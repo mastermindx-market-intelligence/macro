@@ -321,7 +321,7 @@ push_exact_paths_replay_commit() {
 # A rebase left IN PROGRESS is the tell for a real conflict — that is the one case that
 # deserves the conflict remedy and the long backoff, so record it before aborting.
 push_abort_rebase() {
-  local gd=""
+  local gd="" unmerged=""
   gd=$(git rev-parse --git-dir 2>/dev/null) || gd=""
   if [ -n "$gd" ] && { [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; }; then
     PUSH_FAIL_CLASS="rebase-conflict"
@@ -331,10 +331,23 @@ push_abort_rebase() {
     # `--quit` is Git's cleanup-only path for exactly that malformed/stale state.
     if ! git rebase --abort 2>/dev/null; then
       git rebase --quit 2>/dev/null || true
-    fi
-    if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
-      echo "::error title=stale rebase state survived cleanup::git rebase --abort and --quit both failed; refusing to burn every push retry against the same poisoned workspace" >&2
-      return 1
+      if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
+        echo "::error title=stale rebase state survived cleanup::git rebase --abort and --quit both failed; refusing to burn every push retry against the same poisoned workspace" >&2
+        return 1
+      fi
+      # Unlike --abort, --quit never restores HEAD, the index, or the worktree.
+      # An empty cancelled-job residue leaves us on the caller's named branch with
+      # no unmerged entries and is safe to retry. A damaged *real* rebase leaves a
+      # detached HEAD and/or unmerged index; fail closed under bash -e rather than
+      # letting the caller treat that partial tree as a clean retry workspace.
+      if ! unmerged=$(git ls-files -u 2>/dev/null); then
+        echo "::error title=partial rebase state survived cleanup::could not inspect the index after git rebase --quit; refusing to retry from an unknown workspace" >&2
+        return 1
+      fi
+      if [ -n "$unmerged" ] || ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
+        echo "::error title=partial rebase state survived cleanup::git rebase --quit removed malformed metadata but left a detached HEAD and/or unmerged index; refusing to retry or push from a partial rebase" >&2
+        return 1
+      fi
     fi
   fi
   return 0

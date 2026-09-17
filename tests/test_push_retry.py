@@ -879,6 +879,51 @@ def test_abort_rebase_quits_malformed_stale_state_when_abort_cannot(tmp_path):
     assert not stale.exists(), "malformed stale rebase metadata survived cleanup"
 
 
+def test_abort_rebase_fails_closed_when_quit_exposes_partial_rebase_state(tmp_path):
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    (repo / "file").write_text("base\n")
+    _git_output(repo, "add", "file")
+    _git_output(repo, "commit", "-m", "base")
+    base = _git_output(repo, "rev-parse", "HEAD")
+
+    _git_output(repo, "checkout", "-b", "upstream")
+    (repo / "file").write_text("upstream\n")
+    _git_output(repo, "commit", "-am", "upstream")
+
+    _git_output(repo, "checkout", "-b", "topic", base)
+    (repo / "file").write_text("topic\n")
+    _git_output(repo, "commit", "-am", "topic")
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "upstream"],
+        check=False, capture_output=True, text=True,
+    )
+    assert conflict.returncode != 0
+
+    # Corrupt a genuine stopped rebase the same way a cancelled shared runner can:
+    # abort can no longer restore the original branch, while quit can only remove
+    # metadata and necessarily leaves the detached HEAD + unmerged index behind.
+    stale = repo / ".git" / "rebase-merge"
+    (stale / "head-name").unlink()
+    (stale / "orig-head").unlink()
+    r = run_sh(
+        'push_retry_init "t"; PUSH_FAIL_CLASS=contention; push_abort_rebase',
+        cwd=repo,
+    )
+    assert r.returncode != 0, (
+        "cleanup returned success even though quit left a partial rebase state "
+        f"that a bash -e caller could mistake for a retryable clean workspace:\n{r.stdout}\n{r.stderr}"
+    )
+    assert "partial rebase state survived cleanup" in r.stderr
+    assert not stale.exists(), "quit did not remove malformed rebase metadata"
+    assert _git_output(repo, "diff", "--name-only", "--diff-filter=U") == "file"
+    branch = subprocess.run(
+        ["git", "-C", str(repo), "symbolic-ref", "-q", "HEAD"],
+        check=False, capture_output=True, text=True,
+    )
+    assert branch.returncode != 0, "fixture no longer represents a detached partial rebase"
+
+
 # ---------------------------------------------------------------------------
 # 5. Step summary — contention becomes visible instead of silent
 # ---------------------------------------------------------------------------
