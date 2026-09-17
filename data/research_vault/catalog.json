@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T19:21:02.253929+00:00",
-  "count": 2310,
+  "generated_at": "2026-09-17T19:36:05.563133+00:00",
+  "count": 2311,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-pmdrhkxkvax-652422",
+      "title": "GS Ratra Hedge Funds Crowding Monitor US 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:47:24Z",
+      "summary_points": [
+        "Banks Overcrowding: SPX (Banks) shows 98% Short Crowding 6m %ile, indicating extreme short interest concentration and heightened reversal risk from excessive long positioning.",
+        "Retail Favorites Short Squeeze: GSKURF (Retail Favorites) exhibits 81% Short Crowding 6m %ile, signaling severe short interest concentration vulnerable to rapid reversals if sentiment shifts.",
+        "China ADRs Opportunity: China ADRs display \"Not Long Crowded and Not Short Crowded\" positioning (Exhibit 4), suggesting limited institutional exposure and potential upside despite geopolitical risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-9tfrkt7cbch-d59bc0",
       "title": "The EM Trader CEE ing through the Vol",
