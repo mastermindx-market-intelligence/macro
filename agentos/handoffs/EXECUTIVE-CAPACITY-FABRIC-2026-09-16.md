@@ -264,3 +264,14 @@ placement snapshot or the H0 runbook; does not widen the workstream into Wake, S
 Room, browser resources, merge/deploy authority or capital authority; and does not convert a records-only
 edit, a green check, a merged slice or a fixture corpus into native capacity, placement proof or
 production acceptance.
+
+## §5 Continuation notice — 2026-09-16, post-#7181
+
+This record's Section 3 carrier table was taken at 2026-09-16T02:4xZ. Two of its rows — #677 and
+#7114 — have since moved. Two further carriers, #653 and #7103, also moved in the same window but
+were never rows of this table. The current state of all four is recorded in
+`agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md`. macro #7181 itself is
+MERGED at `d7d8bdc6fb9f3548b90487cf51c274693f4e105a` and TERMINAL (release child verdict exactly
+`PASS / MERGE_RECEIPT_VERIFIED / TERMINAL_RELEASE_ACT`). This notice was appended by session
+`claude/agentos-fabric-fold-20260916` and changes no frontmatter, no claim and no verdict of the
+record above it.
