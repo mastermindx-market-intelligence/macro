@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T10:04:54.849616+00:00",
-  "count": 2283,
+  "generated_at": "2026-09-17T10:19:58.754117+00:00",
+  "count": 2284,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1761,6 +1761,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ld41uhni61f-3ff519",
+      "title": "Oil Tracker Mideast Exports Resilient, But Increasingly at Risk",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-15T12:58:17Z",
+      "summary_points": [
+        "Geopolitical Supply Shock: Saudi pipeline closure and Houthi attacks caused 7mb/d Persian Gulf crude production loss (Feb-Aug decline), with August output deficit at 3mb/d, widening supply gaps amid Red Sea disruptions.",
+        "Critical Chokepoint Vulnerability: Hormuz flows declined by 5.4mb/d, while non-Hormuz flows fell 3.2mb/d, exposing systemic risk to 28.6% of pre-war Persian Gulf oil exports (6.7mb/d hit).",
+        "Export Deficit Surge: Persian Gulf oil exports at 16.5–16.8mb/d (70% pre-war) face 6.7mb/d net hit, with visible exports at 13mb/d (7DMA), signaling acute supply chain disruption.",
+        "Price Upside Catalyst: Persistent supply constraints (4mb/d below pre-war Gulf output by 2027) and Red Sea flow reductions elevate Brent >$120 probability, with market pricing at 44% for >$100/bbl in 2027."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
