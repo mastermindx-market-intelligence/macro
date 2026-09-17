@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T20:06:07.704619+00:00",
-  "count": 2312,
+  "generated_at": "2026-09-17T20:21:11.431602+00:00",
+  "count": 2313,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -222,6 +222,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m5zz92anfng-e35262",
+      "title": "GS Quinn Energy Futures Brent (Oil) Buying Backtracks 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:12:09Z",
+      "summary_points": [
+        "Managed Money & Geopolitical Shifts: Geopolitical events (Houthi advances, Saudi pipeline closures) drove +11.1% Brent price surge, but Saudi pipeline capacity return triggered -2.7% drop and $1.3bn OI unwinding, reducing supply outage fears.",
+        "Brent Managed Money Net Length Spike: Sharp net long positioning peak (April 2026 expiry) at ~$110 Brent, indicating strong bullish positioning and potential overextension.",
+        "Brent Price vs Open Interest Divergence: Brent price rose while Aggregate OI fell (Sep 7-14), signaling reduced speculative positioning, market fatigue, or institutional hedging shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
