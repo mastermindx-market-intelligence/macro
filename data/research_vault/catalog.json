@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T20:21:11.431602+00:00",
-  "count": 2313,
+  "generated_at": "2026-09-17T20:41:34.198807+00:00",
+  "count": 2314,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -241,6 +241,28 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jyzcyerp7rc-85b803",
+      "title": "GS McElligott STAY WEIRD 17 Sep 2026",
+      "institution": "Nomura",
+      "side": "sell",
+      "desk": "McElligott",
+      "published_at": "2026-09-17T18:11:56Z",
+      "summary_points": [
+        "Semi-Energy Barbell Outperformance: 54% YTD return, 2.9 Sharpe Ratio, -8.8% drawdown vs. peers (Equal-Weight CTA: 12% YTD, 1.9 Sharpe), driven by Long Commodities/Long Trend and Long AI Bottleneck Equities.",
+        "Diesel Export Ban Policy Risk: Trump’s proposed Diesel Export Ban (targeting 1.7M bpd global exports) risks systemic supply shock, disrupting gasoline/jet fuel amid Saudi pipeline closures, Houthi attacks, and Ukraine refinery damage.",
+        "SPR Drain & Policy Exhaustion: U.S.",
+        "Strategic Petroleum Reserve (SPR) depletion signals policy exhaustion, with WSJ confirming declining reserves as critical flow indicator amid energy volatility."
+      ],
+      "tags": [
+        "McElligott"
+      ],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
