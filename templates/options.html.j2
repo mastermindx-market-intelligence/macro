@@ -2806,7 +2806,7 @@ function expirationPressureHTML(ep){
     single_name: ['Single name','个股']
   };
   var rw = rootWords[root] || ['Covered chain','已覆盖期权链'];
-  var expiry = days === null ? '—' : (days <= 0 ? bi('Today','今日') : bi(days.toFixed(0) + ' days', days.toFixed(0) + ' 天'));
+  var expiry = days === null ? '—' : (days <= 0 ? '0d' : days.toFixed(0) + 'd');
   return '<div class="oew-panel">'
     + '<div class="oew-phead"><h2 class="oew-ph-title">' + bi('Expiration pressure','到期压力') + '</h2>'
       + '<span class="oew-ph-sub">' + bi('where sensitivity is concentrated near expiry','近到期敏感度集中位置') + '</span></div>'
