@@ -5,26 +5,26 @@
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 35.3,
-  "raw_confidence": 34.4,
+  "raw_confidence": 35.2,
   "delta_vs_base": -24.7,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 21.8,
+    "validity": 25.4,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 50.0,
-    "overlay": 55.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.323,
+    "dist_to_stop_r": 0.362,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 88.9,
-    "p1": -0.4511,
-    "p2": -0.2255,
+    "p1": -0.4253,
+    "p2": -0.2127,
     "p3": null,
-    "move_r": -0.677,
+    "move_r": -0.638,
     "mfe_r": 0.0,
     "mae_r": -0.725
   },

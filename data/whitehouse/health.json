@@ -1,10 +1,47 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-16T06:01:28.925385+00:00",
-  "posts_seen": 6,
-  "seen_total": 189,
-  "evaluated": 0,
-  "activated": 0,
+  "as_of": "2026-09-16T22:58:16.489122+00:00",
+  "posts_seen": 14,
+  "seen_total": 198,
+  "evaluated": 6,
+  "activated": 2,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-09-16-fact-sheet-president-donald-j-trump-restores-reciprocity-in-government-procureme",
+      "importance": 68,
+      "activated": true,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-09-16-restoring-reciprocity-in-government-procurement",
+      "importance": 68,
+      "activated": true,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-16-fact-sheet-president-donald-j-trump-provides-meaningful-water-quality-improvemen",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-16-providing-meaningful-water-quality-improvements-through-collaboration-and-oversi",
+      "importance": 25,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-16-constitution-day-citizenship-day-and-constitution-week-2026",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-16-congressional-bills-s-32-and-s-307-signed-into-law",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": null
+    }
+  ]
 }
