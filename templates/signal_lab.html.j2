@@ -268,21 +268,18 @@
           <div class="sig">{{ t(r.name, r.name_zh) }}<a class="anchor-link" href="#{{ r.anchor }}">#</a></div>
           <div class="mkt">{{ t('Direction: ' ~ (r.direction or 'unknown'), '方向：' ~ ('下行' if r.direction == 'down' else ('上行' if r.direction == 'up' else '未知'))) }}</div>
           <div class="extra">{{ t(r.purpose, r.purpose_zh) }}</div>
-        </td>
-        <td><span class="pill {{ status_class }}">{{ t(r.status_text, r.status_zh) }}</span></td>
-        <td>
-          <div class="sig">{{ t('BTC ±5% within ' ~ (r.target.bars or 3) ~ ' daily bars',
-                                  'BTC 在未来 ' ~ (r.target.bars or 3) ~ ' 个日线内波动 ±5%') }}</div>
-          <div class="src">{{ r.target.window or '(t,t+3d]' }}</div>
-        </td>
-        <td>
-          <strong>{{ t('May support a fresh matching event' if r.current_permitted else 'Observation only',
-                       r.permitted_use_zh) }}</strong>
-          <div class="extra">{{ t(r.limits, r.limits_zh) }}</div>
           {% if r.identity == 'd2' and r.research_journey %}
             {% set journey = r.research_journey %}
             <div class="extra" style="margin-top:8px">
               <strong>{{ t('Prospective research journey', '前瞻研究轨迹') }}</strong><br>
+              {{ t('Observed: ' ~ (journey.source_asof or '—'),
+                   '观察：' ~ (journey.source_asof or '—')) }}<br>
+              {{ t('Entry close: ' ~ (journey.entry_asof or '—'),
+                   '入场收盘：' ~ (journey.entry_asof or '—')) }}<br>
+              {{ t('Grade after: ' ~ (journey.check_after or '—'),
+                   '评估日：' ~ (journey.check_after or '—')) }}<br>
+              {{ t('Immutable generations: ' ~ (journey.generation_count or 0),
+                   '不可变代次：' ~ (journey.generation_count or 0)) }}<br>
               {% if journey.fired is sameas true %}
                 {{ t('Raw D2 observation: fired', '原始 D2 观察：已触发') }}
               {% elif journey.fired is sameas false %}
@@ -305,6 +302,17 @@
               {{ t('Research only — no trading authority', '仅供研究 — 无交易权限') }}
             </div>
           {% endif %}
+        </td>
+        <td><span class="pill {{ status_class }}">{{ t(r.status_text, r.status_zh) }}</span></td>
+        <td>
+          <div class="sig">{{ t('BTC ±5% within ' ~ (r.target.bars or 3) ~ ' daily bars',
+                                  'BTC 在未来 ' ~ (r.target.bars or 3) ~ ' 个日线内波动 ±5%') }}</div>
+          <div class="src">{{ r.target.window or '(t,t+3d]' }}</div>
+        </td>
+        <td>
+          <strong>{{ t('May support a fresh matching event' if r.current_permitted else 'Observation only',
+                       r.permitted_use_zh) }}</strong>
+          <div class="extra">{{ t(r.limits, r.limits_zh) }}</div>
         </td>
         <td>
           <details class="method">

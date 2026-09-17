@@ -107,7 +107,7 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert projection["status"] == "pending"
     assert projection["entry_asof"] == str(entry.date())
     assert projection["source_asof"] == str((entry - pd.Timedelta(days=1)).date())
-    assert projection["check_after"] == str((entry + pd.Timedelta(days=4)).date())
+    assert projection["check_after"] == str((entry + pd.Timedelta(days=3)).date())
     assert projection["fired"] is True
     assert projection["trading_authority"] is False
     assert projection["outcome"] is None
@@ -270,3 +270,138 @@ def test_append_rejects_an_orphan_correction_chain():
     )
     with pytest.raises(d2.GenerationConflict):
         d2.append_generation(journey, orphan)
+
+
+
+def test_next_stamp_repairs_only_an_already_enrolled_unavailable_source():
+    """A late DVOL row repairs its prospective journey, never legacy history."""
+    d2 = _d2()
+    entry, sig, dvol = _frames(fired=True)
+    next_entry = entry + pd.Timedelta(days=1)
+    sig_next = pd.concat([
+        sig,
+        pd.DataFrame({"close": [101.0]}, index=[next_entry]),
+    ])
+    tmp = Path(tempfile.mkdtemp()) / "ledger.jsonl"
+    original_path = LED._path
+    LED._path = lambda: tmp
+    try:
+        legacy = {
+            "asof": "2023-12-31",
+            "fires": {"d2": False, "d3": False, "u1": False},
+            "outcome": None,
+        }
+        LED._write([legacy])
+        day1 = {
+            "ok": True,
+            "asof": str(entry.date()),
+            "down": {"score": 0, "ladder": "quiet", "act_live": False, "legs": []},
+            "up": {"score": 0, "ladder": "quiet", "act_live": False, "legs": []},
+        }
+        LED.stamp(
+            day1, sig, dvol_df=pd.DataFrame(),
+            recorded_at="2026-09-17T05:00:00Z",
+        )
+        rows = LED.load()
+        enrolled = next(row for row in rows if row["asof"] == str(entry.date()))
+        first = copy.deepcopy(enrolled["research_d2"]["generations"][0])
+        assert d2.project(enrolled["research_d2"])["status"] == "unavailable"
+
+        day2 = copy.deepcopy(day1)
+        day2["asof"] = str(next_entry.date())
+        LED.stamp(
+            day2, sig_next, dvol_df=dvol,
+            recorded_at="2026-09-18T05:00:00Z",
+        )
+        rows = LED.load()
+        assert "research_d2" not in rows[0]
+        enrolled = next(row for row in rows if row["asof"] == str(entry.date()))
+        assert enrolled["research_d2"]["generations"][0] == first
+        assert [g["kind"] for g in enrolled["research_d2"]["generations"]] == [
+            "source", "correction",
+        ]
+        projection = d2.project(enrolled["research_d2"])
+        assert projection["status"] == "pending"
+        assert projection["fired"] is True
+    finally:
+        LED._path = original_path
+
+
+
+def test_later_source_outage_never_replaces_a_frozen_available_generation():
+    d2, journey, entry, sig, _dvol = _capture_available(fired=True)
+    before = copy.deepcopy(journey)
+    assert d2.capture_source(
+        journey,
+        entry_asof=str(entry.date()),
+        sig_df=sig,
+        dvol_df=pd.DataFrame(),
+        recorded_at="2026-09-18T05:00:00Z",
+    ) is False
+    assert journey == before
+    projection = d2.project(journey)
+    assert projection["status"] == "pending"
+    assert projection["fired"] is True
+
+
+
+def test_stamp_preserves_an_existing_unknown_research_envelope():
+    """A bad/foreign envelope is evidence to fail closed on, never overwrite."""
+    entry, sig, dvol = _frames(fired=True)
+    tmp = Path(tempfile.mkdtemp()) / "ledger.jsonl"
+    original_path = LED._path
+    LED._path = lambda: tmp
+    try:
+        unknown = {"schema": "future-or-corrupt", "generations": [{"opaque": True}]}
+        row = {
+            "asof": str(entry.date()),
+            "fires": {"d2": False, "d3": False, "u1": False},
+            "outcome": None,
+            "research_d2": copy.deepcopy(unknown),
+        }
+        LED._write([row])
+        radar = {
+            "ok": True,
+            "asof": str(entry.date()),
+            "down": {"score": 0, "ladder": "quiet", "act_live": False, "legs": []},
+            "up": {"score": 0, "ladder": "quiet", "act_live": False, "legs": []},
+        }
+        LED.stamp(radar, sig, dvol_df=dvol, recorded_at="2026-09-17T05:00:00Z")
+        assert LED.load()[0]["research_d2"] == unknown
+    finally:
+        LED._path = original_path
+
+
+
+def test_stamp_never_enrolls_an_existing_legacy_current_row():
+    """Existing rows are historical facts, even when their asof equals radar.asof."""
+    entry, sig, dvol = _frames(fired=True)
+    full = pd.concat([
+        sig,
+        pd.DataFrame(
+            {"close": [98.0, 94.0, 93.0]},
+            index=[entry + pd.Timedelta(days=i) for i in (1, 2, 3)],
+        ),
+    ])
+    tmp = Path(tempfile.mkdtemp()) / "ledger.jsonl"
+    original_path = LED._path
+    LED._path = lambda: tmp
+    try:
+        legacy = {
+            "asof": str(entry.date()),
+            "fires": {"d2": False, "d3": False, "u1": False},
+            "btc_close": 100.0,
+            "outcome": None,
+        }
+        LED._write([legacy])
+        radar = {
+            "ok": True,
+            "asof": str(entry.date()),
+            "down": {"score": 0, "ladder": "quiet", "act_live": False, "legs": []},
+            "up": {"score": 0, "ladder": "quiet", "act_live": False, "legs": []},
+        }
+        LED.stamp(radar, full, dvol_df=dvol, recorded_at="2026-09-21T05:00:00Z")
+        row = LED.load()[0]
+        assert "research_d2" not in row
+    finally:
+        LED._path = original_path

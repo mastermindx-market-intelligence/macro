@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import date
 
+from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
 from engine import i18n, signal_lab
@@ -112,7 +113,7 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
         "status": "matured",
         "entry_asof": "2026-09-17",
         "source_asof": "2026-09-16",
-        "check_after": "2026-09-21",
+        "check_after": "2026-09-20",
         "fired": True,
         "trading_authority": False,
         "source_generation_id": "sha256:source",
@@ -141,3 +142,17 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert "已成熟 · 下行目标命中" in html
     assert "Research only — no trading authority" in html
     assert "仅供研究 — 无交易权限" in html
+    assert "Observed: 2026-09-16" in html
+    assert "观察：2026-09-16" in html
+    assert "Entry close: 2026-09-17" in html
+    assert "入场收盘：2026-09-17" in html
+    assert "Grade after: 2026-09-20" in html
+    assert "评估日：2026-09-20" in html
+    assert "Immutable generations: 2" in html
+    assert "不可变代次：2" in html
+    soup = BeautifulSoup(html, "html.parser")
+    d2_row = soup.find(id="signal-lab-btc-impulse-d2")
+    cells = d2_row.find_all("td", recursive=False)
+    assert len(cells) == 5
+    assert "Prospective research journey" in cells[0].get_text(" ", strip=True)
+    assert "Prospective research journey" not in cells[3].get_text(" ", strip=True)

@@ -202,7 +202,7 @@ def _unavailable_source(
 ) -> dict:
     entry_text = str(entry.date()) if entry is not None else None
     source_text = str(source.date()) if source is not None else None
-    check_after = str((entry + timedelta(days=LABEL_H + 1)).date()) if entry is not None else None
+    check_after = str((entry + timedelta(days=LABEL_H)).date()) if entry is not None else None
     return {
         "status": "unavailable",
         "entry_asof": entry_text,
@@ -300,7 +300,7 @@ def build_source_semantic(
         "status": "available",
         "entry_asof": str(entry.date()),
         "source_asof": str(source.date()),
-        "check_after": str((entry + timedelta(days=LABEL_H + 1)).date()),
+        "check_after": str((entry + timedelta(days=LABEL_H)).date()),
         "reason": None,
         "spec": _spec(dvol_w=dvol_w),
         "inputs": {
@@ -375,10 +375,19 @@ def capture_source(
         )
     if current_semantic == candidate:
         return False
-    reason = "late_source_arrival" if (
-        (current_semantic or {}).get("status") == "unavailable"
-        and candidate.get("status") == "available"
-    ) else "source_restatement"
+    current_status = (current_semantic or {}).get("status")
+    candidate_status = candidate.get("status")
+    # A later read outage is not a correction to a frozen historical source.
+    # Likewise, repeated unavailable snapshots add no useful generation.  Only
+    # late arrival (unavailable -> available) or an available-data restatement
+    # may advance the append-only source chain.
+    if candidate_status != "available":
+        return False
+    reason = (
+        "late_source_arrival"
+        if current_status != "available"
+        else "source_restatement"
+    )
     correction = {
         "target_kind": "source",
         "supersedes_generation_id": current_generation["generation_id"],

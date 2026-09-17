@@ -93,7 +93,8 @@ def stamp(
         rows = load()
         row = next((candidate for candidate in rows if candidate.get("asof") == asof), None)
         changed = False
-        if row is None:
+        row_created = row is None
+        if row_created:
             down, up = radar.get("down", {}), radar.get("up", {})
             close = None
             if sig_df is not None and "close" in sig_df.columns and len(sig_df):
@@ -113,20 +114,31 @@ def stamp(
             rows.append(row)
             changed = True
 
-        journey = row.get("research_d2")
-        if not isinstance(journey, dict) or journey.get("schema") != btc_d2_research.SCHEMA:
-            journey = btc_d2_research.new_journey()
-            row["research_d2"] = journey
-            changed = True
         source = _read_dvol() if dvol_df is _DVOL_UNSET else dvol_df
-        if btc_d2_research.capture_source(
-            journey,
-            entry_asof=asof,
-            sig_df=sig_df,
-            dvol_df=source,
-            recorded_at=recorded_at,
-        ):
-            changed = True
+        for candidate in rows:
+            journey = candidate.get("research_d2")
+            if candidate is row and row_created and journey is None:
+                journey = btc_d2_research.new_journey()
+                candidate["research_d2"] = journey
+                changed = True
+            # Never backfill legacy rows, and never overwrite an unknown or
+            # corrupt envelope.  Only rows prospectively enrolled by this
+            # contract are eligible for late arrival/restatement corrections.
+            if not isinstance(journey, dict) or journey.get("schema") != btc_d2_research.SCHEMA:
+                continue
+            try:
+                if btc_d2_research.capture_source(
+                    journey,
+                    entry_asof=candidate.get("asof"),
+                    sig_df=sig_df,
+                    dvol_df=source,
+                    recorded_at=recorded_at,
+                ):
+                    changed = True
+            except Exception as exc:  # noqa: BLE001 — one bad row cannot block today's stamp
+                log.debug("D2 research source refresh skipped for %s: %s",
+                          candidate.get("asof"), exc)
+                continue
         if changed:
             _write(rows)
     except Exception as exc:  # noqa: BLE001 — ledger is additive, never fatal
