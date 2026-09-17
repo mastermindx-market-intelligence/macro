@@ -1,0 +1,17 @@
+{
+  "returncode": 0,
+  "summary": "282 passed in 9.25s",
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp=/Users/chriswong/.cache/mastermind-proof/prophet-protective-geometry-20260917-sol-001/final-focused-and-reset",
+    "tests/test_prophet_bridge.py",
+    "tests/test_prophet_arena.py",
+    "tests/test_prophet_integrity.py",
+    "tests/test_prophet_arena_clock_parity.py",
+    "tests/test_prophet_anticipation_intake.py::TestWaitResetAcceptance",
+    "tests/test_prophet_anticipation_intake.py::test_protective_geometry_stretched_reset_requires_protection_below_its_band"
+  ]
+}
