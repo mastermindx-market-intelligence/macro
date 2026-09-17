@@ -292,6 +292,8 @@ def test_rendered_detail_inline_javascript_parses(tmp_path):
     html = env.get_template("basket_detail.html.j2").render(
         detail_json=json.dumps(detail, separators=(",", ":")),
         basket_name="Test Group", generated_utc="2026-09-16 07:32 UTC",
+        member_observation_digest=observation["projection_digest"],
+        member_observation_pulse_sha256=observation["legacy_pulse_sha256"],
         back_href="../sector_central.html", back_label_en="Sector Intelligence",
         back_label_zh="行业智慧",
     )
@@ -310,17 +312,29 @@ def test_rendered_detail_inline_javascript_parses(tmp_path):
         assert result.returncode == 0, result.stderr
         checked += 1
     assert checked >= 2
+    page = site / "basket" / f"{GROUP_ID}.html"
+    page.parent.mkdir(parents=True, exist_ok=True)
+    page.write_text(html, encoding="utf-8")
+    result = CHECK.evaluate(site)
+    assert result["ok"] is True, result["errors"]
 
 
-def _write_detail_receipt(site: Path, bundle: dict, *, digest: str | None = None) -> Path:
+def _write_detail_receipt(site: Path, bundle: dict, *, digest: str | None = None,
+                          payload: dict | None = None) -> Path:
     group_id = next(iter(bundle["groups"]))
     out = site / "basket" / f"{group_id}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     value = digest or bundle["projection_digest"]
     pulse = bundle["source"]["legacy_pulse_sha256"]
+    if payload is None:
+        payload = {
+            "basket": {"id": group_id},
+            "member_observations": BTD.member_observation_index(site, "us")[group_id],
+        }
     out.write_text(
         f'<body data-member-observations-digest="{value}" '
-        f'data-member-observations-pulse-sha256="{pulse}"></body>',
+        f'data-member-observations-pulse-sha256="{pulse}">'
+        f'<script>\nconst DETAIL = {json.dumps(payload)};\n</script></body>',
         encoding="utf-8",
     )
     return out
@@ -429,3 +443,81 @@ def test_publication_validator_binds_legacy_metric_values_and_byte_count(tmp_pat
     result = CHECK.evaluate(site)
     assert result["ok"] is False
     assert any("legacy_activity" in error for error in result["errors"])
+
+
+@pytest.mark.parametrize("mutation", [
+    "missing_observation", "wrong_basket", "wrong_group", "missing_member",
+    "changed_metric", "changed_null", "boolean_as_number", "wrong_schema",
+    "wrong_as_of", "wrong_projection", "wrong_pulse", "nonfinite_value",
+])
+def test_publication_validator_rejects_embedded_payload_drift(tmp_path, mutation):
+    site = tmp_path / "site"
+    bundle = _write_generation(site)
+    observation = BTD.member_observation_index(site, "us")[GROUP_ID]
+    payload = {"basket": {"id": GROUP_ID}, "member_observations": observation}
+    if mutation == "missing_observation":
+        payload["member_observations"] = None
+    elif mutation == "wrong_basket":
+        payload["basket"]["id"] = "other_group"
+    elif mutation == "wrong_group":
+        observation["group"]["group_id"] = "other_group"
+    elif mutation == "missing_member":
+        observation["group"]["members"].pop("C")
+    elif mutation == "changed_metric":
+        observation["group"]["metrics"]["strict_trend_200"]["value"] = 0.0
+    elif mutation == "changed_null":
+        observation["group"]["members"]["C"]["metrics"]["strict_trend_200"]["value"] = False
+    elif mutation == "boolean_as_number":
+        observation["group"]["members"]["A"]["metrics"]["strict_trend_200"]["value"] = 1
+    elif mutation == "wrong_schema":
+        observation["schema"] = "unrecognised.v1"
+    elif mutation == "wrong_as_of":
+        observation["as_of"] = "2026-09-14"
+    elif mutation == "wrong_projection":
+        observation["projection_digest"] = "0" * 64
+    elif mutation == "wrong_pulse":
+        observation["legacy_pulse_sha256"] = "0" * 64
+    else:
+        observation["group"]["members"]["A"]["metrics"]["raw_daily_change"]["value"] = float("nan")
+    _write_detail_receipt(site, bundle, payload=payload)
+    result = CHECK.evaluate(site)
+    assert result["ok"] is False, f"accepted drift: {mutation}"
+    assert any("detail" in error.lower() for error in result["errors"])
+
+
+@pytest.mark.parametrize("mutation", [
+    "missing_script", "duplicate_detail", "external_script", "duplicate_json_key",
+    "metadata_only_in_comment", "duplicate_body_attribute", "commented_payload",
+    "non_executable_type", "duplicate_body", "unterminated_literal",
+])
+def test_publication_validator_requires_unambiguous_real_body_payload(tmp_path, mutation):
+    site = tmp_path / "site"
+    bundle = _write_generation(site)
+    page = _write_detail_receipt(site, bundle)
+    text = page.read_text()
+    script = re.search(r"<script>.*?</script>", text, re.S).group(0)
+    if mutation == "missing_script":
+        text = text.replace(script, "")
+    elif mutation == "duplicate_detail":
+        text = text.replace("</body>", script + "</body>")
+    elif mutation == "external_script":
+        text = text.replace("<script>", '<script src="ignored.js">')
+    elif mutation == "commented_payload":
+        text = text.replace("<script>", "<script>/*").replace("</script>", "*/</script>")
+    elif mutation == "non_executable_type":
+        text = text.replace("<script>", '<script type="application/json">')
+    elif mutation == "duplicate_body":
+        text += "<body></body>"
+    elif mutation == "unterminated_literal":
+        text = text.replace(";\n</script>", "\n</script>")
+    elif mutation == "duplicate_json_key":
+        text = text.replace('const DETAIL = {', 'const DETAIL = {"member_observations":null,', 1)
+    elif mutation == "metadata_only_in_comment":
+        body_tag = re.search(r"<body[^>]*>", text).group(0)
+        text = "<!-- " + body_tag + " -->" + text.replace(body_tag, "<body>", 1)
+    else:
+        text = text.replace("<body ", '<body data-member-observations-digest="' + "0" * 64 + '" ', 1)
+    page.write_text(text)
+    result = CHECK.evaluate(site)
+    assert result["ok"] is False, f"accepted ambiguous page: {mutation}"
+    assert any("detail" in error.lower() for error in result["errors"])

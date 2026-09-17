@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import hashlib
+from html.parser import HTMLParser
 import json
 import math
 import re
@@ -15,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from engine import group_member_observations as observations
+from engine.company_intelligence.contracts import canonical_json_bytes
 
 _SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 _ATTRS = {
@@ -44,20 +46,116 @@ def _json(raw: bytes | None, label: str, errors: list[str]) -> dict[str, Any] | 
         return None
     return value
 
-def _attrs(path: Path, errors: list[str]) -> dict[str, str | None]:
+class _DetailHTML(HTMLParser):
+    """Read the actual body and inline scripts without executing page JavaScript."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=False)
+        self.bodies: list[list[tuple[str, str | None]]] = []
+        self.scripts: list[str] = []
+        self._script: list[str] | None = None
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "body":
+            self.bodies.append(attrs)
+        elif tag == "script":
+            attributes = dict(attrs)
+            script_type = (attributes.get("type") or "").strip().lower()
+            executable = script_type in ("", "text/javascript", "application/javascript", "module")
+            self._script = [] if "src" not in attributes and executable else None
+
+    def handle_data(self, data: str) -> None:
+        if self._script is not None:
+            self._script.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "script":
+            if self._script is not None:
+                self.scripts.append("".join(self._script))
+            self._script = None
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate embedded JSON key")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value: str) -> Any:
+    raise ValueError("non-finite embedded JSON value")
+
+
+def _read_detail(path: Path, errors: list[str]) -> tuple[dict[str, str | None], Any]:
+    attrs: dict[str, str | None] = {key: None for key in _ATTRS}
     try:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         errors.append(f"detail page {path}: absent or unreadable: {exc}")
-        return {key: None for key in _ATTRS}
-    out: dict[str, str | None] = {}
-    for key, attr in _ATTRS.items():
-        match = re.search(rf'\b{re.escape(attr)}="([0-9a-f]*)"', text)
-        out[key] = match.group(1) if match else None
-        if not match:
-            errors.append(f"detail page {path}: missing {attr}")
-    return out
+        return attrs, None
+    page = _DetailHTML()
+    page.feed(text)
+    page.close()
+    if len(page.bodies) != 1:
+        errors.append(f"detail page {path}: requires exactly one body")
+    else:
+        for key, attr in _ATTRS.items():
+            values = [value for name, value in page.bodies[0] if name == attr]
+            if len(values) != 1:
+                errors.append(f"detail page {path}: missing or duplicate {attr}")
+            else:
+                attrs[key] = values[0]
 
+    # The existing template owns this JSON literal. Parse only that literal, not
+    # a metadata-looking string/comment or an external script's ignored contents.
+    # The owned template starts this script with the declaration; accepting a
+    # declaration later in arbitrary JavaScript would also accept block comments.
+    declaration = re.compile(r"\A\s*const[ \t]+DETAIL[ \t]*=[ \t]*")
+    candidates = [(script, match.end()) for script in page.scripts
+                  for match in declaration.finditer(script)]
+    if len(candidates) != 1:
+        errors.append(f"detail page {path}: requires one embedded DETAIL payload")
+        return attrs, None
+    script, start = candidates[0]
+    decoder = json.JSONDecoder(object_pairs_hook=_unique_json_object,
+                               parse_constant=_reject_json_constant)
+    try:
+        payload, end = decoder.raw_decode(script[start:].lstrip())
+        suffix = script[start:].lstrip()[end:].lstrip()
+        if not suffix.startswith(";") or not isinstance(payload, dict):
+            raise ValueError("DETAIL must be one terminated JSON object literal")
+    except (ValueError, TypeError, RecursionError) as exc:
+        errors.append(f"detail page {path}: invalid embedded DETAIL payload: {exc}")
+        return attrs, None
+    return attrs, payload
+
+
+def _bind_detail_payload(group_id: str, payload: Any, group: Any,
+                         companion: Mapping[str, Any], pulse_digest: str | None,
+                         errors: list[str]) -> None:
+    if not isinstance(payload, Mapping):
+        return  # The reader already records the missing/ambiguous payload.
+    basket = payload.get("basket")
+    if not isinstance(basket, Mapping) or basket.get("id") != group_id:
+        errors.append(f"detail page {group_id}: embedded basket identity mismatch")
+    expected = {
+        key: companion.get(key) for key in (
+            "schema", "authority", "as_of", "generated_at", "projection_digest",
+        )
+    }
+    expected.update({"legacy_pulse_sha256": pulse_digest, "group": group})
+    try:
+        # Structural binding under the existing Python owner serialization also
+        # distinguishes true from 1. Original pulse wire bytes are still hashed
+        # directly; no browser parse/reserialize wire-digest check is introduced.
+        matches = (canonical_json_bytes(payload.get("member_observations"))
+                   == canonical_json_bytes(expected))
+    except (ValueError, TypeError, OverflowError, RecursionError):
+        matches = False
+    if not matches:
+        errors.append(f"detail page {group_id}: embedded member observations mismatch")
 
 
 def _same_timestamp(left: Any, right: Any) -> bool:
@@ -148,7 +246,8 @@ def evaluate(site_root: Path) -> dict[str, Any]:
                 errors.append("pulse and companion group key sets differ")
             projection = companion.get("projection_digest")
             for group_id, group in sorted(groups.items()):
-                attrs = _attrs(site / "basket" / f"{group_id}.html", errors)
+                attrs, detail = _read_detail(site / "basket" / f"{group_id}.html", errors)
+                _bind_detail_payload(group_id, detail, group, companion, pulse_digest, errors)
                 if attrs.get("projection") != projection:
                     errors.append(f"detail page {group_id}: projection digest mismatch")
                 if attrs.get("pulse") != pulse_digest:
