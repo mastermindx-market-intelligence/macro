@@ -419,3 +419,106 @@ calling the old manifest-bound request current.
    current-base material compatibility, no source collision, and accepted
    continuity. Post-merge readback still yields only
    `BUILT_NOT_PROVEN / RESEARCH_ONLY / PRODUCTION_INERT`.
+
+## Current-main qualification checkpoint — 2026-09-17
+
+This checkpoint supersedes the release coordinates above without changing the
+capability or authority classification. The source remains
+`BUILT_NOT_PROVEN / RESEARCH_ONLY / PRODUCTION_INERT`.
+
+### Exact integration identity
+
+- Candidate parent: `71dec51a54b96bd3cebe333069f59ed8b3b9c13b`.
+- Protected `main` parent: `12b655150582d9be39bfd2779b33338d154c565f`.
+- Integrated source head: `ca93ecd56b5c763e5557d36231fa502fc5fd2571`.
+- Integrated tree: `bb9be83e4331a17defb3c7d9a3bc69657aa844b6`.
+- A detached synthetic merge was first qualified at commit
+  `35817c3f3753eb4af267aeef346a8d0c700d712d`; the real merge produced the
+  identical tree byte-for-byte. Protected `main` remained at the pinned parent
+  through the final bounded fetch/reconciliation.
+
+### CI fanout root cause and repair ownership
+
+The pre-integration candidate reproduced the ratchet RED exactly:
+`templates/index.html` selected **133 jobs** against the unchanged ceiling of
+**132**. Four neighboring declaration, import-closure, fallback-tier, and Macro
+owner contracts passed. The excess job was not a Macro Turnaround scope defect:
+Research Vault source-lineage curation had already merged independently to
+protected `main` as `ebaa524756d7` / PR `#7207`, so the duplicate branch-local
+curation was correctly reverted rather than carried twice.
+
+On the exact synthetic/current-main tree, all five CI contracts passed, including
+the same 132-job ceiling. No fanout ceiling, weight ceiling, pack ceiling, test
+coverage, or fallback rule was weakened.
+
+### Post-merge bounded proof
+
+Evidence root:
+`/Volumes/Mastermind/agent-evidence/macro-turnaround-release-20260916-sol/20260917T023957Z-postmerge-ca93ecd5`
+
+- Five focused Macro Turnaround suites: **259 passed**.
+- Canonical entry-script import-pin module: **11 passed**.
+- CI declaration, import-closure, exclusive curation, fallback-tier, fanout, and
+  dedicated Macro owner contracts: **5 passed**.
+- Python compile and `git diff --check`: PASS.
+- Correct workflow-shaped semantic planner: **142/142 jobs** placed into all
+  **12/12 packs**, zero omitted; plan SHA-256
+  `e1628b9960c3cde272f851b84962f7913b96d2f7a3bf9b41f9470e54a6a6eabe`.
+  Full-suite selection is expected because this PR changes the global legacy-job
+  manifest. An earlier unsupported local `--all --dry-run` invocation exited 2
+  before planning because `--workflow` is mandatory; it was an invocation error,
+  not a repository verdict.
+- Whole-tree unrun gate: **2,806 suites**, **910 unrun**, **0 strictly dark**,
+  exit 0. Two stale baseline warnings are inherited cleanup, not new darkness.
+- Agent OS validation: **1,118 records**, **0 errors**, **98 inherited warnings**.
+
+### Replay and correction identity remains current
+
+Current protected `main`, the exact merge, and the latest immutable replay proof
+share the same canonical release-target material:
+
+- manifest blob `2524e4fcdf350bdf4a061a9f009a09ca02bd2274`;
+- manifest SHA-256
+  `6d64a7fb739c33bc5e7248ba72645905876160e740dfe8a361fd76c9e8be815d`;
+- PPIFIS blob `42aab3b388c61e5c0e960a65cd883892870c13c1`;
+- PPIFIS SHA-256
+  `616d4930b5c071e13b78a59aa7660577a7e9670af5b54fe3c7d424e0554e4592`.
+
+Therefore the prior exact native replay, immutable rerun/conflict proof, and
+35/35 mutation campaign remain materially applicable; no revised source data is
+being granted an old receipt. This still proves mechanics only, not forecast
+accuracy, historical production availability, ranking, sizing, gating,
+profitability, alerting, or trading authority.
+
+### Collision and release state
+
+A fully paginated diagnostic census reconciled **274/274 open PRs**, including
+all 16 file lists requiring expansion. Excluding this PR, 92 PRs overlap only on
+shared CI integration surfaces: `.github/ci/legacy-jobs.yml` (92) and
+`tests/test_ci_pack.py` (5). There are **zero exact engine, replay, CLI, research,
+or focused-test collisions**. This diagnostic does not replace the protected
+Source Continuity receipt.
+
+The prior independent PASS at `64e76b847198...` cannot be reused: the path-fence
+repair and tests changed owned semantic blobs after that review. The final
+published descendant therefore remains **FULL_REREVIEW_REQUIRED**. Hosted CI and
+protected Source Continuity must also bind the same remote head; queued,
+canceled, old-head, manually enumerated, or local-only evidence is not release
+acceptance.
+
+### Exact remaining release sequence
+
+1. Commit this records-only checkpoint as a normal descendant of the exact
+   integrated source, then push the existing branch once without force and verify
+   the remote ref and Draft PR head byte-for-byte.
+2. Run protected Source Continuity on that published head. Preserve any typed
+   refusal as a release block; do not substitute the diagnostic census.
+3. Obtain fresh independent adversarial review of the exact published head.
+4. Require every binding hosted check to finish green on that same head.
+5. Only after review PASS, hosted exact-head green, accepted continuity, and a
+   final current-base compatibility check may Sol consider Ready/merge. Even a
+   merge would leave the feature research-only and production-inert.
+
+Do not redo the completed engine/replay implementation, 35-mutation campaign, or
+native replay unless a material source, configuration, manifest, PPIFIS, or
+owned-blob invalidator appears.
