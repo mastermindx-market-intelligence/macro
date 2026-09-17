@@ -328,8 +328,11 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
             "bench_label": ti.get("bench_label", "S&P 500"),       # regional benchmark for the "vs <bench>" labels
             "bench_label_zh": ti.get("bench_label_zh", "标普500"),
         }
+        observation = detail.get("member_observations") or {}
         html = tmpl.render(detail_json=json.dumps(detail, separators=(",", ":"), default=str),
                            basket_name=b.get("name", bid), generated_utc=built,
+                           member_observation_digest=observation.get("projection_digest"),
+                           member_observation_pulse_sha256=observation.get("legacy_pulse_sha256"),
                            back_href=detail["back"],
                            back_label_en=("Sector Intelligence" if region == "us"
                                           else "China Sector Intelligence" if region == "china"

@@ -319,7 +319,8 @@
   }
 </style>
 </head>
-<body>
+<body data-member-observations-digest="{{ member_observation_digest|default('', true)|e }}"
+      data-member-observations-pulse-sha256="{{ member_observation_pulse_sha256|default('', true)|e }}">
 {% set nav_context_links = [
   {'href': back_href | default('../baskets.html'), 'icon': '🧺', 'en': 'All themes', 'zh': '全部主题'},
 ] %}

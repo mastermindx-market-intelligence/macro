@@ -17,6 +17,7 @@ from engine.company_intelligence.contracts import canonical_json_bytes
 from engine import group_member_observations as GMO
 from engine import group_pulse as GP
 from scripts import build_theme_detail as BTD
+from scripts import check_group_member_observations as CHECK
 
 AS_OF = "2026-09-15"
 GENERATED_AT = "2026-09-16T07:32:35+00:00"
@@ -202,6 +203,8 @@ def test_template_exposes_complete_member_evidence_without_client_refetch():
         "observations_required",
         "projection_digest",
         "legacy_pulse_sha256",
+        "data-member-observations-digest",
+        "data-member-observations-pulse-sha256",
         "What supports this read?",
         "哪些成分股支持这项读数？",
         "Context only — does not rank, score, gate, or change action inputs.",
@@ -307,3 +310,60 @@ def test_rendered_detail_inline_javascript_parses(tmp_path):
         assert result.returncode == 0, result.stderr
         checked += 1
     assert checked >= 2
+
+
+def _write_detail_receipt(site: Path, bundle: dict, *, digest: str | None = None) -> Path:
+    group_id = next(iter(bundle["groups"]))
+    out = site / "basket" / f"{group_id}.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    value = digest or bundle["projection_digest"]
+    pulse = bundle["source"]["legacy_pulse_sha256"]
+    out.write_text(
+        f'<body data-member-observations-digest="{value}" '
+        f'data-member-observations-pulse-sha256="{pulse}"></body>',
+        encoding="utf-8",
+    )
+    return out
+
+
+def test_publication_validator_binds_pulse_companion_and_detail(tmp_path):
+    site = tmp_path / "site"
+    bundle = _write_generation(site)
+    _write_detail_receipt(site, bundle)
+    result = CHECK.evaluate(site)
+    assert result["ok"] is True
+    assert result["group_count"] == 1
+    assert result["errors"] == []
+
+
+def test_publication_validator_rejects_pulse_and_detail_mismatch(tmp_path):
+    site = tmp_path / "site"
+    bundle = _write_generation(site)
+    detail = _write_detail_receipt(site, bundle, digest="0" * 64)
+    first = CHECK.evaluate(site)
+    assert first["ok"] is False
+    assert any("detail" in error.lower() for error in first["errors"])
+    detail.write_text(detail.read_text().replace("0" * 64, bundle["projection_digest"]), encoding="utf-8")
+    pulse = site / "basketdata" / "pulse.json"
+    pulse.write_bytes(pulse.read_bytes() + b" ")
+    second = CHECK.evaluate(site)
+    assert second["ok"] is False
+    assert any("pulse" in error.lower() for error in second["errors"])
+
+
+def test_current_run_gate_refuses_capture_errors_or_missing_artifact():
+    assert CHECK.current_run_errors({
+        "member_observation_errors": ["capture failed"],
+        "member_observations_artifact": None,
+        "member_observations_digest": None,
+    })
+    assert CHECK.current_run_errors({
+        "member_observation_errors": [],
+        "member_observations_artifact": None,
+        "member_observations_digest": None,
+    })
+    assert CHECK.current_run_errors({
+        "member_observation_errors": [],
+        "member_observations_artifact": "/tmp/member_observations.json",
+        "member_observations_digest": "a" * 64,
+    }) == []
