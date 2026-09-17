@@ -765,6 +765,9 @@ def validate_member_bundle(bundle: Any) -> list[str]:
 
     source = bundle.get("source")
     legacy_digest = None
+    receipts: list[dict[str, Any]] = []
+    receipt_refs: set[str] = set()
+    membership_receipts: list[dict[str, Any]] = []
     if not isinstance(source, Mapping):
         errors.append("bundle.source: not an object")
     else:
@@ -776,7 +779,11 @@ def validate_member_bundle(bundle: Any) -> list[str]:
         if not isinstance(byte_count, int) or isinstance(byte_count, bool) or byte_count <= 0:
             errors.append("bundle.source.legacy_pulse_bytes invalid")
         try:
-            _normalise_receipts(source.get("receipts") or [])
+            receipts = _normalise_receipts(source.get("receipts") or [])
+            receipt_refs = {row["source_ref"] for row in receipts}
+            membership_receipts = [
+                row for row in receipts if row["basis"] == "curated_membership"
+            ]
         except ContractError as exc:
             errors.append(str(exc))
 
@@ -807,8 +814,16 @@ def validate_member_bundle(bundle: Any) -> list[str]:
         if group.get("member_count") != len(member_keys):
             errors.append(f"{label}: member_count mismatch")
         membership_digest = group.get("source_membership_digest")
+        membership_ref = group.get("source_membership_ref")
         if not isinstance(membership_digest, str) or not _SHA_RE.fullmatch(membership_digest):
             errors.append(f"{label}: source membership digest invalid")
+        elif membership_receipts:
+            if not any(row["source_ref"] == membership_ref and row["sha256"] == membership_digest
+                       for row in membership_receipts):
+                errors.append(f"{label}: membership receipt mismatch")
+        elif (membership_ref != f"group_pulse:membership:{group_id}"
+              or membership_digest != canonical_json_sha256(member_keys)):
+            errors.append(f"{label}: membership receipt fallback mismatch")
         if group.get("legacy_pulse_digest") != legacy_digest:
             errors.append(f"{label}: legacy pulse digest mismatch")
         if not isinstance(members, Mapping) or set(members) != set(member_keys):
@@ -833,6 +848,10 @@ def validate_member_bundle(bundle: Any) -> list[str]:
                 errors.append(f"{member_label}: metric cells mismatch")
                 continue
             for metric_id, cell in cells.items():
+                if isinstance(cell, Mapping) and cell.get("source_ref") not in receipt_refs:
+                    errors.append(
+                        f"{member_label}.metrics[{metric_id!r}]: source receipt missing"
+                    )
                 _validate_cell(cell, label=f"{member_label}.metrics[{metric_id!r}]",
                                metric=metrics[metric_id], member_key=member_key,
                                as_of=as_of, errors=errors)

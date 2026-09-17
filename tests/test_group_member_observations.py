@@ -562,3 +562,17 @@ def test_compute_discloses_benchmark_hole_without_erasing_raw_change(monkeypatch
         assert relative["value"] is None
         assert relative["estimability_reason"] == "benchmark_unavailable"
     assert "benchmark_unavailable_returns_unadjusted" in result["payload"][GROUP_ID]["coverage_warnings"]
+
+
+def test_source_receipts_bind_membership_and_metric_cells():
+    forged = _bundle()
+    forged["groups"][GROUP_ID]["source_membership_digest"] = "f" * 64
+    forged = _rehash(forged)
+    assert any("membership receipt" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["legacy_activity"]["source_ref"] = "unknown:source"
+    forged = _rehash(forged)
+    assert any("source receipt" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
