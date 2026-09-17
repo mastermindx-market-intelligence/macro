@@ -367,3 +367,65 @@ def test_current_run_gate_refuses_capture_errors_or_missing_artifact():
         "member_observations_artifact": "/tmp/member_observations.json",
         "member_observations_digest": "a" * 64,
     }) == []
+
+
+def test_publication_validator_binds_companion_semantics_to_pulse(tmp_path):
+    site = tmp_path / "site"
+    bundle = _write_generation(site)
+    _write_detail_receipt(site, bundle)
+    companion_path = site / "basketdata" / "member_observations.json"
+
+    forged = json.loads(canonical_json_bytes(bundle))
+    forged["as_of"] = "2026-09-14"
+    for receipt in forged["source"]["receipts"]:
+        receipt["effective_at"] = "2026-09-14"
+    for group in forged["groups"].values():
+        for member in group["members"].values():
+            for cell in member["metrics"].values():
+                cell["effective_at"] = "2026-09-14"
+    forged["projection_digest"] = GMO.projection_digest(forged)
+    companion_path.write_bytes(canonical_json_bytes(forged))
+    result = CHECK.evaluate(site)
+    assert result["ok"] is False
+    assert any("as_of" in error.lower() for error in result["errors"])
+
+    bundle = _write_generation(site)
+    _write_detail_receipt(site, bundle)
+    forged = json.loads(canonical_json_bytes(bundle))
+    forged["generated_at"] = "2026-09-16T08:00:00+00:00"
+    forged["projection_digest"] = GMO.projection_digest(forged)
+    companion_path.write_bytes(canonical_json_bytes(forged))
+    result = CHECK.evaluate(site)
+    assert result["ok"] is False
+    assert any("generated_at" in error.lower() for error in result["errors"])
+
+
+def test_publication_validator_binds_legacy_metric_values_and_byte_count(tmp_path):
+    site = tmp_path / "site"
+    bundle = _write_generation(site)
+    _write_detail_receipt(site, bundle)
+    companion_path = site / "basketdata" / "member_observations.json"
+
+    forged = json.loads(canonical_json_bytes(bundle))
+    forged["source"]["legacy_pulse_bytes"] += 1
+    forged["projection_digest"] = GMO.projection_digest(forged)
+    companion_path.write_bytes(canonical_json_bytes(forged))
+    result = CHECK.evaluate(site)
+    assert result["ok"] is False
+    assert any("byte count" in error.lower() for error in result["errors"])
+
+    bundle = _write_generation(site)
+    _write_detail_receipt(site, bundle)
+    forged = json.loads(canonical_json_bytes(bundle))
+    group = forged["groups"][GROUP_ID]
+    metric = group["metrics"]["legacy_activity"]
+    metric["numerator_member_keys"] = []
+    metric["numerator"] = 0
+    metric["value"] = 0.0
+    group["members"]["A"]["metrics"]["legacy_activity"]["value"] = False
+    forged["projection_digest"] = GMO.projection_digest(forged)
+    assert GMO.validate_member_bundle(forged) == []
+    companion_path.write_bytes(canonical_json_bytes(forged))
+    result = CHECK.evaluate(site)
+    assert result["ok"] is False
+    assert any("legacy_activity" in error for error in result["errors"])

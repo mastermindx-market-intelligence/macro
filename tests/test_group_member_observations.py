@@ -708,3 +708,57 @@ def test_closed_contract_binds_excluded_member_details_to_member_cells():
     forged = _rehash(forged)
     assert any("excluded member detail mismatch" in error.lower()
                for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_binds_null_reason_and_coverage_to_estimability():
+    forged = _bundle()
+    group = forged["groups"][GROUP_ID]
+    cell = group["members"]["C"]["metrics"]["strict_trend_200"]
+    cell["null_reason"] = "NOT_YET_AVAILABLE"
+    group["metrics"]["strict_trend_200"]["excluded_members"][0]["null_reason"] = "NOT_YET_AVAILABLE"
+    forged = _rehash(forged)
+    assert any("null_reason disagrees with estimability_reason" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    cell = forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["strict_trend_50"]
+    cell["observations_available"] = 10
+    forged = _rehash(forged)
+    assert any("included cell has insufficient observations" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_refuses_future_or_misbound_source_receipts():
+    forged = _bundle()
+    forged["source"]["receipts"][0]["effective_at"] = "2026-09-16"
+    forged = _rehash(forged)
+    assert any("source receipt" in error.lower() and "future" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    forged["source"]["receipts"][0]["effective_at"] = "2026-09-14"
+    forged = _rehash(forged)
+    assert any("referenced source receipt" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+
+def test_closed_contract_requires_nonempty_receipts_and_frame_backed_cells():
+    forged = _bundle()
+    forged["source"]["receipts"][0]["bytes"] = 0
+    forged = _rehash(forged)
+    assert any("bytes invalid" in error.lower()
+               for error in GMO.validate_member_bundle(forged))
+
+    forged = _bundle()
+    forged["source"]["receipts"].append({
+        "kind": "raw_bytes",
+        "source_ref": "raw:unrelated",
+        "sha256": "d" * 64,
+        "bytes": 12,
+        "effective_at": None,
+        "basis": "unrelated_source",
+    })
+    forged["groups"][GROUP_ID]["members"]["A"]["metrics"]["raw_daily_change"]["source_ref"] = "raw:unrelated"
+    forged = _rehash(forged)
+    assert any("normalized_frame" in error.lower()
+               for error in GMO.validate_member_bundle(forged))

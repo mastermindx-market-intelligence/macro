@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -57,6 +59,59 @@ def _attrs(path: Path, errors: list[str]) -> dict[str, str | None]:
     return out
 
 
+
+def _same_timestamp(left: Any, right: Any) -> bool:
+    def parse(value: Any) -> datetime | None:
+        if not isinstance(value, str) or not value:
+            return None
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+        except (TypeError, ValueError):
+            return None
+    left_dt = parse(left)
+    right_dt = parse(right)
+    return left_dt is not None and left_dt == right_dt
+
+
+def _rounded_equal(left: Any, right: Any, digits: int = 4) -> bool:
+    if left is None or right is None:
+        return left is None and right is None
+    if isinstance(left, bool) or isinstance(right, bool):
+        return False
+    try:
+        return (math.isfinite(float(left)) and math.isfinite(float(right))
+                and round(float(left), digits) == round(float(right), digits))
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
+def _bind_legacy_metric(group_id: str, metric_id: str, metric: Any,
+                        pulse_group: Mapping[str, Any], errors: list[str]) -> None:
+    if not isinstance(metric, Mapping):
+        return
+    participation = pulse_group.get("participation")
+    if not isinstance(participation, Mapping):
+        errors.append(f"group {group_id}: pulse participation invalid")
+        return
+    if metric_id == "legacy_activity":
+        expected_value = participation.get("activity_share")
+        expected_numerator = participation.get("activity_n")
+        expected_denominator = pulse_group.get("n_covered")
+        if metric.get("numerator") != expected_numerator:
+            errors.append(f"group {group_id}: legacy_activity numerator mismatch")
+    elif metric_id == "legacy_trend_50":
+        expected_value = participation.get("trend_share_50d")
+        expected_denominator = participation.get("trend_n_50d")
+    elif metric_id == "legacy_trend_200":
+        expected_value = participation.get("trend_share_200d")
+        expected_denominator = participation.get("trend_n_200d")
+    else:
+        return
+    if metric.get("denominator") != expected_denominator:
+        errors.append(f"group {group_id}: {metric_id} denominator mismatch")
+    if not _rounded_equal(metric.get("value"), expected_value):
+        errors.append(f"group {group_id}: {metric_id} value mismatch")
+
 def current_run_errors(result: Mapping[str, Any]) -> list[str]:
     """Prove this invocation produced a complete companion before strict publish."""
     errors = [str(item) for item in (result.get("member_observation_errors") or [])]
@@ -84,6 +139,8 @@ def evaluate(site_root: Path) -> dict[str, Any]:
         source = companion.get("source") or {}
         if pulse_digest is not None and source.get("legacy_pulse_sha256") != pulse_digest:
             errors.append("member_observations.json: pulse byte digest mismatch")
+        if pulse_raw is not None and source.get("legacy_pulse_bytes") != len(pulse_raw):
+            errors.append("member_observations.json: pulse byte count mismatch")
         groups = companion.get("groups") or {}
         if isinstance(groups, dict):
             group_count = len(groups)
@@ -98,6 +155,26 @@ def evaluate(site_root: Path) -> dict[str, Any]:
                     errors.append(f"detail page {group_id}: pulse digest mismatch")
                 if isinstance(group, dict) and group.get("legacy_pulse_digest") != pulse_digest:
                     errors.append(f"group {group_id}: legacy pulse digest mismatch")
+                pulse_group = pulse.get(group_id) if isinstance(pulse, dict) else None
+                if not isinstance(pulse_group, Mapping):
+                    errors.append(f"group {group_id}: pulse object invalid")
+                    continue
+                if pulse_group.get("as_of") != companion.get("as_of"):
+                    errors.append(f"group {group_id}: companion as_of mismatch")
+                if not _same_timestamp(
+                        pulse_group.get("generated_at"), companion.get("generated_at")):
+                    errors.append(f"group {group_id}: companion generated_at mismatch")
+                if isinstance(group, Mapping):
+                    if pulse_group.get("n_members") != group.get("member_count"):
+                        errors.append(f"group {group_id}: member count mismatch")
+                    metrics = group.get("metrics") or {}
+                    if isinstance(metrics, Mapping):
+                        for metric_id in ("legacy_activity", "legacy_trend_50",
+                                          "legacy_trend_200"):
+                            _bind_legacy_metric(
+                                group_id, metric_id, metrics.get(metric_id),
+                                pulse_group, errors,
+                            )
         else:
             errors.append("member_observations.json: groups must be an object")
     return {

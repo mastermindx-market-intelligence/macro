@@ -59,13 +59,14 @@ _METRIC_KEYS = frozenset({
 _EXCLUDED_KEYS = frozenset({"member_key", "null_reason", "estimability_reason"})
 _COVERAGE_KEYS = frozenset({"catalogue_member_count", "metrics"})
 _COVERAGE_METRIC_KEYS = frozenset({"observed", "excluded"})
-_ESTIMABILITY_REASONS = frozenset({
-    "missing_effective_observation",
-    "insufficient_lookback",
-    "excluded_from_legacy_activity_cohort",
-    "benchmark_unavailable",
-    "unavailable_in_owner_projection",
-})
+_ESTIMABILITY_NULL_REASONS = {
+    "missing_effective_observation": MissingReason.NO_COVERAGE.value,
+    "insufficient_lookback": MissingReason.NOT_YET_AVAILABLE.value,
+    "excluded_from_legacy_activity_cohort": MissingReason.NO_COVERAGE.value,
+    "benchmark_unavailable": MissingReason.NO_COVERAGE.value,
+    "unavailable_in_owner_projection": MissingReason.NO_COVERAGE.value,
+}
+_ESTIMABILITY_REASONS = frozenset(_ESTIMABILITY_NULL_REASONS)
 
 _METRIC_DEFS = {
     "legacy_activity": {
@@ -258,7 +259,7 @@ def _normalise_receipts(receipts: Sequence[Mapping[str, Any]]) -> list[dict[str,
             raise ContractError(f"source_receipts[{index}].basis invalid")
         if not isinstance(digest, str) or not _SHA_RE.fullmatch(digest):
             raise ContractError(f"source_receipts[{index}].sha256 invalid")
-        if not isinstance(byte_count, int) or isinstance(byte_count, bool) or byte_count < 0:
+        if not isinstance(byte_count, int) or isinstance(byte_count, bool) or byte_count <= 0:
             raise ContractError(f"source_receipts[{index}].bytes invalid")
         raw_effective = raw.get("effective_at")
         effective_at = (None if raw_effective is None else
@@ -652,6 +653,10 @@ def _validate_cell(cell: Any, *, label: str, metric: Mapping[str, Any],
             errors.append(f"{label}: null value cannot have OK null_reason")
         if estimability_reason not in _ESTIMABILITY_REASONS:
             errors.append(f"{label}.estimability_reason invalid")
+        elif reason != _ESTIMABILITY_NULL_REASONS[estimability_reason]:
+            errors.append(
+                f"{label}: null_reason disagrees with estimability_reason"
+            )
     else:
         if reason != MissingReason.OK.value:
             errors.append(f"{label}: observed value must have OK null_reason")
@@ -692,6 +697,8 @@ def _validate_cell(cell: Any, *, label: str, metric: Mapping[str, Any],
             errors.append(f"{label}: aggregate inclusion mismatch")
         if included and value is None:
             errors.append(f"{label}: included cell must carry an observed value")
+        if included and valid_counts and cell["observations_available"] < cell["observations_required"]:
+            errors.append(f"{label}: included cell has insufficient observations")
         if not included and value is not None:
             errors.append(f"{label}: excluded cell cannot carry an observed value")
         if value_type == "boolean" and included:
@@ -823,6 +830,7 @@ def validate_member_bundle(bundle: Any) -> list[str]:
     legacy_digest = None
     receipts: list[dict[str, Any]] = []
     receipt_refs: set[str] = set()
+    receipt_by_ref: dict[str, dict[str, Any]] = {}
     membership_receipts: list[dict[str, Any]] = []
     if not isinstance(source, Mapping):
         errors.append("bundle.source: not an object")
@@ -837,6 +845,17 @@ def validate_member_bundle(bundle: Any) -> list[str]:
         try:
             receipts = _normalise_receipts(source.get("receipts") or [])
             receipt_refs = {row["source_ref"] for row in receipts}
+            receipt_by_ref = {row["source_ref"]: row for row in receipts}
+            for index, row in enumerate(receipts):
+                effective_at = row.get("effective_at")
+                if effective_at is not None:
+                    effective = parse_date(
+                        effective_at, field=f"bundle.source.receipts[{index}].effective_at"
+                    )
+                    if effective > as_of:
+                        errors.append(
+                            f"bundle.source.receipts[{index}]: future source receipt"
+                        )
             membership_receipts = [
                 row for row in receipts if row["basis"] == "curated_membership"
             ]
@@ -927,10 +946,29 @@ def validate_member_bundle(bundle: Any) -> list[str]:
                 errors.append(f"{member_label}: metric cells mismatch")
                 continue
             for metric_id, cell in cells.items():
-                if isinstance(cell, Mapping) and cell.get("source_ref") not in receipt_refs:
-                    errors.append(
-                        f"{member_label}.metrics[{metric_id!r}]: source receipt missing"
-                    )
+                if isinstance(cell, Mapping):
+                    source_ref = cell.get("source_ref")
+                    if source_ref not in receipt_refs:
+                        errors.append(
+                            f"{member_label}.metrics[{metric_id!r}]: source receipt missing"
+                        )
+                    else:
+                        receipt = receipt_by_ref[source_ref]
+                        if receipt.get("kind") != "normalized_frame":
+                            errors.append(
+                                f"{member_label}.metrics[{metric_id!r}]: "
+                                "referenced source receipt must be normalized_frame"
+                            )
+                        receipt_effective = receipt.get("effective_at")
+                        if (receipt_effective is None
+                                or parse_date(
+                                    receipt_effective,
+                                    field=f"{member_label}.metrics[{metric_id!r}].source_receipt",
+                                ) != as_of):
+                            errors.append(
+                                f"{member_label}.metrics[{metric_id!r}]: "
+                                "referenced source receipt effective_at mismatch"
+                            )
                 _validate_cell(cell, label=f"{member_label}.metrics[{metric_id!r}]",
                                metric=metrics[metric_id], member_key=member_key,
                                as_of=as_of, errors=errors)
