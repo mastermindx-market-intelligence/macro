@@ -9,3 +9,11 @@ The measured diagnostic profile (120 alphabetically selected names, diagnostic o
 Acceptance: exact legacy-reference parity across calendar rules, missing/empty/duplicate/unsorted/timezone data; no input mutation; real full-universe output comparison on the same preserved refreshed inputs excluding only truthful runtime measurements; existing confluence, anchor, TURN WATCH and candidate-intake tests; no universe cap in the full proof. A runtime claim requires measured whole-run evidence; diagnostic subsets never establish production latency. Other existing peer validation and release gates remain binding.
 
 No production protocol activation, workflow rerun or publication is authorized by this source candidate. All modified files stay in this isolated runtime branch; actual old source-data artifacts remain unmodified.
+
+## Measured full-run boundary and discarded-detail repair
+
+The first native-resample-only candidate b5c0fc2e1e234eefa6e6eb8e9c1a0e129d5a9a22 completed the full unchanged universe in 889.146 wall seconds / 811.754 CPU seconds: all 2,901 uncapped observation rows and all public fields except runtime were identical to the preserved baseline. It is an improvement, NOT a pass of the 600-second warning budget. The diagnostic profile overstated whole-universe savings; its scope is explicitly diagnostic.
+
+The remaining measured hot path builds full slow-tier/washout/detail data for every graded name, even though compute_deck_with_candidates immediately discards rows without any trigger. Add an internal bulk-only early return AFTER the complete trigger union (including basket) and BEFORE explanatory details for only those discarded rows. Keep every graded name in the cross-sectional inputs and every trigger computation. Keep standalone evaluate complete by default. Keep all triggered private rows complete even when excluded by the public display cap. This changes no indicator, source, rank, timing or rule; it removes computations whose output was never consumed.
+
+Two new real-bulk tests with zero/three basket-only triggered names fail on the old code; a standalone untriggered control stays complete. Require exact real-input parity again, and a full-universe measured runtime before any budget claim.

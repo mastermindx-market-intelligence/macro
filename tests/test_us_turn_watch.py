@@ -922,3 +922,60 @@ def test_the_deck_never_writes_under_prophet_authority(tmp_path):
                / "scripts" / "build_turn_watch.py").read_text(encoding="utf-8")
     assert "site/turn_watch/turn_watch.json" in builder
     assert "site/prophet/turn_watch.json" not in builder
+
+
+@pytest.mark.parametrize("active_count", (0, 3))
+def test_bulk_does_not_build_discarded_untriggered_context(tmp_path, monkeypatch, active_count):
+    """Every name keeps trigger/RS participation; detail work follows the uncapped union."""
+    root, site = tmp_path / "data", tmp_path / "site"
+    (root / TW.DECK_STORE).mkdir(parents=True)
+    (root / "baskets").mkdir()
+    (site / "basketdata").mkdir(parents=True)
+    active = [f"ACT{i}" for i in range(active_count)]
+    names = ["QUIET", TW.BENCHMARK] + active
+    close = _series(_UPTREND)
+    for ticker in names:
+        close.to_frame("close").to_parquet(root / TW.DECK_STORE / f"{ticker}.parquet")
+    (root / "baskets/membership.json").write_text(json.dumps({"baskets": {
+        "test_theme": {"name": "Test", "members": [{"ticker": t} for t in active]}}}))
+    (site / "basketdata/us_basket_turn.json").write_text(json.dumps({"baskets": {
+        "test_theme": {"state": "TURNING", "days_in_state": 1, "data_session": _FIXTURE_END}}}))
+    monkeypatch.setattr(TW, "dot_signature", lambda c: pd.Series(False, index=c.index))
+    monkeypatch.setattr(TW, "pre_confluence_2d", lambda c, market: (
+        pd.Series(False, index=c.index), pd.Series(np.nan, index=c.index)))
+    monkeypatch.setattr(TW, "_leader_stream", lambda c, bench, rs: (
+        pd.Series(False, index=c.index), "test_false_stream"))
+    cross_sections = []
+    original_cross = TW._leader_rs_cross_section
+    def cross(closes, benchmark):
+        cross_sections.append(set(closes))
+        return original_cross(closes, benchmark)
+    monkeypatch.setattr(TW, "_leader_rs_cross_section", cross)
+    context_calls = []
+    original_context = TW.slow_tier_cell
+    def context(*args, **kwargs):
+        context_calls.append(1)
+        return original_context(*args, **kwargs)
+    monkeypatch.setattr(TW, "slow_tier_cell", context)
+    artifact, rows = TW.compute_deck_with_candidates(root, site, cap=1, lane_floor=1)
+    assert cross_sections == [set(names)], "do not shrink the cross-sectional universe"
+    assert artifact["coverage"]["universe"] == len(names)
+    assert artifact["coverage"]["graded"] == len(names)
+    assert artifact["coverage"]["leader_rs_cross_section"] == len(names)
+    assert {r["ticker"] for r in rows} == set(active)
+    assert all("slow_tier" in r and "htf_washout" in r and "context_score" in r for r in rows)
+    assert len(context_calls) == active_count, "discarded rows must not compute explanatory context"
+    assert len(artifact["deck"]) == min(1, active_count)
+    assert len(artifact["beyond_cap"]) == max(0, active_count - 1)
+
+
+def test_standalone_untriggered_evaluation_keeps_complete_explanatory_fields(monkeypatch):
+    close = _series(_UPTREND)
+    monkeypatch.setattr(TW, "dot_signature", lambda c: pd.Series(False, index=c.index))
+    monkeypatch.setattr(TW, "pre_confluence_2d", lambda c, market: (
+        pd.Series(False, index=c.index), pd.Series(np.nan, index=c.index)))
+    monkeypatch.setattr(TW, "_leader_stream", lambda c, bench, rs: (
+        pd.Series(False, index=c.index), "test_false_stream"))
+    row = TW.evaluate("QUIET", close, benchmark=close, store=TW.DECK_STORE)
+    assert row["triggers_fired"] == []
+    assert {"slow_tier", "htf_washout", "context_score", "base", "reset"} <= set(row)
