@@ -652,7 +652,7 @@
     }
   ],
   "source_sha256": {
-    "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
+    "templates/_prophet_card.html.j2": "d40b422f716b29eaa5698fddd0d36336ed4092e6f222d7ad75ace415237a4e8e",
     "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
     "templates/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
     "templates/theme.js": "d4ef9d80813724242b7fa9d56b75d235930e658dbc418fe430331425249d74ee",
@@ -676,5 +676,5 @@
   "real_pager_show_all": true,
   "status": "PASS_COMPONENT_NOT_PRODUCTION",
   "capture_script_sha256": "8e88f32cd13930d8032e80d04589fc0da23d702fa7cd246f4bf076f44ec36ab0",
-  "synthetic_fixture_sha256": "1faa7828449bc6aadfcaaaa31d3e846343d7ab321315250a2a2cdef3be1e5e98"
+  "synthetic_fixture_sha256": "8cbf9a5c9e3eef73a6dfd0d03c5f84efa06aeea95002b0d27cd2bef32e6422dd"
 }

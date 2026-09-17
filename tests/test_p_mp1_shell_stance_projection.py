@@ -406,3 +406,17 @@ def test_record_navigation_has_no_nested_anchors_and_preserves_both_destinations
     assert any("CVCO-BULL-20260915" in a.get("href", "") for a in parsed.links)
     stock = next(a for a in parsed.links if a.get("href") == "stock.html#CVCO")
     assert stock.get("aria-label") == "CVCO"
+
+
+def test_record_stock_overlay_uses_house_radius_token_without_losing_full_card_navigation():
+    plan = _record_plan(lifecycle_state="resolved", closed=True)
+    html = _render_plan_record(plan)
+    parsed = _RecordAnchorAudit()
+    parsed.feed(html)
+    stock = next(a for a in parsed.links if a.get("href") == "stock.html#CVCO")
+    style = stock.get("style", "").replace(" ", "")
+    assert "position:absolute" in style
+    assert "inset:0" in style
+    assert "z-index:4" in style
+    assert "border-radius:var(--r-card,12px)" in style
+    assert "border-radius:inherit" not in style
