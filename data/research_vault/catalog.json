@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T16:20:45.309146+00:00",
-  "count": 2301,
+  "generated_at": "2026-09-17T16:35:48.220686+00:00",
+  "count": 2302,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-8sgkawq1mrk-c28eaf",
+      "title": "DB CotD Groundhog Month Sept 15",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T16:10:55Z",
+      "summary_points": [
+        "Seasonal Weakness Amplified by Midterms: September consistently weakest global market month across all historical horizons (100y/50y/20y/10y/5y), with midterm election years worsening underperformance in June/September—self-fulfilling pattern requiring portfolio adjustments.",
+        "Energy-Geopolitics Nexus: Market softness driven by energy sector dynamics; US policy reluctance to escalate Middle East conflict vs. actors exploiting constraints, making Trump-Xi summit (Sept 24) critical for energy/geo policy shifts.",
+        "Midterm Election Risk Catalyst: Red bars (midterm years) confirm election cycles magnify seasonal risks, particularly in June/September, demanding proactive risk mitigation in portfolio construction."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-e8bh0pdjlpm-ce870e",
       "title": "GS Johnstone GS TMT SPEC SALES EU Communacopia Day 2 wrap Nebius raises GPU prices Allegro OnSemi CMD PUB raise Ai Security 17 Sep 2026",
