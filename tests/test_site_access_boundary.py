@@ -617,3 +617,86 @@ def test_hand_stamp_carve_out_holds_only_hand_stamped_paths():
         "these are content-hash stamped, so the 300s carve-out is wrong for them "
         f"— move them to @public_versioned: {wrong}"
     )
+
+
+# ── R1A-M Intelligence Hub Market Pulse controller (freeze §10) ────────────
+#
+# The controller path is /assets/js/intelligence-hub-market-pulse.js. It does
+# NOT get its own exact policy/Caddy entry: /assets/js/ is ALREADY a public
+# `prefixes` entry (content-hashed page scripts, plus every other hand-
+# authored file already living under site/assets/js/ — dossier-live-quote.js
+# and company-intelligence-dossier.js carry no individual entry either), so
+# adding one would duplicate an existing public prefix rather than opening a
+# new one — exactly the "no broad /assets/ prefix may be OPENED" rule read
+# backwards. These tests prove the boundary is exactly what the freeze
+# requires without widening it: the path is public, it is NOT a new broad
+# opening (no policy/Caddy edit landed with this route), and it is delivered
+# byte-for-byte with no auth.
+
+_IHMP_CONTROLLER_PATH = "/assets/js/intelligence-hub-market-pulse.js"
+
+
+def test_ihmp_controller_is_public_via_the_existing_assets_js_prefix():
+    assert "/assets/js/" in POLICY["public"]["prefixes"]
+    assert _IHMP_CONTROLLER_PATH.rsplit("/", 1)[0] + "/" in POLICY["public"]["prefixes"]
+
+
+def test_ihmp_controller_is_excluded_from_caddy_registration_gate():
+    assert "/assets/js/*" in _caddy_public_exclusions()
+
+
+def test_ihmp_controller_asset_exists_and_is_delivered_byte_for_byte():
+    if not SITE.is_dir():
+        pytest.skip("site/ not checked out")
+    body = SITE / "assets" / "js" / "intelligence-hub-market-pulse.js"
+    assert body.is_file(), _MISSING_TARGET_HINT
+    text = body.read_text(encoding="utf-8")
+    assert "window.IntelligenceHubMarketPulse" in text
+    # a controller asset carries no server-side templating placeholder — the
+    # exact bytes committed are the exact bytes served (matching the plain-
+    # copy pairing convention for hand-authored site/assets/js/*.js files)
+    assert "{{" not in text and "{%" not in text
+
+
+def test_no_broad_assets_or_signal_data_prefix_was_opened_for_ihmp():
+    """This route must not have widened the boundary to get its controller
+    served — /assets/js/ already existed before R1A-M, and no new broad
+    prefix (a bare /assets/ or a signal-data directory) appears in policy."""
+    prefixes = set(POLICY["public"]["prefixes"])
+    assert "/assets/" not in prefixes
+    for p in prefixes:
+        assert not p.startswith("/live/"), "a live/signal-data prefix must never be public"
+
+
+def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
+    """The three presentation assets, and nothing that carries a reading.
+
+    Production served the suite's HTML at 200 while these three answered 401,
+    so every anonymous reader got an unstyled, themeless skeleton: the pages
+    were public and their presentation was not. These are promoted as one unit
+    for that reason -- and only these. The snapshot JSON under /macrodata/ is
+    the actual product and stays gated; a prefix or wildcard promoted here
+    would take it public with them.
+    """
+    shell_paths = {"/macro_suite.css", "/macro_suite_boot.js", "/macro_suite.js"}
+    assert shell_paths <= set(POLICY["public"]["exact"])
+    assert shell_paths.isdisjoint(POLICY["free_registered"]["exact"])
+    assert shell_paths <= _caddy_public_exclusions()
+
+    # The error path excludes them too, or an anonymous 401 page renders bare.
+    error_matcher = re.search(r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S)
+    assert error_matcher, "@reg_asset_err matcher missing"
+    assert shell_paths <= set(shlex.split(error_matcher.group(1)))
+
+    # Cacheable as public, both plain and ?v= stamped, exactly like /markets.css.
+    for block in ("@public_static", "@public_versioned"):
+        matcher = re.search(rf"{block}\s*\{{\s*path ([^\n]+)", CADDY, flags=re.S)
+        assert matcher, f"{block} matcher missing"
+        assert shell_paths <= set(shlex.split(matcher.group(1))), block
+
+    # No widening: the reading itself is not public by any route.
+    public_prefixes = set(POLICY["public"]["prefixes"])
+    assert not any(p.startswith("/macrodata") for p in public_prefixes)
+    assert not any(p.startswith("/macrodata") for p in POLICY["public"]["exact"])
+    assert not any(p.startswith("/macro_suite") and p.endswith("*")
+                   for p in _caddy_public_exclusions()), "no wildcard may ride along"

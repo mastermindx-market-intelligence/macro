@@ -1292,6 +1292,21 @@ _STATE_SEED_SCRIPT = """
 }
 """
 
+
+def state_seed_source(state: dict[str, Any]) -> str:
+    """The init-script source that seeds ``state`` before any page script runs.
+
+    ``add_init_script`` takes source, not ``(fn, arg)``, so the seed is wrapped as
+    an IIFE with the state literal baked in. The statement is TERMINATED with a
+    semicolon on purpose: an init script is plain text that callers concatenate
+    onto (a wrapper appending its own IIFE after a newline is the documented
+    shape), and an unterminated ``(fn)(arg)`` followed by ``(function(){...})()``
+    parses as ONE call-of-a-call — ``(intermediate value)(...) is not a
+    function`` — thrown before the page's first script, surfacing in the manifest
+    as a page ``console_error`` with no source URL (sanctions_map, 2026-09-08).
+    """
+    return f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)});"
+
 # Applied AFTER load through the page's own toggle when it exposes one, so the
 # capture goes through the same code path a user's click does (theme.js sets
 # data-theme / data-lang on <html>, syncs documentElement.lang, and fires the
@@ -1486,9 +1501,8 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
             color_scheme=cell.theme,
             device_scale_factor=1,
         )
-        # add_init_script takes source, not (fn, arg) — so the seed is wrapped as an
-        # IIFE with the state literal baked in.
-        context.add_init_script(f"({_STATE_SEED_SCRIPT.strip()})({json.dumps(state)})")
+        # Terminated IIFE source (see state_seed_source): safe to concatenate onto.
+        context.add_init_script(state_seed_source(state))
         page = context.new_page()
         console_errors: list[dict[str, Any]] = []
         failed_responses: list[dict[str, Any]] = []
@@ -2051,6 +2065,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--themes", default="light,dark")
     parser.add_argument("--max-pages", type=int, default=30)
     parser.add_argument("--delay-ms", type=int, default=500, help="politeness sleep between page loads")
+    parser.add_argument(
+        "--settle-ms", type=int, default=400,
+        help=(
+            "pause (each, x3: before state apply, after state apply, after any forced "
+            "state) before the driver reads/shoots the page. Default 400ms is fine for "
+            "a page with no >400ms one-shot animation on theme/locale apply; a page "
+            "whose shared chrome runs a longer transition (e.g. templates/theme.js's "
+            "skyToggleFx() sun/moon flourish, ~1100ms, fired by _APPLY_STATE_SCRIPT's "
+            "window.setTheme() call) needs a larger value so the shot is taken after "
+            "that transition's own cleanup, not mid-animation."
+        ),
+    )
     parser.add_argument("--timeout-s", type=float, default=30.0)
     parser.add_argument("--as-of", help="pin generated_at (ISO); makes a run byte-reproducible")
     parser.add_argument(
@@ -2186,6 +2212,7 @@ def main(
             headless=not args.headed,
             user_agent=USER_AGENT,
             observer_config=observer_config,
+            settle_ms=max(0, args.settle_ms),
         )
     except CaptureUnavailable as exc:
         if httpd is not None:

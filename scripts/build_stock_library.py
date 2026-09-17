@@ -13,6 +13,104 @@ Usage: python -m scripts.build_stock_library
 """
 from __future__ import annotations
 
+try:
+    # Round-2 review MINOR-1: this was a bare, unguarded module-level import
+    # while every actual *use* below is wrapped in `except Exception` -- so an
+    # import-time failure in the debt-maturity module (or one of ITS imports)
+    # killed the entire stockdata build before a single ticker was processed,
+    # the exact opposite of the "additive; must not break the stockdata
+    # build" contract this file's own comments state. `_dm_load` is checked
+    # for None at the one call site below.
+    from scripts.build_debt_maturity import load_debt_maturity_facts as _dm_load
+except Exception:  # noqa: BLE001 -- additive panel; an import failure must never break the whole build
+    _dm_load = None
+
+
+def _resolve_debt_maturity(ticker: str, sector: str, dm_asof) -> dict:
+    """Resolve the ``debt_maturity.v1`` block for one ticker (packet
+    B-F09-3). Extracted to a standalone, directly-callable function (round-3
+    review MAJOR-2) so its taxonomy decisions — the ETF/crypto structural
+    short-circuit, and the producer-fault degrade path — can be pinned by a
+    test that calls the REAL production code, not a hand-copied mirror of it
+    that silently stops tracking the source.
+
+    FOUR distinct statuses, never conflated (META-CEO ruling round 2,
+    MAJOR-1) -- an identity GAP is not fetch LAG:
+      * "not_applicable" -- this listing has no SEC filer identity by
+        CONSTRUCTION (crypto, or an ETF/commodity/FX/factor/credit macro
+        proxy carried under the "ETF / macro" sector sentinel `universe()`
+        itself stamps for every non-named curated_extras ticker -- see
+        `universe()`'s "an ETF / macro proxy" branch). No chip, no section:
+        a promise this listing could NEVER keep must never be made, so it
+        is decided here, before any CIK lookup at all.
+      * "unresolved" -- a CIK lookup was attempted (this IS a candidate
+        common-stock/ADR identity) and found nothing. An identity gap in
+        OUR ledger, not evidence the filer doesn't exist -- but also not a
+        "come back soon" promise, since there is no fetch pending to
+        resolve it. Its own terminal branch in the template.
+      * "not_loaded" -- a CIK exists but this producer has never completed
+        a fetch cycle for it (cache file absent), OR the lookup/extract
+        path faulted transiently (round-3 review MAJOR-3: a real filer's
+        transient producer fault must degrade here, never to
+        `not_applicable`, which would silently swallow its null
+        disclosure). The status whose own copy earns the "still catching
+        up, check back soon" promise.
+      * everything else (engine.debt_maturity.extract_maturity_ladder's own
+        "reported" / "no_maturity_facts" / "no_filings" /
+        "identity_mismatch") -- unchanged, a completed fetch cycle.
+    """
+    if ticker.endswith("-USD") or sector == "ETF / macro":
+        # Structural non-filer: crypto and every ETF/macro proxy this
+        # universe carries. Never attempts a CIK lookup for these -- there
+        # is no filer identity to look up. Pure string checks -- nothing
+        # here can raise, so `not_applicable` is never reached through the
+        # except below.
+        return {"schema": "debt_maturity.v1", "status": "not_applicable"}
+    try:
+        if _dm_load is None:
+            raise RuntimeError("scripts.build_debt_maturity import failed at module load")
+        _dm_cik, _dm_facts, _dm_state = _dm_load(ticker)
+        from engine.debt_maturity import extract_maturity_ladder as _dm_extract  # noqa: PLC0415
+        if _dm_state == "unresolved":
+            return {
+                "schema": "debt_maturity.v1", "status": "unresolved", "cik": None,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "not_loaded":
+            return {
+                "schema": "debt_maturity.v1", "status": "not_loaded", "cik": _dm_cik,
+                "buckets": [], "total_reported_usd": None, "total_display": None,
+                "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+                "as_of": dm_asof.isoformat(),
+            }
+        if _dm_state == "confirmed_no_filings":
+            return _dm_extract(None, cik=_dm_cik, as_of=dm_asof)
+        return _dm_extract(_dm_facts, cik=_dm_cik, as_of=dm_asof)
+    except Exception as _dm_exc:  # noqa: BLE001 -- additive; must not break the stockdata build
+        # Round-3 review MAJOR-3: this listing IS a candidate SEC filer (it
+        # reached the else branch), so a transient fault here (import
+        # error, lookup crash, malformed cache) must degrade to
+        # `not_loaded` -- the status whose own copy already says "still
+        # catching up" -- never to `not_applicable`, which renders no chip
+        # and no section and would silently swallow a real filer's null
+        # disclosure. Loud (line-start ::warning, repo CI-annotation law)
+        # so a systemic fault is visible instead of invisible.
+        print(
+            f"::warning title=stock-library debt-maturity producer fault::{ticker} "
+            f"debt-maturity lookup raised {type(_dm_exc).__name__}: {_dm_exc} -- "
+            f"degrading to not_loaded, never not_applicable",
+            flush=True,
+        )
+        return {
+            "schema": "debt_maturity.v1", "status": "not_loaded", "cik": None,
+            "buckets": [], "total_reported_usd": None, "total_display": None,
+            "near_share_pct": None, "buckets_reported": 0, "buckets_total": 6,
+            "as_of": dm_asof.isoformat(),
+        }
+
+
 import json
 import math
 import logging
@@ -28,6 +126,8 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import ticker_alerts  # noqa: E402
+from engine import valuation_scenario as _valuation_scenario  # noqa: E402 — FROZEN SPEC B-F07-1
+from engine.stock_fundamentals import _load_statements as _vs_load_statements  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's gate)
 from engine.conditions import sector_macro_beta  # noqa: E402
 from engine.cycles import analyze, market_vix_context  # noqa: E402
@@ -67,6 +167,7 @@ from lib.ticker_popularity import attach_latest_volume, latest_volume_map  # noq
 from collectors.us_names_zh import load_aliases_zh as _load_us_aliases_zh  # noqa: E402
 from collectors.us_names_zh import load_names_zh as _load_us_names_zh  # noqa: E402
 from collectors.us_names_zh import lookup as _us_name_zh  # noqa: E402
+import scripts.security_state_producer as _security_state_producer  # noqa: E402
 
 # Lineage stamp for the artifact PAIR this module writes: signal_gate.json (the gate) and
 # us_standouts.json (the board, whose rows embed a superset copy of each gate verdict).
@@ -718,107 +819,9 @@ def _apply_delisting(rec: dict, disclosure: dict) -> None:
         conv.pop("potential", None)
         conv["score"] = None
 
-
-# ---------------------------------------------------------------------------
-# Market OS B1A — security_state.v1 (frozen allowlist: engine.security_state.
-# SECURITY_STATE_TICKERS, AAPL only). Three narrow, import-lazy helpers for
-# the one-ticker owner-read + K1 compile stage wired below, right before the
-# site/stockdata write loop. The pure compile itself lives entirely in
-# engine/security_state.py — everything here is owner I/O + exception
-# containment, never business logic.
-# ---------------------------------------------------------------------------
-
-def _read_security_state_identity_rows(data_dir: Path) -> dict:
-    """Read the four DECLARED master identity artifacts (config/identity_seams.yml
-    ``master.artifacts``) into the plain dict/row shape
-    ``engine.security_state.compile_security_state`` consumes.
-
-    CIK_LEG_UNOWNED_ACCESS disclosure: ``issuer_cik`` is read directly off this
-    declared artifact column, not through ``lib.dataos.identity.IssuerMaster``
-    (whose ``SecurityIssuerRow`` deliberately omits it). Raises on a genuine
-    read failure (absent ``data/reference/`` in a sparse/CI checkout included)
-    — the caller treats that as an ordinary compile failure, never a build crash.
-    """
-    from engine.security_state import PINNED_ISSUER_ID, PINNED_SECURITY_ID
-
-    ref = data_dir / "reference"
-    security_master = pd.read_parquet(ref / "security_master.parquet")
-    issuer_master = pd.read_parquet(ref / "issuer_master.parquet")
-    issuer_migrations = pd.read_parquet(ref / "issuer_migrations.parquet")
-    security_migrations = pd.read_parquet(ref / "security_migrations.parquet")
-
-    row_df = security_master[security_master["security_id"] == PINNED_SECURITY_ID]
-    security_master_row = row_df.iloc[0].to_dict() if len(row_df) else None
-    issuer_security_ids = security_master[
-        (security_master["issuer_id"] == PINNED_ISSUER_ID) & security_master["security_state"].isna()
-    ]["security_id"].astype(str).tolist()
-    return {
-        "security_master_row": security_master_row,
-        "issuer_master_rows": issuer_master.to_dict("records"),
-        "issuer_security_ids": issuer_security_ids,
-        "issuer_migration_matches": issuer_migrations[
-            issuer_migrations["security_id"] == PINNED_SECURITY_ID
-        ].to_dict("records"),
-        "security_migration_matches": security_migrations[
-            security_migrations["security_id"] == PINNED_SECURITY_ID
-        ].to_dict("records"),
-    }
-
-
-def _compile_security_state_for_ticker(ticker: str, rec: dict, *, now: str) -> dict:
-    """One security's ``security_state.v1``. Owner reads only — the compile
-    itself is pure (``engine.security_state.compile_security_state``).
-
-    Budget: exactly ONE extra R2 fetch beyond ``load_workspace_with_disposition``
-    (the generation manifest, for the K1 ``native_digest``) — never fatal if it
-    fails; the change leg still compiles, only ``native_digest`` degrades to
-    ``unknown``.
-    """
-    from engine import security_state as ss
-    from engine.neuralweb.company_intelligence_reader import (
-        fetch_generation_manifest,
-        find_current_event_id_for_company,
-        load_workspace_with_disposition,
-    )
-
-    identity = _read_security_state_identity_rows(config.data_dir())
-    event_id = find_current_event_id_for_company(f"cik:{ss.PINNED_CIK}")
-    workspace, disposition, manifest_sha256 = None, "not_published", None
-    if event_id:
-        workspace, disposition = load_workspace_with_disposition(event_id)
-        generation_id = str((workspace or {}).get("generation_id") or "")
-        if workspace is not None and disposition == "found" and generation_id:
-            try:
-                manifest = fetch_generation_manifest(generation_id)
-                entry = (manifest.get("files") or {}).get(f"workspaces/{event_id}.json")
-                if isinstance(entry, dict):
-                    manifest_sha256 = entry.get("sha256")
-            except Exception as manifest_exc:  # noqa: BLE001 — digest degrades to unknown, never fatal
-                log.debug("security_state.v1 manifest fetch failed for %s (%s)", ticker, manifest_exc)
-    return ss.compile_security_state(
-        now=now, workspace=workspace, workspace_disposition=disposition,
-        blob=rec, manifest_sha256=manifest_sha256, **identity,
-    )
-
-
-def _read_prior_security_state(outdir: Path, ticker: str) -> dict | None:
-    """The prior cycle's FULL committed ``security_state.v1`` read — read
-    BEFORE this run overwrites ``site/stockdata/<ticker>.json`` — as the whole
-    prior state dict, never pre-reduced to the compact ``last_good`` receipt
-    shape. Owner I/O only: eligibility (was the prior read PROVEN and not
-    itself a COMPILER_FAILURE?) and the compact-receipt derivation are
-    ``engine.security_state.derive_last_good``'s pure business logic (Sol
-    blocker 4) — the caller passes this function's return straight through as
-    ``compile_security_state_failure``'s ``prior_state``."""
-    path = outdir / f"{ticker}.json"
-    if not path.exists():
-        return None
-    try:
-        prior_state = json.loads(path.read_text()).get("security_state")
-        return prior_state if isinstance(prior_state, dict) else None
-    except Exception:  # noqa: BLE001 — no usable prior is not fatal
-        return None
-
+# Security-state owner I/O and orchestration live in the dedicated producer
+# module. This monolith consumes that seam through its private module namespace
+# and intentionally re-exports none of its helpers.
 
 def _one(ticker: str, close: pd.Series, high: pd.Series | None,
          name: str, sector: str, liquidity: str | None = None,
@@ -2906,6 +2909,17 @@ def main() -> int:
             geo_rev_map = (json.loads(_geo_p.read_text()) or {}).get("by_ticker", {})
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("geo_revenue.json unreadable (%s)", e)
+    # valuation_scenario.v1 -- FROZEN SPEC B-F07-1. V1 = one pinned issuer only
+    # (AAPL); pure function over already-collected SEC companyfacts statements
+    # (engine.stock_fundamentals._load_statements(), read once here). No new
+    # collector, no network, no licensed data -- ~one extra parquet read plus
+    # ~20 float ops for one ticker, well under the render budget.
+    _VS_TICKERS = ("AAPL",)
+    _vs_statements: dict = {}
+    try:
+        _vs_statements = _vs_load_statements()
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("valuation_scenario: statements unreadable (%s)", e)
     # per-stock dealer-gamma (DISPLAY-ONLY, gated from the score by validate_gex). PRIMARY =
     # the pre-built site/gex board payloads (rich: walls + vol_hole + consistent units), which
     # already cover the curated optionable universe. The live compute_gex path is only used as a
@@ -3604,6 +3618,18 @@ def main() -> int:
         # revenue-by-geography block (collectors/edgar_geo_revenue.py; TXI W2 #3431)
         if geo_rev_map.get(ticker):
             rec["geo_revenue"] = geo_rev_map[ticker]
+        # valuation_scenario.v1 -- pinned V1 issuer only (FROZEN SPEC B-F07-1)
+        if ticker in _VS_TICKERS:
+            try:
+                _vs_price = (rec.get("tech") or {}).get("price")
+                _vs_blob = _valuation_scenario.compute(
+                    _vs_statements.get(ticker) or [],
+                    price=_vs_price, asof=rec.get("asof"), ticker=ticker,
+                )
+                if _vs_blob:
+                    rec["valuation_scenario"] = {"v1": _vs_blob}
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_scenario failed for %s: %s", ticker, e)
         # ---- richer OHLCV technical snapshot + single-stock volatility black hole ------
         # Supersede the thin close-only snapshot with the research-vetted read (ATR/ADX/
         # squeeze/volume where full OHLCV exists; momentum / 52w-proximity / realized-vol
@@ -3626,6 +3652,20 @@ def main() -> int:
                 rec["vol_squeeze"] = sq
         except Exception as e:  # noqa: BLE001 — additive; the thin snapshot is already on rec
             log.warning("tech/squeeze enrich for %s failed (%s)", ticker, e)
+        # valuation_scenario_controls.v1 -- FROZEN SPEC B-F07-2. Reads back the
+        # v1 blob #6905 wrote earlier in this loop and hangs the sandbox control
+        # artifact next to it. Anchored here, twenty lines clear of #6905's own
+        # added block, so a heal round on the parent never merges into this hunk.
+        # Lazy import; never fatal.
+        _vs_v1 = (rec.get("valuation_scenario") or {}).get("v1")
+        if _vs_v1 is not None:
+            try:
+                from engine import valuation_assumptions as _valuation_assumptions
+                rec.setdefault("valuation_scenario", {})["controls"] = (
+                    _valuation_assumptions.controls_blob(_vs_v1)
+                )
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.warning("valuation_assumptions failed for %s: %s", ticker, e)
         # ---- W5b liquidity chip (DISPLAY-ONLY, zero rank/gate power) ---------------
         # engine.liquidity_chip: 20-session MEDIAN dollar volume (close x volume),
         # liquidity tier (deep/ok/thin/illiquid), and days-to-build at $100k and $1M
@@ -4048,6 +4088,14 @@ def main() -> int:
                 rec["sector_pulse"] = _sp_row
         except Exception as _spe2:  # noqa: BLE001 — additive; must not break the stockdata build
             pass
+        # ---- debt maturity ladder (packet B-F09-3, bounded pure producer) ----------
+        # Top-level block in each stockdata JSON: engine.debt_maturity.v1.
+        # Identity is CIK-only via scripts/build_debt_maturity.py's committed
+        # ticker->CIK ledger + issuer_master fallback (GATE 0, fixed 2026-09-06).
+        # Taxonomy + fault-handling now live in `_resolve_debt_maturity()`
+        # (module-level, round-3 review MAJOR-2) so they are directly
+        # unit-testable against the real production code.
+        rec["debt_maturity"] = _resolve_debt_maturity(ticker, sector, _dt.date.today())
         # ---- confluence block (frozen Terminal contract, 2026-07-06) ---------------
         # Top-level block in each stockdata JSON consumed by the charting-app Terminal.
         # Shape: {tier, weight, sub, ticks, bars_to_cross, provisional, not_topped,
@@ -4527,9 +4575,9 @@ def main() -> int:
             log.info("B2 conviction accrual: archived conviction_us for %s", alpha_asof)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("B2 conviction accrual (us) failed (%s)", e)
-    # ---- Market OS B1A: security_state.v1 (frozen allowlist, AAPL only) ----
-    # One owner-backed identity+K1 compile per allow-listed ticker, attached to
-    # its rec BEFORE the write loop below. Exception-contained end to end: a
+    # ---- Market OS B1A: security_state.v1 (frozen AAPL + MSFT allowlist) ----
+    # Owner identity artifacts are loaded once, then one subject-bound K1 compile
+    # runs per allow-listed ticker before the write loop. Exception-contained: a
     # failure here degrades rec["security_state"] to a typed compiler-failure
     # shell, with ``last_good`` derived from the FULL prior cycle's committed
     # read via ``engine.security_state.derive_last_good`` (Sol blocker 4) —
@@ -4538,21 +4586,130 @@ def main() -> int:
     # has that receipt carried forward unchanged, never overwritten by the
     # failed prior itself — and never loses the rest of this ticker's blob write.
     try:
-        from engine.security_state import SECURITY_STATE_TICKERS, compile_security_state_failure
-        _ss_targets = [(t, r) for t, r in to_write if r.get("ticker") in SECURITY_STATE_TICKERS]
+        from engine import security_state as _security_state
+        import engine.neuralweb.company_intelligence_reader as _security_state_reader
+        _ss_targets = _security_state_producer._select_security_state_targets(to_write)
+        _ss_mismatched = _security_state_producer._mismatched_security_state_targets(to_write)
+        _ss_validator = _security_state_producer._load_security_state_validator(
+            _security_state.SCHEMA_PATH
+        )
     except Exception as e:  # noqa: BLE001 — the whole stage is additive
         log.warning("security_state.v1 stage disabled this cycle (%s)", e)
         _ss_targets = []
+        _ss_mismatched = []
+    if _ss_mismatched:
+        # MINOR 3 (review finding): a ticker/record mismatch inside the
+        # frozen allowlist is a producer-side bug, never an expected
+        # condition (``_mismatched_security_state_targets`` docstring). The
+        # pre-fix behavior silently filtered these out of ``_ss_targets``,
+        # leaving the record's ``security_state`` key fully absent — the
+        # same "reads as nothing built, not build failed" hazard M1 already
+        # closed for the owner-identity-unavailable path below. Emit the
+        # same typed failure shell here instead of dropping it.
+        _ss_mismatch_now = pd.Timestamp.now(tz="UTC").isoformat()
+        for _ss_ticker, _ss_rec in _ss_mismatched:
+            log.warning(
+                "security_state.v1 ticker/record mismatch for %s (record ticker=%r)",
+                _ss_ticker, _ss_rec.get("ticker"),
+            )
+            _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(_ss_ticker)
+            _ss_prior = _security_state_producer._read_prior_security_state(outdir, _ss_ticker)
+            _ss_state = (
+                _security_state_producer._compile_security_state_failure_for_exception(
+                    subject=_ss_pinned_subject, now=_ss_mismatch_now,
+                    diagnostic=RuntimeError("ticker/record mismatch"),
+                    prior_state=_ss_prior,
+                    validator=_ss_validator,
+                )
+            )
+            _ss_rec["security_state"] = _ss_state
+            for _ss_idx_row in index:
+                if _ss_idx_row.get("t") == _ss_ticker:
+                    _ss_idx_row["security_state"] = {
+                        "overall_state": _ss_state["coverage"]["overall_state"],
+                        "dominant_degradation": _ss_state["dominant_degradation"],
+                        "generated_at": _ss_state["generated_at"],
+                    }
+                    break
     if _ss_targets:
-        _ss_now = pd.Timestamp.now(tz="UTC").isoformat()
+        _ss_now_timestamp = pd.Timestamp.now(tz="UTC")
+        _ss_now = _ss_now_timestamp.isoformat()
+        try:
+            _ss_identities, _ss_identity_failures = (
+                _security_state_producer._read_security_state_identity_rows(
+                    config.data_dir(),
+                    tuple(ticker for ticker, _rec in _ss_targets),
+                    decision_date=_ss_now_timestamp.date(),
+                )
+            )
+        except Exception as e:  # noqa: BLE001 — no identity means no honest subject shell
+            log.warning("security_state.v1 owner identity batch failed (%s)", e)
+            _ss_identities = {}
+            _ss_identity_failures = {}
         for _ss_ticker, _ss_rec in _ss_targets:
+            _ss_identity = _ss_identities.get(_ss_ticker)
+            if _ss_identity is None:
+                # An owner-identity read failure must never drop the
+                # ``security_state`` key outright (M1): the templates gate
+                # display on the key's mere presence, so an absent key reads
+                # as "nothing built" rather than "build failed" — and next
+                # cycle's ``_read_prior_security_state`` would see no prior
+                # at all, permanently losing ``last_good``. Emit a typed
+                # failure shell against the frozen pinned subject instead.
+                _ss_reason = _ss_identity_failures.get(_ss_ticker, "batch unavailable")
+                log.warning(
+                    "security_state.v1 identity unavailable for %s: %s",
+                    _ss_ticker, _ss_reason,
+                )
+                # The owner-identity BATCH read itself failed (M1) for every
+                # allowlisted ticker at once, so no live owner read exists for
+                # any of them here -- the failure shell must say so, never
+                # borrow a live-read subject's language. `_fallback_subject_for_ticker`
+                # is a frozen-allowlist lookup, not a per-ticker branch.
+                _ss_pinned_subject = _security_state_producer._fallback_subject_for_ticker(
+                    _ss_ticker
+                )
+                _ss_prior = _security_state_producer._read_prior_security_state(
+                    outdir, _ss_ticker
+                )
+                _ss_state = (
+                    _security_state_producer._compile_security_state_failure_for_exception(
+                        subject=_ss_pinned_subject, now=_ss_now,
+                        diagnostic=RuntimeError(_ss_reason),
+                        prior_state=_ss_prior,
+                        validator=_ss_validator,
+                        owner_read_completed=False,
+                    )
+                )
+                _ss_rec["security_state"] = _ss_state
+                for _ss_idx_row in index:
+                    if _ss_idx_row.get("t") == _ss_ticker:
+                        _ss_idx_row["security_state"] = {
+                            "overall_state": _ss_state["coverage"]["overall_state"],
+                            "dominant_degradation": _ss_state["dominant_degradation"],
+                            "generated_at": _ss_state["generated_at"],
+                        }
+                        break
+                continue
             try:
-                _ss_state = _compile_security_state_for_ticker(_ss_ticker, _ss_rec, now=_ss_now)
+                _ss_state = _security_state_producer._compile_security_state_for_ticker(
+                    _ss_ticker, _ss_rec, now=_ss_now, identity=_ss_identity,
+                    validator=_ss_validator,
+                    find_event_id=_security_state_reader.find_current_event_id_for_company,
+                    load_workspace=_security_state_reader.load_workspace_with_disposition,
+                    fetch_manifest=_security_state_reader.fetch_generation_manifest,
+                )
             except Exception as e:  # noqa: BLE001 — never lose the blob write to this stage
                 log.warning("security_state.v1 compile failed for %s (%s)", _ss_ticker, e)
-                _ss_prior = _read_prior_security_state(outdir, _ss_ticker)
-                _ss_state = compile_security_state_failure(
-                    now=_ss_now, reason=f"{type(e).__name__}: {e}", prior_state=_ss_prior,
+                _ss_prior = _security_state_producer._read_prior_security_state(
+                    outdir, _ss_ticker
+                )
+                _ss_state = (
+                    _security_state_producer._compile_security_state_failure_for_exception(
+                        subject=_ss_identity["subject"], now=_ss_now, diagnostic=e,
+                        prior_state=_ss_prior,
+                        validator=_ss_validator,
+                    )
                 )
             _ss_rec["security_state"] = _ss_state
             for _ss_idx_row in index:

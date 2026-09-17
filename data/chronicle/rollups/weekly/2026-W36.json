@@ -1,13 +1,42 @@
 {
-  "as_of": "2026-08-31",
+  "as_of": "2026-09-06",
   "coverage": {
-    "end": "2026-08-31",
+    "end": "2026-09-06",
     "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W36; 13 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-06-01"
+    "start": "2026-06-07"
   },
   "iso_week": "2026-W36",
   "schema": "chronicle.rollup.weekly/v1",
   "weeks": [
+    {
+      "clusters": [
+        {
+          "n_events": 29,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 4,
+          "source": "regime_flip",
+          "theme": "regime",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "claims",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "risk_band",
+          "theme": "risk",
+          "top_events": []
+        }
+      ],
+      "iso_week": "2026-W36"
+    },
     {
       "clusters": [
         {
@@ -77,6 +106,12 @@
         },
         {
           "n_events": 3,
+          "source": "earnings",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
+          "n_events": 3,
           "source": "risk_band",
           "theme": "risk",
           "top_events": []
@@ -126,6 +161,12 @@
           "n_events": 9,
           "source": "prophet_ledger",
           "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 6,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
@@ -182,26 +223,6 @@
           "top_events": [
             {
               "date": "2026-08-05",
-              "id": "cev-research_vault-3dd0e2f4cf3d",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-tghtfv5ime3-1cfbdb",
-              "tickers": [],
-              "title": "UBS: Daily Asia",
-              "weight_hint": 3
-            },
-            {
-              "date": "2026-08-09",
-              "id": "cev-research_vault-6172555846c3",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-qizqgapurqm-a2313f",
-              "tickers": [],
-              "title": "Other: MRB Asset Allocation The Beginning Of The End August 7 2026",
-              "weight_hint": 3
-            },
-            {
-              "date": "2026-08-05",
               "id": "cev-research_vault-868333f1e226",
               "kind": "report",
               "source": "research_vault",
@@ -223,15 +244,15 @@
           ]
         },
         {
-          "n_events": 6,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 86,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 5,
-          "source": "earnings",
-          "theme": "earnings",
+          "n_events": 6,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
@@ -321,14 +342,14 @@
           ]
         },
         {
-          "n_events": 115,
-          "source": "earnings_call",
+          "n_events": 325,
+          "source": "earnings",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 35,
-          "source": "earnings",
+          "n_events": 115,
+          "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
         },
@@ -395,6 +416,12 @@
     {
       "clusters": [
         {
+          "n_events": 225,
+          "source": "earnings",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
           "n_events": 167,
           "source": "research_vault",
           "theme": null,
@@ -442,12 +469,6 @@
           ]
         },
         {
-          "n_events": 138,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
           "n_events": 8,
           "source": "earnings_call",
           "theme": "earnings",
@@ -477,7 +498,7 @@
     {
       "clusters": [
         {
-          "n_events": 49,
+          "n_events": 52,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -530,7 +551,7 @@
     {
       "clusters": [
         {
-          "n_events": 8,
+          "n_events": 9,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -553,7 +574,7 @@
     {
       "clusters": [
         {
-          "n_events": 10,
+          "n_events": 12,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -564,7 +585,7 @@
     {
       "clusters": [
         {
-          "n_events": 22,
+          "n_events": 24,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -599,23 +620,6 @@
         }
       ],
       "iso_week": "2026-W24"
-    },
-    {
-      "clusters": [
-        {
-          "n_events": 38,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 3,
-          "source": "earnings_call",
-          "theme": "earnings",
-          "top_events": []
-        }
-      ],
-      "iso_week": "2026-W23"
     }
   ]
 }

@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-08-28",
+  "asof": "2026-09-15",
   "candidates": {
-    "R": 4,
-    "T": 4,
-    "W": 12
+    "R": 1,
+    "T": 1,
+    "W": 3
   },
   "deduped": {
-    "R": 4,
-    "T": 4,
-    "W": 12
+    "R": 1,
+    "T": 1,
+    "W": 3
   },
   "dry_run": false,
   "feature_source": {
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-08-31 07:02:33",
-  "runtime_s": 109.2,
+  "run_utc": "2026-09-16 22:29:33",
+  "runtime_s": 147.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-08-28",
-    "n_members": 103,
+    "asof": "2026-09-15",
+    "n_members": 69,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.198,
+        "emerging_score": 2.862,
         "rank": 1,
-        "theme": "Software"
-      },
-      {
-        "emerging_score": 1.928,
-        "rank": 2,
-        "theme": "Mega-Cap"
-      },
-      {
-        "emerging_score": 1.881,
-        "rank": 3,
-        "theme": "Big Data"
-      },
-      {
-        "emerging_score": 1.848,
-        "rank": 4,
         "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 1.678,
-        "rank": 5,
+        "emerging_score": 2.059,
+        "rank": 2,
+        "theme": "Social Media"
+      },
+      {
+        "emerging_score": 1.984,
+        "rank": 3,
         "theme": "Biometrics"
+      },
+      {
+        "emerging_score": 1.444,
+        "rank": 4,
+        "theme": "Wearables"
+      },
+      {
+        "emerging_score": 1.205,
+        "rank": 5,
+        "theme": "Mega-Cap"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 12,
-    "asof_max": "2026-08-28",
-    "asof_mismatch": 0,
-    "asof_run": "2026-08-28",
-    "evaluated": 712,
-    "fresh": 12,
+    "aligned": 3,
+    "asof_max": "2026-09-16",
+    "asof_mismatch": 3,
+    "asof_run": "2026-09-15",
+    "evaluated": 713,
+    "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 19.3,
-    "skipped": 5,
+    "runtime_s": 25.3,
+    "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 89,
+    "state_turn": 83,
     "universe_n": 717
   }
 }
