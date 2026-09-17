@@ -1,0 +1,11 @@
+# TURN WATCH full-universe runtime repair
+
+Mission: reduce the actual 1047.53-second full-universe computation below its existing 600-second warning budget without changing discovery scope, indicator definitions, dates, ranks, triggers, null states, or immutable history. Current Chairman direction continues the end-to-end recovery; this is the already-identified runtime dependency, not a new product thesis.
+
+Procedure: Mastermind eec5324c5205e8bad206512e0a936898e50b2408, compatible 1.0.1. Source base: macro 3daf739affa12a43a6b3a0feb3b4c57154587756. Prior phase's engine/confluence, engine/TURN WATCH and governing AGENTS/CLAUDE blobs are unchanged. Direct work reason: PRINCIPAL_JUDGMENT — selecting a computational shortcut requires distinguishing redundant work from temporal/signal semantics. Reassess if the work becomes routine. Existing source writers #7200/#7206/#7187/#7180/#7227/#7235 are not replaced.
+
+The measured diagnostic profile (120 alphabetically selected names, diagnostic only) spends 17.2 of 52.9 profiled seconds in per-bucket Python aggregation and executes 128362 callbacks. The callback merely finds the last non-null observed timestamp in a calendar bucket. Replace that callback in the existing canonical completed-resample helper with the native maximum of masked observed timestamps. Keep the same value resampling, completed-tail test, output normalization, and absolute-fortnight path. No new cache, worker pool, provider call, resampling policy or data plane.
+
+Acceptance: exact legacy-reference parity across calendar rules, missing/empty/duplicate/unsorted/timezone data; no input mutation; real full-universe output comparison on the same preserved refreshed inputs excluding only truthful runtime measurements; existing confluence, anchor, TURN WATCH and candidate-intake tests; no universe cap in the full proof. A runtime claim requires measured whole-run evidence; diagnostic subsets never establish production latency. Other existing peer validation and release gates remain binding.
+
+No production protocol activation, workflow rerun or publication is authorized by this source candidate. All modified files stay in this isolated runtime branch; actual old source-data artifacts remain unmodified.
