@@ -529,6 +529,11 @@ def enrich_opex_events(
     level_zh = snap.get("level_zh") or "平静"
     glance_en = snap.get("glance_en") or ""
     glance_zh = snap.get("glance_zh") or ""
+    # A dated OPEX event owns its own calendar date. Prefer the phase-free
+    # positioning read so a future expiry never inherits a historical
+    # "Mid-cycle" / post-expiry prefix from the last observed price bar.
+    event_glance_en = snap.get("drivers_en") or glance_en
+    event_glance_zh = snap.get("drivers_zh") or glance_zh
     n_hot = snap.get("n_hot")
     n_applicable = snap.get("n_applicable")
     out = []
@@ -537,8 +542,8 @@ def enrich_opex_events(
             ev = dict(ev)  # shallow copy — never mutate caller's dict
             ev["opex_risk_level"] = level
             ev["opex_risk_level_zh"] = level_zh
-            ev["opex_risk_glance_en"] = glance_en
-            ev["opex_risk_glance_zh"] = glance_zh
+            ev["opex_risk_glance_en"] = event_glance_en
+            ev["opex_risk_glance_zh"] = event_glance_zh
             ev["opex_risk_n_hot"] = n_hot
             ev["opex_risk_n_applicable"] = n_applicable
         out.append(ev)
