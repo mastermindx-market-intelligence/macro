@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T09:19:51.948679+00:00",
-  "count": 2281,
+  "generated_at": "2026-09-17T09:49:55.003771+00:00",
+  "count": 2282,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1234,6 +1234,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nl0qtpoyubw-58bcb3",
+      "title": "China Musings Policy and macro back to school",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T02:53:16Z",
+      "summary_points": [
+        "Investor Focus Shift: Policy/Macro Resurgence: Market pivot from AI to policy/macro driven by Middle East tensions, rising global bond yields, Fed policy, and China’s political calendar (Xi’s US visit, Sept Politburo meeting).",
+        "Oil Price Resilience & China's Defense: Oil rebounds >$100/bbl amid Gulf disruptions; China shielded by energy diversification, fiscal offset, refining capacity, and lower oil price beta vs. global peers.",
+        "China Bond Yield Divergence & Valuation: 10Y CGB yields at 1.7% (all-time low) vs. global highs, with elevated A-share ERP signaling risk premium; MSCI China FPE forecast rises to 12.2x on export growth and RMB internationalization."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
