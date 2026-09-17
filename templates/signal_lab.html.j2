@@ -279,6 +279,32 @@
           <strong>{{ t('May support a fresh matching event' if r.current_permitted else 'Observation only',
                        r.permitted_use_zh) }}</strong>
           <div class="extra">{{ t(r.limits, r.limits_zh) }}</div>
+          {% if r.identity == 'd2' and r.research_journey %}
+            {% set journey = r.research_journey %}
+            <div class="extra" style="margin-top:8px">
+              <strong>{{ t('Prospective research journey', '前瞻研究轨迹') }}</strong><br>
+              {% if journey.fired is sameas true %}
+                {{ t('Raw D2 observation: fired', '原始 D2 观察：已触发') }}
+              {% elif journey.fired is sameas false %}
+                {{ t('Raw D2 observation: did not fire', '原始 D2 观察：未触发') }}
+              {% else %}
+                {{ t('Raw D2 observation: unavailable', '原始 D2 观察：不可用') }}
+              {% endif %}<br>
+              {% if journey.status == 'matured' and journey.outcome %}
+                {% if journey.outcome.down_hit %}
+                  {{ t('Matured · down target hit', '已成熟 · 下行目标命中') }}
+                {% else %}
+                  {{ t('Matured · down target missed', '已成熟 · 下行目标未命中') }}
+                {% endif %}
+                · {{ journey.outcome.fwd_min_pct }}% / {{ journey.outcome.fwd_max_pct }}%
+              {% elif journey.status == 'pending' %}
+                {{ t('Pending outcome after three future closes', '等待未来三个收盘后的结果') }}
+              {% else %}
+                {{ t('Source unavailable', '来源不可用') }}{% if journey.reason %}: {{ journey.reason }}{% endif %}
+              {% endif %}<br>
+              {{ t('Research only — no trading authority', '仅供研究 — 无交易权限') }}
+            </div>
+          {% endif %}
         </td>
         <td>
           <details class="method">

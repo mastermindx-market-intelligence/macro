@@ -104,3 +104,40 @@ def test_signal_lab_loads_the_shared_typed_gate_receipt(monkeypatch):
     block = signal_lab._build_alert_trust(evaluation_date=date(2026, 9, 10))
     assert calls["n"] == 1
     assert all(row["gate_read_state"] == "corrupt" for row in block["rows"])
+
+
+def test_signal_lab_exposes_the_append_only_d2_research_projection():
+    research = {
+        "schema": "btc_d2_forward.v1",
+        "status": "matured",
+        "entry_asof": "2026-09-17",
+        "source_asof": "2026-09-16",
+        "check_after": "2026-09-21",
+        "fired": True,
+        "trading_authority": False,
+        "source_generation_id": "sha256:source",
+        "outcome_generation_id": "sha256:outcome",
+        "generation_count": 2,
+        "outcome": {"matured": True, "fwd_min_pct": -7.0, "fwd_max_pct": 1.0,
+                    "down_hit": True},
+        "reason": None,
+    }
+    payload = signal_lab.build_scorecard(
+        gate=_gate(), evaluation_date=date(2026, 9, 17), d2_research=research,
+    )
+    rows = {row["identity"]: row for row in payload["alert_trust"]["rows"]}
+    assert rows["d2"]["research_journey"] == research
+    assert all(row.get("research_journey") is None for key, row in rows.items() if key != "d2")
+
+    env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
+    env.filters["min"] = min
+    env.globals.update(t=i18n.t, td=i18n.td, tr=i18n.tr, zip=zip)
+    html = env.get_template("signal_lab.html.j2").render(**payload)
+    assert "Prospective research journey" in html
+    assert "前瞻研究轨迹" in html
+    assert "Raw D2 observation: fired" in html
+    assert "原始 D2 观察：已触发" in html
+    assert "Matured · down target hit" in html
+    assert "已成熟 · 下行目标命中" in html
+    assert "Research only — no trading authority" in html
+    assert "仅供研究 — 无交易权限" in html
