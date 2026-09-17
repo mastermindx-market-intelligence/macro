@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T19:06:02.574724+00:00",
-  "count": 2309,
+  "generated_at": "2026-09-17T19:21:02.253929+00:00",
+  "count": 2310,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-9tfrkt7cbch-d59bc0",
+      "title": "The EM Trader CEE ing through the Vol",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:46Z",
+      "summary_points": [
+        "HUF Energy Sensitivity: HUF exhibits highest sensitivity to energy prices (beta near historical highs), with EUR/HUF rangebound; Iran war-driven spikes worsen external balances, requiring energy price relief for FX stability.",
+        "105 EUR/MWh Gas Threshold: European gas prices must reach 105 EUR/MWh for CEE local rate curve flattening; sustained spikes dominate inflation risks, especially for HUF.",
+        "PLN/CZK Dynamics: PLN underperforms due to inflation-driven hawkish policy (deficit risk), while CZK long-end provides valuation cushion against energy/fiscal shocks despite disinflationary impulses.",
+        "PLN 2s10s Steepener Trade: Initiate 2s10s PLN IRS steepeners (entry 61bp, target 100bp) due to fiscal risk premium (7.1% GDP deficit) and energy volatility.",
+        "HUF Vulnerability to Gas Spikes: HUF most exposed to natural gas surges (peak winter scenario); Euro convergence (MNB target cut to 2.5%) and EU funds (RFF €10bn) offset but don’t eliminate energy risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-wvpzyhyjijm-d3dc59",
       "title": "Americas Retail Retail sales above consensus in August",
