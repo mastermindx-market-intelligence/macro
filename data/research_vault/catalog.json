@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T16:35:48.220686+00:00",
-  "count": 2302,
+  "generated_at": "2026-09-17T16:50:49.258589+00:00",
+  "count": 2303,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -759,6 +759,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 35,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-izoxacjbbgi-c11805",
+      "title": "BoE preview",
+      "institution": "Berenberg",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-16T23:57:54Z",
+      "summary_points": [
+        "Policy Timing & Credibility Risk: BoE likely to hike 25bp Nov 11 (17 Sept MPC), narrow 5-4 vote; sustained Brent ~$100 risks CPI +3% yoy, threatening credibility if delayed.",
+        "QT Flow Management: MPC to slow QT to £50bn (vs £70bn), possibly £40bn/£45bn, reducing government bond market deterioration risk.",
+        "Rate Expectation Divergence: Market-implied rate path (blue) exceeds Berenberg base case (red), signaling persistent tightening for bond positioning.",
+        "Energy Inflation Acceleration: Outturn/forecast surpasses BoE’s July 2026 projection, driving near-term inflation above policy targets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
