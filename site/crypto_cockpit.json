@@ -2,18 +2,18 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-08-29",
-  "generated_at": "2026-08-29T12:25:13+00:00",
+  "as_of": "2026-09-16",
+  "generated_at": "2026-09-16T08:46:58+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 77656.94,
-    "change_24h_pct": -0.23,
-    "stance_en": "STRONG RISK-ON",
-    "stance_zh": "强烈偏多",
-    "summary_en": "The big picture reads strongly risk-on. Support comes from momentum and fundamentals; the drag comes from futures positioning and behaviour versus stocks. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向明显偏多。支撑来自动量与基本面；拖累来自期货持仓与与美股的联动。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 47,
-    "exposure_pct": 100,
+    "price": 75605.24,
+    "change_24h_pct": 0.03,
+    "stance_en": "RISK-ON",
+    "stance_zh": "偏多",
+    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from the pace of the move and futures positioning. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自涨跌节奏与期货持仓。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 19,
+    "exposure_pct": 40,
     "gate_active": false
   },
   "axes": [
@@ -48,9 +48,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Accelerating",
-          "state_zh": "加速",
-          "tone": "bull",
+          "state_en": "Exhausting",
+          "state_zh": "衰竭",
+          "tone": "bear",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -153,19 +153,19 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-08-29"
+        "as_of": "2026-09-16"
       },
       "spark_source": "signals.oi_mcap_ratio",
       "receipt_members": [
         {
           "key": "funding",
-          "label_en": "Perp funding",
-          "label_zh": "永续资金费率",
+          "label_en": "Funding",
+          "label_zh": "funding",
           "source": "master.board.funding",
-          "state_en": "Neutral",
-          "state_zh": "中性",
+          "state_en": "Unavailable",
+          "state_zh": "暂无",
           "tone": "neutral",
-          "grade": "EXTREMES"
+          "grade": null
         },
         {
           "key": "cot",

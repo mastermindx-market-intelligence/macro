@@ -64,11 +64,14 @@ from __future__ import annotations
 import argparse
 import datetime as _dt
 import fnmatch
+import hashlib
 import json
 import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
+from itertools import islice
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
@@ -97,6 +100,7 @@ STATE_SCHEMA = "agent_os_state.v1"
 BRIEF_SCHEMA = "ceo_brief.v1"
 READINESS_SCHEMA = "agentos.readiness.v1"
 PROGRAM_REGISTRY_SCHEMA = "agentos.program_registry.v1"
+SOURCE_RECORDS_DIGEST_SCHEMA = "agentos.source_records_digest.v1"
 
 # Sibling checkouts, resolved by walking up from this repo.  Macro is this checkout; the
 # other two are separate clones under the shared project home.  Absent is NORMAL (I4).
@@ -610,6 +614,29 @@ def git_dates(path: Path) -> tuple[str | None, str | None]:
     last = (updated or "").strip().splitlines()
     first = [ln for ln in (added or "").strip().splitlines() if ln]
     return (first[-1] if first else None), (last[0] if last else None)
+
+
+_GIT_DATE_BATCH_SIZE = 4
+
+
+def git_dates_batch(paths: Iterable[Path]) -> dict[Path, tuple[str | None, str | None]]:
+    """Read canonical per-path dates with a bounded, invocation-local I/O fan-out.
+
+    Keep git_dates semantics, input order and None results unchanged. Submit only
+    one small batch at a time, and join every thread before return or failure.
+    There is no persisted cache, new history policy or cross-call executor.
+    """
+    iterator = iter(paths)
+    batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    if not batch:
+        return {}
+    result: dict[Path, tuple[str | None, str | None]] = {}
+    with ThreadPoolExecutor(max_workers=_GIT_DATE_BATCH_SIZE,
+                            thread_name_prefix="agentos-git-dates") as executor:
+        while batch:
+            result.update(zip(batch, executor.map(git_dates, batch)))
+            batch = list(islice(iterator, _GIT_DATE_BATCH_SIZE))
+    return result
 
 
 def _cycle(graph: dict[str, list[str]]) -> list[str] | None:
@@ -1142,6 +1169,56 @@ class Store:
         return {k[len(marker):]: v for k, v in self.records.items() if k.startswith(marker)}
 
 
+def _record_repository_root(record_root: Path) -> Path:
+    """Repository root used for stable source-path identity.
+
+    The canonical store is ``<repo>/agentos``.  Tests and explicit ``--root`` callers
+    may use an equivalent isolated tree outside this checkout; its parent is then the
+    only honest repository-relative anchor.
+    """
+    resolved = record_root.resolve()
+    try:
+        resolved.relative_to(_ROOT)
+    except ValueError:
+        return resolved.parent
+    return _ROOT
+
+
+def _direct_record_paths(root: Path) -> list[Path]:
+    """Every direct authored record path the canonical store loader can inspect."""
+    return [
+        path
+        for folder, _prefix, _fileprefix, _checker in SPECS
+        for path in sorted((root / folder).glob("*.md"))
+    ]
+
+
+def _source_records_digest(
+    paths: Iterable[Path], *, repository_root: Path = _ROOT
+) -> str:
+    """Content identity of exact direct-record paths and bytes.
+
+    Each source contributes ``repository-relative UTF-8 path + NUL + SHA-256(bytes)``
+    inside one canonical compact JSON envelope.  Acquisition clocks, git metadata,
+    generated views and live joins never enter this function.
+    """
+    root = repository_root.resolve()
+    sources: dict[str, Path] = {}
+    for raw_path in paths:
+        path = Path(raw_path).resolve()
+        relative = path.relative_to(root).as_posix()
+        sources[relative] = path
+    rows = [
+        relative + "\0" + hashlib.sha256(sources[relative].read_bytes()).hexdigest()
+        for relative in sorted(sources)
+    ]
+    envelope = {"schema": SOURCE_RECORDS_DIGEST_SCHEMA, "sources": rows}
+    payload = json.dumps(
+        envelope, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
 def load_store(root: Path, programs: set[str] | None) -> Store:
     """Parse and check every record under ``root``.  Never raises; never writes."""
     store = Store(root)
@@ -1520,11 +1597,12 @@ def build_records(
     merged_truncated = bool((builds or {}).get("merged_truncated"))
     live_branches = set(worktrees.get("branches") or [])
 
+    dates = git_dates_batch(store.paths[f"WS/{key}"] for key in sorted(ws))
     out: list[dict[str, Any]] = []
     for key in sorted(ws):
         rec = ws[key]
         path = store.paths[f"WS/{key}"]
-        created, updated = git_dates(path)
+        created, updated = dates[path]
         status = rec.get("status")
         waves = [w for w in (rec.get("waves") or []) if isinstance(w, dict)]
         rollup = {name: 0 for name in sorted(WAVE_STATUS)}
@@ -1948,6 +2026,10 @@ def build_state(
     return {
         "schema": STATE_SCHEMA,
         "generator": "scripts/agentos.py status",
+        "source_records_digest": _source_records_digest(
+            _direct_record_paths(store.root),
+            repository_root=_record_repository_root(store.root),
+        ),
         # ---- envelope: volatile, excluded from the byte-identity comparison ----
         "generated_at": _iso_z(now),
         "inputs": {
@@ -1983,7 +2065,8 @@ def build_state(
 
 
 PURE_SECTIONS = (
-    "schema", "generator", "program_registry", "workstreams", "needs_ceo", "warnings"
+    "schema", "generator", "source_records_digest", "program_registry", "workstreams",
+    "needs_ceo", "warnings"
 )
 
 
@@ -3355,8 +3438,31 @@ def compile_bundle(
         store, workstream=workstream, task=task, search_fn=search_fn, degraded=degraded
     )
 
+    # Digest membership is entered where the walk RESOLVES a direct record, never read
+    # back from the emitted envelope.  An output-shaped enumeration silently loses every
+    # record the walk USES without emitting a row for it — a resolved `superseded_by`
+    # target is exactly that: it decides whether the superseded record is evicted or
+    # rendered, and appears in no section, no `excluded` row and no budget omission.  It
+    # also silently GAINS artifact pointers that merely name a record path the walk never
+    # opened.  Registering at the store-table door makes the two sets the same set by
+    # construction, so a later pack, section or tail cannot move one without the other.
+    # The BOUNDARY is the store table, not the store: a record the walk OPENS as a source
+    # is bound; the whole-store eligibility scans (`affects`/`scope` matching) and the
+    # citation-count join are read but never opened, and the amendment excludes auxiliary
+    # join results by name — binding them would be the whole-store hash it forbids.
+    sources: dict[str, Path] = {}
+
+    def source(table_key: str) -> Path:
+        """Resolve one direct record through the store table and bind it to identity."""
+        path = store.paths[table_key]
+        sources.setdefault(str(path.resolve()), path)
+        return path
+
     envelope: dict[str, Any] = {
         "schema": BUNDLE_SCHEMA,
+        "source_records_digest": _source_records_digest(
+            sources.values(), repository_root=_record_repository_root(store.root)
+        ),
         "target": {
             "workstream": f"WS:{target['key']}" if target["key"] else None,
             "task": task,
@@ -3388,7 +3494,7 @@ def compile_bundle(
     hnd_all = store.of_type("HND")
     rec = ws_all[key]
     envelope["target"]["wait"] = _wait_row(rec)
-    ws_path = store.paths[f"WS/{key}"]
+    ws_path = source(f"WS/{key}")
     program = rec.get("program") if isinstance(rec.get("program"), str) else None
     prs = _pr_index(builds)
     # Record-LOCAL hard problems only.  A sibling whose own frontmatter is wrong is a lie
@@ -3465,7 +3571,7 @@ def compile_bundle(
         if dep_rec is None:
             drop("dependency", f"WS:{dep}", "—", "dangling depends_on — no such record")
             continue
-        dep_path = store.paths[f"WS/{dep}"]
+        dep_path = source(f"WS/{dep}")
         if malformed("dependency", f"WS:{dep}", dep_path):
             continue
         _, dep_updated = git_dates(dep_path)
@@ -3514,11 +3620,14 @@ def compile_bundle(
         if dec_rec is None:
             drop("decision", f"DEC:{dec_key}", "—", "dangling citation — no such record")
             continue
-        dec_path = store.paths[f"DEC/{dec_key}"]
+        dec_path = source(f"DEC/{dec_key}")
         if malformed("decision", f"DEC:{dec_key}", dec_path):
             continue
         replacement, raw = _supersession(dec_rec, "DEC", dec_all)
         if replacement is not None:
+            # The replacement is READ, not rendered: eviction happens only because that
+            # record resolves, so its authored bytes are part of this bundle's identity.
+            source(f"DEC/{replacement}")
             # NEVER co-equal.  Supersession is the whole reason both records survive; a
             # bundle that listed them side by side would undo it.
             drop("decision", f"DEC:{dec_key}", dec_path, f"superseded_by DEC:{replacement}")
@@ -3583,11 +3692,12 @@ def compile_bundle(
         if dsc_rec is None:
             drop("discovery", f"DSC:{dsc_key}", "—", "dangling citation — no such record")
             continue
-        dsc_path = store.paths[f"DSC/{dsc_key}"]
+        dsc_path = source(f"DSC/{dsc_key}")
         if malformed("discovery", f"DSC:{dsc_key}", dsc_path):
             continue
         replacement, raw = _supersession(dsc_rec, "DSC", dsc_all)
         if replacement is not None:
+            source(f"DSC/{replacement}")
             drop("discovery", f"DSC:{dsc_key}", dsc_path, f"superseded_by DSC:{replacement}")
             continue
         if raw is not None:
@@ -3639,10 +3749,24 @@ def compile_bundle(
         emit("discoveries", row["item"])
 
     # ---- handoff: the LATEST only ------------------------------------------
-    mine: list[str] = [
-        stem for stem in sorted(hnd_all)
+    handoff_paths = {stem: store.paths[f"HND/{stem}"] for stem in sorted(hnd_all)}
+    mine = {
+        stem: path for stem, path in handoff_paths.items()
         if key in _refs(hnd_all[stem].get("workstream"), "WS")
-    ]
+    }
+    # The loader retains parsed records even when their association is invalid,
+    # and reports unparseable paths separately. Both are selection evidence.
+    for problem in store.problems:
+        if problem.rule == "unparseable" and problem.path.parent == store.root / "handoffs":
+            handoff_paths.setdefault(problem.path.stem, problem.path)
+    unassociated: set[str] = set()
+    for stem, path in handoff_paths.items():
+        date_match = HANDOFF_DATE_RE.search(stem)
+        if date_match and stem[:date_match.start()] == key and stem not in mine:
+            # Exact canonical filenames provide negative evidence only. They
+            # never rewrite a valid authored association to another workstream.
+            mine[stem] = path
+            unassociated.add(stem)
 
     def handoff_rank(stem: str) -> tuple[str, str]:
         match = HANDOFF_DATE_RE.search(stem)
@@ -3650,10 +3774,17 @@ def compile_bundle(
 
     if mine:
         latest = max(mine, key=handoff_rank)
-        for stem in mine:
-            hnd_path = store.paths[f"HND/{stem}"]
+        for stem, hnd_path in sorted(mine.items()):
+            # Bind malformed bytes too: they affect selection despite yielding
+            # no parsed record or emitted handoff.
+            sources.setdefault(str(hnd_path.resolve()), hnd_path)
             if stem != latest:
                 drop("handoff", stem, hnd_path, f"older_handoff (latest: {latest})")
+                continue
+            if stem in unassociated:
+                drop("handoff", stem, hnd_path,
+                     "malformed or inconsistent latest handoff association — no stale fallback")
+                degraded.add(f"record excluded (malformed association): {_rel(hnd_path)} — {stem}")
                 continue
             if malformed("handoff", stem, hnd_path):
                 continue
@@ -3795,6 +3926,9 @@ def compile_bundle(
     ]
     envelope["excluded"] = excluded
     envelope["omitted_due_to_budget"] = omitted
+    envelope["source_records_digest"] = _source_records_digest(
+        sources.values(), repository_root=_record_repository_root(store.root)
+    )
     # Re-read at the end: the walk itself degrades (an unresolvable DNR row, an absent
     # sibling), and a snapshot taken at envelope time would drop exactly those.
     envelope["degraded"] = list(degraded.items)

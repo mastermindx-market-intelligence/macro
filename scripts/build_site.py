@@ -42,6 +42,7 @@ from engine.us_board_rank import (  # noqa: E402
 )
 from lib import config, site_assets, store  # noqa: E402
 from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
+from lib.help_directory import help_page_view_model  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -3731,6 +3732,25 @@ def build_support_page(env: Environment, site: Path, generated: str) -> None:
     log.info("wrote support.html (public support desk)")
 
 
+def build_help_page(env: Environment, site: Path, generated: str) -> None:
+    """Render the public, source-validated bilingual owner directory.
+
+    This is deliberately fail-closed. A missing source label or invalid target
+    aborts the render instead of leaving a stale or inferred help destination.
+
+    Uses lib.help_directory.help_page_view_model — the SAME builder
+    scripts.build_public_pages.build calls — so this render path can never
+    drift from that one and hand the template a partial context again
+    (review finding B-F13-3 BLOCKER-1: this call site used to splat only
+    entries/categories/directory_state and raise UndefinedError on
+    ``changelog``, which this function's except-and-log swallowed silently).
+    """
+    vm = help_page_view_model(config.ROOT)
+    html = env.get_template("help.html.j2").render(generated_utc=generated, **vm)
+    write_page(site / "help.html", html)
+    log.info("wrote help.html (%d source-validated links)", len(vm["entries"]))
+
+
 def build_unsubscribe_page(env: Environment, site: Path, generated: str) -> None:
     """✨ Unsubscribe — the public bilingual opt-out page (SEE W4, masterplan R5).
 
@@ -4373,9 +4393,10 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
     disagree, the card ships two numbers for the same date: on 2026-07-31 the
     gauge baked 69 / Risk-on while the chart's endpoint baked 66, and the header's
     "last graded <date>" stamp disclosed nothing, because the two dates matched.
-    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to;
-    the logged row on disk is left exactly as it was written. Legacy rows without raw_score
-    fall back to score."""
+    The DISPLAY endpoint therefore follows the measured blend on the board it sits next to.
+    If the settled board is newer than the ledger tail, it is appended to the display path so
+    the chart cannot stop on an older score. The logged rows on disk are left exactly as written.
+    Legacy rows without raw_score fall back to score."""
     try:
         p = config.data_dir() / "market_state" / "forward_log.jsonl"
         if not p.exists():
@@ -4402,12 +4423,19 @@ def _ms_history_view(current: dict | None = None) -> list[dict] | None:
         cur_score = (current or {}).get("raw_score")
         if cur_score is None:
             cur_score = (current or {}).get("score")
-        if cur_asof and cur_score is not None and cur_asof == out[-1]["asof"] \
-                and int(cur_score) != out[-1]["score"]:
-            log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
-                     "forward_log row untouched)",
-                     cur_asof, out[-1]["score"], int(cur_score))
-            out[-1] = {"asof": cur_asof, "score": int(cur_score)}
+        if cur_asof and cur_score is not None:
+            cur_score = int(cur_score)
+            last_asof = out[-1]["asof"]
+            if cur_asof == last_asof and cur_score != out[-1]["score"]:
+                log.info("ms_history: display endpoint %s %d -> %d (measured board blend; "
+                         "forward_log row untouched)",
+                         cur_asof, out[-1]["score"], cur_score)
+                out[-1] = {"asof": cur_asof, "score": cur_score}
+            elif cur_asof > last_asof:
+                log.info("ms_history: appending settled display endpoint %s=%d after ledger %s "
+                         "(forward_log untouched)", cur_asof, cur_score, last_asof)
+                out.append({"asof": cur_asof, "score": cur_score})
+                out = out[-60:]
         return out
     except Exception:  # noqa: BLE001 — additive, never fatal
         return None
@@ -4712,6 +4740,17 @@ def _attach_board_display_chips(site: Path, doc: "dict | None") -> "dict | None"
                   "— no receipt rendered", flush=True)
     except Exception as _bse:  # noqa: BLE001 — additive, never fatal
         log.warning("W-L1 board state attach failed (%s)", _bse)
+    # Per-candidate Added / 入榜 date: current continuous published-board membership
+    # start (engine/prophet_board_since.py). Display-only; reads the existing
+    # data/us_board_ledger/snapshots.jsonl fossil (memoized per-process, so the
+    # post-build_library re-render below does not re-parse the 33MB file). Threaded
+    # through this ONE shared attach so both call sites (the first-pass render and
+    # the post-build_library re-render) can never silently diverge.
+    try:
+        from engine.prophet_board_since import stamp_us_board_since_fail_open
+        doc = stamp_us_board_since_fail_open(doc, data_dir=config.data_dir(), log=log)
+    except Exception as _bse:  # noqa: BLE001 — additive, never fatal
+        log.warning("us board_since stamp failed (%s)", _bse)
     return doc
 
 
@@ -5707,6 +5746,11 @@ def main() -> int:
         build_support_page(env, site, generated)
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.error("support page failed: %s", e)
+    try:
+        build_help_page(env, site, generated)
+        _tmark("help_page")
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.error("help page failed: %s", e)
     try:
         build_unsubscribe_page(env, site, generated)
         _tmark("plans_support_unsub_pages")
@@ -6889,6 +6933,30 @@ def main() -> int:
         log.warning("news_feed build failed: %s", _e)
         _news_feed = []
 
+    # F05/MO-PAID-017: bounded chronicle consequence surface for News Feed.
+    # Read-time projection over a recent window — never a nightly-committed
+    # impact.jsonl dump. Explicitly not a Market-Feed-branded surface.
+    _chronicle_impact = None
+    try:
+        from engine.chronicle import impact as _impact_mod  # noqa: PLC0415
+        from engine.chronicle import spine as _spine_mod  # noqa: PLC0415
+        _ev_path = Path(config.data_dir()) / "chronicle" / "events.jsonl"
+        _evs = _spine_mod.load_events_jsonl(_ev_path) if _ev_path.exists() else []
+        _chronicle_impact = _impact_mod.glance_consequence_surface(_evs)
+    except Exception as _e:  # noqa: BLE001 — additive; never fatal
+        log.warning("chronicle_impact glance failed: %s", _e)
+        _chronicle_impact = {
+            "served_as_market_feed": False,
+            "market_feed_disposition": "explicitly_does_not_serve_market_feed",
+            "stance_en": "Not available yet",
+            "stance_zh": "暂不可用",
+            "reason_en": "Consequence projection failed to load.",
+            "reason_zh": "后果投影未能加载。",
+            "families": {},
+            "rows": [],
+            "event_count": 0,
+        }
+
     out_news = site / "news.html"
     # vm already carries a 'macro_news' key (assigned above), so we must NOT splat
     # **vm AND pass macro_news= explicitly — that collides at argument binding and
@@ -6909,6 +6977,7 @@ def main() -> int:
             news_calibration=_news_calibration_data,
             financial_news=_financial_news_data,
             news_feed=_news_feed,
+            chronicle_impact=_chronicle_impact,
         )
     except Exception as _e:  # noqa: BLE001 — degrade, never raise
         log.error("news.html render failed (%s: %s) — retrying without side-artifacts",
@@ -6922,6 +6991,7 @@ def main() -> int:
                 news_calibration=None,
                 financial_news=None,
                 news_feed=_news_feed,
+                chronicle_impact=_chronicle_impact,
             )
         except Exception as _e2:  # noqa: BLE001 — degrade, never raise
             log.error("news.html artifact-free render failed too (%s: %s) — "
@@ -7661,6 +7731,19 @@ def main() -> int:
         log.info("wrote %s", _cs_page)
     except Exception as _cs_e:  # noqa: BLE001 — additive; never break main build
         log.warning("capital_structure.html render failed (%s); page skipped", _cs_e)
+
+    # F01 Macro & Monetary suite — server-rendered workspace pages over the
+    # validated mastermind.macro_workspace_snapshot.v1 artifacts. The builder
+    # fails CLOSED on its own (a refused snapshot renders the typed refusal page,
+    # never a stale or empty one), so this hook only keeps a full-site rebuild
+    # from leaving the suite's pages and shared assets behind the templates.
+    try:
+        from scripts.build_macro_suite_pages import render as _render_macro_suite
+        _macro_suite_pages = _render_macro_suite(config.ROOT)
+        for _mq_page in _macro_suite_pages:
+            log.info("wrote %s", _mq_page)
+    except Exception as _mq_e:  # noqa: BLE001 — additive; never break main build
+        log.warning("macro suite pages render failed (%s); pages skipped", _mq_e)
 
     # W4: TIL State of Themes terminal — cross-theme matrix with asymmetry legs,
     # falsifier health, filter chips, and weekly-delta strip. Reads the four

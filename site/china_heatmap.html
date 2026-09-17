@@ -49,7 +49,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=f41f9a21">
+<link rel="stylesheet" href="theme.css?v=63df1679">
 <link rel="stylesheet" href="assets/css/2c699580.css?v=2c699580">
 <link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
@@ -182,6 +182,7 @@
         </div>
         <a href="intl_stocks.html"><span class="submenu-icon submenu-icon-stocks" aria-hidden="true"></span><span class="l-en">Stock Dashboard</span><span class="l-zh">股票仪表盘</span><span class="d"><span class="l-en">Prophet cross-market · sectors</span><span class="l-zh">Prophet 跨市场 · 板块</span></span></a>
         <a href="baskets_intl.html"><span class="submenu-icon submenu-icon-baskets" aria-hidden="true"></span><span class="l-en">Thematic Baskets</span><span class="l-zh">主题篮子</span><span class="d"><span class="l-en">Cross-country theme baskets · ex-US</span><span class="l-zh">跨国主题篮子 · 除美</span></span></a>
+        <a href="sanctions_map.html"><span class="submenu-icon submenu-icon-policy" aria-hidden="true"></span><span class="l-en">Sanctions Map</span><span class="l-zh">制裁地图</span><span class="d"><span class="l-en">Where US sanctions point · OFAC public list</span><span class="l-zh">美国制裁指向何处 · OFAC 公开名单</span></span></a>
       </div>
     </div>
     <div class="nav-dd">
@@ -218,6 +219,7 @@
               <a class="mega-item nm-feat" href="fundamental_forensics.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M9 6h24l6 6v28H9z"/><path d="M7 4h24l6 6v23H7zM31 4v7h6"/><path d="M13 15h16M13 21h12M13 27h8"/><circle class="soft-fill" cx="31" cy="31" r="8"/><circle cx="29" cy="29" r="7"/><path class="accent" d="m34 34 7 7M25 29h8M29 25v8"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Filing Forensics</span><span class="l-zh">财报排雷</span></span><span class="item-desc d"><span class="l-en">Find the accounting changes worth reviewing</span><span class="l-zh">找出值得复核的会计变动</span></span></span></a>
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
+              <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
             </div>
           </section>
           <section class="mega-section nav-mega-section">
@@ -308,70 +310,70 @@
     <span class="hm-live-badge" data-live-label></span>
   </div>
   <div id="hm-ssr">
-    <div class="hx-pulse flat">
+    <div class="hx-pulse down">
       <div class="hx-pulse-top">
-        <span class="hx-stance"><span class="ic"></span><span class="l-en">Split tape</span><span class="l-zh">涨跌分化</span></span>
+        <span class="hx-stance"><span class="ic"></span><span class="l-en">Broad decline</span><span class="l-zh">普跌</span></span>
         <span class="hx-pulse-lab"><span class="l-en">Market pulse</span><span class="l-zh">市场脉搏</span></span>
-        <span class="hx-pulse-when">2026-08-28</span>
+        <span class="hx-pulse-when">2026-09-15</span>
       </div><div class="hx-pulse-read">
-        <span class="l-en"><b>54%</b> of names advancing · median <b>+0.20%</b>. Strength in <b>A-share</b>, <b>Technology</b> — weakness in <b>Financial Services</b>, <b>Utilities</b>.</span>
-        <span class="l-zh"><b>54%</b> 个股上涨 · 中位数 <b>+0.20%</b>。资金流向：<b>其他</b>、<b>信息技术</b> 走强，<b>金融</b>、<b>公用事业</b> 走弱。</span>
+        <span class="l-en"><b>28%</b> of names advancing · median <b>−0.81%</b>. Strength in <b>Technology</b> — weakness in <b>Industrials</b>, <b>Real Estate</b>.</span>
+        <span class="l-zh"><b>28%</b> 个股上涨 · 中位数 <b>−0.81%</b>。资金流向：<b>信息技术</b> 走强，<b>工业</b>、<b>房地产</b> 走弱。</span>
       </div>
     </div>
 
     <div class="hx-stats">
       <div class="hx-stat hx-stat-br">
         <div class="k"><span class="l-en">Breadth · advancing vs declining</span><span class="l-zh">市场广度 · 涨跌家数</span></div>
-        <div class="v">54% <span class="u"><span class="l-en">advancing</span><span class="l-zh">上涨</span></span></div>
-        <div class="hx-bbar"><i class="adv" style="width:53.69%"></i><i class="flt" style="width:2.73%"></i><i class="dec" style="width:43.59%"></i></div>
-        <div class="hx-bleg"><span class="hx-up">▲ 2,796</span><span class="hx-dn">2,270 ▼</span></div>
-        <div class="hx-bscope"><span class="l-en">Shanghai + Shenzhen A-shares · 5,208 traded</span><span class="l-zh">沪深全市场 · 5,208 只交易</span></div>
+        <div class="v">28% <span class="u"><span class="l-en">advancing</span><span class="l-zh">上涨</span></span></div>
+        <div class="hx-bbar"><i class="adv" style="width:27.78%"></i><i class="flt" style="width:2.46%"></i><i class="dec" style="width:69.75%"></i></div>
+        <div class="hx-bleg"><span class="hx-up">▲ 474</span><span class="hx-dn">1,190 ▼</span></div>
+        <div class="hx-bscope"><span class="l-en">Map sample · 1,706 names</span><span class="l-zh">本图样本 · 1,706 只</span></div>
       </div>
       <div class="hx-stat">
         <div class="k"><span class="l-en">Median move</span><span class="l-zh">涨跌中位数</span></div>
-        <div class="v up">+0.20%</div>
-        <div class="m"><span class="l-en">Flat — no drift</span><span class="l-zh">基本走平</span></div>
+        <div class="v down">−0.81%</div>
+        <div class="m"><span class="l-en">Tilted lower</span><span class="l-zh">偏弱</span></div>
       </div>
       <div class="hx-stat">
         <div class="k"><span class="l-en">Strongest sector</span><span class="l-zh">最强板块</span></div>
-        <div class="v up">+4.77%</div>
-        <div class="m"><span class="l-en">A-share</span><span class="l-zh">其他</span></div>
+        <div class="v up">+0.38%</div>
+        <div class="m"><span class="l-en">Technology</span><span class="l-zh">信息技术</span></div>
       </div>
       <div class="hx-stat">
         <div class="k"><span class="l-en">Weakest sector</span><span class="l-zh">最弱板块</span></div>
-        <div class="v down">−0.53%</div>
-        <div class="m"><span class="l-en">Financial Services</span><span class="l-zh">金融</span></div>
+        <div class="v down">−1.43%</div>
+        <div class="m"><span class="l-en">Industrials</span><span class="l-zh">工业</span></div>
       </div>
     </div>
 
     <div class="hx-boards">
       <div class="hx-board"><h3><span class="tag up">▲</span><span class="l-en">Biggest gainers</span><span class="l-zh">涨幅榜</span></h3>
-        <div class="hx-row"><span class="tk">300456</span><span class="nm"><span class="l-en">Sai MicroElectronics Inc.</span><span class="l-zh">赛微电子</span></span><span class="pc hx-up">+20.0%</span><span class="bar"><i style="width:100%;background:var(--up)"></i></span></div>
-        <div class="hx-row"><span class="tk">301666</span><span class="nm"><span class="l-en">DAPUSTOR CORPORATION</span><span class="l-zh">大普微</span></span><span class="pc hx-up">+20.0%</span><span class="bar"><i style="width:100%;background:var(--up)"></i></span></div>
-        <div class="hx-row"><span class="tk">688300</span><span class="nm"><span class="l-en">Novoray Corporation</span><span class="l-zh">联瑞新材</span></span><span class="pc hx-up">+20.0%</span><span class="bar"><i style="width:100%;background:var(--up)"></i></span></div>
-        <div class="hx-row"><span class="tk">688368</span><span class="nm"><span class="l-en">Shanghai Bright Power Semiconductor Co., Ltd.</span><span class="l-zh">晶丰明源</span></span><span class="pc hx-up">+20.0%</span><span class="bar"><i style="width:100%;background:var(--up)"></i></span></div>
-        <div class="hx-row"><span class="tk">688091</span><span class="nm"><span class="l-en">Shanghai Yizhong Pharmaceutical Co., Ltd.</span><span class="l-zh">上海谊众</span></span><span class="pc hx-up">+16.4%</span><span class="bar"><i style="width:82%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">301662</span><span class="nm"><span class="l-en">Ongoal Technology Co., Ltd.</span><span class="l-zh">宏工科技</span></span><span class="pc hx-up">+15.0%</span><span class="bar"><i style="width:100%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">301155</span><span class="nm"><span class="l-en">Jiangsu Haili Wind Power Equipment Technology Co., Ltd.</span><span class="l-zh">海力风电</span></span><span class="pc hx-up">+12.8%</span><span class="bar"><i style="width:85%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">301061</span><span class="nm"><span class="l-en">MotoMotion China Corporation</span><span class="l-zh">匠心家居</span></span><span class="pc hx-up">+12.5%</span><span class="bar"><i style="width:83%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">688797</span><span class="nm"><span class="l-en">CHONGQING GENORI TECHNOLOGY CO</span><span class="l-zh">臻宝科技</span></span><span class="pc hx-up">+12.3%</span><span class="bar"><i style="width:82%;background:var(--up)"></i></span></div>
+        <div class="hx-row"><span class="tk">603248</span><span class="nm"><span class="l-en">JIANGSU XIHUA NEW ENGY TECH CO</span><span class="l-zh">锡华科技</span></span><span class="pc hx-up">+10.0%</span><span class="bar"><i style="width:67%;background:var(--up)"></i></span></div>
       </div>
       <div class="hx-board"><h3><span class="tag dn">▼</span><span class="l-en">Biggest losers</span><span class="l-zh">跌幅榜</span></h3>
-        <div class="hx-row"><span class="tk">300274</span><span class="nm"><span class="l-en">Sungrow Power Supply Co., Ltd.</span><span class="l-zh">阳光电源</span></span><span class="pc hx-dn">−12.2%</span><span class="bar"><i style="width:100%;background:var(--down)"></i></span></div>
-        <div class="hx-row"><span class="tk">002028</span><span class="nm"><span class="l-en">Sieyuan Electric Co., Ltd.</span><span class="l-zh">思源电气</span></span><span class="pc hx-dn">−10.0%</span><span class="bar"><i style="width:82%;background:var(--down)"></i></span></div>
-        <div class="hx-row"><span class="tk">301177</span><span class="nm"><span class="l-en">DR Corporation Limited</span><span class="l-zh">迪阿股份</span></span><span class="pc hx-dn">−8.18%</span><span class="bar"><i style="width:67%;background:var(--down)"></i></span></div>
-        <div class="hx-row"><span class="tk">688676</span><span class="nm"><span class="l-en">Hainan Jinpan Smart Technology Co., Ltd.</span><span class="l-zh">金盘科技</span></span><span class="pc hx-dn">−7.71%</span><span class="bar"><i style="width:63%;background:var(--down)"></i></span></div>
-        <div class="hx-row"><span class="tk">301291</span><span class="nm"><span class="l-en">Guangdong Mingyang Electric Co.,Ltd.</span><span class="l-zh">明阳电气</span></span><span class="pc hx-dn">−6.97%</span><span class="bar"><i style="width:57%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">600869</span><span class="nm"><span class="l-en">Far East Smarter Energy Co., Ltd.</span><span class="l-zh">远东股份</span></span><span class="pc hx-dn">−10.0%</span><span class="bar"><i style="width:100%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">603983</span><span class="nm"><span class="l-en">Guangdong Marubi Biotechnology Co., Ltd.</span><span class="l-zh">丸美生物</span></span><span class="pc hx-dn">−9.98%</span><span class="bar"><i style="width:100%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">600929</span><span class="nm"><span class="l-en">Snowsky Salt Industry Group CO.,LTD</span><span class="l-zh">雪天盐业</span></span><span class="pc hx-dn">−9.92%</span><span class="bar"><i style="width:99%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">603376</span><span class="nm"><span class="l-en">DAMING ELECTRONICS CO LTD</span><span class="l-zh">大明电子</span></span><span class="pc hx-dn">−8.16%</span><span class="bar"><i style="width:81%;background:var(--down)"></i></span></div>
+        <div class="hx-row"><span class="tk">003039</span><span class="nm"><span class="l-en">Guangdong Shunkong Development Co.,Ltd.</span><span class="l-zh">顺控发展</span></span><span class="pc hx-dn">−7.63%</span><span class="bar"><i style="width:76%;background:var(--down)"></i></span></div>
       </div>
       <div class="hx-board hx-board-sec"><h3><span class="l-en">Sector leaders &amp; laggards</span><span class="l-zh">板块强弱</span></h3>
-        <div class="hx-sec"><span class="nm"><span class="l-en">A-share</span><span class="l-zh">其他</span></span><span class="track"><i style="width:100%;background:var(--up)"></i></span><span class="pc hx-up">+4.77%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Technology</span><span class="l-zh">信息技术</span></span><span class="track"><i style="width:85%;background:var(--up)"></i></span><span class="pc hx-up">+4.06%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Basic Materials</span><span class="l-zh">材料</span></span><span class="track"><i style="width:49%;background:var(--up)"></i></span><span class="pc hx-up">+2.32%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Energy</span><span class="l-zh">能源</span></span><span class="track"><i style="width:25%;background:var(--up)"></i></span><span class="pc hx-up">+1.19%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Healthcare</span><span class="l-zh">医疗保健</span></span><span class="track"><i style="width:15%;background:var(--up)"></i></span><span class="pc hx-up">+0.72%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Industrials</span><span class="l-zh">工业</span></span><span class="track"><i style="width:8%;background:var(--up)"></i></span><span class="pc hx-up">+0.37%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Consumer Cyclical</span><span class="l-zh">非必需消费</span></span><span class="track"><i style="width:6%;background:var(--up)"></i></span><span class="pc hx-up">+0.26%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Real Estate</span><span class="l-zh">房地产</span></span><span class="track"><i style="width:4%;background:var(--down)"></i></span><span class="pc hx-dn">−0.15%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Consumer Defensive</span><span class="l-zh">必需消费</span></span><span class="track"><i style="width:4%;background:var(--down)"></i></span><span class="pc hx-dn">−0.18%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Communication Services</span><span class="l-zh">通信服务</span></span><span class="track"><i style="width:5%;background:var(--down)"></i></span><span class="pc hx-dn">−0.24%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Utilities</span><span class="l-zh">公用事业</span></span><span class="track"><i style="width:7%;background:var(--down)"></i></span><span class="pc hx-dn">−0.34%</span></div>
-        <div class="hx-sec"><span class="nm"><span class="l-en">Financial Services</span><span class="l-zh">金融</span></span><span class="track"><i style="width:11%;background:var(--down)"></i></span><span class="pc hx-dn">−0.53%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Technology</span><span class="l-zh">信息技术</span></span><span class="track"><i style="width:27%;background:var(--up)"></i></span><span class="pc hx-up">+0.38%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Basic Materials</span><span class="l-zh">材料</span></span><span class="track"><i style="width:17%;background:var(--down)"></i></span><span class="pc hx-dn">−0.25%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Communication Services</span><span class="l-zh">通信服务</span></span><span class="track"><i style="width:24%;background:var(--down)"></i></span><span class="pc hx-dn">−0.34%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Energy</span><span class="l-zh">能源</span></span><span class="track"><i style="width:24%;background:var(--down)"></i></span><span class="pc hx-dn">−0.35%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">A-share</span><span class="l-zh">其他</span></span><span class="track"><i style="width:25%;background:var(--down)"></i></span><span class="pc hx-dn">−0.36%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Utilities</span><span class="l-zh">公用事业</span></span><span class="track"><i style="width:36%;background:var(--down)"></i></span><span class="pc hx-dn">−0.52%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Consumer Defensive</span><span class="l-zh">必需消费</span></span><span class="track"><i style="width:41%;background:var(--down)"></i></span><span class="pc hx-dn">−0.58%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Consumer Cyclical</span><span class="l-zh">非必需消费</span></span><span class="track"><i style="width:48%;background:var(--down)"></i></span><span class="pc hx-dn">−0.68%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Healthcare</span><span class="l-zh">医疗保健</span></span><span class="track"><i style="width:61%;background:var(--down)"></i></span><span class="pc hx-dn">−0.88%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Financial Services</span><span class="l-zh">金融</span></span><span class="track"><i style="width:80%;background:var(--down)"></i></span><span class="pc hx-dn">−1.14%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Real Estate</span><span class="l-zh">房地产</span></span><span class="track"><i style="width:80%;background:var(--down)"></i></span><span class="pc hx-dn">−1.15%</span></div>
+        <div class="hx-sec"><span class="nm"><span class="l-en">Industrials</span><span class="l-zh">工业</span></span><span class="track"><i style="width:100%;background:var(--down)"></i></span><span class="pc hx-dn">−1.43%</span></div>
       </div>
     </div>
   </div>
@@ -400,7 +402,7 @@
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
 
-<script src="theme.js?v=0956049c" defer></script>
+<script src="theme.js?v=53939d13" defer></script>
 <script src="heatmap.js?v=b5cf47fc" defer></script>
 <script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>

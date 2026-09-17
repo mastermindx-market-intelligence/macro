@@ -1,12 +1,12 @@
 {
-  "built": "2026-08-29T04:53:29.191406+00:00",
+  "built": "2026-09-17T02:17:34.590685+00:00",
   "schema": "intl_macro_provenance.v1",
   "series": {
     "AU_cpi_yoy": {
       "last_observation": "2025-01-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:13.231901+00:00",
+      "requested_at": "2026-09-17T02:16:58.629988+00:00",
       "source_id": "AUSCPIALLQINMEI",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=AUSCPIALLQINMEI",
@@ -14,10 +14,10 @@
       "unit": null
     },
     "AU_gdp": {
-      "last_observation": "2026-01-01",
+      "last_observation": "2026-04-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:14.627264+00:00",
+      "requested_at": "2026-09-17T02:17:01.880703+00:00",
       "source_id": "NGDPRSAXDCAUQ",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NGDPRSAXDCAUQ",
@@ -25,10 +25,10 @@
       "unit": null
     },
     "AU_short_3m": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:12.587684+00:00",
+      "requested_at": "2026-09-17T02:16:57.199500+00:00",
       "source_id": "IR3TIB01AUM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IR3TIB01AUM156N",
@@ -36,10 +36,10 @@
       "unit": null
     },
     "AU_unemployment": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-07-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:13.900292+00:00",
+      "requested_at": "2026-09-17T02:16:59.576916+00:00",
       "source_id": "LRHUTTTTAUM156S",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=LRHUTTTTAUM156S",
@@ -47,10 +47,10 @@
       "unit": null
     },
     "AU_yield_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:11.913173+00:00",
+      "requested_at": "2026-09-17T02:16:56.834879+00:00",
       "source_id": "IRLTLT01AUM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01AUM156N",
@@ -61,7 +61,7 @@
       "last_observation": "2026-07-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:18.952716+00:00",
+      "requested_at": "2026-09-17T02:17:26.033352+00:00",
       "source_id": "CP0000EZ19M086NEST",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CP0000EZ19M086NEST",
@@ -72,7 +72,7 @@
       "last_observation": "2026-04-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:19.551193+00:00",
+      "requested_at": "2026-09-17T02:17:26.533790+00:00",
       "source_id": "CLVMNACSCAB1GQEA19",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CLVMNACSCAB1GQEA19",
@@ -83,7 +83,7 @@
       "last_observation": "2026-01-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:18.282871+00:00",
+      "requested_at": "2026-09-17T02:17:25.729531+00:00",
       "source_id": "IR3TIB01EZM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IR3TIB01EZM156N",
@@ -91,12 +91,12 @@
       "unit": null
     },
     "EZ_unemployment": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-07-01",
       "provider": "eurostat",
       "release_period_semantics": "Monthly seasonally adjusted unemployment rate, current euro-area composition",
-      "requested_at": "2026-08-29T04:53:28.218524+00:00",
+      "requested_at": "2026-09-17T02:17:33.523719+00:00",
       "source_id": "une_rt_m",
-      "source_updated": "2026-08-25T11:00:00+0200",
+      "source_updated": "2026-09-16T11:00:00+0200",
       "source_url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/une_rt_m?lang=en&geo=EA21&s_adj=SA&age=TOTAL&unit=PC_ACT&sex=T&sinceTimePeriod=2000-01",
       "status": "official",
       "unit": "PC_ACT"
@@ -105,7 +105,7 @@
       "last_observation": "2026-01-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:17.955040+00:00",
+      "requested_at": "2026-09-17T02:17:25.083104+00:00",
       "source_id": "IRLTLT01EZM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01EZM156N",
@@ -116,7 +116,7 @@
       "last_observation": "2025-03-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:16.182798+00:00",
+      "requested_at": "2026-09-17T02:17:05.060660+00:00",
       "source_id": "CPALTT01GBM659N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPALTT01GBM659N",
@@ -124,10 +124,10 @@
       "unit": null
     },
     "GB_gdp": {
-      "last_observation": "2026-01-01",
+      "last_observation": "2026-04-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:17.587099+00:00",
+      "requested_at": "2026-09-17T02:17:24.713832+00:00",
       "source_id": "NGDPRSAXDCGBQ",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NGDPRSAXDCGBQ",
@@ -138,7 +138,7 @@
       "last_observation": "2026-01-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:15.792339+00:00",
+      "requested_at": "2026-09-17T02:17:03.666574+00:00",
       "source_id": "IR3TIB01GBM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IR3TIB01GBM156N",
@@ -146,10 +146,10 @@
       "unit": null
     },
     "GB_unemployment": {
-      "last_observation": "2026-04-01",
+      "last_observation": "2026-05-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:16.927898+00:00",
+      "requested_at": "2026-09-17T02:17:06.114479+00:00",
       "source_id": "LRHUTTTTGBM156S",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=LRHUTTTTGBM156S",
@@ -157,10 +157,10 @@
       "unit": null
     },
     "GB_yield_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:14.970880+00:00",
+      "requested_at": "2026-09-17T02:17:02.213214+00:00",
       "source_id": "IRLTLT01GBM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01GBM156N",
@@ -171,7 +171,7 @@
       "last_observation": "2025-03-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:11.536967+00:00",
+      "requested_at": "2026-09-17T02:16:56.188160+00:00",
       "source_id": "INDCPIALLMINMEI",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=INDCPIALLMINMEI",
@@ -179,10 +179,10 @@
       "unit": null
     },
     "IN_yield_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-07-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:10.785198+00:00",
+      "requested_at": "2026-09-17T02:16:36.929054+00:00",
       "source_id": "INDIRLTLT01STM",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=INDIRLTLT01STM",
@@ -193,7 +193,7 @@
       "last_observation": "2026-04-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:57.013670+00:00",
+      "requested_at": "2026-09-17T02:16:22.052609+00:00",
       "source_id": "JPNRGDPEXP",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=JPNRGDPEXP",
@@ -201,10 +201,10 @@
       "unit": null
     },
     "JP_short_3m": {
-      "last_observation": "2026-05-01",
+      "last_observation": "2026-07-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:55.458819+00:00",
+      "requested_at": "2026-09-17T02:16:19.510357+00:00",
       "source_id": "IR3TIB01JPM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IR3TIB01JPM156N",
@@ -212,10 +212,10 @@
       "unit": null
     },
     "JP_unemployment": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-07-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:56.385635+00:00",
+      "requested_at": "2026-09-17T02:16:20.881141+00:00",
       "source_id": "LRHUTTTTJPM156S",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=LRHUTTTTJPM156S",
@@ -223,10 +223,10 @@
       "unit": null
     },
     "JP_yield_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:54.829548+00:00",
+      "requested_at": "2026-09-17T02:16:18.936252+00:00",
       "source_id": "IRLTLT01JPM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01JPM156N",
@@ -237,7 +237,7 @@
       "last_observation": "2025-04-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:58.736328+00:00",
+      "requested_at": "2026-09-17T02:16:24.113030+00:00",
       "source_id": "KORCPICORMINMEI",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=KORCPICORMINMEI",
@@ -248,7 +248,7 @@
       "last_observation": "2026-04-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:59.984651+00:00",
+      "requested_at": "2026-09-17T02:16:25.265310+00:00",
       "source_id": "NGDPRSAXDCKRQ",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=NGDPRSAXDCKRQ",
@@ -256,10 +256,10 @@
       "unit": null
     },
     "KR_short_3m": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:58.033315+00:00",
+      "requested_at": "2026-09-17T02:16:23.568410+00:00",
       "source_id": "IR3TIB01KRM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IR3TIB01KRM156N",
@@ -270,7 +270,7 @@
       "last_observation": "2026-07-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:59.373722+00:00",
+      "requested_at": "2026-09-17T02:16:24.744515+00:00",
       "source_id": "LRHUTTTTKRM156S",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=LRHUTTTTKRM156S",
@@ -278,10 +278,10 @@
       "unit": null
     },
     "KR_yield_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:52:57.331228+00:00",
+      "requested_at": "2026-09-17T02:16:22.377910+00:00",
       "source_id": "IRLTLT01KRM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01KRM156N",
@@ -289,10 +289,10 @@
       "unit": null
     },
     "de_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:23.274839+00:00",
+      "requested_at": "2026-09-17T02:17:28.677901+00:00",
       "source_id": "IRLTLT01DEM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01DEM156N",
@@ -300,10 +300,10 @@
       "unit": null
     },
     "es_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:23.964303+00:00",
+      "requested_at": "2026-09-17T02:17:29.353257+00:00",
       "source_id": "IRLTLT01ESM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01ESM156N",
@@ -311,10 +311,10 @@
       "unit": null
     },
     "ez_cb_assets": {
-      "last_observation": "2026-08-21",
+      "last_observation": "2026-09-11",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:22.906314+00:00",
+      "requested_at": "2026-09-17T02:17:28.299559+00:00",
       "source_id": "ECBASSETSW",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=ECBASSETSW",
@@ -322,21 +322,21 @@
       "unit": null
     },
     "ez_depo_rate": {
-      "last_observation": "2026-08-29",
+      "last_observation": "2026-09-17",
       "provider": "ecb",
       "release_period_semantics": "Daily effective policy-rate observation",
-      "requested_at": "2026-08-29T04:53:25.491007+00:00",
+      "requested_at": "2026-09-17T02:17:30.831251+00:00",
       "source_id": "D.U2.EUR.4F.KR.DFR.LEV",
-      "source_updated": "2026-08-29",
+      "source_updated": "2026-09-17",
       "source_url": "https://data-api.ecb.europa.eu/service/data/FM/D.U2.EUR.4F.KR.DFR.LEV?format=csvdata&startPeriod=1999-01-01",
       "status": "official",
       "unit": "PCPA"
     },
     "fr_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:24.292287+00:00",
+      "requested_at": "2026-09-17T02:17:29.666342+00:00",
       "source_id": "IRLTLT01FRM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01FRM156N",
@@ -344,10 +344,10 @@
       "unit": null
     },
     "it_10y": {
-      "last_observation": "2026-06-01",
+      "last_observation": "2026-08-01",
       "provider": "fred_fallback",
       "release_period_semantics": "Inherited from the underlying series",
-      "requested_at": "2026-08-29T04:53:23.592879+00:00",
+      "requested_at": "2026-09-17T02:17:28.986022+00:00",
       "source_id": "IRLTLT01ITM156N",
       "source_updated": null,
       "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=IRLTLT01ITM156N",

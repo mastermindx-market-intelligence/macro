@@ -3,24 +3,24 @@
   "is_context_only": true,
   "display_only": true,
   "authority_tier": "display",
-  "generated_asof": "2026-08-29",
-  "generated_utc": "2026-08-29T11:31:45.112611+00:00",
+  "generated_asof": "2026-09-17",
+  "generated_utc": "2026-09-17T07:22:54.934707+00:00",
   "spec": "research/PROPHET_STAGE_FUSION_PREREG.md",
   "accrual_disclaimer": "accruing \u2014 first 126-day cohort matures ~2026-12; n is tiny until then; NOT yet decisive. The 2022-26 backtest on the T-cascade confluence proxy found no CI-clean win-rate edge (a quality right-shift only) \u2014 this forward-shadow is the definitive on-Prophet check, tagging Prophet's ACTUAL entries from go-live. Display / shadow tier only: it NEVER gates, ranks, or alters any Prophet decision.",
-  "n_entries": 332,
-  "n_tagged": 260,
-  "n_stageable": 260,
+  "n_entries": 400,
+  "n_tagged": 316,
+  "n_stageable": 316,
   "n_matured": {
-    "21": 47,
+    "21": 165,
     "63": 0,
     "126": 0,
     "clean15_126": 0,
-    "clean8_21": 47
+    "clean8_21": 165
   },
   "integrity_projection": {
-    "raw_rows": 332,
-    "revision_rows": 47,
-    "effective_rows": 332,
+    "raw_rows": 400,
+    "revision_rows": 165,
+    "effective_rows": 400,
     "quarantined_excluded": 0,
     "quarantined_ids": [],
     "clock_mismatch_excluded": 0,
@@ -35,42 +35,42 @@
   },
   "split": {
     "stage2": {
-      "n": 119,
+      "n": 144,
       "clean15_126": {
         "n_matured": 0,
         "n_win": 0,
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 15,
-        "n_win": 5,
-        "win_rate": 0.3333333333333333
+        "n_matured": 66,
+        "n_win": 16,
+        "win_rate": 0.24242424242424243
       }
     },
     "rest": {
-      "n": 141,
+      "n": 172,
       "clean15_126": {
         "n_matured": 0,
         "n_win": 0,
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 32,
-        "n_win": 15,
-        "win_rate": 0.46875
+        "n_matured": 99,
+        "n_win": 33,
+        "win_rate": 0.3333333333333333
       }
     },
     "fresh_stage2": {
-      "n": 24,
+      "n": 25,
       "clean15_126": {
         "n_matured": 0,
         "n_win": 0,
         "win_rate": null
       },
       "clean8_21": {
-        "n_matured": 5,
-        "n_win": 0,
-        "win_rate": 0.0
+        "n_matured": 14,
+        "n_win": 1,
+        "win_rate": 0.07142857142857142
       }
     },
     "positive_ec": {
@@ -100,7 +100,7 @@
     "ec_coverage": {
       "state": "unavailable",
       "n_rows_with_ec": 0,
-      "n_rows": 332,
+      "n_rows": 400,
       "n_matured_126_with_ec": 0,
       "note": "NO tagged entry carries an earnings-call reading \u2014 the earnings-call source is absent on the host that tagged this ledger, so the Stage-2 \u2229 earnings cohort is empty by source absence, not by outcome. Every number in this block is an empty-sample null, NOT a measured result, and the hold-leash's demote floor cannot be reached while this stays zero."
     },
