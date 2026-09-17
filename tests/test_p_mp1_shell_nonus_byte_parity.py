@@ -179,7 +179,9 @@ def _sha256_text(text: str) -> str:
 #: four templates must recompute and update its hash here.
 _EXPECTED_TEMPLATE_SHA256: dict[str, str] = {
     "templates/hk.html.j2": "1ae1c8edb8554b3fa3a64c02e326522c99c6649f0f7e7f48e62cecb8bda082c5",
-    "templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031",
+    # Accepted China migration #7054 (a8def4c24d584afe63f148c0d5ba6d8bf95ee506).
+    # Only this stale expectation changes; the migrated template is untouched.
+    "templates/china.html.j2": "ba60c7daa09dffa6f6701a6676fb4526459ce92d78682e0a5a73e3d0f6e341c3",
     "templates/canada.html.j2": "878237e4c3d0bef90c2fce108b64cf859d8f67783dede4f77881392c2d1eb7e5",
     "templates/intl.html.j2": "c62b4a6373ac3130a16f622b8dae9b73218642e261051a3bd3493fc95fd0d9a5",
 }

@@ -1,0 +1,52 @@
+{
+  "base": "4f37209719d2ca5caf9fd3a37aca29fa363f351c",
+  "browser_refresh": {
+    "cases_passed": 8,
+    "exit_code": 0,
+    "process": 18615,
+    "real_dom": {
+      "action_badges": 0,
+      "cards": 400,
+      "grid_children": 400,
+      "pagination": "Showing 15 of 400",
+      "record_markers": 400,
+      "unique_ids": 400
+    },
+    "reason": "Generated evidence whitespace normalized by its existing verifier; product templates unchanged"
+  },
+  "compared_main": "27ec910d04fc81692cf9640347ac31fd3de40170",
+  "compatibility_repair": {
+    "accepted_migration_commit": "a8def4c24d584afe63f148c0d5ba6d8bf95ee506",
+    "expected_sha256": "ba60c7daa09dffa6f6701a6676fb4526459ce92d78682e0a5a73e3d0f6e341c3",
+    "reason": "China migration #7054 changed the template without updating the exact-byte expectation",
+    "red_process": 1554,
+    "template_bytes_unchanged": true
+  },
+  "git_publication": "PENDING",
+  "independent_review": "NOT_ASSIGNED",
+  "observed_at": "2026-09-17T00:24:05.192340+00:00",
+  "operation": "prophet-plan-trust-20260916-sol-001",
+  "prior_evidence": {
+    "browser-receipt.json": "323c7360b16028625958983d88afcebd47ae81e2a3f61420f4666e87ca481cd6",
+    "mutation-receipt.json": "57afb24a2a72620d3d9f34b0d72c625cc875e5208c6e05f79b9febcfea925522",
+    "nested-link-before.json": "86d635662d33aa35212af30b02b52e0bf6f05c54d95bfbc8aa33e0bd5ab1aa3d"
+  },
+  "production_acceptance": false,
+  "schema": "prophet.plan_record_release_verification.v1",
+  "skillpack_commit": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "source_sha256": {
+    "templates/_prophet_card.html.j2": "4f069ba91cd92138e66adca574eb551620d19689832b819dcd7d020637647589",
+    "templates/_us_prophet_plan_cards.html.j2": "4835d85e7a5ac2a7f6a7225d9e9cf377304bc80630a8152dbd20ab8001eb3828",
+    "tests/test_p_mp1_shell_ladder_error_state.py": "a63604e7d311836b47c8bfda9209685e4345c22f3747deb0b3ee0abbd882cd0f",
+    "tests/test_p_mp1_shell_nonus_byte_parity.py": "bebd70e5afaec943dfe3bd3c2b7ee81309c4d270c720d39f7841e94058da8fe2",
+    "tests/test_p_mp1_shell_stance_projection.py": "d842366447c11ffbba39823bbda2f0e1ade794838021133c8378e989252c42f6"
+  },
+  "tests": {
+    "command": "python3 -m pytest tests/test_p_mp1_shell_stance_projection.py tests/test_prophet_card_shared.py tests/test_prophet_card_live_change.py tests/test_p_mp1_shell_nonus_byte_parity.py tests/test_p_mp1_shell_repair_round.py tests/test_p_mp1_shell_ladder_error_state.py tests/test_china_archetype_d_s1.py -q -p no:cacheprovider --basetemp=.pytest-tmp-plan-record-publish-fullinputs",
+    "exit_code": 0,
+    "failed": 0,
+    "passed": 193,
+    "process": 8730,
+    "stdout_sha256": "50fc2628c4ca4b51fa74e7af1366929ec73fcbb17e09560f559fdfeb9e914f1f"
+  }
+}
