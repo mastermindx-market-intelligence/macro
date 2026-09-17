@@ -2778,16 +2778,51 @@ function whatMoveWorthHTML(){
     + '<div class="oew-pfoot"><span>' + bi('Not measured yet — nothing here to act on.', '尚未测量 — 此处暂无可据以行动的内容。') + '</span></div>'
   + '</div>';
 }
-function expirationPressureHTML(){
+function expirationPressureHTML(ep){
+  var charm = num(ep && ep.front7_charm_share);
+  var gamma = num(ep && ep.front7_gex_share);
+  var days = num(ep && ep.opex_days);
+  var asof = ep && ep.as_of ? String(ep.as_of) : '';
+  if(charm === null && gamma === null){
+    return '<div class="oew-panel">'
+      + '<div class="oew-phead"><h2 class="oew-ph-title">' + bi('Expiration pressure','到期压力') + '</h2></div>'
+      + '<div class="oew-pbody"><div class="oew-notyet">'
+        + '<div class="oew-notyet-ghost oew-notyet-bar" aria-hidden="true"></div>'
+        + '<p class="oew-notyet-say">' + bi(
+            'No near-expiry concentration reading is available for this name in the current chain.',
+            '当前期权链暂无该标的的近到期集中度读数。') + '</p>'
+      + '</div></div>'
+      + '<div class="oew-pfoot"><span>' + bi(
+          'Missing data stays blank — no neutral value is inferred.',
+          '数据缺失保持为空 — 不会推断为中性值。') + '</span></div>'
+    + '</div>';
+  }
+  var share = function(v){ return v === null ? '—' : (v * 100).toFixed(1) + '%'; };
+  var root = ep && ep.root_class ? String(ep.root_class) : '';
+  var rootWords = {
+    index_etf: ['Index / ETF','指数 / ETF'],
+    sector_etf: ['Sector ETF','行业 ETF'],
+    industry_etf: ['Industry ETF','产业 ETF'],
+    single_name: ['Single name','个股']
+  };
+  var rw = rootWords[root] || ['Covered chain','已覆盖期权链'];
+  var expiry = days === null ? '—' : (days <= 0 ? bi('Today','今日') : bi(days.toFixed(0) + ' days', days.toFixed(0) + ' 天'));
   return '<div class="oew-panel">'
-    + '<div class="oew-phead"><h2 class="oew-ph-title">' + bi('Expiration pressure','到期压力') + '</h2></div>'
-    + '<div class="oew-pbody"><div class="oew-notyet">'
-      + '<div class="oew-notyet-ghost oew-notyet-bar" aria-hidden="true"></div>'
-      + '<p class="oew-notyet-say">' + bi(
-          "Not measured yet. The idea: how much of this name's open interest rolls off in the next few days, and whether that concentration tends to feed on itself into expiry.",
-          '尚未测量。设想中的内容：该标的近几日到期的未平仓量占比，以及该集中度在到期前是否会自我强化。') + '</p>'
-    + '</div></div>'
-    + '<div class="oew-pfoot"><span>' + bi('Not measured yet — nothing here to act on.', '尚未测量 — 此处暂无可据以行动的内容。') + '</span></div>'
+    + '<div class="oew-phead"><h2 class="oew-ph-title">' + bi('Expiration pressure','到期压力') + '</h2>'
+      + '<span class="oew-ph-sub">' + bi('where sensitivity is concentrated near expiry','近到期敏感度集中位置') + '</span></div>'
+    + '<div class="oew-pbody"><div class="oew-metrics">'
+      + mt('Charm within 7 days','7天内 Charm', share(charm))
+      + mt('Gamma within 7 days','7天内 Gamma', share(gamma))
+      + mt('Monthly expiry','月度到期', expiry)
+    + '</div><p class="oew-notyet-say">' + bi(
+        'Shares measure absolute position-weighted sensitivity sitting in expiries within 7 calendar days. They describe concentration, not price direction.',
+        '这些占比衡量未来 7 个日历日内到期期权所集中的绝对持仓加权敏感度。它描述集中度，不代表价格方向。')
+    + '</p></div>'
+    + '<div class="oew-pfoot"><span>' + bi(
+        rw[0] + ' · magnitude-only context; real dealer books are unobservable.',
+        rw[1] + ' · 仅作幅度背景参考；真实做市商持仓不可观测。') + '</span>'
+      + (asof ? '<span class="oew-asof mono">' + esc(asof) + '</span>' : '')
+    + '</div>'
   + '</div>';
 }
 
@@ -3142,7 +3177,7 @@ function rawShelfBody(gx){
         rawGreeksHTML(gx));
 }
 
-function renderTicker(host, tk, gx, fl, sess){
+function renderTicker(host, tk, gx, fl, sess, ep){
   if(!gx || !gx.summary){
     host.innerHTML = emptyPanel('We have no options structure for ' + tk + ' in this close. Pick a name from the Scanner or the Brief.',
       '本次收盘没有 ' + tk + ' 的期权结构数据。请从筛选或简报中选择标的。');
@@ -3253,7 +3288,7 @@ function renderTicker(host, tk, gx, fl, sess){
   + '</div>'
 
   + whatMoveWorthHTML()
-  + expirationPressureHTML()
+  + expirationPressureHTML(ep)
 
   + (fl && fl.available !== false ? '<div class="oew-panel">'
     + '<div class="oew-phead">'
@@ -3568,9 +3603,13 @@ function loadMode(mode){
       // the flow fetch above — a 404 (outside the digest's coverage, or before the
       // first nightly populates the store) degrades the filmstrip to its honest-
       // null variant and changes nothing else on the page.
-      getJSON('session/' + encodeURIComponent(tk) + '.json').catch(function(){ return null; })
+      getJSON('session/' + encodeURIComponent(tk) + '.json').catch(function(){ return null; }),
+      // E7 expiration-pressure projection. One small memoized file serves all names;
+      // a missing projection degrades only this panel and never blocks Ticker mode.
+      getJSON('options_entry/current.json').catch(function(){ return null; })
     ]).then(function(res){
-      renderTicker(tgt, tk, res[0], res[1], res[2]);
+      var epRows = res[3] && res[3].rows ? res[3].rows : {};
+      renderTicker(tgt, tk, res[0], res[1], res[2], epRows[tk] || null);
       loaded.ticker = tk;
       var c = document.getElementById('oew-tk-cnt'); if(c) c.textContent = tk;
     }).catch(fail);
