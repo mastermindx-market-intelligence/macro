@@ -1247,6 +1247,35 @@ def test_host_admission_accepts_only_the_main_dispatch_canary() -> None:
         assert not ADMISSION.decision(mutated)[0]
 
 
+def test_host_admission_accepts_exact_main_four_slot_preflight_only() -> None:
+    allowed = {
+        "MASTERMIND_CI_PROFILE": "pc-ci",
+        "GITHUB_REPOSITORY": "mastermindx-market-intelligence/macro",
+        "GITHUB_EVENT_NAME": "workflow_dispatch",
+        "GITHUB_REF": "refs/heads/main",
+        "GITHUB_WORKFLOW_REF": (
+            "mastermindx-market-intelligence/macro/.github/workflows/"
+            "selfhosted-ci-canary.yml@refs/heads/main"
+        ),
+        "GITHUB_JOB": "four-slot-preflight",
+    }
+    assert ADMISSION.decision(allowed)[0]
+
+    for key, value in (
+        ("MASTERMIND_CI_PROFILE", "pc-render"),
+        ("GITHUB_REPOSITORY", "attacker/fork"),
+        ("GITHUB_EVENT_NAME", "pull_request"),
+        ("GITHUB_REF", "refs/heads/candidate"),
+        (
+            "GITHUB_WORKFLOW_REF",
+            "mastermindx-market-intelligence/macro/.github/workflows/"
+            "selfhosted-ci-canary.yml@refs/heads/candidate",
+        ),
+        ("GITHUB_JOB", "four-slot-preflight-shadow"),
+    ):
+        assert not ADMISSION.decision({**allowed, key: value})[0]
+
+
 def test_host_admission_accepts_only_the_main_dispatch_trusted_executor_pack() -> None:
     allowed = {
         "MASTERMIND_CI_PROFILE": "pc-ci",
