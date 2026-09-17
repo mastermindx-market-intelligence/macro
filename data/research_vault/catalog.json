@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T11:50:14.107511+00:00",
-  "count": 2288,
+  "generated_at": "2026-09-17T12:05:14.009135+00:00",
+  "count": 2289,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -102,6 +102,27 @@
       "tickers": [],
       "top_pick": true,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bmqguy2h1cl-388bcd",
+      "title": "The Point for Europe Thursday, 17 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:41:59Z",
+      "summary_points": [
+        "EU Policy & Global Resilience: EU’s “Protecting Europe” policy drives local industry protection, strategic resilience, and accelerated investment; global growth outlook remains cautious amid geopolitical risks (“many storm clouds but little rain”).",
+        "Daimler Truck & Engine Tech: EPA27 engine demand growth (3-5%) with pricing at €6k (inflation pass-through); risk from Chinese competition and diesel costs despite Q3 order slowdown (Q3 NA orders below expectations).",
+        "Technip Energies Downgrade: Revised 2026E EPS down 25%, target price cut to €36.5 (from €41) due to Middle East conflict risk (Qatar exposure); rating downgraded to Neutral / High Risk.",
+        "EU Policy Shifts Drive Valuations: SOTEU address accelerates EU-wide investment in energy independence, defense, AI, and supply chain resilience, directly lifting equity market valuations.",
+        "USD Squeeze & FX Volatility: Hawkish FOMC sustains strong USD; EURUSD retesting 1.13s, with CHF/SEK/NZD vulnerable; sustained USD strength risk until de-escalation clarity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
