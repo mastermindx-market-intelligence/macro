@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T13:05:20.133601+00:00",
-  "count": 2292,
+  "generated_at": "2026-09-17T13:35:24.171464+00:00",
+  "count": 2293,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-l4h7vckqngo-2f3e03",
+      "title": "GS Crook GS MORNING FOMC Recap BoE Preview BoJ Preview Daan Struyven Latest Views GCEM Symposium Replay 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T12:50:27Z",
+      "summary_points": [
+        "FOMC Rate Hike & Outlook: Fed raised rates to 3.75-4% (25bp), 16-2 majority for further hikes; terminal rate unchanged at 3.25-3.5% despite market pricing, signaling persistent hawkish bias.",
+        "BoE Policy Outlook: 5-4 vote split (vs. 6-3) possible in November, risking 50bps hike if dissenters prevail, intensifying second-round inflation risks near 4%.",
+        "Saudi Pipeline Flows: 3.5M bpd (2M via Yanbu, 1.5M to Western refiners) at risk from pipeline damage; base case recovery in weeks but full impact could trigger $30-40/year oil price surge.",
+        "Oil Demand Structural Weakness: Chinese crude imports down 4m bpd YoY due to gasoline/diesel price sensitivity; SPR releases slowing (40% global draw since war) amid pipeline outage risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gv9xt03wk3a-409751",
       "title": "GS Abbas GS US Daily Download 17 Sep 2026",
