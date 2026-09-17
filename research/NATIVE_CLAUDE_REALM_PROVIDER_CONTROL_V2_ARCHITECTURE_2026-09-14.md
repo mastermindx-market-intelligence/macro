@@ -132,9 +132,19 @@ Closed capability row:
   "billing_mode": "subscription",
   "credential_kind": "attached_login",
   "execution_surface": "native_cli",
-  "registration_state": "registered"
+  "registration_state": "registered | revoked"
 }
 ```
+
+Exactly one current row exists for each previously registered `capacity_capability_id`. A revoked row is retained as the terminal current-state tombstone for that generation; row disappearance is not revocation.
+
+```text
+never registered -> registered(g)
+registered(g) -> revoked(g)
+revoked(g) -> registered(g2), where g2 > g
+```
+
+Provider Control compares the candidate registry with the immediately preceding accepted source release. It refuses generation decrement or generation reuse, rollback or source reversion, same-generation resurrection, duplicate current identity or a conflicting current row, row removal after registration, caller-selected generation/state, and caller-selected identity. Re-enrollment never rewrites a revoked generation.
 
 No host, OS principal, Worker, raw config path, secret-ref name, provider PII, provider credential, quota number, scheduler state or lifecycle state belongs in this registry.
 
