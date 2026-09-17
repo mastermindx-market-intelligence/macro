@@ -195,9 +195,10 @@ def _regular(frame: pd.DataFrame, day: str, calendar) -> pd.DataFrame | None:
 def _segment(frame: pd.DataFrame, day: str, start_minute: int, end_minute: int) -> tuple[pd.DataFrame, dict[str, Any]]:
     rows = _day_rows(frame, day); rows = rows.loc[(rows["minute"] >= start_minute) & ((rows["minute"] + 5) <= end_minute)]
     raw = rows.loc[:, ["o","h","l","c","v"]].copy(); features = tr.segment_features(raw)
-    if not rows.empty:
-        features["first_start_minute"] = int(rows.iloc[0]["minute"])
-        features["last_end_minute"] = int(rows.iloc[-1]["minute"]) + 5
+    evidence_rows = rows.loc[rows["v"].astype(float) > 0]
+    if not evidence_rows.empty:
+        features["first_start_minute"] = int(evidence_rows.iloc[0]["minute"])
+        features["last_end_minute"] = int(evidence_rows.iloc[-1]["minute"]) + 5
     else:
         features["first_start_minute"] = None; features["last_end_minute"] = None
     return raw, features
@@ -211,10 +212,13 @@ def _daily_tables(frames: Mapping[str, pd.DataFrame], days: Sequence[str], calen
             r=_regular(frame, day, calendar)
             if r is None: continue
             rows.append({"date":day,"o":float(r.iloc[0].o),"h":float(r.h.max()),"l":float(r.l.min()),"c":float(r.iloc[-1].c),"v":float(r.v.sum())})
-        d=pd.DataFrame(rows).set_index("date") if rows else pd.DataFrame(columns=["o","h","l","c","v"])
-        if not d.empty:
+        if rows:
+            d=pd.DataFrame(rows).set_index("date").reindex(days)
+        else:
+            d=pd.DataFrame(index=pd.Index(days,name="date"),columns=["o","h","l","c","v"],dtype=float)
+        if len(d):
             prev=d["c"].shift(1); d["tr"]=np.maximum(d["h"]-d["l"], np.maximum((d["h"]-prev).abs(),(d["l"]-prev).abs()))
-            d["atr20"]=d["tr"].rolling(20,min_periods=20).mean(); d["return"]=d["c"].pct_change()
+            d["atr20"]=d["tr"].rolling(20,min_periods=20).mean(); d["return"]=d["c"].pct_change(fill_method=None)
         result[symbol]=d
     return result
 
@@ -279,7 +283,8 @@ def _feature_panel(frames: Mapping[str,pd.DataFrame], daily: Mapping[str,pd.Data
             prior_close=float(daily[symbol].at[prior,"c"]) if prior in daily[symbol].index else None
             three=None
             required=days[i-4:i]
-            if all(d in daily[symbol].index for d in required): three=float(daily[symbol].at[prior,"c"]-daily[symbol].at[days[i-4],"c"])
+            if all(d in daily[symbol].index and pd.notna(daily[symbol].at[d,"c"]) for d in required):
+                three=float(daily[symbol].at[prior,"c"]-daily[symbol].at[days[i-4],"c"])
             comparable=segment_eligible(ah,"ah",cfg) and segment_eligible(pre,"pre",cfg) and atr is not None and beta is not None and prior_ret is not None
             row={"date":day,"ticker":symbol,"comparable":comparable,"ah":ah,"pre":pre,"opening":opening_features,
                  "prior_close":prior_close,"prior_return":prior_ret,"three_day_change":three,"atr20":atr,"beta":beta}

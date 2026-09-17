@@ -44,12 +44,17 @@ def _validate_rows(frame: pd.DataFrame) -> None:
 
 
 def closed_prefix(frame: pd.DataFrame, cutoff_utc: int) -> pd.DataFrame:
-    """Return completed five-minute bars only, without inspecting future prices."""
-    _validate_index(frame)
+    """Return completed five-minute bars only; future row content/duplicates are irrelevant."""
+    if not isinstance(frame, pd.DataFrame) or any(col not in frame.columns for col in _REQUIRED):
+        raise ValueError("frame_required")
     if not isinstance(cutoff_utc, (int, np.integer)) or isinstance(cutoff_utc, (bool, np.bool_)):
         raise ValueError("integer_cutoff_required")
+    if any(not isinstance(x, (int, np.integer)) for x in frame.index):
+        raise ValueError("integer_epoch_required")
     mask = (frame.index.to_numpy(dtype="int64") + BAR_SECONDS) <= int(cutoff_utc)
-    return frame.loc[mask].copy(deep=True)
+    view = frame.loc[mask].copy(deep=True)
+    _validate_index(view)
+    return view
 
 
 def segment_features(frame: pd.DataFrame) -> dict[str, Any]:
@@ -146,35 +151,52 @@ def first_touch(frame: pd.DataFrame, entry: float, atr: float) -> str:
     return "neither"
 
 
-def _censored() -> dict[str, Any]:
-    return {"status": "censored", "raw_return": None, "benchmark_return": None,
+def _censored(reason: str = "path_unavailable") -> dict[str, Any]:
+    return {"status": "censored", "reason": reason, "raw_return": None, "benchmark_return": None,
             "beta_residual": None, "mfe": None, "mae": None, "touch": None,
             "entry_open": None, "exit_close": None, "execution_proven": False}
 
 
+def _frame_columns_and_integer_index(frame: pd.DataFrame) -> bool:
+    return isinstance(frame, pd.DataFrame) and all(col in frame.columns for col in _REQUIRED) and all(isinstance(x, (int, np.integer)) for x in frame.index)
+
+
+def _exactly_one(frame: pd.DataFrame, epoch: int) -> bool:
+    return int(np.count_nonzero(frame.index.to_numpy() == int(epoch))) == 1
+
+
 def fixed_outcome(stock: pd.DataFrame, benchmark: pd.DataFrame, entry_epoch: int, end_epoch: int,
                   beta: float | None, atr: float | None, expected_epochs: Sequence[int]) -> dict[str, Any]:
-    """Measure one fixed price-reference outcome on an explicit expected bar path."""
-    _validate_index(stock); _validate_index(benchmark)
+    """Measure one fixed price-reference outcome on the explicit expected path only."""
     expected = [int(x) for x in expected_epochs]
     if not expected or entry_epoch not in expected or any(x >= int(end_epoch) for x in expected):
-        return _censored()
-    if any(x not in stock.index for x in expected):
-        return _censored()
+        return _censored("invalid_expected_path")
+    if not _frame_columns_and_integer_index(stock):
+        return _censored("stock_structure_unavailable")
+    if any(not _exactly_one(stock, x) for x in expected):
+        return _censored("stock_path_missing_or_ambiguous")
     path = stock.loc[expected].copy()
-    _validate_rows(path)
-    entry = float(stock.loc[entry_epoch, "o"]); exit_close = float(path.iloc[-1]["c"])
+    try:
+        _validate_rows(path)
+    except ValueError:
+        return _censored("stock_path_invalid")
+    entry = float(path.loc[entry_epoch, "o"]); exit_close = float(path.iloc[-1]["c"])
     raw = exit_close / entry - 1.0
     mfe = max(0.0, float(path["h"].astype(float).max()) / entry - 1.0)
     mae = min(0.0, float(path["l"].astype(float).min()) / entry - 1.0)
     bench_ret = None
-    if all(x in benchmark.index for x in expected):
-        bench_path = benchmark.loc[expected].copy(); _validate_rows(bench_path)
-        bench_entry = float(benchmark.loc[entry_epoch, "o"])
-        bench_ret = float(bench_path.iloc[-1]["c"]) / bench_entry - 1.0
+    if _frame_columns_and_integer_index(benchmark) and all(_exactly_one(benchmark, x) for x in expected):
+        bench_path = benchmark.loc[expected].copy()
+        try:
+            _validate_rows(bench_path)
+        except ValueError:
+            bench_path = None
+        if bench_path is not None:
+            bench_entry = float(bench_path.loc[entry_epoch, "o"])
+            bench_ret = float(bench_path.iloc[-1]["c"]) / bench_entry - 1.0
     b = _known_number(beta)
     residual = raw - b * bench_ret if b is not None and b >= 0 and bench_ret is not None else None
     touch = first_touch(path, entry, float(atr)) if _known_number(atr) is not None and float(atr) > 0 else None
-    return {"status": "available", "raw_return": raw, "benchmark_return": bench_ret,
+    return {"status": "available", "reason": None, "raw_return": raw, "benchmark_return": bench_ret,
             "beta_residual": residual, "mfe": mfe, "mae": mae, "touch": touch,
             "entry_open": entry, "exit_close": exit_close, "execution_proven": False}

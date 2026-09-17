@@ -80,3 +80,34 @@ def test_register_only_real_subprocess_reads_existing_ledger():
     receipt = json.loads(result.stdout)
     assert receipt["registered_grid"]["study_cells"] == 84
     assert receipt["study_id"] == "tti-r1-extended-session-v1"
+
+class _EveryDayCalendar:
+    def window(self, day):
+        return (570, 580)
+
+
+def _two_bar_day(day, base, close):
+    return [
+        {"event_start_utc":base,"display_epoch":base,"date":day,"minute":570,"o":100.,"h":101.,"l":99.,"c":100.,"v":10.},
+        {"event_start_utc":base+300,"display_epoch":base+300,"date":day,"minute":575,"o":100.,"h":max(101.,close),"l":99.,"c":close,"v":10.},
+    ]
+
+
+def test_daily_return_never_bridges_a_missing_scheduled_session():
+    s=study(); days=["2026-09-01","2026-09-02","2026-09-03"]
+    frame=pd.DataFrame(_two_bar_day(days[0],1_000_000,100.) + _two_bar_day(days[2],1_200_000,110.)).set_index("event_start_utc")
+    daily=s._daily_tables({"A":frame},days,_EveryDayCalendar())["A"]
+    assert list(daily.index)==days
+    assert pd.isna(daily.at[days[1],"c"])
+    assert pd.isna(daily.at[days[2],"return"]), "a missing scheduled day must not become a two-day return labeled one-day"
+
+
+def test_segment_evidence_end_uses_last_positive_volume_bar():
+    s=study(); day="2026-09-01"
+    frame=pd.DataFrame([
+        {"event_start_utc":1_000_000,"display_epoch":1,"date":day,"minute":240,"o":100.,"h":101.,"l":99.,"c":100.,"v":1.},
+        {"event_start_utc":1_000_300,"display_epoch":2,"date":day,"minute":245,"o":100.,"h":101.,"l":99.,"c":100.,"v":1.},
+        {"event_start_utc":1_000_600,"display_epoch":3,"date":day,"minute":250,"o":100.,"h":101.,"l":99.,"c":100.,"v":0.},
+    ]).set_index("event_start_utc")
+    _,features=s._segment(frame,day,240,255)
+    assert features["last_end_minute"]==250, "zero-volume rows remain visible but cannot extend price-evidence recency"

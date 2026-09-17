@@ -152,3 +152,24 @@ def test_negative_or_unknown_beta_does_not_fabricate_excess():
     for beta in (None,float('nan'),-1):
         o=api().fixed_outcome(x,x,BASE,BASE+900,beta,2.,[BASE,BASE+300,BASE+600])
         assert o['beta_residual'] is None
+
+
+def test_future_duplicate_outside_cutoff_does_not_change_prefix():
+    x=bars([101.,102.,103.])
+    future=pd.concat([x.iloc[[2]],x.iloc[[2]]])
+    source=pd.concat([x.iloc[:2],future])
+    got=api().closed_prefix(source,BASE+600)
+    assert list(got.index)==[BASE,BASE+300]
+
+
+def test_invalid_expected_outcome_bar_censors_without_erasing_fire():
+    x=bars([101.,102.]); b=bars([100.,100.]); x.loc[BASE+300,'c']=float('nan')
+    out=api().fixed_outcome(x,b,BASE,BASE+600,1.,2.,[BASE,BASE+300])
+    assert out['status']=='censored' and out['raw_return'] is None
+
+
+def test_future_duplicate_outside_outcome_path_is_ignored():
+    x=bars([101.,102.,103.]); future=pd.concat([x.iloc[[2]],x.iloc[[2]]]); source=pd.concat([x.iloc[:2],future])
+    b=bars([100.,100.,100.])
+    out=api().fixed_outcome(source,b,BASE,BASE+600,1.,2.,[BASE,BASE+300])
+    assert out['status']=='available' and out['raw_return']==pytest.approx(.02)
