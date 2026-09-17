@@ -11,8 +11,8 @@
   ],
   "held": [
     "cn_gold",
-    "cn_banks",
-    "cn_ai_compute"
+    "cn_ai_compute",
+    "cn_banks"
   ],
   "leader": "cn_gold",
   "names": {
