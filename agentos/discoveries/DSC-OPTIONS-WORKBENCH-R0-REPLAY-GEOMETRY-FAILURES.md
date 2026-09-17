@@ -7,9 +7,10 @@ claim: >
   a single-to-quad layout change moving the selected replay time. The production
   source correction is not applied: both exact edit operations were platform-blocked.
 falsifier: >
-  The original pinned source passes the committed discriminating cases under
-  their documented synthetic inputs, or the screenshots/assertions are shown
-  not to exercise the actual SurfaceView, SurfacePane and replay consumers.
+  At the original pinned Terminal base, npx vitest run
+  lib/__tests__/heatSeriesGeometry.test.ts from Terminal #608 passes, or the
+  screenshots/assertions are shown not to exercise the actual SurfaceView,
+  SurfacePane and replay consumers under the documented synthetic inputs.
 so_what: >
   Resume from Terminal PR 608 and issue 603, not another competitor teardown.
   Keep the red regression tests, original carrier and source-effect reconciliation.
@@ -18,15 +19,15 @@ so_what: >
 kind: runtime
 verified_at: 2026-09-17
 verified_by: >
-  mastermind-terminal PR 608 at 2699f9e6b20fec922c779b2427156206c973de79;
-  docs/evidence/options-workbench-r0-20260917/verification.json;
+  mastermind-terminal #608 at 2699f9e6b20fec922c779b2427156206c973de79;
+  terminal:docs/evidence/options-workbench-r0-20260917/verification.json;
   actual HeatSeries renderer, mounted SurfaceView and real Next
   /options?tab=surface Playwright journeys described in the adjacent README.
 scope:
   - terminal
   - options-intelligence
-  - terminal/components/surface
-  - terminal/lib/heatSeries.ts
+  - terminal:terminal/components/surface
+  - terminal:terminal/lib/heatSeries.ts
 confidence: verified
 ---
 
