@@ -1,33 +1,43 @@
 # Terminal Tactical R1-A: current state and continuation
 
-Parent: Terminal #598. Existing D0 implementation: Terminal #601 at c0f36cb16fadd190ad747fc47a28405d9ec0fca4. Organizational carrier: Macro #7262. This directory is DESIGN_ONLY / SPEC_ONLY; there is no registered or executed R1 study.
+Parent: Terminal #598. D0 dependency: Terminal #601 at `c0f36cb16fadd190ad747fc47a28405d9ec0fca4`. Organizational carrier: Macro #7262. R1-A carrier: Macro #7270. Executive remains unfinished and is not a prerequisite for this research lane.
 
-## What became concrete
+## Current capability state
 
-The proposed first measurement now fixes seven comparison arms, four horizons and three cost assumptions (84 cells); prior-only normalization, 09:25/09:45 decisions and later entry references; missingness/censoring, conservative ambiguous-touch treatment, chronological assessment and date-clustered uncertainty. Separate exhaustion/continuation design defines local turns, candidate final extremes and remaining executable opportunity. The source correction identifies data lost by the current six-value historical projection and the incompatible daily units in existing science interfaces.
+R1-A is **implemented and retrospectively measured, but not production-promoted**. The frozen prereg/config landed before outcomes at `5d950c85cd0c8e3a393e555433bf94fd3ee395a7`; all 84 cells were appended to the existing `entry_radar` TrialLedger at `0109877f57009973cbebe9f72e43bd23e35a5183`; causal primitives/runner were hardened through `30a72e85a25f188d1f654ec71b18872aa4fee3d8`. `TTI_R1A_REPORT.md` and `tti_r1/RESULT.json` carry the aggregate result. No rank, alert, size, order or options authority exists.
 
-Current Chairman correction is canonical: Executive is unfinished and is not a user reconnect prerequisite or a blocker to all research. No Executive re-probe was made in this continuation. Terminal #598 comment 5721925192 records the correction.
+Registration receipt: 1,674 ledger lines before, 1,758 after, exactly 84 R1-A rows; prior ledger prefix SHA256 `7a82e5b7766a7f2bbeb9e8c46bb57ab0b9a1b32d262a853944d093645769f119`, preserved byte-for-byte. Full registered-grid SHA256 `86b9e84faec43882e4ccc0975b2193a2ee489e618cd13adcbe784ea7dab53b46`.
 
-## Actual implementation/registration effects
+## Empirical result
 
-The requested existing TrialLedger grid append plus registration/commit did not execute: the platform refused the tool call before returning a process. A later source-module write was independently refused in the same way. Same-carrier inspection confirmed that data/trial_ledger.jsonl is unchanged, registration.json is absent and engine/entry_radar/tactical_research.py is absent. Neither operation was retried through another carrier. No market-data outcome, accuracy estimate or trial execution was produced.
+Canonical run-003 used the unchanged captured five-minute inputs: 312 scheduled dates, 2,464 name-day candidates, 1,810 comparable rows and 58,308 arm/horizon/cost outcome rows. Aggregate result SHA256 is `5c75a38d3f5acc61ad5e79fcec2f26af37a6f62da0ed449c4b1533b5cc35ff0b`.
 
-A synthetic RED test was written and executed. The first test failed because the proposed module was absent; the remaining test set was not credited as run. The preserved RED_TEST_CONTRACT.md contains the proposed tests and explicitly records the incomplete empty-input fixture. The original untracked tests/test_tactical_research.py remains in the owned worktree as residue; it is not staged into an automatically executed production test suite. This is intentional disclosure, not a green test claim.
+The exact strict AH→PM `PERSISTENT` arm fired 12 times / 10 dates and did not improve the primary 60-minute outcome versus either ALL_EARLY or GAP_UP. `WEAKNESS_PERSISTENT` had N=1 and is uninformative. `WEAKNESS_RECLAIM` fired 514 times / 213 dates but its primary 60-minute incremental delta was near zero and its later-horizon strength was partition-unstable. `PERSISTENT_OPEN_ACCEPT` produced only 3 rows / 2 development dates: interesting intraday observations, no validation.
 
-## Useful independent action completed
+Disposition: **no R1-A arm may be promoted to standalone live rank/alert/size authority.** Strict persistence is not supported as tested; weakness reclaim remains context-only; opening acceptance remains an underpowered prospective hypothesis. This closes only the exact registered construction, not the broader low-timeframe research space.
 
-Source review of Terminal #595 at ba7c48cf58b2a04deb5b566655e8e61721caca3b found exhausted transport failures being treated as unchanged and incomplete pagination being returned as a successful partial result. GitHub review 5242058779 requests changes and names exact discriminating tests. Its proposed offline runtime reproduction was blocked; only source-control-flow evidence is claimed. The incumbent source writer remains responsible for repair; no updater or production change was made here.
+## Adversarial execution record
 
-A single GitHub-native Copilot review request was attempted on the existing #601 review operation, without Executive or another worker lifecycle. The mutation response did not establish a reviewer; requested-reviewer, review and timeline reads showed no review execution/result. It is not a START receipt. No duplicate request or alternate provider was launched.
+Run-001 was rejected after post-run adversarial review found causal robustness defects: missing scheduled sessions could bridge returns, zero-volume bars could extend evidence recency, future duplicate/corrupt observations could contaminate earlier windows, and malformed outcome rows could erase a fire instead of censoring that outcome. Each repair was driven by a failing test. After repair, run-002 and run-003 are byte-identical at feature-panel, outcome and aggregate-result levels on the unchanged inputs; the fixes changed robustness rather than opportunistically changing the observed result.
 
-## Next actions, in dependency order
+Latest focused tactical suite: 41 passes. Broader relevant suite excluding sparse-only species fixtures: 265 passed, 2 skipped. A wider run including `test_species_registry.py` had six failures/two errors solely because this sparse worktree intentionally omits `data/species/registry.json` and `data/experiments/registry_seed.json`; those are checkout-availability failures, not credited as green. Compileall and diff-check passed before report publication.
 
-1. Reconcile the same refused registration and source-write operations only after a material platform/permission recovery; do not reconstruct them through another tool. Then complete test-first implementation on this same research carrier and commit the genuine preregistration before empirical outcomes.
-2. Consume #595's exact revised head and requested failure-path proofs through its existing owner. Do not let preserved stale files be counted as a healthy successful refresh.
-3. Obtain actual independent #601 review and conclude its current-head release proof. Do not infer review execution from a requested action or unfinished Executive installation.
-4. Execute the 84-cell recipe once after registration, preserve all failed/censored/no-fire cells, and adjudicate the result before any live event integration.
-5. Extend existing Radar/Terminal production consumers only through separate qualified shadow and browser-proof steps; options expressions remain separately evaluated.
+## Adjacent dependencies
+
+Terminal #595 remains the current-history refresh owner. Exact-head review `5242058779` found failure masking in exhausted fetch/pagination paths; its owner must repair and prove those paths. This R1 lane did not fork the updater.
+
+Terminal #601 remains the D0 release carrier; its semantic implementation is consumed by exact head only. Its Vercel status failures are rate-limit deployment failures, not source validation. Independent review/release proof remains separate from R1-A research.
+
+The six-value historical projection still discards provider `vw`/transaction-count detail and historical availability receipts. Bar-VWAP proxies therefore remain proxies; corrected-history research is not faithful live-fill reconstruction.
+
+## Next actions
+
+1. Push the current #7270 head with report, machine aggregate, registration receipt and exact verification evidence; obtain current-head review/CI before any merge.
+2. Preserve the R1-A negative/tiny-N dispositions; no post-hoc threshold rescue or options/regime/news additions inside this study.
+3. After R1-A source acceptance, open a separate bounded R1-B carrier for the already-specified long-side exhaustion/reclaim-versus-continuation experiment. Measure local reversal, candidate LOD survival, confirmation delay and remaining opportunity separately.
+4. Keep finer-grain/live work behind the existing data owner and D1 qualification. Do not treat static one-minute absence as vendor incapability.
+5. Only after admitted price-side evidence exists may existing Radar shadow events and Terminal Forming/Confirmed UI be implemented; options remain a separately measured incremental witness.
 
 ## Must not be redone
 
-Do not rebuild D0 or re-census its unchanged archived files. Do not ask for design approval or Executive reconnection. Do not re-query the earlier blocked live INTC operation through another tool. Do not transform the proposed 84-cell grid into a result, a registry receipt, an active worker, or a claim of profitable timing. No new scanner, event store, registry, calendar, paid provider or capital authority is created.
+Do not rebuild D0, repeat the unchanged R1-A grid, refetch the preserved inputs, ask for design approval/Executive reconnection, retry the held INTC operation through another carrier, or reinterpret tiny cells as validated signals. No duplicate scanner, event store, research registry, calendar, provider or capital plane is authorized.

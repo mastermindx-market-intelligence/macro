@@ -1,6 +1,6 @@
-# Proposed executable tests — implementation absent
+# Historical RED test contract — superseded by executed tests
 
-The first executed test failed with ModuleNotFoundError for engine.entry_radar.tactical_research. No green run is claimed. This is a design packet, not a merge-ready implementation; the empty-list bars fixture also needs correction before the full contract is executed. The original file remains preserved in the owned working tree.
+This file preserves the initial pre-implementation RED packet. The first executed test failed with `ModuleNotFoundError` exactly as recorded below. Implementation later proceeded test-first on the same carrier; the current executable tests are `tests/test_tactical_research.py` and `tests/test_tactical_research_cli.py`, and current results/verification live in `TTI_R1A_REPORT.md` and `STATUS.md`. The code block below is retained as historical design evidence and is not the current complete test inventory.
 
 ```python
 """Synthetic behavior proofs; no market outcomes or trial registration are run."""
