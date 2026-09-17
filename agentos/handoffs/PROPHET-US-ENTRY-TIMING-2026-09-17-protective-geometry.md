@@ -53,3 +53,11 @@ This handoff has no merge, provider activation, worker binding, protocol activat
 
 
 Final consumer verification adds the existing stretched-reset tests: 282 passed. Two intended-valid test fixtures now place their artificial stop below the waiting band; a new negative case retains the old contradictory geometry and requires refusal. The broader eight-suite diagnostic had four failures also reproduced with the exact preimage bridge (two missing sparse artifacts, earnings horizon expectation, management wording expectation) and 27 existing artifact-dependent skips. No full-repository green claim is made. Exact scopes/results are committed with the evidence.
+
+## Existing refusal-consumer truth correction
+
+Same original operation and branch, continuation comment #7254/5720472895. The full real-history proof correctly refused HON/TRN/RBA but the existing receipt said all checks passed. The mirrored engine/template fallback now says “No entry plan is available — stand aside” / “暂无入场计划 — 暂时观望”, without changing any category, count, name, ordering, gate or mathematical function. All78 production function/class ASTs are unchanged. The reason remains `plan_not_built`, not a new validation/state plane.
+
+Proof: original complete42-row full-builder receipt exactly reproduced; only its EN/ZH fallback values differ after correction. Three REDs, then333 native tests passed; eight actual-template component browser cases passed (dark/light x EN/ZH x390/1440), with no account/profile access, no JS, no network/provider or production writes. The renderer harness was aligned to the existing production stance global and current plan-grid marker; no assertion was removed. Optional fixture webfonts are unavailable; no full production browser claim. Evidence is `research/us_prophet_availability/2026-09-17-protective-geometry/receipt-copy/`.
+
+Previous full geometry/valid-plan evidence remains historical; mathematical function bodies did not change. The new semantic source still requires exact-head CI/security and independent review; keep DRAFT/HOLD and the current reviewer request. No release or workflow effect was performed. Next owner consumes current source review and the #7200 seam repair, then coordinates one canonical publication under the existing recovery.

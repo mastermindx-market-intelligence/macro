@@ -406,7 +406,7 @@ _KNOWN_REFUSED_STATUSES = frozenset({
 # ``why`` list and is disclosed on the chip's Tier-2 hover.  Do not "repair" this into
 # gate order — that is the defect, not the design.
 REFUSAL_ORDER = (
-    "plan_not_built",   # cleared every gate; only the plan build itself failed
+    "plan_not_built",   # admitted, but no plan; validation may have refused it
     "already_open",     # cleared every gate; the name already has a live plan
     "not_ready",        # the patience statuses that are ALMOST admitted
     "ran_too_far",      # the anti-chase refusal — must outrank the band it co-occurs with
@@ -446,8 +446,8 @@ REFUSAL_STATUS_MAP = {
 #: tier name, a gate name — appears in any string here: the reader is told what is true
 #: about the stock, never which branch of our code said so.
 REFUSAL_COPY = {
-    "plan_not_built": ("Cleared every check — no entry plan came together tonight",
-                       "各项检查都通过 — 但今晚没能形成完整计划"),
+    "plan_not_built": ("No entry plan is available — stand aside",
+                       "暂无入场计划 — 暂时观望"),
     "already_open":   ("Already has a plan running",
                        "已有在跑的计划"),
     "not_ready":      ("Setting up, but the entry hasn't come",

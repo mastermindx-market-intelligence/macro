@@ -95,6 +95,10 @@ def _env() -> jinja2.Environment:
     env.filters["min"] = lambda seq: min(seq)
     from engine import i18n  # noqa: PLC0415 — same import site as build_site.py
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
+    # Match the production dashboard environment, including its existing plan
+    # stance helper; otherwise full-page tests fail before the receipt is read.
+    from scripts.build_site import us_stance_projection
+    env.globals["us_stance_projection"] = us_stance_projection
     return env
 
 
@@ -475,7 +479,7 @@ def test_dashboard_imports_and_emits_the_partial_once():
 
 def test_shelf_sits_below_the_cards_and_above_the_panel_footnote():
     """BELOW the plans, never between them (spec §6)."""
-    grid_close = DASH.index("end .nbgrid")
+    grid_close = DASH.index("end #us-life-grid")
     shelf = DASH.index("pvr.pvr_shelf(us_prophet_refusals)")
     footnote = DASH.index('<p class="pb-fn">')
     assert grid_close < shelf < footnote
@@ -757,3 +761,25 @@ def test_light_theme_keeps_the_near_rail_accent():
     near = css.index('html[data-theme="light"] .pvr-g.is-near::before')
     assert near > generic, "the light near-rail twin must come after the generic override"
     assert "var(--pv-wait)" in css[near:near + 120]
+
+
+@pytest.mark.parametrize("as_of", ("2026-09-11", "2026-09-16", None))
+def test_unbuilt_plan_receipt_does_not_claim_all_plan_checks_passed(as_of):
+    """Admission is not evidence that protective/clock validation also passed."""
+    from copy import deepcopy
+
+    board = _board(_row("UNBUILT"), _row("PLANNED"))
+    board["as_of"] = as_of
+    original = deepcopy(board)
+    receipt = refusal_receipts(board, originated_tickers={"PLANNED"})
+    assert board == original
+    assert receipt["considered"] == 2 and receipt["planned"] == 1 and receipt["passed"] == 1
+    group = receipt["groups"][0]
+    assert group["reason"] == "plan_not_built" and group["n"] == 1
+    assert group["names"][0]["ticker"] == "UNBUILT"
+    assert group["en"] == "No entry plan is available — stand aside"
+    assert group["zh"] == "暂无入场计划 — 暂时观望"
+    html = _shelf(receipt)
+    assert group["en"] in html and group["zh"] in html
+    assert "Cleared every check" not in html and "各项检查都通过" not in html
+    assert "no entry plan came together tonight" not in html
