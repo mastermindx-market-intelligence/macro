@@ -1,43 +1,43 @@
 {
-  "ts": "2026-09-17T08:00:37+00:00",
-  "main_sha": "aa4858518a4cc4edd2aab0fd9b24a1746be42642",
+  "ts": "2026-09-17T13:48:19+00:00",
+  "main_sha": "f8b83fae32fa49c2525affd70d387b3f43fb93f1",
   "red_required": [
-    {
-      "name": "font-ui-defined",
-      "conclusion": "cancelled",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35183776061/job/105081344614"
-    },
     {
       "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35183776061/job/105081344611"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35217353876/job/105188873380"
     },
     {
-      "name": "template-site-sync",
-      "conclusion": "failure",
+      "name": "font-ui-defined",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35183776061/job/105081344592"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35217353876/job/105188873359"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35183776061/job/105081344558"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35217353876/job/105188873227"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35183776061/job/105081344549"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35217353876/job/105188873203"
+    },
+    {
+      "name": "template-site-sync",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35217353876/job/105188873201"
     }
   ],
   "green": false,
-  "consecutive_failures": 146,
+  "consecutive_failures": 147,
   "sensed_shas": [
-    "aa4858518a4cc4edd2aab0fd9b24a1746be42642",
-    "565dd65130e4b8642e0c3f2b0090edb044cc5c87"
+    "f8b83fae32fa49c2525affd70d387b3f43fb93f1",
+    "790640ecef60a5896b173d97d2d555334800ce0c"
   ],
   "heartbeat_degraded": false
 }
