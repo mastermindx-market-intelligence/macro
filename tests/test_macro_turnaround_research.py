@@ -647,6 +647,254 @@ def test_immutable_publisher_binds_canonical_parent_before_guard_returns(
     assert not (protected / "history.json").exists()
 
 
+def test_immutable_publisher_fails_closed_without_descriptor_support(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_publisher_unsupported_platform", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    allowed = root / "research"
+    allowed.mkdir(parents=True)
+    target = allowed / "history.json"
+    monkeypatch.setattr(module, "_DESCRIPTOR_PUBLICATION_SUPPORTED", False)
+
+    with pytest.raises(ValueError, match="descriptor-bound"):
+        module._publish_immutable(
+            target, b"immutable research artifact\n", root=root
+        )
+
+    assert not target.exists()
+    assert not list(allowed.glob(".*.tmp"))
+
+
+def test_immutable_publisher_refuses_replaced_resolved_parent(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_publisher_parent_swap", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    allowed = root / "research"
+    protected = root / "data"
+    moved = root / "research-moved"
+    allowed.mkdir()
+    protected.mkdir()
+    target = allowed / "history.json"
+    content = b"immutable research artifact\n"
+    original_assert = module._assert_research_output_path
+    swapped = False
+
+    def swap_resolved_parent_after_guard(
+        path: Path, *, root: Path | None = None
+    ) -> None:
+        nonlocal swapped
+        original_assert(path, root=root)
+        if not swapped:
+            allowed.rename(moved)
+            allowed.symlink_to(protected, target_is_directory=True)
+            swapped = True
+
+    monkeypatch.setattr(
+        module, "_assert_research_output_path", swap_resolved_parent_after_guard
+    )
+    refusal: ValueError | None = None
+    try:
+        module._publish_immutable(target, content, root=root)
+    except ValueError as error:
+        refusal = error
+
+    assert not (protected / "history.json").exists()
+    assert not (moved / "history.json").exists()
+    assert not list(protected.glob(".*.tmp"))
+    assert not list(moved.glob(".*.tmp"))
+    assert refusal is not None
+    assert "parent" in str(refusal).lower()
+
+
+def test_immutable_publisher_refuses_parent_replacement_after_staging(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_parent_swap_after_stage", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    allowed = root / "research"
+    protected = root / "data"
+    moved = root / "research-moved"
+    allowed.mkdir()
+    protected.mkdir()
+    target = allowed / "history.json"
+    content = b"immutable research artifact\n"
+    original_stage = module._write_temporary_at
+
+    def stage_then_swap(descriptor: int, name: str, body: bytes) -> str:
+        temporary = original_stage(descriptor, name, body)
+        allowed.rename(moved)
+        allowed.symlink_to(protected, target_is_directory=True)
+        return temporary
+
+    monkeypatch.setattr(module, "_write_temporary_at", stage_then_swap)
+    with pytest.raises(ValueError, match="parent"):
+        module._publish_immutable(target, content, root=root)
+
+    assert not (protected / "history.json").exists()
+    assert not (moved / "history.json").exists()
+    assert not list(protected.glob(".*.tmp"))
+    assert not list(moved.glob(".*.tmp"))
+
+
+def test_immutable_publisher_removes_its_link_when_parent_changes_after_link(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_parent_swap_after_link", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    allowed = root / "research"
+    protected = root / "data"
+    moved = root / "research-moved"
+    allowed.mkdir()
+    protected.mkdir()
+    target = allowed / "history.json"
+    content = b"immutable research artifact\n"
+    original_link = module.os.link
+
+    def link_then_swap(*args: object, **kwargs: object) -> None:
+        original_link(*args, **kwargs)
+        allowed.rename(moved)
+        allowed.symlink_to(protected, target_is_directory=True)
+
+    monkeypatch.setattr(module.os, "link", link_then_swap)
+    with pytest.raises(ValueError, match="parent"):
+        module._publish_immutable(target, content, root=root)
+
+    assert not (protected / "history.json").exists()
+    assert not (moved / "history.json").exists()
+    assert not list(protected.glob(".*.tmp"))
+    assert not list(moved.glob(".*.tmp"))
+
+
+def test_immutable_publisher_does_not_unlink_a_foreign_replacement(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_foreign_replacement_cleanup", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    allowed = root / "research"
+    protected = root / "data"
+    moved = root / "research-moved"
+    allowed.mkdir()
+    protected.mkdir()
+    target = allowed / "history.json"
+    content = b"immutable research artifact\n"
+    foreign = b"foreign replacement must survive safe cleanup\n"
+    original_link = module.os.link
+
+    def replace_link_then_swap(*args: object, **kwargs: object) -> None:
+        original_link(*args, **kwargs)
+        destination_name = str(args[1])
+        destination_fd = int(kwargs["dst_dir_fd"])
+        module.os.unlink(destination_name, dir_fd=destination_fd)
+        replacement_fd = module.os.open(
+            destination_name,
+            module.os.O_WRONLY
+            | module.os.O_CREAT
+            | module.os.O_EXCL
+            | module.os.O_NOFOLLOW,
+            0o600,
+            dir_fd=destination_fd,
+        )
+        try:
+            assert module.os.write(replacement_fd, foreign) == len(foreign)
+        finally:
+            module.os.close(replacement_fd)
+        allowed.rename(moved)
+        allowed.symlink_to(protected, target_is_directory=True)
+
+    monkeypatch.setattr(module.os, "link", replace_link_then_swap)
+    with pytest.raises(ValueError, match="identity changed"):
+        module._publish_immutable(target, content, root=root)
+
+    assert not (protected / "history.json").exists()
+    assert (moved / "history.json").read_bytes() == foreign
+    assert not list(protected.glob(".*.tmp"))
+    assert not list(moved.glob(".*.tmp"))
+
+
+def test_immutable_publisher_removes_its_link_when_parent_changes_after_verification(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_parent_swap_after_verification", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "root"
+    root.mkdir()
+    allowed = root / "research"
+    protected = root / "data"
+    moved = root / "research-moved"
+    allowed.mkdir()
+    protected.mkdir()
+    target = allowed / "history.json"
+    content = b"immutable research artifact\n"
+    original_existing_matches = module._existing_matches_at
+    verified = False
+
+    def verify_then_swap(descriptor: int, name: str, body: bytes) -> bool:
+        nonlocal verified
+        matches = original_existing_matches(descriptor, name, body)
+        if matches and not verified:
+            verified = True
+            allowed.rename(moved)
+            allowed.symlink_to(protected, target_is_directory=True)
+        return matches
+
+    monkeypatch.setattr(module, "_existing_matches_at", verify_then_swap)
+    with pytest.raises(ValueError, match="parent"):
+        module._publish_immutable(target, content, root=root)
+
+    assert verified
+    assert not (protected / "history.json").exists()
+    assert not (moved / "history.json").exists()
+    assert not list(protected.glob(".*.tmp"))
+    assert not list(moved.glob(".*.tmp"))
+
+
 def test_cli_concurrent_different_publications_have_one_winner(tmp_path: Path) -> None:
     target = tmp_path / "history.json"
     sources = []
@@ -931,6 +1179,104 @@ def test_build_cli_refuses_case_insensitive_alias_before_input_ingestion(
     assert module.main(["--input", str(source), "--output", str(output)]) == 2
     assert not output.exists()
     assert not (root / canonical_name / "nested" / "turnaround.json").exists()
+
+
+def test_case_semantics_probe_uses_entries_inside_the_protected_volume(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_case_volume_probe", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    witness = root / "CaseWitness"
+    witness.write_text("case-semantics witness", encoding="utf-8")
+    resolved_root = root.resolve()
+    real_samefile = module.os.path.samefile
+
+    def mounted_case_insensitive_samefile(left: object, right: object) -> bool:
+        left_path = Path(left).absolute()
+        right_path = Path(right).absolute()
+        if left_path.name.casefold() == right_path.name.casefold():
+            return (
+                left_path.parent == resolved_root
+                and right_path.parent == resolved_root
+            )
+        try:
+            return real_samefile(left, right)
+        except FileNotFoundError:
+            return False
+
+    monkeypatch.setattr(module.os.path, "samefile", mounted_case_insensitive_samefile)
+    assert module._filesystem_is_case_insensitive(root) is True
+    assert module._path_is_within_protected(
+        root / "SITE" / "nested" / "history.json", root / "site"
+    )
+
+
+def test_case_semantics_probe_fails_closed_without_an_internal_witness(
+    tmp_path: Path,
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("turnaround_empty_case_probe", CLI)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    empty = tmp_path / "empty"
+    empty.mkdir()
+
+    with pytest.raises(ValueError, match="case semantics"):
+        module._filesystem_is_case_insensitive(empty)
+
+
+def test_case_semantics_probe_does_not_inherit_case_insensitive_host_volume(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_case_sensitive_mounted_volume", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    mounted = tmp_path / "MountedVolume"
+    mounted.mkdir()
+    witness = mounted / "CaseWitness"
+    witness.write_text("case-semantics witness", encoding="utf-8")
+    resolved_mounted = mounted.resolve()
+    real_samefile = module.os.path.samefile
+
+    def host_case_insensitive_samefile(left: object, right: object) -> bool:
+        left_path = Path(left).absolute()
+        right_path = Path(right).absolute()
+        if (
+            left_path.parent == resolved_mounted.parent
+            and right_path.parent == resolved_mounted.parent
+            and left_path.name.casefold() == right_path.name.casefold()
+        ):
+            return True
+        if (
+            left_path.parent == resolved_mounted
+            and right_path.parent == resolved_mounted
+            and left_path.name.casefold() == right_path.name.casefold()
+            and left_path.name != right_path.name
+        ):
+            return False
+        try:
+            return real_samefile(left, right)
+        except FileNotFoundError:
+            return False
+
+    monkeypatch.setattr(module.os.path, "samefile", host_case_insensitive_samefile)
+    assert module._filesystem_is_case_insensitive(mounted) is False
+    assert not module._path_is_within_protected(
+        mounted / "DATA" / "history.json", mounted / "data"
+    )
 
 
 def test_case_variant_remains_allowed_when_volume_is_case_sensitive(

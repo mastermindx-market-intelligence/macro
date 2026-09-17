@@ -13,8 +13,8 @@ import argparse
 import json
 import os
 from pathlib import Path
+import stat
 import sys
-import tempfile
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -50,16 +50,198 @@ def _reject_constant(value: str) -> object:
     raise ValueError(f"non-finite JSON number: {value}")
 
 
-def _existing_matches(output: Path, content: bytes) -> bool:
-    if output.is_symlink():
-        raise ValueError("immutable output cannot be a symbolic link")
+_DESCRIPTOR_PUBLICATION_SUPPORTED = (
+    hasattr(os, "O_DIRECTORY")
+    and hasattr(os, "O_NOFOLLOW")
+    and all(
+        function in os.supports_dir_fd
+        for function in (os.open, os.stat, os.unlink, os.link)
+    )
+    and os.stat in os.supports_follow_symlinks
+    and os.link in os.supports_follow_symlinks
+)
+
+
+def _identity(value: os.stat_result) -> tuple[int, int]:
+    return value.st_dev, value.st_ino
+
+
+def _require_descriptor_publication_support() -> None:
+    if not _DESCRIPTOR_PUBLICATION_SUPPORTED:
+        raise ValueError(
+            "descriptor-bound immutable publication is unavailable on this platform"
+        )
+
+
+def _open_bound_parent(directory: Path) -> tuple[int, tuple[int, int]]:
+    _require_descriptor_publication_support()
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
     try:
-        existing = output.read_bytes()
+        descriptor = os.open(directory, flags)
+    except OSError as error:
+        raise ValueError("could not bind immutable output parent directory") from error
+    try:
+        opened = os.fstat(descriptor)
+        named = os.stat(directory, follow_symlinks=False)
+        if (
+            not stat.S_ISDIR(opened.st_mode)
+            or not stat.S_ISDIR(named.st_mode)
+            or _identity(opened) != _identity(named)
+        ):
+            raise ValueError("immutable output parent changed during publication")
+        return descriptor, _identity(opened)
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
+def _require_bound_parent(
+    descriptor: int, directory: Path, identity: tuple[int, int]
+) -> None:
+    try:
+        opened = os.fstat(descriptor)
+        named = os.stat(directory, follow_symlinks=False)
+    except OSError as error:
+        raise ValueError("immutable output parent changed during publication") from error
+    if (
+        not stat.S_ISDIR(opened.st_mode)
+        or not stat.S_ISDIR(named.st_mode)
+        or _identity(opened) != identity
+        or _identity(named) != identity
+    ):
+        raise ValueError("immutable output parent changed during publication")
+
+
+def _existing_matches_at(descriptor: int, name: str, content: bytes) -> bool:
+    try:
+        named = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
     except FileNotFoundError:
         return False
-    if existing != content:
-        raise ValueError("immutable output already exists with different content; choose a new path")
+    except OSError as error:
+        raise ValueError("could not inspect immutable output") from error
+    if stat.S_ISLNK(named.st_mode):
+        raise ValueError("immutable output cannot be a symbolic link")
+    if not stat.S_ISREG(named.st_mode):
+        raise ValueError("immutable output must be a regular file")
+    flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_CLOEXEC", 0)
+    try:
+        file_descriptor = os.open(name, flags, dir_fd=descriptor)
+    except FileNotFoundError as error:
+        raise ValueError("immutable output changed during publication") from error
+    except OSError as error:
+        raise ValueError("could not open immutable output safely") from error
+    try:
+        opened = os.fstat(file_descriptor)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or _identity(opened) != _identity(named)
+            or opened.st_size != named.st_size
+            or opened.st_mtime_ns != named.st_mtime_ns
+        ):
+            raise ValueError("immutable output changed during publication")
+        remaining = len(content) + 1
+        chunks: list[bytes] = []
+        while remaining:
+            chunk = os.read(file_descriptor, remaining)
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        final_opened = os.fstat(file_descriptor)
+        try:
+            final_named = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
+        except OSError as error:
+            raise ValueError("immutable output changed during publication") from error
+        if (
+            _identity(final_opened) != _identity(opened)
+            or _identity(final_named) != _identity(opened)
+            or final_opened.st_size != opened.st_size
+            or final_opened.st_mtime_ns != opened.st_mtime_ns
+            or final_named.st_size != opened.st_size
+            or final_named.st_mtime_ns != opened.st_mtime_ns
+        ):
+            raise ValueError("immutable output changed during publication")
+    finally:
+        os.close(file_descriptor)
+    if b"".join(chunks) != content:
+        raise ValueError(
+            "immutable output already exists with different content; choose a new path"
+        )
     return True
+
+
+def _regular_identity_at(
+    descriptor: int, name: str, *, label: str
+) -> tuple[int, int]:
+    try:
+        value = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
+    except OSError as error:
+        raise ValueError(f"could not inspect {label}") from error
+    if not stat.S_ISREG(value.st_mode):
+        raise ValueError(f"{label} must be a regular file")
+    return _identity(value)
+
+
+def _remove_owned_output_at(
+    descriptor: int, name: str, identity: tuple[int, int]
+) -> None:
+    try:
+        current = os.stat(name, dir_fd=descriptor, follow_symlinks=False)
+    except FileNotFoundError:
+        return
+    except OSError as error:
+        raise ValueError("could not inspect installed immutable output for cleanup") from error
+    if _identity(current) != identity:
+        raise ValueError("installed immutable output identity changed before cleanup")
+    try:
+        os.unlink(name, dir_fd=descriptor)
+    except OSError as error:
+        raise ValueError("could not remove installed immutable output after refusal") from error
+
+
+def _write_temporary_at(descriptor: int, name: str, content: bytes) -> str:
+    temporary_name: str | None = None
+    temporary_descriptor: int | None = None
+    for _attempt in range(16):
+        candidate = f".{name}.{os.urandom(16).hex()}.tmp"
+        try:
+            temporary_descriptor = os.open(
+                candidate,
+                os.O_WRONLY
+                | os.O_CREAT
+                | os.O_EXCL
+                | os.O_NOFOLLOW
+                | getattr(os, "O_CLOEXEC", 0),
+                0o600,
+                dir_fd=descriptor,
+            )
+        except FileExistsError:
+            continue
+        except OSError as error:
+            raise ValueError("could not create immutable output temporary file") from error
+        temporary_name = candidate
+        break
+    if temporary_name is None or temporary_descriptor is None:
+        raise ValueError("could not allocate immutable output temporary file")
+    try:
+        try:
+            view = memoryview(content)
+            written = 0
+            while written < len(view):
+                count = os.write(temporary_descriptor, view[written:])
+                if count <= 0:
+                    raise OSError("immutable output temporary write made no progress")
+                written += count
+            os.fsync(temporary_descriptor)
+        finally:
+            os.close(temporary_descriptor)
+    except BaseException:
+        try:
+            os.unlink(temporary_name, dir_fd=descriptor)
+        except FileNotFoundError:
+            pass
+        raise
+    return temporary_name
 
 
 def _same_filesystem_object(left: Path, right: Path) -> bool:
@@ -91,13 +273,18 @@ def _alternate_ascii_case(name: str) -> str | None:
     return None
 
 
-def _filesystem_is_case_insensitive(existing_path: Path) -> bool:
-    current = existing_path.resolve(strict=True)
-    while current.parent != current:
-        alternate_name = _alternate_ascii_case(current.name)
+def _filesystem_is_case_insensitive(existing_directory: Path) -> bool:
+    directory = existing_directory.resolve(strict=True)
+    if not directory.is_dir():
+        raise ValueError("output-path filesystem probe requires a directory")
+    try:
+        entries = sorted(directory.iterdir(), key=lambda entry: entry.name)
+    except OSError as error:
+        raise ValueError("could not inspect output-path filesystem case semantics") from error
+    for entry in entries:
+        alternate_name = _alternate_ascii_case(entry.name)
         if alternate_name is not None:
-            return _same_filesystem_object(current, current.parent / alternate_name)
-        current = current.parent
+            return _same_filesystem_object(entry, directory / alternate_name)
     raise ValueError("could not establish output-path filesystem case semantics")
 
 
@@ -141,28 +328,77 @@ def _publish_immutable(
         _assert_research_output_path(destination)
     else:
         _assert_research_output_path(destination, root=root)
-    if _existing_matches(destination, content):
-        return
     destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary: Path | None = None
+    parent_descriptor, parent_identity = _open_bound_parent(destination.parent)
+    temporary_name: str | None = None
+    installed_identity: tuple[int, int] | None = None
     try:
-        with tempfile.NamedTemporaryFile(
-            mode="wb", dir=destination.parent, prefix=f".{destination.name}.", suffix=".tmp", delete=False,
-        ) as handle:
-            temporary = Path(handle.name)
-            handle.write(content)
-            handle.flush()
-            os.fsync(handle.fileno())
         try:
-            # Unlike replace()/rename(), link() cannot replace a winner from
-            # another process. Readers only see the fully serialized artifact.
-            os.link(temporary, destination)
-        except FileExistsError:
-            if not _existing_matches(destination, content):
+            _require_bound_parent(
+                parent_descriptor, destination.parent, parent_identity
+            )
+            if root is None:
+                _assert_research_output_path(destination)
+            else:
+                _assert_research_output_path(destination, root=root)
+            _require_bound_parent(
+                parent_descriptor, destination.parent, parent_identity
+            )
+            if _existing_matches_at(parent_descriptor, destination.name, content):
+                _require_bound_parent(
+                    parent_descriptor, destination.parent, parent_identity
+                )
+                return
+            temporary_name = _write_temporary_at(
+                parent_descriptor, destination.name, content
+            )
+            temporary_identity = _regular_identity_at(
+                parent_descriptor, temporary_name, label="immutable output temporary file"
+            )
+            _require_bound_parent(
+                parent_descriptor, destination.parent, parent_identity
+            )
+            try:
+                # The descriptor confines both names to the verified parent and
+                # the hard link cannot replace a winner from another process.
+                os.link(
+                    temporary_name,
+                    destination.name,
+                    src_dir_fd=parent_descriptor,
+                    dst_dir_fd=parent_descriptor,
+                    follow_symlinks=False,
+                )
+                installed_identity = temporary_identity
+            except FileExistsError:
+                if not _existing_matches_at(
+                    parent_descriptor, destination.name, content
+                ):
+                    raise ValueError("immutable output changed during publication")
+            _require_bound_parent(
+                parent_descriptor, destination.parent, parent_identity
+            )
+            if not _existing_matches_at(
+                parent_descriptor, destination.name, content
+            ):
                 raise ValueError("immutable output changed during publication")
+            _require_bound_parent(
+                parent_descriptor, destination.parent, parent_identity
+            )
+        except BaseException:
+            if installed_identity is not None:
+                _remove_owned_output_at(
+                    parent_descriptor, destination.name, installed_identity
+                )
+            raise
     finally:
-        if temporary is not None:
-            temporary.unlink(missing_ok=True)
+        try:
+            if temporary_name is not None:
+                try:
+                    os.unlink(temporary_name, dir_fd=parent_descriptor)
+                except FileNotFoundError:
+                    pass
+        finally:
+            os.close(parent_descriptor)
 
 
 def main(argv: list[str] | None = None) -> int:
