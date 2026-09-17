@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T12:35:13.993884+00:00",
-  "count": 2290,
+  "generated_at": "2026-09-17T12:50:18.148012+00:00",
+  "count": 2291,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -85,6 +85,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-z0bk8qird57-6e5ad5",
+      "title": "JPM on Fed",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T10:49:47Z",
+      "summary_points": [
+        "Fed rate trajectory: Median rate forecast rises to 4.1% by Sep '26, with Core PCE inflation persisting at 2.0–2.5%, signaling prolonged high rates and persistent inflation concerns despite recent hikes.",
+        "Policy dilemma: Core PCE diffusion index remains positive (upside inflation risk) while Real GDP diffusion index is negative (downside growth risk), creating a critical trade-off between inflation control and growth stability.",
+        "Inflation outlook: Core inflation forecast revised upward to 3.4% (vs. prior), with committee highlighting growing risk of demand-led overheating, necessitating potential further tightening.",
+        "Labor market strength: Unemployment forecast revised down to 4.1% (below natural rate), reinforcing tight labor conditions and supporting aggressive rate-hiking stance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-dzoblfxbafq-603a09",
       "title": "JPM Flows Liquidity",
