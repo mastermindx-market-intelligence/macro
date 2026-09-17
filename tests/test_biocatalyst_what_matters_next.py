@@ -8,6 +8,7 @@ import pytest
 from engine.biocatalyst.company_event_adapter import resolve_current_event_identity
 from engine.biocatalyst.what_matters_next import compose_company_event_rows
 from engine.company_intelligence.events import project_catalyst_event
+from engine.company_intelligence.contracts import ContractError, canonical_json_sha256
 from engine.company_intelligence.identity import company_id_for_cik
 from lib.dataos.identity import IssuerMaster, VendorAliasTable
 
@@ -179,3 +180,176 @@ def test_stale_source_and_superseded_revision_preserve_policy_semantics() -> Non
     superseded = _event(revision_is_current=False)
     row = _rows(superseded, _identity(superseded))[0]
     assert row["research_priority"]["disposition"] == "EXCLUDE_SUPERSEDED"
+
+from engine.biocatalyst.what_matters_next import select_what_matters_next_rows
+
+
+def _resolved_identity(event, symbol="AMLX"):
+    sr, ar = _security(f"SEC:US-XNAS-{symbol.replace('.', '')}", f"ISS:US-XNAS-{symbol.replace('.', '')}", symbol)
+    return _identity(event, [sr], [ar])
+
+
+def test_upcoming_view_uses_requested_horizon_and_excludes_reconcile_and_history() -> None:
+    near = _event(native_event_key="doc#near", timing=_timing("2026-09-07", "2026-09-07"))
+    later = _event(native_event_key="doc#later", timing=_timing("2026-12-05", "2026-12-05"))
+    unresolved = _event(native_event_key="doc#unresolved", timing=_timing("2026-09-08", "2026-09-08"))
+    history = _event(native_event_key="doc#history", occurrence="corroborated", timing=_timing("2026-09-07", "2026-09-07"))
+    rows = [
+        _rows(near, _resolved_identity(near))[0],
+        _rows(later, _resolved_identity(later))[0],
+        _rows(unresolved, _identity(unresolved))[0],
+        _rows(history, _resolved_identity(history))[0],
+    ]
+    seven = select_what_matters_next_rows(rows, view="upcoming", horizon_days=7, q=None, event_family=None, lane=None, anchor_date=ANCHOR)
+    assert [r["event_fact_ref"] for r in seven] == [near["event_id"]]
+    year = select_what_matters_next_rows(rows, view="upcoming", horizon_days=365, q=None, event_family=None, lane=None, anchor_date=ANCHOR)
+    assert {r["event_fact_ref"] for r in year} == {near["event_id"], later["event_id"]}
+
+
+def test_reconcile_view_retains_unresolved_and_conflicted_without_horizon() -> None:
+    unresolved = _event(native_event_key="doc#unresolved")
+    conflicted = _event(
+        native_event_key="doc#conflicted",
+        timing={**_timing(), "state": "conflicted", "lower_date": None, "upper_date": None},
+    )
+    rows = [
+        _rows(unresolved, _identity(unresolved))[0],
+        _rows(conflicted, _resolved_identity(conflicted))[0],
+    ]
+    selected = select_what_matters_next_rows(rows, view="reconcile", horizon_days=None, q=None, event_family=None, lane=None, anchor_date=ANCHOR)
+    assert {r["event_fact_ref"] for r in selected} == {unresolved["event_id"], conflicted["event_id"]}
+    assert all(r["research_priority"]["lane"] == "RECONCILE" for r in selected)
+
+
+def test_history_view_is_explicit_and_superseded_rows_never_surface() -> None:
+    history = _event(native_event_key="doc#history", occurrence="withdrawn")
+    superseded = _event(native_event_key="doc#old", revision_is_current=False)
+    rows = [
+        _rows(history, _resolved_identity(history))[0],
+        _rows(superseded, _resolved_identity(superseded))[0],
+    ]
+    selected = select_what_matters_next_rows(rows, view="history", horizon_days=None, q=None, event_family=None, lane=None, anchor_date=ANCHOR)
+    assert [r["event_fact_ref"] for r in selected] == [history["event_id"]]
+
+
+def test_wmn_filters_are_exact_and_search_is_casefolded_over_public_fields() -> None:
+    event = _event(native_event_key="doc#search")
+    row = _rows(event, _resolved_identity(event, "AMLX"))[0]
+    assert select_what_matters_next_rows([row], view="upcoming", horizon_days=90, q="amlx", event_family="issuer_readout_guidance", lane="ACT_NOW", anchor_date=ANCHOR) == [row]
+    assert select_what_matters_next_rows([row], view="upcoming", horizon_days=90, q="nope", event_family=None, lane=None, anchor_date=ANCHOR) == []
+    with pytest.raises(ValueError):
+        select_what_matters_next_rows([row], view="bogus", horizon_days=90, q=None, event_family=None, lane=None, anchor_date=ANCHOR)
+    with pytest.raises(ValueError):
+        select_what_matters_next_rows([row], view="reconcile", horizon_days=90, q=None, event_family=None, lane=None, anchor_date=ANCHOR)
+
+from engine.biocatalyst.what_matters_next import compose_rows_from_wmn_inputs, validate_wmn_inputs
+
+
+def _wmn_inputs(event, identity, *, cutoff=CUTOFF):
+    return {
+        "contract_id": "biocatalyst_wmn_inputs.v1",
+        "schema_version": "1.0.0",
+        "input_cut": {
+            "cutoff": cutoff,
+            "members": [
+                {
+                    "contract_id": "company_catalyst_event.v1",
+                    "ref": event["event_id"],
+                    "sha256": canonical_json_sha256(event),
+                    "observed_at": event["observed_at"],
+                    "accepted_at": event["observed_at"],
+                    "availability": "available",
+                },
+                {
+                    "contract_id": "dataos_issuer_master.current",
+                    "ref": "issuer-master-cut-2026-09-06",
+                    "sha256": "2" * 64,
+                    "observed_at": "2026-09-06T10:00:00Z",
+                    "accepted_at": "2026-09-06T10:00:00Z",
+                    "availability": "available",
+                },
+            ],
+        },
+        "events": [event],
+        "relationships": [],
+        "identity_projection": {event["event_id"]: identity},
+        "coverage": {
+            "declared_universe_ref": "bio:first-company-event-slice",
+            "source_health": "current",
+            "family_states": {
+                "issuer_readout_guidance": {
+                    "declared_scope": "issuer_disclosure:first_slice",
+                    "observed_count": 1,
+                    "state": "partial",
+                },
+                "registry_primary_completion": {
+                    "declared_scope": "not_in_first_company_event_slice",
+                    "observed_count": None,
+                    "state": "not_built",
+                },
+            },
+            "missing_owner_ports": [
+                "asset_relationships", "economic_exposure", "probability",
+                "materiality", "historical_response", "incorporation",
+            ],
+        },
+        "authority": event["authority"],
+    }
+
+
+def test_wmn_inputs_are_closed_cut_bound_and_compose_rows_without_live_owner_reads() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    normalized = validate_wmn_inputs(inputs)
+    assert normalized["contract_id"] == "biocatalyst_wmn_inputs.v1"
+    rows = compose_rows_from_wmn_inputs(normalized, evaluation_cutoff=CUTOFF, anchor_date=ANCHOR)
+    assert len(rows) == 1
+    assert rows[0]["event_fact_ref"] == event["event_id"]
+    assert rows[0]["issuer"]["state"] == "resolved"
+
+
+def test_wmn_inputs_refuse_future_cut_members_and_future_generation_self_reference() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["input_cut"]["members"][0]["observed_at"] = "2026-09-06T12:00:01Z"
+    with pytest.raises(ContractError, match="input_cut"):
+        validate_wmn_inputs(inputs)
+
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["input_cut"]["members"][0]["ref"] = "ctgov_run_future_output_123"
+    with pytest.raises(ContractError, match="future generation"):
+        validate_wmn_inputs(inputs, forbidden_generation_id="ctgov_run_future_output_123")
+
+
+def test_wmn_inputs_require_exact_event_identity_bindings_and_no_unowned_relationship_blob() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["identity_projection"] = {}
+    with pytest.raises(ContractError, match="identity_projection"):
+        validate_wmn_inputs(inputs)
+
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["relationships"] = [{"kind": "owner", "guessed": True}]
+    with pytest.raises(ContractError, match="relationships"):
+        validate_wmn_inputs(inputs)
+
+
+def test_wmn_inputs_family_states_and_authority_are_closed() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["coverage"]["family_states"]["issuer_readout_guidance"]["state"] = "magical"
+    with pytest.raises(ContractError, match="family_states"):
+        validate_wmn_inputs(inputs)
+
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["authority"]["decision_authority"] = True
+    with pytest.raises(ContractError, match="authority"):
+        validate_wmn_inputs(inputs)
+
+
+def test_wmn_inputs_bind_embedded_company_event_to_cut_hash() -> None:
+    event = _event()
+    inputs = _wmn_inputs(event, _identity(event))
+    inputs["input_cut"]["members"][0]["sha256"] = "f" * 64
+    with pytest.raises(ContractError, match="event hash mismatch"):
+        validate_wmn_inputs(inputs)

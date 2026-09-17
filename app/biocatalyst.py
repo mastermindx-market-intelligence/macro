@@ -2473,7 +2473,7 @@ def _resolve_trial_peer_set_payload(
     history_models_by_nct = getattr(projection, "history_models_by_nct", None)
     if (
         not isinstance(generation_id, str)
-        or generation_schema not in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}
+        or generation_schema not in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}
         or not isinstance(protocols_by_nct, Mapping)
         or not isinstance(history_models_by_nct, Mapping)
     ):

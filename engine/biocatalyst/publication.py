@@ -42,6 +42,8 @@ from .prospective import (
     validate_public_model as validate_prospective_public_model,
     validate_publication_evidence as validate_prospective_publication_evidence,
 )
+from .what_matters_next import validate_wmn_inputs
+from engine.company_intelligence.contracts import ContractError as CompanyContractError
 from .change_tape import (
     ChangeTapeError,
     build_trial_change_tape_read_model,
@@ -128,13 +130,15 @@ _POINTER_KEYS = frozenset(
 )
 _ARTIFACT_KEYS = frozenset(("name", "sha256", "byte_count"))
 _PUBLIC_GENERATION_SCHEMAS = frozenset(
-    ("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0")
+    ("1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0")
 )
 _TRIAL_SNAPSHOT_DIRECTORY = "trial_snapshots"
 _TRIAL_HISTORY_DIRECTORY = "history"
 _TRIAL_PROSPECTIVE_DIRECTORY = "prospective"
 _TRIAL_PROTOCOL_DIRECTORY = "protocols"
 _TRIAL_CHANGE_TAPE_DIRECTORY = "change_tapes"
+_WMN_INPUT_ARTIFACT = "what_matters_next_inputs.json"
+_WMN_GENERATION_SCHEMAS = frozenset(("1.8.0", "1.9.0"))
 _HEALTH_KEYS = frozenset(
     {
         "schema_version",
@@ -239,6 +243,7 @@ class CommittedTrialProjection:
     history_models_by_nct: Mapping[str, dict[str, Any]]
     prospective_models_by_nct: Mapping[str, dict[str, Any]]
     change_tapes_by_nct: Mapping[str, dict[str, Any]] = field(default_factory=dict)
+    what_matters_next_inputs: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -256,6 +261,7 @@ class ValidatedGenerationArtifacts:
     history_models_by_nct: Mapping[str, dict[str, Any]]
     prospective_models_by_nct: Mapping[str, dict[str, Any]]
     change_tapes_by_nct: Mapping[str, dict[str, Any]]
+    what_matters_next_inputs: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -1403,15 +1409,15 @@ class PublicGenerationPublisher:
             if item.is_dir()
         }
         expected_directories = {"trials"}
-        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_SNAPSHOT_DIRECTORY)
-        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_HISTORY_DIRECTORY)
-        if generation_schema in {"1.3.0", "1.5.0", "1.7.0"}:
+        if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"}:
             expected_directories.add(_TRIAL_PROSPECTIVE_DIRECTORY)
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_PROTOCOL_DIRECTORY)
-        if generation_schema in {"1.6.0", "1.7.0"}:
+        if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             expected_directories.add(_TRIAL_CHANGE_TAPE_DIRECTORY)
         if directories != expected_directories:
             raise PublicationError("PUBLIC_GENERATION_INVALID")
@@ -1463,20 +1469,24 @@ class PublicGenerationPublisher:
             if not isinstance(artifact.get("byte_count"), int) or artifact["byte_count"] < 1:
                 raise PublicationError("PUBLIC_GENERATION_INVALID")
             source_state_artifact = bool(re.fullmatch(r"trials/NCT[0-9]{8}\.json", str(name)))
-            trial_snapshot_artifact = generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and bool(
+            trial_snapshot_artifact = generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"trial_snapshots/NCT[0-9]{8}\.json", str(name))
             )
-            trial_history_artifact = generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and bool(
+            trial_history_artifact = generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"history/NCT[0-9]{8}\.json", str(name))
             )
-            trial_prospective_artifact = generation_schema in {"1.3.0", "1.5.0", "1.7.0"} and bool(
+            trial_prospective_artifact = generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"} and bool(
                 re.fullmatch(r"prospective/NCT[0-9]{8}\.json", str(name))
             )
-            trial_protocol_artifact = generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and bool(
+            trial_protocol_artifact = generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"protocols/NCT[0-9]{8}\.json", str(name))
             )
-            trial_change_tape_artifact = generation_schema in {"1.6.0", "1.7.0"} and bool(
+            trial_change_tape_artifact = generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"} and bool(
                 re.fullmatch(r"change_tapes/NCT[0-9]{8}\.json", str(name))
+            )
+            wmn_input_artifact = (
+                generation_schema in _WMN_GENERATION_SCHEMAS
+                and name == _WMN_INPUT_ARTIFACT
             )
             if (
                 name not in {"source_manifest.json", "health.json"}
@@ -1486,6 +1496,7 @@ class PublicGenerationPublisher:
                 and not trial_prospective_artifact
                 and not trial_protocol_artifact
                 and not trial_change_tape_artifact
+                and not wmn_input_artifact
             ):
                 raise PublicationError("PUBLIC_GENERATION_INVALID")
             path = _safe_child(generation, name)
@@ -1496,22 +1507,24 @@ class PublicGenerationPublisher:
         required = {"source_manifest.json", "health.json"}
         if not required.issubset(seen) or not any(name.startswith("trials/NCT") for name in seen):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and not any(
+        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_SNAPSHOT_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and not any(
+        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_HISTORY_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.3.0", "1.5.0", "1.7.0"} and not any(
+        if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_PROSPECTIVE_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and not any(
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and not any(
             name.startswith(f"{_TRIAL_PROTOCOL_DIRECTORY}/NCT") for name in seen
         ):
             raise PublicationError("PUBLIC_GENERATION_INVALID")
+        if generation_schema in _WMN_GENERATION_SCHEMAS and _WMN_INPUT_ARTIFACT not in seen:
+            raise PublicationError("WMN_OWNER_INPUT_UNAVAILABLE")
         all_files = {
             item.relative_to(generation).as_posix()
             for item in tree
@@ -1574,6 +1587,7 @@ class PublicGenerationPublisher:
                 *trial_prospective_names,
                 *trial_protocol_names,
                 *trial_change_tape_names,
+                *((_WMN_INPUT_ARTIFACT,) if generation_schema in _WMN_GENERATION_SCHEMAS else ()),
             ),
             allowed_extra_directories=(
                 (
@@ -1583,14 +1597,14 @@ class PublicGenerationPublisher:
                     _TRIAL_PROTOCOL_DIRECTORY,
                     _TRIAL_CHANGE_TAPE_DIRECTORY,
                 )
-                if generation_schema == "1.7.0"
+                if generation_schema in {"1.7.0", "1.9.0"}
                 else (
                     _TRIAL_SNAPSHOT_DIRECTORY,
                     _TRIAL_HISTORY_DIRECTORY,
                     _TRIAL_PROTOCOL_DIRECTORY,
                     _TRIAL_CHANGE_TAPE_DIRECTORY,
                 )
-                if generation_schema == "1.6.0"
+                if generation_schema in {"1.6.0", "1.8.0"}
                 else (
                     _TRIAL_SNAPSHOT_DIRECTORY,
                     _TRIAL_HISTORY_DIRECTORY,
@@ -1627,7 +1641,7 @@ class PublicGenerationPublisher:
         change_tapes_by_nct: dict[str, dict[str, Any]] = {}
         if generation_schema == "1.0.0" and trial_snapshot_names:
             raise PublicationError("PUBLIC_GENERATION_INVALID")
-        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             states_by_nct = dict(states)
             expected_trial_names = {
                 f"{_TRIAL_SNAPSHOT_DIRECTORY}/{nct_id}.json"
@@ -1645,7 +1659,7 @@ class PublicGenerationPublisher:
                     source_state=states_by_nct[nct_id],
                     nct_id=nct_id,
                 )
-            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 expected_history_names = {
                     f"{_TRIAL_HISTORY_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1660,7 +1674,7 @@ class PublicGenerationPublisher:
                     history_models_by_nct[nct_id] = _validate_trial_history_model_binding(
                         history_model, nct_id=nct_id
                     )
-            if generation_schema in {"1.3.0", "1.5.0", "1.7.0"}:
+            if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"}:
                 expected_prospective_names = {
                     f"{_TRIAL_PROSPECTIVE_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1679,7 +1693,7 @@ class PublicGenerationPublisher:
                     if prospective_model.get("nct_id") != nct_id:
                         raise PublicationError("TRIAL_PROSPECTIVE_PROJECTION_INVALID")
                     prospective_models_by_nct[nct_id] = prospective_model
-            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 expected_protocol_names = {
                     f"{_TRIAL_PROTOCOL_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1697,7 +1711,7 @@ class PublicGenerationPublisher:
                         trial_snapshot=trial_snapshots_by_nct[nct_id],
                         nct_id=nct_id,
                     )
-            if generation_schema in {"1.6.0", "1.7.0"}:
+            if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 expected_change_tape_names = {
                     f"{_TRIAL_CHANGE_TAPE_DIRECTORY}/{nct_id}.json"
                     for nct_id in states_by_nct
@@ -1716,6 +1730,29 @@ class PublicGenerationPublisher:
                         )
                     except ChangeTapeError as exc:
                         raise PublicationError("TRIAL_CHANGE_TAPE_PROJECTION_INVALID") from exc
+        wmn_inputs: dict[str, Any] | None = None
+        if generation_schema in _WMN_GENERATION_SCHEMAS:
+            path = generation / _WMN_INPUT_ARTIFACT
+            raw_wmn = _load_json_object(path, code="WMN_OWNER_INPUT_INVALID")
+            try:
+                wmn_inputs = validate_wmn_inputs(
+                    raw_wmn, forbidden_generation_id=generation_id
+                )
+            except CompanyContractError as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            if path.read_bytes() != _json_bytes(wmn_inputs):
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
+            try:
+                cut_time = datetime.fromisoformat(
+                    wmn_inputs["input_cut"]["cutoff"].replace("Z", "+00:00")
+                )
+                published_time = datetime.fromisoformat(
+                    str(manifest["published_at"]).replace("Z", "+00:00")
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            if cut_time > published_time:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
         if (
             manifest["configured_nct_count"] != len(manifest["configured_nct_ids"])
             or manifest["observed_nct_count"] != len(states)
@@ -1740,6 +1777,7 @@ class PublicGenerationPublisher:
                 history_models_by_nct=history_models_by_nct,
                 prospective_models_by_nct=prospective_models_by_nct,
                 change_tapes_by_nct=change_tapes_by_nct,
+                what_matters_next_inputs=wmn_inputs,
             ),
         )
 
@@ -1900,26 +1938,26 @@ class PublicGenerationPublisher:
         manifest = validated.manifest
         artifacts = validated.artifacts
         generation_schema = manifest.get("schema_version")
-        if generation_schema not in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if generation_schema not in {"1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             raise PublicationError("TRIAL_PROJECTION_UNAVAILABLE")
         nct_ids = tuple(manifest["configured_nct_ids"])
         if set(artifacts.source_states_by_nct) != set(nct_ids):
             raise PublicationError("TRIAL_PROJECTION_BINDING_MISMATCH")
         if set(artifacts.trial_snapshots_by_nct) != set(nct_ids):
             raise PublicationError("TRIAL_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and set(
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and set(
             artifacts.protocols_by_nct
         ) != set(nct_ids):
             raise PublicationError("TRIAL_PROTOCOL_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"} and set(
+        if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and set(
             artifacts.history_models_by_nct
         ) != set(nct_ids):
             raise PublicationError("TRIAL_HISTORY_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.3.0", "1.5.0", "1.7.0"} and set(
+        if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"} and set(
             artifacts.prospective_models_by_nct
         ) != set(nct_ids):
             raise PublicationError("TRIAL_PROSPECTIVE_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.6.0", "1.7.0"} and set(artifacts.change_tapes_by_nct) != set(
+        if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"} and set(artifacts.change_tapes_by_nct) != set(
             nct_ids
         ):
             raise PublicationError("TRIAL_CHANGE_TAPE_PROJECTION_BINDING_MISMATCH")
@@ -1930,9 +1968,9 @@ class PublicGenerationPublisher:
         change_tapes_by_nct: dict[str, dict[str, Any]] = {}
         for nct_id in nct_ids:
             trials.append(artifacts.trial_snapshots_by_nct[nct_id])
-            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 protocols_by_nct[nct_id] = artifacts.protocols_by_nct[nct_id]
-            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+            if generation_schema in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 history_models_by_nct[nct_id] = artifacts.history_models_by_nct[nct_id]
             else:
                 # B1b remains readable after B2 ships.  It has no public
@@ -1942,14 +1980,14 @@ class PublicGenerationPublisher:
                     "available": False,
                     "unavailable_reason": "not_collected",
                 }
-            if generation_schema in {"1.3.0", "1.5.0", "1.7.0"}:
+            if generation_schema in {"1.3.0", "1.5.0", "1.7.0", "1.9.0"}:
                 prospective_models_by_nct[nct_id] = artifacts.prospective_models_by_nct[nct_id]
             else:
                 prospective_models_by_nct[nct_id] = {
                     "available": False,
                     "unavailable_reason": "baseline_not_established",
                 }
-            if generation_schema in {"1.6.0", "1.7.0"}:
+            if generation_schema in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
                 change_tapes_by_nct[nct_id] = artifacts.change_tapes_by_nct[nct_id]
             else:
                 change_tapes_by_nct[nct_id] = {
@@ -1960,7 +1998,7 @@ class PublicGenerationPublisher:
             raise PublicationError("TRIAL_PROJECTION_BINDING_MISMATCH")
         if len(history_models_by_nct) != len(trials):
             raise PublicationError("TRIAL_HISTORY_PROJECTION_BINDING_MISMATCH")
-        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0"} and len(protocols_by_nct) != len(trials):
+        if generation_schema in {"1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"} and len(protocols_by_nct) != len(trials):
             raise PublicationError("TRIAL_PROTOCOL_PROJECTION_BINDING_MISMATCH")
         if len(prospective_models_by_nct) != len(trials):
             raise PublicationError("TRIAL_PROSPECTIVE_PROJECTION_BINDING_MISMATCH")
@@ -1973,6 +2011,11 @@ class PublicGenerationPublisher:
             history_models_by_nct=history_models_by_nct,
             prospective_models_by_nct=prospective_models_by_nct,
             change_tapes_by_nct=change_tapes_by_nct,
+            what_matters_next_inputs=(
+                artifacts.what_matters_next_inputs
+                if generation_schema in _WMN_GENERATION_SCHEMAS
+                else None
+            ),
         )
 
     def _prior_history_model_bytes(self, nct_id: str) -> bytes | None:
@@ -1986,7 +2029,7 @@ class PublicGenerationPublisher:
         if committed is None:
             return None
         manifest = self._load_generation_manifest(committed.generation_id)
-        if manifest.get("schema_version") not in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0"}:
+        if manifest.get("schema_version") not in {"1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             return None
         if nct_id not in manifest.get("configured_nct_ids", ()):
             return None
@@ -2017,7 +2060,7 @@ class PublicGenerationPublisher:
         if committed is None:
             return None
         manifest = self._load_generation_manifest(committed.generation_id)
-        if manifest.get("schema_version") not in {"1.6.0", "1.7.0"}:
+        if manifest.get("schema_version") not in {"1.6.0", "1.7.0", "1.8.0", "1.9.0"}:
             return None
         if nct_id not in manifest.get("configured_nct_ids", ()):
             return None
@@ -2051,10 +2094,30 @@ class PublicGenerationPublisher:
         history_evidence_by_nct: Mapping[str, HistoryPublicationEvidence] | None = None,
         prospective_models_by_nct: Mapping[str, Mapping[str, Any]] | None = None,
         prospective_evidence_by_nct: Mapping[str, ProspectivePublicationEvidence] | None = None,
+        wmn_inputs: Mapping[str, Any] | None = None,
     ) -> PreparedGeneration:
         """Make a complete sanitized generation outside the actual public root."""
 
         run = _validate_run(run, expected_watermark=expected_watermark)
+        normalized_wmn_inputs: dict[str, Any] | None = None
+        if wmn_inputs is not None:
+            try:
+                normalized_wmn_inputs = validate_wmn_inputs(
+                    wmn_inputs, forbidden_generation_id=run["run_id"]
+                )
+            except CompanyContractError as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            try:
+                input_cut_time = datetime.fromisoformat(
+                    normalized_wmn_inputs["input_cut"]["cutoff"].replace("Z", "+00:00")
+                )
+                published_time = datetime.fromisoformat(
+                    str(run["finished_at"]).replace("Z", "+00:00")
+                )
+            except (KeyError, TypeError, ValueError) as exc:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID") from exc
+            if input_cut_time > published_time:
+                raise PublicationError("WMN_OWNER_INPUT_INVALID")
         collector_generation = _require_within(
             collector_generation,
             collector_public_root,
@@ -2273,6 +2336,11 @@ class PublicGenerationPublisher:
                     final_stage / _TRIAL_CHANGE_TAPE_DIRECTORY / f"{nct_id}.json",
                     change_tape_bytes_by_nct[nct_id],
                 )
+            if normalized_wmn_inputs is not None:
+                atomic_write(
+                    final_stage / _WMN_INPUT_ARTIFACT,
+                    _json_bytes(normalized_wmn_inputs),
+                )
             atomic_write(final_stage / "health.json", _json_bytes(dict(health)))
             artifact_paths = sorted(
                 path for path in final_stage.rglob("*") if path.is_file()
@@ -2288,9 +2356,17 @@ class PublicGenerationPublisher:
             payload: dict[str, Any] = {
                 "contract_id": "biocatalyst_public_generation.v1",
                 "schema_version": (
-                    "1.7.0"
-                    if normalized_prospective_models is not None
-                    else "1.6.0"
+                    (
+                        "1.9.0"
+                        if normalized_prospective_models is not None
+                        else "1.8.0"
+                    )
+                    if normalized_wmn_inputs is not None
+                    else (
+                        "1.7.0"
+                        if normalized_prospective_models is not None
+                        else "1.6.0"
+                    )
                 ),
                 "generation_id": run["run_id"],
                 "run_id": run["run_id"],
