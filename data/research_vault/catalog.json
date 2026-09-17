@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T02:11:09.853034+00:00",
-  "count": 2266,
+  "generated_at": "2026-09-17T08:05:16.707351+00:00",
+  "count": 2269,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -84,6 +84,67 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-qoewpbn7rg0-0509eb",
+      "title": "Pace",
+      "institution": "Canaccord",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T02:25:43Z",
+      "summary_points": [
+        "Life Insurer Capital Shift: US life insurers allocate ~25% of fixed-income portfolios to private credit/strategic partnerships, directing annuity premiums into hyperscale data centers—structural flow shift impacting data center valuations and fixed-income allocation dynamics.",
+        "Amodei Governance Framework: Mandates internal lab access, global safety standards, and coordinated pacing to curb uncontrolled AI infrastructure growth—critical policy shift for mitigating recursive self-improvement risks and aligning infrastructure buildout with safety.",
+        "Geopolitical & Energy Constraints: Escalating AI deployment risks (power demand, energy limits) combined with Biden’s semiconductor export restrictions and Chinese AI model development create dual pressure points; telecom bubble parallels signal overbuild and volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-steb3m9ncyh-f1abbe",
+      "title": "ASPI A sum of its parts",
+      "institution": "Canaccord",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T02:25:38Z",
+      "summary_points": [
+        "Helium Supply Crisis & Strategic Edge: Qatar LNG damage and Russia export controls (until 2027) drive spot prices to $2,000+/Mcf; Virginia Gas Project’s 3.4% helium concentration (vs.",
+        "US 0.35%) is globally rare, positioning ASP as critical supplier amid 25-30% global supply disruption from Strait of Hormuz closure.",
+        "Phase 1 Revenue Catalysts: Helium commissioning (Aug 2024) ramps to 70 MCF/d by Q3 2026; take-or-pay contract at >$600/Mcf (vs.",
+        "$380) and LNG offtake (2,500 GJ/day) with domestic demand support, targeting $14.6M annual revenue (vs.",
+        "$11.8M)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8omyzzmvnmq-fadb3c",
+      "title": "Prime Insights and Analytics Chart Pack September 2026 Marquee",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T01:42:45Z",
+      "summary_points": [
+        "Hedge Fund Positioning Shift: Global fundamental long/short net sold equities (Macro Products drove 70% of $ net selling), Asia net bought (longs), EM/North America net sold (shorts); Asia equities O/W +13% vs MSCI World ACWI.",
+        "Thematic Sector Divergence: TMT most net bought (hyperscalers longs, Mag 7 allocation ~20%), Health Care most net sold (Biotech-led), Utilities/Real Estate heavily net sold; sector tilt and short-term momentum offset alpha gains.",
+        "Leverage Dynamics: Gross leverage rose +1.0 pts to 307.4% (55th/85th percentile), net leverage fell -1.4 pts to 76.5% (19th/49th percentile); Prime Book gross leverage 330%+ vs Fundamental L/S gross 230%+.",
+        "China Positioning: Chinese equities (onshore/offshore) represent 10–13% of global net exposure (Prime Book), with 2023 peaks indicating significant strategic allocation.",
+        "Geopolitical Risk Integration: Critical assessment of EU CBAM, supply chain vulnerabilities, and trade tensions to mitigate tail risks in positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-gwetpnjg75e-a4b97d",
       "title": "AeroVironment Inc",
