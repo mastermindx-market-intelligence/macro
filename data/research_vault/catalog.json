@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T21:21:22.003697+00:00",
-  "count": 2316,
+  "generated_at": "2026-09-17T21:51:28.366860+00:00",
+  "count": 2317,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -182,6 +182,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kluxnfqxc7x-cd141f",
+      "title": "USA Philly Fed Manufacturing Declines Less Than Expected",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:37:36Z",
+      "summary_points": [
+        "Philly Fed Manufacturing Supply Chain Risks: Delivery times hit highest since March 2022 (+22.8pt to 26.5), signaling persistent bottlenecks and near-term manufacturing slowdown (critical risk factor for industrial equities).",
+        "Housing Starts & GDP Catalyst: Single-family starts rose 7.6% (July growth revised +4.5pp), lifting Q3 GDP tracking estimate by 0.2pp to +3.2% (fundamental growth catalyst for real estate/financials).",
+        "Philly Fed Diffusion Index Expansion: Index at ~60 (above 50 threshold), signaling robust manufacturing expectations and leading indicator for industrial sector expansion (positive catalyst for cyclical equities).",
+        "Labor Market Cooling & Recession Risk: Continuing claims at lowest since Jan 2024 with sharp decline, signaling weakening labor dynamics, increased recession risk, and potential consumer spending sustainability concerns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
