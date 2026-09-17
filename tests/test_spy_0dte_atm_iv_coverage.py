@@ -51,6 +51,19 @@ def test_atm_coverage_all_clocks_and_anchor():
         assert out[prefix + "_anchor_minute"] == 1.0
 
 
+
+def test_invalid_underlying_minute_is_counted_missing_without_losing_iv_clocks():
+    p = payload()
+    for group in p["response"]:
+        for row in group["data"]:
+            if row["timestamp"].endswith("09:55:00.000"):
+                row["underlying_price"] = 0.0
+    out = c.atm_coverage(p, DATE)
+    assert out["minute_count"] == 30
+    for prefix in ("09:35", "09:45", "10:00"):
+        assert out[prefix + "_atm_iv_level"] is True
+        assert out[prefix + "_atm_iv_change"] is True
+
 def test_invalid_exact_atm_is_missing_even_with_farther_valid_strike():
     out = c.atm_coverage(payload(nearest_error=c.a1.IV_ERROR_MAX + .0001), DATE)
     for prefix in ("09:35", "09:45", "10:00"):

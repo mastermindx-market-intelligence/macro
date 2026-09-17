@@ -83,7 +83,10 @@ def collapse_underlying_prices(payload: Any, session_date: str) -> dict[str, flo
                 raise FeatureError("underlying price is future relative to the IV row")
             price = _finite_positive(row.get("underlying_price"))
             if price is None:
-                raise FeatureError("underlying price is not finite/positive")
+                # Source-present invalid price is an unknown observation, not a
+                # day-wide failure. Never impute it; downstream minute-dependent
+                # features remain null when no valid peer row exists for the minute.
+                continue
             by_clock.setdefault(timestamp.split("T", 1)[1], []).append(price)
     collapsed: dict[str, float] = {}
     for clock, values in by_clock.items():

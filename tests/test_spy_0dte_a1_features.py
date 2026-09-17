@@ -145,6 +145,26 @@ def test_invalid_nbbo_fails_iv_closed():
     assert bad["atm_iv_level"] is None
 
 
+
+def test_nonpositive_underlying_rows_are_null_observations_not_day_failure():
+    p = payload(decision="10:00:00.000")
+    for group in p["response"]:
+        for row in group["data"]:
+            if row["timestamp"].endswith("09:55:00.000"):
+                row["underlying_price"] = 0.0
+    features = build(p, "10:00:00.000")
+    assert features["first_30m_return"] is not None
+    assert features["realized_vol_open_to_decision"] is None
+    assert features["atm_iv_level"] is not None
+    assert features["atm_iv_change_from_first_valid"] is not None
+
+
+def test_one_invalid_underlying_peer_does_not_poison_valid_same_minute_rows():
+    p = payload(decision="09:35:00.000")
+    p["response"][0]["data"][2]["underlying_price"] = 0.0
+    prices = f.collapse_underlying_prices(p, DATE)
+    assert math.isclose(prices["09:32:00.000"], 600.02)
+
 def test_future_underlying_timestamp_refuses():
     p = payload(decision="09:35:00.000")
     p["response"][0]["data"][0]["underlying_timestamp"] = DATE + "T09:31:00.000"
