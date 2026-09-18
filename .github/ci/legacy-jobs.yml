@@ -9370,6 +9370,10 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # Skylit R6 Stage 0: tests live in tests/test_market_structure.py and
+      # import this topology analyzer directly; the exclusive owner must cover
+      # the imported script or contract-delta correctly refuses the curation.
+      - "scripts/research_skylit_r6_cross_expiry_topology.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
