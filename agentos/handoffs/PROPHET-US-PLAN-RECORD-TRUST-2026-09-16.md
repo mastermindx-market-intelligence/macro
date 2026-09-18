@@ -181,7 +181,7 @@ The native source and fixtures are unchanged by this checkpoint except for the j
 
 # Current continuation
 
-Operation `prophet-plan-trust-20260916-sol-001`; source base `4f37209719d2ca5caf9fd3a37aca29fa363f351c`; protected Skillpack `Mastermind@5ee11ab1e993616f3568cfca4069cb21fa61fd8f` (1.0.1/bootstrap1). Current live Chairman approval is the modifying intent. Sol retains the exact source carrier; no external worker assignment is asserted.
+Operation `prophet-plan-trust-20260916-sol-001`; source base `4f37209719d2ca5caf9fd3a37aca29fa363f351c`; protected Skillpack `Mastermind@b731149296a9d837d426730813f68d5acc6133ac` (1.0.1/bootstrap1). Current live Chairman approval is the modifying intent. Sol retains the exact source carrier; no external worker assignment is asserted.
 
 Workspace: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/prophet-plan-trust-20260916-sol-001` on Studio `3f5ce987-e3eb-40a3-af9f-4b0ae54919cc`. Branch `claude/prophet-plan-trust-20260916-sol-001`. Reconcile any last process/result before retry. Source publication details belong to the PR receipt appended below, not a guessed commit.
 
@@ -211,3 +211,33 @@ Branch Chromium process 99247 plus deterministic repeat 4227 passed 8 visual, 2 
 Fresh no-write composition with Macro main `16808834c465657194180c89b0d0cdda8f7c9385` produced conflict-free tree `9b7bcb354776d8ad45bf8c04c9cde4b6240847b3` and unreferenced proof commit `5478579a3f7cc5547a4d20571c2a1b628d8f8efb`. The source-owned overlap is empty. The integrated matrix passed 219/219; Chromium retained all 400 records and 0 action badges while ordinary data movement changed the split to 260 default / 140 resolved. Evidence: `/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r6-current-main-168088-20260917-sol-001`.
 
 Release remains held. The prior review request never reached PICKUP_ACK or START and is stale on this descendant. Exact-descendant CI/security, independent review, final current-main composition, expected-head merge, authenticated entitled production browser proof and the subsequent ordinary scheduled update remain required. Do not redo the R2 navigation repair, R3 pager repair, R5/R6 censuses or the radius diagnosis absent a material invalidator.
+
+
+# R8 entitlement-copy honesty repair and exact current-main proof
+
+Protected procedure: `Mastermind@b731149296a9d837d426730813f68d5acc6133ac` (Skillpack 1.0.1/bootstrap1). Original source custody remains the same Studio worktree, branch and PR #7237.
+
+Owner-side adversarial review found one remaining trust contradiction in the gated Plans wall: it promised a “full ranked board” and “table view,” while tracked records are ordered by original priority and the existing source-toggle law explicitly exits table mode in Plans mode. This was a false capability/current-authority promise, not a missing table implementation commission.
+
+TDD RED failed on the legacy promise. The bounded repair changes only the gated plan-wall copy in English and Chinese to “tracked plan rows,” “full tracked plan book,” and “every lifecycle state.” Candidate-wall copy, entitlements, counts, rankings, data, navigation and table behavior are unchanged. Exact semantic head: `eed58e9ff177dab1c7d2af666fbddc2278ce1087`.
+
+Exact semantic verification passed 220/220. Existing Chromium proof passed 8 visual + 2 newer-record navigation + 1 real-input pager case with 400 records/IDs/markers, 0 action badges and a 266 default / 134 resolved split. The actual gated wall passed 8/8 desktop/mobile × dark/light × EN/ZH cases without overflow. Broader lifecycle no-op and overlay falsifiers were reused only after byte-proving their owners and delegated lifecycle script unchanged.
+
+Fresh no-write composition with current Macro main `e2f1a47e585adba7b204de21e70938384dd6051f` produced conflict-free tree `788958f45b7da58e5d1beb2b25064fd487082d6a` and unreferenced proof commit `2cd9912f8c5d05a953e98fb8ac0286078d93a902`. `templates/dashboard.html.j2` is the sole path overlap, but current-main movement is confined to risk-dialog rank/delta hunks while the candidate owns Prophet hunks ~16463+. The integrated matrix passed 220/220; Chromium retained all 400 records and 0 action badges with 260 default / 140 resolved. A fresh integrated gated-wall browser proof passed all 8 cases. Evidence: `/Volumes/Mastermind/agent-evidence/prophet-plan-trust-r8-copy-honesty-20260917-sol-001`; manifest verifies every file.
+
+The semantic commit is local/unpushed at this record capture; the record commit is intentionally `PENDING_RECORD_COMMIT_AT_CAPTURE`. Release remains held. The R6 independent-review operation never reached PICKUP_ACK/START and its exact target is superseded pre-effect by R8 source movement. A fresh exact-final-head review operation is required after lawful reviewer placement. Exact-final-head CI/security, final current-main compatibility, expected-head merge, authenticated entitled production browser proof, accepted integration of incumbent availability repairs, and a subsequent ordinary scheduled update remain mandatory.
+
+Do not redo R2 navigation, R3 pager, nested-anchor diagnosis, China checksum, R6 radius repair, or R8 copy diagnosis absent a material invalidator.
+
+
+# R9 publication reconciliation — current main and upstream union boundary
+
+Protected procedure is now `Mastermind@320f586126b7c82c843ef17612f12d40d20a42e0` (Skillpack 1.0.1/bootstrap1). Same-carrier reconciliation proves local semantic head `eed58e9ff177dab1c7d2af666fbddc2278ce1087` is one normal descendant ahead of the published #7237 head `283a46e9b4bd6b7a43e85ff573e6ce406758d768`; no second source carrier exists.
+
+Fresh Macro `main@88da8fbe42bb9962dfe14ceae6b6ee68cc5d3474` has zero path overlap with the R8 semantic paths. A fresh no-write composition of current main plus R8 is conflict-free at tree `2e454f0b0f1087ee33cb017979300990a1d3c8e2`. The exact owning matrix remains 220/220 PASS and Agent OS validates 1,121 records with 0 errors / 83 inherited warnings.
+
+The prior downstream claim that #7187↔#7237 was test-only is superseded for R8. #7187 `3a05867255312456c11dd216c764122bed87b59e` plus R8 now conflicts in `templates/dashboard.html.j2` and `tests/test_p0_prophet_candidate_board.py`. The product contracts are compatible: retain #7187's source-date/date-unavailable and source-neutral freshness wording; retain R8's tracked-plan/full-tracked-plan-book wording and removal of ranked/table promises; retain both regression families.
+
+Do not resolve that upstream union on this carrier before #7187's source-truth stack is accepted or the designated single integration/publication owner performs it. No new integration branch is warranted.
+
+At this checkpoint the product/test semantics are committed at `eed58e9…`. The only remaining local changes are durable record closure. Next source effect is one record-only commit, then a normal expected-remote fast-forward push of this existing branch. Release remains held for exact-final-head CI/security, independent review, accepted upstream availability integration, final current-main proof, expected-head merge, authenticated entitled production browser proof, and a subsequent ordinary scheduled update.
