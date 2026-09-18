@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T10:22:40.278359+00:00",
-  "count": 2353,
+  "generated_at": "2026-09-18T10:37:44.200123+00:00",
+  "count": 2354,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -127,6 +127,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gzh4fo8ehwn-140d14",
+      "title": "The Point for Europe Friday, 18 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T08:56:43Z",
+      "summary_points": [
+        "Netherlands Banks: ECB Rate Impact: ECB rate hike to 3% boosts ABN NII (+~2.6% vs consensus); Dutch banking market attractiveness from digitalization/volume resilience despite deposit competition.",
+        "Volvo Car - Sell/High Risk: EBIT margin sustainability (8% target) challenged by Chinese competition, geopolitical tensions, and industry overcapacity; volume growth lagging expectations.",
+        "Wacker Chemie AG - Q3 Beat: Q3 EBITDA ~8% above consensus; 15% margin target supported by PACE savings (>€300m p.a. from 2028), mix improvement, and lower capital intensity.",
+        "Solvency II Reform: Effective 30 Jan 2027; phased discount curve adjustments and Volatility Adjustment drive structural demand for long-dated EGBs/SSAs, easing supply pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
