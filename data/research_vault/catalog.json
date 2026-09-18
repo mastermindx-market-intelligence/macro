@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T02:36:57.471069+00:00",
-  "count": 2331,
+  "generated_at": "2026-09-18T02:52:01.922788+00:00",
+  "count": 2332,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-jkhzyolch1w-1d4b38",
+      "title": "JPM Retail Radar Retail Blinks as Rates Swing Sept 16",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:19:00Z",
+      "summary_points": [
+        "Fed Rate Hike & Retail Flow Weakness: 25bps hike to 3.75-4% (removing accommodation) triggered -2.0z ETF outflows, Tech ex-Mag7 selling, and sector leadership shifts; equities face -6% trend risk if earnings weak or Middle East tensions escalate.",
+        "Sector Flow Divergence: Retail shifted defensive (bond proxies), net selling Tech ex-Mag7 (NVDIA, etc.), while buying Mag7 (NVDA, TSLA, AMZN) and Semiconductors; Staples only sector with net retail inflows.",
+        "Short Squeeze Vulnerability: META (13.1% short interest, 25.6 social score) and SPCE (7.6% short interest, 24.1 social score) show high retail buying + hedge fund shorts, creating acute squeeze risk per Figure 14.",
+        "Factor Crowding Risk: Elevated dividend yield crowding (Fig 3) and rates-momentum correlation (Fig 6) signal heightened mispricing risk and drawdown exposure for factor-based strategies.",
+        "ETF Flow Divergence: Tech ETFs saw third-highest outflows; Fixed Income ETFs faced apathy; Dividend ETF inflows declined, signaling exit from broad-market dividend crowding."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-fip581gs8cw-ae1704",
       "title": "GS Mourad post Fed what's working what's not working 17 Sep 2026",
