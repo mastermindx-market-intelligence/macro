@@ -1298,13 +1298,13 @@ def _job_diff_match(job: LegacyJob, changed: Iterable[str]) -> tuple[str, str] |
 def _global_invalidator_paths(
     changed: Iterable[str],
     *,
-    bounded_manifest_enrollment: bool = False,
+    bounded_manifest_delta: bool = False,
 ) -> list[str]:
     """Return changed paths that make per-job scope unknowable.
 
     legacy-jobs.yml remains a global invalidator by default. The only
-    exception is caller-supplied positive evidence that its semantic delta was
-    classified as bounded additive pytest enrollment. The exact path is
+    exception is caller-supplied positive evidence that its semantic delta is
+    bounded to existing logical jobs. The exact path is
     exempted before glob matching so the broader .github/ci/** rule keeps
     every other CI-manifest/control file fail-closed.
     """
@@ -1312,7 +1312,7 @@ def _global_invalidator_paths(
         path
         for path in changed
         if not (
-            bounded_manifest_enrollment
+            bounded_manifest_delta
             and path == LEGACY_MANIFEST_PATH
         )
         and _matches_any(GLOBAL_INVALIDATORS, path)
@@ -1323,28 +1323,28 @@ def select_jobs(
     jobs: Iterable[LegacyJob],
     changed: list[str] | None,
     *,
-    manifest_enrollment_job_ids: Iterable[str] | None = None,
+    manifest_changed_job_ids: Iterable[str] | None = None,
 ) -> tuple[list[LegacyJob], str]:
     """Pick the jobs a diff can actually affect, erring toward running more.
 
-    manifest_enrollment_job_ids is tri-state. None means there is no positive
+    manifest_changed_job_ids is tri-state. None means there is no positive
     proof that a legacy-manifest edit is bounded, so the historical full-suite
     invalidation remains. A tuple (including empty for a semantic no-op) means
     the higher-level planner compared exact base and candidate manifests and
-    proved the only semantic changes are additive pytest-suite enrollment.
-    Every changed job named by that proof is forced into the selection.
+    proved the semantic delta is limited to existing logical jobs. Every job
+    named by that proof is forced into the selection.
     """
     jobs = list(jobs)
     if changed is None:
         return jobs, "full suite: changed-file set unavailable"
-    bounded_manifest = manifest_enrollment_job_ids is not None
+    bounded_manifest = manifest_changed_job_ids is not None
     invalidators = _global_invalidator_paths(
         changed,
-        bounded_manifest_enrollment=bounded_manifest,
+        bounded_manifest_delta=bounded_manifest,
     )
     if invalidators:
         return jobs, f"full suite: global invalidator changed ({invalidators[0]})"
-    forced_job_ids = set(manifest_enrollment_job_ids or ())
+    forced_job_ids = set(manifest_changed_job_ids or ())
     scoped_jobs = [job for job in jobs if job.is_scoped]
     unowned = [
         path for path in changed
@@ -1380,7 +1380,7 @@ def select_jobs(
             1 for job in selected if job.job_id in forced_job_ids
         )
         reason += (
-            "; bounded manifest enrollment "
+            "; bounded manifest job delta "
             f"changed {forced_present} selected job(s)"
         )
     return selected, reason
@@ -1396,71 +1396,26 @@ def _workflow_jobs(path: Path) -> dict[str, dict[str, Any]]:
     return payload["jobs"]
 
 
-def _pytest_suite_token(token: str) -> str | None:
-    """Return the suite path for one exact pytest file selector token."""
-    path = token.split("::", 1)[0]
-    return path if SUITE_REFERENCE_RE.fullmatch(path) else None
-
-
-def _additive_pytest_suite_enrollment(
-    before: str,
-    after: str,
-) -> tuple[str, ...] | None:
-    """Prove that after only adds pytest suite selectors to before."""
-    try:
-        before_tokens = shlex.split(before, comments=False, posix=True)
-        after_tokens = shlex.split(after, comments=False, posix=True)
-    except ValueError:
-        return None
-    # Token equality is not enough for shell semantics: changing quoted to
-    # unquoted expansion can alter globbing/word-splitting while producing the
-    # same shlex tokens. Only the deliberately boring one-space command form is
-    # eligible for narrowing; anything quoted, multiline or reformatted keeps
-    # the historical full-suite invalidation.
-    if before != " ".join(before_tokens) or after != " ".join(after_tokens):
-        return None
-
-    def partition(tokens: list[str]) -> tuple[list[str], list[str]]:
-        suites: list[str] = []
-        rest: list[str] = []
-        for token in tokens:
-            suite = _pytest_suite_token(token)
-            if suite is None:
-                rest.append(token)
-            else:
-                suites.append(token)
-        return suites, rest
-
-    before_suites, before_rest = partition(before_tokens)
-    after_suites, after_rest = partition(after_tokens)
-    if (
-        not before_suites
-        or before_rest != after_rest
-        or not any(token == "pytest" for token in before_rest)
-        or len(after_suites) <= len(before_suites)
-    ):
-        return None
-
-    base_index = 0
-    added: list[str] = []
-    for token in after_suites:
-        if (
-            base_index < len(before_suites)
-            and token == before_suites[base_index]
-        ):
-            base_index += 1
-        else:
-            added.append(token)
-    if base_index != len(before_suites) or not added:
-        return None
-    return tuple(added)
-
-
-def _classify_additive_manifest_pytest_enrollment(
+def _classify_bounded_manifest_job_delta(
     base_document: object,
     candidate_document: object,
 ) -> tuple[str, ...] | None:
-    """Return jobs changed only by additive pytest wiring, else None."""
+    """Return exactly the existing jobs whose manifest semantics changed.
+
+    This proves the legacy manifest edit is job-local rather than globally
+    semantic. The candidate manifest has already passed load_legacy_jobs
+    validation before this classifier is consulted. We still fail closed when
+    the YAML document shape changes, any non-jobs top-level semantic changes,
+    the job inventory/order changes, or a job moves between the code/data gate
+    planes. Those cases preserve the historical full-suite invalidation.
+
+    Within one existing job, any candidate-local change is bounded to that job:
+    commands, setup dependencies, paths/scope, timeout, proof IDs and step
+    structure cannot change what an unchanged sibling job means. The changed
+    job is forced into the candidate plan regardless of its new path scope, so
+    narrowing its own declaration cannot hide the job on the PR that makes the
+    change.
+    """
     if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
         return None
     if set(base_document) != set(candidate_document):
@@ -1473,6 +1428,8 @@ def _classify_additive_manifest_pytest_enrollment(
     candidate_jobs = candidate_document.get("jobs")
     if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
         return None
+    # Job add/delete/rename/reorder remains a global semantic event in this
+    # first bounded release. It can be admitted later only with its own proof.
     if tuple(base_jobs) != tuple(candidate_jobs):
         return None
 
@@ -1484,55 +1441,28 @@ def _classify_additive_manifest_pytest_enrollment(
             continue
         if not isinstance(before, dict) or not isinstance(after, dict):
             return None
-        if set(before) != set(after):
-            return None
-        if any(
-            key != "steps" and before[key] != after[key]
-            for key in before
-        ):
-            return None
-        before_steps = before.get("steps")
-        after_steps = after.get("steps")
-        if (
-            not isinstance(before_steps, list)
-            or not isinstance(after_steps, list)
-            or len(before_steps) != len(after_steps)
-        ):
-            return None
-
-        saw_additive_run = False
-        for before_step, after_step in zip(before_steps, after_steps):
-            if before_step == after_step:
-                continue
-            if not isinstance(before_step, dict) or not isinstance(after_step, dict):
-                return None
-            if set(before_step) != set(after_step):
-                return None
-            if any(
-                key != "run" and before_step[key] != after_step[key]
-                for key in before_step
-            ):
-                return None
-            before_run = before_step.get("run")
-            after_run = after_step.get("run")
-            if not isinstance(before_run, str) or not isinstance(after_run, str):
-                return None
-            if _additive_pytest_suite_enrollment(before_run, after_run) is None:
-                return None
-            saw_additive_run = True
-        if not saw_additive_run:
+        # Moving a job between code and post-nightly data proof planes changes
+        # which authority workflow can execute it. Preserve the full-suite
+        # invalidator rather than treating that as an ordinary job-local edit.
+        if before.get("gate", "code") != after.get("gate", "code"):
             return None
         changed_job_ids.append(str(job_id))
     return tuple(changed_job_ids)
 
 
-def _safe_manifest_enrollment_job_ids(
+def _safe_manifest_changed_job_ids(
     workflow: Path,
     changed_from: str | None,
     *,
     repo_root: Path | None = None,
 ) -> tuple[str, ...] | None:
-    """Prove bounded enrollment from exact base/candidate manifest bytes."""
+    """Prove a job-local manifest delta from exact base/candidate YAML bytes.
+
+    Any inability to bind the repository path, exact 40-hex base commit, base
+    object, UTF-8 bytes or YAML structure returns None and therefore keeps the
+    historical full-suite invalidation. The candidate itself is validated
+    separately through load_legacy_jobs before this proof is used.
+    """
     if changed_from is None or not re.fullmatch(r"[0-9a-f]{40}", changed_from):
         return None
     root = (repo_root or Path(__file__).resolve().parent.parent).resolve()
@@ -1554,11 +1484,10 @@ def _safe_manifest_enrollment_job_ids(
         candidate_document = yaml.safe_load(candidate)
     except (OSError, UnicodeError, subprocess.CalledProcessError, yaml.YAMLError):
         return None
-    return _classify_additive_manifest_pytest_enrollment(
+    return _classify_bounded_manifest_job_delta(
         base_document,
         candidate_document,
     )
-
 
 def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     """Estimate work well enough to avoid putting both giant suites together."""
@@ -2032,7 +1961,7 @@ def build_plan(
     changed_from: str | None,
     scope_mode: str,
     pack_count: int = 12,
-    manifest_enrollment_job_ids: Iterable[str] | None = None,
+    manifest_changed_job_ids: Iterable[str] | None = None,
     workflow_run_id: str | None = None,
     workflow: str | None = None,
     event: str | None = None,
@@ -2055,7 +1984,7 @@ def build_plan(
         changed
         and _global_invalidator_paths(
             changed,
-            bounded_manifest_enrollment=manifest_enrollment_job_ids is not None,
+            bounded_manifest_delta=manifest_changed_job_ids is not None,
         )
     )
     scope_summary = "scope inference not needed"
@@ -2070,7 +1999,7 @@ def build_plan(
     eligible, reason = select_jobs(
         jobs,
         changed,
-        manifest_enrollment_job_ids=manifest_enrollment_job_ids,
+        manifest_changed_job_ids=manifest_changed_job_ids,
     )
     predicted_job_ids = tuple(job.job_id for job in eligible)
     if scope_mode == "off" and changed_from:
@@ -2260,9 +2189,9 @@ def plan_from_workflow(
         changed = resolve_changed_files(
             changed_from, explicit_file=changed_files_file
         )
-        manifest_enrollment_job_ids: tuple[str, ...] | None = None
+        manifest_changed_job_ids: tuple[str, ...] | None = None
         if changed and LEGACY_MANIFEST_PATH in changed:
-            manifest_enrollment_job_ids = _safe_manifest_enrollment_job_ids(
+            manifest_changed_job_ids = _safe_manifest_changed_job_ids(
                 workflow,
                 changed_from,
             )
@@ -2272,7 +2201,7 @@ def plan_from_workflow(
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
-            manifest_enrollment_job_ids=manifest_enrollment_job_ids,
+            manifest_changed_job_ids=manifest_changed_job_ids,
             workflow_run_id=workflow_run_id,
             workflow=workflow_name,
             event=event,
