@@ -1,0 +1,59 @@
+# China Gold Premium Monitor Implementation Plan
+
+Goal: Add a source-entitled, fail-closed Shanghai-versus-London gold premium monitor to the
+existing Gold detail surface without changing trading authority.
+
+Architecture: A pure provider-neutral engine reads explicitly entitled existing store references,
+computes the canonical SHAUPM/LBMA-AM series and optional Au99.99/spot proxy, and returns a
+display-only view-model. The commodity builder attaches that object only to Gold; a dedicated
+Jinja partial renders it using existing design tokens and a dependency-free SVG chart.
+
+Spec: docs/superpowers/specs/2026-09-18-china-gold-premium-monitor-design.md
+
+## Global constraints
+
+- No scraping or new provider collector in this slice.
+- Every configured source leg must explicitly set entitled: true.
+- Canonical and intraday methodologies never splice.
+- Display-only context: no score, rank, gate, size, Prophet, portfolio, or conviction input.
+- No new token root, runtime stylesheet injection, or Plotly dependency.
+- Dark/light and EN/ZH parity; 390px document must not overflow.
+- Existing commodity numeric policy remains unchanged.
+
+## Task 1 — Pure premium engine
+
+Files: create engine/china_gold_premium.py and tests/test_china_gold_premium.py.
+
+- Write failing math/alignment/rights tests.
+- Run focused tests and verify RED for missing module/API.
+- Implement only pure calculations and the fail-closed config/store reader.
+- Re-run focused tests to GREEN.
+- Refactor only while focused tests remain green.
+
+## Task 2 — Gold-only builder wiring
+
+Files: modify scripts/build_commodities.py and tests/test_china_gold_premium.py.
+
+- Write failing test that Gold receives the object and other commodities do not.
+- Verify RED.
+- Add the smallest additive builder hook.
+- Verify GREEN plus existing commodity truth/MTF tests.
+
+## Task 3 — Product panel
+
+Files: create templates/_china_gold_premium.html.j2, modify templates/commodities.html.j2,
+and extend tests/test_china_gold_premium.py.
+
+- Write failing template-render tests for available/unavailable states, EN/ZH content,
+  controls, and no raw internal slug leakage.
+- Verify RED.
+- Implement partial plus existing-token CSS and dependency-free SVG/range/mode behavior.
+- Verify GREEN and existing commodity template tests.
+
+## Task 4 — Visual and release proof
+
+- Opt the worktree into required site/mockups paths before rendering.
+- Render available and unavailable fixture states.
+- Capture dark/light × EN/ZH × desktop/mobile.
+- Run design-system, visual-evidence, runtime-style and relevant pytest gates.
+- Commit/push/open PR, own CI through conclusion, merge when lawful, then verify the served Gold panel.
