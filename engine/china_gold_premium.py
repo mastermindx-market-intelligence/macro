@@ -146,6 +146,62 @@ def compute_daily_benchmark(
     )
 
 
+def compute_close_aligned_proxy(
+    sge: pd.DataFrame,
+    global_spot: pd.DataFrame,
+    *,
+    sge_column: str,
+    global_column: str,
+    max_skew_minutes: float = 2.0,
+) -> pd.DataFrame:
+    """Compare SGE RMB/gram with global XAU/CNY at the Shanghai close clock."""
+    sge_series = _positive_series(sge, sge_column, daily=False)
+    global_series = _positive_series(global_spot, global_column, daily=False)
+    columns = [
+        "sge_rmb_g",
+        "reference_cny_oz",
+        "sge_cny_oz",
+        "spread_cny_oz",
+        "premium_pct",
+        "ma5_pct",
+    ]
+    if sge_series.empty or global_series.empty:
+        return pd.DataFrame(columns=columns)
+
+    tolerance = pd.Timedelta(minutes=float(max_skew_minutes))
+    global_index = pd.DatetimeIndex(global_series.index)
+    rows: list[dict] = []
+    stamps: list[pd.Timestamp] = []
+    for stamp, sge_value in sge_series.items():
+        loc = global_index.get_indexer([stamp], method="nearest", tolerance=tolerance)[0]
+        if loc < 0:
+            continue
+        global_stamp = global_index[loc]
+        global_value = float(global_series.iloc[loc])
+        local_cny_oz = float(sge_value) * TROY_OZ_GRAMS
+        spread = local_cny_oz - global_value
+        premium = (local_cny_oz / global_value - 1.0) * 100.0
+        if not all(np.isfinite(v) for v in (local_cny_oz, spread, premium)):
+            continue
+        rows.append(
+            {
+                "sge_rmb_g": float(sge_value),
+                "reference_cny_oz": global_value,
+                "sge_cny_oz": local_cny_oz,
+                "spread_cny_oz": spread,
+                "premium_pct": premium,
+            }
+        )
+        stamps.append(max(pd.Timestamp(stamp), pd.Timestamp(global_stamp)))
+
+    if not rows:
+        return pd.DataFrame(columns=columns)
+    out = pd.DataFrame(rows, index=pd.DatetimeIndex(stamps)).sort_index()
+    out = out[~out.index.duplicated(keep="last")]
+    out["ma5_pct"] = out["premium_pct"].rolling(5, min_periods=1).mean()
+    return out
+
+
 def compute_intraday_proxy(
     sge: pd.DataFrame,
     london: pd.DataFrame,
@@ -248,6 +304,48 @@ def _read_method(
     return out, labels, None
 
 
+def _read_close_proxy(
+    method_cfg: object,
+    *,
+    reader: Callable[[str, str], pd.DataFrame | None],
+) -> tuple[pd.DataFrame, list[str], _Unavailable | None]:
+    if not isinstance(method_cfg, dict) or not method_cfg:
+        return pd.DataFrame(), [], _REASON["not_configured"]
+
+    specs = {}
+    labels = []
+    for key in ("sge", "global"):
+        spec = method_cfg.get(key)
+        problem = _validate_leg(spec)
+        if problem is not None:
+            return pd.DataFrame(), labels, problem
+        specs[key] = spec
+        labels.append(spec["source_label"])
+
+    frames = {}
+    for key, spec in specs.items():
+        try:
+            frames[key] = reader(spec["group"], spec["name"])
+        except Exception:
+            frames[key] = None
+        if frames[key] is None or not isinstance(frames[key], pd.DataFrame) or frames[key].empty:
+            return pd.DataFrame(), labels, _REASON["source_data_unavailable"]
+
+    max_skew = _nonnegative_setting(method_cfg, "max_skew_minutes", 2.0)
+    if max_skew is None:
+        return pd.DataFrame(), labels, _REASON["source_config_invalid"]
+    out = compute_close_aligned_proxy(
+        frames["sge"],
+        frames["global"],
+        sge_column=specs["sge"]["column"],
+        global_column=specs["global"]["column"],
+        max_skew_minutes=max_skew,
+    )
+    if out.empty:
+        return out, labels, _REASON["no_aligned_observation"]
+    return out, labels, None
+
+
 def _as_utc(value) -> pd.Timestamp:
     ts = pd.Timestamp(value)
     if ts.tzinfo is None:
@@ -261,7 +359,7 @@ def _daily_fresh(frame: pd.DataFrame, cfg: dict, now: pd.Timestamp) -> bool:
     max_age = _nonnegative_setting(cfg, "max_age_days", 7.0)
     if max_age is None:
         return False
-    asof = pd.Timestamp(frame.index[-1]).tz_localize("UTC")
+    asof = _as_utc(frame.index[-1])
     age_days = (now.normalize() - asof.normalize()).days
     return 0 <= age_days <= max_age
 
@@ -286,6 +384,21 @@ def _point(row: pd.Series, when, *, intraday: bool) -> dict:
         "spread_usd_oz": float(row["spread_usd_oz"]),
         "sge_usd_oz": float(row["sge_usd_oz"]),
         "london_usd_oz": float(row["london_usd_oz"]),
+        "spread_price_oz": float(row["spread_usd_oz"]),
+        "sge_price_oz": float(row["sge_usd_oz"]),
+        "reference_price_oz": float(row["london_usd_oz"]),
+        "ma5_pct": float(row["ma5_pct"]),
+    }
+
+
+def _proxy_point(row: pd.Series, when) -> dict:
+    return {
+        "date": pd.Timestamp(when).date().isoformat(),
+        "ts": _as_utc(when).isoformat(),
+        "premium_pct": float(row["premium_pct"]),
+        "spread_price_oz": float(row["spread_cny_oz"]),
+        "sge_price_oz": float(row["sge_cny_oz"]),
+        "reference_price_oz": float(row["reference_cny_oz"]),
         "ma5_pct": float(row["ma5_pct"]),
     }
 
@@ -319,10 +432,15 @@ def _unavailable_vm(reason: _Unavailable) -> dict:
         "spread_usd_oz": None,
         "sge_usd_oz": None,
         "london_usd_oz": None,
+        "price_currency": None,
+        "spread_price_oz": None,
+        "sge_price_oz": None,
+        "reference_price_oz": None,
         "stats": {"avg_5": None, "range_30": None},
         "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
         "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
-        "chart": {"canonical": [], "intraday": None},
+        "close_proxy": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "chart": {"canonical": [], "proxy": [], "intraday": None, "display_source": None},
     }
 
 
@@ -350,6 +468,7 @@ def build_view_model(
     now_ts = _as_utc(now if now is not None else pd.Timestamp.now(tz="UTC"))
     canonical_cfg = cfg.get("canonical")
     intraday_cfg = cfg.get("intraday")
+    close_proxy_cfg = cfg.get("close_proxy")
 
     canonical, canonical_sources, canonical_problem = _read_method(
         canonical_cfg, reader=reader, intraday=False
@@ -357,73 +476,167 @@ def build_view_model(
     intraday, intraday_sources, intraday_problem = _read_method(
         intraday_cfg, reader=reader, intraday=True
     )
+    close_proxy, proxy_sources, proxy_problem = _read_close_proxy(
+        close_proxy_cfg, reader=reader
+    )
 
-    # A source row dated after the evaluation clock is not yet knowable. Keep
-    # past/current canonical history and discard future-dated rows before any
-    # freshness or headline selection.
+    # Nothing after the evaluation clock is knowable. Canonical rows are date
+    # observations; close-proxy rows carry an explicit Shanghai-close timestamp.
     if not canonical.empty:
         current_date = now_ts.tz_convert(None).normalize()
         canonical = canonical.loc[canonical.index <= current_date]
         if canonical.empty:
             canonical_problem = _REASON["no_aligned_observation"]
+    if not close_proxy.empty:
+        close_proxy = close_proxy.loc[close_proxy.index <= now_ts]
+        if close_proxy.empty:
+            proxy_problem = _REASON["no_aligned_observation"]
 
     if canonical_problem is None and _nonnegative_setting(canonical_cfg, "max_age_days", 7.0) is None:
         canonical_problem = _REASON["source_config_invalid"]
     if intraday_problem is None and _nonnegative_setting(intraday_cfg, "max_age_minutes", 180.0) is None:
         intraday_problem = _REASON["source_config_invalid"]
+    if proxy_problem is None and _nonnegative_setting(close_proxy_cfg, "max_age_days", 4.0) is None:
+        proxy_problem = _REASON["source_config_invalid"]
 
     canonical_available = canonical_problem is None and not canonical.empty
     intraday_available = intraday_problem is None and not intraday.empty
+    proxy_available = proxy_problem is None and not close_proxy.empty
+
     canonical_fresh = canonical_available and _daily_fresh(canonical, canonical_cfg, now_ts)
     intraday_fresh = intraday_available and _intraday_fresh(intraday, intraday_cfg, now_ts)
+    proxy_fresh = proxy_available and _daily_fresh(close_proxy, close_proxy_cfg, now_ts)
 
-    if not canonical_available and not intraday_available:
-        problem = canonical_problem or intraday_problem or _REASON["source_data_unavailable"]
-        vm = _unavailable_vm(problem)
+    if not canonical_available and not intraday_available and not proxy_available:
+        configured_problem = (
+            proxy_problem if isinstance(close_proxy_cfg, dict) and close_proxy_cfg
+            else canonical_problem if isinstance(canonical_cfg, dict) and canonical_cfg
+            else intraday_problem if isinstance(intraday_cfg, dict) and intraday_cfg
+            else _REASON["not_configured"]
+        )
+        vm = _unavailable_vm(configured_problem or _REASON["source_data_unavailable"])
         vm["canonical"]["sources"] = canonical_sources
         vm["intraday"]["sources"] = intraday_sources
+        vm["close_proxy"]["sources"] = proxy_sources
         return vm
 
-    # An indicative intraday point may be retained upstream for audit/context,
-    # but it cannot become the current user read after its freshness window when
-    # no canonical benchmark is available.
-    if not canonical_available and intraday_available and not intraday_fresh:
+    # A stale indicative method may remain in the store for audit, but it cannot
+    # become the current user read when no fresher or canonical method exists.
+    if (
+        not canonical_available
+        and not intraday_fresh
+        and proxy_available
+        and not proxy_fresh
+    ):
         vm = _unavailable_vm(_REASON["stale_observation"])
         vm["canonical"]["sources"] = canonical_sources
         vm["intraday"]["sources"] = intraday_sources
-        vm["intraday"]["asof"] = _as_utc(intraday.index[-1]).isoformat()
+        vm["close_proxy"].update(
+            {
+                "available": True,
+                "fresh": False,
+                "asof": _as_utc(close_proxy.index[-1]).isoformat(),
+                "sources": proxy_sources,
+            }
+        )
+        return vm
+    if (
+        not canonical_available
+        and not proxy_fresh
+        and intraday_available
+        and not intraday_fresh
+    ):
+        vm = _unavailable_vm(_REASON["stale_observation"])
+        vm["canonical"]["sources"] = canonical_sources
+        vm["intraday"].update(
+            {
+                "available": True,
+                "fresh": False,
+                "asof": _as_utc(intraday.index[-1]).isoformat(),
+                "sources": intraday_sources,
+            }
+        )
+        vm["close_proxy"]["sources"] = proxy_sources
         return vm
 
     canonical_points = [
         _point(row, idx, intraday=False) for idx, row in canonical.iterrows()
     ] if canonical_available else []
+    proxy_points = [
+        _proxy_point(row, idx) for idx, row in close_proxy.iterrows()
+    ] if proxy_available else []
     intraday_point = (
         _point(intraday.iloc[-1], intraday.index[-1], intraday=True)
         if intraday_available else None
+    )
+
+    canonical_date = (
+        pd.Timestamp(canonical.index[-1]).date() if canonical_available else None
+    )
+    proxy_date = (
+        pd.Timestamp(close_proxy.index[-1]).date() if proxy_available else None
     )
 
     if intraday_fresh:
         current_row = intraday.iloc[-1]
         current_method = "intraday"
         label_en, label_zh = "Indicative intraday basis", "日内指示性价差"
+    elif (
+        canonical_available
+        and canonical_fresh
+        and (not proxy_fresh or proxy_date is None or canonical_date >= proxy_date)
+    ):
+        current_row = canonical.iloc[-1]
+        current_method = "canonical"
+        label_en, label_zh = "Official daily benchmark basis", "官方日度基准价差"
+    elif proxy_fresh:
+        current_row = close_proxy.iloc[-1]
+        current_method = "close_proxy"
+        label_en, label_zh = "Indicative Shanghai-close basis", "上海收盘指示性价差"
     elif canonical_available:
         current_row = canonical.iloc[-1]
         current_method = "canonical"
         label_en, label_zh = "Official daily benchmark basis", "官方日度基准价差"
     else:
-        current_row = intraday.iloc[-1]
-        current_method = "intraday"
-        label_en, label_zh = "Indicative intraday basis", "日内指示性价差"
+        vm = _unavailable_vm(_REASON["stale_observation"])
+        vm["canonical"]["sources"] = canonical_sources
+        vm["intraday"]["sources"] = intraday_sources
+        vm["close_proxy"]["sources"] = proxy_sources
+        return vm
 
     premium = float(current_row["premium_pct"])
     state, state_en, state_zh = _state(premium)
-    last30 = canonical["premium_pct"].tail(30) if canonical_available else pd.Series(dtype=float)
 
+    if current_method == "close_proxy":
+        history = close_proxy["premium_pct"]
+        price_currency = "CNY"
+        spread_price_oz = float(current_row["spread_cny_oz"])
+        sge_price_oz = float(current_row["sge_cny_oz"])
+        reference_price_oz = float(current_row["reference_cny_oz"])
+        spread_usd_oz = None
+        sge_usd_oz = None
+        london_usd_oz = None
+        display_source = "proxy"
+    else:
+        history = canonical["premium_pct"] if canonical_available else pd.Series(dtype=float)
+        price_currency = "USD"
+        spread_price_oz = float(current_row["spread_usd_oz"])
+        sge_price_oz = float(current_row["sge_usd_oz"])
+        reference_price_oz = float(current_row["london_usd_oz"])
+        spread_usd_oz = float(current_row["spread_usd_oz"])
+        sge_usd_oz = float(current_row["sge_usd_oz"])
+        london_usd_oz = float(current_row["london_usd_oz"])
+        display_source = "canonical" if canonical_points else None
+
+    last30 = history.tail(30)
     canonical_asof = (
         pd.Timestamp(canonical.index[-1]).date().isoformat() if canonical_available else None
     )
     intraday_asof = (
         _as_utc(intraday.index[-1]).isoformat() if intraday_available else None
+    )
+    proxy_asof = (
+        _as_utc(close_proxy.index[-1]).isoformat() if proxy_available else None
     )
 
     return {
@@ -439,11 +652,15 @@ def build_view_model(
         "state_en": state_en,
         "state_zh": state_zh,
         "premium_pct": premium,
-        "spread_usd_oz": float(current_row["spread_usd_oz"]),
-        "sge_usd_oz": float(current_row["sge_usd_oz"]),
-        "london_usd_oz": float(current_row["london_usd_oz"]),
+        "spread_usd_oz": spread_usd_oz,
+        "sge_usd_oz": sge_usd_oz,
+        "london_usd_oz": london_usd_oz,
+        "price_currency": price_currency,
+        "spread_price_oz": spread_price_oz,
+        "sge_price_oz": sge_price_oz,
+        "reference_price_oz": reference_price_oz,
         "stats": {
-            "avg_5": float(canonical["premium_pct"].tail(5).mean()) if canonical_available else None,
+            "avg_5": float(history.tail(5).mean()) if not history.empty else None,
             "range_30": (
                 [float(last30.min()), float(last30.max())] if not last30.empty else None
             ),
@@ -460,8 +677,16 @@ def build_view_model(
             "asof": intraday_asof,
             "sources": intraday_sources,
         },
+        "close_proxy": {
+            "available": proxy_available,
+            "fresh": bool(proxy_fresh),
+            "asof": proxy_asof,
+            "sources": proxy_sources,
+        },
         "chart": {
             "canonical": canonical_points,
+            "proxy": proxy_points,
             "intraday": intraday_point,
+            "display_source": display_source,
         },
     }

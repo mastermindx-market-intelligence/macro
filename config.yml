@@ -4243,7 +4243,22 @@ commodities:
   # the Yahoo futures price spine, an ETF, or another unofficial quote.
   china_gold_premium:
     canonical: {}                  # SHAUPM + LBMA Gold Price AM + USDCNY
-    intraday: {}                   # optional Au99.99 + licensed spot + USDCNY
+    intraday: {}                   # optional true intraday method; kept separate
+    close_proxy:                   # indicative, close-aligned; never spliced into canonical history
+      sge:
+        group: china_gold_basis
+        name: sge_au9999
+        column: rmb_per_g
+        source_label: Shanghai Gold Exchange Au99.99
+        entitled: true
+      global:
+        group: china_gold_basis
+        name: xaucny_spot
+        column: cny_per_oz
+        source_label: Global XAU/CNY spot
+        entitled: true
+      max_skew_minutes: 2
+      max_age_days: 4
 
   # Broad commodity roster for the SECTOR INDEX + breadth/trend-diversity engine
   # (engine/commodity_index.py). DISPLAY-TIER: these members get the generic price

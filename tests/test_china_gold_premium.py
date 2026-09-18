@@ -432,7 +432,10 @@ def test_default_config_exposes_entitled_provider_seam_without_fake_sources():
 
     premium_cfg = config.load()["commodities"]["china_gold_premium"]
 
-    assert premium_cfg == {"canonical": {}, "intraday": {}}
+    assert premium_cfg["canonical"] == {}
+    assert premium_cfg["intraday"] == {}
+    assert premium_cfg["close_proxy"]["sge"]["entitled"] is True
+    assert premium_cfg["close_proxy"]["global"]["entitled"] is True
 
 
 def test_malformed_optional_timing_config_fails_closed():
