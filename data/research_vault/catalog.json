@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T10:37:44.200123+00:00",
-  "count": 2354,
+  "generated_at": "2026-09-18T11:07:42.723156+00:00",
+  "count": 2355,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -106,6 +106,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-opksosrmnoc-7aa9cc",
+      "title": "JPM Spain s potential growth",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T09:03:37Z",
+      "summary_points": [
+        "Spain's structural growth advantage driven by immigration: Labour supply boost from immigration doubled potential growth (1%→2.5%), structural unemployment down, offsetting aging population; critical for long-term assessment.",
+        "TFP acceleration signals productivity gains: Trend TFP growth accelerated to 0.7% yoy (vs. 2% 2014-19), driven by tech/organizational improvements; key fundamental for growth potential.",
+        "Investment composition shift to high-value assets: Non-residential construction (75% of capex growth) and IP products (software/databases) now drive investment, supporting non-travel exports and structural capital allocation.",
+        "Key risks: immigration policy uncertainty and fiscal consolidation: Immigration flows dependent on policy decisions, fiscal consolidation gains traction, moderating growth and introducing significant volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
