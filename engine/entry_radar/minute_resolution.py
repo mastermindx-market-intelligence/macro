@@ -144,6 +144,9 @@ def resolve_long_barrier_order(
             interval_start=interval_start, interval_end=interval_end,
             entry=entry, target=target, adverse=adverse,
         )
+    offset_seconds = (interval_start - session_open).total_seconds()
+    if offset_seconds % (WINDOW_MINUTES * 60) != 0:
+        raise MinuteResolutionError("session_five_minute_grid_required")
 
     window = tuple(
         bar for bar in tape.minutes

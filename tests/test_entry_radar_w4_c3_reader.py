@@ -1108,6 +1108,12 @@ def test_TTID1_caller_contract_refuses_wrong_window_and_barrier_order():
         mr.resolve_long_barrier_order(tape, interval_start=start,
                                       interval_end=start + timedelta(minutes=5),
                                       entry=100.0, target=99.0, adverse=101.0)
+    off_grid = start + timedelta(minutes=1)
+    off_grid_tape = _tti_tape(off_grid)
+    with pytest.raises(mr.MinuteResolutionError, match="session_five_minute_grid"):
+        mr.resolve_long_barrier_order(off_grid_tape, interval_start=off_grid,
+                                      interval_end=off_grid + timedelta(minutes=5),
+                                      entry=100.0, target=101.0, adverse=99.0)
 
 
 def test_TTID1_interval_outside_the_tapes_session_is_unavailable():
