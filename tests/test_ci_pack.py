@@ -2485,6 +2485,36 @@ def test_unknown_top_level_path_does_not_widen_the_plan_to_the_full_suite(
     assert plan.has_work is True
 
 
+
+def test_proven_manifest_enrollment_forces_changed_job_without_full_suite(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _freeze_scope_inference(monkeypatch)
+    jobs = [
+        _plan_job("engine-owner", 0, paths=("engine/**",)),
+        _plan_job("manifest-owner", 1, paths=("site/**",)),
+        _plan_job("elsewhere", 2, paths=("docs/**",)),
+        _plan_job("always-on", 3, paths=()),
+    ]
+    plan = PACK.build_plan(
+        jobs,
+        [PACK.LEGACY_MANIFEST_PATH, "engine/market_state.py"],
+        changed_from="a" * 40,
+        scope_mode="active",
+        pack_count=12,
+        manifest_enrollment_job_ids=("manifest-owner",),
+    )
+
+    assert set(plan.eligible_job_ids) == {
+        "engine-owner",
+        "manifest-owner",
+        "always-on",
+    }
+    assert "full suite" not in plan.reason
+    assert "bounded manifest enrollment" in plan.reason
+    assert plan.scope_summary == "frozen test scopes"
+
+
 def test_global_invalidator_widens_the_plan_without_inferring_scopes(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
