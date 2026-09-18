@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T15:23:17.217958+00:00",
-  "count": 2368,
+  "generated_at": "2026-09-18T15:53:19.301598+00:00",
+  "count": 2369,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-lxddyiiqy95-9c3188",
+      "title": "GS Early Morning Research Recap Ratings and Target Price Changes September 18, 2026 as of 5 30 AM ET",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:57Z",
+      "summary_points": [
+        "US Equity & Fed Policy: Fed's \"slow hikes\" stance sustains gold rally (not aggressive), critical for precious metals positioning amid over-earning but no earnings bubble in equities.",
+        "China M&A Framework: Strong FCF and attractive valuation despite N-T pressure; M&A rank down for Bud APAC signals portfolio strategy shift.",
+        "BoE Gilt-Friendly QT: Quantitative tightening plan tailored for UK gilts signals policy shift, directly impacting global bond flows and UK rate sensitivity.",
+        "Brazil Selic Normalization: MBRF (MBRF3.SA) has 20-25% upside from Selic rate normalization through F2027, key policy-driven equity catalyst.",
+        "Japan AI/Robotics Momentum: Active commitment to physical AI and AI solutions (Robots, Japan IT Services), but execution risk noted (\"effects take time to emerge\")."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-5mi5blg5cyz-207bd4",
       "title": "GS Marson What Matters Today Over earning not bubble 18Sep2026",
