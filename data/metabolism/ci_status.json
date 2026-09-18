@@ -1,55 +1,49 @@
 {
-  "ts": "2026-09-18T13:20:39+00:00",
-  "main_sha": "ad53766df79344a59e44565538b50049da22a9b8",
+  "ts": "2026-09-18T21:19:23+00:00",
+  "main_sha": "d3578d8d55e721fd003180a422f5c3e3ee4909e6",
   "red_required": [
-    {
-      "name": "publish",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339334583/job/105581402948"
-    },
     {
       "name": "sweep",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339143602/job/105580809990"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339054529/job/105580536901"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339054529/job/105580536798"
-    },
-    {
-      "name": "free-content-estate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339054529/job/105580536724"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339054529/job/105580536704"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35394326975/job/105759588733"
     },
     {
       "name": "font-ui-defined",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35339054529/job/105580536678"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35394090660/job/105758822138"
+    },
+    {
+      "name": "engine-render-guards",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35394090660/job/105758822090"
+    },
+    {
+      "name": "tier-gate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35394090660/job/105758822029"
+    },
+    {
+      "name": "free-content-estate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35394090660/job/105758821971"
+    },
+    {
+      "name": "template-site-sync",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35394090660/job/105758821863"
     }
   ],
   "green": false,
-  "consecutive_failures": 151,
+  "consecutive_failures": 152,
   "sensed_shas": [
-    "ad53766df79344a59e44565538b50049da22a9b8",
-    "deb61b2751c2d4aa3a6819338c730989be731591"
+    "d3578d8d55e721fd003180a422f5c3e3ee4909e6",
+    "0f6968310ab48eeeb5f44fd818b83158d65ec2e5"
   ],
   "heartbeat_degraded": false
 }
