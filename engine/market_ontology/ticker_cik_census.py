@@ -515,7 +515,7 @@ def c4_renderer_coverage(
 ) -> list[CensusRecord]:
     """Enumerate C4 coverage facts.
 
-    ``universe_tickers`` is the F06 universe (data/stocks + data/sector_holdings;
+    ``universe_tickers`` is the F06 universe (data/stocks only;
     site/stockdata is gitignored — caller asserts this, never counts it).
     """
     active_store_syms: set[str] = set()

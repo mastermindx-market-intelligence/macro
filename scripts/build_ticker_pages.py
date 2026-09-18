@@ -4707,8 +4707,8 @@ def _ss_map_identity_read_value(k: str, raw: Any, has_v: bool) -> dict[str, Any]
 # the audit guard / data attribute / receipt JSON; the visible text row
 # carries a plain-word phrase that confirms the read happened without
 # leaking the raw token into customer copy.
-_ID_TOKEN_WITHHELD_EN = "Recorded identifier — see security-state record"
-_ID_TOKEN_WITHHELD_ZH = "已记录标识 — 见证券状态档案"
+_ID_TOKEN_WITHHELD_EN = "Identifier recorded on the security-state record"
+_ID_TOKEN_WITHHELD_ZH = "标识已记录于证券状态档案"
 
 
 def _ss_identity_read_rows(seq: Any) -> list[dict[str, Any]]:

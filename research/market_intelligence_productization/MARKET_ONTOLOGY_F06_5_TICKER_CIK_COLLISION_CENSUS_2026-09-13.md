@@ -3,12 +3,12 @@
 **Date:** 2026-09-13 (UTC)
 **Decision date (census input):** 2026-09-13
 **Commit (data/reference/):** `4023da6ca48e` (latest nightly data commit touching the identity plane)
-**Commit (code head):** `b7472bae6f5c831265eaee2ec2f3b6763c70894b` (final committed code head sha on branch `claude/mo-b-f06-5-cik-collision-census-repair`)
+**Commit (code head):** `536bc2c4fd0cf663dac25fae98bdab086c6090d1` (final committed code head sha on branch `claude/mo-b-f06-5-cik-collision-census-repair`; h_7122 updated to this same head)
 **Author:** W7B F06-5 sub-agent (Chairman override regime; Fable 5.1 seat ruling)
 **Ledger row:** `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv` row **MO-PAID-020**
 **Packet:** `[MO-B F06-5]` — ticker/CIK collision census + at most ONE bounded renderer/CIK-access repair
 **Outcome (initial census, 6b3a916):** **census only — zero collisions, no admissible repair** (per R3)
-**Outcome (heal-round, d75a9eae):** **C1 still all-zero on strict collisions; one admissible defect found and repaired under R3.** The C5 probe on the original census assertion ("no raw-token leak in any user-facing string") was proven false by qwen_r1 review: `templates/ticker.html.j2:1975-1976` rendered `{{ ss.security_id }}` / `{{ ss.issuer_id }}` as visible text inside the `role="dialog"` "Evidence & receipts / 证据与凭证" panel under the `Security` / `证券标识` and `Issuer` / `发行人标识` labels — a raw `SEC:...` / `ISS:...` token leak in F06-owned code. The heal-round landed H1 — the ONE bounded repair R3 admits — replacing those two raw-token rows with plain-word EN/ZH copy ("Recorded on the security-state record / 记录于证券状态档案") and the `_ss_identity_read_rows` / `_ss_equality_display` withholding from the visible rows. The PR title and body were corrected to drop the "census only" suffix, which is only lawful when no admissible defect exists.
+**Outcome (heal-round, d75a9eae):** **C1 still all-zero on strict collisions; one admissible defect found and repaired under R3.** The C5 probe on the original census assertion ("no raw-token leak in any user-facing string") was proven false by qwen_r1 review: `templates/ticker.html.j2:1975-1976` rendered `{{ ss.security_id }}` / `{{ ss.issuer_id }}` as visible text inside the `role="dialog"` "Evidence & receipts / 证据与凭证" panel under the `Security` / `证券标识` and `Issuer` / `发行人标识` labels — a raw `SEC:...` / `ISS:...` token leak in F06-owned code. The heal-round landed H1 — the ONE bounded repair R3 admits — replacing those two raw-token rows with plain-word EN/ZH copy ("Identifier recorded on the security-state record / 标识已记录于证券状态档案") and the `_ss_identity_read_rows` / `_ss_equality_display` withholding from the visible rows. The PR title and body were corrected to drop the "census only" suffix, which is only lawful when no admissible defect exists.
 
 ## Plain-language summary
 
@@ -123,7 +123,7 @@ through `scripts.build_ticker_pages.build_security_state`. Findings:
 |---|---|
 | `identity read value unmapped:` warnings emitted | 0 |
 | EN and ZH plain-word labels present for every leg/degradation token | yes |
-| Raw tokens (ISS:, SEC:, cik:, US-XN…, evt_) leaked into any user-facing string | 0 |
+| Raw tokens (ISS:, SEC:, cik:, evt_) leaked into any user-facing string | 0 (excl. `listing_key` — `US-XNAS-AAPL` shape is still rendered as visible text in `<span class="vv ss-id">`; the C5 walker exempts it as `AUDIT_DATA_KEYS` on the rationale that the dossier guard consumes the same string; disclosed in the PR body) |
 | Both committed goldens (AAPL, MSFT) project through `build_security_state` cleanly | yes |
 
 ## R3 admissibility ranking (H1 admitted and repaired)
@@ -137,7 +137,7 @@ the fix lies entirely inside the F06-owned path
 
 | Rank | Candidate | Users affected | Severity | Admissible? |
 |---:|---|---:|---|---|
-| 1 | **C5 raw-token leak in Evidence & receipts panel** — `templates/ticker.html.j2:1975-1976` rendered `{{ ss.security_id }}` / `{{ ss.issuer_id }}` as visible text inside the `role="dialog"` "Evidence & receipts / 证据与凭证" panel under the `Security` / `证券标识` and `Issuer` / `发行人标识` labels — a raw `SEC:...` / `ISS:...` token leak in F06-owned code. The fix lies entirely inside the F06-owned path (the same template rows + `scripts/build_ticker_pages.py` `_ss_*` helpers). | users on any ticker page opened to the Evidence & receipts dialog (the panel is rendered across the page) | medium (raw `SEC:...` / `ISS:...` token in a visible role) | **ADMITTED and REPAIRED in heal-round** — H1, the ONE bounded repair R3 admits. Plain-word EN/ZH copy ("Recorded on the security-state record / 记录于证券状态档案") replaces the raw rows; `_ss_identity_read_rows` / `_ss_equality_display` withhold raw identifier tokens from visible rows while preserving them on `raw_token` / `left_raw` / `right_raw` audit fields. |
+| 1 | **C5 raw-token leak in Evidence & receipts panel** — `templates/ticker.html.j2:1975-1976` rendered `{{ ss.security_id }}` / `{{ ss.issuer_id }}` as visible text inside the `role="dialog"` "Evidence & receipts / 证据与凭证" panel under the `Security` / `证券标识` and `Issuer` / `发行人标识` labels — a raw `SEC:...` / `ISS:...` token leak in F06-owned code. The fix lies entirely inside the F06-owned path (the same template rows + `scripts/build_ticker_pages.py` `_ss_*` helpers). | users on any ticker page opened to the Evidence & receipts dialog (the panel is rendered across the page) | medium (raw `SEC:...` / `ISS:...` token in a visible role) | **ADMITTED and REPAIRED in heal-round** — H1, the ONE bounded repair R3 admits. Plain-word EN/ZH copy ("Identifier recorded on the security-state record / 标识已记录于证券状态档案") replaces the raw rows; `_ss_identity_read_rows` / `_ss_equality_display` withhold raw identifier tokens from visible rows while preserving them on `raw_token` / `left_raw` / `right_raw` audit fields. |
 | 2 | C2 active divergence for MMC (store=MMC, yahoo=MRSH) — the user-facing identifier on the ticker page is store=MMC, so the user sees the right symbol | 1 ticker | low | not admissible — would require either (a) widening `SECURITY_STATE_TICKERS` (records/seat decision, R4) or (b) patching `vendor_aliases.parquet` (owner boundary, R4) |
 | 3 | C3 incomplete-CIK rows (CTRA, FI, GOLD, TPH) — `owner identity is incomplete` already routes the user through the typed `OWNER_IDENTITY_INCOMPLETE` path with EN/ZH plain-word copy | 4 tickers | low | not admissible — would require writing CIK into `issuer_master.parquet` (owner boundary, R4) |
 | 4 | C2 expired_store_alias (EQR) — store now carries VMRK; the row's `valid_to` is correctly closed; nothing the renderer can do here | 0 users (renamed) | none | not applicable |
@@ -184,7 +184,7 @@ can take them up if and only if it holds the matching authority.
 | C3 incomplete CIK | FI (same shape) | same as above |
 | C3 incomplete CIK | GOLD (issuer_state DEFERRED_IDENTITY_EXCEPTION, evidence_source legacy_mint) | same as above; DEFERRED is the spec's typed-handoff state and needs a separate ruling, not a CIK write |
 | C3 incomplete CIK | TPH (same as CTRA) | same as above |
-| C4 no_identity_row | 1 (EA) | widen `SECURITY_STATE_TICKERS` — records/seat decision (R4), out of scope for F06-5 |
+| C4 no_identity_row | 1 (EA) | add EA to identity rows (SECURITY_STATE_TICKERS) — records/seat decision (R4), out of scope for F06-5 |
 | C4 resolvable_outside_allowlist | 242 | same — out of scope for F06-5 |
 
 ## Acceptance test (per MO-PAID-020 ledger row)

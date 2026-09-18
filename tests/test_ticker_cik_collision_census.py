@@ -1302,3 +1302,113 @@ def test_c5_two_goldens_project_through_build_security_state(tmp_path: Path) -> 
         # failure shells). The golden deck is engine truth, but if a raw token
         # leaks into a user-facing string we want the test to fail.
         _assert_user_facing_strings_are_clean(rendered, f"golden {name}")
+
+
+# ── BLOCKER (h_7122) — RED-first regression test for H1 raw-token leak ──────────
+def test_h1_security_id_issuer_id_not_interpolated_in_evidence_panel() -> None:
+    """BLOCKER h_7122: the H1 heal-round replaced ``{{ ss.security_id }}`` /
+    ``{{ ss.issuer_id }}`` in the evidence panel with a plain-word phrase.
+
+    This test renders ``ticker.html.j2`` with a security-state payload carrying
+    security_id and issuer_id tokens and asserts the rendered HTML no longer
+    contains the raw ``SEC:`` / ``ISS:`` tokens in user-facing text nodes.
+
+    The pre-H1 template at lines 1984-1985 had::
+
+        <span class="vv">{{ ss.security_id }}</span>
+        <span class="vv">{{ ss.issuer_id }}</span>
+
+    which would render as visible ``SEC:US-XNAS-...`` / ``ISS:US-XNAS-...`` tokens.
+    The heal-round replaced those with::
+
+        <span class="vv">{{ t('Recorded on the security-state record',
+                                '记录于证券状态档案') }}</span>
+
+    RED proof: temporarily revert those two interpolations and this test fails.
+    GREEN proof: restore the heal-round fix and this test passes.
+    """
+    import jinja2
+
+    # Set up the same Jinja2 environment the ticker page builder uses.
+    templates_dir = ROOT / "templates"
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(str(templates_dir)),
+        autoescape=True,
+    )
+    tmpl = env.get_template("ticker.html.j2")
+
+    # A complete security-state payload for rendering the evidence panel.
+    # The template uses ``security_state`` (set as ``ss`` inside the template
+    # at line ~1087) and renders the evidence panel at lines ~1969-1993.
+    # security_id and issuer_id carry raw tokens that the H1 heal-round
+    # (ticker.html.j2:1984-1985) must NOT render as visible text.
+    security_state_payload = {
+        "panel_hint": {"en": "hint", "zh": "提示"},
+        "degradation": {"failed": False},
+        "last_good": {"ok": True, "at": "2026-09-10", "deg": None},
+        "overview": {"state_summary": None},
+        "identity": {
+            "ok": True, "en": "resolved", "zh": "已解析",
+            "tone": "neutral", "legs": [], "equalities": [],
+            "why_en": "", "why_zh": "", "refusals": [], "disclosures": [],
+        },
+        "coverage": {
+            "req_total": None, "opt_total": None,
+            "req_avail": None, "opt_avail": None,
+            "req_nonblock": None, "opt_nonblock": None,
+            "req_sentence": None, "opt_sentence": None,
+        },
+        "gates": [],
+        "axes": [],
+        "personal_impact": None,
+        "owner_receipts": {
+            "legs": [], "generated_at": None,
+            "compiled_at": None, "content_sha256": None,
+        },
+        "security_id": "SEC:US-XNAS-TST",
+        "issuer_id": "ISS:US-XNAS-TST",
+        "listing_key": "US-XNAS-TST",
+        "version": "1.0",
+        "content_sha256": "abc123",
+        "compiled_at": "2026-09-13",
+        "market_at": None,
+        "frontier_at": None,
+        "evidence": {
+            "recipe_id": None, "refs": [], "compile_state": None,
+            "counts": [], "compiled_at": None, "conflicts": [],
+        },
+    }
+
+    rendered_html = tmpl.render(
+        security_state=security_state_payload,
+        ticker="TST",
+        name="Test Corp",
+        meta_desc="Test description",
+        canonical_url="https://example.com",
+        identity={"ticker": "TST", "issuer": "Test Corp", "sector": "Technology"},
+    )
+
+    # The raw tokens must NOT appear as visible text (i.e. not inside <span class="vv">).
+    # We check the specific dialog panel region that contains the H1 fix.
+    import re as _re
+    # The rendered panel has bilingual spans inside h3:
+    # <h3><span class="l-en">How this was put together</span>...
+    panel_match = _re.search(
+        r'<h3>.*?How this was put together.*?</section>',
+        rendered_html,
+        _re.DOTALL,
+    )
+    assert panel_match is not None, "evidence panel not found in rendered HTML"
+    panel_html = panel_match.group(0)
+
+    # Within the panel, security_id and issuer_id must not render as SEC:/ISS: tokens.
+    # The old template had: <span class="vv">{{ ss.security_id }}</span>
+    # which would produce: <span class="vv">SEC:US-XNAS-TST</span>
+    assert "SEC:US-XNAS-TST" not in panel_html, (
+        "RED: raw security_id token still interpolates in evidence panel — "
+        "the H1 heal-round fix at ticker.html.j2:1984 is absent or reverted"
+    )
+    assert "ISS:US-XNAS-TST" not in panel_html, (
+        "RED: raw issuer_id token still interpolates in evidence panel — "
+        "the H1 heal-round fix at ticker.html.j2:1985 is absent or reverted"
+    )
