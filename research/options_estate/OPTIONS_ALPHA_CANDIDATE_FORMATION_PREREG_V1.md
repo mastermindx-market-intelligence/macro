@@ -102,9 +102,9 @@ Those fields may be displayed when their own contracts permit it. They do not be
 
 Settled EOD evidence is **not a v1 formation predicate**.
 
-Until AD-1T2 has production-accepted its real consumer/availability path, candidate output must represent settled EOD context as unavailable/not-admitted rather than reading a convenient local file.
+AD-1T2 production acceptance is nevertheless a hard OA-1C **activation prerequisite** under the existing workstream/implementation plan. This preregistration does not weaken that dependency.
 
-After AD-1T2 acceptance, prior-known EOD evidence may be added as supplemental context only when its own availability time is no later than the candidate cutoff. Later settlement is a post-decision update.
+After AD-1T2 acceptance and later OA-1C activation, prior-known EOD evidence may be added as supplemental context only when its own availability time is no later than the candidate cutoff. If lawful EOD context is unavailable for a particular candidate, it remains explicitly unavailable and does not become zero/neutral or change v1 formation. Later settlement is a post-decision update.
 
 Package evidence is likewise supplemental in v1. Unresolved package state is allowed and visible. A sweep-like flag is not package proof and cannot satisfy candidate formation.
 
@@ -186,12 +186,14 @@ A later Tactical experiment may consume a typed Options Alpha candidate/evidence
 
 This preregistration **does not open OA-1C implementation by itself**.
 
-Before a composer implementation may activate, the existing owners must reconcile:
+Before a composer implementation may activate, **all** existing entrance gates must clear:
 
-- the OA-1T measured source/consumer path and its unresolved collection completeness/freshness issues;
-- the current campaign integrity/publication/runtime condition;
-- any current source-path collision;
-- AD-1T2 before settled EOD context is admitted.
+- OA-1T measured source/consumer proof, including the unresolved collection completeness/freshness issues;
+- AD-1T2 consumer/availability production acceptance;
+- campaign integrity/publication/runtime acceptance;
+- current source-path collision review.
+
+AD-1T2 is a gate on starting OA-1C, not merely a gate on showing one optional EOD field. Once OA-1C is lawfully active, EOD still remains supplemental context rather than a v1 candidate-formation predicate.
 
 The implementation must reuse the existing campaign/event/outcome/publication owners. No candidate database, second campaign identity, second event ledger, new scheduler, or second options collector is authorized.
 
