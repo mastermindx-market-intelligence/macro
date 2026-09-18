@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_basis_visual_checks.v1",
-  "semantic_head": "17e52a158d9f9293bcb70b5b25e8a1289b2528d1",
+  "semantic_head": "84172b5f4b9f2c556b9d5bf4a46c01f113f304a3",
   "capture": "actual commodities page proxy fixture; Gold panel crop; stacked-base overflow comparison",
   "stacked_base": "bd51c2b286827956d54c1afc0af78df4ffc797a2",
   "checks": [
@@ -120,8 +120,8 @@
       "currency": "CNY",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-en-mobile.png",
-      "sha256": "0ad6c2d09f2c95d33649a2d51aefaf9c55e49be0f1da1230f9be4c6a95ed2eef",
-      "bytes": 74396,
+      "sha256": "90625320e158a4b55dc09bbd6e19124e5d33e9ee2e922f2f5b716669dcb1d807",
+      "bytes": 74299,
       "page_errors": []
     },
     {

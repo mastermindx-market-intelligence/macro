@@ -1,7 +1,7 @@
 # China Gold Basis Proxy — visual evidence
 
 This corpus captures the actual Commodity Vector Gold panel at semantic head
-`17e52a158d9f9293bcb70b5b25e8a1289b2528d1`, stacked on parent PR #7325 head
+`84172b5f4b9f2c556b9d5bf4a46c01f113f304a3`, stacked on parent PR #7325 head
 `bd51c2b286827956d54c1afc0af78df4ffc797a2`.
 
 ## What is proven
