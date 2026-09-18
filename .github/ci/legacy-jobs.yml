@@ -13956,7 +13956,8 @@ jobs:
       - name: basket read band + board group-pulse column (GR1)
         run: >-
           python -m pytest tests/test_group_read_surface.py
-          tests/test_theme_detail_member_observations.py -q -rs
+          tests/test_theme_detail_member_observations.py
+          tests/test_house_theme_atlas.py -q -rs
 
   group-earnings-pulse:
     # Group Reads W-GR2: engine/group_earnings.py -> site/basketdata/earnings_pulse.json,
