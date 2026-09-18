@@ -1,9 +1,9 @@
-# TTI R1-B status — v2 frozen, no outcomes
+# TTI R1-B status — v3 frozen, no outcomes
 
-**Current execution target:** v2 at `1348a238c8fbcb79b617478311f2ce0e1e37d4c0`. V1 at `0c54e10e20c43827802d3d829505f74f57f8eb5f` is an immutable **DO_NOT_RUN** audit artifact, superseded before registration after adversarial prereg review.
+**Current execution target:** v3 at `1518ef7dabc74428bd79e7724f080226381b6fe4`. V1 (`0c54e10e...`) and v2 (`1348a238...`) are immutable **DO_NOT_RUN** audit artifacts superseded before registration/outcome access by adversarial prereg review.
 
-V2 prereg SHA256: `23c6d69f40e63e6fca29b25e347a39ddf31c986e85f2e617a7682327a90590b4`. V2 config SHA256: `bb7952eef6f3714c6bae473708889a5a82ac257f2ef53f8f6d1d4a684c035382`. Grid: **60 cells**. Registration: **false**. Outcomes opened: **false**. TrialLedger modified by R1-B: **false**.
+V3 prereg SHA256: `3b3d44979715dcf43b1e71a678c9b263485bdef124abaef959fee60273571aa7`. V3 config SHA256: `62628e9666dda22565c6f6123b80044b86a7fe5ae51f6bd3bd9b6f9915d74bed`. Grid: **60 cells**. Registration: **false**. Outcomes opened: **false**. TrialLedger modified by R1-B: **false**.
 
-V2 preserves all v1 price thresholds while fixing three design defects before empirical use: future selector labels cannot define controls; selector-versus-anchor de-dup/retry semantics are explicit; and confirmation economics/LOD survival retain both candidate-low and pre-confirmation episode-low anchors.
+V3 preserves the same price-state thresholds while closing four pre-run design risks: future selector labels cannot define controls; selector/anchor de-dup semantics are explicit; confirmation economics and LOD diagnostics preserve both candidate and pre-confirmation episode lows; and every entry/control now waits one full five-minute processing-latency bar after its decision/confirmation clock. Price evidence also requires positive volume.
 
-R1-B remains docs/config-only on Macro #7274. Registration and implementation are held until R1-A Macro #7270 clears its current-head shared-source/TrialLedger gate. Do not append R1-B trials, open market outcomes, alter thresholds, add post-hoc context filters, or infer short/HOD symmetry.
+R1-B remains docs/config-only on Macro #7274. Registration and implementation are held until R1-A Macro #7270 clears the current-head shared-source/TrialLedger gate. Do not append R1-B trials, open market outcomes, alter thresholds, add post-hoc context filters, or infer short/HOD symmetry.
