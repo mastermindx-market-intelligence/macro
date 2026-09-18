@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T22:24:05.419879+00:00",
-  "count": 2388,
+  "generated_at": "2026-09-18T22:39:16.171074+00:00",
+  "count": 2389,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -107,6 +107,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a5qi1zxwzqd-c8607b",
+      "title": "US Equities Weekly Rundown 9 18 26",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:46:19Z",
+      "summary_points": [
+        "FOMC Rate Hike & Outlook: Fed raised rates to 3.75%-4.00% (25bps), hawkish dots, no cuts in 2024; GIR expects Oct hike, neutral rate 3.25-3.5%, cuts in March 2028.",
+        "Prime Book US Software Exposure Collapse: Net exposure plummeted from ~16% to ~2% (2022-2026), Long/Short Ratio reversed to net short—fundamental shift signaling severe risk in tech/software positioning.",
+        "Vol Panic Index Decline: Largest 1d drop in 10 years (3rd largest since 2006), signaling eased investor anxieties amid tactical options positioning.",
+        "Health Care (XLV) Bullish Momentum: XLV price rising with Long/Short Ratio increasing (2.2→3.2), indicating strong institutional buying and positive flow signal.",
+        "Brent Oil Geopolitical Risk & Positioning: Managed Money Brent net positioning rose amid Houthi attacks/Saudi pipeline closure, driving +11.1% price jump and $8.3bn OI surge."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
