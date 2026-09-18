@@ -8,13 +8,16 @@ claim: >
   processes, and pytest descendants remained alive and continued consuming the
   three-slot pool.
 falsifier: >
-  Disprove by showing that the exact affected GitHub jobs were not terminal
-  while their local process trees remained alive, that the corresponding
-  organization runners were still online, or that the local services had
-  received a normal completion/deactivation edge before the observed offline
-  state. A future occurrence where terminal server state reliably tears down
-  the service cgroup without an operator restart also falsifies the persistence
-  part of this incident class.
+  PR #7315 falsifier: run `gh api orgs/mastermindx-market-intelligence/actions/runners`,
+  `gh api repos/mastermindx-market-intelligence/macro/actions/runs/35284722984/attempts/1/jobs?per_page=100`,
+  and WSL `systemctl show actions.runner.mastermindx-market-intelligence-macro.pc-ci-1.service`
+  plus the corresponding process census. The diagnosis is false if the exact
+  affected GitHub jobs were not terminal while their local process trees
+  remained alive, if the corresponding organization runners were still online,
+  or if the local services had received a normal completion/deactivation edge
+  before the observed offline state. A future occurrence where terminal server
+  state reliably tears down the service cgroup without an operator restart also
+  falsifies the persistence part of this incident class.
 so_what: >
   Runner health and queue recovery must reconcile the exact GitHub job identity
   against the exact local Runner.Listener identity. Do not infer slot release
@@ -25,13 +28,14 @@ so_what: >
 kind: runtime
 verified_at: 2026-09-18
 verified_by: >
-  GitHub organization runner census, exact run/job records and check
-  annotations for jobs 105415913581 / 105136067731 / 105136067709, plus WSL
-  systemd journals and process trees on the production PC host. GitHub marked
-  each job completed/failure with the annotation "The self-hosted runner lost
-  communication with the server" while the corresponding local step-14 pack
-  process remained active. pc-render-1 on the same WSL host stayed online; no
-  OOM event or cache-updater contention coincided with the failure.
+  PR #7315 live evidence from `gh api orgs/mastermindx-market-intelligence/actions/runners`,
+  exact Actions run-attempt/job reads for jobs 105415913581 / 105136067731 /
+  105136067709, and WSL `systemctl show`, `journalctl`, and `ps` reads on
+  pc-ci-1/2/3. GitHub marked each job completed/failure with the annotation
+  "The self-hosted runner lost communication with the server" while the
+  corresponding local step-14 pack process remained active. pc-render-1 on the
+  same WSL host stayed online; no OOM event or cache-updater contention
+  coincided with the failure.
 scope:
   - macro
   - ops/runner-host/common/runner_admission_hook.js
