@@ -1644,6 +1644,9 @@ jobs:
       - "engine/commodity_inputs.py"
       - "engine/commodity_signals.py"
       - "engine/commodity_strategies.py"
+      # China physical-gold premium core is independently merge-gated here.
+      - "engine/china_gold_premium.py"
+      - "tests/test_china_gold_premium_engine_contract.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"
       - "engine/confluence_tiers.py"
@@ -1764,6 +1767,12 @@ jobs:
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py
           tests/test_china_archetype_d_s1.py -q
+      # Gold China-premium core is a code contract, not merely a render/data
+      # check. The full builder/template matrix remains on unrun-macro-panels;
+      # this hermetic subset prevents the calculation or rights gate from
+      # merging dark on ordinary code PRs.
+      - name: China physical-gold premium — calculation, alignment, entitlement
+        run: python -m pytest tests/test_china_gold_premium_engine_contract.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -12462,7 +12471,7 @@ jobs:
       # above remains the masking unit. No new job; paths widened below to
       # cover the new suite's imports and its engine/template subjects.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
+        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_china_gold_premium.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
@@ -12494,6 +12503,7 @@ jobs:
       - "tests/test_whitehouse_build.py"
       - "tests/test_commodities_ignition_copy.py"
       - "tests/test_commodities_w6_truth.py"
+      - "tests/test_china_gold_premium.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
       - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
@@ -12501,7 +12511,9 @@ jobs:
       - "site/bonds.html"
       - "engine/commodity_confluence.py"
       - "engine/commodity_index.py"
+      - "engine/china_gold_premium.py"
       - "templates/commodities.html.j2"
+      - "templates/_china_gold_premium.html.j2"
       - "templates/bonds.html.j2"
 
   unrun-market-plumbing:
