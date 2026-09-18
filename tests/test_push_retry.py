@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import textwrap
 from pathlib import Path
@@ -956,6 +957,258 @@ def _current_attempt_conflict_repo(tmp_path: Path, *, dirty: bool = False) -> tu
         _git_output(repo, "add", "staged.txt")
         (repo / "unstaged.txt").write_text("current attempt unstaged\n")
     return repo, topic_head
+
+def _install_inherited_complete_rebase(repo: Path, tmp_path: Path) -> Path:
+    """Park a prior invocation's complete stopped rebase over a clean attached topic."""
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "origin/main"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert conflict.returncode != 0
+    git_dir = Path(_git_output(repo, "rev-parse", "--absolute-git-dir"))
+    state = git_dir / "rebase-merge"
+    assert state.is_dir()
+    saved = tmp_path / "inherited-rebase-merge"
+    shutil.copytree(state, saved)
+    _git_output(repo, "rebase", "--abort")
+    assert _git_output(repo, "symbolic-ref", "--short", "HEAD") == "topic"
+    assert _git_output(repo, "diff", "--name-only", "--diff-filter=U") == ""
+    shutil.copytree(saved, state)
+    return git_dir
+
+def test_fetch_rebase_discards_inherited_complete_state_before_binding_current_attempt(tmp_path):
+    """A retained runner must not normal-abort using a previous invocation's orig-head."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -z "$(git ls-files -u)"
+        test "$(cat file)" = topic
+        test ! -d "$GIT_DIR/rebase-merge"
+        test ! -d "$GIT_DIR/rebase-apply"
+
+        rc=0
+        out=$(git rebase origin/main 2>&1) || rc=$?
+        test "$rc" -ne 0
+        case "$out" in
+          *"already a rebase-merge directory"*|*"index contains uncommitted changes"*|*"unstaged changes"*)
+            echo "$out" >&2
+            exit 71
+            ;;
+        esac
+        test -d "$GIT_DIR/rebase-merge"
+        git rebase --abort
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+
+def test_inherited_cleanup_uses_quit_and_never_normal_abort(tmp_path):
+    """Inherited orig-head/autostash metadata is never accepted as this retry's authority."""
+    repo, _ = _current_attempt_conflict_repo(tmp_path)
+    _install_inherited_complete_rebase(repo, tmp_path)
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    log = tmp_path / "git-args.log"
+    fakebin = tmp_path / "logging-args-bin"
+    fakebin.mkdir()
+    wrapper = fakebin / "git"
+    wrapper.write_text(
+        "#!/usr/bin/env bash\n"
+        f"printf '%s\\n' \"$*\" >> {str(log)!r}\n"
+        f'exec {real_git!r} "$@"\n'
+    )
+    wrapper.chmod(0o755)
+
+    r = run_sh(
+        'push_retry_init "t"; push_attempt; push_fetch_main_for_rebase',
+        env={"PATH": f"{fakebin}:{os.environ['PATH']}"},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+    calls = log.read_text().splitlines()
+    assert "rebase --quit" in calls, calls
+    assert "rebase --abort" not in calls, calls
+
+
+def test_inherited_cleanup_never_overwrites_concurrent_branch_ref_movement(tmp_path):
+    """The current-attempt anchor fences local branch movement during inherited cleanup."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+    moved_head = _git_output(repo, "rev-parse", "origin/main")
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    fakebin = tmp_path / "move-branch-bin"
+    fakebin.mkdir()
+    wrapper = fakebin / "git"
+    wrapper.write_text(textwrap.dedent(f"""\
+        #!/usr/bin/env bash
+        if [ "$1" = rebase ] && [ "$2" = --quit ]; then
+          {real_git!r} "$@"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            {real_git!r} update-ref refs/heads/topic "$MOVED_HEAD" "$TOPIC_HEAD"
+          fi
+          exit "$rc"
+        fi
+        exec {real_git!r} "$@"
+        """))
+    wrapper.chmod(0o755)
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        if push_fetch_main_for_rebase; then
+          echo "concurrent branch movement was overwritten" >&2
+          exit 74
+        fi
+        test "$(git rev-parse refs/heads/topic)" = "$MOVED_HEAD"
+        test "$(git rev-parse HEAD)" = "$MOVED_HEAD"
+        test "$PUSH_ATTEMPT_INHERITED_REBASE" -eq 1
+        test ! -d "$GIT_DIR/rebase-merge"
+        """,
+        env={
+            "PATH": f"{fakebin}:{os.environ['PATH']}",
+            "TOPIC_HEAD": topic_head,
+            "MOVED_HEAD": moved_head,
+            "GIT_DIR": str(git_dir),
+        },
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_fetch_rebase_preserves_current_tracked_dirt_while_removing_inherited_state(tmp_path):
+    """Inherited control metadata cannot erase the current job's staged/unstaged bytes."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+    (repo / "staged.txt").write_text("current job staged\n")
+    _git_output(repo, "add", "staged.txt")
+    (repo / "unstaged.txt").write_text("current job unstaged\n")
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test "$(cat staged.txt)" = "current job staged"
+        test "$(cat unstaged.txt)" = "current job unstaged"
+        test "$(git diff --cached --name-only)" = staged.txt
+        test "$(git diff --name-only)" = unstaged.txt
+        test -z "$(git ls-files -u)"
+        test ! -d "$GIT_DIR/rebase-merge"
+        test ! -d "$GIT_DIR/rebase-apply"
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+
+def test_inherited_autostash_is_never_applied_over_current_job_bytes(tmp_path):
+    """A prior invocation's autostash may be retained as evidence, never applied as state."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    (repo / "staged.txt").write_text("prior invocation staged\n")
+    _git_output(repo, "add", "staged.txt")
+    (repo / "unstaged.txt").write_text("prior invocation unstaged\n")
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "--autostash", "origin/main"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert conflict.returncode != 0
+    git_dir = Path(_git_output(repo, "rev-parse", "--absolute-git-dir"))
+    state = git_dir / "rebase-merge"
+    assert (state / "autostash").is_file()
+    saved = tmp_path / "inherited-autostash-rebase-merge"
+    shutil.copytree(state, saved)
+    _git_output(repo, "rebase", "--abort")
+    _git_output(repo, "reset", "--hard", topic_head)
+    shutil.copytree(saved, state)
+
+    (repo / "staged.txt").write_text("current job staged\n")
+    _git_output(repo, "add", "staged.txt")
+    (repo / "unstaged.txt").write_text("current job unstaged\n")
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test "$(cat staged.txt)" = "current job staged"
+        test "$(cat unstaged.txt)" = "current job unstaged"
+        test "$(git diff --cached --name-only)" = staged.txt
+        test "$(git diff --name-only)" = unstaged.txt
+        test -z "$(git ls-files -u)"
+        test ! -d "$GIT_DIR/rebase-merge"
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+def test_fetch_rebase_refuses_inherited_detached_conflict_without_trusting_old_abort(tmp_path):
+    """No current-job anchor means inherited detached/unmerged state stays fail-closed."""
+    repo, _ = _current_attempt_conflict_repo(tmp_path)
+    conflict = subprocess.run(
+        ["git", "-C", str(repo), "rebase", "origin/main"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert conflict.returncode != 0
+    pre_head = _git_output(repo, "rev-parse", "HEAD")
+    pre_unmerged = _git_output(repo, "ls-files", "-u")
+    assert pre_unmerged
+    git_dir = Path(_git_output(repo, "rev-parse", "--absolute-git-dir"))
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        if push_fetch_main_for_rebase; then
+          echo "inherited partial rebase was accepted" >&2
+          exit 72
+        fi
+        if push_abort_rebase; then
+          echo "inherited rebase metadata was trusted by abort" >&2
+          exit 73
+        fi
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 0
+        test "$(git rev-parse HEAD)" = "$PRE_HEAD"
+        test -z "$(git symbolic-ref -q HEAD || true)"
+        test "$(git ls-files -u)" = "$PRE_UNMERGED"
+        test -d "$GIT_DIR/rebase-merge"
+        """,
+        env={
+            "PRE_HEAD": pre_head,
+            "PRE_UNMERGED": pre_unmerged,
+            "GIT_DIR": str(git_dir),
+        },
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
 
 
 def test_abort_rebase_restores_exact_current_attempt_after_malformed_real_conflict(tmp_path):
