@@ -380,7 +380,7 @@ def test_eic_published_same_day_events_and_terms_reach_machine_context(tmp_path)
     assert got['events'][0]['facts']['offering_amount_usd'] == '28000000000'
     assert got['events'][0]['facts']['competitive_close_et'] == '11:30'
     assert got['source_observed_at'] is None
-    assert got['state'] == 'published_snapshot' and len(got['snapshot_sha256']) == 64
+    assert got['state'] == 'page_snapshot' and len(got['snapshot_sha256']) == 64
     assert got['may_originate_signal'] is False
 
 
@@ -396,13 +396,13 @@ def test_eic_future_stamp_refuses_even_with_valid_facts(tmp_path):
     _eic_publish(tmp_path, [_eic_row()], stamp='2026-09-19T10:00:00Z')
     got = _eic_read(tmp_path)
     assert got['state'] == 'unavailable' and got['events'] == []
-    assert got['reason'] == 'future_publication'
+    assert got['reason'] == 'future_page_generation'
 
 
 def test_eic_old_snapshot_retains_honest_last_known_terms(tmp_path):
     _eic_publish(tmp_path, [_eic_row()], stamp='2026-09-15T10:00:00Z')
     got = _eic_read(tmp_path)
-    assert got['state'] == 'stale_snapshot' and got['events']
+    assert got['state'] == 'stale_page_snapshot' and got['events']
 
 
 def test_eic_reference_and_conflict_never_pass_numeric_terms(tmp_path):
@@ -612,7 +612,7 @@ def test_eic_actual_fragment_preserves_same_json_and_exposes_only_page_clock(tmp
     target = tmp_path / 'site/macro.html'; target.parent.mkdir(parents=True)
     target.write_text(html)
     block = read_calendar(tmp_path, now=_EIC_NOW)
-    assert block['state'] == 'published_snapshot'
+    assert block['state'] == 'page_snapshot'
     assert block['page_generated_at'] == '2026-09-18T10:00:00+00:00'
     assert block['source_observed_at'] is None
     assert block['events'][0]['facts']['cusip'] == event['facts'][0]['value']
@@ -668,7 +668,7 @@ def test_eic_prompt_labels_title_as_untrusted_data_not_instructions(tmp_path):
 
 
 @pytest.mark.parametrize("machine,expected", [
-    ("2026-09-18T10:00:00+00:00", "published_snapshot"),
+    ("2026-09-18T10:00:00+00:00", "page_snapshot"),
     (None, "clock_unknown"),
     ("2026-09-18 10:00", "clock_unknown"),
 ])
@@ -691,7 +691,7 @@ def test_eic_machine_build_clock_is_distinct_from_human_display(tmp_path, machin
     assert block["source_observed_at"] is None
     text = render_calendar(block)
     assert "Page published" not in text
-    if machine and expected == "published_snapshot":
+    if machine and expected == "page_snapshot":
         assert block["page_generated_at"] == machine
         assert "Page build timestamp" in text
 
