@@ -26,7 +26,7 @@ This is a source candidate, not a deployed release, calibrated turning-point mod
 
 The interrupted source was reconciled before continuing: one modified engine, two untracked test files, nothing staged, and retained failing logs. No replacement workspace was created. The real-builder regression was rerun and failed (`unverified` instead of `carried`) before the producer hook was added. It subsequently passed.
 
-Combined relevant suite: **144 passed, 1 skipped**, exit 0. Command: `python -m pytest -q --disable-warnings tests/test_yield_momentum.py tests/test_yield_fixed_grid.py tests/test_yield_observation_origin.py tests/test_rates_command.py tests/test_yield_curve.py tests/test_fred_alias_collision.py tests/test_rate_inflation_transmission.py tests/test_sector_rate_inflation.py`. This is not the entire repository suite. The workspace is sparse; no full-suite claim is made.
+Initial head `4bcfb5e2` relevant suite: **144 passed, 1 skipped**, exit 0. Command: `python -m pytest -q --disable-warnings tests/test_yield_momentum.py tests/test_yield_fixed_grid.py tests/test_yield_observation_origin.py tests/test_rates_command.py tests/test_yield_curve.py tests/test_fred_alias_collision.py tests/test_rate_inflation_transmission.py tests/test_sector_rate_inflation.py`. This is not the entire repository suite. The workspace is sparse; no full-suite claim is made.
 
 Same-captured-input differential used 371 existing FRED/Yahoo cache files. All **147 numerical features across 25,746 rows** were exactly equal between original and candidate builders. Auxiliary store groups were absent identically for both; this is not a complete production generation or actual SDK/model-consumption proof.
 
@@ -46,3 +46,11 @@ Sol retains release adjudication. Publish as Draft/HOLD, without merge-on-green 
 `engine/run.py` remains untouched for #7015 custody. Source/guide comparison at Macro `15a0dfd830513bc84ded8e45612a8eaf63db2bd9` was unchanged on all nine checked paths; a 31-PR update delta found no overlap. Earlier same-Studio collision reconciliation remains in #7088 comment5726822912; interrupted-source recovery is comment5727735234. No earlier refused fetch was replayed.
 
 Preserve A V4, B Round2 and C HardenedV2 research adjudication. No regeneration, retuning, ranking, risk or trading promotion is authorized by this change. Next: independent source/consumer review and ordinary hosted checks, then lawful release plus actual production-input proof. Historical source receipts and the pre-nominated leader-pullback experiment stay with their existing owners and explicit scientific gates.
+
+## CI-enrollment repair on the same branch
+
+Initial hosted contract-delta job105548605663 correctly failed: the two newly named test files were not present in any workflow run step. The tests are now consolidated into the already-enrolled `tests/test_yield_momentum.py`, with distinct helper names. All25 rate tests remain (three original, ten fixed-grid, twelve origin/integration), and the relevant combined suite remains **144 passed,1 skipped**, exit0. No tests were waived or disabled; no workflow, pack, runner or governance source was changed. Production-module bytes are unchanged from4bcfb5e2, so the captured-input proof still binds those exact code bytes.
+
+Latest command: `python -m pytest -q --disable-warnings tests/test_yield_momentum.py tests/test_rates_command.py tests/test_yield_curve.py tests/test_fred_alias_collision.py tests/test_rate_inflation_transmission.py tests/test_sector_rate_inflation.py`.
+Latest log `origin_enrolled_suite_20260918_sol003.log` SHA256: `dabcda5389aaf569d0b8bc17b2a435cc5c9dcf01b4dde0440e42e6b99cc73b6d`.
+The repository's existing `_named_by_a_run_step` predicate confirms the consolidated full path is enrolled in the existing rates-panel job. This focused check is not the complete hosted differential gate; the next-head CI remains required. Initial seven-file metadata is historical; the final base-relative scope is two production modules, one enrolled test suite, one research record and one Agent OS handoff.

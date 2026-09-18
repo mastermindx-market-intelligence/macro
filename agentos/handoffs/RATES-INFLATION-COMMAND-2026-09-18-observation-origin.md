@@ -15,18 +15,14 @@ changed:
     what: Capture the same-read rate origin before alignment and attach bounded metadata after assembly.
   - path: engine/yield_momentum.py
     what: Separate measured versus carried values, fixed-grid endpoint arithmetic and path qualification.
-  - path: tests/test_yield_observation_origin.py
-    what: Exercise real builder and Transmission/RIC composition, overrides, failures and immutable values.
-  - path: tests/test_yield_fixed_grid.py
-    what: Retain the test-first endpoint, missingness and nonfinite regressions.
   - path: tests/test_yield_momentum.py
-    what: Explicitly distinguish qualified-path turns from unreceipted endpoint comparisons.
+    what: Preserve all25 tests in the existing CI-enrolled suite, covering source origin, builder/consumer integration and fixed-grid semantics.
   - path: research/RATES_OBSERVATION_ORIGIN_2026-09-18.md
     what: Record implementation boundary, real-input differential and exact private evidence digests.
 verified:
   - claim: Combined relevant suite passes, with one skipped case.
-    command: python -m pytest -q --disable-warnings tests/test_yield_momentum.py tests/test_yield_fixed_grid.py tests/test_yield_observation_origin.py tests/test_rates_command.py tests/test_yield_curve.py tests/test_fred_alias_collision.py tests/test_rate_inflation_transmission.py tests/test_sector_rate_inflation.py
-    result: 144 passed, 1 skipped, exit 0; log digest recorded in the research note.
+    command: python -m pytest -q --disable-warnings tests/test_yield_momentum.py tests/test_rates_command.py tests/test_yield_curve.py tests/test_fred_alias_collision.py tests/test_rate_inflation_transmission.py tests/test_sector_rate_inflation.py
+    result: 144 passed, 1 skipped, exit 0 after CI enrollment repair; current log dabcda5389aaf569d0b8bc17b2a435cc5c9dcf01b4dde0440e42e6b99cc73b6d.
   - claim: Same-captured-input numerical feature parity and exact RIC contract preservation.
     command: Same-Studio Python comparison using original inputs source and candidate with one captured read map; pandas.testing.assert_frame_equal(check_exact=True), then tx.snapshot and rc.build_board.
     result: 371 FRED/Yahoo captures; all 147 columns across 25746 rows equal; five carried dates corrected; RIC yield object equal. Private proof SHA256 14b64841bb1c5218e3efd7e8e423f86f82e290ef5d9bd2d39e4cf98ee861f533.
@@ -56,3 +52,5 @@ danger_areas:
 ---
 
 This is the canonical knowledge-plane continuation for the source repair, not a runtime admission or parent completion. Research/proof details are in `research/RATES_OBSERVATION_ORIGIN_2026-09-18.md`. The source carrier remains on the original Studio and retains its release hold. No secondary Agent OS, event store, queue or watcher was created.
+
+Initial hosted contract-delta caught unenrolled new suites. All25 tests were consolidated into the existing named rates suite; no waiver/workflow/production-module change. The old seven-file head and its failed hosted check remain historical. Final base-relative scope is five files. The next exact-head hosted gate and independent review remain required.
