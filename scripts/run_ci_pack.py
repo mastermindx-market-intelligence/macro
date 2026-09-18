@@ -79,6 +79,7 @@ from scripts.ci_scope_dependencies import (  # noqa: E402
 
 
 PACK_JOB_ID = "ci-pack"
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
 DISABLED_IF = "${{ false }}"
 ALLOWED_JOB_KEYS = {
     "gate",
@@ -1294,16 +1295,56 @@ def _job_diff_match(job: LegacyJob, changed: Iterable[str]) -> tuple[str, str] |
     return None
 
 
+def _global_invalidator_paths(
+    changed: Iterable[str],
+    *,
+    bounded_manifest_enrollment: bool = False,
+) -> list[str]:
+    """Return changed paths that make per-job scope unknowable.
+
+    legacy-jobs.yml remains a global invalidator by default. The only
+    exception is caller-supplied positive evidence that its semantic delta was
+    classified as bounded additive pytest enrollment. The exact path is
+    exempted before glob matching so the broader .github/ci/** rule keeps
+    every other CI-manifest/control file fail-closed.
+    """
+    return [
+        path
+        for path in changed
+        if not (
+            bounded_manifest_enrollment
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and _matches_any(GLOBAL_INVALIDATORS, path)
+    ]
+
+
 def select_jobs(
-    jobs: Iterable[LegacyJob], changed: list[str] | None
+    jobs: Iterable[LegacyJob],
+    changed: list[str] | None,
+    *,
+    manifest_enrollment_job_ids: Iterable[str] | None = None,
 ) -> tuple[list[LegacyJob], str]:
-    """Pick the jobs a diff can actually affect, erring toward running more."""
+    """Pick the jobs a diff can actually affect, erring toward running more.
+
+    manifest_enrollment_job_ids is tri-state. None means there is no positive
+    proof that a legacy-manifest edit is bounded, so the historical full-suite
+    invalidation remains. A tuple (including empty for a semantic no-op) means
+    the higher-level planner compared exact base and candidate manifests and
+    proved the only semantic changes are additive pytest-suite enrollment.
+    Every changed job named by that proof is forced into the selection.
+    """
     jobs = list(jobs)
     if changed is None:
         return jobs, "full suite: changed-file set unavailable"
-    invalidators = [path for path in changed if _matches_any(GLOBAL_INVALIDATORS, path)]
+    bounded_manifest = manifest_enrollment_job_ids is not None
+    invalidators = _global_invalidator_paths(
+        changed,
+        bounded_manifest_enrollment=bounded_manifest,
+    )
     if invalidators:
         return jobs, f"full suite: global invalidator changed ({invalidators[0]})"
+    forced_job_ids = set(manifest_enrollment_job_ids or ())
     scoped_jobs = [job for job in jobs if job.is_scoped]
     unowned = [
         path for path in changed
@@ -1313,7 +1354,11 @@ def select_jobs(
     selected = [
         job
         for job in jobs
-        if not job.is_scoped or _job_diff_match(job, changed)
+        if (
+            not job.is_scoped
+            or _job_diff_match(job, changed)
+            or job.job_id in forced_job_ids
+        )
     ]
     unscoped = sum(1 for job in jobs if not job.is_scoped)
     reason = (
@@ -1326,6 +1371,14 @@ def select_jobs(
             f"; {len(unowned)} unowned path(s) did not widen "
             f"({unowned[0]})"
         )
+    if bounded_manifest and LEGACY_MANIFEST_PATH in changed:
+        forced_present = sum(
+            1 for job in selected if job.job_id in forced_job_ids
+        )
+        reason += (
+            "; bounded manifest enrollment "
+            f"changed {forced_present} selected job(s)"
+        )
     return selected, reason
 
 
@@ -1337,6 +1390,163 @@ def _workflow_jobs(path: Path) -> dict[str, dict[str, Any]]:
     if not isinstance(payload, dict) or not isinstance(payload.get("jobs"), dict):
         raise ManifestError(f"{path} must contain a jobs mapping")
     return payload["jobs"]
+
+
+def _pytest_suite_token(token: str) -> str | None:
+    """Return the suite path for one exact pytest file selector token."""
+    path = token.split("::", 1)[0]
+    return path if SUITE_REFERENCE_RE.fullmatch(path) else None
+
+
+def _additive_pytest_suite_enrollment(
+    before: str,
+    after: str,
+) -> tuple[str, ...] | None:
+    """Prove that after only adds pytest suite selectors to before."""
+    try:
+        before_tokens = shlex.split(before, comments=False, posix=True)
+        after_tokens = shlex.split(after, comments=False, posix=True)
+    except ValueError:
+        return None
+
+    def partition(tokens: list[str]) -> tuple[list[str], list[str]]:
+        suites: list[str] = []
+        rest: list[str] = []
+        for token in tokens:
+            suite = _pytest_suite_token(token)
+            if suite is None:
+                rest.append(token)
+            else:
+                suites.append(token)
+        return suites, rest
+
+    before_suites, before_rest = partition(before_tokens)
+    after_suites, after_rest = partition(after_tokens)
+    if (
+        not before_suites
+        or before_rest != after_rest
+        or not any(token == "pytest" for token in before_rest)
+        or len(after_suites) <= len(before_suites)
+    ):
+        return None
+
+    base_index = 0
+    added: list[str] = []
+    for token in after_suites:
+        if (
+            base_index < len(before_suites)
+            and token == before_suites[base_index]
+        ):
+            base_index += 1
+        else:
+            added.append(token)
+    if base_index != len(before_suites) or not added:
+        return None
+    return tuple(added)
+
+
+def _classify_additive_manifest_pytest_enrollment(
+    base_document: object,
+    candidate_document: object,
+) -> tuple[str, ...] | None:
+    """Return jobs changed only by additive pytest wiring, else None."""
+    if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
+        return None
+    if set(base_document) != set(candidate_document):
+        return None
+    for key in base_document:
+        if key != "jobs" and base_document[key] != candidate_document[key]:
+            return None
+
+    base_jobs = base_document.get("jobs")
+    candidate_jobs = candidate_document.get("jobs")
+    if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
+        return None
+    if tuple(base_jobs) != tuple(candidate_jobs):
+        return None
+
+    changed_job_ids: list[str] = []
+    for job_id in base_jobs:
+        before = base_jobs[job_id]
+        after = candidate_jobs[job_id]
+        if before == after:
+            continue
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            return None
+        if set(before) != set(after):
+            return None
+        if any(
+            key != "steps" and before[key] != after[key]
+            for key in before
+        ):
+            return None
+        before_steps = before.get("steps")
+        after_steps = after.get("steps")
+        if (
+            not isinstance(before_steps, list)
+            or not isinstance(after_steps, list)
+            or len(before_steps) != len(after_steps)
+        ):
+            return None
+
+        saw_additive_run = False
+        for before_step, after_step in zip(before_steps, after_steps):
+            if before_step == after_step:
+                continue
+            if not isinstance(before_step, dict) or not isinstance(after_step, dict):
+                return None
+            if set(before_step) != set(after_step):
+                return None
+            if any(
+                key != "run" and before_step[key] != after_step[key]
+                for key in before_step
+            ):
+                return None
+            before_run = before_step.get("run")
+            after_run = after_step.get("run")
+            if not isinstance(before_run, str) or not isinstance(after_run, str):
+                return None
+            if _additive_pytest_suite_enrollment(before_run, after_run) is None:
+                return None
+            saw_additive_run = True
+        if not saw_additive_run:
+            return None
+        changed_job_ids.append(str(job_id))
+    return tuple(changed_job_ids)
+
+
+def _safe_manifest_enrollment_job_ids(
+    workflow: Path,
+    changed_from: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> tuple[str, ...] | None:
+    """Prove bounded enrollment from exact base/candidate manifest bytes."""
+    if changed_from is None or not re.fullmatch(r"[0-9a-f]{40}", changed_from):
+        return None
+    root = (repo_root or Path(__file__).resolve().parent.parent).resolve()
+    try:
+        relative = workflow.resolve().relative_to(root).as_posix()
+    except (OSError, ValueError):
+        return None
+    if relative != LEGACY_MANIFEST_PATH:
+        return None
+    try:
+        base = subprocess.run(
+            ["git", "-C", str(root), "show", f"{changed_from}:{LEGACY_MANIFEST_PATH}"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        candidate = workflow.read_text(encoding="utf-8")
+        base_document = yaml.safe_load(base)
+        candidate_document = yaml.safe_load(candidate)
+    except (OSError, UnicodeError, subprocess.CalledProcessError, yaml.YAMLError):
+        return None
+    return _classify_additive_manifest_pytest_enrollment(
+        base_document,
+        candidate_document,
+    )
 
 
 def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
@@ -1811,6 +2021,7 @@ def build_plan(
     changed_from: str | None,
     scope_mode: str,
     pack_count: int = 12,
+    manifest_enrollment_job_ids: Iterable[str] | None = None,
     workflow_run_id: str | None = None,
     workflow: str | None = None,
     event: str | None = None,
@@ -1830,7 +2041,11 @@ def build_plan(
     # one is not merely useless — it spends a minute deriving ownership that
     # select_jobs is about to discard.
     invalidated = bool(
-        changed and any(_matches_any(GLOBAL_INVALIDATORS, path) for path in changed)
+        changed
+        and _global_invalidator_paths(
+            changed,
+            bounded_manifest_enrollment=manifest_enrollment_job_ids is not None,
+        )
     )
     scope_summary = "scope inference not needed"
     if (
@@ -1841,7 +2056,11 @@ def build_plan(
     ):
         jobs, scope_summary = infer_job_scopes(jobs)
 
-    eligible, reason = select_jobs(jobs, changed)
+    eligible, reason = select_jobs(
+        jobs,
+        changed,
+        manifest_enrollment_job_ids=manifest_enrollment_job_ids,
+    )
     predicted_job_ids = tuple(job.job_id for job in eligible)
     if scope_mode == "off" and changed_from:
         eligible = jobs
@@ -2030,12 +2249,19 @@ def plan_from_workflow(
         changed = resolve_changed_files(
             changed_from, explicit_file=changed_files_file
         )
+        manifest_enrollment_job_ids: tuple[str, ...] | None = None
+        if changed and LEGACY_MANIFEST_PATH in changed:
+            manifest_enrollment_job_ids = _safe_manifest_enrollment_job_ids(
+                workflow,
+                changed_from,
+            )
         return build_plan(
             legacy,
             changed,
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
+            manifest_enrollment_job_ids=manifest_enrollment_job_ids,
             workflow_run_id=workflow_run_id,
             workflow=workflow_name,
             event=event,
