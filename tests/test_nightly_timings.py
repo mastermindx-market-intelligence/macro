@@ -60,7 +60,7 @@ REGIONAL_BUILDER_STEP_NAME = (
 )
 MASTER_BRAIN_STEP_NAME = "master brain (multi-lens LLM synthesis; default-off, resilient)"
 AI_BRIEF_STEP_NAME = "AI Daily Brief page (build_aibrief)"
-MAX_REGIONAL_BUILDER_MINUTES = 60
+MAX_REGIONAL_BUILDER_MINUTES = 50
 
 #: Every workflow whose self-hosted jobs carry the W2 wiring. The wiring tests are
 #: parametrised over this tuple rather than duplicated per file, so a new nightly
