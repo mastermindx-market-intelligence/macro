@@ -33,9 +33,9 @@ verified_by: >
   5245552829 awaiting fresh rereview. Macro #7271 current head
   cadb7ec4a5029150dea3eb9445d9481f3f2aff66. Macro #7279 current head
   ff27f0a3408a3ddf5a29e0b6e59507501ebea8bb; repair return 5727998620;
-  protected-main proof 69ab1231c120528afb69fc70a1293a79ca848e74 over tree
-  eb13d9c3355b8327724c10757a343316d88e7104; fences 35329144961 SUCCESS;
-  CI 35329145976 in progress; fresh independent exact-head review requested.
+  latest protected-main proof 466f631f27a4106035fd166ebddf99c2777ffdd4 over tree
+  878e3fbe0d1633c623085110a84dfa751ff2a3d5; fences 35329144961 SUCCESS;
+  CI 35329145976 queued at latest read; formal independent review requested from MastermindX1.
   Parent #603 entitlement ruling 5724610745.
 scope:
   - terminal
@@ -158,7 +158,7 @@ prediction, production or Options Workbench completion.
 
 Current head: `ff27f0a3408a3ddf5a29e0b6e59507501ebea8bb`.
 Fresh protected Macro main used for compatibility:
-`747899c6f7588dca6b79fe0857d3efae8fd18f33`.
+`9a132a6969732563a0c317bd7a344953675b8387`.
 State: **BUILT_NOT_PROVEN / DRAFT / REREVIEW_PENDING / DO NOT MERGE**.
 
 The accepted clock/custody repairs remain intact: each root is valued at its fetched
@@ -194,13 +194,13 @@ Discriminating exact-head proof:
 
 Fresh protected-main proof is conflict-free with no movement on #7279 owned/dependency
 paths since the prior hardening base:
-- merge tree `eb13d9c3355b8327724c10757a343316d88e7104`;
-- proof-only integrated commit `69ab1231c120528afb69fc70a1293a79ca848e74`;
+- merge tree `878e3fbe0d1633c623085110a84dfa751ff2a3d5`;
+- proof-only integrated commit `466f631f27a4106035fd166ebddf99c2777ffdd4`;
 - integrated owner packs **629 / 1 / 0**;
 - integrated compileall and diff check: pass.
 
 Exact-head fences `35329144961` are **SUCCESS**. Exact-head CI `35329145976` is
-**IN_PROGRESS** at this checkpoint. Formal independent numerical/source rereview is
+**QUEUED** at the latest checkpoint. Formal independent numerical/source rereview is
 requested from `MastermindX1`; routing correction is #7279 comment `5728070883`.
 The prior `5726860312` and `5726974122` findings are preserved as the red problem
 statements, not treated as cleared review gates merely because source repair exists.
