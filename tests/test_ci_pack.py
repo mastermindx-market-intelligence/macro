@@ -484,6 +484,156 @@ def test_safe_manifest_job_delta_uses_canonical_trusted_repo_root(
     ) == ("owner",)
 
 
+def test_copied_trusted_control_plans_manifest_delta_against_candidate_root(
+    tmp_path: Path,
+) -> None:
+    candidate = tmp_path / "candidate"
+    candidate.mkdir()
+    manifest = candidate / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    tests_dir = candidate / "tests"
+    tests_dir.mkdir()
+    (tests_dir / "test_existing.py").write_text(
+        "def test_existing():\n    assert True\n",
+        encoding="utf-8",
+    )
+    (tests_dir / "test_other.py").write_text(
+        "def test_other():\n    assert True\n",
+        encoding="utf-8",
+    )
+    base_document = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(base_document, sort_keys=False))
+    subprocess.run(["git", "init"], cwd=candidate, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.invalid"],
+        cwd=candidate,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "CI Test"],
+        cwd=candidate,
+        check=True,
+    )
+    subprocess.run(["git", "add", "."], cwd=candidate, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "base"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+    )
+    base_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    candidate_document = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(candidate_document, sort_keys=False))
+    (tests_dir / "test_new.py").write_text(
+        "def test_new():\n    assert True\n",
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", "."], cwd=candidate, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "candidate"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+    )
+    head_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=candidate,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    control = tmp_path / "trusted-ci-control"
+    control_scripts = control / "scripts"
+    control_scripts.mkdir(parents=True)
+    for filename in (
+        "__init__.py",
+        "run_ci_pack.py",
+        "ci_semantic_proof.py",
+        "ci_authority_paths.py",
+        "ci_scope_dependencies.py",
+        "audit_unrun_tests.py",
+        "workflow_run_source.py",
+    ):
+        (control_scripts / filename).write_bytes(
+            (ROOT / "scripts" / filename).read_bytes()
+        )
+
+    plan_path = tmp_path / "plan.json"
+    environment = dict(os.environ)
+    environment["PYTHONPATH"] = str(control)
+    environment["MASTERMIND_TRUSTED_CI_REPO_ROOT"] = str(candidate)
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(control_scripts / "run_ci_pack.py"),
+            "--workflow",
+            ".github/ci/legacy-jobs.yml",
+            "--gate",
+            "code",
+            "--pack-count",
+            "12",
+            "--changed-from",
+            base_sha,
+            "--scope-mode",
+            "active",
+            "--plan-only",
+            "--emit-plan-json",
+            str(plan_path),
+            "--workflow-run-id",
+            "trusted-root-regression",
+            "--workflow-name",
+            "ci",
+            "--event",
+            "pull_request",
+            "--role",
+            "pr_head",
+            "--tested-tree-sha",
+            head_sha,
+            "--subject-head-sha",
+            head_sha,
+            "--base-sha",
+            base_sha,
+        ],
+        cwd=candidate,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    assert "bounded manifest job delta" in plan["reason"], plan
+    assert "full suite" not in plan["reason"], plan
+    assert plan["eligible_jobs"] == ["owner"], plan
+    assert plan["nonempty_pack_indices"] == [0], plan
+
+
 def test_manifest_job_reorder_or_rename_still_fails_closed() -> None:
     base = {
         "jobs": {
