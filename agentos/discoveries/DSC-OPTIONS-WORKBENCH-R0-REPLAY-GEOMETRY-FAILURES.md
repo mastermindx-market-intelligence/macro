@@ -1,35 +1,37 @@
 ---
 key: OPTIONS-WORKBENCH-R0-REPLAY-GEOMETRY-FAILURES
 claim: >
-  Options Workbench R0 has source candidates for Terminal geometry/replay, Macro
-  gamma-sign correctness and an exact-head expiry/source-clock repair. Terminal #608
-  has exact-head hosted CI plus current-base integration proof; Macro #7279 now closes
-  the reproduced cycle-start/root-clock/NBBO-clock defects on candidate
-  e7e0cfefae4591ad961c36e91da0c6745a1159e0 but still awaits hosted CI and independent
-  exact-head review. None of these slices is production acceptance or full Quanted parity.
+  Options Workbench R0 has source candidates for Terminal geometry/replay and Macro
+  gamma-sign correctness, while the expiry/source-clock carrier is still under bounded
+  same-carrier hardening. Terminal #608 has exact-head hosted CI plus current-base
+  integration proof; Macro #7279 head 6d4db997f371df4f5500cdd32ff387fcb2a7849d
+  closes the cycle-start/root-clock, whole-row and cash-session defects but remains
+  REQUEST_CHANGES because mixed unknown NBBO clocks are lost at the public replay
+  aggregation boundary. None of these slices is production acceptance or full Quanted parity.
 falsifier: >
   Terminal #608 at 1f94c551ff997a50dc915a3d7565d626d89f87c4 fails its mounted
   replay/contract regressions, exact-head hosted CI or current-base integrated browser
   matrix; Macro #7271's modeled regime disagrees with its own gamma curve at spot; or
-  Macro #7279 current head e7e0cfefae4591ad961c36e91da0c6745a1159e0 fails the
-  source-clock regressions/current-base owner pack, exact-head hosted CI or independent
-  review before promotion.
+  Macro #7279 is promoted while a stamp containing at least one selected/contributing
+  quote with unknown quote_timestamp can still publish non-null quote_at_first/last
+  without an explicit unknownness contract.
 so_what: >
   Continue the existing carriers and release gates. Do not redo the old replay/tool
-  blocker, geometry repair, gamma-sign repair or #7279 source-clock implementation.
-  Keep #7279 draft until exact-head hosted CI and independent review accept the new
-  immutable candidate, obtain an independent exact-head review for #608, and preserve
-  production proof as a separate post-release gate.
+  blocker, geometry repair, gamma-sign repair, fetched-root valuation repair, whole-row
+  selection or RTH gate. Keep #7279 draft and repair only the aggregate NBBO-clock
+  unknownness on the same source carrier before refreshing exact-head CI/review. Obtain
+  an independent exact-head review for #608 and preserve production proof separately.
 kind: runtime
-verified_at: 2026-09-17
+verified_at: 2026-09-18
 verified_by: >
   Terminal #608 current head 1f94c551ff997a50dc915a3d7565d626d89f87c4;
   hosted CI run 35301191243 SUCCESS; current-base proof
   fb361092f4a17c12c303f0de13882b8100143811; Macro #7271 current head
   cadb7ec4a5029150dea3eb9445d9481f3f2aff66; Macro #7279 current head
-  e7e0cfefae4591ad961c36e91da0c6745a1159e0 with current-main proof
-  1bc045ed919654146b976ef5fe270e6f7c2805ab and review comments 5724395435,
-  5724455441, 5724614973, 5725715278; parent #603 entitlement ruling 5724610745.
+  6d4db997f371df4f5500cdd32ff387fcb2a7849d with hardening proof against
+  d2c2b085c46f0745f9996e7de3d1eb9b1a379984 and review comments 5724395435,
+  5724455441, 5724614973, 5725715278, 5726707566 and 5726860312; parent #603
+  entitlement ruling 5724610745.
 scope:
   - terminal
   - options-intelligence
@@ -139,57 +141,55 @@ was run:
 This remains modeled/internal-consistency evidence only, not dealer inventory,
 prediction, production or Options Workbench completion.
 
-## Macro #7279 — expiry/source clock repair candidate returned
+## Macro #7279 — expiry/source clock repair remains REQUEST_CHANGES
 
-Current head: `e7e0cfefae4591ad961c36e91da0c6745a1159e0`.
-Current protected Macro main used for compatibility:
-`7d95730839d30503d3f9320734943d6c3d660a3a`.
-State: **BUILT_NOT_PROVEN / DRAFT / exact-head review + hosted CI owed**.
+Current head: `6d4db997f371df4f5500cdd32ff387fcb2a7849d`.
+Hardening compatibility base: `d2c2b085c46f0745f9996e7de3d1eb9b1a379984`.
+State: **BUILT_NOT_PROVEN / DRAFT / REQUEST_CHANGES / DO NOT MERGE**.
 
-The prior head `7bf15e63...` removed the false fixed four-hour 0DTE floor but remained
-REQUEST_CHANGES after review comments `5724395435` and `5724455441` reproduced a
-cycle-start valuation mismatch and a multi-root output-clock mismatch. Comment
-`5724614973` additionally required preserving trade and NBBO quote clocks separately;
-`5725715278` corrected one detail of that review: the live `bulk_trade_quote` path
-already retains `quote_timestamp`; the defect was the surface extractor discarding it.
+The earlier clock repair remains valid: fetched-root `observed_at` is the valuation
+basis, root clocks are not relabelled by later roots/builds, trade and actual provider
+NBBO clocks stay distinct, sub-second valuation identity is preserved, OI vintage is
+retained, and normal/early 0DTE maturity uses the existing session/calendar owners.
 
-The current same-carrier candidate now:
-- values each root at its fetched-root `observed_at`, not `cycle_started_at`, and uses
-  that clock for the root stamp, frame `asof` and `valuation_at`; the current head also
-  preserves the poller's deliberate sub-second response ordering rather than rounding
-  the public valuation basis to whole seconds;
-- skips a root with no valid current observation instead of relabelling cumulative
-  state as fresh;
-- retains `built_at` separately from valuation time without claiming it is the later
-  R2 publication receipt;
-- retains selected trade-event time as `trade_at` and the real provider NBBO clock as
-  `quote_at`; missing/malformed quote time remains null rather than inheriting trade time;
-- carries per-stamp trade/quote bounds plus exact prior-session `oi_vintage` through
-  replay truncation;
-- rejects source clocks later than fetched availability and excludes 0DTE contracts
-  after both regular 16:00 ET and existing 13:00 ET early closes;
-- preserves the existing session/calendar, pricing, replay and storage owners.
+Review hardening on `6d4db997...` closed two additional defects without widening owners:
+- pandas `GroupBy.last()` could splice an older non-null quote timestamp onto the
+  newest trade/bid/ask row; stable latest-RTH whole-row selection now preserves row
+  identity and an honestly missing `quote_timestamp`;
+- the Greek quote tap consumed raw bulk frames that can include extended-hours rows;
+  it now reuses `engine.session_digest.session_window_et` before latest-row selection,
+  excluding normal 16:05 and canonical early-close 13:05 rows with the same `< close`
+  boundary already used by `engine.live_flow`.
 
-Discriminating proof includes `trade_timestamp != quote_timestamp`, missing quote-time
-nullability, quote-after-observation rejection, real `run_cycle` response-vs-cycle-start
-separation, normal/early after-close cases, unequal-root timestamps and selected-stamp
-provenance. A later self-review caught one residual loss of precision: d254 rounded a
-fetched-root `18:00:00.123456Z` valuation to whole seconds in the public frame. A RED
-regression reproduced that mismatch before the current head preserved exact precision.
+Exact-head hardening proof supplied and independently spot-checked by Sol:
+- candidate owner pack: 624 passed / 1 skipped / 0 failed;
+- focused whole-row / cash-session / sub-second regressions: 4 passed on the detached
+  immutable head during principal review;
+- compileall and diff check: pass;
+- local current-main proof commit `f354804bac36660067930fcdb46eb097cfb55eaa`,
+  tree `383299fd5f67537cf8c8a28da4c01bc9669e8a52`, owner pack 624/1/0;
+- exact-head fences `35319389099`: SUCCESS;
+- exact-head CI `35319389391`: still queued at the last canonical read.
 
-Fresh exact-head owner pack: 621 passed / 1 skipped / 0 failed across surface, live-flow,
-session-digest, intraday-Greek and ThetaData owner tests; compileall and diff check pass.
-Fresh current-main integration proof is conflict-free:
-- merge tree `bef79bc672642cd8e6bdc355ac9f35726cd60719`;
-- proof-only integrated candidate
-  `1bc045ed919654146b976ef5fe270e6f7c2805ab`;
-- integrated owner pack 621 passed / 1 skipped / 0 failed;
-- integrated compileall and diff check pass.
+A further principal review found one still-blocking public-provenance defect. The
+per-contract path correctly leaves a missing quote clock as `quote_at=None`, but
+`greek_columns_for_stamp::_clock_bounds("quote_at")` skips unknown clocks. With ten
+otherwise valid/OI-matched inputs, one unknown quote clock and nine known clocks, the
+public frame still emitted `quote_at_first=13:30:01Z` and `quote_at_last=13:30:09Z`,
+`coverage=1.0`, and no quote-clock missingness indicator. The public replay boundary
+therefore loses partial NBBO-clock unknownness even though the per-contract source is
+honest.
 
-Exact-head hosted CI `35312578511` and fences `35312578198` are running at the last
-canonical read. Independent exact-head numerical/source review remains required.
-The separate Greek field-completeness denominator defect is deliberately not folded
-into this carrier.
+Review comment `5726860312` requires the smallest same-carrier repair: preferably set
+both aggregate `quote_at_first` / `quote_at_last` to null whenever any selected Greek
+input summarized by that stamp has a missing/malformed quote clock. An explicit
+known/total source-clock count is possible but is a larger public-contract change and
+is not required merely to close this blocker. Add a mixed-known/missing regression
+through the public frame while retaining the all-known bounds and all-missing-null tests.
+
+The separate Greek field-completeness denominator from parent #603 remains outside this
+carrier and must not be folded into this repair. Independent exact-head numerical/source
+review is still owed after a repaired immutable head returns.
 
 ## R1 entitlement and source boundary
 
@@ -220,12 +220,14 @@ Next actions, in order of available evidence:
    transition; its exact-head hosted CI and current-base integration proof are already green;
 2. consume #7271 current-head CI and normal release gates without redoing its modeled
    sign implementation;
-3. consume #7279 exact-head hosted CI/fences and obtain independent exact-head
-   numerical/source review on e7e0cfefae4591ad961c36e91da0c6745a1159e0; do not redo
-   the source-clock implementation unless that review returns a concrete finding;
-4. only after #7279 is accepted, repair the separately recorded Greek field-completeness
+3. keep #7279 on the same source carrier and close only review finding `5726860312`:
+   preserve mixed unknown NBBO-clock truth at the public replay boundary, with a direct
+   mixed-null red/green regression and refreshed exact-head/current-main proof;
+4. after that repaired immutable head returns, consume exact-head CI/fences and obtain
+   the still-owed independent numerical/source review before any Ready/merge transition;
+5. only after #7279 is accepted, repair the separately recorded Greek field-completeness
    denominator through the existing producer rather than opening a parallel writer;
-5. after lawful merges, use existing release owners and natural RTH inputs for real
+6. after lawful merges, use existing release owners and natural RTH inputs for real
    production-path acceptance. Merge, green CI and fixture-browser proof remain
    distinct from production acceptance.
 
