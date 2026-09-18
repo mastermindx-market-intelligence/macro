@@ -488,6 +488,7 @@ def analyze_pair(
         "schema": SCHEMA,
         "research_authority": "research_only",
         "position_tier": POSITION_TIER,
+        "exposure_unit": "USD dealer-delta change per +1% spot move",
         "method": _greek_method_metadata(greeks_fn),
         "outcome_labels_opened": False,
         "root": root.upper(),
