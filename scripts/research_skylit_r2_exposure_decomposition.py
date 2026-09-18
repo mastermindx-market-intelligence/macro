@@ -474,6 +474,8 @@ def analyze_pair(
         "session0": session0,
         "session1": session1,
         "elapsed_calendar_days": (s1 - s0).days,
+        "pair_decision_eligible_not_before_session": state1["decision_eligible_not_before_session"],
+        "decomposition_scope": "survivor_contracts_only",
         "state0": _public_state_summary(state0),
         "state1": _public_state_summary(state1),
         "limitations": [
@@ -501,7 +503,7 @@ def analyze_pair(
         k: v / elapsed
         for k, v in decomposition["component_net"].items()
     }
-    base["status"] = "COMPLETE"
+    base["status"] = "SURVIVOR_DECOMPOSITION_COMPLETE"
     base["decomposition"] = decomposition
     base["composition"] = composition
     return base
