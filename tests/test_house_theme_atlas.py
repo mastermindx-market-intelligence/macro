@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 from pathlib import Path
@@ -81,6 +82,38 @@ def test_house_atlas_dynamic_controls_and_table_keep_zh_parity():
     assert "'成员数量':'Member count'" in block
     assert "isZh()?'主题 / 组别':'Theme / group'" in block
     assert "L(esc(g.category),esc(g.category_zh))" in block
+
+
+def test_house_atlas_category_zh_mirror_matches_canonical_house_map():
+    block = _atlas_block(TEMPLATE)
+    match = re.search(r"var CAT_ZH=(\{.*?\});", block)
+    assert match, "Atlas category ZH map missing"
+    atlas_map = json.loads(match.group(1))
+
+    from engine import theme_context
+
+    membership = json.loads(_read_tracked(ROOT / "data" / "baskets" / "membership.json"))
+    baskets = membership.get("baskets") or {}
+    if isinstance(baskets, list):
+        rows = baskets
+    else:
+        rows = baskets.values()
+    categories = {row.get("category") for row in rows if row.get("category")}
+    assert categories
+    assert categories <= atlas_map.keys()
+    assert {cat: atlas_map[cat] for cat in categories} == {
+        cat: theme_context._CAT_ZH[cat] for cat in categories
+    }
+
+
+def test_house_atlas_activity_intensity_is_not_directional_color():
+    block = _atlas_block(TEMPLATE)
+    assert "if(metric==='legacy_activity')" in block
+    assert "background:color-mix(in srgb,var(--link)" in block
+    assert "metricBarStyle(metric)" in block
+    assert "metric==='legacy_activity'?'background:var(--link)'" in block
+    assert "colorStyle(m.value,state.metric)" in block
+    assert "colorStyle(cm,state.metric)" in block
 
 
 def test_house_atlas_inline_javascript_parses_with_node(tmp_path: Path):
