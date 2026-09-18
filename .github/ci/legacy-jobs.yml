@@ -14908,13 +14908,34 @@ jobs:
     # engine/qbus.py and engine/qkernel.py are direct imports of
     # tests/test_macro_news.py — depth-1 closure, the depth
     # scripts/check_ci_trigger_closure.py gates at and for the reason it states.
+    #
+    # `scope: exclusive` because inference smears. Left to infer its own scope
+    # this job picked up whole-tree roots — templates/**, site/**, scripts/**,
+    # engine/** — through opaque constructs deep in macro_news's closure, and
+    # began selecting on every probe in
+    # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+    # (measured 2026-09-18: the ratchet reds, exactly as it is built to when a
+    # new job is handed the fallback tier). Curated away at the source, the way
+    # `options-estate-guards` was in wave 3, rather than paid for in the bound.
+    # Exclusivity means these paths are the WHOLE scope, so the second-level
+    # modules the three suites really read are declared here rather than lost
+    # with the smear: engine/macro_news.py imports news_common, news_events,
+    # event_calendar and qkernel, and all three leaves read lib/config.py.
+    # Everything inference added BEYOND this list (collectors/**, codex_*,
+    # neuralweb/key_pool, news_translate, macro_surprise, lib/store.py,
+    # lib/ai_costs.py) is reached through those imports, not by these suites.
+    scope: exclusive
     paths:
       - "config.yml"
+      - "engine/event_calendar.py"
       - "engine/gdelt_client.py"
       - "engine/macro_news.py"
+      - "engine/news_common.py"
+      - "engine/news_events.py"
       - "engine/news_vector.py"
       - "engine/qbus.py"
       - "engine/qkernel.py"
+      - "lib/config.py"
       - "tests/test_gdelt_client.py"
       - "tests/test_macro_news.py"
       - "tests/test_news_vector.py"
