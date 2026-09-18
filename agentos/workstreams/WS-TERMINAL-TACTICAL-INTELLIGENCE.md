@@ -45,7 +45,7 @@ waves:
 - id: D1
   title: Current pilot history and finer-grain availability qualification
   status: in_progress
-  next_action: 'Macro #7275 head 3ba681e2ce4232f566b766cb748f6ebef4d85dca is BUILT_NOT_PROVEN: a pure fail-closed resolver now converts a complete qualified one-minute SessionTape into target-first/adverse-first/same-minute-ambiguous/neither without another store or fetch plane. Independent review is requested from mastermindx-2 and hosted checks are pending. Source-clock/history qualification still remains: consume the existing Terminal #595 refresh repair, then prove the existing VendorMinuteReader correction/history/freshness behavior for the intended retrospective or prospective mode before #7275 can become production evidence.'
+  next_action: 'Macro #7275 head 3ba681e2ce4232f566b766cb748f6ebef4d85dca is BUILT_NOT_PROVEN: a pure fail-closed resolver now converts a complete qualified one-minute SessionTape into target-first/adverse-first/same-minute-ambiguous/neither without another store or fetch plane. Independent review is requested from mastermindx-2 and hosted checks are pending. Terminal #595 still owns refresh source: exact-head reproduction comments 5723524041/5723554467 prove failure masking and provide a disposable 47-pass minimal repair spike; consume the incumbent owner fix rather than creating a competing repair carrier. Then prove VendorMinuteReader correction/history/freshness semantics for the intended retrospective or prospective mode before #7275 can become production evidence.'
 - id: R1
   title: Registered price-first hypotheses, causal evaluation and controls
   status: in_progress

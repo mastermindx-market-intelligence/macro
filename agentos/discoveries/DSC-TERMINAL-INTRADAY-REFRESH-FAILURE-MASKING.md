@@ -11,8 +11,13 @@ so_what: The refresh owner must separate successful empty responses from transpo
   freshness repair.
 kind: landmine
 verified_at: '2026-09-17'
-verified_by: 'Exact-head GitHub source read and REQUEST_CHANGES review 5242058779 on Terminal #595; source control-flow
-  review only, proposed offline reproduction was platform-refused.'
+verified_by: >
+  Exact-head source plus executable no-network reproduction on ba7c48cf58b2a04deb5b566655e8e61721caca3b;
+  source SHA256 1490b14de3e4222a9a815aaa908fcd30f77e61a259d2975ae25fc6a3e97a3c1f; Terminal #595
+  review 5242058779, reproduction comment 5723524041 and tested repair-spike comment 5723554467. Five synthetic
+  503 retries classified unchanged/failed=0; page-1 success plus page-2 failure published a prefix as written/failed=0.
+  Disposable repair patch SHA256 b3166e533b0beb18beb8406d23e8b05444294a264b0800bf4e9d28a0b42e53d2: six
+  discriminating failure tests passed and the full refresh/nightly set returned 47 passed; source effect remained NONE.
 scope:
 - WS:TERMINAL-TACTICAL-INTELLIGENCE
 - terminal:ingest/backfill_intraday.py
@@ -20,4 +25,4 @@ scope:
 confidence: verified
 ---
 
-The existing #595 writer is preserved. This record is about the reviewed candidate source, not evidence of a production run. No updater, network request, source repair, merge or deployment was performed by the reviewing TTI session. Review names exhausted timeout/429/5xx, partial-page, continuation-bound, valid-empty and per-symbol isolation tests.
+The existing #595 writer is preserved. The reproduction used the exact candidate file with a dummy key, injected local transport and a temporary data directory: no provider request, credential, production store, source edit, merge or deployment occurred. It proves the failure classification on the candidate's real fetch→refresh path, not a production outage. Required regressions remain exhausted timeout/429/5xx, later-page failure, pagination/incomplete termination, valid-empty and per-symbol isolation.
