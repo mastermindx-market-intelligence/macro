@@ -2512,7 +2512,7 @@ def test_proven_manifest_enrollment_forces_changed_job_without_full_suite(
     }
     assert "full suite" not in plan.reason
     assert "bounded manifest enrollment" in plan.reason
-    assert plan.scope_summary == "frozen test scopes"
+    assert plan.scope_summary == "fixture scopes"
 
 
 def test_global_invalidator_widens_the_plan_without_inferring_scopes(
