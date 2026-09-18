@@ -219,10 +219,14 @@ waves:
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
+  - DEC:R81-AUTHORITY-VALIDATION-LAW
 discoveries:
   - DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC
   - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
+  - agentos/decisions/DEC-R81-AUTHORITY-VALIDATION-LAW.md
+  - agentos/discoveries/DSC-EXECUTIVE-RECEIPTS-HAVE-NO-ANTI-REPLAY-BINDING.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-W1H3-R81-REQUEST-REPAIR.md
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
   - agentos/discoveries/DSC-PF1-CLAUDE-WORK-LEG-BOUNDARY.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
@@ -275,6 +279,8 @@ landmines:
   - "The provider-capacity normalizer receives only secret-free typed observations. Existing Provider Control helpers may continue their already-reviewed credential-presence mechanics internally; that authority is not transferred to the normalizer or Executive OS."
   - "Subscription headroom should reduce marginal API spend for routine eligible work, but policy may reserve scarce frontier capacity for critical/interactive work."
   - "Never expose auth tokens, cookies, API keys, raw auth files, provider-home contents, email/account PII, remote endpoint credentials or private host addresses in the capacity projection."
+  - "DEC:R81 binds any Executive authority/eligibility read: invariants required to GRANT authority must be ASSERTED at the authority-granting read from canonical current evidence or a separately authenticated source, through one shared owner. A read-side check that only confirms an artifact agrees with itself is a drift detector, not an authority validator. The laws are scoped - no writer/read parity is imposed on provenance/audit fields, and an independently authenticated attestation may still carry authority."
+  - "Executive sealed receipts (CEO-submit AND COO autonomy) carry no epoch or anti-replay binding: observed_at is format-checked only and tool_version is a static constant. A DR/backup restore of a matched (config, receipt) pair silently reverses a later legitimate DISARM. See DSC:EXECUTIVE-RECEIPTS-HAVE-NO-ANTI-REPLAY-BINDING - OPEN, architecture-wide, separate adjudication."
 do_not_redo:
   - "Do not create a provider/account/quota database in Mastermind Executive OS."
   - "Do not duplicate Macro key_pool, budget_gate, llm_auth, provider_health or Codex account-home identity logic."
@@ -291,6 +297,10 @@ do_not_redo:
   - "Do not reopen CF2-F; Mastermind #150 is the accepted source law."
   - "Do not patch `mastermind.provider_capacity.v1` in place to add native Claude realm semantics. OCR-2C Family B, if approved, is a new versioned Provider Control evolution."
   - "Do not widen Capacity Fabric into Wake, Slack dispatch, Control Room, browser/devserver resources, host arming, merge/deploy authority or capital/trading authority."
+  - "Do not re-derive Mastermind PR #677 B1/B2/B3 or issue an eleventh single-instance repair round; DEC:R81 consolidated them and the ruling is published as PR #677 comment 5706016890."
+  - "Do not transfer PR #677 source custody to another worker. The started child/branch/writer remains bound; 'mechanical' means no further principal adjudication round is owed."
+  - "Do not attempt to give the CEO-submit receipt transaction_id an independent durable source, and do not change the frozen receipt shape for it; it is an accepted correlation/provenance label."
+  - "Do not repair the receipt anti-replay gap inside W1-H3; it is inherited and separately adjudicated."
   - "Do not treat the merged Mastermind #581 (27a5d893ca28f7006c1007dffa51e677c9c7a4ab) as native Anthropic capacity or as PF1 progress, and never treat a #581 merge as native readiness (Sol R21)."
   - "Do not build a native Claude worker, adapter or carrier outside PF1. Native ownership is PF1 `claude-code` / `ClaudeCodeWorkerAdapter`; PF1-F0 custody is PR #455 and it stays held. A second native writer for one operation is the error, not a shortcut around a slow one."
 next_action: >
