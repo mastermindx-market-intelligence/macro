@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-17T09:45:50Z",
+  "as_of": "2026-09-18",
+  "generated_at": "2026-09-18T08:03:44Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-18",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:e656dae49c61f64d0c99f21045b5a4a48629b75e6fef0940d5485d5ce0a587af",
-      "prev_content_hash": "sha256:acabcaac5d83c41a0e8842b01718afa40ee39c46ea2fa9d2a5aebb0053aeaa36",
+      "content_hash": "sha256:839b001074b3a80413fd5005c896e111b6e23871c8a882dd670ff0bf583474ae",
+      "prev_content_hash": "sha256:e656dae49c61f64d0c99f21045b5a4a48629b75e6fef0940d5485d5ce0a587af",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -95,7 +95,7 @@
           "rule_en": "If revision_breadth for ai_semiconductors turns negative (net earnings downgrades exceed upgrades), the thesis that AI demand is above-cycle durable is weakening — watch for two consecutive negative breadth prints.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.654"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.497"
         },
         {
           "id": "ai_semi_f2",
@@ -465,10 +465,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-18",
       "thesis_id": "robotics_automation.v1",
-      "content_hash": "sha256:cc69587efadc3e91217c743c1b7dc120b89783a469392599cb3799375916cfbd",
-      "prev_content_hash": "sha256:0cbad9948c850ca9b9677c35a5bac0b50b24e3872d0251d1c80f9856c0725636",
+      "content_hash": "sha256:4fb84e54279cc578e5c02238c3810d7930ec811e3affc12fddd80dac5944e693",
+      "prev_content_hash": "sha256:cc69587efadc3e91217c743c1b7dc120b89783a469392599cb3799375916cfbd",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -534,7 +534,7 @@
           "rule_en": "If reshoring basket score falls below 30 or moves to 'avoid' label, the industrial-capex driver underpinning automation demand is weakening.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=42.0"
+          "detail": "threshold check: 'basket_intel[*].score' lt 30 → value=46.0"
         },
         {
           "id": "robo_f3",
@@ -980,10 +980,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-13",
+      "as_of": "2026-09-18",
       "thesis_id": "glp1_obesity.v1",
-      "content_hash": "sha256:3c7c6b41a4c6c8a643ad45c7e04c6fe6ac2a9470b8ddc99af36b0bf22de61421",
-      "prev_content_hash": "sha256:04cfea1325785481c4e1b2788e50242e28674b939f554566ef6f7f055edc22f0",
+      "content_hash": "sha256:52304a15b70adafe8bdb5aaaa7c150b2c68e0b67b6f2544a8b930562eadad439",
+      "prev_content_hash": "sha256:3c7c6b41a4c6c8a643ad45c7e04c6fe6ac2a9470b8ddc99af36b0bf22de61421",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1045,7 +1045,7 @@
           "rule_en": "If revision_breadth for glp1_obesity falls below 0.0, earnings estimates are being cut broadly — manufacturing ramp is not meeting demand curve.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.677"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.71"
         },
         {
           "id": "glp1_f2",
@@ -1149,10 +1149,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-11",
+      "as_of": "2026-09-18",
       "thesis_id": "diagnostics_lifesci.v1",
-      "content_hash": "sha256:e360bf42031a35dea45ee913fd7aa215ee62e1f4516888764f590181ca9ccb7a",
-      "prev_content_hash": "sha256:8235f9f599eaf52d36a9b4e5b16a0c486257813f89d99e18bf8dc9fde3f45971",
+      "content_hash": "sha256:ee2000805ae0581232a7c7cefa81bab06eff78dc9b1c1d02d368656b8e0350eb",
+      "prev_content_hash": "sha256:e360bf42031a35dea45ee913fd7aa215ee62e1f4516888764f590181ca9ccb7a",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1206,7 +1206,7 @@
           "rule_en": "If revision_breadth for diagnostics_lifesci remains below 0.1 for two consecutive months, biopharma R&D capex recovery is not yet flowing through to tools demand.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.615"
+          "detail": "threshold check: 'revision_breadth' lt 0.1 → value=0.626"
         },
         {
           "id": "diag_f2",
@@ -1535,7 +1535,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-17T09:45:50Z",
-  "inputs_hash": "sha256:ed055725ec5bceb2e83ef45f6a3ffb0928c326ac15df8aeba6c48c41a0943cd7",
+  "produced_at": "2026-09-18T08:03:44Z",
+  "inputs_hash": "sha256:316e48ac50d644a778106a73ef29f82d36ac44053a559580b9ad9fc37febc571",
   "tier": "display"
 }

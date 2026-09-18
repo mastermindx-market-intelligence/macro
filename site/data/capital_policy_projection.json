@@ -43,17 +43,6 @@
       "reason_zh": "",
       "rows": [
         {
-          "date": "2026-09-17",
-          "days_out": 0,
-          "event_en": "Treasury auctions 10-Year Note",
-          "event_zh": "财政部拍卖10年期中期国债",
-          "is_context_only": true,
-          "source_label_en": "TreasuryDirect",
-          "source_label_zh": "国债直销",
-          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
-          "window_id": "treasury_supply"
-        },
-        {
           "date": "2026-09-22",
           "days_out": 5,
           "event_en": "Treasury auctions 2-Year Note",
@@ -126,8 +115,8 @@
     {
       "label_en": "Disclosure rules",
       "label_zh": "披露规则",
-      "more_en": "16 more dated steps are not shown.",
-      "more_zh": "另有 16 个既定日期节点未展示。",
+      "more_en": "15 more dated steps are not shown.",
+      "more_zh": "另有 15 个既定日期节点未展示。",
       "reason_en": "",
       "reason_zh": "",
       "rows": [
@@ -195,6 +184,17 @@
           "source_label_en": "Federal Register",
           "source_label_zh": "联邦公报",
           "source_url": "https://www.federalregister.gov/d/2026-15068",
+          "window_id": "disclosure_regulatory"
+        },
+        {
+          "date": "2026-09-28",
+          "days_out": 11,
+          "event_en": "Comment periods close on 11 Federal Register documents",
+          "event_zh": "11 份联邦公报文件的意见征询期截止",
+          "is_context_only": true,
+          "source_label_en": "Federal Register",
+          "source_label_zh": "联邦公报",
+          "source_url": "https://www.federalregister.gov/d/2026-15148",
           "window_id": "disclosure_regulatory"
         }
       ],

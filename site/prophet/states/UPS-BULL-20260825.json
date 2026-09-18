@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.898,
+    "dist_to_stop_r": -1.234,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 51.1,
-    "p1": -1.2656,
-    "p2": -0.6328,
+    "p1": -1.4892,
+    "p2": -0.7446,
     "p3": null,
-    "move_r": -1.898,
+    "move_r": -2.234,
     "mfe_r": 0.263,
     "mae_r": -2.868
   },

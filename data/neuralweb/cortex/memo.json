@@ -1,14 +1,32 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-17T20:23:20+00:00",
-  "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
-  "what_fired": [],
-  "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
-  "decaying_families": [],
-  "deserves_operator": [],
+  "as_of": "2026-09-18T08:47:34+00:00",
+  "summary": "Context-only committee read: the surface has shifted back to risk-on and the risk radar is calm/receding, with a measured 21-day pullback rate of 13.0% versus a 17.8% base rate. That de-escalates the earlier growth, internals, and bubble warnings, but it does not establish a fresh bullish confirmation: market_confirmed is false, no confirmation chip is fresh, breadth remains weak, and the global-breakdown leg remains elevated. The confirmed Q3 label is low-confidence and transitioning because its current axes read Q2. Cross-asset bonds/FX still diverge from the equity regime. Factor intelligence adds no active contradiction: Pair G is dormant because the panel has only 10 dates, the scorecard is explicitly survivorship-biased, and factor attention has zero graded firings. No ranked surface or trade posture was changed.",
+  "what_fired": [
+    "World-state verdict returned to RISK_ON; radar moved from caution to calm and is receding.",
+    "Liquidity is supportive only as low-quality mechanical plumbing context; RRP is exhausted and there is no Fed asset-growth impulse.",
+    "Dealer gamma changed from short to long, while systematic flows remain split.",
+    "The confirmed regime label is Q3, but raw growth/inflation signs read Q2 and are only 1 of 7 sessions into confirmation.",
+    "Two confluence tensions remain: briefing demand-versus-supply divergences and bonds/FX versus the equity regime.",
+    "A causal hypothesis was staked only for forward testing: low-vol Fed net-liquidity deceleration preceding 21-day breadth deterioration."
+  ],
+  "contradictions_review": "Primary contradiction: risk-on/calm surface versus weak internal participation\u201431.8% above the 50-day average, breadth divergence present, zero fresh market-confirmation chips, and global-breakdown intensity 86.8. Second: the low-confidence Q3 label conflicts with its own Q2-sign axes and with bonds/FX cross-asset confirmation. Options contradiction records are older (as of 2026-09-09) and therefore were not elevated. Factor Pair G has no records and cannot resolve the tension. Current contradictions also make the many overdue Master Brain theses unsafe to treat as live context; notably the Long Treasuries falsifier includes real 10-year yield above 2.5%, while the current reading is 2.68%.",
+  "decaying_families": [
+    "Radar and several desk families have negative signed excess at 21\u201363 day horizons and remain unarmed; they should not be treated as authoritative directional engines.",
+    "Policy claims show negative signed excess across reported 5-, 21-, and 63-day windows and remain unarmed.",
+    "AI, stock, and thematic desk 63-day families are negative and their held-out tests are vacuous.",
+    "Factor composite, low-vol, low-beta, and investment legs have negative scorecard IC; the panel history floor is not met.",
+    "Master Brain open theses are administratively decayed: their check-by dates have passed while status remains open and unscored."
+  ],
+  "deserves_operator": [
+    "Resolve or annotate the Q3\u2192Q2 regime transition and the continuing bonds/FX contradiction before relying on the regime label.",
+    "Watch whether weak breadth/global breakdown converges with the risk-on headline; use the pre-committed 45% breadth and global-intensity criteria, not discretion.",
+    "Score, close, or explicitly renew the overdue Master Brain theses. The Long Treasuries thesis deserves immediate review because its stated real-yield falsifier has been met.",
+    "Treat liquidity support as transient mechanical context: RRP is exhausted, so a renewed drain would transmit directly to reserves."
+  ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-16",
+    "as_of": "2026-09-17",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,120 +38,93 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 73,
-      "total_rows": 81
+      "ungradeable": 79,
+      "total_rows": 87
     },
     "is_context_only": true
   },
-  "tool_call_census": {},
+  "tool_call_census": {
+    "read_world_state": 1,
+    "read_factor_state": 1,
+    "query_spine": 1,
+    "read_contradictions": 1,
+    "list_factor_contradictions": 1,
+    "read_kernel": 1,
+    "read_master_brain_theses": 1,
+    "read_causal_candidates": 1,
+    "read_context_candidates": 1,
+    "flag_attention": 1,
+    "stake_hypothesis": 2,
+    "write_memo": 1
+  },
   "is_context_only": true,
   "run_status": {
-    "status": "degraded",
-    "degraded": true,
-    "degradation_reason": "model_unavailable",
-    "model_used": "claude-sonnet-4-6",
+    "status": "ok",
+    "degraded": false,
+    "degradation_reason": null,
+    "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9drHyfY29qQqtrEjJqB'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9dsbHkLwkpYSq4oxMgF'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9dxCMkKDfenfnCCJ8EG'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9eBeid8RyGC77NBeC1M'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
         "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "429 Codex usage limit reached"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9eGZVVCR91LEBmuZmPA'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9eGjgujbUAY4w5ZER7K'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9eGuYVUFKkwLLgMbUBK'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-sonnet-4-6",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf9eH6EBSjJXDuTJucGVZ'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       }
     ],
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "tool_call_batches": 6,
+    "individual_tool_calls": 13,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-17T09:43:07Z"
+    "context_as_of": "2026-09-18T07:59:43Z"
   }
 }
