@@ -604,7 +604,7 @@ def _filings_section(ctx: dict, covered: list[str], today: str) -> dict | None:
     # Congress buys/sells filed within 7 days of today, cap 3. side verbatim.
     if t_date is not None:
         cutoff = t_date - timedelta(days=7)
-        cong_lines: list[tuple[str, str, str]] = []  # (filed, ticker, side)
+        cong_lines: list[dict] = []
         for t in covered:
             for c in ((ctx_tk.get(t) or {}).get("congress") or []):
                 if not isinstance(c, dict):
@@ -615,31 +615,55 @@ def _filings_section(ctx: dict, covered: list[str], today: str) -> dict | None:
                 side = c.get("side")
                 if side not in ("buy", "sell", "other"):
                     continue
-                cong_lines.append((str(c.get("filed"))[:10], t, side))
-        # Dedupe identical (filed, ticker, side) disclosures — two rows indistinguishable
-        # at display granularity must not render as two identical lines. Preserve
-        # deterministic order via a seen-set (descriptive, drops no distinct fact).
+                cong_lines.append({**c, "ticker": t, "filed": str(c.get("filed"))[:10]})
+        # Named/range-qualified rows remain distinct even when ticker/date/side match.
         _seen_cong: set = set()
-        cong_lines = [c for c in cong_lines
-                      if not (c in _seen_cong or _seen_cong.add(c))]
-        # Most-recent first, cap 3.
-        cong_lines.sort(key=lambda r: (r[0], r[1]), reverse=True)
-        _SIDE_EN = {"buy": "buy", "sell": "sell", "other": "trade"}
-        # zh side words: NEUTRAL filing nouns (购入/售出/交易), never the advice-filter
-        # kill-list directional verbs (买入/卖出/加仓/减仓/建仓/平仓 — RUL-NW4). A
-        # Congress DISCLOSURE is a reported fact, not an instruction to trade.
-        _SIDE_ZH = {"buy": "购入", "sell": "售出", "other": "交易"}
-        for filed, t, side in cong_lines[:3]:
-            en = f"This week: a Congress {_SIDE_EN[side]} in {t} (filed {filed})."
-            zh = f"本周：{t} 出现一笔国会{_SIDE_ZH[side]}披露（{filed}）。"
+        deduped = []
+        for c in cong_lines:
+            key = (c.get("filed"), c.get("ticker"), c.get("side"), c.get("actor"),
+                   c.get("amount_range"), c.get("description"))
+            if key in _seen_cong:
+                continue
+            _seen_cong.add(key)
+            deduped.append(c)
+        cong_lines = sorted(
+            deduped, key=lambda r: (r.get("filed") or "", r.get("ticker") or ""),
+            reverse=True)
+        _SIDE_EN = {"buy": "purchase", "sell": "sale", "other": "trade"}
+        _SIDE_GENERIC_EN = {"buy": "buy", "sell": "sell", "other": "trade"}
+        _SIDE_ZH = {"buy": "\u8d2d\u5165", "sell": "\u552e\u51fa", "other": "\u4ea4\u6613"}
+        for c in cong_lines[:3]:
+            filed, t, side = c["filed"], c["ticker"], c["side"]
+            actor = c.get("actor")
+            amount = c.get("amount_range")
+            amount_en = f"; disclosed range {amount}" if amount else ""
+            amount_zh = f"\uff1b\u62ab\u9732\u533a\u95f4 {amount}" if amount else ""
+            if actor:
+                en = (f"Congress disclosure: {actor} reported a {t} {_SIDE_EN[side]} "
+                      f"(filed {filed}{amount_en}).")
+                zh = (f"\u56fd\u4f1a\u62ab\u9732\uff1a{actor} \u62a5\u544a\u4e86\u4e00\u7b14 {t} "
+                      f"{_SIDE_ZH[side]}\uff08{filed}{amount_zh}\uff09\u3002")
+            else:
+                en = f"This week: a Congress {_SIDE_GENERIC_EN[side]} in {t} (filed {filed})."
+                zh = f"\u672c\u5468\uff1a{t} \u51fa\u73b0\u4e00\u7b14\u56fd\u4f1a{_SIDE_ZH[side]}\u62ab\u9732\uff08{filed}\uff09\u3002"
             lines.append({"en": en, "zh": zh})
 
-    # Insider tape for held names with buyers+sellers>0, top 2 by |net_mn|.
+
+    # Prefer named Form-4 events when available; otherwise preserve the aggregate tape.
+    named_insiders: list[tuple[float, str, dict]] = []
     insiders: list[tuple[str, dict, float]] = []
     for t in covered:
         ins = (ctx_tk.get(t) or {}).get("insider")
         if not isinstance(ins, dict):
             continue
+        for event in (ins.get("events") or []):
+            if not isinstance(event, dict) or event.get("side") != "buy":
+                continue
+            try:
+                usd = float(event.get("usd") or 0.0)
+            except (TypeError, ValueError):
+                usd = 0.0
+            named_insiders.append((usd, t, event))
         buyers = ins.get("buyers") or 0
         sellers = ins.get("sellers") or 0
         try:
@@ -653,13 +677,40 @@ def _filings_section(ctx: dict, covered: list[str], today: str) -> dict | None:
         except (TypeError, ValueError):
             mag = 0.0
         insiders.append((t, ins, mag))
+
+    named_insiders.sort(key=lambda r: (-r[0], r[1], str(r[2].get("filed") or "")))
+    shown_tickers: set[str] = set()
+    insider_lines = 0
+    for usd, t, event in named_insiders:
+        if insider_lines >= 2:
+            break
+        actor = event.get("actor") or "an insider"
+        role = event.get("role")
+        who = f"{actor} ({role})" if role else str(actor)
+        filed = event.get("filed")
+        value = f"${usd:,.0f}" if usd > 0 else "an undisclosed amount"
+        when = f"; filed {filed}" if filed else ""
+        en = f"Insider filing: {who} reported an open-market {t} purchase of {value}{when}."
+        zh_when = f"\uff1b\u62ab\u9732\u4e8e {filed}" if filed else ""
+        zh = (f"\u5185\u90e8\u4eba\u62ab\u9732\uff1a{who} \u62a5\u544a\u4e86\u4e00\u7b14 {t} "
+              f"\u516c\u5f00\u5e02\u573a\u8d2d\u5165\uff0c\u91d1\u989d {value}{zh_when}\u3002")
+        lines.append({"en": en, "zh": zh})
+        shown_tickers.add(t)
+        insider_lines += 1
+
     insiders.sort(key=lambda r: (-r[2], r[0]))
-    for t, ins, _mag in insiders[:2]:
+    for t, ins, _mag in insiders:
+        if insider_lines >= 2:
+            break
+        if t in shown_tickers:
+            continue
         buyers = int(ins.get("buyers") or 0)
         sellers = int(ins.get("sellers") or 0)
         en = f"Insider tape: {t} {buyers} buyers / {sellers} sellers."
-        zh = f"内部人动向：{t} {buyers} 买 / {sellers} 卖。"
+        zh = f"\u5185\u90e8\u4eba\u52a8\u5411\uff1a{t} {buyers} \u4e70 / {sellers} \u5356\u3002"
         lines.append({"en": en, "zh": zh})
+        insider_lines += 1
+
 
     # 13F trend line when any f13 blocks: compare adds vs trims counts.
     more_adds = 0

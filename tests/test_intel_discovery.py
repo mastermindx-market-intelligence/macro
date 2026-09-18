@@ -252,3 +252,44 @@ def test_build_recon_gate_controlled():
     on = D.build(None, None, bundle_universe=set(), today=_TODAY,
                  index_changes=chgs, recon_gate={"add_scored": True})
     assert on["sources"]["index_reconstitution"] == 1
+
+
+
+def test_top_officer_buy_surfaces_named_fresh_form4_context():
+    pd = pytest.importorskip("pandas")
+    rows = [{
+        "Ticker": "INTC", "Date": "2026-08-11", "Name": "Lip-Bu Tan",
+        "TransactionCode": "P", "Shares": 105263, "PricePerShare": 95,
+        "fileDate": "2026-08-14", "officerTitle": "Chief Executive Officer",
+        "isOfficer": True, "isDirector": True,
+    }, {
+        "Ticker": "INTC", "Date": "2026-08-12", "Name": "Ordinary Director",
+        "TransactionCode": "P", "Shares": 100000, "PricePerShare": 95,
+        "fileDate": "2026-08-15", "officerTitle": "Director",
+        "isOfficer": False, "isDirector": True,
+    }]
+    got = D.scan_top_officer_buys(pd.DataFrame(rows), today=date(2026, 8, 20))
+    assert len(got) == 1
+    rec = got[0]
+    assert rec["ticker"] == "INTC" and rec["source"] == "top_officer_buy"
+    assert rec["actor"] == "Lip-Bu Tan" and rec["role_label"] == "CEO"
+    assert rec["usd"] == pytest.approx(9_999_985)
+    assert rec["filing_date"] == "2026-08-14" and rec["trans_date"] == "2026-08-11"
+    assert rec["disc_score"] <= D._INSIDER_CAP
+    assert rec["ranking_eligible"] is False
+    assert rec["qualification_status"] == "measuring"
+
+
+def test_build_counts_top_officer_buy_as_context_discovery():
+    pd = pytest.importorskip("pandas")
+    fresh = pd.DataFrame([{
+        "Ticker": "INTC", "Date": "2026-08-11", "Name": "Lip-Bu Tan",
+        "TransactionCode": "P", "Shares": 105263, "PricePerShare": 95,
+        "fileDate": "2026-08-14", "officerTitle": "CEO",
+    }])
+    out = D.build(None, None, None, bundle_universe=set(), today=date(2026, 8, 20),
+                  fresh_insiders=fresh)
+    assert out["by_ticker"]["INTC"]["source"] == "top_officer_buy"
+    assert out["by_ticker"]["INTC"]["off_desk"] is True
+    assert out["sources"]["top_officer_buy"] == 1
+    assert out["is_context_only"] is True

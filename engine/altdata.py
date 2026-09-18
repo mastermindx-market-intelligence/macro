@@ -100,6 +100,35 @@ def _dt(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series, errors="coerce")
 
 
+def _dt_naive(series: pd.Series) -> pd.Series:
+    """Datetime coercion normalized to UTC-naive for safe PIT comparisons."""
+    return pd.to_datetime(series, errors="coerce", utc=True).dt.tz_convert(None)
+
+
+def _boolish(v) -> bool | None:
+    """Provider-safe bool parser; the string ``False`` must never become truthy."""
+    if v is None or (not isinstance(v, (str, bool)) and pd.isna(v)):
+        return None
+    if isinstance(v, bool):
+        return v
+    s = str(v).strip().lower()
+    if s in {"true", "1", "yes", "y"}:
+        return True
+    if s in {"false", "0", "no", "n"}:
+        return False
+    return None
+
+
+def _json_scalar(v):
+    """Normalize pandas missing scalars to JSON ``null``; leave real scalars untouched."""
+    if v is None:
+        return None
+    try:
+        return None if pd.isna(v) else v
+    except (TypeError, ValueError):
+        return v
+
+
 def _now() -> pd.Timestamp:
     return pd.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None))
 
@@ -148,22 +177,39 @@ def _records(df: pd.DataFrame, date_col: str | None, n: int = 25) -> list[dict]:
 
 # --------------------------------------------------------------------------- political
 def _political_frame() -> pd.DataFrame:
+    """Normalize congressional disclosures on the date they became PUBLIC.
+
+    The unified ``congress`` tape is authoritative when present because it carries
+    ``ReportDate``.  House/Senate tapes repeat many of the same transactions but expose
+    transaction dates only, so unioning all three both double-counts and leaks future
+    disclosures into backtests.  They remain a fallback, stamped by our ``_first_seen``
+    observation clock when the unified tape is absent.
+    """
+    unified = _read("congress")
+    specs = []
+    if unified is not None and not unified.empty:
+        specs = [("congress", unified, "ReportDate", "TransactionDate", "Representative")]
+    else:
+        for ds, whocol in (("senate", "Senator"), ("house", "Representative")):
+            df = _read(ds)
+            if df is not None and not df.empty:
+                specs.append((ds, df, "_first_seen", "Date", whocol))
+
     frames = []
-    for ds, datecol, whocol in (("congress", "TransactionDate", "Representative"),
-                                ("senate", "Date", "Senator"),
-                                ("house", "Date", "Representative")):
-        df = _read(ds)
-        if df is None or df.empty:
-            continue
-        d = pd.DataFrame()
-        d["ticker"] = df.get("Ticker", pd.Series(dtype=object)).map(_s)
-        d["date"] = _dt(df[datecol]) if datecol in df else pd.NaT
-        d["side"] = df.get("Transaction", pd.Series(dtype=object)).map(_s).map(_side)
-        d["member"] = df.get(whocol, pd.Series(dtype=object)).map(_s)
-        d["bioguide"] = df.get("BioGuideID", pd.Series(dtype=object)).map(_s)
-        d["party"] = df.get("Party", pd.Series(dtype=object)).map(_s)
-        d["usd"] = df.get("Range", df.get("Amount", pd.Series(dtype=object))).map(_usd)
-        d["chamber"] = ds
+    for ds, df, public_col, tx_col, who_col in specs:
+        d = pd.DataFrame(index=df.index)
+        d["ticker"] = df.get("Ticker", pd.Series(index=df.index, dtype=object)).map(_s)
+        d["date"] = _dt_naive(df[public_col]) if public_col in df else pd.NaT
+        d["transaction_date"] = _dt_naive(df[tx_col]) if tx_col in df else pd.NaT
+        d["side"] = df.get("Transaction", pd.Series(index=df.index, dtype=object)).map(_s).map(_side)
+        d["member"] = df.get(who_col, pd.Series(index=df.index, dtype=object)).map(_s)
+        d["bioguide"] = df.get("BioGuideID", pd.Series(index=df.index, dtype=object)).map(_s)
+        d["party"] = df.get("Party", pd.Series(index=df.index, dtype=object)).map(_s)
+        amount = df.get("Range", df.get("Amount", pd.Series(index=df.index, dtype=object)))
+        d["usd"] = amount.map(_usd)
+        d["amount_range"] = df.get("Range", pd.Series(index=df.index, dtype=object)).map(_s)
+        d["description"] = df.get("Description", pd.Series(index=df.index, dtype=object)).map(_s)
+        d["chamber"] = df.get("House", pd.Series(index=df.index, dtype=object)).map(_s) if ds == "congress" else ds
         frames.append(d)
     if not frames:
         return pd.DataFrame()
@@ -172,29 +218,45 @@ def _political_frame() -> pd.DataFrame:
 
 def political_netflow(window_days: int = 90, top: int = 15) -> dict:
     df = _political_frame()
+    empty = {"buys": [], "sells": [], "by_ticker": {}}
     if df.empty:
-        return {"buys": [], "sells": []}
-    cutoff = _now() - pd.Timedelta(days=window_days)
-    df = df[(df["date"] >= cutoff) & df["ticker"].notna() & df["side"].notna()]
+        return empty
+    now = _now()
+    cutoff = now - pd.Timedelta(days=window_days)
+    df = df[(df["date"] >= cutoff) & (df["date"] <= now)
+            & df["ticker"].notna() & df["side"].notna()]
     if df.empty:
-        return {"buys": [], "sells": []}
+        return empty
+
     rows = []
     for tk, g in df.groupby("ticker"):
         buys = int((g["side"] == "buy").sum())
         sells = int((g["side"] == "sell").sum())
+        actor_key = g["bioguide"].where(g["bioguide"].notna(), g["member"])
+        events = []
+        for r in g.sort_values(["date", "usd"], ascending=[False, False]).head(8).itertuples(index=False):
+            events.append({
+                "actor": _json_scalar(r.member), "bioguide": _json_scalar(r.bioguide),
+                "party": _json_scalar(r.party), "side": r.side,
+                "chamber": _json_scalar(r.chamber),
+                "transaction_date": (r.transaction_date.date().isoformat() if pd.notna(r.transaction_date) else None),
+                "filed": (r.date.date().isoformat() if pd.notna(r.date) else None),
+                "amount_mid": (round(float(r.usd), 0) if pd.notna(r.usd) else None),
+                "amount_range": _json_scalar(r.amount_range),
+                "description": _json_scalar(r.description),
+            })
         rows.append({
-            "ticker": tk,
-            "net": buys - sells,
-            "buys": buys,
-            "sells": sells,
-            "members": int(g["bioguide"].nunique()),
+            "ticker": tk, "net": buys - sells, "buys": buys, "sells": sells,
+            "members": int(actor_key.dropna().nunique()),
             "est_usd": round(float(g.loc[g["side"] == "buy", "usd"].sum(skipna=True)), 0),
             "parties": "/".join(sorted({p for p in g["party"].dropna().unique()})) or None,
+            "events": events,
         })
-    rows.sort(key=lambda r: (r["net"], r["members"]), reverse=True)
-    buys = [r for r in rows if r["net"] > 0][:top]
-    sells = sorted([r for r in rows if r["net"] < 0], key=lambda r: r["net"])[:top]
-    return {"buys": buys, "sells": sells}
+    by_ticker = {r["ticker"]: r for r in rows}
+    rows.sort(key=lambda r: (r["net"], r["members"], r["est_usd"]), reverse=True)
+    buys_out = [r for r in rows if r["net"] > 0][:top]
+    sells_out = sorted([r for r in rows if r["net"] < 0], key=lambda r: r["net"])[:top]
+    return {"buys": buys_out, "sells": sells_out, "by_ticker": by_ticker}
 
 
 # --------------------------------------------------------------------------- gov contracts
@@ -955,40 +1017,80 @@ def offexchange_flow(top: int = 15, stale_bdays: int = 10) -> list[dict]:
 
 # --------------------------------------------------------------------------- insiders
 def insider_netflow(window_days: int = 90, top: int = 15) -> dict:
+    """Open-market Form-4 flow plus role-aware, PIT-stamped evidence per ticker.
+
+    ``buys``/``sells`` remain the bounded leaderboard used by the page. ``by_ticker`` is
+    the complete machine substrate so a valid CEO purchase cannot vanish merely because
+    fifteen other tickers had larger net dollars that night.
+    """
     df = _read("insiders")
+    empty = {"buys": [], "sells": [], "by_ticker": {}}
     if df is None or df.empty:
-        return {"buys": [], "sells": []}
+        return empty
+    idx = df.index
+    public_ts = pd.Series(pd.NaT, index=idx, dtype="datetime64[ns]")
+    for col in ("fileDate", "_first_seen", "Date"):
+        if col in df:
+            public_ts = public_ts.fillna(_dt_naive(df[col]))
     d = pd.DataFrame({
-        "ticker": df.get("Ticker", pd.Series(dtype=object)).map(_s),
-        "date": _dt(df.get("fileDate", df.get("Date"))),
-        "code": df.get("TransactionCode", pd.Series(dtype=object)).map(_s),
-        "ad": df.get("AcquiredDisposedCode", pd.Series(dtype=object)).map(_s),
-        "shares": df.get("Shares", pd.Series(dtype=object)).map(_f),
-        "px": df.get("PricePerShare", pd.Series(dtype=object)).map(_f),
-        "ten": df.get("isTenPercentOwner", pd.Series(dtype=object)).map(_s),
+        "ticker": df.get("Ticker", pd.Series(index=idx, dtype=object)).map(_s),
+        "date": public_ts,
+        "trans_date": _dt_naive(df.get("Date")),
+        "code": df.get("TransactionCode", pd.Series(index=idx, dtype=object)).map(_s),
+        "ad": df.get("AcquiredDisposedCode", pd.Series(index=idx, dtype=object)).map(_s),
+        "shares": df.get("Shares", pd.Series(index=idx, dtype=object)).map(_f),
+        "px": df.get("PricePerShare", pd.Series(index=idx, dtype=object)).map(_f),
+        "name": df.get("Name", pd.Series(index=idx, dtype=object)).map(_s),
+        "role": df.get("officerTitle", pd.Series(index=idx, dtype=object)).map(_s),
+        "is_officer": df.get("isOfficer", pd.Series(index=idx, dtype=object)),
+        "is_director": df.get("isDirector", pd.Series(index=idx, dtype=object)),
+        "direct": df.get("directOrIndirectOwnership", pd.Series(index=idx, dtype=object)).map(_s),
     })
     d = d[d["ticker"].notna() & d["date"].notna()]
-    d = d[d["date"] >= _now() - pd.Timedelta(days=window_days)]
-    # open-market purchases (P) / sales (S) only — the informative subset
+    now = _now()
+    d = d[(d["date"] >= now - pd.Timedelta(days=window_days)) & (d["date"] <= now)]
     d = d[d["code"].isin(["P", "S"])]
     if d.empty:
-        return {"buys": [], "sells": []}
+        return empty
     d["value"] = (d["shares"].fillna(0) * d["px"].fillna(0)).abs()
+    # Refiles can repeat the economic trade with a different fileDate. Preserve one event.
+    dedup = [c for c in ("ticker", "trans_date", "name", "code", "shares") if c in d.columns]
+    d = d.drop_duplicates(subset=dedup, keep="first")
+
     rows = []
     for tk, g in d.groupby("ticker"):
         b = g[g["code"] == "P"]
-        s = g[g["code"] == "S"]
+        sell = g[g["code"] == "S"]
+        def _distinct_people(x):
+            named = x["name"].dropna()
+            return int(named.nunique()) if len(named) else len(x)
+        events = []
+        for r in g.sort_values(["date", "value"], ascending=[False, False]).head(8).itertuples(index=False):
+            events.append({
+                "actor": _json_scalar(r.name), "role": _json_scalar(r.role),
+                "side": "buy" if r.code == "P" else "sell",
+                "usd": round(float(r.value), 0),
+                "shares": (float(r.shares) if pd.notna(r.shares) else None),
+                "price": (round(float(r.px), 4) if pd.notna(r.px) else None),
+                "transaction_date": (r.trans_date.date().isoformat() if pd.notna(r.trans_date) else None),
+                "filed": (r.date.date().isoformat() if pd.notna(r.date) else None),
+                "is_officer": _boolish(r.is_officer),
+                "is_director": _boolish(r.is_director),
+                "ownership": _json_scalar(r.direct),
+            })
         rows.append({
             "ticker": tk,
             "buy_usd": round(float(b["value"].sum()), 0),
-            "sell_usd": round(float(s["value"].sum()), 0),
-            "net_usd": round(float(b["value"].sum() - s["value"].sum()), 0),
-            "buyers": int(len(b)),
-            "sellers": int(len(s)),
+            "sell_usd": round(float(sell["value"].sum()), 0),
+            "net_usd": round(float(b["value"].sum() - sell["value"].sum()), 0),
+            "buyers": _distinct_people(b), "sellers": _distinct_people(sell),
+            "buy_trades": len(b), "sell_trades": len(sell),
+            "events": events,
         })
-    buys = sorted([r for r in rows if r["net_usd"] > 0], key=lambda r: r["net_usd"], reverse=True)[:top]
-    sells = sorted([r for r in rows if r["net_usd"] < 0], key=lambda r: r["net_usd"])[:top]
-    return {"buys": buys, "sells": sells}
+    by_ticker = {r["ticker"]: r for r in rows}
+    buys_out = sorted([r for r in rows if r["net_usd"] > 0], key=lambda r: r["net_usd"], reverse=True)[:top]
+    sells_out = sorted([r for r in rows if r["net_usd"] < 0], key=lambda r: r["net_usd"])[:top]
+    return {"buys": buys_out, "sells": sells_out, "by_ticker": by_ticker}
 
 
 # --------------------------------------------------------------------------- 13F

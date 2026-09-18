@@ -1142,3 +1142,27 @@ def test_budget_breach_emits_a_line_start_annotation(tmp_path, capsys, monkeypat
     for ln in warns:
         # the #3587 defect: a logger prefix ("WARNING ::warning …") makes GitHub drop it
         assert ln.startswith("::warning title=portfolio-ctx-budget::"), ln
+
+
+
+def test_sponsorship_evidence_projects_into_portfolio_context_without_new_score():
+    src = _full_sources()
+    src["by_ticker"]["NVDA"]["sponsorship"] = {
+        "insiders": [{"actor": "CEO Person", "role": "Chief Executive Officer",
+                      "side": "buy", "usd": 10_000_000, "filed": "2026-07-22"}]}
+    src["congress"] = [{
+        "Ticker": "NVDA", "Transaction": "Purchase", "House": "Representatives",
+        "Party": "D", "Representative": "Rep Person", "BioGuideID": "R000001",
+        "TransactionDate": "2026-07-21", "ReportDate": "2026-07-22",
+        "Amount": 500001.0, "Range": "$500,001 - $1,000,000",
+        "Description": "PURCHASED 10,000 SHARES.",
+    }]
+    pld = build_ctx(src, ["NVDA"], ASOF)
+    ins = pld["tickers"]["NVDA"]["insider"]
+    assert ins["events"][0]["actor"] == "CEO Person"
+    assert "score" not in ins
+    cong = pld["tickers"]["NVDA"]["congress"][0]
+    assert cong["actor"] == "Rep Person" and cong["bioguide"] == "R000001"
+    assert cong["amount_range"] == "$500,001 - $1,000,000"
+    assert cong["amount_mid"] == pytest.approx(750000.5)
+    assert cong["filed"] == "2026-07-22" and cong["tx_date"] == "2026-07-21"

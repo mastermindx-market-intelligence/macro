@@ -25,7 +25,7 @@ them with `lib.store.read` (which assumes a datetime index). The engine
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
@@ -192,6 +192,46 @@ class InsidersAdapter(QuiverAdapter):
     name = "quiver_insiders"; dataset = "insiders"
     endpoint = "/beta/live/insiders"
     key_cols = ("Ticker", "Date", "Name", "TransactionCode", "Shares", "fileDate")
+
+    def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+        """Fetch the live tape plus a bounded filing-date overlap.
+
+        Quiver's insider endpoint is unusual: historical catch-up uses ``date=YYYYMMDD``
+        on the same live endpoint.  A latest-only collector permanently loses filings when a
+        nightly run is skipped, which is exactly how a material Form-4 can disappear from
+        every downstream signal.  Re-read the prior N calendar days on every run; ``_merge``
+        is append-only/keep-first, so the overlap repairs holes without rewriting PIT facts.
+        """
+        if not self.api_key:
+            raise RuntimeError("QUIVER_API_KEY not set")
+        cfg = config.load().get("quiver", {})
+        key = "insider_backfill_days" if full_history else "insider_catchup_days"
+        default_days = 60 if full_history else 10
+        cap = 366 if full_history else 62
+        overlap = max(0, min(int(cfg.get(key, default_days)), cap))
+        rows: list[dict] = []
+        try:
+            rows.extend(self._get(self.endpoint, self.query))
+        except Exception as e:  # noqa: BLE001 -- overlap may still recover the tape
+            log.warning("quiver/insiders latest fetch failed: %s", e)
+        today = datetime.now(timezone.utc).date()
+        for n in range(1, overlap + 1):
+            key = (today - timedelta(days=n)).strftime("%Y%m%d")
+            try:
+                rows.extend(self._get(self.endpoint, {"date": key}))
+            except Exception as e:  # noqa: BLE001 -- one bad day must not kill the run
+                log.debug("quiver/insiders catch-up %s failed: %s", key, e)
+        if not rows:
+            raise RuntimeError("quiver/insiders: empty live + catch-up response")
+        df = pd.DataFrame(rows)
+        added, total = self._merge(df)
+        log.info("quiver/insiders: +%d new (%d total) from %d fetched incl overlap",
+                 added, total, len(df))
+        ingest = pd.DataFrame(
+            {"new_rows": [added], "total_rows": [total], "fetched": [len(df)]},
+            index=[pd.Timestamp(_today())],
+        )
+        return {"insiders__ingest": ingest}
 
 
 class FlightsAdapter(QuiverAdapter):

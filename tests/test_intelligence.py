@@ -258,3 +258,40 @@ if __name__ == "__main__":
         fn()
         print(f"ok  {fn.__name__}")
     print(f"\n{len(fns)} passed")
+
+
+
+def test_sponsorship_survives_scored_alt_precedence():
+    alt_s = [_scored_signal("INTC", score=6.0)]
+    alt_bt = {"INTC": {**_bt_record("INTC"), "sponsorship": {
+        "insiders": [{"actor": "CEO Person", "side": "buy", "usd": 10_000_000}],
+        "congress": [{"actor": "Rep Person", "side": "buy", "filed": "2026-08-21"}],
+    }}}
+    result = intel.build(None, alt_s, alt_bt, today=_TODAY)
+    rec = result["tickers"]["INTC"]["alt"]
+    assert rec["scored"] is True and rec["signal_score"] == 6.0
+    assert rec["sponsorship"]["insiders"][0]["actor"] == "CEO Person"
+    assert rec["sponsorship"]["congress"][0]["actor"] == "Rep Person"
+
+
+def test_sponsorship_survives_unscored_alt_path():
+    alt_bt = {"INTC": {**_bt_record("INTC"), "sponsorship": {
+        "insiders": [{"actor": "CEO Person", "side": "buy", "usd": 10_000_000}],
+    }}}
+    result = intel.build(None, None, alt_bt, today=_TODAY)
+    rec = result["tickers"]["INTC"]["alt"]
+    assert rec["scored"] is False
+    assert rec["sponsorship"]["insiders"][0]["actor"] == "CEO Person"
+
+
+
+def test_sponsorship_only_alt_is_visible_but_neutral_context():
+    alt_bt = {"INTC": {"channels": [], "convergence_score": 0, "weighted_score": 0.0,
+                        "sponsorship": {"insiders": [
+                            {"actor": "CEO Person", "side": "buy", "usd": 10_000_000}]}}}
+    result = intel.build(None, None, alt_bt, today=_TODAY)
+    rec = result["tickers"]["INTC"]["alt"]
+    assert rec["scored"] is False and rec["convergence_score"] == 0
+    assert rec["sponsorship"]["insiders"][0]["actor"] == "CEO Person"
+    assert result["tickers"]["INTC"]["read"]["supply_dir"] == 0
+    assert result["tickers"]["INTC"]["read"]["label"] == "quiet"

@@ -389,3 +389,25 @@ def test_emit_brain_usable_flag(tmp_path):
     # No brain at all
     out_none = EM.build_mastermind(by_ticker, {}, {}, {}, {}, root=tmp_path, top=10)
     assert out_none["brain_usable"] is False, "absent brain → brain_usable should be False"
+
+
+
+def test_channel_records_preserves_named_sponsorship_without_directional_vote(monkeypatch):
+    monkeypatch.setattr(M, "_dpi_z_lookup", lambda: {})
+    signals = {
+        "political": {"by_ticker": {"INTC": {
+            "ticker": "INTC", "net": 0, "members": 1,
+            "events": [{"actor": "Nancy Pelosi", "side": "buy", "filed": "2026-08-21"}],
+        }}},
+        "insiders": {"by_ticker": {"INTC": {
+            "ticker": "INTC", "net_usd": -5_000_000, "buyers": 1,
+            "events": [{"actor": "Lip-Bu Tan", "role": "Chief Executive Officer",
+                        "side": "buy", "usd": 9_999_985, "filed": "2026-08-14"}],
+        }}},
+    }
+    rec = M.channel_records(signals)["INTC"]
+    assert rec["channels"] == []                    # facts do not invent a bullish vote
+    assert rec["weighted_score"] == 0
+    assert rec["sponsorship"]["congress"][0]["actor"] == "Nancy Pelosi"
+    assert rec["sponsorship"]["insiders"][0]["actor"] == "Lip-Bu Tan"
+    assert rec["insider_net_usd"] == -5_000_000

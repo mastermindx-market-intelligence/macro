@@ -616,10 +616,14 @@ def _dossier(t: str, v: dict, pidx: dict, vel: dict, catalyst: dict | None = Non
 
     # ── V2: edge-remaining + leading-gap → opportunity (the new ranking key) ──
     gap = _leading_gap(v, dirs)
-    edge = _edge_remaining(v, dirs, nv, catalyst, discovery, traj)
+    # A newly introduced discovery source may be explicitly MEASURING. Preserve it in the
+    # dossier and track record, but do not let it move edge/opportunity until promoted.
+    rank_discovery = (discovery if not discovery or discovery.get("ranking_eligible", True)
+                      else None)
+    edge = _edge_remaining(v, dirs, nv, catalyst, rank_discovery, traj)
     signal_core = _f(brain.get("strength")) or 0.0            # genuine magnitude, NOT agreement
-    if discovery:                                             # BOUNDED boost — discovery never SUBSTITUTES for signal
-        dlift = (_f(discovery.get("disc_score")) or 0.0) * 0.7
+    if rank_discovery:                                        # BOUNDED boost — discovery never SUBSTITUTES for signal
+        dlift = (_f(rank_discovery.get("disc_score")) or 0.0) * 0.7
         signal_core = signal_core + 0.35 * max(0.0, dlift - signal_core)
     # continuous leading-gap multiplier — no binary cliff: ±15% per net leading desk, capped ±2
     gap_mult = 1.0 + 0.15 * max(-2, min(2, gap["gap"]))
@@ -939,8 +943,12 @@ def build(bundle: dict | None, policy: dict | None, macro_context: dict | None =
     # live in the Discovery section via the candidate feed.
     off = [c for c in ((discovery or {}).get("off_desk") or [])
            if (c.get("ticker") or "").upper() not in tickers]
-    _off_us = [c for c in off if _member((c.get("ticker") or "").upper())]  # scope BEFORE the cap
-    universe_scope["n_excluded_off_desk"] = len(off) - len(_off_us)
+    _off_us_all = [c for c in off if _member((c.get("ticker") or "").upper())]  # scope BEFORE the cap
+    universe_scope["n_excluded_off_desk"] = len(off) - len(_off_us_all)
+    measuring_off = [c for c in _off_us_all if not c.get("ranking_eligible", True)]
+    universe_scope["n_measuring_off_desk"] = len(measuring_off)
+    # Measuring-only sources live in Discovery + track-record accrual, never Command injection.
+    _off_us = [c for c in _off_us_all if c.get("ranking_eligible", True)]
     off = _off_us[:_OFF_DESK_INJECT]
     # Extend _pr with off-desk tickers so the discovery dossier gets trajectory + entry_gate.
     for c in off:
@@ -1042,6 +1050,22 @@ def build(bundle: dict | None, policy: dict | None, macro_context: dict | None =
         for _t in _members:
             _cohorts_by_t.setdefault(_t, []).append(_cohort)
 
+    track_rows = [{"t": d["ticker"], "opp": d["opportunity_score"],
+                   "edge": d["edge_remaining"], "stage": d["stage"], "lean": d["lean"],
+                   "source": (d.get("discovery") or {}).get("source"),
+                   "rank": i, "cohorts": _cohorts_by_t.get(d["ticker"]) or [],
+                   "hero_reason": _hero_reason(d), "engine_version": ENGINE_VERSION}
+                  for i, d in enumerate(dossiers, start=1)]
+    tracked = {r["t"] for r in track_rows}
+    for cand in _disc_us:
+        t = (cand.get("ticker") or "").upper()
+        if (not t or t in tracked or cand.get("ranking_eligible", True)):
+            continue
+        track_rows.append({"t": t, "opp": None, "edge": None, "stage": "discovery",
+                           "lean": 1, "source": cand.get("source"),
+                           "cohorts": _cohorts_by_t.get(t) or [],
+                           "hero_reason": "measuring_only", "engine_version": ENGINE_VERSION})
+
     return {
         "schema": SCHEMA, "engine_version": ENGINE_VERSION,
         "is_context_only": True, "as_of": today.isoformat(),
@@ -1070,14 +1094,7 @@ def build(bundle: dict | None, policy: dict | None, macro_context: dict | None =
         "command": dossiers[:top],
         # lightweight per-name rows for the falsifiable track-record (ALL names, not just the
         # top — the cross-sectional IC must see the whole ranking). Stripped before site write.
-        "track_rows": [{"t": d["ticker"], "opp": d["opportunity_score"],
-                        "edge": d["edge_remaining"], "stage": d["stage"], "lean": d["lean"],
-                        "source": (d.get("discovery") or {}).get("source"),   # feed for per-source IC (None = on-desk)
-                        "rank": i,                                   # 1-based position in the ranked list
-                        "cohorts": _cohorts_by_t.get(d["ticker"]) or [],      # sections that SHOWED it
-                        "hero_reason": _hero_reason(d),              # why the hero gate barred it (or None)
-                        "engine_version": ENGINE_VERSION}
-                       for i, d in enumerate(dossiers, start=1)],
+        "track_rows": track_rows,
         "discovery": discovery_shown,
         "emerging": [_compact(d) for d in emerging_hero[:14]],
         "exhausted": [_compact(d) for d in exhausted[:12]],
