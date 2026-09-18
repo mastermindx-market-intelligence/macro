@@ -57,7 +57,7 @@ from engine.options_hub import (
 from engine.levels_publish import levels_payload_from_gex, LEVELS_PREFIX
 from engine.vex_engine import compute_vex
 from engine.moves_engine import moves_payload, per_ticker_calibration
-from lib.nyse_calendar import sessions_between
+from lib.nyse_calendar import expected_last_session, sessions_between
 
 try:
     from engine.grading_stats import wilson_ci as _wilson_ci
@@ -707,6 +707,7 @@ def resolve_moves_inputs(
     vol_payload: dict,
     *,
     snapshot_loader=None,
+    snapshot_asof_ceiling: str | None = None,
 ) -> dict:
     """Resolve one CURRENT same-source ThetaData spot/ATM-IV pair for ``moves/v1``.
 
@@ -720,6 +721,16 @@ def resolve_moves_inputs(
     theta_iv = _positive_finite((vol_payload or {}).get("atm_iv"))
     if theta_spot is not None and theta_iv is not None:
         return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod", "asof": asof}
+
+    if snapshot_asof_ceiling is None:
+        snapshot_asof_ceiling = expected_last_session().isoformat()
+    try:
+        floor_session = _date.fromisoformat(asof)
+        ceiling_session = _date.fromisoformat(snapshot_asof_ceiling)
+    except (TypeError, ValueError):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    if ceiling_session < floor_session:
+        ceiling_session = floor_session
 
     if snapshot_loader is None:
         from collectors.thetadata import snapshot_greeks
@@ -742,10 +753,12 @@ def resolve_moves_inputs(
     valid_days = stamp.dt.date.dropna()
     if valid_days.empty:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
-    snapshot_asof = str(valid_days.max())
-    # The fallback may legitimately be one session NEWER than the settled EOD store
-    # (the exact production shape on 2026-09-18). It may never move the product backward.
-    if snapshot_asof < asof:
+    snapshot_session = valid_days.max()
+    snapshot_asof = str(snapshot_session)
+    # The fallback may legitimately be one settled session NEWER than the EOD store
+    # (the exact production shape on 2026-09-18). It may never move backward or
+    # accept a vendor timestamp beyond the exchange's latest settled session.
+    if snapshot_session < floor_session or snapshot_session > ceiling_session:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     frame = frame[stamp.dt.date.astype(str) == snapshot_asof].copy()
     if frame.empty:
@@ -762,7 +775,11 @@ def resolve_moves_inputs(
     # session date lets the canonical term interpolation run without any duplicate
     # IV math. RV/history stay null because this one-session fallback is for EM only.
     frame["date"] = snapshot_asof
-    snapshot_vol = compute_vol(frame, pd.Series(dtype=float), snapshot_asof, root)
+    try:
+        snapshot_vol = compute_vol(frame, pd.Series(dtype=float), snapshot_asof, root)
+    except Exception as exc:  # noqa: BLE001 — malformed snapshots clear stale moves, never preserve them
+        log.warning("options_hub_builder: ThetaData snapshot normalize %s failed: %s", root, exc)
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     atm_iv = _positive_finite(snapshot_vol.get("atm_iv"))
     if atm_iv is None:
         return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
@@ -778,13 +795,17 @@ def _moves_publishable(payload: dict, root: str, minimum_asof: str) -> bool:
     clears an older R2 band instead of letting stale expectations survive indefinitely.
     """
     payload_asof = payload.get("asof") if isinstance(payload, dict) else None
+    try:
+        payload_session = _date.fromisoformat(payload_asof) if isinstance(payload_asof, str) else None
+        minimum_session = _date.fromisoformat(minimum_asof)
+    except (TypeError, ValueError):
+        return False
     return bool(
         isinstance(payload, dict)
         and payload.get("schema") == "options_hub.moves/v1"
         and str(payload.get("root") or "").upper() == root.upper()
-        and isinstance(payload_asof, str)
-        and len(payload_asof) == 10
-        and payload_asof >= minimum_asof
+        and payload_session is not None
+        and payload_session >= minimum_session
     )
 
 
@@ -798,15 +819,18 @@ def _build_moves_payload(
     learned_band_mult: dict | None,
     regime: str | None,
     snapshot_loader=None,
+    snapshot_asof_ceiling: str | None = None,
 ) -> dict:
     """Build the current moves payload from the best truthful same-session input pair."""
     source = resolve_moves_inputs(
         root, asof, gex_payload, vol_payload, snapshot_loader=snapshot_loader,
+        snapshot_asof_ceiling=snapshot_asof_ceiling,
     )
     payload_asof = source.get("asof") or asof
+    payload_regime = regime if payload_asof == asof else None
     payload = moves_payload(
         root, payload_asof, source["spot"], source["atm_iv_pct"],
-        calibration=calibration, learned_band_mult=learned_band_mult, regime=regime,
+        calibration=calibration, learned_band_mult=learned_band_mult, regime=payload_regime,
         input_source=source["input_source"],
     )
     if payload.get("expected_move") is None:

@@ -307,6 +307,17 @@ def test_moves_inputs_refuse_snapshot_older_than_settled_eod():
         "INTC", "2026-09-17",
         {"spot_ref": None}, {"atm_iv": None},
         snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-16"),
+        snapshot_asof_ceiling="2026-09-18",
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
+def test_moves_inputs_refuse_snapshot_beyond_latest_settled_session():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-19"),
+        snapshot_asof_ceiling="2026-09-18",
     )
     assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
@@ -320,6 +331,18 @@ def test_moves_inputs_refuse_cross_root_snapshot():
     assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
 
+def test_moves_inputs_malformed_snapshot_degrades_to_current_null_instead_of_raising():
+    malformed = _theta_snapshot()
+    malformed["strike"] = "not-a-number"
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: malformed,
+        snapshot_asof_ceiling="2026-09-18",
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+
+
 def test_current_null_moves_payload_is_publishable_to_clear_stale_r2_object():
     payload = moves_payload("INTC", "2026-09-17", None, None, input_source=None)
     assert payload["expected_move"] is None
@@ -329,13 +352,16 @@ def test_current_null_moves_payload_is_publishable_to_clear_stale_r2_object():
 def test_build_moves_payload_turns_newer_intc_theta_snapshot_into_fresh_band():
     payload = _build_moves_payload(
         "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
-        calibration=None, learned_band_mult=None, regime=None,
+        calibration=None, learned_band_mult={"sticky": 1.1, "all": 1.3}, regime="sticky",
         snapshot_loader=lambda _root: _theta_snapshot(
             asof="2026-09-18", spot=108.92, iv=0.638986,
         ),
+        snapshot_asof_ceiling="2026-09-18",
     )
     assert payload["asof"] == "2026-09-18"
     assert payload["input_source"] == "thetadata_snapshot"
+    assert payload["regime"] is None
+    assert payload["learned_band_mult"]["value"] == 1.3
     assert payload["spot_ref"] == 108.92
     assert payload["atm_iv"] == 63.8986
     assert payload["expected_move"] == {
@@ -364,3 +390,5 @@ def test_moves_publishable_rejects_cross_root_or_regressing_session():
     assert not _moves_publishable(p, "AAPL", "2026-09-17")
     assert not _moves_publishable(p, "INTC", "2026-09-18")
     assert _moves_publishable(p, "INTC", "2026-09-16")
+    malformed = {**p, "asof": "9999-99-99"}
+    assert not _moves_publishable(malformed, "INTC", "2026-09-17")
