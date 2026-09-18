@@ -138,18 +138,24 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "source_formed_at",
+        "first_observed_at",
         "decision_at",
         "available_at",
         "published_at",
         "formation_evidence_cutoff",
-        "source_freshness_rule"
+        "source_freshness_rule",
+        "backdating_policy"
       ],
       "properties": {
-        "decision_at": {"const": "first_qualifying_campaign_revision.formed_at"},
+        "source_formed_at": {"const": "first_qualifying_campaign_revision.formed_at"},
+        "first_observed_at": {"const": "candidate_first_observed_at"},
+        "decision_at": {"const": "candidate_first_observed_at"},
         "available_at": {"const": "candidate_durable_write_time"},
         "published_at": {"const": "consumer_publication_time"},
-        "formation_evidence_cutoff": {"const": "each_formation_leg.available_at<=decision_at"},
-        "source_freshness_rule": {"const": "source_owner_clock_and_explicit_health_only_no_wrapper_freshening"}
+        "formation_evidence_cutoff": {"const": "each_formation_leg.available_at<=candidate_first_observed_at"},
+        "source_freshness_rule": {"const": "source_owner_clock_and_explicit_health_only_no_wrapper_freshening"},
+        "backdating_policy": {"const": "never_backdate_candidate_to_campaign_formed_at"}
       }
     },
     "context_policy": {
