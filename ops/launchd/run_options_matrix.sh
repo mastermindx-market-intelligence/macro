@@ -6,36 +6,22 @@
 #
 # FRESHNESS GATE
 # ─────────────────────────────────────────────────────────────────────────────
-# Before running the matrix builder, this script verifies that the ThetaData
-# OI store contains SPY data for the expected last NYSE session.
-#
-# The gate reads the OI store (not EOD) because build_matrix() resolves its
-# published asof date from the OI parquet (engine/options_matrix.py line ~478:
-# asof = latest date in oi_all).  Gating on EOD while the builder keys off OI
-# would allow a stale-OI / fresh-EOD mismatch to slip through undetected.
+# Before running the matrix builder, this script verifies that SPY has a
+# coherent publishable session: OI plus same-date Greeks with a positive spot.
+# The builder uses the same canonical resolver, so scheduling and publication
+# cannot disagree when the daily maintainer advances OI to D ahead of settled
+# Greeks/EOD on S=D-1.
 #
 # Logic:
 #   1. Ask lib/nyse_calendar.expected_last_session() for the expected date, then
-#      require the session BEFORE it: OI is a T+1 plane (session T's open interest
-#      publishes the next morning), and the matrix engine's own OI TIMING LAW
-#      builds on OI[t-1] (delta_oi = OI[t-1] − OI[t-2]). Demanding same-evening
-#      OI[t] made this gate unsatisfiable at 16:00–18:00 local — it burned all
-#      6 retries every night from first install through 2026-07-25 (the only
-#      published artifacts were the initial manual smoke run).
-#   2. Read only the 'date' column of the current-year SPY OI parquet shard
-#      (column-pruned; never loads the full store).
-#   3. If the latest date in the OI shard >= required (the T-1 session) → FRESH.
-#      (>= rather than == so a store that is ahead of the calendar does not
-#      false-fail; the calendar is the floor, not the ceiling.)
+#      require the session BEFORE it because the matrix's OI plane is T+1 and
+#      the engine computes delta_oi from OI[t-1] and OI[t-2].
+#   2. Ask engine.thetadata_store.latest_options_matrix_session() for SPY's
+#      newest date shared by OI and finite positive-spot Greeks.
+#   3. If coherent >= required → FRESH.  The calendar date is a floor, not a
+#      ceiling, so an honestly advanced coherent store does not false-fail.
 #   4. Otherwise sleep 20 min and retry (max 6 attempts = 2h window).
-#   5. After 6 failures, log and exit 1 without running the builder.
-#
-#   NOTE (early-January edge): if the new-year OI shard has not yet been
-#   written, the fallback reads the prior-year shard whose last row is Dec 31
-#   — this will always be stale vs a January expected date.  The runner will
-#   burn all 6 retries and exit 1 every night until the new shard appears.
-#   This is the safe direction (no publish on unknown data), but operators
-#   should be aware of the early-January blackout window (typically 1-2 days).
+#   5. After 6 failures, exit 1 without running or publishing the builder.
 #
 # BYPASS
 # ─────────────────────────────────────────────────────────────────────────────
@@ -75,51 +61,22 @@ _check_freshness() {
     "$PYTHON" - "$STORE" "$REPO" <<'PYEOF'
 import sys
 from datetime import timedelta
-from pathlib import Path
-import pyarrow.parquet as pq
 
 store = sys.argv[1]
-repo  = sys.argv[2]
+repo = sys.argv[2]
 
-# resolve nyse_calendar from repo
+# Resolve the calendar and canonical matrix-session truth from the same source
+# modules used by the builder.  OI may already be on D while Greeks/EOD remain
+# on settled S=D-1; only their latest positive-spot intersection is publishable.
 sys.path.insert(0, repo)
+from engine.thetadata_store import latest_options_matrix_session
 from lib.nyse_calendar import expected_last_session, last_session_on_or_before
 
 expected = expected_last_session()
-# OI is T+1 and the engine builds on OI[t-1] (OI TIMING LAW) — the freshest
-# OI the store can honestly hold at run time is the session BEFORE expected.
 required = last_session_on_or_before(expected - timedelta(days=1))
+coherent = latest_options_matrix_session("SPY", store=store)
 
-# Gate on the OI shard — build_matrix() resolves its published asof from
-# the OI store, so freshness of the OI store is what actually matters.
-# Gating on EOD (as before) would silently pass when EOD is fresh but OI
-# lags a session, publishing a mismatched artifact.
-year = expected.year
-shard = Path(store) / "oi" / "SPY" / f"{year}.parquet"
-if not shard.exists():
-    # Edge: early Jan before the new-year OI shard is written.
-    # Prior-year shard's last row is Dec 31 — always stale vs Jan expected.
-    # Safe direction: will burn retries and exit 1 until shard appears.
-    shard = Path(store) / "oi" / "SPY" / f"{year - 1}.parquet"
-if not shard.exists():
-    print("stale")
-    sys.exit(0)
-
-tbl = pq.read_table(str(shard), columns=["date"])
-if tbl.num_rows == 0:
-    print("stale")
-    sys.exit(0)
-
-# date column may be datetime or date; normalize to date
-raw = tbl.column("date").to_pylist()[-1]
-if hasattr(raw, "date"):
-    latest = raw.date()
-else:
-    latest = raw
-
-# >= rather than == : a store ahead of the calendar (e.g. after a holiday
-# correction) should not false-fail; the calendar date is the floor.
-if latest >= required:
+if coherent is not None and coherent >= required.isoformat():
     print("fresh")
 else:
     print("stale")

@@ -634,3 +634,26 @@ def test_load_parquets_cache_hit_no_reread(monkeypatch):
 
     # Clean up
     ts.clear_parquet_cache()
+
+
+def test_latest_options_matrix_session_requires_shared_positive_spot(tmp_path):
+    """A newer OI-only date cannot outrank the latest usable Greeks spot date."""
+    root = "SPY"
+    store = tmp_path / "theta_store"
+    oi_dir = store / "oi" / root
+    greeks_dir = store / "greeks" / root
+    oi_dir.mkdir(parents=True)
+    greeks_dir.mkdir(parents=True)
+
+    pd.DataFrame([
+        {"date": "2026-07-07"},
+        {"date": "2026-07-08"},
+    ]).to_parquet(oi_dir / "2026.parquet", index=False)
+    pd.DataFrame([
+        {"date": "2026-07-06", "underlying_price": 499.0},
+        {"date": "2026-07-07", "underlying_price": 500.0},
+        {"date": "2026-07-08", "underlying_price": 0.0},
+    ]).to_parquet(greeks_dir / "2026.parquet", index=False)
+
+    from engine.thetadata_store import latest_options_matrix_session
+    assert latest_options_matrix_session(root, store=store) == "2026-07-07"

@@ -52,6 +52,7 @@ from engine.thetadata_store import (
     eod_matrix_for_date,
     eod_sessions_before,
     eod_volume_history_before,
+    latest_options_matrix_session,
 )
 
 log = logging.getLogger(__name__)
@@ -629,16 +630,21 @@ def build_matrix(
     asof_ts = datetime.now(tz=timezone.utc).isoformat()
 
     # ── resolve asof date ────────────────────────────────────────────────────
-    # Load all OI to find the most recent date if asof not provided.
+    if asof is None:
+        asof = latest_options_matrix_session(root, store)
+        if asof is None:
+            log.warning(
+                "options_matrix: no coherent OI/Greeks session for %s — "
+                "returning thin-chain null",
+                root,
+            )
+            return _null_payload(root, asof_ts, "no coherent OI/Greeks session in store")
+
+    # Full OI history is loaded only after the publishable session is known; it
+    # remains the source for the PIT-safe OI[t-1] and OI[t-2] calculation.
     oi_all = _load_parquets("oi", root, None, store)
     if not oi_all.empty:
         oi_all = _normalise_date(oi_all)
-
-    if asof is None:
-        if oi_all.empty or "date" not in oi_all.columns:
-            log.warning("options_matrix: no OI data for %s — returning thin-chain null", root)
-            return _null_payload(root, asof_ts, "no OI data in store")
-        asof = str(sorted(oi_all["date"].unique())[-1])
 
     # ── OI[t-1]: the parquet dated `asof` ───────────────────────────────────
     oi_t1 = _load_oi(root, asof, store)
