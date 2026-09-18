@@ -113,6 +113,17 @@ EFFECT_UNKNOWN_LAST_ERROR = "effect_unknown_after_smtp"
 # progress.
 EFFECT_UNKNOWN_GRACE_S = 300
 
+# How far in the FUTURE a marker may be stamped before we stop believing it is fresh.
+# The mailer writes the marker from the app host and this drain reads it from its own,
+# so a skewed clock can stamp a marker ahead of the drain's `now`. Without a bound,
+# such a marker is younger than the grace window FOREVER: the row would sit 'pending',
+# never resent (safe) but also never resolved and never surfaced -- re-evaluated every
+# five minutes for as long as the skew lasts. That is exactly the silent livelock this
+# module's round-6 ruling forbids. Past this bound the marker is not evidence of
+# freshness, it is evidence of a broken clock, and the row fails closed to
+# EFFECT_UNKNOWN -- quarantined and announced, which is a state a human can act on.
+MAX_CLOCK_SKEW_S = 300
+
 
 def _alert_idem_key(fire_event_id: str, attempt: int = 0) -> str:
     """Pinned identical to ``app.mailer.alert_idem_key`` (cross-module test in
@@ -154,9 +165,13 @@ def classify_ledger_queued(detail, *, now_utc: datetime) -> str:
     if marked.tzinfo is None:
         marked = marked.replace(tzinfo=timezone.utc)
     age_s = (now_utc - marked).total_seconds()
-    # A marker stamped in the FUTURE is clock skew, not freshness -- treat it as
-    # in-flight (the conservative read: touch nothing) rather than as aged out.
+    if age_s < -MAX_CLOCK_SKEW_S:
+        # Implausibly future-dated: a broken clock, not a fresh marker. Fail closed --
+        # 'in_flight' here would never expire (see MAX_CLOCK_SKEW_S).
+        return EFFECT_UNKNOWN
     if age_s < EFFECT_UNKNOWN_GRACE_S:
+        # Includes a small negative age: modest skew is normal and the conservative
+        # read is to touch nothing and look again next tick.
         return "in_flight"
     return EFFECT_UNKNOWN
 

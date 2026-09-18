@@ -693,6 +693,40 @@ def test_in_flight_marker_within_grace_is_left_alone_not_quarantined(estate):
         "licence to double-send this boundary exists to withhold")
 
 
+def test_in_flight_cannot_outlive_a_bounded_clock_skew():
+    """A marker stamped in the FUTURE must not be 'fresh' forever.
+
+    The mailer stamps the marker from the app host; this drain reads it from its own.
+    Under a skewed clock a marker can sit younger-than-grace indefinitely -- never
+    resent (safe) but never resolved and never surfaced, which is a silent livelock.
+    Modest skew stays in-flight; implausible skew fails closed so a human sees it.
+    """
+    marker = drain.SMTP_ATTEMPT_MARKER
+
+    modest = (T0 + timedelta(seconds=drain.MAX_CLOCK_SKEW_S // 2)).isoformat()
+    assert drain.classify_ledger_queued(f"{marker}@{modest}", now_utc=T0) == "in_flight"
+
+    absurd = (T0 + timedelta(seconds=drain.MAX_CLOCK_SKEW_S + 60)).isoformat()
+    assert drain.classify_ledger_queued(f"{marker}@{absurd}", now_utc=T0) == drain.EFFECT_UNKNOWN
+
+    # And the state always terminates: past grace + skew, every marker resolves.
+    beyond = T0 + timedelta(seconds=drain.EFFECT_UNKNOWN_GRACE_S + drain.MAX_CLOCK_SKEW_S + 1)
+    assert drain.classify_ledger_queued(
+        f"{marker}@{T0.isoformat()}", now_utc=beyond) == drain.EFFECT_UNKNOWN
+
+
+def test_naive_marker_timestamp_is_read_as_utc_not_as_local():
+    """email_log.detail is free text, so a naive stamp is possible. It must be read as
+    UTC -- guessing local time would shift the age by whole hours and could push an
+    aged-out marker back inside the grace window."""
+    naive = T0.replace(tzinfo=None).isoformat()
+    assert drain.classify_ledger_queued(
+        f"{drain.SMTP_ATTEMPT_MARKER}@{naive}", now_utc=T0) == "in_flight"
+    assert drain.classify_ledger_queued(
+        f"{drain.SMTP_ATTEMPT_MARKER}@{naive}",
+        now_utc=T0 + timedelta(seconds=drain.EFFECT_UNKNOWN_GRACE_S + 1)) == drain.EFFECT_UNKNOWN
+
+
 def test_malformed_marker_fails_closed_to_effect_unknown():
     """An unparseable marker timestamp is not an excuse to retry."""
     for detail in (drain.SMTP_ATTEMPT_MARKER,
