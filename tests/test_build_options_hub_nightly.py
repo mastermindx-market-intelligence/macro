@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import json
 
+import pandas as pd
+
 from scripts.build_options_hub_nightly import (
     _attach_gex_history,
     _nulled_nonfinite,
@@ -238,40 +240,62 @@ from scripts.build_options_hub_nightly import (  # noqa: E402
 from engine.moves_engine import moves_payload  # noqa: E402
 
 
-def _write_cboe_gex(path, *, root="INTC", asof="2026-09-17", spot=107.02, iv30=62.52):
-    path.mkdir(parents=True, exist_ok=True)
-    (path / f"{root}.json").write_text(json.dumps({
-        "meta": {"key": root, "asof": asof},
-        "summary": {"spot": spot, "iv30": iv30, "tier": "full"},
-    }))
+def _theta_snapshot(*, root="INTC", asof="2026-09-17", spot=107.02, iv=0.6252):
+    # One exact-30-DTE expiry is enough to pin the canonical compute_vol ATM-IV path.
+    return pd.DataFrame([
+        {
+            "root": root,
+            "expiration": pd.Timestamp("2026-10-17"),
+            "strike": 107.0,
+            "right": "C",
+            "snapshot_ts": pd.Timestamp(f"{asof} 16:00:00"),
+            "implied_vol": iv,
+            "underlying_price": spot,
+        },
+        {
+            "root": root,
+            "expiration": pd.Timestamp("2026-10-17"),
+            "strike": 108.0,
+            "right": "P",
+            "snapshot_ts": pd.Timestamp(f"{asof} 15:59:59"),
+            "implied_vol": iv,
+            "underlying_price": spot,
+        },
+    ])
 
 
-def test_moves_inputs_prefer_same_session_thetadata_pair(tmp_path):
-    _write_cboe_gex(tmp_path, spot=107.02, iv30=62.52)
+def test_moves_inputs_prefer_same_session_thetadata_eod_pair():
     got = resolve_moves_inputs(
         "INTC", "2026-09-17",
         {"spot_ref": 108.0}, {"atm_iv": 55.0},
-        cboe_gex_dir=tmp_path,
+        snapshot_loader=lambda _root: _theta_snapshot(),
     )
     assert got == {"spot": 108.0, "atm_iv_pct": 55.0, "input_source": "thetadata_eod"}
 
 
-def test_moves_inputs_fall_back_to_same_session_cboe_pair(tmp_path):
-    _write_cboe_gex(tmp_path, spot=107.02, iv30=62.52)
+def test_moves_inputs_fall_back_to_same_session_thetadata_snapshot():
     got = resolve_moves_inputs(
         "INTC", "2026-09-17",
         {"spot_ref": None}, {"atm_iv": None},
-        cboe_gex_dir=tmp_path,
+        snapshot_loader=lambda _root: _theta_snapshot(),
     )
-    assert got == {"spot": 107.02, "atm_iv_pct": 62.52, "input_source": "cboe_delayed_chain"}
+    assert got == {"spot": 107.02, "atm_iv_pct": 62.52, "input_source": "thetadata_snapshot"}
 
 
-def test_moves_inputs_refuse_stale_cboe_pair(tmp_path):
-    _write_cboe_gex(tmp_path, asof="2026-09-16", spot=107.02, iv30=62.52)
+def test_moves_inputs_refuse_wrong_session_snapshot():
     got = resolve_moves_inputs(
         "INTC", "2026-09-17",
         {"spot_ref": None}, {"atm_iv": None},
-        cboe_gex_dir=tmp_path,
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-16"),
+    )
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None}
+
+
+def test_moves_inputs_refuse_cross_root_snapshot():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(root="AAPL"),
     )
     assert got == {"spot": None, "atm_iv_pct": None, "input_source": None}
 
@@ -282,14 +306,14 @@ def test_current_null_moves_payload_is_publishable_to_clear_stale_r2_object():
     assert _moves_publishable(payload, "INTC", "2026-09-17") is True
 
 
-def test_build_moves_payload_turns_current_intc_cboe_pair_into_fresh_band(tmp_path):
-    _write_cboe_gex(tmp_path, spot=107.02, iv30=62.52)
+def test_build_moves_payload_turns_current_intc_theta_snapshot_into_fresh_band():
     payload = _build_moves_payload(
         "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
-        calibration=None, learned_band_mult=None, regime=None, cboe_gex_dir=tmp_path,
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: _theta_snapshot(),
     )
     assert payload["asof"] == "2026-09-17"
-    assert payload["input_source"] == "cboe_delayed_chain"
+    assert payload["input_source"] == "thetadata_snapshot"
     assert payload["spot_ref"] == 107.02
     assert payload["atm_iv"] == 62.52
     assert payload["expected_move"] == {
@@ -299,10 +323,11 @@ def test_build_moves_payload_turns_current_intc_cboe_pair_into_fresh_band(tmp_pa
     assert "no_data_reason" not in payload
 
 
-def test_build_moves_payload_publishes_current_null_when_every_current_input_is_absent(tmp_path):
+def test_build_moves_payload_publishes_current_null_when_every_current_input_is_absent():
     payload = _build_moves_payload(
         "WBS", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
-        calibration=None, learned_band_mult=None, regime=None, cboe_gex_dir=tmp_path,
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: None,
     )
     assert payload["asof"] == "2026-09-17"
     assert payload["input_source"] is None
@@ -312,6 +337,6 @@ def test_build_moves_payload_publishes_current_null_when_every_current_input_is_
 
 
 def test_moves_publishable_rejects_cross_root_or_wrong_session():
-    p = moves_payload("INTC", "2026-09-17", 107.02, 62.52, input_source="cboe_delayed_chain")
+    p = moves_payload("INTC", "2026-09-17", 107.02, 62.52, input_source="thetadata_snapshot")
     assert not _moves_publishable(p, "AAPL", "2026-09-17")
     assert not _moves_publishable(p, "INTC", "2026-09-16")

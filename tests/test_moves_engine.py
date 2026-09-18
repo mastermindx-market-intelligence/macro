@@ -160,8 +160,8 @@ class TestMovesPayload:
 def test_moves_payload_carries_input_source_provenance():
     p = moves_payload(
         "INTC", "2026-09-17", 107.02, 62.52,
-        input_source="cboe_delayed_chain",
+        input_source="thetadata_snapshot",
     )
-    assert p["input_source"] == "cboe_delayed_chain"
+    assert p["input_source"] == "thetadata_snapshot"
     assert p["expected_move"] is not None
     assert p["expected_move"]["lo"] < 107.02 < p["expected_move"]["hi"]

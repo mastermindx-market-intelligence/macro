@@ -126,8 +126,8 @@ def moves_payload(
     in percent for display-consistency with the vol plane.
 
     ``input_source`` names the current same-source spot/IV pair selected by the nightly
-    publisher (normally ``thetadata_eod``; ``cboe_delayed_chain`` is the current-session
-    fallback when the Theta plane has no usable pair). It is provenance only and never
+    publisher (normally ``thetadata_eod``; ``thetadata_snapshot`` is the current-session
+    fallback when the settled EOD greeks plane has no usable pair). It is provenance only and never
     changes the band math.
 
     ``calibration`` is the per-ticker historical containment of the same-multiplier band

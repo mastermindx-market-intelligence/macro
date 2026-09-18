@@ -706,42 +706,59 @@ def resolve_moves_inputs(
     gex_payload: dict,
     vol_payload: dict,
     *,
-    cboe_gex_dir: Path | None = None,
+    snapshot_loader=None,
 ) -> dict:
-    """Resolve one CURRENT same-source spot/ATM-IV pair for ``moves/v1``.
+    """Resolve one CURRENT same-source ThetaData spot/ATM-IV pair for ``moves/v1``.
 
-    ThetaData remains primary. Some liquid single names (INTC is the motivating
-    production case) have a current Cboe delayed chain but no usable Theta IV/OI
-    snapshot. The already-built rich Cboe GEX artifact carries both ``summary.spot``
-    and 30-day ATM ``summary.iv30``; it is a valid fallback only when its own
-    ``meta.asof`` exactly matches this nightly session. Never mix spot from one source
-    with IV from the other, and never reuse an older Cboe artifact.
+    The settled EOD store remains primary. When that store has not accrued usable
+    greeks for a root, fall back to ThetaData's EXISTING first-order full-chain
+    snapshot endpoint — never another vendor and never a second options authority.
+    Snapshot rows are accepted only when their own vendor timestamps belong to the
+    exact ``asof`` session. Spot + IV always come from the SAME accepted plane.
     """
     theta_spot = _positive_finite((gex_payload or {}).get("spot_ref"))
     theta_iv = _positive_finite((vol_payload or {}).get("atm_iv"))
     if theta_spot is not None and theta_iv is not None:
         return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod"}
 
-    source_dir = cboe_gex_dir if cboe_gex_dir is not None else (_REPO / "site" / "gex")
+    if snapshot_loader is None:
+        from collectors.thetadata import snapshot_greeks
+        snapshot_loader = lambda symbol: snapshot_greeks(symbol, order="first")
     try:
-        raw = json.loads((Path(source_dir) / f"{root}.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError, TypeError):
-        raw = None
-    if isinstance(raw, dict):
-        meta = raw.get("meta") if isinstance(raw.get("meta"), dict) else {}
-        summary = raw.get("summary") if isinstance(raw.get("summary"), dict) else {}
-        key = str(meta.get("key") or "").upper()
-        if key == root.upper() and meta.get("asof") == asof:
-            cboe_spot = _positive_finite(summary.get("spot"))
-            cboe_iv = _positive_finite(summary.get("iv30"))
-            if cboe_spot is not None and cboe_iv is not None:
-                return {
-                    "spot": cboe_spot,
-                    "atm_iv_pct": cboe_iv,
-                    "input_source": "cboe_delayed_chain",
-                }
+        snap = snapshot_loader(root)
+    except Exception as exc:  # noqa: BLE001 — snapshot fallback is fail-soft per root
+        log.warning("options_hub_builder: ThetaData snapshot fallback %s failed: %s", root, exc)
+        snap = None
+    if snap is None or snap.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None}
 
-    return {"spot": None, "atm_iv_pct": None, "input_source": None}
+    frame = snap.copy()
+    if not {"root", "snapshot_ts", "underlying_price", "expiration", "strike", "implied_vol"}.issubset(frame.columns):
+        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+    frame = frame[frame["root"].astype(str).str.upper() == root.upper()].copy()
+    if frame.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+    stamp = pd.to_datetime(frame["snapshot_ts"], errors="coerce")
+    frame = frame[stamp.dt.date.astype(str) == asof].copy()
+    if frame.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+
+    spot_values = pd.to_numeric(frame["underlying_price"], errors="coerce")
+    spot_values = spot_values[np.isfinite(spot_values) & (spot_values > 0)]
+    spot = _positive_finite(spot_values.median()) if not spot_values.empty else None
+    if spot is None:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+
+    # Reuse compute_vol as the ONE ATM-IV definition. Snapshot rows have the same
+    # expiration/strike/implied_vol/underlying_price schema; adding the accepted
+    # session date lets the canonical term interpolation run without any duplicate
+    # IV math. RV/history stay null because this one-session fallback is for EM only.
+    frame["date"] = asof
+    snapshot_vol = compute_vol(frame, pd.Series(dtype=float), asof, root)
+    atm_iv = _positive_finite(snapshot_vol.get("atm_iv"))
+    if atm_iv is None:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+    return {"spot": spot, "atm_iv_pct": atm_iv, "input_source": "thetadata_snapshot"}
 
 
 def _moves_publishable(payload: dict, root: str, asof: str) -> bool:
@@ -768,11 +785,11 @@ def _build_moves_payload(
     calibration: dict | None,
     learned_band_mult: dict | None,
     regime: str | None,
-    cboe_gex_dir: Path | None = None,
+    snapshot_loader=None,
 ) -> dict:
     """Build the current moves payload from the best truthful same-session input pair."""
     source = resolve_moves_inputs(
-        root, asof, gex_payload, vol_payload, cboe_gex_dir=cboe_gex_dir,
+        root, asof, gex_payload, vol_payload, snapshot_loader=snapshot_loader,
     )
     payload = moves_payload(
         root, asof, source["spot"], source["atm_iv_pct"],
@@ -1445,8 +1462,8 @@ def main() -> None:
             # range for this ticker (reconstructed grades → per_ticker_calibration).
             # Sibling of vol/gex/vex in the options_hub plane. The band needs only a
             # same-session spot + ATM-IV pair, not OI/GEX completeness, so it has its OWN
-            # publication law. ThetaData is primary; the already-built current Cboe delayed
-            # chain is a same-source fallback for names whose Theta IV/OI plane is empty.
+            # publication law. The settled ThetaData store is primary; the EXISTING
+            # ThetaData first-order full-chain snapshot is its same-authority fallback.
             # A current payload is uploaded even when expected_move is null, clearing any
             # stale R2 band instead of leaving an old expectation alive indefinitely.
             # Calibration is null until the Track Record has graded this root.
@@ -1460,9 +1477,9 @@ def main() -> None:
                         moves_grades_by_root.get(root, []), ci_fn=_wilson_ci),
                     learned_band_mult=moves_learned_mult, regime=_regime,
                 )
-                if _moves.get("input_source") == "cboe_delayed_chain":
+                if _moves.get("input_source") == "thetadata_snapshot":
                     log.info(
-                        "options_hub_builder: moves %s using current Cboe spot/IV fallback",
+                        "options_hub_builder: moves %s using current ThetaData snapshot fallback",
                         root,
                     )
                 moves_path = out_dir / "moves" / f"{root}.json"
