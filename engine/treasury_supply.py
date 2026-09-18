@@ -9,8 +9,9 @@ trailing window of SAME-TENOR auctions (a 10y note vs prior 10y notes — sizes 
 yields differ wildly across tenors, so only a same-tenor z-score is meaningful):
 
   • bid-to-cover           — total bids / amount sold (higher = stronger demand)
-  • indirect-bidder share  — indirect / total accepted (foreign & real-money demand)
-  • dealer takedown share  — primary-dealer / total accepted (the backstop: a HIGH
+  • indirect-customer share — indirect / competitive accepted (customer bids routed
+                              through a submitter; NOT a foreign-participation measure)
+  • dealer takedown share   — primary-dealer / competitive accepted (the backstop: a HIGH
                              dealer share means weak end-demand, so it is INVERTED)
 
 absorption_z = mean(z_bid_to_cover, z_indirect, −z_dealer). A soft auction clears with
@@ -46,13 +47,20 @@ _NOMINAL = ("Note", "Bond")
 _METRICS = ("bid_to_cover", "indirect_share", "dealer_share")
 
 NOTE_EN = ("Auction demand is supply-absorption CONTEXT, not a validated directional "
-           "signal — never scored, never an MRS leg. Demand metrics are z-scored vs the "
-           "trailing same-tenor auctions. The true auction tail (stop-out minus the "
-           "when-issued yield) is omitted: it needs intraday when-issued quotes that are "
-           "not freely available. Source: TreasuryDirect auction results (keyless).")
+           "signal — never scored, never an MRS leg. Bidder shares use competitive "
+           "accepted awards, not the SOMA/noncompetitive-inclusive total. Indirect bidders "
+           "are customers bidding through a submitter and do not identify foreign "
+           "participation; Treasury's Investor Class Auction Allotments are a separate "
+           "dataset. Demand metrics are z-scored vs trailing same-tenor auctions. The true "
+           "auction tail (stop-out minus the when-issued yield) is omitted: it needs "
+           "intraday when-issued quotes that are not freely available. Source: "
+           "TreasuryDirect auction results (keyless).")
 NOTE_ZH = ("拍卖需求是供给吸收的背景信息，而非经validated的方向性信号——从不评分，也非MRS腿。"
-           "需求指标相对同期限近期拍卖做z-score。真正的拍卖尾部（中标利率减去when-issued收益率）"
-           "予以省略：它需要免费数据中没有的盘中when-issued报价。来源：TreasuryDirect 拍卖结果（无需密钥）。")
+           "投标人占比以竞争性中标额为分母，不使用含SOMA／非竞争性中标的总额。间接投标人是通过"
+           "提交机构参与竞争性投标的客户，并不等同于外国投资者；外国参与度需使用财政部单独发布的"
+           "投资者类别拍卖分配数据。需求指标相对同期限近期拍卖做z-score。真正的拍卖尾部（中标利率"
+           "减去when-issued收益率）予以省略：它需要免费数据中没有的盘中when-issued报价。"
+           "来源：TreasuryDirect 拍卖结果（无需密钥）。")
 
 
 def _cfg() -> dict:
@@ -91,15 +99,42 @@ def _klass(df: pd.DataFrame) -> pd.Series:
     return df.get("security_type", pd.Series("", index=df.index)).astype(str)
 
 
+def _numeric_col(d: pd.DataFrame, name: str) -> pd.Series:
+    """Numeric column aligned to d; absent columns stay unknown rather than scalar None."""
+    if name not in d.columns:
+        return pd.Series(np.nan, index=d.index, dtype=float)
+    return pd.to_numeric(d[name], errors="coerce")
+
+
+def _competitive_denominator(d: pd.DataFrame) -> pd.Series:
+    """Competitive accepted awards for bidder-class shares. PURE.
+
+    Treasury's Primary Dealer / Direct / Indirect categories partition COMPETITIVE
+    accepted awards. total_accepted can include noncompetitive and SOMA awards,
+    so it is not a valid denominator. Prefer Treasury's explicit
+    competitiveAccepted field; for older accrued rows, reconstruct the same
+    subtotal only when all three bidder-class accepted amounts are present.
+    """
+    explicit = _numeric_col(d, "competitive_accepted")
+    classes = pd.concat([
+        _numeric_col(d, "primary_dealer_accepted"),
+        _numeric_col(d, "direct_accepted"),
+        _numeric_col(d, "indirect_accepted"),
+    ], axis=1)
+    reconstructed = classes.sum(axis=1, min_count=3)
+    denom = explicit.where(explicit > 0, reconstructed)
+    return denom.where(denom > 0)
+
+
 def _prep(df: pd.DataFrame) -> pd.DataFrame:
     """Clean + derive demand shares on the NOMINAL-coupon subset. PURE."""
     d = df.copy()
     d["auction_date"] = pd.to_datetime(d["auction_date"])
     d = d[_klass(d).isin(_NOMINAL) & d["tenor"].notna()].copy()
-    tot = pd.to_numeric(d.get("total_accepted"), errors="coerce")
-    d["indirect_share"] = pd.to_numeric(d.get("indirect_accepted"), errors="coerce") / tot
-    d["dealer_share"] = pd.to_numeric(d.get("primary_dealer_accepted"), errors="coerce") / tot
-    d["bid_to_cover"] = pd.to_numeric(d.get("bid_to_cover"), errors="coerce")
+    competitive = _competitive_denominator(d)
+    d["indirect_share"] = _numeric_col(d, "indirect_accepted") / competitive
+    d["dealer_share"] = _numeric_col(d, "primary_dealer_accepted") / competitive
+    d["bid_to_cover"] = _numeric_col(d, "bid_to_cover")
     return d.sort_values("auction_date").reset_index(drop=True)
 
 
