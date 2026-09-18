@@ -812,21 +812,60 @@ def _attach_translations(headlines: list[dict], cfg: dict | None = None) -> list
 # --------------------------------------------------------------------------- #
 # GDELT fetch (free, keyless) — recent macro headlines
 # --------------------------------------------------------------------------- #
-def _query(cfg: dict) -> str:
-    # Strongest, shortest macro terms (GDELT caps query length). The query MATCHES
-    # full article text, so the title-level theme gate in filter_headlines is the
-    # precision step.
-    core = ['"federal reserve"', "fomc", "inflation", "cpi", "pce", "ppi",
-            '"interest rates"', "recession", '"jobs report"', "payrolls",
-            "jolts", "gdp", '"retail sales"', '"housing starts"',
-            '"durable goods"', '"treasury yield"', '"credit spread"',
-            '"treasury auction"', "tariffs", '"debt ceiling"', "sanctions",
-            '"jobless claims"', '"consumer confidence"', "powell", '"rate cut"']
-    q = "(" + " OR ".join(core) + ")"
+# The macro term set — the RECALL step. The GDELT query matches full article
+# TEXT, so the title-level theme gate in filter_headlines is the precision step.
+# Coverage of this list is pinned by tests/test_macro_news.py: _queries() must
+# emit every term exactly once, so a sub-query split can never silently narrow
+# what the global wire is asked for.
+_QUERY_CORE = ['"federal reserve"', "fomc", "inflation", "cpi", "pce", "ppi",
+               '"interest rates"', "recession", '"jobs report"', "payrolls",
+               "jolts", "gdp", '"retail sales"', '"housing starts"',
+               '"durable goods"', '"treasury yield"', '"credit spread"',
+               '"treasury auction"', "tariffs", '"debt ceiling"', "sanctions",
+               '"jobless claims"', '"consumer confidence"', "powell", '"rate cut"']
+
+# GDELT rejects an over-long query with HTTP 200 + text/html "Your query was too
+# short or too long." — a STRUCTURAL failure no retry can heal, and one that is
+# invisible in a fetch-count metric because the leg simply returns nothing.
+#
+# The limit is server-side and has TIGHTENED before: ~2026-06-20 it dropped below
+# engine.news_vector's single 288-char query and stalled that accrual for three
+# weeks (probed 2026-07-10: 246 accepted, 288 rejected), which is why that sibling
+# already splits its terms. THIS module kept one 400-char query and was therefore
+# rejected on every nightly fetch — re-probed live 2026-09-18 against
+# api.gdeltproject.org: 400 chars -> 200 text/html "too short or too long".
+# 230 matches engine.news_vector._MAX_QUERY_LEN and leaves headroom for a further
+# tightening; _queries() splits the term list into as many sub-queries as needed.
+_MAX_QUERY_LEN = 230
+
+
+def _queries(cfg: dict) -> list[str]:
+    """Split the macro term set into OR-group sub-queries whose FULL query strings
+    (terms + source filters) each stay under _MAX_QUERY_LEN. PURE.
+
+    An OR-query partitions losslessly, so the union of the groups asks for EXACTLY
+    the same articles the old single query asked for — splitting changes the number
+    of requests, never the coverage. Terms keep their declared order and the greedy
+    packing is deterministic, so one term set always yields one list of sub-queries
+    (a stable fan-out is what makes the shared rate budget predictable).
+
+    The term set is a module CONSTANT on purpose — no config override. A caller-
+    supplied term could be longer than one group's whole budget, which no split can
+    rescue (it would go out over-length and be rejected), or non-ASCII, which would
+    make this character count diverge from the bytes on the wire. Both are pinned
+    ASCII-and-fits by tests/test_macro_news.py instead."""
+    core = [t for t in _QUERY_CORE if t]
     # sourcecountry:US removes the flood of foreign local papers at source; the
     # reputable-source allowlist + title theme-gate then run in filter_headlines.
-    q += f" sourcecountry:US sourcelang:{cfg.get('lang', 'eng')}"
-    return q
+    suffix = f" sourcecountry:US sourcelang:{cfg.get('lang', 'eng')}"
+    budget = _MAX_QUERY_LEN - len(suffix) - 2          # 2 for the wrapping parens
+    groups: list[list[str]] = [[]]
+    for term in core:
+        if groups[-1] and len(" OR ".join(groups[-1] + [term])) > budget:
+            groups.append([term])
+        else:
+            groups[-1].append(term)
+    return ["(" + " OR ".join(g) + ")" + suffix for g in groups if g]
 
 
 def _cache_path(cfg: dict, d: date):
@@ -1137,13 +1176,28 @@ def _fetch_official_pages(cfg: dict, today: date | None = None) -> tuple[list[di
     return items, reason
 
 
+# degraded_reason severity, worst first: a structural rejection outranks
+# everything (it never self-heals), then transient failures, then the benign
+# "the window was quiet". A partial fan-out reports its WORST sub-query outcome
+# so one rejected sub-query cannot hide behind the ones that succeeded.
+_REASON_PRIORITY = ("query_rejected", "rate_limited", "fetch_error", "no_headlines")
+
+
 def _fetch_gdelt(cfg: dict, today: date | None = None) -> tuple[list[dict], str | None]:
     """Recent macro articles from GDELT (last `window_days` ending today). Returns
     (raw_articles, degraded_reason). Cached; never raises.
 
+    The term set goes out as MULTIPLE sub-queries (_queries, each under GDELT's
+    server-side length limit) and their articles are merged and deduped on
+    (title, domain) — the union is the same slice the old single query asked for.
+
     HTTP layer is handled by engine.gdelt_client so this module shares the same
-    cross-process throttle/retry/rate-limit logic as every other GDELT caller
-    (nine uncoordinated callers caused a 429 penalty-box incident 2026-06-20)."""
+    cross-process throttle / bounded retry / rate-limit breaker as every other
+    GDELT caller (nine uncoordinated callers caused a 429 penalty-box incident
+    2026-06-20). The fan-out therefore spends the ONE shared per-IP budget and
+    adds no second pacing, breaker or cache of its own: the sub-queries serialise
+    behind the same pacing lock, and once a terminal 429 arms the shared breaker
+    the remaining sub-queries short-circuit with no network and no throttle."""
     today = today or date.today()
     cache = _cache_path(cfg, today)
     ttl = cfg.get("cache_ttl_hours", 12) * 3600
@@ -1151,42 +1205,119 @@ def _fetch_gdelt(cfg: dict, today: date | None = None) -> tuple[list[dict], str 
         try:
             if datetime.now(timezone.utc).timestamp() - cache.stat().st_mtime < ttl:
                 blob = json.loads(cache.read_text())
-                return blob.get("articles", []), blob.get("degraded_reason")
+                cached = blob.get("articles") or []
+                # Serve the cache ONLY when it holds a real harvest. An empty blob
+                # is a FAILURE blob (older builds here wrote one on every rejected
+                # fetch); replaying it would suppress the retry for the whole TTL
+                # and keep the global wire dark long after the cause was fixed.
+                if cached:
+                    return cached, blob.get("degraded_reason")
         except Exception:  # noqa: BLE001
             pass
 
     win = int(cfg.get("window_days", 2))
     end = datetime(today.year, today.month, today.day, 23, 59, 59)
     start = end - timedelta(days=win)
-    params = {"query": _query(cfg), "mode": "artlist", "format": "json",
-              "maxrecords": str(cfg.get("max_records", 60)), "sort": "datedesc",
-              "startdatetime": start.strftime("%Y%m%d%H%M%S"),
-              "enddatetime": end.strftime("%Y%m%d%H%M%S")}
-    articles: list[dict] = []
-    reason: str | None = None
+    timeout_s = max(5, int(cfg.get("gdelt_timeout_s", 15)))
+
     try:
         from engine import gdelt_client as _gc
-        timeout_s = max(5, int(cfg.get("gdelt_timeout_s", 15)))
-        raw, gc_reason = _gc.get_articles(params, timeout=timeout_s)
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("gdelt client unavailable (%s)", e)
+        return [], "fetch_error"
+
+    articles: list[dict] = []
+    seen: set[tuple[str, str]] = set()
+    reasons: list[str] = []
+    rejected: list[str] = []
+    planned = _queries(cfg)
+    for q in planned:
+        params = {"query": q, "mode": "artlist", "format": "json",
+                  "maxrecords": str(cfg.get("max_records", 60)), "sort": "datedesc",
+                  "startdatetime": start.strftime("%Y%m%d%H%M%S"),
+                  "enddatetime": end.strftime("%Y%m%d%H%M%S")}
+        try:
+            # NO min_interval override: the pacing floor is ONE shared, global
+            # number (gdelt.min_request_interval_s, floored at 1.0s inside the
+            # client). Passing a module-local one here would be a second throttle
+            # policy over the same per-IP budget — and an int() of a sub-second
+            # config value would silently disable pacing altogether.
+            raw, why = _gc.get_articles(params, timeout=timeout_s)
+        except Exception as e:  # noqa: BLE001 — degrade, never raise
+            log.warning("gdelt macro fetch failed (%s)", e)
+            raw, why = None, "fetch_error"
+
+        if why == "query_rejected":
+            # STRUCTURAL: no retry can heal it. Recorded here, ANNOUNCED once after
+            # the fan-out — inside the loop we do not yet know whether the union
+            # ends up empty or merely thinned, and an annotation that guesses is
+            # worse than none.
+            rejected.append(q)
+            log.error("macro_news: GDELT REJECTED sub-query (len=%d) — STRUCTURAL, "
+                      "retries cannot heal; shorten _QUERY_CORE or _MAX_QUERY_LEN: "
+                      "%r", len(q), q)
+
         if raw is None:
-            raw = []
-        # Normalise reason: gdelt_client uses 'no_articles'; callers here expect 'no_headlines'
-        if gc_reason == "no_articles":
-            reason = "no_headlines"
-        else:
-            reason = gc_reason
-        # gdelt_client._parse_articles already returns {title,url,domain,seendate(ISO)} dicts;
-        # project to the subset this module's callers expect.
+            reasons.append(why or "fetch_error")
+            # Deliberately CONTINUE, never break. A terminal 429 arms the shared
+            # cross-process breaker inside gdelt_client, so the remaining
+            # sub-queries short-circuit instantly, with no network and no throttle
+            # — the budget is already protected by the ONE mechanism that owns it.
+            # Breaking here would add a second, private breaker that also throws
+            # away recoverable coverage whenever the shared one is switched off
+            # (gdelt.rate_limit_cooldown_s: 0). Same choice as engine.news_vector.
+            continue
+
+        # A sub-query that ANSWERED contributes no failure reason — not even when
+        # it was empty. gdelt_client says 'no_articles' for a valid-but-quiet
+        # response, and most macro terms are quiet on most days; recording that
+        # per sub-query would label a healthy union 'no_headlines' the moment one
+        # group had no news. 'no_headlines' is a property of the UNION and is
+        # derived once, below.
+
+        # gdelt_client._parse_articles already returns {title,url,domain,seendate(ISO)}
+        # dicts; project to the subset this module's callers expect, deduping the
+        # stories that matched more than one sub-query.
         for a in raw:
+            key = ((a.get("title") or "").strip(), (a.get("domain") or "").lower())
+            if key in seen:
+                continue
+            seen.add(key)
             articles.append({"title": a.get("title", ""), "url": a.get("url", ""),
                              "domain": a.get("domain", ""), "seendate": a.get("seendate", "")})
-    except Exception as e:  # noqa: BLE001 — degrade, never raise
-        log.warning("gdelt macro fetch failed (%s)", e)
-        reason = "fetch_error"
-    try:
-        cache.write_text(json.dumps({"articles": articles, "degraded_reason": reason}))
-    except Exception:  # noqa: BLE001
-        pass
+
+    reason = next((lvl for lvl in _REASON_PRIORITY if lvl in reasons), None)
+    if not articles and reason is None:
+        reason = "no_headlines"
+
+    if rejected:
+        # ONE annotation for the whole fan-out, stating what actually happened to
+        # the union — "contributed nothing" and "lost N of M term groups" are very
+        # different diagnoses and an operator must not have to guess which they got.
+        scope = ("the global wire contributed NOTHING"
+                 if not articles else
+                 f"the global wire is THINNED — {len(articles)} article(s) survived "
+                 f"from the {len(planned) - len(rejected)} accepted group(s)")
+        print(f"::warning title=macro-news-gdelt-query-rejected::GDELT rejected "
+              f"{len(rejected)} of {len(planned)} macro sub-queries "
+              f"(longest rejected: {max(len(q) for q in rejected)} chars) — {scope}; "
+              f"shorten _QUERY_CORE terms or _MAX_QUERY_LEN in engine/macro_news.py",
+              flush=True)
+
+    # Cache a CLEAN harvest ONLY — articles present AND every sub-query answered.
+    # Two failures hide in the looser "any articles" rule:
+    #   * a PARTIAL harvest (group 1 fine, group 2 429'd) would be frozen for the
+    #     full 12h TTL, so a transient rate limit — the normal state of this shared
+    #     IP — permanently truncates the day's term coverage even though the
+    #     breaker clears in 900s and the very next call would have recovered it;
+    #   * the replay makes no request, so the rejection annotation above never
+    #     fires again either, silencing the alarm for the rest of the day.
+    # engine.gdelt_client's own contract is the same: "Failures are NEVER cached".
+    if articles and reason is None:
+        try:
+            cache.write_text(json.dumps({"articles": articles, "degraded_reason": reason}))
+        except Exception:  # noqa: BLE001
+            pass
     return articles, reason
 
 
@@ -1299,6 +1430,30 @@ def macro_headlines(today: date | None = None) -> dict | None:
         pass
 
     synth = _synthesis(kept)
+
+    # LEG STATUS — one honest line per fetch leg. `degraded_reason` below collapses
+    # to None the moment ANY leg produced a headline, so on its own a dark global
+    # wire (a structural GDELT rejection, a boxed IP) reads as a healthy, complete
+    # news suite: the board fills with official+RSS items and nothing records that
+    # the wire contributed zero. The three legs are INDEPENDENT — official feeds and
+    # news RSS keep working when GDELT is down, and must not paper over its absence.
+    leg_status = {
+        "gdelt":        {"n": len(raw), "degraded_reason": reason},
+        "official_rss": {"n": len(official), "degraded_reason": official_reason},
+        "news_rss":     {"n": len(news_rss), "degraded_reason": news_reason},
+    }
+    if reason in ("query_rejected", "rate_limited", "fetch_error"):
+        if raw:
+            # partial: the wire answered, but not for every term group
+            log.warning("macro_news: global wire (GDELT) is THINNED (%s) — %d raw "
+                        "article(s) arrived but part of the term set never "
+                        "answered; the %d displayed headline(s) are an INCOMPLETE "
+                        "news suite", reason, len(raw), len(kept))
+        else:
+            log.warning("macro_news: global wire (GDELT) is DARK (%s) — the %d "
+                        "displayed headline(s) are official+RSS only, NOT a "
+                        "complete news suite", reason, len(kept))
+
     return {"schema": "macro_news.v1", "is_context_only": True,
             "fetched_at": datetime.now(timezone.utc).isoformat(), "source": "official_rss+news_rss+gdelt_doc_2.0",
             "headlines": kept, "n_raw": len(raw) + len(official) + len(news_rss), "n_gdelt": len(raw),
@@ -1312,6 +1467,8 @@ def macro_headlines(today: date | None = None) -> dict | None:
             "channel_label": CHANNEL_LABEL, "tier_label": TIER_LABEL,
             "rejected": _rejected,
             "degraded_reason": (reason or official_reason or news_reason) if not kept else None,
+            # per-leg truth; `degraded_reason` above answers only "is the board empty"
+            "leg_status": leg_status,
             "disclaimer": DISCLAIMER_TEXT}
 
 
