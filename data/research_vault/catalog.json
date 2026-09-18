@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T16:38:26.002850+00:00",
-  "count": 2371,
+  "generated_at": "2026-09-18T16:46:13.628583+00:00",
+  "count": 2372,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-x3ly3rkhf5d-885f92",
+      "title": "Japan BOJ Raises Policy Rate by 25 bp to 1.25 . Further Tightening Ahead But No Clear Acceleration Signal",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:59Z",
+      "summary_points": [
+        "Policy Rate Hike & Neutral Band: BOJ raised rate to 1.25% (25bp), entering neutral band (1.1-2.5%); forward guidance confirms continued hikes toward neutral rate while retaining \"accommodative financial conditions\" phrasing.",
+        "Key Upside Risk Factors: BOJ explicitly cites Middle East disruption (geopolitics), AI-driven demand, and economic slowdown from rate hikes as critical upside risks to inflation and policy path.",
+        "Forward Guidance Contradiction: Retention of \"accommodative financial conditions\" despite rate hike signals further tightening, implying room for additional hikes without accelerating pace.",
+        "Inflation Target Assessment: BOJ maintains 2% inflation target risk assessment, with Middle East and AI demand highlighted as primary drivers for potential rate path deviations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-lxddyiiqy95-9c3188",
       "title": "GS Early Morning Research Recap Ratings and Target Price Changes September 18, 2026 as of 5 30 AM ET",
