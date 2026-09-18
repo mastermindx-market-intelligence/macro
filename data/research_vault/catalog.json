@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T13:08:05.903692+00:00",
-  "count": 2361,
+  "generated_at": "2026-09-18T13:23:00.525718+00:00",
+  "count": 2362,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -106,6 +106,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i7j2dc89spy-6fe595",
+      "title": "GS Abbas GS US Daily Download 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T12:47:29Z",
+      "summary_points": [
+        "AI Capex Debt Scale: Global AI-related debt $578bn (hyperscalers 40%), with $420bn gross issuance expected in 2027 (vs $250bn 2026), signaling structural capital allocation shift.",
+        "CTA Flow Moderation: CTAs net long $37.54bn US equities (22nd percentile), SPX sellers at $5.4bn (flat tape), flows moderating amid elevated exposure.",
+        "Industrial Production Beat: Industrial production (Aug) expected +0.4% (vs consensus +0.3%), aligning with Fed hike expectations and oil at $101/bbl."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
