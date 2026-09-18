@@ -110,6 +110,18 @@ def main() -> int:
                     sleeve_stats["sharpe"] = float(_full["sharpe"])
                 if _full.get("n") is not None:
                     sleeve_stats["n_rebalances"] = int(_full["n"])
+                # Excess per rebalance: fill-realistic is a measurement; a gross
+                # mean may ship only under a gross label, never fill-realistic.
+                _fill = (_sd.get("rederive_stats") or {}).get("fill_tax") or {}
+                _ex = _fill.get("fill_realistic_pct")
+                if _ex is not None:
+                    sleeve_stats["excess_per_reb"] = float(_ex)
+                    sleeve_stats["excess_plane"] = "fill_realistic"
+                else:
+                    _ex = _full.get("mean_pct")
+                    if _ex is not None:
+                        sleeve_stats["excess_per_reb"] = float(_ex)
+                        sleeve_stats["excess_plane"] = "gross"
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.debug("china_sector_central: sleeve stats load skipped (%s)", e)
 
@@ -128,13 +140,12 @@ def main() -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("china_sector_central: act_now_cn read failed (%s)", e)
 
-    from datetime import datetime, timezone
     html = env.get_template("sector_central_china.html.j2").render(
         theme_context=theme_context,
         sleeve_stats=sleeve_stats,
         act_now_v2=act_now_v2,
         sectors_by_ticker=sectors_by_ticker,
-        generated_utc=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"))
+        bench_en="CSI 300", bench_zh="沪深300")
     write_page(site / "sector_central_china.html", html, encoding="utf-8")
 
     # the page embeds the cycle-map overlay → ensure its shared assets are present. The China
