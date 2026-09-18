@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T15:53:19.301598+00:00",
-  "count": 2369,
+  "generated_at": "2026-09-18T16:08:20.180714+00:00",
+  "count": 2370,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -107,6 +107,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lla3hl0rjt8-d8a682",
+      "title": "Global Markets Daily Timing It Right — When to Sell Interest Rates Vol",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:51Z",
+      "summary_points": [
+        "Macro Fair Value Model: 70% hit ratio in predicting volatility returns using growth, inflation, Fed policy, and mortgage convexity; deviations from model mid-point signal optimal vol selling timing.",
+        "Implied vs Realized Volatility Premium: Consistent outperformance of implied volatility over realized volatility enables profitable delta-hedged short gamma strategies despite macro volatility.",
+        "Fed Policy Impact: Hawkish inflation focus reduces long-end yield sensitivity to energy prices; fundamentals-driven tightening bolsters vol selling strategy support.",
+        "GARCH Deviation Timing: Implied volatility exceeding GARCH forecasts predicts higher subsequent vol selling returns, providing technical edge for trade execution."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
