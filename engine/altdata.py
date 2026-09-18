@@ -233,6 +233,14 @@ def political_netflow(window_days: int = 90, top: int = 15) -> dict:
         buys = int((g["side"] == "buy").sum())
         sells = int((g["side"] == "sell").sum())
         actor_key = g["bioguide"].where(g["bioguide"].notna(), g["member"])
+        actor_flow: list[int] = []
+        keyed = g.assign(_actor=actor_key).dropna(subset=["_actor"])
+        for _, member_rows in keyed.groupby("_actor", sort=False):
+            actor_flow.append(int((member_rows["side"] == "buy").sum())
+                              - int((member_rows["side"] == "sell").sum()))
+        buy_members = sum(1 for x in actor_flow if x > 0)
+        sell_members = sum(1 for x in actor_flow if x < 0)
+        participants = len(actor_flow)
         events = []
         for r in g.sort_values(["date", "usd"], ascending=[False, False]).head(8).itertuples(index=False):
             events.append({
@@ -246,8 +254,15 @@ def political_netflow(window_days: int = 90, top: int = 15) -> dict:
                 "description": _json_scalar(r.description),
             })
         rows.append({
-            "ticker": tk, "net": buys - sells, "buys": buys, "sells": sells,
-            "members": int(actor_key.dropna().nunique()),
+            "ticker": tk,
+            # Political direction is MEMBER breadth, not raw transaction count: one
+            # prolific filer cannot manufacture a cluster by splitting one thesis
+            # across stock/options or multiple same-day disclosure rows.
+            "net": buy_members - sell_members,
+            "members": buy_members,
+            "sell_members": sell_members,
+            "participants": participants,
+            "buys": buys, "sells": sells,
             "est_usd": round(float(g.loc[g["side"] == "buy", "usd"].sum(skipna=True)), 0),
             "parties": "/".join(sorted({p for p in g["party"].dropna().unique()})) or None,
             "events": events,

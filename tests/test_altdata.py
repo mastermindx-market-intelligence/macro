@@ -117,7 +117,8 @@ def test_political_netflow(monkeypatch):
     top = res["buys"][0]
     assert top["ticker"] == "AAA"
     assert top["buys"] == 2 and top["sells"] == 1 and top["net"] == 1
-    assert top["members"] == 3
+    assert top["members"] == 2
+    assert top["sell_members"] == 1 and top["participants"] == 3
     assert top["est_usd"] > 0
 
 
@@ -556,3 +557,32 @@ def test_insider_netflow_keeps_named_distinct_people_outside_top_cap(monkeypatch
     assert intc["events"][0]["usd"] == pytest.approx(9_999_985)
     assert intc["events"][0]["is_officer"] is True
     assert intc["events"][0]["is_director"] is False
+
+
+
+def test_political_cluster_counts_net_buying_members_not_all_participants(monkeypatch):
+    monkeypatch.setattr(altdata, "_now", lambda: pd.Timestamp("2026-08-25"))
+    congress = pd.DataFrame([
+        # One member makes three buys; two other members sell. Raw trade net is +1,
+        # but member breadth is 1 buyer vs 2 sellers, so this is NOT a buy cluster.
+        {"Ticker": "AAA", "TransactionDate": "2026-08-01", "ReportDate": "2026-08-10",
+         "Transaction": "Purchase", "Representative": "Rep A", "BioGuideID": "A1",
+         "Party": "D", "Range": "$1,001 - $15,000", "Description": "stock"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-02", "ReportDate": "2026-08-10",
+         "Transaction": "Purchase", "Representative": "Rep A", "BioGuideID": "A1",
+         "Party": "D", "Range": "$1,001 - $15,000", "Description": "call 1"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-03", "ReportDate": "2026-08-10",
+         "Transaction": "Purchase", "Representative": "Rep A", "BioGuideID": "A1",
+         "Party": "D", "Range": "$1,001 - $15,000", "Description": "call 2"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-04", "ReportDate": "2026-08-10",
+         "Transaction": "Sale", "Representative": "Rep B", "BioGuideID": "B1",
+         "Party": "R", "Range": "$1,001 - $15,000"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-05", "ReportDate": "2026-08-10",
+         "Transaction": "Sale", "Representative": "Rep C", "BioGuideID": "C1",
+         "Party": "R", "Range": "$1,001 - $15,000"},
+    ])
+    _patch_reads(monkeypatch, {"congress": congress})
+    row = altdata.political_netflow(window_days=90, top=20)["by_ticker"]["AAA"]
+    assert row["buys"] == 3 and row["sells"] == 2
+    assert row["members"] == 1 and row["sell_members"] == 2
+    assert row["participants"] == 3 and row["net"] == -1
