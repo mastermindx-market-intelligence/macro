@@ -1,0 +1,18 @@
+{
+  "no_semantic_retry": {
+    "rc": 1,
+    "tail": "FAILED tests/test_stock_price_completed_session.py::test_seventy_percent_current_coverage_preserves_partial_universe\nFAILED tests/test_stock_price_completed_session.py::test_full_history_repull_still_requires_completed_prices\nFAILED tests/test_stock_price_completed_session.py::test_post_rebase_completed_row_refused_without_changing_rebase_rules\nFAILED tests/test_stock_price_completed_session.py::test_transport_and_semantic_failure_share_one_budget\n10 failed, 9 passed in 5.17s"
+  },
+  "historical_row_as_current": {
+    "rc": 1,
+    "tail": "FAILED tests/test_stock_price_completed_session.py::test_seventy_percent_current_coverage_preserves_partial_universe\nFAILED tests/test_stock_price_completed_session.py::test_full_history_repull_still_requires_completed_prices\nFAILED tests/test_stock_price_completed_session.py::test_post_rebase_completed_row_refused_without_changing_rebase_rules\nFAILED tests/test_stock_price_completed_session.py::test_transport_and_semantic_failure_share_one_budget\n10 failed, 9 passed in 3.09s"
+  },
+  "no_post_rebase_filter": {
+    "rc": 1,
+    "tail": "\nNOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_stock_price_completed_session.py::test_final_boundary_rejects_stale_post_pull_frames\n1 failed, 18 passed in 8.17s"
+  },
+  "restored": {
+    "rc": 0,
+    "summary": "102 passed, 1 skipped, 3 warnings in 13.73s"
+  }
+}

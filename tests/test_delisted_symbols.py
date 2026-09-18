@@ -391,10 +391,10 @@ def test_stocks_fetch_excludes_ledger_names_from_retention(fake_ledger, monkeypa
     monkeypatch.setattr(ad, "_needs_full", lambda t: False)
     requested: list[str] = []
 
-    def fake_pull(period, tlist, frames, rebase, tol):
+    def fake_pull(period, tlist, frames, rebase, tol, **kwargs):
         requested.extend(tlist)
         for t in tlist:
-            frames[t] = pd.DataFrame({"close": [1.0]})
+            frames[t] = pd.DataFrame({"close": [1.0]}, index=[pd.Timestamp(kwargs["expected_session"])])
 
     monkeypatch.setattr(ad, "_pull", fake_pull)
     frames = ad.fetch()

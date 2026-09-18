@@ -302,7 +302,7 @@ def test_fetch_retention_heal_split_and_zero_point_seven_guard_use_the_union(dat
 
     calls: list[tuple[str, list[str]]] = []
 
-    def fake_download(batch, period):
+    def fake_download(batch, period, **kwargs):
         calls.append((period, list(batch)))
         if period == "1mo":
             # LIVE2 silently missing from the response (simulates a yfinance drop).

@@ -14881,3 +14881,17 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  us-deep-stock-completed-close:
+    if: ${{ false }}
+    gate: code
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install bounded price-response dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests yfinance beautifulsoup4
+      - name: completed prices and unchanged stock retention and basis repair
+        run: python -m pytest tests/test_stock_price_completed_session.py tests/test_stock_price_retention.py tests/test_upsert_basis_guard.py -q
