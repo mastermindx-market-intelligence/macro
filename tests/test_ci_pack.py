@@ -313,7 +313,7 @@ def _manifest_job(run: str, *, gate: str = "code") -> dict:
     }
 
 
-def test_manifest_additive_pytest_enrollment_is_bounded_to_changed_job() -> None:
+def test_manifest_job_local_delta_is_bounded_to_changed_job() -> None:
     base = {
         "jobs": {
             "owner": _manifest_job(
@@ -327,7 +327,7 @@ def test_manifest_additive_pytest_enrollment_is_bounded_to_changed_job() -> None
     candidate = {
         "jobs": {
             "owner": _manifest_job(
-                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+                "python -m pytest tests/test_existing.py tests/test_new.py -x"
             ),
             "other": _manifest_job(
                 "python -m pytest tests/test_other.py -q"
@@ -335,68 +335,99 @@ def test_manifest_additive_pytest_enrollment_is_bounded_to_changed_job() -> None
         }
     }
 
-    assert PACK._classify_additive_manifest_pytest_enrollment(
+    assert PACK._classify_bounded_manifest_job_delta(
         base, candidate
     ) == ("owner",)
 
 
-@pytest.mark.parametrize(
-    ("candidate_owner", "candidate_other"),
-    [
-        (
-            "python -m pytest tests/test_new.py -q",
-            "python -m pytest tests/test_other.py -q",
-        ),
-        (
-            "python -m pytest tests/test_existing.py tests/test_new.py -x",
-            "python -m pytest tests/test_other.py -q",
-        ),
-        (
-            "python -m pytest tests/test_existing.py tests/test_new.py -q && echo widened",
-            "python -m pytest tests/test_other.py -q",
-        ),
-        (
-            "python -m pytest tests/test_existing.py tests/test_new.py -q",
-            "python -m pytest tests/test_other.py tests/test_surprise.py -x",
-        ),
-        (
-            "python -m pytest 'tests/test_existing.py' tests/test_new.py -q",
-            "python -m pytest tests/test_other.py -q",
-        ),
-        (
-            "python  -m pytest tests/test_existing.py tests/test_new.py -q",
-            "python -m pytest tests/test_other.py -q",
-        ),
-    ],
-)
-def test_manifest_enrollment_near_misses_fail_closed(
-    candidate_owner: str,
-    candidate_other: str,
-) -> None:
+def test_manifest_multiple_job_local_deltas_are_all_forced() -> None:
     base = {
         "jobs": {
-            "owner": _manifest_job(
-                "python -m pytest tests/test_existing.py -q"
+            "first": _manifest_job(
+                "python -m pytest tests/test_first.py -q"
             ),
-            "other": _manifest_job(
-                "python -m pytest tests/test_other.py -q"
+            "second": _manifest_job(
+                "python -m pytest tests/test_second.py -q"
+            ),
+            "third": _manifest_job(
+                "python -m pytest tests/test_third.py -q"
             ),
         }
     }
     candidate = {
         "jobs": {
-            "owner": _manifest_job(candidate_owner),
-            "other": _manifest_job(candidate_other),
+            "first": _manifest_job(
+                "python -m pytest tests/test_first.py tests/test_new.py -q"
+            ),
+            "second": _manifest_job(
+                "python -m pytest tests/test_second.py -x"
+            ),
+            "third": _manifest_job(
+                "python -m pytest tests/test_third.py -q"
+            ),
         }
     }
 
-    assert PACK._classify_additive_manifest_pytest_enrollment(
+    assert PACK._classify_bounded_manifest_job_delta(
         base, candidate
+    ) == ("first", "second")
+
+
+def test_manifest_semantic_noop_is_positive_bounded_evidence() -> None:
+    document = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    assert PACK._classify_bounded_manifest_job_delta(
+        document, document
+    ) == ()
+
+
+def test_manifest_job_delta_rejects_topology_gate_and_top_level_changes() -> None:
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    changed_gate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q",
+                gate="data",
+            ),
+        }
+    }
+    added_job = {
+        "jobs": {
+            **base["jobs"],
+            "new-owner": _manifest_job(
+                "python -m pytest tests/test_new.py -q"
+            ),
+        }
+    }
+    deleted_job = {"jobs": {}}
+    extra_top_level = {**base, "defaults": {"timeout": 10}}
+
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, changed_gate
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, added_job
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, deleted_job
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, extra_top_level
     ) is None
 
 
-
-def test_safe_manifest_enrollment_reads_the_exact_base_commit(
+def test_safe_manifest_job_delta_reads_the_exact_base_commit(
     tmp_path: Path,
 ) -> None:
     repo = tmp_path / "repo"
@@ -434,54 +465,21 @@ def test_safe_manifest_enrollment_reads_the_exact_base_commit(
     candidate = {
         "jobs": {
             "owner": _manifest_job(
-                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+                "python -m pytest tests/test_existing.py tests/test_new.py -x"
             ),
         }
     }
     manifest.write_text(yaml.safe_dump(candidate, sort_keys=False))
 
-    assert PACK._safe_manifest_enrollment_job_ids(
+    assert PACK._safe_manifest_changed_job_ids(
         manifest,
         base_sha,
         repo_root=repo,
     ) == ("owner",)
-    assert PACK._safe_manifest_enrollment_job_ids(
+    assert PACK._safe_manifest_changed_job_ids(
         manifest,
         "not-an-exact-sha",
         repo_root=repo,
-    ) is None
-
-
-def test_manifest_enrollment_rejects_job_topology_or_non_run_changes() -> None:
-    base = {
-        "jobs": {
-            "owner": _manifest_job(
-                "python -m pytest tests/test_existing.py -q"
-            ),
-        }
-    }
-    changed_gate = {
-        "jobs": {
-            "owner": _manifest_job(
-                "python -m pytest tests/test_existing.py tests/test_new.py -q",
-                gate="data",
-            ),
-        }
-    }
-    added_job = {
-        "jobs": {
-            **base["jobs"],
-            "new-owner": _manifest_job(
-                "python -m pytest tests/test_new.py -q"
-            ),
-        }
-    }
-
-    assert PACK._classify_additive_manifest_pytest_enrollment(
-        base, changed_gate
-    ) is None
-    assert PACK._classify_additive_manifest_pytest_enrollment(
-        base, added_job
     ) is None
 
 
@@ -2551,7 +2549,7 @@ def test_unknown_top_level_path_does_not_widen_the_plan_to_the_full_suite(
 
 
 
-def test_proven_manifest_enrollment_forces_changed_job_without_full_suite(
+def test_proven_manifest_job_delta_forces_changed_job_without_full_suite(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _freeze_scope_inference(monkeypatch)
@@ -2567,7 +2565,7 @@ def test_proven_manifest_enrollment_forces_changed_job_without_full_suite(
         changed_from="a" * 40,
         scope_mode="active",
         pack_count=12,
-        manifest_enrollment_job_ids=("manifest-owner",),
+        manifest_changed_job_ids=("manifest-owner",),
     )
 
     assert set(plan.eligible_job_ids) == {
@@ -2576,7 +2574,7 @@ def test_proven_manifest_enrollment_forces_changed_job_without_full_suite(
         "always-on",
     }
     assert "full suite" not in plan.reason
-    assert "bounded manifest enrollment" in plan.reason
+    assert "bounded manifest job delta" in plan.reason
     assert plan.scope_summary == "fixture scopes"
 
 
