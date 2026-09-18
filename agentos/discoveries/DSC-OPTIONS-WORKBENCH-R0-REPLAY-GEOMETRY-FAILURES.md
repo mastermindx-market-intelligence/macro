@@ -5,13 +5,13 @@ claim: >
   gamma-sign correctness and an exact-head expiry/source-clock repair. Terminal #608
   has exact-head hosted CI plus current-base integration proof; Macro #7279 now closes
   the reproduced cycle-start/root-clock/NBBO-clock defects on candidate
-  d254917fc6cafb5031f805fa663ca0ddf645ca2d but still awaits hosted CI and independent
+  e7e0cfefae4591ad961c36e91da0c6745a1159e0 but still awaits hosted CI and independent
   exact-head review. None of these slices is production acceptance or full Quanted parity.
 falsifier: >
   Terminal #608 at 1f94c551ff997a50dc915a3d7565d626d89f87c4 fails its mounted
   replay/contract regressions, exact-head hosted CI or current-base integrated browser
   matrix; Macro #7271's modeled regime disagrees with its own gamma curve at spot; or
-  Macro #7279 current head d254917fc6cafb5031f805fa663ca0ddf645ca2d fails the
+  Macro #7279 current head e7e0cfefae4591ad961c36e91da0c6745a1159e0 fails the
   source-clock regressions/current-base owner pack, exact-head hosted CI or independent
   review before promotion.
 so_what: >
@@ -27,8 +27,8 @@ verified_by: >
   hosted CI run 35301191243 SUCCESS; current-base proof
   fb361092f4a17c12c303f0de13882b8100143811; Macro #7271 current head
   cadb7ec4a5029150dea3eb9445d9481f3f2aff66; Macro #7279 current head
-  d254917fc6cafb5031f805fa663ca0ddf645ca2d with current-main proof
-  033a488b9cede633e3decf288ba36197705f7a89 and review comments 5724395435,
+  e7e0cfefae4591ad961c36e91da0c6745a1159e0 with current-main proof
+  1bc045ed919654146b976ef5fe270e6f7c2805ab and review comments 5724395435,
   5724455441, 5724614973, 5725715278; parent #603 entitlement ruling 5724610745.
 scope:
   - terminal
@@ -141,9 +141,9 @@ prediction, production or Options Workbench completion.
 
 ## Macro #7279 — expiry/source clock repair candidate returned
 
-Current head: `d254917fc6cafb5031f805fa663ca0ddf645ca2d`.
+Current head: `e7e0cfefae4591ad961c36e91da0c6745a1159e0`.
 Current protected Macro main used for compatibility:
-`4114d282b1b85be534c53b150523db1d39400c7b`.
+`7d95730839d30503d3f9320734943d6c3d660a3a`.
 State: **BUILT_NOT_PROVEN / DRAFT / exact-head review + hosted CI owed**.
 
 The prior head `7bf15e63...` removed the false fixed four-hour 0DTE floor but remained
@@ -155,7 +155,9 @@ already retains `quote_timestamp`; the defect was the surface extractor discardi
 
 The current same-carrier candidate now:
 - values each root at its fetched-root `observed_at`, not `cycle_started_at`, and uses
-  that clock for the root stamp, frame `asof` and `valuation_at`;
+  that clock for the root stamp, frame `asof` and `valuation_at`; the current head also
+  preserves the poller's deliberate sub-second response ordering rather than rounding
+  the public valuation basis to whole seconds;
 - skips a root with no valid current observation instead of relabelling cumulative
   state as fresh;
 - retains `built_at` separately from valuation time without claiming it is the later
@@ -171,18 +173,20 @@ The current same-carrier candidate now:
 Discriminating proof includes `trade_timestamp != quote_timestamp`, missing quote-time
 nullability, quote-after-observation rejection, real `run_cycle` response-vs-cycle-start
 separation, normal/early after-close cases, unequal-root timestamps and selected-stamp
-provenance.
+provenance. A later self-review caught one residual loss of precision: d254 rounded a
+fetched-root `18:00:00.123456Z` valuation to whole seconds in the public frame. A RED
+regression reproduced that mismatch before the current head preserved exact precision.
 
-Fresh exact-head owner pack: 620 passed / 1 skipped / 0 failed across surface, live-flow,
+Fresh exact-head owner pack: 621 passed / 1 skipped / 0 failed across surface, live-flow,
 session-digest, intraday-Greek and ThetaData owner tests; compileall and diff check pass.
 Fresh current-main integration proof is conflict-free:
-- merge tree `eaa6907bcc7dcd3c91e60755159265c8036e6de2`;
+- merge tree `bef79bc672642cd8e6bdc355ac9f35726cd60719`;
 - proof-only integrated candidate
-  `033a488b9cede633e3decf288ba36197705f7a89`;
-- integrated owner pack 620 passed / 1 skipped / 0 failed;
+  `1bc045ed919654146b976ef5fe270e6f7c2805ab`;
+- integrated owner pack 621 passed / 1 skipped / 0 failed;
 - integrated compileall and diff check pass.
 
-Exact-head hosted CI `35312086917` and fences `35312086243` are running at the last
+Exact-head hosted CI `35312578511` and fences `35312578198` are running at the last
 canonical read. Independent exact-head numerical/source review remains required.
 The separate Greek field-completeness denominator defect is deliberately not folded
 into this carrier.
@@ -217,7 +221,7 @@ Next actions, in order of available evidence:
 2. consume #7271 current-head CI and normal release gates without redoing its modeled
    sign implementation;
 3. consume #7279 exact-head hosted CI/fences and obtain independent exact-head
-   numerical/source review on d254917fc6cafb5031f805fa663ca0ddf645ca2d; do not redo
+   numerical/source review on e7e0cfefae4591ad961c36e91da0c6745a1159e0; do not redo
    the source-clock implementation unless that review returns a concrete finding;
 4. only after #7279 is accepted, repair the separately recorded Greek field-completeness
    denominator through the existing producer rather than opening a parallel writer;
