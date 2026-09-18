@@ -1,0 +1,323 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-17T20:57:26Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:61923/api/biocatalyst/v1/historical-events?limit=50",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:61923/api/biocatalyst/v1/catalyst-radar?limit=50&horizon=next_365d&milestone_kind=all",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:61923/api/biocatalyst/v1/historical-events?limit=50"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:61923/api/biocatalyst/v1/catalyst-radar?limit=50&horizon=next_365d&milestone_kind=all"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 1523,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 2935,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 1,
+        "document_height_px": 1523,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 4,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 684313,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 19,
+        "screenshot_completion": 1.0,
+        "section_count": 3,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 335
+      },
+      "page_id": "macro:biocatalyst",
+      "registry_route": "/biocatalyst.html",
+      "route": "/biocatalyst.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 335499,
+          "captured": true,
+          "file": "823b1354f79c4946.png",
+          "force_state": null,
+          "height": 1523,
+          "locale": "en",
+          "sha256": "823b1354f79c4946a8759b98fb41aeae592026d496f9dbcff6d0f790cf15dbda",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 326010,
+          "captured": true,
+          "file": "74de1949de567fa2.png",
+          "force_state": null,
+          "height": 1523,
+          "locale": "en",
+          "sha256": "74de1949de567fa28890f479c081f8761b43edf609a4b2209edc4df5c482b549",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 329938,
+          "captured": true,
+          "file": "047e16027b117e8c.png",
+          "force_state": null,
+          "height": 1483,
+          "locale": "zh",
+          "sha256": "047e16027b117e8ce2ac936424354955793fcd6399e553e2c67946eeb643675d",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 323102,
+          "captured": true,
+          "file": "38e53956ab7df203.png",
+          "force_state": null,
+          "height": 1483,
+          "locale": "zh",
+          "sha256": "38e53956ab7df2037eec382082641d76e5900e2c25b24e82912832aeb78e147d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 273645,
+          "captured": true,
+          "file": "db7fff1ae470dbf9.png",
+          "force_state": null,
+          "height": 2935,
+          "locale": "en",
+          "sha256": "db7fff1ae470dbf95b2d7a01dbb8ffbc233f03120df57e7e68a99c0b96e2a03a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 268380,
+          "captured": true,
+          "file": "2800669568219e28.png",
+          "force_state": null,
+          "height": 2935,
+          "locale": "en",
+          "sha256": "2800669568219e288600f586a59f2ea5e257acf89d1f857ac33b929566194fe4",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 275284,
+          "captured": true,
+          "file": "ad42cd62aca8a3f1.png",
+          "force_state": null,
+          "height": 2785,
+          "locale": "zh",
+          "sha256": "ad42cd62aca8a3f14d78b91c4cada5c261c76c0b9c48a20b0336ce1ee7b7bc0e",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 272290,
+          "captured": true,
+          "file": "e6c83425ed602f6a.png",
+          "force_state": null,
+          "height": 2785,
+          "locale": "zh",
+          "sha256": "e6c83425ed602f6a964b872e15b92c4f2e705dee7c42ccf84086d2f0c3ac74d2",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/biocatalyst.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 328,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Volumes/Mastermind/repos/sol-biocatalyst-6389-recovery/.git/worktrees/sol-biocatalyst-6389-20260917",
+    "resolved_sha_or_none": "7b3e19c4bae32ed296cd6d0631a52d97fef00390",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Volumes/Mastermind/repos/sol-biocatalyst-6389-recovery/.git/worktrees/sol-biocatalyst-6389-20260917 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Volumes/Mastermind/worktrees/sol-biocatalyst-6389-20260917/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "3301a5f9f5a21b2bd6fada86b3c685af1f3f9baf9fa52cbd712ab5591e980b05",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.2.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

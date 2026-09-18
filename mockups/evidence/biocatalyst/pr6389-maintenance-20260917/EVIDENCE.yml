@@ -1,0 +1,25 @@
+schema: mastermind.product_evidence.v1
+operation: biocatalyst-6389-release-maintenance-20260917-sol-001
+repository: mastermindx-market-intelligence/macro
+pr: 6389
+source_head: 7b3e19c4bae32ed296cd6d0631a52d97fef00390
+classification: BUILT_NOT_PRODUCTION_PROVEN
+proof:
+  targeted_radius_red_failures: 6
+  targeted_radius_green_passes: 6
+  historical_ui_passes: 12
+  broad_biocatalyst_passes: 1408
+  broad_biocatalyst_warnings: 10
+  browser_states_captured: 8
+  horizontal_overflow_failures: 0
+  static_api_404s_expected: true
+artifacts:
+  manifest_sha256: c4d3dcfcf415db66abdd3eb97c3baf7eb6e3541d0fa7aa64a5c6ef9bf1244298
+  smells_sha256: 632d5d5d2f5921068f05f2ac28a2034cdf78bd6b5f7a6b059ff460f8ac6d3b0f
+  computed_radius_scratch_sha256: ac03081beccbd9d9050a40f2fbed4dce81978d2b9e40632e783708612ed33fb9
+nonclaims:
+  - production_acceptance
+  - authenticated_entitled_browser_proof
+  - ready_or_merge
+  - publication_or_deployment
+  - h1_h2_h3_semantic_acceptance
