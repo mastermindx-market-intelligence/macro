@@ -131,6 +131,36 @@ def listener_matches(identity: tuple[int, int], proc_root: Path = Path("/proc"))
     )
 
 
+def open_listener_pidfd(
+    identity: tuple[int, int],
+    proc_root: Path = Path("/proc"),
+    *,
+    opener: Callable[[int, int], int] = os.pidfd_open,
+    closer: Callable[[int], None] = os.close,
+) -> int | None:
+    """Bind an instance-stable handle and re-prove the Listener after open."""
+
+    pid, _start_ticks = identity
+    try:
+        pidfd = opener(pid, 0)
+    except OSError:
+        return None
+    if listener_matches(identity, proc_root):
+        return pidfd
+    try:
+        closer(pidfd)
+    except OSError:
+        pass
+    return None
+
+
+def close_pidfd(pidfd: int, closer: Callable[[int], None] = os.close) -> None:
+    try:
+        closer(pidfd)
+    except OSError:
+        pass
+
+
 def fetch_jobs(repository: str, run_id: int, run_attempt: int) -> list[dict]:
     if repository != REPOSITORY or run_id <= 0 or run_attempt <= 0:
         raise ValueError("watchdog is repository-bound")
@@ -191,7 +221,9 @@ def monitor(
     fetcher: Callable[[str, int, int], list[dict]] = fetch_jobs,
     sleeper: Callable[[float], None] = time.sleep,
     monotonic: Callable[[], float] = time.monotonic,
-    signaler: Callable[[int, int], None] = os.kill,
+    pidfd_opener: Callable[[int, int], int] = os.pidfd_open,
+    pidfd_signaler: Callable[[int, int], None] = signal.pidfd_send_signal,
+    pidfd_closer: Callable[[int], None] = os.close,
     initial_delay: float = INITIAL_BIND_DELAY_SECONDS,
     bind_attempts: int = BIND_ATTEMPTS,
     bind_retry: float = BIND_RETRY_SECONDS,
@@ -210,6 +242,16 @@ def monitor(
     listener = find_listener_identity(ancestor_pid, proc_root)
     if listener is None:
         _emit(log_path, "listener_unbound", run_id=run_id, runner_name=runner_name)
+        return 0
+
+    listener_pidfd = open_listener_pidfd(
+        listener,
+        proc_root,
+        opener=pidfd_opener,
+        closer=pidfd_closer,
+    )
+    if listener_pidfd is None:
+        _emit(log_path, "listener_pidfd_unbound", run_id=run_id, runner_name=runner_name)
         return 0
 
     _emit(
@@ -237,6 +279,7 @@ def monitor(
 
     if bound_job_id is None:
         _emit(log_path, "job_unbound", run_id=run_id, runner_name=runner_name)
+        close_pidfd(listener_pidfd, pidfd_closer)
         return 0
 
     _emit(log_path, "job_bound", run_id=run_id, job_id=bound_job_id, runner_name=runner_name)
@@ -265,13 +308,15 @@ def monitor(
             continue
         if not listener_matches(listener, proc_root):
             _emit(log_path, "listener_identity_changed", job_id=bound_job_id)
+            close_pidfd(listener_pidfd, pidfd_closer)
             return 0
 
         _emit(log_path, "recycle_sigterm", job_id=bound_job_id, listener_pid=listener[0])
         try:
-            signaler(listener[0], signal.SIGTERM)
+            pidfd_signaler(listener_pidfd, signal.SIGTERM)
         except (OSError, PermissionError):
             _emit(log_path, "recycle_sigterm_failed", job_id=bound_job_id)
+            close_pidfd(listener_pidfd, pidfd_closer)
             return 0
 
         if term_grace_seconds:
@@ -279,12 +324,14 @@ def monitor(
         if listener_matches(listener, proc_root):
             _emit(log_path, "recycle_sigkill", job_id=bound_job_id, listener_pid=listener[0])
             try:
-                signaler(listener[0], signal.SIGKILL)
+                pidfd_signaler(listener_pidfd, signal.SIGKILL)
             except (OSError, PermissionError):
                 _emit(log_path, "recycle_sigkill_failed", job_id=bound_job_id)
+        close_pidfd(listener_pidfd, pidfd_closer)
         return 0
 
     _emit(log_path, "watch_expired", run_id=run_id, job_id=bound_job_id)
+    close_pidfd(listener_pidfd, pidfd_closer)
     return 0
 
 

@@ -58,7 +58,8 @@ job may signal the same Listener; every API ambiguity, identity drift, or read
 failure is a no-op. A normal --once service exit removes the helper with the
 existing cgroup.
 
-This discovery does not claim the source patch is merged or installed. The live
-three-slot pool remains offline until its current ghost services are restarted
-under host administrator authority, and production acceptance still requires
-exact merged-byte installation plus a natural recurrence/recovery proof.
+This discovery does not claim the source patch is merged or installed. At the
+incident observation the three-slot pool was offline; it later recovered through
+privileged stop/restart edges around 11:24–11:25Z on 2026-09-18, an effect
+outside this source operation. Production acceptance still requires exact
+merged-byte installation plus a natural recurrence/recovery proof.

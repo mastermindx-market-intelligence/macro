@@ -2915,18 +2915,20 @@ def test_terminal_watchdog_recycles_only_after_two_terminal_reads(tmp_path: Path
         ]
     )
     signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 901
 
     def fetcher(_repo: str, _run: int, _attempt: int) -> list[dict]:
         return next(responses)
 
-    def signaler(pid: int, sig: int) -> None:
-        signals.append((pid, sig))
+    def pidfd_signaler(fd: int, sig: int) -> None:
+        signals.append((fd, sig))
         if sig == signal.SIGTERM:
             # Model systemd observing the main listener exit and tearing down
             # the service cgroup before escalation is needed.
-            for child in (proc_root / str(pid)).iterdir():
+            for child in (proc_root / "100").iterdir():
                 child.unlink()
-            (proc_root / str(pid)).rmdir()
+            (proc_root / "100").rmdir()
 
     result = WATCHDOG.monitor(
         repository=WATCHDOG.REPOSITORY,
@@ -2939,7 +2941,9 @@ def test_terminal_watchdog_recycles_only_after_two_terminal_reads(tmp_path: Path
         fetcher=fetcher,
         sleeper=lambda _seconds: None,
         monotonic=lambda: 0.0,
-        signaler=signaler,
+        pidfd_opener=lambda pid, flags: pidfd if (pid, flags) == (100, 0) else -1,
+        pidfd_signaler=pidfd_signaler,
+        pidfd_closer=closed.append,
         initial_delay=0,
         bind_attempts=1,
         bind_retry=0,
@@ -2949,7 +2953,8 @@ def test_terminal_watchdog_recycles_only_after_two_terminal_reads(tmp_path: Path
         max_lifetime_seconds=1,
     )
     assert result == 0
-    assert signals == [(100, signal.SIGTERM)]
+    assert signals == [(pidfd, signal.SIGTERM)]
+    assert closed == [pidfd]
 
 
 def test_terminal_watchdog_fails_safe_when_terminal_read_is_not_confirmed(tmp_path: Path) -> None:
@@ -2971,6 +2976,8 @@ def test_terminal_watchdog_fails_safe_when_terminal_read_is_not_confirmed(tmp_pa
         ]
     )
     signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 902
     clock = iter([0.0, 0.0, 2.0])
 
     result = WATCHDOG.monitor(
@@ -2984,7 +2991,9 @@ def test_terminal_watchdog_fails_safe_when_terminal_read_is_not_confirmed(tmp_pa
         fetcher=lambda _repo, _run, _attempt: next(responses),
         sleeper=lambda _seconds: None,
         monotonic=lambda: next(clock),
-        signaler=lambda pid, sig: signals.append((pid, sig)),
+        pidfd_opener=lambda pid, flags: pidfd if (pid, flags) == (100, 0) else -1,
+        pidfd_signaler=lambda fd, sig: signals.append((fd, sig)),
+        pidfd_closer=closed.append,
         initial_delay=0,
         bind_attempts=1,
         bind_retry=0,
@@ -2995,6 +3004,110 @@ def test_terminal_watchdog_fails_safe_when_terminal_read_is_not_confirmed(tmp_pa
     )
     assert result == 0
     assert signals == []
+    assert closed == [pidfd]
+
+
+def test_terminal_watchdog_refuses_pid_reuse_after_pidfd_open(tmp_path: Path) -> None:
+    proc_root = tmp_path / "proc"
+    _write_fake_proc(
+        proc_root,
+        100,
+        1,
+        "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+        777,
+    )
+    _write_fake_proc(proc_root, 200, 100, "Runner.Worker spawnclient", 888)
+    signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 903
+
+    def opener(pid: int, flags: int) -> int:
+        assert (pid, flags) == (100, 0)
+        _write_fake_proc(
+            proc_root,
+            100,
+            1,
+            "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+            999,
+        )
+        return pidfd
+
+    result = WATCHDOG.monitor(
+        repository=WATCHDOG.REPOSITORY,
+        run_id=999,
+        run_attempt=1,
+        runner_name="pc-ci-1",
+        ancestor_pid=200,
+        runner_root=Path("/opt/mastermind-ci/runner-1"),
+        proc_root=proc_root,
+        fetcher=lambda *_args: (_ for _ in ()).throw(AssertionError("must not fetch")),
+        sleeper=lambda _seconds: None,
+        monotonic=lambda: 0.0,
+        pidfd_opener=opener,
+        pidfd_signaler=lambda fd, sig: signals.append((fd, sig)),
+        pidfd_closer=closed.append,
+        initial_delay=0,
+        bind_attempts=1,
+        bind_retry=0,
+        poll_seconds=0,
+        confirm_seconds=0,
+        term_grace_seconds=0,
+        max_lifetime_seconds=1,
+    )
+    assert result == 0
+    assert signals == []
+    assert closed == [pidfd]
+
+
+def test_terminal_watchdog_term_and_kill_share_one_pidfd(tmp_path: Path) -> None:
+    proc_root = tmp_path / "proc"
+    _write_fake_proc(
+        proc_root,
+        100,
+        1,
+        "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+        777,
+    )
+    _write_fake_proc(proc_root, 200, 100, "Runner.Worker spawnclient", 888)
+    responses = iter(
+        [
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "in_progress"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+        ]
+    )
+    signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 904
+
+    result = WATCHDOG.monitor(
+        repository=WATCHDOG.REPOSITORY,
+        run_id=999,
+        run_attempt=1,
+        runner_name="pc-ci-1",
+        ancestor_pid=200,
+        runner_root=Path("/opt/mastermind-ci/runner-1"),
+        proc_root=proc_root,
+        fetcher=lambda _repo, _run, _attempt: next(responses),
+        sleeper=lambda _seconds: None,
+        monotonic=lambda: 0.0,
+        pidfd_opener=lambda pid, flags: pidfd if (pid, flags) == (100, 0) else -1,
+        pidfd_signaler=lambda fd, sig: signals.append((fd, sig)),
+        pidfd_closer=closed.append,
+        initial_delay=0,
+        bind_attempts=1,
+        bind_retry=0,
+        poll_seconds=0,
+        confirm_seconds=0,
+        term_grace_seconds=0,
+        max_lifetime_seconds=1,
+    )
+    assert result == 0
+    assert signals == [
+        (pidfd, signal.SIGTERM),
+        (pidfd, signal.SIGKILL),
+    ]
+    assert closed == [pidfd]
 
 
 def test_pc_ci_hook_arms_tokenless_terminal_watchdog_only_after_admission() -> None:
