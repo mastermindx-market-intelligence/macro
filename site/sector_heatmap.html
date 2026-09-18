@@ -321,6 +321,221 @@
 
   <div id="heatmap-full" data-hm-maps='[{"key":"sp500","icon":"🔥","label_en":"S&amp;P 500","label_zh":"标普500","url":"marketdata/sp500_heatmap.json"},{"key":"themes","icon":"🧭","label_en":"Themes","label_zh":"主题","url":"marketdata/themes_heatmap.json"}]'></div>
 
+
+  <section class="hta" id="house-theme-atlas" aria-labelledby="hta-title"
+           data-observations="basketdata/member_observations.json"
+           data-metadata="basketdata/baskets.json">
+    <div class="hta-head">
+      <div>
+        <div class="hta-eyebrow"><span class="l-en">MASTERMIND HOUSE INTELLIGENCE</span><span class="l-zh">MASTERMIND 自有主题智能</span></div>
+        <h2 id="hta-title"><span class="l-en">Theme Atlas</span><span class="l-zh">主题全景图</span></h2>
+        <p><span class="l-en">One source-bound observation, four representations. Switch views without changing the measured population.</span><span class="l-zh">同一份有来源约束的观测，四种视图。切换视图不会改变衡量样本。</span></p>
+      </div>
+      <div class="hta-receipt" id="hta-receipt"></div>
+    </div>
+    <div class="hta-status" id="hta-status" role="status" aria-live="polite"><span class="l-en">Loading source-bound group evidence…</span><span class="l-zh">正在加载有来源约束的组别证据…</span></div>
+    <div class="hta-controls" id="hta-controls" hidden>
+      <div class="hta-tabs" role="tablist" aria-label="Atlas representation">
+        <button type="button" data-hta-view="matrix" role="tab" aria-selected="true"><span class="l-en">Matrix</span><span class="l-zh">矩阵</span></button>
+        <button type="button" data-hta-view="clusters" role="tab" aria-selected="false"><span class="l-en">Clusters</span><span class="l-zh">聚类视图</span></button>
+        <button type="button" data-hta-view="bubbles" role="tab" aria-selected="false"><span class="l-en">Bubbles</span><span class="l-zh">气泡图</span></button>
+        <button type="button" data-hta-view="table" role="tab" aria-selected="false"><span class="l-en">Table</span><span class="l-zh">表格</span></button>
+      </div>
+      <label><span class="l-en">Color</span><span class="l-zh">颜色</span><select id="hta-metric"></select></label>
+      <label><span class="l-en">Display category</span><span class="l-zh">显示分类</span><select id="hta-category"></select></label>
+      <label class="hta-search"><span class="l-en">Find a group</span><span class="l-zh">查找组别</span><input id="hta-search" type="search" autocomplete="off" placeholder="Theme / group"></label>
+    </div>
+    <div class="hta-bubble-controls" id="hta-bubble-controls" hidden>
+      <label>X <select id="hta-x"></select></label>
+      <label>Y <select id="hta-y"></select></label>
+      <label><span class="l-en">Size</span><span class="l-zh">大小</span><select id="hta-size"><option value="constant">Equal area</option><option value="members">Member count</option></select></label>
+    </div>
+    <div class="hta-scope" id="hta-scope" hidden></div>
+    <div class="hta-stage" id="hta-stage"></div>
+    <div class="hta-foot"><span class="l-en">Context only. Category/search controls are display filters, not analytical rescoping. Circle proximity has no statistical or causal meaning. Member counts are group membership appearances, not unique issuer counts. Member-count bubble area is proportional across the full house observation; display filters do not rescale it.</span><span class="l-zh">仅作背景。分类/搜索属于显示筛选，并非重新计算分析范围。圆点距离不代表统计或因果关系。成员数是组内成员出现次数，并非独立发行人数量。按成员数量显示时，气泡面积按完整自有主题观测同比缩放；显示筛选不会重新缩放。</span></div>
+  </section>
+  <style>
+    .hta{margin:24px 0 8px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+    .hta-head{display:flex;justify-content:space-between;gap:18px;padding:18px 20px 12px;border-bottom:1px solid var(--line)}
+    .hta-head h2{margin:2px 0 4px;font-size:21px}.hta-head p{margin:0;color:var(--muted);font-size:12px;max-width:70ch}
+    .hta-eyebrow{font-size:9.5px;letter-spacing:.13em;font-weight:800;color:var(--link)}
+    .hta-receipt{font:11px/1.5 var(--font-mono,monospace);color:var(--muted);text-align:right;max-width:44ch}
+    .hta-status,.hta-foot{padding:12px 20px;color:var(--muted);font-size:11.5px}.hta-status.err{color:var(--down)}
+    .hta-controls,.hta-bubble-controls{display:flex;flex-wrap:wrap;gap:9px;align-items:end;padding:10px 20px;border-bottom:1px solid var(--line)}
+    .hta-controls[hidden],.hta-bubble-controls[hidden],.hta-scope[hidden]{display:none}
+    .hta-controls label,.hta-bubble-controls label{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .hta-controls select,.hta-controls input,.hta-bubble-controls select{display:block;margin-top:4px;height:32px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--text);padding:0 9px;font:12px var(--font-ui)}
+    .hta-search input{min-width:190px}.hta-tabs{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+    .hta-tabs button{border:0;border-radius:7px;background:transparent;color:var(--muted);padding:7px 10px;font:700 11px var(--font-ui);cursor:pointer}
+    .hta-tabs button[aria-selected="true"]{background:color-mix(in srgb,var(--link) 16%,var(--panel));color:var(--text)}
+    .hta-scope{padding:9px 20px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+    .hta-stage{padding:16px 20px;min-height:260px}.hta-cat{margin:0 0 17px}.hta-cat-h{display:flex;align-items:center;gap:8px;margin:0 0 7px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+    .hta-cat-h b{font:800 10px var(--font-mono);color:var(--text)}.hta-matrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(188px,1fr));gap:7px}
+    .hta-card{display:block;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel2);color:inherit;text-decoration:none}
+    .hta-card:hover{border-color:color-mix(in srgb,var(--link) 55%,var(--line))}.hta-card-top{display:flex;justify-content:space-between;gap:8px}
+    .hta-card-name{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hta-val{font:800 12px var(--font-mono)}
+    .hta-bar{height:5px;border-radius:5px;background:var(--line);overflow:hidden;margin:8px 0 5px}.hta-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--down),var(--warn),var(--up))}
+    .hta-meta{font-size:10px;color:var(--muted)}.hta-clusters{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;align-items:start}
+    .hta-cluster{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel2)}.hta-cluster-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;align-items:start}
+    .hta-cluster-item{min-width:0;display:grid;justify-items:center;gap:4px;padding:5px;border-radius:9px;color:inherit;text-decoration:none;text-align:center}
+    .hta-cluster-item:hover{background:color-mix(in srgb,var(--link) 7%,transparent)}.hta-dot{display:block;width:64px;height:64px;border-radius:50%;border:1px solid color-mix(in srgb,var(--text) 24%,transparent)}
+    .hta-cluster-name{max-width:100%;font:700 10px/1.2 var(--font-ui);overflow-wrap:anywhere}.hta-cluster-metric{font:800 10px/1 var(--font-mono);color:var(--text)}.hta-cluster-meta{font-size:9px;color:var(--muted)}
+    .hta-bubble-wrap{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:8px;overflow:auto}.hta-bubble-wrap svg{display:block;width:100%;min-width:760px;height:auto}
+    .hta-axis{stroke:var(--line);stroke-width:1}.hta-grid{stroke:color-mix(in srgb,var(--line) 65%,transparent);stroke-width:1}.hta-axis-label{fill:var(--muted);font:11px var(--font-ui)}
+    .hta-bubble-leader{stroke:color-mix(in srgb,var(--muted) 65%,transparent);stroke-width:.8;fill:none}.hta-bubble-label{fill:var(--text);font:700 8.3px var(--font-ui);pointer-events:none}.hta-bubble-readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;margin-top:10px}
+    .hta-bubble-readout-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;color:inherit;text-decoration:none;background:var(--panel)}
+    .hta-bubble-readout-name{font:700 10px/1.25 var(--font-ui);overflow-wrap:anywhere}.hta-bubble-readout-value{font:800 10px/1.25 var(--font-mono);white-space:nowrap}.hta-bubble-readout-meta{grid-column:1/-1;color:var(--muted);font-size:9px}.hta-missing{margin-top:9px;color:var(--muted);font-size:10.5px}
+    .hta-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.hta-table{width:100%;border-collapse:collapse;font-size:11px}.hta-table th,.hta-table td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+    .hta-table th{position:sticky;top:0;background:var(--panel2);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.hta-table a{color:var(--text);font-weight:800}
+    .hta-table th:first-child,.hta-table td:first-child{position:sticky;left:0;z-index:2;background:var(--panel)}.hta-table th:first-child{z-index:3;background:var(--panel2);box-shadow:1px 0 0 var(--line)}.hta-table td:first-child{box-shadow:1px 0 0 var(--line)}
+    @media(max-width:650px){.hta-head{display:block}.hta-receipt{text-align:left;margin-top:8px}.hta-controls,.hta-bubble-controls{align-items:stretch}.hta-controls label,.hta-bubble-controls label{flex:1 1 135px}.hta-search input{min-width:0;width:100%}.hta-stage{padding:12px}.hta-dot{width:58px;height:58px}.hta-bubble-wrap svg{min-width:0;width:100%}.hta-bubble-label,.hta-bubble-leader{display:none}.hta-bubble-readout{grid-template-columns:1fr}.hta-table th:first-child,.hta-table td:first-child{width:132px;min-width:108px;max-width:132px;white-space:normal;overflow-wrap:anywhere;line-height:1.25}}
+  </style>
+  <script>
+  (function(){
+    'use strict';
+    var root=document.getElementById('house-theme-atlas'); if(!root) return;
+    var status=document.getElementById('hta-status'), stage=document.getElementById('hta-stage');
+    var controls=document.getElementById('hta-controls'), bubbleControls=document.getElementById('hta-bubble-controls');
+    var scope=document.getElementById('hta-scope'), receipt=document.getElementById('hta-receipt');
+    var metricSel=document.getElementById('hta-metric'), catSel=document.getElementById('hta-category'), search=document.getElementById('hta-search');
+    var xSel=document.getElementById('hta-x'), ySel=document.getElementById('hta-y'), sizeSel=document.getElementById('hta-size');
+    var METRICS=[
+      ['legacy_activity','Unusual activity participation','异动参与度'],
+      ['strict_trend_50','Strict 50-session breadth','严格50日广度'],
+      ['strict_trend_200','Strict 200-session breadth','严格200日广度']
+    ];
+    // Exact house-category translations are mirrored from engine.theme_context._CAT_ZH
+    // and pinned byte-for-value by tests/test_house_theme_atlas.py.  The P1 metadata
+    // artifact predates category_zh fields, so falling back to raw English here would
+    // leak untranslated category names into the Chinese product.
+    var CAT_ZH={"AI & Technology":"AI与科技","Artificial Intelligence":"人工智能","Consumer Cyclical":"可选消费","Consumer Defensive":"必需消费","Crypto & Digital Assets":"加密与数字资产","Energy & Power":"能源与电力","Financials":"金融","Healthcare":"医疗保健","Industrials":"工业","Industrials & Defense":"工业与国防","Materials & Mining":"原材料与矿业","Semiconductors":"半导体","Semiconductors & Hardware":"半导体与硬件","Software":"软件","US Sectors (EW)":"美股行业（等权）"};
+    var state={view:'matrix',metric:'strict_trend_200',category:'all',query:'',x:'strict_trend_50',y:'strict_trend_200',size:'constant'};
+    var model=null;
+    function L(en,zh){return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>';}
+    function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
+    function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+    function pct(v){return v==null?'—':(v*100).toFixed(1)+'%';}
+    function metricLabel(id){var m=METRICS.find(function(x){return x[0]===id;});return m||[id,id,id];}
+    function fetchJson(url){return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status+' '+url);return r.json();});}
+    function normalize(obs,meta){
+      if(!obs||obs.schema!=='group_member_observations.v1') throw new Error('member observation schema unavailable');
+      if(obs.authority!=='context_only') throw new Error('member observation authority must remain context_only');
+      if(!obs.groups||typeof obs.groups!=='object') throw new Error('member observation groups unavailable');
+      var bm={}; (meta&&meta.baskets||[]).forEach(function(b){if(b&&b.id)bm[b.id]=b;});
+      var groups=Object.keys(obs.groups).sort().map(function(id){
+        var g=obs.groups[id]||{}, b=bm[id]||{}, ms=g.metrics||{};
+        var metrics={}; METRICS.forEach(function(m){
+          var v=ms[m[0]]||{}; metrics[m[0]]={value:(typeof v.value==='number'?v.value:null),denominator:(Number.isInteger(v.denominator)?v.denominator:0),numerator:(Number.isInteger(v.numerator)?v.numerator:null),null_reason:v.null_reason||null};
+        });
+        var category=b.category||b.parent||'Other';
+        return {id:id,name:b.name||id,name_zh:b.name_zh||b.name||id,category:category,category_zh:b.category_zh||b.parent_zh||CAT_ZH[category]||category,member_count:Number.isInteger(g.member_count)?g.member_count:0,metrics:metrics};
+      });
+      if(!groups.length) throw new Error('member observation groups are empty');
+      var maxMembers=Math.max.apply(null,groups.map(function(g){return g.member_count;}));
+      return {groups:groups,max_member_count:maxMembers,as_of:obs.as_of||null,generated_at:obs.generated_at||null,digest:obs.projection_digest||null,metadata_as_of:(meta&&meta.as_of)||null};
+    }
+    function visible(){var q=state.query.trim().toLowerCase();return model.groups.filter(function(g){return (state.category==='all'||g.category===state.category)&&(!q||(g.name+' '+g.name_zh+' '+g.id).toLowerCase().indexOf(q)>=0);});}
+    function colorStyle(v,metric){
+      if(v==null)return 'background:var(--muted)';
+      var p=Math.max(0,Math.min(100,Math.round(v*100)));
+      // Activity is participation intensity, not direction. Never paint low activity
+      // bearish red or high activity bullish green.
+      if(metric==='legacy_activity'){
+        return 'background:color-mix(in srgb,var(--link) '+(35+Math.round(p*.65))+'%,var(--panel2));color:var(--text);text-shadow:none';
+      }
+      return 'background:color-mix(in srgb,var(--up) '+p+'%,var(--down))';
+    }
+    function metricBarStyle(metric){return metric==='legacy_activity'?'background:var(--link)':'background:linear-gradient(90deg,var(--down),var(--warn),var(--up))';}
+    function bubbleFill(v,metric){
+      if(v==null)return 'fill:var(--muted)';
+      var p=Math.max(0,Math.min(100,Math.round(v*100)));
+      if(metric==='legacy_activity')return 'fill:color-mix(in srgb,var(--link) '+(35+Math.round(p*.65))+'%,var(--panel2))';
+      return 'fill:color-mix(in srgb,var(--up) '+p+'%,var(--down))';
+    }
+    function bubbleLaneName(g){
+      var name=isZh()?g.name_zh:g.name;
+      return String(name||g.id).replace(/\s*\(Equal-Weight\)\s*/g,'').replace(/（等权）/g,'').trim();
+    }
+    function bubbleLabelLanes(plotted,minY,maxY){
+      var ordered=plotted.slice().sort(function(a,b){return a.x-b.x||a.g.name.localeCompare(b.g.name);});
+      var cut=Math.ceil(ordered.length/2), left=ordered.slice(0,cut), right=ordered.slice(cut);
+      function place(rows,isLeft){
+        rows=rows.slice().sort(function(a,b){return a.py-b.py||a.g.name.localeCompare(b.g.name);});
+        var span=Math.max(0,maxY-minY), denom=Math.max(1,rows.length-1);
+        return rows.map(function(p,i){
+          var ly=rows.length===1?(minY+maxY)/2:minY+span*i/denom;
+          var lx=isLeft?4:996, elbow=isLeft?150:850, anchor=isLeft?'start':'end';
+          return {
+            line:'<path class="hta-bubble-leader" d="M '+p.px+' '+p.py+' L '+elbow+' '+ly+'"></path>',
+            text:'<text class="hta-bubble-label" x="'+lx+'" y="'+(ly+3)+'" text-anchor="'+anchor+'">'+esc(bubbleLaneName(p.g))+'</text>'
+          };
+        });
+      }
+      var placed=place(left,true).concat(place(right,false));
+      return {lines:placed.map(function(x){return x.line;}).join(''),text:placed.map(function(x){return x.text;}).join('')};
+    }
+    function card(g){
+      var m=g.metrics[state.metric], w=m.value==null?0:Math.round(m.value*100);
+      return '<a class="hta-card" href="basket/'+encodeURIComponent(g.id)+'.html"><div class="hta-card-top"><span class="hta-card-name">'+L(esc(g.name),esc(g.name_zh))+'</span><span class="hta-val">'+pct(m.value)+'</span></div><div class="hta-bar"><i style="width:'+w+'%;'+metricBarStyle(state.metric)+'"></i></div><div class="hta-meta">'+m.denominator+' / '+g.member_count+' '+L('members measured','成员有观测')+'</div></a>';
+    }
+    function byCategory(rows){var out={};rows.forEach(function(g){(out[g.category]||(out[g.category]=[])).push(g);});Object.keys(out).forEach(function(k){out[k].sort(function(a,b){return a.name.localeCompare(b.name);});});return out;}
+    function renderMatrix(rows){var cats=byCategory(rows), keys=Object.keys(cats).sort();stage.innerHTML=keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cat"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-matrix">'+cats[k].map(card).join('')+'</div></section>';}).join('')||empty();}
+    function renderClusters(rows){
+      var cats=byCategory(rows), keys=Object.keys(cats).sort();
+      stage.innerHTML='<div class="hta-clusters">'+keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cluster"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-cluster-body">'+cats[k].map(function(g){var m=g.metrics[state.metric],nm=isZh()?g.name_zh:g.name,aria=nm+' · '+pct(m.value)+' · '+m.denominator+' / '+g.member_count;return '<a class="hta-cluster-item" aria-label="'+esc(aria)+'" href="basket/'+encodeURIComponent(g.id)+'.html"><span class="hta-dot" style="'+colorStyle(m.value,state.metric)+'"></span><span class="hta-cluster-name">'+L(esc(g.name),esc(g.name_zh))+'</span><span class="hta-cluster-metric">'+pct(m.value)+'</span><span class="hta-cluster-meta">'+m.denominator+' / '+g.member_count+' '+L('measured','有观测')+'</span></a>';}).join('')+'</div></section>';}).join('')+'</div>';
+    }
+    function bubbleRadius(g){return state.size==='members'?Math.sqrt(Math.max(0,g.member_count)/Math.max(1,model.max_member_count))*24:10;}
+    function renderBubbles(rows){
+      var plotted=[],missing=[];rows.forEach(function(g){var x=g.metrics[state.x].value,y=g.metrics[state.y].value;if(x==null||y==null)missing.push(g);else plotted.push({g:g,x:x,y:y});});
+      var compact=window.innerWidth<=650;
+      var W=compact?390:1000,H=compact?360:520,LFT=compact?42:155,RGT=compact?12:155,TOP=compact?18:24,BOT=compact?48:58,PW=W-LFT-RGT,PH=H-TOP-BOT;
+      var grid='';[0,.25,.5,.75,1].forEach(function(v){var x=LFT+v*PW,y=TOP+(1-v)*PH;grid+='<line class="hta-grid" x1="'+x+'" y1="'+TOP+'" x2="'+x+'" y2="'+(TOP+PH)+'"></line><line class="hta-grid" x1="'+LFT+'" y1="'+y+'" x2="'+(LFT+PW)+'" y2="'+y+'"></line><text class="hta-axis-label" x="'+x+'" y="'+(H-30)+'" text-anchor="middle">'+Math.round(v*100)+'%</text><text class="hta-axis-label" x="48" y="'+(y+4)+'" text-anchor="end">'+Math.round(v*100)+'%</text>';});
+      var dots=plotted.map(function(p){var x=LFT+p.x*PW,y=TOP+(1-p.y)*PH,r=bubbleRadius(p.g),cm=p.g.metrics[state.metric].value,nm=isZh()?p.g.name_zh:p.g.name,aria=nm+' · X '+pct(p.x)+' · Y '+pct(p.y);p.px=x;p.py=y;return '<a href="basket/'+encodeURIComponent(p.g.id)+'.html" aria-label="'+esc(aria)+'"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="'+bubbleFill(cm,state.metric)+';stroke:color-mix(in srgb,var(--text) 30%,transparent);stroke-width:1"><title>'+esc(aria)+'</title></circle></a>';}).join('');
+      var labels=bubbleLabelLanes(plotted,TOP+8,TOP+PH-8);
+      var xl=metricLabel(state.x),yl=metricLabel(state.y),xName=isZh()?xl[2]:xl[1],yName=isZh()?yl[2]:yl[1];
+      var readout=plotted.slice().sort(function(a,b){return b.y-a.y||a.g.name.localeCompare(b.g.name);}).map(function(p){var nm=isZh()?p.g.name_zh:p.g.name;return '<a class="hta-bubble-readout-item" href="basket/'+encodeURIComponent(p.g.id)+'.html"><span class="hta-bubble-readout-name">'+esc(nm)+'</span><span class="hta-bubble-readout-value">'+pct(p.x)+' · '+pct(p.y)+'</span><span class="hta-bubble-readout-meta">'+esc(xName)+' · '+esc(yName)+' · '+p.g.member_count+' '+(isZh()?'成员':'members')+'</span></a>';}).join('');
+      stage.innerHTML='<div class="hta-bubble-wrap"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Theme breadth bubble plot">'+grid+'<line class="hta-axis" x1="'+LFT+'" y1="'+(TOP+PH)+'" x2="'+(LFT+PW)+'" y2="'+(TOP+PH)+'"></line><line class="hta-axis" x1="'+LFT+'" y1="'+TOP+'" x2="'+LFT+'" y2="'+(TOP+PH)+'"></line>'+dots+(compact?'':labels.lines)+(compact?'':labels.text)+'<text class="hta-axis-label" x="'+(LFT+PW/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(xName)+'</text><text class="hta-axis-label" transform="translate(16 '+(TOP+PH/2)+') rotate(-90)" text-anchor="middle">'+esc(yName)+'</text></svg></div><div class="hta-bubble-readout" aria-label="'+esc(isZh()?'气泡值列表':'Bubble values')+'">'+readout+'</div><div class="hta-missing">'+missing.length+' '+L('visible groups withheld from the plot because an axis value is unavailable; they remain in Matrix and Table.','个当前显示组因坐标值不可用而未绘制；它们仍保留在矩阵和表格中。')+'</div>';
+    }
+    function renderTable(rows){
+      stage.innerHTML='<div class="hta-table-wrap"><table class="hta-table"><thead><tr><th>'+L('Group','组别')+'</th><th>'+L('Category','分类')+'</th><th>'+L('Members','成员')+'</th>'+METRICS.map(function(m){return '<th>'+L(m[1],m[2])+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(g){return '<tr><td><a href="basket/'+encodeURIComponent(g.id)+'.html">'+L(esc(g.name),esc(g.name_zh))+'</a></td><td>'+L(esc(g.category),esc(g.category_zh))+'</td><td>'+g.member_count+'</td>'+METRICS.map(function(m){var v=g.metrics[m[0]];return '<td>'+pct(v.value)+' <span class="hta-meta">('+v.denominator+'/'+g.member_count+')</span></td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+    }
+    function empty(){return '<div class="hta-status">'+L('No groups match this display filter.','没有组别符合当前显示筛选。')+'</div>';}
+    function render(){
+      if(!model)return;var rows=visible();
+      document.querySelectorAll('[data-hta-view]').forEach(function(b){var on=b.getAttribute('data-hta-view')===state.view;b.setAttribute('aria-selected',on?'true':'false');});
+      bubbleControls.hidden=state.view!=='bubbles';
+      scope.innerHTML='<span><b>'+rows.length+'</b> / '+model.groups.length+' '+L('groups visible','组别当前显示')+'</span><span>'+L('Observation','观测')+': <b>'+esc(model.as_of||'—')+'</b></span><span>'+L('Metadata','元数据')+': <b>'+esc(model.metadata_as_of||'—')+'</b></span><span>'+L('Display filters never recompute the measurements.','显示筛选不会重新计算读数。')+'</span>';
+      if(state.view==='matrix')renderMatrix(rows);else if(state.view==='clusters')renderClusters(rows);else if(state.view==='bubbles')renderBubbles(rows);else renderTable(rows);
+    }
+    function fillControls(){
+      metricSel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+esc(isZh()?m[2]:m[1])+'</option>';}).join('');metricSel.value=state.metric;
+      xSel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+esc(isZh()?m[2]:m[1])+'</option>';}).join('');xSel.value=state.x;
+      ySel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+esc(isZh()?m[2]:m[1])+'</option>';}).join('');ySel.value=state.y;
+      var catMap={};model.groups.forEach(function(g){catMap[g.category]=g.category_zh||g.category;});
+      var cats=Object.keys(catMap).sort();
+      catSel.innerHTML='<option value="all">'+(isZh()?'全部分类':'All categories')+'</option>'+cats.map(function(c){return '<option value="'+esc(c)+'">'+esc(isZh()?catMap[c]:c)+'</option>';}).join('');
+      catSel.value=state.category;
+      sizeSel.innerHTML='<option value="constant">'+(isZh()?'等面积':'Equal area')+'</option><option value="members">'+(isZh()?'成员数量（面积成比例）':'Member count (area-proportional)')+'</option>';
+      sizeSel.value=state.size;
+      search.placeholder=isZh()?'主题 / 组别':'Theme / group';
+      document.querySelectorAll('[data-hta-view]').forEach(function(b){b.onclick=function(){state.view=b.getAttribute('data-hta-view');render();};});
+      metricSel.onchange=function(){state.metric=this.value;render();};catSel.onchange=function(){state.category=this.value;render();};search.oninput=function(){state.query=this.value;render();};
+      xSel.onchange=function(){state.x=this.value;render();};ySel.onchange=function(){state.y=this.value;render();};sizeSel.onchange=function(){state.size=this.value;render();};
+    }
+    Promise.all([fetchJson(root.getAttribute('data-observations')),fetchJson(root.getAttribute('data-metadata'))]).then(function(all){
+      model=normalize(all[0],all[1]);fillControls();status.hidden=true;controls.hidden=false;scope.hidden=false;
+      receipt.innerHTML=L('P1 observation','P1 观测')+' <b>'+esc(model.as_of||'—')+'</b><br>'+L('projection','投影')+' <code>'+esc((model.digest||'—').slice(0,16))+'</code>';
+      render();
+      document.addEventListener('langchange',function(){fillControls();render();});
+    }).catch(function(err){
+      status.classList.add('err');status.innerHTML=L('Theme Atlas withheld: the required source-bound evidence family is unavailable for this generation.','主题全景图已暂停：本次生成缺少所需的来源约束证据。')+' <code>'+esc(err.message||err)+'</code>';
+      if(window.console)console.warn('house theme atlas withheld',err);
+    });
+    window.MMThemeAtlas={normalize:normalize,getState:function(){return Object.assign({},state);},getModel:function(){return model;}};
+  })();
+  </script>
+
+
   <div id="rotation-strip"></div>
 
   <div class="hm-foot">

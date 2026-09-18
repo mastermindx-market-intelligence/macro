@@ -1,0 +1,183 @@
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+TEMPLATE = ROOT / "templates" / "sector_heatmap.html.j2"
+SITE = ROOT / "site" / "sector_heatmap.html"
+
+
+def _read_tracked(path: Path) -> str:
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    rel = path.relative_to(ROOT).as_posix()
+    return subprocess.check_output(
+        ["git", "show", f"HEAD:{rel}"], cwd=ROOT, text=True, encoding="utf-8"
+    )
+
+
+def _atlas_block(path: Path) -> str:
+    text = _read_tracked(path)
+    start = text.index('  <section class="hta" id="house-theme-atlas"')
+    end = text.index('\n\n  <div id="rotation-strip"></div>', start)
+    return text[start:end]
+
+
+def _atlas_script(block: str) -> str:
+    match = re.search(r"<script>\s*(\(function\(\)\{.*?\}\)\(\);)\s*</script>", block, re.S)
+    assert match, "house Atlas inline script not found"
+    return match.group(1)
+
+
+def test_house_atlas_template_and_rendered_surface_are_identical():
+    assert _atlas_block(TEMPLATE) == _atlas_block(SITE)
+
+
+def test_house_atlas_is_closed_to_house_p1_context_only_sources():
+    block = _atlas_block(TEMPLATE)
+    assert 'data-observations="basketdata/member_observations.json"' in block
+    assert 'data-metadata="basketdata/baskets.json"' in block
+    assert "group_member_observations.v1" in block
+    assert "obs.authority!=='context_only'" in block
+    assert "finviz.com" not in block
+    assert "/api/map_perf" not in block
+
+
+def test_house_atlas_keeps_nulls_and_display_filters_separate_from_measurement():
+    block = _atlas_block(TEMPLATE)
+    assert "typeof v.value==='number'?v.value:null" in block
+    assert "if(x==null||y==null)missing.push(g)" in block
+    assert "state.category==='all'||g.category===state.category" in block
+    assert "Display filters never recompute the measurements." in block
+    assert "visible groups withheld from the plot because an axis value is unavailable" in block
+
+
+def test_house_atlas_has_four_views_and_no_trade_authority():
+    block = _atlas_block(TEMPLATE)
+    for view in ("matrix", "clusters", "bubbles", "table"):
+        assert f'data-hta-view="{view}"' in block
+    assert "Context only" in block
+    lowered = block.lower()
+    for forbidden in ("prophet score", "buy signal", "position size", "trade gate"):
+        assert forbidden not in lowered
+
+
+def test_house_atlas_bubbles_use_only_accepted_group_metrics():
+    block = _atlas_block(TEMPLATE)
+    metric_ids = re.findall(r"\['(legacy_activity|strict_trend_50|strict_trend_200)'", block)
+    assert set(metric_ids) == {"legacy_activity", "strict_trend_50", "strict_trend_200"}
+    assert "state.size==='members'" in block
+    assert "member_count" in block
+    assert "Circle proximity has no statistical or causal meaning." in block
+
+
+def test_house_atlas_dynamic_controls_and_table_keep_zh_parity():
+    block = _atlas_block(TEMPLATE)
+    assert "isZh()?m[2]:m[1]" in block
+    assert "'全部分类':'All categories'" in block
+    assert "'等面积':'Equal area'" in block
+    assert "'成员数量（面积成比例）':'Member count (area-proportional)'" in block
+    assert "isZh()?'主题 / 组别':'Theme / group'" in block
+    assert "L(esc(g.category),esc(g.category_zh))" in block
+
+
+def test_house_atlas_category_zh_mirror_matches_canonical_house_map():
+    block = _atlas_block(TEMPLATE)
+    match = re.search(r"var CAT_ZH=(\{.*?\});", block)
+    assert match, "Atlas category ZH map missing"
+    atlas_map = json.loads(match.group(1))
+
+    from engine import theme_context
+
+    membership = json.loads(_read_tracked(ROOT / "data" / "baskets" / "membership.json"))
+    baskets = membership.get("baskets") or {}
+    if isinstance(baskets, list):
+        rows = baskets
+    else:
+        rows = baskets.values()
+    categories = {row.get("category") for row in rows if row.get("category")}
+    assert categories
+    assert categories <= atlas_map.keys()
+    assert {cat: atlas_map[cat] for cat in categories} == {
+        cat: theme_context._CAT_ZH[cat] for cat in categories
+    }
+
+
+def test_house_atlas_activity_intensity_is_not_directional_color():
+    block = _atlas_block(TEMPLATE)
+    assert "if(metric==='legacy_activity')" in block
+    assert "background:color-mix(in srgb,var(--link)" in block
+    assert "metricBarStyle(metric)" in block
+    assert "metric==='legacy_activity'?'background:var(--link)'" in block
+    assert "colorStyle(m.value,state.metric)" in block
+    assert "bubbleFill(cm,state.metric)" in block
+
+
+def test_house_atlas_bubble_encoding_uses_svg_fill_and_full_readout():
+    block = _atlas_block(TEMPLATE)
+    assert "function bubbleFill(v,metric)" in block
+    assert "fill:color-mix(in srgb,var(--link)" in block
+    assert "fill:color-mix(in srgb,var(--up)" in block
+    assert "bubbleLaneName(p.g)" in block
+    assert "bubbleLabelLanes(plotted,TOP+8,TOP+PH-8)" in block
+    assert 'class="hta-bubble-readout"' in block
+    assert 'class="hta-bubble-readout-name"' in block
+    assert "aria-label=" in block
+
+
+def test_house_atlas_clusters_have_visible_localized_identity_and_measurement():
+    block = _atlas_block(TEMPLATE)
+    assert 'class="hta-cluster-item"' in block
+    assert 'class="hta-cluster-name"' in block
+    assert 'class="hta-cluster-metric"' in block
+    assert "L(esc(g.name),esc(g.name_zh))" in block
+    assert "pct(m.value)" in block
+
+
+def test_house_atlas_mobile_bubbles_fit_panel_and_table_retains_identity():
+    block = _atlas_block(TEMPLATE)
+    assert ".hta-bubble-wrap svg{min-width:0;width:100%}" in block
+    assert ".hta-bubble-label,.hta-bubble-leader{display:none}" in block
+    assert ".hta-table th:first-child,.hta-table td:first-child{position:sticky;left:0" in block
+
+
+def test_house_atlas_member_count_area_scale_is_global_and_disclosed():
+    block = _atlas_block(TEMPLATE)
+    assert "max_member_count" in block
+    assert "Math.sqrt(Math.max(0,g.member_count)/Math.max(1,model.max_member_count))*24" in block
+    assert "Member-count bubble area is proportional across the full house observation" in block
+
+
+def test_house_atlas_desktop_bubble_labels_use_collision_free_side_lanes():
+    block = _atlas_block(TEMPLATE)
+    assert "function bubbleLabelLanes(plotted,minY,maxY)" in block
+    assert 'class="hta-bubble-leader"' in block
+    assert "bubbleLabelLanes(plotted,TOP+8,TOP+PH-8)" in block
+    assert "compact?'':labels.lines" in block
+    assert "compact?'':labels.text" in block
+    assert "bubbleShortLabel" not in block
+
+
+def test_house_atlas_mobile_bubble_geometry_keeps_axes_legible():
+    block = _atlas_block(TEMPLATE)
+    assert "var compact=window.innerWidth<=650" in block
+    assert "var W=compact?390:1000,H=compact?360:520" in block
+    assert "LFT=compact?42:155,RGT=compact?12:155" in block
+
+
+def test_house_atlas_mobile_table_bounds_and_wraps_sticky_identity():
+    block = _atlas_block(TEMPLATE)
+    assert "max-width:132px" in block
+    assert "min-width:108px" in block
+    assert "white-space:normal" in block
+    assert "overflow-wrap:anywhere" in block
+
+
+def test_house_atlas_inline_javascript_parses_with_node(tmp_path: Path):
+    script = tmp_path / "house_atlas.js"
+    script.write_text(_atlas_script(_atlas_block(TEMPLATE)), encoding="utf-8")
+    proc = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr
