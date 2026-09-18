@@ -105,6 +105,10 @@ def _strike_distribution(frame: pd.DataFrame) -> pd.DataFrame:
         gross_abs_exposure=("exposure_gex", lambda s: float(np.abs(s).sum())),
         signed_net_exposure=("exposure_gex", "sum"),
     )
+    grouped = grouped[
+        np.isfinite(grouped["gross_abs_exposure"])
+        & (grouped["gross_abs_exposure"] > 0)
+    ].copy()
     total = float(grouped["gross_abs_exposure"].sum())
     if not np.isfinite(total) or total <= 0:
         raise R6Refusal("zero/invalid gross exposure mass")
