@@ -19,7 +19,7 @@ answer remains ``same_minute_ambiguous``.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -49,9 +49,9 @@ class MinuteResolution:
     entry: float
     target: float
     adverse: float
-    source_clock_proven: bool = False
-    source_evidence_class: str = SOURCE_EVIDENCE_CLASS
-    authority: str = AUTHORITY
+    source_clock_proven: bool = field(default=False, init=False)
+    source_evidence_class: str = field(default=SOURCE_EVIDENCE_CLASS, init=False)
+    authority: str = field(default=AUTHORITY, init=False)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -129,7 +129,6 @@ def resolve_long_barrier_order(
     entry: float,
     target: float,
     adverse: float,
-    expected_price_basis: str = ch.BASIS_ADJUSTED,
 ) -> MinuteResolution:
     """Resolve target-vs-adverse order inside one five-minute interval.
 
@@ -146,7 +145,7 @@ def resolve_long_barrier_order(
             interval_start=interval_start, interval_end=interval_end,
             entry=entry, target=target, adverse=adverse,
         )
-    if tape.price_basis != expected_price_basis:
+    if tape.price_basis != ch.BASIS_ADJUSTED:
         return _unavailable(
             tape, reason="price_basis_mismatch",
             interval_start=interval_start, interval_end=interval_end,

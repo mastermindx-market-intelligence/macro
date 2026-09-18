@@ -1170,3 +1170,16 @@ def test_TTID1_resolution_never_claims_historical_availability_from_session_tape
     payload = got.to_dict()
     assert payload["source_clock_proven"] is False
     assert payload["source_evidence_class"] == "availability_time_unproven"
+
+
+def test_TTID1_authority_and_clock_class_are_not_caller_overridable():
+    fields = mr.MinuteResolution.__dataclass_fields__
+    assert fields["authority"].init is False
+    assert fields["source_clock_proven"].init is False
+    assert fields["source_evidence_class"].init is False
+
+
+def test_TTID1_adjusted_basis_is_a_fixed_contract_not_a_caller_override():
+    import inspect
+    sig = inspect.signature(mr.resolve_long_barrier_order)
+    assert "expected_price_basis" not in sig.parameters
