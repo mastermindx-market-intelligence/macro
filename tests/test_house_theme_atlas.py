@@ -150,6 +150,31 @@ def test_house_atlas_member_count_area_scale_is_global_and_disclosed():
     assert "Member-count bubble area is proportional across the full house observation" in block
 
 
+def test_house_atlas_desktop_bubble_labels_use_collision_free_side_lanes():
+    block = _atlas_block(TEMPLATE)
+    assert "function bubbleLabelLanes(plotted,minY,maxY)" in block
+    assert 'class="hta-bubble-leader"' in block
+    assert "bubbleLabelLanes(plotted,TOP+8,TOP+PH-8)" in block
+    assert "compact?'':labels.lines" in block
+    assert "compact?'':labels.text" in block
+    assert "bubbleShortLabel" not in block
+
+
+def test_house_atlas_mobile_bubble_geometry_keeps_axes_legible():
+    block = _atlas_block(TEMPLATE)
+    assert "var compact=window.innerWidth<=650" in block
+    assert "var W=compact?390:1000,H=compact?360:520" in block
+    assert "LFT=compact?42:155,RGT=compact?12:155" in block
+
+
+def test_house_atlas_mobile_table_bounds_and_wraps_sticky_identity():
+    block = _atlas_block(TEMPLATE)
+    assert "max-width:132px" in block
+    assert "min-width:108px" in block
+    assert "white-space:normal" in block
+    assert "overflow-wrap:anywhere" in block
+
+
 def test_house_atlas_inline_javascript_parses_with_node(tmp_path: Path):
     script = tmp_path / "house_atlas.js"
     script.write_text(_atlas_script(_atlas_block(TEMPLATE)), encoding="utf-8")
