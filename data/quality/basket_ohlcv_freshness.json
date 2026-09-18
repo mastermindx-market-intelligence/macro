@@ -1,11 +1,11 @@
 {
   "status": "stale",
-  "checked_at": "2026-09-17T14:17:55.958758+00:00",
+  "checked_at": "2026-09-18T02:56:13.255253+00:00",
   "threshold_sessions": 3,
   "store_max": "2026-09-17",
   "n_members": 702,
   "n_stale": 2,
-  "n_behind_within_threshold": 14,
+  "n_behind_within_threshold": 0,
   "stale": {
     "EA": {
       "last": "2026-08-10",
