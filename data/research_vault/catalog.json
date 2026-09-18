@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T15:08:12.286650+00:00",
-  "count": 2367,
+  "generated_at": "2026-09-18T15:23:17.217958+00:00",
+  "count": 2368,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -222,6 +222,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vof3hjxsoax-e0a056",
+      "title": "GS Johnstone GS TMT SPEC SALES US Telcos hit on AI spindown risk semicap shortages Adyen and Agentic TEF Zegona Meta 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T12:47:25Z",
+      "summary_points": [
+        "AI-driven market surge & supply constraints: S&P's strongest September session driven by AI/Mag7; AI Semis +348bps, with supply (not demand) as key constraint as Nvidia's chip sales potential doubles, shifting safety debate toward compute needs.",
+        "Semiconductor Supply Chain Crisis: Critical component lead times doubled (e.g., deposition parts: 4→10+ months; laser processing: up to 40 months), driven by US-China trade tensions excluding Chinese suppliers, tightening supply and impacting pricing power.",
+        "Hyperscalers Debt & AI Exposure: $420B gross hyperscaler debt issuance forecast for 2027 (+60% YoY vs 2026), with 65-75% in USD IG; hyperscalers represent 40% of AI-related debt, signaling accelerated AI infrastructure investment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
