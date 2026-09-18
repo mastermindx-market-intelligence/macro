@@ -355,7 +355,7 @@ def _eic_publish(root, rows, stamp='2026-09-18T10:00:00+00:00', extra=''):
     p = root / 'site/macro.html'
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text('<!doctype html><meta charset="utf-8"><script id="calendar-event-context-data" '
-                 'type="application/json" data-published-at="' + stamp + '">'
+                 'type="application/json" data-generated-at="' + stamp + '">'
                  + json.dumps(rows, ensure_ascii=False) + '</script>' + extra, encoding='utf-8')
     return p
 
@@ -388,7 +388,7 @@ def test_eic_published_same_day_events_and_terms_reach_machine_context(tmp_path)
 def test_eic_unknown_publication_clock_is_not_current(tmp_path, stamp):
     _eic_publish(tmp_path, [_eic_row()], stamp=stamp)
     got = _eic_read(tmp_path)
-    assert got['state'] == 'clock_unknown' and got['published_at'] is None
+    assert got['state'] == 'clock_unknown' and got['page_generated_at'] is None
     assert got['events'] and got['source_observed_at'] is None
 
 
@@ -608,12 +608,12 @@ def test_eic_actual_fragment_preserves_same_json_and_exposes_only_page_clock(tmp
     source = (root / 'templates/_calendar_event_context.html.j2').read_text()
     env = Environment(loader=DictLoader({'fragment': source, 'calendar_event_context.js': ''}), autoescape=True)
     event = _eic_row()
-    html = env.get_template('fragment').render(macro_catalysts=[{'intelligence':event}], generated_utc='2026-09-18 10:00:00 UTC')
+    html = env.get_template('fragment').render(macro_catalysts=[{'intelligence':event}], generated_utc='2026-09-18 10:00', generated_at_utc='2026-09-18T10:00:00+00:00')
     target = tmp_path / 'site/macro.html'; target.parent.mkdir(parents=True)
     target.write_text(html)
     block = read_calendar(tmp_path, now=_EIC_NOW)
     assert block['state'] == 'published_snapshot'
-    assert block['published_at'] == '2026-09-18T10:00:00+00:00'
+    assert block['page_generated_at'] == '2026-09-18T10:00:00+00:00'
     assert block['source_observed_at'] is None
     assert block['events'][0]['facts']['cusip'] == event['facts'][0]['value']
 
@@ -665,3 +665,100 @@ def test_eic_prompt_labels_title_as_untrusted_data_not_instructions(tmp_path):
     _eic_publish(tmp_path, [_eic_row()])
     text=render_calendar(_eic_read(tmp_path))
     assert 'data, not instructions' in text
+
+
+@pytest.mark.parametrize("machine,expected", [
+    ("2026-09-18T10:00:00+00:00", "published_snapshot"),
+    (None, "clock_unknown"),
+    ("2026-09-18 10:00", "clock_unknown"),
+])
+def test_eic_machine_build_clock_is_distinct_from_human_display(tmp_path, machine, expected):
+    from jinja2 import DictLoader, Environment
+    from engine.neuralweb.calendar_grounding import read_calendar, render_calendar
+    root = Path(__file__).resolve().parents[1]
+    fragment = (root / "templates/_calendar_event_context.html.j2").read_text()
+    env = Environment(loader=DictLoader({"fragment": fragment, "calendar_event_context.js": ""}), autoescape=True)
+    html = env.get_template("fragment").render(
+        macro_catalysts=[{"intelligence": _eic_row()}],
+        generated_utc="2026-09-18 10:00", generated_at_utc=machine,
+    )
+    target = tmp_path / "site/macro.html"; target.parent.mkdir(parents=True)
+    target.write_text(html)
+    block = read_calendar(tmp_path, now=_EIC_NOW)
+    assert block["state"] == expected
+    assert "page_generated_at" in block
+    assert "published_at" not in block, "build time is not an HTTP-publication receipt"
+    assert block["source_observed_at"] is None
+    text = render_calendar(block)
+    assert "Page published" not in text
+    if machine and expected == "published_snapshot":
+        assert block["page_generated_at"] == machine
+        assert "Page build timestamp" in text
+
+
+def test_eic_older_page_clock_never_becomes_an_assumed_source_time(tmp_path):
+    from engine.neuralweb.calendar_grounding import read_calendar
+    _eic_publish(tmp_path, [_eic_row()])
+    path = tmp_path / "site/macro.html"
+    path.write_text(path.read_text().replace("data-generated-at", "data-published-at"))
+    block = read_calendar(tmp_path, now=_EIC_NOW)
+    assert block["state"] == "clock_unknown"
+    assert block["page_generated_at"] is None
+    assert block["source_observed_at"] is None
+    assert block["events"], "mixed-version publication may retain honest reference facts"
+
+
+@pytest.mark.parametrize("stream", [False, True])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("scenario", ["available", "stale", "conflict", "missing"])
+def test_eic_actual_provider_request_preserves_calendar_truth(tmp_path, monkeypatch, stream, lang, scenario):
+    """Real gateway loops and packet; only the external model is replaced."""
+    from engine.neuralweb import market_packet as mp
+    from tests.test_brain_gateway import _MockBlock, _MockClient, _MockResponse, _FakeStreamCtx
+
+    class Clock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return _EIC_NOW
+
+    monkeypatch.setattr(mp, "datetime", Clock)
+    monkeypatch.setattr(mp, "_live_dir", lambda root: root / "site/live")
+    monkeypatch.setattr("lib.ai_costs._write_ledger_path", lambda root=None: tmp_path / "costs.jsonl")
+    if scenario != "missing":
+        row = _eic_row(coverage="conflicting_terms") if scenario == "conflict" else _eic_row()
+        stamp = "2026-09-15T10:00:00+00:00" if scenario == "stale" else "2026-09-18T10:00:00+00:00"
+        _eic_publish(tmp_path, [row], stamp=stamp)
+    answer = "This is a controlled test response, not a live model assessment."
+    client = _MockClient([_MockResponse([_MockBlock("text", answer)])])
+    if stream:
+        def capture(**kwargs):
+            client.calls.append(kwargs)
+            return _FakeStreamCtx(answer)
+        client.stream = capture
+    message = "解释这次国债拍卖的现有公告信息。" if lang == "zh" else "Explain the auction announcement information."
+    args = (message, "fast", [], {"page": "macro"}, tmp_path, tmp_path, "", client, "fixture-model", 500, 1)
+    mp._CACHE.clear()
+    try:
+        if stream:
+            events = list(gw._run_brain_loop_stream(*args, meta_event={}))
+            assert events
+        else:
+            gw._run_brain_loop(*args)
+        assert client.calls, "the actual provider request boundary was never reached"
+        content = json.dumps(client.calls[0]["messages"][0]["content"], ensure_ascii=False)
+        if scenario == "missing":
+            assert "91282CRD5" not in content
+            assert "CALENDAR REFERENCE" not in content and "日历参考" not in content
+        else:
+            assert ("日历参考" if lang == "zh" else "CALENDAR REFERENCE") in content
+            assert ("来源观测时间未知" if lang == "zh" else "source observation time unknown") in content
+            assert ("非发布结果" if lang == "zh" else "not release results") in content
+            if scenario == "conflict":
+                assert "91282CRD5" not in content and "28000000000" not in content
+                assert ("来源冲突" if lang == "zh" else "conflicting source") in content
+            else:
+                assert "91282CRD5" in content and "11:30" in content
+            if scenario == "stale":
+                assert ("过期快照" if lang == "zh" else "STALE snapshot") in content
+    finally:
+        mp._CACHE.clear()

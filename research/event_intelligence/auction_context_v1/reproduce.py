@@ -21,9 +21,30 @@ with patch.object(ec,'_fetch_upcoming_auctions',return_value=rows):
     events=ec._auction_events(datetime.date(2026,9,17),datetime.date(2026,9,30))
 assert len(events)==4
 vm=_base_vm();vm['macro_catalysts']=events
+# A pinned fixture clock, not a claim of a production publication or source observation.
+proof_now=datetime.datetime(2026,9,18,12,tzinfo=datetime.timezone.utc)
+vm['generated_utc']=proof_now.strftime('%Y-%m-%d %H:%M')
+vm['generated_at_utc']=proof_now.isoformat()
 html=_env().get_template('dashboard.html.j2').render(**vm,mode='macro')
 (OUT/'macro.html').write_text(html)
 (OUT/'projected-events.json').write_text(json.dumps(events,ensure_ascii=False,indent=2))
+# Read exactly the full template's product bytes through the real machine consumer.
+from engine.neuralweb import calendar_grounding, market_packet
+product_root=OUT/'product-fixture'; (product_root/'site').mkdir(parents=True,exist_ok=True)
+(product_root/'site/macro.html').write_text(html)
+full_template_sha256=hashlib.sha256(html.encode()).hexdigest()
+with patch.object(market_packet,'_live_dir',lambda root: root/'site/live'):
+    packet=market_packet.build_packet(product_root,now=proof_now)
+assert len(packet['calendar']['events'])==4
+assert packet['calendar']['page_generated_at']==proof_now.isoformat()
+assert packet['calendar']['source_observed_at'] is None
+assert packet['calendar']['state']=='published_snapshot'
+assert all('91282' in e['facts']['cusip'] for e in packet['calendar']['events'])
+digest=market_packet.render_digest(packet)
+assert 'CALENDAR REFERENCE' in digest and '11:30' in digest
+(OUT/'machine-packet.json').write_text(json.dumps(packet,ensure_ascii=False,indent=2))
+(OUT/'machine-digest.txt').write_text(digest)
+
 # Exercise the actual event component without a synthetic signed-in identity.
 # Full-page navigation correctly hit the authentication boundary; it is not bypassed.
 from bs4 import BeautifulSoup
@@ -103,8 +124,8 @@ try:
 finally:
  server.shutdown();server.server_close()
 manifest={'scope':'real official API capture -> calendar adapter -> full production template -> extracted real event component + actual selector/renderer in local browser; surrounding VM synthetic; full app authentication NOT bypassed; NOT deployed/authenticated production acceptance',
- 'generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source':json.loads((OUT/'source-receipt.json').read_text()),
- 'html_sha256':hashlib.sha256(html.encode()).hexdigest(),'source_file_hashes':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [ROOT/'engine/event_calendar.py',ROOT/'engine/calendar_event_context.py',ROOT/'templates/dashboard.html.j2',ROOT/'templates/calendar_event_context.js',ROOT/'templates/_calendar_event_context.html.j2']},
+ 'generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'fixture_clock':proof_now.isoformat(),'full_template_sha256':full_template_sha256,'machine_context_proven':True,'source':json.loads((OUT/'source-receipt.json').read_text()),
+ 'html_sha256':hashlib.sha256(html.encode()).hexdigest(),'source_file_hashes':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [ROOT/'engine/event_calendar.py',ROOT/'engine/calendar_event_context.py',ROOT/'templates/dashboard.html.j2',ROOT/'templates/calendar_event_context.js',ROOT/'templates/_calendar_event_context.html.j2',ROOT/'scripts/build_site.py',ROOT/'engine/neuralweb/calendar_grounding.py',ROOT/'engine/neuralweb/market_packet.py',Path(__file__)]},
  'cases':records,'page_errors':errors,'keyboard_disclosure':True,'cross_date':True,'same_date_multi_event':True,'forecast_payload':'explicitly unavailable'}
 (OUT/'browser-manifest.json').write_text(json.dumps(manifest,indent=2))
 print(json.dumps({'status':'PASS','cases':len(records),'page_errors':errors,'manifest':str(OUT/'browser-manifest.json')},indent=2))

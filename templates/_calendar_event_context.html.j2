@@ -3,5 +3,5 @@
 {% for event in macro_catalysts | default([], true) %}
   {% if event.get('intelligence') %}{% set _ = event_context_rows.append(event.intelligence) %}{% endif %}
 {% endfor %}
-<script type="application/json" id="calendar-event-context-data" data-published-at="{{ generated_utc | default('', true) }}">{{ event_context_rows | tojson }}</script>
+<script type="application/json" id="calendar-event-context-data" data-generated-at="{{ generated_at_utc | default('', true) }}">{{ event_context_rows | tojson }}</script>
 <script>{% include 'calendar_event_context.js' %}</script>

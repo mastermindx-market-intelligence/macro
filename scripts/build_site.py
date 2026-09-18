@@ -5674,7 +5674,8 @@ def main() -> int:
     # template-side mapping (MP-1 §8a: "never a second mapping").
     env.globals["us_stance_projection"] = us_stance_projection
     confirming, contradicting = component_chips(latest)
-    generated = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+    generated_instant = datetime.now(timezone.utc)
+    generated = generated_instant.strftime("%Y-%m-%d %H:%M")
 
     import calendar
     sector_timing, notable = {}, []
@@ -6745,6 +6746,7 @@ def main() -> int:
         adv_breadth=advanced_breadth_view(f),    # Advanced Breadth tracker (us_stocks page)
         sector_setups=_sector_setups,  # PRIMARY confluence board
         generated_utc=generated,
+        generated_at_utc=generated_instant.isoformat(),
         chart_liquidity=chart_liquidity(f),
         chart_credit_breadth=chart_credit_breadth(f),
         market_tiles=market_tiles(f),

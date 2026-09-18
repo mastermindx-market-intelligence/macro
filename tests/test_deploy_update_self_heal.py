@@ -962,3 +962,14 @@ def test_dotted_import_still_reaches_the_package_init():
         "engine", "engine.marketing",
     }
     assert _ancestor_packages("lib") == set()
+
+
+@pytest.mark.parametrize("path,expected", [
+    ("engine/neuralweb/calendar_grounding.py", True),
+    ("engine/neuralweb/calendar_grounding.py.bak", False),
+    ("engine/neuralweb/calendar_grounding_extra.py", False),
+    ("site/macro.html", False),
+])
+def test_calendar_grounding_uses_existing_api_restart_owner(path, expected):
+    """Adapter-only fixes must reload cached code; published facts need no restart."""
+    assert _triggers_restart(path) is expected

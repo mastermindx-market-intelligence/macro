@@ -2051,6 +2051,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - site/macro.html
       - engine/calendar_event_context.py
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -7381,6 +7382,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - site/macro.html
       - engine/calendar_event_context.py
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -7992,6 +7994,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - site/macro.html
       - engine/calendar_event_context.py
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
@@ -10049,6 +10052,7 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - site/macro.html
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
       - "tests/test_fms_ui.py"
@@ -13329,6 +13333,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - site/macro.html
       - engine/calendar_event_context.py
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
