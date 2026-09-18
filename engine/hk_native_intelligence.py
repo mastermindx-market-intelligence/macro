@@ -51,6 +51,33 @@ def _pair_map(
     return out
 
 
+def load_a_twin_closes(pair_rows, reader) -> pd.DataFrame | None:
+    """Load X1 from its preregistered per-name china_stocks price plane.
+
+    reader is the existing store.read-compatible seam. Missing or corrupt
+    individual twins degrade that twin to UNAVAILABLE downstream; there is no
+    fallback to china_search because that vintage matrix is a distinct price
+    plane and is not the X1 preregistered signal source.
+    """
+    pairs = _pair_map(pair_rows)
+    if not pairs:
+        return None
+    columns: dict[str, pd.Series] = {}
+    for a_ticker in dict.fromkeys(pairs.values()):
+        try:
+            frame = reader("china_stocks", a_ticker)
+        except Exception:
+            continue
+        if frame is None or frame.empty or "close" not in frame.columns:
+            continue
+        series = pd.to_numeric(frame["close"], errors="coerce").copy()
+        series.index = pd.to_datetime(series.index, errors="coerce")
+        series = series[~series.index.isna()].sort_index().dropna()
+        if not series.empty:
+            columns[a_ticker] = series
+    return pd.DataFrame(columns).sort_index() if columns else None
+
+
 def _asof_series(series: pd.Series | None, asof: pd.Timestamp | None) -> pd.Series:
     if series is None or asof is None:
         return pd.Series(dtype=float)

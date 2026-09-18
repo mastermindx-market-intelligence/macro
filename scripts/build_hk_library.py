@@ -2166,12 +2166,16 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         _hk_native_family_rows: dict = {}
         _native_tickers = [str(e.get("ticker")) for e in enriched if e.get("ticker")]
         try:
+            _hk_ah_pairs = hk_ah._panel_pairs() or None
+            _hk_a_twin_closes = hk_native_intelligence.load_a_twin_closes(
+                _hk_ah_pairs, store.read,
+            )
             _hk_native_family_rows = hk_native_intelligence.build_family_evidence(
                 _native_tickers,
                 asof=as_of,
-                pair_rows=(hk_ah._panel_pairs() or None),
+                pair_rows=_hk_ah_pairs,
                 premium_panel=hk_ah.panel_pair_premiums(),
-                a_closes=store.read("china_search", "closes"),
+                a_closes=_hk_a_twin_closes,
             )
         except Exception as _native_ex:
             print(

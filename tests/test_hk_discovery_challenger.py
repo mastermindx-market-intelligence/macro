@@ -770,3 +770,25 @@ def test_k_ni6_unavailable_stale_and_zero_are_not_collapsed():
     assert stale["h3_ah_discount_value"] is not None
     assert stale["x1_atwin_momentum_value"] is not None
     assert tuple(bs.FAMILY_REGISTRY) == tuple(hki.FAMILIES)
+
+
+def test_k_ni7_x1_reads_the_preregistered_per_name_a_share_plane():
+    calls = []
+
+    def reader(group, name):
+        calls.append((group, name))
+        if group != "china_stocks":
+            raise AssertionError(f"wrong X1 source plane: {group}/{name}")
+        return pd.DataFrame({"close": _ni_prices()})
+
+    panel = hki.load_a_twin_closes(_ni_pairs(), reader)
+    assert calls == [("china_stocks", "601939.SS")]
+    assert panel is not None
+    assert list(panel.columns) == ["601939.SS"]
+
+    source = (ROOT / "scripts/build_hk_library.py").read_text()
+    marker = source.index("HK-NATIVE-INTEL Wave 6")
+    registration = source.index("board_shadow.register_challenger(", marker)
+    native_block = source[marker:registration]
+    assert "load_a_twin_closes" in native_block
+    assert 'store.read("china_search", "closes")' not in native_block
