@@ -924,6 +924,101 @@ def test_abort_rebase_fails_closed_when_quit_exposes_partial_rebase_state(tmp_pa
     assert branch.returncode != 0, "fixture no longer represents a detached partial rebase"
 
 
+def _current_attempt_conflict_repo(tmp_path: Path, *, dirty: bool = False) -> tuple[Path, str]:
+    repo = tmp_path / ("repo-dirty" if dirty else "repo-clean")
+    _init_repo(repo)
+    for name, body in (
+        ("file", "base\n"),
+        ("staged.txt", "base staged\n"),
+        ("unstaged.txt", "base unstaged\n"),
+    ):
+        (repo / name).write_text(body)
+    _git_output(repo, "add", ".")
+    _git_output(repo, "commit", "-m", "base")
+    base = _git_output(repo, "rev-parse", "HEAD")
+
+    _git_output(repo, "checkout", "-b", "upstream")
+    (repo / "file").write_text("upstream\n")
+    _git_output(repo, "commit", "-am", "upstream")
+
+    _git_output(repo, "checkout", "-b", "topic", base)
+    (repo / "file").write_text("topic\n")
+    _git_output(repo, "commit", "-am", "topic")
+    topic_head = _git_output(repo, "rev-parse", "HEAD")
+    if dirty:
+        (repo / "staged.txt").write_text("current attempt staged\n")
+        _git_output(repo, "add", "staged.txt")
+        (repo / "unstaged.txt").write_text("current attempt unstaged\n")
+    return repo, topic_head
+
+
+def test_abort_rebase_restores_exact_current_attempt_after_malformed_real_conflict(tmp_path):
+    """A damaged conflict created by THIS retry may recover from its pre-rebase anchor."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        git rebase --autostash upstream >/tmp/push-retry-current-attempt-first.log 2>&1 || true
+        gd=$(git rev-parse --git-dir)
+        rm -f "$gd/rebase-merge/head-name" "$gd/rebase-merge/orig-head"
+        push_abort_rebase
+
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -z "$(git ls-files -u)"
+        test "$(cat file)" = topic
+        test ! -d "$gd/rebase-merge"
+        test ! -d "$gd/rebase-apply"
+
+        rc=0
+        out=$(git rebase upstream 2>&1) || rc=$?
+        test "$rc" -ne 0
+        case "$out" in
+          *"already a rebase-merge directory"*|*"index contains uncommitted changes"*|*"unstaged changes"*)
+            echo "$out" >&2
+            exit 71
+            ;;
+        esac
+        test -d "$gd/rebase-merge"
+        git rebase --abort
+        """,
+        env={"TOPIC_HEAD": topic_head},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_abort_rebase_current_attempt_anchor_restores_staged_and_unstaged_bytes(tmp_path):
+    """Fallback uses this attempt's snapshot; an abandoned Git autostash is not authority."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path, dirty=True)
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        git rebase --autostash upstream >/tmp/push-retry-current-attempt-dirty.log 2>&1 || true
+        gd=$(git rev-parse --git-dir)
+        rm -f "$gd/rebase-merge/head-name" "$gd/rebase-merge/orig-head"
+        push_abort_rebase
+
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -z "$(git ls-files -u)"
+        test "$(cat file)" = topic
+        test "$(cat staged.txt)" = "current attempt staged"
+        test "$(cat unstaged.txt)" = "current attempt unstaged"
+        test "$(git diff --cached --name-only)" = staged.txt
+        test "$(git diff --name-only)" = unstaged.txt
+        test ! -d "$gd/rebase-merge"
+        test ! -d "$gd/rebase-apply"
+        git stash list >/dev/null
+        """,
+        env={"TOPIC_HEAD": topic_head},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
 # ---------------------------------------------------------------------------
 # 5. Step summary — contention becomes visible instead of silent
 # ---------------------------------------------------------------------------

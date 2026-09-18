@@ -82,6 +82,95 @@ push_retry_init() {
   PUSH_N_OTHER=0
   PUSH_FAIL_CLASS=""
   PUSH_STOP=""
+  PUSH_ATTEMPT_ANCHOR_VALID=0
+  PUSH_ATTEMPT_ANCHOR_GIT_DIR=""
+  PUSH_ATTEMPT_ANCHOR_BRANCH=""
+  PUSH_ATTEMPT_ANCHOR_HEAD=""
+  PUSH_ATTEMPT_ANCHOR_INDEX_TREE=""
+  PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH=""
+  PUSH_ATTEMPT_ANCHOR_STASH=""
+  return 0
+}
+
+# Capture the exact tracked state at the START of this retry attempt, before a
+# caller enters rebase machinery. This is observation only: git stash create
+# writes an unreachable snapshot object but does not move refs, index or worktree.
+# An inherited rebase, detached HEAD or unmerged index cannot mint an anchor.
+# Failing to capture is deliberately non-fatal here; cleanup later may still
+# prove an empty metadata-only orphan safe, while a partial rebase fails closed.
+push_capture_attempt_anchor() {
+  local gd="" branch="" head="" branch_head="" unmerged=""
+  local index_tree="" worktree_hash="" snapshot=""
+
+  PUSH_ATTEMPT_ANCHOR_VALID=0
+  PUSH_ATTEMPT_ANCHOR_GIT_DIR=""
+  PUSH_ATTEMPT_ANCHOR_BRANCH=""
+  PUSH_ATTEMPT_ANCHOR_HEAD=""
+  PUSH_ATTEMPT_ANCHOR_INDEX_TREE=""
+  PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH=""
+  PUSH_ATTEMPT_ANCHOR_STASH=""
+
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 0
+  if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
+    return 0
+  fi
+  branch=$(git symbolic-ref -q HEAD 2>/dev/null) || return 0
+  head=$(git rev-parse 'HEAD^{commit}' 2>/dev/null) || return 0
+  branch_head=$(git rev-parse "${branch}^{commit}" 2>/dev/null) || return 0
+  [ "$branch_head" = "$head" ] || return 0
+  unmerged=$(git ls-files -u 2>/dev/null) || return 0
+  [ -z "$unmerged" ] || return 0
+  index_tree=$(git write-tree 2>/dev/null) || return 0
+  worktree_hash=$(git diff --binary --no-ext-diff --no-color | git hash-object --stdin 2>/dev/null) || return 0
+  snapshot=$(git stash create "push-retry-attempt-${PUSH_ATTEMPT}" 2>/dev/null) || return 0
+
+  PUSH_ATTEMPT_ANCHOR_GIT_DIR="$gd"
+  PUSH_ATTEMPT_ANCHOR_BRANCH="$branch"
+  PUSH_ATTEMPT_ANCHOR_HEAD="$head"
+  PUSH_ATTEMPT_ANCHOR_INDEX_TREE="$index_tree"
+  PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH="$worktree_hash"
+  PUSH_ATTEMPT_ANCHOR_STASH="$snapshot"
+  PUSH_ATTEMPT_ANCHOR_VALID=1
+  return 0
+}
+
+# Restore ONLY a snapshot captured by this retry attempt. Never trust the
+# damaged rebase's orig-head or autostash: those may belong to an older job.
+# The branch ref must still point at the captured HEAD before we touch bytes.
+push_restore_attempt_anchor() {
+  local gd="" branch_head="" unmerged="" index_tree="" worktree_hash=""
+
+  [ "${PUSH_ATTEMPT_ANCHOR_VALID:-0}" -eq 1 ] || return 1
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 1
+  [ "$gd" = "$PUSH_ATTEMPT_ANCHOR_GIT_DIR" ] || return 1
+  [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ] || return 1
+
+  branch_head=$(git rev-parse "${PUSH_ATTEMPT_ANCHOR_BRANCH}^{commit}" 2>/dev/null) || return 1
+  [ "$branch_head" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+
+  # --quit removes metadata but leaves the conflicted detached tree in place.
+  # Reset that partial tree to the exact current-attempt HEAD, then reattach
+  # HEAD to the unchanged branch ref. Untracked files are intentionally not
+  # touched; rebase --autostash does not make them part of this tracked anchor.
+  git reset --hard "$PUSH_ATTEMPT_ANCHOR_HEAD" >/dev/null 2>&1 || return 1
+  git symbolic-ref HEAD "$PUSH_ATTEMPT_ANCHOR_BRANCH" >/dev/null 2>&1 || return 1
+
+  # git stash create does not register this object in refs/stash. Applying
+  # this exact object restores staged + unstaged tracked bytes. Any autostash
+  # saved by the damaged rebase remains separate and is NEVER applied here.
+  if [ -n "$PUSH_ATTEMPT_ANCHOR_STASH" ]; then
+    git stash apply --index "$PUSH_ATTEMPT_ANCHOR_STASH" >/dev/null 2>&1 || return 1
+  fi
+
+  [ "$(git symbolic-ref -q HEAD 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_BRANCH" ] || return 1
+  [ "$(git rev-parse 'HEAD^{commit}' 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+  unmerged=$(git ls-files -u 2>/dev/null) || return 1
+  [ -z "$unmerged" ] || return 1
+  index_tree=$(git write-tree 2>/dev/null) || return 1
+  [ "$index_tree" = "$PUSH_ATTEMPT_ANCHOR_INDEX_TREE" ] || return 1
+  worktree_hash=$(git diff --binary --no-ext-diff --no-color | git hash-object --stdin 2>/dev/null) || return 1
+  [ "$worktree_hash" = "$PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH" ] || return 1
+  [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ] || return 1
   return 0
 }
 
@@ -98,6 +187,7 @@ push_attempt() {
     return 1
   fi
   PUSH_ATTEMPT=$(( PUSH_ATTEMPT + 1 ))
+  push_capture_attempt_anchor
   # Default for this attempt: it died on the fetch/rebase leg before ever reaching the
   # push. push_do and push_abort_rebase refine it from there.
   PUSH_FAIL_CLASS="sync"
@@ -345,7 +435,10 @@ push_abort_rebase() {
         return 1
       fi
       if [ -n "$unmerged" ] || ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
-        echo "::error title=partial rebase state survived cleanup::git rebase --quit removed malformed metadata but left a detached HEAD and/or unmerged index; refusing to retry or push from a partial rebase" >&2
+        if push_restore_attempt_anchor; then
+          return 0
+        fi
+        echo "::error title=partial rebase state survived cleanup::git rebase --quit removed malformed metadata but left a detached HEAD and/or unmerged index, and no trustworthy current-attempt anchor could restore it; refusing to retry or push from a partial rebase" >&2
         return 1
       fi
     fi
