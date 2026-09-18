@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T21:24:01.568616+00:00",
-  "count": 2385,
+  "generated_at": "2026-09-18T21:39:02.275174+00:00",
+  "count": 2386,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -427,6 +427,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rduc3oodzkl-53e470",
+      "title": "UST yield forecasts – Still a bearish bond backdrop",
+      "institution": "Standard Chartered",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:06:34Z",
+      "summary_points": [
+        "Bearish UST Yields Persist: 2Y (4.8% end-2026), 10Y (5.1% end-2026) forecasts raised but long-end negatives (AI supply, fiscal risks, Japanese repatriation) sustain bearish outlook despite Fed hikes; 12-month 10Y target at 5.5%.",
+        "Curve Steepening Signals Rate Hikes: Consistent upward revisions to 2Y/10Y yields (Q3-2026E to Q4-2026E) reflect rising market expectations for higher rates and inflationary pressures.",
+        "Duration Risk Requires Portfolio Shift: Steepening curve (2Y vs 10Y) necessitates reduced duration exposure amid tightening policy expectations and heightened rate risk for longer-dated bonds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
