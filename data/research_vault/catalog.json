@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T02:06:54.867332+00:00",
-  "count": 2330,
+  "generated_at": "2026-09-18T02:36:57.471069+00:00",
+  "count": 2331,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -103,6 +103,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jtdyp6pihuu-45ebf7",
+      "title": "GS Equities Color US EQUITIES COLOR RELIEF RALLY 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T01:57:40Z",
+      "summary_points": [
+        "Fed Policy Shift: Neutral rate range (3.25-3.5%) and anticipated cuts (Sept/Dec 2027) easing rate concerns, driving S&P 500 +114bps to 7,637.",
+        "Geopolitical Oil Impact: China-Iran talks lifted WTI oil +113bps to $101.26, resolving supply concerns.",
+        "Tech Sector Dominance: MegaCap Tech (TMT) surged +168bps, with asset managers shifting allocations to tech/industrials over consumer discretionary/energy.",
+        "Institutional Derivatives Flow: GS buying AI puts (MRVL, MU, SNDD, SMH) signals concentrated institutional positioning amid gamma tenors and vol skew reversal."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
