@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T19:53:46.095795+00:00",
-  "count": 2381,
+  "generated_at": "2026-09-18T20:23:49.026110+00:00",
+  "count": 2382,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -207,6 +207,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-copfcklgtjg-fa8301",
+      "title": "US Economic Weekly Kevin Warsh and the parable of the Chinese farmer",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:28:49Z",
+      "summary_points": [
+        "Fed Hawkish Pivot & Hike Path: Fed hiked 25bp with hawkish stance (dropped supply shock language), signaling two more hikes (Oct/Dec); key Fed speakers (Williams, Barkin) and data (S&P PMIs, home sales) to confirm trajectory.",
+        "Inflation Persistence Above Target: Core PCE stuck at 2.5% (not enough to reach 2%), services inflation at 3.1% y/y; nominal growth >5% triggers overshoot, delaying rate cuts despite Fed’s hawkish stance.",
+        "Geopolitical Supply Shock Risk: Iran conflict-driven energy shocks (WTI $80-100) and tariff effects risk sustaining supply-driven inflation, forcing Fed to choose between prolonged above-target inflation or recession via demand pressure.",
+        "Critical Data Releases: Upcoming S&P PMIs (manufacturing contraction risk), home sales, and durable goods orders (beating consensus) to revise 3Q GDP (tracking 3.0% q/q saar) and inflation outlook.",
+        "Policy Dilemma & Demand Risks: Fed hikes to avoid demand-driven inflation if tightening stops as supply shocks fade; long-end rates >5% prevent de-anchoring but complicate mandate amid fiscal stimulus."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
