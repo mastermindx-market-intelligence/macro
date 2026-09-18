@@ -4,7 +4,7 @@ Date: 2026-09-17
 Operation: `options-workbench-r0-expiry-clock-20260917-sol-001`
 Parent: Terminal #603 Options Workbench recovery
 Base: Macro `c3d4b81acee75081138c9e40aba8d7589aa341e3`
-Skillpack: Mastermind `320f586126b7c82c843ef17612f12d40d20a42e0`
+Skillpack: Mastermind `61a2ff79aba4e8a5685e779707ad5c4426cf5cc5`
 State: BUILT_NOT_PROVEN until review, CI, release, and production proof.
 
 ## User/machine capability
@@ -27,8 +27,12 @@ source-time truth.
 The public replay frame now keeps the clocks/bases distinct: exact root `valuation_at`
 (including sub-second precision), later `built_at`, selected trade-event range
 (`trade_at_first/last`), provider NBBO range (`quote_at_first/last`, from the actual
-ThetaData `quote_timestamp`), and exact pre-session `oi_vintage`. Missing quote time
-stays null; a later trade/fetch/build clock never fabricates quote freshness.
+ThetaData `quote_timestamp`), and exact pre-session `oi_vintage`. If any selected source
+clock summarized by a bound is missing, malformed, or timezone-naive, that aggregate
+envelope stays null instead of reporting only the known subset. Reconstructed replay
+`asof` now follows the selected column's `valuation_at` when present; legacy frames with
+no valuation metadata retain the prior wrapper-`asof` fallback. A later
+trade/fetch/build clock never fabricates quote freshness or an earlier replay timestamp.
 
 ## Scope and ownership
 
@@ -46,8 +50,13 @@ the provider's `quote_timestamp`, rejects source clocks later than the root obse
 and filters raw bulk-tape rows through the existing cash-session window before choosing
 the latest row per contract. Stable whole-row selection is intentional: pandas
 `GroupBy.last()` can splice an older non-null quote timestamp onto a newer trade row.
-Same-minute replacement overwrites the same replay column and its aligned provenance
-rather than forward-filling a later column's clocks.
+Same-minute replacement is atomic when the minute already carries Greeks. If a retry
+cannot produce a Greek snapshot (None / failed or unavailable), the prior coherent minute
+is retained rather than mixing newer net-premium/spot/frame clocks with older Greek values.
+An explicitly supplied empty Greek snapshot is different: it is authoritative and clears
+the replaced Greek column to zero/empty provenance for that minute. Successful same-minute
+replacement therefore overwrites the same replay column and its aligned provenance rather
+than forward-filling a later column's clocks.
 
 The current surface universe is US cash-equity/ETF options. This change must not be
 silently reused for SPX/VIX or another product whose expiration clock/settlement
@@ -90,7 +99,14 @@ the first candidate:
 - pandas `GroupBy.last()` could borrow an older non-null quote clock for the latest
   trade row;
 - the raw surface quote tap could select 16:05 / 13:05 extended-hours trades even though
-  the accepted cash-session close was 16:00 / 13:00.
+  the accepted cash-session close was 16:00 / 13:00;
+- a same-minute retry with Greek-stage failure retained the old Greek cells/walls/coverage
+  while replacing the frame valuation/build clocks and erasing its trade/quote/OI
+  provenance; an explicit empty same-minute Greek snapshot also failed to clear stale cells;
+- mixed known/unknown NBBO clocks were silently reduced to known-only first/last bounds,
+  making a partially unknown public frame look fully source-time bounded;
+- reconstructed earlier replay columns kept their own `valuation_at` but copied the newest
+  full-frame `asof`, making the wrapper observation time disagree with the selected column.
 
 Each defect now has a direct red→green regression. The candidate also preserves exact
 sub-second root valuation identity, exact OI vintage, honest null quote clocks,
@@ -99,9 +115,12 @@ dates.
 
 Fresh current-candidate verification:
 - five owner packs (`test_flow_surface`, `test_live_flow`, `test_session_digest`,
-  `test_intraday_greeks`, `test_thetadata`): **624 passed, 1 pre-existing skip,
+  `test_intraday_greeks`, `test_thetadata`): **629 passed, 1 pre-existing skip,
   zero failures**;
-- focused source-clock / row-identity / cash-session regressions: green;
+- focused source-clock / row-identity / cash-session / same-minute atomicity regressions: green;
+- public-provenance red witness: **3 failed / 1 passed** before the aggregate-clock and
+  replay-`asof` repair; the same six focused provenance/atomicity cases are **6/6 green**
+  after repair;
 - `python3 -m compileall` on changed producer/poller/tests: exit 0;
 - `git diff --check`: clean.
 

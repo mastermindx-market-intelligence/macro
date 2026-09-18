@@ -368,8 +368,24 @@ def test_frame_for_stamp_preserves_the_selected_columns_valuation_clock():
         session_date="2026-07-06", root="SPY",
         valuation_at="2026-07-06T13:41:00Z",
     )
-    assert frame_for_stamp(full, "0931")["valuation_at"] == "2026-07-06T13:31:00Z"
-    assert frame_for_stamp(full, "0941")["valuation_at"] == "2026-07-06T13:41:00Z"
+    early = frame_for_stamp(full, "0931")
+    latest = frame_for_stamp(full, "0941")
+    assert early["valuation_at"] == "2026-07-06T13:31:00Z"
+    assert latest["valuation_at"] == "2026-07-06T13:41:00Z"
+    # Public replay asof must name the selected observation, not the newest full-frame clock.
+    assert early["asof"] == "2026-07-06T13:31:00Z"
+    assert latest["asof"] == "2026-07-06T13:41:00Z"
+
+
+def test_frame_for_stamp_legacy_asof_falls_back_when_no_valuation_metadata():
+    full = append_stamp(
+        None, stamp="0931", time_step="09:31", net_by_strike={600.0: 1.0},
+        spot=600.0, asof="legacy-asof", cadence_sec=600,
+        session_date="2026-07-06", root="SPY",
+    )
+    frame = frame_for_stamp(full, "0931")
+    assert "valuation_at" not in frame
+    assert frame["asof"] == "legacy-asof"
 
 
 def test_frame_for_stamp_preserves_unknown_nbbo_clock_as_explicit_null():
@@ -391,6 +407,111 @@ def test_frame_for_stamp_preserves_unknown_nbbo_clock_as_explicit_null():
 
 
 # ── (e) empty-session behavior ──────────────────────────────────────────────────────
+
+def test_same_stamp_retry_without_greek_snapshot_is_atomic():
+    first = append_stamp(
+        None,
+        stamp="0931", time_step="09:31",
+        net_by_strike={600.0: 1000.0},
+        spot=600.0, asof="2026-07-06T13:31:10Z",
+        cadence_sec=60, session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:10Z",
+        built_at="2026-07-06T13:31:11Z",
+        trade_at_first="2026-07-06T13:30:50Z",
+        trade_at_last="2026-07-06T13:31:00Z",
+        quote_at_first="2026-07-06T13:30:49Z",
+        quote_at_last="2026-07-06T13:30:59Z",
+        oi_vintage="2026-07-02",
+        greek_by_strike={
+            METRIC_GEX: {600.0: 5_000_000.0},
+            "dex": {}, "vanna": {}, "charm": {},
+        },
+        walls={"flip": 601.0, "callWall": 605.0, "putWall": 595.0},
+        coverage=1.0,
+    )
+
+    # Same HHMM retry, but the Greek stage did not produce a snapshot. Updating only
+    # net premium / frame clocks would relabel the retained Greek values with a later
+    # information set. The minute snapshot must therefore stay atomic.
+    second = append_stamp(
+        first,
+        stamp="0931", time_step="09:31",
+        net_by_strike={600.0: 1200.0},
+        spot=600.5, asof="2026-07-06T13:31:50Z",
+        cadence_sec=60, session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:50Z",
+        built_at="2026-07-06T13:31:51Z",
+        greek_by_strike=None, walls=None, coverage=None,
+    )
+    frame = frame_for_stamp(second, "0931")
+    assert frame["grids"]["netprem"][0] == [1000.0]
+    assert frame["grids"][METRIC_GEX][0] == [5_000_000.0]
+    assert frame["valuation_at"] == "2026-07-06T13:31:10Z"
+    assert frame["built_at"] == "2026-07-06T13:31:11Z"
+    assert frame["trade_at_first"] == "2026-07-06T13:30:50Z"
+    assert frame["trade_at_last"] == "2026-07-06T13:31:00Z"
+    assert frame["quote_at_first"] == "2026-07-06T13:30:49Z"
+    assert frame["quote_at_last"] == "2026-07-06T13:30:59Z"
+    assert frame["oi_vintage"] == "2026-07-02"
+    assert frame["walls"] == {"flip": 601.0, "callWall": 605.0, "putWall": 595.0}
+    assert frame["coverage"] == {"greeks": 1.0}
+
+
+def test_same_stamp_successful_empty_greek_snapshot_replaces_prior_column():
+    first = append_stamp(
+        None,
+        stamp="0931", time_step="09:31",
+        net_by_strike={600.0: 1000.0},
+        spot=600.0, asof="2026-07-06T13:31:10Z",
+        cadence_sec=60, session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:10Z",
+        built_at="2026-07-06T13:31:11Z",
+        trade_at_first="2026-07-06T13:30:50Z",
+        trade_at_last="2026-07-06T13:31:00Z",
+        quote_at_first="2026-07-06T13:30:49Z",
+        quote_at_last="2026-07-06T13:30:59Z",
+        oi_vintage="2026-07-02",
+        greek_by_strike={
+            METRIC_GEX: {600.0: 5_000_000.0},
+            "dex": {}, "vanna": {}, "charm": {},
+        },
+        walls={"flip": 601.0, "callWall": 605.0, "putWall": 595.0},
+        coverage=1.0,
+    )
+
+    second = append_stamp(
+        first,
+        stamp="0931", time_step="09:31",
+        net_by_strike={600.0: 1200.0},
+        spot=600.5, asof="2026-07-06T13:31:50Z",
+        cadence_sec=60, session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:50Z",
+        built_at="2026-07-06T13:31:51Z",
+        trade_at_first="2026-07-06T13:31:20Z",
+        trade_at_last="2026-07-06T13:31:30Z",
+        quote_at_first=None, quote_at_last=None,
+        oi_vintage="2026-07-02",
+        # A supplied empty Greek snapshot is authoritative, unlike None/failure.
+        greek_by_strike={
+            METRIC_GEX: {},
+            "dex": {}, "vanna": {}, "charm": {},
+        },
+        walls={"flip": None, "callWall": None, "putWall": None},
+        coverage=0.0,
+    )
+    frame = frame_for_stamp(second, "0931")
+    assert frame["grids"]["netprem"][0] == [1200.0]
+    assert frame["grids"][METRIC_GEX][0] == [0.0]
+    assert frame["valuation_at"] == "2026-07-06T13:31:50Z"
+    assert frame["built_at"] == "2026-07-06T13:31:51Z"
+    assert frame["trade_at_first"] == "2026-07-06T13:31:20Z"
+    assert frame["trade_at_last"] == "2026-07-06T13:31:30Z"
+    assert frame["quote_at_first"] is None
+    assert frame["quote_at_last"] is None
+    assert frame["oi_vintage"] == "2026-07-02"
+    assert frame["walls"] == {"flip": None, "callWall": None, "putWall": None}
+    assert frame["coverage"] == {"greeks": 0.0}
+
 
 def test_empty_index_latest_is_null():
     empty = {"stamps": []}
@@ -972,6 +1093,44 @@ def test_greek_columns_for_stamp_joins_and_covers():
     out2 = greek_columns_for_stamp(quotes2, oi_map=oi_map, spot=600.0)
     assert out2["coverage"] < 1.0
     assert 650.0 not in out2["by_strike"][METRIC_GEX] or out2["by_strike"][METRIC_GEX].get(650.0, 0.0) == 0.0
+
+
+def test_mixed_unknown_quote_clock_keeps_public_envelope_unknown():
+    quotes, oi_map = _bs_chain_quotes()
+    for i, quote in enumerate(quotes):
+        quote["trade_at"] = f"2026-07-06T13:30:{i + 10:02d}Z"
+        quote["quote_at"] = f"2026-07-06T13:30:{i:02d}Z"
+    quotes[0]["quote_at"] = None
+
+    greek = greek_columns_for_stamp(quotes, oi_map=oi_map, spot=600.0)
+    assert greek["quote_at_first"] is None
+    assert greek["quote_at_last"] is None
+
+    full = append_stamp(
+        None, stamp="0931", time_step="09:31", net_by_strike={600.0: 1.0},
+        spot=600.0, asof="2026-07-06T13:31:00Z", cadence_sec=120,
+        session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:00Z", built_at="2026-07-06T13:31:01Z",
+        trade_at_first=greek["trade_at_first"], trade_at_last=greek["trade_at_last"],
+        quote_at_first=greek["quote_at_first"], quote_at_last=greek["quote_at_last"],
+        oi_vintage="2026-07-02", greek_by_strike=greek["by_strike"],
+        walls=greek["walls"], coverage=greek["coverage"],
+    )
+    replay = frame_for_stamp(full, "0931")
+    assert replay["quote_at_first"] is None
+    assert replay["quote_at_last"] is None
+
+
+def test_malformed_or_naive_quote_clock_keeps_aggregate_envelope_unknown():
+    for bad in ("not-a-time", "2026-07-06T13:30:00"):
+        quotes, oi_map = _bs_chain_quotes()
+        for i, quote in enumerate(quotes):
+            quote["trade_at"] = f"2026-07-06T13:30:{i + 10:02d}Z"
+            quote["quote_at"] = f"2026-07-06T13:30:{i:02d}Z"
+        quotes[0]["quote_at"] = bad
+        out = greek_columns_for_stamp(quotes, oi_map=oi_map, spot=600.0)
+        assert out["quote_at_first"] is None
+        assert out["quote_at_last"] is None
 
 
 def test_greek_columns_empty_when_no_quotes():

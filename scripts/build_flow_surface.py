@@ -69,6 +69,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 import json
 import logging
 import re
@@ -481,14 +482,18 @@ def greek_columns_for_stamp(
         instants: list[datetime] = []
         for quote in quotes:
             raw = quote.get(field)
+            # Bounds summarize the whole selected source set. A known-only envelope is
+            # dishonest when even one member's source clock is unknown, malformed or
+            # timezone-naive, so fail the aggregate closed rather than silently skipping it.
             if not isinstance(raw, str) or not raw:
-                continue
+                return None, None
             try:
                 dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
             except ValueError:
-                continue
-            if dt.tzinfo is not None:
-                instants.append(dt.astimezone(timezone.utc))
+                return None, None
+            if dt.tzinfo is None:
+                return None, None
+            instants.append(dt.astimezone(timezone.utc))
         instants.sort()
         if not instants:
             return None, None
@@ -617,6 +622,22 @@ def append_stamp(
     prior_built_path: list = list(prior.get("built_at_path") or [])
     prior_greek_source_path: list = list(prior.get("greek_source_path") or [])
 
+    same_stamp = stamp in prior_stamps
+    greek_snapshot_supplied = greek_by_strike is not None
+    prior_has_greeks = any(m in prior_grids for m in GREEK_METRICS)
+
+    # A same-minute retry is one snapshot identity. If a prior Greek-bearing snapshot
+    # exists but the current Greek stage produced no snapshot (None = failed/unavailable,
+    # distinct from an explicitly supplied empty dict), do not partially overwrite that
+    # minute with newer net-premium/spot/clock metadata while retaining older Greek values.
+    # Preserve the coherent prior minute atomically; only the session-wide poll floor may
+    # tighten independently.
+    if same_stamp and prior_has_greeks and not greek_snapshot_supplied:
+        held = deepcopy(prior)
+        held["pollFloorSec"] = poll_floor_sec
+        held["cadence"] = cadence_label(poll_floor_sec)
+        return held
+
     # Which metric grids does this frame carry? netprem always; greek metrics once any
     # stamp has supplied them (a prior frame may already have them, or this stamp does).
     greek_by_strike = greek_by_strike or {}
@@ -630,7 +651,7 @@ def append_stamp(
 
     # Column index for this stamp: reuse if the stamp already exists (idempotent overwrite),
     # else append a new trailing column.
-    if stamp in prior_stamps:
+    if same_stamp:
         col_idx = prior_stamps.index(stamp)
         stamps = list(prior_stamps)
         time_steps = list(prior_steps)
@@ -661,7 +682,21 @@ def append_stamp(
                 continue
             old_row = prior_grid[old_li] if old_li < len(prior_grid) else []
             for cj in range(min(len(old_row), n_cols)):
-                grid[new_li][cj] = old_row[cj]
+                # A same-stamp replacement is authoritative for this column. Start the
+                # current net-premium column clean, and do the same for Greek metrics when
+                # a Greek snapshot was actually supplied. This prevents absent strikes in
+                # an explicit empty/partial replacement from retaining stale current-column
+                # values. Earlier columns remain byte-for-byte preserved.
+                replace_current = (
+                    same_stamp
+                    and cj == col_idx
+                    and (
+                        metric == METRIC_NETPREM
+                        or (metric in GREEK_METRICS and greek_snapshot_supplied)
+                    )
+                )
+                if not replace_current:
+                    grid[new_li][cj] = old_row[cj]
         # Write this stamp's column (overwriting if it already existed).
         for lvl, val in stamp_values.get(metric, {}).items():
             li = lvl_index.get(float(lvl))
@@ -852,7 +887,7 @@ def frame_for_stamp(full_frame: dict, stamp: str) -> dict:
         "price_levels": list(full_frame.get("price_levels") or []),
         "time_steps": times[:upto],
         "grids": grids,
-        "asof": full_frame.get("asof", ""),
+        "asof": valuation_at if valuation_at is not None else full_frame.get("asof", ""),
         "pollFloorSec": full_frame.get("pollFloorSec"),
         "observedCadenceSec": observed_cadence_sec(stamps[:upto]),
         "cadence": full_frame.get("cadence", ""),
