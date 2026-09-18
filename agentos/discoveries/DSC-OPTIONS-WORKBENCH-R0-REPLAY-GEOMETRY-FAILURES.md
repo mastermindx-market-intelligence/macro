@@ -6,8 +6,8 @@ claim: >
   open. Terminal #608 head 14f9a8d83dc7651eff26032ad3b084357e8ec1a3
   retains exact stored-frame identity on same-HHMM refresh failure and distinguishes
   first-read failure from accrual; local/current-base proof is green. Its first repaired-
-  head CI attempt failed only in the unrelated tablet marker-tooltip journey; the exact
-  failing test passes locally and the bounded failed-job rerun is in progress, while fresh
+  head CI attempt failed only in the unrelated tablet marker-tooltip journey; the bounded
+  same-run failed-job rerun returned green, so exact-head CI is now SUCCESS while fresh
   independent rereview remains pending. Macro #7279 head
   ff27f0a3408a3ddf5a29e0b6e59507501ebea8bb closes same-minute atomicity, mixed
   unknown source-clock envelopes and selected-replay asof identity; fences/current-base
@@ -32,8 +32,9 @@ verified_by: >
   repair return 5727869977; protected-master proof 3134f967ccdb2430ec0be37e61a9450e10549d70
   over tree e70bc97f91d5f79d3f7e36d3d8f252864ea48b0c; exact-head CI
   35328161453 first attempt failed only in unrelated tablet marker-tooltip; the exact
-  failing test passed locally and failed-job rerun is in progress; prior independent
-  REQUEST_CHANGES review 5245552829 awaits fresh rereview. Macro #7271 current head
+  failing test passed locally and the bounded failed-job rerun completed green, leaving
+  the run SUCCESS; prior independent REQUEST_CHANGES review 5245552829 awaits fresh
+  rereview. Macro #7271 current head
   cadb7ec4a5029150dea3eb9445d9481f3f2aff66 with fresh protected-main proof
   a40b1a53c60d57d0b8652a26b06abdedf94a92c1 over tree
   48d3d2fdc09821d4d4d397c2c3b6b3d3fca04a55. Macro #7279 current head
@@ -127,9 +128,9 @@ The prior exact-head run `35301191243` remains SUCCESS evidence for the unchange
 accepted replay/geometry/Greek-semantics foundation, but it does not prove repaired
 head `14f9a8d8...`. Fresh hosted CI `35328161453` completed its first attempt with one
 failure in the unrelated tablet `marker-tooltip` journey while unit/typecheck, desktop,
-mobile, serial and the other CI shards passed. The exact failing tablet test passes
-locally on the repaired candidate. A bounded rerun of that failed job is IN_PROGRESS;
-do not treat either the first red run or the local control as the final hosted gate.
+mobile, serial and the other CI shards passed. The exact failing tablet test passed
+locally on the repaired candidate, and a bounded rerun of that failed job on the same
+canonical run returned green. The exact-head hosted run is therefore **SUCCESS**.
 
 Independent review `5245552829` remains the valid REQUEST_CHANGES receipt for the
 superseded head and its concrete defect. The exact defect is now closed by the
@@ -248,8 +249,8 @@ missingness and field-completeness semantics, forward conditional Greek fields, 
 linked-pane composition, entitlement qualification and real production/browser proof.
 
 Next actions, in order of available evidence:
-1. consume Terminal #608 exact-head CI `35328161453` and the requested fresh semantic
-   rereview of `14f9a8d8...`; do not redo the stored-frame repair;
+1. consume the requested fresh semantic rereview of Terminal #608 head `14f9a8d8...`;
+   exact-head CI `35328161453` is green, so do not redo the stored-frame repair;
 2. consume Macro #7279 exact-head CI `35329145976` and the requested fresh numerical/
    source rereview of `ff27f0a3...`; do not redo its atomicity/clock/asof repairs;
 3. consume #7271 current-head CI and normal release gates without redoing its modeled
