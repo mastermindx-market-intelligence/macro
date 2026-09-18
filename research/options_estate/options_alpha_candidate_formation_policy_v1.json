@@ -57,11 +57,14 @@
     ]
   },
   "clock_policy": {
-    "decision_at": "first_qualifying_campaign_revision.formed_at",
+    "source_formed_at": "first_qualifying_campaign_revision.formed_at",
+    "first_observed_at": "candidate_first_observed_at",
+    "decision_at": "candidate_first_observed_at",
     "available_at": "candidate_durable_write_time",
     "published_at": "consumer_publication_time",
-    "formation_evidence_cutoff": "each_formation_leg.available_at<=decision_at",
-    "source_freshness_rule": "source_owner_clock_and_explicit_health_only_no_wrapper_freshening"
+    "formation_evidence_cutoff": "each_formation_leg.available_at<=candidate_first_observed_at",
+    "source_freshness_rule": "source_owner_clock_and_explicit_health_only_no_wrapper_freshening",
+    "backdating_policy": "never_backdate_candidate_to_campaign_formed_at"
   },
   "context_policy": {
     "eod": "supplemental_only_after_ad1t2_acceptance_never_v1_formation_predicate",
