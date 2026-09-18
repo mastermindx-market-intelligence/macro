@@ -11800,7 +11800,13 @@ artifacts:
     notes: >
       B6: per-ticker state snapshot from the previous nightly run.  Enables
       enter-detection (diff today vs yesterday).  Same-day idempotent — the
-      script skips writing when as_of already matches today.
+      script skips writing when as_of already matches today.  `as_of` is the last
+      night the sentinel AUTHORITATIVELY evaluated; the `source` envelope
+      ({status, state, reason, checked, watched_count}) records the last night it
+      TRIED.  They differ exactly when the Supabase watchlist read was
+      unavailable, which is how a reader tells "operator watches nothing" from
+      "watchlist source unavailable" — an unavailable read preserves as_of,
+      states and the cooldown map untouched.
 
   watchlist-sentinel-cooldown:
     path: data/alerts/watchlist_sentinel_cooldown.json
