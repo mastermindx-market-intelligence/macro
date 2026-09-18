@@ -121,7 +121,8 @@ def test_house_atlas_bubble_encoding_uses_svg_fill_and_full_readout():
     assert "function bubbleFill(v,metric)" in block
     assert "fill:color-mix(in srgb,var(--link)" in block
     assert "fill:color-mix(in srgb,var(--up)" in block
-    assert "bubbleShortLabel(p.g)" in block
+    assert "bubbleLaneName(p.g)" in block
+    assert "bubbleLabelLanes(plotted,TOP+8,TOP+PH-8)" in block
     assert 'class="hta-bubble-readout"' in block
     assert 'class="hta-bubble-readout-name"' in block
     assert "aria-label=" in block
@@ -139,7 +140,7 @@ def test_house_atlas_clusters_have_visible_localized_identity_and_measurement():
 def test_house_atlas_mobile_bubbles_fit_panel_and_table_retains_identity():
     block = _atlas_block(TEMPLATE)
     assert ".hta-bubble-wrap svg{min-width:0;width:100%}" in block
-    assert ".hta-bubble-label{display:none}" in block
+    assert ".hta-bubble-label,.hta-bubble-leader{display:none}" in block
     assert ".hta-table th:first-child,.hta-table td:first-child{position:sticky;left:0" in block
 
 
