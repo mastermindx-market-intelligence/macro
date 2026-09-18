@@ -2916,7 +2916,7 @@ def test_terminal_watchdog_recycles_only_after_two_terminal_reads(tmp_path: Path
     )
     signals: list[tuple[int, int]] = []
 
-    def fetcher(_repo: str, _run: int) -> list[dict]:
+    def fetcher(_repo: str, _run: int, _attempt: int) -> list[dict]:
         return next(responses)
 
     def signaler(pid: int, sig: int) -> None:
@@ -2981,7 +2981,7 @@ def test_terminal_watchdog_fails_safe_when_terminal_read_is_not_confirmed(tmp_pa
         ancestor_pid=200,
         runner_root=Path("/opt/mastermind-ci/runner-1"),
         proc_root=proc_root,
-        fetcher=lambda _repo, _run: next(responses),
+        fetcher=lambda _repo, _run, _attempt: next(responses),
         sleeper=lambda _seconds: None,
         monotonic=lambda: next(clock),
         signaler=lambda pid, sig: signals.append((pid, sig)),

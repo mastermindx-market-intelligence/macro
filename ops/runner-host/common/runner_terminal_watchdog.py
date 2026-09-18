@@ -131,13 +131,13 @@ def listener_matches(identity: tuple[int, int], proc_root: Path = Path("/proc"))
     )
 
 
-def fetch_jobs(repository: str, run_id: int) -> list[dict]:
-    if repository != REPOSITORY or run_id <= 0:
+def fetch_jobs(repository: str, run_id: int, run_attempt: int) -> list[dict]:
+    if repository != REPOSITORY or run_id <= 0 or run_attempt <= 0:
         raise ValueError("watchdog is repository-bound")
     quoted = urllib.parse.quote(repository, safe="/")
     url = (
-        f"https://api.github.com/repos/{quoted}/actions/runs/{run_id}/jobs"
-        "?filter=latest&per_page=100"
+        f"https://api.github.com/repos/{quoted}/actions/runs/{run_id}"
+        f"/attempts/{run_attempt}/jobs?per_page=100"
     )
     request = urllib.request.Request(
         url,
@@ -188,7 +188,7 @@ def monitor(
     ancestor_pid: int,
     runner_root: Path,
     proc_root: Path = Path("/proc"),
-    fetcher: Callable[[str, int], list[dict]] = fetch_jobs,
+    fetcher: Callable[[str, int, int], list[dict]] = fetch_jobs,
     sleeper: Callable[[float], None] = time.sleep,
     monotonic: Callable[[], float] = time.monotonic,
     signaler: Callable[[int, int], None] = os.kill,
@@ -227,7 +227,7 @@ def monitor(
     bound_job_id: int | None = None
     for attempt in range(max(bind_attempts, 1)):
         try:
-            bound_job_id = select_active_job(fetcher(repository, run_id), runner_name)
+            bound_job_id = select_active_job(fetcher(repository, run_id, run_attempt), runner_name)
         except (OSError, ValueError, urllib.error.URLError, json.JSONDecodeError) as exc:
             _emit(log_path, "bind_read_failed", attempt=attempt + 1, error=type(exc).__name__)
         if bound_job_id is not None:
@@ -245,7 +245,7 @@ def monitor(
         if poll_seconds:
             sleeper(poll_seconds)
         try:
-            first = fetcher(repository, run_id)
+            first = fetcher(repository, run_id, run_attempt)
         except (OSError, ValueError, urllib.error.URLError, json.JSONDecodeError) as exc:
             _emit(log_path, "poll_failed", job_id=bound_job_id, error=type(exc).__name__)
             continue
@@ -256,7 +256,7 @@ def monitor(
         if confirm_seconds:
             sleeper(confirm_seconds)
         try:
-            second = fetcher(repository, run_id)
+            second = fetcher(repository, run_id, run_attempt)
         except (OSError, ValueError, urllib.error.URLError, json.JSONDecodeError) as exc:
             _emit(log_path, "confirm_failed", job_id=bound_job_id, error=type(exc).__name__)
             continue
