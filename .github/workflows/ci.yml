@@ -5036,10 +5036,13 @@ jobs:
       # Checkout recipe copied verbatim from integration-baseline.yml's
       # `baseline` job (2026-08-13 diet) — same reasoning applies here: this
       # job parses .github/ci/legacy-jobs.yml, walks workflow definitions, and
-      # runs static/manifest analysis only. It opens nothing under site/ or
-      # data/. Non-cone with negation, deliberately: it states the EXCLUSION,
-      # so a new top-level directory is included by default and cannot
-      # silently fall out of this job's view the way a cone allowlist would.
+      # runs static/manifest analysis only. It opens no file bytes under site/
+      # or data/; check_contract_delta binds an exact `git ls-tree` inventory so
+      # literal non-Python dependencies in those omitted trees still exist to
+      # scope derivation (#7228 follow-up, 2026-09-16). Non-cone with negation,
+      # deliberately: it states the EXCLUSION, so a new top-level directory is
+      # included by default and cannot silently fall out of this job's view the
+      # way a cone allowlist would.
       - uses: actions/checkout@v4
         with:
           filter: blob:none

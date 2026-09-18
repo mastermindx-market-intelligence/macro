@@ -1,6 +1,6 @@
 {
   "schema": "contagion_links.v1",
-  "built": "2026-09-14T10:34:58.175892+00:00",
+  "built": "2026-09-18T07:10:11.016693+00:00",
   "params": {
     "structural_version": "structural.v1",
     "dy_window": 150,
@@ -162,365 +162,533 @@
     "dynamic": {
       "us": {
         "us": 0.0,
-        "cn": 0.0468,
-        "hk": 0.0257,
-        "ca": 0.1727,
-        "kr": 0.117,
-        "jp": 0.0976,
-        "tw": 0.14,
-        "in": 0.0594,
-        "au": 0.1735,
-        "gb": 0.1281,
-        "ez": 0.0391
+        "cn": 0.0608,
+        "hk": 0.0211,
+        "ca": 0.1483,
+        "kr": 0.098,
+        "jp": 0.1184,
+        "tw": 0.1531,
+        "in": 0.0513,
+        "au": 0.1736,
+        "gb": 0.1455,
+        "ez": 0.03
       },
       "cn": {
-        "us": 0.0848,
+        "us": 0.1056,
         "cn": 0.0,
-        "hk": 0.1064,
-        "ca": 0.1533,
-        "kr": 0.0756,
-        "jp": 0.0429,
-        "tw": 0.0789,
-        "in": 0.0364,
-        "au": 0.0479,
-        "gb": 0.268,
-        "ez": 0.1059
+        "hk": 0.1058,
+        "ca": 0.1413,
+        "kr": 0.0415,
+        "jp": 0.0635,
+        "tw": 0.0814,
+        "in": 0.026,
+        "au": 0.0574,
+        "gb": 0.2806,
+        "ez": 0.0968
       },
       "hk": {
-        "us": 0.0026,
-        "cn": 0.0176,
+        "us": 0.0045,
+        "cn": 0.0302,
         "hk": 0.0,
-        "ca": 0.0553,
-        "kr": 0.0833,
-        "jp": 0.141,
-        "tw": 0.0666,
-        "in": 0.0227,
-        "au": 0.2044,
-        "gb": 0.3149,
-        "ez": 0.0917
+        "ca": 0.0565,
+        "kr": 0.0616,
+        "jp": 0.154,
+        "tw": 0.0698,
+        "in": 0.0217,
+        "au": 0.2045,
+        "gb": 0.3095,
+        "ez": 0.0877
       },
       "ca": {
-        "us": 0.0029,
-        "cn": 0.056,
-        "hk": 0.046,
+        "us": 0.0009,
+        "cn": 0.0689,
+        "hk": 0.0413,
         "ca": 0.0,
-        "kr": 0.0967,
-        "jp": 0.1585,
-        "tw": 0.1107,
-        "in": 0.0662,
-        "au": 0.2676,
-        "gb": 0.1732,
-        "ez": 0.0222
+        "kr": 0.0874,
+        "jp": 0.1664,
+        "tw": 0.1201,
+        "in": 0.0603,
+        "au": 0.2565,
+        "gb": 0.1747,
+        "ez": 0.0235
       },
       "kr": {
-        "us": 0.0016,
-        "cn": 0.0087,
-        "hk": 0.0327,
-        "ca": 0.027,
+        "us": 0.0018,
+        "cn": 0.0131,
+        "hk": 0.0414,
+        "ca": 0.0346,
         "kr": 0.0,
-        "jp": 0.2518,
-        "tw": 0.3016,
-        "in": 0.0093,
-        "au": 0.1491,
-        "gb": 0.1136,
-        "ez": 0.1045
+        "jp": 0.2393,
+        "tw": 0.2991,
+        "in": 0.0129,
+        "au": 0.1462,
+        "gb": 0.0975,
+        "ez": 0.1141
       },
       "jp": {
-        "us": 0.0032,
-        "cn": 0.0036,
-        "hk": 0.0127,
-        "ca": 0.0508,
-        "kr": 0.244,
+        "us": 0.0029,
+        "cn": 0.0012,
+        "hk": 0.0137,
+        "ca": 0.0649,
+        "kr": 0.212,
         "jp": 0.0,
-        "tw": 0.1876,
-        "in": 0.044,
-        "au": 0.2156,
-        "gb": 0.1685,
-        "ez": 0.07
+        "tw": 0.1895,
+        "in": 0.0466,
+        "au": 0.2247,
+        "gb": 0.1772,
+        "ez": 0.0674
       },
       "tw": {
-        "us": 0.0028,
-        "cn": 0.0037,
-        "hk": 0.0076,
-        "ca": 0.0732,
-        "kr": 0.3451,
-        "jp": 0.2032,
+        "us": 0.0037,
+        "cn": 0.0065,
+        "hk": 0.0093,
+        "ca": 0.091,
+        "kr": 0.3199,
+        "jp": 0.2006,
         "tw": 0.0,
-        "in": 0.0526,
-        "au": 0.1886,
-        "gb": 0.1096,
-        "ez": 0.0137
+        "in": 0.0582,
+        "au": 0.1913,
+        "gb": 0.1071,
+        "ez": 0.0123
       },
       "in": {
-        "us": 0.0035,
-        "cn": 0.0103,
-        "hk": 0.007,
-        "ca": 0.164,
-        "kr": 0.0654,
-        "jp": 0.1491,
-        "tw": 0.1007,
+        "us": 0.0053,
+        "cn": 0.0181,
+        "hk": 0.0065,
+        "ca": 0.1545,
+        "kr": 0.0556,
+        "jp": 0.1567,
+        "tw": 0.108,
         "in": 0.0,
-        "au": 0.2211,
-        "gb": 0.1886,
-        "ez": 0.0903
+        "au": 0.2152,
+        "gb": 0.1927,
+        "ez": 0.0875
       },
       "au": {
-        "us": 0.0058,
-        "cn": 0.0011,
-        "hk": 0.0084,
-        "ca": 0.0956,
-        "kr": 0.1731,
-        "jp": 0.2144,
-        "tw": 0.1578,
-        "in": 0.0879,
+        "us": 0.0047,
+        "cn": 0.0018,
+        "hk": 0.0089,
+        "ca": 0.106,
+        "kr": 0.1519,
+        "jp": 0.2205,
+        "tw": 0.1594,
+        "in": 0.0878,
         "au": 0.0,
-        "gb": 0.1895,
-        "ez": 0.0664
+        "gb": 0.1932,
+        "ez": 0.0657
       },
       "gb": {
-        "us": 0.0033,
-        "cn": 0.0022,
-        "hk": 0.0147,
-        "ca": 0.0618,
-        "kr": 0.1463,
-        "jp": 0.2085,
-        "tw": 0.1335,
-        "in": 0.0845,
-        "au": 0.2222,
+        "us": 0.0046,
+        "cn": 0.0089,
+        "hk": 0.0152,
+        "ca": 0.071,
+        "kr": 0.118,
+        "jp": 0.2204,
+        "tw": 0.1353,
+        "in": 0.0827,
+        "au": 0.2267,
         "gb": 0.0,
-        "ez": 0.1228
+        "ez": 0.1173
       },
       "ez": {
-        "us": 0.0569,
-        "cn": 0.0037,
-        "hk": 0.0031,
-        "ca": 0.0156,
-        "kr": 0.0917,
-        "jp": 0.2024,
-        "tw": 0.1223,
-        "in": 0.1194,
-        "au": 0.1111,
-        "gb": 0.2737,
+        "us": 0.054,
+        "cn": 0.0084,
+        "hk": 0.0038,
+        "ca": 0.0224,
+        "kr": 0.0776,
+        "jp": 0.202,
+        "tw": 0.117,
+        "in": 0.1296,
+        "au": 0.1187,
+        "gb": 0.2666,
         "ez": 0.0
       }
     },
     "blended": {
       "us": {
         "us": 0.0,
-        "cn": 0.0948,
-        "hk": 0.0557,
-        "ca": 0.1863,
-        "kr": 0.1014,
-        "jp": 0.0916,
-        "tw": 0.1057,
-        "in": 0.0511,
-        "au": 0.1153,
-        "gb": 0.1212,
-        "ez": 0.0767
+        "cn": 0.1018,
+        "hk": 0.0534,
+        "ca": 0.1742,
+        "kr": 0.0918,
+        "jp": 0.102,
+        "tw": 0.1122,
+        "in": 0.0471,
+        "au": 0.1154,
+        "gb": 0.1299,
+        "ez": 0.0722
       },
       "cn": {
-        "us": 0.1606,
+        "us": 0.171,
         "cn": 0.0,
-        "hk": 0.1168,
-        "ca": 0.113,
-        "kr": 0.0833,
-        "jp": 0.0669,
-        "tw": 0.094,
-        "in": 0.0455,
-        "au": 0.0603,
-        "gb": 0.1703,
-        "ez": 0.0893
+        "hk": 0.1166,
+        "ca": 0.107,
+        "kr": 0.0662,
+        "jp": 0.0772,
+        "tw": 0.0953,
+        "in": 0.0402,
+        "au": 0.0651,
+        "gb": 0.1767,
+        "ez": 0.0848
       },
       "hk": {
-        "us": 0.1074,
-        "cn": 0.1452,
+        "us": 0.1083,
+        "cn": 0.1515,
         "hk": 0.0,
-        "ca": 0.0504,
-        "kr": 0.0795,
-        "jp": 0.1084,
-        "tw": 0.0636,
-        "in": 0.0341,
-        "au": 0.1249,
-        "gb": 0.2029,
-        "ez": 0.0837
+        "ca": 0.051,
+        "kr": 0.0687,
+        "jp": 0.1149,
+        "tw": 0.0652,
+        "in": 0.0336,
+        "au": 0.125,
+        "gb": 0.2002,
+        "ez": 0.0817
       },
       "ca": {
-        "us": 0.1749,
-        "cn": 0.0994,
-        "hk": 0.0434,
+        "us": 0.1739,
+        "cn": 0.1059,
+        "hk": 0.041,
         "ca": 0.0,
-        "kr": 0.079,
-        "jp": 0.1098,
-        "tw": 0.0758,
-        "in": 0.0535,
-        "au": 0.1848,
-        "gb": 0.1274,
-        "ez": 0.0519
+        "kr": 0.0743,
+        "jp": 0.1138,
+        "tw": 0.0804,
+        "in": 0.0506,
+        "au": 0.1793,
+        "gb": 0.1282,
+        "ez": 0.0526
       },
       "kr": {
-        "us": 0.0978,
-        "cn": 0.0865,
-        "hk": 0.0537,
-        "ca": 0.0359,
+        "us": 0.0979,
+        "cn": 0.0887,
+        "hk": 0.058,
+        "ca": 0.0397,
         "kr": 0.0,
-        "jp": 0.2005,
-        "tw": 0.2329,
-        "in": 0.027,
-        "au": 0.0969,
-        "gb": 0.0867,
-        "ez": 0.0821
+        "jp": 0.1943,
+        "tw": 0.2317,
+        "in": 0.0288,
+        "au": 0.0955,
+        "gb": 0.0786,
+        "ez": 0.0869
       },
       "jp": {
-        "us": 0.0972,
-        "cn": 0.0754,
-        "hk": 0.0431,
-        "ca": 0.0475,
-        "kr": 0.1955,
+        "us": 0.097,
+        "cn": 0.0741,
+        "hk": 0.0436,
+        "ca": 0.0545,
+        "kr": 0.1795,
         "jp": 0.0,
-        "tw": 0.16,
-        "in": 0.044,
-        "au": 0.1372,
-        "gb": 0.121,
-        "ez": 0.0791
+        "tw": 0.1609,
+        "in": 0.0453,
+        "au": 0.1418,
+        "gb": 0.1253,
+        "ez": 0.0778
       },
       "tw": {
-        "us": 0.1116,
-        "cn": 0.0866,
-        "hk": 0.0377,
-        "ca": 0.0536,
-        "kr": 0.2658,
-        "jp": 0.1779,
+        "us": 0.112,
+        "cn": 0.088,
+        "hk": 0.0386,
+        "ca": 0.0624,
+        "kr": 0.2532,
+        "jp": 0.1766,
         "tw": 0.0,
-        "in": 0.0432,
-        "au": 0.1112,
-        "gb": 0.0802,
-        "ez": 0.0323
+        "in": 0.046,
+        "au": 0.1126,
+        "gb": 0.079,
+        "ez": 0.0316
       },
       "in": {
-        "us": 0.1351,
-        "cn": 0.094,
-        "hk": 0.0368,
-        "ca": 0.1042,
-        "kr": 0.066,
-        "jp": 0.1079,
-        "tw": 0.0726,
+        "us": 0.136,
+        "cn": 0.0979,
+        "hk": 0.0366,
+        "ca": 0.0995,
+        "kr": 0.0611,
+        "jp": 0.1117,
+        "tw": 0.0762,
         "in": 0.0,
-        "au": 0.1439,
-        "gb": 0.1498,
-        "ez": 0.0896
+        "au": 0.1409,
+        "gb": 0.1519,
+        "ez": 0.0882
       },
       "au": {
-        "us": 0.1046,
-        "cn": 0.1277,
-        "hk": 0.0381,
-        "ca": 0.0902,
-        "kr": 0.112,
-        "jp": 0.158,
-        "tw": 0.0958,
-        "in": 0.0694,
+        "us": 0.104,
+        "cn": 0.128,
+        "hk": 0.0383,
+        "ca": 0.0954,
+        "kr": 0.1014,
+        "jp": 0.1611,
+        "tw": 0.0966,
+        "in": 0.0693,
         "au": 0.0,
-        "gb": 0.1371,
-        "ez": 0.0671
+        "gb": 0.139,
+        "ez": 0.0668
       },
       "gb": {
-        "us": 0.1157,
-        "cn": 0.0538,
-        "hk": 0.0425,
-        "ca": 0.0747,
-        "kr": 0.0995,
-        "jp": 0.1394,
-        "tw": 0.0843,
-        "in": 0.0774,
-        "au": 0.1462,
+        "us": 0.1163,
+        "cn": 0.0571,
+        "hk": 0.0427,
+        "ca": 0.0793,
+        "kr": 0.0853,
+        "jp": 0.1453,
+        "tw": 0.0852,
+        "in": 0.0764,
+        "au": 0.1484,
         "gb": 0.0,
-        "ez": 0.1667
+        "ez": 0.1639
       },
       "ez": {
-        "us": 0.1425,
-        "cn": 0.0545,
-        "hk": 0.0366,
-        "ca": 0.0429,
-        "kr": 0.081,
-        "jp": 0.1451,
-        "tw": 0.0875,
-        "in": 0.086,
-        "au": 0.0819,
-        "gb": 0.2421,
+        "us": 0.141,
+        "cn": 0.0569,
+        "hk": 0.037,
+        "ca": 0.0463,
+        "kr": 0.0739,
+        "jp": 0.1448,
+        "tw": 0.0848,
+        "in": 0.0911,
+        "au": 0.0857,
+        "gb": 0.2385,
         "ez": 0.0
       }
     }
   },
   "severity": {
     "us": {
-      "sigma": 0.1821,
-      "dd21": 0.0182,
-      "ret10": -0.0096,
-      "as_of": "2026-09-11"
+      "sigma": 0.1419,
+      "dd21": 0.0142,
+      "ret10": -0.0038,
+      "as_of": "2026-09-17"
     },
     "cn": {
-      "sigma": 0.2561,
-      "dd21": 0.0256,
-      "ret10": -0.0162,
-      "as_of": "2026-09-11"
+      "sigma": 0.2376,
+      "dd21": 0.0238,
+      "ret10": -0.0126,
+      "as_of": "2026-09-16"
     },
     "hk": {
-      "sigma": 0.4628,
-      "dd21": 0.0463,
-      "ret10": -0.0305,
-      "as_of": "2026-09-11"
+      "sigma": 0.4982,
+      "dd21": 0.0498,
+      "ret10": -0.0236,
+      "as_of": "2026-09-16"
     },
     "ca": {
-      "sigma": 0.4409,
-      "dd21": 0.0341,
-      "ret10": -0.0309,
-      "as_of": "2026-09-11"
+      "sigma": 0.2931,
+      "dd21": 0.0293,
+      "ret10": -0.006,
+      "as_of": "2026-09-17"
     },
     "kr": {
-      "sigma": 0.201,
-      "dd21": 0.0201,
-      "ret10": 0.0178,
-      "as_of": "2026-09-11"
+      "sigma": 0.2805,
+      "dd21": 0.0281,
+      "ret10": 0.0249,
+      "as_of": "2026-09-18"
     },
     "jp": {
-      "sigma": 0.9052,
-      "dd21": 0.0905,
-      "ret10": -0.0506,
-      "as_of": "2026-09-14"
+      "sigma": 0.2502,
+      "dd21": 0.025,
+      "ret10": -0.0043,
+      "as_of": "2026-09-18"
     },
     "tw": {
-      "sigma": 0.2412,
-      "dd21": 0.0241,
-      "ret10": -0.0032,
-      "as_of": "2026-09-11"
+      "sigma": 0.0916,
+      "dd21": 0.0092,
+      "ret10": 0.0073,
+      "as_of": "2026-09-18"
     },
     "in": {
-      "sigma": 0.4595,
-      "dd21": 0.0397,
-      "ret10": -0.0322,
-      "as_of": "2026-09-11"
+      "sigma": 0.4372,
+      "dd21": 0.0437,
+      "ret10": -0.0269,
+      "as_of": "2026-09-17"
     },
     "au": {
-      "sigma": 0.5046,
-      "dd21": 0.0446,
-      "ret10": -0.0353,
-      "as_of": "2026-09-14"
+      "sigma": 0.4539,
+      "dd21": 0.0454,
+      "ret10": -0.0286,
+      "as_of": "2026-09-18"
     },
     "gb": {
-      "sigma": 0.2166,
-      "dd21": 0.0217,
-      "ret10": -0.0132,
-      "as_of": "2026-09-11"
+      "sigma": 0.1005,
+      "dd21": 0.0101,
+      "ret10": -0.0051,
+      "as_of": "2026-09-17"
     },
     "ez": {
-      "sigma": 0.3502,
-      "dd21": 0.0285,
-      "ret10": -0.0245,
-      "as_of": "2026-09-11"
+      "sigma": 0.2102,
+      "dd21": 0.021,
+      "ret10": -0.0099,
+      "as_of": "2026-09-17"
     }
   },
   "pressure": {
     "us": {
-      "raw": 0.3959,
+      "raw": 0.2646,
+      "pct": 0.8631,
+      "level": "moderate",
+      "line_en": "Pressure from abroad: building — Australia's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 澳大利亚疲软为主要来源",
+      "top_exporters": [
+        {
+          "market": "au",
+          "name_en": "Australia",
+          "name_zh": "澳大利亚",
+          "weight": 0.1154,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0524
+        },
+        {
+          "market": "ca",
+          "name_en": "Canada",
+          "name_zh": "加拿大",
+          "weight": 0.1742,
+          "dd21": 0.0293,
+          "ret10": -0.006,
+          "sigma": 0.2931,
+          "contribution": 0.051
+        },
+        {
+          "market": "hk",
+          "name_en": "Hong Kong",
+          "name_zh": "香港",
+          "weight": 0.0534,
+          "dd21": 0.0498,
+          "ret10": -0.0236,
+          "sigma": 0.4982,
+          "contribution": 0.0266
+        }
+      ],
+      "shadow_state": "calm",
+      "incumbent_state": "calm",
+      "incumbent_as_of": "2026-09-17"
+    },
+    "cn": {
+      "raw": 0.243,
+      "pct": 0.8333,
+      "level": "moderate",
+      "line_en": "Pressure from abroad: building — Hong Kong's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 香港疲软为主要来源",
+      "top_exporters": [
+        {
+          "market": "hk",
+          "name_en": "Hong Kong",
+          "name_zh": "香港",
+          "weight": 0.1166,
+          "dd21": 0.0498,
+          "ret10": -0.0236,
+          "sigma": 0.4982,
+          "contribution": 0.0581
+        },
+        {
+          "market": "ca",
+          "name_en": "Canada",
+          "name_zh": "加拿大",
+          "weight": 0.107,
+          "dd21": 0.0293,
+          "ret10": -0.006,
+          "sigma": 0.2931,
+          "contribution": 0.0314
+        },
+        {
+          "market": "au",
+          "name_en": "Australia",
+          "name_zh": "澳大利亚",
+          "weight": 0.0651,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0295
+        }
+      ],
+      "shadow_state": "risk-off",
+      "incumbent_state": "risk-off",
+      "incumbent_as_of": "2026-09-16"
+    },
+    "hk": {
+      "raw": 0.229,
+      "pct": 0.8313,
+      "level": "moderate",
+      "line_en": "Pressure from abroad: building — Australia's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 澳大利亚疲软为主要来源",
+      "top_exporters": [
+        {
+          "market": "au",
+          "name_en": "Australia",
+          "name_zh": "澳大利亚",
+          "weight": 0.125,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0567
+        },
+        {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.1515,
+          "dd21": 0.0238,
+          "ret10": -0.0126,
+          "sigma": 0.2376,
+          "contribution": 0.036
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.1149,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0287
+        }
+      ],
+      "shadow_state": "caution",
+      "incumbent_state": "caution",
+      "incumbent_as_of": "2026-09-16"
+    },
+    "ca": {
+      "raw": 0.2544,
+      "pct": 0.8532,
+      "level": "moderate",
+      "line_en": "Pressure from abroad: building — Australia's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 澳大利亚疲软为主要来源",
+      "top_exporters": [
+        {
+          "market": "au",
+          "name_en": "Australia",
+          "name_zh": "澳大利亚",
+          "weight": 0.1793,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0814
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.1138,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0285
+        },
+        {
+          "market": "cn",
+          "name_en": "China",
+          "name_zh": "中国",
+          "weight": 0.1059,
+          "dd21": 0.0238,
+          "ret10": -0.0126,
+          "sigma": 0.2376,
+          "contribution": 0.0252
+        }
+      ],
+      "shadow_state": "caution",
+      "incumbent_state": "caution",
+      "incumbent_as_of": "2026-09-17"
+    },
+    "kr": {
+      "raw": 0.2274,
       "pct": 0.8333,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
@@ -530,334 +698,166 @@
           "market": "jp",
           "name_en": "Japan",
           "name_zh": "日本",
-          "weight": 0.0916,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.083
-        },
-        {
-          "market": "ca",
-          "name_en": "Canada",
-          "name_zh": "加拿大",
-          "weight": 0.1863,
-          "dd21": 0.0341,
-          "ret10": -0.0309,
-          "sigma": 0.4409,
-          "contribution": 0.0822
+          "weight": 0.1943,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0486
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
-          "weight": 0.1153,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0582
-        }
-      ],
-      "shadow_state": "caution",
-      "incumbent_state": "caution",
-      "incumbent_as_of": "2026-09-11"
-    },
-    "cn": {
-      "raw": 0.3526,
-      "pct": 0.7937,
-      "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
-      "top_exporters": [
-        {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.0669,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.0606
+          "weight": 0.0955,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0433
         },
         {
           "market": "hk",
           "name_en": "Hong Kong",
           "name_zh": "香港",
-          "weight": 0.1168,
-          "dd21": 0.0463,
-          "ret10": -0.0305,
-          "sigma": 0.4628,
-          "contribution": 0.0541
-        },
-        {
-          "market": "ca",
-          "name_en": "Canada",
-          "name_zh": "加拿大",
-          "weight": 0.113,
-          "dd21": 0.0341,
-          "ret10": -0.0309,
-          "sigma": 0.4409,
-          "contribution": 0.0498
-        }
-      ],
-      "shadow_state": "risk-off",
-      "incumbent_state": "risk-off",
-      "incumbent_as_of": "2026-09-11"
-    },
-    "hk": {
-      "raw": 0.3603,
-      "pct": 0.8036,
-      "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
-      "top_exporters": [
-        {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.1084,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.0981
-        },
-        {
-          "market": "au",
-          "name_en": "Australia",
-          "name_zh": "澳大利亚",
-          "weight": 0.1249,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.063
-        },
-        {
-          "market": "gb",
-          "name_en": "United Kingdom",
-          "name_zh": "英国",
-          "weight": 0.2029,
-          "dd21": 0.0217,
-          "ret10": -0.0132,
-          "sigma": 0.2166,
-          "contribution": 0.044
-        }
-      ],
-      "shadow_state": "watch",
-      "incumbent_state": "watch",
-      "incumbent_as_of": "2026-09-11"
-    },
-    "ca": {
-      "raw": 0.3746,
-      "pct": 0.8274,
-      "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
-      "top_exporters": [
-        {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.1098,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.0994
-        },
-        {
-          "market": "au",
-          "name_en": "Australia",
-          "name_zh": "澳大利亚",
-          "weight": 0.1848,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0933
-        },
-        {
-          "market": "us",
-          "name_en": "United States",
-          "name_zh": "美国",
-          "weight": 0.1749,
-          "dd21": 0.0182,
-          "ret10": -0.0096,
-          "sigma": 0.1821,
-          "contribution": 0.0318
+          "weight": 0.058,
+          "dd21": 0.0498,
+          "ret10": -0.0236,
+          "sigma": 0.4982,
+          "contribution": 0.0289
         }
       ],
       "shadow_state": "caution",
       "incumbent_state": "caution",
-      "incumbent_as_of": "2026-09-11"
-    },
-    "kr": {
-      "raw": 0.4272,
-      "pct": 0.8254,
-      "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
-      "top_exporters": [
-        {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.2005,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.1815
-        },
-        {
-          "market": "tw",
-          "name_en": "Taiwan",
-          "name_zh": "台湾",
-          "weight": 0.2329,
-          "dd21": 0.0241,
-          "ret10": -0.0032,
-          "sigma": 0.2412,
-          "contribution": 0.0562
-        },
-        {
-          "market": "au",
-          "name_en": "Australia",
-          "name_zh": "澳大利亚",
-          "weight": 0.0969,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0489
-        }
-      ],
-      "shadow_state": "calm",
-      "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-11"
+      "incumbent_as_of": "2026-09-18"
     },
     "jp": {
-      "raw": 0.2992,
-      "pct": 0.7163,
-      "level": "low",
-      "line_en": "Pressure from abroad: low",
-      "line_zh": "海外传导压力：低",
-      "top_exporters": [
-        {
-          "market": "au",
-          "name_en": "Australia",
-          "name_zh": "澳大利亚",
-          "weight": 0.1372,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0692
-        },
-        {
-          "market": "kr",
-          "name_en": "South Korea",
-          "name_zh": "韩国",
-          "weight": 0.1955,
-          "dd21": 0.0201,
-          "ret10": 0.0178,
-          "sigma": 0.201,
-          "contribution": 0.0393
-        },
-        {
-          "market": "tw",
-          "name_en": "Taiwan",
-          "name_zh": "台湾",
-          "weight": 0.16,
-          "dd21": 0.0241,
-          "ret10": -0.0032,
-          "sigma": 0.2412,
-          "contribution": 0.0386
-        }
-      ],
-      "shadow_state": "calm",
-      "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-14"
-    },
-    "tw": {
-      "raw": 0.4026,
-      "pct": 0.7778,
+      "raw": 0.2473,
+      "pct": 0.8234,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
+      "line_en": "Pressure from abroad: building — Australia's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 澳大利亚疲软为主要来源",
       "top_exporters": [
-        {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.1779,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.161
-        },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
-          "weight": 0.1112,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0561
+          "weight": 0.1418,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0643
         },
         {
           "market": "kr",
           "name_en": "South Korea",
           "name_zh": "韩国",
-          "weight": 0.2658,
-          "dd21": 0.0201,
-          "ret10": 0.0178,
-          "sigma": 0.201,
-          "contribution": 0.0534
+          "weight": 0.1795,
+          "dd21": 0.0281,
+          "ret10": 0.0249,
+          "sigma": 0.2805,
+          "contribution": 0.0504
+        },
+        {
+          "market": "hk",
+          "name_en": "Hong Kong",
+          "name_zh": "香港",
+          "weight": 0.0436,
+          "dd21": 0.0498,
+          "ret10": -0.0236,
+          "sigma": 0.4982,
+          "contribution": 0.0217
         }
       ],
       "shadow_state": "watch",
       "incumbent_state": "watch",
-      "incumbent_as_of": "2026-09-11"
+      "incumbent_as_of": "2026-09-18"
     },
-    "in": {
-      "raw": 0.3765,
-      "pct": 0.8353,
+    "tw": {
+      "raw": 0.2753,
+      "pct": 0.8214,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
+      "line_en": "Pressure from abroad: building — South Korea's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 韩国疲软为主要来源",
       "top_exporters": [
         {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.1079,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.0976
+          "market": "kr",
+          "name_en": "South Korea",
+          "name_zh": "韩国",
+          "weight": 0.2532,
+          "dd21": 0.0281,
+          "ret10": 0.0249,
+          "sigma": 0.2805,
+          "contribution": 0.071
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
-          "weight": 0.1439,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0726
+          "weight": 0.1126,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0511
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.1766,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0442
+        }
+      ],
+      "shadow_state": "elevated",
+      "incumbent_state": "elevated",
+      "incumbent_as_of": "2026-09-18"
+    },
+    "in": {
+      "raw": 0.2398,
+      "pct": 0.8492,
+      "level": "moderate",
+      "line_en": "Pressure from abroad: building — Australia's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 澳大利亚疲软为主要来源",
+      "top_exporters": [
+        {
+          "market": "au",
+          "name_en": "Australia",
+          "name_zh": "澳大利亚",
+          "weight": 0.1409,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.064
         },
         {
           "market": "ca",
           "name_en": "Canada",
           "name_zh": "加拿大",
-          "weight": 0.1042,
-          "dd21": 0.0341,
-          "ret10": -0.0309,
-          "sigma": 0.4409,
-          "contribution": 0.046
+          "weight": 0.0995,
+          "dd21": 0.0293,
+          "ret10": -0.006,
+          "sigma": 0.2931,
+          "contribution": 0.0292
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.1117,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0279
         }
       ],
-      "shadow_state": "calm",
-      "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-11"
+      "shadow_state": "watch",
+      "incumbent_state": "watch",
+      "incumbent_as_of": "2026-09-17"
     },
     "au": {
-      "raw": 0.3829,
-      "pct": 0.8036,
+      "raw": 0.2282,
+      "pct": 0.8175,
       "level": "moderate",
       "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
       "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
@@ -866,135 +866,135 @@
           "market": "jp",
           "name_en": "Japan",
           "name_zh": "日本",
-          "weight": 0.158,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.143
-        },
-        {
-          "market": "ca",
-          "name_en": "Canada",
-          "name_zh": "加拿大",
-          "weight": 0.0902,
-          "dd21": 0.0341,
-          "ret10": -0.0309,
-          "sigma": 0.4409,
-          "contribution": 0.0398
+          "weight": 0.1611,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0403
         },
         {
           "market": "cn",
           "name_en": "China",
           "name_zh": "中国",
-          "weight": 0.1277,
-          "dd21": 0.0256,
-          "ret10": -0.0162,
-          "sigma": 0.2561,
-          "contribution": 0.0327
+          "weight": 0.128,
+          "dd21": 0.0238,
+          "ret10": -0.0126,
+          "sigma": 0.2376,
+          "contribution": 0.0304
+        },
+        {
+          "market": "in",
+          "name_en": "India",
+          "name_zh": "印度",
+          "weight": 0.0693,
+          "dd21": 0.0437,
+          "ret10": -0.0269,
+          "sigma": 0.4372,
+          "contribution": 0.0303
         }
       ],
-      "shadow_state": "calm",
-      "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-14"
+      "shadow_state": "watch",
+      "incumbent_state": "watch",
+      "incumbent_as_of": "2026-09-18"
     },
     "gb": {
-      "raw": 0.4216,
-      "pct": 0.8413,
+      "raw": 0.2779,
+      "pct": 0.869,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
+      "line_en": "Pressure from abroad: building — Australia's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 澳大利亚疲软为主要来源",
       "top_exporters": [
-        {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.1394,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.1261
-        },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
-          "weight": 0.1462,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0738
+          "weight": 0.1484,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0674
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.1453,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0363
         },
         {
           "market": "ez",
           "name_en": "Eurozone",
           "name_zh": "欧元区",
-          "weight": 0.1667,
-          "dd21": 0.0285,
-          "ret10": -0.0245,
-          "sigma": 0.3502,
-          "contribution": 0.0584
+          "weight": 0.1639,
+          "dd21": 0.021,
+          "ret10": -0.0099,
+          "sigma": 0.2102,
+          "contribution": 0.0345
         }
       ],
-      "shadow_state": "calm",
-      "incumbent_state": "calm",
-      "incumbent_as_of": "2026-09-11"
+      "shadow_state": "caution",
+      "incumbent_state": "caution",
+      "incumbent_as_of": "2026-09-17"
     },
     "ez": {
-      "raw": 0.3777,
-      "pct": 0.8036,
+      "raw": 0.2329,
+      "pct": 0.8373,
       "level": "moderate",
-      "line_en": "Pressure from abroad: building — Japan's weakness is the main source",
-      "line_zh": "海外传导压力：上升 — 日本疲软为主要来源",
+      "line_en": "Pressure from abroad: building — India's weakness is the main source",
+      "line_zh": "海外传导压力：上升 — 印度疲软为主要来源",
       "top_exporters": [
         {
-          "market": "jp",
-          "name_en": "Japan",
-          "name_zh": "日本",
-          "weight": 0.1451,
-          "dd21": 0.0905,
-          "ret10": -0.0506,
-          "sigma": 0.9052,
-          "contribution": 0.1313
-        },
-        {
-          "market": "gb",
-          "name_en": "United Kingdom",
-          "name_zh": "英国",
-          "weight": 0.2421,
-          "dd21": 0.0217,
-          "ret10": -0.0132,
-          "sigma": 0.2166,
-          "contribution": 0.0524
+          "market": "in",
+          "name_en": "India",
+          "name_zh": "印度",
+          "weight": 0.0911,
+          "dd21": 0.0437,
+          "ret10": -0.0269,
+          "sigma": 0.4372,
+          "contribution": 0.0398
         },
         {
           "market": "au",
           "name_en": "Australia",
           "name_zh": "澳大利亚",
-          "weight": 0.0819,
-          "dd21": 0.0446,
-          "ret10": -0.0353,
-          "sigma": 0.5046,
-          "contribution": 0.0413
+          "weight": 0.0857,
+          "dd21": 0.0454,
+          "ret10": -0.0286,
+          "sigma": 0.4539,
+          "contribution": 0.0389
+        },
+        {
+          "market": "jp",
+          "name_en": "Japan",
+          "name_zh": "日本",
+          "weight": 0.1448,
+          "dd21": 0.025,
+          "ret10": -0.0043,
+          "sigma": 0.2502,
+          "contribution": 0.0362
         }
       ],
-      "shadow_state": "watch",
-      "incumbent_state": "watch",
-      "incumbent_as_of": "2026-09-11"
+      "shadow_state": "caution",
+      "incumbent_state": "caution",
+      "incumbent_as_of": "2026-09-17"
     }
   },
   "data_sessions": {
-    "us": "2026-09-11",
-    "cn": "2026-09-11",
-    "hk": "2026-09-11",
-    "ca": "2026-09-11",
-    "kr": "2026-09-11",
-    "jp": "2026-09-14",
-    "tw": "2026-09-11",
-    "in": "2026-09-11",
-    "au": "2026-09-14",
-    "gb": "2026-09-11",
-    "ez": "2026-09-11"
+    "us": "2026-09-17",
+    "cn": "2026-09-16",
+    "hk": "2026-09-16",
+    "ca": "2026-09-17",
+    "kr": "2026-09-18",
+    "jp": "2026-09-18",
+    "tw": "2026-09-18",
+    "in": "2026-09-17",
+    "au": "2026-09-18",
+    "gb": "2026-09-17",
+    "ez": "2026-09-17"
   },
   "gaps": [],
-  "timing_sec": 0.77
+  "timing_sec": 0.39
 }

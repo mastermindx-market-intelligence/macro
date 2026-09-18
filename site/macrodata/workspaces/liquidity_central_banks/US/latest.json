@@ -171,7 +171,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "liquidity_central_banks-US-65a52f31204787c2"
+    "predecessor_generation_id": "liquidity_central_banks-US-b03a24d8c8918746"
   },
   "drivers": {
     "balance_sheet": [
@@ -192,7 +192,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "cb_ecb_balance_sheet_impulse_13w",
-        "impact_magnitude": 3.65,
+        "impact_magnitude": 3.66,
         "impact_sign": -1,
         "label": {
           "en": "ECB balance-sheet impulse (13w)",
@@ -201,7 +201,7 @@
         "note": "positive = balance sheet expanding over the trailing 13 weeks; negative = contracting",
         "owner_field": "cb_desk.cbs[ECB].bs_impulse.impulse_13w",
         "unit": "percent",
-        "value": -3.65
+        "value": -3.66
       },
       {
         "coverage_state": "PRESENT",
@@ -264,11 +264,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-14T07:27:41Z",
+    "built_at": "2026-09-18T04:29:28Z",
     "calculation_as_of": "2026-09-04T11:03:41.497178+00:00",
-    "code_version": "e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b",
-    "content_sha256": "b5cbccb573b25a59cd8e2df2947ef9ddd3a37817291ba3464e250275daaf7799",
-    "generation_id": "liquidity_central_banks-US-b5cbccb573b25a59",
+    "code_version": "8c91e3249d5acd3c702cde8b0e55f5875c0cf562",
+    "content_sha256": "5c906b8ecd5f4709ad0d53044bd2d5d9f4371cef4388906ad50f8fd98d2a1a0c",
+    "generation_id": "liquidity_central_banks-US-5c906b8ecd5f4709",
     "producer": "engine.market_os.macro_workspaces.liquidity_central_banks",
     "rendered_at": null
   },
@@ -1239,7 +1239,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-09-04",
+        "calculation_as_of": "2026-09-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.level",
@@ -1250,10 +1250,10 @@
         "metric_id": "cb_ecb_balance_sheet_level",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-04",
+        "observed_at": "2026-09-11",
         "owner_ref": "engine.cb_desk[ECB]",
         "reference_id": "mastermind.market_reference/v1#cb_ecb_balance_sheet_level",
-        "reference_period": "2026-09-04",
+        "reference_period": "2026-09-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1268,14 +1268,14 @@
           "value": null
         },
         "unit": "EUR billions",
-        "value": 5912.2,
+        "value": 5911.2,
         "value_type": "currency_bn"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_pct_change",
-        "calculation_as_of": "2026-09-04",
+        "calculation_as_of": "2026-09-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.impulse_13w",
@@ -1286,10 +1286,10 @@
         "metric_id": "cb_ecb_balance_sheet_impulse_13w",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-04",
+        "observed_at": "2026-09-11",
         "owner_ref": "engine.cb_desk[ECB]",
         "reference_id": "mastermind.market_reference/v1#cb_ecb_balance_sheet_impulse_13w",
-        "reference_period": "2026-09-04",
+        "reference_period": "2026-09-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1304,14 +1304,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": -3.65,
+        "value": -3.66,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_52w_pct_change",
-        "calculation_as_of": "2026-09-04",
+        "calculation_as_of": "2026-09-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "cb_desk.cbs.bs_impulse.impulse_52w",
@@ -1322,10 +1322,10 @@
         "metric_id": "cb_ecb_balance_sheet_impulse_52w",
         "model_version": "liquidity_central_banks.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-04",
+        "observed_at": "2026-09-11",
         "owner_ref": "engine.cb_desk[ECB]",
         "reference_id": "mastermind.market_reference/v1#cb_ecb_balance_sheet_impulse_52w",
-        "reference_period": "2026-09-04",
+        "reference_period": "2026-09-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1340,7 +1340,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": -2.79,
+        "value": -2.83,
         "value_type": "percent"
       },
       {
@@ -1636,7 +1636,7 @@
         },
         "owner_ref": "engine.cb_desk",
         "provider": "FRED",
-        "reference_period": "2026-09-11",
+        "reference_period": "2026-09-15",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
