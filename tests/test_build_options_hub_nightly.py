@@ -372,6 +372,19 @@ def test_build_moves_payload_turns_newer_intc_theta_snapshot_into_fresh_band():
     assert _moves_publishable(payload, "INTC", "2026-09-17") is True
 
 
+def test_historical_replay_ceiling_refuses_newer_snapshot_and_clears_stale_band():
+    payload = _build_moves_payload(
+        "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
+        calibration=None, learned_band_mult=None, regime=None,
+        snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-18"),
+        snapshot_asof_ceiling="2026-09-17",
+    )
+    assert payload["asof"] == "2026-09-17"
+    assert payload["input_source"] is None
+    assert payload["expected_move"] is None
+    assert payload["no_data_reason"] == "no_current_spot_iv_pair"
+
+
 def test_build_moves_payload_publishes_current_null_when_every_current_input_is_absent():
     payload = _build_moves_payload(
         "WBS", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},

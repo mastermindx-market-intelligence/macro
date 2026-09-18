@@ -714,8 +714,9 @@ def resolve_moves_inputs(
     The settled EOD store remains primary. When that store has not accrued usable
     greeks for a root, fall back to ThetaData's EXISTING first-order full-chain
     snapshot endpoint — never another vendor and never a second options authority.
-    Snapshot rows are accepted only when their own vendor timestamps belong to the
-    exact ``asof`` session. Spot + IV always come from the SAME accepted plane.
+    Snapshot rows are accepted only when their own vendor session is not older than
+    ``asof`` and not newer than the latest settled exchange session. Spot + IV always
+    come from the SAME accepted plane.
     """
     theta_spot = _positive_finite((gex_payload or {}).get("spot_ref"))
     theta_iv = _positive_finite((vol_payload or {}).get("atm_iv"))
@@ -1513,6 +1514,9 @@ def main() -> None:
                     calibration=per_ticker_calibration(
                         moves_grades_by_root.get(root, []), ci_fn=_wilson_ci),
                     learned_band_mult=moves_learned_mult, regime=_regime,
+                    # An explicit --date is a historical replay boundary: never let a
+                    # current snapshot silently rewrite that requested historical session.
+                    snapshot_asof_ceiling=(asof if args.date else None),
                 )
                 if _moves.get("input_source") == "thetadata_snapshot":
                     log.info(
