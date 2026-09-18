@@ -43,7 +43,7 @@ This module AGGREGATES.  It ORIGINATES nothing.
 SOURCES (each block independent, each fail-soft)
 -----------------------------------------------
 Live dir (see ``_live_dir`` — env override, then the VPS public live dir, then
-the repo's ``site/live``): quotes.json, breadth.json, market_drivers.json,
+ the repo's ``site/live``): quotes.json, breadth.json, market_drivers.json,
 shock_state.json, risk_state.json, wires.json, basket_pulse.json.
 Repo: site/master_brief.json (else data/regime/master_brief.json),
 data/neuralweb/world_state.json, data/rates_command/latest.json,
@@ -327,7 +327,7 @@ _REGIONS: tuple[_Region, ...] = (
 )
 
 _SECTION_ORDER: tuple[str, ...] = (
-    "HEADER", "TAPE", "CURVE", "FLAGS", "SHOCK", "EVENTS", "DRIVERS",
+    "HEADER", "TAPE", "CURVE", "FLAGS", "SHOCK", "EVENTS", "CALENDAR", "DRIVERS",
     "RATES", "VOL", "BREADTH", "LEADERS", "REGIONAL", "CROSSASSET", "CNBOARD", "DESK", "WATCH",
     # PRESSURE sits LAST on purpose: it is single-name display context, so it is
     # the first thing the char budget should drop. Appending here changes no
@@ -1230,6 +1230,18 @@ def build_packet(root: Path, *, now: datetime | None = None) -> dict:
             except Exception as exc:  # noqa: BLE001
                 gaps.append(f"{key}: build failed ({type(exc).__name__})")
 
+        # Same published calendar payload as the UI; no source collection here.
+        try:
+            from engine.neuralweb.calendar_grounding import read_calendar
+
+            calendar = read_calendar(root, now=now)
+            if calendar.get("events"):
+                packet["calendar"] = calendar
+            else:
+                gaps.append("calendar: " + calendar["reason"])
+        except Exception as exc:  # noqa: BLE001
+            gaps.append(f"calendar: build failed ({type(exc).__name__})")
+
         # Wire rail: live dir first, then the repo dev/test sink.
         try:
             wires = None
@@ -1889,12 +1901,19 @@ def _render_pressure(p: dict) -> str:
     return "\n".join(lines)
 
 
+def _render_calendar(p: dict) -> str:
+    from engine.neuralweb.calendar_grounding import render_calendar
+
+    return render_calendar(p["calendar"], lang="zh" if _zh(p) else "en")
+
+
 _RENDERERS: dict[str, object] = {
     "TAPE": ("tape", _render_tape),
     "CURVE": ("curve", _render_curve),
     "FLAGS": ("flags", _render_flags),
     "SHOCK": ("shock", _render_shock),
     "EVENTS": ("events", _render_events),
+    "CALENDAR": ("calendar", _render_calendar),
     "DRIVERS": ("drivers", _render_drivers),
     "RATES": ("rates", _render_rates),
     "VOL": ("vol", _render_vol),
@@ -1990,6 +2009,7 @@ _LIVE_SOURCES: tuple[str, ...] = (
 )
 # Relative to root.
 _ROOT_SOURCES: tuple[str, ...] = (
+    "site/macro.html",  # the calendar UI payload; existing cache invalidation
     "site/master_brief.json", "data/regime/master_brief.json",
     "data/neuralweb/world_state.json", "data/rates_command/latest.json",
     "site/vol/regime.json", "data/crossasset/latest.json",

@@ -5609,6 +5609,23 @@ body.page-macro .rsx-dlg-footer{
 [data-theme="light"] .rr-inline-empty-line{color:rgba(0,0,0,.62);}
 .rr-inline-empty-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--ink-3,rgba(255,255,255,.42));}
 [data-theme="light"] .rr-inline-empty-meta{color:rgba(0,0,0,.62);}
+/* Calendar context uses existing cards/disclosure primitives and theme tokens. */
+#dlg-events .mx5-dlg-title,#dlg-events .rr-inline-date{color:var(--ink-1);}
+#dlg-events .mx5-dlg-close{color:var(--ink-2);}
+.eic-stack{display:grid;gap:12px;margin-bottom:16px;min-width:0;}
+.eic-card{padding:16px;min-width:0;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);}
+.eic-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.eic-heading h3{margin:0;font:600 15px/1.4 var(--font-ui);color:var(--ink-1);}
+.eic-state{font:500 11px/1.4 var(--font-ui);color:var(--ink-3);}
+.eic-summary{font:400 13px/1.6 var(--font-ui);color:var(--ink-2);margin:9px 0 12px;}
+.eic-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin:12px 0 16px;}
+.eic-facts dt{font:400 11px/1.45 var(--font-ui);color:var(--ink-3);}
+.eic-facts dd{margin:3px 0 0;font:500 13px/1.5 var(--font-ui);font-variant-numeric:tabular-nums;color:var(--ink-1);overflow-wrap:anywhere;}
+.eic-detail summary{min-height:44px;display:list-item;cursor:pointer;font:500 12px/1.5 var(--font-ui);padding:12px 0;color:var(--ink-2);}
+.eic-detail-body p{font:400 12px/1.6 var(--font-ui);color:var(--ink-2);margin:8px 0 12px;}
+.eic-limit,.eic-detail-body p.eic-limit{font:400 11px/1.6 var(--font-ui);color:var(--ink-3);}
+.eic-source{display:inline-block;margin-top:10px;padding:6px 0;font:500 12px/1.5 var(--font-ui);}
+@media(max-width:430px){.eic-card{padding:13px;}.eic-facts{gap:12px;}.eic-heading h3{font-size:14px;}}
 /* single display-only footer for the inline panel (Law 4: one footnote) */
 .rr-inline-foot{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);
   font-size:10px;line-height:1.5;color:var(--ink-3,rgba(255,255,255,.36));}
@@ -10722,15 +10739,16 @@ html[data-theme="light"] :is(
       var sub = document.getElementById('rr-inline-sub');
       if (sub) sub.innerHTML = covered
         ? '<span class="l-en">our projection vs benchmarks</span><span class="l-zh">本方预测 vs 基准</span>'
-        : '<span class="l-en">event risk only</span><span class="l-zh">仅为事件风险提示</span>';
+        : '<span class="l-en">event context · no model projection</span><span class="l-zh">事件背景 · 无模型预测</span>';
       var dot = covered ? '<span class="mx5-dlg-cal-dot" aria-hidden="true"></span>' : '';
       el.innerHTML = dot
         +'<span class="l-en">'+esc(RR_MOS_EN[mo]||'')+' '+dy+'</span>'
         +'<span class="l-zh">'+mo+'月'+dy+'日</span>';
     }
     function _inlineItemsSignature(dateStr, items){
-      try{ return dateStr+'|'+JSON.stringify(items || []); }
-      catch(e){ return dateStr+'|'+String((items || []).length); }
+      var context = window.MMXCalendarEventContext ? window.MMXCalendarEventContext.signature(dateStr) : '';
+      try{ return dateStr+'|'+JSON.stringify(items || [])+'|'+context; }
+      catch(e){ return dateStr+'|'+String((items || []).length)+'|'+context; }
     }
     function _syncInlineDateSelection(dateStr){
       document.querySelectorAll('#dlg-events .mx5-dlg-cal-card.rr-select').forEach(function(card){
@@ -10756,11 +10774,15 @@ html[data-theme="light"] :is(
          The payload signature still allows a future intraday forecast refresh. */
       if (!immediate && unchanged) return;
       var covered = items.length > 0;
-      var bodyHTML;
+      var contextHTML = window.MMXCalendarEventContext ? window.MMXCalendarEventContext.renderDate(dateStr) : '';
+      var bodyHTML = contextHTML;
       if (covered){
-        bodyHTML = '<div class="rr-grid">'+items.map(renderCard).join('')+'</div>';
-      } else {
+        bodyHTML += '<div class="rr-grid">'+items.map(renderCard).join('')+'</div>';
+      } else if (!contextHTML){
         bodyHTML = _inlineEmptyHTML(sourceCard);
+      } else {
+        bodyHTML += '<p class="eic-limit"><span class="l-en">No model projection for this date. The context above does not require one.</span>'
+          +'<span class="l-zh">此日期无模型预测；上方背景信息无需依赖预测。</span></p>';
       }
       var swap = !immediate && !_prefReducedRR();
       var token = ++_rrInlineSwapToken;
@@ -12123,6 +12145,7 @@ html[data-theme="light"] :is(
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{{ _g.get(kind, '<circle cx="12" cy="12" r="8"/>') | safe }}</svg>
   {%- endmacro %}
 
+  {% include '_calendar_event_context.html.j2' %}
   {# dlg-events: Events catalysts + fed market pricing + release-radar link — S2 redesign #}
   <div class="mx5-dlg" id="dlg-events" role="dialog" aria-modal="true" tabindex="-1">
     <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
@@ -12193,8 +12216,8 @@ html[data-theme="light"] :is(
         <div class="mx5-dlg-sep"></div>
         <div class="mx5-dlg-eyebrow"><span class="l-en">Release Radar</span><span class="l-zh">数据发布雷达</span></div>
         <div style="margin:-4px 0 14px;font-size:12px;color:var(--ink-2,rgba(255,255,255,.6));line-height:1.5">
-          <span class="l-en">Select a date above to see all modeled releases for that day. Tap a projection card for the full read.</span>
-          <span class="l-zh">选择上方日期，查看当天所有已建模数据；点击预测卡片查看完整解读。</span>
+          <span class="l-en">Select a date for its event context and available release projections. Open a reading guide for evidence limits and what to examine.</span>
+          <span class="l-zh">选择日期查看事件背景与可用预测；展开阅读指南查看证据边界与观察重点。</span>
         </div>
         <div id="rr-inline" role="region" aria-labelledby="rr-inline-date">
           <div class="rr-inline-head">

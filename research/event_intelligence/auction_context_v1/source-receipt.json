@@ -1,0 +1,7 @@
+{
+  "observed_at_utc": "2026-09-17T23:23:17.293106+00:00",
+  "url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
+  "http_status": 200,
+  "sha256": "d171085597cfc49d99ccc12590e78481854228d927532f85a14c0969f6ae3c7a",
+  "rows": 7
+}

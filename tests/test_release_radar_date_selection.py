@@ -234,5 +234,12 @@ def test_idempotence_and_timer_token_guards_are_ordered_before_mutation():
     assert token_increment < token_check < body_markup
 
 
-def test_rendered_macro_contains_the_same_date_selector_logic():
-    assert _selector_source(SITE) == _selector_source(TEMPLATE)
+def test_rendered_macro_contains_the_same_date_selector_logic(tmp_path):
+    # Prove the candidate's real Jinja render, not yesterday's separately built
+    # site snapshot. Never copy selector source directly into the expected file.
+    from tests.test_release_radar_render import _base_vm, _env
+
+    generated = tmp_path / "macro.html"
+    generated.write_text(_env().get_template("dashboard.html.j2").render(
+        **_base_vm(), mode="macro"))
+    assert _selector_source(generated) == _selector_source(TEMPLATE)

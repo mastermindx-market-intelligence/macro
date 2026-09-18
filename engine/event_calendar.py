@@ -321,10 +321,19 @@ def _fetch_upcoming_auctions(today: date) -> list[dict]:
 
 
 def _auction_events(today: date, end: date) -> list[dict]:
-    """In-window coupon (Note/Bond/TIPS/FRN) auctions, deduped by (date, term)."""
-    out, seen = [], set()
-    for rec in _fetch_upcoming_auctions(today):
-        if (rec.get("securityType") or "") not in _COUPON_TYPES:
+    """Owner-native coupon auctions; preserve terms and refuse conflicting rows."""
+    from engine.calendar_event_context import auction_security_type
+
+    out, seen = [], {}
+    records = _fetch_upcoming_auctions(today)
+    if not isinstance(records, list):
+        log.warning("TreasuryDirect auction records unavailable: expected a list")
+        return []
+    for rec in records:
+        if not isinstance(rec, dict):
+            continue
+        security_type = auction_security_type(rec)
+        if security_type not in _COUPON_TYPES:
             continue
         try:
             d = date.fromisoformat((rec.get("auctionDate") or "")[:10])
@@ -332,17 +341,45 @@ def _auction_events(today: date, end: date) -> list[dict]:
             continue
         if not (today <= d <= end):
             continue
-        label_term = _normalize_term(rec["securityType"], rec.get("securityTerm", ""))
-        reopen = (rec.get("reopening") or "").strip().lower() == "yes"
-        key = (d.isoformat(), label_term, reopen)
+        term = rec.get("securityTerm")
+        term = term if isinstance(term, str) else ""
+        label_term = _normalize_term(security_type, term)
+        reopen_value = rec.get("reopening")
+        reopen = isinstance(reopen_value, str) and reopen_value.strip().lower() == "yes"
+        event = _event("AUCTION", d,
+                       label=f"{label_term} auction" + (" (reopening)" if reopen else ""),
+                       label_zh=_normalize_term_zh(security_type, term)
+                                + "拍卖" + ("（续发行）" if reopen else ""),
+                       assets=["bonds"], source="treasurydirect", auction=rec)
+        facts = event["intelligence"]["facts"]
+        # Use the projection owner's validated CUSIP; classification and reopening
+        # are claims to reconcile, not dimensions that can split one auction.
+        cusip = next(f["value"] for f in facts if f["key"] == "cusip")
+        key = ((d.isoformat(), "cusip", cusip) if cusip else
+               (d.isoformat(), "unidentified", security_type, label_term, reopen))
+        signature = (security_type, term, reopen,
+                     tuple((f["key"], f["value"]) for f in facts))
         if key in seen:
+            prior, prior_signature = seen[key]
+            ctx = prior["intelligence"]
+            if signature != prior_signature and ctx["coverage"] != "conflicting_terms":
+                # No feed row ordering is an authority to pick corrected terms.
+                ctx["coverage"] = "conflicting_terms"
+                for fact in ctx["facts"]:
+                    fact["value"], fact["state"] = None, "conflicting"
+                prior["time_et"] = ""
+                prior["label"] = "Treasury auction (terms disputed)"
+                prior["label_zh"] = "国债拍卖（条款待核实）"
+                ctx["title"] = {"en": prior["label"], "zh": prior["label_zh"]}
+                ctx["summary"] = {
+                    "en": "Source records disagree. Read the official announcement before interpreting this auction.",
+                    "zh": "来源记录不一致。解读本次拍卖前，请先核实官方公告。"}
+                ctx["limitations"].insert(0, {
+                    "en": "Source rows disagree for this auction; terms are withheld pending reconciliation.",
+                    "zh": "此拍卖的来源记录不一致；条款暂不显示，等待核实。"})
             continue
-        seen.add(key)
-        out.append(_event("AUCTION", d,
-                          label=f"{label_term} auction" + (" (reopening)" if reopen else ""),
-                          label_zh=_normalize_term_zh(rec["securityType"], rec.get("securityTerm", ""))
-                                   + "拍卖" + ("（续发行）" if reopen else ""),
-                          assets=["bonds"]))
+        seen[key] = (event, signature)
+        out.append(event)
     return out
 
 
@@ -352,7 +389,7 @@ def _auction_events(today: date, end: date) -> list[dict]:
 def _event(etype: str, d: date, *, label: str | None = None, tag: str = "",
            label_zh: str | None = None, tag_zh: str | None = None,
            assets: list[str] | None = None, time_et: str | None = None,
-           source: str = "computed") -> dict:
+           source: str = "computed", auction: dict | None = None) -> dict:
     meta = _META.get(etype, {})
     en = (label if label is not None else meta.get("label", etype))
     # ZH twin: explicit > per-type meta > EN label (never empty). tag_zh mirrors tag
@@ -370,6 +407,12 @@ def _event(etype: str, d: date, *, label: str | None = None, tag: str = "",
     }
     if assets:
         ev["assets"] = assets
+    # Pure read projection over this owner; absence of a forecast never suppresses it.
+    from engine.calendar_event_context import auction_close_time, project_event
+    if auction is not None:
+        # An absent official deadline is unknown, never the generic 13:00 slot.
+        ev["time_et"] = auction_close_time(auction.get("closingTimeCompetitive")) or ""
+    ev["intelligence"] = project_event(ev, auction=auction)
     return ev
 
 

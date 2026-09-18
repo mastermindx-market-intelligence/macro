@@ -1,0 +1,115 @@
+{
+  "scope": "calendar UI payload to existing Brain market-packet read projection",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "carrier": {
+    "pr": 7273,
+    "branch": "claude/event-intelligence-auction-20260917-sol",
+    "parent_head": "d4ea77b9afa1620940331317c748f99910b26f1d"
+  },
+  "procedure": {
+    "repository": "mastermindx-market-intelligence/Mastermind",
+    "commit": "320f586126b7c82c843ef17612f12d40d20a42e0",
+    "skillpack_version": "1.0.1"
+  },
+  "sources": [
+    {
+      "path": "engine/neuralweb/market_packet.py",
+      "bytes": 90333,
+      "git_blob_sha1": "3066e0ccf8b30817083af6037493685ac3470fe4",
+      "sha256": "ca433a142e2e6ae3f153f13871c8f8d91d6a2316e681c47cee10fd1b473a3ea9"
+    },
+    {
+      "path": "engine/neuralweb/calendar_grounding.py",
+      "bytes": 13122,
+      "git_blob_sha1": "a33f97da3727eec63202e61ad3774a3bc07307a5",
+      "sha256": "c46f42abac2736a476664932e79f794b1f03af2c504afdc540e8610ed45d6bf8"
+    },
+    {
+      "path": "tests/test_brain_analyst_wiring.py",
+      "bytes": 30422,
+      "git_blob_sha1": "b6cae9c04a23a8fdc0d5e7b9f644818bb253c1d6",
+      "sha256": "d602883297e1d30bddcde4f23426773206d04ecae240c9e36c97d71141d374f1"
+    },
+    {
+      "path": "templates/_calendar_event_context.html.j2",
+      "bytes": 520,
+      "git_blob_sha1": "33cde020a6c2e2a9f8240195152f3a7868977359",
+      "sha256": "022432edf0930fdc60d0f10e8ac4c7e05f75d47db28e93dec71e53764a800cdf"
+    }
+  ],
+  "source_acquisition": "Native GitHub reads, copied into an isolated sandbox and checked against Git blob identities. The original 89501-byte market_packet.py matched 5222d529904323c6aa16e21ce8e717193c9a3246. Published blob 3066e0cc adds one nonsemantic docstring space to the prepublication local candidate; exact bytes were materialized and the 63 cases repeated successfully.",
+  "tests": {
+    "executed_command": "python -m pytest tests/test_eic_isolated.py -q -p no:cacheprovider",
+    "result": {
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0,
+      "deselected": 0
+    },
+    "scope": "Verbatim appended eic tests extracted from tests/test_brain_analyst_wiring.py. Actual complete market_packet.py, adapter and Jinja fragment used. The full gateway test module was not imported in this partial sandbox.",
+    "repository_command_to_repeat": "python -m pytest tests/test_brain_analyst_wiring.py -q -k eic",
+    "red_before_integration": 5,
+    "inherited_test_ast_nodes_unchanged": 40,
+    "python": "3.13.5",
+    "mutations": [
+      {
+        "mutation": "cache_disconnected",
+        "test": "test_eic_existing_digest_cache_tracks_calendar_appearance_correction_removal",
+        "result": "intended assertion failed",
+        "exit_code": 1
+      },
+      {
+        "mutation": "conflicting_fact_resurrected",
+        "test": "test_eic_denied_fact_state_is_not_resurrected",
+        "result": "intended assertion failed",
+        "exit_code": 1
+      },
+      {
+        "mutation": "publication_borrows_source_clock",
+        "test": "test_eic_no_publication_field_is_relabelled_source_known_at",
+        "result": "intended assertion failed",
+        "exit_code": 1
+      }
+    ]
+  },
+  "publication_contract": {
+    "input": "site/macro.html#calendar-event-context-data",
+    "identity": "SHA256 of the exact embedded JSON text; no new event identity",
+    "page_publication_clock": "data-published-at from existing generated_utc; aware timestamp required for age classification",
+    "source_observed_at": null,
+    "scope_ceiling": "Ambient published announcement/reference calendar, not selected-event attachment, official result, model assessment or trade authority",
+    "limits": {
+      "max_page_bytes": 4194304,
+      "max_json_bytes": 131072,
+      "max_input_rows": 64,
+      "max_output_events": 6,
+      "horizon_days": 14,
+      "page_stale_after_hours": 36,
+      "max_calendar_characters": 1800,
+      "existing_packet_characters": 4200,
+      "existing_cache_seconds": 60
+    },
+    "private_state_read": false,
+    "network_call": false,
+    "provider_call": false,
+    "new_store_or_cache": false
+  },
+  "ci_ownership": {
+    "evidence_run": 35295725824,
+    "plan_sha256": "fe6992a66e8041babf9698edc1dea75cb11aff852f5514444242e6c75dd1f2e1",
+    "subject_head": "d4ea77b9afa1620940331317c748f99910b26f1d",
+    "finding": "unrun-release-forecast has gate:data and was excluded; unrun-brain-gateway is selected. New bridge cases are appended to its existing code-gate wiring suite.",
+    "new_head_execution_proven": false
+  },
+  "not_proven": [
+    "full repository/gateway tests",
+    "current-head browser matrix",
+    "independent review",
+    "deployed page/reader compatibility",
+    "real customer model answer",
+    "official auction results and correction ingestion",
+    "exact selected-event attachment",
+    "full calendar history"
+  ],
+  "do_not_relabel": "Historical 94-test/eight-browser evidence belongs to earlier source revisions, not this semantic extension."
+}

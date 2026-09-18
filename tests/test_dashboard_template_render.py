@@ -1166,3 +1166,40 @@ def test_strip_tables_mobile_column_contract():
     # scraping them from the page IS reading the hide list.
     hidden = set(re.findall(r"\.topsetups \.ts-tbl \.(c-[a-z]+)", html))
     assert hidden == (trigger | leaders) - _MOBILE_KEEP
+
+
+def test_calendar_machine_clock_uses_the_visible_build_instant():
+    """Execute the producer's own clock assignments, not a test-only timestamp shape."""
+    import ast
+    from datetime import datetime, timezone
+
+    tree = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    main = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    assignments = {
+        t.id: n for n in main.body if isinstance(n, ast.Assign)
+        for t in n.targets if isinstance(t, ast.Name)
+    }
+    vm = assignments["vm"].value
+    machine = [k.value for k in vm.keywords if k.arg == "generated_at_utc"]
+    assert len(machine) == 1, "calendar needs the builder's timezone-aware machine clock"
+    value = machine[0]
+    assert isinstance(value, ast.Call) and isinstance(value.func, ast.Attribute)
+    assert value.func.attr == "isoformat"
+    clock_name = value.func.value.id
+    clock_assignment = assignments[clock_name]
+    human_assignment = assignments["generated"]
+    calls = []
+
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            calls.append(tz)
+            return cls(2026, 9, 18, 10, 0, 12, tzinfo=tz)
+
+    namespace = {"datetime": FrozenDateTime, "timezone": timezone}
+    nodes = ast.Module(body=[clock_assignment, human_assignment], type_ignores=[])
+    exec(compile(nodes, "actual-build-clock", "exec"), namespace)
+    stamp = eval(compile(ast.Expression(value), "actual-machine-clock", "eval"), namespace)
+    assert calls == [timezone.utc], "both views must derive from exactly one UTC instant"
+    assert namespace["generated"] == "2026-09-18 10:00"
+    assert stamp == "2026-09-18T10:00:12+00:00"
