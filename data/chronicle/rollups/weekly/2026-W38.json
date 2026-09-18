@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-09-17",
+  "as_of": "2026-09-18",
   "coverage": {
-    "end": "2026-09-17",
-    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W38; 14 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-06-18"
+    "end": "2026-09-18",
+    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W38; 13 week(s) have events so far; chronicle event store begins 2013-05-21; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-06-19"
   },
   "iso_week": "2026-W38",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,7 +11,7 @@
     {
       "clusters": [
         {
-          "n_events": 197,
+          "n_events": 231,
           "source": "research_vault",
           "theme": null,
           "top_events": []
@@ -23,9 +23,21 @@
           "top_events": []
         },
         {
-          "n_events": 1,
+          "n_events": 2,
           "source": "research_vault",
           "theme": "McElligott",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "claims",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "risk_band",
+          "theme": "risk",
           "top_events": []
         }
       ],
@@ -264,7 +276,7 @@
           "top_events": []
         },
         {
-          "n_events": 105,
+          "n_events": 130,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -323,7 +335,7 @@
           "top_events": []
         },
         {
-          "n_events": 722,
+          "n_events": 737,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -370,7 +382,7 @@
     {
       "clusters": [
         {
-          "n_events": 585,
+          "n_events": 588,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -657,17 +669,6 @@
         }
       ],
       "iso_week": "2026-W26"
-    },
-    {
-      "clusters": [
-        {
-          "n_events": 2,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        }
-      ],
-      "iso_week": "2026-W25"
     }
   ]
 }

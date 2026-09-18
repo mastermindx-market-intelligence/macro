@@ -1,14 +1,14 @@
 {
-  "appended": 0,
-  "asof": "2026-09-15",
+  "appended": 1,
+  "asof": "2026-09-17",
   "candidates": {
     "R": 1,
-    "T": 1,
+    "T": 0,
     "W": 3
   },
   "deduped": {
-    "R": 1,
-    "T": 1,
+    "R": 0,
+    "T": 0,
     "W": 3
   },
   "dry_run": false,
@@ -19,15 +19,17 @@
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
-      "reason": null,
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 1
+      },
+      "reason": "no flagged name resolved in the OHLCV store — coil and thrust null on every flag tonight",
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
       "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_read": 1
     },
     "keys": [
       "relay_count_3d",
@@ -48,7 +50,13 @@
       "consulted": false
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-09-17",
+      "n_tickers": 1544,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
@@ -76,7 +84,9 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
+    "R": [
+      "BAH"
+    ],
     "T": [],
     "W": []
   },
@@ -86,41 +96,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-16 22:29:33",
-  "runtime_s": 147.9,
+  "run_utc": "2026-09-18 09:05:43",
+  "runtime_s": 166.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-15",
-    "n_members": 69,
+    "asof": "2026-09-17",
+    "n_members": 86,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.862,
+        "emerging_score": 2.4,
         "rank": 1,
+        "theme": "Education Technology"
+      },
+      {
+        "emerging_score": 2.022,
+        "rank": 2,
         "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 2.059,
-        "rank": 2,
-        "theme": "Social Media"
-      },
-      {
-        "emerging_score": 1.984,
+        "emerging_score": 1.843,
         "rank": 3,
         "theme": "Biometrics"
       },
       {
-        "emerging_score": 1.444,
+        "emerging_score": 1.708,
         "rank": 4,
-        "theme": "Wearables"
+        "theme": "Space Tech"
       },
       {
-        "emerging_score": 1.205,
+        "emerging_score": 1.474,
         "rank": 5,
-        "theme": "Mega-Cap"
+        "theme": "Quantum Computing"
       }
     ]
   },
@@ -130,15 +140,15 @@
       "3B"
     ],
     "aligned": 3,
-    "asof_max": "2026-09-16",
-    "asof_mismatch": 3,
-    "asof_run": "2026-09-15",
+    "asof_max": "2026-09-17",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-17",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 25.3,
+    "runtime_s": 29.5,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 83,
