@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T09:22:35.546978+00:00",
-  "count": 2350,
+  "generated_at": "2026-09-18T09:37:34.096953+00:00",
+  "count": 2351,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -107,6 +107,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yb0h2zffraj-053efc",
+      "title": "Early Morning Reid Macro Strategy",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T08:53:38Z",
+      "summary_points": [
+        "BOJ Rate Hike & Dissenters: 25bp hike to 1.25% (highest since 1995), 2nd 2024 hike; dissenters signal weaker political backing vs Fed/ECB, triggering Yen -0.72% and 2yr/30yr bond yield spikes (+2.2bps/+3.2bps) - August Inflation Data: Core CPI 1.7% YoY (vs 1.8% expected), core-core CPI unchanged at 1.9%, confirming stable price pressures near BOJ target - US Labor Data & Oil Prices: Jobless claims fell to 196k (vs 207k expected), oil dropped -3.5% ($104.82/bbl) after China-Iran Houthi supply concerns, shifting sentiment to near-term inflation easing and boosting S&P 500 (+1.14%) - China-US Geopolitics & Treasury Yields: Yuan strengthened to 6.695/USD (strongest since July 2022) ahead of Xi-Trump meeting, Treasury yields fell (10yr: 4.93%) with 2s30s curve flattening to 62bps, signaling Fed pause expectations"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
