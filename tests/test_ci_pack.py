@@ -427,6 +427,63 @@ def test_manifest_job_delta_rejects_topology_gate_and_top_level_changes() -> Non
     ) is None
 
 
+def test_safe_manifest_job_delta_uses_canonical_trusted_repo_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo = tmp_path / "candidate"
+    manifest = repo / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(base, sort_keys=False))
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.invalid"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "CI Test"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(
+        ["git", "commit", "-m", "base"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+    )
+    base_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(candidate, sort_keys=False))
+
+    monkeypatch.setattr(AUDIT, "ROOT", repo)
+
+    assert PACK._safe_manifest_changed_job_ids(
+        manifest,
+        base_sha,
+    ) == ("owner",)
+
+
 def test_manifest_job_reorder_or_rename_still_fails_closed() -> None:
     base = {
         "jobs": {
