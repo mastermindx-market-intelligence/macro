@@ -5,8 +5,10 @@ claim: >
   Terminal replay-refresh and Macro public-provenance defects, while release gates remain
   open. Terminal #608 head 14f9a8d83dc7651eff26032ad3b084357e8ec1a3
   retains exact stored-frame identity on same-HHMM refresh failure and distinguishes
-  first-read failure from accrual; local/current-base proof is green and hosted CI plus
-  fresh independent rereview are pending. Macro #7279 head
+  first-read failure from accrual; local/current-base proof is green. Its first repaired-
+  head CI attempt failed only in the unrelated tablet marker-tooltip journey; the exact
+  failing test passes locally and the bounded failed-job rerun is in progress, while fresh
+  independent rereview remains pending. Macro #7279 head
   ff27f0a3408a3ddf5a29e0b6e59507501ebea8bb closes same-minute atomicity, mixed
   unknown source-clock envelopes and selected-replay asof identity; fences/current-base
   proof are green while hosted CI and exact-head independent review remain open.
@@ -29,12 +31,15 @@ verified_by: >
   Terminal #608 current head 14f9a8d83dc7651eff26032ad3b084357e8ec1a3;
   repair return 5727869977; protected-master proof 3134f967ccdb2430ec0be37e61a9450e10549d70
   over tree e70bc97f91d5f79d3f7e36d3d8f252864ea48b0c; exact-head CI
-  35328161453 in progress at checkpoint; prior independent REQUEST_CHANGES review
-  5245552829 awaiting fresh rereview. Macro #7271 current head
-  cadb7ec4a5029150dea3eb9445d9481f3f2aff66. Macro #7279 current head
+  35328161453 first attempt failed only in unrelated tablet marker-tooltip; the exact
+  failing test passed locally and failed-job rerun is in progress; prior independent
+  REQUEST_CHANGES review 5245552829 awaits fresh rereview. Macro #7271 current head
+  cadb7ec4a5029150dea3eb9445d9481f3f2aff66 with fresh protected-main proof
+  a40b1a53c60d57d0b8652a26b06abdedf94a92c1 over tree
+  48d3d2fdc09821d4d4d397c2c3b6b3d3fca04a55. Macro #7279 current head
   ff27f0a3408a3ddf5a29e0b6e59507501ebea8bb; repair return 5727998620;
-  latest protected-main proof 466f631f27a4106035fd166ebddf99c2777ffdd4 over tree
-  878e3fbe0d1633c623085110a84dfa751ff2a3d5; fences 35329144961 SUCCESS;
+  latest protected-main proof d40218557367551c9ada3ce29baa7c4929f17901 over tree
+  d781cb721f8724d0908e714544d6710b8f600630; fences 35329144961 SUCCESS;
   CI 35329145976 queued at latest read; formal independent review requested from MastermindX1.
   Parent #603 entitlement ruling 5724610745.
 scope:
@@ -120,7 +125,11 @@ R0 replay candidate itself regressed that owner.
 
 The prior exact-head run `35301191243` remains SUCCESS evidence for the unchanged
 accepted replay/geometry/Greek-semantics foundation, but it does not prove repaired
-head `14f9a8d8...`. Fresh hosted CI `35328161453` is IN_PROGRESS at this checkpoint.
+head `14f9a8d8...`. Fresh hosted CI `35328161453` completed its first attempt with one
+failure in the unrelated tablet `marker-tooltip` journey while unit/typecheck, desktop,
+mobile, serial and the other CI shards passed. The exact failing tablet test passes
+locally on the repaired candidate. A bounded rerun of that failed job is IN_PROGRESS;
+do not treat either the first red run or the local control as the final hosted gate.
 
 Independent review `5245552829` remains the valid REQUEST_CHANGES receipt for the
 superseded head and its concrete defect. The exact defect is now closed by the
@@ -141,15 +150,20 @@ The correction reads gamma regime from the same modeled `gamma_profile` sign at 
 rather than assuming every nearest zero crossing has one orientation. It does not
 create another pricing kernel or infer observed dealer inventory.
 
-Current-head review reuse was adjudicated; its prior protected-main compatibility proof
-was run against:
-- Macro main proof base: `3c39f71bfd526ac35e5af67a497dd28f4c9a889d`;
-- merge tree: `916d33420902b6a9d570d7ed509a3a2f84c03ca1`;
+Current-head review reuse remains valid. Fresh protected-main compatibility now uses
+Macro main `c495a4fb7a01c9ecbcd3cbd91e02bcb102427e04`; no movement since the prior
+proof touched the candidate's engine/test/CI-owner paths:
+- merge tree: `48d3d2fdc09821d4d4d397c2c3b6b3d3fca04a55`;
 - proof-only integrated commit:
-  `6ba09ac7d533ce579095617b4e07af69758d5a00`;
-- exact GEX owner pack: 249 passed / 11 skipped;
-- compileall and diff check: pass;
-- fences: green; main CI remained queued at the last canonical read.
+  `a40b1a53c60d57d0b8652a26b06abdedf94a92c1`;
+- authoritative GEX modeling-core owner pack: 249 passed / 11 skipped;
+- compileall and diff check: pass.
+
+An exploratory broad `test_gex*.py` invocation on the temporary integration worktree
+reported one `FileNotFoundError` solely because that proof worktree intentionally omits
+`site/theme.css`; the exact same IV-rank color test passes on a full checkout of current
+protected main. This is a sparse-checkout artifact, not candidate semantic evidence.
+Fences remain green; the trusted-executor main CI is still partially executed/queued.
 
 This remains modeled/internal-consistency evidence only, not dealer inventory,
 prediction, production or Options Workbench completion.
@@ -158,7 +172,7 @@ prediction, production or Options Workbench completion.
 
 Current head: `ff27f0a3408a3ddf5a29e0b6e59507501ebea8bb`.
 Fresh protected Macro main used for compatibility:
-`9a132a6969732563a0c317bd7a344953675b8387`.
+`c495a4fb7a01c9ecbcd3cbd91e02bcb102427e04`.
 State: **BUILT_NOT_PROVEN / DRAFT / REREVIEW_PENDING / DO NOT MERGE**.
 
 The accepted clock/custody repairs remain intact: each root is valued at its fetched
@@ -194,8 +208,8 @@ Discriminating exact-head proof:
 
 Fresh protected-main proof is conflict-free with no movement on #7279 owned/dependency
 paths since the prior hardening base:
-- merge tree `878e3fbe0d1633c623085110a84dfa751ff2a3d5`;
-- proof-only integrated commit `466f631f27a4106035fd166ebddf99c2777ffdd4`;
+- merge tree `d781cb721f8724d0908e714544d6710b8f600630`;
+- proof-only integrated commit `d40218557367551c9ada3ce29baa7c4929f17901`;
 - integrated owner packs **629 / 1 / 0**;
 - integrated compileall and diff check: pass.
 
