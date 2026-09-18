@@ -1406,8 +1406,10 @@ def _classify_bounded_manifest_job_delta(
     semantic. The candidate manifest has already passed load_legacy_jobs
     validation before this classifier is consulted. We still fail closed when
     the YAML document shape changes, any non-jobs top-level semantic changes,
-    the job inventory/order changes, or a job moves between the code/data gate
-    planes. Those cases preserve the historical full-suite invalidation.
+    an incumbent job is removed/renamed/reordered, or a job moves between the
+    code/data gate planes. Those cases preserve the historical full-suite
+    invalidation. Additive jobs are admitted because candidate validation plus
+    forced selection proves their complete new execution surface.
 
     Within one existing job, any candidate-local change is bounded to that job:
     commands, setup dependencies, paths/scope, timeout, proof IDs and step
@@ -1428,15 +1430,28 @@ def _classify_bounded_manifest_job_delta(
     candidate_jobs = candidate_document.get("jobs")
     if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
         return None
-    # Job add/delete/rename/reorder remains a global semantic event in this
-    # first bounded release. It can be admitted later only with its own proof.
-    if tuple(base_jobs) != tuple(candidate_jobs):
+    base_order = list(base_jobs)
+    candidate_order = list(candidate_jobs)
+    if any(job_id not in candidate_jobs for job_id in base_order):
+        # Deletion/rename removes a proof surface and remains full-suite.
+        return None
+    if [job_id for job_id in candidate_order if job_id in base_jobs] != base_order:
+        # Reordering existing jobs changes ordinal/partition semantics. Additive
+        # jobs may be inserted anywhere, but incumbent relative order is frozen.
         return None
 
     changed_job_ids: list[str] = []
-    for job_id in base_jobs:
-        before = base_jobs[job_id]
+    for job_id in candidate_order:
         after = candidate_jobs[job_id]
+        if job_id not in base_jobs:
+            # The loader validates every ordinary candidate job before this
+            # classifier. PACK_JOB_ID is a synthetic-fixture compatibility hole
+            # in that loader and is therefore never eligible for bounded add.
+            if job_id == PACK_JOB_ID or not isinstance(after, dict):
+                return None
+            changed_job_ids.append(str(job_id))
+            continue
+        before = base_jobs[job_id]
         if before == after:
             continue
         if not isinstance(before, dict) or not isinstance(after, dict):
