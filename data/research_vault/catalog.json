@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T20:38:53.819686+00:00",
-  "count": 2383,
+  "generated_at": "2026-09-18T20:53:54.513993+00:00",
+  "count": 2384,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -267,6 +267,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-b9q8fyolssa-3b13f1",
+      "title": "European September Flash PMI Preview",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T17:30:45Z",
+      "summary_points": [
+        "Commodity Inflation Divergence: TTF/Brent/diesel prices surged post-July-August while Euro Area consumer sentiment and Services PMI declined, signaling persistent inflationary pressure despite moderating surveys.",
+        "Germany Structural Weakness: Manufacturing output at 56.6 (highest since 2021) contrasts with deteriorating consumer confidence, truck toll mileage moderation, and contractionary Bundesbank Weekly Activity Index, offsetting positive early indicators.",
+        "France Political Risk Impact: Consumer confidence deteriorates amid political uncertainty, prompting forecast cut to 48.7 (services improvement offset by manufacturing moderation), directly impacting Eurozone economic outlook.",
+        "PMI Consensus Miss Risk: Euro Area Flash Composite PMI (51.7 vs consensus 51.8) and UK Composite PMI (52.2 vs consensus 52.0) expected below consensus, signaling mild deceleration in key economies."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
