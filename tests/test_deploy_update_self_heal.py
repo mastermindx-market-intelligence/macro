@@ -314,6 +314,7 @@ MUST_RESTART = [
     "engine/neuralweb/ask_brain.py",
     "engine/neuralweb/chat_plain_words.py",
     "engine/neuralweb/brain_gateway.py",
+    "engine/neuralweb/calendar_grounding.py",
     "engine/neuralweb/native_facts.py",
     # W1-B imports this typed-fact package on the first native request.  From
     # then on its modules and lru-cached registry/schema validators are pinned.
