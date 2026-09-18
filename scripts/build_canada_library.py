@@ -1225,6 +1225,34 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
                                        entry_sig, risk_sig, eligible, disp_regime,
                                        overlay)
         _write_canada_standouts(board, site)
+
+        # CA-DISCOVERY-SHADOW: preserve the FULL pre-alignment scored research
+        # population in the existing zero-authority Lane-B substrate. Registration
+        # happens strictly AFTER canada_standouts.json is serialized, and the
+        # challenger freezes only ticker/alignment/owner-entry state — never score,
+        # rank, board_pos, Featured, or the published board object.
+        try:
+            from engine import board_shadow, canada_discovery_challenger
+
+            _ca_disc_frozen = canada_discovery_challenger.freeze_evidence(
+                cand, align_map, entry_sig,
+            )
+
+            def _ca_discovery_fn(_asof_arg: str) -> list[dict]:
+                return canada_discovery_challenger.build_candidates(
+                    _ca_disc_frozen, _asof_arg,
+                )
+
+            board_shadow.register_challenger(
+                "CA", canada_discovery_challenger.DEFINITION,
+                discovery_fn=_ca_discovery_fn,
+            )
+        except Exception as _ca_disc_ex:  # noqa: BLE001 — additive shadow research only
+            log.warning(
+                "CA discovery-challenger registration failed (%s) — published board "
+                "and render continue unchanged", _ca_disc_ex,
+            )
+
         log.info("wrote canada_standouts.json (%d buy of %d eligible / %d universe)",
                  len(board["buy"]), eligible, len(cand))
     log.info("canada library: %d analyzed, %d limited (recent listings), %d skipped (empty/failed), %d setups",

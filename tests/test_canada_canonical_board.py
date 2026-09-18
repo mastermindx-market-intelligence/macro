@@ -484,3 +484,107 @@ def test_main_wires_overlay_none_to_the_persisted_fallback():
     main_body = src.split("\ndef main(", 1)[1].split('\nif __name__', 1)[0]
     assert "if overlay is None:" in main_body
     assert "overlay = _last_rendered_overlay()" in main_body
+
+
+# --- CA-DISCOVERY-SHADOW: broaden research recall without changing the board ---
+def _ca_disc_fixture(n=215):
+    cand, align, entry = [], {}, {}
+    for i in range(n):
+        ticker = f"C{i:03d}.TO"
+        cand.append((float(n - i), {
+            "ticker": ticker, "alpha": float(i) / 10,
+            "board_pos": i + 1, "featured": i < 5, "group": "hostile-extra",
+        }))
+        if i % 3 == 0:
+            align[ticker] = {"aligned": True}
+        elif i % 3 == 1:
+            align[ticker] = {"near": True}
+        status = ("buy_now", "await_confluence", "extended", "blocked", None)[i % 5]
+        if status is not None:
+            entry[ticker] = {"status": status}
+    return cand, align, entry
+
+
+def test_ca_discovery_is_uncapped_and_carries_no_rank_or_score():
+    from engine import canada_discovery_challenger as cadc
+    cand, align, entry = _ca_disc_fixture()
+    rows = cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")
+    assert len(rows) == 215
+    assert len({r["security_ref_raw"] for r in rows}) == 215
+    forbidden = {"alpha", "score", "rank", "board_pos", "featured", "group"}
+    assert all(not (forbidden & set(r)) for r in rows)
+    assert rows[0]["candidate_origin"] == "scored_screen+alignment_aligned"
+
+
+def test_ca_discovery_availability_reuses_owner_entry_status_without_upgrading_it():
+    from engine import canada_discovery_challenger as cadc
+    statuses = {
+        "OPEN.TO": "partial",
+        "PULL.TO": "wait_pullback",
+        "RAN.TO": "extended",
+        "BLOCK.TO": "avoid",
+        "WAIT.TO": "buy_soon",
+    }
+    cand = [(1.0, {"ticker": t}) for t in [*statuses, "MISS.TO"]]
+    entry = {t: {"status": s} for t, s in statuses.items()}
+    rows = {r["security_ref_raw"]: r for r in
+            cadc.build_candidates(cadc.freeze_evidence(cand, {}, entry), "2026-09-16")}
+    assert rows["OPEN.TO"]["availability_status"] == cadc.ENTRY_OPEN
+    assert rows["PULL.TO"]["availability_status"] == cadc.WAIT_PULLBACK
+    assert rows["RAN.TO"]["availability_status"] == cadc.RAN_DONT_CHASE
+    assert rows["BLOCK.TO"]["availability_status"] == cadc.BLOCKED
+    assert rows["WAIT.TO"]["availability_status"] == cadc.WAIT_CONFLUENCE
+    assert rows["MISS.TO"]["availability_status"] == cadc.UNAVAILABLE_DATA
+
+
+def test_ca_discovery_does_not_mutate_or_read_published_board_fields():
+    import copy
+    from engine import canada_discovery_challenger as cadc
+    cand, align, entry = _ca_disc_fixture(9)
+    before = copy.deepcopy(cand)
+    rows_a = cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")
+    for _score, row in cand:
+        row["board_pos"] = 999
+        row["featured"] = not bool(row["featured"])
+        row["group"] = "changed"
+    rows_b = cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")
+    assert rows_a == rows_b
+    assert before != cand  # hostile extras really changed; output did not
+
+
+def test_ca_discovery_registration_is_after_artifact_persist_and_before_return():
+    from pathlib import Path
+    source = (Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py").read_text()
+    persist = source.index("_write_canada_standouts(board, site)")
+    register = source.index("board_shadow.register_challenger(", persist)
+    return_board = source.index("    return board", register)
+    assert '"CA"' in source[register:register + 240]
+    assert persist < register < return_board
+    block = source[persist:return_board]
+    assert "canada_discovery_challenger.freeze_evidence" in block
+    assert "canada_discovery_challenger.build_candidates" in block
+
+
+def test_ca_discovery_persists_only_zero_authority_lane_b_rows(tmp_path, monkeypatch):
+    import pandas as pd
+    from engine import board_shadow as bs
+    from engine import canada_discovery_challenger as cadc
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.delenv("CN_LANE", raising=False)
+    monkeypatch.setattr(bs, "_read_incumbent_positions", lambda *_a, **_k: {})
+    bs.CHALLENGER_REGISTRY.clear()
+    cand, align, entry = _ca_disc_fixture(12)
+    frozen = cadc.freeze_evidence(cand, align, entry)
+    try:
+        bs.register_challenger("CA", cadc.DEFINITION,
+                               discovery_fn=lambda asof: cadc.build_candidates(frozen, asof))
+        receipt = bs.write_shadow([], market="CA", asof="2026-09-18")
+        assert receipt["written"] == 12
+        stored = pd.read_parquet(tmp_path / "prophet_shadow" / "ca_discovery.parquet")
+        assert len(stored) == 12
+        assert not stored["published_authority"].fillna(False).astype(bool).any()
+        assert not stored["visible_to_user"].fillna(False).astype(bool).any()
+    finally:
+        bs.CHALLENGER_REGISTRY.clear()
