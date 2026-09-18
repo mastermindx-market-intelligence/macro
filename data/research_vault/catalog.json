@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T06:58:40.365387+00:00",
-  "count": 2339,
+  "generated_at": "2026-09-18T08:52:32.952478+00:00",
+  "count": 2349,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -42,6 +42,7 @@
     "Halcyon",
     "Handelsbanken",
     "ING",
+    "Incrementum",
     "J.P. Morgan",
     "Jefferies",
     "KKR",
@@ -110,6 +111,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-kcnmpfcxvll-fcefa7",
+      "title": "Global Rates Notes BoE Announce Gilt Friendly QT Plan",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:38Z",
+      "summary_points": [
+        "BoE QT Plan Shift: BoE pauses active Gilt sales to private sector until April 2027, redirecting £20bn annual sales to Government; reduces APP Gilt holdings by £368bn by 2034 (avg £46bn/yr), retaining £120bn long-dated Gilts for banknote issuance.",
+        "Market Impact: Gilts rally (30y yields down 13bp, 25-30s curve 8bp flatter), pricing relief with room for asset swap gains; cessation of private sales valued at ~4bp on Gilt swap spreads.",
+        "Gilt Market Dynamics: £46bn net annual Gilt holdings reduction (vs market expectations) drives STR facility use, amplifies swap spread impact, compresses long-run rate expectations via tighter inflation control, and pushes 5% end-year 10y Gilt forecast."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-n1cyyi0umyh-5b5818",
       "title": "Bending Spoons S.p.A. (BSP) Key Takeaways from Meeting with Management (CEO & IR)",
       "institution": "Goldman Sachs",
@@ -147,6 +167,88 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-463mkdebuuf-24983d",
+      "title": "Global Credit Trader An Update on AI Related Debt Issuance",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:31Z",
+      "summary_points": [
+        "Revised 2027 AI Debt Issuance Forecast: $420B gross issuance (60% YoY increase from 2026’s $250B), 65-75% in USD IG market; hyperscalers comprise 40% of AI-related debt.",
+        "USD IG Market Resilience Drivers: Non-AI sectors (Banks, Energy, Healthcare) dominate USD IG market (AI notional at 12%), providing diversification value amid AI issuance growth.",
+        "Hyperscalers’ Capital Structure Shift: Debt capital structures projected to reach size of top IG issuers (JPM, MS, BAC), signaling structural credit market transformation.",
+        "AI Spread Bifurcation & Sector Risk: Hyperscalers outperform hardware/software names; data center financing requires selectivity due to project risks despite broader USD IG resilience.",
+        "EUR AI Issuance Capacity Constraint: EUR market share of AI issuance to rise, but non-USD IG markets (EUR, JPY) lag USD in size, limiting capacity and elevating convertible bond importance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 53,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-utgguevcvna-858734",
+      "title": "Japan August National CPI New Core CPI Unchanged as Deceleration in Food Prices Offsets Impact of Soaring Naphtha and Memor...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:18Z",
+      "summary_points": [
+        "New Core CPI Acceleration: New core CPI (ex one-off factors) accelerated to +2.3% yoy, contrasting with unchanged headline core CPI at +1.9%, critical for policy assessment and asset valuations.",
+        "Tokyo CPI Release: Tokyo CPI data on October 2 is critical for inflation trajectory assessment, directly impacting monetary policy decisions.",
+        "Exclusion Methodology: New core CPI excludes one-time policy factors (e.g., free school fees, tuition shifts), tracking private services inflation (excl. imputed rent), essential for underlying trend analysis.",
+        "Three-Month Average: Three-month average CPI shows lower volatility than private sector services, providing clearer inflation signal for modeling expectations and hedging strategies."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sphhz6z3uvb-79558a",
+      "title": "What's Top of Mind in Macro Research A hawkish Fed meeting, China's economic and corporate prospects",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:00Z",
+      "summary_points": [
+        "Fed Hawkishness & Yield Outlook: Aggressive Fed hike trajectory (October rate hike forecast) with core PCE below median FOMC (3.2%/2.2% vs 3.4%/2.5%), driving global bond yields higher (YE26 10y Bond/Gilt to 3.25%/5.00%) and skewing Treasury yields upward.",
+        "China's Growth Divergence: 2026 real GDP forecast lowered to 4.5% (weak domestic demand), yet Chinese firms' global market share expansion remains a key positive for ex-China markets, contrasting sharply with Global (2.6%) and Euro area (0.9%) growth.",
+        "Policy Divergence & High Rates: Persistent high policy rates (US 4.13%/4.21% 2026/27; Euro area 2.75%/2.80%) amplify regional policy divergence, pressuring bond yields and equity valuations amid structural global growth shifts.",
+        "Global Growth Structural Shift: China's CAI-driven GDP growth (4.5%/4.6% 2026/27) significantly outpaces Global (2.6%/2.7%) and Euro area (0.9%/1.1%), signaling capital flow reallocation and redefining growth drivers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0hxr37xoqdp-7de3b8",
+      "title": "US Equity Views Over earning, but not an earnings bubble",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:16:58Z",
+      "summary_points": [
+        "AI Earnings Tailwind Fade: AI contributed ~50% of S&P 500 EPS growth in 2026 but transitions to marginal drag by 2028 as hyperscaler capex decelerates (from $800B in 2026 to $1.3T in 2027), reducing AI’s EPS impact from 20% to near zero by 2028.",
+        "Earnings-GDP Divergence: S&P 500 earnings growth (51% Q2 2026) vastly exceeds 30-year historical trend (7%) and GDP-linked relationship, raising sustainability concerns amid record cyclically-adjusted P/E (39x).",
+        "Temporary Earnings Inflation: Mega-cap tech’s \"other income\" (Q2 2026: $155B, 12% of EPS) artificially boosted earnings; removing it would reduce 2027 EPS growth by 8pp, with this component diminishing in 2027.",
+        "Semiconductor Margin Vulnerability: Semiconductor margins drove ~25% of S&P 500 earnings growth in 2026; a 1pp margin decline would reduce S&P 500 EPS growth by ~1pp, with margins fading until 2028 amid supply/demand tightness.",
+        "Capex Accounting Impact: Fully expensing hyperscaler capex would slash 2027 S&P 500 EPS by 22%, with depreciation offsetting nearly half of capex-driven EPS growth by 2027 (5pp drag), creating the largest earnings-capex gap since 2001/2008."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
@@ -272,6 +374,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-m7if4mx13nc-a450f4",
+      "title": "Hawkish rate hike from the Fed 2026 09 17",
+      "institution": "SEB",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T00:21:05Z",
+      "summary_points": [
+        "Fed Hawkish Hike: 0.25pp hike to 3.75-4.00% (all 12 members), market reacted hawkishly (stronger dollar), Fed credibility challenged; October hike less likely due to midterms.",
+        "Norges Bank Report: Critical for next week's rate decision; regional report guides moderate growth/inflation focus amid energy price pressures.",
+        "Swedish Data Risk: Energy-driven corporate price hikes, higher unemployment (0.2|0.3), energy prices key downside risk to consumption."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fchir6fxqrc-4a4628",
       "title": "VON32627381",
       "institution": "Other",
@@ -286,6 +407,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6jmeyttw0bb-57d0f5",
+      "title": "GDLS 16.09.2026 EN",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-18T00:16:48Z",
+      "summary_points": [
+        "China's structural supply chain advantage: China maintains lowest strategic vulnerability (0.13) due to minimal dependency (Pillar 1) and superior global competitiveness (Pillar 2), outperforming EU (0.22) and US (0.28) across all product categories.",
+        "EU's competitiveness gap drives policy action: EU's weak global position (Pillar 2 score 0.39 for semiconductors) necessitates urgent policy responses like Chips Act, Net Zero Industry Act, and CRMA to address domestic production deficits.",
+        "Geopolitical strategy divergence: China leverages decades of strategic subsidies for supply chain resilience, while EU prioritizes international partnerships (10% critical materials target by 2030) over circularity, exposing vulnerability gaps requiring accelerated implementation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -310,6 +450,46 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-wipu1i5ebo5-d7ec7f",
+      "title": "Lloyds Market Insights FX Factors 170926 USD",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-18T00:13:37Z",
+      "summary_points": [
+        "Fed's Persistent Hawkish Policy Shift: Unanimous 25bps hike (3.75-4.00%) with SEP revisions (2026 GDP 2.2→2.3, U-rate 4.3→4.1) signaling sustained anti-inflation stance despite market expectations, neutral rate rising.",
+        "Geopolitical Inflation Upside Risk: Middle East tensions and persistent inflation (>3% in many categories) skew price risks upward, with Fed downplaying data improvements, necessitating continued tight policy.",
+        "USD Strength vs.",
+        "Europe's Divergence: US macro resilience (strong growth, energy independence) sustains USD strength, contrasting Europe's slower growth and higher inflation risks, limiting EUR/GBP outperformance vs USD."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q8omsbdwdzb-f33993",
+      "title": "IGWT Special Gold Oktoberfest Beer Ratio 2026 EN",
+      "institution": "Incrementum",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T00:01:27Z",
+      "summary_points": [
+        "Gold-Oktoberfest Beer Ratio: Ratio surged to 240 Maß/ounce (2026), up from 79 (1976), driven by gold’s 29.7% price rise (EUR 3,827) vs. beer’s minimal EUR 15.90 increase, signaling strong real value growth and inflation hedging potential.",
+        "In Gold We Trust Report 2026: 25th-anniversary edition \"Back to Monetary Future\" emphasizes gold’s strategic role in monetary systems, serving as a benchmark for portfolio positioning amid fiat instability.",
+        "2026 Gold/Silver Miners Focus: Critical sector fundamentals assessed via Barrick, Newmont, Agnico Eagle, Kinross, and 18+ producers, prioritizing production/reserves data and strategic positioning for portfolio construction.",
+        "Geopolitical Risk Exposure: Companies operate in high-risk regions (Mexico, Peru, Argentina, West Africa), with varying political stability and regulatory environments directly impacting operational continuity and costs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xgznbpprtcf-e715c8",
       "title": "MACRO WEEK AHEAD WEEK OF SEPTEMBER 21",
       "institution": "J.P. Morgan",
@@ -321,6 +501,25 @@
         "Trump-Xi Summit: High-stakes DC meeting (SEP 23) introduces critical geopolitical uncertainty and potential market volatility.",
         "Near-Term Catalysts: CPI, NFP, ISM, and Retail Sales (SEP 20-24) drive immediate volatility and rate expectations for sector rotation.",
         "US-China Trade Risk: AI talks (RTS), Nov 1 trade truce expiry, and US midterms (Nov 3) threaten trade stability and policy shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cr3negzwj4w-24c1cb",
+      "title": "Blog",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T23:50:52Z",
+      "summary_points": [
+        "Fed rate hike to 3.75%-4.00%: First increase since July 2023 (25bps), with median 2026 rate at 4.1% (1 more hike in 2024, 50bp cumulative through 2027).",
+        "Peak rate timing & reversal: Median projections show rate hikes peak 2027-2028, declining thereafter; policy normalization critical for fixed income/liquidity positioning.",
+        "Inflation disinflation trend: Core PCE revised down to 3.2% (below July’s 3.3%), contradicting market pricing for excessive hikes (4 hikes expected)."
       ],
       "tags": [],
       "tickers": [],
