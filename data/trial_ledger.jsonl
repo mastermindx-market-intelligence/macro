@@ -1673,3 +1673,4 @@
 {"ts": "2026-08-31T06:21:57.523668+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-08-31-in-low-volatility-regimes-negative-10-d-3ac05c", "config_hash": "ccd7834adf805f95"}
 {"ts": "2026-08-31T06:21:57.531381+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-08-31-in-high-volatility-regimes-extended-dwe-235ca3", "config_hash": "fe975a0c7aa7fcfb"}
 {"ts": "2026-09-18T08:49:36.116723+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5", "config_hash": "81ffeacbbe20fbc0"}
+{"ts": "2026-09-18T19:52:35.259468+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc", "config_hash": "d73d710d50dfd299"}
