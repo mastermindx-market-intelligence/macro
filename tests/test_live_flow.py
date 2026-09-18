@@ -558,6 +558,29 @@ class TestEventIdIdempotency:
         ]
         assert loaded.attrs["oi_vintage"] == "2026-09-03"
 
+    def test_surface_oi_snapshot_preserves_exact_loader_vintage(self, monkeypatch) -> None:
+        from scripts import live_flow_poller as poller
+
+        oi = pd.DataFrame([{
+            "expiration": "2026-09-18", "strike": 100.0,
+            "right": "C", "open_interest": 50,
+        }])
+        oi.attrs["oi_vintage"] = "2026-09-03"
+        monkeypatch.setattr(poller, "_load_oi_prev", lambda root, session_date: oi.copy())
+        poller._SURFACE_OI_CACHE.clear()
+
+        oi_map, vintage = poller._surface_oi_snapshot("TEST", "2026-09-08")
+        assert oi_map[("2026-09-18", 100.0, "C")] == 50.0
+        assert vintage == "2026-09-03"
+
+        # The second read is session-cached and must preserve the same basis.
+        monkeypatch.setattr(
+            poller, "_load_oi_prev",
+            lambda *args, **kwargs: pytest.fail("surface OI cache should be reused"),
+        )
+        assert poller._surface_oi_snapshot("TEST", "2026-09-08") == (oi_map, vintage)
+
+
     def test_oi_loader_returns_none_after_five_prior_sessions(self, monkeypatch) -> None:
         from engine import thetadata_store as theta_store
         from scripts import live_flow_poller as poller
@@ -2315,18 +2338,20 @@ class TestRunCycleEndToEnd:
     _STRIKES = {"SPY": 550.0, "QQQ": 460.0, "IWM": 200.0}
 
     def _root_frame(self, root: str, t_hhmm: str, size: int = 100,
-                    price: float = 2.80, seq_base: int = 1000) -> pd.DataFrame:
-        """One ask-side call trade for `root` at `t_hhmm` ET on SESSION_DATE."""
+                    price: float = 2.80, seq_base: int = 1000,
+                    session_date: str = SESSION_DATE) -> pd.DataFrame:
+        """One ask-side call trade for `root` at `t_hhmm` ET on `session_date`."""
         from zoneinfo import ZoneInfo
         et = ZoneInfo("America/New_York")
         h, m = int(t_hhmm[:2]), int(t_hhmm[3:])
-        ts_utc = (datetime(2026, 7, 2, h, m, 0, tzinfo=et)
+        y, mo, d = (int(part) for part in session_date.split("-"))
+        ts_utc = (datetime(y, mo, d, h, m, 0, tzinfo=et)
                   .astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
         return pd.DataFrame([{
             "root": root, "right": "C", "expiration": "2026-07-05",
             "strike": self._STRIKES[root], "price": price, "bid": 2.40, "ask": 2.80,
             "size": size, "trade_timestamp": ts_utc, "quote_timestamp": ts_utc,
-            "sequence": seq_base, "date": SESSION_DATE,
+            "sequence": seq_base, "date": session_date,
         }])
 
     def _run_real_cycle(self, monkeypatch, frames: dict,
@@ -2334,7 +2359,9 @@ class TestRunCycleEndToEnd:
                         cycle_watermarks: dict | None = None,
                         cycle_started_at: str | None = None,
                         observed_start_to_start_sec: float | None = None,
-                        cadence_sec: int = 120) -> tuple:
+                        cadence_sec: int = 120,
+                        session_date: str = SESSION_DATE,
+                        fixed_now: datetime | None = None) -> tuple:
         """Invoke the real run_cycle with all I/O stubbed.
 
         `frames` maps root → canned calls DataFrame (the puts leg returns an empty
@@ -2360,7 +2387,7 @@ class TestRunCycleEndToEnd:
         monkeypatch.setattr(poller, "_upload_r2", _no_r2)
 
         from datetime import datetime as dt2
-        fixed_now = dt2(2026, 7, 2, 18, 30, 0, tzinfo=timezone.utc)  # 14:30 ET
+        fixed_now = fixed_now or dt2(2026, 7, 2, 18, 30, 0, tzinfo=timezone.utc)  # 14:30 ET
         monkeypatch.setattr(poller, "datetime",
                             type("FakeDT", (), {
                                 "now": staticmethod(lambda tz=None: fixed_now),
@@ -2377,7 +2404,7 @@ class TestRunCycleEndToEnd:
             "etf_anchors": ["SPY", "QQQ", "IWM"],
             "retention_hours": 24,
         }
-        def fake_stager(session_date, events):
+        def fake_stager(staged_session_date, events):
             for event in events:
                 event["available_at"] = event["decision_at"]
                 event["published_at"] = None
@@ -2386,7 +2413,7 @@ class TestRunCycleEndToEnd:
             return events
         return poller.run_cycle(
             roots=list(frames.keys()),
-            session_date=SESSION_DATE,
+            session_date=session_date,
             delta_mode="full_day",
             day_state=day_state or {},
             baselines={},
@@ -2398,7 +2425,7 @@ class TestRunCycleEndToEnd:
             observed_start_to_start_sec=observed_start_to_start_sec,
         )
 
-    def test_surface_quote_tap_uses_the_canonical_cycle_clock(self, monkeypatch):
+    def test_surface_quote_tap_uses_fetched_root_observation_not_cycle_start(self, monkeypatch):
         import scripts.build_flow_surface as bfs
 
         seen = {}
@@ -2423,7 +2450,57 @@ class TestRunCycleEndToEnd:
         )
 
         assert seen["session_date"] == SESSION_DATE
-        assert seen["observed_at"] == started
+        # _run_real_cycle freezes the actual fetch-completion clock at 18:30:00Z.
+        # A quote available then must never be valued against the earlier cycle start.
+        assert seen["observed_at"] == "2026-07-02T18:30:00Z"
+
+    def test_surface_quote_tap_keeps_trade_and_nbbo_clocks_distinct(self, monkeypatch):
+        frame = self._root_frame("SPY", "09:30", seq_base=1000)
+        frame.loc[0, "expiration"] = "2026-07-06"  # valid NYSE session after July 2
+        frame.loc[0, "quote_timestamp"] = "2026-07-02T13:29:58.500Z"
+
+        _, _, _, _, tide = self._run_real_cycle(
+            monkeypatch, {"SPY": frame}, cycle_started_at="2026-07-02T18:29:59Z",
+        )
+
+        quote = tide["surface_quotes"]["SPY"][0]
+        assert quote["trade_at"] == "2026-07-02T13:30:00Z"
+        assert quote["quote_at"] == "2026-07-02T13:29:58.500000Z"
+        assert tide["surface_observed_at"]["SPY"] == "2026-07-02T18:30:00Z"
+
+    @pytest.mark.parametrize(
+        ("session_date", "trade_hhmm", "fixed_now", "cycle_started_at"),
+        [
+            (
+                "2026-07-02", "15:50",
+                datetime(2026, 7, 2, 20, 1, 0, tzinfo=timezone.utc),
+                "2026-07-02T19:50:00Z",
+            ),
+            (
+                "2026-11-27", "12:50",
+                datetime(2026, 11, 27, 18, 1, 0, tzinfo=timezone.utc),
+                "2026-11-27T17:50:00Z",
+            ),
+        ],
+    )
+    def test_surface_quote_tap_excludes_0dte_after_session_close(
+        self, monkeypatch, session_date, trade_hhmm, fixed_now, cycle_started_at,
+    ):
+        frame = self._root_frame(
+            "SPY", trade_hhmm, seq_base=1000, session_date=session_date,
+        )
+        frame.loc[0, "expiration"] = session_date
+
+        _, _, _, _, tide = self._run_real_cycle(
+            monkeypatch, {"SPY": frame},
+            cycle_started_at=cycle_started_at,
+            session_date=session_date,
+            fixed_now=fixed_now,
+        )
+
+        observed = fixed_now.isoformat().replace("+00:00", "Z")
+        assert tide["surface_observed_at"]["SPY"] == observed
+        assert tide["surface_quotes"].get("SPY") in (None, [])
 
     def test_meta_v2_separates_poll_source_and_compute_clocks(self, monkeypatch):
         started = "2026-07-02T18:29:59Z"

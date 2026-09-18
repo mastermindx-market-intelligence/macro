@@ -353,6 +353,41 @@ def test_frame_for_stamp_truncates_to_realized_window():
     assert unk["time_steps"] == ["09:31", "09:41", "09:51"]
 
 
+def test_frame_for_stamp_preserves_the_selected_columns_valuation_clock():
+    full = append_stamp(
+        None, stamp="0931", time_step="09:31", net_by_strike={600.0: 1.0},
+        spot=600.0, asof="2026-07-06T13:31:00Z", cadence_sec=600,
+        session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:00Z",
+    )
+    full = append_stamp(
+        full, stamp="0941", time_step="09:41", net_by_strike={600.0: 2.0},
+        spot=601.0, asof="2026-07-06T13:41:00Z", cadence_sec=600,
+        session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:41:00Z",
+    )
+    assert frame_for_stamp(full, "0931")["valuation_at"] == "2026-07-06T13:31:00Z"
+    assert frame_for_stamp(full, "0941")["valuation_at"] == "2026-07-06T13:41:00Z"
+
+
+def test_frame_for_stamp_preserves_unknown_nbbo_clock_as_explicit_null():
+    full = append_stamp(
+        None, stamp="0931", time_step="09:31", net_by_strike={600.0: 1.0},
+        spot=600.0, asof="2026-07-06T13:31:00Z", cadence_sec=600,
+        session_date="2026-07-06", root="SPY",
+        valuation_at="2026-07-06T13:31:00Z", built_at="2026-07-06T13:31:30Z",
+        trade_at_first="2026-07-06T13:30:10Z", trade_at_last="2026-07-06T13:30:20Z",
+        quote_at_first=None, quote_at_last=None, oi_vintage="2026-07-02",
+    )
+    frame = frame_for_stamp(full, "0931")
+    assert frame["built_at"] == "2026-07-06T13:31:30Z"
+    assert frame["trade_at_first"] == "2026-07-06T13:30:10Z"
+    assert frame["trade_at_last"] == "2026-07-06T13:30:20Z"
+    assert "quote_at_first" in frame and frame["quote_at_first"] is None
+    assert "quote_at_last" in frame and frame["quote_at_last"] is None
+    assert frame["oi_vintage"] == "2026-07-02"
+
+
 # ── (e) empty-session behavior ──────────────────────────────────────────────────────
 
 def test_empty_index_latest_is_null():
@@ -364,6 +399,43 @@ def test_empty_index_latest_is_null():
     # Empty index passes the files contract with no files; a non-null latest fails latestOk.
     assert check_index_files_contract(idx, [])["ok"] is True
     assert check_index_files_contract(dict(idx, latest="0931"), [])["latestOk"] is False
+
+
+def test_per_root_observation_controls_stamp_asof_and_missing_root_is_not_relabelled(tmp_path, monkeypatch):
+    import lib.config as cfg_mod
+    from datetime import datetime, timezone
+    monkeypatch.setattr(cfg_mod, "data_dir", lambda: tmp_path)
+
+    paths = build_and_stage_surfaces(
+        root_strikes_by_root={
+            "SPY": _mk_strikes(s600=(1_000.0, 0.0)),
+            "QQQ": _mk_strikes(s500=(2_000.0, 0.0)),
+            "IWM": _mk_strikes(s200=(3_000.0, 0.0)),
+        },
+        roots=["SPY", "QQQ", "IWM"],
+        session_date="2026-07-06",
+        asof="2026-07-06T18:44:00Z",
+        cadence_sec=60,
+        now=datetime(2026, 7, 6, 18, 44, tzinfo=timezone.utc),
+        observed_at_by_root={
+            "SPY": "2026-07-06T18:00:00Z",  # 14:00 ET
+            "QQQ": "2026-07-06T18:43:00Z",  # 14:43 ET
+            # IWM intentionally absent: cumulative state must not be stamped fresh.
+        },
+    )
+    by_key = {k: p for p, k in paths}
+    assert "live_flow/surface/SPY/1400.json" in by_key
+    assert "live_flow/surface/QQQ/1443.json" in by_key
+    assert not any(k.startswith("live_flow/surface/IWM/") for k in by_key)
+
+    spy = json.loads(by_key["live_flow/surface/SPY/1400.json"].read_text())
+    qqq = json.loads(by_key["live_flow/surface/QQQ/1443.json"].read_text())
+    assert spy["asof"] == "2026-07-06T18:00:00Z"
+    assert qqq["asof"] == "2026-07-06T18:43:00Z"
+    assert spy["valuation_at"] == "2026-07-06T18:00:00Z"
+    assert qqq["valuation_at"] == "2026-07-06T18:43:00Z"
+    assert spy["built_at"] == "2026-07-06T18:44:00Z"
+    assert qqq["built_at"] == "2026-07-06T18:44:00Z"
 
 
 def test_empty_rollup_writes_no_column(tmp_path, monkeypatch):
@@ -679,27 +751,63 @@ def test_year_fraction_uses_elapsed_clock_across_dates_and_dst():
 
 def test_extract_cycle_quotes_takes_freshest_nbbo():
     # Two fills for the same (exp,strike,right); the LATER trade_timestamp's NBBO wins.
+    # The provider's quote_timestamp remains a separate NBBO source clock.
     calls = pd.DataFrame([
         {"expiration": "2026-07-13", "strike": 600.0, "right": "C",
-         "trade_timestamp": "2026-07-06T10:00:00", "bid": 5.0, "ask": 5.2},
+         "trade_timestamp": "2026-07-06T10:00:00",
+         "quote_timestamp": "2026-07-06T09:59:59.800", "bid": 5.0, "ask": 5.2},
         {"expiration": "2026-07-13", "strike": 600.0, "right": "C",
-         "trade_timestamp": "2026-07-06T10:05:00", "bid": 6.0, "ask": 6.4},  # fresher
+         "trade_timestamp": "2026-07-06T10:05:00",
+         "quote_timestamp": "2026-07-06T10:04:58.750", "bid": 6.0, "ask": 6.4},  # fresher trade
         {"expiration": "2026-07-13", "strike": 605.0, "right": "C",
-         "trade_timestamp": "2026-07-06T10:03:00", "bid": 3.0, "ask": 3.2},
+         "trade_timestamp": "2026-07-06T10:03:00",
+         "quote_timestamp": "2026-07-06T10:02:57.500", "bid": 3.0, "ask": 3.2},
     ])
     puts = pd.DataFrame([
         {"expiration": "2026-07-13", "strike": 595.0, "right": "P",
-         "trade_timestamp": "2026-07-06T10:02:00", "bid": 2.0, "ask": 2.2},
+         "trade_timestamp": "2026-07-06T10:02:00",
+         "quote_timestamp": "2026-07-06T10:01:59.250", "bid": 2.0, "ask": 2.2},
     ])
     q = extract_cycle_quotes(calls, puts, session_date="2026-07-06",
-                             observed_at="2026-07-06T14:00:00Z", near_dte_cap_days=90)
+                             observed_at="2026-07-06T14:06:00Z", near_dte_cap_days=90)
     by_key = {(d["strike"], d["right"]): d for d in q}
-    # 600C mid = (6.0+6.4)/2 = 6.2 (the fresher fill), NOT 5.1.
+    # 600C mid = (6.0+6.4)/2 = 6.2 (the fresher trade row), NOT 5.1.
     assert abs(by_key[(600.0, "C")]["mid"] - 6.2) < 1e-9
     assert abs(by_key[(605.0, "C")]["mid"] - 3.1) < 1e-9
     assert abs(by_key[(595.0, "P")]["mid"] - 2.1) < 1e-9
+    # Trade event, prevailing-NBBO source and fetched-root valuation clocks are distinct.
+    assert by_key[(600.0, "C")]["trade_at"] == "2026-07-06T14:05:00Z"
+    assert by_key[(600.0, "C")]["quote_at"] == "2026-07-06T14:04:58.750000Z"
+    assert by_key[(605.0, "C")]["trade_at"] == "2026-07-06T14:03:00Z"
+    assert by_key[(605.0, "C")]["quote_at"] == "2026-07-06T14:02:57.500000Z"
     # exp_years > 0 for all (7 days out from session).
     assert all(d["exp_years"] > 0 for d in q)
+
+
+def test_extract_cycle_quotes_does_not_fabricate_missing_quote_clock_from_trade_time():
+    tape = pd.DataFrame([{
+        "expiration": "2026-07-13", "strike": 600.0, "right": "C",
+        "trade_timestamp": "2026-07-06T10:00:00", "bid": 5.0, "ask": 5.2,
+    }])
+    q = extract_cycle_quotes(
+        tape, None, session_date="2026-07-06",
+        observed_at="2026-07-06T14:01:00Z", near_dte_cap_days=90,
+    )
+    assert len(q) == 1
+    assert q[0]["trade_at"] == "2026-07-06T14:00:00Z"
+    assert q[0]["quote_at"] is None
+
+
+def test_extract_cycle_quotes_rejects_source_clock_later_than_root_observation():
+    tape = pd.DataFrame([{
+        "expiration": "2026-07-13", "strike": 600.0, "right": "C",
+        "trade_timestamp": "2026-07-06T09:59:59.900",
+        "quote_timestamp": "2026-07-06T10:00:00.100", "bid": 5.0, "ask": 5.2,
+    }])
+    assert extract_cycle_quotes(
+        tape, None, session_date="2026-07-06",
+        observed_at="2026-07-06T14:00:00Z", near_dte_cap_days=90,
+    ) == []
 
 
 def test_extract_cycle_quotes_drops_bad_quotes_and_expired():
@@ -757,9 +865,17 @@ def test_oi_by_contract_keys():
 
 def test_greek_columns_for_stamp_joins_and_covers():
     quotes, oi_map = _bs_chain_quotes()
+    for i, quote in enumerate(quotes):
+        quote["trade_at"] = f"2026-07-06T13:30:{i + 10:02d}Z"
+        quote["quote_at"] = f"2026-07-06T13:30:{i:02d}Z"
     out = greek_columns_for_stamp(quotes, oi_map=oi_map, spot=600.0)
     assert set(out["by_strike"]) == set(GREEK_METRICS)
-    assert out["coverage"] == 1.0                       # every quoted strike had OI
+    assert out["coverage"] == 1.0
+    assert out["trade_at_first"] == "2026-07-06T13:30:10Z"
+    assert out["trade_at_last"] == f"2026-07-06T13:30:{len(quotes) + 9:02d}Z"
+    assert out["quote_at_first"] == "2026-07-06T13:30:00Z"
+    assert out["quote_at_last"] == f"2026-07-06T13:30:{len(quotes) - 1:02d}Z"
+    # Every quoted strike had OI.
     assert set(out["walls"]) == {"flip", "callWall", "putWall"}
     assert out["walls"]["callWall"] is not None and out["walls"]["callWall"] > 600.0
     assert out["walls"]["putWall"] is not None and out["walls"]["putWall"] < 600.0
@@ -812,15 +928,22 @@ def test_greek_failure_does_not_break_netprem(tmp_path, monkeypatch):
 # ── (g7) end-to-end: build_and_stage_surfaces with quotes → greek grids on disk ──────
 
 def test_build_and_stage_with_quotes_writes_greek_grids(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
     import lib.config as cfg_mod
     monkeypatch.setattr(cfg_mod, "data_dir", lambda: tmp_path)
 
     quotes, oi_map = _bs_chain_quotes(spot=600.0)
+    for i, quote in enumerate(quotes):
+        quote["trade_at"] = f"2026-07-06T13:30:{i + 10:02d}Z"
+        quote["quote_at"] = f"2026-07-06T13:30:{i:02d}Z"
     rstk = {"SPY": _mk_strikes(s600=(1_000_000.0, 400_000.0), s605=(200_000.0, 900_000.0))}
     paths = build_and_stage_surfaces(
         root_strikes_by_root=rstk, roots=["SPY"], session_date="2026-07-06",
         asof="2026-07-06T13:51:00Z", cadence_sec=120, spot_by_root={"SPY": 600.0},
         quotes_by_root={"SPY": quotes}, oi_by_root={"SPY": oi_map},
+        observed_at_by_root={"SPY": "2026-07-06T13:31:00Z"},
+        oi_vintage_by_root={"SPY": "2026-07-02"},
+        now=datetime(2026, 7, 6, 13, 31, 30, tzinfo=timezone.utc),
     )
     legacy_snap_key = _legacy_stamp_keys({k for _, k in paths})[0]
     snap_local = next(p for p, k in paths if k == legacy_snap_key)
@@ -833,6 +956,13 @@ def test_build_and_stage_with_quotes_writes_greek_grids(tmp_path, monkeypatch):
     assert set(snap.get("walls", {})) >= {"flip", "callWall", "putWall"}
     cov = (snap.get("coverage") or {}).get("greeks")
     assert isinstance(cov, (int, float)) and 0.0 <= cov <= 1.0
+    assert snap["valuation_at"] == "2026-07-06T13:31:00Z"
+    assert snap["built_at"] == "2026-07-06T13:31:30Z"
+    assert snap["trade_at_first"] == "2026-07-06T13:30:10Z"
+    assert snap["trade_at_last"] == f"2026-07-06T13:30:{len(quotes) + 9:02d}Z"
+    assert snap["quote_at_first"] == "2026-07-06T13:30:00Z"
+    assert snap["quote_at_last"] == f"2026-07-06T13:30:{len(quotes) - 1:02d}Z"
+    assert snap["oi_vintage"] == "2026-07-02"
 
 
 # ══ (g) date-keyed retention — M-XP(a) ══════════════════════════════════════════════
