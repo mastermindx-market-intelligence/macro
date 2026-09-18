@@ -187,7 +187,10 @@ push_attempt() {
     return 1
   fi
   PUSH_ATTEMPT=$(( PUSH_ATTEMPT + 1 ))
-  push_capture_attempt_anchor
+  # Generic retry accounting is intentionally Git-light. Rebase callers capture
+  # their tracked recovery anchor only at push_fetch_main_for_rebase(), immediately
+  # before entering porcelain rebase machinery; metadata-only publishers never pay
+  # repository-wide diff/stash cost merely to count an attempt.
   # Default for this attempt: it died on the fetch/rebase leg before ever reaching the
   # push. push_do and push_abort_rebase refine it from there.
   PUSH_FAIL_CLASS="sync"
@@ -645,7 +648,13 @@ push_fetch_main_for_rebase() {
     PUSH_FAIL_CLASS="sync"
     return 1
   fi
-  push_quarantine_untracked_collisions origin/main
+  if ! push_quarantine_untracked_collisions origin/main; then
+    return 1
+  fi
+  # The fetch/quarantine boundary is the last shared point before callers enter
+  # porcelain rebase. Capture tracked state here, not in push_attempt(): exact-tree
+  # / metadata-only publishers never rebase and must retain their old retry cost.
+  push_capture_attempt_anchor
 }
 
 # ---------------------------------------------------------------------------

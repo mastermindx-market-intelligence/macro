@@ -926,6 +926,7 @@ def test_abort_rebase_fails_closed_when_quit_exposes_partial_rebase_state(tmp_pa
 
 def _current_attempt_conflict_repo(tmp_path: Path, *, dirty: bool = False) -> tuple[Path, str]:
     repo = tmp_path / ("repo-dirty" if dirty else "repo-clean")
+    bare = tmp_path / ("origin-dirty.git" if dirty else "origin-clean.git")
     _init_repo(repo)
     for name, body in (
         ("file", "base\n"),
@@ -937,9 +938,14 @@ def _current_attempt_conflict_repo(tmp_path: Path, *, dirty: bool = False) -> tu
     _git_output(repo, "commit", "-m", "base")
     base = _git_output(repo, "rev-parse", "HEAD")
 
-    _git_output(repo, "checkout", "-b", "upstream")
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(bare)], check=True)
+    _git_output(repo, "remote", "add", "origin", str(bare))
+    _git_output(repo, "push", "-u", "origin", "main")
+
+    # origin/main is the exact upstream target used by production retry callers.
     (repo / "file").write_text("upstream\n")
     _git_output(repo, "commit", "-am", "upstream")
+    _git_output(repo, "push", "origin", "main")
 
     _git_output(repo, "checkout", "-b", "topic", base)
     (repo / "file").write_text("topic\n")
@@ -959,7 +965,9 @@ def test_abort_rebase_restores_exact_current_attempt_after_malformed_real_confli
         r"""
         push_retry_init "t"
         push_attempt
-        git rebase --autostash upstream >/tmp/push-retry-current-attempt-first.log 2>&1 || true
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        git rebase --autostash origin/main >/tmp/push-retry-current-attempt-first.log 2>&1 || true
         gd=$(git rev-parse --git-dir)
         rm -f "$gd/rebase-merge/head-name" "$gd/rebase-merge/orig-head"
         push_abort_rebase
@@ -972,7 +980,7 @@ def test_abort_rebase_restores_exact_current_attempt_after_malformed_real_confli
         test ! -d "$gd/rebase-apply"
 
         rc=0
-        out=$(git rebase upstream 2>&1) || rc=$?
+        out=$(git rebase origin/main 2>&1) || rc=$?
         test "$rc" -ne 0
         case "$out" in
           *"already a rebase-merge directory"*|*"index contains uncommitted changes"*|*"unstaged changes"*)
@@ -996,7 +1004,9 @@ def test_abort_rebase_current_attempt_anchor_restores_staged_and_unstaged_bytes(
         r"""
         push_retry_init "t"
         push_attempt
-        git rebase --autostash upstream >/tmp/push-retry-current-attempt-dirty.log 2>&1 || true
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        git rebase --autostash origin/main >/tmp/push-retry-current-attempt-dirty.log 2>&1 || true
         gd=$(git rev-parse --git-dir)
         rm -f "$gd/rebase-merge/head-name" "$gd/rebase-merge/orig-head"
         push_abort_rebase
@@ -1017,6 +1027,30 @@ def test_abort_rebase_current_attempt_anchor_restores_staged_and_unstaged_bytes(
         cwd=repo,
     )
     assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_metadata_only_push_attempt_does_not_capture_rebase_anchor(tmp_path):
+    """Retry accounting alone must not scan/stash a dirty repository."""
+    repo = tmp_path / "repo-metadata-only"
+    _init_repo(repo)
+    (repo / "a").write_text("base\n")
+    _git_output(repo, "add", ".")
+    _git_output(repo, "commit", "-m", "base")
+    (repo / "a").write_text("dirty current output\n")
+
+    log = tmp_path / "git-calls.log"
+    fakebin = _logging_git(tmp_path, log)
+    r = run_sh(
+        'push_retry_init "metadata-only"; push_attempt; echo "anchor=$PUSH_ATTEMPT_ANCHOR_VALID"',
+        env={"PATH": f"{fakebin}:{os.environ['PATH']}"},
+        cwd=repo,
+    )
+    assert r.returncode == 0, r.stderr
+    assert "anchor=0" in r.stdout
+    calls = log.read_text().splitlines() if log.exists() else []
+    assert "diff" not in calls, calls
+    assert "stash" not in calls, calls
+    assert "write-tree" not in calls, calls
 
 
 # ---------------------------------------------------------------------------
