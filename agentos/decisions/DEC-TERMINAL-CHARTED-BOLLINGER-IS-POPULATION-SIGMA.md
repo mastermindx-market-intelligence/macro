@@ -64,6 +64,7 @@ evidence:
   - "Terminal lib/suites/trend/marketDashboard.ts:247 — `const sd = Math.sqrt(ss / BB_LEN); // population sigma, like ta.stdev`"
   - "Macro engine/bollinger_event_signals.py `_bb_bands()` — close.rolling(n).std(ddof=1), i.e. the pandas default"
   - "Measured on the 500-bar tech_parity fixture: published Pine source vs population bands = 1.4e-15 max relative (same formula); vs ddof=1 = 0.1997% upper / 0.2360% lower (worst bar 246: 101.3087 vs 101.1067)"
+  - "Downstream readout impact: get_technicals %B shifts up to 2.171 percentage points and its bbPos label flips on 4/481 fixture bars"
   - "That gap is ~2,000x the 1e-6 parity tolerance and 4x larger than the retired test.todo's '~0.05%' estimate"
   - "Terminal lib/__tests__/bollingerRenderParity.test.ts — pins the charted contract against the published Pine source executed by lib/pine-engine, with a positive control proving the oracle rejects ddof=1 bands"
   - "tests/fixtures/tech_parity/expected_bollinger.json unchanged; no tolerance loosened (new budget 1e-12)"
@@ -93,7 +94,12 @@ Conflating them made an anti-drift suite that could pass while the product drift
 suite validated a function the chart never called, and a `test.todo` recorded that fact
 for as long as it stayed unresolved. Meanwhile the ddof=1 bands did reach a user surface:
 `get_technicals`, which advertises itself as TradingView-style, was reporting Bollinger
-position and %B up to ~0.2% off the bands drawn beside them.
+position and %B derived from bands 2.6% wider than the ones drawn beside them. On the
+parity fixture that is up to **2.171 percentage points** of %B — %B is a ratio whose
+denominator is the band width, so it moves by roughly ten times the 0.2% band-value gap —
+and it flipped the `bbPos` label on 4 of 481 bars (2 `upper_half` to `above_upper_band`,
+2 `lower_half` to `below_lower_band`), because the correct population bands are narrower
+and price breaches them slightly more often.
 
 Naming them separately costs one `ddof` argument and keeps both honest. The Ribbon EMA
 divergence in the same fixture family is deliberately NOT resolved by this decision: the
