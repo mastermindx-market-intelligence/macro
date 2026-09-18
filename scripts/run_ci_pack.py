@@ -1480,7 +1480,14 @@ def _safe_manifest_changed_job_ids(
     """
     if changed_from is None or not re.fullmatch(r"[0-9a-f]{40}", changed_from):
         return None
-    root = (repo_root or Path(__file__).resolve().parent.parent).resolve()
+    if repo_root is None:
+        try:
+            from scripts.audit_unrun_tests import ROOT as audit_repository_root
+        except (ImportError, OSError, RuntimeError, SyntaxError):
+            return None
+        root = Path(audit_repository_root).resolve()
+    else:
+        root = repo_root.resolve()
     try:
         relative = workflow.resolve().relative_to(root).as_posix()
     except (OSError, ValueError):
