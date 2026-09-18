@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T22:00:34.755504+00:00",
-  "count": 2387,
+  "generated_at": "2026-09-18T22:24:05.419879+00:00",
+  "count": 2388,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-in7lbnkexwm-9861a7",
+      "title": "European Views Not So Fast",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:48:26Z",
+      "summary_points": [
+        "ECB Rate Hike & Growth Outlook: ECB deposit rate hike to 2.75% expected in December; Eurozone H1 growth (1.2%) exceeded forecasts, with 2027 growth projected at 1.4%, underpinned by reduced energy sensitivity and German fiscal expansion.",
+        "Energy Pressures & Inflation: TTF gas prices nearly doubled since June, driving Q4 inflation forecast to 3.8% yoy; cold winter and food price firming from weather add upside risk to inflation.",
+        "Elevated Neutral Rate (r*): Economy’s resilience supports higher r*; IMF estimates average 2.5% nominal, with robust bank lending and global equity prices justifying sustained higher rates.",
+        "Policy vs.",
+        "Market Pricing: ECB likely to hike to 2.75% in December (terminal rate 2.25%), but markets overprice hikes above 3%; Goldman Sachs skepticism on sustained rates >3% amid energy inflation pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-urhu9ocub0e-eee528",
       "title": "US Economic Notes What you need to know for the week ahead",
