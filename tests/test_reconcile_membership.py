@@ -315,3 +315,21 @@ def test_us_structural_audit_refuses_ambiguous_reference_integrity(tmp_path):
     assert incomplete["skipped"] is True
     assert incomplete["drift"] is None
     assert "classification" in incomplete["note"].lower()
+
+
+def test_collect_threads_same_run_breadth_status_into_us_structural_audit() -> None:
+    """The audit must consume THIS invocation's breadth status, never stale disk alone."""
+    from collectors.base import FetchResult
+    from scripts import collect
+
+    assert collect._current_result_status(
+        [FetchResult("breadth", "failed"), FetchResult("yahoo", "ok")],
+        "breadth",
+    ) == "failed"
+    assert collect._current_result_status(
+        [FetchResult("yahoo", "ok")], "breadth"
+    ) is None
+
+    source = (Path(__file__).resolve().parents[1] / "scripts" / "collect.py").read_text()
+    assert '_current_result_status(results, "breadth")' in source
+    assert "reconcile_membership.run(us_sector_reference_status=_breadth_status)" in source
