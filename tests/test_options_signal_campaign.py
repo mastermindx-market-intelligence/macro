@@ -777,3 +777,22 @@ def test_campaign_refuses_an_owner_valid_training_eligible_h60_source(
 
     with pytest.raises(CampaignContractError, match="unexpectedly permits training"):
         run(root_dir=root)
+
+@pytest.mark.parametrize("dangling_kind", ["base", "parts"])
+def test_campaign_shared_session_reader_rejects_dangling_symlink(
+    tmp_path: Path, dangling_kind: str,
+) -> None:
+    base = tmp_path / campaign_engine.SESSION_PATH
+    base.parent.mkdir(parents=True, exist_ok=True)
+    if dangling_kind == "base":
+        base.symlink_to(base.parent / "missing-session-ledger.jsonl")
+        expected = "session outcome base is not a regular file"
+    else:
+        base.write_bytes(b"")
+        (base.parent / "outcomes_session_parts").symlink_to(
+            base.parent / "missing-session-parts"
+        )
+        expected = "session outcome parts path is not a directory"
+
+    with pytest.raises(CampaignContractError, match=expected):
+        campaign_engine.load_ledger(base, campaign_engine.SESSION_PATH)

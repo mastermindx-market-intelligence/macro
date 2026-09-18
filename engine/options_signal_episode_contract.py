@@ -50,9 +50,13 @@ class EpisodeSourceContractError(ValueError):
 def session_outcome_part_paths(path: Path) -> list[Path]:
     """Return contiguous regular extensions of the canonical session ledger."""
     parts_dir = path.parent / SESSION_OUTCOME_PARTS_DIRNAME
+    if parts_dir.is_symlink():
+        raise EpisodeSourceContractError(
+            f"session outcome parts path is not a directory: {parts_dir}"
+        )
     if not parts_dir.exists():
         return []
-    if parts_dir.is_symlink() or not parts_dir.is_dir():
+    if not parts_dir.is_dir():
         raise EpisodeSourceContractError(
             f"session outcome parts path is not a directory: {parts_dir}"
         )
@@ -78,13 +82,17 @@ def session_outcome_part_paths(path: Path) -> list[Path]:
 def session_outcome_logical_bytes(path: Path) -> bytes:
     """Return frozen base prefix + ordered parts as one byte-identical stream."""
     parts = session_outcome_part_paths(path)
+    if path.is_symlink():
+        raise EpisodeSourceContractError(
+            f"session outcome base is not a regular file: {path}"
+        )
     if not path.exists():
         if parts:
             raise EpisodeSourceContractError(
                 "session outcome parts exist without the canonical base prefix"
             )
         return b""
-    if path.is_symlink() or not path.is_file():
+    if not path.is_file():
         raise EpisodeSourceContractError(
             f"session outcome base is not a regular file: {path}"
         )

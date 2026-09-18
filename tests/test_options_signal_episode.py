@@ -5994,3 +5994,29 @@ def test_episode_v1_ignores_additive_source_microstructure_without_identity_drif
     assert rich_episode == base_episode
     assert "microstructure" not in rich_episode["feature_snapshot"]
     assert "vol_gt_oi_ratio" not in rich_episode["feature_snapshot"]
+
+@pytest.mark.parametrize("dangling_kind", ["base", "parts"])
+def test_session_outcome_shared_reader_rejects_dangling_symlink(
+    tmp_path: Path, dangling_kind: str,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    if dangling_kind == "base":
+        base.symlink_to(tmp_path / "missing-session-ledger.jsonl")
+        expected = "session outcome base is not a regular file"
+    else:
+        base.write_bytes(b"")
+        (tmp_path / "outcomes_session_parts").symlink_to(
+            tmp_path / "missing-session-parts"
+        )
+        expected = "session outcome parts path is not a directory"
+
+    with pytest.raises(EpisodeSourceContractError, match=expected):
+        session_outcome_logical_bytes(base)
+    with pytest.raises(episode_engine.ContractError, match=expected):
+        episode_engine.load_session_outcomes(base)
