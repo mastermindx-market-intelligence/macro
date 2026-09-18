@@ -147,7 +147,7 @@ def test_house_atlas_member_count_area_scale_is_global_and_disclosed():
     block = _atlas_block(TEMPLATE)
     assert "max_member_count" in block
     assert "Math.sqrt(Math.max(0,g.member_count)/Math.max(1,model.max_member_count))*24" in block
-    assert "Member-count bubble area is proportional across the full 49-group observation" in block
+    assert "Member-count bubble area is proportional across the full house observation" in block
 
 
 def test_house_atlas_inline_javascript_parses_with_node(tmp_path: Path):
