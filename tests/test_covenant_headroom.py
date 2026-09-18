@@ -1146,9 +1146,9 @@ def test_glance_sentence_uses_maximum_ceiling_copy_for_maximum_term():
 
 
 def test_grid_no_headroom_word_in_computed_html():
-    """MAJOR 4: the rendered HTML must not contain the literal word
-    "headroom" or "Headroom" anywhere — not in labels, not in class names
-    that reach the user, not in data attributes."""
+    """MAJOR 4: visible text must not contain the literal word "headroom"
+    or "Headroom" anywhere — not in labels, not in class names that reach
+    the user, not in data attributes."""
     import engine.covenant_headroom as headroom
 
     obs = _direct_obs(
@@ -1224,3 +1224,46 @@ def test_next_step_none_shows_plain_message():
     # next_step is absent in this payload (no future step)
     assert payload["terms"][0].get("next_step") is None
     assert "No next step recorded" in html or "尚无记录的下一阶跃" in html
+
+
+def test_glance_renders_both_terms_with_correct_semantic_labels():
+    """BLOCKER 2: with BOTH minimum_ and maximum_ terms in the payload,
+    the glance sentence reads as a floor for interest-coverage (minimum_*)
+    and a ceiling for leverage (maximum_*), with correct numeric values.
+    The two separate one-term tests cannot catch a mixed-payload mistake
+    where the template always picks the first term regardless of kind."""
+    obs_min = _direct_obs(
+        "minimum_interest_coverage_ratio",
+        limit_raw=3.00,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 3.00}],
+    )
+    obs_max = _direct_obs(
+        "maximum_total_net_leverage_ratio",
+        limit_raw=3.50,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 3.50}],
+    )
+    # payload terms order: min first, max second (matches computed.json)
+    payload = headroom.compute_headroom(
+        [obs_min, obs_max],
+        {CORSAIR_CIK: _stmt_row()},
+        {CORSAIR_CIK: "CRSR"},
+        cik_by_source_manifest_id=_cik_by_source_manifest_id(),
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    # Interest coverage (minimum_): floor sentence with correct room (5.3 - 3.0 ≈ 2.3)
+    assert "requires at least" in html, (
+        "minimum_* term must use floor sentence ('requires at least')"
+    )
+    assert "above the floor" in html
+    assert "allows up to" not in html or "requires at least" not in html, (
+        "glance must not contain both floor and ceiling language"
+    )
+    # Numeric values for interest coverage: limit=3.0, reported≈5.3, room≈2.3
+    assert "3.0" in html and "5.3" in html, (
+        f"interest-coverage values (3.0 / 5.3) must appear in glance; got: {text_only[:200]}"
+    )
+    # The net-debt-to-earnings hardcoded clause must NOT appear
+    assert "net debt to earnings" not in html
+    # Ensure the leverage (maximum_) term does not claim "above the floor"
+    # (it would if the template copied the minimum template branch)
+    assert "net debt to earnings" not in text_only
