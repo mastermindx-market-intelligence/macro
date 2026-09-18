@@ -1,0 +1,66 @@
+{
+  "carrier": "macro#7306",
+  "current_main": "deb61b2751c2d4aa3a6819338c730989be731591",
+  "findings_closed": [
+    {
+      "after": "GEX/VEX/CEX each expose all price-axis zero crossings per horizon",
+      "before": "only GEX/Gamma zero crossings were projected",
+      "green": "product-gaps-green.log",
+      "id": "ALL_METRIC_ZERO_CONTOURS",
+      "red": "product-gaps-red.log"
+    },
+    {
+      "after": "explicit solve_from_mid mode reuses incumbent implied_vol_vec, freezes solved IV, and matches incumbent horizon-zero aggregate exposures",
+      "before": "scenario builder required caller-supplied pre-solved IV",
+      "green": "product-gaps-green.log",
+      "id": "REAL_MID_OI_INPUT_SEAM",
+      "red": "product-gaps-red.log"
+    }
+  ],
+  "integrated_proof_commit": "7d7e2418251c2201cca5a5a294bfa2634d7fa9e4",
+  "integrated_proof_tree": "5cb89f3f421bf2ccbd35fc061e82c6b934673b9b",
+  "non_claims": [
+    "production deployment",
+    "live freshness",
+    "observed participant inventory",
+    "predictive edge",
+    "full-chain Greek completeness",
+    "Terminal browser acceptance",
+    "QuantedOptions parity",
+    "parent #603 completion"
+  ],
+  "operation": "options-workbench-r2-scenario-surface-20260918-sol-001",
+  "parent": "mastermind-terminal#603",
+  "pre_hardening_head": "60ba087f7c476fa8b7a564dd191e0f83a004ec8a",
+  "release_gates": {
+    "exact_head_ci": "requires refresh after new head is pushed",
+    "independent_review": "requires refresh after new head is pushed",
+    "production_proof": "not attempted",
+    "terminal_consumer": "not started in this carrier"
+  },
+  "schema": "mastermind.options_workbench.scenario_surface_r2_evidence.v1",
+  "skillpack_sha": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
+  "source_hashes": {
+    "engine/options_scenario_surface.py": "771bf5d86b340e4257bba635af915a5b4d0daf4e2489ae711131fb7969e69cfc",
+    "research/OPTIONS_WORKBENCH_SCENARIO_SURFACE_R2_2026-09-18.md": "bf92f7e9eab9d4dcc25815a8cc4ff27066c9cf11c18a7982c99173a3e7156c5d",
+    "scripts/build_options_scenario_surface.py": "4c93c40dd2a0e93985c3ac2d611f023638d26e149dd45f02bffa5e53584a17a3",
+    "tests/test_options_scenario_surface.py": "5008d016d04243a06db856b3ee50e51c7821d5b4957fe832578e6624e092eec1"
+  },
+  "state": "BUILT_NOT_PROVEN",
+  "verification": {
+    "candidate_owner_pack": {
+      "failed": 0,
+      "passed": 86
+    },
+    "compileall_exit": 0,
+    "diff_check_exit": 0,
+    "focused_review_hardening": {
+      "failed": 0,
+      "passed": 3
+    },
+    "integrated_owner_pack": {
+      "failed": 0,
+      "passed": 86
+    }
+  }
+}

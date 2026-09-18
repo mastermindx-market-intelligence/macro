@@ -38,6 +38,7 @@ def main() -> int:
         oi_vintage=payload.get("oi_vintage"),
         iv_observed_at=payload.get("iv_observed_at"),
         vol_map=payload.get("vol_map", "sticky_strike"),
+        iv_source=payload.get("iv_source", "provided_iv"),
     )
     encoded = json.dumps(out, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n"
     if args.output == "-":

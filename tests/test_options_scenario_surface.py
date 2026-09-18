@@ -11,7 +11,7 @@ import sys
 import numpy as np
 import pytest
 
-from engine.intraday_greeks import bs_greeks_vec
+from engine.intraday_greeks import bs_greeks_vec, bs_price, compute_greek_grids
 from engine.options_scenario_surface import (
     PRODUCT_KIND,
     SCHEMA,
@@ -157,11 +157,69 @@ def test_multiple_gamma_zeros_are_retained_not_collapsed_to_nearest_crossing():
     assert all(80.0 < x < 120.0 for x in zeros)
 
 
+def test_selected_metric_zero_contours_are_emitted_for_gamma_vanna_and_charm():
+    out = _build(price_grid=[85, 90, 95, 100, 105, 110, 115], horizons_minutes=[0, 60])
+    assert set(out["zero_crossings"]) == {"gex", "vex", "cex"}
+    for metric in ("gex", "vex", "cex"):
+        rows = out["zero_crossings"][metric]
+        assert [row["horizon_minutes"] for row in rows] == [0, 60]
+        for idx, row in enumerate(rows):
+            assert row["prices"] == _zero_crossings(
+                out["price_grid"], out["grids"][metric][idx]
+            )
+
+
+def test_mid_snapshot_mode_reuses_incumbent_iv_solver_and_matches_horizon_zero():
+    contracts = []
+    for strike in (95.0, 100.0, 105.0):
+        for right in ("C", "P"):
+            T = 7.0 / 365.0
+            iv = 0.25
+            mid = float(
+                bs_price(
+                    SPOT,
+                    np.asarray([strike], float),
+                    np.asarray([T], float),
+                    np.asarray([iv], float),
+                    np.asarray([right == "C"], bool),
+                )[0]
+            )
+            contracts.append({
+                "strike": strike,
+                "exp_years": T,
+                "mid": mid,
+                "oi": (2200.0 + strike) if right == "C" else (700.0 + strike),
+                "right": right,
+                "expiry": "2026-09-25",
+            })
+
+    out = _build(
+        contracts,
+        price_grid=[99, 100, 101],
+        horizons_minutes=[0],
+        iv_source="solve_from_mid",
+        iv_observed_at="2026-09-18T13:59:59Z",
+    )
+    incumbent = compute_greek_grids(
+        contracts,
+        spot=SPOT,
+        union_strikes=[95.0, 100.0, 105.0],
+    )
+    assert incumbent.n_contracts == len(contracts)
+    assert out["source_counts"]["iv_solved"] == len(contracts)
+    assert out["assumptions"]["iv_source"] == "solve_from_mid"
+    assert out["grids"]["gex"][0][1] == pytest.approx(sum(incumbent.gex))
+    assert out["grids"]["vex"][0][1] == pytest.approx(sum(incumbent.vex))
+    assert out["grids"]["cex"][0][1] == pytest.approx(sum(incumbent.cex))
+
+
 def test_invalid_or_unsupported_scenario_inputs_fail_closed():
     with pytest.raises(ValueError, match="timezone"):
         _build(observed_at="2026-09-18T14:00:00")
     with pytest.raises(ValueError, match="sticky_strike"):
         _build(vol_map="sticky_delta")
+    with pytest.raises(ValueError, match="iv_source"):
+        _build(iv_source="magic")
     with pytest.raises(ValueError, match="price_grid"):
         _build(price_grid=[100])
     with pytest.raises(ValueError, match="horizons"):

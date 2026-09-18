@@ -20,11 +20,14 @@ from engine.intraday_greeks import (
     DEFAULT_R,
     PCT_MOVE,
     bs_greeks_vec,
+    implied_vol_vec,
 )
 
 SCHEMA = "options.scenario_surface/v1"
 PRODUCT_KIND = "conditional_price_time_scenario"
 VOL_MAP_STICKY_STRIKE = "sticky_strike"
+IV_SOURCE_PROVIDED = "provided_iv"
+IV_SOURCE_MID_SOLVE = "solve_from_mid"
 MINUTES_PER_YEAR = 365.0 * 24.0 * 60.0
 
 
@@ -93,21 +96,32 @@ def _normalize_contracts(
     *,
     expiry_scope: set[str] | None,
     max_dte_days: float | None,
+    iv_source: str,
 ) -> tuple[list[dict], dict[str, int]]:
     valid: list[dict] = []
-    counts = {"input": len(contracts), "valid_snapshot": 0, "omitted_invalid": 0, "omitted_scope": 0}
+    counts = {
+        "input": len(contracts),
+        "valid_snapshot": 0,
+        "omitted_invalid": 0,
+        "omitted_scope": 0,
+        "iv_input": 0,
+        "iv_solved": 0,
+        "omitted_iv_unsolved": 0,
+    }
     for raw in contracts:
         if not isinstance(raw, dict):
             counts["omitted_invalid"] += 1
             continue
         strike = _finite_positive(raw.get("strike"))
         T = _finite_positive(raw.get("exp_years"))
-        iv = _finite_positive(raw.get("iv"))
         oi = _finite_positive(raw.get("oi"))
         right = str(raw.get("right", "")).upper()[:1]
         expiry = raw.get("expiry")
         expiry = str(expiry) if expiry is not None else None
-        if strike is None or T is None or iv is None or oi is None or right not in {"C", "P"}:
+        iv = _finite_positive(raw.get("iv")) if iv_source == IV_SOURCE_PROVIDED else None
+        mid = _finite_positive(raw.get("mid")) if iv_source == IV_SOURCE_MID_SOLVE else None
+        source_value = iv if iv_source == IV_SOURCE_PROVIDED else mid
+        if strike is None or T is None or source_value is None or oi is None or right not in {"C", "P"}:
             counts["omitted_invalid"] += 1
             continue
         if expiry_scope is not None and expiry not in expiry_scope:
@@ -116,14 +130,19 @@ def _normalize_contracts(
         if max_dte_days is not None and T * 365.0 > max_dte_days:
             counts["omitted_scope"] += 1
             continue
-        valid.append({
+        row = {
             "strike": strike,
             "exp_years": T,
-            "iv": iv,
             "oi": oi,
             "right": right,
             "expiry": expiry,
-        })
+        }
+        if iv_source == IV_SOURCE_PROVIDED:
+            row["iv"] = iv
+            counts["iv_input"] += 1
+        else:
+            row["mid"] = mid
+        valid.append(row)
     counts["valid_snapshot"] = len(valid)
     return valid, counts
 
@@ -163,6 +182,7 @@ def build_scenario_surface(
     oi_vintage: str | None = None,
     iv_observed_at: str | None = None,
     vol_map: str = VOL_MAP_STICKY_STRIKE,
+    iv_source: str = IV_SOURCE_PROVIDED,
     r: float = DEFAULT_R,
     q: float = DEFAULT_Q,
     mult: float = CONTRACT_MULTIPLIER,
@@ -180,6 +200,10 @@ def build_scenario_surface(
     horizons = _horizons(horizons_minutes)
     if vol_map != VOL_MAP_STICKY_STRIKE:
         raise ValueError("v1 supports only vol_map='sticky_strike'")
+    if iv_source not in {IV_SOURCE_PROVIDED, IV_SOURCE_MID_SOLVE}:
+        raise ValueError(
+            "iv_source must be 'provided_iv' or 'solve_from_mid'"
+        )
     r_clean = _finite_number(r)
     q_clean = _finite_number(q)
     mult_clean = _finite_positive(mult)
@@ -197,12 +221,34 @@ def build_scenario_surface(
             raise ValueError("max_dte_days must be positive and finite")
     expiry_set = {str(x) for x in expiry_scope} if expiry_scope is not None else None
     normalized, counts = _normalize_contracts(
-        contracts, expiry_scope=expiry_set, max_dte_days=max_dte_days
+        contracts,
+        expiry_scope=expiry_set,
+        max_dte_days=max_dte_days,
+        iv_source=iv_source,
     )
+
+    if iv_source == IV_SOURCE_MID_SOLVE and normalized:
+        K0 = np.asarray([c["strike"] for c in normalized], dtype=float)
+        T0 = np.asarray([c["exp_years"] for c in normalized], dtype=float)
+        mids0 = np.asarray([c["mid"] for c in normalized], dtype=float)
+        calls0 = np.asarray([c["right"] == "C" for c in normalized], dtype=bool)
+        solved = implied_vol_vec(mids0, S0, K0, T0, calls0, r=r, q=q)
+        frozen: list[dict] = []
+        for contract, solved_iv in zip(normalized, solved):
+            if not np.isfinite(solved_iv) or solved_iv <= 0:
+                counts["omitted_iv_unsolved"] += 1
+                continue
+            row = dict(contract)
+            row.pop("mid", None)
+            row["iv"] = float(solved_iv)
+            frozen.append(row)
+        normalized = frozen
+        counts["iv_solved"] = len(normalized)
+        counts["valid_snapshot"] = len(normalized)
 
     grids = {"gex": [], "vex": [], "cex": []}
     horizon_meta: list[dict] = []
-    zeros: list[dict] = []
+    zero_crossings: dict[str, list[dict]] = {key: [] for key in grids}
 
     for horizon in horizons:
         dt_years = horizon / MINUTES_PER_YEAR
@@ -216,7 +262,11 @@ def build_scenario_surface(
                 "active_contracts": 0,
                 "active_snapshot_fraction": 0.0 if normalized else None,
             })
-            zeros.append({"horizon_minutes": horizon, "gamma_zeros": []})
+            for metric in zero_crossings:
+                zero_crossings[metric].append({
+                    "horizon_minutes": horizon,
+                    "prices": [],
+                })
             continue
 
         K = np.asarray([c["strike"] for c in live], dtype=float)
@@ -253,7 +303,15 @@ def build_scenario_surface(
             "active_contracts": len(live),
             "active_snapshot_fraction": round(len(live) / len(normalized), 6) if normalized else None,
         })
-        zeros.append({"horizon_minutes": horizon, "gamma_zeros": _zero_crossings(prices, row_g)})
+        for metric, row in (
+            ("gex", row_g),
+            ("vex", row_v),
+            ("cex", row_c),
+        ):
+            zero_crossings[metric].append({
+                "horizon_minutes": horizon,
+                "prices": _zero_crossings(prices, row),
+            })
 
     return {
         "schema": SCHEMA,
@@ -264,7 +322,14 @@ def build_scenario_surface(
         "price_grid": prices,
         "horizons_minutes": horizons,
         "grids": grids,
-        "gamma_zero_crossings": zeros,
+        "zero_crossings": zero_crossings,
+        "gamma_zero_crossings": [
+            {
+                "horizon_minutes": row["horizon_minutes"],
+                "gamma_zeros": list(row["prices"]),
+            }
+            for row in zero_crossings["gex"]
+        ],
         "horizon_meta": horizon_meta,
         "source_counts": counts,
         "source_clocks": {
@@ -283,6 +348,7 @@ def build_scenario_surface(
         "assumptions": {
             "inventory": "fixed_input_oi_snapshot",
             "vol_map": VOL_MAP_STICKY_STRIKE,
+            "iv_source": iv_source,
             "time": "deterministic_roll_forward_from_input_exp_years",
             "dealer_sign": "assumed_long_call_short_put",
             "price_axis": "scenario_not_forecast",
@@ -296,7 +362,7 @@ def build_scenario_surface(
         "warnings": [
             "modeled conditional field; not observed history",
             "scenario prices are not a predicted path",
-            "open interest and strike IV are fixed at the supplied snapshot",
+            "open interest and frozen per-contract IV are fixed at the observation snapshot",
             "missing OI/IV source clocks remain null rather than inheriting market_observed_at",
             "dealer sign is assumption-based, not observed participant inventory",
         ],
