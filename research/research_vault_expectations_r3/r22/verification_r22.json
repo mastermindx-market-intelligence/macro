@@ -91,7 +91,14 @@
     },
     "production_W1_caller_found": false,
     "operator_store_cli_generates_W1": false,
-    "architectural_ruling": "RIO/W2/W3 are canonical; no parallel claim graph/store/search/permission/correction plane"
+    "architectural_ruling": "RIO/W2/W3 are canonical; no parallel claim graph/store/search/permission/correction plane",
+    "frozen_wave_names": {
+      "W4": "ZeroHedge qualitative adapter",
+      "W5": "longitudinal belief memory",
+      "W6": "research synthesis clusters"
+    },
+    "operational_producer_name": "unnumbered W1->W2 producer seam; design only",
+    "do_not_call_operational_producer_W4": true
   },
   "illustrative_compute": {
     "model_config": "claude-haiku-4-5 extraction tier",
