@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T17:38:34.029404+00:00",
-  "count": 2374,
+  "generated_at": "2026-09-18T17:53:35.403518+00:00",
+  "count": 2375,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-yutsbqgbaom-e4b1de",
+      "title": "CEEMEA Week Ahead SARB to Hike by 25bp",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T17:30:50Z",
+      "summary_points": [
+        "SARB Rate Hike with Split Vote: SARB hikes rates 25bp to 7.25% amid hawkish external factors (Fed, oil), but dissent expected due to supply-driven inflation, weak economy, and resilient Rand; decision driven by MPC split, not strong economic case.",
+        "Egypt CBE Hold Amid Geopolitical Inflation Risks: CBE holds rates at 19% despite sticky inflation from energy shocks; Iran war escalation risks keep inflation elevated, delaying easing until global energy markets stabilize (base case: disinflation Q1 2027, terminal rate 13% in 2028).",
+        "SA Fiscal Credibility Driving SAGB Outlook: Fiscal improvements (target met) expected to trigger S&P/Moody's BB→BB+ upgrades, enabling bullish SAGB positioning with gradual yield compression anticipated despite steep post-election yield curve."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vcjug88mmtc-8900ce",
       "title": "UK—Retail Sales Firmer Than Expected in August",
