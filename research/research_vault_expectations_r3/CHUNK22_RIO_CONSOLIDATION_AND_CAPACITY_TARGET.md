@@ -316,3 +316,97 @@ After the incumbent release gates move, consume them in dependency order and com
 Independent now: freeze the unnumbered W1→W2 producer contract against W1/W2 and the frozen Qualitative Research architecture, and prepare a small real-task corpus that contains (a) one current company question, (b) one revision pair, (c) one independent-source disagreement, and (d) one long-report qualification. Do not implement a second semantic plane.
 
 The parent mission remains MORE_WORK_EXISTS / unaccepted.
+
+
+## 11. Operational producer contract frozen
+
+Detailed design: `R22_W1_W2_OPERATIONAL_PRODUCER_CONTRACT.md`.
+Machine shape: `r22/producer_contract_r22.json`.
+Gold cases: `r22/gold_corpus_r22.json`.
+Wave ownership: `r22/gold_stage_matrix_r22.json`.
+Account evaluation: `r22/account_pilot_scorecard_r22.json`.
+
+The recommended first producer is **not** a new frozen wave. It is an unnumbered operational seam between W1 and W2.
+
+Selected shape:
+- explicit permitted report IDs first;
+- exact existing stored corpus body as the W1 source;
+- no PDF re-download or independent extraction;
+- no source-ingest mutation;
+- no new model router/cost ledger/store/queue;
+- W1's existing provider waterfall + usage ledger;
+- W2's exact predecessor/correction/effect semantics;
+- current unchanged W2 state -> zero model call;
+- summary_points/tags/tickers/top_pick-only changes -> zero model call;
+- body or W1 prompt identity change -> reanalysis/correction;
+- source-use denial -> zero model call.
+
+### Long-report coverage law
+
+The producer must not pretend the 60,000-character corpus body is the entire report.
+
+Vault ingest already measures full-extraction `char_count` before truncation. The existing corpus row owns that fact; the current `get_document` projection does not expose it.
+
+The future accepted integration should expose the minimal measured facts needed to distinguish:
+- complete stored body;
+- prefix-only body;
+- unknown coverage;
+- no text layer;
+- extraction unavailable.
+
+Do not put a second extraction store in the producer. Under the current W3 hash contract, W1 must analyze the exact stored body. A separate accepted Vault extension is needed before complete-tail RIOs can use a different canonical analyzed-body identity.
+
+### Gold cases are stage-scoped
+
+The four frozen cases deliberately span several waves:
+- G1 producer extracts each issuer disclosure faithfully; later comparison adjudicates the definition change.
+- G2 producer extracts each ING forecast faithfully; frozen W5 owns revision/repetition across documents.
+- G3 producer extracts each Amundi/ING view; frozen W6 owns independent-source disagreement synthesis.
+- G4 current producer/consumer must report prefix-only/partial when late qualifications are outside the stored body; full-tail support is a Vault follow-up.
+
+A producer implementation that invents cross-document memory to make G2/G3 pass is a failure of scope.
+
+## 12. Current price and cost sensitivity
+
+The current public ZeroHedge signup page observed 2026-09-18 lists Professional at **$150 monthly** or **$125/month billed annually ($1,500/year)** and explicitly includes the research catalog. This is an advertised consumer price, not a bulk/pooled/commercial-processing quote.
+
+Subscription-only nominal totals:
+
+| accounts | month-to-month | annual billed upfront | incremental monthly vs one |
+|---:|---:|---:|---:|
+| 1 | $150 | $1,500 | — |
+| 2 | $300 | $3,000 | $150 |
+| 3 | $450 | $4,500 | $300 |
+| 4 | $600 | $6,000 | $450 |
+
+At the Chairman's current $75/customer/month planning price:
+- one additional $150 account equals two customers of gross monthly revenue;
+- at an illustrative 70% contribution margin it is about 2.86, i.e. three customers' contribution;
+- moving from one to three accounts adds $300/month: four customers gross, about six at that illustrative margin.
+
+These are sensitivity calculations, not measured margins, CAC, churn, source-processing cost, or a recommendation to annual-prepay before rights/usefulness are proven.
+
+Current Anthropic public list pricing confirms Haiku 4.5 at $1/M input and $5/M output standard, with $0.50/M and $2.50/M batch pricing. The R22 token-volume model remains explicitly illustrative. The account pilot must replace it with the existing ai_costs ledger's actual usage.
+
+## 13. Recommendation at this point
+
+There is now enough evidence to say **the expanded institutional feed is strategically worth building toward**.
+
+The reason is not document resale. The existing architecture can turn a report into grounded claims, assumptions, forecasts, counterarguments and versioned derived intelligence, then later into longitudinal/source-disagreement memory under the already frozen W5/W6 program.
+
+There is also enough evidence **not** to buy all remaining capacity immediately:
+- the current source-use/pooling grant is unresolved;
+- W2/W3 are not released;
+- there is no operational W1->W2 producer;
+- full-tail coverage is incomplete;
+- independent-source lineage is not yet reliable;
+- no real customer usefulness/ROI has been measured.
+
+The capital sequence is therefore asymmetric:
+1. finish the current organism;
+2. prove one real permitted answer;
+3. add account #2 monthly and measure it;
+4. if useful gaps remain, account #3 is the structural full-weekday target;
+5. account #4 must prove peak/backfill/resilience value of its own.
+
+This preserves the user's AI-compute budget while recognizing that, once a cheap grounded extraction path works, **licensed/source access rather than first-pass model tokens is likely the scarcer marginal input**.
