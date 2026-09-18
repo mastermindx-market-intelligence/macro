@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T04:37:09.730872+00:00",
-  "count": 2337,
+  "generated_at": "2026-09-18T04:52:10.730668+00:00",
+  "count": 2338,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -320,6 +320,26 @@
         "Rebalancing to Income-Generating Assets: Shift excess cash to quality bonds, high yield, and emerging market credit; higher yields provide income cushion to offset volatility and reduce 12-month loss probability.",
         "Diversification Imperative: Necessity across high-quality government bonds, investment-grade corporate credit, selective high-yield, and emerging market debt due to persistent inflation, geopolitical uncertainty, and shifting monetary policy.",
         "Emerging Market Credit Opportunity: Compelling case with attractive income, diversification benefits, and resilient fundamentals (sovereigns strengthened external balances, corporates maintaining conservative leverage)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qjyf0ohq4qz-301298",
+      "title": "US Equities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T23:48:13Z",
+      "summary_points": [
+        "S&P Targets & AI Drivers: S&P 500 targets 8,100 (Dec 2026) and 8,400 (Jun 2027) driven by 25% EPS growth (2026, USD 350) and 14% (2027, USD 400), underpinned by ≥30% AI capex growth and ISM manufacturing expansion (8 consecutive months).",
+        "Critical Bear Case Trigger: AI stock deflation from low returns/unsustainable commitments could drive S&P 500 to 5,500 by Jun 2027, triggering broader market decline.",
+        "Goldilocks Upside Catalyst: Strait of Hormuz de-escalation, benign tariffs, and sustained AI adoption could fuel upside to 9,500 (S&P 500).",
+        "Core Risk Monitoring: AI disappointments, oil price spikes, and inflation re-acceleration are primary threats to the bull market, outweighing temporary factors like tariffs."
       ],
       "tags": [],
       "tickers": [],
