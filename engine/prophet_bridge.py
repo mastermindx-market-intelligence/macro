@@ -3921,12 +3921,14 @@ def _load_stage_tilt_inputs(data_root: "Path | None" = None) -> dict:
     governed production module — NOT from ``engine.prophet_stage_fusion``, which is a
     research backtest harness and must never be a live dependency of origination.
 
-    R0-C disclosure: the EC table's backing parquet is a local-only EquityDesk backfill
-    that is absent on every CI/deploy host, so ``load_ec_table`` fails open to an EMPTY
-    frame and every EC lookup answers null. That made "no positive earnings call" and
-    "no earnings-call data at all" the same output. ``ec_source`` records which one it
-    is, and an unavailable source now emits a ``::warning::`` instead of degrading in
-    silence. The leash value is unchanged by this disclosure.
+    R0-C disclosure: the EC table resolves a ladder of NATIVE EquityDesk stores — the
+    R2-transported history the nightly hydrates before this runs, else the local-only
+    backfill. When no tier answers, ``load_ec_table`` fails open to an EMPTY frame and
+    every EC lookup answers null. That made "no positive earnings call" and "no
+    earnings-call data at all" the same output. ``ec_source`` records which one it is —
+    and, when a source exists, WHICH tier answered — while an unavailable source emits a
+    ``::warning::`` instead of degrading in silence. The leash value is unchanged by this
+    disclosure.
     """
     from lib import config  # noqa: PLC0415
     import engine.prophet_stage_inputs as psi  # noqa: PLC0415
