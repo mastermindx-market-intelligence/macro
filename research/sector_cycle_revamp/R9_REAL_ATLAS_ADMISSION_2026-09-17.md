@@ -166,5 +166,3 @@ After P1/publication acceptance, build **one** vertical:
 
 This is the smallest real capability slice that preserves the full Atlas destination. It is not
 permission to rebuild the R6 synthetic renderer or copy the Finviz catalogue.
-
-[executed on device: Mac-Studio.ts.net lan (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]

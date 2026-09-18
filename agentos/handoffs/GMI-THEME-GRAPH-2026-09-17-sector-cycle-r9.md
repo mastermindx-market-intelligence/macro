@@ -157,5 +157,3 @@ acceptance laws remain controlling.
 Primary continuation after the external release gates: one producer plus real signed-in
 Terminal consumer plus existing group-detail drill-through. A compact artifact with no
 consumer is not completion.
-
-[executed on device: Mac-Studio.ts.net lan (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]
