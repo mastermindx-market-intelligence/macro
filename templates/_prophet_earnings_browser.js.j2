@@ -150,8 +150,11 @@ function mount(root) {
   root.addEventListener('toggle',function(){if(root.open)loadDirectory(0);else{clear();message('closed');}});
   window.addEventListener('mdx-auth',function(event){
     var d=event.detail||{},id=d.user&&d.user.id||null;
+    var resumeSignIn=root.open&&statusKey==='signin'&&d.event==='SIGNED_IN'&&!!id;
     if(d.event==='SIGNED_OUT'||d.event==='USER_UPDATED'||(accountId&&id!==accountId)){clear();query.value='';message(id?'account':'signin');}
     accountId=id;
+    // Resume only an open sign-in interruption; repeated events and denials do not re-read.
+    if(resumeSignIn){clear();query.value='';loadDirectory(0);}
   });
   window.addEventListener('pagehide',function(){clear();query.value='';message('closed');});
   document.addEventListener('visibilitychange',function(){if(document.hidden){clear();message('closed');}});
