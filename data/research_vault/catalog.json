@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T17:53:35.403518+00:00",
-  "count": 2375,
+  "generated_at": "2026-09-18T19:09:17.633775+00:00",
+  "count": 2379,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,85 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-s9sfcc0k7xy-1fc67f",
+      "title": "GS Wilson weekly mash mild reaction after AI regulation hysteria 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:39:12Z",
+      "summary_points": [
+        "Fed Rate Hikes & Oil Supply Risk: Hawkish Fed (25bps Oct hike) priced in, but Iranian conflict supply disruption not materialized, limiting oil upside; overpriced rate hikes risk inflation surprise with 10yr US bond 5yr return worst in 120 years (duration risk).",
+        "US 10Y Bond Underperformance: Recent 5-year rolling nominal/real returns show one of the worst performances in a century, signaling severe fixed income stress.",
+        "Earnings Dominance: 12m fwd EPS contribution is primary driver across MSCI EM, AP ex Japan, and MSCI AC World; negative P/E contributions in TOPIX and S&P 500 indicate valuation headwinds.",
+        "Hyperscaler CAPEX Intensity: Hyperscalers’ CAPEX as % of cash flow peaked >120% (2002), with 2026 consensus showing steep rise (2027-2028), signaling extreme capital allocation pressure and margin vulnerability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cmpp3zvjetc-96159b",
+      "title": "GS Nathan EU Macro Credit what weve been active in 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:39:10Z",
+      "summary_points": [
+        "Fed Hike & Option Expiry Impact: S45 index widened 1bp (VGA -1.3%, ESA -0.7%) amid Fed rate action and option expiry, signaling near-term credit market stress.",
+        "Brent Crude as Key Risk Factor: S46 index focus tied to ~$104 Brent crude and 1:4.5 ratio, highlighting commodity price sensitivity for credit dynamics.",
+        "French Banking Underperformance: French bank CDS underperformed despite benign overall Bank CDS, indicating sector-specific credit deterioration.",
+        "IG Corps Sector Rotation: French credits/autos led IG Corps CDS gains (+1/+7 singles), with HF/RM extension driving flows away from Fins CDS."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hbhs9y5i8re-f5851f",
+      "title": "GS Mid Day Color US Equities 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:39:08Z",
+      "summary_points": [
+        "Triple Witching Volatility Catalyst: $7tn options expiry (11/15 Sept) coincides with historical down sessions, crude spike elevating bond yields, and tech sector divergence (software vs semis, NFLX downgrade impact).",
+        "Severe Liquidity Crunch: Top of Book at ~$1mm (lowest reading), ETF % of tape at 29% (2% above 20dma), signaling acute market structure stress.",
+        "Institutional Flow Skew: HFs 13% better for sale (macro, IT, consumer discretionary), indicating targeted capital outflows from key sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xjxslphc0gg-06d26f",
+      "title": "GS Kaplan Week Ahead SP implied move 1.29pct 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:39:07Z",
+      "summary_points": [
+        "Trump/Xi Summit: High-impact geopolitical event (Thu) driving USD volatility risk amid US-China tensions; critical for global risk sentiment assessment.",
+        "S&P 500 Earnings Catalysts: Wednesday’s pre-market reports (CTAS, GIS, PAYX) and Friday’s COST after-market release to drive near-term S&P 500 volatility and momentum.",
+        "Durable Goods Orders: Forecasted -0.5% MoM (Fri) signals weak manufacturing activity, weakening USD fundamentals and signaling economic slowdown.",
+        "Fed Policy & Treasury Flows: Williams’ multiple appearances (Tue–Fri) and $173bn Treasury auctions (Tue–Thu) directly impact rate expectations, yield curve, and liquidity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-yutsbqgbaom-e4b1de",
       "title": "CEEMEA Week Ahead SARB to Hike by 25bp",
