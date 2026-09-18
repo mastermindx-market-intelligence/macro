@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T04:22:16.348702+00:00",
-  "count": 2336,
+  "generated_at": "2026-09-18T04:37:09.730872+00:00",
+  "count": 2337,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -69,6 +69,7 @@
     "SocGen - Albert Edwards",
     "Societe Generale",
     "Société Générale",
+    "Standard Chartered",
     "State Street",
     "Std Chartered",
     "TCW",
@@ -343,6 +344,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nyxfrdemzwe-c9d34a",
+      "title": "Wm thematic report roots and routes a framework for global indian investors 17 september 2026",
+      "institution": "Standard Chartered",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T23:43:09Z",
+      "summary_points": [
+        "Structural INR Depreciation Risk: INR depreciated 3.4% annually vs USD since 1994 (INR 31→95), driven by India’s higher inflation vs US, eroding INR asset value; USD-denominated assets provide structural currency hedge.",
+        "India’s Real Yield Advantage: 10-yr Indian bonds yield 6.7% nominal (6.7% - 4.4% inflation = 2.8% real yield), rare globally vs EM peers (1-2%) and developed markets (near-zero), with index inclusion (JPMorgan/Bloomberg) driving passive inflows.",
+        "Global Allocation Impact: 15% global allocation reduces portfolio volatility (18.38%→16.86%) with minimal return impact (8.42%→8.44%), lifting risk-adjusted return (0.46→0.50) for onshore investors.",
+        "Sector Concentration Risk: Indian indices overweight financials (31% vs DM 17%), consumer discretionary (13% vs 9%), and industrials (11% vs 11%), while underweighting technology (7% vs DM 30%), limiting diversification.",
+        "Volatility Constraint: Indian large-cap equity volatility (29%) exceeds historical 10Y average (18.9%), dragging risk-adjusted return down to 0.56 (vs historical 0.81), overshadowing return potential despite growth premium."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
