@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VIRT-BULL-20260618",
-  "asof": "2026-09-13",
+  "asof": "2026-09-18",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 41.3,
@@ -10,27 +10,27 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 100.0,
-    "progress": 11.1,
-    "pace": 28.7,
-    "retention": 29.3,
-    "overlay": 61.0
+    "validity": 95.9,
+    "progress": 0.0,
+    "pace": 22.0,
+    "retention": 0.0,
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.134,
-    "dist_to_t1_r": 1.366,
-    "dist_to_t2_r": 2.866,
-    "horizon_pct_used": 102.2,
-    "p1": 0.0894,
-    "p2": 0.0447,
+    "dist_to_stop_r": 0.969,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 113.3,
+    "p1": -0.0204,
+    "p2": -0.0102,
     "p3": null,
-    "move_r": 0.134,
+    "move_r": -0.031,
     "mfe_r": 0.458,
     "mae_r": -0.103
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Window Elapsed \u2014 Awaiting Close",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 46,
-  "tau": 1.0222
+  "days_elapsed": 51,
+  "tau": 1.1333
 }
