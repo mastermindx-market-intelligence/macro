@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T23:24:10.925570+00:00",
-  "count": 2391,
+  "generated_at": "2026-09-18T22:39:16.171074+00:00",
+  "count": 2389,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -132,27 +132,6 @@
       "needs_metadata": false
     },
     {
-      "id": "marketdesk-g1b46ue91fl-ced014",
-      "title": "DB Parag Thatte Investor Positioning and Flows Sep 18 1",
-      "institution": "Deutsche Bank",
-      "side": "sell",
-      "desk": "",
-      "published_at": "2026-09-18T21:37:52Z",
-      "summary_points": [
-        "Discretionary vs Systematic Divergence: Discretionary investors at 46th percentile (cautious) vs systematic strategies at 88th percentile (extreme bullish), signaling institutional shift toward systematic approaches amid volatility.",
-        "S&P 500 FOMC Pattern: Consistent -0.5% sell-off on FOMC days followed by +1.0% rally next day, critical for short-term tactical positioning.",
-        "Sentiment Extremes: Bull-bear spread at 5th percentile (historical lows since 1987), indicating extreme pessimism and potential contrarian opportunity.",
-        "Systematic Volatility Link: 77% correlation between systematic equity positioning and S&P 500 realized volatility, highlighting amplified reversal risk during volatility spikes.",
-        "Flow Dynamics: $79.3bn equity inflows (3-month high) vs $9.8bn bond inflows (5-month low), with $75.9bn money market outflows, reflecting capital rotation from safety to equities."
-      ],
-      "tags": [],
-      "tickers": [],
-      "top_pick": false,
-      "pages": 51,
-      "language": "en",
-      "needs_metadata": false
-    },
-    {
       "id": "marketdesk-urhu9ocub0e-eee528",
       "title": "US Economic Notes What you need to know for the week ahead",
       "institution": "Deutsche Bank",
@@ -168,27 +147,6 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
-      "language": "en",
-      "needs_metadata": false
-    },
-    {
-      "id": "marketdesk-03fixwhhdpc-1e5ee6",
-      "title": "STAYING RISK ON",
-      "institution": "TS Lombard",
-      "side": "independent",
-      "desk": "",
-      "published_at": "2026-09-18T19:30:43Z",
-      "summary_points": [
-        "Risk Exposure & Beta Management: Modest underweight on EM equities/industrial metals; maintain overweight on Taiwan equity/Tech (AI tailwinds); portfolio beta held at 1.13.",
-        "Geopolitical & Policy Shifts: Overweight Taiwan equity as strongest AI adoption bet; downgrade CAD/CHF to -1 due to monetary policy divergence vs USD.",
-        "Portfolio Allocation Shifts: Trim EM equities (India/Mexico cuts), deepen DM govies underweight; rotate into leveraged credit (EM/global HY), precious metals, managed futures.",
-        "Monetary Policy & Macro Risks: US Q4 hike expected, Japan hawkish (Jan hike), Brazil easing; Fed hikes pressure equities; US personal income decline signals real income risk.",
-        "EM Debt & Risk Mitigation: Reduce Italian BTPs (150bp cut) amid energy volatility; retain EM local debt overweight for carry; exit Indian equities entirely (RBI hikes, El Niño risks)."
-      ],
-      "tags": [],
-      "tickers": [],
-      "top_pick": false,
-      "pages": 24,
       "language": "en",
       "needs_metadata": false
     },
