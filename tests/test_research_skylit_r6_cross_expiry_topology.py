@@ -56,6 +56,7 @@ def test_equal_shape_different_scale_has_zero_wasserstein_and_unit_cosine():
     assert pair["wasserstein_1_x"] == pytest.approx(0.0, abs=1e-12)
     assert pair["cosine_similarity"] == pytest.approx(1.0, abs=1e-12)
     assert got["outcome_labels_opened"] is False
+    assert got["exposure_unit"] == "USD dealer-delta change per +1% spot move"
     assert got["magnitude_semantics"].startswith("gross_absolute")
 
 
