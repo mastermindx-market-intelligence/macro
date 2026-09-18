@@ -1,35 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-17T22:13:06.597149+00:00",
+  "as_of": "2026-09-18T00:21:16.352850+00:00",
   "posts_seen": 20,
   "seen_total": 205,
-  "evaluated": 4,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-17-fact-sheet-president-donald-j-trump-reinvigorates-americas-hunting-heritage",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-09-17-fact-sheet-president-donald-j-trump-restores-american-saltwater-angling-and-recr",
-      "importance": 25,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-17-restoring-american-saltwater-angling-and-recreation",
-      "importance": 35,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-17-reinvigorating-americas-hunting-heritage",
-      "importance": 25,
-      "activated": false,
-      "degraded_reason": null
-    }
-  ]
+  "gate_scores": []
 }
