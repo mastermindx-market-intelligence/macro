@@ -2,36 +2,41 @@
 key: OPTIONS-WORKBENCH-R0-REPLAY-GEOMETRY-FAILURES
 claim: >
   Options Workbench R0 has source candidates for Terminal geometry/replay and Macro
-  gamma-sign correctness, while the expiry/source-clock carrier is still under bounded
-  same-carrier hardening. Terminal #608 has exact-head hosted CI plus current-base
-  integration proof; Macro #7279 head 6d4db997f371df4f5500cdd32ff387fcb2a7849d
-  closes the cycle-start/root-clock, whole-row and cash-session defects but remains
-  REQUEST_CHANGES because mixed unknown NBBO clocks are lost at the public replay
-  aggregation boundary. None of these slices is production acceptance or full Quanted parity.
+  gamma-sign correctness, but both active R0 implementation carriers now have bounded
+  review blockers. Terminal #608 exact head 1f94c551ff997a50dc915a3d7565d626d89f87c4
+  has green hosted/current-base proof but independent review REQUEST_CHANGES because a
+  same-HHMM frame refresh failure discards a usable stored field and falsely reports
+  accrual. Macro #7279 head 6d4db997f371df4f5500cdd32ff387fcb2a7849d
+  retains two provenance blockers: mixed unknown NBBO clocks disappear in aggregation
+  and reconstructed earlier replay copies the newest full-frame asof. None of these
+  slices is production acceptance or full Quanted parity.
 falsifier: >
-  Terminal #608 at 1f94c551ff997a50dc915a3d7565d626d89f87c4 fails its mounted
-  replay/contract regressions, exact-head hosted CI or current-base integrated browser
-  matrix; Macro #7271's modeled regime disagrees with its own gamma curve at spot; or
-  Macro #7279 is promoted while a stamp containing at least one selected/contributing
-  quote with unknown quote_timestamp can still publish non-null quote_at_first/last
-  without an explicit unknownness contract.
+  Terminal #608 is promoted while a successful index refresh followed by failure of the
+  same exact current-frame refresh can still erase the admitted frame and render the
+  no-data/accruing copy; Macro #7271's modeled regime disagrees with its own gamma curve
+  at spot; or Macro #7279 is promoted while mixed unknown quote clocks can publish a
+  known-only quote_at envelope or an earlier reconstructed stamp can report the newest
+  full-frame asof instead of its selected valuation basis.
 so_what: >
-  Continue the existing carriers and release gates. Do not redo the old replay/tool
-  blocker, geometry repair, gamma-sign repair, fetched-root valuation repair, whole-row
-  selection or RTH gate. Keep #7279 draft and repair only the aggregate NBBO-clock
-  unknownness on the same source carrier before refreshing exact-head CI/review. Obtain
-  an independent exact-head review for #608 and preserve production proof separately.
+  Continue the existing carriers and release gates. Do not redo the replay architecture,
+  geometry repair, Greek semantic repair, gamma-sign repair, fetched-root valuation
+  repair, whole-row selection or RTH gate. Repair #608 only at the frame-refresh failure
+  boundary and repair #7279 only at aggregate quote-clock unknownness plus selected-stamp
+  asof reconstruction, then refresh exact-head proofs/reviews. Preserve production proof
+  as a separate post-release gate.
 kind: runtime
 verified_at: 2026-09-18
 verified_by: >
   Terminal #608 current head 1f94c551ff997a50dc915a3d7565d626d89f87c4;
-  hosted CI run 35301191243 SUCCESS; current-base proof
-  fb361092f4a17c12c303f0de13882b8100143811; Macro #7271 current head
+  hosted CI run 35301191243 SUCCESS; fresh protected-master proof
+  a7d6aad120a28e7978d75ab4822fc040724dce56 over tree
+  e72b3e94cf8368f77cf4aafc20565e9eacee66bf; independent REQUEST_CHANGES review
+  5245552829; Macro #7271 current head
   cadb7ec4a5029150dea3eb9445d9481f3f2aff66; Macro #7279 current head
   6d4db997f371df4f5500cdd32ff387fcb2a7849d with hardening proof against
   d2c2b085c46f0745f9996e7de3d1eb9b1a379984 and review comments 5724395435,
-  5724455441, 5724614973, 5725715278, 5726707566 and 5726860312; parent #603
-  entitlement ruling 5724610745.
+  5724455441, 5724614973, 5725715278, 5726707566, 5726860312 and 5726974122;
+  parent #603 entitlement ruling 5724610745.
 scope:
   - terminal
   - options-intelligence
@@ -59,8 +64,8 @@ Carrier: `claude/options-workbench-r0-replay-20260917-sol-001`.
 Current head: `1f94c551ff997a50dc915a3d7565d626d89f87c4`.
 Original base: `75c22083249e7a1529be3d6baf819b9ad5ea509f`.
 Current protected Terminal master used for compatibility:
-`82ca818be7ea592f7cdb1fb6731cc19f94610593`.
-State: **BUILT_NOT_PROVEN / DRAFT / not merged or deployed**.
+`1b2cc28f6ed8a59eedd9420f904c68fcce52c7e3`.
+State: **BUILT_NOT_PROVEN / DRAFT / REQUEST_CHANGES / not merged or deployed**.
 
 The original reproduction and the earlier geometry/cache correction remain preserved.
 The formerly missing provider/view/pane integration is now implemented on the same
@@ -91,13 +96,16 @@ Current source proof recorded on #608:
 - semantic replay browser: 6/6 EN/ZH × desktop/tablet/mobile;
 - replay/alignment/geometry browser matrix: 30/30, one worker, zero retries.
 
-Fresh latest-base proof for the exact current head:
-- merge tree: `bd8e03734eccb8f2d1585b9b7ce29f4407374b70`;
+Fresh protected-master proof for the exact current head:
+- protected master: `1b2cc28f6ed8a59eedd9420f904c68fcce52c7e3`; the only movement
+  since the prior compatibility base is six path-disjoint release-preflight files;
+- merge tree: `e72b3e94cf8368f77cf4aafc20565e9eacee66bf`;
 - proof-only integrated commit:
-  `fb361092f4a17c12c303f0de13882b8100143811`;
-- integrated focused replay/surface/cache/geometry: 180/180;
-- integrated TypeScript: pass;
-- integrated real-route browser matrix: 30/30.
+  `a7d6aad120a28e7978d75ab4822fc040724dce56`;
+- independent focused replay/surface/cache/geometry: 268/268 on exact head and
+  268/268 on the integrated candidate;
+- exact-head and integrated TypeScript: pass; integrated diff check: pass;
+- integrated real-route browser matrix: 30/30, one worker, zero retries.
 
 The earlier full responsive run produced 820 passing / 279 skipped / four failures
 outside #608's changed paths. The tablet crosshair case passed on protected master and
@@ -111,11 +119,23 @@ and the final Terminal typecheck+tests aggregation gate passed. Repository/compa
 CI is therefore closed for this immutable candidate; independent review and production
 acceptance remain separate gates.
 
-Independent exact-head review remains unresolved. The existing bounded review brief in
-#608 prefers Terra and is WAITING_CAPACITY / needs_placement. A GitHub `@codex review`
-attempt returned the provider usage-limit receipt; it was not blind-retried. Executive
-v2 was separately observed READONLY/stale and did not provide a lawful submit path.
-No receiver/START or completed independent review is claimed.
+Independent exact-head review is now resolved as **REQUEST_CHANGES** in GitHub review
+`5245552829`. The review verified the shared replay/index architecture, exact context
+admission, modeled-Greek semantics and numeric heat geometry, then found one release
+blocker in the newly added same-HHMM refresh path. After a successful live index poll,
+the pane refreshes the current frame with `refresh:true`; if that exact frame request
+returns 503, `flowGet` returns null and `SurfacePane` clears `frameResult`, while the
+index remains healthy. A real-route browser probe started from a visible admitted SPY
+09:31 frame, let the same-head index refresh succeed, failed only `surface:SPY:0931`,
+and reproduced the field disappearing while the rail still said LATEST STORED and the
+chart falsely said `No surface data yet — accruing ... Nothing is hidden.`
+
+The smallest repair is to retain the previously admitted exact root/session/stamp frame
+on a same-identity refresh failure, surface a bilingual refresh-unavailable/stored-state
+indicator, and distinguish an initial frame read failure from genuine accrual. The
+existing cancellation/context fencing, index-error semantics, zoom, geometry and metric
+semantics remain frozen. A successful index refresh + same-frame 503 regression and an
+initial-frame-failure regression are required before rereview.
 
 ## Macro #7271 — local gamma-regime consistency
 
@@ -187,9 +207,20 @@ known/total source-clock count is possible but is a larger public-contract chang
 is not required merely to close this blocker. Add a mixed-known/missing regression
 through the public frame while retaining the all-known bounds and all-missing-null tests.
 
+Supplemental integration review `5726974122` independently confirmed that blocker and
+found one more bounded replay-provenance defect: `frame_for_stamp` selects the earlier
+column's `valuation_at`, `built_at` and quote provenance but still copies `asof` from
+the newest full frame. A two-column witness requested 14:00, returned the correct
+`valuation_at=18:00:00.123456Z`, but reported `asof=18:43:00.654321Z`. This is a
+reconstructed-replay helper inconsistency, not evidence that already-written earlier
+JSON was overwritten. The narrow compatible repair is selected `valuation_at` as the
+frame `asof` when present, with the legacy full-frame fallback only when valuation
+metadata is absent. The supplemental review's private prototype is diagnostic only,
+not source truth or an adopted patch.
+
 The separate Greek field-completeness denominator from parent #603 remains outside this
-carrier and must not be folded into this repair. Independent exact-head numerical/source
-review is still owed after a repaired immutable head returns.
+carrier and must not be folded into these two repairs. Independent exact-head
+numerical/source review is still owed after a repaired immutable head returns.
 
 ## R1 entitlement and source boundary
 
@@ -216,15 +247,16 @@ missingness and field-completeness semantics, forward conditional Greek fields, 
 linked-pane composition, entitlement qualification and real production/browser proof.
 
 Next actions, in order of available evidence:
-1. obtain an independent exact-head review for Terminal #608 before any Ready/merge
-   transition; its exact-head hosted CI and current-base integration proof are already green;
+1. keep Terminal #608 on the same source carrier and close independent review
+   `5245552829`: retain the exact stored frame on same-identity refresh failure, expose
+   refresh-unavailable state, and distinguish initial read failure from true accrual;
 2. consume #7271 current-head CI and normal release gates without redoing its modeled
    sign implementation;
-3. keep #7279 on the same source carrier and close only review finding `5726860312`:
-   preserve mixed unknown NBBO-clock truth at the public replay boundary, with a direct
-   mixed-null red/green regression and refreshed exact-head/current-main proof;
-4. after that repaired immutable head returns, consume exact-head CI/fences and obtain
-   the still-owed independent numerical/source review before any Ready/merge transition;
+3. keep #7279 on the same source carrier and close both bounded provenance findings:
+   mixed unknown NBBO-clock truth (`5726860312`) and selected-stamp `asof` reconstruction
+   (`5726974122`), with direct red/green public-frame/replay regressions;
+4. after repaired immutable heads return, refresh exact-head/current-base proof and
+   complete the required rereviews before any Ready/merge transition;
 5. only after #7279 is accepted, repair the separately recorded Greek field-completeness
    denominator through the existing producer rather than opening a parallel writer;
 6. after lawful merges, use existing release owners and natural RTH inputs for real
