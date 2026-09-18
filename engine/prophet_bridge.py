@@ -160,12 +160,17 @@ TARGET_DELTA = 0.60        # nearest-delta strike for option resolution
 STAGE_TILT_LEASH = 1.25
 STAGE_TILT_DEMOTE_MIN_MATURED = 30   # §4 floor: n_matured_126 needed before diff can demote
 
-# R0-C disclosure: the leash's earnings-call arm reads a local-only EquityDesk backfill
-# parquet that is gitignored and absent on every CI/deploy host, so in production the EC
-# lookup always answers null and the leash is pinned at 1.0. That is a STARVED negative,
-# not an honest one, and the two used to be indistinguishable in the emitted plan. Every
-# stage_tilt block now states which it is. Fail-closed default: with no source record we
-# never claim a source exists. This is disclosure only — it never moves the leash.
+# R0-C disclosure: the leash's earnings-call arm reads EquityDesk's native
+# earnings_call_sent. It used to resolve ONLY a local-only backfill parquet that is
+# gitignored and absent on every CI/deploy host, so in production the EC lookup always
+# answered null and the leash was pinned at 1.0 — a STARVED negative, indistinguishable
+# in the emitted plan from an honest one. engine/prophet_stage_inputs.py now walks the
+# native-store ladder, whose first tier is the R2-transported EquityDesk history that
+# engine/earnings_qual.py already consumes, so the arm can actually be fed; the nightly
+# hydrates it before this module originates (.github/workflows/daily.yml). Every
+# stage_tilt block states the source state AND the tier that answered. Fail-closed
+# default: with no source record we never claim a source exists. This is disclosure
+# only — it never moves the leash.
 STAGE_TILT_EC_SOURCE_UNAVAILABLE = "unavailable"
 
 # ── ANTICIPATION §6.2 A1 — status-class admission (ported to the #5071 base) ──
@@ -4037,6 +4042,13 @@ def _compute_stage_tilt(ticker: str, entry_date: str, tilt_inputs: dict) -> tupl
         # Disclosure only (R0-C) — never read by the eligibility test above.
         "ec_source_state": str(ec_source.get("state") or STAGE_TILT_EC_SOURCE_UNAVAILABLE),
         "ec_source_path": ec_source.get("path"),
+        # WHICH native EquityDesk store answered: "r2_history" (the R2-transported
+        # migration restored by scripts/fetch_earnings_scores.py) or
+        # "legacy_full_history" (the local-only import). Both carry the same native
+        # ~-10..30 earnings_call_sent; naming the tier is what lets a grader tell a
+        # plan built on the transported generation from one built on a workstation copy.
+        "ec_source_tier": ec_source.get("tier"),
+        "ec_source_generation": ec_source.get("generation"),
         "ec_source_reason": ec_source.get("reason"),
         "bear_gate": bool(bear),             # True = gate forced 1.0
         "provisional": True,
@@ -4515,6 +4527,8 @@ def originate_plans(
                 "ec_sent": None, "ec_call_date": None,
                 "ec_source_state": STAGE_TILT_EC_SOURCE_UNAVAILABLE,
                 "ec_source_path": None,
+                "ec_source_tier": None,
+                "ec_source_generation": None,
                 "ec_source_reason": "stage-tilt inputs unavailable — no source resolved",
                 "bear_gate": True,
                 "provisional": True, "demoted": False,
