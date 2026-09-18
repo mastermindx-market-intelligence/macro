@@ -1346,15 +1346,17 @@ def subscribe_complete(body: SubscribeCompleteRequest, user: dict = Depends(_cur
         raise HTTPException(400, "setup intent offer mismatch")
 
     # Re-check the no-double-subscribe guard — a second tab could have subscribed in the card-capture
-    # window between /init and /complete.
+    # window between /init and /complete. Capture THEN raise (the /subscribe/init idiom): raising
+    # inside the try would let the `except HTTPException` arm rethrow anything the check itself
+    # raised — _stripe() answers 503 when unconfigured — reporting the probe's status as if it
+    # were this request's answer.
     try:
-        if _has_live_subscription(customer_id):
-            raise HTTPException(409, "already subscribed")
-    except HTTPException:
-        raise
+        already = _has_live_subscription(customer_id)
     except Exception as exc:  # noqa: BLE001
         log.warning("billing: subscribe complete sub-check failed (%s)", exc)
         raise HTTPException(502, "subscribe complete failed, please try again") from None
+    if already:
+        raise HTTPException(409, "already subscribed")
 
     try:
         create_args: dict[str, Any] = {
@@ -1386,13 +1388,17 @@ def subscribe_complete(body: SubscribeCompleteRequest, user: dict = Depends(_cur
         # (including the same-key conflict we ran out of retries on). If the customer is live
         # now, the honest answer is the 409 the pre-check would have given, not a 502 that
         # invites the client to retry into a duplicate.
+        # Same shape as the /subscribe/init guard: capture, THEN raise. Raising inside the try
+        # would make the `except HTTPException: raise` arm swallow-and-rethrow anything the probe
+        # itself raises — _stripe() answers with a 503 when unconfigured — masking the real
+        # failure below with a misleading status.
+        racer_won = False
         try:
-            if _has_live_subscription(customer_id):
-                raise HTTPException(409, "already subscribed") from None
-        except HTTPException:
-            raise
+            racer_won = _has_live_subscription(customer_id)
         except Exception as probe:  # noqa: BLE001 — the original failure is the one to report
             log.debug("billing: post-failure sub-check failed (%s)", probe)
+        if racer_won:
+            raise HTTPException(409, "already subscribed") from None
         if _offer_sold_out_after_error(offer_key):
             raise HTTPException(410, f"{_catalog()['offers'][offer_key]['name']} is sold out") from None
         raise HTTPException(502, "subscribe complete failed, please try again") from None

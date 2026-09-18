@@ -610,3 +610,23 @@ def test_webhook_during_completion_never_mints_a_second_subscription(wired):
     assert len(acct.create_calls) == 1, "the webhook lane must never create a subscription"
     assert results[1] == "webhook-ok"
     assert all(u[:2] == ("user_1", "cus_1") for u in upserts)
+
+
+def test_a_failing_probe_does_not_mask_the_real_create_failure(wired):
+    """The post-failure live-sub probe is best-effort. If the probe itself raises an
+    HTTPException -- _stripe() answers 503 when unconfigured -- the caller must still get the
+    502 for the create that actually failed, not the probe's status."""
+    acct = _FakeAccount(si_by_id={"seti_abc": _si()})
+    acct.Subscription.create = lambda **kw: (_ for _ in ()).throw(RuntimeError("stripe 500"))
+    wired.setattr(billing, "_stripe", lambda: acct)
+    wired.setattr(billing, "_existing_customer", lambda uid: "cus_1")
+
+    def _probe_explodes(cid):
+        raise HTTPException(503, "billing not configured")
+
+    wired.setattr(billing, "_has_live_subscription", _probe_explodes)
+
+    with pytest.raises(HTTPException) as ei:
+        billing.subscribe_complete(_body(), user=USER)
+    assert ei.value.status_code == 502
+    assert ei.value.detail == "subscribe complete failed, please try again"
