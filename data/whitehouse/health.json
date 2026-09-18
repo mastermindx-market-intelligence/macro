@@ -1,17 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-10T22:35:45.551626+00:00",
-  "posts_seen": 18,
-  "seen_total": 182,
-  "evaluated": 1,
+  "as_of": "2026-09-18T19:36:16.743022+00:00",
+  "posts_seen": 20,
+  "seen_total": 207,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-10-s-858-signed-into-law",
+      "id": "wh-2026-09-18-president-trump-extends-most-favored-nation-pricing-to-every-medicaid-program-in",
       "importance": 0,
       "activated": false,
-      "degraded_reason": "served_by:codex"
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-18-what-they-are-saying-president-trump-delivers-historic-victories-for-americas-hu",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": null
     }
   ]
 }
