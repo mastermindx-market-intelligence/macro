@@ -9370,6 +9370,10 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # Skylit R2 Stage 0: tests live in tests/test_options_gap_discipline.py
+      # and import this research analyzer directly. Keep the exclusive options
+      # owner closed over that dependency so contract-delta can audit the pack.
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
