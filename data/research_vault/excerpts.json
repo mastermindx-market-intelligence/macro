@@ -7209,6 +7209,22 @@
    "GS Corporate Trading Desk Flow",
    "Historical Cumulative Market Execution Activity"
   ],
+  "marketdesk-gyips5hunij-753073": [
+   "GS Biswas - GS Credit MarketStrats iTraxx S45 46 Roll Refresh of Expected NAV changes Indices positioning 18 Sep 2026 Avishek Biswas · Goldman Sachs · Credit MarketStrats Fri 18 Sep 2026, 1:38am ET",
+   "iTraxx indices will roll from S45 to S46 on Sep 21st (next Monday). Final lists of constituents for iTraxx S46 indices available here. Reach out to ou",
+   "iTraxx indices will roll from S45 to S46 on Sep 21st (next Monday). Final lists of constituents for iTraxx S46 indices available here. Reach out to our desk on any roll requirements on your side.",
+   "Estimate of the expected NAV rolls",
+   "Historically, as the charts below show, the roll skew tends to be explained by positioning in the series becoming off-the-run. When investors are very net long risk that series, there is more pressure to roll those longs, taking the roll skew to negative levels - and vice-versa (see charts below, X-axis is non-dealer positioning while Y-axis is the roll skew).",
+   "Below is the non-dealer positioning for the on-the-run (currently S45) series as per DTCC (-ve means short risk; +ve means long risk)",
+   "| iTraxx Main | 6.4 (long risk) | | iTraxx Xover | -1.9 (short risk) | | iTraxx SnrFin | -6.4 (short risk) | | iTraxx SubFin | -17.5 (short risk) |",
+   "Above data as of 11th Sep 2026",
+   "| iTraxx Main | | IN | | | OUT | | | | Name | Ticker | Reason | Name | Ticker | Reason | | TELEFONAKTIEBOLAGET L M ERICSSON | LMETEL | Upgrade | VINCI | VINCI | Liquidity | | CLARIANT AG | CLAR | Liquidity | TELEKOM AUSTRIA AKTIENGESELLSCHAFT | TKA | Liquidity | | DHL AG | DPW | Liquidity | HOCHTIEF AKTIENGESELLSCHAFT | RWE-HOCHTIEF | Liquidity | | RELX PLC | RELXPLC | Liquidity | DANONE | DANONE | Liquidity |",
+   "| iTraxx Xover | | IN | | | OUT | | | | Name | Ticker | Reason | Name | Ticker | Reason | | ALTICE FRANCE | ALTICEF | Liquidity | KAIXO BONDCO TELECOM, S.A.U. | KAIXBON | Debt | | METLEN ENERGY & METALS S.A. | METLENE | Liquidity | INFRASTRUTTURE WIRELESS ITALIANE S.P.A. | NFRAWIR | Liquidity | | BELRON UK FINANCE PLC | BELROUK | Liquidity | TELEFONAKTIEBOLAGET L M ERICSSON | LMETEL | Upgrade | | MOTION FINCO Sarl | MOTIFIN | Supplementary List | EG GLOBAL FINANCE PLC | EGGLO | Debt |",
+   "Max loss : Unlimited. For all charts unless otherwise stated. Source: DTCC/S&P/GS FICC and Equities. As of 17-Sep-2026. Past performance not indicative of future results.",
+   "Any references to I/we/us/our refer to GS Credit MarketStrats.",
+   "For analytics on European Macro, check out our latest European Macro Credit dashboard",
+   "For analytics on US Macro*, check out our latest US Macro Credit dashboard"
+  ],
   "marketdesk-gyzddeyojqp-c707cd": [
    "DB Early Morning Reid - Macro Strategy",
    "Key Market Data (Index @ Close // Change) (S&P 500 @ 7719 // -0.38%) (STOXX Europe 600 @ 650 // +0.12%) (iTraxx Crossover @ 249 // -2) (Brent Oil^ @ 97.17 // +1.56%) (10yr Treasury^ @ 4.78 // 2 bp) (10yr Bund @ 3.34 // 0 bp) (Dollar Index^ @ 99.18 // +0.18%) (Further Fed hikes/cuts priced for 2026 @ 35 // 2 bp) (Further ECB hikes/cuts priced for 2026 @ 46 // -1 bp) ^ - Change from previous day's 4:30 GMT to 04:30 GMT",

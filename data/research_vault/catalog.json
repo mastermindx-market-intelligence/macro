@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T14:53:10.698170+00:00",
-  "count": 2366,
+  "generated_at": "2026-09-18T15:08:12.286650+00:00",
+  "count": 2367,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -144,6 +144,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gyips5hunij-753073",
+      "title": "GS Biswas GS Credit MarketStrats iTraxx S45 46 Roll Refresh of Expected NAV changes Indices positioning 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T12:47:37Z",
+      "summary_points": [
+        "Roll Skew Pressure: iTraxx Main net long risk (6.4) vs. net short risk in Xover (-1.9), SenFin (-6.4), SubFin (-17.5) creates negative roll skew pressure ahead of S45 to S46 index roll on Sep 21, 2026.",
+        "SubFin Bearish Positioning: SubFin 5y net short risk at -17.5bn (S45) signals extreme bearish sentiment and elevated subprime risk, diverging from technical skew.",
+        "Xover Risk-Off Shift: Non-dealer long risk in iTraxx Xover collapsed from ~$10bn to -$20bn (2023–2026), indicating severe risk aversion and defensive positioning amid macro stress."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
