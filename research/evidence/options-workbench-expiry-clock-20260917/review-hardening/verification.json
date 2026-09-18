@@ -1,0 +1,74 @@
+{
+  "current_main": "d2c2b085c46f0745f9996e7de3d1eb9b1a379984",
+  "findings_closed": [
+    {
+      "after": "stable latest-RTH whole-row selection preserves null/source identity",
+      "before": "pandas GroupBy.last could splice an older non-null quote_timestamp onto the latest trade row",
+      "green": "row-integrity-green.log",
+      "id": "WHOLE_ROW_SOURCE_IDENTITY",
+      "red": "row-integrity-red.log"
+    },
+    {
+      "after": "trade-event rows are filtered through the existing normal/early cash-session owner before latest-row selection",
+      "before": "surface Greek tap could choose 16:05 or 13:05 raw extended-hours trades",
+      "green": "rth-row-green.log",
+      "id": "RAW_TAPE_CASH_SESSION_BOUNDARY",
+      "red": "rth-quote-tap-red.log"
+    }
+  ],
+  "integrated_parents": [
+    "d2c2b085c46f0745f9996e7de3d1eb9b1a379984",
+    "e7e0cfefae4591ad961c36e91da0c6745a1159e0"
+  ],
+  "integrated_proof_commit": "f354804bac36660067930fcdb46eb097cfb55eaa",
+  "integrated_proof_tree": "383299fd5f67537cf8c8a28da4c01bc9669e8a52",
+  "non_claims": [
+    "production deployment",
+    "live market freshness",
+    "observed dealer inventory",
+    "predictive edge",
+    "conditional forward surface parity",
+    "QuantedOptions parity",
+    "Greek field-completeness denominator repair"
+  ],
+  "operation": "options-workbench-r0-expiry-clock-20260917-sol-001",
+  "pre_hardening_head": "e7e0cfefae4591ad961c36e91da0c6745a1159e0",
+  "release_gates": {
+    "hosted_ci": "requires refresh on the next frozen head",
+    "independent_review": "waiting capacity / not STARTED at packaging time",
+    "production_proof": "not attempted"
+  },
+  "schema": "mastermind.options_workbench.expiry_clock_review_hardening.v1",
+  "skillpack_sha": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "source_hashes": {
+    "collectors/thetadata.py": "b428cbd19e51bbf9e198d97d83e08317f2bde304fcd1b4bcd5cdc5556797746e",
+    "engine/intraday_greeks.py": "3592b1981bbe851a2d55cc1b711eb1eede7f21697918a290ba0a5950d03a6f90",
+    "engine/session_digest.py": "25ae25d29f1a1e6ce7d38372bbfaaf03e18925072e41aaea8bc3c1c730a14191",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+    "research/OPTIONS_WORKBENCH_EXPIRY_CLOCK_REPAIR_2026-09-17.md": "f3e6f42a8a60de62b33ac3a7bd33b68999be5c47066273b7500e78b11073eddf",
+    "scripts/build_flow_surface.py": "3111e58caabaaa388eebd438f4ec133d1708a47d60beaaa1891d4ef2f8a155f1",
+    "scripts/live_flow_poller.py": "830d2dcbf53dab68dc2c3ea844ee808984ff0a85a9b0fac5a1d618fdf0831bc1",
+    "tests/test_flow_surface.py": "583654054cf1faf1cd66d33c1c712037807810107e28434174901a5f50140289",
+    "tests/test_live_flow.py": "1cffb8f3c4d9e073352e3c306b966e20676a2d909b7cc0df33f1e452730be9fb"
+  },
+  "state": "BUILT_NOT_PROVEN",
+  "verification": {
+    "candidate_owner_packs": {
+      "failed": 0,
+      "passed": 624,
+      "skipped": 1
+    },
+    "compileall_exit": 0,
+    "diff_check_exit": 0,
+    "integrated_owner_packs": {
+      "failed": 0,
+      "passed": 624,
+      "skipped": 1
+    },
+    "pre_hardening_exact_head": {
+      "failed": 0,
+      "passed": 621,
+      "skipped": 1
+    }
+  }
+}

@@ -28,6 +28,8 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from scripts.build_flow_surface import (
     GREEK_METRICS,
     METRIC_GEX,
@@ -814,6 +816,73 @@ def test_extract_cycle_quotes_does_not_fabricate_missing_quote_clock_from_trade_
     assert len(q) == 1
     assert q[0]["trade_at"] == "2026-07-06T14:00:00Z"
     assert q[0]["quote_at"] is None
+
+
+def test_extract_cycle_quotes_latest_row_missing_quote_time_stays_missing():
+    tape = pd.DataFrame([
+        {
+            "expiration": "2026-07-13", "strike": 600.0, "right": "C",
+            "trade_timestamp": "2026-07-06T10:00:00",
+            "quote_timestamp": "2026-07-06T09:59:59.500",
+            "bid": 5.0, "ask": 5.2,
+        },
+        {
+            "expiration": "2026-07-13", "strike": 600.0, "right": "C",
+            "trade_timestamp": "2026-07-06T10:05:00",
+            "quote_timestamp": None,
+            "bid": 6.0, "ask": 6.4,
+        },
+    ])
+    q = extract_cycle_quotes(
+        tape, None, session_date="2026-07-06",
+        observed_at="2026-07-06T14:06:00Z", near_dte_cap_days=90,
+    )
+    assert len(q) == 1
+    assert q[0]["mid"] == 6.2
+    assert q[0]["trade_at"] == "2026-07-06T14:05:00Z"
+    # Whole-row identity law: never borrow the prior row's quote timestamp.
+    assert q[0]["quote_at"] is None
+
+
+@pytest.mark.parametrize(
+    "session_date, observed_at, in_session_trade, after_close_trade, expected_trade_at",
+    [
+        (
+            "2026-07-06", "2026-07-06T20:06:00Z",
+            "2026-07-06T15:59:00", "2026-07-06T16:05:00",
+            "2026-07-06T19:59:00Z",
+        ),
+        (
+            "2026-11-27", "2026-11-27T18:06:00Z",
+            "2026-11-27T12:59:00", "2026-11-27T13:05:00",
+            "2026-11-27T17:59:00Z",
+        ),
+    ],
+)
+def test_extract_cycle_quotes_uses_cash_session_rows_only(
+    session_date, observed_at, in_session_trade, after_close_trade, expected_trade_at,
+):
+    tape = pd.DataFrame([
+        {
+            "expiration": "2026-12-18", "strike": 600.0, "right": "C",
+            "trade_timestamp": in_session_trade,
+            "quote_timestamp": in_session_trade,
+            "bid": 5.0, "ask": 5.2,
+        },
+        {
+            "expiration": "2026-12-18", "strike": 600.0, "right": "C",
+            "trade_timestamp": after_close_trade,
+            "quote_timestamp": after_close_trade,
+            "bid": 9.0, "ask": 9.2,
+        },
+    ])
+    q = extract_cycle_quotes(
+        tape, None, session_date=session_date,
+        observed_at=observed_at, near_dte_cap_days=None,
+    )
+    assert len(q) == 1
+    assert q[0]["mid"] == 5.1
+    assert q[0]["trade_at"] == expected_trade_at
 
 
 def test_extract_cycle_quotes_rejects_source_clock_later_than_root_observation():

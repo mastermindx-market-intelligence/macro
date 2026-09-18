@@ -307,6 +307,14 @@ def extract_cycle_quotes(
         return []
     observed_utc = observed.astimezone(timezone.utc)
 
+    # Reuse the same cash-session owner as engine.live_flow. The raw bulk tape can
+    # include post-close ETF prints because the poller fetches through "now"; surface
+    # Greek inputs must first stay inside the accepted cash-session trade window.
+    from engine.session_digest import session_window_et
+    session_open_et, session_close_et = session_window_et(session_d)
+    session_open_utc = session_open_et.astimezone(timezone.utc)
+    session_close_utc = session_close_et.astimezone(timezone.utc)
+
     def _source_instant(raw: object) -> datetime | None:
         if raw is None:
             return None
@@ -344,14 +352,29 @@ def extract_cycle_quotes(
     # start with '_' into positional accessors, so keep them itertuples-safe.
     tape["cright"] = tape["right"].astype(str).str.upper().str[:1]
     tape["cexp"] = tape["expiration"].astype(str).str[:10]
-    # Keep only rows with a usable two-sided quote.
-    tape = tape[(tape["bid"] > 0) & (tape["ask"] > 0) & (tape["strike"] > 0)]
+    # Keep only rows with a usable two-sided quote and a trade event inside
+    # the existing cash-session window. RTH membership belongs to the trade clock;
+    # quote_timestamp may legitimately precede it and remains provenance only.
+    tape["trade_utc_sort"] = tape["trade_timestamp"].map(_source_instant)
+    tape = tape[
+        (tape["bid"] > 0)
+        & (tape["ask"] > 0)
+        & (tape["strike"] > 0)
+        & tape["trade_utc_sort"].notna()
+        & (tape["trade_utc_sort"] >= session_open_utc)
+        & (tape["trade_utc_sort"] < session_close_utc)
+    ]
     if tape.empty:
         return []
 
-    # Freshest quote per contract = last row by trade_timestamp.
-    tape = tape.sort_values("trade_timestamp")
-    last = tape.groupby(["cexp", "strike", "cright"], as_index=False).last()
+    # Freshest contract observation = the whole latest RTH trade row.
+    # GroupBy.last() is column-wise and skips nulls, which can splice an older
+    # quote_timestamp onto a newer trade/bid/ask row. Stable sort + drop_duplicates
+    # preserves row identity, including an honestly missing quote clock.
+    tape = tape.sort_values("trade_utc_sort", kind="mergesort")
+    last = tape.drop_duplicates(
+        subset=["cexp", "strike", "cright"], keep="last",
+    ).reset_index(drop=True)
 
     out: list[dict] = []
     for row in last.itertuples(index=False):
@@ -361,7 +384,7 @@ def extract_cycle_quotes(
             continue
         if near_dte_cap_days is not None and T > (near_dte_cap_days + 1) / 365.0:
             continue
-        trade_utc = _source_instant(getattr(row, "trade_timestamp", None))
+        trade_utc = getattr(row, "trade_utc_sort", None)
         if trade_utc is None or trade_utc > observed_utc:
             continue
         quote_utc = _source_instant(getattr(row, "quote_timestamp", None))
