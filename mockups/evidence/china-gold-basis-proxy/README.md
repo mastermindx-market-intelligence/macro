@@ -39,10 +39,11 @@ remains dependent on the incumbent R1 integration.
 The visual **available** state uses deterministic source fixtures. It is not a claim that
 the live SGE/Tushare and Massive Currencies calls have already run in production.
 
-The implementation wires those existing governed sources into the Asia collector, but
-production source proof still requires a real secret-bearing Asia run after lawful merge.
-If either technical source is unavailable, the product engine fails closed rather than
-substituting futures, an ETF, or an unofficial quote.
+The implementation wires those governed sources into the existing US-nightly collector
+lane, whose 18:30 ET authoritative run occurs after the Shanghai close and already carries
+both technical credentials. Production source proof still requires that normal secret-bearing
+nightly run after lawful merge. If either technical source is unavailable, the product engine
+fails closed rather than substituting futures, an ETF, or an unofficial quote.
 
 The official SHAUPM/LBMA-AM canonical benchmark remains a separate method and is not
 fabricated by this proxy.
