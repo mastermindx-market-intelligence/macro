@@ -1229,6 +1229,18 @@
       "at": "2026-09-17T22:13:06.593848+00:00",
       "activated": false,
       "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50506": {
+      "id": "wh-2026-09-18-president-trump-extends-most-favored-nation-pricing-to-every-medicaid-program-in",
+      "at": "2026-09-18T19:36:04.579753+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50510": {
+      "id": "wh-2026-09-18-what-they-are-saying-president-trump-delivers-historic-victories-for-americas-hu",
+      "at": "2026-09-18T19:36:16.739825+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
