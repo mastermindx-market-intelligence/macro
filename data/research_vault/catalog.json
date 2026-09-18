@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T12:37:57.165926+00:00",
-  "count": 2360,
+  "generated_at": "2026-09-18T13:08:05.903692+00:00",
+  "count": 2361,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-m5oomfilu9q-50c80a",
+      "title": "GS Blekos Marketcolour Equity Strategy CTA Transport Chartpack Renk Up 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T12:47:33Z",
+      "summary_points": [
+        "EPS Growth Forecast: S&P 500 EPS growth forecasted at 11% (2027: $415, 2028: $460), driven by GDP growth and fading AI tailwind, signaling sustained equity momentum.",
+        "Valuation Premium Risk: Current S&P 500 real trailing 4Q EPS ($326 in 2026 dollars) significantly exceeds 30-year trend line ($261), indicating multi-decade earnings overvaluation relative to historical norms.",
+        "Hedge Fund Flows: Hedge Funds increased tech/consumer discretionary/industrials/financials exposure by $658mm vs. macro products, reflecting sector rotation amid elevated equity demand.",
+        "Low-Correlation Basket: GSXUHLTH identified as optimal basket (least correlated to AI/oil/rates) with strong earnings revisions (GSHLCOMB), offering tactical diversification."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-lysi4w2sjkz-a09bde",
       "title": "JPM US Market Intelligence | Morning Briefing",
