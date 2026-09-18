@@ -81,7 +81,7 @@ Current code search found analyze_document/analyze_vault_report only in implemen
 
 Therefore even after W2+W3 release, RIO can legitimately remain missing for most reports.
 
-**Proposed W4, not implemented:** one bounded producer under existing Vault/Research Intelligence runtime ownership:
+**Proposed operational producer seam, not implemented and NOT W4:** the frozen Qualitative Research architecture already reserves W4 for ZeroHedge, W5 for longitudinal belief memory, and W6 for synthesis. Add one bounded W1→W2 producer under existing Vault/Research Intelligence runtime ownership:
 eligible current Vault report -> compare current body + current document identity to latest RIO receipt -> if missing/stale and admitted run W1 -> W2 validates/persists -> W3 consumes later.
 
 No new queue/store. Reuse existing scheduler/process and W2 idempotency/CAS. Start selectively on actual consumer demand: Prophet/company questions, private watch/portfolio relevance without writing holdings into shared state, earnings/guidance/revisions/initiations, current macro/policy tasks, independent dissent, missing predecessor pairs, and approved editorial/news needs. Expand only after real quality/cost receipts.
@@ -138,7 +138,7 @@ R14 reader review HOLD/NOT_RUN, R16 storage/page qualification held with6747/4.3
 
 Primary: consume material incumbent release movement in order. Do not poll unchanged queues or repeat semantic reviews.
 
-Independent useful work: freeze W4 producer contract against the released W1/W2 semantics and assemble a small permitted gold corpus with: one current company question; one comparable revision pair; one independent-source disagreement; one long-report qualification. No source acquisition beyond current rights implied.
+Independent useful work: freeze the unnumbered W1→W2 producer contract against released W1/W2 semantics and the frozen Qualitative Research architecture and assemble a small permitted gold corpus with: one current company question; one comparable revision pair; one independent-source disagreement; one long-report qualification. No source acquisition beyond current rights implied.
 
 DO_NOT_REDO: W1 RIO schema; W2 storage/correction plane; planned W3 duplicate-store alternative; R20 implementation/proof absent invalidator; #7045 merged hygiene; CA1A#6838; collector recovery#7164/Mastermind#631; #7287 semantic review absent material change.
 
