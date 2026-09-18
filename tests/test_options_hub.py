@@ -727,6 +727,51 @@ class TestVolPayloadSchema:
 
 
 # --------------------------------------------------------------------------- #
+# R5 prerequisite: expiry-resolved vanna/charm projection
+# --------------------------------------------------------------------------- #
+
+def test_by_expiry_projects_existing_vanna_and_charm_without_new_math():
+    asof = "2025-01-10"
+    greeks = pd.DataFrame([
+        _make_greeks_row(
+            date=asof, expiration="2025-02-21", strike=500.0, right="C",
+            underlying_price=500.0, vanna=0.001, charm=-0.002,
+        ),
+        _make_greeks_row(
+            date=asof, expiration="2025-06-20", strike=500.0, right="C",
+            underlying_price=500.0, vanna=0.003, charm=-0.004,
+        ),
+    ])
+    oi = pd.DataFrame([
+        {
+            "expiration": "2025-02-21", "strike": 500.0, "right": "C",
+            "open_interest": 1000.0, "date": asof,
+        },
+        {
+            "expiration": "2025-06-20", "strike": 500.0, "right": "C",
+            "open_interest": 2000.0, "date": asof,
+        },
+    ])
+
+    result = compute_gex(greeks, oi, asof, "SPY")
+    by_expiry = result["by_expiry"]
+    assert [row["exp"] for row in by_expiry] == ["2025-02-21", "2025-06-20"]
+    assert all("vanna_net" in row and "charm_net" in row for row in by_expiry)
+
+    # On this one-strike, fully in-window fixture, expiry aggregation must reconcile
+    # exactly to the already-published by-strike greek totals. This proves the new
+    # projection is only another grouping of the existing owner-native exposures.
+    assert sum(row["vanna_net"] for row in by_expiry) == pytest.approx(
+        sum(row["vanna_net"] for row in result["by_strike"]), abs=1e-4
+    )
+    assert sum(row["charm_net"] for row in by_expiry) == pytest.approx(
+        sum(row["charm_net"] for row in result["by_strike"]), abs=1e-4
+    )
+    assert any(abs(row["vanna_net"]) > 0 for row in by_expiry)
+    assert any(abs(row["charm_net"]) > 0 for row in by_expiry)
+
+
+# --------------------------------------------------------------------------- #
 # CONTRACT: by_strike windowing — 470-strike synthetic
 # --------------------------------------------------------------------------- #
 
