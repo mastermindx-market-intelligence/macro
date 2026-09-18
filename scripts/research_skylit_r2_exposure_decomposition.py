@@ -13,6 +13,7 @@ import pandas as pd
 
 SCHEMA = "skylit.r2.exposure_decomposition_feasibility/v1"
 POSITION_TIER = "naive_dealer_long_calls_short_puts/v1"
+EXPOSURE_UNIT = "USD dealer-delta change per +1% spot move"
 KEY = ["root", "expiration", "strike", "right"]
 FACTORS = ("position", "spot", "vol", "time")
 CONTRACT_MULTIPLIER = 100.0
@@ -301,6 +302,7 @@ def build_settled_state(
     return {
         "session": session,
         "root": root.upper(),
+        "exposure_unit": EXPOSURE_UNIT,
         "position_publication_session": oi_publication_session,
         "decision_eligible_not_before_session": oi_publication_session,
         "source_availability_precision": "session_only_from_current_store_reader",
@@ -488,6 +490,7 @@ def analyze_pair(
         "schema": SCHEMA,
         "research_authority": "research_only",
         "position_tier": POSITION_TIER,
+        "exposure_unit": EXPOSURE_UNIT,
         "method": _greek_method_metadata(greeks_fn),
         "outcome_labels_opened": False,
         "root": root.upper(),
