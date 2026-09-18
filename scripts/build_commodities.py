@@ -1475,11 +1475,15 @@ def _attach_china_gold_premium(
 
     from engine import china_gold_premium
 
-    premium_vm = china_gold_premium.build_view_model(
-        (cfg_com or {}).get("china_gold_premium", {}),
-        reader=reader,
-        now=now,
-    )
+    try:
+        premium_vm = china_gold_premium.build_view_model(
+            (cfg_com or {}).get("china_gold_premium", {}),
+            reader=reader,
+            now=now,
+        )
+    except Exception as exc:  # noqa: BLE001 — additive context must never drop the commodity VM
+        log.warning("china gold premium context failed (%s); showing unavailable state", exc)
+        premium_vm = china_gold_premium.unavailable_view_model("source_data_unavailable")
     for row in detail:
         if isinstance(row, dict) and row.get("name") == "gold":
             row["china_gold_premium"] = premium_vm

@@ -358,3 +358,164 @@ def test_gold_premium_partial_labels_stale_canonical_observation():
 
     assert "Stale benchmark" in html
     assert "基准数据已陈旧" in html
+
+
+def test_view_model_ignores_future_canonical_rows_before_selecting_current():
+    m = _mod()
+    now = pd.Timestamp("2026-09-18T18:00:00Z")
+    frames = {
+        ("sge", "pm"): pd.DataFrame(
+            {"value": [700.0, 900.0]},
+            index=pd.to_datetime(["2026-09-18", "2026-09-19"]),
+        ),
+        ("london", "am"): pd.DataFrame(
+            {"value": [3100.0, 3200.0]},
+            index=pd.to_datetime(["2026-09-18", "2026-09-19"]),
+        ),
+        ("fx", "daily"): pd.DataFrame(
+            {"value": [7.0, 7.0]},
+            index=pd.to_datetime(["2026-09-18", "2026-09-19"]),
+        ),
+    }
+    cfg = {
+        "canonical": {
+            "sge": _leg("sge", "pm", label="SGE SHAUPM"),
+            "london": _leg("london", "am", label="LBMA AM"),
+            "fx": _leg("fx", "daily", label="USDCNY"),
+            "max_age_days": 5,
+        }
+    }
+
+    vm = m.build_view_model(cfg, reader=lambda g, n: frames.get((g, n)), now=now)
+
+    assert vm["available"] is True
+    assert vm["current_method"] == "canonical"
+    assert vm["canonical"]["asof"] == "2026-09-18"
+    expected = (700.0 * TROY_OZ_GRAMS / 7.0 / 3100.0 - 1.0) * 100.0
+    assert vm["premium_pct"] == pytest.approx(expected)
+
+
+def test_stale_intraday_without_canonical_benchmark_is_unavailable():
+    m = _mod()
+    now = pd.Timestamp("2026-09-18T12:00:00Z")
+    frames = {
+        ("sge", "au9999"): pd.DataFrame(
+            {"value": [700.0]}, index=[pd.Timestamp("2026-09-18T09:00:00Z")]
+        ),
+        ("london", "spot"): pd.DataFrame(
+            {"value": [3100.0]}, index=[pd.Timestamp("2026-09-18T09:03:00Z")]
+        ),
+        ("fx", "intraday"): pd.DataFrame(
+            {"value": [7.0]}, index=[pd.Timestamp("2026-09-18T09:02:00Z")]
+        ),
+    }
+    cfg = {
+        "intraday": {
+            "sge": _leg("sge", "au9999", label="SGE Au99.99"),
+            "london": _leg("london", "spot", label="London spot"),
+            "fx": _leg("fx", "intraday", label="USDCNY"),
+            "max_skew_minutes": 10,
+            "max_age_minutes": 30,
+        }
+    }
+
+    vm = m.build_view_model(cfg, reader=lambda g, n: frames.get((g, n)), now=now)
+
+    assert vm["available"] is False
+    assert vm["reason_code"] == "stale_observation"
+    assert vm["chart"]["canonical"] == []
+    assert vm["chart"]["intraday"] is None
+
+
+def test_default_config_exposes_entitled_provider_seam_without_fake_sources():
+    from lib import config
+
+    premium_cfg = config.load()["commodities"]["china_gold_premium"]
+
+    assert premium_cfg == {"canonical": {}, "intraday": {}}
+
+
+def test_malformed_optional_timing_config_fails_closed():
+    m = _mod()
+    frames = {
+        ("sge", "pm"): _frame([700.0]),
+        ("london", "am"): _frame([3100.0]),
+        ("fx", "daily"): _frame([7.0]),
+    }
+    cfg = {
+        "canonical": {
+            "sge": _leg("sge", "pm"),
+            "london": _leg("london", "am"),
+            "fx": _leg("fx", "daily"),
+            "max_age_days": "not-a-number",
+        }
+    }
+
+    vm = m.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-08-01T18:00:00Z"),
+    )
+
+    assert vm["available"] is False
+    assert vm["reason_code"] == "source_config_invalid"
+
+
+def test_malformed_source_timestamp_fails_closed_instead_of_crashing_page():
+    m = _mod()
+    frames = {
+        ("sge", "pm"): pd.DataFrame({"value": [700.0]}, index=["not-a-date"]),
+        ("london", "am"): _frame([3100.0]),
+        ("fx", "daily"): _frame([7.0]),
+    }
+    cfg = {
+        "canonical": {
+            "sge": _leg("sge", "pm"),
+            "london": _leg("london", "am"),
+            "fx": _leg("fx", "daily"),
+        }
+    }
+
+    vm = m.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-08-01T18:00:00Z"),
+    )
+
+    assert vm["available"] is False
+    assert vm["reason_code"] == "no_aligned_observation"
+
+
+def test_builder_premium_failure_preserves_existing_commodity_detail(monkeypatch):
+    from engine import china_gold_premium
+    from scripts import build_commodities
+
+    vm = {
+        "stance": {"word_en": "Mixed conditions"},
+        "detail": [
+            {"name": "gold", "label_en": "Gold"},
+            {"name": "silver", "label_en": "Silver"},
+        ],
+    }
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("fixture premium engine failure")
+
+    monkeypatch.setattr(china_gold_premium, "build_view_model", boom)
+
+    out = build_commodities._attach_china_gold_premium(vm, {"china_gold_premium": {}})
+
+    assert out["stance"]["word_en"] == "Mixed conditions"
+    assert [row["name"] for row in out["detail"]] == ["gold", "silver"]
+    gold = out["detail"][0]
+    assert gold["china_gold_premium"]["available"] is False
+    assert gold["china_gold_premium"]["reason_code"] == "source_data_unavailable"
+
+
+def test_display_state_calls_values_that_render_zero_near_parity():
+    m = _mod()
+
+    assert m._state(0.004) == ("parity", "Near parity", "接近平价")
+    assert m._state(-0.004) == ("parity", "Near parity", "接近平价")
+    assert m._state(0.006)[0] == "premium"
+    assert m._state(-0.006)[0] == "discount"

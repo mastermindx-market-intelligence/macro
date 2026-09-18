@@ -120,3 +120,81 @@ def test_view_model_refuses_unentitled_source_instead_of_substituting_a_proxy():
     assert vm["reason_code"] == "source_not_entitled"
     assert vm["chart"]["canonical"] == []
     assert vm["chart"]["intraday"] is None
+
+
+def test_view_model_does_not_look_ahead_to_future_daily_rows():
+    now = pd.Timestamp("2026-09-18T18:00:00Z")
+    frames = {
+        ("sge", "pm"): _frame([700.0, 900.0], dates=["2026-09-18", "2026-09-19"]),
+        ("london", "am"): _frame([3100.0, 3200.0], dates=["2026-09-18", "2026-09-19"]),
+        ("fx", "daily"): _frame([7.0, 7.0], dates=["2026-09-18", "2026-09-19"]),
+    }
+    cfg = {
+        "canonical": {
+            "sge": _leg("sge", "pm"),
+            "london": _leg("london", "am"),
+            "fx": _leg("fx", "daily"),
+            "max_age_days": 5,
+        }
+    }
+
+    vm = cgp.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=now,
+    )
+
+    assert vm["available"] is True
+    assert vm["canonical"]["asof"] == "2026-09-18"
+
+
+def test_stale_intraday_alone_cannot_become_the_current_read():
+    now = pd.Timestamp("2026-09-18T12:00:00Z")
+    frames = {
+        ("sge", "au9999"): _frame([700.0], dates=["2026-09-18T09:00:00Z"]),
+        ("london", "spot"): _frame([3100.0], dates=["2026-09-18T09:03:00Z"]),
+        ("fx", "intraday"): _frame([7.0], dates=["2026-09-18T09:02:00Z"]),
+    }
+    cfg = {
+        "intraday": {
+            "sge": _leg("sge", "au9999"),
+            "london": _leg("london", "spot"),
+            "fx": _leg("fx", "intraday"),
+            "max_skew_minutes": 10,
+            "max_age_minutes": 30,
+        }
+    }
+
+    vm = cgp.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=now,
+    )
+
+    assert vm["available"] is False
+    assert vm["reason_code"] == "stale_observation"
+
+
+def test_malformed_freshness_setting_is_refused_instead_of_raising():
+    frames = {
+        ("sge", "pm"): _frame([700.0]),
+        ("london", "am"): _frame([3100.0]),
+        ("fx", "daily"): _frame([7.0]),
+    }
+    cfg = {
+        "canonical": {
+            "sge": _leg("sge", "pm"),
+            "london": _leg("london", "am"),
+            "fx": _leg("fx", "daily"),
+            "max_age_days": "invalid",
+        }
+    }
+
+    vm = cgp.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-09-01T18:00:00Z"),
+    )
+
+    assert vm["available"] is False
+    assert vm["reason_code"] == "source_config_invalid"

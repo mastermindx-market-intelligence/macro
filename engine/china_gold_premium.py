@@ -56,6 +56,11 @@ _REASON = {
         "The benchmark legs do not share a valid aligned observation.",
         "各基准数据腿没有可用的对齐观测值。",
     ),
+    "stale_observation": _Unavailable(
+        "stale_observation",
+        "The latest indicative observation is outside its freshness window.",
+        "最新指示性观测已超出时效窗口。",
+    ),
 }
 
 
@@ -63,11 +68,29 @@ def _to_utc_index(index) -> pd.DatetimeIndex:
     return pd.DatetimeIndex(pd.to_datetime(index, utc=True))
 
 
+def _nonnegative_setting(cfg: object, key: str, default: float) -> float | None:
+    if not isinstance(cfg, dict):
+        return None
+    raw = cfg.get(key, default)
+    if isinstance(raw, (bool, np.bool_)):
+        return None
+    try:
+        value = float(raw)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not np.isfinite(value) or value < 0:
+        return None
+    return value
+
+
 def _positive_series(frame: pd.DataFrame | None, column: str, *, daily: bool) -> pd.Series:
     if frame is None or not isinstance(frame, pd.DataFrame) or frame.empty or column not in frame:
         return pd.Series(dtype=float)
     values = pd.to_numeric(frame[column], errors="coerce").astype(float)
-    idx = _to_utc_index(frame.index)
+    try:
+        idx = _to_utc_index(frame.index)
+    except (TypeError, ValueError, OverflowError):
+        return pd.Series(dtype=float)
     if daily:
         idx = idx.tz_convert(None).normalize()
     values = pd.Series(values.to_numpy(), index=idx, dtype=float)
@@ -199,6 +222,9 @@ def _read_method(
             return pd.DataFrame(), labels, _REASON["source_data_unavailable"]
 
     if intraday:
+        max_skew = _nonnegative_setting(method_cfg, "max_skew_minutes", 15.0)
+        if max_skew is None:
+            return pd.DataFrame(), labels, _REASON["source_config_invalid"]
         out = compute_intraday_proxy(
             frames["sge"],
             frames["london"],
@@ -206,7 +232,7 @@ def _read_method(
             sge_column=specs["sge"]["column"],
             london_column=specs["london"]["column"],
             fx_column=specs["fx"]["column"],
-            max_skew_minutes=float(method_cfg.get("max_skew_minutes", 15.0)),
+            max_skew_minutes=max_skew,
         )
     else:
         out = compute_daily_benchmark(
@@ -232,15 +258,20 @@ def _as_utc(value) -> pd.Timestamp:
 def _daily_fresh(frame: pd.DataFrame, cfg: dict, now: pd.Timestamp) -> bool:
     if frame.empty:
         return False
-    max_age = int(cfg.get("max_age_days", 7))
+    max_age = _nonnegative_setting(cfg, "max_age_days", 7.0)
+    if max_age is None:
+        return False
     asof = pd.Timestamp(frame.index[-1]).tz_localize("UTC")
-    return (now.normalize() - asof.normalize()).days <= max_age
+    age_days = (now.normalize() - asof.normalize()).days
+    return 0 <= age_days <= max_age
 
 
 def _intraday_fresh(frame: pd.DataFrame, cfg: dict, now: pd.Timestamp) -> bool:
     if frame.empty:
         return False
-    max_age = float(cfg.get("max_age_minutes", 180.0))
+    max_age = _nonnegative_setting(cfg, "max_age_minutes", 180.0)
+    if max_age is None:
+        return False
     asof = _as_utc(frame.index[-1])
     age = (now - asof).total_seconds() / 60.0
     return age >= 0 and age <= max_age
@@ -262,11 +293,13 @@ def _point(row: pd.Series, when, *, intraday: bool) -> dict:
 def _state(premium: float | None) -> tuple[str, str, str]:
     if premium is None or not np.isfinite(premium):
         return "unavailable", "Unavailable", "暂不可用"
+    # Keep the state word coherent with the value shown at two decimals: a
+    # value that renders as ±0.00% is near parity, not a directional premium.
+    if round(float(premium), 2) == 0.0:
+        return "parity", "Near parity", "接近平价"
     if premium > 0:
         return "premium", "Premium", "溢价"
-    if premium < 0:
-        return "discount", "Discount", "折价"
-    return "parity", "Near parity", "接近平价"
+    return "discount", "Discount", "折价"
 
 
 def _unavailable_vm(reason: _Unavailable) -> dict:
@@ -291,6 +324,11 @@ def _unavailable_vm(reason: _Unavailable) -> dict:
         "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
         "chart": {"canonical": [], "intraday": None},
     }
+
+
+def unavailable_view_model(reason_code: str = "source_data_unavailable") -> dict:
+    """Public fail-closed view-model for an additive caller that catches a hard failure."""
+    return _unavailable_vm(_REASON.get(reason_code, _REASON["source_data_unavailable"]))
 
 
 def build_view_model(
@@ -320,6 +358,20 @@ def build_view_model(
         intraday_cfg, reader=reader, intraday=True
     )
 
+    # A source row dated after the evaluation clock is not yet knowable. Keep
+    # past/current canonical history and discard future-dated rows before any
+    # freshness or headline selection.
+    if not canonical.empty:
+        current_date = now_ts.tz_convert(None).normalize()
+        canonical = canonical.loc[canonical.index <= current_date]
+        if canonical.empty:
+            canonical_problem = _REASON["no_aligned_observation"]
+
+    if canonical_problem is None and _nonnegative_setting(canonical_cfg, "max_age_days", 7.0) is None:
+        canonical_problem = _REASON["source_config_invalid"]
+    if intraday_problem is None and _nonnegative_setting(intraday_cfg, "max_age_minutes", 180.0) is None:
+        intraday_problem = _REASON["source_config_invalid"]
+
     canonical_available = canonical_problem is None and not canonical.empty
     intraday_available = intraday_problem is None and not intraday.empty
     canonical_fresh = canonical_available and _daily_fresh(canonical, canonical_cfg, now_ts)
@@ -330,6 +382,16 @@ def build_view_model(
         vm = _unavailable_vm(problem)
         vm["canonical"]["sources"] = canonical_sources
         vm["intraday"]["sources"] = intraday_sources
+        return vm
+
+    # An indicative intraday point may be retained upstream for audit/context,
+    # but it cannot become the current user read after its freshness window when
+    # no canonical benchmark is available.
+    if not canonical_available and intraday_available and not intraday_fresh:
+        vm = _unavailable_vm(_REASON["stale_observation"])
+        vm["canonical"]["sources"] = canonical_sources
+        vm["intraday"]["sources"] = intraday_sources
+        vm["intraday"]["asof"] = _as_utc(intraday.index[-1]).isoformat()
         return vm
 
     canonical_points = [

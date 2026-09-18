@@ -4237,6 +4237,14 @@ commodities:
     copper: ["HG=F", cot_copper, industrial]
     oil:    ["CL=F", cot_oil,    energy]
 
+  # Gold-only China physical-premium monitor. Provider-neutral refs are filled
+  # ONLY after the applicable Shanghai/London/FX source rights are accepted.
+  # Empty legs deliberately render an honest unavailable state; never substitute
+  # the Yahoo futures price spine, an ETF, or another unofficial quote.
+  china_gold_premium:
+    canonical: {}                  # SHAUPM + LBMA Gold Price AM + USDCNY
+    intraday: {}                   # optional Au99.99 + licensed spot + USDCNY
+
   # Broad commodity roster for the SECTOR INDEX + breadth/trend-diversity engine
   # (engine/commodity_index.py). DISPLAY-TIER: these members get the generic price
   # technical + MTF + cycle stack, NOT the per-asset DSR calibration / alerts that
