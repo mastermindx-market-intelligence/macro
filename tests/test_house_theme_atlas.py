@@ -79,7 +79,7 @@ def test_house_atlas_dynamic_controls_and_table_keep_zh_parity():
     assert "isZh()?m[2]:m[1]" in block
     assert "'全部分类':'All categories'" in block
     assert "'等面积':'Equal area'" in block
-    assert "'成员数量':'Member count'" in block
+    assert "'成员数量（面积成比例）':'Member count (area-proportional)'" in block
     assert "isZh()?'主题 / 组别':'Theme / group'" in block
     assert "L(esc(g.category),esc(g.category_zh))" in block
 
@@ -113,7 +113,7 @@ def test_house_atlas_activity_intensity_is_not_directional_color():
     assert "metricBarStyle(metric)" in block
     assert "metric==='legacy_activity'?'background:var(--link)'" in block
     assert "colorStyle(m.value,state.metric)" in block
-    assert "colorStyle(cm,state.metric)" in block
+    assert "bubbleFill(cm,state.metric)" in block
 
 
 def test_house_atlas_bubble_encoding_uses_svg_fill_and_full_readout():
