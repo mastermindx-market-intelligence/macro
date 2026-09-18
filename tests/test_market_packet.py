@@ -1651,3 +1651,113 @@ def test_pressure_render_stays_tiny(tmp_path):
     text = mp._render_pressure(packet)
     assert len(text) <= 420, (len(text), text)
     assert len(text.split("\n")) <= 6
+
+
+def test_china_regional_clock_separates_session_state_and_component_vintages(tmp_path):
+    """2026-09-13 incident replay: a 9/9 basket component may not become the
+    exchange's alleged last trading day when state and the calendar are through 9/11."""
+    _write(tmp_path / "site" / "chinabasketdata" / "baskets.json", {
+        "as_of": "2026-09-09",
+        "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+        "cycle_context": {"asOf": "2026-09-11", "market": "CN"},
+    })
+    _write(tmp_path / "data" / "china_regime" / "latest.json", {
+        "date": "2026-09-11",
+        "quad": "Q4",
+        "quad_name": "Growth-scare",
+        "cycle_tag": "mid",
+    })
+    now = datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)
+
+    packet = mp.build_packet(tmp_path, now=now)
+    rows = packet["regional"]
+    line = mp._render_regional(packet)
+
+    assert "CN (latest completed session 2026-09-11" in line
+    assert "state through 2026-09-11" in line
+    assert "basket inputs through 2026-09-09, 2 sessions behind" in line
+    assert "CN (2026-09-09)" not in line
+    assert "each stamped with its OWN session" not in line
+    cn = next(row for row in rows if row["code"] == "CN")
+    assert cn["expected_session"] == "2026-09-11"
+    assert cn["state_as_of"] == "2026-09-11"
+    assert cn["component_as_of"] == "2026-09-09"
+    assert cn["component_sessions_behind"] == 2
+
+
+def test_china_missing_artifacts_remain_an_explicit_gap(tmp_path):
+    gaps: list[str] = []
+    rows = mp._regional_block(
+        tmp_path, gaps,
+        now=datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc),
+    )
+
+    assert not any(row.get("code") == "CN" for row in rows)
+    assert "regional CN: absent" in gaps
+
+
+def test_china_calendar_failure_never_restores_a_bare_component_stamp(
+        tmp_path, monkeypatch):
+    from lib import cn_calendar
+
+    _write(tmp_path / "site" / "chinabasketdata" / "baskets.json", {
+        "as_of": "2026-09-09",
+        "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+    })
+    _write(tmp_path / "data" / "china_regime" / "latest.json", {
+        "date": "2026-09-11",
+        "quad_name": "Growth-scare",
+    })
+    monkeypatch.setattr(
+        cn_calendar, "expected_last_session",
+        lambda now=None: (_ for _ in ()).throw(RuntimeError("calendar unavailable")),
+    )
+    gaps: list[str] = []
+
+    rows = mp._regional_block(tmp_path, gaps, now=datetime(2026, 9, 14, tzinfo=timezone.utc))
+    line = mp._render_regional({"regional": rows})
+
+    assert "state through 2026-09-11" in line
+    assert "basket inputs through 2026-09-09" in line
+    assert "exchange session unavailable" in line
+    assert "CN (2026-09-09)" not in line
+    assert any("regional CN clock: build failed" in gap for gap in gaps)
+
+
+def test_non_china_component_dates_are_labeled_not_bare():
+    line = mp._render_regional({"regional": [{
+        "code": "HK", "label": "Hong Kong",
+        "as_of": "2026-09-11", "component_as_of": "2026-09-11",
+        "bench_label": "Hang Seng",
+    }]})
+
+    assert "HK (basket inputs through 2026-09-11)" in line
+    assert "HK (2026-09-11)" not in line
+
+
+def test_build_packet_normalizes_naive_now(tmp_path):
+    _write(tmp_path / "site" / "chinabasketdata" / "baskets.json", {
+        "as_of": "2026-09-09", "benchmark_label": "CSI 300",
+        "chart": {"bench": [100.0, 101.0]},
+    })
+    aware = mp.build_packet(tmp_path, now=datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc))
+    naive = mp.build_packet(tmp_path, now=datetime(2026, 9, 14, 4, 0))
+    assert naive.get("regional") == aware.get("regional")
+    cn = next(row for row in naive["regional"] if row["code"] == "CN")
+    assert cn["expected_session"] == "2026-09-11"
+
+
+def test_china_undated_content_never_binds_to_exchange_session_alone(tmp_path):
+    _write(tmp_path / "data" / "china_regime" / "latest.json", {
+        "quad": "Q1", "quad_name": "Goldilocks", "cycle_tag": "mid",
+    })
+    now = datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)
+
+    packet = mp.build_packet(tmp_path, now=now)
+    line = mp._render_regional(packet)
+
+    assert "latest completed session 2026-09-11" in line
+    assert "content vintage unknown" in line
+    assert "CN (latest completed session 2026-09-11):" not in line

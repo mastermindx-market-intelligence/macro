@@ -139,7 +139,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-07-01",
+        "source_asof": "2026-08-01",
         "status": "PRESENT"
       },
       {
@@ -151,7 +151,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-07-01",
+        "source_asof": "2026-08-01",
         "status": "PRESENT"
       }
     ],
@@ -162,19 +162,48 @@
     "items": []
   },
   "changes": {
-    "comparability": "NO_EARLIER_PUBLICATION",
-    "deltas": [],
-    "null_reason": "INSUFFICIENT_HISTORY",
-    "prior_effective_date": null,
-    "prior_generation_id": null,
-    "prior_method_version": null,
-    "status": "ABSENT"
+    "comparability": "COMPARABLE",
+    "deltas": [
+      {
+        "current_value": -88576.0,
+        "delta": 0.0,
+        "metric_id": "trade_balance_level",
+        "note": "same method version; numeric comparison permitted",
+        "prior_value": -88576.0
+      },
+      {
+        "current_value": 310723.0,
+        "delta": 0.0,
+        "metric_id": "exports_level",
+        "note": "same method version; numeric comparison permitted",
+        "prior_value": 310723.0
+      },
+      {
+        "current_value": 399299.0,
+        "delta": 0.0,
+        "metric_id": "imports_level",
+        "note": "same method version; numeric comparison permitted",
+        "prior_value": 399299.0
+      },
+      {
+        "current_value": 0.7782,
+        "delta": 0.0,
+        "metric_id": "export_import_coverage_ratio",
+        "note": "same method version; numeric comparison permitted",
+        "prior_value": 0.7782
+      }
+    ],
+    "null_reason": null,
+    "prior_effective_date": "2026-07-01",
+    "prior_generation_id": "trade_flows-US-61dce61b98d938a8",
+    "prior_method_version": "trade_flows.compose.v1",
+    "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "trade_flows-US-0870f4ab8dc1d128"
+    "predecessor_generation_id": "trade_flows-US-1f44e4b9d6b3849e"
   },
   "drivers": {
     "balance_sheet": [
@@ -267,7 +296,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "import_price_index_level",
-        "impact_magnitude": 149.6,
+        "impact_magnitude": 150.8,
         "impact_sign": 1,
         "label": {
           "en": "Import price index",
@@ -276,12 +305,12 @@
         "note": "bucket reuse: published under drivers.rate_side because the contract's driver bucket pair is fixed as rate_side/balance_sheet and Trade Flows has no dedicated price-index bucket -- see the driver_bucket_naming_note implication",
         "owner_field": "fred.IR.import_price_index",
         "unit": "index",
-        "value": 149.6
+        "value": 150.8
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "export_price_index_level",
-        "impact_magnitude": 165.4,
+        "impact_magnitude": 166.2,
         "impact_sign": 1,
         "label": {
           "en": "Export price index",
@@ -290,12 +319,12 @@
         "note": "bucket reuse: see import_price_index_level's note",
         "owner_field": "fred.IQ.export_price_index",
         "unit": "index",
-        "value": 165.4
+        "value": 166.2
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "terms_of_trade_proxy",
-        "impact_magnitude": 1.1056,
+        "impact_magnitude": 1.1021,
         "impact_sign": 1,
         "label": {
           "en": "Terms-of-trade proxy",
@@ -304,21 +333,21 @@
         "note": "bucket reuse: see import_price_index_level's note",
         "owner_field": "fred.IQ / fred.IR",
         "unit": "ratio",
-        "value": 1.1056
+        "value": 1.1021
       }
     ]
   },
   "generation": {
-    "built_at": "2026-09-13T07:23:13Z",
-    "calculation_as_of": "2026-07-01",
-    "code_version": "aa6750b68ccefeb17043e590b61e8a00565d1837",
-    "content_sha256": "508aabfb38d57900bfa94b4b533399e55a628b6b753003e71471227d5ab67cdb",
-    "generation_id": "trade_flows-US-508aabfb38d57900",
+    "built_at": "2026-09-18T15:39:55Z",
+    "calculation_as_of": "2026-08-01",
+    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
+    "content_sha256": "470585957f0dce7dfd162a42707f3b64ca10616510094812bed2f0ebd3a6583e",
+    "generation_id": "trade_flows-US-470585957f0dce7d",
     "producer": "engine.market_os.macro_workspaces.trade_flows",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-07-01",
+    "effective_date": "2026-08-01",
     "hysteresis": {
       "applied": false,
       "band": 0.0,
@@ -326,17 +355,22 @@
       "note": "Trade Flows is a Chairman-authorized expansion added after the frozen Market Ontology architecture document's own twelve-workspace freeze, so no section of that document defines a headline model for it at all -- not even a note that none exists, the way monetary_policy/liquidity_central_banks each carry their own such note. There is accordingly no named axis pair here to attempt, and no dual-axis quadrant is asserted. A future architecture revision may ratify a genuine two-axis blueprint for this workspace, at which point this null becomes a real state the moment that blueprint is adopted. Until then, the real trade content -- balance, exports, imports, price indexes, the terms-of-trade proxy, and the balance-identity read -- lives in metrics, drivers, and implications instead. See the headline_unavailable implication for the reader-facing version."
     },
     "method_version": "trade_flows.compose.v1",
-    "movement_state": "NO_EARLIER_PUBLICATION",
+    "movement_state": null,
     "nearest_boundary": {
       "axis": null,
       "distance": null,
       "null_reason": "NOT_APPLICABLE"
     },
     "null_reason": "NOT_APPLICABLE",
-    "one_month_vector": null,
+    "one_month_vector": {
+      "dx": null,
+      "dy": null,
+      "null_reason": "NOT_APPLICABLE",
+      "status": "ABSENT"
+    },
     "prior_state": {
-      "effective_date": null,
-      "method_version": null,
+      "effective_date": "2026-07-01",
+      "method_version": "trade_flows.compose.v1",
       "state_id": null
     },
     "quadrant": {
@@ -443,8 +477,8 @@
         "horizon": "current",
         "implication_id": "price_index_read",
         "text": {
-          "en": "Import prices 149.6 (+5.9% YoY); export prices 165.4 (+8.2% YoY); terms-of-trade proxy 1.1056.",
-          "zh": "进口价格149.6（同比+5.9%）；出口价格165.4（同比+8.2%）；贸易条件指标为1.1056。"
+          "en": "Import prices 150.8 (+7.0% YoY); export prices 166.2 (+8.6% YoY); terms-of-trade proxy 1.1021.",
+          "zh": "进口价格150.8（同比+7.0%）；出口价格166.2（同比+8.6%）；贸易条件指标为1.1021。"
         },
         "trace_ref": null
       },
@@ -977,7 +1011,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IR.import_price_index",
@@ -988,10 +1022,10 @@
         "metric_id": "import_price_index_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/IR.parquet",
         "reference_id": "mastermind.market_reference/v1#import_price_index_level",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1006,14 +1040,14 @@
           "value": null
         },
         "unit": "index_nsa",
-        "value": 149.6,
+        "value": 150.8,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IR.import_price_index",
@@ -1024,10 +1058,10 @@
         "metric_id": "import_price_index_yoy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/IR.parquet",
         "reference_id": "mastermind.market_reference/v1#import_price_index_yoy",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1042,14 +1076,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.949,
+        "value": 6.9504,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IQ.export_price_index",
@@ -1060,10 +1094,10 @@
         "metric_id": "export_price_index_level",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/IQ.parquet",
         "reference_id": "mastermind.market_reference/v1#export_price_index_level",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1078,14 +1112,14 @@
           "value": null
         },
         "unit": "index_nsa",
-        "value": 165.4,
+        "value": 166.2,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IQ.export_price_index",
@@ -1096,10 +1130,10 @@
         "metric_id": "export_price_index_yoy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/IQ.parquet",
         "reference_id": "mastermind.market_reference/v1#export_price_index_yoy",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1114,14 +1148,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 8.2461,
+        "value": 8.6275,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_ratio",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IQ / fred.IR",
@@ -1132,10 +1166,10 @@
         "metric_id": "terms_of_trade_proxy",
         "model_version": "trade_flows.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "fred.IQ / fred.IR",
         "reference_id": "mastermind.market_reference/v1#terms_of_trade_proxy",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1151,7 +1185,7 @@
           "value": null
         },
         "unit": null,
-        "value": 1.1056,
+        "value": 1.1021,
         "value_type": "ratio"
       },
       {
@@ -1376,7 +1410,745 @@
       }
     ]
   },
-  "prior_publication": null,
+  "prior_publication": {
+    "generation": {
+      "generation_id": "trade_flows-US-61dce61b98d938a8"
+    },
+    "headline": {
+      "effective_date": "2026-07-01",
+      "hysteresis": {
+        "applied": false,
+        "band": 0.0,
+        "held_prior": false,
+        "note": "Trade Flows is a Chairman-authorized expansion added after the frozen Market Ontology architecture document's own twelve-workspace freeze, so no section of that document defines a headline model for it at all -- not even a note that none exists, the way monetary_policy/liquidity_central_banks each carry their own such note. There is accordingly no named axis pair here to attempt, and no dual-axis quadrant is asserted. A future architecture revision may ratify a genuine two-axis blueprint for this workspace, at which point this null becomes a real state the moment that blueprint is adopted. Until then, the real trade content -- balance, exports, imports, price indexes, the terms-of-trade proxy, and the balance-identity read -- lives in metrics, drivers, and implications instead. See the headline_unavailable implication for the reader-facing version."
+      },
+      "method_version": "trade_flows.compose.v1",
+      "movement_state": "NO_EARLIER_PUBLICATION",
+      "nearest_boundary": {
+        "axis": null,
+        "distance": null,
+        "null_reason": "NOT_APPLICABLE"
+      },
+      "null_reason": "NOT_APPLICABLE",
+      "one_month_vector": null,
+      "prior_state": {
+        "effective_date": null,
+        "method_version": null,
+        "state_id": null
+      },
+      "quadrant": {
+        "x": null,
+        "x_status": "ABSENT",
+        "y": null,
+        "y_status": "ABSENT"
+      },
+      "state_id": null,
+      "state_label": {
+        "en": null,
+        "zh": null
+      },
+      "status": "ABSENT",
+      "subtitle": {
+        "en": "Trade balance, exports/imports, and the terms of trade",
+        "zh": "贸易差额、出口与进口及贸易条件"
+      },
+      "transition_distance": null
+    },
+    "metrics": {
+      "items": [
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_surplus",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "trade_balance_level",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPGSTB.parquet",
+          "reference_id": "mastermind.market_reference/v1#trade_balance_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPGSTB"
+          ],
+          "status": "PRESENT",
+          "transformation": "Census/BEA FT-900 Trade Balance: Goods and Services, BoP basis, seasonally adjusted, republished by FRED, in USD MILLIONS (never rescaled to $bn -- judgment call 3). Negative = deficit. No ALFRED point-in-time vintage exists for this series; this composer publishes the current stored (latest-revised) read.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_millions_sa",
+          "value": -88576.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "trailing_3m_average",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_surplus",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "trade_balance_avg_3m",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPGSTB.parquet",
+          "reference_id": "mastermind.market_reference/v1#trade_balance_avg_3m",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPGSTB"
+          ],
+          "status": "PRESENT",
+          "transformation": "Mean of every observation inside a 65-day trailing window from the latest print, refused as insufficient history below 3 observations in that window -- never a blind average of 'the last three rows' across a collection gap (judgment call 5).",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_millions_sa",
+          "value": -78503.3333,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_level_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPGSTB.trade_balance_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "positive_is_balance_improving",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "trade_balance_yoy_change",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPGSTB.parquet",
+          "reference_id": "mastermind.market_reference/v1#trade_balance_yoy_change",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPGSTB"
+          ],
+          "status": "PRESENT",
+          "transformation": "Current level minus the level roughly 12 months prior, in USD MILLIONS -- a LEVEL difference, never a percent (judgment call 4): the trade balance crosses zero, so a percent YoY would be unstable near a zero or sign-flipping denominator.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_millions_sa",
+          "value": -13514.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPTEXP.exports_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_exports",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "exports_level",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPTEXP.parquet",
+          "reference_id": "mastermind.market_reference/v1#exports_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPTEXP"
+          ],
+          "status": "PRESENT",
+          "transformation": "Census/BEA FT-900 Exports of Goods and Services, BoP basis, seasonally adjusted, republished by FRED, in USD MILLIONS. No ALFRED point-in-time vintage exists for this series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_millions_sa",
+          "value": 310723.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPTEXP.exports_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_faster_export_growth",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "exports_yoy",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPTEXP.parquet",
+          "reference_id": "mastermind.market_reference/v1#exports_yoy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPTEXP"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same SA series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 9.3433,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPTIMP.imports_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_imports",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "imports_level",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPTIMP.parquet",
+          "reference_id": "mastermind.market_reference/v1#imports_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPTIMP"
+          ],
+          "status": "PRESENT",
+          "transformation": "Census/BEA FT-900 Imports of Goods and Services, BoP basis, seasonally adjusted, republished by FRED, in USD MILLIONS. No ALFRED point-in-time vintage exists for this series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_millions_sa",
+          "value": 399299.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPTIMP.imports_goods_services",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_faster_import_growth",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "imports_yoy",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/BOPTIMP.parquet",
+          "reference_id": "mastermind.market_reference/v1#imports_yoy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPTIMP"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same SA series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 11.1526,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "same_date_disciplined_ratio",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPTEXP / fred.BOPTIMP",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_export_coverage_of_imports",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "export_import_coverage_ratio",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "fred.BOPTEXP / fred.BOPTIMP",
+          "reference_id": "mastermind.market_reference/v1#export_import_coverage_ratio",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPTEXP",
+            "FRED:BOPTIMP"
+          ],
+          "status": "PRESENT",
+          "transformation": "Exports divided by imports (both goods-and-services, SA, USD millions), at the latest date common to both legs (same-date discipline); refused when no such date exists within 20 days of either leg's own newest print, rather than mixing an older print from one leg with a newer print from the other.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": null,
+          "value": 0.7782,
+          "value_type": "ratio"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.IR.import_price_index",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_expensive_imports",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "import_price_index_level",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/IR.parquet",
+          "reference_id": "mastermind.market_reference/v1#import_price_index_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:IR"
+          ],
+          "status": "PRESENT",
+          "transformation": "BLS Import Price Index, All Commodities, NOT seasonally adjusted, republished by FRED (index, NSA, base year per BLS/FRED series metadata -- NOT verified in this authoring environment; see judgment call 14). No ALFRED point-in-time vintage exists for this series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "index_nsa",
+          "value": 149.6,
+          "value_type": "index"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.IR.import_price_index",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_faster_import_price_inflation",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "import_price_index_yoy",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/IR.parquet",
+          "reference_id": "mastermind.market_reference/v1#import_price_index_yoy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:IR"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same NSA index.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 5.949,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "level",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.IQ.export_price_index",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_expensive_exports",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "export_price_index_level",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/IQ.parquet",
+          "reference_id": "mastermind.market_reference/v1#export_price_index_level",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:IQ"
+          ],
+          "status": "PRESENT",
+          "transformation": "BLS Export Price Index, All Commodities, NOT seasonally adjusted, republished by FRED (index, NSA, base year per BLS/FRED series metadata -- NOT verified in this authoring environment; see judgment call 14). No ALFRED point-in-time vintage exists for this series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "index_nsa",
+          "value": 165.4,
+          "value_type": "index"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "yoy_pct_change",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.IQ.export_price_index",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_faster_export_price_inflation",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "export_price_index_yoy",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "INSUFFICIENT_HISTORY",
+          "observed_at": "2026-07-01",
+          "owner_ref": "data/fred/IQ.parquet",
+          "reference_id": "mastermind.market_reference/v1#export_price_index_yoy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:IQ"
+          ],
+          "status": "PRESENT",
+          "transformation": "12-month percent change of the same NSA index.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": 8.2461,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "same_date_disciplined_ratio",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.IQ / fred.IR",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_favorable_terms_of_trade",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "terms_of_trade_proxy",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "fred.IQ / fred.IR",
+          "reference_id": "mastermind.market_reference/v1#terms_of_trade_proxy",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:IQ",
+            "FRED:IR"
+          ],
+          "status": "PRESENT",
+          "transformation": "Export price index divided by import price index (both NOT seasonally adjusted -- a clean NSA-vs-NSA pairing, judgment call 2), at the latest date common to both legs; refused when no such date exists within 20 days of either leg's own newest print. Never combined with any SA dollar-flow series in the same derived read.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": null,
+          "value": 1.1056,
+          "value_type": "ratio"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "same_date_disciplined_share",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
+          "definition_version": "1.0.0",
+          "direction_semantics": "higher_more_surplus_relative_to_flow_volume",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "trade_balance_share_of_flows_pct",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "fred.BOPGSTB / (fred.BOPTEXP + fred.BOPTIMP)",
+          "reference_id": "mastermind.market_reference/v1#trade_balance_share_of_flows_pct",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPGSTB",
+            "FRED:BOPTEXP",
+            "FRED:BOPTIMP"
+          ],
+          "status": "PRESENT",
+          "transformation": "Trade balance divided by (exports plus imports), expressed as a percent, at the latest date common to all three legs (same-date discipline, three-leg -- judgment call 6); refused when no such date exists within the disclosed staleness bound, or when the exports-plus-imports denominator reads exactly zero.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "percent",
+          "value": -12.4751,
+          "value_type": "percent"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "same_date_disciplined_identity_residual",
+          "calculation_as_of": "2026-07-01",
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "fred.BOPGSTB - (fred.BOPTEXP - fred.BOPTIMP)",
+          "definition_version": "1.0.0",
+          "direction_semantics": "magnitude_indicates_cross_series_revision_vintage_mismatch",
+          "freshness": "CURRENT",
+          "market_session": null,
+          "metric_id": "trade_balance_identity_residual",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": null,
+          "observed_at": "2026-07-01",
+          "owner_ref": "fred.BOPGSTB - (fred.BOPTEXP - fred.BOPTIMP)",
+          "reference_id": "mastermind.market_reference/v1#trade_balance_identity_residual",
+          "reference_period": "2026-07-01",
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "FRED:BOPGSTB",
+            "FRED:BOPTEXP",
+            "FRED:BOPTIMP"
+          ],
+          "status": "PRESENT",
+          "transformation": "Published trade balance minus (exports minus imports), at the latest date common to all three legs; a disclosed 100-USD-million tolerance band absorbs ordinary rounding across FRED's three independently-refreshed series -- a residual beyond the band is flagged as a genuine disagreement (this composer's one contradiction, judgment call 8), never silently averaged away.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": "usd_millions_sa",
+          "value": 0.0,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "NOT_COVERED",
+          "market_session": null,
+          "metric_id": "bilateral_country_trade_detail",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "NOT_COVERED",
+          "observed_at": null,
+          "owner_ref": "NONE -- a China-side GACC partner-country collector exists in this estate but is another owner's context/display-tier-only lane",
+          "reference_id": "mastermind.market_reference/v1#bilateral_country_trade_detail",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- a China-side GACC partner-country collector exists in this estate but is another owner's context/display-tier-only lane"
+          ],
+          "status": "ABSENT",
+          "transformation": "A bilateral/country-level breakdown of US trade flows is not shown. A China-side partner-country trade detail collector (collectors/china_trade_detail.py -> data/china_trade_detail/) is real and nightly-wired in this estate, but it is scoped as 'CONTEXT / DISPLAY TIER ONLY' for its own owning surface, and reusing its breakdown here would require a cross-workspace scope/ rights decision this composer has no standing to make on its own authority. Typed as not covered rather than silently read.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": null,
+          "value": null,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "NOT_COVERED",
+          "market_session": null,
+          "metric_id": "petroleum_specific_trade_flows",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "NOT_COVERED",
+          "observed_at": null,
+          "owner_ref": "NONE -- EIA weekly crude import/export series exist in this estate but belong to the energy-plumbing owner's lane",
+          "reference_id": "mastermind.market_reference/v1#petroleum_specific_trade_flows",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- EIA weekly crude import/export series exist in this estate but belong to the energy-plumbing owner's lane"
+          ],
+          "status": "ABSENT",
+          "transformation": "Petroleum-specific import/export flows are not shown. EIA weekly crude oil import/export series (WCEIMUS2 / WCREXUS2) exist in-tree, surfaced as a supply read on the energy/oil page's Commodity Vector -- a different owner's lane, not this workspace's. This composer does not build new collectors or cross-project another workspace's supply read; typed as not covered.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": null,
+          "value": null,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "NOT_COVERED",
+          "market_session": null,
+          "metric_id": "customs_tariff_receipts",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "NOT_COVERED",
+          "observed_at": null,
+          "owner_ref": "NONE -- no collector for customs/tariff receipts exists anywhere in this estate",
+          "reference_id": "mastermind.market_reference/v1#customs_tariff_receipts",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- no collector for customs/tariff receipts exists anywhere in this estate"
+          ],
+          "status": "ABSENT",
+          "transformation": "Customs duty / tariff receipts context is not shown: no collector for that release exists in this estate today. This workspace does not estimate that context from a different series.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": null,
+          "value": null,
+          "value_type": "number"
+        },
+        {
+          "authority_ceiling": "DESCRIPTIVE",
+          "available_at": null,
+          "basis": "n/a",
+          "calculation_as_of": null,
+          "collected_at": null,
+          "coverage": null,
+          "definition_id": "NONE",
+          "definition_version": "1.0.0",
+          "direction_semantics": "n/a",
+          "freshness": "NOT_COVERED",
+          "market_session": null,
+          "metric_id": "trade_services_detail",
+          "model_version": "trade_flows.compose.v1",
+          "null_reason": "NOT_COVERED",
+          "observed_at": null,
+          "owner_ref": "NONE -- only the combined goods-and-services read is collected; no goods-only or services-only breakdown exists",
+          "reference_id": "mastermind.market_reference/v1#trade_services_detail",
+          "reference_period": null,
+          "released_at": null,
+          "revised_at": null,
+          "rights_state": "OPEN",
+          "source_digest": null,
+          "source_refs": [
+            "NONE -- only the combined goods-and-services read is collected; no goods-only or services-only breakdown exists"
+          ],
+          "status": "ABSENT",
+          "transformation": "A goods-only or services-only breakdown of the trade balance, exports, or imports is not shown: BOPGSTB/BOPTEXP/BOPTIMP are the COMBINED goods-AND-services read, and no finer breakdown is collected in this estate. This composer never estimates a goods-only or services-only split from the combined figure.",
+          "uncertainty": {
+            "kind": null,
+            "value": null
+          },
+          "unit": null,
+          "value": null,
+          "value_type": "number"
+        }
+      ]
+    }
+  },
   "region": {
     "code": "US",
     "display_name": "United States",
@@ -1538,7 +2310,7 @@
         },
         "owner_ref": "collectors.fred[IR]",
         "provider": "US Bureau of Labor Statistics / FRED",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1559,7 +2331,7 @@
         },
         "owner_ref": "collectors.fred[IQ]",
         "provider": "US Bureau of Labor Statistics / FRED",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
