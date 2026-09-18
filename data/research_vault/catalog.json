@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T19:38:41.591906+00:00",
-  "count": 2380,
+  "generated_at": "2026-09-18T19:53:46.095795+00:00",
+  "count": 2381,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-kchgaldsw1n-6651ac",
+      "title": "AI at 70 Part 2 14 more lessons from a lifetime of boom and bust",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T19:25:17Z",
+      "summary_points": [
+        "AI Boom-Bust Lessons: 14 historical lessons from AI cycles (e.g., tech IPOs outpacing others, jobs volatility, data sovereignty) critical for assessing sector volatility and tech equity positioning.",
+        "Jagged Frontier Gap: AI excels in complex tasks (ImageNet, SuperGLUE) but lags in autonomous engineering/PhD science (GPTQ Diamond), exposing fundamental performance divide.",
+        "Data Center Electricity Strain: US data center electricity demand share rising from 2% (2020) to 5% (2025), with AI data centers (480 TWh) exceeding non-AI (330 TWh) by 2030, signaling grid capacity risks.",
+        "Model Commoditization Acceleration: Top AI models retain leadership for <2 months (Epoch Capabilities Index), driving rapid innovation cycles and pricing pressure (LLM Token Expenditure Index decline).",
+        "AI Hazard Coverage Surge: Monthly AI hazard incidents (dark blue line) rising steeper than AI events (light blue line), indicating escalating systemic risk exposure per OECD/DB monitor."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-s9sfcc0k7xy-1fc67f",
       "title": "GS Wilson weekly mash mild reaction after AI regulation hysteria 18 Sep 2026",
