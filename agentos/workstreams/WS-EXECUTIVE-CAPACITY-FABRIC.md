@@ -331,6 +331,22 @@ do_not_redo:
   - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
+  VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root
+  C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals
+  sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance
+  ruling on that root. (1) Macro PR #7280, branch claude/provider-production-modes-20260918, head
+  284bd893f5fb2085d597611d065017494f3275db — production API usage modes. (2) Mastermind PR #804, branch
+  claude/executive-service-principal-20260918, head 3b5182e2545cab671f2da2db6735b51c926baf18 — tier A1
+  executive service principal, which reports NOT_YET_ADMITTED by design because the intent sink refuses a
+  typed schema, a provenance key and constraints.task_kind. A2 (actor-aware CEO gate in
+  executive_runtime.py) and B (OpenCode native Worker) are NOT started: they collide with open PR #699
+  and PR #762/#590 respectively. Read DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY — the CEO provenance
+  gate is schema-only, so an actor-aware CEO branch is a security prerequisite before any non-CEO
+  principal is armed beyond READ/RESEARCH — and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-18.md
+  before touching either vertical. Protected Mastermind master is now
+  320f586126b7c82c843ef17612f12d40d20a42e0; executive generation 8b231e82 is installed but
+  UNARMED/STOPPED and the next gate is HUMAN_AUTH/CREDENTIAL_READINESS.
+
   CEO REGIME 2026-09-17 (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, amended ~08:50Z): the Chairman delegated
   ownership and decision authority over the ENTIRE Agent Fabric program to the Fable seat (aa22a3d2,
   Claude8) - no separate Sol authorization inside the program; bounded by unrelated programs, shared

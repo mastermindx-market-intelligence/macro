@@ -105,7 +105,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -117,7 +117,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -129,7 +129,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -141,7 +141,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -153,7 +153,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -165,7 +165,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -177,7 +177,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -189,7 +189,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -201,7 +201,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-16",
+        "source_asof": "2026-09-17",
         "status": "PRESENT"
       },
       {
@@ -213,7 +213,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-16",
+        "source_asof": "2026-09-17",
         "status": "PRESENT"
       },
       {
@@ -237,7 +237,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -249,7 +249,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -261,7 +261,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-09-17",
+        "source_asof": "2026-09-18",
         "status": "PRESENT"
       },
       {
@@ -273,7 +273,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -285,7 +285,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -297,7 +297,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -309,7 +309,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       },
       {
@@ -321,7 +321,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-09-15",
+        "source_asof": "2026-09-16",
         "status": "PRESENT"
       }
     ],
@@ -335,25 +335,25 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 4.67,
-        "delta": 0.02,
+        "current_value": 4.74,
+        "delta": 0.07,
         "metric_id": "us2y_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 4.65
+        "prior_value": 4.67
       },
       {
-        "current_value": 5.0,
-        "delta": 0.03,
+        "current_value": 5.01,
+        "delta": 0.01,
         "metric_id": "us10y_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 4.97
+        "prior_value": 5.0
       },
       {
-        "current_value": 0.33,
-        "delta": 0.01,
+        "current_value": 0.27,
+        "delta": -0.06,
         "metric_id": "curve_2s10s_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 0.32
+        "prior_value": 0.33
       },
       {
         "current_value": 0.961,
@@ -364,23 +364,23 @@
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-09-16",
-    "prior_generation_id": "rates_curves-US-a7e6c5218dd21d30",
+    "prior_effective_date": "2026-09-17",
+    "prior_generation_id": "rates_curves-US-d6157b70c25ece12",
     "prior_method_version": "rates_curves.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "rates_curves-US-a7e6c5218dd21d30"
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "rates_curves-US-21b621fbb213e5c7"
   },
   "drivers": {
     "balance_sheet": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "corridor_sofr_minus_iorb_bp",
-        "impact_magnitude": 1.0,
+        "impact_magnitude": 3.0,
         "impact_sign": -1,
         "label": {
           "en": "SOFR minus IORB",
@@ -389,7 +389,7 @@
         "note": "bucket reuse: published under drivers.balance_sheet because the contract's driver bucket pair is fixed as rate_side/balance_sheet and this workspace has no dedicated corridor/plumbing bucket -- see the driver_bucket_naming_note implication",
         "owner_field": "fred.SOFR - fred.IORB",
         "unit": "bp",
-        "value": -1.0
+        "value": -3.0
       },
       {
         "coverage_state": "PRESENT",
@@ -408,7 +408,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "curvature_butterfly_2s5s10s",
-        "impact_magnitude": 0.01,
+        "impact_magnitude": 0.03,
         "impact_sign": -1,
         "label": {
           "en": "2s5s10s butterfly",
@@ -417,7 +417,7 @@
         "note": "bucket reuse: see corridor_sofr_minus_iorb_bp's note",
         "owner_field": "2*fred.DGS5 - fred.DGS2 - fred.DGS10",
         "unit": "pct_pts",
-        "value": -0.01
+        "value": -0.03
       },
       {
         "coverage_state": "PRESENT",
@@ -438,7 +438,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "us10y_level",
-        "impact_magnitude": 5.0,
+        "impact_magnitude": 5.01,
         "impact_sign": 1,
         "label": {
           "en": "10-year Treasury yield",
@@ -447,12 +447,12 @@
         "note": "the curve's most-watched single node; literal fit for drivers.rate_side",
         "owner_field": "fred.DGS10",
         "unit": "percent",
-        "value": 5.0
+        "value": 5.01
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "us10y_real_level",
-        "impact_magnitude": 2.62,
+        "impact_magnitude": 2.68,
         "impact_sign": 1,
         "label": {
           "en": "10-year real (TIPS) yield",
@@ -461,12 +461,12 @@
         "note": "higher = more restrictive real financing cost; literal fit",
         "owner_field": "fred.DFII10",
         "unit": "percent",
-        "value": 2.62
+        "value": 2.68
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "curve_2s10s_level",
-        "impact_magnitude": 0.33,
+        "impact_magnitude": 0.27,
         "impact_sign": 1,
         "label": {
           "en": "2s10s slope",
@@ -475,12 +475,12 @@
         "note": "positive = normal (upward-sloping); negative = inverted; literal fit",
         "owner_field": "fred.DGS10 - fred.DGS2",
         "unit": "pct_pts",
-        "value": 0.33
+        "value": 0.27
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "curve_3m10y_level",
-        "impact_magnitude": 0.89,
+        "impact_magnitude": 0.87,
         "impact_sign": 1,
         "label": {
           "en": "3m10y slope",
@@ -489,7 +489,7 @@
         "note": "the NY Fed recession-model spread convention; literal fit",
         "owner_field": "fred.DGS10 - fred.DGS3MO",
         "unit": "pct_pts",
-        "value": 0.89
+        "value": 0.87
       },
       {
         "coverage_state": "PRESENT",
@@ -508,16 +508,16 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-17T05:36:03Z",
-    "calculation_as_of": "2026-09-17",
-    "code_version": "100968c016a7d3e40b6adb3fee4eb4becb72f3d4",
-    "content_sha256": "d6157b70c25ece1252c32287a022f05057e5f683864d86caee5f23ab19f725c3",
-    "generation_id": "rates_curves-US-d6157b70c25ece12",
+    "built_at": "2026-09-18T15:39:55Z",
+    "calculation_as_of": "2026-09-18",
+    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
+    "content_sha256": "a1999c3dd0fa5948d228a4f8e1c2e3bf009ccae38a20f7d3704c9db91337682e",
+    "generation_id": "rates_curves-US-a1999c3dd0fa5948",
     "producer": "engine.market_os.macro_workspaces.rates_curves",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-09-17",
+    "effective_date": "2026-09-18",
     "hysteresis": {
       "applied": false,
       "band": 0.0,
@@ -539,7 +539,7 @@
       "status": "ABSENT"
     },
     "prior_state": {
-      "effective_date": "2026-09-16",
+      "effective_date": "2026-09-17",
       "method_version": "rates_curves.compose.v1",
       "state_id": null
     },
@@ -626,8 +626,8 @@
         "horizon": "current",
         "implication_id": "curve_shape_read",
         "text": {
-          "en": "Curve shape: 2s10s reads +0.33 percentage points; 3m10y reads +0.89 percentage points; 5s30s reads +0.53 percentage points.",
-          "zh": "曲线形态：2年-10年期利差为+0.33个百分点；3个月-10年期利差为+0.89个百分点；5年-30年期利差为+0.53个百分点。"
+          "en": "Curve shape: 2s10s reads +0.27 percentage points; 3m10y reads +0.87 percentage points; 5s30s reads +0.49 percentage points.",
+          "zh": "曲线形态：2年-10年期利差为+0.27个百分点；3个月-10年期利差为+0.87个百分点；5年-30年期利差为+0.49个百分点。"
         },
         "trace_ref": null
       },
@@ -650,8 +650,8 @@
         "horizon": "current",
         "implication_id": "inversion_status_read",
         "text": {
-          "en": "2s10s is currently normal (not inverted), holding that sign for 505 consecutive shared trading dates. 3m10y is currently normal (not inverted), holding that sign for 228 consecutive shared trading dates.",
-          "zh": "2年-10年期利差目前为正常（未倒挂），该方向已持续505个共同交易日。3个月-10年期利差目前为正常（未倒挂），该方向已持续228个共同交易日。"
+          "en": "2s10s is currently normal (not inverted), holding that sign for 506 consecutive shared trading dates. 3m10y is currently normal (not inverted), holding that sign for 229 consecutive shared trading dates.",
+          "zh": "2年-10年期利差目前为正常（未倒挂），该方向已持续506个共同交易日。3个月-10年期利差目前为正常（未倒挂），该方向已持续229个共同交易日。"
         },
         "trace_ref": null
       },
@@ -718,8 +718,8 @@
         "horizon": "current",
         "implication_id": "corridor_read",
         "text": {
-          "en": "Policy corridor spreads: EFFR-IORB -2.0bp; SOFR-EFFR +1.0bp; SOFR-IORB -1.0bp.",
-          "zh": "政策走廊利差：EFFR减IORB为-2.0个基点；SOFR减EFFR为+1.0个基点；SOFR减IORB为-1.0个基点。"
+          "en": "Policy corridor spreads: EFFR-IORB -2.0bp; SOFR-EFFR -1.0bp; SOFR-IORB -3.0bp.",
+          "zh": "政策走廊利差：EFFR减IORB为-2.0个基点；SOFR减EFFR为-1.0个基点；SOFR减IORB为-3.0个基点。"
         },
         "trace_ref": null
       },
@@ -809,7 +809,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS3MO.us3m",
@@ -820,10 +820,10 @@
         "metric_id": "us3m_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS3MO.parquet",
         "reference_id": "mastermind.market_reference/v1#us3m_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -838,14 +838,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.11,
+        "value": 4.14,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS6MO.us6m",
@@ -856,10 +856,10 @@
         "metric_id": "us6m_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS6MO.parquet",
         "reference_id": "mastermind.market_reference/v1#us6m_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -874,14 +874,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.17,
+        "value": 4.22,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS1.us1y",
@@ -892,10 +892,10 @@
         "metric_id": "us1y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS1.parquet",
         "reference_id": "mastermind.market_reference/v1#us1y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -910,14 +910,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.39,
+        "value": 4.45,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS2.us2y",
@@ -928,10 +928,10 @@
         "metric_id": "us2y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS2.parquet",
         "reference_id": "mastermind.market_reference/v1#us2y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -946,14 +946,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.67,
+        "value": 4.74,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS3.us3y",
@@ -964,10 +964,10 @@
         "metric_id": "us3y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS3.parquet",
         "reference_id": "mastermind.market_reference/v1#us3y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -982,14 +982,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.76,
+        "value": 4.82,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS5.us5y",
@@ -1000,10 +1000,10 @@
         "metric_id": "us5y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS5.parquet",
         "reference_id": "mastermind.market_reference/v1#us5y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1018,14 +1018,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.83,
+        "value": 4.86,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS7.us7y",
@@ -1036,10 +1036,10 @@
         "metric_id": "us7y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS7.parquet",
         "reference_id": "mastermind.market_reference/v1#us7y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1054,14 +1054,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.91,
+        "value": 4.94,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10.us10y",
@@ -1072,10 +1072,10 @@
         "metric_id": "us10y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet",
         "reference_id": "mastermind.market_reference/v1#us10y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1090,14 +1090,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.0,
+        "value": 5.01,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS20.us20y",
@@ -1108,10 +1108,10 @@
         "metric_id": "us20y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS20.parquet",
         "reference_id": "mastermind.market_reference/v1#us20y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1126,14 +1126,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.4,
+        "value": 5.39,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS30.us30y",
@@ -1144,10 +1144,10 @@
         "metric_id": "us30y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS30.parquet",
         "reference_id": "mastermind.market_reference/v1#us30y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1162,14 +1162,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 5.36,
+        "value": 5.35,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "tips_constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DFII5.us5y_real",
@@ -1180,10 +1180,10 @@
         "metric_id": "us5y_real_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DFII5.parquet",
         "reference_id": "mastermind.market_reference/v1#us5y_real_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1198,14 +1198,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 2.42,
+        "value": 2.51,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "tips_constant_maturity_investment_basis",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DFII10.us10y_real",
@@ -1216,10 +1216,10 @@
         "metric_id": "us10y_real_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DFII10.parquet",
         "reference_id": "mastermind.market_reference/v1#us10y_real_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1234,14 +1234,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 2.62,
+        "value": 2.68,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "market_derived_breakeven_inflation",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-09-17",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.T10YIE.breakeven_10y",
@@ -1252,10 +1252,10 @@
         "metric_id": "breakeven_10y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-09-17",
         "owner_ref": "data/fred/T10YIE.parquet",
         "reference_id": "mastermind.market_reference/v1#breakeven_10y_level",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-09-17",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1277,7 +1277,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "market_derived_breakeven_inflation",
-        "calculation_as_of": "2026-09-16",
+        "calculation_as_of": "2026-09-17",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.T5YIFR.breakeven_5y5y",
@@ -1288,10 +1288,10 @@
         "metric_id": "breakeven_5y5y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-16",
+        "observed_at": "2026-09-17",
         "owner_ref": "data/fred/T5YIFR.parquet",
         "reference_id": "mastermind.market_reference/v1#breakeven_5y5y_level",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-09-17",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1306,7 +1306,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 2.31,
+        "value": 2.34,
         "value_type": "percent"
       },
       {
@@ -1349,7 +1349,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "realized_reference_rate",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.EFFR.effr",
@@ -1360,10 +1360,10 @@
         "metric_id": "effr_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/EFFR.parquet",
         "reference_id": "mastermind.market_reference/v1#effr_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1385,7 +1385,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "realized_reference_rate",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.OBFR.obfr",
@@ -1396,10 +1396,10 @@
         "metric_id": "obfr_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/OBFR.parquet",
         "reference_id": "mastermind.market_reference/v1#obfr_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1421,7 +1421,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "realized_reference_rate",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.SOFR.sofr",
@@ -1432,10 +1432,10 @@
         "metric_id": "sofr_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/SOFR.parquet",
         "reference_id": "mastermind.market_reference/v1#sofr_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1450,14 +1450,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 3.64,
+        "value": 3.62,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "realized_reference_rate",
-        "calculation_as_of": "2026-09-17",
+        "calculation_as_of": "2026-09-18",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.IORB.iorb",
@@ -1468,10 +1468,10 @@
         "metric_id": "iorb_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-17",
+        "observed_at": "2026-09-18",
         "owner_ref": "data/fred/IORB.parquet",
         "reference_id": "mastermind.market_reference/v1#iorb_level",
-        "reference_period": "2026-09-17",
+        "reference_period": "2026-09-18",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1493,7 +1493,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_level_change",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS2",
@@ -1504,10 +1504,10 @@
         "metric_id": "us2y_change_13w",
         "model_version": "rates_curves.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS2.parquet",
         "reference_id": "mastermind.market_reference/v1#us2y_change_13w",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1522,14 +1522,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.62,
+        "value": 0.54,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_level_change",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10",
@@ -1540,10 +1540,10 @@
         "metric_id": "us10y_change_13w",
         "model_version": "rates_curves.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet",
         "reference_id": "mastermind.market_reference/v1#us10y_change_13w",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1558,14 +1558,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.57,
+        "value": 0.52,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_level_change",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS30",
@@ -1576,10 +1576,10 @@
         "metric_id": "us30y_change_13w",
         "model_version": "rates_curves.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS30.parquet",
         "reference_id": "mastermind.market_reference/v1#us30y_change_13w",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1594,7 +1594,7 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.43,
+        "value": 0.42,
         "value_type": "number"
       },
       {
@@ -1637,7 +1637,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_spread",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10 - fred.DGS2",
@@ -1648,10 +1648,10 @@
         "metric_id": "curve_2s10s_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS2.parquet",
         "reference_id": "mastermind.market_reference/v1#curve_2s10s_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1667,14 +1667,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.33,
+        "value": 0.27,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_spread",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10 - fred.DGS3MO",
@@ -1685,10 +1685,10 @@
         "metric_id": "curve_3m10y_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS3MO.parquet",
         "reference_id": "mastermind.market_reference/v1#curve_3m10y_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1704,14 +1704,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.89,
+        "value": 0.87,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_spread",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS30 - fred.DGS5",
@@ -1722,10 +1722,10 @@
         "metric_id": "curve_5s30s_level",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS30.parquet + data/fred/DGS5.parquet",
         "reference_id": "mastermind.market_reference/v1#curve_5s30s_level",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1741,14 +1741,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.53,
+        "value": 0.49,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "consecutive_shared_date_rows",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10 - fred.DGS2",
@@ -1759,10 +1759,10 @@
         "metric_id": "curve_2s10s_inversion_run_length_bd",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS2.parquet",
         "reference_id": "mastermind.market_reference/v1#curve_2s10s_inversion_run_length_bd",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1778,14 +1778,14 @@
           "value": null
         },
         "unit": "business_days",
-        "value": 505,
+        "value": 506,
         "value_type": "count"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "consecutive_shared_date_rows",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10 - fred.DGS3MO",
@@ -1796,10 +1796,10 @@
         "metric_id": "curve_3m10y_inversion_run_length_bd",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS3MO.parquet",
         "reference_id": "mastermind.market_reference/v1#curve_3m10y_inversion_run_length_bd",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1815,14 +1815,14 @@
           "value": null
         },
         "unit": "business_days",
-        "value": 228,
+        "value": 229,
         "value_type": "count"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_butterfly",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "2*fred.DGS5 - fred.DGS2 - fred.DGS10",
@@ -1833,10 +1833,10 @@
         "metric_id": "curvature_butterfly_2s5s10s",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS5.parquet + data/fred/DGS2.parquet + data/fred/DGS10.parquet",
         "reference_id": "mastermind.market_reference/v1#curvature_butterfly_2s5s10s",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1853,14 +1853,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": -0.01,
+        "value": -0.03,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_decomposition_residual",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DGS10 - (fred.DFII10 + fred.T10YIE)",
@@ -1871,10 +1871,10 @@
         "metric_id": "nominal_real_breakeven_residual_10y",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/DGS10.parquet + data/fred/DFII10.parquet + data/fred/T10YIE.parquet",
         "reference_id": "mastermind.market_reference/v1#nominal_real_breakeven_residual_10y",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1898,7 +1898,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_spread",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.EFFR - fred.IORB",
@@ -1909,10 +1909,10 @@
         "metric_id": "corridor_effr_minus_iorb_bp",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/EFFR.parquet + data/fred/IORB.parquet",
         "reference_id": "mastermind.market_reference/v1#corridor_effr_minus_iorb_bp",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1935,7 +1935,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_spread",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.SOFR - fred.EFFR",
@@ -1946,10 +1946,10 @@
         "metric_id": "corridor_sofr_minus_effr_bp",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/SOFR.parquet + data/fred/EFFR.parquet",
         "reference_id": "mastermind.market_reference/v1#corridor_sofr_minus_effr_bp",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1965,14 +1965,14 @@
           "value": null
         },
         "unit": "bp",
-        "value": 1.0,
+        "value": -1.0,
         "value_type": "basis_points"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "same_date_disciplined_spread",
-        "calculation_as_of": "2026-09-15",
+        "calculation_as_of": "2026-09-16",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.SOFR - fred.IORB",
@@ -1983,10 +1983,10 @@
         "metric_id": "corridor_sofr_minus_iorb_bp",
         "model_version": "rates_curves.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-09-15",
+        "observed_at": "2026-09-16",
         "owner_ref": "data/fred/SOFR.parquet + data/fred/IORB.parquet",
         "reference_id": "mastermind.market_reference/v1#corridor_sofr_minus_iorb_bp",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2002,17 +2002,17 @@
           "value": null
         },
         "unit": "bp",
-        "value": -1.0,
+        "value": -3.0,
         "value_type": "basis_points"
       }
     ]
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "rates_curves-US-a7e6c5218dd21d30"
+      "generation_id": "rates_curves-US-d6157b70c25ece12"
     },
     "headline": {
-      "effective_date": "2026-09-16",
+      "effective_date": "2026-09-17",
       "hysteresis": {
         "applied": false,
         "band": 0.0,
@@ -2034,7 +2034,7 @@
         "status": "ABSENT"
       },
       "prior_state": {
-        "effective_date": "2026-09-14",
+        "effective_date": "2026-09-16",
         "method_version": "rates_curves.compose.v1",
         "state_id": null
       },
@@ -2062,7 +2062,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS3MO.us3m",
@@ -2073,10 +2073,10 @@
           "metric_id": "us3m_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS3MO.parquet",
           "reference_id": "mastermind.market_reference/v1#us3m_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2098,7 +2098,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS6MO.us6m",
@@ -2109,10 +2109,10 @@
           "metric_id": "us6m_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS6MO.parquet",
           "reference_id": "mastermind.market_reference/v1#us6m_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2127,14 +2127,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.18,
+          "value": 4.17,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS1.us1y",
@@ -2145,10 +2145,10 @@
           "metric_id": "us1y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS1.parquet",
           "reference_id": "mastermind.market_reference/v1#us1y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2163,14 +2163,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.37,
+          "value": 4.39,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS2.us2y",
@@ -2181,10 +2181,10 @@
           "metric_id": "us2y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS2.parquet",
           "reference_id": "mastermind.market_reference/v1#us2y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2199,14 +2199,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.65,
+          "value": 4.67,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS3.us3y",
@@ -2217,10 +2217,10 @@
           "metric_id": "us3y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS3.parquet",
           "reference_id": "mastermind.market_reference/v1#us3y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2235,14 +2235,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.73,
+          "value": 4.76,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS5.us5y",
@@ -2253,10 +2253,10 @@
           "metric_id": "us5y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS5.parquet",
           "reference_id": "mastermind.market_reference/v1#us5y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2271,14 +2271,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.8,
+          "value": 4.83,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS7.us7y",
@@ -2289,10 +2289,10 @@
           "metric_id": "us7y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS7.parquet",
           "reference_id": "mastermind.market_reference/v1#us7y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2307,14 +2307,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.88,
+          "value": 4.91,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10.us10y",
@@ -2325,10 +2325,10 @@
           "metric_id": "us10y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet",
           "reference_id": "mastermind.market_reference/v1#us10y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2343,14 +2343,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 4.97,
+          "value": 5.0,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS20.us20y",
@@ -2361,10 +2361,10 @@
           "metric_id": "us20y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS20.parquet",
           "reference_id": "mastermind.market_reference/v1#us20y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2379,14 +2379,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 5.37,
+          "value": 5.4,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS30.us30y",
@@ -2397,10 +2397,10 @@
           "metric_id": "us30y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS30.parquet",
           "reference_id": "mastermind.market_reference/v1#us30y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2415,14 +2415,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 5.34,
+          "value": 5.36,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "tips_constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DFII5.us5y_real",
@@ -2433,10 +2433,10 @@
           "metric_id": "us5y_real_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DFII5.parquet",
           "reference_id": "mastermind.market_reference/v1#us5y_real_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2451,14 +2451,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 2.4,
+          "value": 2.42,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "tips_constant_maturity_investment_basis",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DFII10.us10y_real",
@@ -2469,10 +2469,10 @@
           "metric_id": "us10y_real_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DFII10.parquet",
           "reference_id": "mastermind.market_reference/v1#us10y_real_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2487,14 +2487,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 2.6,
+          "value": 2.62,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "market_derived_breakeven_inflation",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-09-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.T10YIE.breakeven_10y",
@@ -2505,10 +2505,10 @@
           "metric_id": "breakeven_10y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-09-16",
           "owner_ref": "data/fred/T10YIE.parquet",
           "reference_id": "mastermind.market_reference/v1#breakeven_10y_level",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-09-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2523,14 +2523,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 2.38,
+          "value": 2.33,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "market_derived_breakeven_inflation",
-          "calculation_as_of": "2026-09-15",
+          "calculation_as_of": "2026-09-16",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.T5YIFR.breakeven_5y5y",
@@ -2541,10 +2541,10 @@
           "metric_id": "breakeven_5y5y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-15",
+          "observed_at": "2026-09-16",
           "owner_ref": "data/fred/T5YIFR.parquet",
           "reference_id": "mastermind.market_reference/v1#breakeven_5y5y_level",
-          "reference_period": "2026-09-15",
+          "reference_period": "2026-09-16",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2559,7 +2559,7 @@
             "value": null
           },
           "unit": "percent",
-          "value": 2.35,
+          "value": 2.31,
           "value_type": "percent"
         },
         {
@@ -2602,7 +2602,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "realized_reference_rate",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.EFFR.effr",
@@ -2613,10 +2613,10 @@
           "metric_id": "effr_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/EFFR.parquet",
           "reference_id": "mastermind.market_reference/v1#effr_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2638,7 +2638,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "realized_reference_rate",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.OBFR.obfr",
@@ -2649,10 +2649,10 @@
           "metric_id": "obfr_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/OBFR.parquet",
           "reference_id": "mastermind.market_reference/v1#obfr_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2674,7 +2674,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "realized_reference_rate",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.SOFR.sofr",
@@ -2685,10 +2685,10 @@
           "metric_id": "sofr_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/SOFR.parquet",
           "reference_id": "mastermind.market_reference/v1#sofr_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2703,14 +2703,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 3.62,
+          "value": 3.64,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "realized_reference_rate",
-          "calculation_as_of": "2026-09-16",
+          "calculation_as_of": "2026-09-17",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.IORB.iorb",
@@ -2721,10 +2721,10 @@
           "metric_id": "iorb_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-16",
+          "observed_at": "2026-09-17",
           "owner_ref": "data/fred/IORB.parquet",
           "reference_id": "mastermind.market_reference/v1#iorb_level",
-          "reference_period": "2026-09-16",
+          "reference_period": "2026-09-17",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2739,14 +2739,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 3.65,
+          "value": 3.9,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_13w_level_change",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS2",
@@ -2757,10 +2757,10 @@
           "metric_id": "us2y_change_13w",
           "model_version": "rates_curves.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS2.parquet",
           "reference_id": "mastermind.market_reference/v1#us2y_change_13w",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2775,14 +2775,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.58,
+          "value": 0.62,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_13w_level_change",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10",
@@ -2793,10 +2793,10 @@
           "metric_id": "us10y_change_13w",
           "model_version": "rates_curves.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet",
           "reference_id": "mastermind.market_reference/v1#us10y_change_13w",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2811,14 +2811,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.5,
+          "value": 0.57,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_13w_level_change",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS30",
@@ -2829,10 +2829,10 @@
           "metric_id": "us30y_change_13w",
           "model_version": "rates_curves.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS30.parquet",
           "reference_id": "mastermind.market_reference/v1#us30y_change_13w",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2847,7 +2847,7 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.37,
+          "value": 0.43,
           "value_type": "number"
         },
         {
@@ -2890,7 +2890,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_spread",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10 - fred.DGS2",
@@ -2901,10 +2901,10 @@
           "metric_id": "curve_2s10s_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS2.parquet",
           "reference_id": "mastermind.market_reference/v1#curve_2s10s_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2920,14 +2920,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.32,
+          "value": 0.33,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_spread",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10 - fred.DGS3MO",
@@ -2938,10 +2938,10 @@
           "metric_id": "curve_3m10y_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS3MO.parquet",
           "reference_id": "mastermind.market_reference/v1#curve_3m10y_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2957,14 +2957,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.86,
+          "value": 0.89,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_spread",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS30 - fred.DGS5",
@@ -2975,10 +2975,10 @@
           "metric_id": "curve_5s30s_level",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS30.parquet + data/fred/DGS5.parquet",
           "reference_id": "mastermind.market_reference/v1#curve_5s30s_level",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2994,14 +2994,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.54,
+          "value": 0.53,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "consecutive_shared_date_rows",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10 - fred.DGS2",
@@ -3012,10 +3012,10 @@
           "metric_id": "curve_2s10s_inversion_run_length_bd",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS2.parquet",
           "reference_id": "mastermind.market_reference/v1#curve_2s10s_inversion_run_length_bd",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3031,14 +3031,14 @@
             "value": null
           },
           "unit": "business_days",
-          "value": 504,
+          "value": 505,
           "value_type": "count"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "consecutive_shared_date_rows",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10 - fred.DGS3MO",
@@ -3049,10 +3049,10 @@
           "metric_id": "curve_3m10y_inversion_run_length_bd",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet + data/fred/DGS3MO.parquet",
           "reference_id": "mastermind.market_reference/v1#curve_3m10y_inversion_run_length_bd",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3068,14 +3068,14 @@
             "value": null
           },
           "unit": "business_days",
-          "value": 227,
+          "value": 228,
           "value_type": "count"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_butterfly",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "2*fred.DGS5 - fred.DGS2 - fred.DGS10",
@@ -3086,10 +3086,10 @@
           "metric_id": "curvature_butterfly_2s5s10s",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS5.parquet + data/fred/DGS2.parquet + data/fred/DGS10.parquet",
           "reference_id": "mastermind.market_reference/v1#curvature_butterfly_2s5s10s",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3106,14 +3106,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": -0.02,
+          "value": -0.01,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_decomposition_residual",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.DGS10 - (fred.DFII10 + fred.T10YIE)",
@@ -3124,10 +3124,10 @@
           "metric_id": "nominal_real_breakeven_residual_10y",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/DGS10.parquet + data/fred/DFII10.parquet + data/fred/T10YIE.parquet",
           "reference_id": "mastermind.market_reference/v1#nominal_real_breakeven_residual_10y",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3144,14 +3144,14 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": -0.0,
+          "value": 0.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_spread",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.EFFR - fred.IORB",
@@ -3162,10 +3162,10 @@
           "metric_id": "corridor_effr_minus_iorb_bp",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/EFFR.parquet + data/fred/IORB.parquet",
           "reference_id": "mastermind.market_reference/v1#corridor_effr_minus_iorb_bp",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3188,7 +3188,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_spread",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.SOFR - fred.EFFR",
@@ -3199,10 +3199,10 @@
           "metric_id": "corridor_sofr_minus_effr_bp",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/SOFR.parquet + data/fred/EFFR.parquet",
           "reference_id": "mastermind.market_reference/v1#corridor_sofr_minus_effr_bp",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3218,14 +3218,14 @@
             "value": null
           },
           "unit": "bp",
-          "value": -1.0,
+          "value": 1.0,
           "value_type": "basis_points"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "same_date_disciplined_spread",
-          "calculation_as_of": "2026-09-14",
+          "calculation_as_of": "2026-09-15",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.SOFR - fred.IORB",
@@ -3236,10 +3236,10 @@
           "metric_id": "corridor_sofr_minus_iorb_bp",
           "model_version": "rates_curves.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-09-14",
+          "observed_at": "2026-09-15",
           "owner_ref": "data/fred/SOFR.parquet + data/fred/IORB.parquet",
           "reference_id": "mastermind.market_reference/v1#corridor_sofr_minus_iorb_bp",
-          "reference_period": "2026-09-14",
+          "reference_period": "2026-09-15",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -3255,7 +3255,7 @@
             "value": null
           },
           "unit": "bp",
-          "value": -3.0,
+          "value": -1.0,
           "value_type": "basis_points"
         }
       ]
@@ -3471,6 +3471,10 @@
           {
             "t": "2026-09-15",
             "v": 4.11
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.14
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -3609,6 +3613,10 @@
           {
             "t": "2026-09-15",
             "v": 4.17
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.22
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -3747,6 +3755,10 @@
           {
             "t": "2026-09-15",
             "v": 4.39
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.45
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -3885,6 +3897,10 @@
           {
             "t": "2026-09-15",
             "v": 4.67
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.74
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4023,6 +4039,10 @@
           {
             "t": "2026-09-15",
             "v": 4.76
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.82
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4161,6 +4181,10 @@
           {
             "t": "2026-09-15",
             "v": 4.83
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.86
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4299,6 +4323,10 @@
           {
             "t": "2026-09-15",
             "v": 4.91
+          },
+          {
+            "t": "2026-09-16",
+            "v": 4.94
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4437,6 +4465,10 @@
           {
             "t": "2026-09-15",
             "v": 5.0
+          },
+          {
+            "t": "2026-09-16",
+            "v": 5.01
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4575,6 +4607,10 @@
           {
             "t": "2026-09-15",
             "v": 5.4
+          },
+          {
+            "t": "2026-09-16",
+            "v": 5.39
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4713,6 +4749,10 @@
           {
             "t": "2026-09-15",
             "v": 5.36
+          },
+          {
+            "t": "2026-09-16",
+            "v": 5.35
           }
         ],
         "revision_behavior": "recomputed each owner cadence from prior-only owner reads; a method-version change breaks comparability and is reported as such, never as a numeric delta",
@@ -4740,7 +4780,7 @@
         },
         "owner_ref": "collectors.fred[DGS3MO]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4761,7 +4801,7 @@
         },
         "owner_ref": "collectors.fred[DGS6MO]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4782,7 +4822,7 @@
         },
         "owner_ref": "collectors.fred[DGS1]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4803,7 +4843,7 @@
         },
         "owner_ref": "collectors.fred[DGS2]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4824,7 +4864,7 @@
         },
         "owner_ref": "collectors.fred[DGS3]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4845,7 +4885,7 @@
         },
         "owner_ref": "collectors.fred[DGS5]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4866,7 +4906,7 @@
         },
         "owner_ref": "collectors.fred[DGS7]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4887,7 +4927,7 @@
         },
         "owner_ref": "collectors.fred[DGS10]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4908,7 +4948,7 @@
         },
         "owner_ref": "collectors.fred[DGS20]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4929,7 +4969,7 @@
         },
         "owner_ref": "collectors.fred[DGS30]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4950,7 +4990,7 @@
         },
         "owner_ref": "collectors.fred[DFII5]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4971,7 +5011,7 @@
         },
         "owner_ref": "collectors.fred[DFII10]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -4992,7 +5032,7 @@
         },
         "owner_ref": "collectors.fred[T10YIE]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-09-17",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -5013,7 +5053,7 @@
         },
         "owner_ref": "collectors.fred[T5YIFR]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-16",
+        "reference_period": "2026-09-17",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -5055,7 +5095,7 @@
         },
         "owner_ref": "collectors.fred[EFFR]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -5076,7 +5116,7 @@
         },
         "owner_ref": "collectors.fred[OBFR]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -5097,7 +5137,7 @@
         },
         "owner_ref": "collectors.fred[SOFR]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-15",
+        "reference_period": "2026-09-16",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -5118,7 +5158,7 @@
         },
         "owner_ref": "collectors.fred[IORB]",
         "provider": "FRED (Federal Reserve Bank of St. Louis)",
-        "reference_period": "2026-09-17",
+        "reference_period": "2026-09-18",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

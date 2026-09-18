@@ -9,7 +9,18 @@
   "sessions": [
     {
       "date": "2026-09-17",
-      "events": []
+      "events": [
+        {
+          "date": "2026-09-17",
+          "id": "cev-research_vault-cf288ca2fb96",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g3bugkjjgib-77331c",
+          "tickers": [],
+          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
+          "weight_hint": 3
+        }
+      ]
     },
     {
       "date": "2026-09-16",

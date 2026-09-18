@@ -1,15 +1,21 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-17T13:27:01.703809+00:00",
-  "posts_seen": 15,
-  "seen_total": 199,
-  "evaluated": 1,
+  "as_of": "2026-09-18T19:36:16.743022+00:00",
+  "posts_seen": 20,
+  "seen_total": 207,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
   "gate_scores": [
     {
-      "id": "wh-2026-09-17-president-trumps-top-250-victories-for-people-of-faith",
-      "importance": 15,
+      "id": "wh-2026-09-18-president-trump-extends-most-favored-nation-pricing-to-every-medicaid-program-in",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": null
+    },
+    {
+      "id": "wh-2026-09-18-what-they-are-saying-president-trump-delivers-historic-victories-for-americas-hu",
+      "importance": 0,
       "activated": false,
       "degraded_reason": null
     }

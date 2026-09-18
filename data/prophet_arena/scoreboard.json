@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-09-17",
+  "as_of": "2026-09-18",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -85,16 +85,16 @@
       "label": "the live rule, mirrored",
       "label_zh": "\u5b9e\u76d8\u89c4\u5219\u955c\u50cf",
       "grain": "selection",
-      "n_open": 225,
-      "n_closed": 45,
-      "win_rate_pct": 46.7,
-      "avg_pct": -1.88,
+      "n_open": 221,
+      "n_closed": 49,
+      "win_rate_pct": 46.9,
+      "avg_pct": -0.9,
       "median_pct": -1.1,
       "expired_share_pct": 0.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "INVALIDATED": 30,
-        "T1_HIT": 14,
+        "INVALIDATED": 32,
+        "T1_HIT": 16,
         "T2_HIT": 1
       },
       "nights_recorded": 17,
@@ -106,27 +106,27 @@
       "label": "earlier entries first",
       "label_zh": "\u4f18\u5148\u8f83\u65e9\u5165\u573a",
       "grain": "selection",
-      "n_open": 71,
-      "n_closed": 11,
-      "win_rate_pct": 18.2,
-      "avg_pct": -11.44,
-      "median_pct": -8.72,
+      "n_open": 70,
+      "n_closed": 12,
+      "win_rate_pct": 16.7,
+      "avg_pct": -10.87,
+      "median_pct": -6.63,
       "expired_share_pct": 0.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "INVALIDATED": 9,
+        "INVALIDATED": 10,
         "T1_HIT": 2
       },
       "nights_recorded": 16,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 11",
+      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 12",
       "readable": false,
       "vs_champion": {
         "shared_nights": 8,
-        "n_policy": 11,
-        "n_champion": 38,
-        "avg_pct": -11.44,
-        "champion_avg_pct": -2.25,
-        "diff_pp": -9.19
+        "n_policy": 12,
+        "n_champion": 41,
+        "avg_pct": -10.87,
+        "champion_avg_pct": -1.2,
+        "diff_pp": -9.67
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -135,27 +135,27 @@
       "label": "washout turns added",
       "label_zh": "\u7eb3\u5165\u8d85\u8dcc\u8f6c\u6298",
       "grain": "selection",
-      "n_open": 98,
-      "n_closed": 15,
-      "win_rate_pct": 40.0,
-      "avg_pct": -2.7,
-      "median_pct": -2.32,
+      "n_open": 97,
+      "n_closed": 16,
+      "win_rate_pct": 37.5,
+      "avg_pct": -2.81,
+      "median_pct": -3.43,
       "expired_share_pct": 0.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "INVALIDATED": 9,
+        "INVALIDATED": 10,
         "T1_HIT": 6
       },
       "nights_recorded": 16,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 15",
+      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 16",
       "readable": false,
       "vs_champion": {
         "shared_nights": 10,
-        "n_policy": 14,
-        "n_champion": 40,
-        "avg_pct": -4.83,
-        "champion_avg_pct": -2.59,
-        "diff_pp": -2.24
+        "n_policy": 15,
+        "n_champion": 44,
+        "avg_pct": -4.81,
+        "champion_avg_pct": -1.43,
+        "diff_pp": -3.38
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -181,10 +181,10 @@
       "vs_champion": {
         "shared_nights": 8,
         "n_policy": 11,
-        "n_champion": 38,
+        "n_champion": 41,
         "avg_pct": -11.44,
-        "champion_avg_pct": -2.25,
-        "diff_pp": -9.19
+        "champion_avg_pct": -1.2,
+        "diff_pp": -10.25
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -193,27 +193,27 @@
       "label": "weekly-aligned only",
       "label_zh": "\u4ec5\u9650\u5468\u7ebf\u540c\u5411",
       "grain": "selection",
-      "n_open": 39,
-      "n_closed": 9,
-      "win_rate_pct": 44.4,
-      "avg_pct": -4.93,
-      "median_pct": 0.0,
+      "n_open": 38,
+      "n_closed": 10,
+      "win_rate_pct": 40.0,
+      "avg_pct": -4.89,
+      "median_pct": -0.55,
       "expired_share_pct": 0.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "INVALIDATED": 8,
+        "INVALIDATED": 9,
         "T2_HIT": 1
       },
       "nights_recorded": 14,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 9",
+      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 10",
       "readable": false,
       "vs_champion": {
         "shared_nights": 7,
-        "n_policy": 9,
-        "n_champion": 27,
-        "avg_pct": -4.93,
-        "champion_avg_pct": -2.53,
-        "diff_pp": -2.4
+        "n_policy": 10,
+        "n_champion": 29,
+        "avg_pct": -4.89,
+        "champion_avg_pct": -2.74,
+        "diff_pp": -2.15
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -222,30 +222,30 @@
       "label": "cut dead money at 21 sessions",
       "label_zh": "21\u4e2a\u4ea4\u6613\u65e5\u6b62\u635f\u79bb\u573a",
       "grain": "closure",
-      "n_open": 195,
-      "n_closed": 75,
-      "win_rate_pct": 28.0,
-      "avg_pct": -2.91,
-      "median_pct": -2.32,
+      "n_open": 184,
+      "n_closed": 86,
+      "win_rate_pct": 26.7,
+      "avg_pct": -2.42,
+      "median_pct": -2.28,
       "expired_share_pct": 0.0,
-      "time_stopped_share_pct": 46.7,
+      "time_stopped_share_pct": 48.8,
       "outcomes": {
-        "INVALIDATED": 25,
-        "T1_HIT": 14,
+        "INVALIDATED": 27,
+        "T1_HIT": 16,
         "T2_HIT": 1,
-        "time_stopped": 35
+        "time_stopped": 42
       },
       "nights_recorded": 17,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "n_paired": 45,
-        "avg_diff_pp": 1.41,
+        "n_paired": 49,
+        "avg_diff_pp": 1.3,
         "median_diff_pp": 0.0,
         "better": 5,
         "worse": 0,
-        "same": 40,
-        "unpaired_plans": 30
+        "same": 44,
+        "unpaired_plans": 37
       },
       "vs_champion_basis": "per-plan paired \u2014 same plan ids and entries as the live rule, different exits"
     },
@@ -254,27 +254,27 @@
       "label": "almost-ready entries admitted",
       "label_zh": "\u7eb3\u5165\u300c\u5373\u5c06\u4e70\u5165\u300d\u6863",
       "grain": "selection",
-      "n_open": 72,
-      "n_closed": 13,
-      "win_rate_pct": 30.8,
-      "avg_pct": -8.47,
-      "median_pct": -4.03,
+      "n_open": 71,
+      "n_closed": 14,
+      "win_rate_pct": 28.6,
+      "avg_pct": -8.19,
+      "median_pct": -4.28,
       "expired_share_pct": 0.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "INVALIDATED": 9,
+        "INVALIDATED": 10,
         "T1_HIT": 4
       },
       "nights_recorded": 16,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 13",
+      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 14",
       "readable": false,
       "vs_champion": {
         "shared_nights": 10,
-        "n_policy": 13,
-        "n_champion": 41,
-        "avg_pct": -8.47,
-        "champion_avg_pct": -2.32,
-        "diff_pp": -6.15
+        "n_policy": 14,
+        "n_champion": 44,
+        "avg_pct": -8.19,
+        "champion_avg_pct": -1.33,
+        "diff_pp": -6.86
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     }
@@ -295,9 +295,9 @@
     }
   ],
   "tonight": {
-    "asof": "2026-09-17",
-    "standouts_as_of": "2026-09-16",
-    "price_through": "2026-09-15",
+    "asof": "2026-09-18",
+    "standouts_as_of": "2026-09-17",
+    "price_through": "2026-09-17",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -306,15 +306,15 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "neutral",
-      "artifact_as_of": "2026-09-17",
+      "artifact_as_of": "2026-09-18",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
     },
     "door_w": {
       "ok": true,
-      "candidates": 3,
-      "rows": 3,
+      "candidates": 4,
+      "rows": 4,
       "skipped_no_prices": 0,
       "skipped_tickers": [],
       "reason": null,
@@ -325,129 +325,176 @@
         "reason": null,
         "evaluated": 713,
         "skipped": 4,
-        "state_turn": 83,
+        "state_turn": 77,
         "fresh": 4,
-        "aligned": 3,
-        "asof_max": "2026-09-16",
+        "aligned": 4,
+        "asof_max": "2026-09-18",
         "asof_mismatch": 0,
         "fresh_weeks_max": 2,
         "align_grids": [
           "2B",
           "3B"
         ],
-        "runtime_s": 21.5
+        "runtime_s": 21.2
       }
     },
     "policies": {
       "C0_champion_mirror": {
         "selected_tickers": [
-          "HON",
-          "BRK-B",
-          "EBAY",
-          "SIG",
-          "ROG",
-          "GATX",
-          "ASO",
-          "REXR",
-          "DT",
-          "UTHR",
-          "PG",
-          "PLMR",
+          "GL",
+          "EGBN",
+          "RKLB",
+          "VTRS",
+          "HAFC",
+          "CZR",
+          "WAT",
+          "STRL",
           "PLUS",
-          "VRSN",
+          "GATX",
+          "BANC",
+          "USPH",
+          "DT",
+          "GNRC",
+          "SHO",
+          "RDNT",
+          "EBAY",
           "APP",
-          "ATEN",
+          "CINF",
+          "ITW",
           "SEDG",
-          "TEM",
-          "CPRI",
-          "CI",
-          "TRN",
+          "DLX",
           "TDC",
+          "ATR",
           "CHRW",
-          "SKYW",
-          "CRUS",
-          "RBA"
+          "AFRM",
+          "PG",
+          "NXPI",
+          "CNM",
+          "WAY"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 26,
+          "admitted": 30,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 26,
-          "skipped_duplicate_id": 3,
-          "skipped_open_plan": 6,
-          "skipped_clock_provenance": 17,
+          "offered": 30,
+          "skipped_duplicate_id": 0,
+          "skipped_open_plan": 4,
+          "skipped_clock_provenance": 26,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
           "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
             "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
           ],
           "validation_failures": [
             {
-              "ticker": "HON",
-              "id": "HON-BULL-20260727",
+              "ticker": "GL",
+              "id": "GL-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
+              "ticker": "EGBN",
+              "id": "EGBN-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-15'"
               ]
             },
             {
-              "ticker": "EBAY",
-              "id": "EBAY-BULL-20260914",
+              "ticker": "VTRS",
+              "id": "VTRS-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "ROG",
-              "id": "ROG-BULL-20260914",
+              "ticker": "HAFC",
+              "id": "HAFC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "CZR",
+              "id": "CZR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "WAT",
+              "id": "WAT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "STRL",
+              "id": "STRL-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "PLUS",
+              "id": "PLUS-BULL-20260909",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
               "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
+              "id": "GATX-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
               ]
             },
             {
-              "ticker": "REXR",
-              "id": "REXR-BULL-20260903",
+              "ticker": "BANC",
+              "id": "BANC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "USPH",
+              "id": "USPH-BULL-20260609",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
@@ -456,65 +503,88 @@
               "id": "DT-BULL-20260914",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "UTHR",
-              "id": "UTHR-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "PG",
-              "id": "PG-BULL-20260914",
+              "ticker": "GNRC",
+              "id": "GNRC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "PLUS",
-              "id": "PLUS-BULL-20260909",
+              "ticker": "SHO",
+              "id": "SHO-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "RDNT",
+              "id": "RDNT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "EBAY",
+              "id": "EBAY-BULL-20260914",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
               "ticker": "APP",
-              "id": "APP-BULL-20260914",
+              "id": "APP-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "CPRI",
-              "id": "CPRI-BULL-20260914",
+              "ticker": "CINF",
+              "id": "CINF-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "TRN",
-              "id": "TRN-BULL-20260714",
+              "ticker": "ITW",
+              "id": "ITW-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "DLX",
+              "id": "DLX-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "ATR",
+              "id": "ATR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
@@ -523,160 +593,16 @@
               "id": "CHRW-BULL-20260914",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "SKYW",
-              "id": "SKYW-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "CRUS",
-              "id": "CRUS-BULL-20260909",
+              "ticker": "AFRM",
+              "id": "AFRM-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "RBA",
-              "id": "RBA-BULL-20260727",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-              ]
-            }
-          ],
-          "originated": 0,
-          "validation_failed": 17
-        },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 5
-      },
-      "C1_buy_soon_first": {
-        "selected_tickers": [
-          "HON",
-          "BRK-B",
-          "EBAY",
-          "SIG",
-          "ROG",
-          "GATX",
-          "ASO",
-          "REXR",
-          "DT",
-          "UTHR",
-          "PG",
-          "PLMR"
-        ],
-        "plan_ids": [],
-        "n_plans": 0,
-        "selection": {
-          "admitted": 26,
-          "cap": 12,
-          "cap_applied": true,
-          "act_level_2": 0,
-          "lifted": 0
-        },
-        "origination": {
-          "offered": 12,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 9,
-          "skipped_no_spot": 0,
-          "skipped_door_w_no_geometry": 0,
-          "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
-          "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-            "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-          ],
-          "validation_failures": [
-            {
-              "ticker": "HON",
-              "id": "HON-BULL-20260727",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-              ]
-            },
-            {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "EBAY",
-              "id": "EBAY-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "ROG",
-              "id": "ROG-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "REXR",
-              "id": "REXR-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-              ]
-            },
-            {
-              "ticker": "DT",
-              "id": "DT-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "UTHR",
-              "id": "UTHR-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
@@ -685,310 +611,136 @@
               "id": "PG-BULL-20260914",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "CNM",
+              "id": "CNM-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "WAY",
+              "id": "WAY-BULL-20260914",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             }
           ],
           "originated": 0,
-          "validation_failed": 9
+          "validation_failed": 26
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 1
       },
-      "C3_door_w_union": {
+      "C1_buy_soon_first": {
         "selected_tickers": [
-          "HON",
-          "BRK-B",
-          "EBAY",
-          "SIG",
-          "ROG",
+          "GL",
+          "EGBN",
+          "RKLB",
+          "VTRS",
+          "HAFC",
+          "CZR",
+          "WAT",
+          "STRL",
+          "PLUS",
           "GATX",
-          "ASO",
-          "REXR",
-          "DT",
-          "LITE",
-          "IREN",
-          "KR"
+          "BANC",
+          "USPH"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 26,
+          "admitted": 30,
           "cap": 12,
           "cap_applied": true,
-          "door_w_offered": 3,
-          "door_w_already_in_champion_pool": 0,
-          "door_w_reserved_slots": 3,
-          "door_w_selected": 3,
-          "champion_rows_displaced": 3
+          "act_level_2": 0,
+          "lifted": 0
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 0,
           "skipped_open_plan": 1,
-          "skipped_clock_provenance": 9,
+          "skipped_clock_provenance": 11,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
           "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
             "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
           ],
           "validation_failures": [
             {
-              "ticker": "HON",
-              "id": "HON-BULL-20260727",
+              "ticker": "GL",
+              "id": "GL-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
+              "ticker": "EGBN",
+              "id": "EGBN-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-15'"
               ]
             },
             {
-              "ticker": "EBAY",
-              "id": "EBAY-BULL-20260914",
+              "ticker": "VTRS",
+              "id": "VTRS-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "ROG",
-              "id": "ROG-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "REXR",
-              "id": "REXR-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "DT",
-              "id": "DT-BULL-20260914",
+              "ticker": "HAFC",
+              "id": "HAFC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
               ]
             },
             {
-              "ticker": "LITE",
-              "id": "LITE-BULL-20260916",
+              "ticker": "CZR",
+              "id": "CZR-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "KR",
-              "id": "KR-BULL-20260916",
+              "ticker": "WAT",
+              "id": "WAT-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-              ]
-            }
-          ],
-          "originated": 0,
-          "validation_failed": 9
-        },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
-      },
-      "C4_dispersion_cap": {
-        "selected_tickers": [
-          "HON",
-          "BRK-B",
-          "EBAY",
-          "SIG",
-          "ROG",
-          "GATX"
-        ],
-        "plan_ids": [],
-        "n_plans": 0,
-        "selection": {
-          "admitted": 26,
-          "cap": 6,
-          "cap_applied": true
-        },
-        "origination": {
-          "offered": 6,
-          "skipped_duplicate_id": 1,
-          "skipped_open_plan": 0,
-          "skipped_clock_provenance": 5,
-          "skipped_no_spot": 0,
-          "skipped_door_w_no_geometry": 0,
-          "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
-          "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-            "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-          ],
-          "validation_failures": [
-            {
-              "ticker": "HON",
-              "id": "HON-BULL-20260727",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
+              "ticker": "STRL",
+              "id": "STRL-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "EBAY",
-              "id": "EBAY-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "ROG",
-              "id": "ROG-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            }
-          ],
-          "originated": 0,
-          "validation_failed": 5
-        },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 1
-      },
-      "C5_align2_gate": {
-        "selected_tickers": [
-          "BRK-B",
-          "SIG",
-          "GATX",
-          "ASO",
-          "REXR",
-          "PLUS",
-          "VRSN"
-        ],
-        "plan_ids": [],
-        "n_plans": 0,
-        "selection": {
-          "admitted": 26,
-          "cap": 12,
-          "cap_applied": true,
-          "align_gate": {
-            "admitted": 7,
-            "admitted_via_fallback": 4,
-            "excluded_misaligned": 19,
-            "excluded_unreadable": 0,
-            "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
-          },
-          "passed_gate": 7,
-          "excluded": 19
-        },
-        "origination": {
-          "offered": 7,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 4,
-          "skipped_no_spot": 0,
-          "skipped_door_w_no_geometry": 0,
-          "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
-          "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-            "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-          ],
-          "validation_failures": [
-            {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "REXR",
-              "id": "REXR-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
@@ -997,7 +749,334 @@
               "id": "PLUS-BULL-20260909",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "GATX",
+              "id": "GATX-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "BANC",
+              "id": "BANC-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "USPH",
+              "id": "USPH-BULL-20260609",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            }
+          ],
+          "originated": 0,
+          "validation_failed": 11
+        },
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 1
+      },
+      "C3_door_w_union": {
+        "selected_tickers": [
+          "GL",
+          "EGBN",
+          "RKLB",
+          "VTRS",
+          "HAFC",
+          "CZR",
+          "WAT",
+          "STRL",
+          "AZN",
+          "ECHO",
+          "LITE",
+          "IREN"
+        ],
+        "plan_ids": [],
+        "n_plans": 0,
+        "selection": {
+          "admitted": 30,
+          "cap": 12,
+          "cap_applied": true,
+          "door_w_offered": 4,
+          "door_w_already_in_champion_pool": 0,
+          "door_w_reserved_slots": 4,
+          "door_w_selected": 4,
+          "champion_rows_displaced": 4
+        },
+        "origination": {
+          "offered": 12,
+          "skipped_duplicate_id": 0,
+          "skipped_open_plan": 3,
+          "skipped_clock_provenance": 9,
+          "skipped_no_spot": 0,
+          "skipped_door_w_no_geometry": 0,
+          "skipped_door_w_tickers": [],
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
+          "clock_errors": [
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+            "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+          ],
+          "validation_failures": [
+            {
+              "ticker": "GL",
+              "id": "GL-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "EGBN",
+              "id": "EGBN-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-15'"
+              ]
+            },
+            {
+              "ticker": "VTRS",
+              "id": "VTRS-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "HAFC",
+              "id": "HAFC-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "CZR",
+              "id": "CZR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "WAT",
+              "id": "WAT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "STRL",
+              "id": "STRL-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "ECHO",
+              "id": "ECHO-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "LITE",
+              "id": "LITE-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            }
+          ],
+          "originated": 0,
+          "validation_failed": 9
+        },
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 1
+      },
+      "C4_dispersion_cap": {
+        "selected_tickers": [
+          "GL",
+          "EGBN",
+          "RKLB",
+          "VTRS",
+          "HAFC",
+          "CZR"
+        ],
+        "plan_ids": [],
+        "n_plans": 0,
+        "selection": {
+          "admitted": 30,
+          "cap": 6,
+          "cap_applied": true
+        },
+        "origination": {
+          "offered": 6,
+          "skipped_duplicate_id": 0,
+          "skipped_open_plan": 1,
+          "skipped_clock_provenance": 5,
+          "skipped_no_spot": 0,
+          "skipped_door_w_no_geometry": 0,
+          "skipped_door_w_tickers": [],
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
+          "clock_errors": [
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+            "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+          ],
+          "validation_failures": [
+            {
+              "ticker": "GL",
+              "id": "GL-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "EGBN",
+              "id": "EGBN-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-15'"
+              ]
+            },
+            {
+              "ticker": "VTRS",
+              "id": "VTRS-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "HAFC",
+              "id": "HAFC-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "CZR",
+              "id": "CZR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            }
+          ],
+          "originated": 0,
+          "validation_failed": 5
+        },
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 0
+      },
+      "C5_align2_gate": {
+        "selected_tickers": [
+          "WAT",
+          "PLUS",
+          "GATX",
+          "USPH"
+        ],
+        "plan_ids": [],
+        "n_plans": 0,
+        "selection": {
+          "admitted": 30,
+          "cap": 12,
+          "cap_applied": true,
+          "align_gate": {
+            "admitted": 4,
+            "admitted_via_fallback": 3,
+            "excluded_misaligned": 26,
+            "excluded_unreadable": 0,
+            "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
+          },
+          "passed_gate": 4,
+          "excluded": 26
+        },
+        "origination": {
+          "offered": 4,
+          "skipped_duplicate_id": 0,
+          "skipped_open_plan": 0,
+          "skipped_clock_provenance": 4,
+          "skipped_no_spot": 0,
+          "skipped_door_w_no_geometry": 0,
+          "skipped_door_w_tickers": [],
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
+          "clock_errors": [
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+            "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+          ],
+          "validation_failures": [
+            {
+              "ticker": "WAT",
+              "id": "WAT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "PLUS",
+              "id": "PLUS-BULL-20260909",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "GATX",
+              "id": "GATX-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "USPH",
+              "id": "USPH-BULL-20260609",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             }
@@ -1006,117 +1085,164 @@
           "validation_failed": 4
         },
         "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
+        "ledger_closures_appended": 1
       },
       "C6_time_stop_21": {
         "selected_tickers": [
-          "HON",
-          "BRK-B",
-          "EBAY",
-          "SIG",
-          "ROG",
-          "GATX",
-          "ASO",
-          "REXR",
-          "DT",
-          "UTHR",
-          "PG",
-          "PLMR",
+          "GL",
+          "EGBN",
+          "RKLB",
+          "VTRS",
+          "HAFC",
+          "CZR",
+          "WAT",
+          "STRL",
           "PLUS",
-          "VRSN",
+          "GATX",
+          "BANC",
+          "USPH",
+          "DT",
+          "GNRC",
+          "SHO",
+          "RDNT",
+          "EBAY",
           "APP",
-          "ATEN",
+          "CINF",
+          "ITW",
           "SEDG",
-          "TEM",
-          "CPRI",
-          "CI",
-          "TRN",
+          "DLX",
           "TDC",
+          "ATR",
           "CHRW",
-          "SKYW",
-          "CRUS",
-          "RBA"
+          "AFRM",
+          "PG",
+          "NXPI",
+          "CNM",
+          "WAY"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 26,
+          "admitted": 30,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 26,
-          "skipped_duplicate_id": 3,
-          "skipped_open_plan": 6,
-          "skipped_clock_provenance": 17,
+          "offered": 30,
+          "skipped_duplicate_id": 0,
+          "skipped_open_plan": 4,
+          "skipped_clock_provenance": 26,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
           "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
             "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
           ],
           "validation_failures": [
             {
-              "ticker": "HON",
-              "id": "HON-BULL-20260727",
+              "ticker": "GL",
+              "id": "GL-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
+              "ticker": "EGBN",
+              "id": "EGBN-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-15'"
               ]
             },
             {
-              "ticker": "EBAY",
-              "id": "EBAY-BULL-20260914",
+              "ticker": "VTRS",
+              "id": "VTRS-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "ROG",
-              "id": "ROG-BULL-20260914",
+              "ticker": "HAFC",
+              "id": "HAFC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "CZR",
+              "id": "CZR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "WAT",
+              "id": "WAT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "STRL",
+              "id": "STRL-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "PLUS",
+              "id": "PLUS-BULL-20260909",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
               "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
+              "id": "GATX-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
               ]
             },
             {
-              "ticker": "REXR",
-              "id": "REXR-BULL-20260903",
+              "ticker": "BANC",
+              "id": "BANC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "USPH",
+              "id": "USPH-BULL-20260609",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
@@ -1125,65 +1251,88 @@
               "id": "DT-BULL-20260914",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "UTHR",
-              "id": "UTHR-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "PG",
-              "id": "PG-BULL-20260914",
+              "ticker": "GNRC",
+              "id": "GNRC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "PLUS",
-              "id": "PLUS-BULL-20260909",
+              "ticker": "SHO",
+              "id": "SHO-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "RDNT",
+              "id": "RDNT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "EBAY",
+              "id": "EBAY-BULL-20260914",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
               "ticker": "APP",
-              "id": "APP-BULL-20260914",
+              "id": "APP-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "CPRI",
-              "id": "CPRI-BULL-20260914",
+              "ticker": "CINF",
+              "id": "CINF-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "TRN",
-              "id": "TRN-BULL-20260714",
+              "ticker": "ITW",
+              "id": "ITW-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "DLX",
+              "id": "DLX-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "ATR",
+              "id": "ATR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
@@ -1192,188 +1341,200 @@
               "id": "CHRW-BULL-20260914",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "SKYW",
-              "id": "SKYW-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "CRUS",
-              "id": "CRUS-BULL-20260909",
+              "ticker": "AFRM",
+              "id": "AFRM-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "RBA",
-              "id": "RBA-BULL-20260727",
+              "ticker": "PG",
+              "id": "PG-BULL-20260914",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "CNM",
+              "id": "CNM-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "WAY",
+              "id": "WAY-BULL-20260914",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             }
           ],
           "originated": 0,
-          "validation_failed": 17
+          "validation_failed": 26
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 5
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
-          "HON",
-          "BRK-B",
-          "EBAY",
-          "SIG",
-          "ENSG",
-          "ROG",
+          "GL",
+          "EGBN",
+          "RKLB",
+          "VTRS",
+          "HAFC",
+          "SONO",
+          "CZR",
+          "WAT",
+          "STRL",
+          "PLUS",
           "GATX",
-          "TMO",
-          "ASO",
-          "REXR",
-          "DT",
-          "UTHR"
+          "BANC"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 26,
+          "admitted": 30,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 30,
-          "buy_soon_in_board": 4,
-          "buy_soon_admitted_by_widening": 4,
-          "buy_soon_selected": 2,
+          "admitted_with_widening": 35,
+          "buy_soon_in_board": 5,
+          "buy_soon_admitted_by_widening": 5,
+          "buy_soon_selected": 1,
           "widening": "the status-class gate is relaxed for buy_soon rows only; tone, band, tier, entry-signal presence and the champion's own ordering stay the champion's"
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 0,
-          "skipped_clock_provenance": 10,
+          "skipped_duplicate_id": 0,
+          "skipped_open_plan": 1,
+          "skipped_clock_provenance": 11,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-17",
-          "price_basis_date": "2026-09-15",
+          "recorded_at": "2026-09-18",
+          "price_basis_date": "2026-09-17",
           "clock_errors": [
-            "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+            "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
             "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
           ],
           "validation_failures": [
             {
-              "ticker": "HON",
-              "id": "HON-BULL-20260727",
+              "ticker": "GL",
+              "id": "GL-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "BRK-B",
-              "id": "BRK-B-BULL-20260914",
+              "ticker": "EGBN",
+              "id": "EGBN-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-15'"
               ]
             },
             {
-              "ticker": "EBAY",
-              "id": "EBAY-BULL-20260914",
+              "ticker": "VTRS",
+              "id": "VTRS-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
-              ]
-            },
-            {
-              "ticker": "ENSG",
-              "id": "ENSG-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
-              "ticker": "ROG",
-              "id": "ROG-BULL-20260914",
+              "ticker": "HAFC",
+              "id": "HAFC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
+              ]
+            },
+            {
+              "ticker": "SONO",
+              "id": "SONO-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "CZR",
+              "id": "CZR-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "WAT",
+              "id": "WAT-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "STRL",
+              "id": "STRL-BULL-20260917",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
+              ]
+            },
+            {
+              "ticker": "PLUS",
+              "id": "PLUS-BULL-20260909",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
+                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             },
             {
               "ticker": "GATX",
-              "id": "GATX-BULL-20260914",
+              "id": "GATX-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "formation_date '2026-09-14' postdates tier_event_date '2026-09-11'"
+                "formation_date '2026-09-17' postdates tier_event_date '2026-09-11'"
               ]
             },
             {
-              "ticker": "TMO",
-              "id": "TMO-BULL-20260914",
+              "ticker": "BANC",
+              "id": "BANC-BULL-20260917",
               "stage": "clock_provenance",
               "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "REXR",
-              "id": "REXR-BULL-20260903",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
-              ]
-            },
-            {
-              "ticker": "DT",
-              "id": "DT-BULL-20260914",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
-                "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans",
-                "tier_observed_date '2026-09-16' does not match price_basis_date '2026-09-15'"
-              ]
-            },
-            {
-              "ticker": "UTHR",
-              "id": "UTHR-BULL-20260916",
-              "stage": "clock_provenance",
-              "errors": [
-                "price_basis_date '2026-09-15' is not the last completed NYSE session for recorded_at '2026-09-17' (2026-09-17); stale boards cannot originate plans",
+                "price_basis_date '2026-09-17' is not the last completed NYSE session for recorded_at '2026-09-18' (2026-09-18); stale boards cannot originate plans",
                 "us_standouts staleness.inputs.panel.mixed_vintage is true; mixed-vintage boards cannot originate plans"
               ]
             }
           ],
           "originated": 0,
-          "validation_failed": 10
+          "validation_failed": 11
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 1
