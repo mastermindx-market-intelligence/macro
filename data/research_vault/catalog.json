@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T03:37:03.004666+00:00",
-  "count": 2334,
+  "generated_at": "2026-09-18T03:52:06.227243+00:00",
+  "count": 2335,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -304,6 +304,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rfe9eykjpji-cb1207",
+      "title": "FX Weekly New Macro View New FX Outlook",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-17T23:45:53Z",
+      "summary_points": [
+        "USD Weakness Drivers: Fed/ECB/BoE rate hikes (Fed: 25bp, ECB: 2 hikes, BoE: 2 hikes) fuel USD decline by 2027 end, constrained by geopolitical risks (US midterms, French elections) and energy prices.",
+        "Currency Performance Shifts: Energy exporters (NOK, BRL) and hawkish central banks (NOK, AUD, NZD) outperform; CAD gains capped by US trade tensions despite energy support.",
+        "Carry Trade Evolution: CHF/SEK replace JPY as carry trade anchors due to low inflation, below-target rates, and no imminent hikes; JPY gains traction as alternative."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
