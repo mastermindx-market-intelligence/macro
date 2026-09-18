@@ -83,6 +83,31 @@ def _origin(tail: pd.Series, column: str, evidence: Any) -> tuple:
     return dates, 'matched_captured_alignment', item
 
 
+def _last_observed_context(values: pd.Series) -> dict | None:
+    """Dated measured samples, never a claim of fresh or continuously observed momentum."""
+    observed = values.dropna()
+    if observed.empty:
+        return None
+    stamp, level = observed.index[-1], float(observed.iloc[-1])
+    position = int(values.index.get_loc(stamp))
+    out = {'basis': 'latest_two_captured_source_rows_on_retained_grid',
+           'as_of': _date(stamp), 'level': round(level, 3),
+           'previous_as_of': None, 'previous_level': None, 'change_bp': None,
+           'elapsed_calendar_days': None, 'elapsed_grid_intervals': None,
+           'age_calendar_days': int((values.index[-1] - stamp).days),
+           'age_grid_intervals': len(values) - 1 - position,
+           'is_current_grid_row': position == len(values) - 1,
+           'historical_availability_qualified': False}
+    if len(observed) >= 2:
+        previous, previous_level = observed.index[-2], float(observed.iloc[-2])
+        change = (level - previous_level) * 100
+        out.update(previous_as_of=_date(previous), previous_level=round(previous_level, 3),
+                   change_bp=round(change, 1) if np.isfinite(change) else None,
+                   elapsed_calendar_days=int((stamp - previous).days),
+                   elapsed_grid_intervals=position - int(values.index.get_loc(previous)))
+    return out
+
+
 def _bp_change(values: pd.Series, horizon: int) -> float | None:
     if len(values) <= horizon:
         return None
@@ -118,7 +143,7 @@ def _series_read(frame: pd.DataFrame, column: str,
            'historical_availability_qualified': False, 'observation_origin': 'unverified',
            'origin_status': 'not_provided', 'path_qualified': False,
            'horizon_basis': 'fixed_weekday_grid_intervals',
-           'level': None, 'carried_level': None,
+           'level': None, 'carried_level': None, 'last_observed': None,
            'velocity_bp': {f'{h}d': None for h in HORIZONS},
            'endpoint_dates': {f'{h}d': None for h in HORIZONS},
            'acceleration_bp': None, 'turn_watch': None, 'null_reason': None}
@@ -152,6 +177,8 @@ def _series_read(frame: pd.DataFrame, column: str,
         if out['observation_origin'] == 'carried':
             out.update(carried_level=float(numeric.iloc[-1]), as_of=dates[-1])
     valid = measured.dropna()  # Dates only; NEVER compact the calculation horizon.
+    if dates is not None and item['source_basis'] == 'captured_source_rows':
+        out['last_observed'] = _last_observed_context(measured)
     if not valid.empty and out['as_of'] is None:
         out['as_of'] = _date(valid.index[-1])
     if pd.isna(measured.iloc[-1]):

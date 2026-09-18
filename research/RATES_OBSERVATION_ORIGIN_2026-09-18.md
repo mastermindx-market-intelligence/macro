@@ -54,3 +54,23 @@ Initial hosted contract-delta job105548605663 correctly failed: the two newly na
 Latest command: `python -m pytest -q --disable-warnings tests/test_yield_momentum.py tests/test_rates_command.py tests/test_yield_curve.py tests/test_fred_alias_collision.py tests/test_rate_inflation_transmission.py tests/test_sector_rate_inflation.py`.
 Latest log `origin_enrolled_suite_20260918_sol003.log` SHA256: `dabcda5389aaf569d0b8bc17b2a435cc5c9dcf01b4dde0440e42e6b99cc73b6d`.
 The repository's existing `_named_by_a_run_step` predicate confirms the consolidated full path is enrolled in the existing rates-panel job. This focused check is not the complete hosted differential gate; the next-head CI remains required. Initial seven-file metadata is historical; the final base-relative scope is two production modules, one enrolled test suite, one research record and one Agent OS handoff.
+
+## Dated measured context refinement after c1be489b
+
+The c1be candidate correctly withheld current momentum on a carried row but did not retain the last measured move. `last_observed` now preserves the last two qualified captured-source samples on the retained weekday grid, their actual dates/levels, basis-point difference, elapsed calendar/grid intervals and age relative to the frame. One sample has no invented previous change; no observed samples means null. Overrides, unverified origins and changed-frame metadata cannot create this canonical context. This is an additive explanatory field, not new historical receipt, current-session, turn or trade authority.
+
+The basis is explicitly `latest_two_captured_source_rows_on_retained_grid`: observations outside that bounded grid are not promised. A two-grid-interval change stays a two-interval change; Friday-to-Monday spans three calendar days. There is no per-day normalization or guessed Treasury holiday calendar. `is_current_grid_row` compares against the supplied frame, not the real-time wall clock. Current stale/level/velocity/turn fields remain unchanged.
+
+Nine new cases were observed failing because `last_observed` was absent, then passed. The existing CI-enrolled rates suite now has **34 passing cases**. Current combined related suite: **153 passed,1 skipped**, exit0. No new suite, workflow, waiver or skip was introduced.
+
+Captured-input check: actual cached SPY ends September4; nominal yields last observed September3. Qualified September3-vs-September2 changes are -5bp for2y and -2bp for5/10/20/30y. The 10y pair is4.79% to4.77%. All five remain stale in the September4 frame with current measured levels/velocities withheld. These are archived inputs, NOT current market readings or historically issued predictions. RIC preserves the added context exactly; deleting only the additive field makes the candidate output value-identical to the c1be reader on that captured frame.
+
+The input-builder bytes are unchanged, so prior numerical-feature parity still supports that builder; the new field has its own proof rather than being attributed to the old complete output. No raw file was modified or re-collected. This check constructs the actual configured nominal-yield grid and exercises the existing reader/RIC consumer; it does not repeat the full371-input builder comparison or establish live SDK/browser/production acceptance.
+
+Private evidence under the existing parent return root:
+- `dated_context_green_20260918_sol003.log`: SHA256 `48f87f438e0582e8879c1d929a56405458a9f7ba15a6ed3fde8fa1b47a00187c`.
+- `dated_context_combined_20260918_sol003.log`: SHA256 `29f20c8539d0922c1a022a2c935d772f95b49f43433bd899773c25a09f75c20e`.
+- `dated-context-20260918-sol003/proof.json`: SHA256 `f42a4e1725d989325c454081e3993ac0db3cf8bc7d60334030398353a042170f`.
+- New yield-reader source SHA256 `f6dabcc1c5b619c54f8703fe394eea5c0367795503ea465718e70041f4c4b255`; inputs.py remains `db4a84069daff04c89a6b857b7808be7da54172a089bf971c053b96ce91d9d4e`.
+
+The c1be hosted contract-delta gate concluded success before this refinement. Full test packs and independent review were still pending; that prior check does not prove the new semantic head. Hold and fresh exact-head review/CI requirements remain. Mastermind#769 still does not project the added rich context; do not imply it does.

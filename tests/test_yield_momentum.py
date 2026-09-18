@@ -302,3 +302,85 @@ def test_ric_preserves_exact_transmission_origin_contract(tmp_path, monkeypatch)
     board = ric.build_board(tmp_path)
     assert board['yield_momentum'] == snapshot['yield_momentum']
     assert board['authority'] is False and board['display_only'] is True
+
+
+# Dated measured context must survive a stale latest frame without becoming fresh.
+def test_carried_tail_retains_last_measured_change_with_its_own_dates():
+    f = _origin_frame()
+    raw = f.us10y.iloc[:-3].copy()
+    f.loc[f.index[-3:], 'us10y'] = raw.iloc[-1]
+    out = _origin_read(_attach_origin(f, raw))
+    last = out['last_observed']
+    assert out['status'] == 'stale' and out['level'] is None
+    assert all(v is None for v in out['velocity_bp'].values())
+    assert out['turn_watch'] is None
+    assert last['as_of'] == str(raw.index[-1].date())
+    assert last['previous_as_of'] == str(raw.index[-2].date())
+    assert last['level'] == round(raw.iloc[-1], 3)
+    assert last['change_bp'] == 1.0
+    assert last['age_grid_intervals'] == 3
+    assert last['is_current_grid_row'] is False
+    assert last['historical_availability_qualified'] is False
+
+
+def test_measured_change_spans_missing_interior_without_daily_relabel():
+    f = _origin_frame(); raw = f.us10y.drop(f.index[-2])
+    f.iloc[-2, 0] = f.iloc[-3, 0]
+    last = _origin_read(_attach_origin(f, raw))['last_observed']
+    assert last['change_bp'] == 2.0
+    assert last['elapsed_grid_intervals'] == 2
+    assert last['previous_as_of'] == str(f.index[-3].date())
+    assert last['is_current_grid_row'] is True
+
+
+def test_one_measured_row_has_no_invented_previous_change():
+    f = _origin_frame(); f['us10y'] = np.nan; f.iloc[-1, 0] = 4.5
+    out = _origin_read(_attach_origin(f, f.us10y.dropna()))
+    last = out['last_observed']
+    assert last['level'] == 4.5 and last['is_current_grid_row'] is True
+    assert last['previous_as_of'] is None and last['change_bp'] is None
+    assert last['elapsed_grid_intervals'] is None
+
+
+def test_unknown_or_changed_origin_cannot_create_measured_history():
+    assert _origin_read(_origin_frame())['last_observed'] is None
+    f = _attach_origin(_origin_frame()); f.iloc[-1, 0] += 0.1
+    assert _origin_read(f)['last_observed'] is None
+
+
+def test_caller_override_is_not_canonical_measured_history(monkeypatch):
+    inputs, raw = _builder_fixture(monkeypatch)
+    out = _origin_read(inputs.build_features(overrides={'us10y': raw}))
+    assert out['observation_origin'] == 'caller_supplied_row'
+    assert out['last_observed'] is None
+
+
+def test_true_flat_observations_keep_zero_measured_change():
+    f = _origin_frame(); f['us10y'] = 4.0
+    last = _origin_read(_attach_origin(f))['last_observed']
+    assert last['change_bp'] == 0.0
+    assert last['elapsed_grid_intervals'] == 1
+
+
+def test_weekend_elapsed_days_are_not_called_one_calendar_day():
+    idx = pd.bdate_range('2026-01-01', '2026-04-06')  # Monday after Friday.
+    f = pd.DataFrame({'us10y': np.arange(len(idx)) / 100 + 4.0}, index=idx)
+    last = _origin_read(_attach_origin(f))['last_observed']
+    assert last['elapsed_grid_intervals'] == 1
+    assert last['elapsed_calendar_days'] == 3
+    assert last['basis'] == 'latest_two_captured_source_rows_on_retained_grid'
+
+
+def test_nonfinite_latest_does_not_erase_prior_measured_context():
+    f = _origin_frame(); f.iloc[-1, 0] = np.inf
+    out = _origin_read(_attach_origin(f))
+    assert out['level'] is None and out['turn_watch'] is None
+    assert out['last_observed']['as_of'] == str(f.index[-2].date())
+    assert out['last_observed']['age_grid_intervals'] == 1
+    assert out['last_observed']['is_current_grid_row'] is False
+
+
+def test_no_observed_samples_in_retained_window_means_no_history():
+    f = _origin_frame(1400); f['us10y'] = np.nan; f.iloc[0, 0] = 4.0
+    out = _origin_read(_attach_origin(f, f.us10y.dropna()))
+    assert out['last_observed'] is None
