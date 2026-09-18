@@ -1148,3 +1148,25 @@ def test_TTID1_resolver_is_pure_and_cannot_fetch_write_or_emit_events():
     }
     assert not any(i in forbidden_import_roots for i in imports), imports
     assert not ({"open", "write", "write_text", "write_bytes", "replace", "unlink"} & calls)
+
+
+
+def test_TTID1_missing_source_vintage_refuses_a_resolution_claim():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    tape = ch.SessionTape(session=tape.session, minutes=tape.minutes,
+                          price_basis=tape.price_basis, vintage="")
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "source_vintage_missing")
+
+
+def test_TTID1_resolution_never_claims_historical_availability_from_session_tape():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    got = mr.resolve_long_barrier_order(_tti_tape(start), interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    payload = got.to_dict()
+    assert payload["source_clock_proven"] is False
+    assert payload["source_evidence_class"] == "availability_time_unproven"

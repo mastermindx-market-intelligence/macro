@@ -7,8 +7,12 @@ when a five-minute OHLC bar touched BOTH a long target and adverse threshold,
 can a COMPLETE, positive-volume one-minute tape determine which came first?
 
 Fail-closed law: missing, duplicate, unordered, wrong-basis, zero-volume, or
-malformed minute evidence returns ``unavailable``.  The resolver never fills a
-missing minute, sorts a broken tape, or chooses a flattering order.  If both
+malformed minute evidence returns ``unavailable``.  The resolver also requires a
+non-empty source vintage, but a SessionTape carries no historical acquisition/
+availability receipt; every result therefore states ``source_clock_proven=False``
+and ``source_evidence_class=availability_time_unproven``.  Mathematical minute
+bar close is not proof the vendor delivered that observation by that instant.
+The resolver never fills a missing minute, sorts a broken tape, or chooses a flattering order.  If both
 barriers are touched inside one minute and that minute opens between them, the
 answer remains ``same_minute_ambiguous``.
 """
@@ -24,6 +28,7 @@ from engine.session_digest import session_window_et
 
 WINDOW_MINUTES = 5
 AUTHORITY = "research_resolution_only"
+SOURCE_EVIDENCE_CLASS = "availability_time_unproven"
 
 
 class MinuteResolutionError(ValueError):
@@ -44,6 +49,8 @@ class MinuteResolution:
     entry: float
     target: float
     adverse: float
+    source_clock_proven: bool = False
+    source_evidence_class: str = SOURCE_EVIDENCE_CLASS
     authority: str = AUTHORITY
 
     def to_dict(self) -> dict[str, Any]:
@@ -63,6 +70,8 @@ class MinuteResolution:
             "entry": self.entry,
             "target": self.target,
             "adverse": self.adverse,
+            "source_clock_proven": self.source_clock_proven,
+            "source_evidence_class": self.source_evidence_class,
             "authority": self.authority,
         }
 
@@ -131,6 +140,12 @@ def resolve_long_barrier_order(
     order unknowable.
     """
     _contract(interval_start, interval_end, entry, target, adverse)
+    if not str(tape.vintage).strip():
+        return _unavailable(
+            tape, reason="source_vintage_missing",
+            interval_start=interval_start, interval_end=interval_end,
+            entry=entry, target=target, adverse=adverse,
+        )
     if tape.price_basis != expected_price_basis:
         return _unavailable(
             tape, reason="price_basis_mismatch",
@@ -231,6 +246,6 @@ def resolve_long_barrier_order(
 
 
 __all__ = [
-    "AUTHORITY", "MinuteResolution", "MinuteResolutionError", "WINDOW_MINUTES",
+    "AUTHORITY", "SOURCE_EVIDENCE_CLASS", "MinuteResolution", "MinuteResolutionError", "WINDOW_MINUTES",
     "resolve_long_barrier_order",
 ]
