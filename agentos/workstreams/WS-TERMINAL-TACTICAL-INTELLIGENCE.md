@@ -27,6 +27,7 @@ owns_paths:
 decisions:
 - DEC:TERMINAL-TACTICAL-PRICE-FIRST-APPROVAL
 - DEC:TERMINAL-TACTICAL-R1A-DISPOSITION
+- DEC:TERMINAL-TACTICAL-TOP-SIDE-BOUNDARY
 discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 - DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
@@ -49,7 +50,7 @@ waves:
   status: in_progress
   depends_on:
   - D0
-  next_action: 'Macro #7270 current semantic head is 982a99a8adcac29c8158c2c31ec6639894dfdce1 after wiring its two tactical suites into the canonical Entry Radar CI step. Local exact-head evidence: full Radar step 1522 passed/2 skipped and contract-delta 0 introduced/0 inherited against the reconciled base; hosted current-head checks and independent review still govern release. R1-B is now frozen separately on draft Macro #7274 v2 (freeze commit 1348a238c8fbcb79b617478311f2ce0e1e37d4c0; 60 cells; no registration/outcomes). Do not touch shared TrialLedger/implementation for R1-B until #7270 shared-source gate clears. No R1-A threshold rescue.'
+  next_action: 'Macro #7270 current semantic head is 982a99a8adcac29c8158c2c31ec6639894dfdce1 after wiring its two tactical suites into the canonical Entry Radar CI step. Local full Radar step 1522 passed/2 skipped; hosted ci-plan/contract-delta/fence/authority/hosted-plan are green, while trusted executor packs remain QUEUED and independent review remains absent. R1-B is frozen separately on draft Macro #7274 v3 (freeze commit 1518ef7dabc74428bd79e7724f080226381b6fe4; 60 cells; no registration/outcomes) after two pre-outcome adversarial revisions. Do not touch shared TrialLedger/implementation for R1-B until #7270 shared-source execution/review gate clears. No R1-A threshold rescue.'
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
@@ -78,6 +79,7 @@ landmines:
   No existing wave or source custody is taken over.
 - Setup Species and Evaluation OS remain the scientific owners. Context-only evidence is not rank, sizing, gating,
   trade or options-expression authority.
+- Intraday top/HOD research must remain distinct from WS:TOP-ANATOMY winner-maturation/OOT research; no Top Anatomy threshold/OOT import and no automatic short/sell/trim authority. See DEC:TERMINAL-TACTICAL-TOP-SIDE-BOUNDARY.
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION distinguishes local-file absence, static publication, live freshness
   and historical availability.
 - 'Terminal #595 is the existing refresh carrier. Do not modify its source without current custody reconciliation.'
@@ -104,7 +106,7 @@ artifacts:
 - research/species/TTI_R1A_REPORT.md
 - research/species/tti_r1/RESULT.json
 - research/species/tti_r1/REGISTRATION_RECEIPT.json
-next_action: 'Advance #7270 current head 982a99a8adcac29c8158c2c31ec6639894dfdce1 through hosted checks and independent review without promoting its null/tiny-N arms. Keep #7274 v2 docs/config-only until that shared-source gate clears, then register its frozen 60-cell grid before any outcome read. In parallel, consume #595 repair evidence and #601 independent review when those incumbent carriers move, and qualify the existing VendorMinuteReader for bounded ambiguity resolution rather than building another minute store. No Executive prerequisite, live scan or validated edge is claimed.'
+next_action: 'Let #7270 current-head trusted executor packs and independent review complete under their existing owners; ci-plan/contract-delta/fence/authority/hosted-plan are already green. Keep #7274 v3 docs/config-only until that shared-source gate clears, then append its frozen 60-cell grid to the existing entry_radar TrialLedger before any outcome read and implement test-first. In parallel, consume #595/#601 when they move and qualify the existing VendorMinuteReader for bounded ambiguity resolution. Intraday top/HOD work remains a later separate preregistration under DEC:TERMINAL-TACTICAL-TOP-SIDE-BOUNDARY. No Executive prerequisite, live scan or validated edge is claimed.'
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
