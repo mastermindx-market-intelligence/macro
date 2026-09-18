@@ -217,11 +217,14 @@ Consume `r22/gold_corpus_r22.json`.
 
 The automated producer does not get a pass by merely finding the report.
 
-Initial current-corpus acceptance:
-- G1/G2/G3 should produce supported or explicitly source-limited semantics once their permitted bodies are available.
-- G4 is expected to **abstain/degrade honestly** if the decisive printed-page 100–101 evidence sits outside the current stored prefix. Calling that case complete from a prefix is a failure.
+**Use `r22/gold_stage_matrix_r22.json` to preserve wave boundaries.** The W1→W2 producer is judged on per-document grounding/provenance/coverage, not on cross-document synthesis it does not own:
 
-Later complete-tail support should turn G4 from honest partial to supported without changing its source identity.
+- G1: each Microsoft source independently preserves the spending/lease definition and numeric claims. The later cross-document like-for-like adjudication is not producer scope.
+- G2: each ING source independently preserves fixed-target/rolling-horizon values, quoted prior and rationale. Same-source longitudinal revision/repetition classification is frozen W5 scope.
+- G3: each Amundi/ING source independently preserves its policy forecast and rationale. Independent-source disagreement synthesis is frozen W6 scope.
+- G4: current producer/consumer must **abstain/degrade honestly** when decisive late evidence lies outside the stored prefix. Complete-tail support is an existing-Vault follow-up, not producer scope.
+
+Later W5/W6/deep-evidence work can make the relational/long-tail cases fully supported without changing their source identities. Never add a graph or cross-document store to the producer merely to make those gold cases green early.
 
 ## Implementation acceptance (future PR)
 
@@ -238,7 +241,7 @@ Not complete unless:
 10. prefix-only coverage is visible to the consumer;
 11. actual provider/model and token/cost receipt survive;
 12. source body/prompt/model provenance exactly revalidates through W2;
-13. G1–G4 behave according to their frozen expectations;
+13. G1–G4 behave according to their **producer-stage** expectations in `gold_stage_matrix_r22.json`; later W5/W6 obligations are not falsely claimed;
 14. W3 consumes one produced artifact after its own release gates;
 15. actual customer/source/browser proof remains separate from fixture success.
 
