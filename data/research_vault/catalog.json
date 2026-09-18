@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T01:06:47.700422+00:00",
-  "count": 2327,
+  "generated_at": "2026-09-18T01:36:50.195469+00:00",
+  "count": 2328,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-lhfikavrimj-fcd356",
+      "title": "JPM Oil Markets Weekly Dry powder Sept 17",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T00:37:12Z",
+      "summary_points": [
+        "Geopolitical Supply Shock Premium: $16 Brent premium ($106 vs $90 fair value) from 4 mbd supply disruption (Houthi attacks, Saudi pipeline, Ukraine refinery strikes), with inventory hoarding preventing price surge to $100/bbl.",
+        "Inventory Hoarding Overrides Supply-Demand: Actual crude draws (555M barrels) were 1/3 of forecast (1.6B barrels) due to conflict uncertainty, preserving inventories and delaying price spikes despite supply disruption.",
+        "Demand Destruction Dominates Adjustment: Global oil demand 4.4 mbd below 2025 levels (1.5x larger than inventory draw adjustment), confirming demand destruction—not inventory draws—as primary market rebalancing driver.",
+        "System Fragility Threshold: Inventory buffers deplete to 7.65Bb (current: 7.5Bb), triggering intensified demand adjustment (e.g., government intervention) as operational stress (7,500 mb) constrains supply resilience.",
+        "OPEC+ Tightening Risk: 2025F OPEC+ crude production at 23.7M bpd with negative monthly growth (-195), projecting continued decline (-85 in 2026F), amplifying supply tightness risk for portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-zhgm3kqi98z-8b951a",
       "title": "Economics Economics Daily Alert 17 09 2026",
