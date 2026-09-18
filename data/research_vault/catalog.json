@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T23:51:37.525031+00:00",
-  "count": 2323,
+  "generated_at": "2026-09-18T00:06:41.860446+00:00",
+  "count": 2324,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-xgznbpprtcf-e715c8",
+      "title": "MACRO WEEK AHEAD WEEK OF SEPTEMBER 21",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T23:52:19Z",
+      "summary_points": [
+        "US Economic Data & Fed Policy: ADP, PMIs, Jobless Claims, and Fed speeches (Goosbee, Williams, Hammack) directly shape monetary policy expectations and market sentiment.",
+        "Trump-Xi Summit: High-stakes DC meeting (SEP 23) introduces critical geopolitical uncertainty and potential market volatility.",
+        "Near-Term Catalysts: CPI, NFP, ISM, and Retail Sales (SEP 20-24) drive immediate volatility and rate expectations for sector rotation.",
+        "US-China Trade Risk: AI talks (RTS), Nov 1 trade truce expiry, and US midterms (Nov 3) threaten trade stability and policy shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pmdrhkxkvax-652422",
       "title": "GS Ratra Hedge Funds Crowding Monitor US 17 Sep 2026",
