@@ -2377,6 +2377,22 @@ def test_stable_key_vendor_boundary_does_not_require_an_undated_rename(
     assert BUILD.unmodelled_renames({"FISV": "FI"}, {}) == []
 
 
+def test_stable_key_boundary_never_excuses_a_missing_dated_rename(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """FI/FISV is exceptional; MMC/MRSH still requires its dated rename record."""
+    monkeypatch.setattr(BUILD, "RENAME_EVENTS", ())
+    monkeypatch.setattr(BUILD, "UNDATED_RENAMES", ())
+    monkeypatch.setattr(
+        BUILD.ticker_aliases,
+        "YAHOO_FETCH_ALIASES",
+        {"FI": "FISV", "MMC": "MRSH"},
+    )
+    missing = BUILD.unmodelled_renames({"FISV": "FI", "MRSH": "MMC"}, {})
+    assert not any("FISV->FI" in line for line in missing)
+    assert any("MRSH->MMC" in line for line in missing)
+
+
 def test_every_rename_the_repo_records_is_modelled_by_the_builder() -> None:
     """The next rename must not be able to land silently.
 

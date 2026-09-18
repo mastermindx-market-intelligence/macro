@@ -550,19 +550,30 @@ DISCLOSED_IDENTITY_EXCEPTIONS: dict[str, dict[str, str]] = {
 
 
 # ── Small helpers ─────────────────────────────────────────────────────────────
-def stable_key_vendor_boundaries(fixups: dict[str, str]) -> tuple[tuple[str, str], ...]:
-    """Return accepted (stable_repo_key, live_vendor_symbol) boundaries.
+# An explicitly adjudicated stable repo/store key whose current listed/vendor symbol
+# differs. This is NOT a general inference rule: MMC/MRSH has the same fixup+fetch-map
+# shape but also carries a real dated historical rename that must remain modelled.
+STABLE_KEY_VENDOR_BOUNDARIES: tuple[tuple[str, str, str], ...] = (
+    (
+        "FI",
+        "FISV",
+        "merged #4622: FI stays the stable membership/page/ledger/store key while "
+        "FISV is the live listed/vendor symbol; Data OS listing identity remains "
+        "SEC:US-XNAS-FISV",
+    ),
+)
 
-    A breadth fixup live_symbol -> stable_key plus the exact inverse fetch boundary
-    stable_key -> live_symbol in lib.ticker_aliases is already an explicit two-source
-    statement that the repo key intentionally differs from the live request/listing key.
-    It is NOT historical rename evidence and must not enter _current_symbol().
-    """
+
+def stable_key_vendor_boundaries(fixups: dict[str, str]) -> tuple[tuple[str, str], ...]:
+    """Return only explicit stable-key boundaries whose two existing seams agree."""
     rows = []
-    for stable, vendor in ticker_aliases.YAHOO_FETCH_ALIASES.items():
-        if fixups.get(vendor) == stable:
+    for stable, vendor, _evidence in STABLE_KEY_VENDOR_BOUNDARIES:
+        if (
+            fixups.get(vendor) == stable
+            and ticker_aliases.YAHOO_FETCH_ALIASES.get(stable) == vendor
+        ):
             rows.append((stable, vendor))
-    return tuple(sorted(rows))
+    return tuple(rows)
 
 
 def unmodelled_renames(fixups: dict[str, str], migrations: dict[str, str]) -> list[str]:
@@ -3415,6 +3426,10 @@ def build(out_dir: Path, dry_run: bool = False, allow_missing_evidence: bool = F
         "undated_renames": [
             {"old": old, "new": new, "evidence": why} for old, new, why in UNDATED_RENAMES
         ],
+        "stable_key_vendor_boundaries": [
+            {"stable_key": stable, "vendor_symbol": vendor, "evidence": evidence}
+            for stable, vendor, evidence in STABLE_KEY_VENDOR_BOUNDARIES
+        ],
         "identity_exceptions": [
             {
                 "key": key,
@@ -3922,6 +3937,11 @@ def _report(receipt: dict, verbose: bool) -> None:
         )
     for undated in receipt["undated_renames"]:
         print(f"  undated rename {undated['old']}->{undated['new']} (open-bounded rows)")
+    for boundary in receipt["stable_key_vendor_boundaries"]:
+        print(
+            f"  stable-key boundary {boundary['stable_key']}<-"
+            f"{boundary['vendor_symbol']} (repo/store <- live vendor/listing)"
+        )
     for name, digest in sorted(receipt["inputs"].items()):
         print(f"  input {name} sha256={digest}")
 
