@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T22:39:16.171074+00:00",
-  "count": 2389,
+  "generated_at": "2026-09-18T23:09:09.686712+00:00",
+  "count": 2390,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -128,6 +128,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-g1b46ue91fl-ced014",
+      "title": "DB Parag Thatte Investor Positioning and Flows Sep 18 1",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:37:52Z",
+      "summary_points": [
+        "Discretionary vs Systematic Divergence: Discretionary investors at 46th percentile (cautious) vs systematic strategies at 88th percentile (extreme bullish), signaling institutional shift toward systematic approaches amid volatility.",
+        "S&P 500 FOMC Pattern: Consistent -0.5% sell-off on FOMC days followed by +1.0% rally next day, critical for short-term tactical positioning.",
+        "Sentiment Extremes: Bull-bear spread at 5th percentile (historical lows since 1987), indicating extreme pessimism and potential contrarian opportunity.",
+        "Systematic Volatility Link: 77% correlation between systematic equity positioning and S&P 500 realized volatility, highlighting amplified reversal risk during volatility spikes.",
+        "Flow Dynamics: $79.3bn equity inflows (3-month high) vs $9.8bn bond inflows (5-month low), with $75.9bn money market outflows, reflecting capital rotation from safety to equities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 51,
       "language": "en",
       "needs_metadata": false
     },
