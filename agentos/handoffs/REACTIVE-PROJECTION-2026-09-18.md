@@ -2,7 +2,7 @@
 workstream: WS:REACTIVE-PROJECTION
 session: claude/terminal-ext-hours-stability-20260917
 model: sol
-ended_because: blocked
+ended_because: complete
 mission: >
   Diagnose and close the Terminal extended-hours quote flicker reported on QCOM, where the detail
   card and watchlist Ext % value repeatedly disappeared and returned, while preserving one canonical
@@ -28,9 +28,10 @@ changed:
       retention plus recovery.
   - path: agentos/workstreams/WS-REACTIVE-PROJECTION.md
     what: >
-      Added wave R1A-T-S as SOURCE_ACCEPTED / production-in-progress. It names the exact protected
-      Terminal merge, current production RED discriminator, canonical release dependency on issue
-      #483, required post-deploy browser/runtime proof, and the honest unsupported-overnight limit.
+      Advanced R1A-T-S from SOURCE_ACCEPTED / production-in-progress to PROVEN_LIVE / done after
+      exact served-generation, runtime-byte, QCOM eviction, and public responsive browser proof.
+      The record preserves the honest provider-null boundary and leaves Terminal issue #483's
+      broader release-hardening programme separate rather than treating it as a product blocker.
 verified:
   - claim: >
       Exact Terminal source head fc26254fbcef7a2d5f28321a6152962023db4620 passed the complete local
@@ -75,42 +76,55 @@ verified:
       mastermindx-market-intelligence/mastermind-terminal --json number,state,isDraft,headRefOid,
       mergeStateStatus,comments,statusCheckRollup,url
     result: >
-      Issue #483 remains the canonical GitHub-to-production release programme. PR #605 is its active
-      same-carrier exact-target preflight work and remained Draft while natural CI and the larger
-      release sequence continued. No legacy moving-master deploy was authorized.
-unverified:
+      Issue #483 remains the canonical GitHub-to-production release programme. Its broader
+      exact-SHA release hardening continues independently and does not need to be completed in order
+      to truthfully accept this already-served product repair.
   - claim: >
-      The accepted Terminal merge 82ca818be7ea592f7cdb1fb6731cc19f94610593 is running in production and the real QCOM UI no
-      longer flickers under extended-feed churn or transport failure.
-    what_would_verify: >
-      Issue #483 must admit and deploy an exact accepted SHA containing 82ca818be7ea592f7cdb1fb6731cc19f94610593; then run a
-      fresh public Playwright probe derived from the committed regression at Terminal merge
-      82ca818be7ea592f7cdb1fb6731cc19f94610593 (`terminal/e2e/watchlist-ext-percent.spec.ts`) and reconcile Terminal plus quote-hub
-      service identity, real request view=regular, desktop detail/watchlist Ext and Ext %, compact
-      tablet/mobile extended lanes, 503 retention, recovery advancement, and no fabricated overnight
-      value.
+      The protected #616 repair is installed in the serving application and Quote Hub at one exact
+      reconciled production generation.
+    command: >
+      Read-only SSH at 2026-09-18T12:21Z: compare /opt/terminal/.gitsrc HEAD and
+      /opt/terminal/terminal/.deployment-id; sha256sum the canonical and live copies of
+      hub/lib/extfeed.js, hub/lib/quotes.js, hub/hub.js, terminal/app/api/ext-quote/route.ts,
+      terminal/app/api/quote/route.ts, and terminal/components/TerminalShell.tsx; verify
+      82ca818be7ea592f7cdb1fb6731cc19f94610593 is an ancestor of HEAD.
+    result: >
+      Canonical checkout and deployment marker both equal
+      1f56eae265bdbb69c60ce1c5b63dcea19f1f480e; every checked repaired file is byte-identical
+      live vs canonical; the #616 merge is an ancestor; Terminal and Quote Hub are active from the
+      current generation; QCOM ext-LRU evictions since that Quote Hub restart equal zero.
+  - claim: >
+      The real served Terminal preserves QCOM extended-hours state through a non-authoritative
+      transport failure and keeps regular polling out of the constrained extended-feed demand lane.
+    command: >
+      One-time public Playwright proof at 2026-09-18T12:20Z derived from the committed
+      terminal/e2e/watchlist-ext-percent.spec.ts regression, run against
+      https://app.mastermind-x.com and bound to deployment
+      1f56eae265bdbb69c60ce1c5b63dcea19f1f480e; durable receipt posted on Terminal PR #616 and
+      release carrier issue #483.
+    result: >
+      PASS at desktop 1440x900 and mobile 390x844. Every real /api/quote request used
+      view=regular. Desktop QCOM detail plus watchlist Ext/Ext % and the compact mobile pre-market
+      lane retained 188.23 / -0.25% across an injected HTTP 503, then advanced coherently to
+      188.42 / -0.15% after recovery. Production assets exposed the expected deployment id.
+unverified: []
 unresolved:
   - >
-    Production acceptance is blocked only in the deployment lane by canonical issue #483. Source
-    implementation, exact-head tests, protected merge, and dependent return are complete and must not
-    be redone.
+    The keyless production source may truthfully have no QCOM print in an otherwise extended session
+    and may have no true 20:00-04:00 ET coverage. At acceptance time real QCOM pre-market ext was
+    null. That is an honest source-coverage state, not recurrence of the fixed churn defect, and this
+    wave deliberately does not invent a feed or fabricate a price.
   - >
-    The current keyless production source set still may have no true 20:00-04:00 ET print. That is an
-    honest coverage null, not the flicker defect, and this wave deliberately does not invent a feed or
-    fabricate a price.
+    Terminal issue #483 still owns unfinished W2B-B/W2B-C release hardening. That programme remains
+    independently active; it no longer blocks or reopens the product acceptance recorded here.
 next_actions:
   - >
-    On issue #483, consume protected Terminal merge 82ca818be7ea592f7cdb1fb6731cc19f94610593 through the admitted exact-SHA
-    release path once the complete deploy/rollback implementation is ready. Do not use the legacy
-    moving-master VPS wrapper as a shortcut.
+    No further action is owed for R1A-T-S. Preserve PR #616 and the production receipts as
+    DO_NOT_REDO. Continue only the broader Reactive Projection waves under their own current
+    dependencies and acceptance evidence.
   - >
-    After deployment, derive a one-time public probe from the committed Terminal regression
-    `terminal/e2e/watchlist-ext-percent.spec.ts` at merge
-    82ca818be7ea592f7cdb1fb6731cc19f94610593, bind it to the served accepted deployment SHA, add
-    direct quote-hub health/full/regular reads, and attach the receipts to #483 and Terminal #616.
-  - >
-    Mark R1A-T-S done only after that production identity and browser/runtime matrix pass. A merge,
-    green CI, or source-only browser fixture is not enough.
+    Terminal issue #483 may continue its exact-SHA release-hardening programme independently; do not
+    treat that infrastructure work as evidence that the QCOM product repair is unfinished.
 do_not_redo:
   - >
     Do not reopen the ExtFeed root-cause implementation. Terminal #616 already closes active-symbol
