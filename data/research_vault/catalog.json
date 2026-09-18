@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T16:53:24.587725+00:00",
-  "count": 2372,
+  "generated_at": "2026-09-18T17:08:32.031319+00:00",
+  "count": 2373,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vcjug88mmtc-8900ce",
+      "title": "UK—Retail Sales Firmer Than Expected in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:18:07Z",
+      "summary_points": [
+        "UK Retail Sales Surprise: Headline retail sales volumes rose 0.5% mom in August (vs. expected decline), with non-auto fuel rising 0.6% contributing +2bp to August GDP growth.",
+        "GDP & Outlook: Retail trade’s +2bp GDP contribution keeps Q3 GDP tracking at +0.5% qoq, though consumer spending growth expected to moderate due to rising inflation and interest rates.",
+        "Forward Risk Factor: Rising inflation and interest rates pose near-term risk to consumer spending growth, offsetting positive retail data."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-x3ly3rkhf5d-885f92",
       "title": "Japan BOJ Raises Policy Rate by 25 bp to 1.25 . Further Tightening Ahead But No Clear Acceleration Signal",
