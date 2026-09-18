@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T13:23:00.525718+00:00",
-  "count": 2362,
+  "generated_at": "2026-09-18T13:53:05.061078+00:00",
+  "count": 2363,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-5mi5blg5cyz-207bd4",
+      "title": "GS Marson What Matters Today Over earning not bubble 18Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T13:25:16Z",
+      "summary_points": [
+        "S&P 500 Earnings Sensitivity to Semiconductors: Semiconductor margin decline (70%→55%) risks 10% S&P 500 earnings cut; 2027 EPS growth ranges from 4% (55% margin) to 21% (75% margin), with consensus (70% margin) at 15%, highlighting high vulnerability to margin erosion despite AI-driven growth.",
+        "CTA Flow Shifts & Positioning: CTA US equity longs at $37.54bn (22nd percentile) amid $6bn sellers in flat tape, $14bn sellers in down tape, and $3bn buyers in up tape, signaling potential demand-driven flow shifts as SPX closes above short-term threshold.",
+        "Gold Structural Demand & Policy Dynamics: Central bank gold demand raised to 60 tonnes/month (2026-27), contributing ~23% to 2027 appreciation; Fed rate cuts (3x 2027-28) maintain $5,400/ton Dec-2027 forecast but near-term path adjusted downward due to rate drag offset by central bank purchases."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-m5oomfilu9q-50c80a",
       "title": "GS Blekos Marketcolour Equity Strategy CTA Transport Chartpack Renk Up 18 Sep 2026",
