@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T02:52:01.922788+00:00",
-  "count": 2332,
+  "generated_at": "2026-09-18T03:07:04.767488+00:00",
+  "count": 2333,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -104,6 +104,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-n1cyyi0umyh-5b5818",
+      "title": "Bending Spoons S.p.A. (BSP) Key Takeaways from Meeting with Management (CEO & IR)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:36Z",
+      "summary_points": [
+        "Growth Catalysts & Strategy: Disciplined M&A (6+ acquisitions in 12 months), AI-driven productivity (95% code via AI, $4mm/Spoooner revenue), accelerating EBIT growth (GS forecast: EBIT 434.9m→2,980.1m by 12/27E).",
+        "Valuation & Upside: $50.00 price target (27.6% upside from $39.19), EV/EBITDA compression (18.2→11.6), supported by explosive revenue growth (115.1% 12/26E) and rising EBIT margins (35.9% 12/26E).",
+        "Key Risks: Acquisition execution failure (lack of targets, overpaying), debt sustainability (net debt/EBITDA 4.7x), and macro/geopolitical impacts on consumer spending.",
+        "AI Costs & Disruption Risk: AI spending ($15mm annually) immaterial vs.",
+        "$4bn revenue; workflow products immune to disruption due to hard-to-replace collaborative governance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
