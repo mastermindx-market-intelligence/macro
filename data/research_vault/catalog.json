@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T00:06:41.860446+00:00",
-  "count": 2324,
+  "generated_at": "2026-09-18T00:57:55.772567+00:00",
+  "count": 2326,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -87,6 +87,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-itrxoou09ct-d10520",
+      "title": "Syz Flash 2026 09 17 Fed2",
+      "institution": "SYZ",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T00:22:14Z",
+      "summary_points": [
+        "FOMC Rate Hike & Market Reaction: Fed hiked to 3.75%-4.00% (25bps), hawkish tone triggered Dow -600pts, 2-yr yield +7bps, oil to $102; forward guidance (16/18 officials expect further hikes) and \"removing policy accommodation\" signal sustained tightening despite market expectations.",
+        "Gold's Resilience: Slipped only 0.69% despite three headwinds (higher real yields, firmer dollar, hawkish Fed) due to central bank demand as neutral collateral and US fiscal solvency risks; strategic hedge opportunity.",
+        "Equity Timing Threshold: S&P 500 typically falls ~2% in first 3 months post-hike, then gains 9% over 12 months; 40-50 bps real yield jump precedes ~4% drawdown, with earnings driving recovery.",
+        "Tightening Cycle Assessment: Markets assign 89% probability of Dec hike; Fed’s action framed as \"recalibration\" (not durable tightening) emphasizing credibility (pre-emptive growth support) and institutional factors (new Chair, political pressure)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-xgznbpprtcf-e715c8",
       "title": "MACRO WEEK AHEAD WEEK OF SEPTEMBER 21",
       "institution": "J.P. Morgan",
@@ -98,6 +118,26 @@
         "Trump-Xi Summit: High-stakes DC meeting (SEP 23) introduces critical geopolitical uncertainty and potential market volatility.",
         "Near-Term Catalysts: CPI, NFP, ISM, and Retail Sales (SEP 20-24) drive immediate volatility and rate expectations for sector rotation.",
         "US-China Trade Risk: AI talks (RTS), Nov 1 trade truce expiry, and US midterms (Nov 3) threaten trade stability and policy shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zhcuudhcc2x-1d416a",
+      "title": "Investment strategy insights",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T23:50:17Z",
+      "summary_points": [
+        "Central Bank Tightening & Geopolitical Risks: Fed/ECB rate hikes (25bps Sept, more expected), revised inflation forecasts (US PCE 3%, Eurozone 2.5%/2.1%), prolonged Middle East conflict → heightened yield volatility and oil supply disruptions.",
+        "Rebalancing to Income-Generating Assets: Shift excess cash to quality bonds, high yield, and emerging market credit; higher yields provide income cushion to offset volatility and reduce 12-month loss probability.",
+        "Diversification Imperative: Necessity across high-quality government bonds, investment-grade corporate credit, selective high-yield, and emerging market debt due to persistent inflation, geopolitical uncertainty, and shifting monetary policy.",
+        "Emerging Market Credit Opportunity: Compelling case with attractive income, diversification benefits, and resilient fundamentals (sovereigns strengthened external balances, corporates maintaining conservative leverage)."
       ],
       "tags": [],
       "tickers": [],
