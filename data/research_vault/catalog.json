@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T01:36:50.195469+00:00",
-  "count": 2328,
+  "generated_at": "2026-09-18T01:51:56.279524+00:00",
+  "count": 2329,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -144,6 +144,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fchir6fxqrc-4a4628",
+      "title": "VON32627381",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-18T00:18:57Z",
+      "summary_points": [
+        "No Catalysts: Week lacks corporate earnings or economic data releases, reducing near-term market volatility drivers.",
+        "Givaudan Field Trip: Monday 21-09-26 investor event may influence sentiment for consumer goods sector positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
