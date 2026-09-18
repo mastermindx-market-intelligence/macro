@@ -35,6 +35,13 @@ Run:
     python3 scripts/massive_entitlement_probe.py --out data/massive/capability_manifest.json
     python3 scripts/massive_entitlement_probe.py --skip-ws --strict
 
+Futures rights gate:
+    Futures probes are OFF by default. Massive's Individual Futures plans are expressly
+    personal/non-business use. Only pass --probe-futures after the operator has confirmed
+    this key/account is covered by Business/commercial rights or written permission for
+    the intended Mastermind use. The flag measures technical entitlement; it never grants
+    storage, redistribution, display, or product rights.
+
 Tests: tests/test_massive_entitlement_probe.py (no network — the HTTP layer is stubbed).
 """
 
@@ -897,6 +904,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key-env", default=None,
                     help="env var holding the key (default: POLYGON_API_KEY then MASSIVE_API_KEY)")
     ap.add_argument("--skip-ws", action="store_true", help="REST battery only")
+    ap.add_argument(
+        "--probe-futures",
+        action="store_true",
+        help=(
+            "also probe api.massive.com Futures; OFF by default and only lawful after "
+            "operator confirms Business/commercial rights or written permission"
+        ),
+    )
     ap.add_argument("--timeout", type=float, default=15.0, help="per-request timeout (s)")
     ap.add_argument("--strict", action="store_true", help="exit 1 when any probe errored")
     args = ap.parse_args(argv)
@@ -914,9 +929,11 @@ def main(argv: list[str] | None = None) -> int:
     rest = run_rest_battery(prober)
 
     # Futures GA uses api.massive.com rather than the legacy api.polygon.io base.
-    # Same manual ruler, same bearer-only key handling, no dataset collection.
-    futures_prober = RestProber(key, base_url=FUTURES_BASE_URL, timeout=args.timeout)
-    rest.update(run_futures_rest_battery(futures_prober))
+    # It is intentionally opt-in: technical entitlement and commercial rights are
+    # different gates, and Massive Individual plans are not licensed for business use.
+    if args.probe_futures:
+        futures_prober = RestProber(key, base_url=FUTURES_BASE_URL, timeout=args.timeout)
+        rest.update(run_futures_rest_battery(futures_prober))
 
     ws: dict[str, dict] = {}
     if not args.skip_ws:
