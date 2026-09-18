@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T00:57:55.772567+00:00",
-  "count": 2326,
+  "generated_at": "2026-09-18T01:06:47.700422+00:00",
+  "count": 2327,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-zhgm3kqi98z-8b951a",
+      "title": "Economics Economics Daily Alert 17 09 2026",
+      "institution": "CommBank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T00:25:55Z",
+      "summary_points": [
+        "Fed Rate Hike & Hawkish Stance: Fed raised rates 25bp to 3.75%-4.00% (first since July 2023), signaling further hikes (25bp Oct + more), triggering US market decline, rising Treasury yields (2-year: 4.74%), and dollar strength—critical for global risk positioning.",
+        "Oil Supply Resolution: Brent/WTI oil prices fell 3.0%/3.2% as Saudi pipeline restoration eased supply concerns, directly impacting commodity flows and reversing earlier risk-driven price surges.",
+        "Japan BoJ Policy Shift: Expected 25bp rate hike to 1.25% (core inflation acceleration, JPY weakness, US pressure), signaling faster tightening—key for FX flows and global risk sentiment.",
+        "NZ Inflation Trajectory: Annual CPI projected at ~4% H2 2026 then 2% mid-2027, with RBNZ signaling gradual stimulus removal; critical for AUD positioning and central bank policy timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-itrxoou09ct-d10520",
       "title": "Syz Flash 2026 09 17 Fed2",
