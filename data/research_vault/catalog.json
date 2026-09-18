@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T23:09:09.686712+00:00",
-  "count": 2390,
+  "generated_at": "2026-09-18T23:24:10.925570+00:00",
+  "count": 2391,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -168,6 +168,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-03fixwhhdpc-1e5ee6",
+      "title": "STAYING RISK ON",
+      "institution": "TS Lombard",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-18T19:30:43Z",
+      "summary_points": [
+        "Risk Exposure & Beta Management: Modest underweight on EM equities/industrial metals; maintain overweight on Taiwan equity/Tech (AI tailwinds); portfolio beta held at 1.13.",
+        "Geopolitical & Policy Shifts: Overweight Taiwan equity as strongest AI adoption bet; downgrade CAD/CHF to -1 due to monetary policy divergence vs USD.",
+        "Portfolio Allocation Shifts: Trim EM equities (India/Mexico cuts), deepen DM govies underweight; rotate into leveraged credit (EM/global HY), precious metals, managed futures.",
+        "Monetary Policy & Macro Risks: US Q4 hike expected, Japan hawkish (Jan hike), Brazil easing; Fed hikes pressure equities; US personal income decline signals real income risk.",
+        "EM Debt & Risk Mitigation: Reduce Italian BTPs (150bp cut) amid energy volatility; retain EM local debt overweight for carry; exit Indian equities entirely (RBI hikes, El Niño risks)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
       "language": "en",
       "needs_metadata": false
     },
