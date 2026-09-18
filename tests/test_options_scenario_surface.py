@@ -213,6 +213,27 @@ def test_mid_snapshot_mode_reuses_incumbent_iv_solver_and_matches_horizon_zero()
     assert out["grids"]["cex"][0][1] == pytest.approx(sum(incumbent.cex))
 
 
+def test_source_clock_and_oi_vintage_cannot_come_from_after_market_observation():
+    with pytest.raises(ValueError, match="iv_observed_at"):
+        _build(iv_observed_at="2026-09-18T14:00:01Z")
+    with pytest.raises(ValueError, match="oi_vintage"):
+        _build(oi_vintage="2026-09-19")
+    with pytest.raises(ValueError, match="oi_vintage"):
+        _build(oi_vintage="not-a-date")
+
+
+def test_scenario_rejects_same_day_oi_and_unknown_iv_clock_for_mid_solve():
+    # Existing options timing law: OI must be from a strictly prior session/date,
+    # never the same observation date.
+    with pytest.raises(ValueError, match="oi_vintage"):
+        _build(oi_vintage="2026-09-18")
+
+    # When this engine itself solves IV from mids, the IV observation clock is part
+    # of the frozen information set and cannot be omitted.
+    with pytest.raises(ValueError, match="iv_observed_at"):
+        _build(iv_source="solve_from_mid")
+
+
 def test_invalid_or_unsupported_scenario_inputs_fail_closed():
     with pytest.raises(ValueError, match="timezone"):
         _build(observed_at="2026-09-18T14:00:00")

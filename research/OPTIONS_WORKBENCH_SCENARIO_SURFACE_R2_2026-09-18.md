@@ -45,6 +45,17 @@ The review-hardening adds explicit `iv_source="solve_from_mid"`. In that mode, t
 
 A discriminating horizon-zero test builds real mids from Black-Scholes, sends mid+OI contracts through the new mode, and compares the aggregate GEX/VEX/CEX against `compute_greek_grids`. With asymmetric call/put OI the values match to floating precision, proving the new path is not a second pricing kernel.
 
+### Point-in-time source law
+
+The conditional field freezes one lawful information set; source metadata is not decorative.
+
+- `iv_observed_at` may never be later than `market_observed_at`.
+- `solve_from_mid` requires an explicit `iv_observed_at`; an unknown IV source clock is rejected rather than inherited from the market wrapper.
+- when `oi_vintage` is supplied it must be a valid ISO date **strictly before** the observation's ET date. Same-day OI is rejected under the existing lagged-OI law.
+- unknown OI vintage remains null rather than being fabricated. The production consumer is still responsible for passing the exact vintage supplied by the accepted OI owner.
+
+These checks constrain the information set only; they do not change IV, Greek or exposure calculations.
+
 ## Contours
 
 The returned field now includes:
@@ -58,20 +69,22 @@ Each horizon entry carries all interpolated price-axis crossings for that metric
 
 TDD review hardening:
 - RED: Gamma-only contour contract and no `iv_source` seam caused **3 focused failures**.
-- GREEN: the same three cases pass after the bounded repair.
+- GREEN: those three cases pass after the bounded contour/live-input repair.
+- RED: same-day OI was accepted by the subsequent source-clock guard.
+- GREEN: source-clock/PIT + live-input/contour focused set is **4 passed / 0 failed**; same-day OI and mid-solved IV without an explicit IV clock are now refused.
 
 Fresh candidate proof:
-- scenario + incumbent intraday-Greek + GEX + options-matrix owner pack: **86 passed / 0 failed**;
+- scenario + incumbent intraday-Greek + GEX + options-matrix owner pack: **88 passed / 0 failed**;
 - changed-source `compileall`: pass;
 - `git diff --check`: pass.
 
 Fresh protected-main proof:
-- protected Macro main: `deb61b2751c2d4aa3a6819338c730989be731591`;
-- no movement on scenario pricing/Greek/calendar dependencies or owned paths from the reviewed head;
-- proof-only integrated commit: `7d7e2418251c2201cca5a5a294bfa2634d7fa9e4`;
-- proof tree: `5cb89f3f421bf2ccbd35fc061e82c6b934673b9b`;
-- parents: current main + pre-hardening #7306 head `60ba087f7c476fa8b7a564dd191e0f83a004ec8a`;
-- integrated owner pack: **86 passed / 0 failed**;
+- protected Macro main: `91662480a1026d0e84fdf3d774ee9ea6d857e668`;
+- protected movement on the shared CI manifest is path-disjoint from the scenario numerical owners; the scenario source files remain unique to this carrier;
+- proof-only integrated commit: `d90f4ed752fe936003eba4984b688d2158c7552d`;
+- proof tree: `3b84e4932a4164c2cc1e51558e694a0dd538c316`;
+- parents: current main + pre-PIT-hardening #7306 head `e2328d3e41ee1ded4433c72a1c9e4f3066f8958f`;
+- integrated owner pack: **88 passed / 0 failed**;
 - integrated compileall/diff check: pass.
 
 Compact red/green and owner-pack receipts live under:

@@ -1,6 +1,6 @@
 {
   "carrier": "macro#7306",
-  "current_main": "deb61b2751c2d4aa3a6819338c730989be731591",
+  "current_main": "91662480a1026d0e84fdf3d774ee9ea6d857e668",
   "findings_closed": [
     {
       "after": "GEX/VEX/CEX each expose all price-axis zero crossings per horizon",
@@ -15,10 +15,17 @@
       "green": "product-gaps-green.log",
       "id": "REAL_MID_OI_INPUT_SEAM",
       "red": "product-gaps-red.log"
+    },
+    {
+      "after": "OI vintage, when supplied, must be strictly prior to the observation ET date; solve_from_mid requires explicit iv_observed_at no later than market_observed_at",
+      "before": "same-day OI vintage was accepted and solve_from_mid could omit the IV observation clock",
+      "green": "pit-and-seams-green.log",
+      "id": "PIT_SOURCE_CLOCK_ORDERING",
+      "red_observed": "test_scenario_rejects_same_day_oi_and_unknown_iv_clock_for_mid_solve failed before repair: same-day OI DID NOT RAISE ValueError"
     }
   ],
-  "integrated_proof_commit": "7d7e2418251c2201cca5a5a294bfa2634d7fa9e4",
-  "integrated_proof_tree": "5cb89f3f421bf2ccbd35fc061e82c6b934673b9b",
+  "integrated_proof_commit": "d90f4ed752fe936003eba4984b688d2158c7552d",
+  "integrated_proof_tree": "3b84e4932a4164c2cc1e51558e694a0dd538c316",
   "non_claims": [
     "production deployment",
     "live freshness",
@@ -32,35 +39,40 @@
   "operation": "options-workbench-r2-scenario-surface-20260918-sol-001",
   "parent": "mastermind-terminal#603",
   "pre_hardening_head": "60ba087f7c476fa8b7a564dd191e0f83a004ec8a",
+  "pre_pit_head": "e2328d3e41ee1ded4433c72a1c9e4f3066f8958f",
   "release_gates": {
-    "exact_head_ci": "requires refresh after new head is pushed",
-    "independent_review": "requires refresh after new head is pushed",
+    "exact_head_ci": "requires refresh after the PIT-hardened head is pushed",
+    "independent_review": "requires refresh after the PIT-hardened head is pushed",
     "production_proof": "not attempted",
     "terminal_consumer": "not started in this carrier"
   },
   "schema": "mastermind.options_workbench.scenario_surface_r2_evidence.v1",
   "skillpack_sha": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
   "source_hashes": {
-    "engine/options_scenario_surface.py": "771bf5d86b340e4257bba635af915a5b4d0daf4e2489ae711131fb7969e69cfc",
-    "research/OPTIONS_WORKBENCH_SCENARIO_SURFACE_R2_2026-09-18.md": "bf92f7e9eab9d4dcc25815a8cc4ff27066c9cf11c18a7982c99173a3e7156c5d",
+    "engine/options_scenario_surface.py": "1038b4343eee38b302dda41a9d1580853ce52b7490aaadb6e13cdc18cb8f6e05",
+    "research/OPTIONS_WORKBENCH_SCENARIO_SURFACE_R2_2026-09-18.md": "32a369771160f23281526c731143be0c79cb4302df58623d10effa0edf9ea3db",
     "scripts/build_options_scenario_surface.py": "4c93c40dd2a0e93985c3ac2d611f023638d26e149dd45f02bffa5e53584a17a3",
-    "tests/test_options_scenario_surface.py": "5008d016d04243a06db856b3ee50e51c7821d5b4957fe832578e6624e092eec1"
+    "tests/test_options_scenario_surface.py": "9354fb31ba7ffcf6344f83b3c6f0ae76b79cd5c139c1a6df5e4baabd62ed0ee8"
   },
   "state": "BUILT_NOT_PROVEN",
   "verification": {
     "candidate_owner_pack": {
       "failed": 0,
-      "passed": 86
+      "passed": 88
     },
     "compileall_exit": 0,
     "diff_check_exit": 0,
+    "focused_pit_and_input_hardening": {
+      "failed": 0,
+      "passed": 4
+    },
     "focused_review_hardening": {
       "failed": 0,
       "passed": 3
     },
     "integrated_owner_pack": {
       "failed": 0,
-      "passed": 86
+      "passed": 88
     }
   }
 }

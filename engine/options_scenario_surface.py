@@ -9,8 +9,9 @@ deterministic time roll-forward, incumbent +call/-put dealer-sign assumption.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Iterable
+from zoneinfo import ZoneInfo
 
 import numpy as np
 
@@ -29,6 +30,7 @@ VOL_MAP_STICKY_STRIKE = "sticky_strike"
 IV_SOURCE_PROVIDED = "provided_iv"
 IV_SOURCE_MID_SOLVE = "solve_from_mid"
 MINUTES_PER_YEAR = 365.0 * 24.0 * 60.0
+ET = ZoneInfo("America/New_York")
 
 
 def _finite_positive(value: Any) -> float | None:
@@ -211,10 +213,24 @@ def build_scenario_surface(
     if r_clean is None or q_clean is None or mult_clean is None or pm_clean is None:
         raise ValueError("r/q must be finite and mult/pm must be positive finite values")
     r, q, mult, pm = r_clean, q_clean, mult_clean, pm_clean
+    observed_dt = datetime.fromisoformat(observed_at.replace("Z", "+00:00"))
     if iv_observed_at is not None:
         iv_observed_at = _require_aware_iso(iv_observed_at)
+        iv_dt = datetime.fromisoformat(iv_observed_at.replace("Z", "+00:00"))
+        if iv_dt > observed_dt:
+            raise ValueError("iv_observed_at cannot be after observed_at")
+    elif iv_source == IV_SOURCE_MID_SOLVE:
+        raise ValueError("iv_observed_at is required when iv_source='solve_from_mid'")
+
     oi_vintage = str(oi_vintage).strip() if oi_vintage is not None else None
     oi_vintage = oi_vintage or None
+    if oi_vintage is not None:
+        try:
+            oi_date = date.fromisoformat(oi_vintage)
+        except ValueError as exc:
+            raise ValueError("oi_vintage must be an ISO YYYY-MM-DD date") from exc
+        if oi_date >= observed_dt.astimezone(ET).date():
+            raise ValueError("oi_vintage must be strictly before the observation ET date")
     if max_dte_days is not None:
         max_dte_days = _finite_positive(max_dte_days)
         if max_dte_days is None:
