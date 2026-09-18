@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T09:37:34.096953+00:00",
-  "count": 2351,
+  "generated_at": "2026-09-18T10:07:46.416642+00:00",
+  "count": 2352,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-1jpcpn7srbs-044a4b",
+      "title": "JPM Euro inflation",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T09:03:48Z",
+      "summary_points": [
+        "Euro Inflation Drivers & Outlook: Headline inflation forecast at 3.9% Q4 2024 (energy-driven, limited core pass-through), core inflation at 2.5% next year; services (46.8% weight) at 3.03% persistently elevating core inflation.",
+        "ECB Core Inflation Revisions: Core inflation revised up 0.2% pts for 2024 (energy cost-push + wage effects), peaking at 2.7% Q1 2024; core inflation remains above ECB target (2.3% Q4 2024).",
+        "Energy Volatility as Critical Risk: Energy component exhibits extreme volatility (e.g., +17.4% Sep-26, -6.1% Dec-27), directly linked to geopolitical shocks (Russia-Ukraine) and supply disruptions, demanding tactical hedging for energy-intensive sectors.",
+        "Services Dominance & Sticky Core: Services inflation (3.03% Aug-26) is largest core component (46.8% weight), declining from peak but sustaining pressure; core inflation (72% weight) remains elevated despite energy moderation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-uwqa5olqdhw-a88553",
       "title": "JPM International Market Intelligence | Morning Briefing",
