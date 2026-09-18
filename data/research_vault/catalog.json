@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T03:52:06.227243+00:00",
-  "count": 2335,
+  "generated_at": "2026-09-18T04:22:16.348702+00:00",
+  "count": 2336,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -145,6 +145,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-oa1lmy1yp9x-6a09f1",
+      "title": "The 720 STE initiation, Global Macro & Strategy, Weichai Power, Hanwha Aerospace, China Beer Sector, JP Telcos, India's AI C...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:16:54Z",
+      "summary_points": [
+        "ST Engineering Initiation: Buy rating, 12m TP SGD13.20, 20% revenue CAGR driven by aerospace MRO expansion, defense penetration, margin growth to 11.5% by 2029, SGD1bn cost savings.",
+        "US Rate Outlook: Expect second 25bp Fed hike in October (3.75-4%), terminal rate 3.25-3.5%; neutral equities short-term (bond risks), overweight long-term on nominal GDP/earnings.",
+        "China CICC Post-Merger Catalysts: Consolidation of Dongxing & Cinda triples parent net capital (Rmb120bn), Rmb4.5bn capital injection for ROE expansion, dividend payout to 30% (vs 15% historical), resilient earnings via wealth management.",
+        "India AI Enablers Outperformance: 42 AI Enablers surged 60% YTD vs 12% Nifty decline, driven by 22% CY27 EPS growth, 65% capex growth (2026), 53%/39%/29% earnings growth (2026-2028), premium multiples justified."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
