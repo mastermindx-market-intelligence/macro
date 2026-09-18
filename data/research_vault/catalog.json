@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T08:52:32.952478+00:00",
-  "count": 2349,
+  "generated_at": "2026-09-18T09:22:35.546978+00:00",
+  "count": 2350,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-uwqa5olqdhw-a88553",
+      "title": "JPM International Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T09:01:53Z",
+      "summary_points": [
+        "BOJ Policy Shift & FX Impact: BOJ hiked 25bps with dovish split; JGBs lower, USDJPY breaks 157, tech equities rally; Japan risks on long-end if BOJ lags curve + fiscal noise.",
+        "EU-China Trade Tensions: EU demands China limit hybrid car exports to 15% (vs 1/3); Trump-Xi summit focuses on Tech/AI + critical minerals de-rating.",
+        "Oil Inventory Tightening: 2026 forecast shows declining global oil inventories (diverging from 2024/2025), signaling supply tightening and higher Brent prices.",
+        "UK-Eurozone Inflation Divergence: UK headline/core inflation consistently exceeds Euro area through 2027, implying tighter UK monetary policy vs Eurozone.",
+        "Gold ETF Flows as Hedge: Robust global gold ETF inflows (NA/Asia) despite higher rates signal persistent safe-haven demand amid rate volatility/geopolitics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-jkhzyolch1w-1d4b38",
       "title": "JPM Retail Radar Retail Blinks as Rates Swing Sept 16",
