@@ -4,7 +4,7 @@
     "event_versions": "bf205566bcceb3bd5b34991f8c38cceb05c956f867e31be18296ced2c4eddf37",
     "review_queue": "f35b01c37bcf1a55745f07df6bc020d8faefc3f4e4e5bf5ed0810279b0b417c7"
   },
-  "as_of": "2026-09-18T03:34:14.333208+00:00",
+  "as_of": "2026-09-18T14:48:52.243671+00:00",
   "authority": {
     "entry_authority": false,
     "is_context_only": true,
@@ -18,7 +18,7 @@
     "compile_failures": 0,
     "event_edges": 1856,
     "event_versions": 13472,
-    "new_event_versions": 540,
+    "new_event_versions": 0,
     "review_queue": 8728,
     "source_manifests": 41603
   },
@@ -124,7 +124,7 @@
       "PRE 14C"
     ]
   },
-  "generation_id": "generation:cs:fa29f7a8d8926cf51784c79e",
+  "generation_id": "generation:cs:26ebfb129968f6f875c1fe02",
   "known_exclusions": [
     "424B2",
     "424B6",
