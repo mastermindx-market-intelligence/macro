@@ -3934,3 +3934,6 @@
 {"date":"2026-09-18","ticker":"F","departed":true,"left_desk":"2026-09-18","last_rank":null,"last_score":19}
 {"date":"2026-09-18","ticker":"GOOGL","departed":true,"left_desk":"2026-09-18","last_rank":6,"last_score":53}
 {"date":"2026-09-18","ticker":"VST","departed":true,"left_desk":"2026-09-18","last_rank":null,"last_score":25}
+{"date":"2026-09-18","ticker":"GOOGL","rank":6,"score":52,"lean":1,"broken":false}
+{"date":"2026-09-18","ticker":"UNP","rank":20,"score":32,"lean":1,"broken":false}
+{"date":"2026-09-18","ticker":"USAR","rank":null,"score":16,"lean":1,"broken":true}

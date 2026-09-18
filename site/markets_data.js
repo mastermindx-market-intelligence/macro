@@ -6,7 +6,7 @@
 (function(){
   "use strict";
   window.MARKET_META = {
-  "asOf": "2026-09-17",
+  "asOf": "2026-09-18",
   "today": 2026.48,
   "xDomain": [
     2000,
@@ -541,11 +541,11 @@
       }
     ],
     "now": {
-      "level": 10776.78,
-      "asOf": "2026-09-17",
+      "level": 10685.73,
+      "asOf": "2026-09-18",
       "ath": 10910.6,
       "athDate": "2026-02",
-      "pctFromATH": -1.2,
+      "pctFromATH": -2.1,
       "ytd": 6,
       "ret1y": 20.5,
       "pos": 68,
@@ -736,11 +736,11 @@
       }
     ],
     "now": {
-      "level": 642.68,
-      "asOf": "2026-09-17",
+      "level": 636.04,
+      "asOf": "2026-09-18",
       "ath": 660.51,
       "athDate": "2026-08",
-      "pctFromATH": -2.7,
+      "pctFromATH": -3.7,
       "ytd": 7.4,
       "ret1y": 13,
       "pos": 78,
@@ -891,11 +891,11 @@
       }
     ],
     "now": {
-      "level": 64743.86,
+      "level": 65018.95,
       "asOf": "2026-09-18",
       "ath": 72366.34,
       "athDate": "2026-06",
-      "pctFromATH": -10.5,
+      "pctFromATH": -10.2,
       "ytd": 43.8,
       "ret1y": 85,
       "pos": 93,
@@ -1075,11 +1075,11 @@
       }
     ],
     "now": {
-      "level": 8748.6,
+      "level": 8731.2,
       "asOf": "2026-09-18",
       "ath": 9271.6,
       "athDate": "2026-08",
-      "pctFromATH": -5.6,
+      "pctFromATH": -5.8,
       "ytd": 1.3,
       "ret1y": 3.1,
       "pos": 80,
@@ -1220,11 +1220,11 @@
       }
     ],
     "now": {
-      "level": 46892.88,
+      "level": 47180.75,
       "asOf": "2026-09-18",
       "ath": 47741.51,
       "athDate": "2026-06",
-      "pctFromATH": -1.8,
+      "pctFromATH": -1.2,
       "ytd": 54.8,
       "ret1y": 98.5,
       "pos": 88,
@@ -1397,11 +1397,11 @@
       }
     ],
     "now": {
-      "level": 6853.84,
+      "level": 6894.23,
       "asOf": "2026-09-18",
       "ath": 9114.55,
       "athDate": "2026-06",
-      "pctFromATH": -24.8,
+      "pctFromATH": -24.4,
       "ytd": 62.5,
       "ret1y": 124.2,
       "pos": 97,
@@ -1590,11 +1590,11 @@
       }
     ],
     "now": {
-      "level": 23270.6,
-      "asOf": "2026-09-17",
+      "level": 23346.4,
+      "asOf": "2026-09-18",
       "ath": 26328.55,
       "athDate": "2026-01",
-      "pctFromATH": -11.6,
+      "pctFromATH": -11.3,
       "ytd": -7.9,
       "ret1y": -4.4,
       "pos": 48,

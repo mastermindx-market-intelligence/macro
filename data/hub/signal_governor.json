@@ -1,7 +1,7 @@
 {
   "schema": "signal_governor.v1",
   "as_of": "2026-09-18",
-  "generated_at": "2026-09-18T07:44:54.716140+00:00",
+  "generated_at": "2026-09-18T18:48:25.486976+00:00",
   "region": "us",
   "gate": {
     "min_n": 150,
@@ -17,13 +17,13 @@
   "signals": {
     "radar": {
       "signal": "radar",
-      "n_matured": 11892,
-      "ic": -0.0293,
-      "t_hac": -0.556,
+      "n_matured": 11933,
+      "ic": -0.0299,
+      "t_hac": -0.566,
       "horizon": "21",
       "demoted": false,
       "trust": 1.0,
-      "reason": "healthy: 21d IC=-0.029 not wrong-sign \u2014 trust 1.0",
+      "reason": "healthy: 21d IC=-0.030 not wrong-sign \u2014 trust 1.0",
       "input": {
         "source": "site/basketdata/radar_ic.json",
         "as_of": "2026-09-18",
@@ -33,9 +33,9 @@
     },
     "hub": {
       "signal": "hub",
-      "n_matured": 118173,
-      "ic": -0.0139,
-      "t_hac": -0.531,
+      "n_matured": 118732,
+      "ic": -0.0137,
+      "t_hac": -0.521,
       "horizon": "21",
       "demoted": false,
       "trust": 1.0,
