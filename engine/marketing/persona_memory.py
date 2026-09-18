@@ -715,6 +715,7 @@ def reconcile_publications(
         "publications_read": 0,
         "considered": 0,
         "recovered": 0,
+        "aged_out": 0,
         "unresolved": [],
         "sources": {},
         # SAY WHAT IS NOT COVERED, in the artifact itself. `phrases` is the
@@ -735,13 +736,14 @@ def reconcile_publications(
         "rows": len(pub_rows),
     }
     if not pub_rows:
-        # A missing receipt ledger is NOT proof that nothing published — it is
-        # proof that we cannot tell. Say which, so the caller can warn.
+        # A ledger we cannot read is NOT proof that nothing published — it is
+        # proof that we cannot tell, and those two must never print the same.
+        # An ABSENT ledger is a broken checkout or a missing restore; a PRESENT
+        # but empty one is a host that genuinely has no receipts yet.
         report["unavailable"] = (
-            "publication receipt ledger absent or empty"
-            if not pubs_path.exists() or not pub_rows
-            else ""
-        ) or None
+            "publication receipt ledger absent" if not pubs_path.exists()
+            else "publication receipt ledger present but empty"
+        )
         return {}, report
     report["publications_read"] = len(pub_rows)
 
@@ -765,6 +767,12 @@ def reconcile_publications(
         account = str(pub.get("account") or "").strip()
         asset_id = str(pub.get("asset_id") or "").strip()
         if not account or not asset_id:
+            # A LIVE receipt we cannot even address. Something published and we
+            # cannot say what or for whom — the one thing this repair exists to
+            # stop being silent. Reported without an account, since that is
+            # precisely the field that is missing.
+            report["unresolved"].append(
+                {"asset_id": asset_id, "account": account, "reason": "malformed_receipt"})
             continue
         if want is not None and account not in want:
             continue
@@ -844,7 +852,12 @@ def reconcile_publications(
             source="reconciled",
         )
         if rec["date"] < cutoff:
-            continue  # outside the tracked ledger's own retention horizon
+            # Outside the tracked ledger's own retention horizon — the
+            # consolidator would drop it on the next line anyway. Counted, so
+            # `considered` still equals recovered + unresolved + aged_out and a
+            # reader is never left wondering where the difference went.
+            report["aged_out"] = int(report.get("aged_out", 0)) + 1
+            continue
         out.setdefault(account, []).append(rec)
         report["recovered"] += 1
 

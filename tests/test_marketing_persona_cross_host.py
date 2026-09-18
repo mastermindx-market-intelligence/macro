@@ -675,3 +675,59 @@ def test_non_dict_ledger_rows_are_skipped(fleet):
     fleet.consolidate("mac")
 
     assert len(fleet.phrases("mac", GOVERNED)) == 1
+
+
+def test_a_malformed_receipt_is_reported_not_skipped(fleet, capsys):
+    """A LIVE receipt we cannot even address is the archetype of silent loss.
+
+    Something published and we cannot say what or for whom. Dropping it quietly
+    is the exact behaviour this repair exists to remove.
+    """
+    fleet.publish("vps", GOVERNED, "Breadth is the tell.", item_id="ob-1")
+    fleet.commit_back()
+    p = fleet.root("mac") / "data/marketing/publications.jsonl"
+    rows = [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
+    rows[0]["asset_id"] = ""
+    p.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows), encoding="utf-8")
+
+    summary = fleet.consolidate("mac")
+
+    assert [u["reason"] for u in summary["reconciliation"]["unresolved"]] == ["malformed_receipt"]
+    assert "malformed_receipt" in capsys.readouterr().out
+
+
+def test_the_report_arithmetic_reconciles(fleet):
+    """`considered` must equal recovered + aged_out + the unresolved it counted.
+
+    A report whose numbers do not add up sends a reader hunting for a loss that
+    is really an accounting gap — or worse, lets a real one hide in the slack.
+    """
+    old = NOW - timedelta(days=pm.RETENTION_DAYS + 5)
+    fleet.publish("vps", GOVERNED, "A current take.", item_id="ob-new")
+    fleet.publish("vps", GOVERNED, "An ancient take.", item_id="ob-old",
+                  as_of=old.strftime("%Y-%m-%d"),
+                  published_at=old.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    fleet.publish("vps", GOVERNED, "An unjoinable take.", item_id="ob-gone")
+    fleet.commit_back()
+    # Drop one item so its publication cannot be resolved.
+    p = fleet.root("mac") / "data/marketing/outbox/items.jsonl"
+    keep = [json.loads(x) for x in p.read_text(encoding="utf-8").splitlines() if x.strip()]
+    keep = [r for r in keep if r["id"] != "ob-gone"]
+    p.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in keep), encoding="utf-8")
+
+    recon = fleet.consolidate("mac")["reconciliation"]
+
+    counted = len([u for u in recon["unresolved"] if u["reason"] != "malformed_receipt"])
+    assert recon["considered"] == recon["recovered"] + recon["aged_out"] + counted, recon
+    assert recon["recovered"] == 1 and recon["aged_out"] == 1 and counted == 1
+
+
+def test_an_absent_ledger_and_an_empty_one_do_not_print_the_same(fleet):
+    """'we cannot tell' and 'nothing published' are different facts."""
+    (fleet.root("mac") / "data/marketing/publications.jsonl").unlink(missing_ok=True)
+    absent = fleet.consolidate("mac")["reconciliation"]["unavailable"]
+
+    (fleet.root("mac") / "data/marketing/publications.jsonl").write_text("", encoding="utf-8")
+    empty = fleet.consolidate("mac")["reconciliation"]["unavailable"]
+
+    assert absent and empty and absent != empty, (absent, empty)
