@@ -542,5 +542,5 @@ def test_sparse_prophet_owner_grids_return_to_full_width_on_mobile():
         match = next((candidate for candidate in matches if candidate), None)
         assert match, f"680px blocks lost the mobile owner-grid reset for {selector}"
         declarations = re.sub(r"\s+", "", match.group(1))
-        assert "grid-template-columns:1fr" in declarations
+        assert "grid-template-columns:1fr!important" in declarations
         assert "justify-content:stretch" in declarations

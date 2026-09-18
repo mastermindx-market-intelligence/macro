@@ -771,7 +771,7 @@ html[data-theme=light] .mx-stockdash--ca .ca-v36-modal .ca-v36-modal-x:hover {
   html[data-theme=light] .mx-stockdash--ca .ca-v36-an-lane:nth-child(n+3) { border-top: 0; }
   .mx-stockdash--ca .ca-v36-card-grid { grid-template-columns: 1fr; padding: 10px; gap: 10px; }
   .mx-stockdash--ca .ca-v36-card-grid #standouts .cards {
-    grid-template-columns: 1fr; justify-content: stretch;
+    grid-template-columns: 1fr !important; justify-content: stretch;
   }
   .mx-stockdash--ca .ca-v36-card-grid .pv-tk { font-size: 16.3px !important; }
   .mx-stockdash--ca .ca-v36-card-grid .nb-px.pv-px { font-size: 15.5px !important; }
@@ -1182,7 +1182,7 @@ html[data-theme=light] .mx-stockdash--hk .hk-v37-modal-sb { background: var(--pa
   html[data-theme=light] .mx-stockdash--hk .hk-v37-an-lane + .hk-v37-an-lane { border-left: 0; }
   .mx-stockdash--hk .hk-v37-card-grid { padding: 10px; }
   .mx-stockdash--hk .hk-v37-card-grid #standouts .nbgrid {
-    grid-template-columns: 1fr; justify-content: stretch;
+    grid-template-columns: 1fr !important; justify-content: stretch;
   }
   .mx-stockdash--hk .hk-v37-lead-row { grid-template-columns: 48px minmax(0, 1fr) auto; }
   .mx-stockdash--hk .hk-v37-count { display: none; }
