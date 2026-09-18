@@ -402,6 +402,7 @@
     var state={view:'matrix',metric:'strict_trend_200',category:'all',query:'',x:'strict_trend_50',y:'strict_trend_200',size:'constant'};
     var model=null;
     function L(en,zh){return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>';}
+    function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
     function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
     function pct(v){return v==null?'—':(v*100).toFixed(1)+'%';}
     function metricLabel(id){var m=METRICS.find(function(x){return x[0]===id;});return m||[id,id,id];}
@@ -428,10 +429,10 @@
       return '<a class="hta-card" href="basket/'+encodeURIComponent(g.id)+'.html"><div class="hta-card-top"><span class="hta-card-name">'+L(esc(g.name),esc(g.name_zh))+'</span><span class="hta-val">'+pct(m.value)+'</span></div><div class="hta-bar"><i style="width:'+w+'%"></i></div><div class="hta-meta">'+m.denominator+' / '+g.member_count+' '+L('members measured','成员有观测')+'</div></a>';
     }
     function byCategory(rows){var out={};rows.forEach(function(g){(out[g.category]||(out[g.category]=[])).push(g);});Object.keys(out).forEach(function(k){out[k].sort(function(a,b){return a.name.localeCompare(b.name);});});return out;}
-    function renderMatrix(rows){var cats=byCategory(rows), keys=Object.keys(cats).sort();stage.innerHTML=keys.map(function(k){return '<section class="hta-cat"><h3 class="hta-cat-h">'+esc(k)+' <b>'+cats[k].length+'</b></h3><div class="hta-matrix">'+cats[k].map(card).join('')+'</div></section>';}).join('')||empty();}
+    function renderMatrix(rows){var cats=byCategory(rows), keys=Object.keys(cats).sort();stage.innerHTML=keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cat"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-matrix">'+cats[k].map(card).join('')+'</div></section>';}).join('')||empty();}
     function renderClusters(rows){
       var cats=byCategory(rows), keys=Object.keys(cats).sort();
-      stage.innerHTML='<div class="hta-clusters">'+keys.map(function(k){return '<section class="hta-cluster"><h3 class="hta-cat-h">'+esc(k)+' <b>'+cats[k].length+'</b></h3><div class="hta-cluster-body">'+cats[k].map(function(g){var m=g.metrics[state.metric];return '<a class="hta-dot" style="'+colorStyle(m.value)+'" title="'+esc(g.name)+' · '+pct(m.value)+' · '+g.member_count+' members" href="basket/'+encodeURIComponent(g.id)+'.html">'+esc(g.name.replace(/&/g,'& ').split(/\s+/).slice(0,2).join(' '))+'</a>';}).join('')+'</div></section>';}).join('')+'</div>';
+      stage.innerHTML='<div class="hta-clusters">'+keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cluster"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-cluster-body">'+cats[k].map(function(g){var m=g.metrics[state.metric],nm=isZh()?g.name_zh:g.name;return '<a class="hta-dot" style="'+colorStyle(m.value)+'" title="'+esc(nm)+' · '+pct(m.value)+' · '+g.member_count+' members" href="basket/'+encodeURIComponent(g.id)+'.html">'+esc(nm.replace(/&/g,'& ').split(/\s+/).slice(0,2).join(' '))+'</a>';}).join('')+'</div></section>';}).join('')+'</div>';
     }
     function bubbleRadius(g){return state.size==='members'?Math.max(7,Math.min(23,5+Math.sqrt(Math.max(1,g.member_count))*2.2)):10;}
     function renderBubbles(rows){
@@ -439,8 +440,8 @@
       var W=1000,H=520,LFT=62,RGT=22,TOP=24,BOT=58,PW=W-LFT-RGT,PH=H-TOP-BOT;
       var grid='';[0,.25,.5,.75,1].forEach(function(v){var x=LFT+v*PW,y=TOP+(1-v)*PH;grid+='<line class="hta-grid" x1="'+x+'" y1="'+TOP+'" x2="'+x+'" y2="'+(TOP+PH)+'"></line><line class="hta-grid" x1="'+LFT+'" y1="'+y+'" x2="'+(LFT+PW)+'" y2="'+y+'"></line><text class="hta-axis-label" x="'+x+'" y="'+(H-30)+'" text-anchor="middle">'+Math.round(v*100)+'%</text><text class="hta-axis-label" x="48" y="'+(y+4)+'" text-anchor="end">'+Math.round(v*100)+'%</text>';});
       var dots=plotted.map(function(p){var x=LFT+p.x*PW,y=TOP+(1-p.y)*PH,r=bubbleRadius(p.g),cm=p.g.metrics[state.metric].value;return '<a href="basket/'+encodeURIComponent(p.g.id)+'.html"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="'+colorStyle(cm)+';stroke:color-mix(in srgb,var(--text) 30%,transparent);stroke-width:1"><title>'+esc(p.g.name)+' · X '+pct(p.x)+' · Y '+pct(p.y)+'</title></circle><text class="hta-bubble-label" x="'+x+'" y="'+(y+3)+'" text-anchor="middle">'+esc(p.g.id.slice(0,9))+'</text></a>';}).join('');
-      var xl=metricLabel(state.x),yl=metricLabel(state.y);
-      stage.innerHTML='<div class="hta-bubble-wrap"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Theme breadth bubble plot">'+grid+'<line class="hta-axis" x1="'+LFT+'" y1="'+(TOP+PH)+'" x2="'+(LFT+PW)+'" y2="'+(TOP+PH)+'"></line><line class="hta-axis" x1="'+LFT+'" y1="'+TOP+'" x2="'+LFT+'" y2="'+(TOP+PH)+'"></line>'+dots+'<text class="hta-axis-label" x="'+(LFT+PW/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(xl[1])+'</text><text class="hta-axis-label" transform="translate(16 '+(TOP+PH/2)+') rotate(-90)" text-anchor="middle">'+esc(yl[1])+'</text></svg></div><div class="hta-missing">'+missing.length+' '+L('visible groups withheld from the plot because an axis value is unavailable; they remain in Matrix and Table.','个当前显示组因坐标值不可用而未绘制；它们仍保留在矩阵和表格中。')+'</div>';
+      var xl=metricLabel(state.x),yl=metricLabel(state.y),xName=isZh()?xl[2]:xl[1],yName=isZh()?yl[2]:yl[1];
+      stage.innerHTML='<div class="hta-bubble-wrap"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Theme breadth bubble plot">'+grid+'<line class="hta-axis" x1="'+LFT+'" y1="'+(TOP+PH)+'" x2="'+(LFT+PW)+'" y2="'+(TOP+PH)+'"></line><line class="hta-axis" x1="'+LFT+'" y1="'+TOP+'" x2="'+LFT+'" y2="'+(TOP+PH)+'"></line>'+dots+'<text class="hta-axis-label" x="'+(LFT+PW/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(xName)+'</text><text class="hta-axis-label" transform="translate(16 '+(TOP+PH/2)+') rotate(-90)" text-anchor="middle">'+esc(yName)+'</text></svg></div><div class="hta-missing">'+missing.length+' '+L('visible groups withheld from the plot because an axis value is unavailable; they remain in Matrix and Table.','个当前显示组因坐标值不可用而未绘制；它们仍保留在矩阵和表格中。')+'</div>';
     }
     function renderTable(rows){
       stage.innerHTML='<div class="hta-table-wrap"><table class="hta-table"><thead><tr><th>'+L('Group','组别')+'</th><th>'+L('Category','分类')+'</th><th>'+L('Members','成员')+'</th>'+METRICS.map(function(m){return '<th>'+L(m[1],m[2])+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(g){return '<tr><td><a href="basket/'+encodeURIComponent(g.id)+'.html">'+L(esc(g.name),esc(g.name_zh))+'</a></td><td>'+esc(g.category)+'</td><td>'+g.member_count+'</td>'+METRICS.map(function(m){var v=g.metrics[m[0]];return '<td>'+pct(v.value)+' <span class="hta-meta">('+v.denominator+'/'+g.member_count+')</span></td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
@@ -466,6 +467,7 @@
       model=normalize(all[0],all[1]);fillControls();status.hidden=true;controls.hidden=false;scope.hidden=false;
       receipt.innerHTML=L('P1 observation','P1 观测')+' <b>'+esc(model.as_of||'—')+'</b><br>'+L('projection','投影')+' <code>'+esc((model.digest||'—').slice(0,16))+'</code>';
       render();
+      document.addEventListener('langchange',function(){fillControls();render();});
     }).catch(function(err){
       status.classList.add('err');status.innerHTML=L('Theme Atlas withheld: the required source-bound evidence family is unavailable for this generation.','主题全景图已暂停：本次生成缺少所需的来源约束证据。')+' <code>'+esc(err.message||err)+'</code>';
       if(window.console)console.warn('house theme atlas withheld',err);
