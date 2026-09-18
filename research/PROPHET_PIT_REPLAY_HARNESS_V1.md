@@ -263,3 +263,19 @@ the instruction to run `--verify-collisions` immediately before merge.
   DEC-preserved).
 - No workflow/lane changes beyond the three absorb hooks; the harness is
   operator/session-run, never scheduled.
+
+## Source-correctness amendment: sparse inputs and observed board production (2026-09-16)
+
+This refines the existing input preparation, builder cache and receipt owners. It does not create another replay, clock, ledger or admission system, authorize an additional backfill, or qualify any strategy for trading authority.
+
+A local omission is not proof that history was unavailable. For both declared ticker files and declared wide panels, missing files tracked by the pinned historical revision are restored from that revision before applying later-session overlays. Historical values and columns remain authoritative; later-only names do not enter by sparse-checkout substitution. Required tracked historical blobs that cannot be read or decoded refuse rather than fall back to later revisions. Genuinely untracked auxiliary panels retain their existing explicit substitution/constituents-diff disclosure. Both passes' restoration provenance travels in the existing harness receipt.
+
+A successful child process plus an existing correctly dated board is not proof of a rebuild. `build_board` leaves the historical board available for legitimate input reads, then requires an observed output-file write before accepting fresh production. A changed content hash or file-write metadata can witness a write, including an identical-content rewrite. This is an accidental-no-op detector, not proof that every calculation was correct or an adversarially trustworthy attestation.
+
+The existing board cache carries a companion `.buildproof.json` with schema `pit_replay.board_build_proof/v1`, output hash, before/after file witnesses, actual observation time and declared build binding. Reuse requires matching price fingerprint, historical source revision, vintage path, command digest, applied-environment-pin digest and output bytes. Missing source/price identity, bare legacy caches, invalid proof, changed bindings and modified cached output require a fresh build. Original inputs are never removed merely to force apparent production. Interrupted cache/proof writes cannot earn a cache hit unless the completed pair matches.
+
+The existing final receipt adds `board_builds` for control and replay. Each completed build observation says `fresh` or `cache` and includes its originating write witness. A cache hit means reuse of an earlier witnessed output, not execution of a new builder. An absent observation remains absent/empty, never inferred from fidelity. The existing fidelity floor, source stamps, chronology, mint and absorb rules remain unchanged.
+
+These bindings do not establish complete nonprice-input closure, runtime dependency parity, historical execution-time correctness, or publication/knowledge-time eligibility. In particular, the MACD study's held historical control is not cleared by this amendment. Its original cache bodies and relevant per-build state still require independent qualification, and the separately blocked inspections remain blocked.
+
+Historical source precedence also applies across passes: when control-time truncation removes rows that were already in the pinned vintage, the replay restores those rows from that vintage before taking a genuinely later tail. A later correction or deletion is not authority to replace/erase the truncated historical rows. This uses the same pinned-input helper and existing `restored_vintage_inputs`/per-file provenance fields; the final receipt distinguishes missing-file restoration from historical-tail restoration. Previously present unreadable local files retain their existing disclosed handling; this amendment does not claim complete input validity or a new all-files refusal policy.

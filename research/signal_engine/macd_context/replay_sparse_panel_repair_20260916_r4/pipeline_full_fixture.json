@@ -1,0 +1,272 @@
+{
+  "kind": "SYNTHETIC_TWO_PASS_PIPELINE_PROOF",
+  "sparse_fixture": false,
+  "scope": "temporary Git data and real builder subprocess; no real market control",
+  "owner_sha256": "797d3cd22f68895d0bbba70bba1ca12644aa566cf8b848d61af77ffd3de23d05",
+  "first_harness_receipt": {
+    "schema": "pit_replay.receipt/v1",
+    "authority": "DEC:FORCE-MAJEURE-SESSIONS-ARE-BACKFILLED-BY-DEFAULT",
+    "masterplan": "research/PROPHET_PIT_REPLAY_HARNESS_V1.md",
+    "market": "us",
+    "session": "2026-07-16",
+    "dry_run": true,
+    "bake_slot_utc": "2026-07-16T22:30:00Z",
+    "vintage_sha": "bdae5a217b9a44a07774f6e1c63ad32def343428",
+    "vintage_committed_utc": "2026-07-16T21:00:00Z",
+    "vintage_ancestry": "fixture",
+    "live_price_source_commit": "c787a4fbddc83e6664f7ae1ef7975204d02cd065",
+    "overlay_totals": {
+      "written": 1,
+      "sessions_added": 2,
+      "unchanged": 0
+    },
+    "overlay_files": {
+      "data/test_panel/closes.parquet": {
+        "added_sessions": 2,
+        "added": [
+          "2026-07-15",
+          "2026-07-16"
+        ],
+        "substituted": false,
+        "dropped_columns": [
+          "NEW"
+        ],
+        "note": "vintage rows kept byte-for-byte; only missing sessions appended"
+      }
+    },
+    "restored_vintage_inputs": {
+      "control": {},
+      "replay": {}
+    },
+    "skipped_identical": {},
+    "aux_panel_source": null,
+    "fence": {
+      "files_scanned": 1,
+      "ceiling": "2026-07-16",
+      "max_date_found": "2026-07-16",
+      "violations": 0,
+      "state_digest": "14f03bb920fe",
+      "state_digest_kind": "price-path-endpoint-and-bytes-sha256/v1",
+      "unscannable": [],
+      "unscannable_count": 0,
+      "pass_ceiling": "2026-07-16",
+      "ahead_of_pass": [],
+      "ahead_of_pass_count": 0,
+      "ahead_of_pass_note": "round-the-clock instruments (FX crosses, crypto) whose bar for a later calendar date already existed in the pinned vintage at bake time. Not lookahead \u2014 the bake read exactly these \u2014 and never equities."
+    },
+    "control_through": "2026-07-14",
+    "harness_fidelity": {
+      "reference_as_of": "2026-07-14",
+      "reference_rank_by": "fixture",
+      "reference_buy_rows": 2,
+      "rebuilt_buy_rows": 2,
+      "jaccard": 1.0,
+      "exact_order_match": true,
+      "missing_from_rebuild": [],
+      "extra_in_rebuild": [],
+      "floor": 0.85,
+      "passes_floor": true,
+      "measured": true,
+      "method": "the same tree, alpha rebuild (where applicable) and builder, run at the vintage's own committed session and scored against the board that vintage already ships",
+      "reference_sha256": "49fb810487ec6e843c3824d6f37a2f89358c701c53f8c160563eff907acb1e61",
+      "waived": false
+    },
+    "board_identity": {
+      "sha256": "ef59a5b7b1a8ee2032f41ac1f0981f8fe5f659e708117fbf48cbfc87abe75576",
+      "as_of": "2026-07-16",
+      "rank_by": "fixture",
+      "board_definition": "fixture",
+      "price_through": "",
+      "required_rank_by": "fixture",
+      "required_definition": "fixture",
+      "size_bytes": 163,
+      "buy_rows": 1,
+      "panel": {},
+      "synthetic": true,
+      "synthetic_note": "No as_of=2026-07-16 board is published to site/factordata; this one was rebuilt inside a pinned vintage worktree from a price store truncated at the 2026-07-16 close and is deliberately NOT published."
+    },
+    "board_builds": {
+      "control": {
+        "mode": "fresh",
+        "proof": {
+          "schema": "pit_replay.board_build_proof/v1",
+          "binding": {
+            "through": "2026-07-14",
+            "board_relpath": "site/factordata/test-board.json",
+            "vintage_root": "/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-final/test_wide_panel_real_builder_p0/vintage",
+            "vintage_sha": "bdae5a217b9a44a07774f6e1c63ad32def343428",
+            "price_fingerprint": "02f8614d4ec0",
+            "command_sha256": "b4c22831ef6e143e96287c1d2bd97aebfca5f222a7e7be7c6ee88352f4999fd7",
+            "env_pins_sha256": "c5b4e1225d57147c23ca08cae5f0e986d0a90dcbc28b2c37ebd5f34fe21e753f"
+          },
+          "before": {
+            "device": 16777257,
+            "inode": 81098379,
+            "size": 127,
+            "mtime_ns": 1789598511564374917,
+            "ctime_ns": 1789598511564374917,
+            "sha256": "49fb810487ec6e843c3824d6f37a2f89358c701c53f8c160563eff907acb1e61"
+          },
+          "after": {
+            "device": 16777257,
+            "inode": 81098379,
+            "size": 186,
+            "mtime_ns": 1789598513680337473,
+            "ctime_ns": 1789598513680337473,
+            "sha256": "d7164206e6a1c97dc327d9b9d7245767ab87baf16b4016d25cf948a0471d984f"
+          },
+          "output_sha256": "d7164206e6a1c97dc327d9b9d7245767ab87baf16b4016d25cf948a0471d984f",
+          "executed_at": "2026-09-16T22:41:53.777707+00:00",
+          "scope": "output-write witness; complete input/clock closure unverified"
+        }
+      },
+      "replay": {
+        "mode": "fresh",
+        "proof": {
+          "schema": "pit_replay.board_build_proof/v1",
+          "binding": {
+            "through": "2026-07-16",
+            "board_relpath": "site/factordata/test-board.json",
+            "vintage_root": "/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-final/test_wide_panel_real_builder_p0/vintage",
+            "vintage_sha": "bdae5a217b9a44a07774f6e1c63ad32def343428",
+            "price_fingerprint": "14f03bb920fe",
+            "command_sha256": "b4c22831ef6e143e96287c1d2bd97aebfca5f222a7e7be7c6ee88352f4999fd7",
+            "env_pins_sha256": "c5b4e1225d57147c23ca08cae5f0e986d0a90dcbc28b2c37ebd5f34fe21e753f"
+          },
+          "before": {
+            "device": 16777257,
+            "inode": 81098397,
+            "size": 127,
+            "mtime_ns": 1789598513949097462,
+            "ctime_ns": 1789598513949097462,
+            "sha256": "49fb810487ec6e843c3824d6f37a2f89358c701c53f8c160563eff907acb1e61"
+          },
+          "after": {
+            "device": 16777257,
+            "inode": 81098397,
+            "size": 163,
+            "mtime_ns": 1789598514979573711,
+            "ctime_ns": 1789598514979573711,
+            "sha256": "ef59a5b7b1a8ee2032f41ac1f0981f8fe5f659e708117fbf48cbfc87abe75576"
+          },
+          "output_sha256": "ef59a5b7b1a8ee2032f41ac1f0981f8fe5f659e708117fbf48cbfc87abe75576",
+          "executed_at": "2026-09-16T22:41:55.086086+00:00",
+          "scope": "output-write witness; complete input/clock closure unverified"
+        }
+      }
+    },
+    "counts": {},
+    "reconciliation": {},
+    "wall_clock_exposure": null,
+    "snapshot_capture": null,
+    "ledger_capture": null,
+    "env_pins": {
+      "HTTP_PROXY": "http://127.0.0.1:9",
+      "HTTPS_PROXY": "http://127.0.0.1:9",
+      "ALL_PROXY": "http://127.0.0.1:9",
+      "NO_PROXY": "",
+      "no_proxy": "",
+      "PYTHONUNBUFFERED": "1"
+    },
+    "residual_network": [],
+    "pinned_stores": {
+      "registry": {
+        "dirs": [],
+        "exempt_files": []
+      },
+      "checks": []
+    },
+    "executed_at": "2026-07-17T00:00:00Z",
+    "executing_commit": "bdae5a217b9a44a07774f6e1c63ad32def343428",
+    "plans_baseline": {
+      "commit": null,
+      "ancestry": null,
+      "plan_count": null
+    },
+    "disposition_proof": {
+      "schema": "pit_replay.us_disposition_proof/v1",
+      "rows": [],
+      "row_count": 0,
+      "counts": {
+        "duplicate_id_blocked": 0,
+        "minted": 0,
+        "collided": 0,
+        "chronology_refused": 0,
+        "still_refused": 0
+      },
+      "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  },
+  "repeat_board_builds": {
+    "control": {
+      "mode": "cache",
+      "proof": {
+        "after": {
+          "ctime_ns": 1789598513680337473,
+          "device": 16777257,
+          "inode": 81098379,
+          "mtime_ns": 1789598513680337473,
+          "sha256": "d7164206e6a1c97dc327d9b9d7245767ab87baf16b4016d25cf948a0471d984f",
+          "size": 186
+        },
+        "before": {
+          "ctime_ns": 1789598511564374917,
+          "device": 16777257,
+          "inode": 81098379,
+          "mtime_ns": 1789598511564374917,
+          "sha256": "49fb810487ec6e843c3824d6f37a2f89358c701c53f8c160563eff907acb1e61",
+          "size": 127
+        },
+        "binding": {
+          "board_relpath": "site/factordata/test-board.json",
+          "command_sha256": "b4c22831ef6e143e96287c1d2bd97aebfca5f222a7e7be7c6ee88352f4999fd7",
+          "env_pins_sha256": "c5b4e1225d57147c23ca08cae5f0e986d0a90dcbc28b2c37ebd5f34fe21e753f",
+          "price_fingerprint": "02f8614d4ec0",
+          "through": "2026-07-14",
+          "vintage_root": "/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-final/test_wide_panel_real_builder_p0/vintage",
+          "vintage_sha": "bdae5a217b9a44a07774f6e1c63ad32def343428"
+        },
+        "executed_at": "2026-09-16T22:41:53.777707+00:00",
+        "output_sha256": "d7164206e6a1c97dc327d9b9d7245767ab87baf16b4016d25cf948a0471d984f",
+        "schema": "pit_replay.board_build_proof/v1",
+        "scope": "output-write witness; complete input/clock closure unverified"
+      }
+    },
+    "replay": {
+      "mode": "cache",
+      "proof": {
+        "after": {
+          "ctime_ns": 1789598514979573711,
+          "device": 16777257,
+          "inode": 81098397,
+          "mtime_ns": 1789598514979573711,
+          "sha256": "ef59a5b7b1a8ee2032f41ac1f0981f8fe5f659e708117fbf48cbfc87abe75576",
+          "size": 163
+        },
+        "before": {
+          "ctime_ns": 1789598513949097462,
+          "device": 16777257,
+          "inode": 81098397,
+          "mtime_ns": 1789598513949097462,
+          "sha256": "49fb810487ec6e843c3824d6f37a2f89358c701c53f8c160563eff907acb1e61",
+          "size": 127
+        },
+        "binding": {
+          "board_relpath": "site/factordata/test-board.json",
+          "command_sha256": "b4c22831ef6e143e96287c1d2bd97aebfca5f222a7e7be7c6ee88352f4999fd7",
+          "env_pins_sha256": "c5b4e1225d57147c23ca08cae5f0e986d0a90dcbc28b2c37ebd5f34fe21e753f",
+          "price_fingerprint": "14f03bb920fe",
+          "through": "2026-07-16",
+          "vintage_root": "/Volumes/Mastermind/Mastermind/artifacts/macd-context-first-look-20260915-c3/cycle_extension_v2/replay_sparse_panel_repair_20260916_r4/pytest-final/test_wide_panel_real_builder_p0/vintage",
+          "vintage_sha": "bdae5a217b9a44a07774f6e1c63ad32def343428"
+        },
+        "executed_at": "2026-09-16T22:41:55.086086+00:00",
+        "output_sha256": "ef59a5b7b1a8ee2032f41ac1f0981f8fe5f659e708117fbf48cbfc87abe75576",
+        "schema": "pit_replay.board_build_proof/v1",
+        "scope": "output-write witness; complete input/clock closure unverified"
+      }
+    }
+  },
+  "repeat_output_matches": true,
+  "source_panel_untouched": true
+}

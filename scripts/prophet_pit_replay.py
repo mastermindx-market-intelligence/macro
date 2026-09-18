@@ -480,7 +480,12 @@ def fence_no_bar_after(tree: Path, through: str, surface: PriceSurface,
         nonlocal scanned, latest
         scanned += 1
         try:
-            frame = pd.read_parquet(path)
+            raw = path.read_bytes()
+            # Endpoints alone cannot distinguish corrected prices, changed history,
+            # or two different panels ending on the same session. Hash before parsing
+            # so a repaired empty/corrupt file also invalidates the cached board.
+            state.append((relative, hashlib.sha256(raw).hexdigest()))
+            frame = pd.read_parquet(io.BytesIO(raw))
             index = _fence_index(frame)
         except Exception:  # noqa: BLE001 - unreadable is the builder's problem
             return
@@ -519,6 +524,7 @@ def fence_no_bar_after(tree: Path, through: str, surface: PriceSurface,
         "files_scanned": scanned, "ceiling": through, "max_date_found": latest,
         "violations": 0,
         "state_digest": _canonical_sha256(sorted(state))[:12],
+        "state_digest_kind": "price-path-endpoint-and-bytes-sha256/v1",
         "unscannable": sorted(unscannable),
         "unscannable_count": len(unscannable),
         "pass_ceiling": str(pass_ceiling)[:10],
@@ -648,10 +654,20 @@ def prepare_reconstruction_tree(
         "live_price_source_commit": live_sha,
         "vintage_commit": vintage_commit,
         "files": {},
+        "restored_vintage_inputs": {},
         "totals": {"written": 0, "sessions_added": 0, "unchanged": 0},
     }
 
     def _record(relative: str, provenance: dict[str, Any]) -> None:
+        previous = manifest["files"].get(relative)
+        if previous is not None:
+            count = int(previous.get("added_sessions") or 0)
+            manifest["totals"]["written" if count else "unchanged"] -= 1
+            manifest["totals"]["sessions_added"] -= count
+            dates = sorted(set(previous.get("added") or [])
+                           | set(provenance.get("added") or []))
+            provenance = {**previous, **provenance,
+                          "added": dates, "added_sessions": len(dates)}
         manifest["files"][relative] = provenance
         if provenance.get("added_sessions"):
             manifest["totals"]["written"] += 1
@@ -659,17 +675,101 @@ def prepare_reconstruction_tree(
         else:
             manifest["totals"]["unchanged"] += 1
 
+    def _restore_inputs(relatives: list[str]) -> None:
+        pinned = batch_blobs(repo, vintage_commit, relatives)
+        unavailable = sorted(set(relatives) - set(pinned))
+        if unavailable:
+            raise PitReplayRefused(
+                "missing historical price blobs: " + ", ".join(unavailable[:8]))
+        for rel in relatives:
+            path = vintage / rel
+            try:
+                restored = truncate_frame(_read_parquet_bytes(pinned[rel]), through)
+            except Exception as exc:  # noqa: BLE001 - never replace with later history
+                raise PitReplayRefused(
+                    f"cannot restore historical price input {rel}: {exc}") from exc
+            tail_provenance = None
+            if path.exists():
+                existing = pd.read_parquet(path)
+                restored, tail_provenance = overlay_sessions(existing, restored, through)
+                if not tail_provenance.get("added_sessions"):
+                    continue
+                tail_provenance.update(
+                    substituted=False,
+                    note="missing historical sessions restored from pinned vintage")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            _atomic_parquet(restored, path)
+            restoration = {
+                "source_commit": vintage_commit,
+                "source_sha256": hashlib.sha256(pinned[rel]).hexdigest(),
+                "through": through, "rows": len(restored),
+                "kind": "historical_tail" if tail_provenance else "missing_file",
+            }
+            if tail_provenance:
+                restoration["restored_sessions"] = tail_provenance["added"]
+                _record(rel, {**tail_provenance, "historical_tail": restoration})
+            manifest["restored_vintage_inputs"][rel] = restoration
+
+    def _needs_historical_tail(path: Path) -> bool:
+        # Control-time truncation can remove rows already present in the pinned
+        # source. Restore those before a later revision supplies any missing tail.
+        # A later deletion likewise cannot erase the historical source's own rows.
+        try:
+            index = _fence_index(pd.read_parquet(path))
+            if index is None:
+                return False
+            if not len(index):
+                return True
+            ceiling = pd.Timestamp(through)
+            top = index.max()
+            if getattr(top, "tz", None) is not None:
+                ceiling = ceiling.tz_localize(top.tz)
+            return bool(top < ceiling)
+        except Exception:  # noqa: BLE001 - preserve existing unreadable-file handling
+            return False
+
     for relative, pattern in surface.ticker_stores:
         directory = vintage / relative
+        vintage_tree = _tree_blobs(repo, vintage_commit, relative)
+        # A sparse checkout is not an empty historical population. Restore ONLY
+        # declared inputs already tracked at this vintage, never today's new names
+        # or today's restatements of its old rows. Existing pass-state stays intact.
+        missing = [f"{relative}/{name}" for name in sorted(vintage_tree)
+                   if Path(name).match(pattern) and not (directory / name).exists()]
+        _restore_inputs(missing)
+        _restore_inputs([f"{relative}/{name}" for name in sorted(vintage_tree)
+                         if Path(name).match(pattern)
+                         and (directory / name).exists()
+                         and _needs_historical_tail(directory / name)])
         if not directory.exists():
             continue
         # Only files whose bytes actually MOVED between the two commits can be carrying
         # a session the vintage lacks. Comparing tree object ids first turns thousands
         # of per-file `git show` forks into two `ls-tree` calls.
-        vintage_tree = _tree_blobs(repo, vintage_commit, relative)
         live_tree = _tree_blobs(repo, live_sha, relative)
         changed = [name for name, oid in live_tree.items()
                    if vintage_tree.get(name) not in (None, oid)]
+        # A control pass can truncate a restored input while Git's two source
+        # blobs stay identical. Reconsider its missing tail on the replay pass;
+        # source-object equality is not equality with the working price frame.
+        for name, oid in live_tree.items():
+            path = directory / name
+            if vintage_tree.get(name) != oid or not path.exists():
+                continue
+            try:
+                index = _fence_index(pd.read_parquet(path))
+                if index is None:
+                    continue
+                ceiling = pd.Timestamp(through)
+                if len(index):
+                    top = index.max()
+                    if getattr(top, "tz", None) is not None:
+                        ceiling = ceiling.tz_localize(top.tz)
+                    if top >= ceiling:
+                        continue
+            except Exception:  # noqa: BLE001 - leave existing unreadable-file behavior unchanged
+                continue
+            changed.append(name)
         manifest.setdefault("skipped_identical", {})[relative] = (
             len(vintage_tree) - len(changed))
         present = [name for name in sorted(changed) if (directory / name).exists()]
@@ -695,7 +795,19 @@ def prepare_reconstruction_tree(
 
     for relative in surface.wide_panels:
         path = vintage / relative
+        if not path.exists() or _needs_historical_tail(path):
+            # A missing local panel may still be tracked at the historical commit.
+            # Establish that before the optional later/auxiliary-source fallback;
+            # otherwise a sparse tree substitutes later rows AND later membership.
+            try:
+                tracked = str(_git(repo, "ls-tree", vintage_commit, "--", relative)).strip()
+            except subprocess.CalledProcessError as exc:
+                raise PitReplayRefused(
+                    f"cannot inspect historical price input {relative}") from exc
+            if tracked:
+                _restore_inputs([relative])
         live_blob = blob_at(repo, live_sha, relative)
+        used_auxiliary_source = False
         if live_blob is None and aux_panel_source is not None:
             # A gitignored panel (e.g. Russell breadth caches) exists only in the lane
             # checkouts that build it. Without it universe() silently drops the names
@@ -706,6 +818,7 @@ def prepare_reconstruction_tree(
             candidate = aux_panel_source / Path(relative).name
             if parent_name in surface.aux_panel_dirnames and candidate.exists():
                 live_blob = candidate.read_bytes()
+                used_auxiliary_source = True
         if live_blob is None:
             continue
         try:
@@ -720,7 +833,7 @@ def prepare_reconstruction_tree(
             path.parent.mkdir(parents=True, exist_ok=True)
             _atomic_parquet(merged, path)
             provenance = dict(provenance)
-            if vintage_frame is None:
+            if vintage_frame is None and used_auxiliary_source:
                 provenance["note"] = (
                     "gitignored panel supplied from an aux checkout and truncated")
         # F4: a wholesale substitution carries today's column set — where this panel
@@ -869,84 +982,139 @@ def reset_builder_state(vintage: Path, surface: PriceSurface) -> dict[str, Any]:
     }
 
 
+def _board_file_witness(path: Path) -> dict[str, Any] | None:
+    """Observe an output-file write without removing a builder's historical input.
+
+    This witnesses ordinary producer activity, not semantic correctness or the
+    completeness of the historical input/clock/environment reconstruction.
+    """
+    try:
+        stat = path.stat()
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        return None
+    return {"device": stat.st_dev, "inode": stat.st_ino, "size": stat.st_size,
+            "mtime_ns": stat.st_mtime_ns, "ctime_ns": stat.st_ctime_ns,
+            "sha256": hashlib.sha256(raw).hexdigest()}
+
+
 def build_board(vintage: Path, *, through: str, work: Path, build_cmd: tuple[str, ...],
                 board_relpath: str, timeout: int = 7200,
                 fingerprint: str | None = None,
-                env_pins: dict[str, str] | None = None) -> Path:
-    """Run the VINTAGE board builder and freeze the board it produces.
+                env_pins: dict[str, str] | None = None,
+                vintage_sha: str | None = None,
+                observation: dict[str, Any] | None = None) -> Path:
+    """Run the vintage producer, or reuse its byte-bound, witnessed cache output.
 
-    A board build costs minutes, so it is cached — but the cache is keyed on the TREE
-    STATE (the fence's ``state_digest``), not on the date alone: keyed on the date, a
-    re-run with a widened universe would rebuild the alpha stamp, hit a stale cached
-    board built over a smaller universe, sail through the stamp check because ``as_of``
-    had not changed, and publish a fidelity score measured on one tree beside a board
-    built on another.
-
-    ``env_pins`` (registry ``entry["env_pins"]``, e.g. CN/HK's ``CN_LANE=asia``) is
-    APPLIED here — every other vintage subprocess in this module (build_alpha,
-    run_origination, capture_us_snapshot_row) hardcodes its own literal env dict, and
-    those literals happen to already equal US's registry entry, which is what let this
-    call run with none of it (``_vintage_env({})``) go unnoticed: US's board build
-    itself has run without TZ=UTC/RENDER_NO_DRIP pinned. CN/HK cannot get away with
-    that — CN_LANE=asia is the fail-closed gate every ledger write inside build_cmd
-    checks (china_standout_track.append_board, board_ledger.append_board), so without
-    it here the ledger pass silently writes nothing and every capture_*_rows() call
-    downstream reports a false refusal. Threading the registry's own env_pins through
-    is additive (default None reproduces the prior ``_vintage_env({})`` exactly) and
-    fixes the same gap for US's board build in passing.
+    The historical board may be a legitimate INPUT, so leave it in place. A zero
+    exit status plus its continued existence does not prove a new output. Require
+    an observed write, including identical-content rewrites, before caching it.
+    Legacy bare caches cannot grandfather that missing proof. Missing source or
+    price identity disables cache reuse. Cache reuse also
+    binds the price fingerprint, declared source, command, root and applied pins.
+    This is NOT complete nonprice-input, runtime-library or historical-clock proof.
     """
-    # Defensive, idempotent: main() already creates --work-dir, but this function is
-    # also callable directly (tests, a future caller), and a FileNotFoundError three
-    # frames down inside a subprocess write is a much worse failure than a mkdir.
+    if observation is not None:
+        observation.clear()
     work.mkdir(parents=True, exist_ok=True)
     suffix = f"_{fingerprint}" if fingerprint else ""
     out = work / f"board_{through}{suffix}.json"
-    if out.exists():
-        log.info("pit_replay: reusing cached board %s (same tree state)", out.name)
-        # Coordinator amendment (cache-coherence fix, found by a warm-cache dry-run
-        # re-run): a REAL build leaves its board on the vintage tree's own
-        # board_relpath as its very last step (`out.write_bytes(board_path.
-        # read_bytes())` below reads FROM that path after the builder wrote it) — but
-        # a cache HIT used to skip straight to `return out` without ever touching the
-        # tree. `reset_builder_state` (called earlier in the same pass) had already
-        # restored the tree's board to the VINTAGE's own committed bytes, so a
-        # cache-hit pass left the tree holding the WRONG board — a later in-process
-        # reader of the tree's own path (capture_us_snapshot_row's snapshot_today(),
-        # which reads BOARD_PATH off the vintage tree, not off `out`) would then read
-        # the vintage's stale as_of and refuse. Writing the cached bytes back to the
-        # tree here makes a cache-hit end state IDENTICAL to a build-executed one,
-        # regardless of which callers read the returned `out` path vs the tree itself
-        # (origination is unaffected either way — it takes the board path explicitly).
-        board_path = vintage / board_relpath
-        board_path.parent.mkdir(parents=True, exist_ok=True)
-        board_path.write_bytes(out.read_bytes())
-        return out
+    proof_path = out.with_suffix(".buildproof.json")
+    board_path = vintage / board_relpath
+    binding = {"through": through, "board_relpath": board_relpath,
+               "vintage_root": str(vintage.resolve()), "vintage_sha": vintage_sha,
+               "price_fingerprint": fingerprint,
+               "command_sha256": _canonical_sha256(list(build_cmd)),
+               "env_pins_sha256": _canonical_sha256(applied_env_pins(env_pins))}
+
+    def _output_bytes(path: Path) -> bytes:
+        raw = path.read_bytes()
+        try:
+            board = json.loads(raw)
+        except (ValueError, UnicodeError) as exc:
+            raise PitReplayRefused("the board builder produced invalid JSON") from exc
+        if not isinstance(board, dict):
+            raise PitReplayRefused("the board builder produced a non-object JSON value")
+        as_of = str(board.get("as_of") or "")[:10]
+        if as_of != through:
+            raise PitReplayRefused(
+                f"the rebuilt board reports as_of={as_of!r}, not {through!r}")
+        return raw
+
+    def _write_bytes(path: Path, raw: bytes) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + ".pitreplay-tmp")
+        tmp.write_bytes(raw)
+        tmp.replace(path)
+
+    def _valid_witness(value: Any) -> bool:
+        if not isinstance(value, dict):
+            return False
+        fields = ("device", "inode", "size", "mtime_ns", "ctime_ns")
+        digest = value.get("sha256")
+        return (all(type(value.get(key)) is int for key in fields)
+                and value["size"] >= 0 and isinstance(digest, str)
+                and len(digest) == 64
+                and all(char in "0123456789abcdef" for char in digest))
+
+    if fingerprint and vintage_sha and out.exists() and proof_path.exists():
+        try:
+            proof = json.loads(proof_path.read_bytes())
+            cached = _output_bytes(out)
+            after = proof.get("after") if isinstance(proof, dict) else None
+            valid = (_valid_witness(after)
+                     and "before" in proof
+                     and (proof["before"] is None or _valid_witness(proof["before"]))
+                     and isinstance(proof.get("executed_at"), str)
+                     and datetime.fromisoformat(proof["executed_at"]).tzinfo is not None
+                     and proof.get("schema") == "pit_replay.board_build_proof/v1"
+                     and proof.get("binding") == binding
+                     and proof.get("before") != after
+                     and proof.get("output_sha256") == hashlib.sha256(cached).hexdigest()
+                     and after.get("sha256") == proof.get("output_sha256"))
+        except (OSError, ValueError, TypeError, PitReplayRefused):
+            valid = False
+        if valid:
+            _write_bytes(board_path, cached)
+            if observation is not None:
+                observation.update(mode="cache", proof=proof)
+            log.info("pit_replay: reusing witnessed board cache %s", out.name)
+            return out
+    # Keep the current candidate until replacement succeeds. Sidecars belong to
+    # their board; never mistake one for another stale board JSON.
     for stale in work.glob(f"board_{through}_*.json"):
-        log.info("pit_replay: discarding %s — the tree state that produced it is not "
-                 "the one being built now", stale.name)
+        if stale == out or stale.name.endswith(".buildproof.json"):
+            continue
         stale.unlink()
+        stale.with_suffix(".buildproof.json").unlink(missing_ok=True)
+    before = _board_file_witness(board_path)
     log.info("pit_replay: building the %s board in %s", through, vintage)
     proc = subprocess.run(
-        list(build_cmd),
-        cwd=vintage, env=_vintage_env(env_pins or {}), capture_output=True, timeout=timeout,
+        list(build_cmd), cwd=vintage, env=_vintage_env(env_pins or {}),
+        capture_output=True, timeout=timeout,
     )
-    board_path = vintage / board_relpath
     if proc.returncode != 0 or not board_path.exists():
         tail = proc.stderr.decode("utf-8", "replace").strip().splitlines()[-25:]
         raise PitReplayRefused(
             f"the vintage board builder exited {proc.returncode} and produced no "
-            f"usable board. Last lines:\n  " + "\n  ".join(tail)
-        )
-    board = json.loads(board_path.read_text())
-    as_of = str(board.get("as_of") or "")[:10]
-    if as_of != through:
+            f"usable board. Last lines:\n  " + "\n  ".join(tail))
+    after = _board_file_witness(board_path)
+    if after is None or (before is not None and before == after):
         raise PitReplayRefused(
-            f"the rebuilt board reports as_of={as_of!r}, not {through!r}. The panel on "
-            "disk did not truncate to the intended session, so this board is not the "
-            "one that night would have produced."
-        )
-    out.write_bytes(board_path.read_bytes())
+            "the vintage board builder exited 0 but did not write its board output; "
+            "the pre-existing reference cannot count as a fresh rebuild")
+    output = _output_bytes(board_path)
+    if hashlib.sha256(output).hexdigest() != after["sha256"]:
+        raise PitReplayRefused("the board output changed while being captured")
+    proof = {"schema": "pit_replay.board_build_proof/v1", "binding": binding,
+             "before": before, "after": after, "output_sha256": after["sha256"],
+             "executed_at": datetime.now(timezone.utc).isoformat(),
+             "scope": "output-write witness; complete input/clock closure unverified"}
+    _write_bytes(out, output)
+    _write_bytes(proof_path, (json.dumps(proof, sort_keys=True) + "\n").encode())
     (work / f"board_{through}{suffix}.buildlog").write_bytes(proc.stdout[-200_000:])
+    if observation is not None:
+        observation.update(mode="fresh", proof=proof)
     return out
 
 
@@ -1007,9 +1175,10 @@ def assert_pinned_stores_unchanged(vintage: Path, *, pinned_stores: dict[str, An
 def tree_fingerprint(manifest: dict[str, Any]) -> str:
     """A short digest of the price tree state a board was built over.
 
-    Comes from the FENCE — (path, last session) for every price file it scanned — and
-    deliberately not from the overlay's own delta manifest: an identical tree state
-    produces an identical key regardless of how it got there, so a control pass run
+    Comes from the FENCE — paths, last sessions and SHA-256 hashes of actual price
+    bytes — not merely endpoints, which collide after same-date price repairs. It is
+    deliberately not the overlay delta: identical price bytes produce an identical
+    key regardless of how they got there, so a control pass run
     against a tree already at its own ceiling and a fresh replay pass against the same
     resulting tree state share one cache entry instead of each rebuilding a board that
     already exists.
@@ -1097,6 +1266,17 @@ def build_alpha(vintage: Path, *, through: str, work: Path,
             + "\n  ".join(tail)
         )
     result = json.loads(out.read_text())
+    if not isinstance(result, dict):
+        raise PitReplayRefused("the residual-alpha rebuild returned an invalid result object")
+    if result.get("ok") is False:
+        # No output is an upstream computation/data failure, not proof of a bad date fence.
+        tail = proc.stderr.decode("utf-8", "replace").strip().splitlines()[-20:]
+        details = "\n  ".join(tail) or "<no upstream diagnostic>"
+        raise PitReplayRefused(
+            "the residual-alpha rebuild returned no alpha result; refusing before "
+            "date validation. No truncation cause is inferred. Upstream diagnostics:\n  "
+            + details
+        )
     as_of = str(result.get("as_of") or "")[:10]
     if as_of != through:
         raise PitReplayRefused(
@@ -2736,6 +2916,7 @@ def run_pit_replay(
     floor = float(entry.get("fidelity_floor", 0.85))
     pinned_stores = entry.get("pinned_stores") or {}
     pinned_stores_check: list[dict[str, Any]] = []
+    board_builds: dict[str, dict[str, Any]] = {"control": {}, "replay": {}}
 
     reference_blob = blob_at(repo, vintage_sha, entry["board_relpath"])
     if reference_blob is None:
@@ -2770,7 +2951,8 @@ def run_pit_replay(
             vintage, through=control_through, work=work, build_cmd=entry["build_cmd"],
             board_relpath=entry["board_relpath"],
             fingerprint=tree_fingerprint(control_overlay),
-            env_pins=entry.get("env_pins"),
+            env_pins=entry.get("env_pins"), vintage_sha=vintage_sha,
+            observation=board_builds["control"],
         )
         pinned_stores_check.extend(assert_pinned_stores_unchanged(
             vintage, pinned_stores=pinned_stores, pass_label="control"))
@@ -2812,7 +2994,8 @@ def run_pit_replay(
     board_path = build_board(
         vintage, through=session, work=work, build_cmd=entry["build_cmd"],
         board_relpath=entry["board_relpath"], fingerprint=tree_fingerprint(overlay),
-        env_pins=entry.get("env_pins"),
+        env_pins=entry.get("env_pins"), vintage_sha=vintage_sha,
+        observation=board_builds["replay"],
     )
     pinned_stores_check.extend(assert_pinned_stores_unchanged(
         vintage, pinned_stores=pinned_stores, pass_label="replay"))
@@ -2826,6 +3009,11 @@ def run_pit_replay(
         "market": market, "session": session, "vintage_sha": vintage_sha,
         "control_through": control_through, "fidelity": fidelity, "overlay": overlay,
         "alpha": alpha, "board_identity": identity, "board_path": str(board_path),
+        "board_builds": board_builds,
+        "restored_vintage_inputs": {
+            "control": (control_overlay.get("restored_vintage_inputs") or {}) if control else {},
+            "replay": overlay.get("restored_vintage_inputs") or {},
+        },
         "minted": [], "collided": [], "chronology_refused": [], "still_refused": [],
         "counts": {}, "reconciliation": {}, "snapshot_capture": None, "clock": None,
         "ledger_capture": None, "pinned_stores_check": pinned_stores_check,
@@ -3005,12 +3193,16 @@ def build_harness_receipt(*, market: str, session: str, entry: dict[str, Any],
         "live_price_source_commit": overlay["live_price_source_commit"],
         "overlay_totals": overlay["totals"],
         "overlay_files": overlay.get("files") or {},
+        "restored_vintage_inputs": result.get("restored_vintage_inputs") or {
+            "control": {}, "replay": overlay.get("restored_vintage_inputs") or {},
+        },
         "skipped_identical": overlay.get("skipped_identical") or {},
         "aux_panel_source": result.get("aux_panel_source"),
         "fence": overlay["fence"],
         "control_through": result["control_through"],
         "harness_fidelity": result["fidelity"],
         "board_identity": result["board_identity"],
+        "board_builds": result.get("board_builds") or {},
         "counts": result["counts"], "reconciliation": result["reconciliation"],
         "wall_clock_exposure": result["clock"],
         "snapshot_capture": result["snapshot_capture"],

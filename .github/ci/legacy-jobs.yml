@@ -11099,7 +11099,7 @@ jobs:
       # 2026-08-14, CN/HK 2026-08-17, the US disclosed-gap/session-invalid refusals)
       # are exercised directly against this checkout, not a network call.
       - name: prophet PIT replay harness (truncate/overlay/fence, vintage resolution, disclosed-gap guard, registry, receipt idempotence, verify-collisions ordering)
-        run: python -m pytest tests/test_prophet_pit_replay.py -q
+        run: python -m pytest tests/test_prophet_pit_replay.py tests/test_prophet_pit_replay_alpha_result.py tests/test_prophet_pit_replay_sparse_inputs.py -q
       # US absorb hook (scripts/grade_us_board.py::absorb_pending_replays) — same
       # subject/job as the harness above; wired together so a change to the
       # pending/v1 schema or the harness's session ordering fails in one place.

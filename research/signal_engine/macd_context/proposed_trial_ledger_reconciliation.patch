@@ -1,0 +1,6 @@
+--- a/data/trial_ledger.jsonl
++++ b/data/trial_ledger.jsonl
+@@ -1673,2 +1673,3 @@
+ {"ts": "2026-08-31T06:21:57.523668+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-08-31-in-low-volatility-regimes-negative-10-d-3ac05c", "config_hash": "ccd7834adf805f95"}
+ {"ts": "2026-08-31T06:21:57.531381+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-08-31-in-high-volatility-regimes-extended-dwe-235ca3", "config_hash": "fe975a0c7aa7fcfb"}
++{"ts": "2026-09-16T00:16:32.178432+00:00", "family": "macd_context_cycle", "kind": "declared_budget", "n": 6235, "reason": "Retrospective reconciliation of 6235 generated summary cells across 23 first-look, extension and attribution tables; conservative scoped floor, not independent tests or accepted preregistration. Includes 18 variants x 13 policies before context/cohort views. Source inventory in PR7177 horizon review; no correlation credit or promotion authority.", "config_hash": "ae8c9d8a67cba545"}

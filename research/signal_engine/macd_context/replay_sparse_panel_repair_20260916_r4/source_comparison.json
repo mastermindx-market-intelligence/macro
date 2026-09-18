@@ -1,0 +1,16 @@
+{
+  "main_pin": "a96104e0af12fdd21c755fa158e3950a262e6eab",
+  "head_before": "9513a4d9353362c6e02fe56a402008f49b44b049",
+  "same_governing_sources": {
+    "AGENTS.md": true,
+    "CLAUDE.md": true,
+    "scripts/check_contract_delta.py": true,
+    "scripts/run_ci_pack.py": true,
+    "scripts/audit_unrun_tests.py": true,
+    "research/PROPHET_PIT_REPLAY_HARNESS_V1.md": true
+  },
+  "ci_owner_job_change": "only expected two-suite enrollment",
+  "main_replay_blob_unchanged_since_prior_qualification": "785b91613b347eade7dedac04b56bfb67956100a",
+  "candidate_replay_sha256": "a9f8f74c2ddc94028f1bf81609330985f7bb4a17c7d46b279c149ef773889e0c",
+  "integration_proof": "not yet run; no merge/rebase performed"
+}

@@ -1,0 +1,12 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_corrupt_existing_wide_panel_cannot_be_replaced_by_later_history _____
+tests/test_prophet_pit_replay_sparse_inputs.py:601: in test_corrupt_existing_wide_panel_cannot_be_replaced_by_later_history
+    with pytest.raises(ppr.PitReplayRefused, match='cannot read existing historical price panel'):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE PitReplayRefused
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_prophet_pit_replay_sparse_inputs.py::test_corrupt_existing_wide_panel_cannot_be_replaced_by_later_history
+1 failed, 39 deselected in 33.86s

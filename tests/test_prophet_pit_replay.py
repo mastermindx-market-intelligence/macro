@@ -1021,67 +1021,42 @@ class TestWorkDirAutoCreated:
 
 
 class TestBuildBoardCacheCoherence:
-    """Coordinator amendment (found by a warm-cache dry-run re-run): a build_board
-    CACHE HIT must leave the vintage tree's own board_relpath bytes equal to the
-    cached board. Before this fix, a cache hit returned the cached ``work/`` path
-    without ever writing back to the tree — but ``reset_builder_state`` (called
-    earlier in the SAME pass) had already restored the tree's board to the
-    vintage's own committed (stale) bytes, so an in-process reader of the tree's
-    OWN board path (``capture_us_snapshot_row``'s ``snapshot_today()``, which reads
-    ``BOARD_PATH`` off the vintage tree rather than off the returned path) could
-    read the wrong as_of and refuse — exactly the failure a warm-cache re-run of
-    the same session hit. A real (non-cached) build does not have this problem: its
-    very last step reads the board FROM the tree (``out.write_bytes(board_path.
-    read_bytes())``), so the tree is already correct by construction; the cache-hit
-    branch needed the mirror-image write."""
+    """A witnessed cache hit must restore the exact board to its real consumer path."""
+
+    @staticmethod
+    def _seed_verified_cache(tmp_path):
+        vintage = tmp_path / "vintage"
+        target = vintage / "site/factordata/us_standouts.json"
+        target.parent.mkdir(parents=True)
+        target.write_text(json.dumps({"as_of": "2026-08-13", "rank_by": "stale"}))
+        expected = json.dumps({"as_of": "2026-08-14", "rank_by": "fresh"})
+        code = (
+            "from pathlib import Path\n"
+            "marker=Path('producer-ran')\n"
+            "assert not marker.exists(), 'cache hit incorrectly reran producer'\n"
+            "marker.write_text('1')\n"
+            f"Path('site/factordata/us_standouts.json').write_text({expected!r})\n")
+        args = dict(through="2026-08-14", work=tmp_path / "work",
+                    build_cmd=(sys.executable, "-c", code),
+                    board_relpath="site/factordata/us_standouts.json",
+                    fingerprint="verified-cache", vintage_sha="a" * 40)
+        ppr.build_board(vintage, **args)
+        return vintage, target, args, expected
 
     def test_cache_hit_writes_the_cached_board_back_to_the_vintage_tree(self, tmp_path):
-        vintage = tmp_path / "vintage"
-        (vintage / "site" / "factordata").mkdir(parents=True)
-        stale_board = json.dumps({"as_of": "2026-08-13", "rank_by": "stale"})
-        (vintage / "site" / "factordata" / "us_standouts.json").write_text(stale_board)
-
-        work = tmp_path / "work"
-        work.mkdir()
-        cached_board = json.dumps({"as_of": "2026-08-14", "rank_by": "fresh"})
-        fingerprint = "deadbeef"
-        (work / f"board_2026-08-14_{fingerprint}.json").write_text(cached_board)
-
-        out = ppr.build_board(
-            vintage, through="2026-08-14", work=work,
-            # A cache hit must short-circuit BEFORE this subprocess ever runs — a
-            # command that always fails is the proof it was never invoked.
-            build_cmd=(sys.executable, "-c", "import sys; sys.exit(1)"),
-            board_relpath="site/factordata/us_standouts.json",
-            fingerprint=fingerprint,
-        )
-        assert out.read_text() == cached_board
-        tree_board = (vintage / "site" / "factordata" / "us_standouts.json").read_text()
-        assert tree_board == cached_board, (
-            "a cache hit must leave the tree's own board path equal to the cached "
-            f"board, not the stale pre-reset bytes — got {tree_board!r}"
-        )
+        vintage, target, args, expected = self._seed_verified_cache(tmp_path)
+        target.write_text(json.dumps({"as_of": "2026-08-13", "rank_by": "stale"}))
+        out = ppr.build_board(vintage, **args)
+        assert out.read_text() == target.read_text() == expected
+        assert (vintage / "producer-ran").read_text() == "1"
 
     def test_cache_hit_creates_the_board_relpath_parent_if_missing(self, tmp_path):
-        """The vintage tree may not even have the board's parent directory yet
-        (a throwaway worktree that never ran a real build before this cache hit) —
-        the write-back must mkdir(parents=True), not crash."""
-        vintage = tmp_path / "vintage"
-        vintage.mkdir()
-        work = tmp_path / "work"
-        work.mkdir()
-        cached_board = json.dumps({"as_of": "2026-08-14", "rank_by": "fresh"})
-        fingerprint = "cafef00d"
-        (work / f"board_2026-08-14_{fingerprint}.json").write_text(cached_board)
-
-        ppr.build_board(
-            vintage, through="2026-08-14", work=work,
-            build_cmd=(sys.executable, "-c", "import sys; sys.exit(1)"),
-            board_relpath="site/factordata/us_standouts.json",
-            fingerprint=fingerprint,
-        )
-        assert (vintage / "site" / "factordata" / "us_standouts.json").read_text() \
-            == cached_board
+        vintage, target, args, expected = self._seed_verified_cache(tmp_path)
+        target.unlink()
+        target.parent.rmdir()
+        out = ppr.build_board(vintage, **args)
+        assert out.read_text() == target.read_text() == expected
+        assert (vintage / "producer-ran").read_text() == "1"
 
 
 # ---------------------------------------------------------------------------
@@ -2006,6 +1981,11 @@ class TestPrepareReconstructionTreeConstituentsDiff:
             {"name": ["Alpha"], "sector": ["Tech"]},
             index=pd.Index(["AAA"], name="symbol"),
         ).to_parquet(cdir / "constituents.parquet")
+        # This is the genuine absent-at-vintage substitution case, not a
+        # tracked historical panel merely missing from the local checkout.
+        _git(repo, "add", "data/china_breadth/constituents.parquet")
+        vintage_sha = _commit(repo, "historical membership only",
+                              date_iso="2026-08-13T00:00:00+00:00")
         panel = pd.DataFrame(
             {"AAA": [1.0, 1.1], "BBB": [2.0, 2.1]},
             index=pd.to_datetime(["2026-08-10", "2026-08-11"]),
@@ -2013,7 +1993,7 @@ class TestPrepareReconstructionTreeConstituentsDiff:
         panel.to_parquet(cdir / "_closes_cache.parquet")
         _git(repo, "add", "data/china_breadth/constituents.parquet",
             "data/china_breadth/_closes_cache.parquet")
-        live_sha = _commit(repo, "seed", date_iso="2026-08-14T00:00:00+00:00")
+        _commit(repo, "later panel", date_iso="2026-08-14T00:00:00+00:00")
 
         surface = ppr.PriceSurface(
             wide_panels=("data/china_breadth/_closes_cache.parquet",),
@@ -2026,7 +2006,7 @@ class TestPrepareReconstructionTreeConstituentsDiff:
         vintage_dir.mkdir()
         manifest = ppr.prepare_reconstruction_tree(
             vintage_dir, repo, through="2026-08-11", live_ref="main",
-            vintage_commit=live_sha, surface=surface, session_ceiling="2026-08-11",
+            vintage_commit=vintage_sha, surface=surface, session_ceiling="2026-08-11",
         )
         prov = manifest["files"]["data/china_breadth/_closes_cache.parquet"]
         assert prov["substituted"] is True

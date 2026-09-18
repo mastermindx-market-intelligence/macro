@@ -1,0 +1,16 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_cache_rebuilds_when_output_or_declared_build_identity_changes[proof_missing_before] _
+tests/test_prophet_pit_replay_sparse_inputs.py:492: in test_cache_rebuilds_when_output_or_declared_build_identity_changes
+    assert json.loads(rebuilt.read_text())['generation'] == 2
+E   assert 1 == 2
+_ test_cache_rebuilds_when_output_or_declared_build_identity_changes[proof_partial_after] _
+tests/test_prophet_pit_replay_sparse_inputs.py:492: in test_cache_rebuilds_when_output_or_declared_build_identity_changes
+    assert json.loads(rebuilt.read_text())['generation'] == 2
+E   assert 1 == 2
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_prophet_pit_replay_sparse_inputs.py::test_cache_rebuilds_when_output_or_declared_build_identity_changes[proof_missing_before]
+FAILED tests/test_prophet_pit_replay_sparse_inputs.py::test_cache_rebuilds_when_output_or_declared_build_identity_changes[proof_partial_after]
+2 failed, 40 deselected in 30.35s
