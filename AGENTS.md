@@ -400,6 +400,97 @@ Do NOT save tokens by reducing reasoning effort — output is only 17% of burn, 
 cutting thinking degrades quality for at most a sixth of the cost. The savings
 are in where work happens and how large the context is.
 
+## Execution continuation law
+
+A blocked lane is not a finished mission. This section governs when a session may
+STOP; the "Definition of done" section below governs what the ship chain owes once a
+session produces a commit. This law does not weaken the ordinary ship chain: both bind,
+and neither releases the other. A blocked lane is a reason to keep working other lanes,
+never a reason to leave an unmerged pull request.
+
+### Authority model — restated here, duplicated nowhere
+
+Chairman Chris is final authority. **Sol is the default AI CEO / system owner.**
+Ordinary Claude and Codex sessions remain **bounded workers**. **Fable is scarce
+principal capacity by default.** The governing authority map stays in Mastermind
+(`config/authority_map.yml` + `control_plane/packet_gate.py`); the "Required context"
+section above already forbids a second copy in this repository, and this section
+creates none, dispatches nothing, and grants no one a permission they did not have.
+
+What it adds is the scope rule the defaults were missing. **An explicit Chairman
+delegation overrides those defaults inside its stated scope, and a default role
+assumption never overrides it back.** A seat holding a Chairman-delegated program
+decides in-scope matters itself and does not re-ask Sol for what it was already
+delegated — the standing example is Meta-CEO Fable B owning the Agent Fabric program,
+which repeatedly stalled waiting for a Sol authorization it did not need. The converse
+binds just as hard: **delegated authority never leaks outside its stated scope**,
+exactly as conditional merge authority granted for one pull request never transfers to
+another (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`). This law promotes no worker to principal, widens no
+credential, and changes no provider permission.
+
+### The six execution invariants
+
+`BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
+One blocked review, tool, provider or CI lane freezes that lane, never the mission.
+Before any stop, enumerate the other authorized lanes and continue on them. Only when
+every scoped lane is genuinely blocked is `ALL_SCOPED_LANES_BLOCKED` the honest state,
+and that classification must name the lanes it checked.
+
+`NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
+direct bounded execution may continue`. A delegation surface being unavailable — the
+Fabric down, a pool exhausted, a spawn refused — is not evidence that execution is
+impossible. If no worker actually started, the principal still holds lawful tools and
+custody, no other owner is working the same artifact, and no act sits in an
+`EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
+those four is false the lawful outcome is `ALL_SCOPED_LANES_BLOCKED` or
+`EXACT_HUMAN_GATE` naming the exact missing thing — never a silent stop, and never a
+second worker on a contested artifact.
+
+`WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
+burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
+merge sweeper, then work an independent lane. A Stop-hook block during a wait is
+satisfied by a one-line hold note, never by a fresh poll.
+
+`2 equivalent no-delta cycles -> change tactic/lane/owner`. Two attempts that changed
+nothing observable ban a third identical one. The Stop guard now names the cycle count
+in its own block text rather than repeating one unchanging instruction.
+
+`accepted work -> DO_NOT_REDO unless materially invalidated`. Accepted, merged or
+ratified work reopens only on a material invalidator: new contradicting evidence, a
+changed contract, or an explicit authority reversal. A fresh session, a lost
+transcript, and an absent memory are none of those. Check the `agentos/`
+`do_not_redo` entries and `research/DO_NOT_REBUILD.md` before re-opening anything.
+
+`EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`. An act
+whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a dropped
+tool call — is reconciled on the same carrier that performed it. A blind retry or a
+failover to another provider is how one irreversible act becomes two.
+
+### The delivery ladder
+
+`ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
+ACCEPTANCE` are nine distinct facts and none implies the next. An acknowledgement is
+not a queue entry; a queue entry is not a started worker; a returned packet is not a
+green check; a merge is not production proof; production proof is not acceptance by
+the commissioning authority. Report the rung the evidence reaches and no higher. A
+checkpoint, a status note, or a continuation record describes work; it is never the
+outcome it describes.
+
+### Session end classification
+
+Every substantial session states one line before it ends: `SESSION END: <STATE>`,
+where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
+`ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or `MORE_WORK_EXISTS`. The
+set is closed on purpose. **`MORE_WORK_EXISTS` is never a valid stopping state**, and
+the Stop guard refuses it under the code `more_work_exists`, escapable only through
+the ordinary any-code ladder.
+
+The converse binds equally. Reaching the actual outcome or the exact human gate early
+is a complete session however short or expensive it was: never pad a session to look
+substantial, and never stop while authorized work remains. Context compaction,
+rotation, or a `/clear` is a harness event and not an outcome — the guard's block
+ledger deliberately survives `resume` and `compact`.
+
 ## Definition of done
 
 DONE for ordinary substantive, verified work is the full delivery chain, which is
