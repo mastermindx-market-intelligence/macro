@@ -307,7 +307,9 @@ jobs:
           # reports/*.md graders) that no `git add` here covers — left unstaged they
           # abort `git pull --rebase` ("unstaged changes") and the push silently dies
           # after 5 retries, discarding the whole collection (froze 2026-07-02..07).
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           git add data/ site/qledger/
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           if git diff --cached --quiet; then echo "no asia data changes"; else
             git commit -m "data: asia collection $(date -u +%F)"
             push_retry_init "asia data"
@@ -877,7 +879,9 @@ jobs:
             git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html
             echo "::warning title=China heatmap held before staging::current-clock freshness failed; the pre-engine pair was restored and other CN/HK outputs continue"
           fi
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           git add data/ site/
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
           # matches nothing, and this step runs under `-eo pipefail` — a missing
           # templates/ would abort the commit and lose the whole render rather than

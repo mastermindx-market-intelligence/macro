@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -710,6 +711,32 @@ def test_asia_lane_owns_heatmap_without_blocking_other_markets() -> None:
     assert 'touch "$marker"' in block
     assert "git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html" in block
     assert "exit 1" in block
+
+
+def test_asia_broad_publishers_exclude_options_narrow_roots_around_staging() -> None:
+    """Asia must never acquire the Options PIT/campaign roots owned by narrow publishers."""
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    exclusion = "bash scripts/ci/options_signal_nightly.sh exclude-broad"
+
+    collected_start = workflow.index("name: commit collected asia data")
+    collected_end = workflow.index("name: build + verify China A-share heatmap", collected_start)
+    collected = workflow[collected_start:collected_end]
+    collected_stage = collected.index("git add data/ site/qledger/")
+    collected_exclusions = [
+        match.start() for match in re.finditer(exclusion, collected)
+    ]
+    assert len(collected_exclusions) == 2
+    assert collected_exclusions[0] < collected_stage < collected_exclusions[1]
+
+    output_start = workflow.index("name: commit engine outputs")
+    output_end = workflow.index("name: publish CN/HK stores to R2", output_start)
+    output = workflow[output_start:output_end]
+    output_stage = output.index("git add data/ site/")
+    output_exclusions = [
+        match.start() for match in re.finditer(exclusion, output)
+    ]
+    assert len(output_exclusions) == 2
+    assert output_exclusions[0] < output_stage < output_exclusions[1]
 
 
 def test_always_commit_rechecks_before_the_no_change_early_exit() -> None:
