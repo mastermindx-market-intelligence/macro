@@ -282,6 +282,9 @@ def test_analyze_pair_never_opens_outcome_labels_and_requires_consecutive_sessio
     assert got["status"] == "SURVIVOR_DECOMPOSITION_COMPLETE"
     assert got["decomposition_scope"] == "survivor_contracts_only"
     assert got["pair_decision_eligible_not_before_session"] == "2026-09-16"
+    assert got["method"]["vol_counterfactual"] == "sticky_strike"
+    assert got["method"]["kernel"].endswith(".fake_greeks")
+    assert "component_net_per_calendar_day" not in got["decomposition"]
     assert got["outcome_labels_opened"] is False
     assert got["decomposition"]["max_contract_closure_error_abs"] < 1e-9
 
