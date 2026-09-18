@@ -116,6 +116,40 @@ def test_house_atlas_activity_intensity_is_not_directional_color():
     assert "colorStyle(cm,state.metric)" in block
 
 
+def test_house_atlas_bubble_encoding_uses_svg_fill_and_full_readout():
+    block = _atlas_block(TEMPLATE)
+    assert "function bubbleFill(v,metric)" in block
+    assert "fill:color-mix(in srgb,var(--link)" in block
+    assert "fill:color-mix(in srgb,var(--up)" in block
+    assert "bubbleShortLabel(p.g)" in block
+    assert 'class="hta-bubble-readout"' in block
+    assert 'class="hta-bubble-readout-name"' in block
+    assert "aria-label=" in block
+
+
+def test_house_atlas_clusters_have_visible_localized_identity_and_measurement():
+    block = _atlas_block(TEMPLATE)
+    assert 'class="hta-cluster-item"' in block
+    assert 'class="hta-cluster-name"' in block
+    assert 'class="hta-cluster-metric"' in block
+    assert "L(esc(g.name),esc(g.name_zh))" in block
+    assert "pct(m.value)" in block
+
+
+def test_house_atlas_mobile_bubbles_fit_panel_and_table_retains_identity():
+    block = _atlas_block(TEMPLATE)
+    assert ".hta-bubble-wrap svg{min-width:0;width:100%}" in block
+    assert ".hta-bubble-label{display:none}" in block
+    assert ".hta-table th:first-child,.hta-table td:first-child{position:sticky;left:0" in block
+
+
+def test_house_atlas_member_count_area_scale_is_global_and_disclosed():
+    block = _atlas_block(TEMPLATE)
+    assert "max_member_count" in block
+    assert "Math.sqrt(Math.max(0,g.member_count)/Math.max(1,model.max_member_count))*24" in block
+    assert "Member-count bubble area is proportional across the full 49-group observation" in block
+
+
 def test_house_atlas_inline_javascript_parses_with_node(tmp_path: Path):
     script = tmp_path / "house_atlas.js"
     script.write_text(_atlas_script(_atlas_block(TEMPLATE)), encoding="utf-8")
