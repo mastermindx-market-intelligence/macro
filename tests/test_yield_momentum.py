@@ -46,7 +46,7 @@ def test_missing_and_short_series_are_explicit_null_states():
     short = read["series"]["10y"]
     assert short["status"] == "insufficient_history"
     assert short["velocity_bp"]["63d"] is None
-    assert short["null_reason"] == "requires 64 observed points for 63d velocity"
+    assert short["null_reason"] == "requires 64 grid points for 63-interval velocity"
 
 
 def test_turn_watch_is_trailing_and_correction_rebuild_is_idempotent():
@@ -58,10 +58,24 @@ def test_turn_watch_is_trailing_and_correction_rebuild_is_idempotent():
     frame = _frame(len(values))
     frame["us20y"] = values
 
+    # Unreceipted frames retain endpoints but cannot certify a turn.
+    assert _build(frame)["series"]["20y"]["turn_watch"] is None
+
+    def qualified(f):
+        f.attrs[yield_momentum.ORIGIN_ATTR] = {
+            col: yield_momentum.capture_rate_observations(
+                f[col], f[col], source_id=None, source_column=col)
+            for col in yield_momentum.SERIES.values()
+        }
+        return f
+
+    frame = qualified(frame)
     first = _build(frame)
     second = _build(frame.copy())
     corrected = frame.copy()
     corrected.loc[corrected.index[-23], "us20y"] -= 0.10
+    assert _build(corrected)["series"]["20y"]["origin_status"] == "frame_mismatch"
+    corrected = qualified(corrected)
     corrected_once = _build(corrected)
     corrected_twice = _build(corrected.copy())
 
