@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T17:08:32.031319+00:00",
-  "count": 2373,
+  "generated_at": "2026-09-18T17:38:34.029404+00:00",
+  "count": 2374,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -185,6 +185,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sbz0zb4gkgp-e7df1e",
+      "title": "Europe Weekly Kickstart Higher rates, resilient earnings",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:35Z",
+      "summary_points": [
+        "Higher Rates & Earnings Resilience: European equities hold up amid rising yields (US/German 10-yr at 4.75%/3.25% by year-end) due to strong earnings and balance sheets, despite Brent oil >$100/bbl and STOXX 600 down 3% from peak.",
+        "Energy Price Earnings Link: Brent oil price rise (10%) correlates with 2.4% higher STOXX 600 earnings, making oil a critical fundamental risk factor for European equities.",
+        "Valuation Constraints: STOXX 600 trades at 14.2x forward P/E (above fair value), with limited upside vs. model, constrained by Europe’s cheaper pricing vs.",
+        "US (18% vs 9% EPS growth expected 2026-2027)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
