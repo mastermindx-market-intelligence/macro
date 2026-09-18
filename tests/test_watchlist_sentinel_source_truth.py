@@ -333,3 +333,70 @@ def test_the_three_states_are_distinguishable_from_the_value_alone():
     assert empty.tickers == down.tickers == ()
     # ...and are still never equal, so `read == <empty read>` cannot silently accept an outage.
     assert empty != down
+
+
+# --------------------------------------------------------------------------- #
+# 11. schema drift is an unknown read, not an empty watchlist
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("payload,reason", [
+    # the `symbol` column renamed out from under the embedded select
+    ([{"id": "l1", "watchlist_symbols": [{"ticker": "AAPL"}, {"ticker": "NVDA"}]}],
+     "no_usable_symbols"),
+    # symbol rows present but every value blank
+    ([{"id": "l1", "watchlist_symbols": [{"symbol": ""}, {"symbol": "  "}]}],
+     "no_usable_symbols"),
+    # the embedded select returned an object where a list was asked for
+    ([{"id": "l1", "watchlist_symbols": {"symbol": "AAPL"}}], "malformed_payload"),
+])
+def test_symbol_rows_that_yield_nothing_are_unavailable_not_empty(
+        sentinel, monkeypatch, payload, reason):
+    """A 200 whose symbol rows produce no usable ticker is a read we no longer understand -- NOT
+    an operator who watches nothing. Classifying it as empty would let a schema drift erase the
+    cooldown, which is the original defect wearing a narrower disguise."""
+    _seed()
+    before_cooldown = M._COOLDOWN_PATH.read_text()
+    _wire_supabase(monkeypatch, response=_Resp(200, payload))
+
+    assert _run() == 0
+    assert M._COOLDOWN_PATH.read_text() == before_cooldown
+    assert _states_file()["as_of"] == D2
+    assert _states_file()["source"]["reason"] == reason
+
+
+def test_a_container_with_no_symbol_rows_is_still_honestly_empty(sentinel, monkeypatch):
+    """The boundary the rule above must not cross: ZERO symbol rows is a real container the
+    operator simply has not filled, and still advances normally."""
+    _seed()
+    _wire_supabase(monkeypatch, response=_Resp(200, [{"id": "l1", "watchlist_symbols": []}]))
+
+    assert _run() == 0
+    assert _states_file()["as_of"] == D3
+    assert _states_file()["source"]["state"] == "ok_zero_events"
+    assert _cooldown_file() == {"as_of": D3, "cooldown": {}}
+
+
+# --------------------------------------------------------------------------- #
+# 12. an unreadable states file is never overwritten
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("content", ["{not json", "", "[1,2]", "null"])
+def test_an_unreadable_states_file_is_left_untouched(sentinel, monkeypatch, content):
+    """The health stamp must never be the thing that destroys state. If the states file exists
+    but cannot be read as an object, rewriting it with only a `source` key would turn a read
+    problem into data loss -- and would destroy bytes a human might still recover."""
+    M._STATES_PATH.write_text(content)
+    M._COOLDOWN_PATH.write_text(json.dumps({"as_of": D2, "cooldown": LIVE_COOLDOWN}))
+    _wire_supabase(monkeypatch, response=_Resp(500, text="boom"))
+
+    assert _run() == 0
+    assert M._STATES_PATH.read_text() == content, "the unreadable file was rewritten"
+    assert _cooldown_file()["cooldown"] == LIVE_COOLDOWN
+
+
+def test_a_readable_states_file_still_gets_its_stamp(sentinel, monkeypatch):
+    """The boundary: a well-formed file keeps as_of + states AND gains the health stamp."""
+    _seed()
+    _wire_supabase(monkeypatch, response=_Resp(500, text="boom"))
+    assert _run() == 0
+    st = _states_file()
+    assert st["as_of"] == D2 and st["states"] == PREV_STATES
+    assert st["source"]["reason"] == "http_500"

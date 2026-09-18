@@ -247,17 +247,32 @@ def _fetch_operator_watchlist() -> WatchlistRead:
     # Flatten symbols from all the operator's list containers, dedupe, sort.
     seen: set[str] = set()
     tickers: list[str] = []
+    entries_seen = 0          # symbol ROWS the payload actually carried
     for row in dict_rows:
         symbols = row.get("watchlist_symbols") or []
         if not isinstance(symbols, list):
-            continue
+            # The embedded select asks for a list; anything else means the shape changed under us.
+            log.info("watchlist_sentinel: watchlist_symbols was %s, not a list — watchlist unknown",
+                     type(symbols).__name__)
+            return WatchlistRead.unavailable("malformed_payload")
         for entry in symbols:
+            entries_seen += 1
             if not isinstance(entry, dict):
                 continue
             raw = (entry.get("symbol") or "").strip().upper()
             if raw and raw not in seen:
                 seen.add(raw)
                 tickers.append(raw)
+
+    # Symbol rows that yield NO usable ticker are not an empty watchlist — they are a read whose
+    # shape we no longer understand. A `symbol` column renamed out from under this query would
+    # otherwise arrive as an authoritative empty and wipe the cooldown, which is the original
+    # defect in a narrower disguise. Zero ENTRIES is different, and stays honestly empty: that is
+    # a real container the operator has simply not put anything in.
+    if entries_seen and not tickers:
+        log.info("watchlist_sentinel: %d symbol row(s) yielded no usable ticker — watchlist unknown",
+                 entries_seen)
+        return WatchlistRead.unavailable("no_usable_symbols")
 
     tickers.sort()
     log.info("watchlist_sentinel: %d unique ticker(s) in operator watchlist", len(tickers))
@@ -463,13 +478,23 @@ def _record_unavailable_source(today_str: str, read: WatchlistRead, dry_run: boo
     if dry_run:
         return
     existing: dict = {}
-    try:
-        if _STATES_PATH.exists():
+    if _STATES_PATH.exists():
+        try:
             loaded = json.loads(_STATES_PATH.read_text())
-            if isinstance(loaded, dict):
-                existing = loaded
-    except Exception as exc:  # noqa: BLE001 — a corrupt file must not cost us the health stamp
-        log.debug("watchlist_sentinel: could not read states for source stamp (%s)", exc)
+        except Exception as exc:  # noqa: BLE001
+            # The file is there but we cannot read it. REFUSE to write: rewriting it with only a
+            # health stamp would turn a read problem into the exact data loss this whole change
+            # exists to prevent, and would destroy bytes a human might still recover. The stamp is
+            # a nicety; the state is the point.
+            log.warning("watchlist_sentinel: states file unreadable (%s) — not stamping source, "
+                        "leaving the file untouched", exc)
+            return
+        if isinstance(loaded, dict):
+            existing = loaded
+        else:
+            log.warning("watchlist_sentinel: states file holds %s, not an object — not stamping "
+                        "source, leaving the file untouched", type(loaded).__name__)
+            return
     existing["source"] = _source_envelope(read, today_str)
     _ALERTS_DIR.mkdir(parents=True, exist_ok=True)
     _STATES_PATH.write_text(json.dumps(existing, separators=(",", ":")))
