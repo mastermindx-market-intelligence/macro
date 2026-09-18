@@ -162,10 +162,11 @@ Every capacity decision must use one common model. For a bounded observation win
 ```text
 lambda = admitted PR generations per hour
 W      = runner-minutes consumed per admitted generation
-C      = concurrently usable execution slots
+C      = nominal admitted execution slots
 A      = observed slot availability fraction after offline/ghost/refusal loss
 
-rho = lambda * W / (60 * C * A)
+usable_slots = C * A
+rho = lambda * W / (60 * usable_slots)
 ```
 
 A **PR generation** is an exact proof-producing head admitted to trusted execution. A
@@ -251,8 +252,9 @@ A reason is diagnostic metadata, not another selection authority.
 The existing latency-plan population definitions remain binding: **ordinary** means one
 to four selected packs without a global invalidator; **heavy** means eight or more packs
 or a declared full-suite path. After #7296 and the next ownership-splitting carriers,
-the program is not considered demand-stable if more than 20% of otherwise ordinary
-natural PR generations still widen to eight or more packs.
+the program is not considered demand-stable if more than 20% of natural product/maintenance
+PR generations that do not intentionally change a global authority surface still widen
+to eight or more packs.
 
 Every narrowing must continue to pass closure/representative-diff/unrun-suite guards and
 must name what it dropped. "Fewer tests" is never the optimization goal; **fewer
