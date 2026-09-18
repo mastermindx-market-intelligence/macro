@@ -1348,7 +1348,11 @@ def select_jobs(
     scoped_jobs = [job for job in jobs if job.is_scoped]
     unowned = [
         path for path in changed
-        if not any(_job_diff_match(job, [path]) for job in scoped_jobs)
+        if not (
+            bounded_manifest
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and not any(_job_diff_match(job, [path]) for job in scoped_jobs)
         and not _matches_any(PASSIVE_UNOWNED_PATTERNS, path)
     ]
     selected = [
@@ -1407,6 +1411,13 @@ def _additive_pytest_suite_enrollment(
         before_tokens = shlex.split(before, comments=False, posix=True)
         after_tokens = shlex.split(after, comments=False, posix=True)
     except ValueError:
+        return None
+    # Token equality is not enough for shell semantics: changing quoted to
+    # unquoted expansion can alter globbing/word-splitting while producing the
+    # same shlex tokens. Only the deliberately boring one-space command form is
+    # eligible for narrowing; anything quoted, multiline or reformatted keeps
+    # the historical full-suite invalidation.
+    if before != " ".join(before_tokens) or after != " ".join(after_tokens):
         return None
 
     def partition(tokens: list[str]) -> tuple[list[str], list[str]]:
