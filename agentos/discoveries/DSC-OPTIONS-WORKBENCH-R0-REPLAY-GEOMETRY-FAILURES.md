@@ -124,9 +124,11 @@ head `14f9a8d8...`. Fresh hosted CI `35328161453` is IN_PROGRESS at this checkpo
 
 Independent review `5245552829` remains the valid REQUEST_CHANGES receipt for the
 superseded head and its concrete defect. The exact defect is now closed by the
-red→green repair above; fresh independent semantic rereview of `14f9a8d8...` was
-requested in #608 comment `5727869977`. Until that rereview and exact-head CI conclude,
-keep the PR draft and do not merge/deploy.
+red→green repair above. Formal GitHub rereview of `14f9a8d8...` is requested from
+`MastermindX1`; routing correction is #608 comment `5728070280`. The PR author
+`mastermindx-3` and repaired-head source writer `mastermindx-2` are not used to
+self-approve. Until that rereview and exact-head CI conclude, keep the PR draft and
+do not merge/deploy.
 
 ## Macro #7271 — local gamma-regime consistency
 
@@ -198,10 +200,10 @@ paths since the prior hardening base:
 - integrated compileall and diff check: pass.
 
 Exact-head fences `35329144961` are **SUCCESS**. Exact-head CI `35329145976` is
-**IN_PROGRESS** at this checkpoint. Fresh independent numerical/source rereview was
-requested in #7279 comment `5727998620`; the prior `5726860312` and `5726974122`
-findings are preserved as the red problem statements, not treated as cleared review
-gates merely because source repair exists.
+**IN_PROGRESS** at this checkpoint. Formal independent numerical/source rereview is
+requested from `MastermindX1`; routing correction is #7279 comment `5728070883`.
+The prior `5726860312` and `5726974122` findings are preserved as the red problem
+statements, not treated as cleared review gates merely because source repair exists.
 
 The separate Greek field-completeness denominator from parent #603 remains outside this
 carrier and must not be edited until #7279 is accepted. No observed-dealer-inventory,
