@@ -203,9 +203,9 @@ Current code search found `analyze_document` / `analyze_vault_report` only insid
 
 So even after W2 and W3 release, the system can legitimately report `missing` for most reports unless an operational producer exists.
 
-### Proposed W4 producer — design only
+### Proposed operational producer seam — design only; NOT W4
 
-Add one bounded consumer under the existing Research Vault / Research Intelligence runtime owner:
+The frozen Qualitative Research architecture already reserves **W4 for the ZeroHedge qualitative adapter, W5 for longitudinal belief memory, and W6 for cross-document synthesis**. Do not reuse those wave identities. Add one bounded operational producer seam under the existing Research Vault / Research Intelligence runtime owner:
 
 ```
 eligible current Vault report
@@ -275,7 +275,7 @@ Release/qualify:
 2. #7079 same-head fresh current-base proof/release;
 3. #7230 W2 release;
 4. existing W3 Brain consumer;
-5. one bounded W4 producer;
+5. one bounded W1→W2 operational producer seam (unnumbered; not frozen W4);
 6. one permitted real company question -> useful answer -> original inspection.
 
 ### Stage B — second account monthly pilot
@@ -313,6 +313,6 @@ Do not poll or rerun unchanged external release gates as a substitute for work. 
 
 After the incumbent release gates move, consume them in dependency order and commission/adopt W3 under the existing Brain/Vault owner.
 
-Independent now: freeze the W4 producer contract against W1/W2 and prepare a small real-task corpus that contains (a) one current company question, (b) one revision pair, (c) one independent-source disagreement, and (d) one long-report qualification. Do not implement a second semantic plane.
+Independent now: freeze the unnumbered W1→W2 producer contract against W1/W2 and the frozen Qualitative Research architecture, and prepare a small real-task corpus that contains (a) one current company question, (b) one revision pair, (c) one independent-source disagreement, and (d) one long-report qualification. Do not implement a second semantic plane.
 
 The parent mission remains MORE_WORK_EXISTS / unaccepted.
