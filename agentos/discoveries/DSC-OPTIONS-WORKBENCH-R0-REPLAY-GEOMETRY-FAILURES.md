@@ -8,10 +8,10 @@ claim: >
   none of these slices is production acceptance or full Quanted parity.
 falsifier: >
   Terminal #608 at 1f94c551ff997a50dc915a3d7565d626d89f87c4 fails its mounted
-  replay/contract regressions or current-base integrated browser matrix; Macro #7271's
-  modeled regime disagrees with its own gamma curve at spot; or Macro #7279 is promoted
-  without resolving review comments 5724395435 and 5724455441 and proving a coherent
-  valuation/source/publication clock path.
+  replay/contract regressions, exact-head hosted CI or current-base integrated browser
+  matrix; Macro #7271's modeled regime disagrees with its own gamma curve at spot; or
+  Macro #7279 is promoted without resolving review comments 5724395435, 5724455441 and
+  5724614973 and proving coherent trade/quote/valuation/publication clock identities.
 so_what: >
   Continue the existing carriers and release gates. Do not redo the old replay/tool
   blocker, geometry repair or gamma-sign repair. Keep #7279 held until its source-clock
@@ -21,9 +21,10 @@ kind: runtime
 verified_at: 2026-09-17
 verified_by: >
   Terminal #608 current head 1f94c551ff997a50dc915a3d7565d626d89f87c4;
-  current-base proof fb361092f4a17c12c303f0de13882b8100143811;
-  Macro #7271 current head cadb7ec4a5029150dea3eb9445d9481f3f2aff66;
-  Macro #7279 review comments 5724395435 and 5724455441.
+  hosted CI run 35301191243 SUCCESS; current-base proof
+  fb361092f4a17c12c303f0de13882b8100143811; Macro #7271 current head
+  cadb7ec4a5029150dea3eb9445d9481f3f2aff66; Macro #7279 review comments
+  5724395435, 5724455441 and 5724614973; parent #603 entitlement ruling 5724610745.
 scope:
   - terminal
   - options-intelligence
@@ -94,8 +95,14 @@ Fresh latest-base proof for the exact current head:
 The earlier full responsive run produced 820 passing / 279 skipped / four failures
 outside #608's changed paths. The tablet crosshair case passed on protected master and
 on the then-current integrated candidate, so that broad run is not evidence that the
-R0 replay candidate itself regressed that owner. Exact-head hosted CI remains the
-binding repository gate for the current head.
+R0 replay candidate itself regressed that owner.
+
+Exact-head hosted GitHub Actions run `35301191243` is now **SUCCESS** for current head
+`1f94c551ff997a50dc915a3d7565d626d89f87c4`: unit/typecheck, Quote Hub,
+ingest/signal-layer, desktop, tablet, mobile and serial responsive shards all passed,
+and the final Terminal typecheck+tests aggregation gate passed. Repository/compatibility
+CI is therefore closed for this immutable candidate; independent review and production
+acceptance remain separate gates.
 
 Independent exact-head review remains unresolved. The existing bounded review brief in
 #608 prefers Terra and is WAITING_CAPACITY / needs_placement. A GitHub `@codex review`
@@ -144,9 +151,13 @@ basis and republishes multiple roots under one later global clock.
 Required same-carrier repair:
 - value each root against the clock at which its fetched source is actually available,
   or enforce a true common cutoff;
-- preserve valuation/source/publication clocks as distinct evidence;
+- preserve trade event time, actual NBBO `quote_timestamp`, fetched availability /
+  valuation time and later publication/build time as distinct evidence;
+- never relabel `trade_timestamp` as `quote_at`; protected `collectors/thetadata.py`
+  documents both raw v3 clocks but its current bulk projection drops `quote_timestamp`;
 - never make an older root fresh because another root returned later;
-- include regular-close, early-close, unequal-root and after-close regressions;
+- include regular-close, early-close, unequal-root, after-close and
+  `trade_timestamp != quote_timestamp` regressions;
 - retain existing replay/storage/calendar owners rather than creating another
   freshness plane.
 
@@ -154,6 +165,23 @@ The original #7279 head therefore remains **REQUEST_CHANGES / DO NOT MERGE** reg
 of its earlier green tests. Same-carrier local repair activity has begun, but no new
 committed exact head or accepted repair result is recorded here yet. Do not promote
 working-tree bytes or partial tests into canonical completion.
+
+## R1 entitlement and source boundary
+
+Parent #603 ruling `5724610745` freezes two capability classes. The current first useful
+vertical remains SPY on the modeled surface plane; exact Terminal #608 still materializes
+`SPY / QQQ / IWM`. Macro has additional derived/historical index-option stores, including
+SPX-family rows in some owners, but those are assumption-signed display context and do
+not become Quanted-style measured participant inventory. Raw `thetadata_eod/**` is
+classified `VENDOR_RAW / OPERATOR_ONLY` in the current delivery-plane source, with no
+repository evidence of signed browser/public redistribution rights.
+
+The binding competitor teardown records Quanted's SPX/VIX MM/Firm/BD/Customer product
+as separately licensed CBOE signed positioning while its ticker product is OPRA/OI
+based. Therefore workflow/interaction quality may advance now on lawful modeled inputs,
+but participant-labelled signed SPX/VIX remains an explicit entitlement/input gate.
+Existing OI-derived SPX data is not an acceptable cosmetic substitute and no provider
+purchase is implied before the exact missing entitlement is qualified.
 
 ## Completion boundary and next action
 
