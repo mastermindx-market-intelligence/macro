@@ -81,6 +81,22 @@ except ImportError:  # pragma: no cover - environment guard
     print("::error title=agentos::PyYAML is required (pip install pyyaml)", flush=True)
     raise SystemExit(1)
 
+# PyYAML's C-backed SafeLoader preserves SafeLoader values while avoiding the
+# pure-Python scanner/parser cost on the ~1,100 Agent OS records. Malformed
+# YAML deliberately falls back through yaml.safe_load so the historical
+# diagnostic wording remains stable instead of changing with the C parser.
+_FAST_YAML_LOADER = getattr(yaml, "CSafeLoader", None)
+
+
+def _yaml_safe_load(text: str) -> Any:
+    if _FAST_YAML_LOADER is None:
+        return yaml.safe_load(text)
+    try:
+        return yaml.load(text, Loader=_FAST_YAML_LOADER)
+    except yaml.YAMLError:
+        return yaml.safe_load(text)
+
+
 _ROOT = Path(__file__).resolve().parent.parent
 # Pinned at module scope, before any in-repo import.  Run as `python3 scripts/agentos.py`,
 # sys.path[0] is scripts/, so `from scripts import ...` resolves against whatever `scripts`
@@ -189,7 +205,7 @@ def parse_record(path: Path) -> tuple[dict[str, Any], str]:
     if not match:
         raise ValueError("no YAML frontmatter block (expected a leading '---' fence)")
     try:
-        data = yaml.safe_load(match.group(1))
+        data = _yaml_safe_load(match.group(1))
     except yaml.YAMLError as exc:
         raise ValueError(f"malformed YAML frontmatter: {exc}") from exc
     if not isinstance(data, dict):
@@ -202,7 +218,7 @@ def _load_programs() -> set[str] | None:
     if not _PROGRAMS.exists():
         return None
     try:
-        doc = yaml.safe_load(_PROGRAMS.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_PROGRAMS.read_text(encoding="utf-8"))
     except (yaml.YAMLError, OSError):
         return None
     programs = doc.get("programs") if isinstance(doc, dict) else None
@@ -235,7 +251,7 @@ def _load_program_registry(path: Path = _PROGRAMS) -> dict[str, Any]:
     if not path.exists():
         return unavailable("program_registry_unavailable")
     try:
-        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(path.read_text(encoding="utf-8"))
     except UnicodeDecodeError:
         return unavailable("program_registry_malformed")
     except OSError:
@@ -1437,7 +1453,7 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
         text, ref = found
         source = f" (from {ref})"
     try:
-        doc = yaml.safe_load(text)
+        doc = _yaml_safe_load(text)
     except yaml.YAMLError as exc:
         degraded.add(
             f"{label}{source} unreadable ({exc.__class__.__name__}) — p0 ids unvalidated")
@@ -2811,7 +2827,7 @@ def _index_config() -> tuple[dict[str, dict[str, list[Any]]], str | None]:
     projects: dict[str, dict[str, list[Any]]] = {}
     error: str | None = None
     try:
-        doc = yaml.safe_load(_CONTEXT_INDEX_CONFIG.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_CONTEXT_INDEX_CONFIG.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         doc = None
         error = f"{_CONTEXT_INDEX_CONFIG_REL} unreadable ({exc.__class__.__name__})"
@@ -3233,7 +3249,7 @@ def _load_kill_rows(degraded: Degraded) -> dict[str, dict[str, Any]] | None:
         degraded.add(f"{_rel(_KILL_REGISTRY)} absent — DNR citations unresolved")
         return None
     try:
-        doc = yaml.safe_load(_KILL_REGISTRY.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_KILL_REGISTRY.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         degraded.add(
             f"{_rel(_KILL_REGISTRY)} unreadable ({exc.__class__.__name__}) — "
@@ -3257,7 +3273,7 @@ def _load_program_row(program: str, degraded: Degraded) -> dict[str, Any] | None
         degraded.add(f"{_PROGRAMS_REL} absent — program context omitted")
         return None
     try:
-        doc = yaml.safe_load(_PROGRAMS.read_text(encoding="utf-8"))
+        doc = _yaml_safe_load(_PROGRAMS.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         degraded.add(
             f"{_PROGRAMS_REL} unreadable ({exc.__class__.__name__}) — program omitted"
