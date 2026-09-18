@@ -61,6 +61,22 @@ waves:
       tuples, atomic duplicate paint, zero nb-px, zero live.js fetches, ExtFeed
       canary at full cap 30->30 zero eviction, Polygon +35 bounded, 68/68 ticker
       links, 0 console errors, route median 0.52s. Receipts on #6741.
+  - id: R1A-T-S
+    title: Terminal extended-hours stability under shared feed churn
+    status: in_progress
+    pr: 616
+    next_action: >
+      SOURCE_ACCEPTED at protected Terminal merge 82ca818be7ea592f7cdb1fb6731cc19f94610593 after exact-head CI and browser proof:
+      active-first ExtFeed demand finishes MRU, regular quote reads no longer churn the 30-slot ext
+      subscription LRU, subscription eviction retains a bounded last-good print behind session and
+      90-minute gates, transport failure preserves client state through HTTP 503, and stale retained
+      providers cannot shadow a fresh fallback. Production remains RED at deployment marker
+      6f2e23951c8981acfc68609526d74d3e8ffbe5b5, whose real public QCOM Terminal request omits
+      view=regular. Consume 82ca818be7ea592f7cdb1fb6731cc19f94610593 only through the existing exact-SHA release carrier
+      terminal issue #483; the moving-master VPS wrapper is not a fallback. Then prove the accepted
+      deployment identity plus desktop/watchlist and tablet/mobile retain-through-503/recovery paths
+      before marking this wave done. Unsupported 20:00-04:00 ET coverage remains an honest null when
+      no entitled overnight source exists.
   - id: R1B
     title: Ordered delta transport (SSE) — measurement-gated decision
     status: todo
