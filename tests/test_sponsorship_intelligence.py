@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 from datetime import date
+from pathlib import Path
 import json
 
 import pandas as pd
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from engine import altdata, altdata_signals, intel_discovery, intelligence
 from scripts.build_portfolio_ctx import build_ctx
@@ -82,3 +84,33 @@ def test_intel_style_named_sponsorship_survives_to_user_brief(monkeypatch):
                for line in english)
     assert any("Congress disclosure: Nancy Pelosi" in line and "$500,001 - $1,000,000" in line
                for line in english)
+
+
+
+def test_measuring_top_officer_discovery_renders_without_numeric_score():
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(str(root / "templates")),
+                      autoescape=select_autoescape(["html", "xml"]))
+    env.globals["region_for"] = lambda sym: "us"
+    cand = {"ticker": "INTC", "price": 95.0, "discovery": {
+        "source": "top_officer_buy", "disc_score": 0.45,
+        "ranking_eligible": False, "qualification_status": "measuring",
+        "off_desk": False, "reason": "CEO open-market buy $9,999,985",
+    }}
+    hub = {
+        "command": [], "emerging": [], "discovery": [cand], "exhausted": [],
+        "catalysts": [], "track_record": None, "desk_grader": {}, "sector_heat": [],
+        "disclaimer": "", "n_universe": 1, "macro_context": {}, "desks": {},
+        "as_of": "2026-08-25", "counts": {}, "n_actionable": 0,
+        "n_emerging": 0, "n_discovery": 1,
+    }
+    html = env.get_template("intelligence_hub.html.j2").render(
+        hub=hub, built="2026-08-25T21:00:00+00:00", mode="intel_hub",
+        qledger_chips={}, china=None, market_pulse_roster=[])
+    assert "top officer buy" in html
+    assert ">measuring<" in html
+    assert "Measuring only — not used in Command ranking" in html
+    # The heuristic 0.45 strength is an ordering aid while measuring; it must not be
+    # rendered as the normal Discovery numeric score.
+    card = html.split('class="card ecard dcard"', 1)[1].split('</div>', 4)
+    assert 'class="dscore">45' not in "</div>".join(card)
