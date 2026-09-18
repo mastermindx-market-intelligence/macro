@@ -251,6 +251,8 @@
       : (el.hasAttribute("data-bare")
           ? fmtPrice(r.price, mkt).replace(/^\$/, "")
           : fmtPrice(r.price, mkt));
+    el.classList.remove("mx-skel");
+    el.removeAttribute("aria-busy");
     var sess = sessions && sessions[regionOf(sym)];
     var closed = sess && sess.open === false;
     var stale = isStale(mkt, r.ageMin, r.stale);
@@ -277,6 +279,8 @@
     el.classList.remove("skel");
     el.removeAttribute("aria-busy");
     paintChg(el, r.chg, isStale(mkt, r.ageMin, r.stale), r);
+    el.classList.remove("mx-skel");
+    el.removeAttribute("aria-busy");
   }
   function patchSymbol(sym, r, sessions, ovT) {
     var touched = false;

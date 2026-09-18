@@ -367,6 +367,79 @@ def test_earnings_table_cap_and_order(tmp_path):
     assert out["cap"] == 5
 
 
+def test_publish_ec_scale_one_vocabulary():
+    """W7 M3: signed −1..1 and desk 0–30 both print the same 0–100 tone."""
+    assert eq.publish_ec_tone(1.0, native="signed1") == 100.0
+    assert eq.publish_ec_tone(0.0, native="signed1") == 50.0
+    assert eq.publish_ec_tone(-1.0, native="signed1") == 0.0
+    assert eq.publish_ec_tone(30, native="desk30") == 100.0
+    assert eq.publish_ec_tone(12, native="desk30") == 50.0
+    # Desk 20/11/4 (retired gauge cutoffs) through the publish transform.
+    assert eq.publish_ec_tone(20, native="desk30") == 72.2
+    assert eq.publish_ec_tone(11, native="desk30") == 47.2
+    assert eq.publish_ec_tone(4, native="desk30") == 27.8
+    assert eq.publish_ec_tone(8, native="desk30") == 38.9
+    assert eq.publish_ec_tone(30, native="desk30") == eq.publish_ec_tone(
+        1.0, native="signed1")
+    assert eq.publish_ec_result(8.4, native="ten") == 8.4
+    assert eq.publish_ec_result(12, native="signed12") == 10.0
+    assert eq.publish_ec_result(-12, native="signed12") == 0.0
+    assert eq.publish_ec_result(0, native="signed12") == 5.0
+    assert eq.publish_ec_tone(None, native="signed1") is None
+    assert eq.publish_ec_result(None, native="ten") is None
+
+
+def test_prophet_stage_inputs_rejects_out_of_native_ec_sent(tmp_path, caplog):
+    """W7 r4 m1: native desk is ~−10..30; a 0–100 value must not enter the leash."""
+    import logging
+
+    import engine.prophet_stage_inputs as psi
+
+    idx = {
+        "AAA": pd.DataFrame({
+            "ticker": ["AAA"],
+            "call_date": pd.to_datetime(["2026-01-01"]),
+            "earnings_call_sent": [80.0],
+        }),
+    }
+    with caplog.at_level(logging.WARNING, logger="engine.prophet_stage_inputs"):
+        assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") is None
+    assert any("outside native" in r.message for r in caplog.records)
+
+    idx["AAA"] = idx["AAA"].assign(earnings_call_sent=24.0)
+    assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") == 24.0
+    idx["AAA"] = idx["AAA"].assign(earnings_call_sent=-10.0)
+    assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") == -10.0
+    idx["AAA"] = idx["AAA"].assign(earnings_call_sent=30.0)
+    assert psi.ec_sent_at_entry(idx, "AAA", "2026-02-01") == 30.0
+
+    p = tmp_path / "ec.parquet"
+    pd.DataFrame({
+        "document_ticker": ["AAA", "BBB"],
+        "call_date": pd.to_datetime(["2026-01-01", "2026-01-02"]),
+        "earnings_call_sent": [80.0, 12.0],
+    }).to_parquet(p, index=False)
+    caplog.clear()
+    with caplog.at_level(logging.WARNING, logger="engine.prophet_stage_inputs"):
+        table, _src = psi.load_ec_table_with_source(p)
+    sent = table.set_index("ticker")["earnings_call_sent"]
+    assert pd.isna(sent.loc["AAA"])
+    assert float(sent.loc["BBB"]) == 12.0
+    assert any("dropping" in r.message for r in caplog.records)
+
+
+def test_earnings_table_publishes_one_ec_scale(tmp_path):
+    """W7 M3: earnings_table.json uses the same 0–100 / 0–10 vocabulary."""
+    recs = [_call("NEW", "Newest", "Hardware", "2026-07-17", 30, 12, 42)]
+    _write_backfill(tmp_path, recs)
+    out = eq.earnings_table(root=tmp_path, cap=5, write=False)
+    r = out["rows"][0]
+    assert r["ec_sent"] == 100.0
+    assert r["ec_perf"] == 10.0
+    assert 0.0 <= r["ec_sent"] <= 100.0
+    assert 0.0 <= r["ec_perf"] <= 10.0
+
+
 # ── 6. fail-open on empty / missing seed ────────────────────────────────────
 def test_all_surfaces_fail_open_empty(tmp_path):
     # No backfill parquet written at all.
