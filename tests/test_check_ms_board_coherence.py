@@ -67,6 +67,34 @@ def test_garbled_board_is_loud():
     assert v and "unparseable" in v[0]
 
 
+def test_macro_path_cannot_lag_settled_board_date():
+    html = """
+    <span id="regime-asof">2026-09-14</span>
+    <span id="ms-score">56</span>
+    <svg class="mx5-path-svg" data-points='[{"d":"2026-09-11","s":66,"v":"Risk-on"}]'></svg>
+    """
+    v = guard.check_text("site/macro.html", html)
+    assert len(v) == 1 and "stale versus settled board" in v[0]
+
+
+def test_non_macro_path_may_keep_independent_history_clock():
+    html = """
+    <span id="regime-asof">2026-09-14</span>
+    <span id="ms-score">56</span>
+    <svg class="mx5-path-svg" data-points='[{"d":"2026-09-11","s":66,"v":"Risk-on"}]'></svg>
+    """
+    assert guard.check_text("site/china.html", html) == []
+
+
+def test_macro_path_uses_measured_blend_when_display_score_is_capped():
+    html = """
+    <span id="regime-asof">2026-09-08</span>
+    <span id="ms-score" data-measured-score="77">59</span>
+    <svg class="mx5-path-svg" data-points='[{"d":"2026-09-08","s":77,"v":"Risk-on"}]'></svg>
+    """
+    assert guard.check_text("site/macro.html", html) == []
+
+
 # ── 2. drift-pin against engine/market_state.py ──────────────────────────────
 
 ms = pytest.importorskip("engine.market_state", reason="engine deps (pandas) unavailable")
