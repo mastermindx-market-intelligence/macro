@@ -15,6 +15,9 @@ import sys
 from pathlib import Path
 from typing import Any, Sequence
 
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine.research_intelligence.projection import summary_points
 from engine.research_intelligence.store import (
     ARTIFACT_MAX_BYTES,
