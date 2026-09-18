@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T11:37:48.386190+00:00",
-  "count": 2357,
+  "generated_at": "2026-09-18T12:08:23.053301+00:00",
+  "count": 2358,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -824,6 +824,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ya9wdhgz1c6-a265c0",
+      "title": "European Daily BoE Recap—Opening the Door to a November Hike",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:39:29Z",
+      "summary_points": [
+        "Geopolitical Risk Impact: Middle East conflict drives MPC tightening signals; November 2026 rate hike (25bp) likely if energy prices persist, overriding softer data risks.",
+        "QT Policy Execution: BoE to unwind £369bn in gilts (£147bn longer-dated, £222bn shorter-dated) by 2034 at £20bn/year pace, pausing APF auctions and testing new gilt sales model.",
+        "Rate Forecast Discrepancy: Goldman Sachs forecasts 4% Bank Rate by November (25bp hike), with probability-weighted path below market pricing, signaling potential market overestimation of tightening."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
