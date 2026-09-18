@@ -1,0 +1,111 @@
+{
+  "all_mutations_caught": true,
+  "mutations": [
+    {
+      "caught_by_test": true,
+      "exit_code": 1,
+      "mutation": "calendar_days_replace_exchange_sessions",
+      "output_tail": [
+        "F                                                                        [100%]",
+        "=================================== FAILURES ===================================",
+        "_______ test_nth_session_after_uses_exchange_sessions_not_calendar_days ________",
+        "tests/test_rotation_persistence_metrics.py:42: in test_nth_session_after_uses_exchange_sessions_not_calendar_days",
+        "    assert nth_session_after(date(2026, 9, 4), 1) == date(2026, 9, 8)",
+        "E   assert datetime.date(2026, 9, 5) == datetime.date(2026, 9, 8)",
+        "E    +  where datetime.date(2026, 9, 5) = nth_session_after(datetime.date(2026, 9, 4), 1)",
+        "E    +    where datetime.date(2026, 9, 4) = date(2026, 9, 4)",
+        "E    +  and   datetime.date(2026, 9, 8) = date(2026, 9, 8)",
+        "=========================== short test summary info ============================",
+        "FAILED tests/test_rotation_persistence_metrics.py::test_nth_session_after_uses_exchange_sessions_not_calendar_days",
+        "1 failed in 0.77s"
+      ],
+      "target_test": "tests/test_rotation_persistence_metrics.py::test_nth_session_after_uses_exchange_sessions_not_calendar_days"
+    },
+    {
+      "caught_by_test": true,
+      "exit_code": 1,
+      "mutation": "missing_endpoint_is_forward_filled",
+      "output_tail": [
+        "F                                                                        [100%]",
+        "=================================== FAILURES ===================================",
+        "____ test_build_surface_uses_exact_endpoint_dates_and_does_not_forward_fill ____",
+        "tests/test_rotation_persistence_metrics.py:160: in test_build_surface_uses_exact_endpoint_dates_and_does_not_forward_fill",
+        "    assert surface[\"1\"][\"pairs_eligible\"] == 1",
+        "E   assert 2 == 1",
+        "=========================== short test summary info ============================",
+        "FAILED tests/test_rotation_persistence_metrics.py::test_build_surface_uses_exact_endpoint_dates_and_does_not_forward_fill",
+        "1 failed in 0.36s"
+      ],
+      "target_test": "tests/test_rotation_persistence_metrics.py::test_build_surface_uses_exact_endpoint_dates_and_does_not_forward_fill"
+    },
+    {
+      "caught_by_test": true,
+      "exit_code": 1,
+      "mutation": "nonmonotone_half_life_is_forced",
+      "output_tail": [
+        "...F.                                                                    [100%]",
+        "=================================== FAILURES ===================================",
+        "_____ test_derive_half_life_keeps_invalid_curves_null[curve3-NON_MONOTONE] _____",
+        "tests/test_rotation_persistence_metrics.py:216: in test_derive_half_life_keeps_invalid_curves_null",
+        "    assert result[\"state\"] == reason",
+        "E   AssertionError: assert 'MEASURED' == 'NON_MONOTONE'",
+        "E     ",
+        "E     - NON_MONOTONE",
+        "E     + MEASURED",
+        "=========================== short test summary info ============================",
+        "FAILED tests/test_rotation_persistence_metrics.py::test_derive_half_life_keeps_invalid_curves_null[curve3-NON_MONOTONE]",
+        "1 failed, 4 passed in 0.32s"
+      ],
+      "target_test": "tests/test_rotation_persistence_metrics.py::test_derive_half_life_keeps_invalid_curves_null"
+    },
+    {
+      "caught_by_test": true,
+      "exit_code": 1,
+      "mutation": "research_output_gains_rank_authority",
+      "output_tail": [
+        "F                                                                        [100%]",
+        "=================================== FAILURES ===================================",
+        "__________________ test_cli_writes_strict_result_and_markdown __________________",
+        "tests/test_rotation_persistence_cli.py:105: in test_cli_writes_strict_result_and_markdown",
+        "    assert AUTHORITY == expected_authority",
+        "E   AssertionError: assert {'is_context_...': False, ...} == {'is_context_...': False, ...}",
+        "E     ",
+        "E     Omitting 6 identical items, use -vv to show",
+        "E     Differing items:",
+        "E     {'may_rank': True} != {'may_rank': False}",
+        "E     Use -v to get more diff",
+        "=========================== short test summary info ============================",
+        "FAILED tests/test_rotation_persistence_cli.py::test_cli_writes_strict_result_and_markdown",
+        "1 failed in 1.56s"
+      ],
+      "target_test": "tests/test_rotation_persistence_cli.py::test_cli_writes_strict_result_and_markdown"
+    },
+    {
+      "caught_by_test": true,
+      "exit_code": 1,
+      "mutation": "output_path_enters_data_owner_root",
+      "output_tail": [
+        "F                                                                        [100%]",
+        "=================================== FAILURES ===================================",
+        "___________ test_validate_output_dir_refuses_production_owner_roots ____________",
+        "tests/test_rotation_persistence_cli.py:149: in test_validate_output_dir_refuses_production_owner_roots",
+        "    with pytest.raises(ContractError, match=\"forbidden owner root\"):",
+        "         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "E   Failed: DID NOT RAISE ContractError",
+        "=========================== short test summary info ============================",
+        "FAILED tests/test_rotation_persistence_cli.py::test_validate_output_dir_refuses_production_owner_roots",
+        "1 failed in 0.31s"
+      ],
+      "target_test": "tests/test_rotation_persistence_cli.py::test_validate_output_dir_refuses_production_owner_roots"
+    }
+  ],
+  "notes": [
+    "Each mutation ran in an isolated temporary copy; the source worktree was not modified.",
+    "Exit code 1 with the named targeted pytest failure is the expected successful mutation-kill receipt."
+  ],
+  "observed_at": "2026-09-11T04:12:03Z",
+  "operation_key": "leadership-persistence-rph0-20260910-sol-001",
+  "schema_version": "research.rotation_persistence.mutation_self_review.v1",
+  "source_head": "254641cbbe2017bd57e2ae7018417b42964cf956",
+  "source_tree": "d9284540feec918533615dbc94a35ed17c37a7cc"
+}
