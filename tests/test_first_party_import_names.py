@@ -115,7 +115,6 @@ def _python_files(root: Path) -> list[Path]:
     return sorted(out)
 
 
-@lru_cache(maxsize=None)
 def _parse(path: Path) -> ast.Module | None:
     try:
         return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
