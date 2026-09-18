@@ -2381,7 +2381,9 @@ def run_cycle(
                 from scripts.build_flow_surface import extract_cycle_quotes
                 near_cap = cfg.get("near_dte_cap_days", 90)
                 quotes = extract_cycle_quotes(
-                    calls_df, puts_df, session_date=session_date,
+                    calls_df, puts_df,
+                    session_date=session_date,
+                    observed_at=cycle_started_at,
                     near_dte_cap_days=int(near_cap) if near_cap is not None else None)
                 if quotes:
                     surface_quotes[root.upper()] = quotes

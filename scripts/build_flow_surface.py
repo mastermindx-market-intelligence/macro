@@ -224,23 +224,41 @@ def net_prem_by_strike(root_strikes: dict) -> dict[float, float]:
 # aggregates per-strike GEX/DEX/VANNA/CHARM using the EOD engine's dealer conventions.
 
 
-def _year_fraction(exp_str: str, session_date: str) -> float | None:
-    """Year-fraction to expiry (T) from an expiration date and the session date.
+def _year_fraction(exp_str: str, observed_at: str) -> float | None:
+    """Actual year-fraction from an observation to the expiration session close.
 
-    Both ISO 'YYYY-MM-DD' (or a timestamp whose first 10 chars are the date). 0DTE →
-    a small positive floor (never 0 or negative, which would blow up BS). Returns None on
-    an unparseable/expired date (past the session date).
+    Surface Greeks are observation-time objects. The current surface roots are US
+    cash-equity/ETF options, so maturity is the underlying cash-session close for the
+    expiration date: 16:00 ET normally and 13:00 ET on the existing early-close calendar.
+    The numerical Greek engine owns its separate one-minute MIN_T solve guard; this
+    producer reports actual remaining time and drops contracts at/after maturity.
+
+    ``observed_at`` must be an offset-aware ISO timestamp (the poller's canonical
+    ``cycle_started_at``). Non-session expirations, malformed/naive observations and
+    already-matured contracts fail closed with ``None``.
     """
     try:
         exp_d = datetime.fromisoformat(str(exp_str)[:10]).date()
-        sess_d = datetime.fromisoformat(str(session_date)[:10]).date()
+        observed = datetime.fromisoformat(str(observed_at).replace("Z", "+00:00"))
     except (TypeError, ValueError):
         return None
-    days = (exp_d - sess_d).days
-    if days < 0:
+    if observed.tzinfo is None:
         return None
-    # 0DTE carries intraday time value; floor at ~4 hours so late-day 0DTE greeks stay finite.
-    return max(days / 365.0, (4.0 / 24.0) / 365.0)
+
+    # Reuse the existing US cash-session clock/calendar rather than minting a second
+    # early-close table inside the options surface producer.
+    from lib.nyse_calendar import is_session
+    from engine.session_digest import session_window_et
+
+    if not is_session(exp_d):
+        return None
+    _opened, maturity = session_window_et(exp_d)
+    remaining_sec = (
+        maturity.astimezone(timezone.utc) - observed.astimezone(timezone.utc)
+    ).total_seconds()
+    if remaining_sec <= 0:
+        return None
+    return remaining_sec / (365.0 * 24.0 * 60.0 * 60.0)
 
 
 def extract_cycle_quotes(
@@ -248,6 +266,7 @@ def extract_cycle_quotes(
     puts_df,
     *,
     session_date: str,
+    observed_at: str,
     near_dte_cap_days: int | None = 90,
 ) -> list[dict]:
     """Freshest per-contract NBBO mid this cycle, from the raw trade-tape frames.
@@ -259,12 +278,25 @@ def extract_cycle_quotes(
     mid = (bid+ask)/2. Contracts with no positive bid/ask, or an expiry beyond
     near_dte_cap_days (the poller's chain coverage cap), are dropped.
 
-    Returns a list of {exp_str, exp_years, strike, right('C'/'P'), mid} dicts — the input
+    observed_at is the poller's canonical cycle clock and determines actual remaining
+    time to the expiration session close. Returns a list of
+    {exp_str, exp_years, strike, right('C'/'P'), mid} dicts — the input
     compute_greek_grids expects (minus oi, which is joined separately from the OI snapshot).
     Coverage honesty is intrinsic: a strike with no traded contract this cycle simply is
     not in the list, so it contributes 0 and is not counted toward greek coverage.
     """
     import pandas as pd  # local import — pure-python callers (dry-run) never hit this
+
+    # The frame's session identity and the clock driving time-to-expiry must agree.
+    # A historical/diagnostic date paired with today's clock is unavailable, not a
+    # license to manufacture a maturity from two different information sets.
+    try:
+        session_d = datetime.fromisoformat(str(session_date)[:10]).date()
+        observed = datetime.fromisoformat(str(observed_at).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return []
+    if observed.tzinfo is None or observed.astimezone(ET).date() != session_d:
+        return []
 
     frames = []
     for df in (calls_df, puts_df):
@@ -298,7 +330,7 @@ def extract_cycle_quotes(
     out: list[dict] = []
     for row in last.itertuples(index=False):
         exp_str = row.cexp
-        T = _year_fraction(exp_str, session_date)
+        T = _year_fraction(exp_str, observed_at)
         if T is None:
             continue
         if near_dte_cap_days is not None and T > (near_dte_cap_days + 1) / 365.0:

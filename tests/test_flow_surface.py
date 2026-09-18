@@ -625,6 +625,56 @@ def test_frame_for_stamp_surfaces_walls_and_coverage():
     assert latest["coverage"] == {"greeks": 1.0}
 
 
+# ── 0DTE expiry clock: observation-time truth, not a fixed same-day floor ───────────
+
+def test_year_fraction_0dte_tracks_remaining_et_session_time():
+    import scripts.build_flow_surface as bfs
+
+    # SPY/QQQ/IWM daily ETF expiries settle from the 16:00 ET underlying close.
+    # July is EDT: 14:00Z = 10:00 ET, so six hours remain — never a fixed four.
+    morning = bfs._year_fraction("2026-07-06", "2026-07-06T14:00:00Z")
+    assert morning is not None
+    assert abs(morning - (6.0 / 24.0) / 365.0) < 1e-12
+
+    # At 15:59 ET, only one minute remains. The numerical engine owns its own MIN_T
+    # guard; the data contract must report the real remaining maturity.
+    last_minute = bfs._year_fraction("2026-07-06", "2026-07-06T19:59:00Z")
+    assert last_minute is not None
+    assert abs(last_minute - (1.0 / 60.0 / 24.0) / 365.0) < 1e-12
+
+    # Once the settlement reference close is reached, the contract is no longer an
+    # intraday Greek input for this surface snapshot.
+    assert bfs._year_fraction("2026-07-06", "2026-07-06T20:00:00Z") is None
+
+
+def test_year_fraction_respects_the_existing_early_close_calendar():
+    import scripts.build_flow_surface as bfs
+
+    # Friday after Thanksgiving 2026 is a canonical 13:00 ET close in
+    # engine.session_digest. At 12:59 ET exactly one minute remains.
+    last_minute = bfs._year_fraction("2026-11-27", "2026-11-27T17:59:00Z")
+    assert last_minute is not None
+    assert abs(last_minute - (1.0 / 60.0 / 24.0) / 365.0) < 1e-12
+    assert bfs._year_fraction("2026-11-27", "2026-11-27T18:00:00Z") is None
+
+    # An exchange holiday is not a lawful cash-equity option maturity date.
+    assert bfs._year_fraction("2026-07-03", "2026-07-02T14:00:00Z") is None
+
+
+def test_year_fraction_uses_elapsed_clock_across_dates_and_dst():
+    import scripts.build_flow_surface as bfs
+
+    # 10:00 ET Monday to 16:00 ET Tuesday is 30 calendar hours, not an integer day.
+    next_day = bfs._year_fraction("2026-07-07", "2026-07-06T14:00:00Z")
+    assert next_day is not None
+    assert abs(next_day - (30.0 / 24.0) / 365.0) < 1e-12
+
+    # January is EST: 15:00Z = 10:00 ET. Zone handling must still yield six hours.
+    winter = bfs._year_fraction("2026-01-09", "2026-01-09T15:00:00Z")
+    assert winter is not None
+    assert abs(winter - (6.0 / 24.0) / 365.0) < 1e-12
+
+
 # ── (g4) extract_cycle_quotes: freshest NBBO per contract from the tape ──────────────
 
 def test_extract_cycle_quotes_takes_freshest_nbbo():
@@ -641,7 +691,8 @@ def test_extract_cycle_quotes_takes_freshest_nbbo():
         {"expiration": "2026-07-13", "strike": 595.0, "right": "P",
          "trade_timestamp": "2026-07-06T10:02:00", "bid": 2.0, "ask": 2.2},
     ])
-    q = extract_cycle_quotes(calls, puts, session_date="2026-07-06", near_dte_cap_days=90)
+    q = extract_cycle_quotes(calls, puts, session_date="2026-07-06",
+                             observed_at="2026-07-06T14:00:00Z", near_dte_cap_days=90)
     by_key = {(d["strike"], d["right"]): d for d in q}
     # 600C mid = (6.0+6.4)/2 = 6.2 (the fresher fill), NOT 5.1.
     assert abs(by_key[(600.0, "C")]["mid"] - 6.2) < 1e-9
@@ -666,14 +717,28 @@ def test_extract_cycle_quotes_drops_bad_quotes_and_expired():
         {"expiration": "2026-07-13", "strike": 605.0, "right": "P",
          "trade_timestamp": "2026-07-06T10:00:00", "bid": 4.0, "ask": 4.2},
     ])
-    q = extract_cycle_quotes(tape, None, session_date="2026-07-06", near_dte_cap_days=90)
+    q = extract_cycle_quotes(tape, None, session_date="2026-07-06",
+                             observed_at="2026-07-06T14:00:00Z", near_dte_cap_days=90)
     assert len(q) == 1
     assert q[0]["strike"] == 605.0 and q[0]["right"] == "P"
 
 
+def test_extract_cycle_quotes_rejects_a_clock_from_another_session():
+    tape = pd.DataFrame([{
+        "expiration": "2026-07-13", "strike": 605.0, "right": "P",
+        "trade_timestamp": "2026-07-06T10:00:00", "bid": 4.0, "ask": 4.2,
+    }])
+    assert extract_cycle_quotes(
+        tape, None, session_date="2026-07-07",
+        observed_at="2026-07-06T14:00:00Z", near_dte_cap_days=90,
+    ) == []
+
+
 def test_extract_cycle_quotes_empty_inputs():
-    assert extract_cycle_quotes(None, None, session_date="2026-07-06") == []
-    assert extract_cycle_quotes(pd.DataFrame(), pd.DataFrame(), session_date="2026-07-06") == []
+    assert extract_cycle_quotes(None, None, session_date="2026-07-06",
+                                observed_at="2026-07-06T14:00:00Z") == []
+    assert extract_cycle_quotes(pd.DataFrame(), pd.DataFrame(), session_date="2026-07-06",
+                                observed_at="2026-07-06T14:00:00Z") == []
 
 
 # ── (g5) oi_by_contract + greek_columns_for_stamp join ───────────────────────────────

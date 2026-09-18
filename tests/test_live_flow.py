@@ -2398,6 +2398,33 @@ class TestRunCycleEndToEnd:
             observed_start_to_start_sec=observed_start_to_start_sec,
         )
 
+    def test_surface_quote_tap_uses_the_canonical_cycle_clock(self, monkeypatch):
+        import scripts.build_flow_surface as bfs
+
+        seen = {}
+        real = bfs.extract_cycle_quotes
+
+        def recording_extract(calls_df, puts_df, *, session_date, near_dte_cap_days=90, observed_at=None):
+            seen["session_date"] = session_date
+            seen["observed_at"] = observed_at
+            return real(
+                calls_df, puts_df,
+                session_date=session_date,
+                observed_at=observed_at,
+                near_dte_cap_days=near_dte_cap_days,
+            )
+
+        monkeypatch.setattr(bfs, "extract_cycle_quotes", recording_extract)
+        started = "2026-07-02T18:29:59Z"
+        self._run_real_cycle(
+            monkeypatch,
+            {"SPY": self._root_frame("SPY", "09:30", seq_base=1000)},
+            cycle_started_at=started,
+        )
+
+        assert seen["session_date"] == SESSION_DATE
+        assert seen["observed_at"] == started
+
     def test_meta_v2_separates_poll_source_and_compute_clocks(self, monkeypatch):
         started = "2026-07-02T18:29:59Z"
         feed, heat, meta, state, _ = self._run_real_cycle(
