@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-17T23:21:35.186689+00:00",
-  "count": 2322,
+  "generated_at": "2026-09-18T00:06:41.860446+00:00",
+  "count": 2324,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-xgznbpprtcf-e715c8",
+      "title": "MACRO WEEK AHEAD WEEK OF SEPTEMBER 21",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T23:52:19Z",
+      "summary_points": [
+        "US Economic Data & Fed Policy: ADP, PMIs, Jobless Claims, and Fed speeches (Goosbee, Williams, Hammack) directly shape monetary policy expectations and market sentiment.",
+        "Trump-Xi Summit: High-stakes DC meeting (SEP 23) introduces critical geopolitical uncertainty and potential market volatility.",
+        "Near-Term Catalysts: CPI, NFP, ISM, and Retail Sales (SEP 20-24) drive immediate volatility and rate expectations for sector rotation.",
+        "US-China Trade Risk: AI talks (RTS), Nov 1 trade truce expiry, and US midterms (Nov 3) threaten trade stability and policy shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pmdrhkxkvax-652422",
       "title": "GS Ratra Hedge Funds Crowding Monitor US 17 Sep 2026",
@@ -264,6 +284,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kyllyqhi7lk-a74839",
+      "title": "LatAm Mining VALE, CMIN & USIM Sensitivity To Freight Oil FX Commodities",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-17T18:37:57Z",
+      "summary_points": [
+        "Freight/Oil Surge Drives Margin Compression: Brazil-to-China freight at $40/t (100% above 10-yr avg) + Brent at $103/bbl erodes FOB netbacks to 8-yr lows; CSN/Usiminas (100% spot exposure) face negative EBITDA, while Vale’s 70% oil hedging and 75% long-term contracts shield margins.",
+        "Geographic Cost Penalty Escalation: Brazil’s freight cost to China ($40/t vs Australia’s $20/t) doubles its geographic penalty ($10/t → $20/t), worsening margin pressure amid China’s capped iron ore prices ($95–$105/t) and weak steel demand.",
+        "Vale’s Bunker Fuel Advantage: Vale’s fleet scrubbers enable HSFO use (discounted vs VLSFO), reducing fuel costs by $3-4/t (bunker fuel = 40% of freight rate), shielding against $150/t VLSFO spikes.",
+        "Guinea Bauxite Demand Surge: Guinea’s long-haul bauxite (19–20 Mt/month to China) and Simandou ramp-up (30 Mt by 2030E) drive ton-mile demand, ensuring Brazil iron ore demand growth (5.8% 2026E) outpaces supply.",
+        "CSN/Usiminas Break-even Vulnerability: Spot scenarios trigger catastrophic EBITDA declines (-42% for CSN, -109% for CMIN in 2027) due to 100% spot freight exposure and inability to pass costs amid portside stockpiles."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
