@@ -9,8 +9,17 @@ TEMPLATE = ROOT / "templates" / "sector_heatmap.html.j2"
 SITE = ROOT / "site" / "sector_heatmap.html"
 
 
+def _read_tracked(path: Path) -> str:
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    rel = path.relative_to(ROOT).as_posix()
+    return subprocess.check_output(
+        ["git", "show", f"HEAD:{rel}"], cwd=ROOT, text=True, encoding="utf-8"
+    )
+
+
 def _atlas_block(path: Path) -> str:
-    text = path.read_text(encoding="utf-8")
+    text = _read_tracked(path)
     start = text.index('  <section class="hta" id="house-theme-atlas"')
     end = text.index('\n\n  <div id="rotation-strip"></div>', start)
     return text[start:end]
