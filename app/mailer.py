@@ -321,6 +321,12 @@ _PERMANENT = (
     smtplib.SMTPDataError,
     smtplib.SMTPNotSupportedError,
 )
+# Bound at IMPORT time from the real module, like the tuples below: tests swap
+# `mailer.smtplib` for a stand-in, so anything resolved through that name at RUNTIME
+# would vanish under the fake. Raised by _deliver's post-marker session probe.
+_ServerDisconnected = smtplib.SMTPServerDisconnected
+_DataError = smtplib.SMTPDataError
+
 _TRANSIENT = (
     smtplib.SMTPServerDisconnected,
     smtplib.SMTPConnectError,
@@ -349,7 +355,8 @@ class TransportUncertain(Exception):
 # accepted, so retrying one can never duplicate.
 #   SMTPSenderRefused      — MAIL FROM rejected; RCPT and DATA never issued.
 #   SMTPRecipientsRefused  — raised only when EVERY recipient is refused, before DATA.
-#   SMTPDataError          — the server answered DATA with a non-2xx: an explicit "no".
+#   SMTPDataError          — the server answered DATA with a non-2xx: an explicit "no",
+#                            BUT ONLY when the code actually parsed (see below).
 #   SMTPNotSupportedError  — raised before sendmail() is entered at all (SMTPUTF8).
 # Anything else escaping send_message — a disconnect or timeout while the body or the
 # terminating '.' is in flight — is NOT in this tuple, and that omission is the whole
@@ -360,6 +367,24 @@ _ENVELOPE_REFUSED = (
     smtplib.SMTPDataError,
     smtplib.SMTPNotSupportedError,
 )
+
+
+def _is_proof_of_non_delivery(exc: BaseException) -> bool:
+    """Is this exception a REFUSAL (nothing delivered) rather than an unknown?
+
+    The subtlety is SMTPDataError. CPython's ``SMTP.getreply`` sets ``errcode = -1``
+    when a reply line's first three bytes do not parse as an integer, and ``sendmail``
+    then raises ``SMTPDataError(-1, resp)`` for the reply to the TERMINATING '.'. A -1
+    is an UNPARSED reply, not a server "no" — the relay may well have committed the
+    message and then answered with something we could not read. Treating it as a
+    refusal marks a possibly-delivered message 'failed', which the delivery drain
+    retries under a fresh key: a duplicate. So only a parsed, genuinely negative code
+    counts as proof.
+    """
+    if isinstance(exc, _DataError):
+        code = getattr(exc, "smtp_code", -1)
+        return isinstance(code, int) and code > 0
+    return isinstance(exc, _ENVELOPE_REFUSED)
 
 
 def _deliver(s, msg: EmailMessage, before_data=None) -> bool:
@@ -384,11 +409,22 @@ def _deliver(s, msg: EmailMessage, before_data=None) -> bool:
     """
     if before_data is not None and not before_data():
         raise MarkerUnwritable("attempt marker did not persist")
+    # The marker's round trip just left this session idle for up to the PostgREST
+    # timeout. Re-validate it BEFORE committing to DATA: a relay that dropped us during
+    # that idle window fails HERE, with zero body bytes on the wire, which is provably
+    # not delivered and therefore retryable. Without the probe the same drop surfaces
+    # from inside sendmail()'s MAIL FROM and is indistinguishable from a fault mid-body,
+    # so a message that certainly never went out would be quarantined instead. This
+    # NARROWS that window to the gap between NOOP and MAIL FROM; it does not close it.
+    code, _resp = s.noop()
+    if code != 250:
+        raise _ServerDisconnected(
+            f"relay did not survive the attempt-marker write (NOOP {code})")
     try:
         s.send_message(msg)
-    except _ENVELOPE_REFUSED:
-        raise                                   # provably not delivered — let it retry
     except Exception as exc:  # noqa: BLE001
+        if _is_proof_of_non_delivery(exc):
+            raise                               # provably not delivered — let it retry
         raise TransportUncertain(exc) from None  # in flight — unknowable, never retry
     return True
 
@@ -416,24 +452,44 @@ def _smtp_send(msg: EmailMessage, before_data=None) -> None:
     """
     host, port = smtp_host(), smtp_port()
     ctx = ssl.create_default_context()
-    accepted = False
+    state: dict = {"accepted": False, "uncertain": None}
+
+    def _hand_over(s) -> None:
+        """Deliver, remembering UNCERTAINTY before it can be destroyed on the way out.
+
+        Python replaces a propagating exception with whatever ``__exit__`` raises, and
+        CPython's ``smtplib.SMTP.__exit__`` raises ``SMTPResponseException`` on any
+        non-221 QUIT reply. Since ``SMTPResponseException`` subclasses ``OSError``, an
+        unrecorded ``TransportUncertain`` unwinding past a grumpy QUIT would come out
+        of this function as a plain transient — matched by ``_TRANSIENT`` in ``send()``,
+        slept on, and RETRIED, re-entering DATA for a message the relay may already
+        have committed. Recording it here makes the uncertainty outrank teardown noise.
+        """
+        try:
+            state["accepted"] = _deliver(s, msg, before_data)
+        except TransportUncertain as exc:
+            state["uncertain"] = exc
+            raise
+
     try:
         if port == 465:
             with smtplib.SMTP_SSL(host, port, timeout=_SMTP_TIMEOUT, context=ctx) as s:
                 s.login(smtp_user(), smtp_pass())
-                accepted = _deliver(s, msg, before_data)
+                _hand_over(s)
         else:
             with smtplib.SMTP(host, port, timeout=_SMTP_TIMEOUT) as s:
                 s.ehlo()
                 s.starttls(context=ctx)
                 s.ehlo()
                 s.login(smtp_user(), smtp_pass())
-                accepted = _deliver(s, msg, before_data)
+                _hand_over(s)
     except Exception:
-        if accepted:
+        if state["accepted"]:
             # Teardown noise after acceptance cannot un-deliver the message.
             log.info("mailer: relay accepted the message; ignoring a fault during teardown")
             return
+        if state["uncertain"] is not None:
+            raise state["uncertain"]
         raise
 
 
@@ -589,7 +645,24 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
     # the LATEST transport entry, not the first, or a slow first attempt would make
     # the second one's marker look stale the moment it is written.
     def _mark() -> bool:
-        return _ledger_mark_attempting(idem_key) if ledgered else True
+        if _ledger_mark_attempting(idem_key):
+            return True
+        # The write did not land. If we hold a confirmed claim, that is fail-closed:
+        # no marker, no send (the row stays a bare 'queued', which reads as
+        # provably-unsent and stays retryable).
+        if ledgered:
+            return False
+        # `ledgered` is False only because _ledger_insert raised something that was
+        # not DuplicateKey -- which INCLUDES a POST that committed server-side and
+        # then lost its reply (_pg only translates HTTP 409, and it has a 6s timeout).
+        # So the claim row may well exist. That is exactly why the marker is ATTEMPTED
+        # above before this branch is reached: when the row is really there, the write
+        # succeeds and the boundary is durable after all. Only when it also fails is
+        # the ledger genuinely unreachable, and then the documented degraded mode
+        # applies -- send without idempotency rather than drop the message.
+        log.warning("mailer: sending %s with NO effect-boundary marker -- ledger "
+                    "unreachable; a duplicate is possible if this process dies", idem_key)
+        return True
 
     last: Exception | None = None
     for attempt in range(_SEND_ATTEMPTS):
@@ -1308,8 +1381,11 @@ def send_alert(*, fire_event_id: str, to_email: str, payload: dict,
               lang: str = "en", user_id=None, attempt: int = 0) -> str:
     """Compose + send ONE fired-alert email. Returns a mailer status string.
 
-    Returns one of ``app.mailer.STATUSES`` plus ``'duplicate'``. No parallel enum
-    (F08 freeze section 8). ``attempt`` (default 0, byte-identical key) is the
+    Returns one of ``app.mailer.RESULTS`` -- ``STATUSES`` plus ``'duplicate'`` and
+    ``EFFECT_UNKNOWN``. No parallel enum (F08 freeze section 8). ``EFFECT_UNKNOWN`` is
+    load-bearing at the drain's seam: a caller written to the older
+    ``STATUSES + 'duplicate'`` contract would fall through to its failure branch and
+    reintroduce the duplicate this boundary exists to prevent. ``attempt`` (default 0, byte-identical key) is the
     drain's retry counter -- passed straight to ``alert_idem_key`` so a later retry
     of a terminally-failed row claims a FRESH ``email_log`` row instead of colliding
     with the first attempt's (review round 3 BLOCKER).

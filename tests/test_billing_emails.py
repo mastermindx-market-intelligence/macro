@@ -95,6 +95,9 @@ class _FakeSMTP:
     def login(self, user, password):
         pass
 
+    def noop(self):
+        return (250, b"ok")
+
     def send_message(self, msg):
         self._rec["messages"].append(msg)
 

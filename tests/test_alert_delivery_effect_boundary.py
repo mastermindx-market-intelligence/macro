@@ -71,9 +71,11 @@ class FakeRelay:
         self.mailbox: list = []
         self.sessions: list[str] = []
         self.fault = None          # None | 'connect' | 'login' | 'refuse_rcpt'
-                                   # | 'reject_data' | 'drop_during_data'
-                                   # | 'accept_then_drop' | 'accept_then_quit_anomaly'
-                                   # | 'accept_then_die'
+                                   # | 'reject_data' | 'unparsed_data_reply'
+                                   # | 'drop_during_data' | 'accept_then_drop'
+                                   # | 'accept_then_quit_anomaly' | 'accept_then_die'
+                                   # | 'drop_after_marker' | 'noop_refused'
+                                   # | 'accept_then_uncertain_then_quit_anomaly'
 
     # -- module-level stand-ins for smtplib.SMTP / smtplib.SMTP_SSL ------------
     def SMTP(self, host, port, timeout=None):  # noqa: N802 -- mirrors the stdlib name
@@ -99,6 +101,8 @@ class _FakeSMTP:
         # non-221 reply raises SMTPResponseException AFTER the message was accepted.
         if self.relay.fault == "accept_then_quit_anomaly" and self._accepted:
             raise smtplib.SMTPResponseException(451, b"quit failed")
+        if getattr(self, "_quit_anomaly", False):
+            raise smtplib.SMTPResponseException(451, b"quit failed")
         return False
 
     def ehlo(self, *a, **k):
@@ -106,6 +110,14 @@ class _FakeSMTP:
 
     def starttls(self, *a, **k):
         return (220, b"ready")
+
+    def noop(self):
+        # The session probe mailer._deliver issues after the marker write.
+        if self.relay.fault == "drop_after_marker":
+            raise smtplib.SMTPServerDisconnected("relay dropped the idle session")
+        if self.relay.fault == "noop_refused":
+            return (421, b"service not available")
+        return (250, b"ok")
 
     def login(self, user, password):
         if self.relay.fault == "login":
@@ -119,6 +131,20 @@ class _FakeSMTP:
             raise smtplib.SMTPRecipientsRefused({msg["To"]: (550, b"no such user")})
         if f == "reject_data":
             raise smtplib.SMTPDataError(554, b"message rejected")
+        if f == "unparsed_data_reply":
+            # CPython getreply() yields errcode -1 when a reply line's code does not
+            # parse. sendmail then raises SMTPDataError(-1, ...) for the reply to the
+            # TERMINATING '.', so the relay may already have committed the message.
+            self.relay.mailbox.append(msg)
+            self._accepted = True
+            raise smtplib.SMTPDataError(-1, b"\xff\xfe garbage")
+        if f == "accept_then_uncertain_then_quit_anomaly":
+            # The relay commits, the socket then dies mid-acknowledgement (uncertain),
+            # and QUIT answers non-221 on the way out -- which Python lets REPLACE the
+            # uncertainty unless it was recorded.
+            self.relay.mailbox.append(msg)
+            self._quit_anomaly = True
+            raise smtplib.SMTPServerDisconnected("dropped awaiting the final reply")
         # ---- the body is streamed; the server may or may not commit ------------
         if f == "drop_during_data":
             # The classic irreducible case: the connection dies while the client is
@@ -783,3 +809,161 @@ def test_engine_still_does_not_import_app():
         body = fh.read()
     assert "import app" not in body
     assert "from app" not in body
+
+
+# ============================================================================ #
+# Adversarial-review findings (2026-09-18). Each of these delivered the same
+# logical alert twice, or lost one, before the fix named in its docstring.
+# ============================================================================ #
+def test_a_lost_insert_reply_does_not_disable_the_boundary(estate):
+    """BLOCKER: `_pg` translates only HTTP 409 into DuplicateKey and times out at 6s,
+    so an `email_log` INSERT that COMMITS server-side and then loses its reply leaves
+    a real claim row while `send()` believes the ledger is unreachable.
+
+    If the marker is skipped in that state, the surviving row is a bare 'queued' --
+    which reads as provably-unsent -- and the next tick mints a fresh key and delivers
+    again. The marker must therefore be ATTEMPTED even when the claim is unconfirmed:
+    when the row is really there the write lands and the boundary holds after all.
+    """
+    db, relay = estate
+    key = mailer.alert_idem_key("fe1", attempt=0)
+    real_pg = db.mailer_pg
+
+    def insert_commits_then_loses_its_reply(method, path, body=None, prefer=None, timeout=6):
+        if method == "POST" and path.startswith("email_log"):
+            real_pg(method, path, body, prefer, timeout)      # it COMMITS ...
+            raise RuntimeError("URLError: timed out")          # ... and the reply is lost
+        return real_pg(method, path, body, prefer, timeout)
+
+    import app.mailer as m
+    m._pg = insert_commits_then_loses_its_reply
+    try:
+        relay.fault = "accept_then_die"
+        _tick(db, now=T0, expect_death=True)
+    finally:
+        m._pg = real_pg
+    relay.fault = None
+
+    assert len(relay.mailbox) == 1, "precondition: it was delivered"
+    assert drain.SMTP_ATTEMPT_MARKER in str(db.email_log[key].get("detail") or ""), (
+        "the marker must be attempted even when the claim is unconfirmed -- without it "
+        "the surviving row reads as provably-unsent and licenses a resend")
+
+    for i in range(1, 5):
+        _tick(db, now=T0 + timedelta(minutes=5 * i))
+    assert len(relay.mailbox) == 1, "a delivered alert was resent through the lost-reply path"
+
+
+def test_b_quit_anomaly_cannot_destroy_an_in_flight_uncertainty(estate):
+    """MAJOR: Python replaces a propagating exception with whatever `__exit__` raises,
+    and smtplib's `__exit__` raises SMTPResponseException on a non-221 QUIT. Since that
+    subclasses OSError it lands in `_TRANSIENT` -- so an unrecorded TransportUncertain
+    would be slept on and RETRIED, re-entering DATA for a message already committed.
+    """
+    db, relay = estate
+    relay.fault = "accept_then_uncertain_then_quit_anomaly"
+
+    status = mailer.send_alert(fire_event_id="fe1", to_email="reader@example.com",
+                               payload=db.outbox[0]["payload"], lang="en",
+                               user_id="u1", attempt=0)
+
+    assert len(relay.mailbox) == 1, (
+        "the uncertainty was destroyed by the QUIT anomaly and the message was "
+        f"re-sent in-process: mailbox={len(relay.mailbox)}")
+    assert status == mailer.EFFECT_UNKNOWN, (
+        f"uncertainty must outrank teardown noise, got {status!r}")
+
+
+def test_c_unparsed_reply_to_the_terminating_dot_is_not_a_refusal(estate):
+    """MAJOR: `SMTPDataError(-1, ...)` means the reply to the terminating '.' did not
+    PARSE -- not that the server said no. The relay may have committed. Treating it as
+    a refusal marks a delivered alert 'failed', which the drain retries under a fresh
+    key: a guaranteed duplicate.
+    """
+    db, relay = estate
+    relay.fault = "unparsed_data_reply"
+
+    _tick(db, now=T0)
+    assert len(relay.mailbox) == 1, "precondition: the relay committed it"
+    relay.fault = None
+
+    for i in range(1, 6):
+        _tick(db, now=T0 + timedelta(minutes=5 * i))
+    assert len(relay.mailbox) == 1, (
+        "an unparsed final reply was treated as proof of non-delivery and the message "
+        "was sent again")
+    assert db.outbox[0]["status"] == "failed"
+    assert db.outbox[0]["last_error"] == drain.EFFECT_UNKNOWN_LAST_ERROR
+
+
+def test_d_a_parsed_rejection_is_still_a_refusal_and_stays_retryable(estate):
+    """The other side of the same line: a REAL non-2xx code is an explicit 'no', and
+    must keep its retry rather than being quarantined as unknowable."""
+    db, relay = estate
+    relay.fault = "reject_data"
+
+    _tick(db, now=T0)
+    assert relay.mailbox == []
+    assert db.outbox[0]["status"] == "failed"
+    assert db.outbox[0]["last_error"] != drain.EFFECT_UNKNOWN_LAST_ERROR
+
+    relay.fault = None
+    for i in range(1, 3):
+        _tick(db, now=T0 + timedelta(minutes=5 * i))
+    assert len(relay.mailbox) == 1, "a genuine rejection must stay retryable"
+
+
+def test_e_session_lost_during_the_marker_write_is_retryable_not_quarantined(estate):
+    """MAJOR: the marker's own round trip leaves the SMTP session idle, so the relay
+    may drop it. That drop surfaces from inside sendmail()'s MAIL FROM -- before RCPT,
+    before DATA, with zero body bytes on the wire -- and is provably not delivered.
+    Quarantining it would lose an alert that certainly never went out, and the design's
+    own choice to do an HTTP round trip inside the session makes it MORE likely.
+    """
+    db, relay = estate
+    relay.fault = "drop_after_marker"
+
+    _tick(db, now=T0)
+    assert relay.mailbox == []
+    assert db.outbox[0]["last_error"] != drain.EFFECT_UNKNOWN_LAST_ERROR, (
+        "a pre-body session drop is provably not delivered -- it must not be "
+        "quarantined as effect-unknown")
+
+    relay.fault = None
+    for i in range(1, 4):
+        _tick(db, now=T0 + timedelta(minutes=5 * i))
+    assert len(relay.mailbox) == 1, "and it must still be delivered"
+
+
+def test_f_overlapping_drain_ticks_do_not_duplicate_a_fresh_claim(estate):
+    """MAJOR: the outbox row stays 'pending' with `attempts` unchanged for the WHOLE
+    duration of send_fn, and nothing leases it. A second tick that resolves the first
+    tick's fresh, not-yet-marked claim as an abandoned pre-send bumps `attempts` and
+    mints a fresh key for a send still under way -- a duplicate needing no crash.
+
+    `email_log.created_at` is the claim time, so a claim younger than the grace window
+    is a live writer, not an abandonment.
+    """
+    db, relay = estate
+    key = mailer.alert_idem_key("fe1", attempt=0)
+
+    # Tick A has claimed the row and is inside connect/AUTH -- no marker yet.
+    db.email_log[key] = {"idem_key": key, "status": "queued", "detail": None,
+                         "created_at": (T0 - timedelta(seconds=3)).isoformat()}
+    assert drain.classify_ledger_queued(
+        None, now_utc=T0, created_at=db.email_log[key]["created_at"]) == "in_flight"
+
+    before = dict(db.outbox[0])
+    _tick(db, now=T0)                       # tick B, overlapping
+
+    assert relay.mailbox == [], "tick B must not send over a live tick A"
+    assert int(db.outbox[0]["attempts"]) == int(before["attempts"] or 0), (
+        "bumping attempts here mints a fresh key next tick -- the duplicate licence")
+
+    # An ABANDONED bare claim, however, is still retryable once it ages out.
+    assert drain.classify_ledger_queued(
+        None, now_utc=T0,
+        created_at=(T0 - timedelta(seconds=drain.EFFECT_UNKNOWN_GRACE_S + 60)).isoformat()
+    ) == "pre_send"
+    # and an unreadable/absent created_at keeps the original behaviour.
+    assert drain.classify_ledger_queued(None, now_utc=T0) == "pre_send"

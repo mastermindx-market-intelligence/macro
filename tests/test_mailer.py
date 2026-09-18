@@ -74,6 +74,11 @@ class _FakeSMTP:
     def login(self, user, password):
         self._rec["logins"].append(user)
 
+    def noop(self):
+        # mailer._deliver probes the session after writing its write-ahead
+        # marker: an idle relay that dropped us fails HERE, before any body bytes.
+        return (250, b"ok")
+
     def send_message(self, msg):
         self._rec["messages"].append(msg)
 

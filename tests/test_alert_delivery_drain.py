@@ -184,10 +184,18 @@ def test_duplicate_whose_email_log_row_is_queued_stays_pending_never_mirrors_a_n
 
     Review round 6 MAJOR (amended ruling): `attempts` must still increment on this
     pending-stays-pending path -- leaving it unchanged is the exact livelock the
-    round-6 review found (same idem_key claimed forever)."""
+    round-6 review found (same idem_key claimed forever).
+
+    2026-09-18: the claim is now stamped WELL PAST ``EFFECT_UNKNOWN_GRACE_S`` so it is
+    an ABANDONED pre-send claim, which is the case this test was always about. A claim
+    younger than that window is a LIVE writer -- bumping its attempts would mint a
+    fresh idempotency key and race a send still under way -- and is covered by
+    ``test_a_fresh_bare_claim_is_left_to_its_live_writer`` below. The anti-livelock
+    property is unchanged: once the claim ages out, attempts increments and the row
+    retires at the cap."""
     row = _row()
     fake = FakeTables(outbox=[row])
-    fake.email_log["alert_fire:fe1"] = {"status": "queued", "created_at": "2026-09-05T14:59:00+00:00"}
+    fake.email_log["alert_fire:fe1"] = {"status": "queued", "created_at": "2026-09-05T14:00:00+00:00"}
     _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
     result = drain.drain(send_fn=lambda **kw: "duplicate", now_utc=_now(), limit=10)
     assert result.fired_n == 0
@@ -195,6 +203,27 @@ def test_duplicate_whose_email_log_row_is_queued_stays_pending_never_mirrors_a_n
     assert fake.outbox[0]["status"] == "pending"
     assert fake.outbox[0]["last_error"] == "prior send queued"
     assert fake.outbox[0]["attempts"] == 1
+
+
+def test_a_fresh_bare_claim_is_left_to_its_live_writer(monkeypatch):
+    """The other side of the line above: an ``email_log`` claim younger than
+    ``EFFECT_UNKNOWN_GRACE_S`` may belong to a drain tick that is STILL inside SMTP --
+    the window between the ledger INSERT and the write-ahead marker spans connect,
+    STARTTLS, AUTH and the marker's own round trip. Bumping ``attempts`` there mints a
+    fresh key next tick and delivers a second copy of a message already on its way, with
+    no crash anywhere."""
+    row = _row()
+    fake = FakeTables(outbox=[row])
+    fake.email_log["alert_fire:fe1"] = {"status": "queued",
+                                        "created_at": "2026-09-05T14:59:30+00:00"}
+    _patch(monkeypatch, fake, users={"u1": OPTED_IN_USER})
+    result = drain.drain(send_fn=lambda **kw: "duplicate", now_utc=_now(), limit=10)
+    assert result.fired_n == 0
+    assert result.in_flight_n == 1
+    assert fake.outbox[0]["status"] == "pending"
+    assert int(fake.outbox[0]["attempts"] or 0) == 0, (
+        "a live writer's row must not have its attempts bumped")
+    assert result.outcome != "success"
 
 
 def test_duplicate_whose_email_log_row_is_unreadable_leaves_outbox_row_pending(monkeypatch, capsys):

@@ -135,7 +135,21 @@ def _alert_idem_key(fire_event_id: str, attempt: int = 0) -> str:
     return base if not attempt else f"{base}:{attempt}"
 
 
-def classify_ledger_queued(detail, *, now_utc: datetime) -> str:
+def _age_s(stamp, now_utc: datetime):
+    """Seconds between ``stamp`` (ISO-8601, naive treated as UTC) and ``now_utc``.
+    None when it cannot be read -- callers must decide the safe answer themselves."""
+    if not stamp:
+        return None
+    try:
+        t = datetime.fromisoformat(str(stamp).strip().replace("Z", "+00:00"))
+    except Exception:  # noqa: BLE001
+        return None
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=timezone.utc)
+    return (now_utc - t).total_seconds()
+
+
+def classify_ledger_queued(detail, *, now_utc: datetime, created_at=None) -> str:
     """What a durable ``email_log.status='queued'`` actually means.
 
     Returns ``'pre_send'`` | ``'in_flight'`` | ``'effect_unknown'``.
@@ -153,6 +167,17 @@ def classify_ledger_queued(detail, *, now_utc: datetime) -> str:
     """
     text = str(detail or "")
     if SMTP_ATTEMPT_MARKER not in text:
+        # No marker. Either the transport was never entered, or a writer is between
+        # the ledger INSERT and the marker write RIGHT NOW -- that gap spans connect,
+        # STARTTLS, AUTH and the marker's own round trip, so it is seconds wide, not
+        # instantaneous. `created_at` is the claim time (app/mailer.py's _ledger_insert
+        # writes the row before touching SMTP), so a claim younger than the grace
+        # window is treated as a live writer and left alone. Without this, two
+        # overlapping drain ticks resolve the same fresh claim as an abandoned
+        # pre-send, bump `attempts`, and mint a fresh key for a send that is still
+        # under way -- a duplicate that needs no crash at all.
+        if _age_s(created_at, now_utc) is not None and _age_s(created_at, now_utc) < EFFECT_UNKNOWN_GRACE_S:
+            return "in_flight"
         return "pre_send"
     _, _, stamp = text.partition(f"{SMTP_ATTEMPT_MARKER}@")
     stamp = stamp.strip()
@@ -570,8 +595,12 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
     """Drain one batch. NEVER raises for a delivery reason.
 
     ``send_fn(fire_event_id=..., to_email=..., payload=..., lang=..., user_id=...,
-    attempt=...) -> str`` returning a value in ``app.mailer.STATUSES`` +
-    ``'duplicate'``. Injected so this module never imports ``app/`` (see the module
+    attempt=...) -> str`` returning a value in ``app.mailer.RESULTS`` -- i.e.
+    ``STATUSES`` + ``'duplicate'`` + ``'effect_unknown'``. That last value is
+    load-bearing, not decorative: a send_fn written to the older
+    ``STATUSES + 'duplicate'`` contract sends an undetermined delivery down this
+    function's failure branch, which increments ``attempts`` and so mints a fresh
+    idempotency key -- reintroducing the exact duplicate this boundary prevents. Injected so this module never imports ``app/`` (see the module
     docstring's Layering note). ``send_fn=None`` or ``dry_run=True`` => decisions
     computed, ZERO sends, ZERO writes.
 
@@ -707,7 +736,7 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
             idem_key = _alert_idem_key(str(fire_event_id), attempt=attempt_n)
             log_read = typed_get(
                 f"email_log?idem_key=eq.{urllib.parse.quote(idem_key, safe='')}"
-                "&select=status,detail")
+                "&select=status,detail,created_at")
             log_row = (log_read.rows or [None])[0] if log_read.state == READ_OK else None
             log_status = log_row.get("status") if log_row else None
             if log_status == "sent":
@@ -751,7 +780,8 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
                 # code answered all three with "bump attempts" -- which mints a fresh
                 # idempotency key next tick and so permits another SMTP delivery of
                 # the same logical alert. That is safe for exactly one of them.
-                kind = classify_ledger_queued(log_row.get("detail"), now_utc=now_utc)
+                kind = classify_ledger_queued(log_row.get("detail"), now_utc=now_utc,
+                                              created_at=log_row.get("created_at"))
                 if kind == EFFECT_UNKNOWN:
                     # The transport WAS entered and no outcome was ever recorded. The
                     # message may be in the reader's inbox. Never resend, never claim
