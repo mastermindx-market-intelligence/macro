@@ -1,0 +1,57 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "page": "china_intel",
+  "round": "w12-r2",
+  "sha": "7ab30e790c67567df4342056584ac30e150b1bc7",
+  "rig": "S1 overlay-column (Playwright, overlay hide, reduced-motion)",
+  "overlays_hidden": [
+    ".ift-aurora",
+    ".mx5-aurora",
+    ".sky-fx",
+    "#mmb-root",
+    "#mmb-boot"
+  ],
+  "selection": [
+    "b1-state3-dark-en",
+    "b1-state4-dark-en",
+    "brief-card-dark-en",
+    "brief-card-light-en",
+    "regime-en",
+    "regime-zh"
+  ],
+  "totals": {
+    "states": 6
+  },
+  "cells": {
+    "b1-state3-dark-en": {
+      "file": "cells/b1-state3-dark-en.png",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "b1-state4-dark-en": {
+      "file": "cells/b1-state4-dark-en.png",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "brief-card-dark-en": {
+      "file": "cells/brief-card-dark-en.png",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "brief-card-light-en": {
+      "file": "cells/brief-card-light-en.png",
+      "theme": "light",
+      "locale": "en"
+    },
+    "regime-en": {
+      "file": "cells/regime-en.png",
+      "theme": "dark",
+      "locale": "en"
+    },
+    "regime-zh": {
+      "file": "cells/regime-zh.png",
+      "theme": "dark",
+      "locale": "zh"
+    }
+  }
+}

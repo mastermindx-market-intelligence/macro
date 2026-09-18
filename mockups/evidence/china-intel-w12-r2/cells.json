@@ -1,0 +1,70 @@
+{
+  "captured_at": "2026-09-11T09:03:16Z",
+  "sha": "7ab30e790c67567df4342056584ac30e150b1bc7",
+  "rig": "S1 overlay-column (Playwright, overlay hide, reduced-motion)",
+  "overlays_hidden": [
+    ".ift-aurora",
+    ".mx5-aurora",
+    ".sky-fx",
+    "#mmb-root",
+    "#mmb-boot"
+  ],
+  "cells": {
+    "b1-state3-dark-en": {
+      "file": "cells/b1-state3-dark-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-b1-s3"
+      ],
+      "bytes": 41294
+    },
+    "b1-state4-dark-en": {
+      "file": "cells/b1-state4-dark-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-b1-s4"
+      ],
+      "bytes": 28969
+    },
+    "brief-card-dark-en": {
+      "file": "cells/brief-card-dark-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-brief"
+      ],
+      "bytes": 30305
+    },
+    "brief-card-light-en": {
+      "file": "cells/brief-card-light-en.png",
+      "theme": "light",
+      "locale": "en",
+      "clip": [
+        "#cell-brief"
+      ],
+      "bytes": 29319
+    },
+    "regime-en": {
+      "file": "cells/regime-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-regime"
+      ],
+      "bytes": 6443,
+      "computed_color": "rgb(31, 154, 85)"
+    },
+    "regime-zh": {
+      "file": "cells/regime-zh.png",
+      "theme": "dark",
+      "locale": "zh",
+      "clip": [
+        "#cell-regime"
+      ],
+      "bytes": 8263,
+      "computed_color": "rgb(210, 63, 63)"
+    }
+  }
+}
