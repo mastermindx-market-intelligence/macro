@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T20:23:49.026110+00:00",
-  "count": 2382,
+  "generated_at": "2026-09-18T20:38:53.819686+00:00",
+  "count": 2383,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -107,6 +107,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fb7lanavjec-e169c5",
+      "title": "GS Rates MarketStrats G4 govt bonds weekly supply 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:39:17Z",
+      "summary_points": [
+        "BoE QT Overhaul: £120bn longer-dated bonds excluded from sales; £222bn gilts (2034) passively roll off; no active QT sales until April 2027, reducing gilt supply pressure.",
+        "UK Gilt Supply Reduction: DMO front-loaded issuance (57% of FY remit by Sept), lowering monthly supply to £12mn/bp (vs £17mn/bp); QT pause for two quarters cuts supply by ~£1mn/bp/month.",
+        "JGB Auction Imbalance: 2-year auction tail spike (Aug 2026) and high bid-to-cover (5.0) indicate short-term demand surge, while 40-year demand remains subdued (bid-to-cover <3.0).",
+        "Yield Curve Divergence: Germany’s flattest curve (lowest yields) signals stability; France’s steepest curve (5%+ at 30y) reflects higher risk/reward amid political uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
