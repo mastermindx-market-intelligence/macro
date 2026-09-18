@@ -689,6 +689,102 @@ def build_cross_root(
 
 
 # --------------------------------------------------------------------------- #
+# MOVES input provenance + current-object publish law (pure/testable)
+# --------------------------------------------------------------------------- #
+
+def _positive_finite(value) -> float | None:
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return None
+    return num if np.isfinite(num) and num > 0 else None
+
+
+def resolve_moves_inputs(
+    root: str,
+    asof: str,
+    gex_payload: dict,
+    vol_payload: dict,
+    *,
+    cboe_gex_dir: Path | None = None,
+) -> dict:
+    """Resolve one CURRENT same-source spot/ATM-IV pair for ``moves/v1``.
+
+    ThetaData remains primary. Some liquid single names (INTC is the motivating
+    production case) have a current Cboe delayed chain but no usable Theta IV/OI
+    snapshot. The already-built rich Cboe GEX artifact carries both ``summary.spot``
+    and 30-day ATM ``summary.iv30``; it is a valid fallback only when its own
+    ``meta.asof`` exactly matches this nightly session. Never mix spot from one source
+    with IV from the other, and never reuse an older Cboe artifact.
+    """
+    theta_spot = _positive_finite((gex_payload or {}).get("spot_ref"))
+    theta_iv = _positive_finite((vol_payload or {}).get("atm_iv"))
+    if theta_spot is not None and theta_iv is not None:
+        return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod"}
+
+    source_dir = cboe_gex_dir if cboe_gex_dir is not None else (_REPO / "site" / "gex")
+    try:
+        raw = json.loads((Path(source_dir) / f"{root}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError):
+        raw = None
+    if isinstance(raw, dict):
+        meta = raw.get("meta") if isinstance(raw.get("meta"), dict) else {}
+        summary = raw.get("summary") if isinstance(raw.get("summary"), dict) else {}
+        key = str(meta.get("key") or "").upper()
+        if key == root.upper() and meta.get("asof") == asof:
+            cboe_spot = _positive_finite(summary.get("spot"))
+            cboe_iv = _positive_finite(summary.get("iv30"))
+            if cboe_spot is not None and cboe_iv is not None:
+                return {
+                    "spot": cboe_spot,
+                    "atm_iv_pct": cboe_iv,
+                    "input_source": "cboe_delayed_chain",
+                }
+
+    return {"spot": None, "atm_iv_pct": None, "input_source": None}
+
+
+def _moves_publishable(payload: dict, root: str, asof: str) -> bool:
+    """A current moves object publishes even when its expected_move is null.
+
+    Publishing the current explicit null clears an older R2 band instead of letting
+    a weeks-old expectation survive indefinitely. The consumer can then distinguish
+    current unavailability from an old price/IV estimate.
+    """
+    return bool(
+        isinstance(payload, dict)
+        and payload.get("schema") == "options_hub.moves/v1"
+        and str(payload.get("root") or "").upper() == root.upper()
+        and payload.get("asof") == asof
+    )
+
+
+def _build_moves_payload(
+    root: str,
+    asof: str,
+    gex_payload: dict,
+    vol_payload: dict,
+    *,
+    calibration: dict | None,
+    learned_band_mult: dict | None,
+    regime: str | None,
+    cboe_gex_dir: Path | None = None,
+) -> dict:
+    """Build the current moves payload from the best truthful same-session input pair."""
+    source = resolve_moves_inputs(
+        root, asof, gex_payload, vol_payload, cboe_gex_dir=cboe_gex_dir,
+    )
+    payload = moves_payload(
+        root, asof, source["spot"], source["atm_iv_pct"],
+        calibration=calibration, learned_band_mult=learned_band_mult, regime=regime,
+        input_source=source["input_source"],
+    )
+    if payload.get("expected_move") is None:
+        payload["no_data_reason"] = "no_current_spot_iv_pair"
+    return payload
+
+
+# --------------------------------------------------------------------------- #
 # Completeness guard helper (pure — testable without main())
 # --------------------------------------------------------------------------- #
 
@@ -1347,23 +1443,31 @@ def main() -> None:
             # The move the options are pricing today (spot + ATM IV) paired with how
             # often a band built the SAME way has actually contained the next session's
             # range for this ticker (reconstructed grades → per_ticker_calibration).
-            # Sibling of vol/gex/vex in the options_hub plane. Written locally always;
-            # uploaded only when an expected move could be built AND the same completeness
-            # guard is satisfied (gex_publish). Calibration is null until the Track Record
-            # has graded this root — honest "no graded history yet". INERT per root.
+            # Sibling of vol/gex/vex in the options_hub plane. The band needs only a
+            # same-session spot + ATM-IV pair, not OI/GEX completeness, so it has its OWN
+            # publication law. ThetaData is primary; the already-built current Cboe delayed
+            # chain is a same-source fallback for names whose Theta IV/OI plane is empty.
+            # A current payload is uploaded even when expected_move is null, clearing any
+            # stale R2 band instead of leaving an old expectation alive indefinitely.
+            # Calibration is null until the Track Record has graded this root.
             try:
                 _regime = None
                 if isinstance(levels_payload, dict) and isinstance(levels_payload.get("regime"), dict):
                     _regime = levels_payload["regime"].get("label")
-                _moves = moves_payload(
-                    root, asof, gex_payload.get("spot_ref"), vol_payload.get("atm_iv"),
+                _moves = _build_moves_payload(
+                    root, asof, gex_payload, vol_payload,
                     calibration=per_ticker_calibration(
                         moves_grades_by_root.get(root, []), ci_fn=_wilson_ci),
                     learned_band_mult=moves_learned_mult, regime=_regime,
                 )
+                if _moves.get("input_source") == "cboe_delayed_chain":
+                    log.info(
+                        "options_hub_builder: moves %s using current Cboe spot/IV fallback",
+                        root,
+                    )
                 moves_path = out_dir / "moves" / f"{root}.json"
                 _write_json(moves_path, _moves)
-                if s3 and bucket and gex_publish and _moves.get("expected_move"):
+                if s3 and bucket and _moves_publishable(_moves, root, asof):
                     _upload_r2(s3, bucket, moves_path, f"{R2_PREFIX}moves/{root}.json")
             except Exception as _mv_err:  # noqa: BLE001
                 log.warning(
