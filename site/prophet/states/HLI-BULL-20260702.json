@@ -14,7 +14,7 @@
     "progress": 0.0,
     "pace": 12.7,
     "retention": 40.4,
-    "overlay": 47.0
+    "overlay": 55.0
   },
   "geometry": {
     "dist_to_stop_r": 0.129,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
