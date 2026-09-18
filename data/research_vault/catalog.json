@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T01:57:41.936392+00:00",
-  "count": 2329,
+  "generated_at": "2026-09-18T02:06:54.867332+00:00",
+  "count": 2330,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -86,6 +86,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-fip581gs8cw-ae1704",
+      "title": "GS Mourad post Fed what's working what's not working 17 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T01:57:44Z",
+      "summary_points": [
+        "Fed's 2026 Hike Decision: Median rate projection elevated to 3.25% through 2029, \"removed a dose of accommodation\" emphasized, signaling sustained restrictive policy.",
+        "AI Infrastructure EPS Dominance: Drives 50% of S&P 500 EPS growth in Q2 2026 (54% YoY vs. 14% ex-AI), confirming secular momentum despite pessimism.",
+        "Healthcare Sector Resilience: Diversified healthcare (GSXUHLTH) shows negative correlations to AI/oil/rates (YTD: -0.03/-0.20/-0.29) and strong earnings revisions (13% N12m EPS growth).",
+        "Tariff Policy Risk: Trump administration policies with limited congressional relief imply tariffs will rise through early 2027, elevating cross-sector risk (GS24TRFS: 101.49 vs SPX)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": true,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-lhfikavrimj-fcd356",
       "title": "JPM Oil Markets Weekly Dry powder Sept 17",
