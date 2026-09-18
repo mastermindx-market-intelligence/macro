@@ -270,6 +270,37 @@ def test_end_to_end_run_leaks_the_key_to_neither_manifest_nor_stdout(
     assert rc == 0                                               # non-strict tolerates errors
 
 
+def test_main_never_probes_futures_without_explicit_rights_gate_flag(
+        monkeypatch, tmp_path):
+    monkeypatch.setenv("POLYGON_API_KEY", FAKE_KEY)
+    monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
+    monkeypatch.setattr(mep, "run_rest_battery", lambda prober: {})
+    seen = []
+
+    def futures(prober):
+        seen.append(prober.base_url)
+        return {}
+
+    monkeypatch.setattr(mep, "run_futures_rest_battery", futures)
+
+    rc = mep.main([
+        "--out", str(tmp_path / "default.json"),
+        "--skip-ws",
+        "--timeout", "1",
+    ])
+    assert rc == 0
+    assert seen == []
+
+    rc = mep.main([
+        "--out", str(tmp_path / "futures.json"),
+        "--skip-ws",
+        "--probe-futures",
+        "--timeout", "1",
+    ])
+    assert rc == 0
+    assert seen == [mep.FUTURES_BASE_URL]
+
+
 def test_strict_exits_one_when_a_probe_errored(monkeypatch, tmp_path):
     monkeypatch.setenv("POLYGON_API_KEY", FAKE_KEY)
     monkeypatch.setattr(mep.requests, "Session",
