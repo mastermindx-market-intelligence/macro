@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T16:08:20.180714+00:00",
-  "count": 2370,
+  "generated_at": "2026-09-18T16:38:26.002850+00:00",
+  "count": 2371,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -127,6 +127,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t7txx8cjpbq-373b9f",
+      "title": "EM Asia FX Rates Views Positioning for Higher Energy, Elevated Core Yields and Further AI Investment",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:37Z",
+      "summary_points": [
+        "MYR/THB Outperformance: Malaysia’s tech exports (3rd in Asia), data center growth, and gas price benefits drive MYR strength vs THB’s energy import drag; trade entry 8.14, target 8.60, stop-loss 7.80.",
+        "KRW 2Y IRS Carry Opportunity: BoK’s dovish hike (3.0% in Aug) and curve steepness (3M-2Y) offer 5bp carry/roll-down; recommend receiving at 3.97% (target 3.60%, stop-loss 4.30%) as hiking cycle nears end.",
+        "INR/IDR Long Position: RBI’s FCNR(B) inflows ($128bn) and improved balance of payments support INR outperformance; recommend long entry 187, target 200, stop-loss 178 amid net FDI/equity inflows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
