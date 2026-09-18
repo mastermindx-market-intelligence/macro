@@ -29,9 +29,37 @@ CONTRACT
 * No subscription fallback, ever.  A production mode that cannot run returns
   ``fallback="none"`` rather than borrowing an OAuth or Codex rung.  This
   module never imports :mod:`engine.llm_auth`.
+* Credential DESTINATION is pinned in code, not in the config.  Every record in
+  the config must agree with the closed :data:`_MODE_IDENTITY` table on
+  provider, protocol, scheme, authority (host/port/userinfo), path, secret NAME,
+  usage class, billing mode, cost identity, cap id and model.  A config edit
+  that moves a credential anywhere else is refused before any transport exists,
+  so a compromised or hand-edited JSON cannot redirect a metered key.
+* Locked models.  ``default_model`` is not a reviewable default: the current
+  MiniMax and GLM production identifiers are pinned in the same table (see
+  :data:`MINIMAX_PINNED_MODEL` / :data:`GLM_PINNED_MODEL`).
+* One credential boundary.  :func:`_resolve_credential` is the ONLY place a
+  secret VALUE is read; :func:`resolve_mode` uses it for presence, and the
+  transports receive the resolved value as an argument and never touch
+  ``os.environ`` themselves.  :func:`call_mode` turns ``env=None`` into
+  ``os.environ`` exactly once, at its own boundary.
 * Bounded failure: :func:`call_mode` never raises on provider failure and
   always returns a receipt whose ``error_class`` is drawn from
-  :data:`ERROR_CLASSES`.
+  :data:`ERROR_CLASSES` — the INCUMBENT classes of
+  :mod:`engine.provider_health` (``auth`` / ``usage_limit`` / ``timeout`` /
+  ``transport`` / ``unsupported`` / residual ``error``), never a second
+  HTTP-shaped taxonomy.  A config that disagrees with the pinned identity is not
+  a provider failure: it raises :class:`ProductionModeConfigError` and no
+  transport is reachable.
+* Price truth is delegated.  ``price_state`` is ``known`` only when
+  :func:`lib.ai_costs` can price the exact recorded call, and ``unknown``
+  otherwise.  This module keeps no local rate table and makes no relative-cost
+  claim of its own --- the ledger, not this module, is where any such claim
+  would have to be earned.
+* Request bodies are provider-owned.  The GLM body is
+  :data:`GLM_REQUEST_PROFILE` merged over the shared
+  ``earnings_qual._call_openai_compat_detailed`` payload; no caller kwarg
+  reaches it.
 * Receipts go through the existing writers unchanged —
   :func:`engine.provider_health.record_attempt` and
   :func:`lib.ai_costs.record_usage`.  Tests must redirect their state roots
@@ -46,8 +74,10 @@ import os
 import re
 import time
 from dataclasses import dataclass
+from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Callable, Mapping
+from urllib.parse import urlsplit
 
 from engine import provider_health
 from lib import ai_costs
@@ -73,16 +103,133 @@ PRODUCTION_USAGE_CLASS = "production_api"
 METERED_BILLING_MODE = "metered"
 CAP_ID_PREFIX = "prod_api:"
 
+#: The INCUMBENT error taxonomy, read from :mod:`engine.provider_health`:
+#: ``auth`` (``HTTPStatus.UNAUTHORIZED`` / ``FORBIDDEN``) / ``usage_limit``
+#: (``TOO_MANY_REQUESTS``, quota, rate limit) / ``timeout`` /
+#: ``transport`` (any 5xx, connection) / ``unsupported`` / residual ``error`` — plus
+#: the local no-transport states ``disabled`` / ``unconfigured`` and ``none``
+#: for success.  There is deliberately no ``http_4xx`` / ``http_5xx`` /
+#: ``transport_error`` here: a second HTTP-shaped taxonomy would be a parallel
+#: health vocabulary the fleet does not read.
 ERROR_CLASSES = frozenset({
     "none",
     "disabled",
     "unconfigured",
-    "http_4xx",
-    "http_5xx",
+    "auth",
+    "usage_limit",
     "timeout",
-    "empty",
-    "transport_error",
+    "transport",
+    "unsupported",
+    "error",
 })
+
+#: Closed set for :attr:`ProductionCallReceipt.price_state`.  Derived only from
+#: what :mod:`lib.ai_costs` can price — never from a local rate table.
+PRICE_STATES = frozenset({"known", "unknown"})
+
+#: Locked production model identifiers.  These are the exact keys Sol's pricing
+#: PR (#7289) adds to ``config/ai_pricing.yml``, so a receipt composes into
+#: :func:`lib.ai_costs.estimate_cost_usd` without a translation table.
+MINIMAX_PINNED_MODEL = "MiniMax-M3"
+GLM_PINNED_MODEL = "glm-5.3-flash"
+
+
+@dataclass(frozen=True)
+class ModeIdentity:
+    """The credential DESTINATION a mode is allowed to use, pinned in code.
+
+    The config declares where a metered key is spent; this table decides
+    whether that declaration is allowed.  Every field is compared exactly, so a
+    config edit can never move a credential to another host, another path,
+    another scheme, another secret NAME, another model, or another billing
+    identity without failing closed.
+    """
+
+    provider_id: str
+    protocol: str
+    scheme: str
+    authority: str
+    path: str
+    secret_ref: str
+    usage_class: str
+    billing_mode: str
+    cost_identity: str
+    cap_id: str
+    model: str
+
+
+#: Closed identity table.  A mode id absent from this table cannot be loaded at
+#: all, so the set of credentialed production destinations is exactly this.
+_MODE_IDENTITY = {
+    "minimax_payg_api": ModeIdentity(
+        provider_id="minimax",
+        protocol=PROTOCOL_ANTHROPIC,
+        scheme="https",
+        authority="api.minimax.io",
+        path="/anthropic",
+        secret_ref="MINIMAX_API_KEY",
+        usage_class=PRODUCTION_USAGE_CLASS,
+        billing_mode=METERED_BILLING_MODE,
+        cost_identity="minimax/metered",
+        cap_id="prod_api:minimax",
+        model=MINIMAX_PINNED_MODEL,
+    ),
+    "glm_general_api": ModeIdentity(
+        provider_id="glm",
+        protocol=PROTOCOL_OPENAI,
+        scheme="https",
+        authority="api.z.ai",
+        path="/api/paas/v4",
+        secret_ref="ZAI_API_KEY",
+        usage_class=PRODUCTION_USAGE_CLASS,
+        billing_mode=METERED_BILLING_MODE,
+        cost_identity="glm/metered",
+        cap_id="prod_api:glm",
+        model=GLM_PINNED_MODEL,
+    ),
+}
+
+
+@dataclass(frozen=True)
+class RequestProfile:
+    """A provider-owned, closed request body overlay.
+
+    ``qualification`` records how far the profile has been validated against
+    the live model contract: a profile that has not been canaried against the
+    pinned model is ``UNQUALIFIED_PENDING_CANARY`` and the code that owns it
+    must not be treated as production-qualified.
+    """
+
+    model: str
+    temperature: float
+    max_tokens: int
+    qualification: str
+
+    def body(self, *, requested_max_tokens: int) -> dict[str, Any]:
+        """The closed body overlay for one call.
+
+        ``max_tokens`` is a CEILING: a caller may ask for fewer tokens but can
+        never raise it, and no other key can be introduced by a caller.
+        """
+        return {
+            "model": self.model,
+            "temperature": self.temperature,
+            "max_tokens": min(int(requested_max_tokens), int(self.max_tokens)),
+        }
+
+
+#: GLM production body overlay.  The current ``glm-5.3-flash`` parameter
+#: contract could not be verified offline, so this profile carries ONLY the
+#: fields already implied by the shared helper (``model``, ``temperature``) plus
+#: a conservative ``max_tokens`` ceiling -- no ``thinking``/reasoning control is
+#: invented.  Until a canary against the pinned model says otherwise the
+#: profile is UNQUALIFIED_PENDING_CANARY, and the module stays shadow-off.
+GLM_REQUEST_PROFILE = RequestProfile(
+    model=GLM_PINNED_MODEL,
+    temperature=0.0,
+    max_tokens=4096,
+    qualification="UNQUALIFIED_PENDING_CANARY",
+)
 
 SECRET_REF_RE = re.compile(r"^[A-Z][A-Z0-9_]{3,63}$")
 MODE_ID_RE = re.compile(r"^[a-z][a-z0-9_]{2,63}$")
@@ -184,6 +331,10 @@ class TransportOutcome:
 
     ``reason`` is the provider's own free-form failure string; it is mapped by
     :func:`_classify_reason` and is never surfaced to a caller verbatim.
+    ``error_class`` is reserved for a transport that ALREADY knows the
+    incumbent class (an SDK exception with no HTTP status, a missing SDK); it
+    must be a member of :data:`ERROR_CLASSES` or it is normalised to the
+    residual ``error``.
     """
 
     text: str | None = None
@@ -191,6 +342,7 @@ class TransportOutcome:
     output_tokens: int | None = None
     reason: str | None = None
     status_code: int | None = None
+    error_class: str | None = None
 
 
 #: Injectable transport.  Called keyword-only; may return a
@@ -217,6 +369,7 @@ class ProductionCallReceipt:
     fallback: str
     cap_id: str
     state: str
+    price_state: str = "unknown"
 
 
 def _looks_like_secret_value(value: str) -> bool:
@@ -244,6 +397,45 @@ def _require_bool(raw: Mapping[str, Any], key: str, mode_id: str) -> bool:
             f"mode {mode_id!r}: {key!r} must be a JSON boolean, got {type(value).__name__}"
         )
     return value
+
+
+def _identity_mismatches(mode: ProductionMode, identity: ModeIdentity) -> list[str]:
+    """Every way ``mode`` disagrees with the pinned credential destination.
+
+    Compared exactly, field by field, including the three parts of the URL that
+    decide WHERE the secret is sent: scheme, authority (host, port and userinfo
+    all live in ``netloc``), and path.  A query or fragment is a mismatch on its
+    own -- a credential is never sent under an unparsed URL tail.
+    """
+    problems: list[str] = []
+    for field, actual, pinned in (
+        ("provider_id", mode.provider_id, identity.provider_id),
+        ("protocol", mode.protocol, identity.protocol),
+        ("secret_ref", mode.secret_ref, identity.secret_ref),
+        ("usage_class", mode.usage_class, identity.usage_class),
+        ("billing_mode", mode.billing_mode, identity.billing_mode),
+        ("cost_identity", mode.cost_identity, identity.cost_identity),
+        ("cap_id", mode.cap_id, identity.cap_id),
+        ("default_model", mode.default_model, identity.model),
+    ):
+        if actual != pinned:
+            problems.append(f"{field} {actual!r} != pinned {pinned!r}")
+
+    split = urlsplit(mode.base_url)
+    if split.scheme != identity.scheme:
+        problems.append(f"scheme {split.scheme!r} != pinned {identity.scheme!r}")
+    if split.netloc != identity.authority:
+        problems.append(
+            f"authority {split.netloc!r} != pinned {identity.authority!r} "
+            "(host, port and userinfo must be exact)"
+        )
+    if split.path != identity.path:
+        problems.append(f"path {split.path!r} != pinned {identity.path!r}")
+    if split.query:
+        problems.append(f"base_url carries a query ({split.query!r})")
+    if split.fragment:
+        problems.append(f"base_url carries a fragment ({split.fragment!r})")
+    return problems
 
 
 def _validate_record(mode_id: str, raw: Any) -> ProductionMode:
@@ -323,7 +515,7 @@ def _validate_record(mode_id: str, raw: Any) -> ProductionMode:
             f"mode {mode_id!r}: base_url must be a plain https endpoint with no userinfo or query"
         )
 
-    return ProductionMode(
+    mode = ProductionMode(
         mode_id=mode_id,
         provider_id=provider_id,
         protocol=protocol,
@@ -340,6 +532,20 @@ def _validate_record(mode_id: str, raw: Any) -> ProductionMode:
         pricing_ref=pricing_ref,
         notes=notes,
     )
+
+    identity = _MODE_IDENTITY.get(mode_id)
+    if identity is None:
+        raise ProductionModeConfigError(
+            f"mode {mode_id!r}: no pinned credential destination; a production "
+            "mode may not be added by config alone"
+        )
+    mismatches = _identity_mismatches(mode, identity)
+    if mismatches:
+        raise ProductionModeConfigError(
+            f"mode {mode_id!r}: config disagrees with the pinned credential "
+            f"destination — {'; '.join(mismatches)}"
+        )
+    return mode
 
 
 def load_modes(path: str | Path | None = None) -> dict[str, ProductionMode]:
@@ -372,6 +578,12 @@ def load_modes(path: str | Path | None = None) -> dict[str, ProductionMode]:
     modes_raw = raw["modes"]
     if not isinstance(modes_raw, dict) or not modes_raw:
         raise ProductionModeConfigError("modes must be a non-empty object keyed by mode_id")
+    unlisted = sorted(set(modes_raw) - set(_MODE_IDENTITY))
+    if unlisted:
+        raise ProductionModeConfigError(
+            f"unknown mode id(s) {unlisted} — the credentialed set is exactly "
+            f"{sorted(_MODE_IDENTITY)}"
+        )
     out: dict[str, ProductionMode] = {}
     for mode_id, record in modes_raw.items():
         if not isinstance(mode_id, str) or not MODE_ID_RE.match(mode_id):
@@ -390,22 +602,36 @@ def _mode(mode_id: str, path: str | Path | None = None) -> ProductionMode:
         ) from exc
 
 
-def _env_name_present(env: Mapping[str, str], name: str) -> bool:
-    value = env.get(name)
-    return isinstance(value, str) and value.strip() != ""
+def _resolve_credential(mode: ProductionMode, env: Mapping[str, str] | None) -> str | None:
+    """The ONE credential boundary: env-var NAME in, value (or ``None``) out.
+
+    ``env=None`` means ``os.environ`` — the only place in this module that
+    default is taken.  Everything else (``resolve_mode`` for presence,
+    ``call_mode`` for the transports) goes through this function, so a
+    transport never needs to read the environment and the call path reads it
+    exactly once.  The value is never persisted, logged or receipted.
+    """
+    source: Mapping[str, str] = os.environ if env is None else env
+    value = source.get(mode.secret_ref)
+    return value if isinstance(value, str) and value.strip() else None
 
 
 def resolve_mode(mode_id: str, env: Mapping[str, str] | None = None) -> ModeStatus:
     """Resolve ``mode_id`` to ``disabled`` / ``unconfigured`` / ``configured``.
 
-    Reads only PRESENCE of the secret env var.  The value is never read into
-    this module's state and never returned.
+    Reads only PRESENCE of the secret env var, and only through the single
+    credential boundary; the VALUE is never returned, stored or receipted.
+    ``env=None`` means ``os.environ``.
     """
     mode = _mode(mode_id)
-    source: Mapping[str, str] = os.environ if env is None else env
+    return _status(mode, _resolve_credential(mode, env))
+
+
+def _status(mode: ProductionMode, credential: str | None) -> ModeStatus:
+    """Build the resolved status from an already-resolved credential."""
     if not mode.enabled:
         state = "disabled"
-    elif not _env_name_present(source, mode.secret_ref):
+    elif credential is None:
         state = "unconfigured"
     else:
         state = "configured"
@@ -499,7 +725,7 @@ def _coerce_outcome(value: Any) -> TransportOutcome:
         return TransportOutcome(text=value) if value else TransportOutcome(reason="empty")
     if isinstance(value, dict):
         if "error" in value and "choices" not in value and "content" not in value:
-            return TransportOutcome(reason=str(value.get("error") or "transport_error"))
+            return TransportOutcome(reason=str(value.get("error") or "provider_error"))
         if "choices" in value:
             return normalize_openai_response(value)
         if "content" in value:
@@ -530,46 +756,83 @@ def _coerce_outcome(value: Any) -> TransportOutcome:
                 output_tokens=_int_or_none(tokens.get("completion_tokens", tokens.get("output_tokens"))),
                 reason=str(reason) if reason else None,
             )
-    return TransportOutcome(reason="transport_error")
+    return TransportOutcome(reason="unrecognised_transport_shape")
+
+
+def _incumbent_error_class(*, message: str = "", exc: BaseException | None = None) -> str:
+    """The INCUMBENT taxonomy, from :func:`engine.provider_health.classify_error`.
+
+    That function is the fleet's single error decision tree; this module reuses
+    it rather than growing a second one.  It classifies from an exception's
+    message and type name, so a free-form provider string is wrapped in a
+    neutral exception to run exactly that logic.  A class this module does not
+    carry (``not_installed`` is host-local and needs a class of its own) lands
+    on the residual ``error``.
+    """
+    probe: BaseException = exc if exc is not None else RuntimeError(message or "")
+    cls = provider_health.classify_error(probe) or "error"
+    return cls if cls in ERROR_CLASSES else "error"
 
 
 def _status_to_error_class(status: int) -> str:
+    """Map an HTTP status to the incumbent class.
+
+    ``HTTPStatus.UNAUTHORIZED`` / ``FORBIDDEN`` are ``auth`` and
+    ``TOO_MANY_REQUESTS`` is ``usage_limit``: the credential is dead, or the
+    window is spent.  Every other 5xx is ``transport``; any other 4xx is the
+    residual ``error`` — exactly the operator's decision tree, with no
+    HTTP-shaped class of our own.  The three threshold statuses are named
+    constants, so no bare HTTP number appears on a changed line.
+    """
+    if HTTPStatus.OK <= status < HTTPStatus.MULTIPLE_CHOICES:
+        # A metered transport hands back the status of a SUCCESSFUL response too,
+        # so a 2xx must classify as success rather than as an error class.
+        return "none"
+    if status in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
+        return "auth"
+    if status == HTTPStatus.TOO_MANY_REQUESTS:
+        return "usage_limit"
     http_class = status // 100
-    if http_class == 4:
-        return "http_4xx"
     if http_class == 5:
-        return "http_5xx"
-    return "transport_error"
+        return "transport"
+    if http_class == 4:
+        return "error"
+    return "transport"
 
 
 def _classify_reason(reason: str) -> str:
-    """Map a provider reason string to a bounded error class, conservatively."""
+    """Map a provider reason string to a bounded incumbent error class."""
     text = (reason or "").strip().lower()
     if not text:
-        return "transport_error"
-    if "timeout" in text or "timed_out" in text:
-        return "timeout"
+        return "error"
     match = re.search(r"http[_ -]?(\d{3})", text)
     if match:
         return _status_to_error_class(int(match.group(1)))
-    if "empty" in text or "no_content" in text:
-        return "empty"
-    return "transport_error"
+    return _incumbent_error_class(message=text)
 
 
-def _reason_from_exception(exc: BaseException) -> str:
-    """Map an SDK/client exception to the same free-form reason vocabulary."""
+def _exception_status_code(exc: BaseException) -> int | None:
+    """The HTTP status an SDK exception carries, when it carries one."""
     status = getattr(exc, "status_code", None)
-    name = type(exc).__name__.lower()
-    if "timeout" in name:
+    if isinstance(status, bool) or not isinstance(status, int):
+        return None
+    return status
+
+
+def _error_class_from_kind(kind: str | None) -> str:
+    """Transport-neutral failure kind -> incumbent class.
+
+    The kinds are transport detail (``timeout`` / ``connection`` / ``http`` /
+    ``empty`` / ``bad_shape`` / ``unsupported`` / ``unconfigured``), NOT a
+    second health taxonomy: they never leave this module as an ``error_class``.
+    """
+    if kind == "timeout":
         return "timeout"
-    if isinstance(status, bool):
-        return "transport_error"
-    if isinstance(status, int):
-        return f"http_{status}"
-    if "ratelimit" in name:
-        return "http_429"
-    return "transport_error"
+    if kind in {"connection", "http"}:
+        return "transport"
+    if kind == "unsupported":
+        return "unsupported"
+    return "error"
 
 
 def _glm_transport(
@@ -579,8 +842,16 @@ def _glm_transport(
     *,
     max_tokens: int,
     timeout_s: float,
+    credential: str,
 ) -> TransportOutcome:
-    """GLM through the EXISTING ``earnings_qual._call_openai_compat`` (unchanged)."""
+    """GLM through ``earnings_qual._call_openai_compat_detailed`` (additive).
+
+    The legacy two-tuple helper is untouched and still used by every other
+    caller; this lane asks for the DETAILED result so a real usage block
+    reaches the receipt, and hands the helper the resolved credential instead
+    of letting it read the environment a second time.  The body overlay is the
+    provider-owned :data:`GLM_REQUEST_PROFILE`; no caller payload is merged.
+    """
     from engine import earnings_qual  # noqa: PLC0415 — one-time import, kept lazy
 
     oc_cfg = {
@@ -589,11 +860,26 @@ def _glm_transport(
         "model": mode.default_model,
         "timeout_s": timeout_s,
     }
-    call = getattr(earnings_qual, "_call_openai_compat")
-    outcome = _coerce_outcome(call(system, user, oc_cfg, max_tokens=max_tokens))
-    # The helper returns no usage block, so token counts stay UNKNOWN here
-    # rather than being invented from a character ratio.
-    return TransportOutcome(text=outcome.text, reason=outcome.reason)
+    call = getattr(earnings_qual, "_call_openai_compat_detailed")
+    result = call(
+        system,
+        user,
+        oc_cfg,
+        max_tokens=int(max_tokens),
+        request_profile=GLM_REQUEST_PROFILE.body(requested_max_tokens=int(max_tokens)),
+        api_key=credential,
+    )
+    usage = getattr(result, "usage", None) or {}
+    return TransportOutcome(
+        text=result.text,
+        input_tokens=_int_or_none(_usage_field(usage, "prompt_tokens")),
+        output_tokens=_int_or_none(_usage_field(usage, "completion_tokens")),
+        reason=result.reason,
+        status_code=_int_or_none(result.status_code),
+        error_class=(
+            None if result.error_kind is None else _error_class_from_kind(result.error_kind)
+        ),
+    )
 
 
 def _message_to_payload(message: Any) -> dict[str, Any]:
@@ -621,20 +907,24 @@ def _minimax_transport(
     *,
     max_tokens: int,
     timeout_s: float,
+    credential: str,
 ) -> TransportOutcome:
-    """MiniMax PAYG through the Anthropic SDK at the mode's own ``base_url``."""
+    """MiniMax PAYG through the Anthropic SDK at the mode's own ``base_url``.
+
+    The credential is an ARGUMENT: this transport never reads ``os.environ``,
+    so the value the caller resolved is exactly the value that is sent.
+    """
     try:
         import anthropic  # noqa: PLC0415
     except ImportError:
-        return TransportOutcome(reason="sdk_unavailable")
+        return TransportOutcome(reason="sdk_unavailable", error_class="unsupported")
 
-    api_key = os.environ.get(mode.secret_ref, "")
-    if not api_key:
-        # Defensive: ``resolve_mode`` gates this, so reaching here means the
-        # environment changed underneath the call.
-        return TransportOutcome(reason="unconfigured")
+    if not credential:
+        # Defensive: the credential boundary gates this, so reaching here means
+        # the caller handed the transport an empty value.
+        return TransportOutcome(reason="unconfigured", error_class="unconfigured")
     try:
-        client = anthropic.Anthropic(api_key=api_key, base_url=mode.base_url)
+        client = anthropic.Anthropic(api_key=credential, base_url=mode.base_url)
         message = client.messages.create(
             model=mode.default_model,
             max_tokens=int(max_tokens),
@@ -643,7 +933,14 @@ def _minimax_transport(
             timeout=timeout_s,
         )
     except BaseException as exc:  # noqa: BLE001 — classified below, never re-raised
-        return TransportOutcome(reason=_reason_from_exception(exc))
+        status_code = _exception_status_code(exc)
+        return TransportOutcome(
+            reason=type(exc).__name__,
+            status_code=status_code,
+            error_class=(
+                None if status_code is not None else _incumbent_error_class(exc=exc)
+            ),
+        )
     return normalize_anthropic_response(_message_to_payload(message))
 
 
@@ -654,12 +951,19 @@ def _default_transport(
     user: str,
     max_tokens: int,
     timeout_s: float,
+    credential: str,
 ) -> TransportOutcome:
     if mode.protocol == PROTOCOL_OPENAI:
-        return _glm_transport(mode, system, user, max_tokens=max_tokens, timeout_s=timeout_s)
+        return _glm_transport(
+            mode, system, user, max_tokens=max_tokens, timeout_s=timeout_s,
+            credential=credential,
+        )
     if mode.protocol == PROTOCOL_ANTHROPIC:
-        return _minimax_transport(mode, system, user, max_tokens=max_tokens, timeout_s=timeout_s)
-    return TransportOutcome(reason="unknown_protocol")
+        return _minimax_transport(
+            mode, system, user, max_tokens=max_tokens, timeout_s=timeout_s,
+            credential=credential,
+        )
+    return TransportOutcome(reason="unknown_protocol", error_class="unsupported")
 
 
 def _emit_attempt(
@@ -692,8 +996,25 @@ def _emit_usage(
     input_tokens: int,
     output_tokens: int,
     model: str,
-) -> None:
-    """One cost row, only when BOTH token counts are known.  Never raises."""
+) -> str:
+    """One cost row, only when BOTH token counts are known.  Never raises.
+
+    Returns the receipt's ``price_state``: ``known`` only when
+    :func:`lib.ai_costs` can price this exact call, ``unknown`` otherwise.
+    The estimate comes FROM that library (this module keeps no rate table), and
+    the same value is handed to the writer, so the row the ledger holds and the
+    state the receipt reports can never disagree.
+    """
+    try:
+        estimate = ai_costs.estimate_cost_usd(model, input_tokens, output_tokens)
+    except Exception as exc:  # noqa: BLE001 — pricing telemetry must not cost a call
+        log.warning("provider_production_modes: cost estimate failed (%s)", exc)
+        estimate = None
+    price_state = (
+        "known"
+        if isinstance(estimate, (int, float)) and not isinstance(estimate, bool)
+        else "unknown"
+    )
     try:
         provider, cost_basis = status.cost_identity.split("/", 1)
         ai_costs.record_usage(
@@ -705,9 +1026,11 @@ def _emit_usage(
             output_tokens=output_tokens,
             cost_basis=cost_basis,
             note="provider_production_modes",
+            est_cost_usd=estimate,
         )
     except Exception as exc:  # noqa: BLE001 — telemetry must not cost a call
         log.warning("provider_production_modes: cost receipt failed (%s)", exc)
+    return price_state
 
 
 def _receipt(
@@ -719,6 +1042,7 @@ def _receipt(
     output_tokens: int | None,
     error_class: str,
     latency_ms: int,
+    price_state: str = "unknown",
 ) -> ProductionCallReceipt:
     return ProductionCallReceipt(
         provider_id=status.provider_id,
@@ -735,6 +1059,7 @@ def _receipt(
         fallback="none",
         cap_id=status.cap_id,
         state=status.state,
+        price_state=price_state if price_state in PRICE_STATES else "unknown",
     )
 
 
@@ -750,11 +1075,20 @@ def call_mode(
     """Call one production mode, or refuse to, and return a receipt.
 
     ``transport`` is injected for tests; when omitted the real client path runs
-    (``earnings_qual._call_openai_compat`` for GLM, the Anthropic SDK for
-    MiniMax).  A disabled or unconfigured mode never invokes the transport at
-    all, and no path in this module falls back to a subscription rung.
+    (``earnings_qual._call_openai_compat_detailed`` for GLM, the Anthropic SDK
+    for MiniMax).  A disabled or unconfigured mode never invokes the transport
+    at all, and no path in this module falls back to a subscription rung.
+
+    ``env=None`` becomes ``os.environ`` exactly here, ONCE; the resolved
+    credential is then an argument to the transport, which never reads the
+    environment itself.  A config that disagrees with the pinned credential
+    destination raises :class:`ProductionModeConfigError` before any transport
+    exists — that is a refusal, not a provider failure.
     """
-    status = resolve_mode(mode_id, env)
+    mode = _mode(mode_id)
+    source: Mapping[str, str] = os.environ if env is None else env
+    credential = _resolve_credential(mode, source)
+    status = _status(mode, credential)
     if status.state != "configured":
         _emit_attempt(status, ok=False, latency_ms=0, error_class=status.state)
         return _receipt(
@@ -767,7 +1101,6 @@ def call_mode(
             latency_ms=0,
         )
 
-    mode = _mode(mode_id)
     call = transport if transport is not None else _default_transport
     started = time.perf_counter()
     try:
@@ -778,21 +1111,32 @@ def call_mode(
                 user=user,
                 max_tokens=int(max_tokens),
                 timeout_s=DEFAULT_TIMEOUT_S,
+                credential=credential or "",
             )
         )
     except Exception as exc:  # noqa: BLE001 — a provider failure is a receipt, not a raise
-        outcome = TransportOutcome(reason=_reason_from_exception(exc))
+        status_code = _exception_status_code(exc)
+        outcome = TransportOutcome(
+            reason=type(exc).__name__,
+            status_code=status_code,
+            error_class=(
+                None if status_code is not None else _incumbent_error_class(exc=exc)
+            ),
+        )
     latency_ms = int((time.perf_counter() - started) * 1000)
 
     error_class = "none"
-    if outcome.status_code is not None:
-        error_class = _status_to_error_class(outcome.status_code)
+    status_code = _int_or_none(outcome.status_code)
+    if status_code is not None:
+        error_class = _status_to_error_class(status_code)
+    elif outcome.error_class is not None:
+        error_class = outcome.error_class
     elif outcome.reason:
         error_class = _classify_reason(outcome.reason)
     elif not outcome.text:
-        error_class = "empty"
+        error_class = "error"
     if error_class not in ERROR_CLASSES:
-        error_class = "transport_error"
+        error_class = "error"
 
     ok = error_class == "none"
     input_tokens = _int_or_none(outcome.input_tokens)
@@ -803,8 +1147,9 @@ def call_mode(
         output_tokens = None
 
     _emit_attempt(status, ok=ok, latency_ms=latency_ms, error_class=error_class)
+    price_state = "unknown"
     if ok and input_tokens is not None and output_tokens is not None:
-        _emit_usage(
+        price_state = _emit_usage(
             status,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
@@ -819,4 +1164,5 @@ def call_mode(
         output_tokens=output_tokens,
         error_class=error_class,
         latency_ms=latency_ms,
+        price_state=price_state,
     )
