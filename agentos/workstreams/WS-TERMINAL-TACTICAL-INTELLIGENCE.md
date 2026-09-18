@@ -31,6 +31,7 @@ discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 - DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
 - DSC:TERMINAL-TACTICAL-R1A-EXTENDED-SESSION-RESULT
+- DSC:TERMINAL-TACTICAL-BOUNDED-MINUTE-SEAM
 waves:
 - id: D0
   title: Existing-store qualification and causal cutoff consumer
@@ -42,16 +43,13 @@ waves:
 - id: D1
   title: Current pilot history and finer-grain availability qualification
   status: todo
-  next_action: 'Consume the existing owner repair on Terminal #595 after source review 5242058779 at ba7c48cf58b2a04deb5b566655e8e61721caca3b:
-    exhausted upstream failures must not count as unchanged, and unfinished pagination must not publish an apparently
-    successful prefix. Require actual offline failure-path tests and then production freshness proof. Separate finer-grain
-    publication/availability from this refresh repair; no duplicate updater.'
+  next_action: 'Consume the existing owner repair on Terminal #595 after source review 5242058779: exhausted upstream failures must not count as unchanged, and unfinished pagination must not publish an apparently successful prefix. Require actual offline failure-path tests and then production freshness proof. Separately qualify the existing Radar VendorMinuteReader clock/correction/history behavior for bounded ambiguous-episode resolution; committed capability evidence already shows minute/second/trades/quotes entitlement, so do not create a duplicate one-minute warehouse.'
 - id: R1
   title: Registered price-first hypotheses, causal evaluation and controls
   status: in_progress
   depends_on:
   - D0
-  next_action: 'Macro #7270 now carries the registered/implemented R1-A result at remote head a1be5ee08294196e0f2c84d5a93778c17a7901df. The frozen 84-cell grid was registered before outcomes; canonical aggregate SHA256 is 5c75a38d3f5acc61ad5e79fcec2f26af37a6f62da0ed449c4b1533b5cc35ff0b. No arm is promoted. Keep #7270 draft until current-head review/hosted checks; after source acceptance, open a separate R1-B carrier for the already-specified exhaustion/reclaim-versus-continuation experiment. No R1-A threshold rescue.'
+  next_action: 'Macro #7270 current semantic head is 982a99a8adcac29c8158c2c31ec6639894dfdce1 after wiring its two tactical suites into the canonical Entry Radar CI step. Local exact-head evidence: full Radar step 1522 passed/2 skipped and contract-delta 0 introduced/0 inherited against the reconciled base; hosted current-head checks and independent review still govern release. R1-B is now frozen separately on draft Macro #7274 v2 (freeze commit 1348a238c8fbcb79b617478311f2ce0e1e37d4c0; 60 cells; no registration/outcomes). Do not touch shared TrialLedger/implementation for R1-B until #7270 shared-source gate clears. No R1-A threshold rescue.'
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
@@ -106,7 +104,7 @@ artifacts:
 - research/species/TTI_R1A_REPORT.md
 - research/species/tti_r1/RESULT.json
 - research/species/tti_r1/REGISTRATION_RECEIPT.json
-next_action: 'Advance #7270 through current-head review/CI without promoting its null/tiny-N arms. Then start the separate R1-B exhaustion/reclaim-versus-continuation experiment already frozen at design level. In parallel, consume #595 repair evidence and #601 independent review when those existing carriers move. No Executive installation prerequisite, active worker, live scan or validated edge is claimed.'
+next_action: 'Advance #7270 current head 982a99a8adcac29c8158c2c31ec6639894dfdce1 through hosted checks and independent review without promoting its null/tiny-N arms. Keep #7274 v2 docs/config-only until that shared-source gate clears, then register its frozen 60-cell grid before any outcome read. In parallel, consume #595 repair evidence and #601 independent review when those incumbent carriers move, and qualify the existing VendorMinuteReader for bounded ambiguity resolution rather than building another minute store. No Executive prerequisite, live scan or validated edge is claimed.'
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
