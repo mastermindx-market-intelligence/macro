@@ -34,25 +34,27 @@ waves:
     depends_on: [OA-0]
     pr: 6585
     next_action: >
-      BUILT_NOT_PROVEN — natural-RTH production proof OWED. Implementation MERGED
-      2026-08-30 as dbd654edb0fb47449b969b7dcb4fbafc2e0fe3ef (squash of carrier head
-      77f400630d8a47402f0fd71a8c23eec3d6822356, 8 files +1284/-2, patch-identity proven
-      byte-identical against the pre-merge blobs), under Sol conditional-adoption ruling
-      #6585 comment 5459823114 after C3 gates A6 PASS / A2 SAFE_UNDER_FREEZE / A3 green
-      + MERGEABLE / A4 scripts/** authority acknowledged. Status is NOT done: the capability
-      moves BUILT_NOT_PROVEN -> PROVEN_LIVE only on a natural RTH session emitting a real
-      measured event. Do NOT manufacture that proof — historical `--once --date` is
-      explicitly forbidden as a proof path by the live-flow runbook. Consumer census is
-      CLOSED, not owed: no current live_flow.event_stage/v1 consumer hard-enumerates nested
-      event keys, so no v2 adjudication is required (both episode schemas carry zero
-      additionalProperties:false; the poller/episode consumers read via .get() and their
-      "strict" JSON loaders reject duplicate keys only). FS-4 remains frozen with
-      scoring.enabled=false and the FS-5 kill switch intact; this wave armed no scoring,
-      ranking or sizing authority. Two disclosed non-blocking defects carried forward for a
-      separate bounded child, NOT repaired here: _coerce_int is not Infinity-safe on
-      source_print_count/nbbo_valid_print_count (uncaught OverflowError can abort a harvest
-      run), and vol_gt_oi_ratio is the one published measurement with no finite/rounding
-      gate at the producer.
+      BUILT_NOT_PROVEN — implementation MERGED 2026-08-30 as
+      dbd654edb0fb47449b969b7dcb4fbafc2e0fe3ef and natural untouched 2026-09-17
+      RTH measured evidence now exists on the canonical source/event-stage/Flow path.
+      Natural evidence is DO_NOT_REDO: do not commission another event-hunt child and do
+      not manufacture proof with historical `--once --date`, replay, synthetic events,
+      lowered floors, hand-edited clocks or later-data reconstruction. The remaining
+      acceptance gate is durable publication/integrity, not measurement existence. The
+      normal nightly episode builder consumed the Sep-17 stage and generated the next
+      episode/outcome generation, but narrow publication was rejected when the monolithic
+      session-outcome blob exceeded GitHub's 100 MB limit; campaign-v2 runtime and
+      source-receipt integrity remain nonterminal. Preserve the existing recovery owners:
+      #7265 for bounded session-outcome durability, #7263 for shared publisher recovery,
+      #7193 for broad-writer exclusion, and the existing campaign owner for historical
+      mixed-generation reconciliation. Then require one normal scheduled nightly plus
+      protected-main readback with the measured Flow cohort present, owned
+      episode/campaign/outcome receipts valid, and scoring.enabled=false before moving
+      OA-1T-MACRO -> PROVEN_LIVE. Consumer census remains CLOSED; this wave grants no
+      scoring, ranking or sizing authority. The previously disclosed finite-value
+      hardening defects (_coerce_int Infinity handling and vol_gt_oi_ratio
+      finite/rounding validation) remain separate unless one becomes directly causal on
+      this acceptance path.
   - id: OA-1T-TERMINAL
     title: Render measured microstructure and separate Attention from probability
     status: todo
@@ -150,13 +152,18 @@ artifacts:
   - data/flow_signals/gate.json
   - data/options_signal_campaign/checkpoint.json
 next_action: >
-  OA-1T-MACRO is BUILT_NOT_PROVEN and the exact next OA dependency is its separate
-  natural untouched-RTH production proof. Use a fresh child operation; never reuse the
-  terminal C3 carrier or fabricate proof with historical `--once --date`, replay,
-  synthetic events, lowered floors, hand-edited clocks or later-data reconstruction.
-  The two disclosed finite-value defects remain a separate bounded hardening child unless
-  one is the direct causal blocker on the real proof path. OA-1T-TERMINAL, OA-1C and OA-2+
-  remain closed until their declared prerequisites are actually satisfied.
+  OA-1T-MACRO remains BUILT_NOT_PROVEN, but natural measured evidence is now
+  DO_NOT_REDO. Advance the existing publication/integrity recovery instead:
+  accept the bounded session-outcome durability repair, the shared publisher
+  repair and broad-writer exclusion under their existing owners; reconcile the
+  Sep-03 mixed-generation campaign contamination without restamping or rewriting
+  historical receipts; then require one normal scheduled nightly and protected-main
+  readback proving canonical measured Flow plus valid owned episode/campaign/outcome
+  receipts with scoring still disabled. OA-1C remains closed until OA-1T is
+  accepted, the candidate-formation preregistration is protected, AD-1T2
+  consumer/availability is production-accepted and source-collision review is
+  clear. OA-1T-TERMINAL and OA-2+ remain closed until their declared prerequisites
+  are actually satisfied.
 ---
 
 ## Context
