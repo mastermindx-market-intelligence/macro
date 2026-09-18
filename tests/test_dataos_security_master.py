@@ -1099,6 +1099,22 @@ def test_the_security_migrations_schema_matches_the_registry() -> None:
     assert emitted == declared
 
 
+def test_receipt_distinguishes_stable_repo_keys_from_historical_renames(
+    receipt: dict,
+) -> None:
+    """FI/FISV is explicit provenance without becoming a fake rename clock."""
+    assert receipt["undated_renames"] == []
+    assert receipt["stable_key_vendor_boundaries"] == [{
+        "stable_key": "FI",
+        "vendor_symbol": "FISV",
+        "evidence": (
+            "merged #4622: FI stays the stable membership/page/ledger/store key while "
+            "FISV is the live listed/vendor symbol; Data OS listing identity remains "
+            "SEC:US-XNAS-FISV"
+        ),
+    }]
+
+
 def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataFrame) -> None:
     """``security.state_counts`` is a WHOLE-TABLE count (same convention as
     ``issuer.state_counts``) — V4-D2B2-CN-HK added ~1,100 active CN/HK rows to the
