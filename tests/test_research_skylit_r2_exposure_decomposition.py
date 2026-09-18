@@ -115,6 +115,24 @@ def test_missing_next_session_oi_fails_coverage_without_zero_imputation():
     assert len(state["frame"]) == 1
 
 
+def test_malformed_source_identity_refuses_instead_of_shrinking_board():
+    broken = _chain()
+    broken.loc[1, "right"] = "UNKNOWN"
+    api = SimpleNamespace(
+        resolve_thetadata_store=lambda **kwargs: "/store",
+        chain=lambda s, root, store=None: broken,
+        oi_for_date=lambda s, root, store=None: _oi(s),
+    )
+    with pytest.raises(r2.R2Refusal, match="malformed contract identity rows"):
+        r2.build_settled_state(
+            "2026-09-14",
+            "SPY",
+            store_api=api,
+            calendar_api=Calendar,
+            greeks_fn=fake_greeks,
+        )
+
+
 def test_missing_iv_cannot_disappear_from_the_coverage_denominator():
     broken = _chain()
     broken.loc[1, "implied_vol"] = np.nan
