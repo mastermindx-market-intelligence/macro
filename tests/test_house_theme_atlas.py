@@ -73,6 +73,16 @@ def test_house_atlas_bubbles_use_only_accepted_group_metrics():
     assert "Circle proximity has no statistical or causal meaning." in block
 
 
+def test_house_atlas_dynamic_controls_and_table_keep_zh_parity():
+    block = _atlas_block(TEMPLATE)
+    assert "isZh()?m[2]:m[1]" in block
+    assert "'全部分类':'All categories'" in block
+    assert "'等面积':'Equal area'" in block
+    assert "'成员数量':'Member count'" in block
+    assert "isZh()?'主题 / 组别':'Theme / group'" in block
+    assert "L(esc(g.category),esc(g.category_zh))" in block
+
+
 def test_house_atlas_inline_javascript_parses_with_node(tmp_path: Path):
     script = tmp_path / "house_atlas.js"
     script.write_text(_atlas_script(_atlas_block(TEMPLATE)), encoding="utf-8")

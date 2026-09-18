@@ -161,7 +161,7 @@
       stage.innerHTML='<div class="hta-bubble-wrap"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Theme breadth bubble plot">'+grid+'<line class="hta-axis" x1="'+LFT+'" y1="'+(TOP+PH)+'" x2="'+(LFT+PW)+'" y2="'+(TOP+PH)+'"></line><line class="hta-axis" x1="'+LFT+'" y1="'+TOP+'" x2="'+LFT+'" y2="'+(TOP+PH)+'"></line>'+dots+'<text class="hta-axis-label" x="'+(LFT+PW/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(xName)+'</text><text class="hta-axis-label" transform="translate(16 '+(TOP+PH/2)+') rotate(-90)" text-anchor="middle">'+esc(yName)+'</text></svg></div><div class="hta-missing">'+missing.length+' '+L('visible groups withheld from the plot because an axis value is unavailable; they remain in Matrix and Table.','个当前显示组因坐标值不可用而未绘制；它们仍保留在矩阵和表格中。')+'</div>';
     }
     function renderTable(rows){
-      stage.innerHTML='<div class="hta-table-wrap"><table class="hta-table"><thead><tr><th>'+L('Group','组别')+'</th><th>'+L('Category','分类')+'</th><th>'+L('Members','成员')+'</th>'+METRICS.map(function(m){return '<th>'+L(m[1],m[2])+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(g){return '<tr><td><a href="basket/'+encodeURIComponent(g.id)+'.html">'+L(esc(g.name),esc(g.name_zh))+'</a></td><td>'+esc(g.category)+'</td><td>'+g.member_count+'</td>'+METRICS.map(function(m){var v=g.metrics[m[0]];return '<td>'+pct(v.value)+' <span class="hta-meta">('+v.denominator+'/'+g.member_count+')</span></td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
+      stage.innerHTML='<div class="hta-table-wrap"><table class="hta-table"><thead><tr><th>'+L('Group','组别')+'</th><th>'+L('Category','分类')+'</th><th>'+L('Members','成员')+'</th>'+METRICS.map(function(m){return '<th>'+L(m[1],m[2])+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(g){return '<tr><td><a href="basket/'+encodeURIComponent(g.id)+'.html">'+L(esc(g.name),esc(g.name_zh))+'</a></td><td>'+L(esc(g.category),esc(g.category_zh))+'</td><td>'+g.member_count+'</td>'+METRICS.map(function(m){var v=g.metrics[m[0]];return '<td>'+pct(v.value)+' <span class="hta-meta">('+v.denominator+'/'+g.member_count+')</span></td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
     }
     function empty(){return '<div class="hta-status">'+L('No groups match this display filter.','没有组别符合当前显示筛选。')+'</div>';}
     function render(){
@@ -172,10 +172,16 @@
       if(state.view==='matrix')renderMatrix(rows);else if(state.view==='clusters')renderClusters(rows);else if(state.view==='bubbles')renderBubbles(rows);else renderTable(rows);
     }
     function fillControls(){
-      metricSel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>';}).join('');metricSel.value=state.metric;
-      xSel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>';}).join('');xSel.value=state.x;
-      ySel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+m[1]+'</option>';}).join('');ySel.value=state.y;
-      var cats=Array.from(new Set(model.groups.map(function(g){return g.category;}))).sort();catSel.innerHTML='<option value="all">All categories</option>'+cats.map(function(c){return '<option value="'+esc(c)+'">'+esc(c)+'</option>';}).join('');
+      metricSel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+esc(isZh()?m[2]:m[1])+'</option>';}).join('');metricSel.value=state.metric;
+      xSel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+esc(isZh()?m[2]:m[1])+'</option>';}).join('');xSel.value=state.x;
+      ySel.innerHTML=METRICS.map(function(m){return '<option value="'+m[0]+'">'+esc(isZh()?m[2]:m[1])+'</option>';}).join('');ySel.value=state.y;
+      var catMap={};model.groups.forEach(function(g){catMap[g.category]=g.category_zh||g.category;});
+      var cats=Object.keys(catMap).sort();
+      catSel.innerHTML='<option value="all">'+(isZh()?'全部分类':'All categories')+'</option>'+cats.map(function(c){return '<option value="'+esc(c)+'">'+esc(isZh()?catMap[c]:c)+'</option>';}).join('');
+      catSel.value=state.category;
+      sizeSel.innerHTML='<option value="constant">'+(isZh()?'等面积':'Equal area')+'</option><option value="members">'+(isZh()?'成员数量':'Member count')+'</option>';
+      sizeSel.value=state.size;
+      search.placeholder=isZh()?'主题 / 组别':'Theme / group';
       document.querySelectorAll('[data-hta-view]').forEach(function(b){b.onclick=function(){state.view=b.getAttribute('data-hta-view');render();};});
       metricSel.onchange=function(){state.metric=this.value;render();};catSel.onchange=function(){state.category=this.value;render();};search.oninput=function(){state.query=this.value;render();};
       xSel.onchange=function(){state.x=this.value;render();};ySel.onchange=function(){state.y=this.value;render();};sizeSel.onchange=function(){state.size=this.value;render();};
