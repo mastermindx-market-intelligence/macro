@@ -1434,7 +1434,7 @@
     body.page-china-stocks .stf-ch-row.st-hide-sm { display:flex; }
   }
   /* ===== MX5 CHINA GLANCE REDESIGN (body.page-china scope) ===== */
-  body.page-china .aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  body.page-china .aurora{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
   /* Base aurora: green blobs (risk-on default) */
   body.page-china .aurora::before{content:"";position:absolute;top:-220px;left:12%;width:820px;height:560px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(34,217,122,.12) 0%,transparent 70%)}
   body.page-china .aurora::after{content:"";position:absolute;bottom:-100px;right:-100px;width:700px;height:600px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(99,102,241,.10) 0%,transparent 70%)}
@@ -1446,15 +1446,21 @@
   /* State tint: red (Risk-off) */
   body.page-china .aurora.au-red::before{background:radial-gradient(ellipse,rgba(239,68,68,.10) 0%,transparent 70%)}
   body.page-china .aurora.au-red .au-a3{background:radial-gradient(ellipse,rgba(239,68,68,.06) 0%,transparent 70%)}
-  /* LIGHT: no aurora. "Much fainter" was the wrong fix — an additive bloom that
-     reads as light on a black field reads as INK on paper, and a 90px-blurred
-     colour wash over a pale canvas is a stain, not atmosphere. It was most
-     obvious as the soft concentric wash sitting in the empty canvas below the
-     fold (the layer is position:fixed, so it spans the whole scroll). The state
-     it tints is already said out loud by the score, the verdict word and the
-     regime pill, so nothing is lost. Depth in light comes from the panel/canvas
-     value step and the shadow recipe. Dark keeps the aurora untouched. */
-  [data-theme="light"] body.page-china .aurora{display:none}
+  /* LIGHT: no aurora. Gate the layer off — do not dim it. An additive bloom
+     that reads as light on a black field reads as INK on paper, and a
+     90px-blurred colour wash over a pale canvas is a stain, not atmosphere.
+     html[data-theme] (theme.js) and [data-theme] on body are both named so a
+     capture harness cannot miss the gate. Dark keeps the aurora, behind the
+     wrap (z-index:-1) so it cannot moon through glass tiles. */
+  html[data-theme="light"] body.page-china .aurora,
+  html[data-theme="light"] body.page-china .aurora::before,
+  html[data-theme="light"] body.page-china .aurora::after,
+  html[data-theme="light"] body.page-china .aurora .au-a3,
+  [data-theme="light"] body.page-china .aurora,
+  body.page-china[data-theme="light"] .aurora{
+    display:none !important;background:none !important;filter:none !important;opacity:0 !important}
+  html[data-theme="light"] body.page-china::before{
+    background:none !important}
   /* Reduced-motion: no animations */
   @media(prefers-reduced-motion:reduce){body.page-china .aurora,body.page-china .aurora::before,body.page-china .aurora::after,body.page-china .aurora .au-a3{animation:none}}
   /* zh direction-convention mirrors (operator ruling 2026-07-21): the aurora state wash
@@ -2010,6 +2016,162 @@
     body.page-china .mx5-path-tip{transition:none;}
   }
 
+  /* post-stack: consolidate */
+  /* Archetype-D L1 (S1) — page-scoped until the Macro Command stack lands these tokens.
+     Reuses macro_reference class names; does not invent a parallel family. */
+  body.page-china .cnx-wrap .band{margin-top:var(--sp-6,24px)}
+  body.page-china .cnx-wrap .band.panel,
+  body.page-china .cnx-wrap .drivers > .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r-panel,14px);
+    padding:16px 18px;box-shadow:none}
+  body.page-china .cnx-wrap h2.band-label{
+    font-size:var(--fs-label,11px);font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 10px}
+  html[data-lang="zh"] body.page-china .cnx-wrap h2.band-label{letter-spacing:0;text-transform:none}
+  body.page-china .cnx-wrap .mx-sec{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
+  body.page-china .cnx-wrap .mx-sec h2{font-size:var(--fs-h2,17px);font-weight:700;letter-spacing:-.01em;margin:0}
+  body.page-china .cnx-wrap{position:relative;z-index:1}
+  body.page-china .cnx-wrap .mx-vh{
+    display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:var(--sp-6,24px);align-items:start;
+    padding:var(--sp-6,24px) 0 var(--sp-4,16px)}
+  body.page-china .cnx-wrap .mx-vh-word{
+    font-size:var(--fs-display,46px);font-weight:800;letter-spacing:-.03em;line-height:.95;
+    margin:4px 0 8px;color:var(--text)}
+  body.page-china .cnx-wrap .mx-vh-word .l-en{text-transform:uppercase}
+  body.page-china .cnx-wrap .mx-vh-clause{font-size:var(--fs-md,15px);max-width:56ch;margin:0 0 8px}
+  body.page-china .cnx-wrap .mx-vh-meta{
+    display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3,12px);margin-top:12px}
+  body.page-china .cnx-wrap .mx-stance{
+    display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:var(--fs-sm,12.5px);
+    padding:4px 11px;border-radius:var(--r-pill,999px);
+    border:1px solid color-mix(in srgb, var(--c,var(--muted)) 34%, transparent);
+    background:color-mix(in srgb, var(--c,var(--muted)) 12%, var(--panel));
+    color:var(--c,var(--muted))}
+  body.page-china .cnx-wrap .mx-stance.st-up{--c:var(--ink-up, var(--up))}
+  body.page-china .cnx-wrap .mx-stance.st-down{--c:var(--ink-down, var(--down))}
+  body.page-china .cnx-wrap .mx-stance.st-warn{--c:var(--ink-warn, var(--warn))}
+  body.page-china .cnx-wrap .dial{text-align:center;height:auto;background:none;border-radius:0}
+  body.page-china .cnx-wrap .dial .mx5-sc-gauge-row{justify-content:center}
+  body.page-china .cnx-wrap .dial-cap{font-size:var(--fs-sm,12.5px);color:var(--muted);margin:8px 0 0}
+  body.page-china .cnx-wrap .drivers{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap-grid,18px)}
+  body.page-china .cnx-wrap .drv-read{font-size:var(--fs-sm,12.5px);margin:0 0 10px;max-width:64ch}
+  body.page-china .cnx-wrap .drv-read b{font-weight:700}
+  body.page-china .cnx-wrap .depth{display:flex;flex-wrap:wrap;gap:10px}
+  body.page-china .cnx-wrap .depth a{
+    display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--text);
+    border:1px solid var(--line);background:var(--panel);border-radius:var(--r-btn,10px);
+    padding:9px 14px;font-size:var(--fs-sm,12.5px);font-weight:600;
+    transition:transform .2s cubic-bezier(.2,.7,.3,1), border-color .2s ease, box-shadow .2s ease}
+  body.page-china .cnx-wrap .depth a:hover{
+    transform:translateY(-1px);
+    background:color-mix(in srgb, var(--link) 18%, transparent);
+    border-color:color-mix(in srgb, var(--link) 45%, var(--line))}
+  body.page-china .cnx-wrap .depth a small{color:var(--muted);font-weight:400}
+  body.page-china .cnx-orient{display:block;margin-top:6px;font-size:11px;color:var(--muted);line-height:1.4;font-weight:400}
+  body.page-china .cnx-wrap .depth a:focus-visible,
+  body.page-china .cnx-wrap .mx-chg-row:focus-visible,
+  body.page-china .cnx-wrap .cnx-row .cnx-lens:focus-visible,
+  body.page-china .cnx-wrap .drivers > .panel:focus-visible,
+  body.page-china .cnx-wrap [data-ev="watching"] .panel:focus-visible,
+  body.page-china .cnx-wrap .sxg-face.mx5-card-face:focus-visible{
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px}
+  body.page-china .cnx-wrap .cnx-row .cnx-lens{
+    flex:none;width:28px;height:28px;margin-left:auto;border-radius:var(--r-pill,50%);
+    border:1px solid var(--line);background:transparent;color:var(--muted);
+    font-size:13px;font-weight:700;cursor:help;line-height:1;position:relative}
+  body.page-china .cnx-wrap .cnx-row .cnx-lens::after{
+    content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);
+    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:12px;
+    line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);
+    box-shadow:var(--card-shadow);white-space:normal;text-align:left}
+  html[data-lang="zh"] body.page-china .cnx-wrap .cnx-row .cnx-lens::after{content:attr(data-tip-zh)}
+  body.page-china .cnx-wrap .cnx-row .cnx-lens.cnx-tip-open::after,
+  body.page-china .cnx-wrap .cnx-row .cnx-lens:focus-visible::after{display:block}
+  body.page-china .cnx-wrap .mx-chg-when{
+    flex:none;font-variant-numeric:tabular-nums;color:var(--muted);font-size:var(--fs-sm,12.5px)}
+  body.page-china .cnx-wrap{overflow-x:clip}
+  @media (max-width:860px){
+    body.page-china .cnx-wrap .drivers{grid-template-columns:1fr}
+    body.page-china .cnx-wrap .mx-vh{grid-template-columns:1fr}
+  }
+  @media (max-width:640px){
+    body.page-china .cnx-wrap .drivers{
+      display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding-bottom:6px}
+    body.page-china .cnx-wrap .drivers > .panel{flex:0 0 86%;scroll-snap-align:start}
+    body.page-china .cnx-wrap .mx-vh-word{font-size:32px;letter-spacing:-.02em}
+    body.page-china .cnx-wrap .dial{margin:4px auto 12px;overflow:hidden;max-width:220px;height:auto;min-height:160px;background:none}
+    body.page-china .aurora .au-a3{display:none}
+    body.page-china .cnx-wrap .mx-vh .cnx-gauge-needle{filter:none}
+    body.page-china .sxg-face.mx5-card-face{background:var(--panel)}
+    body.page-china .cnx-estrip{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+    body.page-china .cnx-ev{flex:0 0 72%;scroll-snap-align:start}
+    body.page-china .cnx-wrap .cnx-row .cnx-lens{width:32px;height:32px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    body.page-china .cnx-wrap .depth a, body.page-china .cnx-wrap .depth a:hover{transform:none}
+  }
+  /* LENS: data-tip rows — visible ? affordance; hover/focus/tap open the receipt */
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]{position:relative;cursor:help;padding-right:28px}
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]::before{
+    content:"?";position:absolute;right:0;top:6px;width:18px;height:18px;border-radius:var(--r-pill,50%);
+    border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;line-height:1}
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]::after{
+    content:attr(data-tip-en);display:none;position:absolute;left:0;bottom:calc(100% + 6px);
+    z-index:8;max-width:min(42ch,90vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:12px;
+    line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);
+    box-shadow:var(--card-shadow);white-space:normal}
+  html[data-lang="zh"] body.page-china .cnx-wrap .cnx-row[data-tip-en]::after{content:attr(data-tip-zh)}
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]:hover::after,
+  body.page-china .cnx-wrap .cnx-row[data-tip-en]:focus-visible::after,
+  body.page-china .cnx-wrap .cnx-row[data-tip-en].cnx-tip-open::after{display:block}
+  /* Skeleton — true geometry. Dark: luminance pulse, no border. Light: hairline plate. */
+  body.page-china .mx-skel{
+    display:inline-block;border-radius:var(--r-ctl,3px);vertical-align:middle;
+    background:var(--panel2);
+    background-image:linear-gradient(90deg,
+      color-mix(in srgb, var(--text) 6%, transparent) 0%,
+      color-mix(in srgb, var(--text) 10%, transparent) 50%,
+      color-mix(in srgb, var(--text) 6%, transparent) 100%);
+    background-size:200% 100%;animation:cnxSkelSweep 1.2s ease-in-out infinite;border:none}
+  body.page-china .mx5-mkt-price.mx-skel{width:4.5ch;height:1em}
+  body.page-china .mx5-mkt-delta.mx-skel{width:3.2ch;height:1em}
+  @keyframes cnxSkelSweep{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @media (prefers-reduced-motion:reduce){
+    body.page-china .mx-skel{animation:none;background-image:none}
+  }
+  body.page-china .mx-empty{font-size:var(--fs-sm,12.5px);color:var(--muted)}
+  body.page-china .mx-empty .empty-why{display:block;font-size:var(--fs-micro,10px);opacity:.85;margin-top:2px}
+  /* LIGHT TREATMENT — research workspace: white card, hairline, ring-not-glow */
+  [data-theme="light"] body.page-china .cnx-wrap .mx-vh{
+    background:var(--panel);border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    box-shadow:var(--card-shadow);border-radius:var(--r-panel,14px);
+    padding:var(--sp-6,24px) var(--sp-5,20px)}
+  [data-theme="light"] body.page-china .cnx-wrap .band.panel,
+  [data-theme="light"] body.page-china .cnx-wrap .drivers > .panel{
+    background:var(--panel);box-shadow:var(--card-shadow);
+    border-color:color-mix(in srgb, var(--text) 12%, transparent)}
+  [data-theme="light"] body.page-china .cnx-wrap .depth a:hover{
+    background:var(--panel);transform:none;
+    border-color:color-mix(in srgb, var(--link) 55%, var(--line));
+    box-shadow:0 1px 0 color-mix(in srgb, var(--link) 22%, transparent),
+               0 4px 10px -6px color-mix(in srgb, var(--link) 35%, transparent)}
+  [data-theme="light"] body.page-china .mx-skel{
+    background:var(--panel);border:1px solid color-mix(in srgb, var(--text) 16%, transparent);
+    background-image:linear-gradient(90deg,
+      color-mix(in srgb, var(--text) 4%, transparent) 0%,
+      color-mix(in srgb, var(--text) 7%, transparent) 50%,
+      color-mix(in srgb, var(--text) 4%, transparent) 100%);
+    background-size:200% 100%}
+  @media (prefers-reduced-motion:reduce){
+    [data-theme="light"] body.page-china .mx-skel{animation:none;background-image:none}
+  }
+  body.page-china .mx-vh .mx5-gauge-svg path.cnx-arc-bg{stroke:color-mix(in srgb, var(--text) 8%, transparent)}
+  [data-theme="light"] body.page-china .mx-vh .mx5-gauge-svg path.cnx-arc-bg{
+    stroke:color-mix(in srgb, var(--text) 12%, transparent)}
+  body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:url(#cnxArcGlow)}
+  [data-theme="light"] body.page-china .cnx-wrap .mx-vh .cnx-gauge-fill{filter:none}
+
   /* ── C · Market tiles face (ONE glass button → markets dialog) ── */
   /* The face now replaces the four separate tiles inside .cnx-tiles (a 4-col grid),
      so it must span the full row; its own .mx5-mkt-grid holds the four tiles. */
@@ -2032,7 +2194,8 @@
     box-shadow:var(--mx5-hover-shadow);transform:translateY(-1px);
   }
   body.page-china .sxg-face.mx5-card-face:focus-visible{
-    outline:none;box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px;
+    box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);
   }
   body.page-china .mx5-mkt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
   @media(max-width:1100px){body.page-china .mx5-mkt-grid{grid-template-columns:repeat(2,1fr);}}
@@ -2056,7 +2219,9 @@
     background:var(--mx5-hover-bg);border-color:var(--mx5-hover-border);
     box-shadow:var(--mx5-hover-shadow);transform:translateY(-1px);
   }
-  body.page-china .mx5-mkt-tile:focus-visible{outline:none;box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);}
+  body.page-china .mx5-mkt-tile:focus-visible{
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px;
+    box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);}
   body.page-china .mx5-mkt-ticker{
     font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--ink-3);text-transform:uppercase;margin-bottom:3px;
   }
