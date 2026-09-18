@@ -1276,7 +1276,9 @@ def build_and_stage_surfaces(
                     )
                     continue
                 root_now = observed.astimezone(timezone.utc)
-                root_asof = root_now.strftime("%Y-%m-%dT%H:%M:%SZ")
+                # Preserve the poller's exact fetched-root clock; it deliberately retains
+                # sub-second ordering, so the public valuation basis must not round it away.
+                root_asof = root_now.isoformat().replace("+00:00", "Z")
                 valuation_at = root_asof
 
             stamp = stamp_hhmm(root_now)

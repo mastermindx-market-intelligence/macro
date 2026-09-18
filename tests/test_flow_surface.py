@@ -438,6 +438,24 @@ def test_per_root_observation_controls_stamp_asof_and_missing_root_is_not_relabe
     assert qqq["built_at"] == "2026-07-06T18:44:00Z"
 
 
+def test_per_root_observation_preserves_subsecond_valuation_identity(tmp_path, monkeypatch):
+    from datetime import datetime, timezone
+    import lib.config as cfg_mod
+    monkeypatch.setattr(cfg_mod, "data_dir", lambda: tmp_path)
+
+    paths = build_and_stage_surfaces(
+        root_strikes_by_root={"SPY": _mk_strikes(s600=(1_000.0, 0.0))},
+        roots=["SPY"], session_date="2026-07-06",
+        asof="2026-07-06T18:44:00Z", cadence_sec=60,
+        now=datetime(2026, 7, 6, 18, 44, tzinfo=timezone.utc),
+        observed_at_by_root={"SPY": "2026-07-06T18:00:00.123456Z"},
+    )
+    by_key = {k: p for p, k in paths}
+    frame = json.loads(by_key["live_flow/surface/SPY/1400.json"].read_text())
+    assert frame["asof"] == "2026-07-06T18:00:00.123456Z"
+    assert frame["valuation_at"] == "2026-07-06T18:00:00.123456Z"
+
+
 def test_empty_rollup_writes_no_column(tmp_path, monkeypatch):
     # build_and_stage_surfaces must skip a root whose strike rollup is empty this cycle
     # (never blanks a good prior frame). Redirect the staging dir to tmp_path.
