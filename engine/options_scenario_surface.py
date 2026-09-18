@@ -36,6 +36,20 @@ def _finite_positive(value: Any) -> float | None:
     return out if np.isfinite(out) and out > 0 else None
 
 
+def _finite_number(value: Any) -> float | None:
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return out if np.isfinite(out) else None
+
+
+def _sum_or_none(values: np.ndarray) -> float | None:
+    with np.errstate(over="ignore", invalid="ignore"):
+        total = float(np.sum(values))
+    return total if np.isfinite(total) else None
+
+
 def _require_aware_iso(value: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError("observed_at must be a non-empty timezone-aware ISO timestamp")
@@ -146,6 +160,8 @@ def build_scenario_surface(
     horizons_minutes: list[int],
     expiry_scope: list[str] | None = None,
     max_dte_days: float | None = None,
+    oi_vintage: str | None = None,
+    iv_observed_at: str | None = None,
     vol_map: str = VOL_MAP_STICKY_STRIKE,
     r: float = DEFAULT_R,
     q: float = DEFAULT_Q,
@@ -164,6 +180,17 @@ def build_scenario_surface(
     horizons = _horizons(horizons_minutes)
     if vol_map != VOL_MAP_STICKY_STRIKE:
         raise ValueError("v1 supports only vol_map='sticky_strike'")
+    r_clean = _finite_number(r)
+    q_clean = _finite_number(q)
+    mult_clean = _finite_positive(mult)
+    pm_clean = _finite_positive(pm)
+    if r_clean is None or q_clean is None or mult_clean is None or pm_clean is None:
+        raise ValueError("r/q must be finite and mult/pm must be positive finite values")
+    r, q, mult, pm = r_clean, q_clean, mult_clean, pm_clean
+    if iv_observed_at is not None:
+        iv_observed_at = _require_aware_iso(iv_observed_at)
+    oi_vintage = str(oi_vintage).strip() if oi_vintage is not None else None
+    oi_vintage = oi_vintage or None
     if max_dte_days is not None:
         max_dte_days = _finite_positive(max_dte_days)
         if max_dte_days is None:
@@ -187,7 +214,7 @@ def build_scenario_surface(
             horizon_meta.append({
                 "horizon_minutes": horizon,
                 "active_contracts": 0,
-                "contract_coverage": 0.0 if normalized else None,
+                "active_snapshot_fraction": 0.0 if normalized else None,
             })
             zeros.append({"horizon_minutes": horizon, "gamma_zeros": []})
             continue
@@ -210,12 +237,13 @@ def build_scenario_surface(
                 row_v.append(None)
                 row_c.append(None)
                 continue
-            g = sign[finite] * gamma[finite] * oi[finite] * mult * sx * sx * pm
-            v = sign[finite] * vanna[finite] * oi[finite] * mult * sx * pm
-            c = sign[finite] * (charm[finite] / 365.0) * oi[finite] * mult * sx
-            row_g.append(float(np.sum(g)))
-            row_v.append(float(np.sum(v)))
-            row_c.append(float(np.sum(c)))
+            with np.errstate(over="ignore", invalid="ignore"):
+                g = sign[finite] * gamma[finite] * oi[finite] * mult * sx * sx * pm
+                v = sign[finite] * vanna[finite] * oi[finite] * mult * sx * pm
+                c = sign[finite] * (charm[finite] / 365.0) * oi[finite] * mult * sx
+            row_g.append(_sum_or_none(g))
+            row_v.append(_sum_or_none(v))
+            row_c.append(_sum_or_none(c))
 
         grids["gex"].append(row_g)
         grids["vex"].append(row_v)
@@ -223,7 +251,7 @@ def build_scenario_surface(
         horizon_meta.append({
             "horizon_minutes": horizon,
             "active_contracts": len(live),
-            "contract_coverage": round(len(live) / len(normalized), 6) if normalized else None,
+            "active_snapshot_fraction": round(len(live) / len(normalized), 6) if normalized else None,
         })
         zeros.append({"horizon_minutes": horizon, "gamma_zeros": _zero_crossings(prices, row_g)})
 
@@ -239,8 +267,19 @@ def build_scenario_surface(
         "gamma_zero_crossings": zeros,
         "horizon_meta": horizon_meta,
         "source_counts": counts,
+        "source_clocks": {
+            "market_observed_at": observed_at,
+            "iv_observed_at": iv_observed_at,
+            "oi_vintage": oi_vintage,
+        },
         "expiry_scope": sorted(expiry_set) if expiry_set is not None else None,
         "max_dte_days": max_dte_days,
+        "conventions": {
+            "r": r,
+            "q": q,
+            "contract_multiplier": mult,
+            "pct_move": pm,
+        },
         "assumptions": {
             "inventory": "fixed_input_oi_snapshot",
             "vol_map": VOL_MAP_STICKY_STRIKE,
@@ -258,6 +297,7 @@ def build_scenario_surface(
             "modeled conditional field; not observed history",
             "scenario prices are not a predicted path",
             "open interest and strike IV are fixed at the supplied snapshot",
+            "missing OI/IV source clocks remain null rather than inheriting market_observed_at",
             "dealer sign is assumption-based, not observed participant inventory",
         ],
     }

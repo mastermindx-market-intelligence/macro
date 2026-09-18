@@ -75,6 +75,21 @@ def test_payload_is_explicitly_scenario_not_observed_history_or_forecast():
     assert out["observed_at"] == OBS
     assert any("not observed history" in w for w in out["warnings"])
     assert any("not a predicted path" in w for w in out["warnings"])
+    assert out["source_clocks"] == {
+        "market_observed_at": OBS,
+        "iv_observed_at": None,
+        "oi_vintage": None,
+    }
+    assert out["conventions"]["contract_multiplier"] == 100.0
+    assert out["conventions"]["pct_move"] == 0.01
+
+
+def test_source_clock_provenance_is_explicit_and_never_inherited():
+    iv_clock = "2026-09-18T13:59:58.900000Z"
+    out = _build(oi_vintage="2026-09-17", iv_observed_at=iv_clock)
+    assert out["source_clocks"]["market_observed_at"] == OBS
+    assert out["source_clocks"]["iv_observed_at"] == iv_clock
+    assert out["source_clocks"]["oi_vintage"] == "2026-09-17"
 
 
 def test_horizon_zero_reuses_incumbent_greek_kernel_and_exposure_convention():
@@ -107,7 +122,7 @@ def test_time_roll_forward_excludes_expired_contracts_and_preserves_missingness(
     assert out["horizon_meta"][2]["active_contracts"] == 0
     assert out["grids"]["gex"][2] == [None, None, None]
     assert out["grids"]["vex"][3] == [None, None, None]
-    assert out["horizon_meta"][2]["contract_coverage"] == 0.0
+    assert out["horizon_meta"][2]["active_snapshot_fraction"] == 0.0
     assert out["grids"]["cex"][0] != out["grids"]["cex"][1]
 
 
@@ -151,6 +166,21 @@ def test_invalid_or_unsupported_scenario_inputs_fail_closed():
         _build(price_grid=[100])
     with pytest.raises(ValueError, match="horizons"):
         _build(horizons_minutes=[-1])
+    with pytest.raises(ValueError, match="timezone"):
+        _build(iv_observed_at="2026-09-18T13:59:59")
+    with pytest.raises(ValueError, match="mult/pm"):
+        _build(pm=0.0)
+    with pytest.raises(ValueError, match="mult/pm"):
+        _build(mult=float("inf"))
+
+
+def test_numerical_overflow_fails_cell_closed_instead_of_serializing_infinity():
+    contracts = _contracts()
+    for contract in contracts:
+        contract["oi"] = 1e308
+    out = _build(contracts, price_grid=[99, 100, 101], horizons_minutes=[0])
+    assert out["grids"]["gex"][0] == [None, None, None]
+    json.dumps(out, allow_nan=False)
 
 
 def test_builder_does_not_mutate_snapshot_contracts():
@@ -167,6 +197,8 @@ def test_cli_is_a_machine_projection_without_a_new_store(tmp_path):
         "spot": SPOT,
         "price_grid": [95, 100, 105],
         "horizons_minutes": [0, 30],
+        "oi_vintage": "2026-09-17",
+        "iv_observed_at": "2026-09-18T13:59:58Z",
         "contracts": _contracts(),
     }
     src = tmp_path / "snapshot.json"
@@ -182,4 +214,6 @@ def test_cli_is_a_machine_projection_without_a_new_store(tmp_path):
     assert out["product_kind"] == PRODUCT_KIND
     assert out["root"] == "SPY"
     assert out["horizons_minutes"] == [0, 30]
+    assert out["source_clocks"]["oi_vintage"] == "2026-09-17"
+    assert out["source_clocks"]["iv_observed_at"] == "2026-09-18T13:59:58Z"
     assert len(out["grids"]["gex"]) == 2
