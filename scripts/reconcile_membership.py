@@ -207,24 +207,48 @@ def _reconcile_suite(suite: str, cache_rel: str, label: str, data_dir: Path,
 
 
 
-def _audit_us_sector_membership(data_dir: Path) -> dict:
-    """Compare current active us_sector_* rows with the current S&P-500 sector owner.
+def _audit_us_sector_membership(
+    data_dir: Path,
+    *,
+    asof: date,
+    reference_status: str | None,
+) -> dict:
+    """Compare PIT-active us_sector_* rows with this run's S&P-500 sector snapshot.
 
-    Evidence-only: this function NEVER edits membership. A current snapshot proves
-    present drift but cannot reconstruct the historical effective date needed for a
-    lawful [added, removed) mutation.
+    Evidence-only: this function NEVER edits membership. The reference is
+    admissible only when the breadth adapter completed in this same full collect
+    run with status ok or stale; both mean fetch() returned and wrote the
+    constituent reference. A failed/dead/missing current run may leave an old
+    parquet on disk, so it is unauditable instead of false-clean.
+
+    Membership activity follows the house [added, removed) law at asof.
+    Malformed membership/reference input makes the audit unavailable; it never
+    raises into the regional prune-refusal path.
     """
     result = {
         "membership": "data/baskets/membership.json",
         "reference": "data/breadth/constituents.parquet",
+        "reference_status": reference_status,
+        "asof": asof.isoformat(),
         "skipped": False,
         "note": "",
-        "drift": False,
+        "drift": None,
         "n_extra": 0,
         "n_missing": 0,
         "missing_baskets": [],
         "baskets": [],
     }
+
+    if reference_status not in {"ok", "stale"}:
+        result.update(
+            skipped=True,
+            note=(
+                "current breadth collection did not produce a qualified structural "
+                f"reference (status={reference_status or 'unavailable'})"
+            ),
+        )
+        return result
+
     mem_path = data_dir / "baskets" / "membership.json"
     ref_path = data_dir / "breadth" / "constituents.parquet"
     if not mem_path.exists() or not ref_path.exists():
@@ -237,23 +261,97 @@ def _audit_us_sector_membership(data_dir: Path) -> dict:
             note="required U.S. structural input(s) absent: " + ", ".join(missing),
         )
         return result
+
     try:
-        baskets = (json.loads(mem_path.read_text(encoding="utf-8")).get("baskets") or {})
+        raw_doc = json.loads(mem_path.read_text(encoding="utf-8"))
+        baskets = raw_doc.get("baskets")
         constituents = pd.read_parquet(ref_path, columns=["sector"])
-    except Exception as exc:  # noqa: BLE001 — unreadable input means unauditable, never mutate
+    except Exception as exc:  # noqa: BLE001 — unreadable means unauditable, never mutate
         result.update(skipped=True, note=f"U.S. structural inputs unreadable: {exc}")
         return result
+
+    if not isinstance(baskets, dict):
+        result.update(skipped=True, note="U.S. structural membership malformed: baskets is not an object")
+        return result
+    if constituents.index.has_duplicates:
+        result.update(skipped=True, note="U.S. structural reference malformed: duplicate ticker index")
+        return result
+    if constituents.index.isna().any() or constituents["sector"].isna().any():
+        result.update(
+            skipped=True,
+            note="U.S. structural reference classification incomplete: null ticker/sector",
+        )
+        return result
+    allowed_sectors = set(US_SECTOR_BASKETS.values())
+    observed_sectors = {str(value) for value in constituents["sector"].tolist()}
+    unknown_sectors = sorted(observed_sectors - allowed_sectors)
+    if unknown_sectors:
+        result.update(
+            skipped=True,
+            note=(
+                "U.S. structural reference classification incomplete: unknown sector(s) "
+                + ", ".join(unknown_sectors)
+            ),
+        )
+        return result
+
+    def active_tickers(basket_id: str, basket: dict) -> set[str] | None:
+        members = basket.get("members")
+        if not isinstance(members, list):
+            result.update(
+                skipped=True,
+                note=f"U.S. structural membership malformed: {basket_id}.members is not a list",
+            )
+            return None
+        active: set[str] = set()
+        for index, member in enumerate(members):
+            if not isinstance(member, dict):
+                result.update(
+                    skipped=True,
+                    note=f"U.S. structural membership malformed: {basket_id}.members[{index}]",
+                )
+                return None
+            ticker = member.get("ticker")
+            added_raw = member.get("added")
+            removed_raw = member.get("removed")
+            if not isinstance(ticker, str) or not ticker or not isinstance(added_raw, str):
+                result.update(
+                    skipped=True,
+                    note=f"U.S. structural membership malformed: {basket_id}.members[{index}] identity/added",
+                )
+                return None
+            try:
+                added = date.fromisoformat(added_raw)
+                removed = None if removed_raw in (None, "") else date.fromisoformat(str(removed_raw))
+            except (TypeError, ValueError):
+                result.update(
+                    skipped=True,
+                    note=f"U.S. structural membership malformed: {basket_id}.members[{index}] interval",
+                )
+                return None
+            if removed is not None and removed < added:
+                result.update(
+                    skipped=True,
+                    note=f"U.S. structural membership malformed: {basket_id}.members[{index}] removed<added",
+                )
+                return None
+            if added <= asof and (removed is None or asof < removed):
+                active.add(ticker)
+        return active
 
     for basket_id, sector in US_SECTOR_BASKETS.items():
         basket = baskets.get(basket_id)
         if not isinstance(basket, dict):
             result["missing_baskets"].append(basket_id)
             continue
-        active = {
-            str(member["ticker"])
-            for member in basket.get("members") or []
-            if member.get("ticker") and not member.get("removed")
-        }
+        active = active_tickers(basket_id, basket)
+        if active is None:
+            result["baskets"] = []
+            result["n_extra"] = 0
+            result["n_missing"] = 0
+            result["missing_baskets"] = []
+            result["drift"] = None
+            return result
         expected = {
             str(ticker)
             for ticker in constituents[constituents["sector"].eq(sector)].index
@@ -289,12 +387,14 @@ def _audit_us_sector_membership(data_dir: Path) -> dict:
               "do not auto-mutate because effective dates require evidence",
             flush=True,
         )
+    else:
+        result["note"] = "PIT-active structural rosters match this run's qualified breadth reference"
     return result
-
 
 def run(cfg: dict | None = None, asof: date | None = None,
         data_dir: Path | None = None, out_dir: Path | None = None,
-        dry_run: bool = False) -> dict:
+        dry_run: bool = False,
+        us_sector_reference_status: str | None = None) -> dict:
     """Reconcile every suite, write data/quality/membership_reconcile.json, and THEN raise
     PruneGuardError if any suite refused (healthy suites are healed either way; the summary
     doc is on disk before the abort so the evidence survives). Test seams mirror the audit_*
@@ -304,7 +404,25 @@ def run(cfg: dict | None = None, asof: date | None = None,
     data_dir = data_dir or config.data_dir()
 
     suites = [_reconcile_suite(s, c, lb, data_dir, asof, cfg, dry_run) for s, c, lb in SUITES]
-    us_sector_audit = _audit_us_sector_membership(data_dir)
+    reasons = [r for s in suites for r in s["reasons"]]
+    try:
+        us_sector_audit = _audit_us_sector_membership(
+            data_dir, asof=asof, reference_status=us_sector_reference_status
+        )
+    except Exception as exc:  # noqa: BLE001 — observational audit never masks prune refusal
+        us_sector_audit = {
+            "membership": "data/baskets/membership.json",
+            "reference": "data/breadth/constituents.parquet",
+            "reference_status": us_sector_reference_status,
+            "asof": asof.isoformat(),
+            "skipped": True,
+            "note": f"U.S. structural audit internal failure: {type(exc).__name__}: {exc}",
+            "drift": None,
+            "n_extra": 0,
+            "n_missing": 0,
+            "missing_baskets": [],
+            "baskets": [],
+        }
     n_pruned = sum(len(s["pruned"]) for s in suites)
     doc = {
         "asof": asof.isoformat(),
@@ -320,7 +438,6 @@ def run(cfg: dict | None = None, asof: date | None = None,
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "membership_reconcile.json").write_text(json.dumps(doc, indent=1))
 
-    reasons = [r for s in suites for r in s["reasons"]]
     if reasons:
         raise PruneGuardError(
             "[reconcile] membership prune REFUSED:\n  - " + "\n  - ".join(reasons))
