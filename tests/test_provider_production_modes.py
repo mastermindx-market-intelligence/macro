@@ -598,3 +598,78 @@ def test_minimax_sdk_exceptions_map_to_bounded_error_classes(
     assert receipt.fallback == "none"
     assert receipts["usage"] == []
     assert receipts["health"][0]["error_class"] == expected
+
+
+# --- independent pins for the two validators review found unpinned ----------
+
+
+#: The canonical subscription rungs a metered production mode must never
+#: masquerade as.  Asserted as a floor of its own, because a test that only
+#: rode the live set would go green the moment the set were emptied.
+_SUBSCRIPTION_RUNG_PROVIDER_IDS = (
+    "oauth",
+    "codex",
+    "claude",
+    "claude_code_oauth",
+    "claude_oauth",
+    "anthropic_oauth",
+)
+
+
+def _provider_id_of(provider_id: str):
+    """Re-point the glm record at ``provider_id`` with a CONSISTENT identity.
+
+    ``cost_identity`` and ``cap_id`` are derived from ``provider_id``, so a
+    forbidden id arrives at the ban check with every other validator already
+    satisfied — the ban is the only thing left that can refuse it.
+    """
+
+    def mutate(raw):
+        record = raw["modes"]["glm_general_api"]
+        record["provider_id"] = provider_id
+        record["cost_identity"] = f"{provider_id}/{ppm.METERED_BILLING_MODE}"
+        record["cap_id"] = f"{ppm.CAP_ID_PREFIX}{provider_id}"
+
+    return mutate
+
+
+def test_the_subscription_rung_ban_is_neither_empty_nor_shrunk():
+    assert ppm._FORBIDDEN_PROVIDER_IDS, "the subscription-rung ban must never be emptied"
+    dropped = sorted(set(_SUBSCRIPTION_RUNG_PROVIDER_IDS) - ppm._FORBIDDEN_PROVIDER_IDS)
+    assert dropped == [], f"subscription-rung ids missing from the ban: {dropped}"
+
+
+def test_subscription_provider_id_is_refused_when_every_other_field_matches(tmp_path):
+    for provider_id in _SUBSCRIPTION_RUNG_PROVIDER_IDS:
+        with pytest.raises(ppm.ProductionModeConfigError):
+            ppm.load_modes(_config(tmp_path, _provider_id_of(provider_id)))
+
+
+def test_metered_provider_id_of_the_same_shape_still_loads(tmp_path):
+    """Negative control: the refusals above are the ban, not the field shapes."""
+    modes = ppm.load_modes(_config(tmp_path, _provider_id_of("glm")))
+    assert modes["glm_general_api"].provider_id == "glm"
+
+
+#: Values that satisfy SECRET_REF_RE's env-var NAME shape yet are still secret
+#: VALUES, so only the value detector can refuse them.
+_SECRET_VALUE_LOOKALIKES = (
+    "AKIAIOSFODNN7EXAMPLE",  # AWS-style access key id
+    "DEADBEEF" * 4,  # 32 uppercase hex characters
+    "A" * 40,  # 40 characters of the hex/base64 alphabet
+)
+
+
+def test_secret_value_lookalike_is_refused_even_when_the_name_shape_matches(tmp_path):
+    for value in _SECRET_VALUE_LOOKALIKES:
+        assert ppm.SECRET_REF_RE.match(value), f"{value!r} must pass the NAME shape"
+        assert ppm._looks_like_secret_value(value), f"{value!r} must trip the VALUE detector"
+        with pytest.raises(ppm.ProductionModeConfigError):
+            ppm.load_modes(_config(tmp_path, _set("glm_general_api", "secret_ref", value)))
+
+
+def test_secret_value_lookalike_is_refused_outside_secret_ref(tmp_path):
+    value = "AKIAIOSFODNN7EXAMPLE"
+    assert ppm.SECRET_REF_RE.match(value), "the value must pass the NAME shape"
+    with pytest.raises(ppm.ProductionModeConfigError):
+        ppm.load_modes(_config(tmp_path, _set("glm_general_api", "default_model", value)))

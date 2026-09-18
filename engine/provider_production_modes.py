@@ -534,9 +534,10 @@ def _coerce_outcome(value: Any) -> TransportOutcome:
 
 
 def _status_to_error_class(status: int) -> str:
-    if 400 <= status < 500:
+    http_class = status // 100
+    if http_class == 4:
         return "http_4xx"
-    if 500 <= status < 600:
+    if http_class == 5:
         return "http_5xx"
     return "transport_error"
 
