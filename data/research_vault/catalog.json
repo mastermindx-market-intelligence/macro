@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T04:52:10.730668+00:00",
-  "count": 2338,
+  "generated_at": "2026-09-18T05:22:14.901664+00:00",
+  "count": 2339,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -44,6 +44,7 @@
     "ING",
     "J.P. Morgan",
     "Jefferies",
+    "KKR",
     "LSEG",
     "MUFG",
     "MetLife",
@@ -285,6 +286,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nqfda3bdxub-044d76",
+      "title": "2026 september flash macro FOMC",
+      "institution": "KKR",
+      "side": "buy",
+      "desk": "",
+      "published_at": "2026-09-18T00:14:34Z",
+      "summary_points": [
+        "Fed Rate Hike Context & Regime Change: Fed's 25bps hike (Sep 2026) viewed as adjustment cycle, not 2021-style tightening; aligns with Regime Change framework (persistent GDP, core CPI ~2.5%, four structural forces).",
+        "Rate Outlook & Policy Shift: KKR forecasts two additional hikes (Dec/Mar), holding rates at 4.375% through 2029 (vs FOMC's one hike, 2028 cut); Fed no longer expects inflation return to target until 2029.",
+        "Structural Forces Drive Policy: Elevated nominal GDP growth (geopolitics, AI spending, resilient growth) central to Fed decisions; structural forces (fiscal deficits, demographics, geopolitics, energy transition) justify prolonged high rates.",
+        "Asset Allocation Focus: Prioritize nominal GDP growth assets (Infrastructure, Asset-Based Finance, Opportunistic Credit) and non-correlated operational improvement themes (Security of Everything, Energy Grids, Capital Heavy-to-Light)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
