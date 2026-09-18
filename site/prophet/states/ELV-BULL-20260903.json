@@ -11,20 +11,20 @@
   "human_state": "Needs Follow-Through",
   "components": {
     "validity": 100.0,
-    "progress": 7.2,
-    "pace": 63.3,
+    "progress": 6.4,
+    "pace": 62.6,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.075,
-    "dist_to_t1_r": 1.425,
-    "dist_to_t2_r": 2.925,
+    "dist_to_stop_r": 1.064,
+    "dist_to_t1_r": 1.436,
+    "dist_to_t2_r": 2.936,
     "horizon_pct_used": 28.9,
-    "p1": 0.0503,
-    "p2": 0.0251,
+    "p1": 0.0424,
+    "p2": 0.0212,
     "p3": null,
-    "move_r": 0.075,
+    "move_r": 0.064,
     "mfe_r": 0.194,
     "mae_r": -0.164
   },

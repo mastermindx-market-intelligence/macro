@@ -5,7 +5,7 @@
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 55.9,
-  "raw_confidence": 55.4,
+  "raw_confidence": 55.9,
   "delta_vs_base": -4.1,
   "recommended_action": "trim",
   "human_state": "T1 Giveback Warning",
@@ -14,7 +14,7 @@
     "progress": 42.9,
     "pace": 29.6,
     "retention": 38.9,
-    "overlay": 53.0
+    "overlay": 61.0
   },
   "geometry": {
     "dist_to_stop_r": 1.436,
