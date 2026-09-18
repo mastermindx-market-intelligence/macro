@@ -220,6 +220,68 @@ def test_a_foreign_scale_is_rejected_from_every_tier(data_root, tier_writer):
     assert psi.ec_sent_at_entry(idx, "OK", "2026-07-01") == EC_AT_GATE
 
 
+def test_the_native_clamp_is_applied_at_THE_FRAME_not_only_at_the_lookup(data_root):
+    """BOTH guards must stay load-bearing.
+
+    An out-of-native value is rejected twice: ``_normalise_ec_frame`` nulls it when the
+    table is built, and ``_reject_out_of_native_ec_sent`` nulls it again at lookup. That
+    redundancy means a test which only checks ``ec_sent_at_entry`` would stay green if
+    the frame-level clamp were deleted — and the loaded TABLE would then carry foreign
+    values for anything that reads it directly. This asserts the frame itself.
+    """
+    write_r2_history(data_root, [("HI", "2026-06-01", 90.0),
+                                 ("NEG", "2026-06-02", -40.0),
+                                 ("OK", "2026-06-03", EC_AT_GATE)])
+    table, _record = psi.load_ec_table_with_source()
+    by_ticker = table.set_index("ticker")["earnings_call_sent"]
+
+    assert pd.isna(by_ticker["HI"]), "the frame-level native clamp was removed"
+    assert pd.isna(by_ticker["NEG"]), "the frame-level native clamp was removed"
+    assert by_ticker["OK"] == EC_AT_GATE
+    live = table["earnings_call_sent"].dropna()
+    assert live.between(psi.EC_SENT_NATIVE_MIN, psi.EC_SENT_NATIVE_MAX).all()
+
+
+def test_the_generation_manifest_is_read_from_beside_the_payload_only(data_root):
+    """The transported store is judged by ITS OWN sibling manifest.
+
+    ``engine.earnings_qual``'s validator falls back to a repo-layout guess
+    (``<root>/data/earnings_calls/manifest.json``) when no sibling exists, and
+    ``lib.config.data_dir()`` is configurable — only conventionally named ``data``. Under
+    a data root that guess cannot reconstruct, the fallback would judge this payload
+    against a different generation's commit marker. Here the data root is NOT named
+    ``data`` and a conflicting manifest sits where the guess would look; the store must
+    still be accepted on its own terms.
+    """
+    from lib import config
+
+    odd_root = data_root.parent / "not_named_data"
+    (odd_root / "earnings_calls").mkdir(parents=True)
+    write_r2_history(odd_root, [("MSFT", "2026-06-01", EC_STRONG)], manifest=False)
+
+    # A foreign manifest exactly where the repo-layout fallback would look.
+    decoy = data_root.parent / "data" / "earnings_calls"
+    decoy.mkdir(parents=True, exist_ok=True)
+    (decoy / "manifest.json").write_text(json.dumps({
+        "schema": "earnings_intelligence_manifest.v3",
+        "generation_id": "deadbeefdeadbeefdeadbeef",
+        "scores": {"md5": "0" * 32, "rows": 1, "tickers": 1,
+                   "key": "earnings_calls/generations/x/scores.parquet"},
+        "history": {"md5": "0" * 32, "rows": 999, "tickers": 999,
+                    "key": "earnings_calls/generations/x/history.parquet"},
+    }), encoding="utf-8")
+
+    config.data_dir = lambda: odd_root  # noqa: E731 - monkeypatched by the fixture's scope
+    ok, why = psi._validate_transport(
+        pd.DataFrame(), odd_root / "earnings_calls" / "history.parquet")
+    assert (ok, why) == (None, "manifest_absent"), (
+        "a payload with no sibling manifest was judged against a foreign one")
+
+    _table, record = psi.load_ec_table_with_source()
+    assert record["state"] == psi.EC_SOURCE_AVAILABLE
+    assert record["tier"] == psi.EC_TIER_R2_HISTORY
+
+
 def test_the_gate_edge_is_unchanged_on_the_restored_tier(data_root, monkeypatch):
     """At the gate tilts; one point below does not. The restored tier must not shift
     the boundary by so much as a rounding."""

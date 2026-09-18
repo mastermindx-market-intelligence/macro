@@ -67,15 +67,19 @@ corrected call, and the only time rule THIS layer applies is ``call_date < entry
 That rule is unchanged, and it answers identically on either tier — pinned by
 ``test_point_in_time_and_correction_selection_are_identical_across_tiers``.
 
-The residual, stated rather than papered over: because the selected row is the LATEST
-correction, a value read for an entry date can in principle reflect a revision published
-after that date. This does not affect live origination, which runs at wall-clock now and
-can only ever see corrections that already exist. It DOES affect anything that re-tags a
-past entry — the forward shadow's grading lane — and the live R2 tier makes that surface
-continuously rather than only up to a frozen snapshot date. Filtering on ``updated_at``
-would close it, and would also be a stricter point-in-time rule than the one the leash
-was promoted under, so it is deliberately NOT done here: that is a prereg amendment, not
-a data-availability repair.
+The residual, stated rather than papered over, and scoped to what it actually is: because
+the selected row is the LATEST correction, a value read for an entry date can in principle
+reflect a revision published after that date. Two of the three paths are NOT exposed.
+Live origination runs at wall-clock now, so it can only ever see corrections that already
+exist. The forward shadow tags each entry exactly once and never re-tags
+(``prophet_stage_shadow.tag_entries``: "idempotent — the tag is PIT-fixed"), so a later
+correction cannot reach a row already in its ledger. What remains is narrow and real: the
+gap between an entry's signal date and the first nightly that tags it, and the
+``clock_retag`` overlay, which deliberately recomputes an older entry's PIT tag against
+today's table. The live R2 tier makes that window continuously current rather than frozen
+at a snapshot date. Filtering on ``updated_at`` would close it, and would also be a
+STRICTER point-in-time rule than the one the leash was promoted under, so it is
+deliberately NOT done here: that is a prereg amendment, not a data-availability repair.
 
 THE FAIL-OPEN IS UNCHANGED. When no tier answers, the table is empty, every lookup is
 ``None``, and the leash stays 1.0 — a missing source never raises and never tilts. A
@@ -274,13 +278,21 @@ def _validate_transport(frame: pd.DataFrame, path: Path) -> tuple[bool | None, s
     ``None`` means "no manifest beside this store" (a hand-placed or fixture file), which
     is accepted exactly as engine.earnings_qual accepts it. ``False`` is an explicit
     contract failure and the candidate must be rejected rather than used.
+
+    THE MANIFEST IS THE PAYLOAD'S SIBLING, FULL STOP. The delegate falls back to a
+    repo-layout guess (``<root>/data/earnings_calls/manifest.json``) when no sibling
+    exists, and ``lib.config.data_dir()`` is configurable — it is only conventionally
+    named ``data``. Under a data root the guess cannot reconstruct, that fallback would
+    judge this payload against a DIFFERENT generation's commit marker: a valid store
+    rejected, or worse, one blessed by a manifest that does not describe it. So the
+    sibling is resolved here and the fallback is never reachable.
     """
+    if not (path.parent / "manifest.json").exists():
+        return None, "manifest_absent"
     try:
         from engine import earnings_qual  # noqa: PLC0415
-        # root is the parent of data_dir, so the module's repo-layout fallback resolves
-        # to THIS data root's manifest and never to the checkout's.
         return earnings_qual.validate_transport_frame(
-            frame, path, EC_TRANSPORT_BLOCK, root=path.parent.parent.parent,
+            frame, path, EC_TRANSPORT_BLOCK, root=path.parent,
         )
     except Exception as e:  # noqa: BLE001
         # A validator that cannot run must not silently bless the payload.
