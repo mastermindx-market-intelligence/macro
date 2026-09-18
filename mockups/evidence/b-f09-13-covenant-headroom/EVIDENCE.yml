@@ -3,7 +3,7 @@ packet_slug: b-f09-13-covenant-headroom
 captured_at: "2026-09-13T23:16:00Z"
 captured_by: META-CEO-B-FABLE-round-3
 manifest: manifest.json
-manifest_sha: df75b4b54a534c32c782e62fc2347518c3131ee4
+manifest_sha: efc6c1ccdf814a03a73d3fdec466880e4c87eeaa
 # Git commit SHA at capture; HEAD^{tree} = 1e57d13cf36bba9c47ecd8363998b4809234e0ee
 # for this packet's tree state. The packet is committed in the FINAL committed
 # head on branch claude/mo-b-f09-13-covenant-headroom.
@@ -89,8 +89,8 @@ spec_compliance:
 # manifest_sha + manifest.json:manifest_sha to the same value, or this packet
 # is FIX_REQUIRED (manifest naming a parent or an uncommitted tree).
 final_head_capture_command: "git rev-parse HEAD"
-final_head_sha: df75b4b54a534c32c782e62fc2347518c3131ee4
-final_head_tree_sha: a60e2da27b4044c81f42bcd9ba03647661055bc1
+final_head_sha: efc6c1ccdf814a03a73d3fdec466880e4c87eeaa
+final_head_tree_sha: 9d994b86924df813f3f1f85282d884d02c21cdf1
 
 notes:
   - "16 PNG cells captured via Playwright/Chromium from rendered-html/{null,computed}.html at dark/light × EN/ZH × 1440/390 — 8 null + 8 computed, all unique content-addressed."

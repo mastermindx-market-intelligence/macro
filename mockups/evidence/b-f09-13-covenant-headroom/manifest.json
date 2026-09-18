@@ -1,8 +1,8 @@
 {
   "schema": "mastermind.page_evidence_receipt.v1",
   "packet_slug": "b-f09-13-covenant-headroom",
-  "manifest_sha": "df75b4b54a534c32c782e62fc2347518c3131ee4",
-  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = a60e2da27b4044c81f42bcd9ba03647661055bc1 for this packet's tree state. The packet is committed in the FINAL committed head on branch claude/mo-b-f09-13-covenant-headroom.",
+  "manifest_sha": "efc6c1ccdf814a03a73d3fdec466880e4c87eeaa",
+  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = 9d994b86924df813f3f1f85282d884d02c21cdf1 for this packet's tree state. The packet is committed in the FINAL committed head on branch claude/mo-b-f09-13-covenant-headroom.",
   "captured_at": "2026-09-13T23:16:00Z",
   "captured_by": "META-CEO-B-FABLE-round-3",
   "render_method": "fixture_render_via_same_template_and_builder",
