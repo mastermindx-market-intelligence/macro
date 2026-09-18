@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T23:24:10.925570+00:00",
-  "count": 2391,
+  "generated_at": "2026-09-18T23:39:15.630971+00:00",
+  "count": 2392,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -149,6 +149,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 51,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kzxwkqw31o5-b6a6f6",
+      "title": "Fed SOMA Holdings Analytics for Treasury securities in SOMA",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:36:56Z",
+      "summary_points": [
+        "Fed Balance Sheet Risk: $15.8B–$16.8B eligible for next Fed pass with 25% Fed ownership on key maturities (e.g., 9128CCV1), signaling imminent market disruption from Fed sales.",
+        "Technical Risk Signals: Negative spreads (e.g., -0.1 bps for 91282CK0) and elevated T-Stats (0.1) indicate Fed policy-driven pricing stress and volatility impacting short-term trading strategies.",
+        "Fed Holdings Duration & DV01: Fed Holdings show significantly higher Modified Duration (5.31 vs. 75) and DV01 (5.51 vs. 48), reflecting elevated interest rate sensitivity and policy-driven risk exposure for portfolio managers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
       "language": "en",
       "needs_metadata": false
     },
