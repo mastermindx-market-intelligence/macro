@@ -12,6 +12,7 @@
     "registered_on",
     "governing_sources",
     "effective_fences",
+    "activation_preconditions",
     "source_contracts",
     "formation",
     "candidate_identity",
@@ -55,6 +56,26 @@
         "pre_activation_action": {"const": "permanent_abstain"},
         "late_arrival_policy": {"const": "formed_before_activation_never_cured_by_late_observation"}
       }
+    },
+    "activation_preconditions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "oa1t_measured_source_consumer_proven",
+          "ad1t2_consumer_availability_production_accepted",
+          "campaign_integrity_publication_runtime_accepted",
+          "source_collision_review_clear"
+        ]
+      },
+      "allOf": [
+        {"contains": {"const": "oa1t_measured_source_consumer_proven"}},
+        {"contains": {"const": "ad1t2_consumer_availability_production_accepted"}},
+        {"contains": {"const": "campaign_integrity_publication_runtime_accepted"}},
+        {"contains": {"const": "source_collision_review_clear"}}
+      ]
     },
     "source_contracts": {
       "type": "object",
