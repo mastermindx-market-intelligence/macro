@@ -1093,6 +1093,94 @@ def test_inherited_cleanup_never_overwrites_concurrent_branch_ref_movement(tmp_p
     assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
 
 
+
+def test_failed_inherited_recovery_is_sticky_across_retry_attempts(tmp_path):
+    """A failed inherited-state recovery cannot be recaptured as fresh authority."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    _install_inherited_complete_rebase(repo, tmp_path)
+    moved_head = _git_output(repo, "rev-parse", "origin/main")
+    real_git = subprocess.run(
+        ["which", "git"], capture_output=True, text=True, check=True
+    ).stdout.strip()
+    fakebin = tmp_path / "sticky-failure-bin"
+    fakebin.mkdir()
+    wrapper = fakebin / "git"
+    wrapper.write_text(textwrap.dedent(f"""\\
+        #!/usr/bin/env bash
+        if [ "$1" = rebase ] && [ "$2" = --quit ]; then
+          {real_git!r} "$@"
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            {real_git!r} update-ref refs/heads/topic "$MOVED_HEAD" "$TOPIC_HEAD"
+          fi
+          exit "$rc"
+        fi
+        exec {real_git!r} "$@"
+        """))
+    wrapper.chmod(0o755)
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        if push_fetch_main_for_rebase; then
+          echo "first inherited recovery unexpectedly succeeded" >&2
+          exit 81
+        fi
+        test "$PUSH_RECOVERY_FAILED" -eq 1
+        if push_attempt; then
+          echo "failed recovery was forgotten by the next retry" >&2
+          exit 82
+        fi
+        test "$PUSH_RECOVERY_FAILED" -eq 1
+        case "$PUSH_STOP" in
+          *"recovery failed"*) ;;
+          *) echo "missing sticky recovery stop: $PUSH_STOP" >&2; exit 83 ;;
+        esac
+        """,
+        env={
+            "PATH": f"{fakebin}:{os.environ['PATH']}",
+            "TOPIC_HEAD": topic_head,
+            "MOVED_HEAD": moved_head,
+        },
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+
+
+def test_inherited_cleanup_preserves_untracked_child_without_destructive_restore(tmp_path):
+    """Cleanup-only quit must not reset away current-job untracked output."""
+    repo, topic_head = _current_attempt_conflict_repo(tmp_path)
+    git_dir = _install_inherited_complete_rebase(repo, tmp_path)
+    tracked = repo / "staged.txt"
+    tracked.unlink()
+    tracked.mkdir()
+    child = tracked / "untracked-child.txt"
+    child.write_text("current-job-untracked\n")
+    before = _git_output(repo, "status", "--porcelain")
+    assert "staged.txt" in before
+
+    r = run_sh(
+        r"""
+        push_retry_init "t"
+        push_attempt
+        push_fetch_main_for_rebase
+        test "$PUSH_ATTEMPT_ANCHOR_VALID" -eq 1
+        test "$PUSH_RECOVERY_FAILED" -eq 0
+        test "$(git symbolic-ref -q --short HEAD)" = topic
+        test "$(git rev-parse HEAD)" = "$TOPIC_HEAD"
+        test -f staged.txt/untracked-child.txt
+        test "$(cat staged.txt/untracked-child.txt)" = current-job-untracked
+        test -z "$(git ls-files -u)"
+        test ! -d "$GIT_DIR/rebase-merge"
+        test ! -d "$GIT_DIR/rebase-apply"
+        """,
+        env={"TOPIC_HEAD": topic_head, "GIT_DIR": str(git_dir)},
+        cwd=repo,
+    )
+    assert r.returncode == 0, f"{r.stdout}\n{r.stderr}"
+    assert child.read_text() == "current-job-untracked\n"
+
 def test_fetch_rebase_preserves_current_tracked_dirt_while_removing_inherited_state(tmp_path):
     """Inherited control metadata cannot erase the current job's staged/unstaged bytes."""
     repo, topic_head = _current_attempt_conflict_repo(tmp_path)

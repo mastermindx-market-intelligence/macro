@@ -92,6 +92,9 @@ push_retry_init() {
   # Set only when this retry discovers rebase metadata that predates its own
   # anchor. While set, push_abort_rebase must never trust that metadata.
   PUSH_ATTEMPT_INHERITED_REBASE=0
+  # Sticky for this retry operation. Once exact recovery cannot be proven, no
+  # later attempt may recapture authority from the damaged post-failure state.
+  PUSH_RECOVERY_FAILED=0
   return 0
 }
 
@@ -139,6 +142,28 @@ push_capture_attempt_anchor() {
   return 0
 }
 
+# Verify the current repository still equals this attempt's tracked anchor.
+# Observation only: never reset, apply a stash, move refs, or touch untracked bytes.
+push_verify_attempt_anchor() {
+  local gd="" branch_head="" unmerged="" index_tree="" worktree_hash=""
+
+  [ "${PUSH_ATTEMPT_ANCHOR_VALID:-0}" -eq 1 ] || return 1
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 1
+  [ "$gd" = "$PUSH_ATTEMPT_ANCHOR_GIT_DIR" ] || return 1
+  [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ] || return 1
+  branch_head=$(git rev-parse "${PUSH_ATTEMPT_ANCHOR_BRANCH}^{commit}" 2>/dev/null) || return 1
+  [ "$branch_head" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+  [ "$(git symbolic-ref -q HEAD 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_BRANCH" ] || return 1
+  [ "$(git rev-parse 'HEAD^{commit}' 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
+  unmerged=$(git ls-files -u 2>/dev/null) || return 1
+  [ -z "$unmerged" ] || return 1
+  index_tree=$(git write-tree 2>/dev/null) || return 1
+  [ "$index_tree" = "$PUSH_ATTEMPT_ANCHOR_INDEX_TREE" ] || return 1
+  worktree_hash=$(git diff --binary --no-ext-diff --no-color | git hash-object --stdin 2>/dev/null) || return 1
+  [ "$worktree_hash" = "$PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH" ] || return 1
+  return 0
+}
+
 # Restore ONLY a snapshot captured by this retry attempt. Never trust the
 # damaged rebase's orig-head or autostash: those may belong to an older job.
 # The branch ref must still point at the captured HEAD before we touch bytes.
@@ -167,16 +192,7 @@ push_restore_attempt_anchor() {
     git stash apply --index "$PUSH_ATTEMPT_ANCHOR_STASH" >/dev/null 2>&1 || return 1
   fi
 
-  [ "$(git symbolic-ref -q HEAD 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_BRANCH" ] || return 1
-  [ "$(git rev-parse 'HEAD^{commit}' 2>/dev/null)" = "$PUSH_ATTEMPT_ANCHOR_HEAD" ] || return 1
-  unmerged=$(git ls-files -u 2>/dev/null) || return 1
-  [ -z "$unmerged" ] || return 1
-  index_tree=$(git write-tree 2>/dev/null) || return 1
-  [ "$index_tree" = "$PUSH_ATTEMPT_ANCHOR_INDEX_TREE" ] || return 1
-  worktree_hash=$(git diff --binary --no-ext-diff --no-color | git hash-object --stdin 2>/dev/null) || return 1
-  [ "$worktree_hash" = "$PUSH_ATTEMPT_ANCHOR_WORKTREE_HASH" ] || return 1
-  [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ] || return 1
-  return 0
+  push_verify_attempt_anchor
 }
 
 # A retained runner may begin a new retry while rebase metadata from an older
@@ -186,7 +202,8 @@ push_restore_attempt_anchor() {
 # entries and its exact tracked state can be captured independently of that metadata.
 push_prepare_inherited_rebase() {
   local gd=""
-  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || return 1
+  [ "${PUSH_RECOVERY_FAILED:-0}" -eq 0 ] || return 1
+  gd=$(git rev-parse --absolute-git-dir 2>/dev/null) || { PUSH_RECOVERY_FAILED=1; return 1; }
   if [ ! -d "$gd/rebase-merge" ] && [ ! -d "$gd/rebase-apply" ]; then
     return 0
   fi
@@ -195,6 +212,7 @@ push_prepare_inherited_rebase() {
   push_capture_attempt_anchor allow-existing-rebase
   if [ "${PUSH_ATTEMPT_ANCHOR_VALID:-0}" -ne 1 ]; then
     echo "::error title=inherited rebase state is not current-attempt authority::retained rebase metadata predates this retry and the current branch/index/worktree cannot be independently anchored; preserving the state and refusing stale orig-head/autostash recovery" >&2
+    PUSH_RECOVERY_FAILED=1
     return 1
   fi
 
@@ -202,14 +220,20 @@ push_prepare_inherited_rebase() {
   # control directory without applying its orig-head or autostash.
   if ! git rebase --quit 2>/dev/null; then
     echo "::error title=inherited rebase cleanup failed::git rebase --quit could not remove retained metadata; refusing to enter a new rebase" >&2
+    PUSH_RECOVERY_FAILED=1
     return 1
   fi
   if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
     echo "::error title=inherited rebase cleanup incomplete::retained rebase metadata survived git rebase --quit; refusing to enter a new rebase" >&2
+    PUSH_RECOVERY_FAILED=1
     return 1
   fi
-  if ! push_restore_attempt_anchor; then
-    echo "::error title=inherited rebase current state restore failed::retained metadata was removed but this retry's independently captured tracked state could not be verified exactly" >&2
+  # `git rebase --quit` is cleanup-only. It must leave the current job's
+  # branch/HEAD/index/tracked worktree untouched, so verify equality rather than
+  # destructively resetting/reapplying state (which can delete untracked output).
+  if ! push_verify_attempt_anchor; then
+    echo "::error title=inherited rebase current state verification failed::retained metadata was removed but this retry's independently captured tracked state changed; refusing without destructive restoration" >&2
+    PUSH_RECOVERY_FAILED=1
     return 1
   fi
 
@@ -221,6 +245,10 @@ push_prepare_inherited_rebase() {
 # or the wall-clock deadline is spent (PUSH_STOP records which). The FIRST attempt is
 # always allowed regardless of the deadline.
 push_attempt() {
+  if [ "${PUSH_RECOVERY_FAILED:-0}" -eq 1 ]; then
+    PUSH_STOP="recovery failed earlier in this retry operation"
+    return 1
+  fi
   if [ "${PUSH_ATTEMPT}" -ge "${PUSH_MAX_ATTEMPTS}" ]; then
     PUSH_STOP="attempt budget exhausted (${PUSH_MAX_ATTEMPTS} attempts)"
     return 1
@@ -463,6 +491,7 @@ push_abort_rebase() {
   # Never let a later generic cleanup call normal-abort that inherited state.
   if [ "${PUSH_ATTEMPT_INHERITED_REBASE:-0}" -eq 1 ]; then
     echo "::error title=inherited rebase abort refused::retained rebase metadata is not current-attempt authority; refusing to restore stale orig-head or autostash bytes" >&2
+    PUSH_RECOVERY_FAILED=1
     return 1
   fi
   gd=$(git rev-parse --git-dir 2>/dev/null) || gd=""
@@ -476,6 +505,7 @@ push_abort_rebase() {
       git rebase --quit 2>/dev/null || true
       if [ -d "$gd/rebase-merge" ] || [ -d "$gd/rebase-apply" ]; then
         echo "::error title=stale rebase state survived cleanup::git rebase --abort and --quit both failed; refusing to burn every push retry against the same poisoned workspace" >&2
+        PUSH_RECOVERY_FAILED=1
         return 1
       fi
       # Unlike --abort, --quit never restores HEAD, the index, or the worktree.
@@ -485,6 +515,7 @@ push_abort_rebase() {
       # letting the caller treat that partial tree as a clean retry workspace.
       if ! unmerged=$(git ls-files -u 2>/dev/null); then
         echo "::error title=partial rebase state survived cleanup::could not inspect the index after git rebase --quit; refusing to retry from an unknown workspace" >&2
+        PUSH_RECOVERY_FAILED=1
         return 1
       fi
       if [ -n "$unmerged" ] || ! git symbolic-ref -q HEAD >/dev/null 2>&1; then
@@ -492,6 +523,7 @@ push_abort_rebase() {
           return 0
         fi
         echo "::error title=partial rebase state survived cleanup::git rebase --quit removed malformed metadata but left a detached HEAD and/or unmerged index, and no trustworthy current-attempt anchor could restore it; refusing to retry or push from a partial rebase" >&2
+        PUSH_RECOVERY_FAILED=1
         return 1
       fi
     fi
