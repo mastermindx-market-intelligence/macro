@@ -527,14 +527,26 @@ def test_ca_discovery_availability_reuses_owner_entry_status_without_upgrading_i
     }
     cand = [(1.0, {"ticker": t}) for t in [*statuses, "MISS.TO"]]
     entry = {t: {"status": s} for t, s in statuses.items()}
+    align = {t: {"aligned": True} for t in statuses}
     rows = {r["security_ref_raw"]: r for r in
-            cadc.build_candidates(cadc.freeze_evidence(cand, {}, entry), "2026-09-16")}
+            cadc.build_candidates(cadc.freeze_evidence(cand, align, entry), "2026-09-16")}
     assert rows["OPEN.TO"]["availability_status"] == cadc.ENTRY_OPEN
     assert rows["PULL.TO"]["availability_status"] == cadc.WAIT_PULLBACK
     assert rows["RAN.TO"]["availability_status"] == cadc.RAN_DONT_CHASE
     assert rows["BLOCK.TO"]["availability_status"] == cadc.BLOCKED
     assert rows["WAIT.TO"]["availability_status"] == cadc.WAIT_CONFLUENCE
     assert rows["MISS.TO"]["availability_status"] == cadc.UNAVAILABLE_DATA
+
+
+def test_ca_discovery_never_calls_unaligned_timing_open_an_open_entry():
+    from engine import canada_discovery_challenger as cadc
+    cand = [(1.0, {"ticker": "BLOCKED.TO"})]
+    entry = {"BLOCKED.TO": {"status": "partial"}}
+    row = cadc.build_candidates(
+        cadc.freeze_evidence(cand, {}, entry), "2026-09-16"
+    )[0]
+    assert row["availability_status"] == cadc.WAIT_CONFLUENCE
+    assert row["availability_source"] == "alignment_blocked+entry_signal:partial"
 
 
 def test_ca_discovery_does_not_mutate_or_read_published_board_fields():

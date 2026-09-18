@@ -55,9 +55,13 @@ def freeze_evidence(
         ))
     return tuple(frozen)
 
-def _availability(status: str | None) -> tuple[str, str]:
+def _availability(
+    status: str | None, *, aligned: bool, near: bool,
+) -> tuple[str, str]:
     source = f"entry_signal:{status or 'missing'}"
     if status in _OPEN:
+        if not aligned and not near:
+            return WAIT_CONFLUENCE, f"alignment_blocked+{source}"
         return ENTRY_OPEN, source
     if status in _PULLBACK:
         return WAIT_PULLBACK, source
@@ -82,7 +86,9 @@ def build_candidates(
             origins.append("alignment_aligned")
         elif near:
             origins.append("alignment_near")
-        availability, source = _availability(entry_status)
+        availability, source = _availability(
+            entry_status, aligned=aligned, near=near,
+        )
         rows.append({
             "session_date": str(asof),
             "security_ref_raw": str(ticker),
