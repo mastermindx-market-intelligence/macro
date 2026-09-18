@@ -264,7 +264,11 @@ def _transport_generation(path: Path) -> dict | None:
     block = manifest.get(EC_TRANSPORT_BLOCK)
     out = {
         "generation_id": manifest.get("generation_id"),
-        "published_at": manifest.get("generated_at") or manifest.get("published_at"),
+        # publish_earnings_r2._synth_manifest stamps the publish time as "built";
+        # the other two names are accepted so an older or hand-written marker still
+        # discloses a vintage instead of silently reporting none.
+        "published_at": (manifest.get("built") or manifest.get("generated_at")
+                         or manifest.get("published_at")),
         "rows": (block or {}).get("rows") if isinstance(block, dict) else None,
     }
     return out if any(v is not None for v in out.values()) else None

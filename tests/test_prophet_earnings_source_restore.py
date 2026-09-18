@@ -567,6 +567,10 @@ def test_deploy_host_hydrates_through_the_real_shim_then_prophet_sees_the_cohort
     assert record["state"] == psi.EC_SOURCE_AVAILABLE
     assert record["tier"] == psi.EC_TIER_R2_HISTORY
     assert record["generation"]["generation_id"] == manifest["generation_id"]
+    # The vintage must actually be disclosed, not silently null: publish_earnings_r2
+    # stamps the publish time under "built", so reading only "generated_at" reports None
+    # for every real generation.
+    assert record["generation"]["published_at"] == manifest["built"]
 
     plans = _originate(data_root, monkeypatch, stage2=True)
     assert plans
