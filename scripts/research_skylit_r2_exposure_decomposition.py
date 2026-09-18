@@ -18,6 +18,7 @@ FACTORS = ("position", "spot", "vol", "time")
 CONTRACT_MULTIPLIER = 100.0
 PCT_MOVE = 0.01
 CONTRACT_MATCH_TARGET = 0.90
+MODEL_INPUT_MATCH_TARGET = 0.90
 EXPOSURE_MASS_TARGET = 0.95
 
 
@@ -172,20 +173,6 @@ def build_settled_state(
     unexpired = base[pd.to_datetime(base["expiration"]).dt.date > session_day].copy()
     if unexpired.empty:
         raise R2Refusal(f"no unexpired contracts for {root.upper()} {session}")
-    iv_mask = np.isfinite(unexpired["implied_vol"]) & (unexpired["implied_vol"] > 0)
-    iv_contract_rate = float(iv_mask.mean())
-    base = unexpired[iv_mask].copy()
-    if base.empty:
-        raise R2Refusal(f"no unexpired finite-IV contracts for {root.upper()} {session}")
-
-    spots = base.loc[
-        np.isfinite(base["underlying_price"]) & (base["underlying_price"] > 0),
-        "underlying_price",
-    ]
-    if spots.empty:
-        raise R2Refusal(f"no qualified underlying_price for {root.upper()} {session}")
-    spot = float(spots.median())
-    spot_range_bps = float((spots.max() - spots.min()) / spot * 10000.0) if spot else float("nan")
 
     oi_raw = store_api.oi_for_date(oi_publication_session, root.upper(), store=store)
     if oi_raw is None or oi_raw.empty:
@@ -195,7 +182,11 @@ def build_settled_state(
     oi = _normalize_identity(oi_raw, root, require_oi=True)
     oi = oi.rename(columns={"open_interest": "settled_open_interest"})
 
-    merged = base.merge(
+    # Coverage denominators are the complete unexpired identity board.  Do not
+    # filter away a contract merely because one model input is missing: that
+    # would let missing IV/OI disappear from the denominator and falsely qualify
+    # a partial source board.
+    merged = unexpired.merge(
         oi[KEY + ["settled_open_interest"]],
         on=KEY,
         how="left",
@@ -203,9 +194,20 @@ def build_settled_state(
     )
     expiry = pd.to_datetime(merged["expiration"])
     merged["time_years"] = (expiry.dt.date - session_day).map(lambda x: x.days / 365.0)
+
+    spots = merged.loc[
+        np.isfinite(merged["underlying_price"]) & (merged["underlying_price"] > 0),
+        "underlying_price",
+    ]
+    if spots.empty:
+        raise R2Refusal(f"no qualified underlying_price for {root.upper()} {session}")
+    spot = float(spots.median())
+    spot_range_bps = float((spots.max() - spots.min()) / spot * 10000.0) if spot else float("nan")
     merged["spot"] = spot
 
     eligible_n = int(len(merged))
+    iv_mask = np.isfinite(merged["implied_vol"]) & (merged["implied_vol"] > 0)
+    model_input_rate = float(iv_mask.mean()) if eligible_n else 0.0
     settled_mask = np.isfinite(merged["settled_open_interest"])
     prior_mask = np.isfinite(merged["prior_open_interest"]) & (merged["prior_open_interest"] >= 0)
     settled_rate = float(settled_mask.mean()) if eligible_n else 0.0
@@ -221,23 +223,30 @@ def build_settled_state(
         greeks_fn=greeks_fn,
     )
     prior_mass = np.abs(prior_exposure)
-    prior_mass_den = float(np.nansum(prior_mass))
-    if prior_rate < CONTRACT_MATCH_TARGET or not np.isfinite(prior_mass_den) or prior_mass_den <= 0:
+    reference_mask = iv_mask & prior_mask & np.isfinite(prior_mass)
+    prior_mass_den = float(np.sum(prior_mass[reference_mask])) if reference_mask.any() else 0.0
+    if (
+        model_input_rate < MODEL_INPUT_MATCH_TARGET
+        or prior_rate < CONTRACT_MATCH_TARGET
+        or not np.isfinite(prior_mass_den)
+        or prior_mass_den <= 0
+    ):
         exposure_mass_coverage = None
     else:
+        matched_reference = reference_mask & settled_mask
         exposure_mass_coverage = float(
-            np.nansum(np.where(settled_mask, prior_mass, np.nan)) / prior_mass_den
+            np.sum(prior_mass[matched_reference]) / prior_mass_den
         )
 
     qualified = bool(
-        iv_contract_rate >= MODEL_INPUT_MATCH_TARGET
+        model_input_rate >= MODEL_INPUT_MATCH_TARGET
         and settled_rate >= CONTRACT_MATCH_TARGET
         and prior_rate >= CONTRACT_MATCH_TARGET
         and exposure_mass_coverage is not None
         and exposure_mass_coverage >= EXPOSURE_MASS_TARGET
     )
 
-    usable = merged[settled_mask].copy()
+    usable = merged[iv_mask & settled_mask].copy()
     usable["position"] = usable["settled_open_interest"].astype(float)
     usable["vol"] = usable["implied_vol"].astype(float)
     usable["exposure_gex"] = _exposure_gex(
@@ -262,7 +271,8 @@ def build_settled_state(
         "spot": spot,
         "spot_cross_contract_range_bps": spot_range_bps,
         "unexpired_identity_contracts": int(len(unexpired)),
-        "iv_contract_rate": iv_contract_rate,
+        "model_input_contract_rate": model_input_rate,
+        "iv_contract_rate": model_input_rate,
         "eligible_contracts": eligible_n,
         "settled_oi_matched_contracts": int(settled_mask.sum()),
         "settled_oi_contract_rate": settled_rate,
