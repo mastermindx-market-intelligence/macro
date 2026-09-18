@@ -129,16 +129,36 @@
       <span class="cs-state-chip">{{ t('Reading only — not a trade call', '仅供查阅 — 不是交易指令') }}</span>
     </div>
     {% if covenant_headroom.state == 'computed' %}
-    <p>{{ t('The credit agreement allows up to', '信贷协议允许最高') }}
-       <strong>{% if covenant_headroom.terms and covenant_headroom.terms[0].limit_kind == 'minimum' %}{{ '%.1f'|format(covenant_headroom.terms[0].limit_raw) }}{% else %}{% set max_limit = covenant_headroom.terms | map(attribute='limit_raw') | max %}{{ '%.1f'|format(max_limit) }}{% endif %}</strong>
+    {#
+      BLOCKER 2 fix: derive the glance sentence from the term's semantics.
+      - maximum_* term → ceiling: "allows up to X; shows Y — Z of room"
+      - minimum_* term → floor: "requires at least X; shows Y — Z of room"
+      limit_kind is set by the engine for every computed term.
+    #}
+    {% set first_computed = (covenant_headroom.terms | selectattr('room_turns') | list | first) %}
+    {% if first_computed and first_computed.limit_kind == 'minimum' %}
+    <p>{{ t('The credit agreement requires at least', '信贷协议要求最低') }}
+       <strong>{{ '%.1f'|format(first_computed.limit_raw) }}</strong>
        <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
-       {{ t('net debt to earnings; the last annual report shows', '净债务与盈利之比；最近的年报显示为') }}
-       <strong>{% set first_ratio = (covenant_headroom.terms | selectattr('reported.value') | list | first) %}{{ '%.1f'|format(first_ratio.reported.value) }}</strong>
+       {{ t('of earnings to interest; the last annual report shows', '；最近的年报显示为') }}
+       <strong>{{ '%.1f'|format(first_computed.reported.value) }}</strong>
        <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
        {{ t('— about', '— 还剩约') }}
-       <strong>{% set first_room = (covenant_headroom.terms | selectattr('room_turns') | list | first) %}{{ '%.1f'|format(first_room.room_turns) }}</strong>
+       <strong>{{ '%.1f'|format(first_computed.room_turns) }}</strong>
+       <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
+       {{ t('of room above the floor.', '的下限以上空间。') }}</p>
+    {% else %}
+    <p>{{ t('The credit agreement allows up to', '信贷协议允许最高') }}
+       <strong>{% if first_computed %}{{ '%.1f'|format(first_computed.limit_raw) }}{% else %}{% set max_limit = covenant_headroom.terms | map(attribute='limit_raw') | max %}{{ '%.1f'|format(max_limit) }}{% endif %}</strong>
+       <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
+       {{ t('net debt to earnings; the last annual report shows', '净债务与盈利之比；最近的年报显示为') }}
+       <strong>{% if first_computed %}{{ '%.1f'|format(first_computed.reported.value) }}{% endif %}</strong>
+       <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
+       {{ t('— about', '— 还剩约') }}
+       <strong>{% if first_computed %}{{ '%.1f'|format(first_computed.room_turns) }}{% endif %}</strong>
        <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
        {{ t('of room.', '的空间。') }}</p>
+    {% endif %}
     <div class="cs-latest-grid">
       {% for term in covenant_headroom.terms %}
       {% if term.state == 'computed' %}
@@ -151,34 +171,29 @@
         <strong>{% if term.reported.value is not none %}{{ '%.1f'|format(term.reported.value) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>{% if term.reported.period_end %} {{ t('for the year ended', '截至') }} {{ term.reported.period_end }}{% endif %}{% else %}—{% endif %}</strong>
       </div>
       <div>
-        <span>{{ t('Room left under the covenant', '契约下剩余空间') }}</span>
+        <span>{{ t('Room remaining', '剩余空间') }}</span>
         <strong>{% if term.room_turns is not none %}{% if term.room_turns >= 0 %}+{% endif %}{{ '%.1f'|format(term.room_turns) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>{% else %}—{% endif %}</strong>
       </div>
-      {% if term.next_step %}
       <div>
         <span>{{ t('Next step', '下一阶跃') }}</span>
-        <strong>{{ t('the limit steps to', '限额将调整为') }} {{ '%.2f'|format(term.next_step.limit_raw) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span> {{ t('from', '自') }} {{ term.next_step.start_date }}</strong>
+        <strong>{% if term.next_step %}{{ t('the limit steps to', '限额将调整为') }} {{ '%.2f'|format(term.next_step.limit_raw) }}<span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span> {{ t('from', '自') }} {{ term.next_step.start_date }}{% else %}{{ t('No next step recorded.', '尚无记录的下一阶跃。') }}{% endif %}</strong>
       </div>
-      {% endif %}
-      {% if term.receipt.accession %}
       <div>
         <span>{{ t('Filing type', '披露类型') }}</span>
-        <strong>{{ term.receipt.form }}</strong>
+        <strong>{% if term.receipt.accession %}{{ term.receipt.form }}{% else %}—{% endif %}</strong>
       </div>
       <div>
         <span>{{ t('Accession', '文件编号') }}</span>
-        <strong>{{ term.receipt.accession }}</strong>
+        <strong>{% if term.receipt.accession %}{{ term.receipt.accession }}{% else %}—{% endif %}</strong>
       </div>
       <div>
         <span>{{ t('Filing date', '披露日期') }}</span>
-        <strong>{{ term.receipt.filing_date }}</strong>
+        <strong>{% if term.receipt.filing_date %}{{ term.receipt.filing_date }}{% else %}—{% endif %}</strong>
       </div>
-      {% endif %}
-      {% endif %}
-      {% if term.refusal %}
+      {% else %}
       <div>
-        <span>{{ t(term.term_name | replace('_', ' '), term.term_name | replace('_', ' ')) }}</span>
-        <strong>{{ t(term.refusal_label_en or 'Not computed', term.refusal_label_zh or '未计算') }}</strong>
+        <span>{{ t(term.refusal_label_en, term.refusal_label_zh) }}</span>
+        <strong>—</strong>
       </div>
       {% endif %}
       {% endfor %}

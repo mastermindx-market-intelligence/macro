@@ -7,8 +7,8 @@
   "refusal": "no_terms_extracted",
   "null_en": "No credit agreement has been read for covenant terms yet. Of 2,450 exhibits that could hold one, 0 have been read so far.",
   "null_zh": "尚未从任何信贷协议中读取契约条款。可能包含条款的 2,450 份附件中，目前已读取 0 份。",
-  "refusal_label_en": "No terms extracted",
-  "refusal_label_zh": "未提取到条款",
+  "refusal_label_en": "No covenant terms have been read yet.",
+  "refusal_label_zh": "尚未读取任何契约条款。",
   "disclaimer_en": "For your own research only — this is a reading of public filings, not advice or a trade call.",
   "disclaimer_zh": "仅供自行研究 — 这是对公开披露文件的解读，不是建议，也不是交易指令。",
   "issuer": {
@@ -26,6 +26,6 @@
     "covered_manifests": 0,
     "state": "uncovered"
   },
-  "computed_at": "2026-09-13T21:30:17Z",
-  "generated_at": "2026-09-13T21:30:17Z"
+  "computed_at": "2026-09-18T23:25:43Z",
+  "generated_at": "2026-09-18T23:25:43Z"
 }

@@ -109,8 +109,8 @@ _ZERO_AUTHORITY_KEYS: frozenset[str] = frozenset({
 # placeholders are omitted.
 _NULL_COPY: dict[str, dict[str, str]] = {
     "no_terms_extracted": {
-        "label_en": "No terms extracted",
-        "label_zh": "未提取到条款",
+        "label_en": "No covenant terms have been read yet.",
+        "label_zh": "尚未读取任何契约条款。",
         "en_no_coverage": (
             "No credit agreement has been read for covenant terms yet."
         ),
@@ -154,7 +154,7 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         "label_en": "Ratio undefined",
         "label_zh": "比率未定义",
         "en": (
-            "The covenant limit could not be turned into a headroom number "
+            "The covenant limit could not be turned into a room number "
             "— the term was extracted but the reported EBITDA is zero, "
             "negative, or the agreement's step schedule is empty."
         ),

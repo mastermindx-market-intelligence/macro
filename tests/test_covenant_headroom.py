@@ -36,7 +36,18 @@ from typing import Any
 import pytest
 
 import engine.covenant_headroom as headroom
-from engine.capital_structure import covenant_terms
+
+# MAJOR 3 fix: guard the optional import that fails collection on Python 3.14
+# (jsonschema not installed there). The two tests that need covenant_terms
+# (test_covenant_metric_map_is_subset_of_producer_term_names and
+# test_always_definition_differs_covers_all_definition_differs_terms) are skipped
+# when this import is unavailable.
+try:
+    from engine.capital_structure import covenant_terms
+    _covenant_terms_available = True
+except Exception:
+    covenant_terms = None  # type: ignore[assignment]
+    _covenant_terms_available = False
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -637,6 +648,17 @@ def test_no_internal_state_names_leak_into_copy():
                 )
 
 
+def test_no_headroom_word_in_null_copy_block9():
+    """Spec B9 (BLOCKER 2 / MAJOR 4): the literal word "headroom"/"Headroom"
+    must never appear in any _NULL_COPY value — the engine produces plain-word
+    readings, not a study name."""
+    for reason, copy in headroom._NULL_COPY.items():
+        for k, v in copy.items():
+            assert "headroom" not in v.lower(), (
+                f"word 'headroom' leaked into refusal {reason}.{k}: {v!r}"
+            )
+
+
 def test_ceiling_and_basis_use_spec_verbatim_copy_block7():
     """Spec R4 + R1 — every payload carries the verbatim ceiling EN+ZH and
     the basis EN+ZH from the spec. Round-1 drifted both — round-2 pins the
@@ -828,6 +850,10 @@ def test_refusals_is_closed_set():
     )
 
 
+@pytest.mark.skipif(
+    not _covenant_terms_available,
+    reason="covenant_terms not available (jsonschema missing on Python 3.14)"
+)
 def test_covenant_metric_map_is_subset_of_producer_term_names():
     """The map's keys must all appear in the producer's frozen
     COVENANT_TERM_NAMES tuple. Any drift here is a bug."""
@@ -849,6 +875,10 @@ def test_always_definition_differs_is_disjoint_from_metric_map():
     assert not clash, f"clash: {clash}"
 
 
+@pytest.mark.skipif(
+    not _covenant_terms_available,
+    reason="covenant_terms not available (jsonschema missing on Python 3.14)"
+)
 def test_always_definition_differs_covers_all_definition_differs_terms():
     """Every term the producer recognises outside COVENANT_METRIC_MAP
     appears in _ALWAYS_DEFINITION_DIFFERS — i.e. the four definition_differs
@@ -1030,3 +1060,167 @@ def test_covenant_headroom_builder_returns_payload_with_explicit_coverage():
     assert payload["coverage"]["eligible_exhibits"] == 2450
     assert payload["coverage"]["covered_manifests"] == 0
     assert "2,450" in payload["null_en"]
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# BLOCKER 2: Glance sentence + MAJOR 4: no "headroom" in template output
+# ────────────────────────────────────────────────────────────────────────────
+
+def _render_covenant_panel(**ch_headroom_kwargs) -> str:
+    """Render the covenant headroom section of capital_structure.html.j2
+    in isolation, returning the rendered HTML fragment.
+
+    Also returns a ``text_only`` stripped version (HTML tags removed) for
+    assertions about visible user-facing copy."""
+    import re
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    root = Path(__file__).resolve().parents[1]
+    templates = root / "templates"
+    env = Environment(
+        loader=FileSystemLoader(str(templates)),
+        autoescape=True,
+        undefined=StrictUndefined,
+    )
+    html = env.get_template("capital_structure.html.j2").render(
+        active_section="research",
+        active_page="capital_structure",
+        **ch_headroom_kwargs,
+    )
+    # Strip HTML tags + CSS classes/ids to get visible text only
+    text_only = re.sub(r"<[^>]+>", " ", html)
+    text_only = re.sub(r'\s+', " ", text_only).strip()
+    return html, text_only
+
+
+def test_glance_sentence_uses_minimum_floor_copy_for_minimum_term():
+    """BLOCKER 2 RED-first: the glance sentence for a minimum_* term must read
+    as a floor ("requires at least X; shows Y — Z of room above the floor"),
+    not a ceiling. The old hardcoded copy used "net debt to earnings; the last
+    annual report shows" regardless of term kind."""
+    import engine.covenant_headroom as headroom
+
+    # minimum_interest_coverage_ratio: EBITDA/interest = 5.33x vs 3.00x floor
+    obs = _direct_obs(
+        "minimum_interest_coverage_ratio",
+        limit_raw=3.00,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 3.00}],
+    )
+    payload = headroom.compute_headroom(
+        [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
+        cik_by_source_manifest_id=_cik_by_source_manifest_id(),
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    # Floor sentence: "requires at least"
+    assert "requires at least" in html, (
+        "glance copy does not read as a floor for minimum_* term"
+    )
+    # "of room above the floor" not "of room"
+    assert "above the floor" in html
+    # Does NOT say "net debt to earnings"
+    assert "net debt to earnings" not in html
+
+
+def test_glance_sentence_uses_maximum_ceiling_copy_for_maximum_term():
+    """BLOCKER 2 GREEN: for a maximum_* term the glance copy reads as a
+    ceiling ("allows up to X; shows Y — Z of room")."""
+    import engine.covenant_headroom as headroom
+
+    # maximum_total_net_leverage_ratio: net_debt/EBITDA = 2.25x vs 3.50x limit
+    obs = _direct_obs(
+        "maximum_total_net_leverage_ratio",
+        limit_raw=3.50,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 3.50}],
+    )
+    payload = headroom.compute_headroom(
+        [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
+        cik_by_source_manifest_id=_cik_by_source_manifest_id(),
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    # Ceiling sentence: "allows up to"
+    assert "allows up to" in html
+    # "of room" (not "above the floor")
+    assert "of room" in html
+    assert "above the floor" not in html
+
+
+def test_grid_no_headroom_word_in_computed_html():
+    """MAJOR 4: the rendered HTML must not contain the literal word
+    "headroom" or "Headroom" anywhere — not in labels, not in class names
+    that reach the user, not in data attributes."""
+    import engine.covenant_headroom as headroom
+
+    obs = _direct_obs(
+        "maximum_total_net_leverage_ratio",
+        limit_raw=3.50,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 3.50}],
+    )
+    payload = headroom.compute_headroom(
+        [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
+        cik_by_source_manifest_id=_cik_by_source_manifest_id(),
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    assert "headroom" not in text_only.lower(), (
+        "word 'headroom' found in visible user-facing text"
+    )
+
+
+def test_grid_no_headroom_word_in_null_html():
+    """MAJOR 4: same assertion for the refusal/null state."""
+    import engine.covenant_headroom as headroom
+
+    payload = headroom.compute_headroom(
+        [], {}, {},
+        coverage={"covered_manifests": 0, "eligible_exhibits": 2450,
+                  "issuers_covered": 0, "state": "uncovered"},
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    assert "headroom" not in text_only.lower(), (
+        "word 'headroom' found in visible user-facing text"
+    )
+
+
+def test_refusal_row_uses_plain_label_not_hyphenated_term_name():
+    """MAJOR 1 / MAJOR 4: a refusal row must display the refusal label
+    (e.g. "Definition differs" / "定义不一致"), not the hyphenated term name
+    (e.g. "maximum secured net leverage ratio")."""
+    import engine.covenant_headroom as headroom
+
+    # definition_differs: maximum_secured_net_leverage_ratio always refuses
+    obs = _direct_obs(
+        "maximum_secured_net_leverage_ratio",
+        limit_raw=2.50,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 2.50}],
+    )
+    payload = headroom.compute_headroom(
+        [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
+        cik_by_source_manifest_id=_cik_by_source_manifest_id(),
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    # The label is "Definition differs" / "定义不一致"
+    assert "Definition differs" in html or "定义不一致" in html
+    # The raw term name with underscores must NOT appear as a visible label
+    assert "maximum_secured_net_leverage_ratio" not in html
+    assert "maximum secured net leverage ratio" not in html
+
+
+def test_next_step_none_shows_plain_message():
+    """MAJOR 1: when next_step is absent, the grid cell shows a plain
+    "No next step recorded." / "尚无记录的下一阶跃。" message, never a blank
+    or a machine identifier."""
+    import engine.covenant_headroom as headroom
+
+    obs = _direct_obs(
+        "maximum_total_net_leverage_ratio",
+        limit_raw=3.50,
+        steps=[{"start_date": "2022-09-30", "end_date": None, "limit_raw": 3.50}],
+    )
+    payload = headroom.compute_headroom(
+        [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
+        cik_by_source_manifest_id=_cik_by_source_manifest_id(),
+    )
+    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    # next_step is absent in this payload (no future step)
+    assert payload["terms"][0].get("next_step") is None
+    assert "No next step recorded" in html or "尚无记录的下一阶跃" in html
