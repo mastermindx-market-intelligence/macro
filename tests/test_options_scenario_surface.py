@@ -79,6 +79,10 @@ def test_payload_is_explicitly_scenario_not_observed_history_or_forecast():
         "market_observed_at": OBS,
         "iv_observed_at": None,
         "oi_vintage": None,
+        "trade_at_first": None,
+        "trade_at_last": None,
+        "quote_at_first": None,
+        "quote_at_last": None,
     }
     assert out["conventions"]["contract_multiplier"] == 100.0
     assert out["conventions"]["pct_move"] == 0.01
@@ -220,6 +224,79 @@ def test_source_clock_and_oi_vintage_cannot_come_from_after_market_observation()
         _build(oi_vintage="2026-09-19")
     with pytest.raises(ValueError, match="oi_vintage"):
         _build(oi_vintage="not-a-date")
+
+
+def test_live_flow_contract_shape_uses_exp_str_for_scope_and_preserves_source_clocks():
+    T = 1.0 / 365.0
+    contracts = []
+    for strike, right, oi, trade_at, quote_at in [
+        (99.0, "C", 1800.0, "2026-09-18T13:59:50Z", "2026-09-18T13:59:49.500000Z"),
+        (100.0, "P", 1400.0, "2026-09-18T13:59:55Z", "2026-09-18T13:59:54.500000Z"),
+    ]:
+        mid = float(
+            bs_price(
+                SPOT,
+                np.asarray([strike], float),
+                np.asarray([T], float),
+                np.asarray([0.24], float),
+                np.asarray([right == "C"], bool),
+            )[0]
+        )
+        contracts.append({
+            # Canonical #7279 live-flow key is exp_str, not expiry.
+            "exp_str": "2026-09-19",
+            "exp_years": T,
+            "strike": strike,
+            "right": right,
+            "mid": mid,
+            "oi": oi,
+            "trade_at": trade_at,
+            "quote_at": quote_at,
+        })
+
+    out = _build(
+        contracts,
+        price_grid=[99, 100, 101],
+        horizons_minutes=[0],
+        expiry_scope=["2026-09-19"],
+        iv_source="solve_from_mid",
+        iv_observed_at="2026-09-18T13:59:56Z",
+        oi_vintage="2026-09-17",
+    )
+    assert out["source_counts"]["valid_snapshot"] == 2
+    assert out["source_counts"]["omitted_scope"] == 0
+    assert out["expiry_scope"] == ["2026-09-19"]
+    assert out["source_clocks"]["trade_at_first"] == "2026-09-18T13:59:50Z"
+    assert out["source_clocks"]["trade_at_last"] == "2026-09-18T13:59:55Z"
+    assert out["source_clocks"]["quote_at_first"] == "2026-09-18T13:59:49.500000Z"
+    assert out["source_clocks"]["quote_at_last"] == "2026-09-18T13:59:54.500000Z"
+
+
+def test_mixed_unknown_live_quote_clock_fails_scenario_envelope_closed():
+    contracts = _contracts()[:2]
+    contracts[0]["trade_at"] = "2026-09-18T13:59:50Z"
+    contracts[0]["quote_at"] = "2026-09-18T13:59:49Z"
+    contracts[1]["trade_at"] = "2026-09-18T13:59:55Z"
+    contracts[1]["quote_at"] = None
+    out = _build(contracts, horizons_minutes=[0])
+    assert out["source_clocks"]["trade_at_first"] == "2026-09-18T13:59:50Z"
+    assert out["source_clocks"]["trade_at_last"] == "2026-09-18T13:59:55Z"
+    assert out["source_clocks"]["quote_at_first"] is None
+    assert out["source_clocks"]["quote_at_last"] is None
+
+
+def test_conflicting_expiry_aliases_and_future_contract_clocks_fail_closed():
+    contract = _contracts()[0]
+    contract["exp_str"] = "2026-09-20"
+    out = _build([contract], horizons_minutes=[0])
+    assert out["source_counts"]["valid_snapshot"] == 0
+    assert out["source_counts"]["omitted_invalid"] == 1
+
+    future = _contracts()[0]
+    future["trade_at"] = "2026-09-18T14:00:01Z"
+    future["quote_at"] = "2026-09-18T13:59:59Z"
+    with pytest.raises(ValueError, match="trade_at"):
+        _build([future], horizons_minutes=[0])
 
 
 def test_scenario_rejects_same_day_oi_and_unknown_iv_clock_for_mid_solve():

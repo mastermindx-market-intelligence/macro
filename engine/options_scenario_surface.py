@@ -55,6 +55,43 @@ def _sum_or_none(values: np.ndarray) -> float | None:
     return total if np.isfinite(total) else None
 
 
+def _source_clock_bounds(
+    contracts: list[dict],
+    field: str,
+    *,
+    observed_dt: datetime,
+) -> tuple[str | None, str | None]:
+    """Fail a source-clock envelope closed when any contributing member is unknown.
+
+    This mirrors the incumbent live-flow provenance rule: known-only min/max bounds are
+    dishonest for a mixed known/unknown contract set. A known source instant after the
+    market observation is an impossible PIT state and is rejected instead of backdated.
+    """
+    if not contracts:
+        return None, None
+    instants: list[datetime] = []
+    observed_utc = observed_dt.astimezone(ZoneInfo("UTC"))
+    for contract in contracts:
+        raw = contract.get(field)
+        if not isinstance(raw, str) or not raw.strip():
+            return None, None
+        try:
+            dt = datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
+        except ValueError:
+            return None, None
+        if dt.tzinfo is None or dt.utcoffset() is None:
+            return None, None
+        dt = dt.astimezone(ZoneInfo("UTC"))
+        if dt > observed_utc:
+            raise ValueError(f"{field} cannot be after observed_at")
+        instants.append(dt)
+    instants.sort()
+    return (
+        instants[0].isoformat().replace("+00:00", "Z"),
+        instants[-1].isoformat().replace("+00:00", "Z"),
+    )
+
+
 def _require_aware_iso(value: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise ValueError("observed_at must be a non-empty timezone-aware ISO timestamp")
@@ -118,8 +155,14 @@ def _normalize_contracts(
         T = _finite_positive(raw.get("exp_years"))
         oi = _finite_positive(raw.get("oi"))
         right = str(raw.get("right", "")).upper()[:1]
-        expiry = raw.get("expiry")
-        expiry = str(expiry) if expiry is not None else None
+        expiry_raw = raw.get("expiry")
+        exp_str_raw = raw.get("exp_str")
+        expiry = str(expiry_raw).strip()[:10] if expiry_raw is not None and str(expiry_raw).strip() else None
+        exp_str = str(exp_str_raw).strip()[:10] if exp_str_raw is not None and str(exp_str_raw).strip() else None
+        if expiry is not None and exp_str is not None and expiry != exp_str:
+            counts["omitted_invalid"] += 1
+            continue
+        expiry = expiry or exp_str
         iv = _finite_positive(raw.get("iv")) if iv_source == IV_SOURCE_PROVIDED else None
         mid = _finite_positive(raw.get("mid")) if iv_source == IV_SOURCE_MID_SOLVE else None
         source_value = iv if iv_source == IV_SOURCE_PROVIDED else mid
@@ -138,6 +181,8 @@ def _normalize_contracts(
             "oi": oi,
             "right": right,
             "expiry": expiry,
+            "trade_at": raw.get("trade_at"),
+            "quote_at": raw.get("quote_at"),
         }
         if iv_source == IV_SOURCE_PROVIDED:
             row["iv"] = iv
@@ -262,6 +307,13 @@ def build_scenario_surface(
         counts["iv_solved"] = len(normalized)
         counts["valid_snapshot"] = len(normalized)
 
+    trade_at_first, trade_at_last = _source_clock_bounds(
+        normalized, "trade_at", observed_dt=observed_dt
+    )
+    quote_at_first, quote_at_last = _source_clock_bounds(
+        normalized, "quote_at", observed_dt=observed_dt
+    )
+
     grids = {"gex": [], "vex": [], "cex": []}
     horizon_meta: list[dict] = []
     zero_crossings: dict[str, list[dict]] = {key: [] for key in grids}
@@ -352,6 +404,10 @@ def build_scenario_surface(
             "market_observed_at": observed_at,
             "iv_observed_at": iv_observed_at,
             "oi_vintage": oi_vintage,
+            "trade_at_first": trade_at_first,
+            "trade_at_last": trade_at_last,
+            "quote_at_first": quote_at_first,
+            "quote_at_last": quote_at_last,
         },
         "expiry_scope": sorted(expiry_set) if expiry_set is not None else None,
         "max_dte_days": max_dte_days,

@@ -56,6 +56,25 @@ The conditional field freezes one lawful information set; source metadata is not
 
 These checks constrain the information set only; they do not change IV, Greek or exposure calculations.
 
+### Canonical live-contract adapter
+
+The accepted intraday quote producer (#7279) emits contract expiry as `exp_str`, not
+`expiry`, and carries per-contract `trade_at` / `quote_at` provenance. R2 now consumes
+that shape directly rather than forcing Terminal to translate or silently losing scope.
+
+- `exp_str` is accepted as the canonical expiry alias; a supplied `expiry` remains
+  supported for generic callers.
+- if both expiry aliases are present and disagree, that contract is rejected as invalid.
+- expiry scope / 0DTE-style filtering therefore works on the actual live quote objects.
+- contributing trade and NBBO clocks are summarized into
+  `trade_at_first/last` and `quote_at_first/last`.
+- those envelopes use the incumbent fail-closed rule: if any contributing member has an
+  unknown/malformed clock, the aggregate pair is null rather than a misleading known-only range.
+- a known contract source clock after `market_observed_at` is an impossible information set
+  and raises rather than being backdated.
+
+This is an adapter inside the scenario engine, not a new quote collector or provenance plane.
+
 ## Contours
 
 The returned field now includes:
@@ -72,19 +91,20 @@ TDD review hardening:
 - GREEN: those three cases pass after the bounded contour/live-input repair.
 - RED: same-day OI was accepted by the subsequent source-clock guard.
 - GREEN: source-clock/PIT + live-input/contour focused set is **4 passed / 0 failed**; same-day OI and mid-solved IV without an explicit IV clock are now refused.
+- RED: the actual #7279 `exp_str` live shape was omitted by expiry scoping, source-clock envelopes were absent, and conflicting expiry aliases were accepted.
+- GREEN: canonical live-contract adapter set is **3 passed / 0 failed**; `exp_str` scopes correctly, clock envelopes survive with mixed-unknown fail-closed semantics, and conflicting/future identities are refused.
 
 Fresh candidate proof:
-- scenario + incumbent intraday-Greek + GEX + options-matrix owner pack: **88 passed / 0 failed**;
+- scenario + incumbent intraday-Greek + GEX + options-matrix owner pack: **91 passed / 0 failed**;
 - changed-source `compileall`: pass;
 - `git diff --check`: pass.
 
 Fresh protected-main proof:
-- protected Macro main: `91662480a1026d0e84fdf3d774ee9ea6d857e668`;
-- protected movement on the shared CI manifest is path-disjoint from the scenario numerical owners; the scenario source files remain unique to this carrier;
-- proof-only integrated commit: `d90f4ed752fe936003eba4984b688d2158c7552d`;
-- proof tree: `3b84e4932a4164c2cc1e51558e694a0dd538c316`;
-- parents: current main + pre-PIT-hardening #7306 head `e2328d3e41ee1ded4433c72a1c9e4f3066f8958f`;
-- integrated owner pack: **88 passed / 0 failed**;
+- protected Macro main: `36fbbbfcc045fa422ba3be94f3c29e5206d2e35d`;
+- proof-only integrated commit: `d7b6514128bfcfe4eb11fc2f4c15797531080587`;
+- proof tree: `b558ae1b0d34671edd9979f70b38be4fe5653fdc`;
+- parents: current main + pre-live-adapter #7306 head `6f2df12fe79d73a9b57feba4f62734551b956b59`;
+- integrated owner pack: **91 passed / 0 failed**;
 - integrated compileall/diff check: pass.
 
 Compact red/green and owner-pack receipts live under:
