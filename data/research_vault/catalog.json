@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T11:07:42.723156+00:00",
-  "count": 2355,
+  "generated_at": "2026-09-18T11:22:58.384415+00:00",
+  "count": 2356,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -126,6 +126,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mpbd4y2zloo-53250f",
+      "title": "JPM Oil Markets Weekly",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T09:03:30Z",
+      "summary_points": [
+        "Geopolitical Supply Premium: Brent at $106 vs fair value $90; $16 premium implies pricing risk of 4 mbd supply disruption (Houthi attacks, Saudi pipeline, Ukraine-Russia strikes), contradicting temporary disruption assumptions.",
+        "Inventory Drawdown Shortfall: Actual global oil inventory draws (555M bbl) fell 1/3 short of April forecast (1.6B bbl), driven by strategic stock preservation amid conflict, limiting price upside below $100/bbl.",
+        "SPR Releases as 2027 Catalyst: 2027F shows +324 mbd SPR releases creating supply surplus (positive Stock Change To Balance), triggering inventory buildup and price pressure.",
+        "Structural WTI-Brent Shift: WTI > Brent (positive spread) from 2025 onward, signaling US production dominance vs. global supply constraints, critical for relative value trades."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 32,
       "language": "en",
       "needs_metadata": false
     },
