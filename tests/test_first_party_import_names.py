@@ -89,6 +89,21 @@ _ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset()
 # Static resolution
 # ---------------------------------------------------------------------------
 
+def test_parse_does_not_retain_the_repo_ast_estate():
+    """A repo-wide sweep must not pin every parsed AST in an unbounded cache.
+
+    The WSL trusted pool shares a 10 GiB MemoryHigh / 12 GiB MemoryMax envelope.
+    Caching every source AST made two ordinary copies of this guard retain more
+    than that envelope by themselves and stretched otherwise-small packs from
+    seconds into tens of minutes.  Module-scope summaries and the completed
+    sweep may stay memoized; raw per-file ASTs must remain transient.
+    """
+    assert not hasattr(_parse, "cache_info"), (
+        "_parse must not be an lru_cache: a repo-wide sweep would retain the "
+        "entire first-party AST estate for the lifetime of the pytest process"
+    )
+
+
 def _python_files(root: Path) -> list[Path]:
     """*.py under root, pruning _SKIP_DIRS without descending into them."""
     out: list[Path] = []
