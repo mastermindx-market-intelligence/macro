@@ -418,12 +418,40 @@ def test_manifest_job_delta_rejects_topology_gate_and_top_level_changes() -> Non
     ) is None
     assert PACK._classify_bounded_manifest_job_delta(
         base, added_job
-    ) is None
+    ) == ("new-owner",)
     assert PACK._classify_bounded_manifest_job_delta(
         base, deleted_job
     ) is None
     assert PACK._classify_bounded_manifest_job_delta(
         base, extra_top_level
+    ) is None
+
+
+def test_manifest_job_reorder_or_rename_still_fails_closed() -> None:
+    base = {
+        "jobs": {
+            "first": _manifest_job("python -m pytest tests/test_first.py -q"),
+            "second": _manifest_job("python -m pytest tests/test_second.py -q"),
+        }
+    }
+    reordered = {
+        "jobs": {
+            "second": base["jobs"]["second"],
+            "first": base["jobs"]["first"],
+        }
+    }
+    renamed = {
+        "jobs": {
+            "first": base["jobs"]["first"],
+            "second-renamed": base["jobs"]["second"],
+        }
+    }
+
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, reordered
+    ) is None
+    assert PACK._classify_bounded_manifest_job_delta(
+        base, renamed
     ) is None
 
 
