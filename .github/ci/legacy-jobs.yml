@@ -11975,6 +11975,10 @@ jobs:
       - "templates/stocktable.js"
       - "templates/support.html.j2"
       - "templates/theme.css"
+      # 2026-09-16 (#7228 follow-up): test_macro_risk_dialog now reads the
+      # shipped locale-aware direction tokens directly from this generated twin.
+      # This exclusive job must own the literal dependency; widening is safe.
+      - "site/theme.css"
       - "tests/test_b3_forex_consumer.py"
       - "tests/test_board_contradictions.py"
       - "tests/test_bottom_ledger.py"

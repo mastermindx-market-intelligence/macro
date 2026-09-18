@@ -2,6 +2,19 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-17",
+      "tickers": [
+        "ASO",
+        "COO",
+        "ELV",
+        "EZPW",
+        "LRCX",
+        "PCG",
+        "URBN",
+        "UTL"
+      ]
+    },
+    {
       "as_of": "2026-09-16",
       "tickers": [
         "AGNT",
@@ -82,27 +95,6 @@
         "LAUR",
         "LILA",
         "SEI"
-      ]
-    },
-    {
-      "as_of": "2026-09-09",
-      "tickers": [
-        "ABM",
-        "ACM",
-        "BABA",
-        "CARR",
-        "COIN",
-        "CRNX",
-        "FCFS",
-        "ITB",
-        "LZB",
-        "MPT",
-        "PRVA",
-        "SEDG",
-        "SGI",
-        "VRSN",
-        "WERN",
-        "WFC"
       ]
     }
   ]
