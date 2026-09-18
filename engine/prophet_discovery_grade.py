@@ -200,6 +200,81 @@ def _same_frame(left: pd.DataFrame, right: pd.DataFrame) -> bool:
         return False
 
 
+def _median_or_none(frame: pd.DataFrame, column: str) -> float | None:
+    if column not in frame.columns:
+        return None
+    values = pd.to_numeric(frame[column], errors="coerce").dropna()
+    return float(values.median()) if not values.empty else None
+
+
+def _terminal_summary(frame: pd.DataFrame, column: str) -> dict[str, Any]:
+    if column not in frame.columns:
+        states = pd.Series(dtype=object)
+    else:
+        states = frame[column].dropna().astype(str)
+    counts = states.value_counts().to_dict()
+    n = int(len(states))
+
+    def rate(*labels: str) -> float | None:
+        if not n:
+            return None
+        return float(sum(int(counts.get(label, 0)) for label in labels) / n)
+
+    return {
+        "n_matured": n,
+        "counts": {str(k): int(v) for k, v in counts.items()},
+        "clean_liftoff_rate": rate(grading.TerminalState.CLEAN_LIFTOFF),
+        "stopped_dead_money_rate": rate(
+            grading.TerminalState.STOPPED,
+            grading.TerminalState.DEAD_MONEY,
+        ),
+        "cushioned_rate": rate(grading.TerminalState.CUSHIONED),
+    }
+
+
+def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
+    """Machine summary of only metrics with canonical definitions.
+
+    This deliberately does NOT define eventual-winner recall, first-surface
+    lead time, catastrophic loss, or top-K regret. Those require separately
+    frozen denominators under the HK/Canada revamp evaluation contract.
+    """
+    n = int(len(frame))
+    states = (
+        frame["outcome_state"].fillna("UNKNOWN").astype(str)
+        if "outcome_state" in frame.columns else pd.Series(dtype=object)
+    )
+    unavailable = int((states == UNAVAILABLE_PRICE).sum()) if n else 0
+    horizons: dict[str, dict[str, Any]] = {}
+    for h in HORIZONS:
+        mfe_col = f"fwd_mfe_{h}"
+        matured = (
+            int(pd.to_numeric(frame[mfe_col], errors="coerce").notna().sum())
+            if mfe_col in frame.columns else 0
+        )
+        horizons[f"{h}d"] = {
+            "n_matured": matured,
+            "mfe_median": _median_or_none(frame, mfe_col),
+            "mae_median": _median_or_none(frame, f"fwd_mdd_{h}"),
+            "excess_ret_median": _median_or_none(frame, f"excess_ret_{h}"),
+        }
+    return {
+        "n_observations": n,
+        "price_store_coverage_rate": (
+            float((n - unavailable) / n) if n else None
+        ),
+        "horizons": horizons,
+        "terminal_states": {
+            "clean8_21": _terminal_summary(
+                frame, "terminal_state_clean8_21"
+            ),
+            "clean15_126": _terminal_summary(
+                frame, "terminal_state_clean15_126"
+            ),
+        },
+    }
+
+
 def grade_market(market: str) -> dict[str, Any]:
     """Refresh one market's derived outcome store from its append-only discovery source."""
     m = str(market or "").upper()
@@ -252,6 +327,7 @@ def grade_market(market: str) -> dict[str, Any]:
         "n_no_fill": int(counts.get(NO_FILL, 0)),
         "terminal_clean8_21": terminal8,
         "terminal_clean15_126": terminal15,
+        "candidate_metrics": summarize_outcomes(fresh),
     }
 
 

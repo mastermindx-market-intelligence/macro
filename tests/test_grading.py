@@ -348,3 +348,76 @@ def test_prophet_discovery_cli_runs_both_markets_once(monkeypatch):
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", fake)
     assert runner.main() == 0
     assert called["n"] == 1
+
+
+def test_prophet_discovery_summary_reports_only_canonical_measured_metrics():
+    from engine import prophet_discovery_grade as pdg
+
+    frame = pd.DataFrame([
+        {
+            "outcome_state": pdg.MATURED,
+            "fwd_mfe_5": 0.04, "fwd_mdd_5": -0.02, "excess_ret_5": 0.01,
+            "terminal_state_clean8_21": grading.TerminalState.CLEAN_LIFTOFF,
+            "terminal_state_clean15_126": None,
+        },
+        {
+            "outcome_state": pdg.ACCRUING,
+            "fwd_mfe_5": 0.02, "fwd_mdd_5": -0.06, "excess_ret_5": -0.01,
+            "terminal_state_clean8_21": grading.TerminalState.STOPPED,
+            "terminal_state_clean15_126": None,
+        },
+        {
+            "outcome_state": pdg.UNAVAILABLE_PRICE,
+            "fwd_mfe_5": None, "fwd_mdd_5": None, "excess_ret_5": None,
+            "terminal_state_clean8_21": None,
+            "terminal_state_clean15_126": None,
+        },
+    ])
+
+    summary = pdg.summarize_outcomes(frame)
+    assert summary["n_observations"] == 3
+    assert summary["price_store_coverage_rate"] == pytest.approx(2 / 3)
+
+    h5 = summary["horizons"]["5d"]
+    assert h5["n_matured"] == 2
+    assert h5["mfe_median"] == pytest.approx(0.03)
+    assert h5["mae_median"] == pytest.approx(-0.04)
+    assert h5["excess_ret_median"] == pytest.approx(0.0)
+
+    clean8 = summary["terminal_states"]["clean8_21"]
+    assert clean8["n_matured"] == 2
+    assert clean8["clean_liftoff_rate"] == pytest.approx(0.5)
+    assert clean8["stopped_dead_money_rate"] == pytest.approx(0.5)
+    assert clean8["cushioned_rate"] == pytest.approx(0.0)
+
+    clean15 = summary["terminal_states"]["clean15_126"]
+    assert clean15["n_matured"] == 0
+    assert clean15["clean_liftoff_rate"] is None
+    assert clean15["stopped_dead_money_rate"] is None
+
+    serialized = repr(summary).lower()
+    assert "eventual_winner" not in serialized
+    assert "top_k_regret" not in serialized
+    assert "catastrophic" not in serialized
+
+
+def test_prophet_discovery_grade_market_receipt_includes_candidate_summary(tmp_path, monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    src = tmp_path / "prophet_shadow"
+    src.mkdir(parents=True)
+    sig = "2026-01-12"
+    _discovery_rows("ABC.TO", session_date=sig, market="CA").to_parquet(
+        src / "ca_discovery.parquet", index=False
+    )
+    close = _trend(180)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    receipt = pdg.grade_market("CA")
+    assert receipt["candidate_metrics"]["n_observations"] == 1
+    assert receipt["candidate_metrics"]["horizons"]["21d"]["n_matured"] == 1
+    assert receipt["candidate_metrics"]["terminal_states"]["clean8_21"]["n_matured"] == 1
