@@ -209,6 +209,99 @@ def store_root(override: str | Path | None = None) -> Path:
     return p
 
 
+def latest_options_matrix_session(
+    root: str,
+    store: str | Path | None = None,
+) -> str | None:
+    """Return the newest root session jointly usable by OI and Greeks spot.
+
+    The daily Theta maintainer intentionally may expose OI for business day D
+    while settled EOD/Greeks remain on S=D-1.  An options matrix cannot use D
+    until same-date Greeks contain a finite positive ``underlying_price``.
+    This narrow resolver projects only the date columns plus Greeks spot and
+    scans shared year shards newest-first; it never populates the broad parquet
+    cache or materializes full chain history merely to answer freshness.
+    """
+    root_key = str(root).upper()
+    base = store_root(store)
+    oi_dir = base / "oi" / root_key
+    greeks_dir = base / "greeks" / root_key
+    if not oi_dir.is_dir() or not greeks_dir.is_dir():
+        return None
+
+    oi_years = {
+        path.stem: path
+        for path in oi_dir.glob("*.parquet")
+        if path.stem.isdigit()
+    }
+    greeks_years = {
+        path.stem: path
+        for path in greeks_dir.glob("*.parquet")
+        if path.stem.isdigit()
+    }
+    shared_years = sorted(set(oi_years) & set(greeks_years), reverse=True)
+
+    # Arrow keeps this scheduler/readiness probe columnar.  The SPY shard has
+    # millions of contract rows; materializing even two projected columns as a
+    # pandas frame needlessly consumed ~500 MB during incident reproduction.
+    import pyarrow.compute as pc  # noqa: PLC0415
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
+    def _canonical_dates(values) -> set[str]:
+        dates: set[str] = set()
+        for value in pc.unique(values).to_pylist():
+            if value is None:
+                continue
+            try:
+                stamp = pd.Timestamp(value)
+            except Exception:  # noqa: BLE001 — malformed values are non-sessions
+                continue
+            if pd.isna(stamp):
+                continue
+            dates.add(stamp.date().isoformat())
+        return dates
+
+    for year in shared_years:
+        try:
+            oi = pq.read_table(oi_years[year], columns=["date"])
+            greeks = pq.read_table(
+                greeks_years[year],
+                columns=["date", "underlying_price"],
+            )
+        except Exception as exc:  # noqa: BLE001 — partial/corrupt year falls back older
+            log.debug(
+                "options-matrix session skip %s/%s: %s",
+                root_key,
+                year,
+                exc,
+            )
+            continue
+        if oi.num_rows == 0 or greeks.num_rows == 0:
+            continue
+
+        spot = greeks.column("underlying_price")
+        try:
+            valid_spot = pc.and_(
+                pc.is_valid(spot),
+                pc.and_(pc.is_finite(spot), pc.greater(spot, 0)),
+            )
+            greek_dates = pc.filter(greeks.column("date"), valid_spot)
+        except Exception as exc:  # noqa: BLE001 — malformed spot column is unusable
+            log.debug(
+                "options-matrix Greeks spot skip %s/%s: %s",
+                root_key,
+                year,
+                exc,
+            )
+            continue
+
+        common = _canonical_dates(oi.column("date")) & _canonical_dates(greek_dates)
+        if common:
+            return max(common)
+
+    return None
+
+
 # --------------------------------------------------------------------------- #
 # low-level parquet loader (graceful on missing root/year)                     #
 # --------------------------------------------------------------------------- #
