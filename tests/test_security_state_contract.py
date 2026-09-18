@@ -1981,3 +1981,20 @@ def test_disclosures_only_retire_cik_and_namespace_limits_where_the_fix_lands() 
     assert unresolved["legs"]["opportunity_context"]["prophet"]["reason"] == (
         "PROPHET_OWNER_OUTPUT_ABSENT"
     )
+
+
+def test_committed_fiserv_identity_composes_through_the_existing_owner_reader() -> None:
+    """FI stable repo key must compose through the canonical current-only identity bridge."""
+    import scripts.security_state_producer as producer
+
+    data_dir = Path(__file__).resolve().parents[1] / "data"
+    inputs, failures = producer._read_security_state_identity_rows(
+        data_dir, ("FI",), decision_date=datetime.date(2026, 9, 18),
+    )
+
+    assert failures == {}
+    subject = inputs["FI"]["subject"]
+    assert subject.security_id == "SEC:US-XNAS-FISV"
+    assert subject.issuer_id == "ISS:US-XNAS-FISV"
+    assert subject.listing_key == "US-XNAS-FISV"
+    assert subject.issuer_cik == "0000798354"

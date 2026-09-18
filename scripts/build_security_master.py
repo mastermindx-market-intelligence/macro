@@ -488,22 +488,16 @@ SECURITY_SUPERSESSIONS: tuple[SecuritySupersession, ...] = (
     ),
 )
 
-#: Renames the repo records WITHOUT a citable date.  Fiserv renamed FISV->FI in 2023
-#: and the vendor LAGS it: Yahoo still serves the series under FISV
-#: (`lib/ticker_aliases.YAHOO_FETCH_ALIASES["FI"] == "FISV"`), and so does the exchange
-#: symbol directory (the 2026-08-10 snapshot carries FISV, "Fiserv, Inc. - Common
-#: Stock", and carries no FI at all).  There is therefore NO vendor-side changeover day
-#: to scope, and no in-repo source for the 2023 date, so both rows stay OPEN-BOUNDED.
-#: An open bound is the ABSENCE of a claim about the boundary; inventing 2023-07-01 to
-#: make the table look complete would be exactly the fabricated fact §4 forbids.
-UNDATED_RENAMES: tuple[tuple[str, str, str], ...] = (
-    (
-        "FISV",
-        "FI",
-        "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); "
-        "config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
-    ),
-)
+#: Historical renames whose changeover date is genuinely unavailable.  There are
+#: currently NONE.  In particular, FI/FISV is not a historical rename record in this
+#: builder: merged #4622 ratified FI as the stable repo/store key and FISV as the live
+#: listing/vendor symbol.  That boundary is expressed by config breadth.ticker_fixups
+#: plus lib.ticker_aliases, while listing identity remains US-XNAS-FISV.
+#:
+#: Keep this extension seam for a future evidence-backed undated rename, but never use
+#: it merely because the repo intentionally keeps a stable key different from a live
+#: vendor/listing symbol.
+UNDATED_RENAMES: tuple[tuple[str, str, str], ...] = ()
 
 #: Identity cases whose current symbol is verified but whose historical alias cannot be
 #: represented by the builder's symbol-pair-only ``RenameEvent`` yet.  Fail closed:
@@ -556,6 +550,21 @@ DISCLOSED_IDENTITY_EXCEPTIONS: dict[str, dict[str, str]] = {
 
 
 # ── Small helpers ─────────────────────────────────────────────────────────────
+def stable_key_vendor_boundaries(fixups: dict[str, str]) -> tuple[tuple[str, str], ...]:
+    """Return accepted (stable_repo_key, live_vendor_symbol) boundaries.
+
+    A breadth fixup live_symbol -> stable_key plus the exact inverse fetch boundary
+    stable_key -> live_symbol in lib.ticker_aliases is already an explicit two-source
+    statement that the repo key intentionally differs from the live request/listing key.
+    It is NOT historical rename evidence and must not enter _current_symbol().
+    """
+    rows = []
+    for stable, vendor in ticker_aliases.YAHOO_FETCH_ALIASES.items():
+        if fixups.get(vendor) == stable:
+            rows.append((stable, vendor))
+    return tuple(sorted(rows))
+
+
 def unmodelled_renames(fixups: dict[str, str], migrations: dict[str, str]) -> list[str]:
     """Rename pairs the repo's own maps carry that this builder does not model.
 
@@ -574,6 +583,10 @@ def unmodelled_renames(fixups: dict[str, str], migrations: dict[str, str]) -> li
     """
     modelled = {frozenset((e.old, e.new)) for e in RENAME_EVENTS}
     modelled |= {frozenset((old, new)) for old, new, _ in UNDATED_RENAMES}
+    modelled |= {
+        frozenset((stable, vendor))
+        for stable, vendor in stable_key_vendor_boundaries(fixups)
+    }
     missing: list[str] = []
     for label, mapping in (("breadth.ticker_fixups", fixups),
                            ("quality.ticker_key_migrations", migrations)):
@@ -581,8 +594,9 @@ def unmodelled_renames(fixups: dict[str, str], migrations: dict[str, str]) -> li
             if frozenset((left, right)) not in modelled:
                 missing.append(
                     f"{label} carries {left}->{right}, which scripts/build_security_master.py "
-                    "does not model — add a RenameEvent (with its date and evidence) or an "
-                    "UNDATED_RENAMES row, or the alias table answers the old pairing forever"
+                    "does not model — add a dated RenameEvent, an evidence-backed undated "
+                    "rename, or an accepted stable-key/vendor boundary through the existing "
+                    "ticker_aliases seam; otherwise the alias table answers stale identity"
                 )
     return missing
 
@@ -876,9 +890,9 @@ class Resolution:
 def _inception_code(key: str, directory_symbol: str | None) -> str:
     """The code the listing carried at INCEPTION — never today's symbol.
 
-    Walks the rename chains BACKWARDS to their ROOT: a dated event (MMC->MRSH,
-    SATS->ECHO) or an undated one (FISV->FI) whose NEW side is this key means the OLD
-    side is the earlier code this repo can evidence.
+    Walks the historical rename chains BACKWARDS to their ROOT. A stable repo key
+    that differs from a live vendor/listing symbol is not automatically a rename chain:
+    FI resolves through the directory spelling FISV while the store key remains FI.
 
     The membership key can sit on EITHER side of a chain, and that asymmetry is the
     whole MMC case: the repo's key is the OLD symbol (``MMC``, pinned by
@@ -914,22 +928,14 @@ def _inception_code(key: str, directory_symbol: str | None) -> str:
 
 
 def _current_symbol(inception_code: str) -> str:
-    """Inception code -> this repo's own CURRENT symbol for the listing (V4-D2B1 §1
-    evidence join law), walking the SAME rename records :func:`_inception_code` walks
-    BACKWARD (``RENAME_EVENTS`` + ``UNDATED_RENAMES``) but FORWARDS to the chain's tip.
+    """Inception code -> the listing's current evidence-join symbol.
 
-    This is deliberately this repo's OWN rename record, not "whatever Yahoo currently
-    serves" — the two disagree for exactly the case the FI/FISV row exists to carry:
-    Yahoo still serves the pre-rename ``FISV`` (the vendor lags), but this repo's own
-    ``UNDATED_RENAMES`` records the venue-current name as ``FI``, and ``FI`` is the
-    join key spec §1 asks for (the SEC registrant map is an independent, current
-    observation of the same real-world fact — it does not follow Yahoo's lag).  For
-    MMC/SATS, where the vendor LED the rename, this walk and Yahoo's current symbol
-    agree (``MMC``->``MRSH``, ``SATS``->``ECHO``) because both ``RENAME_EVENTS`` rows
-    were sourced from the same real-world change.
+    Only historical rename records (dated or genuinely undated) move this value.
+    Stable repo/store-key boundaries do not: #4622 intentionally keeps Fiserv under
+    the house key FI while the live listing/vendor symbol and canonical listing identity
+    remain FISV / US-XNAS-FISV. Current SEC CIK evidence therefore joins on FISV.
 
-    A name no chain mentions returns itself unchanged — the venue is the authority on
-    its own current spelling when this repo has recorded no rename for it.
+    A name no historical chain mentions returns itself unchanged.
     """
     forwards: dict[str, str] = {}
     for event in RENAME_EVENTS:
