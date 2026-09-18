@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T10:07:46.416642+00:00",
-  "count": 2352,
+  "generated_at": "2026-09-18T10:22:40.278359+00:00",
+  "count": 2353,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -127,6 +127,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2esirek5mqt-d9f5a8",
+      "title": "JPM Europe Equity Research | Today’s Morning Meeting",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T08:54:48Z",
+      "summary_points": [
+        "Anheuser Busch InBev: FY26 strength vs FY27 risks: FY27 volume risks (JPMe -0.2%) and Brazil/US-China uncertainty limit ST rating despite 9% EPS growth, requiring volume consensus adjustment.",
+        "BoE QT policy shift supports corporate deposit growth: Slower QT (£46bn/year vs £70bn) enables 3-4% CAGR corporate deposit growth (2025-2028), lifting corporate lending forecasts to 8-9% CAGR.",
+        "Solvay's EPS changes: -4.0% current EPS and -12.9% next EPS signal critical downside risk for portfolio risk management.",
+        "EU Earnings Expectations & Hurricane Risk: H2'26 earnings assessment faces negative read across from Atlantic hurricane season (risk factor) impacting European Building Materials & Reinsurance.",
+        "REN's EPS change: +45.8% current EPS represents major fundamental catalyst for earnings growth potential."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
