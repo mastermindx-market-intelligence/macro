@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 47.0
+    "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.006,
+    "dist_to_stop_r": -0.011,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 80.0,
-    "p1": -0.6709,
-    "p2": -0.3354,
+    "p1": -0.6743,
+    "p2": -0.3371,
     "p3": null,
-    "move_r": -1.006,
+    "move_r": -1.011,
     "mfe_r": 0.065,
-    "mae_r": -1.006
+    "mae_r": -1.011
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.17000011444091712,
-  "_mae": -2.646699867248536,
+  "_mae": -2.6599998092651376,
   "_max_p1": 0.043092551189079134,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,

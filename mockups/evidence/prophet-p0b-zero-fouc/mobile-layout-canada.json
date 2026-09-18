@@ -13,11 +13,11 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "151.0.7922.34"
+    "version": "153.0.8010.12"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "0a47ed38ff86e2066baf3b0079ca94935727443b05270aa5121583eab863af33"
+    "sha256": "8069aaf8a31509f91d8cf1cfd15c9568f69e460567e040ea917380a13f4dff5a"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -264,7 +264,7 @@
     }
   },
   "construction_inputs": {
-    "engine/i18n.py": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44",
+    "engine/i18n.py": "528b85cd04f9747a66628e48bdc233344cad765b63fafd2c1d82c5fc017f600a",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json": "6a0d10249045cbffca6e7386458b45c0b3976408b7d57021254987df0c8a11f6",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json": "dc93511b93517c9ecd096bcb5a79144d95f2ee565fc12d98a2410ff9aa1ad72b",
     "scripts/render_stock_dashboard_fixture.py": "8f46fc24b9582ee85bc8e612b907f7cf23d02ed151cf3d15f0607a766fe10332",
@@ -4700,7 +4700,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "20314a268abfa12cd1b4a50056fbaba0fb2a497561ec2dab1d9fe1bae4f09631",
+          "sha256": "a51d4326e78bcd81fcb0d229f9c29ee5fab18008ea1667b62f7b21ad3f319c52",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11885,7 +11885,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "36298603c4f79cbf646e6546e7c61cc3c0a563d0d4f675a172ab8f0b89ed86e5",
+          "sha256": "4b52d64c034adea85d8b50001b239ff04ffbf306010221c76227a243f8af514d",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -13322,7 +13322,7 @@
         "screenshot": {
           "filename": "owner-empty-ca-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "48ed229f8e3c4dbe6b925b255ce76253758c9ec17b0ec39d9a73db8396b9fb0f",
+          "sha256": "697cb5425e83a5891334a6761d62be6250ee946c1ab19cb89423fd601e88e98c",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
