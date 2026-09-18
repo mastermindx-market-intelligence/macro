@@ -352,7 +352,7 @@
     </div>
     <div class="hta-scope" id="hta-scope" hidden></div>
     <div class="hta-stage" id="hta-stage"></div>
-    <div class="hta-foot"><span class="l-en">Context only. Category/search controls are display filters, not analytical rescoping. Circle proximity has no statistical or causal meaning. Member counts are group membership appearances, not unique issuer counts.</span><span class="l-zh">仅作背景。分类/搜索属于显示筛选，并非重新计算分析范围。圆点距离不代表统计或因果关系。成员数是组内成员出现次数，并非独立发行人数量。</span></div>
+    <div class="hta-foot"><span class="l-en">Context only. Category/search controls are display filters, not analytical rescoping. Circle proximity has no statistical or causal meaning. Member counts are group membership appearances, not unique issuer counts. Member-count bubble area is proportional across the full house observation; display filters do not rescale it.</span><span class="l-zh">仅作背景。分类/搜索属于显示筛选，并非重新计算分析范围。圆点距离不代表统计或因果关系。成员数是组内成员出现次数，并非独立发行人数量。按成员数量显示时，气泡面积按完整自有主题观测同比缩放；显示筛选不会重新缩放。</span></div>
   </section>
   <style>
     .hta{margin:24px 0 8px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
@@ -375,15 +375,20 @@
     .hta-card:hover{border-color:color-mix(in srgb,var(--link) 55%,var(--line))}.hta-card-top{display:flex;justify-content:space-between;gap:8px}
     .hta-card-name{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hta-val{font:800 12px var(--font-mono)}
     .hta-bar{height:5px;border-radius:5px;background:var(--line);overflow:hidden;margin:8px 0 5px}.hta-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--down),var(--warn),var(--up))}
-    .hta-meta{font-size:10px;color:var(--muted)}.hta-clusters{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
-    .hta-cluster{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel2)}.hta-cluster-body{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
-    .hta-dot{display:flex;align-items:center;justify-content:center;width:70px;height:70px;border-radius:50%;border:1px solid color-mix(in srgb,var(--text) 24%,transparent);color:#fff;text-shadow:0 1px 2px #0008;text-decoration:none;text-align:center;font:800 9px/1.15 var(--font-ui);padding:7px;overflow:hidden}
+    .hta-meta{font-size:10px;color:var(--muted)}.hta-clusters{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;align-items:start}
+    .hta-cluster{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel2)}.hta-cluster-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;align-items:start}
+    .hta-cluster-item{min-width:0;display:grid;justify-items:center;gap:4px;padding:5px;border-radius:9px;color:inherit;text-decoration:none;text-align:center}
+    .hta-cluster-item:hover{background:color-mix(in srgb,var(--link) 7%,transparent)}.hta-dot{display:block;width:64px;height:64px;border-radius:50%;border:1px solid color-mix(in srgb,var(--text) 24%,transparent)}
+    .hta-cluster-name{max-width:100%;font:700 10px/1.2 var(--font-ui);overflow-wrap:anywhere}.hta-cluster-metric{font:800 10px/1 var(--font-mono);color:var(--text)}.hta-cluster-meta{font-size:9px;color:var(--muted)}
     .hta-bubble-wrap{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:8px;overflow:auto}.hta-bubble-wrap svg{display:block;width:100%;min-width:760px;height:auto}
     .hta-axis{stroke:var(--line);stroke-width:1}.hta-grid{stroke:color-mix(in srgb,var(--line) 65%,transparent);stroke-width:1}.hta-axis-label{fill:var(--muted);font:11px var(--font-ui)}
-    .hta-bubble-label{fill:var(--text);font:800 9px var(--font-ui);pointer-events:none}.hta-missing{margin-top:9px;color:var(--muted);font-size:10.5px}
+    .hta-bubble-label{fill:var(--text);font:800 8.5px var(--font-ui);pointer-events:none}.hta-bubble-readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px;margin-top:10px}
+    .hta-bubble-readout-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;color:inherit;text-decoration:none;background:var(--panel)}
+    .hta-bubble-readout-name{font:700 10px/1.25 var(--font-ui);overflow-wrap:anywhere}.hta-bubble-readout-value{font:800 10px/1.25 var(--font-mono);white-space:nowrap}.hta-bubble-readout-meta{grid-column:1/-1;color:var(--muted);font-size:9px}.hta-missing{margin-top:9px;color:var(--muted);font-size:10.5px}
     .hta-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.hta-table{width:100%;border-collapse:collapse;font-size:11px}.hta-table th,.hta-table td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
     .hta-table th{position:sticky;top:0;background:var(--panel2);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.hta-table a{color:var(--text);font-weight:800}
-    @media(max-width:650px){.hta-head{display:block}.hta-receipt{text-align:left;margin-top:8px}.hta-controls,.hta-bubble-controls{align-items:stretch}.hta-controls label,.hta-bubble-controls label{flex:1 1 135px}.hta-search input{min-width:0;width:100%}.hta-stage{padding:12px}.hta-dot{width:62px;height:62px}}
+    .hta-table th:first-child,.hta-table td:first-child{position:sticky;left:0;z-index:2;background:var(--panel)}.hta-table th:first-child{z-index:3;background:var(--panel2);box-shadow:1px 0 0 var(--line)}.hta-table td:first-child{box-shadow:1px 0 0 var(--line)}
+    @media(max-width:650px){.hta-head{display:block}.hta-receipt{text-align:left;margin-top:8px}.hta-controls,.hta-bubble-controls{align-items:stretch}.hta-controls label,.hta-bubble-controls label{flex:1 1 135px}.hta-search input{min-width:0;width:100%}.hta-stage{padding:12px}.hta-dot{width:58px;height:58px}.hta-bubble-wrap svg{min-width:0;width:100%}.hta-bubble-label{display:none}.hta-bubble-readout{grid-template-columns:1fr}}
   </style>
   <script>
   (function(){
@@ -426,7 +431,8 @@
         return {id:id,name:b.name||id,name_zh:b.name_zh||b.name||id,category:category,category_zh:b.category_zh||b.parent_zh||CAT_ZH[category]||category,member_count:Number.isInteger(g.member_count)?g.member_count:0,metrics:metrics};
       });
       if(!groups.length) throw new Error('member observation groups are empty');
-      return {groups:groups,as_of:obs.as_of||null,generated_at:obs.generated_at||null,digest:obs.projection_digest||null,metadata_as_of:(meta&&meta.as_of)||null};
+      var maxMembers=Math.max.apply(null,groups.map(function(g){return g.member_count;}));
+      return {groups:groups,max_member_count:maxMembers,as_of:obs.as_of||null,generated_at:obs.generated_at||null,digest:obs.projection_digest||null,metadata_as_of:(meta&&meta.as_of)||null};
     }
     function visible(){var q=state.query.trim().toLowerCase();return model.groups.filter(function(g){return (state.category==='all'||g.category===state.category)&&(!q||(g.name+' '+g.name_zh+' '+g.id).toLowerCase().indexOf(q)>=0);});}
     function colorStyle(v,metric){
@@ -440,6 +446,16 @@
       return 'background:color-mix(in srgb,var(--up) '+p+'%,var(--down))';
     }
     function metricBarStyle(metric){return metric==='legacy_activity'?'background:var(--link)':'background:linear-gradient(90deg,var(--down),var(--warn),var(--up))';}
+    function bubbleFill(v,metric){
+      if(v==null)return 'fill:var(--muted)';
+      var p=Math.max(0,Math.min(100,Math.round(v*100)));
+      if(metric==='legacy_activity')return 'fill:color-mix(in srgb,var(--link) '+(35+Math.round(p*.65))+'%,var(--panel2))';
+      return 'fill:color-mix(in srgb,var(--up) '+p+'%,var(--down))';
+    }
+    function bubbleShortLabel(g){
+      var name=isZh()?g.name_zh:g.name;
+      return String(name||g.id).replace(/\s*\(Equal-Weight\)\s*/g,'').replace(/（等权）/g,'').trim();
+    }
     function card(g){
       var m=g.metrics[state.metric], w=m.value==null?0:Math.round(m.value*100);
       return '<a class="hta-card" href="basket/'+encodeURIComponent(g.id)+'.html"><div class="hta-card-top"><span class="hta-card-name">'+L(esc(g.name),esc(g.name_zh))+'</span><span class="hta-val">'+pct(m.value)+'</span></div><div class="hta-bar"><i style="width:'+w+'%;'+metricBarStyle(state.metric)+'"></i></div><div class="hta-meta">'+m.denominator+' / '+g.member_count+' '+L('members measured','成员有观测')+'</div></a>';
@@ -448,16 +464,17 @@
     function renderMatrix(rows){var cats=byCategory(rows), keys=Object.keys(cats).sort();stage.innerHTML=keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cat"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-matrix">'+cats[k].map(card).join('')+'</div></section>';}).join('')||empty();}
     function renderClusters(rows){
       var cats=byCategory(rows), keys=Object.keys(cats).sort();
-      stage.innerHTML='<div class="hta-clusters">'+keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cluster"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-cluster-body">'+cats[k].map(function(g){var m=g.metrics[state.metric],nm=isZh()?g.name_zh:g.name;return '<a class="hta-dot" style="'+colorStyle(m.value,state.metric)+'" title="'+esc(nm)+' · '+pct(m.value)+' · '+g.member_count+' members" href="basket/'+encodeURIComponent(g.id)+'.html">'+esc(nm.replace(/&/g,'& ').split(/\s+/).slice(0,2).join(' '))+'</a>';}).join('')+'</div></section>';}).join('')+'</div>';
+      stage.innerHTML='<div class="hta-clusters">'+keys.map(function(k){var z=(cats[k][0]&&cats[k][0].category_zh)||k;return '<section class="hta-cluster"><h3 class="hta-cat-h">'+L(esc(k),esc(z))+' <b>'+cats[k].length+'</b></h3><div class="hta-cluster-body">'+cats[k].map(function(g){var m=g.metrics[state.metric],nm=isZh()?g.name_zh:g.name,aria=nm+' · '+pct(m.value)+' · '+m.denominator+' / '+g.member_count;return '<a class="hta-cluster-item" aria-label="'+esc(aria)+'" href="basket/'+encodeURIComponent(g.id)+'.html"><span class="hta-dot" style="'+colorStyle(m.value,state.metric)+'"></span><span class="hta-cluster-name">'+L(esc(g.name),esc(g.name_zh))+'</span><span class="hta-cluster-metric">'+pct(m.value)+'</span><span class="hta-cluster-meta">'+m.denominator+' / '+g.member_count+' '+L('measured','有观测')+'</span></a>';}).join('')+'</div></section>';}).join('')+'</div>';
     }
-    function bubbleRadius(g){return state.size==='members'?Math.max(7,Math.min(23,5+Math.sqrt(Math.max(1,g.member_count))*2.2)):10;}
+    function bubbleRadius(g){return state.size==='members'?Math.sqrt(Math.max(0,g.member_count)/Math.max(1,model.max_member_count))*24:10;}
     function renderBubbles(rows){
       var plotted=[],missing=[];rows.forEach(function(g){var x=g.metrics[state.x].value,y=g.metrics[state.y].value;if(x==null||y==null)missing.push(g);else plotted.push({g:g,x:x,y:y});});
       var W=1000,H=520,LFT=62,RGT=22,TOP=24,BOT=58,PW=W-LFT-RGT,PH=H-TOP-BOT;
       var grid='';[0,.25,.5,.75,1].forEach(function(v){var x=LFT+v*PW,y=TOP+(1-v)*PH;grid+='<line class="hta-grid" x1="'+x+'" y1="'+TOP+'" x2="'+x+'" y2="'+(TOP+PH)+'"></line><line class="hta-grid" x1="'+LFT+'" y1="'+y+'" x2="'+(LFT+PW)+'" y2="'+y+'"></line><text class="hta-axis-label" x="'+x+'" y="'+(H-30)+'" text-anchor="middle">'+Math.round(v*100)+'%</text><text class="hta-axis-label" x="48" y="'+(y+4)+'" text-anchor="end">'+Math.round(v*100)+'%</text>';});
-      var dots=plotted.map(function(p){var x=LFT+p.x*PW,y=TOP+(1-p.y)*PH,r=bubbleRadius(p.g),cm=p.g.metrics[state.metric].value;return '<a href="basket/'+encodeURIComponent(p.g.id)+'.html"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="'+colorStyle(cm,state.metric)+';stroke:color-mix(in srgb,var(--text) 30%,transparent);stroke-width:1"><title>'+esc(p.g.name)+' · X '+pct(p.x)+' · Y '+pct(p.y)+'</title></circle><text class="hta-bubble-label" x="'+x+'" y="'+(y+3)+'" text-anchor="middle">'+esc(p.g.id.slice(0,9))+'</text></a>';}).join('');
+      var dots=plotted.map(function(p){var x=LFT+p.x*PW,y=TOP+(1-p.y)*PH,r=bubbleRadius(p.g),cm=p.g.metrics[state.metric].value,nm=isZh()?p.g.name_zh:p.g.name,label=bubbleShortLabel(p.g),aria=nm+' · X '+pct(p.x)+' · Y '+pct(p.y);return '<a href="basket/'+encodeURIComponent(p.g.id)+'.html" aria-label="'+esc(aria)+'"><circle cx="'+x+'" cy="'+y+'" r="'+r+'" style="'+bubbleFill(cm,state.metric)+';stroke:color-mix(in srgb,var(--text) 30%,transparent);stroke-width:1"><title>'+esc(aria)+'</title></circle><text class="hta-bubble-label" x="'+x+'" y="'+(y+3)+'" text-anchor="middle">'+esc(label)+'</text></a>';}).join('');
       var xl=metricLabel(state.x),yl=metricLabel(state.y),xName=isZh()?xl[2]:xl[1],yName=isZh()?yl[2]:yl[1];
-      stage.innerHTML='<div class="hta-bubble-wrap"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Theme breadth bubble plot">'+grid+'<line class="hta-axis" x1="'+LFT+'" y1="'+(TOP+PH)+'" x2="'+(LFT+PW)+'" y2="'+(TOP+PH)+'"></line><line class="hta-axis" x1="'+LFT+'" y1="'+TOP+'" x2="'+LFT+'" y2="'+(TOP+PH)+'"></line>'+dots+'<text class="hta-axis-label" x="'+(LFT+PW/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(xName)+'</text><text class="hta-axis-label" transform="translate(16 '+(TOP+PH/2)+') rotate(-90)" text-anchor="middle">'+esc(yName)+'</text></svg></div><div class="hta-missing">'+missing.length+' '+L('visible groups withheld from the plot because an axis value is unavailable; they remain in Matrix and Table.','个当前显示组因坐标值不可用而未绘制；它们仍保留在矩阵和表格中。')+'</div>';
+      var readout=plotted.slice().sort(function(a,b){return b.y-a.y||a.g.name.localeCompare(b.g.name);}).map(function(p){var nm=isZh()?p.g.name_zh:p.g.name;return '<a class="hta-bubble-readout-item" href="basket/'+encodeURIComponent(p.g.id)+'.html"><span class="hta-bubble-readout-name">'+esc(nm)+'</span><span class="hta-bubble-readout-value">'+pct(p.x)+' · '+pct(p.y)+'</span><span class="hta-bubble-readout-meta">'+esc(xName)+' · '+esc(yName)+' · '+p.g.member_count+' '+(isZh()?'成员':'members')+'</span></a>';}).join('');
+      stage.innerHTML='<div class="hta-bubble-wrap"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Theme breadth bubble plot">'+grid+'<line class="hta-axis" x1="'+LFT+'" y1="'+(TOP+PH)+'" x2="'+(LFT+PW)+'" y2="'+(TOP+PH)+'"></line><line class="hta-axis" x1="'+LFT+'" y1="'+TOP+'" x2="'+LFT+'" y2="'+(TOP+PH)+'"></line>'+dots+'<text class="hta-axis-label" x="'+(LFT+PW/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(xName)+'</text><text class="hta-axis-label" transform="translate(16 '+(TOP+PH/2)+') rotate(-90)" text-anchor="middle">'+esc(yName)+'</text></svg></div><div class="hta-bubble-readout" aria-label="'+esc(isZh()?'气泡值列表':'Bubble values')+'">'+readout+'</div><div class="hta-missing">'+missing.length+' '+L('visible groups withheld from the plot because an axis value is unavailable; they remain in Matrix and Table.','个当前显示组因坐标值不可用而未绘制；它们仍保留在矩阵和表格中。')+'</div>';
     }
     function renderTable(rows){
       stage.innerHTML='<div class="hta-table-wrap"><table class="hta-table"><thead><tr><th>'+L('Group','组别')+'</th><th>'+L('Category','分类')+'</th><th>'+L('Members','成员')+'</th>'+METRICS.map(function(m){return '<th>'+L(m[1],m[2])+'</th>';}).join('')+'</tr></thead><tbody>'+rows.map(function(g){return '<tr><td><a href="basket/'+encodeURIComponent(g.id)+'.html">'+L(esc(g.name),esc(g.name_zh))+'</a></td><td>'+L(esc(g.category),esc(g.category_zh))+'</td><td>'+g.member_count+'</td>'+METRICS.map(function(m){var v=g.metrics[m[0]];return '<td>'+pct(v.value)+' <span class="hta-meta">('+v.denominator+'/'+g.member_count+')</span></td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
@@ -478,7 +495,7 @@
       var cats=Object.keys(catMap).sort();
       catSel.innerHTML='<option value="all">'+(isZh()?'全部分类':'All categories')+'</option>'+cats.map(function(c){return '<option value="'+esc(c)+'">'+esc(isZh()?catMap[c]:c)+'</option>';}).join('');
       catSel.value=state.category;
-      sizeSel.innerHTML='<option value="constant">'+(isZh()?'等面积':'Equal area')+'</option><option value="members">'+(isZh()?'成员数量':'Member count')+'</option>';
+      sizeSel.innerHTML='<option value="constant">'+(isZh()?'等面积':'Equal area')+'</option><option value="members">'+(isZh()?'成员数量（面积成比例）':'Member count (area-proportional)')+'</option>';
       sizeSel.value=state.size;
       search.placeholder=isZh()?'主题 / 组别':'Theme / group';
       document.querySelectorAll('[data-hta-view]').forEach(function(b){b.onclick=function(){state.view=b.getAttribute('data-hta-view');render();};});
