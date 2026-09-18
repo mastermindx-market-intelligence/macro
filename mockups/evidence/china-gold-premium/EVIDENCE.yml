@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/commodities.html.j2
+  - templates/_china_gold_premium.html.j2
+manifest: mockups/evidence/china-gold-premium/manifest.json
