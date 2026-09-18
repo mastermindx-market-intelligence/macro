@@ -1185,25 +1185,27 @@ def test_production_config_wires_close_proxy_to_source_store_without_vendor_bran
     assert "Polygon" not in public_labels
 
 
-def test_collector_registry_places_gold_basis_on_existing_asia_shard():
+def test_collector_registry_places_gold_basis_on_existing_us_nightly_shard():
     from scripts import collect
 
     registry = collect.all_adapters()
 
-    assert "china_gold_basis" in registry
-    assert registry["china_gold_basis"].__name__ == "ChinaGoldBasisAdapter"
-    assert "china_gold_basis" in collect.group_members("asia", registry)
+    assert "gold_china_basis" in registry
+    assert registry["gold_china_basis"].__name__ == "ChinaGoldBasisAdapter"
+    assert "gold_china_basis" in collect.group_members("us", registry)
+    assert "gold_china_basis" not in collect.group_members("asia", registry)
 
 
-def test_asia_close_supplies_existing_massive_credentials_to_gold_basis_collector():
+def test_daily_nightly_already_supplies_both_gold_basis_credentials():
     from pathlib import Path
 
     repo = Path(__file__).resolve().parents[1]
-    text = (repo / ".github" / "workflows" / "asia-close.yml").read_text()
+    text = (repo / ".github" / "workflows" / "daily.yml").read_text()
 
     assert "TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}" in text
     assert "POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}" in text
     assert "MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}" in text
+    assert "python -m scripts.collect --exclude-group asia" in text
 
 
 def test_massive_history_chunks_never_exceed_fourteen_calendar_days():
