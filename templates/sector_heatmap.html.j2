@@ -119,6 +119,7 @@
     var state={view:'matrix',metric:'strict_trend_200',category:'all',query:'',x:'strict_trend_50',y:'strict_trend_200',size:'constant'};
     var model=null;
     function L(en,zh){return '<span class="l-en">'+en+'</span><span class="l-zh">'+(zh||en)+'</span>';}
+    function isZh(){return document.documentElement.getAttribute('data-lang')==='zh';}
     function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
     function pct(v){return v==null?'—':(v*100).toFixed(1)+'%';}
     function metricLabel(id){var m=METRICS.find(function(x){return x[0]===id;});return m||[id,id,id];}
