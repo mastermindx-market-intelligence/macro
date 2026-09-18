@@ -270,7 +270,10 @@ def test_moves_inputs_prefer_same_session_thetadata_eod_pair():
         {"spot_ref": 108.0}, {"atm_iv": 55.0},
         snapshot_loader=lambda _root: _theta_snapshot(),
     )
-    assert got == {"spot": 108.0, "atm_iv_pct": 55.0, "input_source": "thetadata_eod"}
+    assert got == {
+        "spot": 108.0, "atm_iv_pct": 55.0,
+        "input_source": "thetadata_eod", "asof": "2026-09-17",
+    }
 
 
 def test_moves_inputs_fall_back_to_same_session_thetadata_snapshot():
@@ -279,16 +282,33 @@ def test_moves_inputs_fall_back_to_same_session_thetadata_snapshot():
         {"spot_ref": None}, {"atm_iv": None},
         snapshot_loader=lambda _root: _theta_snapshot(),
     )
-    assert got == {"spot": 107.02, "atm_iv_pct": 62.52, "input_source": "thetadata_snapshot"}
+    assert got == {
+        "spot": 107.02, "atm_iv_pct": 62.52,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-17",
+    }
 
 
-def test_moves_inputs_refuse_wrong_session_snapshot():
+def test_moves_inputs_accept_newer_vendor_stamped_snapshot_than_settled_eod():
+    got = resolve_moves_inputs(
+        "INTC", "2026-09-17",
+        {"spot_ref": None}, {"atm_iv": None},
+        snapshot_loader=lambda _root: _theta_snapshot(
+            asof="2026-09-18", spot=108.92, iv=0.638986,
+        ),
+    )
+    assert got == {
+        "spot": 108.92, "atm_iv_pct": 63.8986,
+        "input_source": "thetadata_snapshot", "asof": "2026-09-18",
+    }
+
+
+def test_moves_inputs_refuse_snapshot_older_than_settled_eod():
     got = resolve_moves_inputs(
         "INTC", "2026-09-17",
         {"spot_ref": None}, {"atm_iv": None},
         snapshot_loader=lambda _root: _theta_snapshot(asof="2026-09-16"),
     )
-    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None}
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
 
 def test_moves_inputs_refuse_cross_root_snapshot():
@@ -297,7 +317,7 @@ def test_moves_inputs_refuse_cross_root_snapshot():
         {"spot_ref": None}, {"atm_iv": None},
         snapshot_loader=lambda _root: _theta_snapshot(root="AAPL"),
     )
-    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None}
+    assert got == {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
 
 def test_current_null_moves_payload_is_publishable_to_clear_stale_r2_object():
@@ -306,21 +326,24 @@ def test_current_null_moves_payload_is_publishable_to_clear_stale_r2_object():
     assert _moves_publishable(payload, "INTC", "2026-09-17") is True
 
 
-def test_build_moves_payload_turns_current_intc_theta_snapshot_into_fresh_band():
+def test_build_moves_payload_turns_newer_intc_theta_snapshot_into_fresh_band():
     payload = _build_moves_payload(
         "INTC", "2026-09-17", {"spot_ref": None}, {"atm_iv": None},
         calibration=None, learned_band_mult=None, regime=None,
-        snapshot_loader=lambda _root: _theta_snapshot(),
+        snapshot_loader=lambda _root: _theta_snapshot(
+            asof="2026-09-18", spot=108.92, iv=0.638986,
+        ),
     )
-    assert payload["asof"] == "2026-09-17"
+    assert payload["asof"] == "2026-09-18"
     assert payload["input_source"] == "thetadata_snapshot"
-    assert payload["spot_ref"] == 107.02
-    assert payload["atm_iv"] == 62.52
+    assert payload["spot_ref"] == 108.92
+    assert payload["atm_iv"] == 63.8986
     assert payload["expected_move"] == {
-        "band_mult": 1.96, "horizon_days": 1.0, "pct": 7.7192,
-        "lo": 98.7589, "hi": 115.2811,
+        "band_mult": 1.96, "horizon_days": 1.0, "pct": 7.8895,
+        "lo": 100.3268, "hi": 117.5132,
     }
     assert "no_data_reason" not in payload
+    assert _moves_publishable(payload, "INTC", "2026-09-17") is True
 
 
 def test_build_moves_payload_publishes_current_null_when_every_current_input_is_absent():
@@ -336,7 +359,8 @@ def test_build_moves_payload_publishes_current_null_when_every_current_input_is_
     assert _moves_publishable(payload, "WBS", "2026-09-17") is True
 
 
-def test_moves_publishable_rejects_cross_root_or_wrong_session():
+def test_moves_publishable_rejects_cross_root_or_regressing_session():
     p = moves_payload("INTC", "2026-09-17", 107.02, 62.52, input_source="thetadata_snapshot")
     assert not _moves_publishable(p, "AAPL", "2026-09-17")
-    assert not _moves_publishable(p, "INTC", "2026-09-16")
+    assert not _moves_publishable(p, "INTC", "2026-09-18")
+    assert _moves_publishable(p, "INTC", "2026-09-16")

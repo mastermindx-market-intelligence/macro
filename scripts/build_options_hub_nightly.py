@@ -719,7 +719,7 @@ def resolve_moves_inputs(
     theta_spot = _positive_finite((gex_payload or {}).get("spot_ref"))
     theta_iv = _positive_finite((vol_payload or {}).get("atm_iv"))
     if theta_spot is not None and theta_iv is not None:
-        return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod"}
+        return {"spot": theta_spot, "atm_iv_pct": theta_iv, "input_source": "thetadata_eod", "asof": asof}
 
     if snapshot_loader is None:
         from collectors.thetadata import snapshot_greeks
@@ -730,49 +730,61 @@ def resolve_moves_inputs(
         log.warning("options_hub_builder: ThetaData snapshot fallback %s failed: %s", root, exc)
         snap = None
     if snap is None or snap.empty:
-        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
     frame = snap.copy()
     if not {"root", "snapshot_ts", "underlying_price", "expiration", "strike", "implied_vol"}.issubset(frame.columns):
-        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     frame = frame[frame["root"].astype(str).str.upper() == root.upper()].copy()
     if frame.empty:
-        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
     stamp = pd.to_datetime(frame["snapshot_ts"], errors="coerce")
-    frame = frame[stamp.dt.date.astype(str) == asof].copy()
+    valid_days = stamp.dt.date.dropna()
+    if valid_days.empty:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    snapshot_asof = str(valid_days.max())
+    # The fallback may legitimately be one session NEWER than the settled EOD store
+    # (the exact production shape on 2026-09-18). It may never move the product backward.
+    if snapshot_asof < asof:
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    frame = frame[stamp.dt.date.astype(str) == snapshot_asof].copy()
     if frame.empty:
-        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
     spot_values = pd.to_numeric(frame["underlying_price"], errors="coerce")
     spot_values = spot_values[np.isfinite(spot_values) & (spot_values > 0)]
     spot = _positive_finite(spot_values.median()) if not spot_values.empty else None
     if spot is None:
-        return {"spot": None, "atm_iv_pct": None, "input_source": None}
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
 
     # Reuse compute_vol as the ONE ATM-IV definition. Snapshot rows have the same
     # expiration/strike/implied_vol/underlying_price schema; adding the accepted
     # session date lets the canonical term interpolation run without any duplicate
     # IV math. RV/history stay null because this one-session fallback is for EM only.
-    frame["date"] = asof
-    snapshot_vol = compute_vol(frame, pd.Series(dtype=float), asof, root)
+    frame["date"] = snapshot_asof
+    snapshot_vol = compute_vol(frame, pd.Series(dtype=float), snapshot_asof, root)
     atm_iv = _positive_finite(snapshot_vol.get("atm_iv"))
     if atm_iv is None:
-        return {"spot": None, "atm_iv_pct": None, "input_source": None}
-    return {"spot": spot, "atm_iv_pct": atm_iv, "input_source": "thetadata_snapshot"}
+        return {"spot": None, "atm_iv_pct": None, "input_source": None, "asof": None}
+    return {"spot": spot, "atm_iv_pct": atm_iv, "input_source": "thetadata_snapshot", "asof": snapshot_asof}
 
 
-def _moves_publishable(payload: dict, root: str, asof: str) -> bool:
-    """A current moves object publishes even when its expected_move is null.
+def _moves_publishable(payload: dict, root: str, minimum_asof: str) -> bool:
+    """Publish a current-or-newer moves object, including an explicit current null.
 
-    Publishing the current explicit null clears an older R2 band instead of letting
-    a weeks-old expectation survive indefinitely. The consumer can then distinguish
-    current unavailability from an old price/IV estimate.
+    The snapshot fallback can be one session newer than the settled EOD store. It is
+    lawful to advance `moves/v1` to that vendor-stamped session; it is never lawful to
+    publish a payload older than the settled source date. A current explicit null still
+    clears an older R2 band instead of letting stale expectations survive indefinitely.
     """
+    payload_asof = payload.get("asof") if isinstance(payload, dict) else None
     return bool(
         isinstance(payload, dict)
         and payload.get("schema") == "options_hub.moves/v1"
         and str(payload.get("root") or "").upper() == root.upper()
-        and payload.get("asof") == asof
+        and isinstance(payload_asof, str)
+        and len(payload_asof) == 10
+        and payload_asof >= minimum_asof
     )
 
 
@@ -791,8 +803,9 @@ def _build_moves_payload(
     source = resolve_moves_inputs(
         root, asof, gex_payload, vol_payload, snapshot_loader=snapshot_loader,
     )
+    payload_asof = source.get("asof") or asof
     payload = moves_payload(
-        root, asof, source["spot"], source["atm_iv_pct"],
+        root, payload_asof, source["spot"], source["atm_iv_pct"],
         calibration=calibration, learned_band_mult=learned_band_mult, regime=regime,
         input_source=source["input_source"],
     )
