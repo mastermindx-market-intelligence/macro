@@ -136,10 +136,19 @@ R14 reader review HOLD/NOT_RUN, R16 storage/page qualification held with6747/4.3
 
 ## Exact continuation / do-not-redo
 
-Primary: consume material incumbent release movement in order. Do not poll unchanged queues or repeat semantic reviews.
+Primary release path: consume material incumbent release movement in order (#7287 -> fresh same-head #7079 qualification/release; #7230 independently), then W3. Do not poll unchanged queues or repeat semantic reviews.
 
 Independent useful work: freeze the unnumbered W1→W2 producer contract against released W1/W2 semantics and the frozen Qualitative Research architecture and assemble a small permitted gold corpus with: one current company question; one comparable revision pair; one independent-source disagreement; one long-report qualification. No source acquisition beyond current rights implied.
 
 DO_NOT_REDO: W1 RIO schema; W2 storage/correction plane; planned W3 duplicate-store alternative; R20 implementation/proof absent invalidator; #7045 merged hygiene; CA1A#6838; collector recovery#7164/Mastermind#631; #7287 semantic review absent material change.
 
 Parent mission remains MORE_WORK_EXISTS / unaccepted. No background task is promised; no worker/watch dialogue was opened.
+
+
+## R22 additional empirical findings
+
+Current 2,354-row catalog has zero populated ticker fields but already has conservative literal title/summary incidence for many target companies (not body coverage/entity resolution): NVIDIA100, AMD23, Intel15, Arm Holdings4, Alphabet/Google79, Meta57, Microsoft56, Amazon71, Coinbase1, Circle Internet2, gold-miner phrases2, silver-miner phrases1. An earlier substring probe that overcounted Intel via the word intelligence was rejected; never use it. These counts demonstrate both already-paid evidence and the need for canonical entity association. Do not turn them into research-quality or independent-source counts.
+
+Public Professional price rechecked 2026-09-18: $150 month-to-month / $125 per month billed annually. Public terms reviewed do not establish automation/pooling/model-processing/subscriber-output/redistribution rights. Purchase remains held pending intended-use permission and product proof.
+
+Exact next design gate: Chairman approval of the frozen producer contract. Exact next product gate remains one permitted real company question -> useful answer -> same-source inspection after incumbent releases.
