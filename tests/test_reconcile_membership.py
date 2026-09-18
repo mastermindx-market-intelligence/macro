@@ -173,3 +173,44 @@ def test_dry_run_reports_without_writing(tmp_path):
 def test_guard_error_aborts_like_the_quality_gate():
     # collect.py re-raises PruneGuardError specifically; it must be the gate's abort type
     assert issubclass(rm.PruneGuardError, RuntimeError)
+
+
+def _write_us_structural_inputs(data: Path) -> Path:
+    membership = {
+        "baskets": {
+            "us_sector_tech": {
+                "members": [
+                    {"ticker": "AAPL", "added": "2023-05-09", "removed": None},
+                    {"ticker": "OLD", "added": "2023-05-09", "removed": None},
+                ]
+            },
+        }
+    }
+    mem = data / "baskets" / "membership.json"
+    mem.parent.mkdir(parents=True, exist_ok=True)
+    mem.write_text(json.dumps(membership, indent=2), encoding="utf-8")
+    ref = data / "breadth" / "constituents.parquet"
+    ref.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(
+        {"name": ["Apple", "Nvidia"], "sector": ["Information Technology", "Information Technology"]},
+        index=pd.Index(["AAPL", "NVDA"], name="symbol"),
+    ).to_parquet(ref)
+    return mem
+
+
+def test_us_structural_drift_is_reported_but_never_auto_mutated(tmp_path, capsys):
+    data = tmp_path / "data"
+    mem = _write_us_structural_inputs(data)
+    before = mem.read_bytes()
+
+    doc = rm.run(cfg=CFG, asof=ASOF, data_dir=data, out_dir=tmp_path / "q")
+
+    audit = doc["us_sector_audit"]
+    assert audit["drift"] is True
+    assert audit["n_extra"] == 1
+    assert audit["n_missing"] == 1
+    tech = next(row for row in audit["baskets"] if row["basket_id"] == "us_sector_tech")
+    assert tech["extra"] == ["OLD"]
+    assert tech["missing"] == ["NVDA"]
+    assert mem.read_bytes() == before
+    assert "::warning title=us-sector-membership-drift::" in capsys.readouterr().out

@@ -33,10 +33,15 @@ Guard thresholds are overridable via the config `quality:` block. A guarded suit
 the other suites still reconcile, then the error propagates and aborts the collect run
 exactly like the data-quality gate's >5% abort.
 
-EXPLICIT NON-GOALS: data/baskets (US) validates against the S&P-1500 membership table +
-git-excluded breadth cache (a coverage-limited contract audit_universe already grades), and
-data/baskets_china_ths is snapshot-driven with its own add/remove lifecycle in its seeder —
-neither is touched here.
+U.S. STRUCTURAL AUDIT: data/baskets remains human/PIT curated and is NEVER auto-mutated
+here because the current S&P constituent snapshot cannot tell us the historical effective
+date of an add/delete/GICS move. The same END-OF-COLLECT run nevertheless compares the
+eleven us_sector_* active rosters against data/breadth/constituents.parquet and writes the
+drift into membership_reconcile.json. Drift emits a GitHub warning and waits for an
+evidence-backed dated membership edit; it does not prune/add/move a member automatically.
+
+EXPLICIT NON-GOAL: data/baskets_china_ths is snapshot-driven with its own add/remove
+lifecycle in its seeder and is not touched here.
 
 Run:    python -m scripts.reconcile_membership [-v] [--dry-run]
 Import: from scripts import reconcile_membership
@@ -66,6 +71,23 @@ SUITES: list[tuple[str, str, str]] = [
     ("baskets_canada", "canada_search/closes.parquet",  "canada_search"),
     ("baskets_hk",     "hk_search/closes_deep.parquet", "hk_search"),
 ]
+
+# Existing U.S. structural sleeves: active membership must match the current
+# S&P-500 constituent/sector owner. This map is structural classification only;
+# it grants no authority to infer historical effective dates.
+US_SECTOR_BASKETS: dict[str, str] = {
+    "us_sector_tech": "Information Technology",
+    "us_sector_financials": "Financials",
+    "us_sector_health": "Health Care",
+    "us_sector_discretionary": "Consumer Discretionary",
+    "us_sector_comm": "Communication Services",
+    "us_sector_industrials": "Industrials",
+    "us_sector_staples": "Consumer Staples",
+    "us_sector_energy": "Energy",
+    "us_sector_utilities": "Utilities",
+    "us_sector_realestate": "Real Estate",
+    "us_sector_materials": "Materials",
+}
 
 _DEFAULTS = {
     "membership_min_present": 3,       # floor: min cache-present member rows a basket must keep
@@ -184,6 +206,92 @@ def _reconcile_suite(suite: str, cache_rel: str, label: str, data_dir: Path,
     return res
 
 
+
+def _audit_us_sector_membership(data_dir: Path) -> dict:
+    """Compare current active us_sector_* rows with the current S&P-500 sector owner.
+
+    Evidence-only: this function NEVER edits membership. A current snapshot proves
+    present drift but cannot reconstruct the historical effective date needed for a
+    lawful [added, removed) mutation.
+    """
+    result = {
+        "membership": "data/baskets/membership.json",
+        "reference": "data/breadth/constituents.parquet",
+        "skipped": False,
+        "note": "",
+        "drift": False,
+        "n_extra": 0,
+        "n_missing": 0,
+        "missing_baskets": [],
+        "baskets": [],
+    }
+    mem_path = data_dir / "baskets" / "membership.json"
+    ref_path = data_dir / "breadth" / "constituents.parquet"
+    if not mem_path.exists() or not ref_path.exists():
+        missing = [
+            label for label, path in (("membership", mem_path), ("reference", ref_path))
+            if not path.exists()
+        ]
+        result.update(
+            skipped=True,
+            note="required U.S. structural input(s) absent: " + ", ".join(missing),
+        )
+        return result
+    try:
+        baskets = (json.loads(mem_path.read_text(encoding="utf-8")).get("baskets") or {})
+        constituents = pd.read_parquet(ref_path, columns=["sector"])
+    except Exception as exc:  # noqa: BLE001 — unreadable input means unauditable, never mutate
+        result.update(skipped=True, note=f"U.S. structural inputs unreadable: {exc}")
+        return result
+
+    for basket_id, sector in US_SECTOR_BASKETS.items():
+        basket = baskets.get(basket_id)
+        if not isinstance(basket, dict):
+            result["missing_baskets"].append(basket_id)
+            continue
+        active = {
+            str(member["ticker"])
+            for member in basket.get("members") or []
+            if member.get("ticker") and not member.get("removed")
+        }
+        expected = {
+            str(ticker)
+            for ticker in constituents[constituents["sector"].eq(sector)].index
+        }
+        extra = sorted(active - expected)
+        missing = sorted(expected - active)
+        result["n_extra"] += len(extra)
+        result["n_missing"] += len(missing)
+        result["baskets"].append({
+            "basket_id": basket_id,
+            "sector": sector,
+            "active": len(active),
+            "expected": len(expected),
+            "extra": extra,
+            "missing": missing,
+        })
+
+    result["drift"] = bool(
+        result["n_extra"] or result["n_missing"] or result["missing_baskets"]
+    )
+    if result["drift"]:
+        parts = []
+        if result["n_extra"]:
+            parts.append(f"{result['n_extra']} stale/excess")
+        if result["n_missing"]:
+            parts.append(f"{result['n_missing']} missing")
+        if result["missing_baskets"]:
+            parts.append(f"{len(result['missing_baskets'])} structural basket(s) absent")
+        print(
+            "::warning title=us-sector-membership-drift::"
+            + ", ".join(parts)
+            + "; current S&P/GICS roster differs from curated data/baskets membership; "
+              "do not auto-mutate because effective dates require evidence",
+            flush=True,
+        )
+    return result
+
+
 def run(cfg: dict | None = None, asof: date | None = None,
         data_dir: Path | None = None, out_dir: Path | None = None,
         dry_run: bool = False) -> dict:
@@ -196,6 +304,7 @@ def run(cfg: dict | None = None, asof: date | None = None,
     data_dir = data_dir or config.data_dir()
 
     suites = [_reconcile_suite(s, c, lb, data_dir, asof, cfg, dry_run) for s, c, lb in SUITES]
+    us_sector_audit = _audit_us_sector_membership(data_dir)
     n_pruned = sum(len(s["pruned"]) for s in suites)
     doc = {
         "asof": asof.isoformat(),
@@ -204,6 +313,7 @@ def run(cfg: dict | None = None, asof: date | None = None,
         "n_pruned": n_pruned,
         "n_refused": sum(1 for s in suites if s["refused"]),
         "suites": suites,
+        "us_sector_audit": us_sector_audit,
     }
     if not dry_run:
         out_dir = out_dir or (data_dir / "quality")
