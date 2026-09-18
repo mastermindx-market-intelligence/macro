@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T03:07:04.767488+00:00",
-  "count": 2333,
+  "generated_at": "2026-09-18T03:37:03.004666+00:00",
+  "count": 2334,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -125,6 +125,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-68tfkpykks4-a09335",
+      "title": "Precious Analyst Fed Hikes to Slow, Rather than Derail, the Gold Rally",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:33Z",
+      "summary_points": [
+        "Central Bank Demand Structural Shift: Central bank gold demand surges to 91 tonnes/month by end-2027 (vs. pre-2022 avg 17 tonnes), driven by structural diversification post-2022 Russian freeze, dominating price growth and lifting floor to $4,200/oz by 2026.",
+        "Fed Policy Near-Term Floor Risk: Hawkish Fed (3+ hikes, higher terminal rate) unwinds macro-hedge demand, triggering $4,070/oz near-term floor; central bank purchases may lift floor to $4,200/oz by 2026.",
+        "Dealer Hedging Amplification: Elevated call-option positioning (2.3M contracts) creates dealer hedging \"beta\" (1M contracts = ~7% price impact), mechanically amplifying rallies above forecasts if central bank demand persists.",
+        "Gold Forecast Resilience: Goldman Sachs maintains $5,400/oz end-2027 forecast despite Fed hikes, with year-end fair value revised to $4,650/oz (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
