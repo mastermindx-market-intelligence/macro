@@ -1243,6 +1243,7 @@ jobs:
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
+      - "engine/btc_d2_research.py"
       - "engine/stocks_hub.py"
       - "engine/technicals.py"
       - "engine/valuation.py"
@@ -7081,6 +7082,8 @@ jobs:
       - "engine/bottleneck.py"
       - "engine/bottom_radar.py"
       - "engine/btc_alerts.py"
+      - "engine/btc_d2_research.py"
+      - "engine/btc_impulse_ledger.py"
       - "engine/btc_impulse_radar.py"
       - "engine/btc_impulse_radar_backtest.py"
       - "engine/btc_leverage_cascade.py"
@@ -11032,6 +11035,7 @@ jobs:
       # builder. This curated scope replaces inference, so the closure entry is
       # explicit; widening is the safe direction.
       - "engine/btc_decision.py"
+      - "engine/btc_d2_research.py"
       - "engine/btc_impulse_ledger.py"
       - "engine/btc_impulse_radar.py"
       - "engine/btc_impulse_radar_backtest.py"
