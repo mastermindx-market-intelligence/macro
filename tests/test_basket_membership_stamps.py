@@ -544,3 +544,5 @@ def test_2026_us_sector_changes_preserve_effective_membership_boundaries(members
         row = _member_row(membership, basket_id, ticker)
         assert row["added"] == added, (basket_id, ticker, row)
         assert row.get("removed") == removed, (basket_id, ticker, row)
+
+    # These rows were curated only when the drift was repaired on Sep 17.\n    # Historical added preserves effective membership; curation knowledge stays separate.\n    for basket_id, ticker in (\n        ("us_sector_industrials", "HONA"),\n        ("us_sector_comm", "APP"),\n        ("us_sector_industrials", "DD"),\n        ("us_sector_industrials", "FERG"),\n        ("us_sector_comm", "RDDT"),\n    ):\n        assert _member_row(membership, basket_id, ticker)["curated_added"] == "2026-09-17"\n
