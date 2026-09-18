@@ -1226,6 +1226,39 @@ def test_pc_windows_boot_recovery_rejects_unsafe_distribution_names() -> None:
     assert ".Replace('\"', '\"\"')" not in installer
 
 
+def test_pc_windows_boot_recovery_seals_privileged_action_path() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    assert "SetAccessRuleProtection($true, $false)" in installer
+    assert "S-1-5-18" in installer
+    assert "S-1-5-32-544" in installer
+    assert "AreAccessRulesProtected" in installer
+    assert "Get-FileHash" in installer
+    assert "[System.IO.FileAttributes]::ReparsePoint" in installer
+
+
+def test_pc_windows_boot_recovery_whatif_is_non_mutating() -> None:
+    installer = (
+        ROOT
+        / "ops"
+        / "runner-host"
+        / "pc"
+        / "windows"
+        / "Install-MastermindWslBootRecovery.ps1"
+    ).read_text(encoding="utf-8")
+    should_process = installer.index("if ($PSCmdlet.ShouldProcess")
+    assert installer.find("New-Item", 0, should_process) == -1
+    assert installer.find("Copy-Item", 0, should_process) == -1
+    assert installer.index("New-Item", should_process) > should_process
+    assert installer.index("Copy-Item", should_process) > should_process
+
+
 def test_resource_refusal_backoff_only_delays_an_unsafe_retry() -> None:
     sleeps: list[int] = []
     RESOURCE_GUARD.refusal_backoff([], 300, sleep=sleeps.append)
