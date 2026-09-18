@@ -1,0 +1,90 @@
+{
+  "changed_files": {
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "after_sha256": "da9ba71f1d54b56bac807794dc91d80c9dbe5bfd354738a51e7eeacc83cfbc39",
+      "before_sha256": "9f817b71e113b239fd589acc4555ef73bc2865ff68936f79f0dd5095518a0e70"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+      "after_sha256": "6838445437886d1d781b713f7ba3050a0b1c1e71f7614f23f5f97e501b86e80a",
+      "before_sha256": "759f9d51e3e412fbaa3c2519c49c6ac2baf4ef9aaa67874203ec51ecaac145f7"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+      "after_sha256": "a24b448bc8ab88550b62b476932f45c82027c44c2df56d67a6326ddb0b056244",
+      "before_sha256": "96b2cc78fc1940a3ebb1dee7eee93bf7cb5e8f50d5c8be1cb688de27974d3e52"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": {
+      "after_sha256": "c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5",
+      "before_sha256": "8069aaf8a31509f91d8cf1cfd15c9568f69e460567e040ea917380a13f4dff5a"
+    }
+  },
+  "effects": {
+    "collectors": false,
+    "production_writes": 0,
+    "provider_calls": 0,
+    "publication": false
+  },
+  "historical_evidence_preserved": [
+    "mockups/evidence/prophet-p0b-zero-fouc/ux-smells.json",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json:historical_baseline",
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json:target"
+  ],
+  "observed_at": "2026-09-18T06:16:08.573315+00:00",
+  "output_bytes_unchanged": {
+    "ca": {
+      "after_sha256": "781af5ee61e0da0eddba9117cec6265883dcdeaba97289cf8a3a0f330e4ed018",
+      "before_sha256": "781af5ee61e0da0eddba9117cec6265883dcdeaba97289cf8a3a0f330e4ed018",
+      "output": "canada_stocks.html",
+      "unchanged": true
+    },
+    "hk": {
+      "after_sha256": "cfff62e246c431e75d4634e5dc642b16951a825f744f62297c52422528a866d6",
+      "before_sha256": "cfff62e246c431e75d4634e5dc642b16951a825f744f62297c52422528a866d6",
+      "output": "hk_stocks.html",
+      "unchanged": true
+    }
+  },
+  "production": "none",
+  "proof_class": "current_integrated_source_receipt_rebind",
+  "schema": "mastermind.prophet_p0b_evidence_rebind.v1",
+  "source_base": "7233b2cd182976c8d1707cc2cba13725c358bf37",
+  "source_input": {
+    "current_sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2",
+    "old_bound_sha256": "528b85cd04f9747a66628e48bdc233344cad765b63fafd2c1d82c5fc017f600a",
+    "path": "engine/i18n.py"
+  },
+  "verification": {
+    "closed_leaf_changes": 7,
+    "green": [
+      {
+        "command": "python -m pytest -q tests/test_stock_dashboard_first_frame.py",
+        "result": "114 passed in 51.32s"
+      },
+      {
+        "command": "python scripts/agentos.py validate",
+        "result": "0 errors; inherited warnings disclosed"
+      },
+      {
+        "command": "git diff --check",
+        "result": "pass"
+      },
+      {
+        "command": "python scripts/check_contract_delta.py --base 7233b2cd182976c8d1707cc2cba13725c358bf37",
+        "result": "0 introduced, 0 inherited in 237.59s"
+      }
+    ],
+    "red": [
+      {
+        "command": "python -m pytest -q tests/test_stock_dashboard_first_frame.py::test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic",
+        "result": "1 failed: committed rendered receipt did not equal deterministic current-source output"
+      },
+      {
+        "phase": "after rendered receipt leaf update",
+        "result": "3 failed: both browser receipts and repair-extension fixture binding retained predecessor receipt hash"
+      },
+      {
+        "phase": "after direct fixture binding closure",
+        "result": "1 failed: repair-extension browser receipt hashes retained predecessor browser-receipt bytes"
+      }
+    ]
+  }
+}
