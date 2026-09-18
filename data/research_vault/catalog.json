@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T21:39:02.275174+00:00",
-  "count": 2386,
+  "generated_at": "2026-09-18T21:54:02.519064+00:00",
+  "count": 2387,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-urhu9ocub0e-eee528",
+      "title": "US Economic Notes What you need to know for the week ahead",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:35:01Z",
+      "summary_points": [
+        "Fed's Hawkish Shift & Policy Outlook: SEP removes \"dose of accommodation,\" 16 officials project 2026 tightening (50bps-75bps), long-run dot at 3.2%, signaling sustained restrictive policy despite limited evidence of current restriction.",
+        "Geopolitical & Data Catalysts: Geopolitical tensions pressuring long-term rates via commodity prices; key data (S&P Manufacturing PMI 54.0, Durable Goods Orders +0.6%) due Sep 22-25 to drive near-term market direction.",
+        "Policy Signals & Rate Trajectory: Williams (NY Fed) projects easing by 2025, but FOMC signals 50bps tightening to 4.375% by Q1 2027 with 40bps upside risk, overriding dovish signals from Goolsbee."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-kchgaldsw1n-6651ac",
       "title": "AI at 70 Part 2 14 more lessons from a lifetime of boom and bust",
