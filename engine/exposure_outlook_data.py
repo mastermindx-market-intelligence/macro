@@ -224,8 +224,20 @@ def audit_surface_session(
             reasons['INVALID_FRAME'] += 1
         if not isinstance(grids, dict) or 'gex' not in grids:
             reasons['GEX_UNAVAILABLE'] += 1
+        # A numerically valid zero grid can be padding after a cycle supplied
+        # no Greeks. Coverage's denominator is the quoted-strike union, not
+        # the full chain, so even 1.0 cannot establish full-inventory coverage.
+        coverage = frame.get('coverage')
+        fraction = coverage.get('greeks') if isinstance(coverage, dict) else None
+        if not _number(fraction) or not 0 <= fraction <= 1:
+            reasons['GEX_COVERAGE_NOT_VALID'] += 1
+            fraction = None
+        elif fraction == 0:
+            reasons['GEX_NO_CONTRIBUTING_STRIKES'] += 1
         result['frame_findings'].append({
             'stamp': stamp, 'source_asof': frame.get('asof'),
+            'reported_greek_coverage': fraction,
+            'coverage_scope': 'quoted_strike_union_not_full_chain',
             'invalid_fields': invalid_fields,
             'reason_codes': sorted(code for code, count in reasons.items()
                                    if count > prior_reasons[code]),

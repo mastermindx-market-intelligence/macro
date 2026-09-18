@@ -19,7 +19,7 @@ def store(tmp_path, stamps=('1000', '1002'), publish=True):
         frame = dict(root='SPY', session_date='2026-09-18', spot=762.,
                      asof=f'2026-09-18T{hour + 4:02}:{minute:02}:00Z',
                      time_steps=[f'{hour:02}:{minute:02}'], price_levels=[761., 762.],
-                     metrics=['gex'], grids={'gex': [[1.], [2.]]})
+                     metrics=['gex'], grids={'gex': [[1.], [2.]]}, coverage={'greeks':1.0})
         if publish:
             frame['published_at'] = frame['asof']
         (folder / f'{stamp}.json').write_text(json.dumps(frame))
@@ -211,3 +211,33 @@ def test_total_session_budget_stops_before_extra_frame_reads(tmp_path):
     out=audit(tmp_path,max_session_bytes=first+10)
     assert out['readable_frames']==0
     assert 'SESSION_SIZE_LIMIT' in out['reason_codes']
+
+
+def test_zero_greek_coverage_is_absence_not_a_measured_zero_gamma(tmp_path):
+    f=store(tmp_path)
+    change(f/'1000.json', coverage={'greeks':0.0}, grids={'gex':[[0.],[0.]]})
+    out=audit(tmp_path)
+    detail=next(x for x in out['frame_findings'] if x['stamp']=='1000')
+    assert detail['reported_greek_coverage']==0
+    assert 'GEX_NO_CONTRIBUTING_STRIKES' in detail['reason_codes']
+
+
+@pytest.mark.parametrize('value',[None,True,-0.1,1.1,float('nan')])
+def test_invalid_greek_coverage_does_not_imply_observation(tmp_path,value):
+    f=store(tmp_path);change(f/'1000.json',coverage={'greeks':value})
+    out=audit(tmp_path)
+    assert 'GEX_COVERAGE_NOT_VALID' in out['reason_codes']
+
+
+def test_missing_greek_coverage_is_not_invented_from_grid(tmp_path):
+    f=store(tmp_path);change(f/'1000.json',coverage={})
+    assert 'GEX_COVERAGE_NOT_VALID' in audit(tmp_path)['reason_codes']
+
+
+def test_positive_greek_coverage_keeps_its_limited_denominator(tmp_path):
+    f=store(tmp_path);change(f/'1000.json',coverage={'greeks':0.5})
+    out=audit(tmp_path)
+    detail=next(x for x in out['frame_findings'] if x['stamp']=='1000')
+    assert detail['reported_greek_coverage']==0.5
+    assert detail['coverage_scope']=='quoted_strike_union_not_full_chain'
+    assert out['forecast_eligible'] is False

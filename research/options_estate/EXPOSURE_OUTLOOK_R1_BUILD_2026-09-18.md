@@ -134,3 +134,35 @@ then resolve the concrete corpus/availability and source-clock meanings with exi
 and Terminal source owners. Qualify actual historical anchors before scoring the baseline;
 only later compare GEX ablations and earned calibration. Full GEX UI, main-chart overlay,
 immutable live forecasts and browser/export proof remain owed under the approved commission.
+
+## Follow-up: numeric Greek grids are not proof of measured exposure
+
+The same source review uncovered a material admission distinction in the existing producer.
+`scripts/build_flow_surface.py::greek_columns_for_stamp` documents coverage against the union
+of quoted strikes, not the full options chain. `append_stamp` retains Greek-grid keys once they
+have appeared and pads a cycle without Greek contributions with numeric zeros. Thus valid
+array dimensions and finite values do not prove that a cycle observed zero gamma.
+
+Eight new regression cases first failed, then passed after the reader began preserving
+`reported_greek_coverage` with `coverage_scope=quoted_strike_union_not_full_chain`, refusing
+invalid/missing coverage and explicitly flagging zero contributing strikes. Positive partial
+coverage is reported without inventing a full-chain denominator. The local prototype is still
+separate; no baseline-file transfer was retried.
+
+A separate real read at `2026-09-18T21:53:37.891862+00:00` is preserved in
+`EXPOSURE_OUTLOOK_GREEK_COVERAGE_2026-09-18.json`, reader SHA-256
+`65886a87b0138c7071879a19c927db4d968025e3ca4303c014be24e99f97b4ba`.
+The earlier readiness receipt is retained unchanged under its original reader hash.
+For each of SPY, QQQ and IWM, the same nine unusable-spot frames report zero Greek coverage;
+only three of twelve frames have a positive contributing-strike fraction. Those three still
+do not meet the unresolved availability/clock/corpus requirements. No producer or M1 runtime
+was changed by this read or reader change.
+
+Final focused source test after this addition: **142 passed** (63 new and 79 existing).
+The original e4d6656344da119e3bb524bd889ff8ad439bd318 is the initial R1 head; current source
+review must use the eventual pushed coverage-hardening successor on **the same PR #7328**.
+Native GitHub review was requested from existing collaborator mastermindx-2; this is not a
+worker START. GitHub CI was observed in progress on the initial head. The inactive-base
+ci-authority/codex/merge-queue-pilot red is not a binding source failure: its check explicitly
+reported context_active=false / inactive_base_context. HOLD remains until actual independent
+review and exact-successor-head CI have completed; no auto-merge is armed.

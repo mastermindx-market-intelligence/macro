@@ -79,3 +79,24 @@ feature through actual user-path acceptance. No worker, watcher, background mode
 forecast publication is represented as running. The locked original worktree and branch carry
 all repository changes. Current Linear projection remains MAS-260; no fifth Options workstream
 was created. The code, tests and receipts are the new capability; this handoff is not completion.
+
+## Material follow-up: same-carrier PR and Greek-coverage evidence
+
+The source carrier is now Macro PR #7328. Its initial pushed head is
+`e4d6656344da119e3bb524bd889ff8ad439bd318`; review must follow the actual later head on that
+same PR, never the initial pin after a source change. Native review is requested from
+`mastermindx-2` but no independent worker START is proven. Initial-head GitHub CI was observed
+running (run 35398479141); no release/merge/automerge was attempted.
+
+The additional canonical artifact
+`research/options_estate/EXPOSURE_OUTLOOK_GREEK_COVERAGE_2026-09-18.json` preserves a separate
+real-source read at 21:53:37Z. The source reader now distinguishes numeric grid padding from
+observed exposure by checking the existing quoted-strike Greek-coverage field. All three roots
+have zero contribution in the same nine of twelve unusable-spot frames. The full-chain coverage
+of any root remains unknown; a 1.0 quoted-strike fraction cannot qualify the full book.
+
+Eight new regression cases failed before this change and passed afterward. Exact focused
+verification is now 142 passing tests (63 new / 79 existing). The original readiness receipt
+is unchanged and remains attributed to its historical reader hash. The second receipt uses
+reader 65886a87b0138c7071879a19c927db4d968025e3ca4303c014be24e99f97b4ba.
+The baseline prototype remains absent from the repository; no blocked transfer was retried.
