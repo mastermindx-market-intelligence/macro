@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T14:08:05.580855+00:00",
-  "count": 2364,
+  "generated_at": "2026-09-18T14:23:07.193526+00:00",
+  "count": 2365,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -105,6 +105,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-aat9zmxk4l7-94e16e",
+      "title": "GS Crook GS MORNING BoJ Review Gold Update CEE FX Thoughts GS Webcast Replay 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T12:47:44Z",
+      "summary_points": [
+        "BoJ Policy Shift & Dissent: BoJ hiked rates to 1.25% with two Takaichi appointees dissenting (favoring hold), while hawkish members dissented on price stability language, signaling persistent inflation concerns and accelerated hike pace.",
+        "Inflation Fundamentals & Hawkish Stance: Persistent upside inflation risks from energy, AI-driven demand, and wage growth; BoJ maintains hawkish policy, risking inflation exceeding 2% target with Ueda’s flexibility on future adjustments.",
+        "USDJPY FX Options Dynamics: Bullish momentum driven by gamma demand; elevated volatility from intervention risks (spot 4 figures off lows, Treasury rhetoric) and light top-side positioning.",
+        "Gold Central Bank Demand & Fed Risk: Central bank demand raised to 60 tonnes/month (vs. 50/40 prior); Fed hike risks vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
