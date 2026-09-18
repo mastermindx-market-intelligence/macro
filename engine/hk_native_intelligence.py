@@ -1,0 +1,162 @@
+"""HK-native evidence families for the zero-authority Prophet discovery lane.
+
+H3 and X1 remain ACCRUING research families. This module only projects their
+pre-registered, point-in-time-safe reads onto existing discovery candidates.
+It never selects candidates, grants entry, ranks the live board, or publishes.
+"""
+from __future__ import annotations
+
+from collections.abc import Iterable, Mapping
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
+OWN_WIN = 504
+OWN_MIN = 252
+X1_LOOKBACK = 21
+# X1 prereg requires a month-end signal to be no more than 10 calendar days old.
+# Reuse that conservative research freshness bound for both daily A/H inputs.
+MAX_INPUT_LAG_DAYS = 10
+
+ACCRUING = "ACCRUING"
+NOT_APPLICABLE = "NOT_APPLICABLE"
+UNAVAILABLE = "UNAVAILABLE"
+STALE = "STALE"
+PARTIAL = "PARTIAL"
+
+FAMILIES = ("h3_ah_discount", "x1_atwin_momentum")
+FAMILY_FIELDS = tuple(
+    field for family in FAMILIES
+    for field in (f"{family}_status", f"{family}_value")
+)
+
+def _pair_map(
+    pair_rows: Iterable[Mapping[str, Any]] | Mapping[str, str] | None,
+) -> dict[str, str] | None:
+    if pair_rows is None:
+        return None
+    if isinstance(pair_rows, Mapping):
+        return {
+            str(h): str(a) for h, a in pair_rows.items()
+            if h not in (None, "") and a not in (None, "")
+        }
+    out: dict[str, str] = {}
+    for row in pair_rows:
+        if not isinstance(row, Mapping):
+            continue
+        h, a = row.get("h"), row.get("a")
+        if h not in (None, "") and a not in (None, ""):
+            out[str(h)] = str(a)
+    return out
+
+
+def _asof_series(series: pd.Series | None, asof: pd.Timestamp | None) -> pd.Series:
+    if series is None or asof is None:
+        return pd.Series(dtype=float)
+    s = pd.to_numeric(series, errors="coerce").copy()
+    s.index = pd.to_datetime(s.index, errors="coerce")
+    s = s[~s.index.isna()].sort_index()
+    return s.loc[s.index <= asof].dropna()
+
+
+def _is_stale(series: pd.Series, asof: pd.Timestamp) -> bool:
+    if series.empty:
+        return False
+    last = pd.Timestamp(series.index[-1]).normalize()
+    return (asof.normalize() - last).days > MAX_INPUT_LAG_DAYS
+
+def _h3_read(series: pd.Series, asof: pd.Timestamp) -> tuple[str, float | None]:
+    s = _asof_series(series, asof)
+    if s.empty:
+        return UNAVAILABLE, None
+    window = s.tail(OWN_WIN)
+    if len(window) < OWN_MIN:
+        return PARTIAL, None
+    last = float(window.iloc[-1])
+    value = float((window < last).sum() / len(window))
+    return (STALE if _is_stale(s, asof) else ACCRUING), value
+
+
+def _x1_read(series: pd.Series, asof: pd.Timestamp) -> tuple[str, float | None]:
+    s = _asof_series(series, asof)
+    if s.empty:
+        return UNAVAILABLE, None
+    returns = (s / s.shift(X1_LOOKBACK) - 1.0).dropna().tail(OWN_WIN)
+    if len(returns) < OWN_MIN:
+        return PARTIAL, None
+    sd = float(returns.std(ddof=1))
+    if not np.isfinite(sd) or sd <= 0:
+        return PARTIAL, None
+    value = float((float(returns.iloc[-1]) - float(returns.mean())) / sd)
+    return (STALE if _is_stale(s, asof) else ACCRUING), value
+
+
+def unavailable_family_evidence(tickers: Iterable[str]) -> dict[str, dict[str, Any]]:
+    """Fail-soft family projection when applicability/source reads are unknown."""
+    return {
+        str(t): {
+            "h3_ah_discount_status": UNAVAILABLE,
+            "h3_ah_discount_value": None,
+            "x1_atwin_momentum_status": UNAVAILABLE,
+            "x1_atwin_momentum_value": None,
+        }
+        for t in tickers
+    }
+
+def build_family_evidence(
+    tickers: Iterable[str],
+    *,
+    asof: str | pd.Timestamp | None,
+    pair_rows: Iterable[Mapping[str, Any]] | Mapping[str, str] | None,
+    premium_panel: pd.DataFrame | None,
+    a_closes: pd.DataFrame | None,
+) -> dict[str, dict[str, Any]]:
+    """Project frozen H3/X1 reads onto existing HK discovery candidates.
+
+    H3 is the current A/H premium percentile inside its trailing 504
+    observations (min 252). X1(b) is the A twin's trailing 21-session return
+    standardized inside its own trailing 504 return observations (min 252,
+    sample SD). Both inputs are cut at asof before any statistic is formed.
+    """
+    names = [str(t) for t in tickers if t not in (None, "")]
+    pairs = _pair_map(pair_rows)
+    try:
+        asof_ts = pd.Timestamp(asof).normalize() if asof is not None else None
+    except (TypeError, ValueError):
+        asof_ts = None
+    if pairs is None or asof_ts is None:
+        return unavailable_family_evidence(names)
+
+    premium = premium_panel if isinstance(premium_panel, pd.DataFrame) else None
+    a_panel = a_closes if isinstance(a_closes, pd.DataFrame) else None
+    out: dict[str, dict[str, Any]] = {}
+
+    for ticker in names:
+        twin = pairs.get(ticker)
+        if twin is None:
+            out[ticker] = {
+                "h3_ah_discount_status": NOT_APPLICABLE,
+                "h3_ah_discount_value": None,
+                "x1_atwin_momentum_status": NOT_APPLICABLE,
+                "x1_atwin_momentum_value": None,
+            }
+            continue
+
+        if premium is None or ticker not in premium.columns:
+            h3_status, h3_value = UNAVAILABLE, None
+        else:
+            h3_status, h3_value = _h3_read(premium[ticker], asof_ts)
+
+        if a_panel is None or twin not in a_panel.columns:
+            x1_status, x1_value = UNAVAILABLE, None
+        else:
+            x1_status, x1_value = _x1_read(a_panel[twin], asof_ts)
+
+        out[ticker] = {
+            "h3_ah_discount_status": h3_status,
+            "h3_ah_discount_value": h3_value,
+            "x1_atwin_momentum_status": x1_status,
+            "x1_atwin_momentum_value": x1_value,
+        }
+    return out

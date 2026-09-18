@@ -18,6 +18,8 @@ import re
 import sys
 from pathlib import Path
 
+import numpy as np
+import pandas as pd
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,6 +29,7 @@ if str(ROOT) not in sys.path:
 from engine import board_shadow as bs  # noqa: E402
 from engine import hk_board_rank as hbr  # noqa: E402
 from engine import hk_discovery_challenger as hkdc  # noqa: E402
+from engine import hk_native_intelligence as hki  # noqa: E402
 from lib import config  # noqa: E402
 
 
@@ -619,3 +622,151 @@ def test_no_bare_session_date_literal_reintroduces_the_time_bomb():
         f"bare session-date literal(s) {sorted(literals - {'2020-01-01'})} will age out of "
         "SETTLE_WINDOW_DAYS and red board-shadow-substrate on a date rollover -- use ASOF"
     )
+
+
+# ---------------------------------------------------------------------------
+# K-NI1..K-NI4 — HK-NATIVE-INTEL Wave 6 (H3/X1 shadow families)
+# ---------------------------------------------------------------------------
+def _ni_prices(n: int = 420, drift: float = 0.001) -> pd.Series:
+    idx = pd.bdate_range(end=pd.Timestamp.today().normalize(), periods=n)
+    steps = 1.0 + drift + np.linspace(-0.003, 0.004, n)
+    return pd.Series(100.0 * np.cumprod(steps), index=idx)
+
+
+def _ni_premium(n: int = 420) -> pd.Series:
+    idx = pd.bdate_range(end=pd.Timestamp.today().normalize(), periods=n)
+    vals = np.linspace(0.10, 0.55, n) + 0.03 * np.sin(np.arange(n) / 9)
+    return pd.Series(vals, index=idx)
+
+
+def _ni_pairs():
+    return [{"h": "0939.HK", "a": "601939.SS"}]
+
+
+def test_k_ni1_h3_x1_match_frozen_formulas_and_preserve_null_semantics():
+    prem, a = _ni_premium(), _ni_prices()
+    asof = str(min(prem.index[-1], a.index[-1]).date())
+    rows = hki.build_family_evidence(
+        ["0939.HK", "0005.HK"], asof=asof, pair_rows=_ni_pairs(),
+        premium_panel=pd.DataFrame({"0939.HK": prem}),
+        a_closes=pd.DataFrame({"601939.SS": a}),
+    )
+    got = rows["0939.HK"]
+    p = prem.loc[:asof].dropna().tail(hki.OWN_WIN)
+    expected_h3 = float((p < p.iloc[-1]).sum() / len(p))
+    r = (a / a.shift(hki.X1_LOOKBACK) - 1.0).loc[:asof].dropna().tail(hki.OWN_WIN)
+    expected_x1 = float((r.iloc[-1] - r.mean()) / r.std(ddof=1))
+    assert got["h3_ah_discount_status"] == hki.ACCRUING
+    assert got["x1_atwin_momentum_status"] == hki.ACCRUING
+    assert got["h3_ah_discount_value"] == pytest.approx(expected_h3)
+    assert got["x1_atwin_momentum_value"] == pytest.approx(expected_x1)
+    assert rows["0005.HK"]["h3_ah_discount_status"] == hki.NOT_APPLICABLE
+    assert rows["0005.HK"]["x1_atwin_momentum_status"] == hki.NOT_APPLICABLE
+
+    short = _ni_prices(100)
+    partial = hki.build_family_evidence(
+        ["0939.HK"], asof=str(short.index[-1].date()), pair_rows=_ni_pairs(),
+        premium_panel=pd.DataFrame({"0939.HK": _ni_premium(100)}),
+        a_closes=pd.DataFrame({"601939.SS": short}),
+    )["0939.HK"]
+    assert partial["h3_ah_discount_status"] == hki.PARTIAL
+    assert partial["x1_atwin_momentum_status"] == hki.PARTIAL
+
+
+def test_k_ni2_future_rows_cannot_change_asof_family_values():
+    prem, a = _ni_premium(), _ni_prices()
+    cut = prem.index[-20]
+    base = hki.build_family_evidence(
+        ["0939.HK"], asof=str(cut.date()), pair_rows=_ni_pairs(),
+        premium_panel=pd.DataFrame({"0939.HK": prem}),
+        a_closes=pd.DataFrame({"601939.SS": a}),
+    )["0939.HK"]
+    prem2, a2 = prem.copy(), a.copy()
+    prem2.loc[prem2.index > cut] = 100.0
+    a2.loc[a2.index > cut] = a2.loc[a2.index > cut] * 10.0
+    changed = hki.build_family_evidence(
+        ["0939.HK"], asof=str(cut.date()), pair_rows=_ni_pairs(),
+        premium_panel=pd.DataFrame({"0939.HK": prem2}),
+        a_closes=pd.DataFrame({"601939.SS": a2}),
+    )["0939.HK"]
+    assert changed == base
+
+
+def test_k_ni3_native_families_do_not_originate_or_upgrade_availability():
+    native = {"0939.HK": {
+        "h3_ah_discount_status": hki.ACCRUING,
+        "h3_ah_discount_value": 0.91,
+        "x1_atwin_momentum_status": hki.ACCRUING,
+        "x1_atwin_momentum_value": 1.25,
+    }}
+    evidence = {
+        "washout_2w": {"0939.HK": True},
+        "sig_verdict": {"0939.HK": _verdict(eligible=False)},
+        "native_families": native,
+    }
+    row = hkdc.build_candidates(evidence, ASOF)[0]
+    assert row["candidate_origin"] == "washout_reclaim"
+    assert row["availability_status"] == hkdc.WAIT_CONFLUENCE
+    for family in hki.FAMILIES:
+        assert row[f"{family}_status"] == native["0939.HK"][f"{family}_status"]
+        assert row[f"{family}_value"] == native["0939.HK"][f"{family}_value"]
+
+
+def test_k_ni4_registered_family_fields_persist_shadow_only(monkeypatch):
+    _hk_on(monkeypatch)
+    raw = {
+        "session_date": ASOF,
+        "security_ref_raw": "0939.HK",
+        "candidate_origin": "ah_dislocation",
+        "availability_status": hkdc.WAIT_CONFLUENCE,
+        "availability_source": "hk_signal_gate",
+        "h3_ah_discount_status": hki.ACCRUING,
+        "h3_ah_discount_value": 0.88,
+        "x1_atwin_momentum_status": hki.PARTIAL,
+        "x1_atwin_momentum_value": None,
+    }
+    bs.register_challenger("HK", "hk_native_family_test", discovery_fn=lambda _asof: [raw])
+    receipt = bs.write_shadow([], market="HK", asof=ASOF)
+    assert receipt["written"] == 1
+    stored = pd.read_parquet(bs._lane_b_path("HK"))
+    row = stored.iloc[0]
+    assert row["h3_ah_discount_status"] == hki.ACCRUING
+    assert row["h3_ah_discount_value"] == pytest.approx(0.88)
+    assert row["x1_atwin_momentum_status"] == hki.PARTIAL
+    assert pd.isna(row["x1_atwin_momentum_value"])
+    assert bool(row["visible_to_user"]) is False
+    assert bool(row["published_authority"]) is False
+
+
+def test_k_ni5_builder_wires_families_after_publication_before_registration():
+    source = (ROOT / "scripts/build_hk_library.py").read_text()
+    persist = source.index('(fdir / "hk_standouts.json").write_text(')
+    produce = source.index("hk_native_intelligence.build_family_evidence")
+    bundle = source.index('"native_families":')
+    register = source.index('board_shadow.register_challenger(')
+    assert persist < produce < bundle < register
+
+
+def test_k_ni6_unavailable_stale_and_zero_are_not_collapsed():
+    fresh, prem = _ni_prices(), _ni_premium()
+    last_asof = str(fresh.index[-1].date())
+    unavailable = hki.build_family_evidence(
+        ["0939.HK"], asof=last_asof, pair_rows=_ni_pairs(),
+        premium_panel=None, a_closes=None,
+    )["0939.HK"]
+    assert unavailable["h3_ah_discount_status"] == hki.UNAVAILABLE
+    assert unavailable["x1_atwin_momentum_status"] == hki.UNAVAILABLE
+
+    stale_asof = str((
+        fresh.index[-1] + pd.Timedelta(days=hki.MAX_INPUT_LAG_DAYS + 5)
+    ).date())
+    stale = hki.build_family_evidence(
+        ["0939.HK"], asof=stale_asof, pair_rows=_ni_pairs(),
+        premium_panel=pd.DataFrame({"0939.HK": prem}),
+        a_closes=pd.DataFrame({"601939.SS": fresh}),
+    )["0939.HK"]
+    assert stale["h3_ah_discount_status"] == hki.STALE
+    assert stale["x1_atwin_momentum_status"] == hki.STALE
+    assert stale["h3_ah_discount_value"] is not None
+    assert stale["x1_atwin_momentum_value"] is not None
+    assert tuple(bs.FAMILY_REGISTRY) == tuple(hki.FAMILIES)

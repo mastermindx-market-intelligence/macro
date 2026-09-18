@@ -87,8 +87,9 @@ _LANE_A_KEY = ("date", "ticker", "challenger_definition")
 #: Lane B evidence families are REGISTERED, not free-form (contract §1): a
 #: family contributes exactly ``<family>_status`` + ``<family>_value``, and
 #: registering one is a reviewed code change to this tuple (which regenerates
-#: _schema_b()). EMPTY at merge — no family exists yet.
-FAMILY_REGISTRY: tuple[str, ...] = ()
+#: schema_b()). H3/X1 are the first registered HK research families; both remain
+#: zero-authority and additive to the shared Lane-B schema.
+FAMILY_REGISTRY: tuple[str, ...] = ("h3_ah_discount", "x1_atwin_momentum")
 
 _FIXED_SCHEMA_B_HEAD = (
     "session_date", "market",

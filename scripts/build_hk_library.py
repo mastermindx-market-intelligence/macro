@@ -2133,7 +2133,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
     # never depend on the published board it exists to audit independently
     # of (K-D9 publication-isolation).
     try:
-        from engine import board_shadow, hk_discovery_challenger
+        from engine import board_shadow, hk_discovery_challenger, hk_native_intelligence
 
         # HK-DISCOVERY EVIDENCE ASSEMBLY START (build commission R3/K-D9
         # structural pin: this token must sit strictly between the
@@ -2159,6 +2159,31 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                 flush=True,
             )
 
+        # HK-NATIVE-INTEL Wave 6: attach H3/X1 evidence to the existing
+        # zero-authority discovery rows. These reads cannot originate a
+        # candidate, change availability, alter the published board, or reach
+        # HK Brain.
+        _hk_native_family_rows: dict = {}
+        _native_tickers = [str(e.get("ticker")) for e in enriched if e.get("ticker")]
+        try:
+            _hk_native_family_rows = hk_native_intelligence.build_family_evidence(
+                _native_tickers,
+                asof=as_of,
+                pair_rows=(hk_ah._panel_pairs() or None),
+                premium_panel=hk_ah.panel_pair_premiums(),
+                a_closes=store.read("china_search", "closes"),
+            )
+        except Exception as _native_ex:
+            print(
+                "::warning title=hk-native-intel-unavailable::H3/X1 family projection "
+                f"failed ({_native_ex}) — discovery continues with explicit UNAVAILABLE "
+                "family states",
+                flush=True,
+            )
+            _hk_native_family_rows = hk_native_intelligence.unavailable_family_evidence(
+                _native_tickers
+            )
+
         # R5/F5: ripening_tickers enters the bundle as a SORTED list, never
         # the raw set above — set iteration order is not stable across
         # process runs (hash randomisation), and build_candidates()
@@ -2172,6 +2197,7 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
             "dir_by_ticker": {e.get("ticker"): e.get("dir") for e in enriched if e.get("ticker")},
             "southbound": southbound,
             "ah_value": ah_value,
+            "native_families": _hk_native_family_rows,
             "knife_risk": {e.get("ticker"): bool(e.get("knife_risk"))
                           for e in enriched if e.get("ticker")},
             # R4/F4: knife_available is True iff the falling-knife pass
