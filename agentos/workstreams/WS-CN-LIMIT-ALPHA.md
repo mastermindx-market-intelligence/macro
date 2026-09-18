@@ -181,6 +181,20 @@ waves:
     status: todo
     depends_on: [R6-0]
     next_action: >-
+      CURRENT 2026-09-12 / SOL RECOVERY: the separate technical-readiness
+      promotion is now justified and executing. Post-#6513 exact-head workflow
+      run 33043190487 (head 23007eea2f2b, 2018-01-02) completed on the real
+      self-hosted store with mode=canary, 6 requests, zero failures and
+      stage=complete. The range-shard implementation and adversarial suite have
+      no commits after accepted PR #5523 and the suite remains wired into the
+      current full-A collector CI step. Per DEC:CNLI-NAMECHANGE-IS-ITS-OWN-SOURCE-AUTHORITY,
+      those receipts justify the separate BULK_HISTORICAL_BACKFILL_READY
+      promotion; they do NOT close DEP-EXACT. After the reviewed promotion lands,
+      run one bounded mode=backfill on a cap-triggering recent session as the
+      first real range-shard production proof, then continue the resumable full-A
+      campaign to the sanitized completeness manifest. DEP-ID-ELIG and all I1*
+      algorithm work remain blocked until DEP-EXACT genuinely closes. Historical
+      execution record follows.
       TECHNICAL_CANARY_REQUIRED (reclassified 2026-08-21 under the Chairman
       override DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE).
       TuShare licensing/compliance is CHAIRMAN_VERIFIED_PRIVATE / SATISFIED:
@@ -480,19 +494,19 @@ artifacts:
   - research/cn_limit/CN_LIMIT_R6_EXECUTIVE_HANDOFF_INDEX_2026-08-19.md
   - research/cn_limit/CN_LIMIT_R6_ARTIFACT_MANIFEST_2026-08-19.json
 next_action: >-
-  Execution owner is Fable COO under DEC:CNLI-FABLE-COO-AUTONOMOUS-EXECUTION
-  (Chairman delegation 2026-08-25; Sol retains product thesis, architecture,
-  evaluation law and final milestone acceptance; A5 stays Sol/Chairman).
-  R6-0, P0-ST and DEP-CAI are done with production receipts. This PR (#6207)
-  lands the Chairman TuShare compliance override reconciled onto current main.
-  Next: execute DEP-EXACT per its row — dispatch tushare-spine-backfill
-  mode=plan, then ONE bounded mode=canary, then a separate reviewed technical
-  flip of BULK_HISTORICAL_BACKFILL_READY on canary evidence, then the resumable
-  full-A range campaign and the sanitized completeness manifest. After
-  DEP-EXACT: DEP-ID-ELIG, then I1A-T1..T4 / I1B / M2-R4-BATTERY / I1C-G6 / I2A
-  per the frozen R6 wave graph. Milestone bundles return to Sol per
-  agentos/handoffs/CN-LIMIT-ALPHA-2026-08-25-fable-coo-program.md. No live
-  rank, score, gate, size, or public probability is authorized by any R6
+  CURRENT 2026-09-12: highest-leverage critical path is DEP-EXACT. Sol recovered
+  post-#6513 exact-head production receipt 33043190487: real self-hosted canary,
+  2018-01-02, 6 requests, zero failures, stage=complete. The accepted #5523
+  range-shard implementation/adversarial suite is unchanged and still CI-wired,
+  so the separate technical readiness promotion is justified under Sol 10B.
+  After that reviewed promotion lands, execute ONE bounded mode=backfill on a
+  recent cap-triggering session as range-shard production proof; then drive the
+  resumable full-A campaign to the sanitized completeness manifest. Only after
+  DEP-EXACT closes: DEP-ID-ELIG, then I1A-T1..T4 / I1B / M2-R4-BATTERY / I1C-G6
+  / I2A per the frozen R6 wave graph. Fable COO remains the standing execution
+  owner under DEC:CNLI-FABLE-COO-AUTONOMOUS-EXECUTION; this Chairman-directed Sol
+  continuation supplies the bounded readiness adjudication/fix and final review.
+  No live rank, score, gate, size, or public probability is authorized by any R6
   record.
 ---
 
