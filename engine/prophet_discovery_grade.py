@@ -31,6 +31,7 @@ NO_FILL = "NO_FILL"
 _IDENTITY = list(KEY)
 _BASE = [
     *_IDENTITY,
+    "candidate_origin", "availability_status", "availability_source",
     "outcome_state", "fill_date", "fill_offset", "entry_price",
     "suspended", "benchmark_available", "survivorship",
     "terminal_state_clean8_21", "terminal_state_clean15_126",
@@ -63,6 +64,9 @@ def _base_row(row: pd.Series, market: str) -> dict[str, Any]:
         "security_ref": str(row["security_ref"]),
         "security_ref_raw": str(row["security_ref_raw"]),
         "challenger_definition": str(row["challenger_definition"]),
+        "candidate_origin": row.get("candidate_origin"),
+        "availability_status": row.get("availability_status"),
+        "availability_source": row.get("availability_source"),
         "outcome_state": None,
         "fill_date": None,
         "fill_offset": None,
@@ -232,13 +236,8 @@ def _terminal_summary(frame: pd.DataFrame, column: str) -> dict[str, Any]:
     }
 
 
-def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
-    """Machine summary of only metrics with canonical definitions.
-
-    This deliberately does NOT define eventual-winner recall, first-surface
-    lead time, catastrophic loss, or top-K regret. Those require separately
-    frozen denominators under the HK/Canada revamp evaluation contract.
-    """
+def _summary_core(frame: pd.DataFrame) -> dict[str, Any]:
+    """Canonical measured metrics for one observation cohort."""
     n = int(len(frame))
     states = (
         frame["outcome_state"].fillna("UNKNOWN").astype(str)
@@ -273,6 +272,40 @@ def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
             ),
         },
     }
+
+
+def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
+    """Measured discovery quality, including descriptive source strata.
+
+    Origin-token cohorts overlap by construction and are NEVER a rank/promotion
+    plane. Undefined winner/first-surface/catastrophic denominators remain absent.
+    """
+    summary = _summary_core(frame)
+    by_availability: dict[str, dict[str, Any]] = {}
+    if "availability_status" in frame.columns:
+        labels = frame["availability_status"].fillna("UNKNOWN").astype(str)
+        for label in sorted(labels.unique()):
+            by_availability[label] = _summary_core(frame[labels == label])
+
+    by_origin_token: dict[str, dict[str, Any]] = {}
+    if "candidate_origin" in frame.columns:
+        origins = frame["candidate_origin"].fillna("").astype(str)
+        tokens = sorted({
+            token
+            for origin in origins
+            for token in origin.split("+")
+            if token
+        })
+        for token in tokens:
+            mask = origins.map(lambda raw: token in raw.split("+"))
+            by_origin_token[token] = _summary_core(frame[mask])
+
+    summary.update({
+        "cohort_semantics": "overlapping_descriptive_only",
+        "by_availability": by_availability,
+        "by_origin_token": by_origin_token,
+    })
+    return summary
 
 
 def grade_market(market: str) -> dict[str, Any]:

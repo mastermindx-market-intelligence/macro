@@ -421,3 +421,74 @@ def test_prophet_discovery_grade_market_receipt_includes_candidate_summary(tmp_p
     assert receipt["candidate_metrics"]["n_observations"] == 1
     assert receipt["candidate_metrics"]["horizons"]["21d"]["n_matured"] == 1
     assert receipt["candidate_metrics"]["terminal_states"]["clean8_21"]["n_matured"] == 1
+
+
+def test_prophet_discovery_outcome_preserves_discovery_reason_and_availability(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+
+    close = _trend(180)
+    sig = str(close.index[5].date())
+    discovery = _discovery_rows("0005.HK", session_date=sig)
+    discovery["candidate_origin"] = "washout_reclaim+hk_native_onset(southbound)"
+    discovery["availability_status"] = "WAIT_CONFLUENCE"
+    discovery["availability_source"] = "hk_signal_gate"
+
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    row = pdg.grade_frame("HK", discovery).iloc[0]
+    assert row["candidate_origin"] == "washout_reclaim+hk_native_onset(southbound)"
+    assert row["availability_status"] == "WAIT_CONFLUENCE"
+    assert row["availability_source"] == "hk_signal_gate"
+
+
+def test_prophet_discovery_summary_stratifies_origin_tokens_and_availability():
+    from engine import prophet_discovery_grade as pdg
+
+    frame = pd.DataFrame([
+        {
+            "outcome_state": pdg.MATURED,
+            "candidate_origin": "washout_reclaim+hk_native_onset(southbound)",
+            "availability_status": "WAIT_CONFLUENCE",
+            "fwd_mfe_5": 0.06, "fwd_mdd_5": -0.01, "excess_ret_5": 0.03,
+            "terminal_state_clean8_21": None, "terminal_state_clean15_126": None,
+        },
+        {
+            "outcome_state": pdg.MATURED,
+            "candidate_origin": "hk_native_onset(southbound)",
+            "availability_status": "ENTRY_OPEN",
+            "fwd_mfe_5": 0.04, "fwd_mdd_5": -0.02, "excess_ret_5": 0.01,
+            "terminal_state_clean8_21": None, "terminal_state_clean15_126": None,
+        },
+        {
+            "outcome_state": pdg.ACCRUING,
+            "candidate_origin": "ripening",
+            "availability_status": "WAIT_PULLBACK",
+            "fwd_mfe_5": None, "fwd_mdd_5": None, "excess_ret_5": None,
+            "terminal_state_clean8_21": None, "terminal_state_clean15_126": None,
+        },
+    ])
+
+    summary = pdg.summarize_outcomes(frame)
+    native = summary["by_origin_token"]["hk_native_onset(southbound)"]
+    assert native["n_observations"] == 2
+    assert native["horizons"]["5d"]["n_matured"] == 2
+    assert native["horizons"]["5d"]["mfe_median"] == pytest.approx(0.05)
+    assert native["horizons"]["5d"]["excess_ret_median"] == pytest.approx(0.02)
+
+    wash = summary["by_origin_token"]["washout_reclaim"]
+    assert wash["n_observations"] == 1
+    assert wash["horizons"]["5d"]["mfe_median"] == pytest.approx(0.06)
+
+    entry = summary["by_availability"]["ENTRY_OPEN"]
+    assert entry["n_observations"] == 1
+    assert entry["horizons"]["5d"]["excess_ret_median"] == pytest.approx(0.01)
+
+    wait = summary["by_availability"]["WAIT_CONFLUENCE"]
+    assert wait["n_observations"] == 1
+    assert wait["horizons"]["5d"]["excess_ret_median"] == pytest.approx(0.03)
+
+    # Token cohorts overlap by design; they are descriptive evidence, never a
+    # partition whose counts may be summed or a hidden promotion/ranking rule.
+    assert summary["cohort_semantics"] == "overlapping_descriptive_only"
