@@ -1,7 +1,7 @@
 {
   "schema": "mastermind.china_gold_premium_visual_checks.v1",
-  "semantic_head": "cddde2c93bf603b245478dc8174615067fd05e25",
-  "capture": "actual commodities.html.j2 fixture; panel crop; exact feature-base overflow comparison",
+  "semantic_head": "47bc4b192b68b504804e99e9cb894335639edf8e",
+  "capture": "actual commodities.html.j2 fixture; panel crop; pickup-base overflow comparison",
   "known_dependency": "Macro #7198 owns inherited commodity-page mobile overflow; this feature may not worsen it.",
   "checks": [
     {
