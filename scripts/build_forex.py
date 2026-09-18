@@ -655,7 +655,14 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
     else:
         headline_en, headline_zh = "Dollar mixed", "美元分化"
 
-    # plain sentence (≤14 words) from direction + top-2 headwind + top-1 tailwind
+    # plain sentence (≤14 words). Ripple-table contract
+    # (templates/forex.html.j2:473/:494/:495), column "If USD rises":
+    #   headwind_for → "Leaning on it" / 压制中
+    #   tailwind_for → "Giving it a lift" / 提振中
+    # Correlation is linear and symmetric, so a falling dollar inverts the verbs:
+    #   USD firm: leans on headwind_for, lifts tailwind_for
+    #   USD soft: lifts headwind_for, leans on tailwind_for
+    # Quiet only when direction is mixed/flat or both lists are empty.
     hw = headwind_for or []
     tw = tailwind_for or []
     hw_names = [_PLAIN_ASSET_EN.get(k, k) for k in hw[:2]]
@@ -668,16 +675,25 @@ def _stance(dollar_dir: str | None, active_scenarios: list[str],
                       else "mixed"))
     dir_word_zh = "走强" if dir_word == "firm" else ("偏软" if dir_word == "soft" else "走势分化")
 
-    if hw_names and dir_word != "mixed":
-        parts = " and ".join(hw_names)
-        sentence_en = f"A {dir_word} dollar is leaning on {parts}."
-        parts_zh = "与".join(hw_names_zh)
-        sentence_zh = f"美元{dir_word_zh}，正压制{parts_zh}。"
-    elif tw_names and dir_word != "mixed":
-        parts = tw_names[0]
-        sentence_en = f"A {dir_word} dollar is giving {parts} a lift."
-        parts_zh = tw_names_zh[0] if tw_names_zh else ""
-        sentence_zh = f"美元{dir_word_zh}，正提振{parts_zh}。"
+    if dir_word == "firm":
+        lean_en, lean_zh = hw_names, hw_names_zh
+        lift_en, lift_zh = tw_names, tw_names_zh
+    elif dir_word == "soft":
+        lean_en, lean_zh = tw_names, tw_names_zh
+        lift_en, lift_zh = hw_names, hw_names_zh
+    else:
+        lean_en, lean_zh, lift_en, lift_zh = [], [], [], []
+
+    # Firm prefers lean (existing, both-lists tape). Soft prefers lift so a
+    # typical inverse-only tape is not a false "quiet" beside "Dollar soft".
+    use_lift = bool(lift_en) and (dir_word == "soft" or not lean_en)
+    use_lean = bool(lean_en) and not use_lift
+    if use_lift:
+        sentence_en = f"A {dir_word} dollar is giving {' and '.join(lift_en)} a lift."
+        sentence_zh = f"美元{dir_word_zh}，正提振{'与'.join(lift_zh)}。"
+    elif use_lean:
+        sentence_en = f"A {dir_word} dollar is leaning on {' and '.join(lean_en)}."
+        sentence_zh = f"美元{dir_word_zh}，正压制{'与'.join(lean_zh)}。"
     else:
         sentence_en = "The dollar is quiet today."
         sentence_zh = "美元今日平静。"
