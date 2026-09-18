@@ -1,59 +1,145 @@
 # Research Vault institutional intelligence — continuation
 
-**R21: records-only frontier reconciliation. Parent customer upgrade remains SPEC_ONLY / unaccepted. R20 ordered-report leaf remains BUILT_NOT_PROVEN in draft #7258.** No new application code, test pass, real-source answer, customer measurement, release, or production proof was delivered in R21. Immediate product lanes checked in this session are blocked; that is not mission completion.
+**R22: architecture/capacity convergence. Parent customer upgrade remains SPEC_ONLY / unaccepted. R20 ordered-report leaf remains BUILT_NOT_PROVEN in draft #7258.** R22 adds no application code, subscription, vendor action, customer proof, model benchmark, or production source mutation. It does establish the canonical semantic architecture and current capacity evidence so future sessions stop designing a parallel intelligence plane.
 
-## Mission, authority and journey
+## Mission and authority
 
-Make permitted institutional evidence useful for company/Prophet explanations, Mastermind AI, private briefs and original editorial. The first user journey is a company question -> existing discovery -> source-bound single-debit reader -> useful synthesized answer -> inspection of the matching original. The user should not have to choose the PDF first. Explain changes, financial meaning, competing assumptions and uncertainty. Source-stated/extracted/verified/calculated/assumed remain distinct. Research gains no signal/rank/sizing/execution authority.
+Make permitted institutional evidence useful for company/Prophet explanations, Mastermind AI, private briefs and original editorial. First user journey remains: company question -> existing discovery -> source-bound single-debit reader -> useful synthesized answer -> matching original inspection. User need not know the PDF first. Explain what changed, its financial meaning, competing assumptions, uncertainty, and next evidence. Source-stated/extracted/verified/calculated/assumed remain separate. Research gains no signal/rank/sizing/execution authority.
 
-Present Chairman continuation supplies original-scope intent. R21 protected procedure: Mastermind@61a2ff79aba4e8a5685e779707ad5c4426cf5cc5, compatible Skillpack 1.0.1/bootstrap1, with INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/RECONCILE_STATE/REVIEW_RETURN/CLOSEOUT read at one pin. Re-pin on continuation. Executive OS owns admission/lifecycle; Agent OS continuity; GitHub implementation/evidence; Slack transport. Existing source/corpus/identity/auth/allowance/publication/analytics/financial-calculation owners remain unchanged. Principal reconciliation is not a Job or delegated worker.
+Present Chairman continuation supplies original-scope intent. R22 procedure pin: Mastermind@61a2ff79aba4e8a5685e779707ad5c4426cf5cc5, Skillpack1.0.1/bootstrap1; INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/RECONCILE_STATE/REVIEW_RETURN/CLOSEOUT consumed at one pin. Re-pin on continuation. Executive OS owns lifecycle/admission; Agent OS continuity; GitHub implementation/evidence; Slack transport. Existing Vault, Research Intelligence, Brain, identity, auth/allowance, publication, analytics and financial-calculation owners remain authoritative.
 
-## Carrier, last effects and durable refs
+Parent carrier: draft #7182 / sol/research-vault-intelligence-design-r2-20260915. R22 began at dda6465fdcf8ff1f2927d03cbbe48de04c1d24e3. New canonical report: research/research_vault_expectations_r3/CHUNK22_RIO_CONSOLIDATION_AND_CAPACITY_TARGET.md, introduced at349a7b73b04bcf049810d5684d28b50942ceda02. Machine receipt: r22/verification_r22.json, introduced atab44db16cd0e4602f67c2ec222f4c91b7e138c05. No dependency branch/source ownership transfer.
 
-Parent is #7182 / sol/research-vault-intelligence-design-r2-20260915. R21 starts from freshly read bd1064b9c45674b6ccf42bdcc83546cfe379af63, tree 4f9ccd2ebb06fd89940bac1752db224bf65003a8. This existing handoff is the sole repository change for R21; no additional research artifact or duplicate source implementation is required. No dependency branch, application source, structured workstream state or generated governance projection is changed.
+## R22 executive ruling — one semantic organism
 
-R20 exact implementation remains #7258@9872bbe611a3a2ce532f03e28ab15735371f38ef, tree803fc3cb4e46b220bcee555781bd0772a691fbb4, tested parent983625f5336ad6d6a581cbfe1e81536166deadc1. Only scripts/activation_funnel_report.py and tests/test_activation_funnel_report.py. Tested/readback blobs: d6194e95b5cf3e6f03f1a32e01c4a791e0010065 / b0fae0b37dcfd528afa8a42b2d316cfa93b54783. Open/draft/unmerged at R21 inspection.
+Do NOT build the parallel claim graph / longitudinal-research store contemplated in early #7182 drafts.
 
-Historical R20 proof is in CHUNK20_ORDERED_USE_IMPLEMENTATION.md and r20/verification_r20.json at bd1064b9c45674b6ccf42bdcc83546cfe379af63. Forty-one tests (8 retained +33 new),200 default-output comparisons,six direct mutations,150 generated cases inside one oracle test, and package replay are retained evidence, not R21 reruns or customer observations. The earlier timed-out subprocess challenge is not passing evidence.
+Canonical path is:
 
-## R20 measurement contract — preserved
+Research Vault source/body
+-> W1 Research Intelligence Object (RIO), merged #7101
+-> W2 immutable/versioned private RIO in existing strict Vault store, #7230
+-> W3 existing Brain/Research Vault report consumer after #7230 + #7079
+-> existing Prophet/company/private-portfolio/editorial consumers under their own gates.
 
-Actual CLI --ordered emits activation_funnel_report.ordered.v2 with supported ordered prefixes beside independent stage activity. Default v1 JSON/Markdown is unchanged; no dashboard adoption is assumed. Unit is recorded(site,session_id), not people, stitched visits or a shared missing-session bucket. Any admitted row with a valid session supplies presence, not a separately verified visit event.
+Any institutional expectation, revision, source-independence, company-association or longitudinal-belief capability extends/projects this organism and existing identity/source owners. No second RAG truth store, graph authority, search service, queue, source archive, entitlement mirror, correction plane, chatbot or lifecycle.
 
-Explicit-timezone client_ts and strictly increasing stage times supply order; no arrival/file/UUID inference. Missing/malformed/naive/tied times do not prove progression or human nonaction. Later repetitions may complete a valid subsequence. Post-cutoff occurrences do not complete it. Older occurrences received inside the ingestion window remain older, not newly occurring conversion. Saved symbol_count requires an actual integer>=3 in ordered mode. Existing exclusions/cutoffs stay first; missing denominators stay null; raw identifiers are not projected; input rows are unchanged. No causal/payment/retention claim.
+W1 merged #7101 / merge0859610dd27e032eba3a34f515cf239110aa35f8. It already owns grounded source claims, numbers, entities, horizons and descriptive synthesis: thesis, assumptions, forecasts, catalysts, falsifiers, counterarguments, implications, belief_delta, consensus_relation and uncertainties. Authority remains descriptive_research_only.
 
-## Current release frontier — material corrections
+W2 current #7230 actual head at R22 investigation: fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2. It already owns immutable content-addressed artifacts, strict existing-store CAS latest pointer, source-body/prompt/model receipts, replay/idempotency, explicit predecessor corrections, historical versions, conflicts/effect-unknown reconciliation, private versus rights-safe projections. Do not recreate any of those.
 
-**Shared repair #7287 -> reader #7079 is now the primary release sequence.**
+W3 already has an incumbent exact design in #7079 comment5720608418: start only after #7230 and #7079 merge; reuse the existing store/corpus/Brain path; join by report ID; compare W2 analyzed-body hash to the current stored-body hash; perform lookup after existing identity/catalog/quota gates; generic mode gets only rights-safe summary; evidence mode still requires literal source-bound evidence; no new store/cache/index/identity/entitlement/retry plane. Preserve that.
 
-#7079 remains open/draft/unmerged at8271ae320732997be4553957e3e2773d1b9e9f1b. Incumbent comment5720313658 identifies run35056156631 attempt2 as inherited-main red in stock-dashboard-first-frame: a stale P0B engine/i18n.py evidence binding, not reader source. Do not project the old run as queued/green, blindly rerun it, or duplicate its fix in the reader.
+## Current acquisition evidence — account is capacity-bound
 
-Incumbent repair #7287 is open/draft/unmerged atdb088894ba2b77a028981630f9b1165f23fa79ce. Comment5726112733 already records independent exact-head review and current-base owner proof. A direct R21 workflow read returned fences35314833636 SUCCESS and CI35314833914 QUEUED/no conclusion. Do not redo the accepted semantic review absent a material invalidator. After applicable terminal-green CI and its incumbent's expected-head release, #7079 needs fresh current-base binding proof on its SAME PR/head through the existing lawful lifecycle. This handoff does not authorize or execute close/reopen, rerun, Ready, merge or deployment.
+Complete catalog diff uses:
+- R7 baseline blob54ed63983248afad543ff46ed327a076d67475b4, generated2026-09-16T06:09:42.758496Z,2208 rows.
+- current blob b6900293dc9281124d3018d2fc5eda52873dc04a from main@8d614027688c8f37e36800c42b545af213251e54, generated2026-09-18T10:37:44.200123Z,2354 rows.
 
-**W2 #7230 actual head changed.** PR metadata is fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2; the older PR body still names b5304ae... . Updated owner comment5720244598 records a three-line CLI import-root pin after old run35201875286's candidate-caused import-hygiene red, with targeted GREEN,15 import-hygiene and164 W2 owner passes, review, and new CI35320271015. These are incumbent receipts, not tests or terminal current CI independently rerun here. Use fc4c12a... on pickup. Existing W3 integration waits for both W2 and reader release; reuse the existing store/Brain owner. Stored/analyzed-body hashes and source-PDF fingerprints are different fields, not interchangeable freshness evidence. Preserve identity/quota admission before intelligence lookup.
+Observed:
+-146 IDs added;
+-0 removed;
+-117 additions published after the baseline snapshot;
+-29 older/backfill additions;
+-net catalog growth about66.8/day across about52.47h.
 
-**Analytics remains a separate leaf.** Direct R21 #7258 workflow read returned fences35202906928 SUCCESS and CI35202907075 QUEUED/no conclusion. #6835 comments since2026-09-17T09:10:38Z returned none: no new adoption on that checked carrier, not a global inactivity claim. Prior delivery5711784778 is not acceptance. Supabase discovery still installed:false; a suggestion is not consent/connection. No live rows/credentials/service-role workaround.
+This is net committed-catalog growth, NOT a live four-set/R2/download census. It nevertheless sits near the configured70/account/24h cap.
 
-## Independent excerpt lane — blocked before implementation
+Allocator source at the pinned main records a measured175-day arrival profile of about208 weekday posts/day and85 weekend posts/day. Nominal weekday raw capacity is therefore:
+1 account70=33.7%;2=140=67.3%;3=210=101.0%;4=280=134.6%.
 
-Macro inspection pin c495a4fb7a01c9ecbcd3cbd91e02bcb102427e04 still has excerpt.py blobb6180d72cb8baff59b99ba22d8aa92958d747b97 and the nine-digit phone-removal rule underlying R19's financial-number/year-list counterexamples. No new real-customer corruption was measured.
+**Planning target:** if provider/source-use terms allow pooled capacity, three total accounts is the structural near-full-weekday raw-flow target. A fourth is peak-day/backfill/resilience headroom, not default baseline need. This is capacity math, not purchase authorization or guaranteed complete capture.
 
-Desktop Commander Mac device3f5ce987-e3eb-40a3-af9f-4b0ae54919cc/session8c9c012f-6b96-4e09-9943-8ade5eb6ecba served preliminary read-only calls; processes12602/15810 exited0. A subsequent start_process request to inspect existing excerpt/page tests, template and owner references at the pin was BLOCKED_BY_TOOL: OpenAI could not determine the request's safety status. No PID/execution receipt returned. It was NOT retried/simplified/rerouted through another actor, tool, device or carrier. No source patch, worktree, test or deployment followed. Earlier working reads do not prove general writes; this one block does not prove the whole Studio is down. The repair remains NOT_IMPLEMENTED.
+## Source independence — raw labels are not independent institutions
 
-## Source-use, other holds and danger areas
+Current raw catalog:
+- Goldman Sachs943;
+- S&T245;
+- J.P. Morgan211;
+- top3 =1399/2354=59.43%;
+- top5 incl UBS/Other=1688/2354=71.71%.
 
-Bounded Gmail licensing/agreement queries returned no matching messages. Project/Library top-ranked results including exact-name refinements did not establish a MarketDesk/ZeroHedge agreement. These are not exhaustive searches and do not prove rights absent or granted. #7182 had no new comments after the R20 boundary; two recent #7151 notices concerned Event Intelligence, not institutional-source-use approval. No vendor contact/purchase/source download/model call occurred.
+219/245 S&T titles (89.39%) explicitly carry GS/Goldman wording. Among the146 additions,24 are S&T and23 explicitly identify GS. Therefore95 raw institution labels is NOT95 independent institutional viewpoints. Desk label/publication brand/original analytical origin/evidence lineage remain distinct. Do not build consensus, diversity or subscription ROI from raw institution counts.
 
-R14 extra reader review remains HOLD/NOT_RUN. R16 captured-source storage/page qualification remains held and6747/4.34% remains WITHDRAWN_UNQUALIFIED. R17 local tail code remains CODE PUBLICATION BLOCKED; no copy/republication/import. Exact held original/operation identities remain in the R19/predecessor records and need not be replayed for unrelated work. Source-use/pooling/retention and authentic Brain/quota/original-browser proof remain unresolved. Existing financial bridge alone owns arithmetic.
+Acquisition value should prioritize predecessor continuity, genuinely independent origin, user/company gaps, dissenting assumptions, event/earnings expectation chains, underrepresented sources, timeliness and then backfill.
 
-Do not turn absent read results into zero usage, missing permission into inferred authority, comments into worker START, local/source tests into production proof, or fresh record dates into fresh product inputs. No new account-value, price, margin, ROI or model-accuracy measurement.
+## Catalog metadata can correct without ID change
 
-## Next action, acceptance and do-not-redo
+Between the R7/current snapshots,2196 existing IDs changed summary_points and19 changed institution labels. Examples show summary normalization/rejoining and institution canonicalization such as Commbank->CommBank. No claim that PDF/body bytes changed.
 
-Primary: resume at incumbent #7287's release gate when its actual hosted result changes; after accepted release, #7079's existing owner obtains fresh same-head/current-base proof and completes lawful release. Then execute one permitted real-source Brain answer with matching original and allowed/denied/no-match/malformed/quota behavior. #7230 proceeds independently on its repaired head under its existing owner; no ownership transfer from this handoff.
+Freshness must remain typed:
+- content freshness: W2 analyzed-body hash vs current stored body;
+- catalog identity freshness: prompt-time institution/desk/title/published_at compatible with current catalog;
+- PDF/source binding: #7079 PDF fingerprint separately current;
+- historical availability: separate clock, never implied by current freshness.
 
-Analytics owner separately reviews/adopts #7258 after applicable checks and runs one authorized fixed-window report after connection, with real schema/exclusions/time coverage. Source-use configuration remains separately required. The blocked excerpt operation stays frozen; no assumption that time or a new session alone clears it.
+W3's body-hash rule remains correct for semantic content. Do not turn it into a universal freshness bit.
 
-DO_NOT_REDO: #7258 implementation and R20 synthetic proof absent a material invalidator; CA1A#6838; #7045 merged hygiene atc37c4e37b20ada935f32516a2a31428d558430c3; completed collector recovery#7164/Mastermind#631; #7287's accepted review without a material change. Never add another analytics/corpus/identity/financial/retry/queue/control plane or copy dependency fixes into this records carrier.
+## Missing operational capability — no continuous W1 -> W2 producer
 
-Current-turn classification ALL_SCOPED_LANES_BLOCKED applies to immediate product advancement across the checked frontier, not global mission completion. R21 verification is connector/native-read evidence only; no full Agent OS validator or new application/hosted/browser test is claimed. No worker/watch dialogue was opened, no background task is promised, and no new runtime execution is asserted. Reconcile actual changed state at the next material event; do not poll unchanged queued state or repeat this checkpoint as a new capability.
+Current code search found analyze_document/analyze_vault_report only in implementation/tests; the W2 CLI consumes an already-successful W1 analysis and exact source body. It does not produce W1 analysis.
+
+Therefore even after W2+W3 release, RIO can legitimately remain missing for most reports.
+
+**Proposed W4, not implemented:** one bounded producer under existing Vault/Research Intelligence runtime ownership:
+eligible current Vault report -> compare current body + current document identity to latest RIO receipt -> if missing/stale and admitted run W1 -> W2 validates/persists -> W3 consumes later.
+
+No new queue/store. Reuse existing scheduler/process and W2 idempotency/CAS. Start selectively on actual consumer demand: Prophet/company questions, private watch/portfolio relevance without writing holdings into shared state, earnings/guidance/revisions/initiations, current macro/policy tasks, independent dissent, missing predecessor pairs, and approved editorial/news needs. Expand only after real quality/cost receipts.
+
+## RIO v1 gaps — additive, not a parallel graph
+
+Still needed for deeper expectation/revision intelligence:
+1 canonical issuer/security/listing/segment mapping via existing Data OS identity;
+2 typed numeric dimensions: metric definition, unit/currency, scope, target period, scenario, accounting basis, point/range;
+3 deterministic same-source revision/reaffirmation/correction/repetition relation;
+4 publication/desk/original-origin/evidence lineage for independence;
+5 authored/provider/observed/acquired/derived/product clocks;
+6 rights/audience disposition through existing source-use owner;
+7 RIO quote vs #7079 locator binding without conflating source body/PDF hashes;
+8 complete-long-report input: RIO only knows the exact body W1 received.
+
+If real tasks justify a structured institutional-expectation projection, build it under Research Intelligence from grounded claims + deterministic transforms. Do not build another source of truth now.
+
+## Compute economics — access, not Haiku extraction, is likely the scarcer marginal resource
+
+Current Macro config points the extraction tier to claude-haiku-4-5. Current official Anthropic list price observed in R22 is $1/M input +$5/M output standard; batch pricing $0.50/M +$2.50/M when an eligible route preserves required behavior.
+
+Current catalog pages:2249 page-count records; overall mean12.49, median9,p9024,p9531. Recent Sep mean12.94, median9,p9025,p9534.
+
+Illustrative only, NOT measured usage:200 reports/day *30d *12.94 pages,500-800 input tokens/page,2000 output tokens/report =38.82-62.112M input +12M output/month. Standard Haiku about$98.82-$122.11/month; eligible batch about$49.41-$61.06/month.3000 output tokens/report would put standard roughly$128.82-$152.11/month. Actual prompts/retries/fallback/visual extraction/failed parses/user reads may differ materially.
+
+Conclusion: once this organism is useful, another $150-class source allowance can be economically rational because first-pass extraction is likely cents/report. Source access can become scarcer than base extraction compute. This is a planning sensitivity, not a bill or ROI proof.
+
+## Purchase sequence
+
+DO NOT buy three/four total accounts immediately.
+
+A use current paid corpus: release/qualify #7287 -> #7079 same-head current-base proof/release; independently #7230 W2 release; then W3; then one bounded W4 producer; prove one permitted real company question -> useful answer -> matching original.
+
+B after source-use/pooling terms allow it, add one second account as a monthly marginal pilot. Freeze questions before selecting incremental sources. Measure newly acquired evidence, supported task completion, independent-origin gain, revision continuity, timeliness, processing cost and real user outcome when available.
+
+C third total account only if the second stays capacity-bound and meaningful eligible gaps remain. Three total accounts is the structural near-full raw weekday target.
+
+D fourth only with measured peak/backfill/resilience value beyond three.
+
+No account purchase/vendor message in R22.
+
+## Release frontier / held work
+
+#7287 is the shared prerequisite for #7079; accepted semantic review remains do-not-redo absent material invalidator. #7079 must not absorb #7287. After accepted #7287 release, the existing #7079 owner owes fresh same-head current-base proof via its lawful lifecycle.
+
+#7230 proceeds independently on actual head fc4c12a... with its current CI/release owner. W3 waits for W2+reader merge and starts fresh main; do not stack old branches.
+
+R20 #7258 remains separate measurement infrastructure, not product usefulness. Supabase remains unconnected in the last checked state.
+
+R14 reader review HOLD/NOT_RUN, R16 storage/page qualification held with6747/4.34% WITHDRAWN_UNQUALIFIED, R17 tail code CODE_PUBLICATION_BLOCKED, and source-use/pooling/retention remain unresolved. Do not retry/reroute those exact held effects without a material invalidator/current owner action.
+
+## Exact continuation / do-not-redo
+
+Primary: consume material incumbent release movement in order. Do not poll unchanged queues or repeat semantic reviews.
+
+Independent useful work: freeze W4 producer contract against the released W1/W2 semantics and assemble a small permitted gold corpus with: one current company question; one comparable revision pair; one independent-source disagreement; one long-report qualification. No source acquisition beyond current rights implied.
+
+DO_NOT_REDO: W1 RIO schema; W2 storage/correction plane; planned W3 duplicate-store alternative; R20 implementation/proof absent invalidator; #7045 merged hygiene; CA1A#6838; collector recovery#7164/Mastermind#631; #7287 semantic review absent material change.
+
+Parent mission remains MORE_WORK_EXISTS / unaccepted. No background task is promised; no worker/watch dialogue was opened.
