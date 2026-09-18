@@ -167,3 +167,184 @@ def test_grade_next_bar_return_single_horizon():
     s = _series([100, 101, 102, 103, 104, 105])
     sig = str(s.index[0].date())           # fill bar 1 (101); +2 -> bar 3 (103)
     assert grading.grade_next_bar_return(s, sig, 2) == pytest.approx(103.0 / 101.0 - 1.0)
+
+
+# --------------------------------------------------------------------------- #
+# Prophet HK/CA discovery outcome evaluator — governed Lane-B "third door"
+# --------------------------------------------------------------------------- #
+def _discovery_rows(*raw_refs, session_date="2026-01-12", market="HK", definition="disc_v1"):
+    rows = []
+    for raw in raw_refs:
+        rows.append({
+            "session_date": session_date,
+            "market": market,
+            "security_ref": str(raw).strip(),
+            "security_ref_raw": raw,
+            "challenger_definition": definition,
+            "candidate_origin": "research_only",
+        })
+    return pd.DataFrame(rows)
+
+
+def _trend(n=120, start="2025-12-01", step=1.0):
+    idx = pd.bdate_range(start, periods=n)
+    return pd.Series(100.0 + step * np.arange(n), index=idx)
+
+def test_prophet_discovery_outcome_parity_with_shared_grader_and_benchmark(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    close = _trend(180, step=1.0)
+    bench = _trend(180, step=0.4)
+    sig = str(close.index[5].date())
+    discovery = _discovery_rows("0005.HK", session_date=sig)
+
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: bench)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    out = pdg.grade_frame("HK", discovery)
+    assert len(out) == 1
+    row = out.iloc[0]
+    expected = grading.forward_metrics(close, sig, horizons=pdg.HORIZONS)
+    expected_bench = grading.forward_metrics(bench, sig, horizons=pdg.HORIZONS)
+    assert row["fill_date"] == expected["fill_date"]
+    assert row["fill_offset"] == 1
+    assert row["fwd_ret_21"] == pytest.approx(expected["fwd_ret_21"])
+    assert row["bench_ret_21"] == pytest.approx(expected_bench["fwd_ret_21"])
+    assert row["excess_ret_21"] == pytest.approx(
+        expected["fwd_ret_21"] - expected_bench["fwd_ret_21"]
+    )
+    expected_ts8 = grading.terminal_state(
+        close, sig,
+        liftoff_mult=grading.LIFTOFF_8,
+        liftoff_horizon=grading.LIFTOFF_HORIZON_21,
+    )
+    expected_ts15 = grading.terminal_state(
+        close, sig,
+        liftoff_mult=grading.LIFTOFF_15,
+        liftoff_horizon=grading.LIFTOFF_HORIZON_126,
+    )
+    assert row["terminal_state_clean8_21"] == expected_ts8["state"]
+    assert row["terminal_state_clean15_126"] == expected_ts15["state"]
+    assert row["outcome_state"] == pdg.MATURED
+    assert row["survivorship"] == "no_dead_name_store"
+
+def test_prophet_discovery_outcome_uses_shared_suspension_law(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    close = _trend(30)
+    sig = str(close.index[5].date())
+    called = {"n": 0}
+
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: None)
+
+    def suspended(series, fill_date):
+        called["n"] += 1
+        assert series is close
+        assert fill_date == close.index[6]
+        return True
+
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", suspended)
+    monkeypatch.setattr(
+        pdg.grading, "terminal_state",
+        lambda *_a, **_k: (_ for _ in ()).throw(
+            AssertionError("terminal-state math must not run for suspended rows")
+        ),
+    )
+    row = pdg.grade_frame("HK", _discovery_rows("0005.HK", session_date=sig)).iloc[0]
+    assert called["n"] == 1
+    assert row["outcome_state"] == pdg.SUSPENDED
+    assert bool(row["suspended"]) is True
+    assert pd.isna(row["fwd_ret_5"])
+    assert pd.isna(row["entry_price"])
+    assert pd.isna(row["terminal_state_clean8_21"])
+    assert pd.isna(row["terminal_state_clean15_126"])
+
+def test_prophet_discovery_missing_price_is_explicit_not_zero(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: None)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: None)
+    row = pdg.grade_frame("CA", _discovery_rows("ABC.TO", market="CA")).iloc[0]
+    assert row["outcome_state"] == pdg.UNAVAILABLE_PRICE
+    assert pd.isna(row["fwd_ret_5"])
+    assert pd.isna(row["entry_price"])
+
+
+def test_prophet_discovery_outcomes_preserve_raw_identity_collisions(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    close = _trend(100)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: None)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+    d = _discovery_rows("ABC.TO", " ABC.TO ", market="CA")
+    out = pdg.grade_frame("CA", d)
+    assert len(out) == 2
+    assert set(out["security_ref_raw"]) == {"ABC.TO", " ABC.TO "}
+    assert not {"rank", "score", "board_pos", "featured", "published_authority"} & set(out.columns)
+
+def test_prophet_discovery_store_upserts_maturation_without_duplicate(tmp_path, monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    src = tmp_path / "prophet_shadow"
+    src.mkdir(parents=True)
+    sig = "2026-01-12"
+    _discovery_rows("ABC.TO", session_date=sig, market="CA").to_parquet(
+        src / "ca_discovery.parquet", index=False
+    )
+    short = _trend(45)
+    long = _trend(180)
+    current = {"series": short}
+    monkeypatch.setattr(
+        pdg.board_ledger, "_name_close",
+        lambda *_a, **_k: current["series"],
+    )
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: None)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    first = pdg.grade_market("CA")
+    assert first["n_rows"] == 1
+    stored = pd.read_parquet(src / "ca_discovery_outcomes.parquet")
+    assert len(stored) == 1
+    assert stored.iloc[0]["outcome_state"] == pdg.ACCRUING
+
+    current["series"] = long
+    second = pdg.grade_market("CA")
+    assert second["n_rows"] == 1
+    stored2 = pd.read_parquet(src / "ca_discovery_outcomes.parquet")
+    assert len(stored2) == 1
+    assert stored2.iloc[0]["outcome_state"] == pdg.MATURED
+    assert pd.notna(stored2.iloc[0]["fwd_ret_63"])
+    assert pd.notna(stored2.iloc[0]["terminal_state_clean8_21"])
+    assert pd.notna(stored2.iloc[0]["terminal_state_clean15_126"])
+    assert second["terminal_clean8_21"] == {grading.TerminalState.CLEAN_LIFTOFF: 1}
+    assert second["terminal_clean15_126"] == {grading.TerminalState.CLEAN_LIFTOFF: 1}
+    # Deterministic rerun with unchanged prices: no duplicate and identical values.
+    before = stored2.copy()
+    third = pdg.grade_market("CA")
+    after = pd.read_parquet(src / "ca_discovery_outcomes.parquet")
+    assert third["n_rows"] == 1
+    pd.testing.assert_frame_equal(before, after)
+
+
+def test_prophet_discovery_grader_is_explicit_and_not_render_wired():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    render = (root / ".github/workflows/render.yml").read_text()
+    dag = (root / "config/dag.yml").read_text()
+    assert "scripts.grade_prophet_discovery" not in render
+    # Scheduler ownership is intentionally separate: the core evaluator lands
+    # without silently inserting itself into the shared DAG while another
+    # carrier owns that file. The CLI remains an explicit modifying action.
+    assert "scripts.grade_prophet_discovery" not in dag
+
+def test_prophet_discovery_cli_runs_both_markets_once(monkeypatch):
+    import scripts.grade_prophet_discovery as runner
+    called = {"n": 0}
+
+    def fake():
+        called["n"] += 1
+        return {"HK": {"n_rows": 1}, "CA": {"n_rows": 2}}
+
+    monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", fake)
+    assert runner.main() == 0
+    assert called["n"] == 1
