@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T11:22:58.384415+00:00",
-  "count": 2356,
+  "generated_at": "2026-09-18T11:37:48.386190+00:00",
+  "count": 2357,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -469,6 +469,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fmdz83ogu2s-f50587",
+      "title": "ING Think marieke blom why europe can carry the cost of rising defence spending",
+      "institution": "ING",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T00:26:55Z",
+      "summary_points": [
+        "Affordability Trend: Rising European defense spending is becoming increasingly manageable due to domestic production growth and financial sustainability, per ING analysis.",
+        "Domestic Production Driver: Growth in domestic defense manufacturing is a key factor enabling Europe to sustain higher spending levels without fiscal strain.",
+        "Financial Sustainability Basis: ING's assessment confirms Europe's defense budgets are now aligned with broader fiscal health, reducing affordability risks.",
+        "Policy Relevance: This trend directly impacts portfolio allocation toward European defense sector equities and related supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
