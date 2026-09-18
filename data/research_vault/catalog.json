@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T20:53:54.513993+00:00",
-  "count": 2384,
+  "generated_at": "2026-09-18T21:24:01.568616+00:00",
+  "count": 2385,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -287,6 +287,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q92wstuze2m-455279",
+      "title": "EM Weekly Fund Flows Monitor Foreign selling in Korea continues this week",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T17:30:42Z",
+      "summary_points": [
+        "Korea Outflows Accelerate: Korea saw $5.6bn FII outflows in September (YTD $119.7bn), driving EM Asia ex-China outflows; Japan remains sole net buyer (+$31.4bn YTD).",
+        "China Exposure Recovers: Hedge funds show China equity net exposure recovery in September, with EM funds raising China/India exposure while trimming Taiwan (geopolitical risk mitigation).",
+        "EM Fund Flow Divergence: EM funds shifted to India/China (+$15bn GEM inflows) and trimmed Taiwan, contrasting with Korea’s $120bn YTD outflows and EM Asia ex-China outflows.",
+        "Sectoral Allocation Extremes: China Industrials top overweight (Exhibit 7), Taiwan Tech/China Banks top underweight; Banks/Financials saw largest sector outflows since Feb 27.",
+        "Southbound Flows Surge: Southbound flows hit $2.6bn cumulative (2026 est), with weekly net buying spiking to $1.531bn (Sep 14-18), driven by tech (HW/Semi) and industrials."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
