@@ -309,13 +309,15 @@ def classify_wide(vel: pd.DataFrame, accel: pd.DataFrame, vin: float = VIN, vout
     state = state.mask(above & (a > 0), "above norm, rising")
     state = state.mask(above & ~(a > 0), "above norm, cooling")
     state = state.mask(below & (a < 0), "below norm, worsening")
-    state = state.mask(below & ~(a < 0), "below norm, easing")
+    # Vectorized path has no per-name absolute sign, so the below-and-not-worsening
+    # cell is the sign-free "pace easing" (never a direction word).
+    state = state.mask(below & ~(a < 0), "pace easing")
     state = state.mask(mid, "near its norm")
     return state
 
 
 STATE_NAMES = ("above norm, rising", "above norm, cooling", "near its norm",
-               "below norm, worsening", "below norm, easing")
+               "below norm, worsening", "pace easing")
 
 
 # ── metric 1: state distribution ───────────────────────────────────────────────────
