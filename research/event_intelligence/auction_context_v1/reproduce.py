@@ -66,15 +66,28 @@ function renderCard(){throw new Error('No forecast was supplied to this componen
 """
 html='<html data-theme="dark" data-lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css">'+''.join(str(x) for x in soup.find_all('style'))+'</head><body>'+str(dialog)+str(soup.find(id='calendar-event-context-data'))+'<script>'+(ROOT/'templates/calendar_event_context.js').read_text()+'</script><script>'+glue+selector+'\nwireCalendarCards();</script></body></html>'
 (OUT/'component.html').write_text(html)
+def _proof_assets(root: Path) -> dict[str, Path]:
+    """Serve the source theme's real local dependencies, never font fallbacks."""
+    assets = {'/theme.css': root/'templates/theme.css',
+              '/product-nav-icons.css': root/'templates/product-nav-icons.css',
+              '/favicon.ico': root/'site/favicon.ico'}
+    assets.update({f'/fonts/Inter-{weight}.woff2': root/f'site/fonts/Inter-{weight}.woff2'
+                   for weight in (400, 500, 600, 700, 800, 900)})
+    return assets
+
+assets=_proof_assets(ROOT)
+assert all(p.is_file() for p in assets.values()), 'missing actual static dependency'
 BASE=ROOT/'templates'
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self,*a,**kw):super().__init__(*a,directory=str(BASE),**kw)
     def log_message(self,*a):pass
     def do_GET(self):
         p=self.path.split('?')[0]
-        if p in ['/macro.html','/theme.css','/macrodata/release_forecast.json']:
+        if p in ['/macro.html','/macrodata/release_forecast.json'] or p in assets:
             if p=='/macro.html':body=html.encode();typ='text/html; charset=utf-8'
-            elif p=='/theme.css':body=(ROOT/'templates/theme.css').read_bytes();typ='text/css'
+            elif p in assets:
+                import mimetypes
+                body=assets[p].read_bytes();typ=mimetypes.guess_type(p)[0] or 'application/octet-stream'
             else:body=b'{"items":[],"status":"unavailable"}';typ='application/json'
             self.send_response(200);self.send_header('Content-Type',typ);self.end_headers();self.wfile.write(body)
         else:super().do_GET()
@@ -88,10 +101,12 @@ try:
     browser=pw.chromium.launch(headless=True,executable_path=str(exe))
     page=browser.new_page(viewport={'width':1440,'height':1100},reduced_motion='reduce')
     errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
+    failed_responses=[];page.on('response',lambda r:failed_responses.append({'url':r.url,'status':r.status}) if r.status>=400 else None)
     page.route('**/*',lambda r:r.continue_() if r.request.url.startswith(origin) else r.abort())
     page.goto(origin+'/macro.html',wait_until='domcontentloaded')
     page.wait_for_function("!!window.MMXCalendarEventContext")
     page.wait_for_selector('#dlg-events .rr-select',timeout=15000)
+    page.evaluate('document.fonts.ready')
     for width in (1440,390):
      page.set_viewport_size({'width':width,'height':1100})
      for theme in ('dark','light'):
@@ -120,13 +135,14 @@ try:
     page.locator('#dlg-events .mx5-dlg-cal-card[data-cal-date="2026-09-22"]').click()
     page.wait_for_function("document.querySelectorAll('#rr-inline-body .eic-card').length===1")
     assert '91282CRP8' in page.locator('#rr-inline-body').inner_text()
+    assert not failed_responses, failed_responses
     browser.close()
 finally:
  server.shutdown();server.server_close()
 manifest={'scope':'real official API capture -> calendar adapter -> full production template -> extracted real event component + actual selector/renderer in local browser; surrounding VM synthetic; full app authentication NOT bypassed; NOT deployed/authenticated production acceptance',
  'generated_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'fixture_clock':proof_now.isoformat(),'full_template_sha256':full_template_sha256,'machine_context_proven':True,'source':json.loads((OUT/'source-receipt.json').read_text()),
  'html_sha256':hashlib.sha256(html.encode()).hexdigest(),'source_file_hashes':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [ROOT/'engine/event_calendar.py',ROOT/'engine/calendar_event_context.py',ROOT/'templates/dashboard.html.j2',ROOT/'templates/calendar_event_context.js',ROOT/'templates/_calendar_event_context.html.j2',ROOT/'scripts/build_site.py',ROOT/'engine/neuralweb/calendar_grounding.py',ROOT/'engine/neuralweb/market_packet.py',Path(__file__)]},
- 'cases':records,'page_errors':errors,'keyboard_disclosure':True,'cross_date':True,'same_date_multi_event':True,'forecast_payload':'explicitly unavailable'}
+ 'source_asset_hashes':{k:hashlib.sha256(p.read_bytes()).hexdigest() for k,p in assets.items()},'failed_responses':failed_responses,'cases':records,'page_errors':errors,'keyboard_disclosure':True,'cross_date':True,'same_date_multi_event':True,'forecast_payload':'explicitly unavailable'}
 (OUT/'browser-manifest.json').write_text(json.dumps(manifest,indent=2))
 print(json.dumps({'status':'PASS','cases':len(records),'page_errors':errors,'manifest':str(OUT/'browser-manifest.json')},indent=2))
 
@@ -148,7 +164,11 @@ data=stage.find(id='calendar-event-context-data')
 style=''.join(str(x) for x in stage.find_all('style'))
 page_html='<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/theme.css">'+style+'</head><body><main id="dlg-events" style="max-width:980px;margin:24px auto;padding:16px">'+str(panel)+'</main>'+str(data)+'<script>'+(ROOT/'templates/calendar_event_context.js').read_text()+'</script><script>'+glue+selector+"selectInlineDate('2026-09-23',null,true);</script></body></html>"
 (capture_site/'event-context-proof.html').write_text(page_html)
-shutil.copy2(ROOT/'templates/theme.css',capture_site/'theme.css')
+for url,asset_path in assets.items():
+    destination=capture_site/url.lstrip('/')
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copy2(asset_path,destination)
+
 evidence=OUT/'canonical-evidence';evidence.mkdir(exist_ok=True)
 def canonical_driver(**kw):
     manager=sync_playwright().start()
@@ -169,3 +189,6 @@ assert rc==0,rc
 canonical_manifest=json.loads((evidence/'manifest.json').read_text())
 cells=canonical_manifest['pages'][0]['states']
 assert len({c['sha256'] for c in cells if c.get('captured')})==8, 'locale/theme matrix contains identical captures; inspect the page'
+
+assert not canonical_manifest['pages'][0]['failed_responses'], 'visual proof has missing static resources'
+assert not canonical_manifest['pages'][0]['console_errors'], 'visual proof emitted console errors'

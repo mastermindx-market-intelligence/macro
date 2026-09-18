@@ -116,3 +116,22 @@ def test_official_terms_survive_full_production_template(monkeypatch):
 def test_event_dialog_heading_and_date_do_not_keep_dark_only_ink():
     css = (ROOT / 'templates/dashboard.html.j2').read_text()
     assert '#dlg-events .mx5-dlg-title,#dlg-events .rr-inline-date{color:var(--ink-1);}' in css
+
+
+def test_browser_evidence_resolves_actual_font_and_theme_assets():
+    """Font fallback is not faithful visual evidence of the published component."""
+    import ast
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    source = root / "research/event_intelligence/auction_context_v1/reproduce.py"
+    tree = ast.parse(source.read_text())
+    helper = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "_proof_assets"]
+    assert len(helper) == 1, "the proof server must bind its styles and actual font files"
+    namespace = {"Path": Path}
+    exec(compile(ast.Module(body=helper, type_ignores=[]), str(source), "exec"), namespace)
+    assets = namespace["_proof_assets"](root)
+    assert assets["/theme.css"] == root / "templates/theme.css"
+    assert assets["/product-nav-icons.css"] == root / "templates/product-nav-icons.css"
+    for weight in (400, 500, 600, 700, 800, 900):
+        assert assets[f"/fonts/Inter-{weight}.woff2"] == root / f"site/fonts/Inter-{weight}.woff2"
+    assert all(path.is_file() for path in assets.values())
