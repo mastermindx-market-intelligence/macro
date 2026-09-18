@@ -83,8 +83,9 @@ unverified:
       The accepted Terminal merge 82ca818be7ea592f7cdb1fb6731cc19f94610593 is running in production and the real QCOM UI no
       longer flickers under extended-feed churn or transport failure.
     what_would_verify: >
-      Issue #483 must admit and deploy an exact accepted SHA containing 82ca818be7ea592f7cdb1fb6731cc19f94610593; then run the
-      prepared public browser probe against that deployment and reconcile Terminal plus quote-hub
+      Issue #483 must admit and deploy an exact accepted SHA containing 82ca818be7ea592f7cdb1fb6731cc19f94610593; then run a
+      fresh public Playwright probe derived from the committed regression at Terminal merge
+      82ca818be7ea592f7cdb1fb6731cc19f94610593 (`terminal/e2e/watchlist-ext-percent.spec.ts`) and reconcile Terminal plus quote-hub
       service identity, real request view=regular, desktop detail/watchlist Ext and Ext %, compact
       tablet/mobile extended lanes, 503 retention, recovery advancement, and no fabricated overnight
       value.
@@ -103,8 +104,10 @@ next_actions:
     release path once the complete deploy/rollback implementation is ready. Do not use the legacy
     moving-master VPS wrapper as a shortcut.
   - >
-    After deployment, run /tmp/prod_ext_stability_probe.cjs with the served accepted deployment SHA,
-    plus direct quote-hub health/full/regular reads, and attach the receipts to #483 and Terminal #616.
+    After deployment, derive a one-time public probe from the committed Terminal regression
+    `terminal/e2e/watchlist-ext-percent.spec.ts` at merge
+    82ca818be7ea592f7cdb1fb6731cc19f94610593, bind it to the served accepted deployment SHA, add
+    direct quote-hub health/full/regular reads, and attach the receipts to #483 and Terminal #616.
   - >
     Mark R1A-T-S done only after that production identity and browser/runtime matrix pass. A merge,
     green CI, or source-only browser fixture is not enough.
