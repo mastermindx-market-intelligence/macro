@@ -1,15 +1,15 @@
 {
-  "appended": 1,
+  "appended": 2,
   "asof": "2026-09-17",
   "candidates": {
-    "R": 1,
+    "R": 0,
     "T": 0,
-    "W": 3
+    "W": 4
   },
   "deduped": {
     "R": 0,
     "T": 0,
-    "W": 3
+    "W": 2
   },
   "dry_run": false,
   "feature_source": {
@@ -19,17 +19,15 @@
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": true,
-      "null_reasons": {
-        "ohlcv_absent": 1
-      },
-      "reason": "no flagged name resolved in the OHLCV store — coil and thrust null on every flag tonight",
+      "consulted": false,
+      "null_reasons": {},
+      "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {},
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
       "tickers_ok": 0,
-      "tickers_read": 1
+      "tickers_read": 0
     },
     "keys": [
       "relay_count_3d",
@@ -50,20 +48,19 @@
       "consulted": false
     },
     "turnover": {
-      "consulted": true,
-      "last_session": "2026-09-17",
-      "n_tickers": 1544,
-      "ok": true,
-      "reason": null,
-      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
-      "window_max": 60
+      "consulted": false
     }
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": false,
-      "n_asked": 0,
-      "n_covered": 0
+      "consulted": true,
+      "direction": "bull",
+      "grid": "W",
+      "horizon": "13w",
+      "n_asked": 2,
+      "n_covered": 2,
+      "reason": null,
+      "source": "engine.event_atlas.receipt"
     },
     "enabled": true,
     "keys": [
@@ -84,11 +81,12 @@
     ]
   },
   "flag_tickers": {
-    "R": [
-      "BAH"
-    ],
+    "R": [],
     "T": [],
-    "W": []
+    "W": [
+      "AZN",
+      "ECHO"
+    ]
   },
   "n_universe": 1496,
   "overflow": {
@@ -96,41 +94,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-18 09:05:43",
-  "runtime_s": 166.7,
+  "run_utc": "2026-09-18 20:37:42",
+  "runtime_s": 121.3,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": 0,
-    "asof": "2026-09-17",
-    "n_members": 86,
+    "age_days": -1,
+    "asof": "2026-09-18",
+    "n_members": 75,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.4,
+        "emerging_score": 3.655,
         "rank": 1,
         "theme": "Education Technology"
       },
       {
-        "emerging_score": 2.022,
+        "emerging_score": 2.544,
         "rank": 2,
         "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 1.843,
+        "emerging_score": 1.301,
         "rank": 3,
         "theme": "Biometrics"
       },
       {
-        "emerging_score": 1.708,
+        "emerging_score": 1.154,
         "rank": 4,
-        "theme": "Space Tech"
+        "theme": "Mega-Cap"
       },
       {
-        "emerging_score": 1.474,
+        "emerging_score": 1.045,
         "rank": 5,
-        "theme": "Quantum Computing"
+        "theme": "Space Tech"
       }
     ]
   },
@@ -139,19 +137,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 3,
-    "asof_max": "2026-09-17",
-    "asof_mismatch": 0,
+    "aligned": 4,
+    "asof_max": "2026-09-18",
+    "asof_mismatch": 4,
     "asof_run": "2026-09-17",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 29.5,
+    "runtime_s": 22.3,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 83,
+    "state_turn": 77,
     "universe_n": 717
   }
 }
