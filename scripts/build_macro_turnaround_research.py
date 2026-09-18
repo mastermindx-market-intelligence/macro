@@ -488,13 +488,20 @@ def _filesystem_is_case_insensitive(existing_directory: Path) -> bool:
     if not directory.is_dir():
         raise ValueError("output-path filesystem probe requires a directory")
     census = _case_semantics_census(directory)
+    entry_names = {entry_name for entry_name, _, _ in census[2]}
     for entry_name, _, entry_mode in census[2]:
         alternate_name = _alternate_ascii_case(entry_name)
         if alternate_name is None or stat.S_ISLNK(entry_mode):
             continue
-        result = _same_filesystem_object(
-            directory / entry_name, directory / alternate_name
-        )
+        # Coexisting exact case-variant names prove that the namespace
+        # distinguishes case. Their inode relationship is irrelevant:
+        # hard links must not be mistaken for case-insensitive lookup.
+        if alternate_name in entry_names:
+            result = False
+        else:
+            result = _same_filesystem_object(
+                directory / entry_name, directory / alternate_name
+            )
         # Both the selected witness and the complete sorted directory census
         # are authority-bearing. Refuse if either changed while samefile()
         # followed the two pathnames; otherwise a removed or substituted

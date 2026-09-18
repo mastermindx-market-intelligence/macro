@@ -1625,6 +1625,48 @@ def test_case_semantics_probe_skips_dangling_symlink_before_valid_witness(
     )
 
 
+def test_case_semantics_probe_treats_coexisting_case_variant_hardlinks_as_case_sensitive(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_case_variant_hardlinks", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    witness = root / "CaseWitness"
+    witness.write_text("same inode, two names", encoding="utf-8")
+    directory_stat = module.os.stat(root, follow_symlinks=False)
+    witness_stat = module.os.stat(witness, follow_symlinks=False)
+    directory_identity = module._identity(directory_stat)
+    witness_identity = module._identity(witness_stat)
+    directory_mode = module.stat.S_IFMT(directory_stat.st_mode)
+    witness_mode = module.stat.S_IFMT(witness_stat.st_mode)
+    census = (
+        directory_identity,
+        directory_mode,
+        (
+            ("CaseWitness", witness_identity, witness_mode),
+            ("caseWitness", witness_identity, witness_mode),
+        ),
+    )
+
+    monkeypatch.setattr(module, "_case_semantics_census", lambda directory: census)
+
+    def forbidden_identity_lookup(*args: object) -> bool:
+        raise AssertionError(
+            "coexisting case-variant names prove a case-sensitive namespace"
+        )
+
+    monkeypatch.setattr(module, "_same_filesystem_object", forbidden_identity_lookup)
+
+    assert module._filesystem_is_case_insensitive(root) is False
+
+
 def test_case_semantics_probe_refuses_witness_replacement_during_classification(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
