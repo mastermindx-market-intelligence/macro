@@ -169,10 +169,12 @@ def build_settled_state(
         base["prior_open_interest"] = pd.to_numeric(base["open_interest"], errors="coerce")
     else:
         base["prior_open_interest"] = np.nan
-    base = base[
-        np.isfinite(base["implied_vol"]) & (base["implied_vol"] > 0)
-        & (pd.to_datetime(base["expiration"]).dt.date > session_day)
-    ].copy()
+    unexpired = base[pd.to_datetime(base["expiration"]).dt.date > session_day].copy()
+    if unexpired.empty:
+        raise R2Refusal(f"no unexpired contracts for {root.upper()} {session}")
+    iv_mask = np.isfinite(unexpired["implied_vol"]) & (unexpired["implied_vol"] > 0)
+    iv_contract_rate = float(iv_mask.mean())
+    base = unexpired[iv_mask].copy()
     if base.empty:
         raise R2Refusal(f"no unexpired finite-IV contracts for {root.upper()} {session}")
 
@@ -228,7 +230,8 @@ def build_settled_state(
         )
 
     qualified = bool(
-        settled_rate >= CONTRACT_MATCH_TARGET
+        iv_contract_rate >= MODEL_INPUT_MATCH_TARGET
+        and settled_rate >= CONTRACT_MATCH_TARGET
         and prior_rate >= CONTRACT_MATCH_TARGET
         and exposure_mass_coverage is not None
         and exposure_mass_coverage >= EXPOSURE_MASS_TARGET
@@ -258,6 +261,8 @@ def build_settled_state(
         "source_availability_precision": "session_only_from_current_store_reader",
         "spot": spot,
         "spot_cross_contract_range_bps": spot_range_bps,
+        "unexpired_identity_contracts": int(len(unexpired)),
+        "iv_contract_rate": iv_contract_rate,
         "eligible_contracts": eligible_n,
         "settled_oi_matched_contracts": int(settled_mask.sum()),
         "settled_oi_contract_rate": settled_rate,
