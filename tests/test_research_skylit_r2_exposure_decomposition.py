@@ -135,6 +135,53 @@ def test_missing_iv_cannot_disappear_from_the_coverage_denominator():
     assert state["target_gate_pass"] is False
 
 
+def test_oi_match_rate_uses_full_unexpired_board_even_when_iv_is_missing():
+    rows = []
+    oi_rows = []
+    publication = "2026-09-15"
+    for i in range(100):
+        right = "C" if i % 2 == 0 else "P"
+        strike = 90.0 + i * 0.25
+        rows.append({
+            "root": "SPY",
+            "expiration": "2026-10-16",
+            "strike": strike,
+            "right": right,
+            "implied_vol": (np.nan if i < 10 else 0.20),
+            "underlying_price": 100.0,
+            "open_interest": 100 + i,
+        })
+        # The ten IV-missing contracts plus one IV-valid contract are absent
+        # from settled OI.  A post-IV denominator would incorrectly see 89/90
+        # and pass; the full unexpired board must report 89/100 and fail.
+        if i >= 10 and i != 10:
+            oi_rows.append({
+                "root": "SPY",
+                "expiration": "2026-10-16",
+                "strike": strike,
+                "right": right,
+                "date": publication,
+                "open_interest": 100 + i,
+            })
+
+    api = SimpleNamespace(
+        resolve_thetadata_store=lambda **kwargs: "/store",
+        chain=lambda s, root, store=None: pd.DataFrame(rows),
+        oi_for_date=lambda s, root, store=None: pd.DataFrame(oi_rows),
+    )
+    state = r2.build_settled_state(
+        "2026-09-14",
+        "SPY",
+        store_api=api,
+        calendar_api=Calendar,
+        greeks_fn=fake_greeks,
+    )
+    assert state["unexpired_identity_contracts"] == 100
+    assert state["model_input_contract_rate"] == pytest.approx(0.90)
+    assert state["settled_oi_contract_rate"] == pytest.approx(0.89)
+    assert state["target_gate_pass"] is False
+
+
 def _state(position, spot=100.0, vol=0.2, time_years=30 / 365):
     exposure = r2._exposure_gex(
         np.array([position]),
