@@ -86,6 +86,97 @@ def test_cli_refuses_case_insensitive_alias_before_source_ingestion(
     assert not (root/canonical_name/'nested'/'turns.json').exists()
 
 
+def test_cli_dangling_case_witness_still_refuses_alias_before_source_ingestion(
+    tmp_path, monkeypatch
+):
+    import os
+
+    c = cli()
+    publisher = importlib.import_module(
+        "scripts.build_macro_turnaround_research"
+    )
+    root = tmp_path / "source"
+    root.mkdir()
+    (root / "A_Dangling").symlink_to(root / "missing-target")
+    (root / "CaseWitness").write_text("valid witness", encoding="utf-8")
+    request_path = tmp_path / "request.json"
+    request(request_path, "0" * 64)
+    output = root / "SITE" / "nested" / "turns.json"
+    resolved_root = root.resolve()
+    real_samefile = os.path.samefile
+
+    def mounted_case_insensitive_samefile(left, right):
+        left_path = Path(left).absolute()
+        right_path = Path(right).absolute()
+        if "dangling" in left_path.name.casefold():
+            raise FileNotFoundError("dangling case witness")
+        if (
+            left_path.parent == resolved_root
+            and right_path.parent == resolved_root
+            and {left_path.name, right_path.name}
+            == {"CaseWitness", "caseWitness"}
+        ):
+            return True
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(
+        publisher.os.path, "samefile", mounted_case_insensitive_samefile
+    )
+
+    def forbidden_loader(*args, **kwargs):
+        raise AssertionError("protected alias must fail before source ingestion")
+
+    monkeypatch.setattr(c, "load_panel", forbidden_loader)
+    assert c.main(
+        ["--root", str(root), "--input", str(request_path), "--output", str(output)]
+    ) == 2
+    assert not output.exists()
+
+
+def test_cli_refuses_replaced_case_witness_before_source_ingestion(
+    tmp_path, monkeypatch
+):
+    import os
+
+    c = cli()
+    publisher = importlib.import_module(
+        "scripts.build_macro_turnaround_research"
+    )
+    root = tmp_path / "source"
+    root.mkdir()
+    witness = root / "CaseWitness"
+    witness.write_text("original witness", encoding="utf-8")
+    replacement = tmp_path / "replacement"
+    replacement.write_text("replacement witness", encoding="utf-8")
+    request_path = tmp_path / "request.json"
+    request(request_path, "0" * 64)
+    output = root / "SITE" / "nested" / "turns.json"
+    real_samefile = os.path.samefile
+    replaced = False
+
+    def replacing_samefile(left, right):
+        nonlocal replaced
+        left_path = Path(left).absolute()
+        if not replaced and left_path == witness.absolute():
+            witness.unlink()
+            replacement.replace(witness)
+            replaced = True
+            return False
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(publisher.os.path, "samefile", replacing_samefile)
+
+    def forbidden_loader(*args, **kwargs):
+        raise AssertionError("unstable case witness must fail before source ingestion")
+
+    monkeypatch.setattr(c, "load_panel", forbidden_loader)
+    assert c.main(
+        ["--root", str(root), "--input", str(request_path), "--output", str(output)]
+    ) == 2
+    assert replaced
+    assert not output.exists()
+
+
 def test_cli_refuses_destination_alias_change_after_preflight(tmp_path,monkeypatch):
     c=cli();root=tmp_path/'source';protected=root/'data';protected.mkdir(parents=True)
     outside=tmp_path/'outside';outside.mkdir();alias=tmp_path/'alias';alias.symlink_to(outside,target_is_directory=True)

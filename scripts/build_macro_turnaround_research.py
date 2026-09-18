@@ -452,18 +452,58 @@ def _alternate_ascii_case(name: str) -> str | None:
     return None
 
 
+_CaseSemanticsEntry = tuple[str, _DirectoryIdentity, int]
+_CaseSemanticsCensus = tuple[_DirectoryIdentity, int, tuple[_CaseSemanticsEntry, ...]]
+
+
+def _case_semantics_census(directory: Path) -> _CaseSemanticsCensus:
+    try:
+        directory_before = os.stat(directory, follow_symlinks=False)
+        entries = sorted(directory.iterdir(), key=lambda entry: entry.name)
+        rows: list[_CaseSemanticsEntry] = []
+        for entry in entries:
+            witness = os.stat(entry, follow_symlinks=False)
+            rows.append(
+                (entry.name, _identity(witness), stat.S_IFMT(witness.st_mode))
+            )
+        directory_after = os.stat(directory, follow_symlinks=False)
+    except OSError as error:
+        raise ValueError(
+            "could not establish output-path filesystem case semantics"
+        ) from error
+    directory_mode = stat.S_IFMT(directory_before.st_mode)
+    if (
+        not stat.S_ISDIR(directory_before.st_mode)
+        or _identity(directory_after) != _identity(directory_before)
+        or stat.S_IFMT(directory_after.st_mode) != directory_mode
+    ):
+        raise ValueError(
+            "could not establish output-path filesystem case semantics"
+        )
+    return _identity(directory_before), directory_mode, tuple(rows)
+
+
 def _filesystem_is_case_insensitive(existing_directory: Path) -> bool:
     directory = existing_directory.resolve(strict=True)
     if not directory.is_dir():
         raise ValueError("output-path filesystem probe requires a directory")
-    try:
-        entries = sorted(directory.iterdir(), key=lambda entry: entry.name)
-    except OSError as error:
-        raise ValueError("could not inspect output-path filesystem case semantics") from error
-    for entry in entries:
-        alternate_name = _alternate_ascii_case(entry.name)
-        if alternate_name is not None:
-            return _same_filesystem_object(entry, directory / alternate_name)
+    census = _case_semantics_census(directory)
+    for entry_name, _, entry_mode in census[2]:
+        alternate_name = _alternate_ascii_case(entry_name)
+        if alternate_name is None or stat.S_ISLNK(entry_mode):
+            continue
+        result = _same_filesystem_object(
+            directory / entry_name, directory / alternate_name
+        )
+        # Both the selected witness and the complete sorted directory census
+        # are authority-bearing. Refuse if either changed while samefile()
+        # followed the two pathnames; otherwise a removed or substituted
+        # witness could be misclassified as proof of case-sensitive semantics.
+        if _case_semantics_census(directory) != census:
+            raise ValueError(
+                "could not establish output-path filesystem case semantics"
+            )
+        return result
     raise ValueError("could not establish output-path filesystem case semantics")
 
 

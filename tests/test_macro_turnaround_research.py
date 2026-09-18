@@ -1581,6 +1581,221 @@ def test_case_semantics_probe_uses_entries_inside_the_protected_volume(
     )
 
 
+def test_case_semantics_probe_skips_dangling_symlink_before_valid_witness(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_dangling_case_witness", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    (root / "A_Dangling").symlink_to(root / "missing-target")
+    (root / "CaseWitness").write_text("valid witness", encoding="utf-8")
+    resolved_root = root.resolve()
+    real_samefile = module.os.path.samefile
+
+    def mounted_case_insensitive_samefile(
+        left: object, right: object
+    ) -> bool:
+        left_path = Path(left).absolute()
+        right_path = Path(right).absolute()
+        if "dangling" in left_path.name.casefold():
+            raise FileNotFoundError("dangling case witness")
+        if (
+            left_path.parent == resolved_root
+            and right_path.parent == resolved_root
+            and {left_path.name, right_path.name}
+            == {"CaseWitness", "caseWitness"}
+        ):
+            return True
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(
+        module.os.path, "samefile", mounted_case_insensitive_samefile
+    )
+
+    assert module._filesystem_is_case_insensitive(root) is True
+    assert module._path_is_within_protected(
+        root / "SITE" / "nested" / "history.json", root / "site"
+    )
+
+
+def test_case_semantics_probe_refuses_witness_replacement_during_classification(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_replaced_case_witness", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    witness = root / "CaseWitness"
+    witness.write_text("original witness", encoding="utf-8")
+    replacement = tmp_path / "replacement"
+    replacement.write_text("replacement witness", encoding="utf-8")
+    real_samefile = module.os.path.samefile
+    replaced = False
+
+    def replacing_samefile(left: object, right: object) -> bool:
+        nonlocal replaced
+        left_path = Path(left).absolute()
+        if not replaced and left_path == witness.absolute():
+            witness.unlink()
+            replacement.replace(witness)
+            replaced = True
+            return False
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(module.os.path, "samefile", replacing_samefile)
+
+    with pytest.raises(ValueError, match="case semantics"):
+        module._filesystem_is_case_insensitive(root)
+    assert replaced
+
+
+def test_case_semantics_probe_refuses_census_growth_during_matching_lookup(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_growing_case_census", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    witness = root / "CaseWitness"
+    witness.write_text("stable witness", encoding="utf-8")
+    real_samefile = module.os.path.samefile
+    changed = False
+
+    def growing_matching_samefile(left: object, right: object) -> bool:
+        nonlocal changed
+        if not changed and Path(left).absolute() == witness.absolute():
+            (root / "LaterEntry").write_text("new census member", encoding="utf-8")
+            changed = True
+            return True
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(
+        module.os.path, "samefile", growing_matching_samefile
+    )
+
+    with pytest.raises(ValueError, match="case semantics"):
+        module._filesystem_is_case_insensitive(root)
+    assert changed
+
+
+def test_build_cli_dangling_case_witness_still_refuses_alias_before_ingestion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_build_dangling_case_witness", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    (root / "A_Dangling").symlink_to(root / "missing-target")
+    (root / "CaseWitness").write_text("valid witness", encoding="utf-8")
+    monkeypatch.setattr(module, "ROOT", root)
+    resolved_root = root.resolve()
+    real_samefile = module.os.path.samefile
+
+    def mounted_case_insensitive_samefile(
+        left: object, right: object
+    ) -> bool:
+        left_path = Path(left).absolute()
+        right_path = Path(right).absolute()
+        if "dangling" in left_path.name.casefold():
+            raise FileNotFoundError("dangling case witness")
+        if (
+            left_path.parent == resolved_root
+            and right_path.parent == resolved_root
+            and {left_path.name, right_path.name}
+            == {"CaseWitness", "caseWitness"}
+        ):
+            return True
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(
+        module.os.path, "samefile", mounted_case_insensitive_samefile
+    )
+    source = tmp_path / "input.json"
+    source.write_text(json.dumps(cli_payload()), encoding="utf-8")
+    output = root / "SITE" / "nested" / "turnaround.json"
+
+    def forbidden_loads(*args: object, **kwargs: object) -> object:
+        raise AssertionError("protected alias must fail before input ingestion")
+
+    monkeypatch.setattr(module.json, "loads", forbidden_loads)
+    assert module.main(
+        ["--input", str(source), "--output", str(output)]
+    ) == 2
+    assert not output.exists()
+
+
+def test_build_cli_refuses_replaced_case_witness_before_ingestion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "turnaround_build_replaced_case_witness", CLI
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    root = tmp_path / "source"
+    root.mkdir()
+    witness = root / "CaseWitness"
+    witness.write_text("original witness", encoding="utf-8")
+    replacement = tmp_path / "replacement"
+    replacement.write_text("replacement witness", encoding="utf-8")
+    monkeypatch.setattr(module, "ROOT", root)
+    real_samefile = module.os.path.samefile
+    replaced = False
+
+    def replacing_samefile(left: object, right: object) -> bool:
+        nonlocal replaced
+        left_path = Path(left).absolute()
+        if not replaced and left_path == witness.absolute():
+            witness.unlink()
+            replacement.replace(witness)
+            replaced = True
+            return False
+        return real_samefile(left, right)
+
+    monkeypatch.setattr(module.os.path, "samefile", replacing_samefile)
+    source = tmp_path / "input.json"
+    source.write_text(json.dumps(cli_payload()), encoding="utf-8")
+    output = root / "SITE" / "nested" / "turnaround.json"
+
+    def forbidden_loads(*args: object, **kwargs: object) -> object:
+        raise AssertionError("unstable case witness must fail before input ingestion")
+
+    monkeypatch.setattr(module.json, "loads", forbidden_loads)
+    assert module.main(
+        ["--input", str(source), "--output", str(output)]
+    ) == 2
+    assert replaced
+    assert not output.exists()
+
+
 def test_case_semantics_probe_fails_closed_without_an_internal_witness(
     tmp_path: Path,
 ) -> None:
