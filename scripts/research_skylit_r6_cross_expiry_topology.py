@@ -12,6 +12,7 @@ import pandas as pd
 from scripts import research_skylit_r2_exposure_decomposition as r2
 
 SCHEMA = "skylit.r6.cross_expiry_topology_feasibility/v1"
+EXPOSURE_UNIT = getattr(r2, "EXPOSURE_UNIT", "USD dealer-delta change per +1% spot move")
 TENOR_BUCKETS = (
     ("0DTE", 0, 0),
     ("1-2DTE", 1, 2),
@@ -271,6 +272,7 @@ def analyze_state(
         "session": session,
         "decision_eligible_not_before_session": settled_state.get("decision_eligible_not_before_session"),
         "position_tier": r2.POSITION_TIER,
+        "exposure_unit": EXPOSURE_UNIT,
         "magnitude_semantics": "gross_absolute_contract_exposure_aggregated_by_strike",
         "signed_semantics": "separate_naive_position_tier_net_exposure",
         "coordinate": spec,
