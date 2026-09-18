@@ -6928,3 +6928,11 @@
 {"id":"ob-2026-09-18-eb42e26951","from":"approved","to":"posting","at":"2026-09-18T17:26:15Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-18-eb42e26951","from":"posting","to":"posted","at":"2026-09-18T17:26:17Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aad7438a8ad4ba2167a066c","external_url":null,"at":"2026-09-18T17:26:05Z","booked_at":"2026-09-18T17:26:05Z"}}
 {"id":"ob-2026-09-18-af076f4eb1","from":"approved","to":"quarantined","at":"2026-09-18T17:26:17Z","actor":"publisher","note":"orphaned context brief: alert is unresolved","receipt":null}
+{"id":"ob-2026-09-18-66a93d6ff1","from":"queued","to":"approved","at":"2026-09-18T17:31:45Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-18-a6fb4176ed","from":"queued","to":"approved","at":"2026-09-18T17:31:45Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-18-b2832ac491","from":"queued","to":"approved","at":"2026-09-18T17:31:45Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-18-66a93d6ff1","from":"approved","to":"quarantined","at":"2026-09-18T17:31:46Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.68) of ob-2026-09-18-6fa3a34fc1 posted today; same template, different ticker","receipt":null}
+{"id":"ob-2026-09-18-a6fb4176ed","from":"approved","to":"posting","at":"2026-09-18T17:31:53Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-18-a6fb4176ed","from":"posting","to":"posted","at":"2026-09-18T17:31:54Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aad758aa8ad4ba2167a309e","external_url":null,"at":"2026-09-18T17:31:44Z","booked_at":"2026-09-18T17:31:44Z"}}
+{"id":"ob-2026-09-18-b2832ac491","from":"approved","to":"posting","at":"2026-09-18T17:32:00Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
+{"id":"ob-2026-09-18-b2832ac491","from":"posting","to":"posted","at":"2026-09-18T17:32:01Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aad7591640ac6e6f5e377fa","external_url":null,"at":"2026-09-18T17:31:44Z","booked_at":"2026-09-18T17:31:44Z"}}
