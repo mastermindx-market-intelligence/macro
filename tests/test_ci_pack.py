@@ -359,6 +359,14 @@ def test_manifest_additive_pytest_enrollment_is_bounded_to_changed_job() -> None
             "python -m pytest tests/test_existing.py tests/test_new.py -q",
             "python -m pytest tests/test_other.py tests/test_surprise.py -x",
         ),
+        (
+            "python -m pytest 'tests/test_existing.py' tests/test_new.py -q",
+            "python -m pytest tests/test_other.py -q",
+        ),
+        (
+            "python  -m pytest tests/test_existing.py tests/test_new.py -q",
+            "python -m pytest tests/test_other.py -q",
+        ),
     ],
 )
 def test_manifest_enrollment_near_misses_fail_closed(
@@ -384,6 +392,63 @@ def test_manifest_enrollment_near_misses_fail_closed(
 
     assert PACK._classify_additive_manifest_pytest_enrollment(
         base, candidate
+    ) is None
+
+
+
+def test_safe_manifest_enrollment_reads_the_exact_base_commit(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    manifest = repo / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(base, sort_keys=False))
+    subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "config", "user.email", "ci@example.invalid"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.name", "CI Test"],
+        cwd=repo,
+        check=True,
+    )
+    subprocess.run(["git", "add", "."], cwd=repo, check=True)
+    subprocess.run(["git", "commit", "-m", "base"], cwd=repo, check=True, capture_output=True)
+    base_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+            ),
+        }
+    }
+    manifest.write_text(yaml.safe_dump(candidate, sort_keys=False))
+
+    assert PACK._safe_manifest_enrollment_job_ids(
+        manifest,
+        base_sha,
+        repo_root=repo,
+    ) == ("owner",)
+    assert PACK._safe_manifest_enrollment_job_ids(
+        manifest,
+        "not-an-exact-sha",
+        repo_root=repo,
     ) is None
 
 
