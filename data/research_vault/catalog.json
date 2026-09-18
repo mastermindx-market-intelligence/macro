@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T12:22:57.198857+00:00",
-  "count": 2359,
+  "generated_at": "2026-09-18T12:37:57.165926+00:00",
+  "count": 2360,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-lysi4w2sjkz-a09bde",
+      "title": "JPM US Market Intelligence | Morning Briefing",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T10:54:45Z",
+      "summary_points": [
+        "Fed Policy Ambiguity: Warsh’s unclear inflation stance and Fed dots suggesting 1 hike before 2027 create uncertainty; critical for rate path positioning and bond yields near 4.99% cycle high.",
+        "Oil Correction Catalyst: WTI at $101 amid EEW outage (Hormuz flows at 9.5 mbd) and CTA max-allocation signal meaningful correction; diplomatic events (Trump-Xi, UN) key next catalysts.",
+        "BOJ Policy Divergence: Split vote (7-2) on rate hike with JPY depreciating to 157.98; signals potential rate resistance despite CPI trends, impacting FX flows and global carry trades.",
+        "Near-Term Event Risk: Fed meeting (Sep 16, 2pm ET) and earnings cluster (Sep 14-15) drive immediate positioning; critical for equities, fixed income, and sector rotation (Tech, Financials).",
+        "Geopolitical & Trade Risk: US-China trade truce expiration (Nov 1) threatens tariffs/supply chains; US/Iran tensions + El Niño pressure commodities/inflation, amplifying headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-1jpcpn7srbs-044a4b",
       "title": "JPM Euro inflation",
