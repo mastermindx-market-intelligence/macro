@@ -2,6 +2,36 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-18",
+      "tickers": [
+        "ALGT",
+        "ARDC",
+        "ASTE",
+        "CLH",
+        "COF",
+        "CXT",
+        "DG",
+        "ELV",
+        "F",
+        "GAP",
+        "GLW",
+        "HUBG",
+        "IPGP",
+        "MNR",
+        "MPT",
+        "MUSA",
+        "NABL",
+        "NX",
+        "OKE",
+        "RBLX",
+        "SGI",
+        "TQQQ",
+        "TTD",
+        "XBI",
+        "XBP"
+      ]
+    },
+    {
       "as_of": "2026-09-17",
       "tickers": [
         "ASO",
@@ -80,21 +110,6 @@
         "SIG",
         "VTR",
         "WMB"
-      ]
-    },
-    {
-      "as_of": "2026-09-10",
-      "tickers": [
-        "ADM",
-        "ALV",
-        "BABA",
-        "DYN",
-        "EZPW",
-        "FN",
-        "KMT",
-        "LAUR",
-        "LILA",
-        "SEI"
       ]
     }
   ]
