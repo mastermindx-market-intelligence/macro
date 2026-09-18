@@ -346,20 +346,20 @@ def test_vendor_symbol_for_inverts_resolve_on_both_sides(
     assert table.resolve(vendor, expected, on) == security
 
 
-def test_fiserv_is_carried_with_open_bounds_because_the_date_is_not_citable(
+def test_fiserv_stable_repo_key_is_not_misclassified_as_the_current_listing_symbol(
     table: VendorAliasTable,
 ) -> None:
-    """The vendor LAGS this one, and an invented date would be a fabricated fact.
+    """#4622 ratified FI as stable repo key and FISV as live listing/vendor key.
 
-    Yahoo still serves Fiserv under the pre-rename FISV
-    (``lib.ticker_aliases.YAHOO_FETCH_ALIASES["FI"] == "FISV"``) and so does the
-    exchange symbol directory, while this repo's key is FI.  There is no changeover DAY
-    to scope and no in-repo source for the 2023 change, so both rows are open-bounded —
-    the honest ABSENCE of a boundary claim rather than a guessed one.
+    That boundary is open-bounded in membership/store space; it is not an undated
+    historical rename claiming the venue-current symbol is FI. The canonical listing
+    identity stays SEC:US-XNAS-FISV while the repo stores it under FI.
     """
     for on in (date(2019, 1, 2), date(2023, 6, 1), date(2026, 8, 1)):
         assert table.resolve("yahoo", "FISV", on) == "SEC:US-XNAS-FISV"
         assert table.resolve("membership", "FI", on) == "SEC:US-XNAS-FISV"
+    assert BUILD._current_symbol("FISV") == "FISV"
+    assert BUILD._evidence_join_key("FISV") == "FISV"
 
 
 def test_b_is_fail_closed_until_identity_scoped_continuation_and_reuse_exist(
@@ -507,13 +507,9 @@ def test_ibit_resolves_to_the_trusts_own_cik(master: pd.DataFrame) -> None:
 
 
 def test_no_issuer_evidence_rows_retain_their_legacy_value(master: pd.DataFrame) -> None:
-    """CTRA/TPH (measured misses) and FISV (current symbol FI misses the map) —
-    spec §11: legacy issuer_id retained, aggregation-forbidden, self-heals later.
-    AEP left this exemplar set 2026-08: the self-heal the docstring promised
-    actually happened (a later CIK map carries AEP -> 0000004904), so it is
-    asserted below in its healed state instead — the spec's own §11 end-state."""
+    """Measured CTRA/TPH misses stay explicit while later evidence self-heals others."""
     rows = master.set_index("inception_code")
-    for code in ("CTRA", "TPH", "FISV"):
+    for code in ("CTRA", "TPH"):
         row = rows.loc[code]
         assert row["issuer_state"] == "NO_ISSUER_EVIDENCE", code
         assert row["issuer_id"] == f"ISS:{row['listing_key']}", code
@@ -521,6 +517,14 @@ def test_no_issuer_evidence_rows_retain_their_legacy_value(master: pd.DataFrame)
     aep = rows.loc["AEP"]
     assert aep["issuer_state"] == "RESOLVED"
     assert aep["issuer_cik"] == "0000004904"
+
+
+def test_fisv_issuer_self_heals_from_the_current_cik_map(master: pd.DataFrame) -> None:
+    """Stable repo key FI must not stop current CIK evidence joining on listed FISV."""
+    row = master.set_index("inception_code").loc["FISV"]
+    assert row["issuer_state"] == "RESOLVED"
+    assert row["issuer_cik"] == "0000798354"
+    assert row["issuer_id"] == "ISS:US-XNAS-FISV"
 
 
 def test_rddt_enters_resolved_from_current_seeds(master: pd.DataFrame) -> None:
@@ -650,10 +654,9 @@ def test_current_symbol_walks_the_same_chain_forward(monkeypatch: pytest.MonkeyP
     opposite direction, landing on the security's own current symbol."""
     assert BUILD._current_symbol("MMC") == "MRSH"
     assert BUILD._current_symbol("SATS") == "ECHO"
-    # The vendor-lag case: this repo's OWN rename record says the current symbol is
-    # FI even though Yahoo still serves FISV — §1 asks for THIS repo's record, not
-    # whatever a lagging vendor currently serves.
-    assert BUILD._current_symbol("FISV") == "FI"
+    # #4622 ratified FI as the stable repo/store key, not the venue-current symbol.
+    # The current listing/vendor symbol is FISV and current CIK evidence joins there.
+    assert BUILD._current_symbol("FISV") == "FISV"
     assert BUILD._current_symbol("AAPL") == "AAPL"
     assert BUILD._evidence_join_key("BRK.B") == "BRK-B"
 
@@ -1094,6 +1097,22 @@ def test_the_security_migrations_schema_matches_the_registry() -> None:
     emitted = list(pd.read_parquet(
         ROOT / "data" / "reference" / "security_migrations.parquet").columns)
     assert emitted == declared
+
+
+def test_receipt_distinguishes_stable_repo_keys_from_historical_renames(
+    receipt: dict,
+) -> None:
+    """FI/FISV is explicit provenance without becoming a fake rename clock."""
+    assert receipt["undated_renames"] == []
+    assert receipt["stable_key_vendor_boundaries"] == [{
+        "stable_key": "FI",
+        "vendor_symbol": "FISV",
+        "evidence": (
+            "merged #4622: FI stays the stable membership/page/ledger/store key while "
+            "FISV is the live listed/vendor symbol; Data OS listing identity remains "
+            "SEC:US-XNAS-FISV"
+        ),
+    }]
 
 
 def test_receipt_carries_the_security_axis_block(receipt: dict, master: pd.DataFrame) -> None:
@@ -2358,6 +2377,36 @@ def test_alias_rows_are_built_dated_for_a_rename_and_open_otherwise() -> None:
     assert by_pair[("yahoo_fetch", "AAPL")].valid_to is None
     assert by_pair[("store", "AAPL")].valid_to is None
     VendorAliasTable(rows)  # and the fixture table is unambiguous
+
+
+def test_stable_key_vendor_boundary_does_not_require_an_undated_rename(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Stable repo key / live vendor key is not historical rename evidence.
+
+    This reproduces #4622's accepted FI/FISV boundary after removing the stale
+    UNDATED_RENAMES crutch: config FISV->FI plus ticker_aliases FI->FISV is already
+    a modelled stable-key boundary, so the rename-drift guard must stay green.
+    """
+    monkeypatch.setattr(BUILD, "UNDATED_RENAMES", ())
+    monkeypatch.setattr(BUILD.ticker_aliases, "YAHOO_FETCH_ALIASES", {"FI": "FISV"})
+    assert BUILD.unmodelled_renames({"FISV": "FI"}, {}) == []
+
+
+def test_stable_key_boundary_never_excuses_a_missing_dated_rename(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """FI/FISV is exceptional; MMC/MRSH still requires its dated rename record."""
+    monkeypatch.setattr(BUILD, "RENAME_EVENTS", ())
+    monkeypatch.setattr(BUILD, "UNDATED_RENAMES", ())
+    monkeypatch.setattr(
+        BUILD.ticker_aliases,
+        "YAHOO_FETCH_ALIASES",
+        {"FI": "FISV", "MMC": "MRSH"},
+    )
+    missing = BUILD.unmodelled_renames({"FISV": "FI", "MRSH": "MMC"}, {})
+    assert not any("FISV->FI" in line for line in missing)
+    assert any("MRSH->MMC" in line for line in missing)
 
 
 def test_every_rename_the_repo_records_is_modelled_by_the_builder() -> None:
