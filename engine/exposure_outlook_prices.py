@@ -13,6 +13,15 @@ from typing import Any
 from engine.exposure_outlook_data import ET, _ROOT, _number, _timestamp
 
 
+def terminal_bar_open_utc(epoch: int | float) -> datetime:
+    """Decode the existing Terminal market-local display-epoch convention."""
+    if (not isinstance(epoch, (int, float)) or isinstance(epoch, bool)
+            or not 0 < epoch < 4_102_444_800 or epoch != int(epoch)):
+        raise ValueError('invalid Terminal bar epoch')
+    wall = datetime.fromtimestamp(epoch, timezone.utc)
+    return wall.replace(tzinfo=ET).astimezone(timezone.utc)
+
+
 def audit_terminal_intraday(payload: dict[str, Any], *, root: str, session: str,
                              as_of: str) -> dict[str, Any]:
     if not isinstance(root,str) or not _ROOT.fullmatch(root) or len(root)>12:
@@ -91,10 +100,9 @@ def audit_terminal_intraday(payload: dict[str, Any], *, root: str, session: str,
         return finish()
     opens=[]
     for bar in bars:
-        wall=datetime.fromtimestamp(bar[0],timezone.utc)
-        if wall.date()!=day:
+        actual=terminal_bar_open_utc(bar[0])
+        if actual.astimezone(ET).date()!=day:
             reasons.add('BAR_SESSION_MISMATCH')
-        actual=wall.replace(tzinfo=ET).astimezone(timezone.utc)
         opens.append(actual)
         if actual+timedelta(seconds=span)>cutoff:
             reasons.add('BAR_NOT_CLOSED_BY_CUTOFF')

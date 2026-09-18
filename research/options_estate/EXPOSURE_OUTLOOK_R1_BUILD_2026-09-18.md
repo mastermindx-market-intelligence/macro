@@ -166,3 +166,94 @@ worker START. GitHub CI was observed in progress on the initial head. The inacti
 ci-authority/codex/merge-queue-pilot red is not a binding source failure: its check explicitly
 reported context_active=false / inactive_base_context. HOLD remains until actual independent
 review and exact-successor-head CI have completed; no auto-merge is armed.
+
+## Approved continuation: CI enrollment and observed-outcome consumer
+
+Current live Chairman continuation retains the approved hybrid design. This slice stays on
+PR #7328 and adds observed price outcomes to the existing read-only research CLI, not the
+blocked forecasting-baseline transfer. No probability, training, source-store or runtime writer.
+Procedure pin: Mastermind@20dc89a201b9dfa65c2b6a2366072f45d885cb5c, compatible Skillpack 1.0.1.
+
+- [x] Enroll the three existing suites in the options-data job in `.github/ci/legacy-jobs.yml`.
+  Reproducer: contract-delta job 105774897691 names all three as unrun. No waiver or new job.
+- [x] Add `engine/exposure_outlook_outcomes.py::label_price_outcomes(payload, *, root,
+  session, origin, as_of, session_open, session_close, calendar_ref, barriers=None)`.
+  The explicit session window comes from the caller's calendar owner; do not invent another
+  early-close calendar. Reuse Terminal display-epoch decoding and source-evidence checks.
+- [x] Tests in `tests/test_exposure_outlook_prices.py` first prove the module absent, then pin
+  exact 30/60/90/120/close endpoints, no silent clipping, pending outcomes, missing anchors,
+  per-horizon gap handling, same-bar first-touch ambiguity, touch versus exit, inclusive
+  endpoint containment, missing barrier nulls, late-defined target refusal and identity checks.
+  Example: a missing interior bar permits an observed endpoint return but never false
+  path containment; high==upper touches the barrier without exiting the closed interval.
+- [x] Add `label-price` to `engine/exposure_outlook_research.py`, wire explicit window/ref
+  flags, and run its real subprocess from `tests/test_exposure_outlook_audit_cli.py`.
+- [x] Run all four focused suites plus contract-delta; use actual served Terminal bars to
+  produce a hash-attributed outcome receipt with research admission still unqualified.
+- [ ] Commit/push this same carrier, obtain independent review and actual current-head CI;
+  no self-review-as-independent, auto-merge, source restart or baseline-transfer retry.
+
+The full feature is not complete at an outcome label, data receipt, test run, PR or merge.
+
+## Continuation verification — September 18, 23:35 UTC
+
+The existing R1 carrier now includes observed-outcome labeling, not the blocked baseline
+forecast model. `label-price` is a real stdout-only CLI over existing Terminal responses.
+It separates endpoint observations, complete supplied-bar paths, inclusive touches, strict
+range exits, and unresolved first-touch order inside an OHLC bar. A missing interior candle
+may leave an endpoint observed but cannot prove a barrier was never touched. Nothing here
+proves full exchange-feed completeness, historical availability, or forecast calibration.
+
+Verification: 162 focused tests passed (83 Exposure Outlook / 79 existing GEX-state tests).
+The first 13 outcome tests failed before the module existed; the CLI and two adversarial
+clock/first-touch cases failed before their implementation. The active suite has no new
+skips or waivers. Two unimplemented optional calendar-default tests are separately retained
+as a deferred specification, not reported as passing tests or an installed feature.
+
+The original `contract-delta` failure named three unregistered pytest suites. All three now
+run inside the existing options-data job. After materializing omitted source directories in
+this worktree (not generated data/site), `python3 scripts/check_contract_delta.py --base
+b9bd603745c6d5afa86a0183f4a12d196c7c8ad7` returned 0 introduced / 0 inherited. The manifest
+is a CI-authority path; this is enrollment, not a gate exemption. Current-head hosted proof
+and independent review are still required; no auto-merge or protection change is implied.
+
+`EXPOSURE_OUTLOOK_OBSERVED_OUTCOMES_2026-09-18.json` records the actual served SPY response
+for September 17, 78 five-minute bars, origin 18:00 UTC. The CLI observed exact 30/60/90/120/
+close endpoints. The caller used existing `lib.nyse_calendar.is_session` and
+`engine.session_digest.session_window_et` and supplied their explicit window. No barriers
+were retrospectively selected for this real-input receipt. Source hashes and original
+research-admission limitations travel with it. These are observations, not forecast scores.
+
+### Additional measured source boundaries
+
+The actual M1 SPY 2026 Theta parquet metadata shows 2,352,602 EOD rows, 2,352,602 Greek
+rows and 2,297,761 OI rows. Their clocks are date-level; last inspected EOD/Greek dates
+were September 17 and OI September 18. No per-row intraday availability/method-version
+field appears in the inspected schemas. This is substantial EOD history, not proof of a
+minute-level historical exposure corpus. Only metadata and bounded clock samples were read;
+no store, producer, schedule, subscription or credentials were modified.
+
+The served `surface_dates:SPY` request returned HTTP 403 / `pro_required`. This session did
+not inspect the authenticated R2 archive through that product endpoint and did not fetch a
+public bucket URL to evade it. Archive coverage remains unknown, not absent. The existing
+canonical ArchiveReader is an available code seam; an authenticated read still needs its
+proper principal/context and no duplicate archive reader or source system was created.
+
+The optional automatic-calendar-default source patch was platform-blocked before execution.
+Same-worktree reconciliation confirmed no effect. The implemented explicit-window API is
+unchanged; the two draft default tests are preserved in the named deferred specification.
+The prior forecasting-baseline transfer remains separately blocked/absent. No blocked write
+was retried through another path, actor or renamed implementation. Further source writes
+outside those exact blocked operations continued on the original allowed R1 carrier.
+
+### Historical Greek request feasibility resolved for the bounded probe
+
+The existing M1 Theta service returned HTTP 200 for both requested methodology versions
+on a SPY 762 call expiring September 17, 15:45-15:55, interval=5m. Three matched timestamps
+had matching quote/underlying inputs and method-dependent delta, gamma, IV and charm.
+The metadata-only feasibility receipt records parameters, observation clocks and response
+hashes. This materially supersedes using the July interval-rejection observation as a
+current blocker. The adapter remains EOD-only in this PR; full capture, historical
+availability, rate/dividend conventions and immutable version/build provenance remain
+to be qualified through the existing Theta owner. A mutable latest label is not an
+immutable model version. No raw vendor quote corpus was committed.

@@ -1,6 +1,6 @@
 """Stdout-only research consumer for the existing options surface store.
 
-R1 exposes only the installed audit capability, not the unqualified baseline.
+R1 exposes source audits and observed outcomes, not the unqualified baseline.
 Findings exit 0; invalid invocation/input exits 2 with a machine-readable error.
 No input files, runtime artifacts, ledgers or model-promotion state are written.
 """
@@ -13,6 +13,7 @@ from pathlib import Path
 
 from engine.exposure_outlook_data import audit_surface_session
 from engine.exposure_outlook_prices import audit_terminal_intraday
+from engine.exposure_outlook_outcomes import label_price_outcomes
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -30,6 +31,11 @@ def main(argv: list[str] | None = None) -> int:
     price.add_argument('--root', required=True)
     price.add_argument('--session', required=True)
     price.add_argument('--as-of', required=True)
+    label = commands.add_parser('label-price')
+    label.add_argument('--input', required=True, type=Path)
+    for flag in ('root', 'session', 'as-of', 'origin', 'session-open', 'session-close', 'calendar-ref'):
+        label.add_argument('--' + flag, required=True)
+    label.add_argument('--barriers', help='Frozen band JSON with lower, upper, known_at and source_ref')
     args = parser.parse_args(argv)
     try:
         if args.command == 'audit-surface':
@@ -41,8 +47,15 @@ def main(argv: list[str] | None = None) -> int:
                 raw = stream.read(16 * 1024 * 1024 + 1)
             if len(raw) > 16 * 1024 * 1024:
                 raise ValueError('input exceeds 16 MiB read budget')
-            out = audit_terminal_intraday(json.loads(raw), root=args.root, session=args.session,
-                                          as_of=args.as_of)
+            payload = json.loads(raw)
+            if args.command == 'label-price':
+                out = label_price_outcomes(payload, root=args.root, session=args.session,
+                    origin=args.origin, as_of=args.as_of, session_open=args.session_open,
+                    session_close=args.session_close, calendar_ref=args.calendar_ref,
+                    barriers=json.loads(args.barriers) if args.barriers is not None else None)
+            else:
+                out = audit_terminal_intraday(payload, root=args.root, session=args.session,
+                                              as_of=args.as_of)
             out['input_sha256'] = hashlib.sha256(raw).hexdigest()
         print(json.dumps(out, sort_keys=True, allow_nan=False))
         return 0
