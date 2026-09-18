@@ -151,5 +151,51 @@
     "actual extraction token usage/cost",
     "incremental account customer value",
     "fourth-account need"
-  ]
+  ],
+  "durable_design": {
+    "producer_contract": "research/research_vault_expectations_r3/R22_W1_W2_OPERATIONAL_PRODUCER_CONTRACT.md",
+    "producer_contract_state": "DESIGN_ONLY_NOT_IMPLEMENTED",
+    "gold_corpus": "research/research_vault_expectations_r3/r22/gold_corpus_r22.json",
+    "gold_stage_matrix": "research/research_vault_expectations_r3/r22/gold_stage_matrix_r22.json",
+    "account_pilot_scorecard": "research/research_vault_expectations_r3/r22/account_pilot_scorecard_r22.json",
+    "literal_company_metadata": "research/research_vault_expectations_r3/r22/literal_company_metadata_r22.json",
+    "implementation_approval_required": true
+  },
+  "public_pricing": {
+    "observed_date": "2026-09-18",
+    "zerohedge_professional": {
+      "monthly_usd": 150,
+      "annual_billed_monthly_equivalent_usd": 125,
+      "annual_total_usd": 1500,
+      "source": "https://www.zerohedge.com/signup"
+    },
+    "haiku_4_5_api": {
+      "standard_input_per_million_usd": 1,
+      "standard_output_per_million_usd": 5,
+      "batch_input_per_million_usd": 0.5,
+      "batch_output_per_million_usd": 2.5,
+      "source": "Anthropic public list prices"
+    }
+  },
+  "rights": {
+    "zerohedge_public_terms_reviewed": "https://www.zerohedge.com/terms-of-service",
+    "automated_collection_pooling_model_processing_subscriber_output_redistribution": "NOT_ESTABLISHED",
+    "interpretation": "Professional catalog access is advertised; the public terms page reviewed does not establish the intended commercial automation/redistribution grant."
+  },
+  "company_metadata_probe": {
+    "method": "bounded literal regex over title + summary_points only; NOT entity resolution",
+    "NVIDIA": 100,
+    "AMD": 23,
+    "Intel": 15,
+    "Arm Holdings": 4,
+    "Alphabet/Google": 79,
+    "Meta Platforms": 57,
+    "Microsoft": 56,
+    "Amazon": 71,
+    "Coinbase": 1,
+    "Circle Internet": 2,
+    "gold miners": 2,
+    "silver miners": 1,
+    "warning": "metadata literal incidence only; body coverage and true entity relevance may differ"
+  }
 }
