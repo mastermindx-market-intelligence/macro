@@ -41,6 +41,7 @@ function answer(url){
     data.selection={...data.selection,query:q,offset,limit:25,total_matches:all.length,next_offset:offset+25<all.length?offset+25:null};data.episodes=all.slice(offset,offset+25);
     if(mode==='wronglink')data.episodes[0].research_view_url='https://other.test/collect';
     if(mode==='rank')data.authority.can_rank=true;
+    if(mode==='changed_generation'){data.generation_id='peg:'+'b'.repeat(64);for(const row of data.episodes){row.episode_ref.generation_id=data.generation_id;const u=new URL(row.research_view_url,'https://prophet.test');u.searchParams.set('expected_generation',data.generation_id);row.research_view_url=u.pathname+u.search;}}
   }
   return response(data);
 }
@@ -66,6 +67,10 @@ else{
   await open();assert.equal(controls.results.querySelectorAll('button').length,25,'bounded first page');
   if(scenario==='search'){controls.query.value='NO-SUCH-SECURITY';controls.search.emit('submit');await flush();assert.match(controls.status.textContent,/No recorded opportunities/);assert.equal(controls.results.children.length,0);assert.equal(new URL(requests.at(-1).url,'https://prophet.test').searchParams.get('q'),'NO-SUCH-SECURITY');}
   else if(scenario==='pagination'){controls.next.emit('click');await flush();assert.equal(controls.results.querySelectorAll('button').length,2);assert.equal(new URL(requests.at(-1).url,'https://prophet.test').searchParams.get('expected_generation'),input.directory.generation_id);}
+  else if(scenario==='unsubmitted_pagination'){controls.query.value='NO-SUCH-SECURITY';controls.next.emit('click');await flush();assert.equal(new URL(requests.at(-1).url,'https://prophet.test').searchParams.get('q'),'');assert.equal(controls.results.querySelectorAll('button').length,2);assert.equal(controls.query.value,'NO-SUCH-SECURITY');}
+  else if(scenario==='unsubmitted_first'){controls.next.emit('click');await flush();controls.query.value='NO-SUCH-SECURITY';controls.first.emit('click');await flush();assert.equal(new URL(requests.at(-1).url,'https://prophet.test').searchParams.get('q'),'');assert.equal(controls.results.querySelectorAll('button').length,25);assert.equal(controls.query.value,'NO-SUCH-SECURITY');}
+  else if(scenario==='first_generation'){controls.next.emit('click');await flush();controls.first.emit('click');await flush();assert.equal(new URL(requests.at(-1).url,'https://prophet.test').searchParams.get('expected_generation'),input.directory.generation_id);}
+  else if(scenario==='changed_first_generation'){controls.next.emit('click');await flush();mode='changed_generation';controls.first.emit('click');await flush();noEvidence();assert.match(controls.status.textContent,/source version changed/);}
   else if(scenario==='distinct_episodes'){const buttons=controls.results.querySelectorAll('button');assert.notEqual(buttons[0].dataset.episode,buttons[1].dataset.episode);assert.equal(buttons[0].children[0].textContent,buttons[1].children[0].textContent);}
   else if(scenario==='wrongref'){mode=scenario;await choose();noEvidence();assert.match(controls.status.textContent,/could not be verified/);}
   else if(scenario.startsWith('http')){mode=scenario;await choose();noEvidence();const code=Number(scenario.slice(4));assert.match(controls.status.textContent,code===409?/source version changed/:code===401?/Sign in/:[402,403].includes(code)?/cannot access/:/unavailable/);}

@@ -93,7 +93,8 @@ def runtime_payload():
 @pytest.mark.parametrize('scenario', ['happy','anonymous','absent_auth','auth_race','timeout',
     'late_response','wronglink','rank','nonjson','oversize','search','pagination','distinct_episodes',
     'wrongref','http401','http402','http403','http409','http503','late_account_response','language',
-    'close','signout','account_change','hidden','pagehide','token_refresh','user_updated','superseded_response','unsubmitted_input'])
+    'close','signout','account_change','hidden','pagehide','token_refresh','user_updated','superseded_response','unsubmitted_input',
+    'unsubmitted_pagination','unsubmitted_first','first_generation','changed_first_generation'])
 def test_browser_runtime_contract(runtime_payload, scenario):
     node = shutil.which('node')
     assert node, 'Node is required by the existing frontend test owner'

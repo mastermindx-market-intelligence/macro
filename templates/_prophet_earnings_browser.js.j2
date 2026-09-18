@@ -64,14 +64,14 @@ function mount(root) {
     detail.replaceChildren(element('div','pe-detail-heading',securityLabel(chosen.security_id)),article);
   }
   function refOK(r){return r&&string(r.episode_id)&&r.episode_id.length>0&&string(r.identity_ref)&&string(r.schema)&&generation(r.generation_id);}
-  function validateDirectory(d,requestedOffset,requestedQuery){
+  function validateDirectory(d,requestedOffset,requestedQuery,expectedGeneration){
     var s=d&&d.selection;
     if(!d||d.schema!=='prophet.lab_episode_directory/v1'||!generation(d.generation_id)||!noAuthority(d.authority)||!s||!Array.isArray(d.episodes)||d.episodes.length>100)throw failure('bad');
     if(s.offset!==requestedOffset||s.limit!==25||s.query!==requestedQuery||!Number.isInteger(s.total_matches)||s.total_matches<0||!Number.isInteger(s.total_episodes)||s.total_episodes<s.total_matches)throw failure('bad');
     if(d.scope!=='B1_CURRENT_GENERATION_ONLY'||d.population_completeness!=='NOT_ASSERTED'||s.order!=='REVERSE_CANONICAL_B1_ORDER')throw failure('bad');
     if(d.episodes.length!==Math.max(0,Math.min(s.limit,s.total_matches-s.offset)))throw failure('bad');
     var expectedNext=s.offset+s.limit<s.total_matches?s.offset+s.limit:null;
-    if(s.next_offset!==expectedNext||(requestedOffset&&(!page||page.generation_id!==d.generation_id)))throw failure('changed');
+    if(s.next_offset!==expectedNext||(expectedGeneration&&expectedGeneration!==d.generation_id))throw failure('changed');
     var seen=new Set();d.episodes.forEach(function(r){
       if(!refOK(r.episode_ref)||r.episode_ref.generation_id!==d.generation_id||!string(r.security_id)||!string(r.opened_at)||!string(r.opened_session)||seen.has(r.episode_ref.episode_id))throw failure('bad');
       seen.add(r.episode_ref.episode_id);
@@ -129,18 +129,23 @@ function mount(root) {
     message(d.episodes.length?'count':'empty',{shown:d.episodes.length,total:d.selection.total_matches});
     detail.replaceChildren(element('p','pe-help',text('details')));
   }
-  function loadDirectory(offset){
+  function loadDirectory(offset,navigation){
     if(!root.open)return;
-    var previous=page, needle=query.value.trim();chosen=null;currentView=null;detail.replaceChildren();list.replaceChildren();next.hidden=true;first.hidden=true;
-    if(!offset)page=null;
+    var previous=page, paging=!!offset||navigation===true;
+    if(paging&&!previous){notice(failure('changed'));return;}
+    // Navigation follows the submitted search and its exact snapshot, not draft input.
+    var needle=paging?previous.selection.query:query.value.trim();
+    var expectedGeneration=paging?previous.generation_id:null;
+    chosen=null;currentView=null;detail.replaceChildren();list.replaceChildren();next.hidden=true;first.hidden=true;
+    if(!paging)page=null;
     var params=new URLSearchParams({q:needle,limit:'25',offset:String(offset)});
-    if(offset){if(!previous){notice(failure('changed'));return;}params.set('expected_generation',previous.generation_id);}
-    perform(BASE+'?'+params.toString(),function(data){page=validateDirectory(data,offset,needle);paintDirectory(page);});
+    if(expectedGeneration)params.set('expected_generation',expectedGeneration);
+    perform(BASE+'?'+params.toString(),function(data){page=validateDirectory(data,offset,needle,expectedGeneration);paintDirectory(page);});
   }
   select('search').addEventListener('submit',function(event){event.preventDefault();loadDirectory(0);});
   select('refresh').addEventListener('click',function(){clear();loadDirectory(0);});
-  next.addEventListener('click',function(){if(page&&page.selection.next_offset!==null)loadDirectory(page.selection.next_offset);});
-  first.addEventListener('click',function(){loadDirectory(0);});
+  next.addEventListener('click',function(){if(page&&page.selection.next_offset!==null)loadDirectory(page.selection.next_offset,true);});
+  first.addEventListener('click',function(){loadDirectory(0,true);});
   signin.addEventListener('click',function(){if(window.MDXAuth&&window.MDXAuth.open)window.MDXAuth.open('signin');});
   root.addEventListener('toggle',function(){if(root.open)loadDirectory(0);else{clear();message('closed');}});
   window.addEventListener('mdx-auth',function(event){
