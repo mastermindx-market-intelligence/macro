@@ -59,6 +59,21 @@ def _next_session(value: str, calendar_api) -> str:
     return nxt.isoformat()
 
 
+def _identity_valid_mask(frame: pd.DataFrame, root: str) -> pd.Series:
+    missing = sorted(set(KEY) - set(frame.columns))
+    if missing:
+        raise R2Refusal(f"missing required columns: {missing}")
+    strike = pd.to_numeric(frame["strike"], errors="coerce")
+    expiry = pd.to_datetime(frame["expiration"], errors="coerce")
+    return (
+        frame["root"].astype(str).str.upper().eq(root.upper())
+        & frame["right"].astype(str).str.upper().isin(["C", "P"])
+        & np.isfinite(strike)
+        & strike.gt(0)
+        & expiry.notna()
+    )
+
+
 def _normalize_identity(frame: pd.DataFrame, root: str, *, require_oi: bool = False) -> pd.DataFrame:
     required = set(KEY)
     if require_oi:
@@ -67,17 +82,12 @@ def _normalize_identity(frame: pd.DataFrame, root: str, *, require_oi: bool = Fa
     if missing:
         raise R2Refusal(f"missing required columns: {missing}")
     out = frame.copy()
+    valid_identity = _identity_valid_mask(out, root)
+    out = out[valid_identity].copy()
     out["root"] = out["root"].astype(str).str.upper()
     out["right"] = out["right"].astype(str).str.upper()
     out["expiration"] = pd.to_datetime(out["expiration"], errors="coerce").dt.date.astype(str)
     out["strike"] = pd.to_numeric(out["strike"], errors="coerce")
-    out = out[
-        (out["root"] == root.upper())
-        & out["right"].isin(["C", "P"])
-        & np.isfinite(out["strike"])
-        & (out["strike"] > 0)
-        & out["expiration"].ne("NaT")
-    ].copy()
     if require_oi:
         out["open_interest"] = pd.to_numeric(out["open_interest"], errors="coerce")
         out = out[np.isfinite(out["open_interest"]) & (out["open_interest"] >= 0)].copy()
@@ -160,6 +170,13 @@ def build_settled_state(
     base_raw = store_api.chain(session, root.upper(), store=store)
     if base_raw is None or base_raw.empty:
         raise R2Refusal(f"no EOD/Greeks chain for {root.upper()} {session}")
+    identity_mask = _identity_valid_mask(base_raw, root)
+    invalid_identity_rows = int((~identity_mask).sum())
+    if invalid_identity_rows:
+        raise R2Refusal(
+            f"malformed contract identity rows for {root.upper()} {session}: "
+            f"{invalid_identity_rows}/{len(base_raw)}"
+        )
     base = _normalize_identity(base_raw, root)
     for col in ("implied_vol", "underlying_price"):
         if col not in base.columns:
