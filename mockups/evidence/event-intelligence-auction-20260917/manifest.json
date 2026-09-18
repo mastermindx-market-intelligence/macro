@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-17T23:54:07Z",
+  "generated_at": "2026-09-18T00:02:11Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -35,42 +35,42 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:61326/product-nav-icons.css?v=093ad1ea",
+          "source_url": "http://127.0.0.1:51113/product-nav-icons.css?v=093ad1ea",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:61326/favicon.ico",
+          "source_url": "http://127.0.0.1:51113/favicon.ico",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:61326/fonts/Inter-500.woff2",
+          "source_url": "http://127.0.0.1:51113/fonts/Inter-600.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:61326/fonts/Inter-600.woff2",
+          "source_url": "http://127.0.0.1:51113/fonts/Inter-500.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:61326/fonts/Inter-400.woff2",
+          "source_url": "http://127.0.0.1:51113/fonts/Inter-400.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:61326/product-nav-icons.css?v=093ad1ea"
+          "url": "http://127.0.0.1:51113/product-nav-icons.css?v=093ad1ea"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:61326/fonts/Inter-500.woff2"
+          "url": "http://127.0.0.1:51113/fonts/Inter-600.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:61326/fonts/Inter-600.woff2"
+          "url": "http://127.0.0.1:51113/fonts/Inter-500.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:61326/fonts/Inter-400.woff2"
+          "url": "http://127.0.0.1:51113/fonts/Inter-400.woff2"
         }
       ],
       "gaps": [
@@ -152,7 +152,7 @@
           "viewport": "desktop"
         },
         "panel_count": 2,
-        "payload_bytes_total": 168022,
+        "payload_bytes_total": 567031,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 3,
@@ -172,13 +172,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 166324,
+          "bytes": 166286,
           "captured": true,
-          "file": "captures/c8c1a32e03fd0abd.png",
+          "file": "captures/7c82dfbc84d74a2b.png",
           "force_state": null,
           "height": 1008,
           "locale": "en",
-          "sha256": "c8c1a32e03fd0abd3235f415a80081a1a172d4569e49c1ea2fce8a571b50131c",
+          "sha256": "7c82dfbc84d74a2b2748e53c30299112af95f3fe926962952dbe1ae92a8f4c05",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -189,13 +189,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 156466,
+          "bytes": 157063,
           "captured": true,
-          "file": "captures/8c0c4712698b708f.png",
+          "file": "captures/fe6a77257da7a28e.png",
           "force_state": null,
           "height": 1008,
           "locale": "en",
-          "sha256": "8c0c4712698b708f79e349b8714c417ab0be47ae7870dde2dd6c2386bea72600",
+          "sha256": "fe6a77257da7a28e6b727b441b9da262b7d3acb3350481bc2340b0a3d3e242f4",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -206,13 +206,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 177629,
+          "bytes": 177653,
           "captured": true,
-          "file": "captures/983fc05a5dbc4f5c.png",
+          "file": "captures/fa6442523e8519ff.png",
           "force_state": null,
           "height": 1008,
           "locale": "zh",
-          "sha256": "983fc05a5dbc4f5c4e85b7c5defd0ae8ec081bbe24755fce63edf24fe94206bd",
+          "sha256": "fa6442523e8519ff05040e91cf94df9d51fe1653cbe8ca8278d85a85745def14",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -223,13 +223,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 168308,
+          "bytes": 168943,
           "captured": true,
-          "file": "captures/5e0327445c81d93a.png",
+          "file": "captures/71ad824fd44b99a7.png",
           "force_state": null,
           "height": 1008,
           "locale": "zh",
-          "sha256": "5e0327445c81d93a3182597a9c6bd7d008859902b3e191bb74626b5fa63b8788",
+          "sha256": "71ad824fd44b99a7e359194e6724cc59e3d6a73ac9da584ed1e3edba4c665583",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -240,13 +240,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 119434,
+          "bytes": 119445,
           "captured": true,
-          "file": "captures/9695a8d5d57c52d5.png",
+          "file": "captures/af7f6ed8e11f87c2.png",
           "force_state": null,
           "height": 1100,
           "locale": "en",
-          "sha256": "9695a8d5d57c52d5a557c9021db64d42b47d4433fd44ec6f353c291f6d257153",
+          "sha256": "af7f6ed8e11f87c279381d140f7cdb86b0c1d92014df11c032d5cbea1db9e59e",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -257,13 +257,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 113491,
+          "bytes": 113996,
           "captured": true,
-          "file": "captures/7758da14e61ea369.png",
+          "file": "captures/75471c5799042ac5.png",
           "force_state": null,
           "height": 1100,
           "locale": "en",
-          "sha256": "7758da14e61ea3691b963d4e85baa43ceeb1c5b68f044edd819afa5a4a997b27",
+          "sha256": "75471c5799042ac5ec4540a4c4054fe59c58f9aa8ba1ed80409554cc07303afc",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -274,13 +274,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 126648,
+          "bytes": 126656,
           "captured": true,
-          "file": "captures/812b98a8b7f329ed.png",
+          "file": "captures/9f31c405b0f315e0.png",
           "force_state": null,
           "height": 1046,
           "locale": "zh",
-          "sha256": "812b98a8b7f329ed742842555866655a5d43558fa6a01ef3076127c2b5654601",
+          "sha256": "9f31c405b0f315e05c5509bcb1743d9a1fd658d0a95a61ae22a01aa1767528ba",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -291,13 +291,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 122659,
+          "bytes": 123002,
           "captured": true,
-          "file": "captures/7cbcb36ced90948f.png",
+          "file": "captures/d268b20b01e141af.png",
           "force_state": null,
           "height": 1046,
           "locale": "zh",
-          "sha256": "7cbcb36ced90948fe4554635d5252444517db765d361eb8464f55e1bc173095d",
+          "sha256": "d268b20b01e141af87a9ccdf285dcabc66750558722b77883cab09c0dc5d6e25",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -327,7 +327,7 @@
     "resolved_gitdir_or_none": null,
     "resolved_sha_or_none": null,
     "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/mmx-event-intelligence-proof-final-utf8/canonical-page"
+    "site_dir": "/private/tmp/mmx-event-intelligence-proof-records/canonical-page"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

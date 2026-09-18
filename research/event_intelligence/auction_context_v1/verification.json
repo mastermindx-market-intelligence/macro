@@ -2,8 +2,8 @@
   "capability_state": "BUILT_NOT_PROVEN",
   "local_tests": {
     "command": "pytest tests/test_calendar_event_context.py tests/test_calendar_event_context_ui.py tests/test_event_calendar.py tests/test_release_radar_date_selection.py tests/test_dashboard_template_render.py -q -p no:cacheprovider",
-    "result": "94 passed in 65.95s",
-    "source": "/tmp/event-intelligence-verified-tests.txt"
+    "result": "94 passed in 64.87s",
+    "source": "final product source at 46c51b36607c331b0f49794c1e7caa4724fbbc6c; /tmp/event-intelligence-staged-tests.txt"
   },
   "browser": {
     "result": "8 cases passed; no page errors",
@@ -22,5 +22,6 @@
     "warnings": 100,
     "note": "pre-existing warnings; no record repair outside scope"
   },
-  "canonical_browser_evidence": "mockups/evidence/event-intelligence-auction-20260917/manifest.json"
+  "canonical_browser_evidence": "mockups/evidence/event-intelligence-auction-20260917/manifest.json",
+  "pull_request": 7273
 }

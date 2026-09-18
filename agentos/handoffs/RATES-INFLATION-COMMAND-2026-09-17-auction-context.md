@@ -27,8 +27,8 @@ verified:
   command: python -m pytest tests/test_calendar_event_context.py tests/test_calendar_event_context_ui.py
     tests/test_event_calendar.py tests/test_release_radar_date_selection.py tests/test_dashboard_template_render.py
     -q -p no:cacheprovider
-  result: 94 passed in 65.95s; real API contracts, null/conflict/hostile inputs, render/selector
-    tests included.
+  result: 94 passed in 64.87s on the final product source; subsequent changes are
+    evidence/continuity only.
 - claim: The captured official-source projection works in the actual event component
     without a forecast.
   command: python research/event_intelligence/auction_context_v1/reproduce.py --out
@@ -50,14 +50,15 @@ unverified:
     receipts and qualified existing AI-consumer output. This slice is explicitly a
     reference guide, not that capability.
 unresolved:
-- Local contract delta is now 0 introduced / 0 inherited; hosted exact-head checks
-  and independent review still required.
+- 'Hosted ci/fences started on #7273. Vercel build-rate-limit is external; ci-authority/codex/merge-queue-pilot
+  reports inactive_base_context and allowed=true for main, not a main authority rejection.
+  Independent review remains unplaced; no worker START is claimed.'
 - No independent reviewer pickup is proven; no worker, runtime job or metered provider
   call created.
 - Full local app correctly redirected to sign-in; component proof did not bypass auth.
 next_actions:
-- Commit/push this exact carrier and create the scoped Draft PR; keep deployment and
-  review evidence separate.
+- 'Read Macro #7273 exact current head and checks; do not create a second PR or repeat
+  the implementation.'
 - Obtain exact-head review and hosted proof, adjudicate only actual candidate failures,
   then execute the existing merge/render/live verification path.
 - Advance official result/correction and grounded assessment composition through the
@@ -78,6 +79,8 @@ danger_areas:
   authority or authenticated production proof is implied.
 - 'Incumbent #7241 publication recovery and #7036 release-diagnostic semantics remain
   untouched.'
+prs:
+- 7273
 ---
 
 # Event Intelligence — implementation checkpoint
@@ -128,3 +131,23 @@ page redirected to sign-in. This was not bypassed. June cached VM was rejected
 for publication. No generated production page was overwritten from stale data.
 
 Final source-bound focused suite: 94 passed. Portable browser proof repeated after the last source fix: 8/8 passed. Widened CI contract check: 0 introduced, 0 inherited. Canonical capture owner additionally emitted 8/8 valid capture cells; Agent OS validation has zero errors.
+
+## Published carrier and machine-context continuation
+
+Implementation is pushed and PR #7273 exists under parent #6819, Draft with
+HOLD-FOR-SOL and no auto-merge. Source implementation commit 46c51b36607c331b0f49794c1e7caa4724fbbc6c;
+subsequent commits change evidence/continuity only. Read the PR's current head
+instead of replaying this record's earlier create/push instructions.
+
+The next AI join is a real missing capability, not automatically supplied by this
+UI: engine/neuralweb/market_packet.py currently consumes published market/rates
+artifacts, and its rates block contains no event dossiers. scripts/build_site.py
+6021-6042 builds the calendar for the template and imminent brief line only.
+The next bounded contract is a versioned READ PROJECTION from this same calendar
+owner into the existing product artifact/publication path, consumed by the
+existing AI market packet or an admitted selected-event tool. It must carry source
+snapshot identity, explicit unavailable/partial/stale states, bounded context and
+no new event truth store; no live collection or provider call inside packet build.
+Do not edit incumbent #7230 research persistence or #7241 release recovery to do it.
+Official results/corrections and richer grounded assessments remain separate
+unproven dependencies, not renamed reading-guide features.

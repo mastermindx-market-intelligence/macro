@@ -1,6 +1,6 @@
 {
   "scope": "real official API capture -> calendar adapter -> full production template -> extracted real event component + actual selector/renderer in local browser; surrounding VM synthetic; full app authentication NOT bypassed; NOT deployed/authenticated production acceptance",
-  "generated_at_utc": "2026-09-17T23:54:04.792173+00:00",
+  "generated_at_utc": "2026-09-18T00:02:09.744239+00:00",
   "source": {
     "observed_at_utc": "2026-09-17T23:23:17.293106+00:00",
     "url": "https://www.treasurydirect.gov/TA_WS/securities/upcoming?format=json",
@@ -46,7 +46,7 @@
       "theme": "light",
       "lang": "en",
       "file": "1440-light-en.png",
-      "sha256": "dd12a2eb38d96b4ab1e8c231b45a5de0759394b03fbfb2a9f6f93aa66a0806fa",
+      "sha256": "f1fa3355c880dea8f50b67fa46c987deb9400fdc98e439a190704e21c5cb0abf",
       "cards": 2,
       "bounds": {
         "w": 926,
@@ -58,7 +58,7 @@
       "theme": "light",
       "lang": "zh",
       "file": "1440-light-zh.png",
-      "sha256": "3d766362f9b8b8bbdbeced67db59ba319f112dcd4f0ff72f8a06a20c607bcdf7",
+      "sha256": "2eab37a4d93754b57a0c65a5fd785fb2201606f21176cd455ec985fa4b3a8e9d",
       "cards": 2,
       "bounds": {
         "w": 926,
@@ -70,7 +70,7 @@
       "theme": "dark",
       "lang": "en",
       "file": "390-dark-en.png",
-      "sha256": "93d8ce15b34b720806f8940a6303c029977dc497ddcaef9650fc609d8a83b1be",
+      "sha256": "bb18e8d11c0add2df4ea4a17875c27fbf2ababfbc905c16ae7831cc18311cca1",
       "cards": 2,
       "bounds": {
         "w": 328,
@@ -94,7 +94,7 @@
       "theme": "light",
       "lang": "en",
       "file": "390-light-en.png",
-      "sha256": "0264057886d0a1afab913d62784c6acfbe6952f878f5ab60d42475cc7ec31818",
+      "sha256": "79c0dd9db6aa2a7bf000991065a796c7d915d4ec59aaee074d5cae8f79c69cce",
       "cards": 2,
       "bounds": {
         "w": 328,
