@@ -35,7 +35,8 @@ def _default_greeks_fn():
 def _default_store_api():
     from engine import thetadata_store
     return thetadata_store
-\ndef _greek_method_metadata(greeks_fn: Callable | None) -> dict[str, Any]:
+
+def _greek_method_metadata(greeks_fn: Callable | None) -> dict[str, Any]:
     if greeks_fn is None:
         from engine import intraday_greeks
         return {
