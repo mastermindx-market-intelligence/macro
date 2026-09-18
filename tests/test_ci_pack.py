@@ -303,6 +303,123 @@ def test_scope_glob_separator_semantics() -> None:
     assert match("**/conftest.py", "conftest.py")
 
 
+
+def _manifest_job(run: str, *, gate: str = "code") -> dict:
+    return {
+        "if": PACK.DISABLED_IF,
+        "gate": gate,
+        "runs-on": "ubuntu-latest",
+        "steps": [{"name": "contract", "run": run}],
+    }
+
+
+def test_manifest_additive_pytest_enrollment_is_bounded_to_changed_job() -> None:
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+
+    assert PACK._classify_additive_manifest_pytest_enrollment(
+        base, candidate
+    ) == ("owner",)
+
+
+@pytest.mark.parametrize(
+    ("candidate_owner", "candidate_other"),
+    [
+        (
+            "python -m pytest tests/test_new.py -q",
+            "python -m pytest tests/test_other.py -q",
+        ),
+        (
+            "python -m pytest tests/test_existing.py tests/test_new.py -x",
+            "python -m pytest tests/test_other.py -q",
+        ),
+        (
+            "python -m pytest tests/test_existing.py tests/test_new.py -q && echo widened",
+            "python -m pytest tests/test_other.py -q",
+        ),
+        (
+            "python -m pytest tests/test_existing.py tests/test_new.py -q",
+            "python -m pytest tests/test_other.py tests/test_surprise.py -x",
+        ),
+    ],
+)
+def test_manifest_enrollment_near_misses_fail_closed(
+    candidate_owner: str,
+    candidate_other: str,
+) -> None:
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+            "other": _manifest_job(
+                "python -m pytest tests/test_other.py -q"
+            ),
+        }
+    }
+    candidate = {
+        "jobs": {
+            "owner": _manifest_job(candidate_owner),
+            "other": _manifest_job(candidate_other),
+        }
+    }
+
+    assert PACK._classify_additive_manifest_pytest_enrollment(
+        base, candidate
+    ) is None
+
+
+def test_manifest_enrollment_rejects_job_topology_or_non_run_changes() -> None:
+    base = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py -q"
+            ),
+        }
+    }
+    changed_gate = {
+        "jobs": {
+            "owner": _manifest_job(
+                "python -m pytest tests/test_existing.py tests/test_new.py -q",
+                gate="data",
+            ),
+        }
+    }
+    added_job = {
+        "jobs": {
+            **base["jobs"],
+            "new-owner": _manifest_job(
+                "python -m pytest tests/test_new.py -q"
+            ),
+        }
+    }
+
+    assert PACK._classify_additive_manifest_pytest_enrollment(
+        base, changed_gate
+    ) is None
+    assert PACK._classify_additive_manifest_pytest_enrollment(
+        base, added_job
+    ) is None
+
+
 def test_selection_fails_safe_toward_running_everything() -> None:
     """Unknown changed-sets and global invalidators still widen; unowned paths do not.
 
