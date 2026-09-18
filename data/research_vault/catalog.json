@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T12:08:23.053301+00:00",
-  "count": 2358,
+  "generated_at": "2026-09-18T12:22:57.198857+00:00",
+  "count": 2359,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -408,6 +408,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mtzgxiuy6er-3960ea",
+      "title": "Macro at a Glance Latest views and forecasts",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:16:51Z",
+      "summary_points": [
+        "Fed Policy Shift: Hawkish FOMC shifts forecast to second 25bp hike in October (vs.",
+        "Sept), critical for rate-sensitive assets and yield curve positioning.",
+        "Bond Yield Forecasts: Raising YE26 10y Treasury (4.75% vs 4.40%), Bund (3.25% vs 3.00%), Gilt (5.00% vs 4.40%) due to Fed/ECB/BoE policy shifts, impacting fixed income strategies.",
+        "ECB/China Growth & ME Risk: ECB to hike to 2.75% (one more 25bp); China 2026 GDP 4.5% (CPI/PPI 1.0%/2.0%); ME energy supply disruptions risk economies."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
