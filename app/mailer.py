@@ -58,6 +58,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from typing import Any
 
@@ -78,7 +79,46 @@ _SEND_ATTEMPTS = 2          # one retry, only on a transient connection failure
 _RETRY_BACKOFF_SEC = 1.5    # a 421 "too many connections" needs a beat, not an instant retry
 
 CLASSES = ("transactional", "marketing")
+# STATUSES is the email_log.status CHECK constraint, verbatim
+# (scripts/deploy/0007_support_email.sql). It is the DB's vocabulary, not this
+# module's return vocabulary -- see RESULTS below. Nothing may be added here
+# without a migration to that (externally owned) table.
 STATUSES = ("sent", "failed", "skipped_no_smtp", "suppressed", "queued")
+
+# --------------------------------------------------------------------------- #
+# The post-SMTP effect boundary
+#
+# send() writes email_log TWICE: 'queued' before SMTP, a terminal status after. The
+# physical delivery happens BETWEEN those writes, so a process death, a service
+# timeout, or a swallowed ledger write in that window leaves a durable 'queued' row
+# for a message that is already in the recipient's inbox. Read later, that row is
+# indistinguishable from one that never reached the transport at all -- and the
+# delivery drain's recovery for a never-sent row is to mint a FRESH idempotency key,
+# which is a licence to deliver the same logical message a second time.
+#
+# The fix is a WRITE-AHEAD MARKER, not a new table: the same row's `detail` column
+# records that the transport is ABOUT TO BE entered, before it is entered. A durable
+# 'queued' then answers three different questions instead of one:
+#
+#   detail has no marker          -> transport never entered   -> PROVABLY NOT SENT
+#   marker, younger than grace    -> a writer may still be live -> IN FLIGHT
+#   marker, older than grace      -> the writer is gone         -> EFFECT UNKNOWN
+#
+# The marker carries its own ISO-8601 timestamp because email_log has no updated_at
+# and no sent_at column (confirmed against the DDL above and every migration under
+# scripts/deploy/), so there is nothing else to age it by. Any terminal PATCH
+# overwrites `detail`, so the marker is self-clearing on every resolved send.
+# --------------------------------------------------------------------------- #
+SMTP_ATTEMPT_MARKER = "SMTP_ATTEMPTED"
+
+# A send() RESULT, never an email_log.status: the transport was entered and the
+# outcome is not knowable. The row stays 'queued' carrying the marker, and no caller
+# may convert this into a fresh send attempt under a new identity.
+EFFECT_UNKNOWN = "effect_unknown"
+
+# What send() can actually return. STATUSES is the DB's vocabulary; this is the
+# caller's.
+RESULTS = STATUSES + ("duplicate", EFFECT_UNKNOWN)
 
 
 def _env(name: str, default: str = "") -> str:
@@ -204,6 +244,34 @@ def _ledger_finish(idem_key: str, status: str, detail: str | None = None) -> Non
         log.warning("mailer: ledger finish %s -> %s failed (%s)", idem_key, status, type(exc).__name__)
 
 
+def _ledger_mark_attempting(idem_key: str) -> bool:
+    """Durably record that SMTP is about to be entered. Returns whether it persisted.
+
+    FAIL-CLOSED, and deliberately the opposite of ``_ledger_finish``'s best-effort
+    posture. ``_ledger_finish`` may swallow a write because by then the send has
+    already happened and the in-process return value still carries the truth. This
+    write happens BEFORE the irreversible act, and if it does not land, a later crash
+    on the far side of the transport is indistinguishable from a crash before it --
+    which is exactly the ambiguity that licenses a duplicate delivery. So the caller
+    does not cross the boundary unless this returns True.
+
+    The asymmetry that buys: a marker write that lands server-side but whose reply is
+    lost makes us withhold a message that was never sent, and the drain later
+    quarantines it for an operator. That is a visible, recoverable under-delivery. The
+    opposite mistake is an invisible, unrecoverable double-delivery. We take the first.
+    """
+    try:
+        _pg("PATCH", f"email_log?idem_key=eq.{urllib.parse.quote(idem_key, safe='')}",
+            body={"status": "queued",
+                  "detail": f"{SMTP_ATTEMPT_MARKER}@{datetime.now(timezone.utc).isoformat()}"},
+            prefer="return=minimal")
+        return True
+    except Exception as exc:  # noqa: BLE001
+        log.warning("mailer: could not mark %s as attempting (%s) -- NOT sending",
+                    idem_key, type(exc).__name__)
+        return False
+
+
 def _suppression_reason(to_email: str, user_id: str | None) -> str | None:
     """Why this MARKETING message must not be sent, or None when it may go.
 
@@ -262,25 +330,111 @@ _TRANSIENT = (
 )
 
 
-def _smtp_send(msg: EmailMessage) -> None:
+class MarkerUnwritable(Exception):
+    """The write-ahead marker could not be persisted, so the message was NOT handed to
+    the relay. Proof of non-delivery: ``send_message`` was never called."""
+
+
+class TransportUncertain(Exception):
+    """SMTP was entered and the outcome is NOT knowable. May or may not have been
+    delivered. Never retried — not in-process, and not by any caller."""
+
+    def __init__(self, cause: BaseException):
+        super().__init__(type(cause).__name__)
+        self.cause = cause
+
+
+# Failures that are PROOF OF NON-DELIVERY, verified against CPython's
+# smtplib.SMTP.sendmail: each is raised at a point where the message body has not been
+# accepted, so retrying one can never duplicate.
+#   SMTPSenderRefused      — MAIL FROM rejected; RCPT and DATA never issued.
+#   SMTPRecipientsRefused  — raised only when EVERY recipient is refused, before DATA.
+#   SMTPDataError          — the server answered DATA with a non-2xx: an explicit "no".
+#   SMTPNotSupportedError  — raised before sendmail() is entered at all (SMTPUTF8).
+# Anything else escaping send_message — a disconnect or timeout while the body or the
+# terminating '.' is in flight — is NOT in this tuple, and that omission is the whole
+# point: the server may have committed the message before the socket died.
+_ENVELOPE_REFUSED = (
+    smtplib.SMTPSenderRefused,
+    smtplib.SMTPRecipientsRefused,
+    smtplib.SMTPDataError,
+    smtplib.SMTPNotSupportedError,
+)
+
+
+def _deliver(s, msg: EmailMessage, before_data=None) -> bool:
+    """Hand the message to an open session. True once the server has accepted it.
+
+    Returning normally from ``send_message`` means ``sendmail`` read a 2xx reply to the
+    terminating '.', i.e. the relay took responsibility. That is the strongest claim
+    SMTP permits and it is what this ledger means by 'sent'.
+
+    ``before_data`` is the write-ahead hook, and it is called HERE — with the session
+    already open and authenticated — rather than before the connection, on purpose.
+    The marker is a claim that the outcome may be unknowable, and the only genuinely
+    unknowable window is the one this line opens: everything earlier (connect, TLS,
+    AUTH, and the envelope) fails with proof that nothing was delivered, so marking
+    before them would quarantine sends we can prove never happened. Placing it here
+    keeps the uncertain window down to the DATA phase itself, which is the part SMTP
+    really cannot settle.
+
+    The cost is one PostgREST round trip inside an open SMTP session. If that makes
+    the relay time the session out, the failure lands before DATA and is therefore
+    retryable — the safe direction.
+    """
+    if before_data is not None and not before_data():
+        raise MarkerUnwritable("attempt marker did not persist")
+    try:
+        s.send_message(msg)
+    except _ENVELOPE_REFUSED:
+        raise                                   # provably not delivered — let it retry
+    except Exception as exc:  # noqa: BLE001
+        raise TransportUncertain(exc) from None  # in flight — unknowable, never retry
+    return True
+
+
+def _smtp_send(msg: EmailMessage, before_data=None) -> None:
     """Deliver one message over the configured relay. Raises on failure.
 
     Port 465 is implicit TLS (SMTP_SSL); everything else is STARTTLS on a plain
     connection — the shape used by the greydeercapital intake relay, stdlib only.
+
+    PHASE-AWARE (this is what separates a retryable failure from an unknowable one):
+
+      connect / starttls / login   no message bytes sent      → raise as-is, retryable
+      write-ahead marker unwritable  send_message never called → raise as-is, retryable
+      envelope refusal             server refused before DATA  → raise as-is, retryable
+      fault while DATA is in flight  server may have committed → TransportUncertain
+      fault AFTER send_message returned  server already said 2xx → RETURN, it is sent
+
+    That last row is not a nicety. CPython's ``smtplib.SMTP.__exit__`` issues QUIT on
+    the way out and swallows only ``SMTPServerDisconnected``; a non-221 QUIT reply
+    raises ``SMTPResponseException`` out of the ``with`` block — after the message was
+    accepted. Treating that as a failure marked a delivered alert 'failed', which the
+    delivery drain then retried under a fresh idempotency key: a guaranteed duplicate
+    from a message that was never actually in doubt.
     """
     host, port = smtp_host(), smtp_port()
     ctx = ssl.create_default_context()
-    if port == 465:
-        with smtplib.SMTP_SSL(host, port, timeout=_SMTP_TIMEOUT, context=ctx) as s:
-            s.login(smtp_user(), smtp_pass())
-            s.send_message(msg)
-        return
-    with smtplib.SMTP(host, port, timeout=_SMTP_TIMEOUT) as s:
-        s.ehlo()
-        s.starttls(context=ctx)
-        s.ehlo()
-        s.login(smtp_user(), smtp_pass())
-        s.send_message(msg)
+    accepted = False
+    try:
+        if port == 465:
+            with smtplib.SMTP_SSL(host, port, timeout=_SMTP_TIMEOUT, context=ctx) as s:
+                s.login(smtp_user(), smtp_pass())
+                accepted = _deliver(s, msg, before_data)
+        else:
+            with smtplib.SMTP(host, port, timeout=_SMTP_TIMEOUT) as s:
+                s.ehlo()
+                s.starttls(context=ctx)
+                s.ehlo()
+                s.login(smtp_user(), smtp_pass())
+                accepted = _deliver(s, msg, before_data)
+    except Exception:
+        if accepted:
+            # Teardown noise after acceptance cannot un-deliver the message.
+            log.info("mailer: relay accepted the message; ignoring a fault during teardown")
+            return
+        raise
 
 
 def _header_safe(value: str, *, limit: int = 400) -> str:
@@ -348,9 +502,16 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
          return ``'duplicate'`` WITHOUT sending. This is the whole idempotency gate.
       2. marketing only: suppression / opt-out → PATCH ``'suppressed'``, return it.
       3. mail-off → PATCH ``'skipped_no_smtp'``, return it.
-      4. SMTP (one retry on a transient connection failure) → PATCH ``'sent'`` or
-         ``'failed'``. ``detail`` on failure is the exception CLASS NAME only — never a
-         message body, an address list, or anything that could carry a credential.
+      4. Mark the row ``'queued'`` + ``SMTP_ATTEMPT_MARKER`` (fail-closed: no marker,
+         no send), then SMTP → PATCH ``'sent'`` or ``'failed'``. ``detail`` on failure
+         is the exception CLASS NAME only — never a message body, an address list, or
+         anything that could carry a credential.
+
+    Returns a value in ``RESULTS``. The one retry at step 4 fires only for failures
+    that are PROOF OF NON-DELIVERY (see ``_smtp_send``); a fault while the message was
+    in flight returns ``EFFECT_UNKNOWN`` with the row left at ``'queued'`` + marker,
+    and is never retried here or anywhere else. SMTP cannot prove exactly-once, so
+    this function preserves the uncertainty rather than resolving it by guess.
     """
     cls = cls if cls in CLASSES else "marketing"   # unknown → the stricter (suppressible) class
     to_email = (to_email or "").strip()
@@ -418,12 +579,38 @@ def send(*, template: str, cls: str, to_email: str, subject: str, html: str, tex
         log.warning("mailer: %s could not be composed (%s)", template, type(exc).__name__)
         return _finish("failed", type(exc).__name__)
 
+    # WRITE-AHEAD. Handed to _smtp_send and fired at the last instant before the
+    # message goes on the wire, so the window it covers is the DATA phase — the only
+    # part of an SMTP exchange whose outcome is genuinely unknowable. Fail-closed:
+    # returning False aborts the send (MarkerUnwritable), leaving the row a bare
+    # 'queued' that correctly reads as provably-unsent and stays retryable.
+    #
+    # Re-fired on the retry attempt on purpose: the marker's timestamp must age from
+    # the LATEST transport entry, not the first, or a slow first attempt would make
+    # the second one's marker look stale the moment it is written.
+    def _mark() -> bool:
+        return _ledger_mark_attempting(idem_key) if ledgered else True
+
     last: Exception | None = None
     for attempt in range(_SEND_ATTEMPTS):
         try:
-            _smtp_send(msg)
+            _smtp_send(msg, before_data=_mark)
             log.info("mailer: %s sent (%s)", template, cls)
             return _finish("sent")
+        except MarkerUnwritable:
+            log.warning("mailer: %s not sent — attempt marker unwritable", template)
+            return _finish("failed", "ledger_attempt_marker_unwritable")
+        except TransportUncertain as exc:
+            # The message left this process and the relay's verdict never came back.
+            # Deliberately NOT _finish()ed: writing 'failed' here would be a claim we
+            # cannot support, and every consumer of a 'failed' row treats it as
+            # retryable. The row stays 'queued' carrying the marker — the one durable
+            # shape that says "effect unknown" — and there is no in-process retry,
+            # because a retry here is a second delivery of a message that may already
+            # be in the recipient's inbox.
+            log.warning("mailer: %s EFFECT UNKNOWN after %s — not retried, not failed",
+                        template, exc)
+            return EFFECT_UNKNOWN
         except _PERMANENT as exc:   # listed first: these subclass OSError, see above
             last = exc
             break

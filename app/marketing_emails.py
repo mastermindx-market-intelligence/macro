@@ -596,6 +596,15 @@ def _bucket(status: str) -> str:
         return "skipped_no_smtp"
     if status in ("suppressed", "queued"):
         return "skipped"
+    if status == mailer.EFFECT_UNKNOWN:
+        # No bucket means "we do not know", and no campaign column means it either
+        # (adding one is the unproven-schema mistake this estate has already paid for).
+        # It lands in `failed` because that is the only bucket that cannot overstate
+        # what happened: it never inflates sent_n and never claims a delivery. The log
+        # line is how the distinction survives.
+        log.warning("marketing: a send returned %s — counted as failed, but the "
+                    "message may have been delivered", status)
+        return "failed"
     return "failed"
 
 
@@ -1044,6 +1053,19 @@ def _complete_parked(row: dict, out: dict) -> None:
             to_email=to_email, subject=subject, html=html, text=text,
             cls="marketing", headers=_marketing_headers(identity))
         mailer._smtp_send(msg)
+    except mailer.TransportUncertain as exc:
+        # The message was in flight when the transport faulted, so we cannot say it
+        # failed — only that we never learned. The row still goes TERMINAL, which is
+        # what stops it being re-offered: neither of drain_parked's two selects matches
+        # status='failed', so this lane cannot resend it under any key. What changes is
+        # only the honesty of the record — `detail` names the uncertainty instead of
+        # claiming a failure nobody observed.
+        mailer._ledger_finish(idem_key, "failed", mailer.EFFECT_UNKNOWN)
+        log.warning("marketing: parked %s EFFECT UNKNOWN after %s — not resent, "
+                    "not recorded as delivered", idem_key, exc)
+        out["failed"] += 1
+        _pace("failed")
+        return
     except Exception as exc:  # noqa: BLE001
         mailer._ledger_finish(idem_key, "failed", type(exc).__name__)
         out["failed"] += 1
