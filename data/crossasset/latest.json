@@ -182,15 +182,15 @@
       },
       {
         "pair": "gold_silver",
-        "ratio": 66.05,
+        "ratio": 65.455,
         "trend": "mid",
-        "pctile": 26.0
+        "pctile": 24.0
       },
       {
         "pair": "oil_gold",
-        "ratio": 0.023,
+        "ratio": 0.022,
         "trend": "mid",
-        "pctile": 76.0
+        "pctile": 70.0
       },
       {
         "pair": "stocks_gold",
@@ -279,18 +279,9 @@
     },
     "confirm": {
       "verdict": "diverge",
-      "agree_pct": 50,
-      "n_blind_flags": 2,
+      "agree_pct": 100,
+      "n_blind_flags": 1,
       "flags_top": [
-        {
-          "key": "credit",
-          "en": "High-yield credit widening from tight \u2014 credit risk-appetite turning (partly-leading via the EBP family, but often coincident with equity stress).",
-          "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u4ece\u504f\u7d27\u8d70\u9614 \u2014 \u4fe1\u7528\u98ce\u9669\u504f\u597d\u8f6c\u5411\uff08\u7ecfEBP\u5177\u90e8\u5206\u9886\u5148\u6027\uff0c\u4f46\u5e38\u4e0e\u80a1\u7968\u538b\u529b\u540c\u6b65\uff09\u3002",
-          "severity": "medium",
-          "owner": "bonds",
-          "lead": "leading",
-          "equity_blind": true
-        },
         {
           "key": "usd_triple_red",
           "en": "Triple-red \u2014 USD, equities & Treasuries falling together: the dollar is NOT acting as a safe haven (a US-idiosyncratic 'sell-America' configuration).",
@@ -301,7 +292,7 @@
           "equity_blind": true
         }
       ],
-      "asof": "2026-09-16"
+      "asof": "2026-09-17"
     },
     "dollar": {
       "usd_dir": "weakening",
@@ -323,9 +314,9 @@
       ],
       "unstable_n": 0,
       "fx_stress": {
-        "dominant": null,
-        "top_key": "em_crisis_capital_flight",
-        "top_val": 35.4
+        "dominant": "intervention_risk",
+        "top_key": "intervention_risk",
+        "top_val": 24.7
       }
     },
     "shadow": {

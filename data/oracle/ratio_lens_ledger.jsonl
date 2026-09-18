@@ -560,3 +560,6 @@
 {"date": "2026-09-18", "pair_id": "memory_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.050011, "leg_den_ret_1w": 0.036661, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-09-18", "pair_id": "ailogic_vs_equipment", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.036661, "leg_den_ret_1w": -0.048633, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-09-18", "pair_id": "power_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.013846, "leg_den_ret_1w": 0.036661, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-09-18", "pair_id": "memory_vs_equipment", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.000764, "leg_den_ret_1w": -0.061157, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-09-18", "pair_id": "ailogic_vs_legacy", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.012594, "leg_den_ret_1w": -0.038876, "state": "TRENDING", "kind": "basket"}
+{"date": "2026-09-18", "pair_id": "cyber_vs_software", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.122992, "leg_den_ret_1w": 0.010164, "state": "NO_ANCHOR", "kind": "basket"}

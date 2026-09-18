@@ -1,11 +1,36 @@
 {
-  "as_of": "2026-09-16",
+  "as_of": "2026-09-18",
   "schema": "cn_audit_scoreboard.v1",
   "taxonomy_version": "v2",
   "board_definition": "cn_prophet_v4",
-  "note": "no matured rows yet \u2014 accruing",
-  "cells": [],
-  "outcome_cause_mix": {},
-  "process_fault_mix": {},
-  "us_proxy_note": "Pre-store rows (own_market_regime=null) carry stratum='us_proxy'. They are never pooled with own-market cells in any significance claim. Seam date: first row in data/china_regime/regime_daily.parquet."
+  "total_matured": 23,
+  "cells": [
+    {
+      "stratum": "Q4",
+      "raw_n": 23,
+      "effective_n": 1,
+      "state": "ACCRUING",
+      "us_proxy": false
+    }
+  ],
+  "outcome_cause_mix": {
+    "idio_break": 9,
+    "mixed": 8,
+    "idio_alpha": 6
+  },
+  "process_fault_mix": {
+    "clean": 23
+  },
+  "taxonomy_constants": {
+    "IDIO_BREAK_PP": -0.04,
+    "IDIO_ALPHA_PP": 0.04,
+    "IDIO_BAND_PP": 0.02,
+    "SECTOR_OUT_PP": -0.025,
+    "MACRO_FALL_PCT": -0.03,
+    "BETA_STRONG_PCT": 0.02,
+    "FRESH_TICKS": 2,
+    "EXT_SCORE_LATE_PCT": 0.7,
+    "PREMATURE_STOP_MFE_PP": 0.04
+  },
+  "us_proxy_note": "Pre-store rows (own_market_regime=null) carry stratum='us_proxy'. They are NEVER pooled with own-market cells in any significance claim. Seam date: first row in data/china_regime/regime_daily.parquet."
 }

@@ -11,13 +11,13 @@
     {
       "clusters": [
         {
-          "n_events": 231,
+          "n_events": 263,
           "source": "research_vault",
           "theme": null,
           "top_events": []
         },
         {
-          "n_events": 36,
+          "n_events": 38,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
