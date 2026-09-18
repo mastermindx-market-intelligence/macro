@@ -3752,7 +3752,20 @@ jobs:
         # landed by the "commit engine outputs" step below (git add data/ site/) — like every
         # sibling forward ledger, the committed store is what lets cohorts accrue night to
         # night. Idempotent per as_of. Resilient.
-        run: python -m scripts.grade_bottom_calls --nightly || true
+        #
+        # NOT `|| true` (2026-09-18). This step stays non-fatal to the nightly — nothing here
+        # gates the dashboard deploy — but a bare `|| true` made failure INVISIBLE, and that is
+        # not a hypothetical: the advancer raised `TypeError: Cannot compare tz-naive and
+        # tz-aware timestamps` on EVERY run from birth, before its first write, so neither
+        # data/bottom_ledger/rows.parquet nor site/factordata/us_bottom_ledger.json ever
+        # existed while this step reported success every night. The advancer now also stamps
+        # site/factordata/us_bottom_ledger.json with `advance.status` ∈ {advanced, read_only,
+        # failed}, so the artifact itself says whether tonight advanced — a failed run can no
+        # longer masquerade as a quiet one. Annotation must start the line (CLAUDE.md).
+        run: |
+          python -m scripts.grade_bottom_calls --nightly || {
+            echo "::error title=bottom-ledger-advance-failed::Bottom Ledger forward advance FAILED — no flag was accrued and no grade was frozen tonight. data/bottom_ledger/rows.parquet is unchanged and site/factordata/us_bottom_ledger.json carries advance.status=failed. Non-fatal to the nightly by design; fix scripts/grade_bottom_calls.py."
+          }
       - name: Options-state stamp on board ledger (Options Alpha W1.3; context-only)
         # Stamps the freshly-graded + accumulated retro_grades.parquet with the eight nullable
         # opt_* options-state columns (PIT: only positioning data with as-of ≤ each fire's as_of).
