@@ -522,3 +522,53 @@ def test_display_state_calls_values_that_render_zero_near_parity():
     assert m._state(-0.004) == ("parity", "Near parity", "接近平价")
     assert m._state(0.006)[0] == "premium"
     assert m._state(-0.006)[0] == "discount"
+
+
+# China close-basis proxy render contract (stacked source slice).
+def test_proxy_partial_renders_cny_close_basis_as_primary_display():
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    from engine import china_gold_premium as cgp
+
+    idx = pd.date_range("2026-09-10 07:30:00", periods=9, freq="D")
+    frames = {
+        ("basis", "sge"): pd.DataFrame({"v": [818.0 + i for i in range(9)]}, index=idx),
+        ("basis", "global"): pd.DataFrame({"v": [25400.0 + 20 * i for i in range(9)]}, index=idx),
+    }
+    leg = lambda g, n, label: {
+        "group": g, "name": n, "column": "v", "source_label": label, "entitled": True
+    }
+    vm = cgp.build_view_model(
+        {
+            "canonical": {},
+            "intraday": {},
+            "close_proxy": {
+                "sge": leg("basis", "sge", "Shanghai Gold Exchange Au99.99"),
+                "global": leg("basis", "global", "Global XAU/CNY spot"),
+                "max_skew_minutes": 2,
+                "max_age_days": 4,
+            },
+        },
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-09-18T12:00:00Z"),
+    )
+
+    repo = Path(__file__).resolve().parents[1]
+    env = Environment(
+        loader=FileSystemLoader(str(repo / "templates")),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    html = env.get_template("_china_gold_premium.html.j2").render(g=vm)
+
+    assert "Indicative Shanghai-close basis" in html
+    assert "上海收盘指示性价差" in html
+    assert "Shanghai CNY/oz" in html
+    assert "Global spot CNY/oz" in html
+    assert "CNY/oz Spread" in html
+    assert 'data-cgp-display-source="proxy"' in html
+    assert 'data-cgp-currency="CNY"' in html
+    assert 'class="cgp-chart"' in html
+    assert "Shanghai Gold Exchange Au99.99" in html
+    assert "Global XAU/CNY spot" in html
+    assert "Tushare" not in html
+    assert "Massive" not in html

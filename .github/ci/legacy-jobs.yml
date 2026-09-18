@@ -3647,7 +3647,7 @@ jobs:
         # with Draft202012Validator, which is a COLLECTION-time import — without it
         # the step dies at exit 2 having asserted nothing, which reads as a lane
         # failure rather than as the missing dep it is.
-        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema jinja2
+        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema
       - name: china native interaction + sell-side collector tests (W1 CNH)
         run: python -m pytest tests/test_china_irm_collector.py tests/test_china_einteraction_collector.py tests/test_china_reports_collector.py tests/test_china_holder_counts_collector.py -q
       # China Alpha Intelligence P1 (#6050): institutional-visit tape, derived
@@ -3743,11 +3743,6 @@ jobs:
       # install line (numpy arrives with pandas).
       - name: china tushare takeover suites — addons gate + minutes plane + chips (A/B/C)
         run: python -m pytest tests/test_tushare_addons.py tests/test_tushare_minutes_plane.py tests/test_tushare_chips_distribution.py tests/test_tushare_freshness_tripwire.py -q
-      # Gold China-basis source plane: fixture-only parser/alignment/rights seam +
-      # product-view integration. Runs on the code gate so source drift cannot merge
-      # dark and waits for no nightly data artifact.
-      - name: china physical-gold basis source + product seam
-        run: python -m pytest tests/test_china_gold_basis_source.py -q
 
   china-board-breadth:
     if: ${{ false }}

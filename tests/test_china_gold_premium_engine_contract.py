@@ -198,3 +198,123 @@ def test_malformed_freshness_setting_is_refused_instead_of_raising():
 
     assert vm["available"] is False
     assert vm["reason_code"] == "source_config_invalid"
+
+
+# China close-basis proxy contract (stacked source slice).
+def test_close_aligned_proxy_compares_rmb_per_ounce_directly():
+    from engine import china_gold_premium as cgp
+
+    idx = [pd.Timestamp("2026-09-18T07:30:00")]
+    sge = pd.DataFrame({"rmb_per_g": [820.50]}, index=idx)
+    global_spot = pd.DataFrame({"cny_per_oz": [25490.0]}, index=idx)
+
+    out = cgp.compute_close_aligned_proxy(
+        sge,
+        global_spot,
+        sge_column="rmb_per_g",
+        global_column="cny_per_oz",
+        max_skew_minutes=2,
+    )
+
+    assert len(out) == 1
+    row = out.iloc[-1]
+    expected_local = 820.50 * cgp.TROY_OZ_GRAMS
+    assert row["sge_cny_oz"] == pytest.approx(expected_local)
+    assert row["reference_cny_oz"] == pytest.approx(25490.0)
+    assert row["spread_cny_oz"] == pytest.approx(expected_local - 25490.0)
+    assert row["premium_pct"] == pytest.approx((expected_local / 25490.0 - 1.0) * 100.0)
+
+
+def test_proxy_only_view_model_is_available_and_keeps_canonical_separate():
+    from engine import china_gold_premium as cgp
+
+    idx = pd.date_range("2026-09-01 07:30:00", periods=18, freq="D")
+    sge = pd.DataFrame({"rmb_per_g": [810.0 + i for i in range(18)]}, index=idx)
+    global_spot = pd.DataFrame({"cny_per_oz": [25200.0 + 25 * i for i in range(18)]}, index=idx)
+    frames = {
+        ("china_gold_basis", "sge_au9999"): sge,
+        ("china_gold_basis", "xaucny_spot"): global_spot,
+    }
+    cfg = {
+        "canonical": {},
+        "intraday": {},
+        "close_proxy": {
+            "sge": {
+                "group": "china_gold_basis",
+                "name": "sge_au9999",
+                "column": "rmb_per_g",
+                "source_label": "Shanghai Gold Exchange Au99.99",
+                "entitled": True,
+            },
+            "global": {
+                "group": "china_gold_basis",
+                "name": "xaucny_spot",
+                "column": "cny_per_oz",
+                "source_label": "Global XAU/CNY spot",
+                "entitled": True,
+            },
+            "max_skew_minutes": 2,
+            "max_age_days": 4,
+        },
+    }
+
+    vm = cgp.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-09-18T12:00:00Z"),
+    )
+
+    assert vm["available"] is True
+    assert vm["current_method"] == "close_proxy"
+    assert vm["methodology_label_en"] == "Indicative Shanghai-close basis"
+    assert vm["price_currency"] == "CNY"
+    assert vm["canonical"]["available"] is False
+    assert vm["close_proxy"]["available"] is True
+    assert len(vm["chart"]["canonical"]) == 0
+    assert len(vm["chart"]["proxy"]) == 18
+    assert vm["chart"]["display_source"] == "proxy"
+    assert vm["stats"]["avg_5"] is not None
+    assert vm["stats"]["range_30"] is not None
+    assert vm["sge_price_oz"] == pytest.approx(vm["chart"]["proxy"][-1]["sge_price_oz"])
+    assert vm["reference_price_oz"] == pytest.approx(vm["chart"]["proxy"][-1]["reference_price_oz"])
+
+
+def test_same_date_canonical_benchmark_outranks_close_proxy():
+    from engine import china_gold_premium as cgp
+
+    idx = [pd.Timestamp("2026-09-18")]
+    proxy_idx = [pd.Timestamp("2026-09-18T07:30:00")]
+    frames = {
+        ("sge", "pm"): pd.DataFrame({"v": [820.0]}, index=idx),
+        ("lbma", "am"): pd.DataFrame({"v": [3700.0]}, index=idx),
+        ("fx", "daily"): pd.DataFrame({"v": [6.95]}, index=idx),
+        ("basis", "sge"): pd.DataFrame({"v": [820.0]}, index=proxy_idx),
+        ("basis", "global"): pd.DataFrame({"v": [25450.0]}, index=proxy_idx),
+    }
+    leg = lambda g, n, label: {
+        "group": g, "name": n, "column": "v", "source_label": label, "entitled": True
+    }
+    cfg = {
+        "canonical": {
+            "sge": leg("sge", "pm", "SGE SHAUPM"),
+            "london": leg("lbma", "am", "LBMA AM"),
+            "fx": leg("fx", "daily", "USDCNY"),
+            "max_age_days": 4,
+        },
+        "close_proxy": {
+            "sge": leg("basis", "sge", "SGE Au99.99"),
+            "global": leg("basis", "global", "Global XAU/CNY"),
+            "max_skew_minutes": 2,
+            "max_age_days": 4,
+        },
+    }
+
+    vm = cgp.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-09-18T12:00:00Z"),
+    )
+
+    assert vm["current_method"] == "canonical"
+    assert vm["price_currency"] == "USD"
+    assert vm["chart"]["display_source"] == "canonical"
