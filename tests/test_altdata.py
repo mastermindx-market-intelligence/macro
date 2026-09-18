@@ -489,7 +489,7 @@ def test_insider_collector_replays_overlap_and_full_history(monkeypatch):
     adapter.fetch(full_history=False)
     assert len(calls) == 3                         # latest + two overlap days
     assert "date" not in calls[0]
-    assert all("date" in c for c in calls[1:])
+    assert all("date" in c and c.get("page_size") == 1000 for c in calls[1:])
 
     calls.clear()
     adapter.fetch(full_history=True)

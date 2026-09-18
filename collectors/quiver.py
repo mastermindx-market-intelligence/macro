@@ -218,7 +218,7 @@ class InsidersAdapter(QuiverAdapter):
         for n in range(1, overlap + 1):
             key = (today - timedelta(days=n)).strftime("%Y%m%d")
             try:
-                rows.extend(self._get(self.endpoint, {"date": key}))
+                rows.extend(self._get(self.endpoint, {"date": key, "page_size": 1000}))
             except Exception as e:  # noqa: BLE001 -- one bad day must not kill the run
                 log.debug("quiver/insiders catch-up %s failed: %s", key, e)
         if not rows:
