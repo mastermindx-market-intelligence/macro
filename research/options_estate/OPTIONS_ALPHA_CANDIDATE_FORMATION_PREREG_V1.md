@@ -68,6 +68,8 @@ V1 therefore requires two forward fences.
 
 This means there is no historical “backfill” of candidates after implementation. Historical rows remain useful for diagnostics and schema tests only.
 
+The current canonical campaign v2 producer is a normal-nightly writer. Therefore `campaign.formed_at` is a source/evidence clock, **not proof that a candidate was observable at that time**. A future composer must record when it first observed the exact campaign revision. If the canonical campaign path is delayed, the candidate is delayed; it may not be backdated to the final member. This preregistration does not authorize a second campaign writer merely to make the product look live.
+
 ## 5. Why there is no new 60/80/90% NBBO threshold
 
 OA-1T deliberately publishes both the measured shares and how much source premium supports them. No accepted source law establishes a candidate-level predictive cutoff for 60%, 80%, 90%, or any other coverage value.
@@ -112,14 +114,22 @@ These choices do not waive the separate Package or AD programs; they prevent tho
 
 For the first qualifying campaign revision:
 
-- `decision_at = campaign.formed_at`, which campaign v2 defines from its final member's availability;
-- formation evidence must satisfy `evidence.available_at <= decision_at`;
-- `available_at` for the candidate is the durable candidate-view write time;
+- `source_formed_at = campaign.formed_at`, which campaign v2 defines from its final member's availability;
+- `first_observed_at` is when the candidate composer first observes and validates that exact canonical revision;
+- `decision_at = first_observed_at`; candidate decisions are never backdated to `campaign.formed_at`;
+- formation evidence must satisfy `evidence.available_at <= first_observed_at`;
+- `available_at` for the candidate is the later durable candidate-view write time;
 - `published_at` is the later consumer-publication time.
 
-A later wrapper/build/publication clock cannot make an older source fact fresh.
+The causal order is therefore:
 
-The final product must preserve event, observation, decision, availability and publication clocks rather than collapsing them into one `asof`.
+`source_formed_at <= first_observed_at = decision_at <= available_at <= published_at`
+
+subject to each evidence leg's own earlier event/observation/availability ordering.
+
+A later wrapper/build/publication clock cannot make an older source fact fresh. Conversely, an earlier campaign formation clock cannot make a later-observed candidate look intraday-live.
+
+The final product must preserve source event, campaign formation, candidate observation/decision, durable availability and publication clocks rather than collapsing them into one `asof`. Before the product may claim a live candidate stream, the existing campaign/source owner must prove that canonical revision availability is timely enough on the real path.
 
 ## 9. Candidate, abstention, and degraded states
 
