@@ -2,11 +2,56 @@
 workstream: WS:GMI-THEME-GRAPH
 session: sol/sector-cycle-r7-finviz-dynamic-recon-20260917
 model: sol
-ended_because: phase_complete
+ended_because: complete
 mission: >
   Finish the previously blocked dynamic Finviz Matrix/Bubbles interaction study and convert the
   observed behavior into a bounded design input for the existing Sector/Cycle Intelligence programme,
   without copying the competitor catalogue or starting another product/data/publication plane.
+state_before: >
+  R1-R6 had established the existing Finviz taxonomy import, Group Reads/Cell A predecessors,
+  full-member observation requirements and a synthetic shared Atlas reference, but live public
+  Matrix/Bubbles interaction semantics remained unverified because browser access had been blocked.
+changed:
+  - path: research/sector_cycle_revamp/R7_FINVIZ_DYNAMIC_PRODUCT_RECON_2026-09-17.md
+    what: >
+      Record the successful public Matrix/Bubbles interaction census, scope/filter semantics,
+      URL persistence behavior, control depth and bounded product/read-model implications.
+  - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-17-sector-cycle-r7.md
+    what: >
+      Preserve the exact evidence boundary, next dependency and do-not-redo frontier for the
+      completed R7 research phase. This normalization only conforms the historical handoff to the
+      current Agent OS record contract; it does not change the R7 research findings.
+verified:
+  - claim: Public Matrix and Bubbles behavior was inspected through a fresh headed browser without login or bypass.
+    command: bounded headed-Chrome semantic DOM/CDP reads and public control interactions
+    result: >
+      Matrix displayed 5,547 tickers and 145 industries; Grid/Clusters representation behavior,
+      Technology rescope, Bubbles axes/filter URL persistence and preset/control inventories were observed.
+  - claim: R7 did not create a competitor-data store or product/runtime change.
+    command: inspect changed paths on the research/HOLD carrier
+    result: Research and Agent OS records only; no production engine, dataset, publisher, model or trade-authority path.
+unverified:
+  - claim: Finviz proprietary backend, exact packing implementation, catalogue maintenance process or source rights.
+    what_would_verify: >
+      Lawful vendor documentation/licensing and separately accepted source-rights review; public UI observations
+      do not establish these facts or rights.
+  - claim: Production Mastermind Atlas capability or predictive improvement.
+    what_would_verify: >
+      Accepted real scope, implemented shared representations through existing owners, deployed user proof,
+      and separately governed point-in-time/forward evaluation for any predictive authority.
+unresolved:
+  - Matrix cap equality boundaries were not directly disclosed on the Matrix page.
+  - Public counts and metric-response populations do not establish Mastermind catalogue coverage or source/display rights.
+  - P1 publication integration and the first rights-safe real Atlas scope remained separate downstream dependencies.
+next_actions:
+  - Consume P1 exact-head CI/review and preserve the accepted source-bound observation substrate.
+  - Reconcile incumbent publication owner #7211 for current-invocation validation and deployed proof.
+  - Freeze one rights-safe real Atlas scope before production Grid/Clusters/Bubbles/table implementation.
+danger_areas:
+  - A Matrix sector filter changed the analytical population without serializing that rescope in the observed URL.
+  - Packed-circle proximity has no established statistical, economic or causal meaning.
+  - Metric payload membership and displayed classification membership were not identical and must not be conflated.
+  - Public competitor behavior is research evidence, never a grant to copy proprietary data/assets or to create predictive authority.
 authority_and_verified_state:
   - Protected procedure: Mastermind aacf3df5a47ca37ce71cd47a3bd7caea81ad4cd2, Skillpack v1.0.1.
   - P1 implementation remains PR #7252 at b81fd9e424a14386645a744af1872d85b6df91f5, OPEN/DRAFT/BUILT_NOT_PROVEN.
