@@ -10,6 +10,11 @@ field, one at a time, must be refused), the receipt's error classes are the
 INCUMBENT ones from ``engine.provider_health``, ``price_state`` is derived only
 from ``lib.ai_costs``, the GLM request body is the provider-owned profile, and
 the resolved credential reaches the transports as an argument.
+
+Round-3 pins added here: a 2xx is a success ONLY when its body carried usable
+text (an empty or unparseable 200 is ``error``, never a silent ``none`` with
+``text=None``), and a ``base_url`` carrying a fragment marker -- even a bare
+trailing ``#`` that ``urlsplit`` reports as an empty fragment -- is refused.
 """
 from __future__ import annotations
 
@@ -186,6 +191,7 @@ _REJECTIONS = {
     "cap_id_without_prefix": _set("glm_general_api", "cap_id", "glm"),
     "base_url_not_https": _set("glm_general_api", "base_url", "http://api.z.ai/api/paas/v4"),
     "base_url_with_query": _set("glm_general_api", "base_url", "https://api.z.ai/api/paas/v4?key=1"),
+    "base_url_with_empty_fragment": _set("glm_general_api", "base_url", "https://api.z.ai/api/paas/v4#"),
     "base_url_with_userinfo": _set("glm_general_api", "base_url", "https://u:p@api.z.ai/x"),
     "missing_secret_ref": lambda raw: raw["modes"]["glm_general_api"].pop("secret_ref"),
     "mode_id_not_an_id": lambda raw: raw["modes"].update({"GLM General": raw["modes"]["glm_general_api"]}),
@@ -242,6 +248,9 @@ def _identity_mutations() -> dict[str, tuple[str, object]]:
         cases[f"{mode_id}:http_scheme"] = (mode_id, _set(mode_id, "base_url", f"http://{host}{path}"))
         cases[f"{mode_id}:query"] = (mode_id, _set(mode_id, "base_url", f"{base}?token=1"))
         cases[f"{mode_id}:fragment"] = (mode_id, _set(mode_id, "base_url", f"{base}#frag"))
+        # A bare trailing ``#`` is the same refusal: ``urlsplit`` reports an
+        # EMPTY fragment, so only the raw string can see the marker.
+        cases[f"{mode_id}:empty_fragment"] = (mode_id, _set(mode_id, "base_url", f"{base}#"))
         # The load-bearing substitution from the review: the OTHER mode's key
         # name on this mode.  It passes every generic validator, so only the
         # pinned destination can refuse it.
@@ -592,6 +601,92 @@ def test_glm_http_statuses_map_to_the_incumbent_classes(receipts, monkeypatch, t
     assert receipts["usage"] == []
 
 
+def _glm_json_response(payload, status: int = 200):
+    """A minimal ``requests`` response, so a real status crosses the helper."""
+
+    class _Response:
+        status_code = status
+
+        @staticmethod
+        def json():
+            return payload
+
+    return _Response()
+
+
+#: Real-shaped GLM 200 bodies carrying NO usable text.  The detailed helper
+#: returns each of these WITH ``status_code=200`` and ``error_kind`` ``empty`` /
+#: ``bad_shape`` -- the exact shape that used to be booked ``none``/``ok=True``.
+_GLM_200_WITHOUT_TEXT = {
+    "empty_content": {
+        "choices": [{"message": {"content": ""}}],
+        "usage": {"prompt_tokens": 12, "completion_tokens": 7},
+    },
+    "no_choices": {
+        "choices": [],
+        "usage": {"prompt_tokens": 12, "completion_tokens": 7},
+    },
+    "choices_wrong_type": {"choices": "nope"},
+    "missing_message": {
+        "choices": [{}],
+        "usage": {"prompt_tokens": 12, "completion_tokens": 7},
+    },
+    "blank_content": {"choices": [{"message": {"content": "   "}}]},
+}
+
+
+@pytest.mark.parametrize(
+    "payload", list(_GLM_200_WITHOUT_TEXT.values()), ids=list(_GLM_200_WITHOUT_TEXT)
+)
+def test_glm_200_without_usable_text_is_an_error_not_a_success(
+    receipts, monkeypatch, tmp_path, payload
+):
+    """R3/B3: a 2xx is a success ONLY when its body carried usable text."""
+    _install(monkeypatch, tmp_path, _enable_all)
+    calls = _install_requests_spy(monkeypatch, _glm_json_response(payload))
+
+    receipt = ppm.call_mode(
+        "glm_general_api", "s", "u", max_tokens=8, env={"ZAI_API_KEY": SECRET_VALUE}
+    )
+
+    # A REAL 200 crosses the helper here, not a status-less mock.
+    assert len(calls) == 1
+    assert receipt.ok is False
+    assert receipt.error_class == "error"
+    assert receipt.text is None
+    assert receipt.fallback == "none"
+    assert (receipt.input_tokens, receipt.output_tokens) == (None, None)
+    assert receipt.price_state == "unknown"
+    assert receipts["usage"] == []
+    assert [row["ok"] for row in receipts["health"]] == [False]
+    assert receipts["health"][0]["error_class"] == "error"
+
+
+def test_glm_200_with_usable_text_is_still_the_success_path(receipts, monkeypatch, tmp_path):
+    """Positive control: the same wire path WITH text stays ``none`` and priced."""
+    _install(monkeypatch, tmp_path, _enable_all)
+    _install_requests_spy(
+        monkeypatch,
+        _glm_json_response(
+            {
+                "choices": [{"message": {"content": "glm answer"}}],
+                "usage": {"prompt_tokens": 12, "completion_tokens": 7},
+            }
+        ),
+    )
+
+    receipt = ppm.call_mode(
+        "glm_general_api", "s", "u", max_tokens=8, env={"ZAI_API_KEY": SECRET_VALUE}
+    )
+
+    assert receipt.ok is True
+    assert receipt.error_class == "none"
+    assert receipt.text == "glm answer"
+    assert (receipt.input_tokens, receipt.output_tokens) == (12, 7)
+    assert len(receipts["health"]) == 1 and receipts["health"][0]["ok"] is True
+    assert len(receipts["usage"]) == 1
+
+
 @pytest.mark.parametrize(
     ("reason", "expected"),
     [
@@ -641,6 +736,9 @@ def test_glm_helper_reasons_map_to_incumbent_error_classes(receipts, monkeypatch
         (ppm.TransportOutcome(reason="connection reset"), "transport"),
         (ppm.TransportOutcome(reason="openai_compat_empty"), "error"),
         (ppm.TransportOutcome(text=""), "error"),
+        (ppm.TransportOutcome(text="   "), "error"),
+        (ppm.TransportOutcome(status_code=200), "error"),
+        (ppm.TransportOutcome(status_code=200, text="   "), "error"),
         (ppm.TransportOutcome(), "error"),
     ],
 )

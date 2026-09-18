@@ -433,8 +433,11 @@ def _identity_mismatches(mode: ProductionMode, identity: ModeIdentity) -> list[s
         problems.append(f"path {split.path!r} != pinned {identity.path!r}")
     if split.query:
         problems.append(f"base_url carries a query ({split.query!r})")
-    if split.fragment:
-        problems.append(f"base_url carries a fragment ({split.fragment!r})")
+    if "#" in mode.base_url:
+        # The raw string, not ``split.fragment``: ``urlsplit`` drops the
+        # delimiter of an EMPTY trailing fragment, so a bare ``#`` is invisible
+        # to the parsed parts -- and a credential is never sent under a URL tail.
+        problems.append(f"base_url carries a fragment ({mode.base_url.split('#', 1)[1]!r})")
     return problems
 
 
@@ -510,9 +513,15 @@ def _validate_record(mode_id: str, raw: Any) -> ProductionMode:
         raise ProductionModeConfigError(
             f"mode {mode_id!r}: cap_id must be {CAP_ID_PREFIX}{provider_id}"
         )
-    if not base_url.startswith("https://") or "@" in base_url or "?" in base_url:
+    if (
+        not base_url.startswith("https://")
+        or "@" in base_url
+        or "?" in base_url
+        or "#" in base_url
+    ):
         raise ProductionModeConfigError(
-            f"mode {mode_id!r}: base_url must be a plain https endpoint with no userinfo or query"
+            f"mode {mode_id!r}: base_url must be a plain https endpoint with no "
+            "userinfo, query or fragment"
         )
 
     mode = ProductionMode(
@@ -706,6 +715,18 @@ def _usage_field(usage: Any, key: str) -> Any:
     return getattr(usage, key, None)
 
 
+def _usable_text(text: Any) -> str | None:
+    """The transport's text, or ``None`` when it carries nothing usable.
+
+    A blank string is not text: a 2xx whose body is whitespace is the same
+    failed call as one whose body is empty, and neither may be receipted as a
+    success with ``text=None``.
+    """
+    if not isinstance(text, str) or not text.strip():
+        return None
+    return text
+
+
 def _int_or_none(value: Any) -> int | None:
     if isinstance(value, bool) or value is None:
         return None
@@ -786,7 +807,9 @@ def _status_to_error_class(status: int) -> str:
     """
     if HTTPStatus.OK <= status < HTTPStatus.MULTIPLE_CHOICES:
         # A metered transport hands back the status of a SUCCESSFUL response too,
-        # so a 2xx must classify as success rather than as an error class.
+        # so a 2xx must classify as success rather than as an error class.  This
+        # maps the STATUS alone; ``call_mode`` still requires the body to carry
+        # usable text before it receipts a success.
         return "none"
     if status in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
         return "auth"
@@ -1127,15 +1150,23 @@ def call_mode(
 
     error_class = "none"
     status_code = _int_or_none(outcome.status_code)
+    text = _usable_text(outcome.text)
     if status_code is not None:
         error_class = _status_to_error_class(status_code)
     elif outcome.error_class is not None:
         error_class = outcome.error_class
     elif outcome.reason:
         error_class = _classify_reason(outcome.reason)
-    elif not outcome.text:
+    elif text is None:
         error_class = "error"
     if error_class not in ERROR_CLASSES:
+        error_class = "error"
+    if error_class == "none" and text is None:
+        # A metered transport reports the status of a SUCCESSFUL response too,
+        # so ``_status_to_error_class`` maps a 2xx to "none" -- but the status
+        # alone is not a success.  A 2xx whose body carries no usable text
+        # (empty ``choices``, ``content == ""``, an unparseable shape) is a
+        # FAILED call, never a silent "none" with ``text=None``.
         error_class = "error"
 
     ok = error_class == "none"
