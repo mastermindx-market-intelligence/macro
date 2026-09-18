@@ -203,7 +203,10 @@ def test_us_structural_drift_is_reported_but_never_auto_mutated(tmp_path, capsys
     mem = _write_us_structural_inputs(data)
     before = mem.read_bytes()
 
-    doc = rm.run(cfg=CFG, asof=ASOF, data_dir=data, out_dir=tmp_path / "q")
+    doc = rm.run(
+        cfg=CFG, asof=ASOF, data_dir=data, out_dir=tmp_path / "q",
+        us_sector_reference_status="ok",
+    )
 
     audit = doc["us_sector_audit"]
     assert audit["drift"] is True
@@ -214,3 +217,101 @@ def test_us_structural_drift_is_reported_but_never_auto_mutated(tmp_path, capsys
     assert tech["missing"] == ["NVDA"]
     assert mem.read_bytes() == before
     assert "::warning title=us-sector-membership-drift::" in capsys.readouterr().out
+
+
+def test_us_structural_audit_skips_failed_current_breadth_run(tmp_path):
+    data = tmp_path / "data"
+    _write_us_structural_inputs(data)
+
+    doc = rm.run(
+        cfg=CFG, asof=ASOF, data_dir=data, out_dir=tmp_path / "q",
+        us_sector_reference_status="failed",
+    )
+
+    audit = doc["us_sector_audit"]
+    assert audit["skipped"] is True
+    assert audit["drift"] is None
+    assert audit["reference_status"] == "failed"
+    assert "current breadth collection" in audit["note"]
+
+
+def test_us_structural_audit_applies_added_removed_interval_at_asof(tmp_path):
+    data = tmp_path / "data"
+    mem = _write_us_structural_inputs(data)
+    doc = json.loads(mem.read_text())
+    doc["baskets"]["us_sector_tech"]["members"] = [
+        {"ticker": "AAPL", "added": "2020-01-01", "removed": "2026-07-02"},
+        {"ticker": "NVDA", "added": "2026-07-02", "removed": None},
+        {"ticker": "OLD", "added": "2020-01-01", "removed": "2026-07-02"},
+    ]
+    mem.write_text(json.dumps(doc, indent=2))
+
+    audit = rm._audit_us_sector_membership(
+        data, asof=ASOF, reference_status="ok"
+    )
+    tech = next(row for row in audit["baskets"] if row["basket_id"] == "us_sector_tech")
+    assert tech["active"] == 2
+    assert tech["extra"] == ["OLD"]
+    assert tech["missing"] == ["NVDA"]
+
+    next_day = rm._audit_us_sector_membership(
+        data, asof=date(2026, 7, 2), reference_status="ok"
+    )
+    tech2 = next(row for row in next_day["baskets"] if row["basket_id"] == "us_sector_tech")
+    assert tech2["active"] == 1
+    assert tech2["extra"] == []
+    assert tech2["missing"] == ["AAPL"]
+
+
+def test_malformed_us_audit_cannot_suppress_existing_prune_refusal(tmp_path):
+    data = tmp_path / "data"
+    _write_membership(data, "baskets_intl", {"b1": ["T1", "T2", "GONE1", "GONE2"]})
+    _write_cache(data, "intl_search/closes.parquet", ["T1", "T2"])
+    mem = _write_us_structural_inputs(data)
+    doc = json.loads(mem.read_text())
+    doc["baskets"]["us_sector_tech"]["members"].append(None)
+    mem.write_text(json.dumps(doc, indent=2))
+    out = tmp_path / "q"
+
+    with pytest.raises(rm.PruneGuardError, match="cache-present"):
+        rm.run(
+            cfg={**CFG, "membership_max_prune_pct": 90.0},
+            asof=ASOF,
+            data_dir=data,
+            out_dir=out,
+            us_sector_reference_status="ok",
+        )
+
+    receipt = json.loads((out / "membership_reconcile.json").read_text())
+    assert receipt["n_refused"] == 1
+    assert receipt["us_sector_audit"]["skipped"] is True
+    assert receipt["us_sector_audit"]["drift"] is None
+    assert "malformed" in receipt["us_sector_audit"]["note"].lower()
+
+
+def test_us_structural_audit_refuses_ambiguous_reference_integrity(tmp_path):
+    data = tmp_path / "data"
+    _write_us_structural_inputs(data)
+    ref = data / "breadth" / "constituents.parquet"
+    pd.DataFrame(
+        {"sector": ["Information Technology", "Information Technology"]},
+        index=pd.Index(["AAPL", "AAPL"], name="symbol"),
+    ).to_parquet(ref)
+
+    duplicate = rm._audit_us_sector_membership(
+        data, asof=ASOF, reference_status="ok"
+    )
+    assert duplicate["skipped"] is True
+    assert duplicate["drift"] is None
+    assert "duplicate" in duplicate["note"].lower()
+
+    pd.DataFrame(
+        {"sector": ["Information Technology", None]},
+        index=pd.Index(["AAPL", "NVDA"], name="symbol"),
+    ).to_parquet(ref)
+    incomplete = rm._audit_us_sector_membership(
+        data, asof=ASOF, reference_status="ok"
+    )
+    assert incomplete["skipped"] is True
+    assert incomplete["drift"] is None
+    assert "classification" in incomplete["note"].lower()
