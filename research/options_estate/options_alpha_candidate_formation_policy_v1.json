@@ -17,6 +17,12 @@
     "pre_activation_action": "permanent_abstain",
     "late_arrival_policy": "formed_before_activation_never_cured_by_late_observation"
   },
+  "activation_preconditions": [
+    "oa1t_measured_source_consumer_proven",
+    "ad1t2_consumer_availability_production_accepted",
+    "campaign_integrity_publication_runtime_accepted",
+    "source_collision_review_clear"
+  ],
   "source_contracts": {
     "campaign": "options.signal_campaign/v2",
     "microstructure": "options.trade_nbbo_microstructure/v1",
