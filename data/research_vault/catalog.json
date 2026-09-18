@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-18T14:23:07.193526+00:00",
-  "count": 2365,
+  "generated_at": "2026-09-18T14:53:10.698170+00:00",
+  "count": 2366,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -178,6 +178,26 @@
         "AI Capex Debt Scale: Global AI-related debt $578bn (hyperscalers 40%), with $420bn gross issuance expected in 2027 (vs $250bn 2026), signaling structural capital allocation shift.",
         "CTA Flow Moderation: CTAs net long $37.54bn US equities (22nd percentile), SPX sellers at $5.4bn (flat tape), flows moderating amid elevated exposure.",
         "Industrial Production Beat: Industrial production (Aug) expected +0.4% (vs consensus +0.3%), aligning with Fed hike expectations and oil at $101/bbl."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fohcvy32xk9-357655",
+      "title": "GS Privorotsky GS Basics Bear Sentiment Spike Trump Xi AI Returns 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T12:47:27Z",
+      "summary_points": [
+        "Extreme Bearish Sentiment: AAII bull/bear spread at -24.5 (lowest since May 2025), AI capex trade overreaction confirmed, Fed hawkish energy/geopolitics messaging amplifying risk aversion.",
+        "Oil Market Relief: Diplomatic progress with Iran/China/Saudi and Hormuz oil relief anchoring energy shock risks, reducing near-term market volatility.",
+        "Trump-Xi Meeting Pivotal: Upcoming summit critical for de-escalation; Russia/NATO escalation (drone incursions, Article 5) necessitates CHF/PLN hedges amid trust deficit in China’s intermediary role.",
+        "AI Compute Scarcity: Anthropic R&D shift (26%→50%+), PrismML model compression (27B→5.9GB), GPU rental hikes (Nebius) confirm supply constraints reinforcing compute value despite data center growth."
       ],
       "tags": [],
       "tickers": [],
