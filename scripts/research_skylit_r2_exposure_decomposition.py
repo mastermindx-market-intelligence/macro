@@ -34,6 +34,25 @@ def _default_greeks_fn():
 def _default_store_api():
     from engine import thetadata_store
     return thetadata_store
+\ndef _greek_method_metadata(greeks_fn: Callable | None) -> dict[str, Any]:
+    if greeks_fn is None:
+        from engine import intraday_greeks
+        return {
+            "kernel": "engine.intraday_greeks.bs_greeks_vec",
+            "rate": float(intraday_greeks.DEFAULT_R),
+            "dividend_yield": float(intraday_greeks.DEFAULT_Q),
+            "vol_counterfactual": "sticky_strike",
+            "position_tier": POSITION_TIER,
+        }
+    return {
+        "kernel": f"{getattr(greeks_fn, '__module__', 'unknown')}.{getattr(greeks_fn, '__name__', 'callable')}",
+        "rate": None,
+        "dividend_yield": None,
+        "vol_counterfactual": "sticky_strike",
+        "position_tier": POSITION_TIER,
+    }
+
+
 
 
 def _default_calendar_api():
@@ -469,6 +488,7 @@ def analyze_pair(
         "schema": SCHEMA,
         "research_authority": "research_only",
         "position_tier": POSITION_TIER,
+        "method": _greek_method_metadata(greeks_fn),
         "outcome_labels_opened": False,
         "root": root.upper(),
         "session0": session0,
@@ -497,12 +517,6 @@ def analyze_pair(
         greeks_fn=greeks_fn,
     )
     composition = _composition_summary(state0["frame"], state1["frame"], session1)
-    elapsed = max(1, (s1 - s0).days)
-    decomposition["component_net_per_session"] = decomposition["component_net"].copy()
-    decomposition["component_net_per_calendar_day"] = {
-        k: v / elapsed
-        for k, v in decomposition["component_net"].items()
-    }
     base["status"] = "SURVIVOR_DECOMPOSITION_COMPLETE"
     base["decomposition"] = decomposition
     base["composition"] = composition
