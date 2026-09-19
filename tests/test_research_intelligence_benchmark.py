@@ -5,6 +5,8 @@ import json
 import stat
 
 from engine.research_intelligence.benchmark import (
+    BENCHMARK_CONTRACT_SHA256,
+    BENCHMARK_VERSION,
     CASE_SCHEMA,
     OBSERVATION_SCHEMA,
     aggregate_results,
@@ -185,6 +187,8 @@ def test_request_is_exact_w1_prompt_and_marked_private():
     request = build_benchmark_request(_case(), BODY)
     assert request["visibility"] == "private_source_bound"
     assert request["case_id"] == "fixture-amd-001"
+    assert request["benchmark_version"] == BENCHMARK_VERSION
+    assert request["benchmark_contract_sha256"] == BENCHMARK_CONTRACT_SHA256
     assert BODY in request["user_prompt"]
     assert request["source_content_sha256"] == hashlib.sha256(BODY.encode()).hexdigest()
     assert len(request["gold_contract_sha256"]) == 64
@@ -672,3 +676,37 @@ def test_semantic_precision_penalizes_extra_unmatched_analysis_rows():
     assert result["counts"]["matched_analysis_semantics"] == 3
     assert result["counts"]["observed_analysis_semantic_rows"] == 4
     assert result["overall_score"] < 1.0
+
+
+def test_aggregate_refuses_cross_generation_receipt():
+    first = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    second = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-b",
+    )
+    second["benchmark_contract_sha256"] = "0" * 64
+    try:
+        aggregate_results([first, second])
+    except ValueError as exc:
+        assert "contract hash is invalid" in str(exc)
+    else:
+        raise AssertionError("benchmark generations must never be mixed")
+
+
+def test_aggregate_exposes_frozen_benchmark_generation():
+    result = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    aggregate = aggregate_results([result])
+    assert aggregate["benchmark_version"] == BENCHMARK_VERSION
+    assert aggregate["benchmark_contract_sha256"] == BENCHMARK_CONTRACT_SHA256
