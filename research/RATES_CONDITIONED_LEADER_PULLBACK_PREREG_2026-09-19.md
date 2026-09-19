@@ -310,6 +310,26 @@ Those remain separate gates.
 
 ---
 
+## 10.1 Immutable input identity gate
+
+The no-join feasibility receipt is:
+
+`research/RATES_CONDITIONED_LEADER_PULLBACK_PREJOIN_FEASIBILITY_2026-09-19.md`
+
+It binds the exact episode parquet and the canonical rate histories through the last episode date (2026-08-10). Appended FRED tail rows after that cutoff are allowed; changes inside the frozen historical prefix are not.
+
+Before any TrialLedger declaration or rate×episode statistic, the runner must verify:
+
+- episode parquet Git blob `86142b0f567044b4a3d2e307ca87a41029e83afa` and SHA256 `a55f3e3ecaef13efc6dc0a407375ee3d87e66b6dfb70eacb0c1d3b7249c6feb4`;
+- DGS2 prefix SHA256 `a9b2615177ad46e359bbd368a5d8e280b397c818e840e875091d36bf7ff85cfe`;
+- DGS10 prefix SHA256 `4e0ca7ac1542f9ff6ab7a93d323f71d85cd342028e1c89b6a09baef1e5db5e87`;
+- DFII10 prefix SHA256 `835a01fd88d029a4fb2fbbff1517a22e4d8e0c2138c00cda5c41cf03e1d6f57e`;
+- T10YIE prefix SHA256 `cc6f9e6ecca3a8a512d2c7a4baa30d4646add347f628a838af798efc69ce90c6`.
+
+The rate prefix digest algorithm is defined in the feasibility receipt and machine companion. **Any prefix-digest mismatch refuses the study before registration/join.** It is a material invalidator requiring source reconciliation or a new prereg; it is never repaired by accepting the newer history after outcomes.
+
+---
+
 ## 11. Execution / stop contract
 
 Before running:
