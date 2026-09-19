@@ -1089,3 +1089,83 @@ def test_cw_state_and_clause_keys_do_not_leak_engine_token():
         "templates/ipo.html.j2 must not carry '无法评估' — use '暂无读数' "
         "(see template/convention across transmission / foresight / risk bands)"
     )
+
+
+# --------------------------------------------------------------------------- #
+# MAJOR-3 + minors 1/2 (h_7128) — RED-first test for the capture-time
+# force-state CSS hook. The hook lives in templates/ipo.html.j2 and toggles
+# [data-credit="null"] on <body> to swap the data-bearing rail/scale for the
+# null-variant fallback nodes. It was added in round 2; this test proves it
+# exists and works as designed.
+# --------------------------------------------------------------------------- #
+def test_cw_force_hook_fallback_nodes_and_css_are_emitted():
+    """Assert the .cw-rail-fb / .cw-scale-fb fallback nodes and the
+    [data-credit="null"] CSS rule are present in the template. Fails on the
+    round-1 head (6c444f6f35f8) where neither the nodes nor the CSS rule exist."""
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+
+    # 1. The always-present fallback rail and scale nodes (hidden by default)
+    assert ".cw-rail-fb" in src, (
+        ".cw-rail-fb fallback node must be present in templates/ipo.html.j2 — "
+        "it renders the null rail and is toggled by [data-credit='null']"
+    )
+    assert ".cw-scale-fb" in src, (
+        ".cw-scale-fb fallback node must be present in templates/ipo.html.j2 — "
+        "it renders the null scale label and is toggled by [data-credit='null']"
+    )
+
+    # 2. The [data-credit="null"] CSS rule that hides data nodes + shows fallback
+    assert '[data-credit="null"] .cw-rail-data' in src, (
+        '[data-credit="null"] CSS rule must hide .cw-rail-data when the '
+        'capture attribute is set on <body>'
+    )
+    assert '[data-credit="null"] .cw-scale-data' in src, (
+        '[data-credit="null"] CSS rule must hide .cw-scale-data when the '
+        'capture attribute is set on <body>'
+    )
+    assert '[data-credit="null"] .cw-rail-fb{display:block}' in src, (
+        '[data-credit="null"] must show .cw-rail-fb (display:block)'
+    )
+    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in src, (
+        '[data-credit="null"] must show .cw-scale-fb (display:flex)'
+    )
+
+    # 3. The null-state copy: "range can't be read yet" / "区间暂无读数"
+    #    appears in BOTH the existing is-null node (~458) and the fallback (~464)
+    #    — the ruling requires both the data state and the fallback state to carry
+    #    the corrected plain copy.
+    assert "range can" in src and "t be read yet" in src, (
+        'Null rail/scale copy "range can\'t be read yet" must appear in the '
+        'template — the is-null node AND the fallback node both carry it.'
+    )
+    assert "区间暂无读数" in src, (
+        'Null rail/scale copy "区间暂无读数" must appear in the template — '
+        'the is-null node AND the fallback node both carry it.'
+    )
+
+
+def test_cw_force_hook_comment_names_body_not_html():
+    """The hook comment must name <body> as the element the capture script sets
+    [data-credit="null"] on — not <html> (which the pre-fix comment stated).
+    Fails on the round-2 head before this fix."""
+    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
+    src = tpl_path.read_text()
+    # The comment should say "on <body>", not "on <html>"
+    # Scan for the comment block that mentions data-credit
+    import re
+    comment_blocks = re.findall(r'/\*.*?\*/', src, re.DOTALL)
+    hook_comment = None
+    for block in comment_blocks:
+        if 'data-credit' in block and 'force-state hook' in block:
+            hook_comment = block
+            break
+    assert hook_comment is not None, "Force-state hook comment not found in template"
+    assert "<body>" in hook_comment, (
+        "Hook comment must name <body> as the element [data-credit='null'] is set on "
+        "(capture_page_evidence.py sets it on <body>, not <html>)"
+    )
+    assert "<html>" not in hook_comment or "not <html>" in hook_comment, (
+        "Hook comment must not say [data-credit='null'] is set on <html> — "
+        "capture_page_evidence.py sets it on <body>"
+    )
