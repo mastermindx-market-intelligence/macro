@@ -3605,6 +3605,29 @@ jobs:
           tests/test_covenant_terms.py
           tests/test_compile_capital_structure_covenant_terms.py -q
 
+  covenant-headroom:
+    if: ${{ false }}
+    gate: code
+    # B-F09-13 (MO-PAID-062 slice 2): zero-authority covenant headroom
+    # view-model for the one extracted issuer. Pure engine + closed-set
+    # defenses (REFUSALS, COVENANT_METRIC_MAP, _NO_EXTRAPOLATION_KEYS,
+    # _ZERO_AUTHORITY_KEYS). This legacy job is disabled by `if: ${{ false }}`;
+    # the trusted executor packs run the test on pull requests instead. Same
+    # tmp_path fixture discipline as board-shadow-substrate: no committed
+    # data/site moves.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # contract-delta 2026-09-19 (seat main update d6c4277c): lib/config.py on main imports yaml at
+        # module import (ModuleNotFoundError: No module named 'yaml' at lib/config.py:8 on ci-pack-10);
+        # pyyaml added to this job's own install line, nothing else changed.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: covenant headroom engine — closed refusal set, zero authority, no extrapolation
+        run: python -m pytest tests/test_covenant_headroom.py -q
+
   stock-seasonality:
     if: ${{ false }}
     gate: data
