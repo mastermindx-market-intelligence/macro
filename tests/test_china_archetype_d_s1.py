@@ -68,3 +68,34 @@ def test_binding_design_sources_record_the_family_parity_gate():
     assert marker in DESIGN
     assert "#7054" in FACTORY
     assert "#7054" in DESIGN
+
+
+def test_rollback_preserves_orthogonal_truth_and_accessibility_fixes():
+    """Do not throw away #7054 fixes that were independent of its rejected L1 shell."""
+    # The markets dialog must actually retain the first CNH/CGB tile found in a
+    # Jinja loop and explain the inverted USD/CNH quote orientation.
+    assert "namespace(tile=none)" in SRC
+    assert "_cnh_ns.tile" in SRC and "_cgb_ns.tile" in SRC
+    assert "_cnh.meaning_en" in SRC and "_cnh.meaning_zh" in SRC
+    assert "cnx-orient" in SRC
+
+    # Multi-timeframe rows use the producer's named D/W/M cells rather than
+    # positional score indexes, and labels keep EN/ZH parity.
+    assert "ix.cells or {}" in SRC
+    assert "ix.label_en or ix.label" in SRC
+    assert "_cells.D" in SRC and "_cells.W" in SRC and "_cells.M" in SRC
+
+    # Restored cards keep an actual keyboard focus outline, not box-shadow only.
+    assert "sxg-face.mx5-card-face:focus-visible" in SRC
+    assert "mx5-mkt-tile:focus-visible" in SRC
+    assert "outline:2px solid color-mix(in srgb, var(--link) 70%, transparent)" in SRC
+
+    # Light mode really disables the dark aurora regardless of whether the
+    # theme attribute sits on html or body, and dark aurora stays behind content.
+    assert "pointer-events:none;z-index:-1;overflow:hidden" in SRC
+    assert 'html[data-theme="light"] body.page-china .aurora::before' in SRC
+    assert "display:none !important;background:none !important" in SRC
+
+    # Locale correctness retained from #7054.
+    assert "{% macro cny_yi_pair(n)" in SRC
+    assert "'Neutral':'中性'" in SRC
