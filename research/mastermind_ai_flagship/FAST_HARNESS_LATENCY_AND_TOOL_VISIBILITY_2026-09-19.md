@@ -205,6 +205,28 @@ The first release target is **quality noninferiority plus a material reduction i
 and observed latency on the qualified profiles**. Do not claim a latency win from static payload
 reduction alone.
 
+## 10A. 2026-09-19 anonymous Fast/Pro bakeoff gate
+
+A fresh matched-case attempt used the same supplied valuation/thesis question on the
+current production endpoint while health reported process commit `dfcab92360` and
+checkout `7babc6c17d`.
+
+Fast request: HTTP524 after ~15.47s with an empty body and no returned run identity.
+Backend effect/completion is unknown. It was **not retried** and is not counted as a
+model-quality failure or latency sample.
+
+Distinct Pro arm: HTTP402 after ~0.55s with
+`{"quota_exhausted":true,"lane":"pro","tier":"guest"}`. No Pro model, route, usage
+or answer was returned. This is an entitlement/identity gate, not evidence about
+GPT-5.6 Sol quality.
+
+Therefore the anonymous endpoint cannot currently produce a valid matched Fast/Pro
+comparison. Do not infer DeepSeek superiority/inferiority from these two outcomes and
+do not reroute the Fast 524 through another account. A valid model bakeoff requires a
+server-authenticated entitled customer identity (or an existing sanctioned evaluation
+harness) and exact served-model receipts for both arms. No credential was read or
+reused by this observation.
+
 ## 11. Current ownership / sequence
 
 Do not edit shared gateway/classifier paths while the current calculator/scope/Research/vision source
