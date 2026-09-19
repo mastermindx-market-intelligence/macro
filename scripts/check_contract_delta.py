@@ -48,12 +48,12 @@ Finding identity for the delta:
     suites    the suite's repo-relative path string.
 
 BASE-TREE MATERIALIZATION. The base commit is checked out into a throwaway
-`git worktree add --detach` (works under this repo's `blob:none` partial clone —
-missing blobs fetch lazily over the network). Since 2026-09-14 the throwaway
-tree MIRRORS the calling checkout's sparse cone (`materialize_base_tree`): a
-sparse session worktree gets a sparse base (~0.4 GiB instead of 3.8 GiB, the
-dominant disk burn on the shared dev Macs), a full checkout still gets a full
-base, and either way both censuses walk the same directory set. It is minted
+worktree. Since 2026-09-14 cone-mode callers mirror their sparse include set.
+This now mirrors non-cone callers too: GitHub's hosted checkout uses the
+fail-safe pattern `/*` plus only `!/site/` and `!/data/`, so copying that
+profile omits the same generated-heavy trees from the base while keeping unknown
+new top-level paths included. A full checkout still gets a full base, and either
+way both censuses walk the same directory set. It is minted
 under `$CONTRACT_DELTA_TMP_ROOT`, else the host's external-volume policy root,
 else the system temp dir (`base_tree_temp_root`), and never under
 `.claude/worktrees/` or any other fleet worktree-GC root — see
@@ -434,18 +434,62 @@ def base_tree_temp_root() -> Path | None:
     return candidate
 
 
-def caller_sparse_cone(repo_root: Path) -> list[str] | None:
-    """The calling checkout's cone-mode sparse include set, or None when it is a
-    full checkout (or uses non-cone patterns, which we do not try to mirror)."""
+def _git_with_stdin(*args: str, cwd: Path, stdin: str) -> str:
+    completed = subprocess.run(
+        ["git", *args],
+        cwd=cwd,
+        input=stdin,
+        capture_output=True,
+        text=True,
+        timeout=300,
+    )
+    if completed.returncode != 0:
+        raise ContractDeltaError(
+            f"git {' '.join(args)} failed in {cwd}: {completed.stderr.strip()}"
+        )
+    return completed.stdout
+
+
+def caller_sparse_profile(repo_root: Path) -> tuple[str, list[str]] | None:
+    """The calling checkout's exact sparse profile, if it can be proven.
+
+    Cone mode returns Git's canonical include list. Non-cone mode returns the raw
+    sparse pattern file line-for-line so negative patterns keep their semantics.
+    Any ambiguity preserves the historical full-checkout fallback.
+    """
     try:
         enabled = _git("config", "--get", "core.sparseCheckout", cwd=repo_root).strip()
         cone = _git("config", "--get", "core.sparseCheckoutCone", cwd=repo_root).strip()
     except ContractDeltaError:
         return None
-    if enabled != "true" or cone != "true":
+    if enabled != "true":
         return None
-    listed = _git("sparse-checkout", "list", cwd=repo_root).split()
-    return listed or None
+    if cone == "true":
+        listed = _git("sparse-checkout", "list", cwd=repo_root).split()
+        return ("cone", listed) if listed else None
+    if cone != "false":
+        return None
+
+    try:
+        sparse_path_text = _git(
+            "rev-parse", "--git-path", "info/sparse-checkout", cwd=repo_root
+        ).strip()
+    except ContractDeltaError:
+        return None
+    sparse_path = Path(sparse_path_text)
+    if not sparse_path.is_absolute():
+        sparse_path = repo_root / sparse_path
+    try:
+        patterns = sparse_path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    return ("non-cone", patterns) if patterns else None
+
+
+def caller_sparse_cone(repo_root: Path) -> list[str] | None:
+    """Backward-compatible cone-only view used by existing callers/tests."""
+    profile = caller_sparse_profile(repo_root)
+    return profile[1] if profile and profile[0] == "cone" else None
 
 
 def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
@@ -455,22 +499,19 @@ def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
     `tempfile.mkdtemp()` is outside every one of them, matching
     `scripts/prophet_pit_replay.py`'s `resolve_or_create_vintage_worktree`.
 
-    MIRRORS THE CALLER'S SPARSE CONE (2026-09-14). A session worktree on this
-    fleet is sparse (config/sparse_worktree.json: data/, site/, mockups/,
-    verify_shots/ omitted — 87% of a 3.8 GiB tree), yet the base tree used to be
-    a FULL checkout every time: 3-6 GB written per gate run, ~20 GB/h across the
-    Studio's concurrent sessions, and every SIGKILLed run left the half-built
-    tree behind (wave-2 freed 184 GB of them; it was gone again in ~9 h). The base
-    tree now takes exactly the caller's `git sparse-checkout list` cone, so both
-    censuses see the SAME set of directories — which is also the only way the
-    delta is well-defined: a full base against a sparse head reports every suite
-    under an omitted directory as "fixed on head" and hides it. A full caller (CI
-    runners, the operator root) still gets a full base tree, unchanged.
+    MIRRORS THE CALLER'S SPARSE PROFILE. Cone callers reuse their canonical
+    `git sparse-checkout list`. Non-cone callers reuse the exact sparse pattern
+    file through `git sparse-checkout set --no-cone --stdin`. The latter is the
+    hosted CI case: the head includes every top-level path except `site/` and
+    `data/`, so the base must do the same instead of materializing roughly 80k
+    deliberately omitted files. Copying the negative profile verbatim keeps
+    unknown new top-level trees fail-safe INCLUDED. A full caller still gets a
+    full base tree, unchanged.
     Placement follows `base_tree_temp_root()` (external volume when the host has
     one); the `contract-delta-base-` prefix is what the fleet sweeper keys on.
     """
     base_sha = _git("rev-parse", f"{base_ref}^{{commit}}", cwd=repo_root).strip()
-    cone = caller_sparse_cone(repo_root)
+    sparse_profile = caller_sparse_profile(repo_root)
     tmpdir = Path(tempfile.mkdtemp(prefix="contract-delta-base-", dir=base_tree_temp_root()))
     tmpdir.rmdir()  # `git worktree add` refuses a pre-existing non-empty target
 
@@ -484,12 +525,23 @@ def materialize_base_tree(base_ref: str, *, repo_root: Path = ROOT):
             except ContractDeltaError:
                 pass
 
-    if cone is None:
+    if sparse_profile is None:
         _git("worktree", "add", "--detach", str(tmpdir), base_sha, cwd=repo_root)
         return tmpdir, base_sha, cleanup
+    mode, patterns = sparse_profile
     try:
         _git("worktree", "add", "--detach", "--no-checkout", str(tmpdir), base_sha, cwd=repo_root)
-        _git("sparse-checkout", "set", "--cone", "--", *cone, cwd=tmpdir)
+        if mode == "cone":
+            _git("sparse-checkout", "set", "--cone", "--", *patterns, cwd=tmpdir)
+        else:
+            _git_with_stdin(
+                "sparse-checkout",
+                "set",
+                "--no-cone",
+                "--stdin",
+                cwd=tmpdir,
+                stdin="\n".join(patterns) + "\n",
+            )
         _git("read-tree", "-mu", "HEAD", cwd=tmpdir)
     except BaseException:
         cleanup()
