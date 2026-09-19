@@ -1,7 +1,7 @@
 {
   "schema": "theme_trade_flows.v1",
-  "as_of": "2026-09-16",
-  "generated_at": "2026-09-16T04:01:45.044382+00:00",
+  "as_of": "2026-09-19",
+  "generated_at": "2026-09-19T15:53:15.076980+00:00",
   "authority": {
     "may_rank": false,
     "may_gate": false,

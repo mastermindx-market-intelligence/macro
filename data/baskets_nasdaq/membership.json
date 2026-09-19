@@ -4,7 +4,7 @@
  "index": "Nasdaq-100",
  "benchmark": "QQQ",
  "benchmark_label": "Nasdaq-100 (QQQ)",
- "as_of": "2026-09-16",
+ "as_of": "2026-09-19",
  "source": "finviz idx_ndx + QQQ holdings; curated tech subsectors + amalgamations",
  "subsectors": {
   "semiconductors": {
@@ -40,24 +40,24 @@
      "name": "Texas Instruments Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "ALAB",
@@ -86,12 +86,12 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "CDNS",
@@ -102,12 +102,12 @@
      "name": "Strategy Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
-    },
-    {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -398,24 +398,24 @@
      "name": "Texas Instruments Inc"
     },
     {
-     "ticker": "QCOM",
-     "name": "Qualcomm Inc"
-    },
-    {
      "ticker": "MRVL",
      "name": "Marvell Technology Inc"
+    },
+    {
+     "ticker": "QCOM",
+     "name": "Qualcomm Inc"
     },
     {
      "ticker": "ADI",
      "name": "Analog Devices Inc"
     },
     {
-     "ticker": "NXPI",
-     "name": "NXP Semiconductors NV"
-    },
-    {
      "ticker": "MPWR",
      "name": "Monolithic Power System Inc"
+    },
+    {
+     "ticker": "NXPI",
+     "name": "NXP Semiconductors NV"
     },
     {
      "ticker": "ALAB",
@@ -532,12 +532,12 @@
      "name": "Adobe Inc"
     },
     {
-     "ticker": "INTU",
-     "name": "Intuit Inc"
-    },
-    {
      "ticker": "DDOG",
      "name": "Datadog Inc"
+    },
+    {
+     "ticker": "INTU",
+     "name": "Intuit Inc"
     },
     {
      "ticker": "CDNS",
@@ -548,12 +548,12 @@
      "name": "Strategy Inc"
     },
     {
-     "ticker": "ADSK",
-     "name": "Autodesk Inc"
-    },
-    {
      "ticker": "WDAY",
      "name": "Workday Inc"
+    },
+    {
+     "ticker": "ADSK",
+     "name": "Autodesk Inc"
     },
     {
      "ticker": "PAYX",
@@ -861,7 +861,7 @@
     },
     {
      "ticker": "KHC",
-     "name": "Kraft Heinz Co"
+     "name": "KHC"
     },
     {
      "ticker": "AEP",

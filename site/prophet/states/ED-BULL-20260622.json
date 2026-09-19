@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ED-BULL-20260622",
-  "asof": "2026-09-16",
+  "asof": "2026-09-18",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 33.0,
-  "raw_confidence": 30.8,
-  "delta_vs_base": -27.0,
+  "management_confidence": 32.3,
+  "raw_confidence": 31.1,
+  "delta_vs_base": -27.7,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 55.9,
+    "validity": 58.4,
     "progress": 0.0,
-    "pace": 5.7,
+    "pace": 4.3,
     "retention": 50.0,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.65,
+    "dist_to_stop_r": 0.672,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 60.0,
-    "p1": -0.2334,
-    "p2": -0.1167,
+    "horizon_pct_used": 64.4,
+    "p1": -0.2189,
+    "p2": -0.1095,
     "p3": null,
-    "move_r": -0.35,
+    "move_r": -0.328,
     "mfe_r": 0.001,
     "mae_r": -0.35
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 27,
-  "tau": 0.6
+  "days_elapsed": 29,
+  "tau": 0.6444
 }

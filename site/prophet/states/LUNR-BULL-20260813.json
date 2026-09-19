@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LUNR-BULL-20260813",
-  "asof": "2026-09-16",
+  "asof": "2026-09-18",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 35.0,
-  "raw_confidence": 34.5,
+  "raw_confidence": 34.4,
   "delta_vs_base": -25.0,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 19.9,
+    "validity": 20.4,
     "progress": 0.0,
-    "pace": 3.7,
+    "pace": 2.5,
     "retention": 50.0,
-    "overlay": 58.0
+    "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.302,
+    "dist_to_stop_r": 0.308,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 66.7,
-    "p1": -0.4652,
-    "p2": -0.2326,
+    "horizon_pct_used": 71.1,
+    "p1": -0.4616,
+    "p2": -0.2308,
     "p3": null,
-    "move_r": -0.698,
+    "move_r": -0.692,
     "mfe_r": 0.0,
-    "mae_r": -0.698
+    "mae_r": -0.702
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -6.510000114440917,
+  "_mae": -6.5456999588012685,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 30,
-  "tau": 0.6667
+  "days_elapsed": 32,
+  "tau": 0.7111
 }

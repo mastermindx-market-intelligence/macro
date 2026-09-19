@@ -66,9 +66,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 12,
+          "n_baseline": 10,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=12 — need 5 of each",
+          "reason": "recent n=0, baseline n=10 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -122,9 +122,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 2,
+          "n_baseline": 0,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=2 — need 5 of each",
+          "reason": "recent n=0, baseline n=0 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -172,9 +172,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 1,
+          "n_baseline": 0,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=1 — need 5 of each",
+          "reason": "recent n=0, baseline n=0 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -226,9 +226,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 32,
+          "n_baseline": 14,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=32 — need 5 of each",
+          "reason": "recent n=0, baseline n=14 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -282,9 +282,9 @@
         },
         "engagement_trend": {
           "metric": "engagement_trend",
-          "n_baseline": 1,
+          "n_baseline": 0,
           "n_recent": 0,
-          "reason": "recent n=0, baseline n=1 — need 5 of each",
+          "reason": "recent n=0, baseline n=0 — need 5 of each",
           "value": null,
           "verdict": "null"
         },
@@ -376,7 +376,7 @@
     }
   ],
   "apply_halts": true,
-  "as_of": "2026-09-15T19:16:50Z",
+  "as_of": "2026-09-19T09:35:34Z",
   "halted": [],
   "metrics": [
     "approval_rate",

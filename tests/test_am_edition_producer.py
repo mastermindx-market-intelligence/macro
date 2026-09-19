@@ -364,7 +364,7 @@ def test_calendar_filters_on_release_date_and_whitelists_plain_titles(tmp_path):
     assert cal["rows"] == [{
         "release_date": "2026-09-08",
         "title_en": "Headline CPI (consumer prices)",
-        "title_zh": "CPI 总体（消费者物价）",
+        "title_zh": "总体消费者物价指数",
     }]
     raw = json.dumps(cal)
     for leak in (

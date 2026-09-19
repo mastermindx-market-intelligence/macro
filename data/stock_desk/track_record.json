@@ -1,23 +1,23 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-15",
-  "scored_total": 180,
-  "open": 68,
-  "unscored_neutral": 243,
+  "as_of": "2026-09-19",
+  "scored_total": 182,
+  "open": 85,
+  "unscored_neutral": 267,
   "overall": {
-    "n": 180,
-    "hits": 115,
-    "misses": 65,
-    "hit_rate": 0.639,
-    "dir_accuracy": 0.417
+    "n": 182,
+    "hits": 116,
+    "misses": 66,
+    "hit_rate": 0.637,
+    "dir_accuracy": 0.418
   },
   "by_lean": {
     "constructive": {
-      "n": 108,
-      "hits": 61,
-      "misses": 47,
-      "hit_rate": 0.565,
-      "dir_accuracy": 0.306
+      "n": 110,
+      "hits": 62,
+      "misses": 48,
+      "hit_rate": 0.564,
+      "dir_accuracy": 0.309
     },
     "neutral": {
       "n": 0,
@@ -43,11 +43,11 @@
   },
   "by_conviction": {
     "low": {
-      "n": 150,
-      "hits": 94,
-      "misses": 56,
-      "hit_rate": 0.627,
-      "dir_accuracy": 0.387
+      "n": 152,
+      "hits": 95,
+      "misses": 57,
+      "hit_rate": 0.625,
+      "dir_accuracy": 0.388
     },
     "medium": {
       "n": 28,
@@ -64,8 +64,26 @@
       "dir_accuracy": 0.0
     }
   },
-  "calibration_note": "180 leans scored, hit-rate 0.639 (directional accuracy 0.417). Chance alone would land a hit-rate near 0.7511 (directional accuracy near 0.5075) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "182 leans scored, hit-rate 0.637 (directional accuracy 0.418). Chance alone would land a hit-rate near 0.7514 (directional accuracy near 0.5077) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "2026-08-18-HWM-20260819191449-4",
+      "ticker": "HWM",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2192,
+      "check_by": "2026-09-15"
+    },
+    {
+      "id": "2026-08-18-GNW-20260819191449-5",
+      "ticker": "GNW",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0062,
+      "check_by": "2026-09-15"
+    },
     {
       "id": "2026-08-17-EQIX-20260818143708-1",
       "ticker": "EQIX",
@@ -155,24 +173,6 @@
       "outcome": "miss",
       "realized": 0.1586,
       "check_by": "2026-09-07"
-    },
-    {
-      "id": "2026-08-10-WBD-20260811041812-4",
-      "ticker": "WBD",
-      "lean": "cautious",
-      "conviction": "medium",
-      "outcome": "miss",
-      "realized": 0.0557,
-      "check_by": "2026-09-07"
-    },
-    {
-      "id": "2026-08-07-VSEC-20260810035336-2",
-      "ticker": "VSEC",
-      "lean": "constructive",
-      "conviction": "low",
-      "outcome": "miss",
-      "realized": -0.0614,
-      "check_by": "2026-09-04"
     }
   ]
 }
