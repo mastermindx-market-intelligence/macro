@@ -288,6 +288,27 @@ use exact identities, and abstain where a relationship path is unavailable.
 This is separate from same-company forensic follow-up. Do not assign both jobs to one
 new Maerino-parity component.
 
+### 10. Public event distribution / X
+
+**Classification: BUILT_NOT_WIRED for the native earnings-call derivative; broader
+canonical event-to-X automation NOT_PROVEN.**
+
+Current main `engine/marketing/earnings_call_lane.py` states plainly that its
+deterministic Chronicle earnings-call derivative is **"NOT WIRED TO ANYTHING TODAY"**:
+no engine/script/app/workflow calls `enqueue_event` or `run_ledger`; only tests do.
+The module itself already reuses the canonical Marketing outbox, routing, story lock,
+copy validation, preflight/dedupe, card publishing and value gate, and it explicitly
+refuses unlabeled correction duplicates.
+
+This matters competitively because Maerino demonstrably uses public social event
+distribution as a product/acquisition surface. Mastermind has the safer projection
+machinery but not a proven live CEI -> X path.
+
+Do **not** answer this by creating another scheduler or publisher. Existing X Growth /
+Marketing owns distribution. Any future activation must reuse the current outbox,
+approval/value/copy gates, correction semantics and persona/cadence controls, and must
+prove a natural real event reaches the intended channel without historical flood.
+
 ## Disagreement / boundary ledger
 
 | Claim | Evidence | Ruling |
@@ -299,6 +320,7 @@ new Maerino-parity component.
 | "Research Factory solves Maerino follow-up already" | Factory candidate schema is alpha/trial-oriented, while Company Intelligence already routes cited questions to Brain | False; autonomous forensic composition remains unproven |
 | "Current macro publication is healthy" | latest FOMC/claims degraded on public feed | False at current edge; #7241 owns repair |
 | "Economic read-through is ready" | K3-D current state says not built | False |
+| "Mastermind already auto-publishes CEI earnings intelligence to X" | `engine/marketing/earnings_call_lane.py` says no runtime caller exists | False; guarded projection is built but unwired |
 
 ## Residual capability docket — existing owners only
 
@@ -387,6 +409,24 @@ Owner: existing PR #7241 carrier.
 Hold until binding CI and same-carrier release gates complete; then require installed
 and production/natural-heartbeat proof.
 
+### Gap G — governed public event distribution
+
+Owner: existing X Growth / Marketing distribution system.
+
+Current source already contains the deterministic `earnings_call_lane`, canonical
+outbox reuse, story locks, card/value/copy gates and correction refusal. What is absent
+is the live producer/wiring proof.
+
+This is an **operator/product activation decision**, not a greenfield build:
+- choose the canonical event/story producer that is allowed to originate the derivative;
+- connect only through the existing outbox/publisher authority;
+- preserve first-deploy age/event caps so history cannot flood the channel;
+- require one natural new event to produce a real channel receipt;
+- keep X copy display/context-only and never let publication become trade authority.
+
+Do not arm this lane merely to imitate Maerino; activate only when source coverage,
+channel custody and current marketing policy gates are satisfied.
+
 ## Priority order
 
 No new Maerino program should be created.
@@ -401,6 +441,8 @@ No new Maerino program should be created.
    or create a second queue/store/control plane.
 4. Let **K3-D** own later cross-company read-through.
 5. Let **#7241** finish the current macro recovery on its existing carrier.
+6. Treat CEI -> X as an **existing-lane activation/proof** problem under X Growth /
+   Marketing, not a new distribution system; do not arm it from this census.
 
 ## 10/10 end-state
 
@@ -412,6 +454,7 @@ event observed
  -> deterministic facts + issuer-specific KPIs
  -> structured management Q&A
  -> fast material event digest
+ -> governed product/social derivative from the same corrected fact packet
  -> unresolved questions / anomalies
  -> governed autonomous follow-up research
  -> peer and historical evidence
@@ -445,6 +488,7 @@ Mastermind:
 - `engine/earnings_release/figures.py`
 - `engine/company_intelligence/issuer_profiles.py`
 - `engine/company_intelligence/event_workspace_build.py`
+- `engine/marketing/earnings_call_lane.py`
 - `research/earnings_intelligence/E0_E1_E2_CONTRACT_FREEZE.md`
 - `research/economic_propagation/D0_THREE_GRAPH_SEPARATION_MAP.md`
 - `research/COMPANY_EVENT_INTELLIGENCE_SPINE_AND_PREMIUM_IR_SUITE_BUILD_DOCKET_2026-08-01.md`
