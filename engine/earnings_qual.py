@@ -1760,6 +1760,25 @@ def _validate_transport_frame(
     return True, None
 
 
+
+def validate_transport_frame(
+    frame,
+    path: Path,
+    block_name: str,
+    root: Path | None = None,
+) -> tuple[bool | None, str | None]:
+    """Public name for the earnings R2 generation contract.
+
+    ONE definition of "is this transported earnings payload the generation its manifest
+    commits to" for the whole repo. ``engine/prophet_stage_inputs.py`` reads the same
+    ``data/earnings_calls/history.parquet`` this module reads and validates it through
+    this function, so a second copy of the contract can never drift from this one.
+
+    ``None`` = no manifest beside the store (a hand-placed or fixture file — accepted).
+    ``False`` = an explicit contract failure; the caller must reject that candidate.
+    """
+    return _validate_transport_frame(frame, path, block_name, root=root)
+
 def _clean_identity(value: Any) -> str:
     text = str(value or "").strip().upper()
     if text in {"", "NAN", "NONE", "<NA>"}:

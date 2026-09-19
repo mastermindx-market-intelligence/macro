@@ -2300,6 +2300,30 @@ jobs:
           echo "::endgroup::"
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
           exit 0
+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)
+        # The Prophet hold-leash's earnings arm reads EquityDesk's native
+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already
+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet
+        # had already originated against an absent store, so every plan carried
+        # ec_source_state=unavailable and the promoted tilt could never become eligible
+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the
+        # repair; the later call stays put and is a content-hash no-op.
+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step
+        # below still carries NO R2 credentials — that publish boundary is unchanged.
+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the
+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).
+        # Rationale in full: scripts/report_prophet_earnings_source.py.
+        timeout-minutes: 6
+        continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          python -m scripts.fetch_earnings_scores || echo "::warning title=fetch_earnings_scores::rc≠0 before Prophet (non-fatal — the hold-tilt stays at leash 1.0 and every plan discloses ec_source_state=unavailable)"
+          python3 scripts/report_prophet_earnings_source.py || echo "::warning title=prophet_earnings_source::source report failed (non-fatal)"
+          exit 0
       - name: timings band — prophet (W2)
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
