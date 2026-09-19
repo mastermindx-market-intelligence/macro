@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T04:10:13.380850+00:00",
-  "count": 2405,
+  "generated_at": "2026-09-19T04:25:13.637839+00:00",
+  "count": 2406,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -225,6 +225,25 @@
         "Global equity growth drivers: S&P 500 earnings up 25% YOY, Eurozone 15% YOY; AI investment as structural catalyst beyond tech giants, with cash inadequacy vs. inflation/taxes/longevity costs.",
         "AI-Driven Growth & Sector Exposure: Global AI capex to reach $900bn (2026) and $1.2tr (2027), extending to semiconductors, infrastructure, renewables, and healthcare innovation (oncology, cardiometabolic).",
         "Strategic Positioning: Prioritize Eurozone, Asia ex-Japan, and emerging markets for relative gains; avoid over-concentration, retaining single-stock positions only for targeted innovation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wqqqu8shu3u-cd8796",
+      "title": "Position for a commodity upcycle",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:52Z",
+      "summary_points": [
+        "Structural Demand Shifts: AI infrastructure, electrification, and energy transition drive sustained long-term demand for industrial metals (e.g., copper), with constrained supply and projected deficits supporting positive outlook despite near-term tariff volatility.",
+        "Energy Market Hedge Utility: Energy exposure effectively hedges supply uncertainty (Middle East risks, shipping normalization) and inflation spillovers, with robust demand underpinning medium-term gains amid Chinese import strength.",
+        "Active Catalyst Positioning: Portfolio managers should dynamically allocate across precious metals, energy, industrial metals, and agriculture to capture near-term catalysts (El Niño, AI-linked demand) while navigating geopolitical volatility."
       ],
       "tags": [],
       "tickers": [],
