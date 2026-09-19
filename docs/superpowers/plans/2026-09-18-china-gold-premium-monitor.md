@@ -148,3 +148,16 @@ and global artifacts resolve through the registry in `PROPOSED` or `PRODUCED` st
 contain rows, carry valid SHA-256 bindings, contain the selected headline timestamp, the machine
 projection is consistent, the close proxy is fresh, and 5-/30-session statistics are ready. Fixture-only proof therefore remains promotion-blocked unless it supplies
 explicit artifact bindings.
+
+Closeout uses a bounded source-writer utility rather than an ad-hoc registry edit:
+
+`python -m scripts.promote_china_gold_dataos`
+
+is dry-run only and reports the exact two pending Data OS ids. After the production receipt is
+promotion-ready, the source owner may run:
+
+`python -m scripts.promote_china_gold_dataos --apply`
+
+which changes only those two canonical registry rows from `PROPOSED` to `PRODUCED`, verifies the
+written statuses, and stops. It never commits or pushes Git state and refuses missing/duplicate/
+non-PROPOSED target rows or an unready receipt.

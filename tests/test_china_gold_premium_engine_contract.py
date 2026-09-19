@@ -1492,3 +1492,200 @@ def test_gold_premium_dataos_promotion_rejects_invalid_registry_status():
     )
 
     assert "source artifact sge registry status is REJECTED" in blockers
+
+
+def _dataos_promotion_receipt(root=None):
+    import hashlib
+
+    sge_bytes = b"sge-parquet-fixture"
+    global_bytes = b"global-parquet-fixture"
+    if root is not None:
+        source_dir = root / "data" / "gold_china_basis"
+        source_dir.mkdir(parents=True, exist_ok=True)
+        source_dir.joinpath("sge_au9999.parquet").write_bytes(sge_bytes)
+        source_dir.joinpath("xaucny_spot.parquet").write_bytes(global_bytes)
+
+    return {
+        "schema": "commodity.china_gold_premium_quality.v1",
+        "close_proxy_dataos_promotion_ready": True,
+        "close_proxy_dataos_promotion_blockers": [],
+        "source_artifacts": [
+            {
+                "role": "sge",
+                "dataset_id": "commodity.gold.sge_au9999.close",
+                "registry_status": "PROPOSED",
+                "path": "data/gold_china_basis/sge_au9999.parquet",
+                "exists": True,
+                "rows": 30,
+                "sha256": hashlib.sha256(sge_bytes).hexdigest(),
+                "selected_asof_present": True,
+            },
+            {
+                "role": "global",
+                "dataset_id": "commodity.gold.xaucny.close_ref",
+                "registry_status": "PROPOSED",
+                "path": "data/gold_china_basis/xaucny_spot.parquet",
+                "exists": True,
+                "rows": 30,
+                "sha256": hashlib.sha256(global_bytes).hexdigest(),
+                "selected_asof_present": True,
+            },
+        ],
+    }
+
+
+def _dataos_promotion_registry_text():
+    return """schema: dataset_registry.v1
+updated: "2026-09-19"
+datasets:
+  - dataset_id: commodity.gold.sge_au9999.close
+    layer: L1
+    status: PROPOSED
+    storage: data/gold_china_basis/sge_au9999.parquet
+  - dataset_id: commodity.gold.xaucny.close_ref
+    layer: L1
+    status: PROPOSED
+    storage: data/gold_china_basis/xaucny_spot.parquet
+  - dataset_id: unrelated.fixture
+    layer: L1
+    status: PROPOSED
+    storage: data/unrelated.parquet
+"""
+
+
+def test_china_gold_dataos_promoter_dry_run_plans_exact_two_rows(tmp_path):
+    import json
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    receipt.write_text(json.dumps(_dataos_promotion_receipt(tmp_path)))
+    before = _dataos_promotion_registry_text()
+    registry.write_text(before)
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=False,
+    )
+
+    assert result["eligible"] is True
+    assert result["pending"] == [
+        "commodity.gold.sge_au9999.close",
+        "commodity.gold.xaucny.close_ref",
+    ]
+    assert result["already_produced"] == []
+    assert result["blockers"] == []
+    assert registry.read_text() == before
+
+
+def test_china_gold_dataos_promoter_apply_updates_only_two_target_statuses(tmp_path):
+    import json
+    import yaml
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    receipt.write_text(json.dumps(_dataos_promotion_receipt(tmp_path)))
+    registry.write_text(_dataos_promotion_registry_text())
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=True,
+    )
+
+    payload = yaml.safe_load(registry.read_text())
+    statuses = {
+        row["dataset_id"]: row["status"]
+        for row in payload["datasets"]
+    }
+    assert result["eligible"] is True
+    assert result["applied"] == list(promote.TARGET_DATASET_IDS)
+    assert result["pending"] == []
+    assert statuses["commodity.gold.sge_au9999.close"] == "PRODUCED"
+    assert statuses["commodity.gold.xaucny.close_ref"] == "PRODUCED"
+    assert statuses["unrelated.fixture"] == "PROPOSED"
+
+
+def test_china_gold_dataos_promoter_is_idempotent_after_production(tmp_path):
+    import json
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    receipt.write_text(json.dumps(_dataos_promotion_receipt(tmp_path)))
+    registry.write_text(
+        _dataos_promotion_registry_text().replace(
+            "status: PROPOSED",
+            "status: PRODUCED",
+            2,
+        )
+    )
+    before = registry.read_text()
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=True,
+    )
+
+    assert result["eligible"] is True
+    assert result["applied"] == []
+    assert result["already_produced"] == list(promote.TARGET_DATASET_IDS)
+    assert registry.read_text() == before
+
+
+def test_china_gold_dataos_promoter_refuses_receipt_without_live_proof(tmp_path):
+    import json
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    doc = _dataos_promotion_receipt(tmp_path)
+    doc["close_proxy_dataos_promotion_ready"] = False
+    doc["close_proxy_dataos_promotion_blockers"] = ["source artifacts were not proven"]
+    receipt.write_text(json.dumps(doc))
+    before = _dataos_promotion_registry_text()
+    registry.write_text(before)
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=True,
+    )
+
+    assert result["eligible"] is False
+    assert result["applied"] == []
+    assert "quality receipt is not close-proxy Data OS promotion-ready" in result["blockers"]
+    assert registry.read_text() == before
+
+
+def test_china_gold_dataos_promoter_refuses_source_file_changed_since_receipt(tmp_path):
+    import json
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    registry.write_text(_dataos_promotion_registry_text())
+    doc = _dataos_promotion_receipt(tmp_path)
+    receipt.write_text(json.dumps(doc))
+
+    source_dir = tmp_path / "data" / "gold_china_basis"
+    source_dir.mkdir(parents=True, exist_ok=True)
+    source_dir.joinpath("sge_au9999.parquet").write_bytes(b"changed-after-receipt")
+    source_dir.joinpath("xaucny_spot.parquet").write_bytes(b"changed-after-receipt")
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=False,
+    )
+
+    assert result["eligible"] is False
+    assert any("current sha256 does not match receipt" in x for x in result["blockers"])

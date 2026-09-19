@@ -1719,6 +1719,7 @@ jobs:
       # are independently merge-gated here.
       - "engine/china_gold_premium.py"
       - "scripts/audit_china_gold_premium.py"
+      - "scripts/promote_china_gold_dataos.py"
       - "tests/test_china_gold_premium_engine_contract.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"

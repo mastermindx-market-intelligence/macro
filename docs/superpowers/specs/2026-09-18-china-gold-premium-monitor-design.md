@@ -164,6 +164,11 @@ remains false unless both datasets resolve through the canonical registry in `PR
 contain the close-proxy headline observation that was also proven through the page and machine
 projection.
 
+The status transition is deliberately explicit. `scripts.promote_china_gold_dataos` is dry-run by
+default; `--apply` is permitted only from a promotion-ready receipt and updates exactly the two
+source dataset rows. The utility is not a lifecycle/scheduler plane and performs no Git commit or
+push. Re-running after both rows are already `PRODUCED` is idempotent.
+
 ## Engine boundary
 
 Create engine/china_gold_premium.py. It owns source-reference validation, provider-neutral store
