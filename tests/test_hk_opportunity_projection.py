@@ -246,3 +246,47 @@ def test_projection_is_deterministic_for_duplicate_attention_rows():
     assert len(rows) == 1
     assert rows[0]["attention_rank"] == 2
     assert rows[0]["attention_features"]["edge_z"] == 1.0
+
+def test_attention_missing_discovery_can_only_recover_from_existing_owner_context():
+    attention = [
+        _attention("LEAD.HK", 1, 2.0),
+        _attention("RIPE.HK", 2, 1.8),
+        _attention("MISS.HK", 3, 1.6),
+    ]
+    context = [
+        {
+            "ticker": "RIPE.HK",
+            "owner_context_lane": "ripening",
+            "name": "Ripening fixture",
+            "stance": "setup forming — no entry signal yet; watch, don't chase",
+        },
+        {
+            "ticker": "LEAD.HK",
+            "owner_context_lane": "leaders",
+            "name": "Leader fixture",
+            "stance": "watch — don't chase",
+        },
+    ]
+    out = hop.project_opportunities(
+        incumbent_asof=ASOF,
+        discovery_asof=ASOF,
+        attention_asof=ASOF,
+        incumbent_buy=[],
+        discovery_rows=[],
+        attention_picks=attention,
+        owner_context_rows=context,
+    )
+    assert [r["ticker"] for r in out["lanes"][hop.PREPARING]] == ["RIPE.HK"]
+    assert [r["ticker"] for r in out["lanes"][hop.MONITOR]] == ["LEAD.HK"]
+    assert out["lanes"][hop.ENTRY_OPEN] == []
+    lead = out["lanes"][hop.MONITOR][0]
+    assert lead["permission_status"] == hop.MONITOR_ONLY
+    assert lead["permission_authority"] == "official_display"
+    assert lead["source_lane"] == "incumbent_leaders"
+    assert lead["attention_rank"] == 1
+    ripe = out["lanes"][hop.PREPARING][0]
+    assert ripe["permission_status"] == hop.WAIT_CONFLUENCE
+    assert ripe["permission_authority"] == "official_display"
+    assert out["diagnostics"]["attention_not_in_discovery"] == 3
+    assert out["diagnostics"]["attention_recovered_by_owner_context"] == 2
+    assert out["diagnostics"]["attention_without_context"] == 1
