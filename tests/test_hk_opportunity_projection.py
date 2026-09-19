@@ -290,3 +290,44 @@ def test_attention_missing_discovery_can_only_recover_from_existing_owner_contex
     assert out["diagnostics"]["attention_not_in_discovery"] == 3
     assert out["diagnostics"]["attention_recovered_by_owner_context"] == 2
     assert out["diagnostics"]["attention_without_context"] == 1
+
+def test_blocked_official_identity_cannot_be_resurrected_by_screen_or_context():
+    official = [_official("BLOCK.HK", "blocked")]
+    attention = [_attention("BLOCK.HK", 1, 2.0)]
+    context = [{
+        "ticker": "BLOCK.HK",
+        "owner_context_lane": "leaders",
+        "stance": "watch — don't chase",
+    }]
+    out = hop.project_opportunities(
+        incumbent_asof=ASOF,
+        discovery_asof=ASOF,
+        attention_asof=ASOF,
+        incumbent_buy=official,
+        discovery_rows=[_discovery("BLOCK.HK", hop.WAIT_CONFLUENCE)],
+        attention_picks=attention,
+        owner_context_rows=context,
+    )
+    assert all(not rows for rows in out["lanes"].values())
+    assert out["diagnostics"]["official_excluded_by_permission"] == 1
+    assert out["diagnostics"]["attention_shadowed_by_official"] == 1
+
+
+def test_projection_cli_is_read_only_and_module_has_no_data_io_surface():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    cli = (root / "scripts" / "project_hk_opportunities.py").read_text()
+    module = (root / "engine" / "hk_opportunity_projection.py").read_text()
+    forbidden_cli = (
+        ".to_parquet(",
+        ".write_text(",
+        "store.write(",
+        "write_shadow(",
+        "write_snapshot(",
+        "append_board(",
+    )
+    assert not any(token in cli for token in forbidden_cli)
+    assert "Path(" not in module
+    assert "pandas" not in module
+    assert "signal_gate" not in module
