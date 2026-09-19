@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T03:55:04.331665+00:00",
-  "count": 2404,
+  "generated_at": "2026-09-19T04:10:13.380850+00:00",
+  "count": 2405,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -169,6 +169,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tuiqgam6dcw-77acdf",
+      "title": "Advisory Solutions Monthly Update Non Model September 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-19T01:25:08Z",
+      "summary_points": [
+        "Small-Cap Momentum: Russell 2000 +34.18% 1-year return outpaces MSCI ACWI IMI (+22.27%), signaling strong small-cap structural momentum and potential rotation opportunity.",
+        "U.S.",
+        "Value/Growth Shift: U.S.",
+        "value outperforms growth on rolling 5-year basis (rare since 2017), driven by software-led global equities (+2.79% Aug) and emerging markets (MSCI EM IMI +4.08%).",
+        "Fixed Income Yield Divergence: U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
