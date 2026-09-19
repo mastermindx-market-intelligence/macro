@@ -8627,6 +8627,50 @@
       "notes": []
     },
     {
+      "page_id": "macro:research_screener",
+      "repo": "macro",
+      "route": "/research_screener.html",
+      "route_kind": "page",
+      "source_template": "templates/research_screener.html.j2",
+      "builder": [
+        "scripts/build_research_screener.py"
+      ],
+      "data_sources": [],
+      "access_shell": "anonymous",
+      "payload_tier": "public",
+      "nav_family": "none",
+      "archetype": "discovery_board",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "Which names deserve a look first, and why?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": true,
+      "bilingual": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "config/site_access.yml:1",
+        "scripts/build_research_screener.py:173",
+        "site/research_screener.html",
+        "templates/research_screener.html.j2"
+      ],
+      "notes": [
+        "template attributed by name match; no write_page() call site names it",
+        "research_priority_only; four plain-word lenses; never a ranker"
+      ]
+    },
+    {
       "page_id": "macro:research_vault",
       "repo": "macro",
       "route": "/research_vault.html",
