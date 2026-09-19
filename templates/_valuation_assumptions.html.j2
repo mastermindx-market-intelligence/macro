@@ -3,7 +3,12 @@
     three free parameters V1 hard-codes. Nothing is saved or sent.
     Governed CSS lives in this partial's own <style> block -- never authored
     as a runtime JS stylesheet. Whole file gated on valuation_assumptions
-    (CSS included). too_thin_base renders ONLY the single-line copy. -#}
+    (CSS included). too_thin_base renders ONLY the single-line copy.
+    B-F07-3 adds the event-to-assumption bridge line: one Tier-2 plain-word
+    line under the controls naming which of the three F07-2 inputs a
+    freshly-classified filing would touch, with a single direction word
+    only -- no magnitude, no score, no ranking, nothing applied
+    automatically. -#}
 {% if valuation_assumptions %}
 {% set va = valuation_assumptions %}
 {% if va.too_thin_base %}
@@ -40,6 +45,12 @@
 .va-note{margin:0 0 6px;font-size:11.5px;line-height:1.5;color:var(--muted);}
 .va-is-null .va-out-num,.va-is-null .va-bridge{display:none;}
 .va-is-null .va-out-null{display:block;}
+/* B-F07-3 event-to-assumption bridge — one Tier-2 plain-word line under
+   the controls. Smaller than the FY footnote; same hairline color as
+   the notes so the line is read as receipt, not as instruction. */
+.va-event-bridge{margin:6px 0 0;font-size:11px;line-height:1.5;color:var(--muted);}
+.va-event-bridge .va-event-target{color:var(--muted);}
+.va-event-bridge .va-event-null{font-style:normal;}
 @media(max-width:390px){
   .va-ctl{grid-template-columns:1fr;gap:4px;}
   .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
@@ -101,6 +112,28 @@
   {#- One minus-sign convention across the panel: the site's ASCII hyphen-minus,
       the same character the V1 cards and this panel's own readouts print. -#}
   <p class="va-note">{{ t('Sales growth -10% to +20%; margin change -3.0 to +3.0 percentage points; earnings multiple 8× to 35×.', '销售增长 -10% 至 +20%；利润率变化 -3.0 至 +3.0 个百分点；市盈率倍数 8 倍至 35 倍。') }}</p>
+  {#- B-F07-3 event-to-assumption bridge. One plain-word line under the
+      controls: the latest classified event on file usually touches growth,
+      margin, or multiple — or a typed null. No magnitude, no score, no
+      ranking, nothing applied automatically. The user moves the
+      slider; the bridge never moves it. -#}
+  {% set _va_event_bridge = va.latest_event_bridge if va and va.latest_event_bridge else None %}
+  <p class="va-event-bridge" id="va-event-bridge" data-valuation-event-bridge="v1">
+    {% if _va_event_bridge %}
+    {{ t(
+      (
+        'Latest filing on file (' ~ _va_event_bridge.event_class_en
+        ~ ') <span class="va-event-target">' ~ _va_event_bridge.direction_word ~ '</span>.'
+      ) | safe,
+      (
+        '最新备案（' ~ _va_event_bridge.event_class_zh
+        ~ '）<span class="va-event-target">' ~ _va_event_bridge.direction_word_zh ~ '</span>。'
+      ) | safe
+    ) }}
+    {% else %}
+    {{ t('No filing on file yet for this company.', '该公司暂无备案。') }}
+    {% endif %}
+  </p>
   <script>
 (function (root) {
   function round2(v) {
