@@ -85,6 +85,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--previous", required=True, help="older private RIO JSON")
     parser.add_argument("--current", required=True, help="newer private RIO JSON")
+    parser.add_argument(
+        "--topic-key",
+        required=True,
+        help="caller-selected topic context; hashed into the delta, not a topic authority",
+    )
     parser.add_argument("--output", required=True, help="private full delta output path")
     return parser
 
@@ -94,7 +99,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         previous = _read_json(args.previous)
         current = _read_json(args.current)
-        delta = compare_institutional_rio(previous, current)
+        delta = compare_institutional_rio(
+            previous,
+            current,
+            topic_key=args.topic_key,
+        )
         _write_private_json(args.output, delta)
         print(
             json.dumps(
