@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T10:55:49.591103+00:00",
-  "count": 2424,
+  "generated_at": "2026-09-19T11:11:15.862960+00:00",
+  "count": 2425,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-j5jzlymnymf-be87c2",
+      "title": "Japan Macro 1",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:50:38Z",
+      "summary_points": [
+        "CPI Data & Iran-Driven Inflation: Japan's August CPI headline at +1.9% (core +1.7%), with Iran conflict driving doubled medical treatment and non-durable goods inflation, offsetting electricity/gas declines from subsidies.",
+        "BOJ Core Inflation Drivers: Goods inflation dominates BOJ core CPI (Chart 6), while food supply chain risks (fresh food as key contributor) critically influence policy and asset valuations, outperforming all-items CPI since 2022.",
+        "Policy Impact & Trajectory: BOJ's planned food tax cut (8%→1%) may temporarily slow core-core inflation but net re-acceleration to +2.5% by Q2 2027 due to oil costs, with core CPI expected to rise above +2.5% into early 2027.",
+        "Goods vs.",
+        "Services Divergence: Goods prices (peaked 2022–23) decline while services inflation stabilizes and recently rises, signaling a shift in inflation dynamics central to BOJ policy focus."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-jnothg7v4v1-7e5d74",
       "title": "GS Miller Global Reflections AI trade recouped Monday losses 18 Sep 2026",
