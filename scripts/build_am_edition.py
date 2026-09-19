@@ -28,7 +28,8 @@ from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib import config, nyse_calendar  # noqa: E402
+from lib import config, nyse_calendar, pages  # noqa: E402
+from lib.pages import write_page  # noqa: E402  # 2026-09-19 h5_7337: bare name so the page-registry census (scan_write_sites) derives macro:am_edition
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_am_edition")
@@ -68,9 +69,9 @@ _NY_TZ = ZoneInfo("America/New_York")
 # data/release_forecast/latest.json `release` / `release_type`. Unknown
 # codes never surface the raw slug; they get a generic plain-word pair.
 _RELEASE_TITLES = {
-    "cpi": ("CPI (consumer prices)", "消费者物价指数（CPI）"),
-    "cpi_headline": ("Headline CPI (consumer prices)", "CPI 总体（消费者物价）"),
-    "cpi_core": ("Core CPI (consumer prices)", "CPI 核心（消费者物价）"),
+    "cpi": ("CPI (consumer prices)", "消费者物价指数"),
+    "cpi_headline": ("Headline CPI (consumer prices)", "总体消费者物价指数"),
+    "cpi_core": ("Core CPI (consumer prices)", "核心消费者物价指数"),
     "ppi": ("PPI (producer prices)", "生产者物价指数（PPI）"),
     "ppi_finaldemand": ("PPI (producer prices)", "生产者物价指数（PPI）"),
     "nfp": ("Jobs report (nonfarm payrolls)", "非农就业报告"),
@@ -824,6 +825,22 @@ def main() -> int:
             json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
             encoding="utf-8",
         )
+        # Write HTML page through lib.pages.write_page (injects data-base shim).
+        import jinja2
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(str(Path(__file__).resolve().parent.parent / "templates")),
+            autoescape=jinja2.select_autoescape(["html", "xml"]),
+        )
+        try:
+            tmpl = env.get_template("am_edition.html.j2")
+        except jinja2.TemplateNotFound:
+            log.warning("am_edition.html.j2 not found; skipping HTML page")
+        else:
+            html_out_path = site / "am_edition.html"
+            html = tmpl.render(payload=payload, as_of=payload.get("generated_at", ""))
+            write_page(html_out_path, html)
+            log.info("wrote %s (%d bytes)", html_out_path, html_out_path.stat().st_size)
+
         log.info("wrote %s (%d bytes)", out_path, out_path.stat().st_size)
     except Exception as e:  # noqa: BLE001 — additive, must never break the site build
         log.error("AM edition build failed (%s); skipping", e)

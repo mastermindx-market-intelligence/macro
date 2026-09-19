@@ -2528,6 +2528,7 @@ jobs:
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
+      - "site/live/quotes.json"
       - "site/darkpool_eod.json"
       - "site/data/**"
       - "site/factordata/**"
@@ -2546,6 +2547,12 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # MO-B F01-1 morning edition (am_edition.v1) 2026-09-19 (contract-delta)
+      - "templates/am_edition.html.j2"
+      - "scripts/build_am_edition.py"
+      - "scripts/capture_am_edition_evidence.py"
+      - "tests/test_am_edition_page.py"
+      - "tests/test_am_edition_producer.py"
       # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
       # source-bound help directory now also validates the public
       # glossary page against this template.
@@ -2686,6 +2693,8 @@ jobs:
         run: python -m pytest tests/test_build_options_prophet.py -q
       - name: private operator-reviewed Options Issue Desk (R6.2-A)
         run: python -m pytest tests/test_options_issue_desk.py tests/test_options_issue_desk_api.py -q
+      - name: morning edition page + producer (MO-B F01-1)
+        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py -q
 
   cycle-grading-stats:
     if: ${{ false }}
@@ -3595,6 +3604,29 @@ jobs:
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
           tests/test_compile_capital_structure_covenant_terms.py -q
+
+  covenant-headroom:
+    if: ${{ false }}
+    gate: code
+    # B-F09-13 (MO-PAID-062 slice 2): zero-authority covenant headroom
+    # view-model for the one extracted issuer. Pure engine + closed-set
+    # defenses (REFUSALS, COVENANT_METRIC_MAP, _NO_EXTRAPOLATION_KEYS,
+    # _ZERO_AUTHORITY_KEYS). This legacy job is disabled by `if: ${{ false }}`;
+    # the trusted executor packs run the test on pull requests instead. Same
+    # tmp_path fixture discipline as board-shadow-substrate: no committed
+    # data/site moves.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # contract-delta 2026-09-19 (seat main update d6c4277c): lib/config.py on main imports yaml at
+        # module import (ModuleNotFoundError: No module named 'yaml' at lib/config.py:8 on ci-pack-10);
+        # pyyaml added to this job's own install line, nothing else changed.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: covenant headroom engine — closed refusal set, zero authority, no extrapolation
+        run: python -m pytest tests/test_covenant_headroom.py -q
 
   stock-seasonality:
     if: ${{ false }}
