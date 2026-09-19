@@ -610,6 +610,7 @@ import pandas as pd
 import pytest
 
 from scripts import research_skylit_r2_exposure_decomposition as r2
+from scripts import research_skylit_r8_daily_position_evidence as r8
 
 
 def fake_greeks(spot, strike, time_years, vol, is_call):
@@ -629,11 +630,24 @@ class Calendar:
 
     @staticmethod
     def session_n_forward(d, n):
+        if n < 0:
+            raise ValueError("n must be non-negative")
         cur = d
         for _ in range(n):
             cur += timedelta(days=1)
             while cur.weekday() >= 5:
                 cur += timedelta(days=1)
+        return cur
+
+    @staticmethod
+    def session_n_back(d, n):
+        if n < 0:
+            raise ValueError("n must be non-negative")
+        cur = d
+        for _ in range(n):
+            cur -= timedelta(days=1)
+            while cur.weekday() >= 5:
+                cur -= timedelta(days=1)
         return cur
 
 
@@ -922,4 +936,208 @@ def test_analyze_pair_never_opens_outcome_labels_and_requires_consecutive_sessio
             store_api=api,
             calendar_api=Calendar,
             greeks_fn=fake_greeks,
+        )
+
+
+# --------------------------------------------------------------------------- Skylit R8 daily position evidence Stage 0
+
+def _r8_eod(rows):
+    return pd.DataFrame([
+        {
+            "root": "SPY",
+            "expiration": row.get("expiration", "2026-10-16"),
+            "strike": float(row.get("strike", 100.0 + i)),
+            "right": row.get("right", "C" if i % 2 == 0 else "P"),
+            "date": "2026-09-14",
+            "volume": float(row["volume"]),
+            "close": float(row.get("close", 5.0)),
+        }
+        for i, row in enumerate(rows)
+    ])
+
+
+def _r8_oi(pub_session, values, *, expirations=None):
+    expirations = expirations or ["2026-10-16"] * len(values)
+    return pd.DataFrame([
+        {
+            "root": "SPY",
+            "expiration": expirations[i],
+            "strike": float(100.0 + i),
+            "right": "C" if i % 2 == 0 else "P",
+            "date": pub_session,
+            "open_interest": float(value),
+        }
+        for i, value in enumerate(values)
+    ])
+
+
+def _r8_api(eod, prior, later):
+    def oi_for_date(session, root, store=None):
+        if session == "2026-09-14":
+            return prior.copy()
+        if session == "2026-09-15":
+            return later.copy()
+        return pd.DataFrame()
+
+    return SimpleNamespace(
+        resolve_thetadata_store=lambda **kwargs: "/store",
+        eod_matrix_for_date=lambda session, root, store=None: eod.copy(),
+        oi_for_date=oi_for_date,
+    )
+
+
+def test_r8_positive_delta_oi_yields_bounds_not_opening_point_estimate():
+    eod = _r8_eod([{"volume": 150}])
+    prior = _r8_oi("2026-09-14", [100])
+    later = _r8_oi("2026-09-15", [130])
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+
+    assert got["status"] == "DAILY_POSITION_EVIDENCE_COMPLETE"
+    assert got["outcome_labels_opened"] is False
+    assert got["later_position_evidence_opened"] is True
+    high = got["cohorts"]["high_turnover_volume_gt_prior_oi"]
+    assert high["contracts"] == 1
+    assert high["net_oi_increase"] == 1
+    bounds = got["conditional_trade_only_bounds"]
+    assert bounds["min_open_open_volume"] == pytest.approx(30)
+    assert bounds["max_open_open_volume"] == pytest.approx(90)
+    assert bounds["min_close_close_volume"] == pytest.approx(0)
+    assert bounds["max_close_close_volume"] == pytest.approx(60)
+    assert bounds["max_mixed_open_close_volume"] == pytest.approx(120)
+    assert bounds["open_open_share_lower"] == pytest.approx(0.20)
+    assert bounds["open_open_share_upper"] == pytest.approx(0.60)
+    assert got["identification_law"]["institution_identity"].startswith("unknown")
+
+
+def test_r8_negative_delta_oi_yields_symmetric_feasible_bounds():
+    eod = _r8_eod([{"volume": 100}])
+    prior = _r8_oi("2026-09-14", [200])
+    later = _r8_oi("2026-09-15", [160])
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+    bounds = got["conditional_trade_only_bounds"]
+    assert bounds["min_open_open_volume"] == pytest.approx(0)
+    assert bounds["max_open_open_volume"] == pytest.approx(30)
+    assert bounds["min_close_close_volume"] == pytest.approx(40)
+    assert bounds["max_close_close_volume"] == pytest.approx(70)
+    assert bounds["max_mixed_open_close_volume"] == pytest.approx(60)
+
+
+def test_r8_abs_delta_oi_above_volume_is_inconsistent_and_excluded_from_bounds():
+    eod = _r8_eod([{"volume": 10}])
+    prior = _r8_oi("2026-09-14", [100])
+    later = _r8_oi("2026-09-15", [120])
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+    assert got["coverage"]["fully_matched_contracts"] == 1
+    assert got["coverage"]["trade_conservation_incompatible_contracts"] == 1
+    assert got["coverage"]["trade_conservation_compatible_contracts"] == 0
+    bounds = got["conditional_trade_only_bounds"]
+    assert bounds["total_volume"] == pytest.approx(0)
+    assert bounds["open_open_share_lower"] is None
+    assert "exercise" in bounds["assumption"]
+
+
+def test_r8_missing_later_oi_stays_missing_not_zero():
+    eod = _r8_eod([{"volume": 50}, {"volume": 60}])
+    prior = _r8_oi("2026-09-14", [100, 200])
+    later = _r8_oi("2026-09-15", [110]).iloc[:1].copy()
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+    assert got["coverage"]["eligible_later_oi_contracts"] == 2
+    assert got["coverage"]["settled_oi_known_contracts"] == 1
+    assert got["coverage"]["fully_matched_contracts"] == 1
+    assert got["coverage"]["fully_matched_contract_rate"] == pytest.approx(0.5)
+
+
+def test_r8_same_session_expiry_is_excluded_from_later_oi_population():
+    eod = _r8_eod([
+        {"volume": 80, "expiration": "2026-09-14"},
+        {"volume": 50, "expiration": "2026-10-16"},
+    ])
+    prior = _r8_oi(
+        "2026-09-14", [100, 100],
+        expirations=["2026-09-14", "2026-10-16"],
+    )
+    later = _r8_oi(
+        "2026-09-15", [999, 110],
+        expirations=["2026-09-14", "2026-10-16"],
+    )
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+    assert got["coverage"]["same_session_expiry_contracts"] == 1
+    assert got["coverage"]["eligible_later_oi_contracts"] == 1
+    assert got["coverage"]["fully_matched_contracts"] == 1
+
+
+def test_r8_high_turnover_can_end_flat_or_with_lower_oi():
+    eod = _r8_eod([{"volume": 150}, {"volume": 150}])
+    prior = _r8_oi("2026-09-14", [100, 100])
+    later = _r8_oi("2026-09-15", [90, 100])
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+    high = got["cohorts"]["high_turnover_volume_gt_prior_oi"]
+    assert high["contracts"] == 2
+    assert high["net_oi_increase"] == 0
+    assert high["net_oi_decrease"] == 1
+    assert high["net_oi_flat"] == 1
+
+
+def test_r8_receipt_preserves_prior_and_later_position_clocks():
+    eod = _r8_eod([{"volume": 100}])
+    prior = _r8_oi("2026-09-14", [100])
+    later = _r8_oi("2026-09-15", [100])
+    got = r8.analyze_session(
+        "2026-09-14",
+        "SPY",
+        store_api=_r8_api(eod, prior, later),
+        calendar_api=Calendar,
+    )
+    receipt = got["source_receipt"]
+    assert receipt["prior_oi_publication_session"] == "2026-09-14"
+    assert receipt["prior_position_effective_through_session"] == "2026-09-11"
+    assert receipt["settled_oi_publication_session"] == "2026-09-15"
+    assert receipt["settled_position_effective_through_session"] == "2026-09-14"
+    assert receipt["decision_eligible_not_before_session"] == "2026-09-15"
+    assert len(receipt["volume_input_sha256"]) == 64
+    assert len(receipt["prior_oi_input_sha256"]) == 64
+    assert len(receipt["settled_oi_input_sha256"]) == 64
+
+
+def test_r8_malformed_source_identity_refuses_instead_of_shrinking_population():
+    eod = _r8_eod([{"volume": 100}])
+    eod.loc[0, "right"] = "UNKNOWN"
+    prior = _r8_oi("2026-09-14", [100])
+    later = _r8_oi("2026-09-15", [100])
+    with pytest.raises(r8.R8Refusal, match="malformed contract identity"):
+        r8.analyze_session(
+            "2026-09-14",
+            "SPY",
+            store_api=_r8_api(eod, prior, later),
+            calendar_api=Calendar,
         )

@@ -2405,6 +2405,8 @@ jobs:
       - "scripts/build_options_screener.py"
       # Skylit R2 Stage 0 research analyzer (tests in options gap discipline).
       - "scripts/research_skylit_r2_exposure_decomposition.py"
+      # Skylit R8 daily position evidence is imported by tests/test_options_gap_discipline.py.
+      - "scripts/research_skylit_r8_daily_position_evidence.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
       - "scripts/build_options_sparse_selector_prereg.py"
@@ -9403,9 +9405,10 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
-      # Skylit R2 Stage 0 is imported by tests/test_options_gap_discipline.py.
-      # Keep the exclusive options owner closed over the research analyzer.
+      # Skylit R2/R8 Stage 0 are imported by the registered options research suites.
+      # Keep the exclusive options owner closed over both research analyzers.
       - "scripts/research_skylit_r2_exposure_decomposition.py"
+      - "scripts/research_skylit_r8_daily_position_evidence.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
@@ -9429,6 +9432,7 @@ jobs:
       - "tests/test_market_structure.py"
       - "tests/test_market_structure_nw.py"
       - "tests/test_options_gap_discipline.py"
+      - "tests/test_r8_daily_position_integer_bounds.py"
       - "tests/test_options_intel_brief.py"
       - "tests/test_options_intel_brief_ui.py"
       - "tests/test_options_command_aib.py"
@@ -9462,7 +9466,7 @@ jobs:
       # ceiling.  No dependency widened: probed at RUN time it loads only pandas/numpy/
       # pyarrow/pyyaml, and blocking openpyxl leaves it 38-passed.
       - name: options-screener builder suite (denominator pins)
-        run: python -m pytest tests/test_build_options_screener.py tests/test_options_gap_discipline.py -q
+        run: python -m pytest tests/test_build_options_screener.py tests/test_options_gap_discipline.py tests/test_r8_daily_position_integer_bounds.py -q
       - name: options workspace suite (OEU M-CMD — 4 modes, close-line honesty, payload law)
         # AD-1 joins this step (not a new job — the manifest is at the narrow-diff
         # ceiling and a step is the masking unit): the intel-brief engine/producer
