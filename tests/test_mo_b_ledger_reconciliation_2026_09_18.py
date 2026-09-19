@@ -625,6 +625,16 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "signed-in production" in export["missing_contract_or_proof"]
     assert "no /export route" not in export["missing_contract_or_proof"]
 
+    implication = r["MO-PAID-039"]
+    assert implication["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "admin.mastermind-x.com" in implication["real_consumer"]
+    assert "Intelligence Hub" in implication["real_consumer"]
+    assert "@never_site" in implication["missing_contract_or_proof"]
+    assert "retarget/remove" in implication["next_bounded_child"]
+    assert "single existing measurement builder" in implication["next_bounded_child"]
+    assert "scripts.build_measurement" in implication["adjudication_notes"]
+    assert "not a missing builder step" in implication["adjudication_notes"]
+
 
 def test_manifest_names_the_single_writer_sources_and_union():
     data = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
