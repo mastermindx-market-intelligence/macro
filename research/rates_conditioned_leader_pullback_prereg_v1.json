@@ -89,12 +89,19 @@
     "primary_weighting": "equal_weight_per_eligible_decision_date",
     "episode_weighted_estimate": "descriptive_only",
     "cluster_unit": "decision_date",
-    "bootstrap_block": "calendar_month",
+    "bootstrap_block": "calendar_quarter",
     "bootstrap_resamples": 10000,
     "bootstrap_seed": 20260919,
     "temporal_split": "2020-07-01",
     "minimum_unique_decision_dates_per_arm_overall": 30,
-    "minimum_unique_decision_dates_per_arm_each_half": 10
+    "minimum_unique_decision_dates_per_arm_each_half": 10,
+    "minimum_unique_quarters_per_arm_overall": 8,
+    "minimum_unique_quarters_per_arm_each_half": 3,
+    "p_value": {
+      "sidedness": "two_sided",
+      "method": "null_centered_calendar_quarter_block_bootstrap",
+      "formula": "(1 + count(abs(delta_null_boot) >= abs(delta_obs))) / (B + 1)"
+    }
   },
   "primary_outcome_definition": "existing Early Admission false_bounce: post-trigger low within +15 sessions breaches P_low by >2%",
   "episode_schema": {
@@ -120,9 +127,12 @@
     },
     "primary_outcome_null_policy": "OUTCOME_TRUNCATED; exclude and count; never coerce to false",
     "leader_missing_policy": "LEADER_STATE_UNAVAILABLE; exclude from leader/nonleader analysis and count",
-    "source_rule": "false_bounce requires full +15 sessions and equals min forward low < 0.98*P_low"
+    "source_rule": "false_bounce requires full +15 sessions and equals min forward low < 0.98*P_low",
+    "primary_addon_value": false,
+    "addon_policy": "addon==true is descriptive-only and excluded from primary Ns/statistics/verdicts"
   },
   "primary_eligibility": [
+    "addon_false",
     "false_bounce_non_null",
     "leader_fields_available_for_stratum",
     "primary_rate_endpoints_observed_by_T_minus_1"
