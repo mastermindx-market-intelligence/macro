@@ -1147,3 +1147,347 @@ def test_tenor_buckets_preserve_absent_zero_dte_as_absent_not_zero():
     assert buckets["3-7DTE"]["present"] is True
     assert buckets["31-90DTE"]["present"] is True
     assert got["daily_view"]["same_day_expiry_present"] is False
+
+
+# ===========================================================================
+# Skylit R4 cross-index structural coherence Stage 0
+# ===========================================================================
+
+from scripts import research_skylit_r4_cross_index_coherence as skylit_r4
+from scripts import research_skylit_r2_exposure_decomposition as skylit_r2
+
+
+_R4_SESSION = "2026-09-14"
+
+
+def _r4_frame(
+    root,
+    *,
+    spot,
+    scale,
+    xs=(-1.0, 0.0, 1.0),
+    exposures=(1.0, 2.0, 1.0),
+    exp="2026-09-18",
+):
+    rows = []
+    for x, exposure in zip(xs, exposures):
+        rows.append({
+            "root": root,
+            "expiration": exp,
+            "strike": float(spot * np.exp(float(x) * float(scale))),
+            "right": "C",
+            "spot": float(spot),
+            "exposure_gex": float(exposure),
+        })
+    return pd.DataFrame(rows)
+
+
+def _r4_state(root, frame, *, clock="2026-09-15", session=_R4_SESSION):
+    return {
+        "session": session,
+        "root": root,
+        "target_gate_pass": True,
+        "decision_eligible_not_before_session": clock,
+        "position_tier": skylit_r2.POSITION_TIER,
+        "exposure_unit": skylit_r2.EXPOSURE_UNIT,
+        "base_input_sha256": (root.lower()[0] if root else "a") * 64,
+        "settled_oi_input_sha256": (root.lower()[-1] if root else "b") * 64,
+        "frame": frame,
+    }
+
+
+def _r4_em_receipts(
+    states,
+    pcts,
+    *,
+    method="synthetic_expected_move/v1",
+    horizon="1-session",
+    effective=_R4_SESSION,
+):
+    return {
+        root: {
+            "pct": float(pcts[root]),
+            "horizon": horizon,
+            "method": method,
+            "source_effective_session": effective,
+            "decision_eligible_not_before_session": states[root][
+                "decision_eligible_not_before_session"
+            ],
+            "source_receipt": {"test_root": root},
+        }
+        for root in states
+    }
+
+
+def _r4_analyze(states, *, pcts=None, min_mass=0.70, receipts=None):
+    if receipts is None and pcts is not None:
+        receipts = _r4_em_receipts(states, pcts)
+    return skylit_r4.analyze_states(
+        states,
+        _R4_SESSION,
+        expected_move_receipts=receipts,
+        min_common_support_mass=min_mass,
+    )
+
+
+def test_r4_expected_move_receipts_normalize_equivalent_shapes_across_price_scales():
+    spy_em = 2.0
+    qqq_em = 4.0
+    spy_scale = np.log1p(spy_em / 100.0)
+    qqq_scale = np.log1p(qqq_em / 100.0)
+    states = {
+        "SPY": _r4_state(
+            "SPY",
+            _r4_frame("SPY", spot=100, scale=spy_scale, exposures=(1, 2, 1)),
+        ),
+        "QQQ": _r4_state(
+            "QQQ",
+            _r4_frame("QQQ", spot=200, scale=qqq_scale, exposures=(10, 20, 10)),
+        ),
+    }
+    got = _r4_analyze(states, pcts={"SPY": spy_em, "QQQ": qqq_em})
+    pair = got["pairwise_by_bucket"]["ALL"][0]
+    assert pair["present"] is True
+    assert pair["wasserstein_1_x"] == pytest.approx(0.0, abs=1e-10)
+    assert pair["cosine_similarity"] == pytest.approx(1.0, abs=1e-10)
+    assert pair["common_support"]["left_retained_mass"] == pytest.approx(1.0)
+    assert pair["common_support"]["right_retained_mass"] == pytest.approx(1.0)
+    assert got["root_topology"]["SPY"]["by_bucket"]["ALL"]["gross_abs_exposure"] == pytest.approx(4)
+    assert got["root_topology"]["QQQ"]["by_bucket"]["ALL"]["gross_abs_exposure"] == pytest.approx(40)
+    assert got["coordinate_mode"] == "expected_move_normalized"
+    assert got["expected_move_receipts"]["SPY"]["horizon"] == "1-session"
+    assert got["source_receipts"]["SPY"]["expected_move_receipt"]["method"] == "synthetic_expected_move/v1"
+    assert got["outcome_labels_opened"] is False
+    assert got["trade_or_sizing_authority"] is False
+
+
+def test_r4_continuous_geometry_identifies_unique_third_root_outlier_on_one_global_support():
+    em = 2.0
+    scale = np.log1p(em / 100.0)
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale)),
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+        "SPXW": _r4_state(
+            "SPXW",
+            _r4_frame("SPXW", spot=5000, scale=scale, xs=(-0.5, 0.5, 1.5)),
+        ),
+    }
+    got = _r4_analyze(
+        states,
+        pcts={"SPY": em, "QQQ": em, "SPXW": em},
+        min_mass=0.70,
+    )
+    summary = next(row for row in got["system_by_bucket"] if row["bucket"] == "ALL")
+    assert summary["pair_count"] == 3
+    assert summary["complete_pair_graph"] is True
+    assert summary["outlier_root"] == "SPXW"
+    assert summary["outlier_tie"] == []
+    assert summary["max_pairwise_wasserstein_1_x"] > 0
+    assert summary["average_wasserstein_by_root"]["SPXW"] > summary["average_wasserstein_by_root"]["SPY"]
+    supports = {
+        (
+            row["common_support"]["common_x_min"],
+            row["common_support"]["common_x_max"],
+        )
+        for row in got["pairwise_by_bucket"]["ALL"]
+        if row["present"]
+    }
+    assert len(supports) == 1
+
+
+def test_r4_expected_move_mode_requires_one_structured_receipt_per_root():
+    scale = np.log1p(0.02)
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale)),
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+    }
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    receipts.pop("QQQ")
+    with pytest.raises(skylit_r4.R4Refusal, match="one receipt per root"):
+        _r4_analyze(states, receipts=receipts)
+
+
+def test_r4_expected_move_receipts_require_common_method_horizon_and_timely_clock():
+    scale = np.log1p(0.02)
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale)),
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+    }
+
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    receipts["QQQ"]["method"] = "other/v1"
+    with pytest.raises(skylit_r4.R4Refusal, match="methods are not aligned"):
+        _r4_analyze(states, receipts=receipts)
+
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    receipts["QQQ"]["horizon"] = "5-session"
+    with pytest.raises(skylit_r4.R4Refusal, match="horizons are not aligned"):
+        _r4_analyze(states, receipts=receipts)
+
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    receipts["QQQ"]["decision_eligible_not_before_session"] = "2026-09-16"
+    with pytest.raises(skylit_r4.R4Refusal, match="not available by R4 decision cutoff"):
+        _r4_analyze(states, receipts=receipts)
+
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    receipts["QQQ"]["source_effective_session"] = "2026-09-15"
+    with pytest.raises(skylit_r4.R4Refusal, match="effective after R4 session"):
+        _r4_analyze(states, receipts=receipts)
+
+
+def test_r4_cli_receipt_parser_rejects_duplicates_and_bare_float():
+    with pytest.raises(skylit_r4.R4Refusal, match="duplicate"):
+        skylit_r4._parse_expected_move_receipts([
+            'SPY={"pct":2}',
+            'SPY={"pct":3}',
+        ])
+    with pytest.raises(skylit_r4.R4Refusal, match="JSON object"):
+        skylit_r4._parse_expected_move_receipts(["SPY=2"])
+
+
+def test_r4_programmatic_receipt_root_keys_normalize_and_case_collisions_refuse():
+    scale = np.log1p(0.02)
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale)),
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+    }
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    lower = {root.lower(): receipt for root, receipt in receipts.items()}
+    got = _r4_analyze(states, receipts=lower)
+    assert got["coordinate_mode"] == "expected_move_normalized"
+    assert set(got["expected_move_receipts"]) == {"SPY", "QQQ"}
+
+    collided = dict(receipts)
+    collided["spy"] = dict(receipts["SPY"])
+    with pytest.raises(skylit_r4.R4Refusal, match="after normalization"):
+        _r4_analyze(states, receipts=collided)
+
+
+def test_r4_common_support_removes_window_artifact_but_retained_mass_gate_is_visible():
+    # Same true shape on [-1,0,1], but SPY also publishes small tails at +/-2.
+    # Primary common-support geometry should recover equality; full-board W1 should
+    # retain the listing-window difference as a sensitivity diagnostic.
+    states = {
+        "SPY": _r4_state(
+            "SPY",
+            _r4_frame(
+                "SPY",
+                spot=100,
+                scale=1.0,
+                xs=(-2.0, -1.0, 0.0, 1.0, 2.0),
+                exposures=(1.0, 2.0, 4.0, 2.0, 1.0),
+            ),
+        ),
+        "QQQ": _r4_state(
+            "QQQ",
+            _r4_frame(
+                "QQQ",
+                spot=200,
+                scale=1.0,
+                xs=(-1.0, 0.0, 1.0),
+                exposures=(2.0, 4.0, 2.0),
+            ),
+        ),
+    }
+    got = _r4_analyze(states, min_mass=0.75)
+    pair = got["pairwise_by_bucket"]["ALL"][0]
+    assert pair["present"] is True
+    assert pair["wasserstein_1_x"] == pytest.approx(0.0, abs=1e-10)
+    assert pair["cosine_similarity"] == pytest.approx(1.0, abs=1e-10)
+    assert pair["full_board_wasserstein_1_x"] > 0
+    assert pair["common_support"]["left_retained_mass"] == pytest.approx(0.8)
+    assert pair["common_support"]["right_retained_mass"] == pytest.approx(1.0)
+
+    too_strict = _r4_analyze(states, min_mass=0.90)
+    rejected = too_strict["pairwise_by_bucket"]["ALL"][0]
+    assert rejected["present"] is False
+    assert rejected["reason"] == "insufficient_common_support_mass"
+    assert rejected["wasserstein_1_x"] is None
+    assert rejected["full_board_wasserstein_1_x"] > 0
+    assert rejected["common_support"]["left_retained_mass"] == pytest.approx(0.8)
+
+
+def test_r4_root_identity_mismatch_refuses_before_geometry():
+    scale = np.log1p(0.02)
+    bad = _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale))
+    states = {
+        "SPY": bad,
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+    }
+    with pytest.raises(skylit_r4.R4Refusal, match="state/root identity mismatch"):
+        _r4_analyze(states)
+
+
+def test_r4_missing_decision_clock_refuses_instead_of_aligning_nulls():
+    scale = np.log1p(0.02)
+    a = _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale))
+    b = _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale))
+    a["decision_eligible_not_before_session"] = None
+    b["decision_eligible_not_before_session"] = None
+    with pytest.raises(skylit_r4.R4Refusal, match="missing decision-eligible clock"):
+        _r4_analyze({"SPY": a, "QQQ": b})
+
+
+def test_r4_cross_root_clock_mismatch_refuses():
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=1.0)),
+        "QQQ": _r4_state(
+            "QQQ",
+            _r4_frame("QQQ", spot=200, scale=1.0),
+            clock="2026-09-16",
+        ),
+    }
+    with pytest.raises(skylit_r4.R4Refusal, match="decision clocks are not aligned"):
+        _r4_analyze(states)
+
+
+def test_r4_spx_and_spxw_remain_distinct_and_never_implicitly_combined():
+    scale = np.log1p(0.02)
+    states = {
+        "SPX": _r4_state("SPX", _r4_frame("SPX", spot=5000, scale=scale)),
+        "SPXW": _r4_state("SPXW", _r4_frame("SPXW", spot=5000, scale=scale)),
+    }
+    got = _r4_analyze(states, pcts={"SPX": 2.0, "SPXW": 2.0})
+    assert got["roots"] == ["SPX", "SPXW"]
+    assert got["spx_spxw_combined"] is False
+    assert "distinct identities" in got["spx_spxw_identity_note"]
+    assert got["categorical_trinity_baseline"] is None
+
+
+def test_r4_absent_tenor_stays_absent_and_is_not_called_comparable():
+    scale = np.log1p(0.02)
+    states = {
+        "SPY": _r4_state(
+            "SPY",
+            _r4_frame("SPY", spot=100, scale=scale, exp="2026-09-18"),  # 4D
+        ),
+        "QQQ": _r4_state(
+            "QQQ",
+            _r4_frame("QQQ", spot=200, scale=scale, exp="2026-10-16"),  # 32D
+        ),
+    }
+    got = _r4_analyze(states, pcts={"SPY": 2.0, "QQQ": 2.0})
+    front = got["pairwise_by_bucket"]["3-7DTE"][0]
+    back = got["pairwise_by_bucket"]["31-90DTE"][0]
+    assert front["present"] is False
+    assert front["reason"] == "missing_tenor_population"
+    assert front["wasserstein_1_x"] is None
+    assert back["present"] is False
+    assert back["cosine_similarity"] is None
+    front_summary = next(
+        row for row in got["system_by_bucket"] if row["bucket"] == "3-7DTE"
+    )
+    assert front_summary["roots_with_bucket"] == ["SPY"]
+    assert front_summary["comparable_roots"] == []
+    assert front_summary["pair_count"] == 0
+
+
+def test_r4_log_moneyness_remains_explicit_fallback_without_em_receipts():
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=1.0)),
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=1.0)),
+    }
+    got = _r4_analyze(states)
+    assert got["coordinate_mode"] == "log_moneyness_fallback"
+    assert got["expected_move_receipts"] is None
+    assert got["expected_move_pct_by_root"] is None

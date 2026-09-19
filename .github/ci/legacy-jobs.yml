@@ -2407,6 +2407,8 @@ jobs:
       - "scripts/research_skylit_r2_exposure_decomposition.py"
       # Skylit R6 topology is imported by tests/test_market_structure.py.
       - "scripts/research_skylit_r6_cross_expiry_topology.py"
+      # Skylit R4 coherence is imported by tests/test_market_structure.py.
+      - "scripts/research_skylit_r4_cross_index_coherence.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
       - "scripts/build_options_sparse_selector_prereg.py"
