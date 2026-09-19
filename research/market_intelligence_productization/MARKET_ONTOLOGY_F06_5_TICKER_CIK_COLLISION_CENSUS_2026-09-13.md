@@ -3,7 +3,8 @@
 **Date:** 2026-09-13 (UTC)
 **Decision date (census input):** 2026-09-13
 **Commit (data/reference/):** `4023da6ca48e` (latest nightly data commit touching the identity plane)
-**Commit (code head):** `536bc2c4fd0cf663dac25fae98bdab086c6090d1` (final committed code head sha on branch `claude/mo-b-f06-5-cik-collision-census-repair`; h_7122 updated to this same head)
+**Commit (reviewed head):** `536bc2c4fd0cf663dac25fae98bdab086c6090d1` (final committed code head sha on branch `claude/mo-b-f06-5-cik-collision-census-repair`; h_7122 built on this head)
+**Commit (this note's own):** `a1436caccf56bb27fbfbdb6b5af53a3268440da4` (heal h2_7122 — fixes MAJOR-1 pin and PR body SHA; checkable with `git log -1 --format=%H -- research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md`)
 **Author:** W7B F06-5 sub-agent (Chairman override regime; Fable 5.1 seat ruling)
 **Ledger row:** `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv` row **MO-PAID-020**
 **Packet:** `[MO-B F06-5]` — ticker/CIK collision census + at most ONE bounded renderer/CIK-access repair
