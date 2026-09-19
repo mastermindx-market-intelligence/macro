@@ -1,0 +1,269 @@
+{
+  "scope": "whole current materialized estate",
+  "passed": false,
+  "findings": [
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "line": 17,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "``lib.macro_suite_view.build_view`` over ONE validated  [phrase matches entry 'one validated' but file surface ['macro_suite_shell'] is not in its `surfaces` \u2014 extend that entry only if the SAME backing covers this page, else add a properly-backed entry]"
+    },
+    {
+      "path": "templates/_macro_suite_shell.html.j2",
+      "line": 789,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\">{{ t('The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders"
+    },
+    {
+      "path": "templates/macro_business_activity.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_capital_structure.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_consumer_payments.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_financial_conditions.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_growth_real_economy.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_housing_real_estate.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_inflation_system.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_labor_markets.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_liquidity_central_banks.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_liquidity_regime.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_monetary_policy.html.j2",
+      "line": 6,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_national_debt_liabilities.html.j2",
+      "line": 7,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_rates_curves.html.j2",
+      "line": 8,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_trade_flows.html.j2",
+      "line": 8,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "model that scripts/build_macro_suite_pages.py builds from the validated"
+    },
+    {
+      "path": "templates/macro_suite.js",
+      "line": 4,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "* hash-validated snapshot, so this file never fetches, never computes a state,"
+    },
+    {
+      "path": "templates/mm_brain.js",
+      "line": 3580,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "whether it came from the server receipt (already validated server-side)"
+    },
+    {
+      "path": "site/macro_suite.js",
+      "line": 4,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "* hash-validated snapshot, so this file never fetches, never computes a state,"
+    },
+    {
+      "path": "site/mm_brain.js",
+      "line": 3580,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "whether it came from the server receipt (already validated server-side)"
+    },
+    {
+      "path": "site/macro_business_activity.html",
+      "line": 2395,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_capital_structure.html",
+      "line": 2392,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_consumer_payments.html",
+      "line": 2603,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_financial_conditions.html",
+      "line": 2540,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_growth_real_economy.html",
+      "line": 2224,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_housing_real_estate.html",
+      "line": 2163,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_inflation_system.html",
+      "line": 1773,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_labor_markets.html",
+      "line": 2066,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_liquidity_central_banks.html",
+      "line": 2468,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_liquidity_regime.html",
+      "line": 1654,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_monetary_policy.html",
+      "line": 2249,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_national_debt_liabilities.html",
+      "line": 2883,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_rates_curves.html",
+      "line": 3451,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/macro_trade_flows.html",
+      "line": 2221,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "<p class=\"mq-lineage-note\"><span class=\"l-en\">The page validated this artifact against the closed schema and recomputed its content hash before rendering. A mis"
+    },
+    {
+      "path": "site/start.html",
+      "line": 317,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "</div><div class=\"mk-sec\"><div class=\"band\"><h2><span class=\"l-en\">Markets</span><span class=\"l-zh\">\u5e02\u573a</span></h2><span class=\"ln\"></span></div><div class=\"nav   [phrase matches entry '\u7ecf\u9a8c\u8bc1\u7684\u9886\u5148\u524d\u5146\u7a81\u7834' but file surface ['start'] is not in its `surfaces` \u2014 extend that entry only if the SAME backing covers this page, else add a properly-backed entry]"
+    },
+    {
+      "path": "site/start.html",
+      "line": 317,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "</div><div class=\"mk-sec\"><div class=\"band\"><h2><span class=\"l-en\">Markets</span><span class=\"l-zh\">\u5e02\u573a</span></h2><span class=\"ln\"></span></div><div class=\"nav   [phrase matches entry '\u7ecf\u9a8c\u8bc1\u7684\u9886\u5148\u524d\u5146\u7a81\u7834' but file surface ['start'] is not in its `surfaces` \u2014 extend that entry only if the SAME backing covers this page, else add a properly-backed entry]"
+    },
+    {
+      "path": "engine/market_os/macro_workspaces/consumer.py",
+      "line": 106,
+      "candidate_owned": false,
+      "identical_to_base": true,
+      "claim": "[detail] snapshot validated against mastermind.macro_workspace_snapshot.v1"
+    }
+  ],
+  "candidate_owned_findings": 0,
+  "all_unowned_findings_identical_to_base": true,
+  "baseline": "7692303dcc785c8af7f4438ffd88e91a7e9b0be5",
+  "waiver": false
+}

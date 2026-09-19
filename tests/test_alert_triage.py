@@ -342,12 +342,12 @@ def test_page_renders_without_template_errors():
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     html = env.get_template("alerts.html.j2").render(**_payload())
-    assert "Alert Command Center" in html
+    assert "<title>Alerts — Mastermind</title>" in html
     assert "{{" not in html and "{%" not in html          # no unrendered jinja
     assert "Undefined" not in html                        # no leaked missing keys
     # the honest framing + the transparent score must be present
-    assert "documented, not" in html
-    assert "Triage priority" in html
+    assert "not a probability" in html
+    assert "How attention order works" in html
     assert "Backdrop" in html
 
 
@@ -450,83 +450,89 @@ def test_impulse_radar_edge_carries_the_blind_caveat_past_the_old_cap():
 
 
 def test_page_keeps_long_bodies_and_the_blind_caveat():
+    """V2 carries complete evidence into the inspector payload without slicing."""
     assert len(_EMERGING_DETAIL) > 200
     assert len(_IMPULSE_EDGE) > 120
     assert len(_EMERGING_DETAIL_ZH) > 200
     assert len(_IMPULSE_EDGE_ZH) > 200
-    p = _payload()
-    p["alerts"] = [_synthetic_card(
+    from engine.alert_center_view import build_explorer
+    card = _synthetic_card(
         detail=_EMERGING_DETAIL, note=_IMPULSE_EDGE,
         detail_zh=_EMERGING_DETAIL_ZH, note_zh=_IMPULSE_EDGE_ZH,
-    )] + p["alerts"]
-    html = _render(p)
-    assert "{{" not in html and "Undefined" not in html
-    assert _BLIND_CAVEAT in html
-    assert _BLIND_CAVEAT_ZH in html
-    assert _EMERGING_DETAIL in html
-    assert _EMERGING_DETAIL_ZH in html
-    # red-on-revert: a 200/120 slice would leave the EN span at exactly those lengths
+    )
+    p = _payload()
+    p["alerts"] = [card] + p["alerts"]
+    p["explorer"] = build_explorer(p["alerts"], [])
+    rendered = _render(p)
+    assert "{{" not in rendered and "Undefined" not in rendered
+
+    import html as html_lib
+    import json
     import re
-    en_spans = re.findall(r'<span class="l-en">(.*?)</span>', html, flags=re.S)
-    zh_spans = re.findall(r'<span class="l-zh">(.*?)</span>', html, flags=re.S)
-    matching_edge = [s for s in en_spans if s.startswith("Forward de-risk")]
-    matching_detail = [s for s in en_spans if "entered the emerging phase" in s]
-    matching_edge_zh = [s for s in zh_spans if s.startswith("来自经验证的领先前兆")]
-    matching_detail_zh = [s for s in zh_spans if "进入「新兴」阶段" in s]
-    assert matching_edge and _BLIND_CAVEAT in matching_edge[0]
-    assert len(matching_edge[0]) != 120
-    assert matching_detail and len(matching_detail[0]) != 200
-    assert "wait for a second session" in matching_detail[0]
-    assert matching_edge_zh and matching_edge_zh[0] == _IMPULSE_EDGE_ZH
-    assert matching_detail_zh and matching_detail_zh[0] == _EMERGING_DETAIL_ZH
-    assert len(matching_edge_zh[0]) > 200
-    assert len(matching_detail_zh[0]) > 200
+    payload = re.search(
+        r'<script id="ac-data" type="application/json">(.*?)</script>',
+        rendered, flags=re.S,
+    )
+    assert payload, "the inspector data payload is missing"
+    data = json.loads(html_lib.unescape(payload.group(1)))
+    projected = next(
+        row for row in data["explorer"]["signals"]
+        if row["alert_id"] == card["alert_id"]
+    )
+    assert projected["detail"] == _EMERGING_DETAIL
+    assert projected["detail_zh"] == _EMERGING_DETAIL_ZH
+    assert projected["validation"]["note"] == _IMPULSE_EDGE
+    assert projected["validation"]["note_zh"] == _IMPULSE_EDGE_ZH
+    assert _BLIND_CAVEAT in projected["validation"]["note"]
+    assert _BLIND_CAVEAT_ZH in projected["validation"]["note_zh"]
 
+    js = (config.ROOT / "templates" / "alert_center.js").read_text()
+    assert "if (field(a, 'detail'))" in js
+    assert "if (field(v, 'note'))" in js
+    assert ".slice(0, 200)" not in js and ".slice(0, 120)" not in js
 
-def test_story_strip_ellipsizes_long_headlines_word_safe():
-    src = (config.ROOT / "templates" / "alerts.html.j2").read_text()
-    assert "top_headline[:70]" not in src
-    assert "(s.top_headline_zh or s.top_headline)[:70]" not in src
+def test_signal_rows_preserve_long_headlines_and_wrap_instead_of_midword_slicing():
+    """The V2 queue replaces the old storyline truncation with complete wrapping rows."""
+    template = (config.ROOT / "templates" / "alerts.html.j2").read_text()
+    js = (config.ROOT / "templates" / "alert_center.js").read_text()
+    css = (config.ROOT / "templates" / "alert_center.css").read_text()
+    assert "top_headline[:70]" not in template
+    assert "(s.top_headline_zh or s.top_headline)[:70]" not in template
+    assert ".slice(0, 70)" not in js and ".substring(0, 70)" not in js
+
     long_en = (
         "Utilities (Equal-Weight) is emerging as leadership handoff continues "
         "into a second confirmed session"
     )
-    assert len(long_en) > 70
-    assert long_en[69].isalnum() and long_en[70].isalnum()
     long_zh = (
         "公用事业（等权）进入新兴阶段并且相对强度仍在加速尚未过度延展"
         "需要连续两个交易日确认进取方向不得即时报为领涨"
         "领涨交接仍在进行中请勿把未确认的翻转当成已完成的轮动"
     )
-    assert len(long_zh) > 70
-    p = _payload()
-    p["storylines"] = [{
-        "cluster": "rotation",
-        "label": "Sector & theme rotation", "label_zh": "板块与主题轮动",
-        "icon": "🔄",
-        "gist": "leadership is handing off between themes",
-        "gist_zh": "领涨在主题之间交接",
-        "count": 1, "act": 0, "critical": 0, "recurring": 0, "persisting": 0,
-        "top_headline": long_en, "top_headline_zh": long_zh,
-        "assets": ["UTIL"],
-    }]
-    html = _render(p)
-    import re
-    block = re.search(r'<div class="st-line">(.*?)</div>', html, flags=re.S)
-    assert block, "story strip headline missing"
-    en = re.search(r'<span class="l-en">(.*?)</span>', block.group(1), flags=re.S)
-    zh = re.search(r'<span class="l-zh">(.*?)</span>', block.group(1), flags=re.S)
-    assert en and zh
-    en_txt, zh_txt = en.group(1), zh.group(1)
-    assert en_txt.endswith("…")
-    assert zh_txt.endswith("…")
-    assert long_en[:70] not in en_txt          # naive mid-word slice is gone
-    assert en_txt[:-1].endswith("continues")   # backed up to the last full word
-    assert "into" not in en_txt
-    assert zh_txt.endswith("…")
-    assert long_zh.startswith(zh_txt[:-1])     # CJK has no spaces; char + ellipsis
-    assert len(zh_txt) <= 70
+    assert len(long_en) > 70 and len(long_zh) > 70
 
+    from engine.alert_center_view import build_explorer
+    card = _synthetic_card(detail="Full detail", note="Full note")
+    card["headline"] = long_en
+    card["headline_zh"] = long_zh
+    p = _payload()
+    p["alerts"] = [card]
+    p["explorer"] = build_explorer(p["alerts"], [])
+    rendered = _render(p)
+
+    import html as html_lib
+    import json
+    import re
+    payload = re.search(
+        r'<script id="ac-data" type="application/json">(.*?)</script>',
+        rendered, flags=re.S,
+    )
+    assert payload
+    signal = json.loads(html_lib.unescape(payload.group(1)))["explorer"]["signals"][0]
+    assert signal["headline"] == long_en
+    assert signal["headline_zh"] == long_zh
+    assert "plain(field(item, 'headline'))" in js
+    assert ".page-alerts .acx-row-main" in css and "overflow-wrap:anywhere" in css
 
 
 def test_macro_raw_rewrites_transition_enum_in_detail(tmp_path, monkeypatch):
