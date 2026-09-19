@@ -633,7 +633,7 @@
       "data_sources": [],
       "access_shell": "anonymous",
       "payload_tier": "public_shell_premium_payload",
-      "nav_family": "public_nav.am_edition",
+      "nav_family": "public_nav.public",
       "archetype": "editorial",
       "design_system": {
         "compliant": false
@@ -658,12 +658,12 @@
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml:1",
-        "scripts/build_am_edition.py:840",
+        "scripts/build_am_edition.py:841",
         "templates/_public_nav.html.j2",
         "templates/am_edition.html.j2"
       ],
       "notes": [
-        "no committed site/am_edition.html; builder derives on every render"
+        "written by a builder but not committed under site/"
       ]
     },
     {

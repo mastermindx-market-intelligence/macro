@@ -29,6 +29,7 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, nyse_calendar, pages  # noqa: E402
+from lib.pages import write_page  # noqa: E402  # 2026-09-19 h5_7337: bare name so the page-registry census (scan_write_sites) derives macro:am_edition
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_am_edition")
@@ -837,7 +838,7 @@ def main() -> int:
         else:
             html_out_path = site / "am_edition.html"
             html = tmpl.render(payload=payload, as_of=payload.get("generated_at", ""))
-            pages.write_page(html_out_path, html)
+            write_page(html_out_path, html)
             log.info("wrote %s (%d bytes)", html_out_path, html_out_path.stat().st_size)
 
         log.info("wrote %s (%d bytes)", out_path, out_path.stat().st_size)
