@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+- templates/dashboard.html.j2
+- templates/_prophet_earnings_browser.html.j2
+- templates/_prophet_earnings_browser.css.j2
+- templates/_prophet_earnings_browser.js.j2
+manifest: mockups/evidence/prophet-earnings-browser-v1/manifest.json

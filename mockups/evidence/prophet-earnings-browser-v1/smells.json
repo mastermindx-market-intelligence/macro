@@ -1,0 +1,203 @@
+{
+  "schema": "mastermind.ux_smell_report.v1",
+  "generated_at": "2026-09-18T02:51:32.996428+00:00",
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "version": "1.2.0"
+  },
+  "target": {
+    "kind": "declared_synthetic_component_fixture",
+    "production": false,
+    "full_dashboard": false,
+    "source_head": "a76d390a92e9c7ad86eb88684831fd8f71d3adf8",
+    "driver_sha256": "bb2f7e0b4ff3e23bdefc655076a1628ac167373e12fbf785480ebffdcded36db",
+    "access_note": "No real account; native TestClient synthetic entitlement fixture. Actual gated access remains unproven."
+  },
+  "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
+  "metric_notes": {
+    "section_count": "direct <section> children of <body> plus direct element children of <main>; an approximation of 'how many blocks is this page'",
+    "panel_count": "class-name heuristic over the configured selector list; both over- and under-counts are expected",
+    "visible_word_count": "whitespace-split innerText of <body>; Chinese text is not word-segmented, so a zh capture undercounts relative to en",
+    "raw_slug_hits": "visible text matching 3+ segment snake_case; legitimate identifiers (file names, API keys quoted on purpose) match too",
+    "duplicate_heading_texts": "case-folded visible heading text seen more than once; a repeated section label across tabs is a legitimate duplicate",
+    "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "source_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
+    "payload_bytes_total": "sum of response body sizes reported by the driver for the reference state; excludes bodies the driver could not size",
+    "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not \u2014 a state that failed to load is often the one carrying the evidence",
+    "screenshot_completion": "captured states / attempted states for this page; states the registry excludes are not attempted and are recorded as gaps"
+  },
+  "pages": [
+    {
+      "page_id": "fixture_covered.html",
+      "route": "/fixture/covered.html",
+      "metrics": {
+        "document_height_px": null,
+        "section_count": null,
+        "heading_counts": {},
+        "duplicate_heading_texts": [],
+        "panel_count": null,
+        "visible_word_count": null,
+        "long_paragraph_count": null,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": null,
+        "elements_wider_than_viewport": null,
+        "console_error_count": 0,
+        "request_count": 4,
+        "payload_bytes_total": 200541,
+        "asof_present": null,
+        "source_present": null,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          },
+          "mobile": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          }
+        }
+      }
+    },
+    {
+      "page_id": "fixture_corrected.html",
+      "route": "/fixture/corrected.html",
+      "metrics": {
+        "document_height_px": null,
+        "section_count": null,
+        "heading_counts": {},
+        "duplicate_heading_texts": [],
+        "panel_count": null,
+        "visible_word_count": null,
+        "long_paragraph_count": null,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": null,
+        "elements_wider_than_viewport": null,
+        "console_error_count": 0,
+        "request_count": 4,
+        "payload_bytes_total": 202738,
+        "asof_present": null,
+        "source_present": null,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          },
+          "mobile": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          }
+        }
+      }
+    },
+    {
+      "page_id": "fixture_withdrawn.html",
+      "route": "/fixture/withdrawn.html",
+      "metrics": {
+        "document_height_px": null,
+        "section_count": null,
+        "heading_counts": {},
+        "duplicate_heading_texts": [],
+        "panel_count": null,
+        "visible_word_count": null,
+        "long_paragraph_count": null,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": null,
+        "elements_wider_than_viewport": null,
+        "console_error_count": 0,
+        "request_count": 4,
+        "payload_bytes_total": 200561,
+        "asof_present": null,
+        "source_present": null,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          },
+          "mobile": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          }
+        }
+      }
+    },
+    {
+      "page_id": "fixture_unavailable.html",
+      "route": "/fixture/unavailable.html",
+      "metrics": {
+        "document_height_px": null,
+        "section_count": null,
+        "heading_counts": {},
+        "duplicate_heading_texts": [],
+        "panel_count": null,
+        "visible_word_count": null,
+        "long_paragraph_count": null,
+        "raw_slug_hits": [],
+        "raw_slug_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "todo_placeholder_hit_count": 0,
+        "horizontal_overflow": null,
+        "elements_wider_than_viewport": null,
+        "console_error_count": 0,
+        "request_count": 4,
+        "payload_bytes_total": 196893,
+        "asof_present": null,
+        "source_present": null,
+        "screenshot_completion": 1.0,
+        "measured_in": {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous"
+        },
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          },
+          "mobile": {
+            "document_height_px": null,
+            "horizontal_overflow": null,
+            "elements_wider_than_viewport": null
+          }
+        }
+      }
+    }
+  ]
+}

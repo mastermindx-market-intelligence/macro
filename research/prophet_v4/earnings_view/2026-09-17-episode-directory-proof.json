@@ -1,0 +1,168 @@
+{
+  "schema": "prophet.lab_episode_directory.proof/v1",
+  "operation": "prophet-native-lab-earnings-release-20260917-sol-001",
+  "pr": 7264,
+  "parent_semantic_head": "0fe505b186c51455a73778a672dd1e02794c628a",
+  "procedure_pin": "b731149296a9d837d426730813f68d5acc6133ac",
+  "native_tests": {
+    "exit_code": 0,
+    "tests": 511,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_prophet_lab.py",
+      "tests/test_prophet_lab_api.py",
+      "tests/test_prophet_lab_earnings_view.py",
+      "tests/test_company_intelligence_workspace_chain.py",
+      "tests/test_prophet_lab_timeparse.py",
+      "tests/test_prophet_lab_commissioning.py",
+      "tests/test_caddy_hub_boundary.py",
+      "--basetemp",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/directory/pytest-final",
+      "--junitxml",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/directory/13_final.xml"
+    ],
+    "source_sha256": {
+      "app/prophet_lab.py": "00ae14eedcab2bf57a4cffe8d743492e14ad9e9a747dbc8fba588d1b74eac673",
+      "engine/prophet_lab/episode_directory.py": "e997138385c5207c49aa051433bcf1dac8476d9614207718da4e0df89ca73168",
+      "engine/prophet_lab/earnings_view.py": "ea4c19c14d9624b61de75c89d4d16c7667fcf36cdcda546aaed32d7ef557de53",
+      "tests/test_prophet_lab_earnings_view.py": "fcafd158d3562a37d36468fde6d1b1f2364492e6249f30f7fbb9ef3827105015"
+    },
+    "method": "actual native linked source worktree; qualified test imports; no PYTHONPATH override, provider calls, or dynamic source injection",
+    "production_proof": false
+  },
+  "real_committed_b1_input": {
+    "source_pin": "63fb8dd9fa7dbe43c02ca6eac84b22fbbc9706dd",
+    "status": 200,
+    "elapsed_seconds": 4.907,
+    "complete_native_b1_loader": true,
+    "b1_mocked": false,
+    "auth": "local test override, NOT production authentication proof",
+    "production_proof": false,
+    "outcomes_read": false,
+    "earnings_read": false,
+    "source_writes": false,
+    "generation_id": "peg:18dfbb8a9d7152382ca6da8a2ac4177d6ea617dddc7cad082b3645c100fb53a7",
+    "selection": {
+      "query": "",
+      "offset": 0,
+      "limit": 100,
+      "total_episodes": 866,
+      "total_matches": 866,
+      "next_offset": 100,
+      "order": "REVERSE_CANONICAL_B1_ORDER"
+    },
+    "private_headers": {
+      "cache-control": "private, no-store",
+      "vary": "Authorization",
+      "x-content-type-options": "nosniff"
+    },
+    "all_100_links_pinned": true,
+    "source_epoch_distinctions_preserved": true,
+    "population_completeness": "NOT_ASSERTED"
+  },
+  "mutations": {
+    "count": 5,
+    "initial": {
+      "results": [
+        {
+          "mutant": "unpin_pagination",
+          "exit_code": 1,
+          "summary": [
+            "1 failed, 9 passed, 48 deselected, 1 warning, 1 error in 3.61s"
+          ],
+          "method": "isolated mutated module; original source unchanged"
+        },
+        {
+          "mutant": "deduplicate_by_ticker",
+          "exit_code": 1,
+          "summary": [
+            "1 failed, 57 deselected, 1 warning in 1.98s"
+          ],
+          "method": "isolated mutated module; original source unchanged"
+        },
+        {
+          "mutant": "directory_rank_authority",
+          "exit_code": 1,
+          "summary": [
+            "1 failed, 57 deselected, 1 warning in 1.95s"
+          ],
+          "method": "isolated mutated module; original source unchanged"
+        },
+        {
+          "mutant": "malformed_pin_accepted",
+          "exit_code": 1,
+          "summary": [
+            "1 failed, 57 deselected, 1 warning, 1 error in 2.35s"
+          ],
+          "method": "isolated mutated module; original source unchanged"
+        }
+      ],
+      "source_unchanged": true,
+      "source_sha256": "e997138385c5207c49aa051433bcf1dac8476d9614207718da4e0df89ca73168"
+    },
+    "changed_generation": {
+      "mutant": "changed_generation_accepted",
+      "exit_code": 1,
+      "summary": [
+        "2 failed, 56 deselected, 2 warnings in 2.25s"
+      ],
+      "method": "isolated candidate app; complete native dependencies",
+      "source_unchanged": true
+    },
+    "clean_spy_retests": {
+      "results": [
+        {
+          "name": "unpin_pagination",
+          "exit_code": 1,
+          "summary": [
+            "1 failed, 9 passed, 48 deselected, 1 warning in 2.75s"
+          ]
+        },
+        {
+          "name": "malformed_pin_accepted",
+          "exit_code": 1,
+          "summary": [
+            "1 failed, 57 deselected, 1 warning in 2.44s"
+          ]
+        }
+      ],
+      "note": "Supersedes exception-throwing-spy test diagnostics only; intended source faults unchanged."
+    }
+  },
+  "ci_import_closure": {
+    "status": "TIMED_OUT",
+    "seconds": 100.01139237498865,
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "tests/test_ci_pack.py::test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies",
+      "tests/test_ci_pack.py::test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate",
+      "--basetemp",
+      "/Volumes/Mastermind/agent-evidence/prophet-d5-view-20260917/release/directory/pytest-ci-closure"
+    ]
+  },
+  "boundaries": {
+    "new_identity_store": false,
+    "new_authentication": false,
+    "new_publication_plane": false,
+    "b17_complete_population_claim": false,
+    "frontend_mounted": false,
+    "production_proof": false,
+    "market_outcomes_read": false,
+    "ranking_changed": false
+  },
+  "source_manifest_sha256": "4e1df5799be0b6fa4a62ccf5c5c0070b809955856fde6b89ac25aed74b1e603c"
+}

@@ -230,53 +230,33 @@ def _resolve_roots() -> LabRoots:
     )
 
 
-@router.get("/api/prophet/lab/v1")
-def lab_v1(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
-    if _kill_switch_active():
-        return _response(
-            {
-                "error": "prophet_lab_disabled",
-                "detail": f"the Prophet Operator Lab is stood down ({KILL_SWITCH_ENV}=1)",
-            },
-            status_code=503,
-        )
-    try:
-        payload = build_lab_response(_resolve_roots())
-    except Exception as exc:  # noqa: BLE001 — a projection failure must not 500 blind
-        log.warning("prophet_lab: projection failed (%s: %s)", type(exc).__name__, exc)
-        return _response(
-            {"error": "prophet_lab_unavailable", "detail": "Lab projection temporarily unavailable"},
-            status_code=503,
-        )
-    return _response(payload)
-
-
-@router.get("/api/prophet/lab/v1/episodes/{episode_id}/intelligence")
-def episode_intelligence_v1(
+def _episode_intelligence_response(
     episode_id: str,
-    _user: dict = Depends(require_site_full_user),
+    *,
+    snapshot: Any | None = None,
 ) -> JSONResponse:
-    """Project one exact B1 episode through the read-only D5 Earnings adapter."""
-    if _kill_switch_active():
-        return _response(
-            {
-                "error": "prophet_lab_disabled",
-                "detail": f"the Prophet Operator Lab is stood down ({KILL_SWITCH_ENV}=1)",
-            },
-            status_code=503,
-        )
+    """Build one D5 response from one already-frozen B1 snapshot.
 
+    A pinned research-view preflight passes its validated snapshot here so the
+    expensive D5 read cannot silently switch to a second B1 generation between
+    the generation check and evidence assembly. The public intelligence route
+    leaves ``snapshot`` unset and therefore retains its existing current-read
+    behavior.
+    """
     try:
-        episode_store_root = _env_path(
-            "PROPHET_LAB_EPISODE_STORE_ROOT", _CANDIDATE_EPISODE_STORE_ROOT,
-        )
         security_master_path = _env_path(
             "PROPHET_LAB_SECURITY_MASTER_PATH", _SECURITY_MASTER_PATH,
         )
-        if episode_store_root is None or security_master_path is None:
-            raise IntelligenceVectorContractError("D5 read roots must be configured")
+        if security_master_path is None:
+            raise IntelligenceVectorContractError("D5 security master must be configured")
+        if snapshot is None:
+            episode_store_root = _env_path(
+                "PROPHET_LAB_EPISODE_STORE_ROOT", _CANDIDATE_EPISODE_STORE_ROOT,
+            )
+            if episode_store_root is None:
+                raise IntelligenceVectorContractError("D5 episode store must be configured")
+            snapshot = load_candidate_episode_store_snapshot(episode_store_root)
 
-        snapshot = load_candidate_episode_store_snapshot(episode_store_root)
         matching_episodes = [
             episode
             for episode in snapshot.generation.episodes
@@ -320,6 +300,44 @@ def episode_intelligence_v1(
             status_code=503,
         )
     return _response(payload)
+
+
+@router.get("/api/prophet/lab/v1")
+def lab_v1(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    if _kill_switch_active():
+        return _response(
+            {
+                "error": "prophet_lab_disabled",
+                "detail": f"the Prophet Operator Lab is stood down ({KILL_SWITCH_ENV}=1)",
+            },
+            status_code=503,
+        )
+    try:
+        payload = build_lab_response(_resolve_roots())
+    except Exception as exc:  # noqa: BLE001 — a projection failure must not 500 blind
+        log.warning("prophet_lab: projection failed (%s: %s)", type(exc).__name__, exc)
+        return _response(
+            {"error": "prophet_lab_unavailable", "detail": "Lab projection temporarily unavailable"},
+            status_code=503,
+        )
+    return _response(payload)
+
+
+@router.get("/api/prophet/lab/v1/episodes/{episode_id}/intelligence")
+def episode_intelligence_v1(
+    episode_id: str,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Project one exact B1 episode through the read-only D5 Earnings adapter."""
+    if _kill_switch_active():
+        return _response(
+            {
+                "error": "prophet_lab_disabled",
+                "detail": f"the Prophet Operator Lab is stood down ({KILL_SWITCH_ENV}=1)",
+            },
+            status_code=503,
+        )
+    return _episode_intelligence_response(episode_id)
 
 
 def _hub_prophet_authorized(request: Request) -> bool:
@@ -371,3 +389,114 @@ def hub_prophet(request: Request) -> Response:
 
 
 __all__ = ["router", "require_site_full_user"]
+
+
+@router.get("/api/prophet/lab/v1/episodes/{episode_id}/research-view")
+def episode_research_view_v1(
+    episode_id: str,
+    format: str = "json",
+    language: str = "en",
+    expected_generation: str | None = None,
+    _user: dict = Depends(require_site_full_user),
+) -> Response:
+    """Present the incumbent D5 read; preserve auth, kill switch and errors."""
+    from engine.prophet_lab.episode_directory import valid_generation_pin
+
+    if (format not in {"json", "html"} or language not in {"en", "zh"}
+            or not valid_generation_pin(expected_generation)):
+        return _response({"error": "prophet_research_view_options_invalid"}, status_code=400)
+    if _kill_switch_active():
+        return _response(
+            {
+                "error": "prophet_lab_disabled",
+                "detail": f"the Prophet Operator Lab is stood down ({KILL_SWITCH_ENV}=1)",
+            },
+            status_code=503,
+        )
+
+    snapshot = None
+    if expected_generation is not None:
+        try:
+            episode_store_root = _env_path(
+                "PROPHET_LAB_EPISODE_STORE_ROOT", _CANDIDATE_EPISODE_STORE_ROOT,
+            )
+            if episode_store_root is None:
+                raise IntelligenceVectorContractError("B1 read root unavailable")
+            snapshot = load_candidate_episode_store_snapshot(episode_store_root)
+        except Exception as exc:
+            log.warning(
+                "prophet_lab research view generation preflight failed (%s)",
+                type(exc).__name__,
+            )
+            return _response(
+                {
+                    "error": "prophet_episode_intelligence_unavailable",
+                    "detail": "Episode intelligence temporarily unavailable",
+                },
+                status_code=503,
+            )
+        if snapshot.generation_id != expected_generation:
+            return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
+
+    source = (
+        _episode_intelligence_response(episode_id, snapshot=snapshot)
+        if snapshot is not None
+        else episode_intelligence_v1(episode_id, _user=_user)
+    )
+    if source.status_code != 200:
+        return source
+    try:
+        import json
+        from hashlib import sha256
+        from base64 import b64encode
+        from engine.prophet_lab.earnings_view import (
+            STYLE, build_earnings_view, render_earnings_fragment,
+        )
+        payload = json.loads(source.body)
+        if (expected_generation is not None and
+                payload["episode_ref"]["generation_id"] != expected_generation):
+            return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
+        if format == "json":
+            return _response(build_earnings_view(payload, language=language))
+        style_hash = b64encode(sha256(STYLE.encode("utf-8")).digest()).decode("ascii")
+        headers = dict(_PRIVATE_HEADERS)
+        headers["Content-Security-Policy"] = (
+            "default-src 'none'; script-src 'none'; base-uri 'none'; form-action 'none'; "
+            "frame-ancestors 'self'; style-src 'sha256-" + style_hash + "'"
+        )
+        return Response(render_earnings_fragment(payload, language=language),
+                        media_type="text/html", headers=headers)
+    except Exception as exc:
+        log.warning("prophet_lab research view failed (%s)", type(exc).__name__)
+        return _response({"error": "prophet_research_view_unavailable",
+                          "detail": "Research view temporarily unavailable"}, status_code=503)
+
+
+@router.get("/api/prophet/lab/v1/episodes")
+def episode_directory_v1(
+    q: str = "", limit: str = "25", offset: str = "0",
+    expected_generation: str | None = None,
+    _user: dict = Depends(require_site_full_user),
+) -> JSONResponse:
+    """Discover exact B1 episode links without reading or selecting earnings."""
+    from engine.prophet_lab.episode_directory import (
+        build_episode_directory, parse_directory_options,
+    )
+
+    try:
+        query, size, start = parse_directory_options(q, limit, offset, expected_generation)
+    except ValueError:
+        return _response({"error": "prophet_episode_directory_options_invalid"}, status_code=400)
+    if _kill_switch_active():
+        return _response({"error": "prophet_lab_disabled"}, status_code=503)
+    try:
+        root = _env_path("PROPHET_LAB_EPISODE_STORE_ROOT", _CANDIDATE_EPISODE_STORE_ROOT)
+        if root is None:
+            raise IntelligenceVectorContractError("B1 read root unavailable")
+        snapshot = load_candidate_episode_store_snapshot(root)
+        if expected_generation is not None and snapshot.generation_id != expected_generation:
+            return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
+        return _response(build_episode_directory(snapshot, query=query, limit=size, offset=start))
+    except Exception as exc:
+        log.warning("prophet_lab episode directory failed (%s)", type(exc).__name__)
+        return _response({"error": "prophet_episode_directory_unavailable"}, status_code=503)

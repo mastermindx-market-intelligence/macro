@@ -16170,6 +16170,7 @@ html[data-theme="light"] :is(
         {% if not _su %}<span class="muted" style="font-size:11.5px">{{ t("Up to 10 names per sector · grouped by setup, strongest names first.", "每个板块最多 10 只 · 按形态分组，较强者优先。") }}
           {{ help("Shows up to ten holdings from each sector when their price action reaches a clear buy, turning or topping point. Cards are grouped by setup stage; stronger names within the sector appear first. A cap keeps one sector from taking over. Click any card for the full breakdown.", "当价格走势出现明确的买入、转向或见顶时，每个板块最多展示十只股票。卡片按形态阶段分组，同板块中较强者优先。数量上限可避免单一板块占满页面。点击卡片查看完整拆解。") }}</span>{% endif %}
       </div>
+      {% include '_prophet_earnings_browser.html.j2' %}
       {#- ── W-L1 SLOT B — the board-state note (spec §2 B, §5.1, §5.2) ────────────────
           ONE line, FOUR mutually exclusive contents, never two at once. Every variant is
           SSR-baked with its l-en/l-zh pair and its own Tier-2 `?` receipt, so the live

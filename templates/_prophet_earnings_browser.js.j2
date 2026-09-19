@@ -1,0 +1,166 @@
+/* Ephemeral UI for the existing private B1/D5 readers. No board or signal changes. */
+(function () {
+'use strict';
+var BASE='/api/prophet/lab/v1/episodes';
+var AUTH=['can_rank','can_gate','can_size','can_originate_signal','can_change_entry_open','can_change_execution'];
+var WORDS={
+en:{idle:'Open a recorded opportunity to review its earnings evidence.',loading:'Loading private evidence…',
+signin:'Sign in to review private earnings evidence. No evidence is loaded.',
+forbidden:'This account cannot access this evidence. Previously loaded data has been cleared.',
+unavailable:'Evidence is unavailable. No prior result is shown; use Reload evidence to try again.',
+changed:'The source version changed. Reload evidence to select from the new version.',
+bad:'The evidence response could not be verified. No result is shown.',empty:'No recorded opportunities match this search.',
+closed:'Evidence cleared. Reopen to read it again.',timeout:'The evidence request timed out. Reload evidence to try again.',
+account:'Account or access state changed. Private evidence was cleared.',count:'Showing {shown} of {total} matching records. These are not ranked picks.',
+records:'Recorded opportunities',recorded:'Recorded',details:'Select a record to review its evidence.'},
+zh:{idle:'请选择已记录的机会，查看相关财报证据。',loading:'正在读取私有证据…',
+signin:'请登录以查看私有财报证据；当前未加载任何证据。',forbidden:'当前账户无权查看此证据；此前加载的数据已清除。',
+unavailable:'证据暂不可用；未显示旧结果。可点击重新读取。',changed:'来源版本已更新。请重新读取并从新版本选择记录。',
+bad:'无法核对证据响应；当前不显示结果。',empty:'没有符合搜索条件的机会记录。',closed:'证据已清除；重新展开后读取。',
+timeout:'读取证据超时；可点击重新读取。',account:'账户或访问状态已变化；私有证据已清除。',
+count:'当前显示 {shown} 条，共 {total} 条匹配记录；并非推荐排名。',records:'已记录的机会',recorded:'记录时间',details:'请选择记录以查看证据。'}};
+function lang(){return document.documentElement.getAttribute('data-lang')==='zh'?'zh':'en';}
+function text(key,args){var s=WORDS[lang()][key];Object.keys(args||{}).forEach(function(k){s=s.replace('{'+k+'}',String(args[k]));});return s;}
+function element(tag,cls,value){var n=document.createElement(tag);if(cls)n.className=cls;if(value!=null)n.textContent=String(value);return n;}
+function string(v){return typeof v==='string'&&v.length<20000;}
+function generation(v){return typeof v==='string'&&/^peg:[0-9a-f]{64}$/.test(v);}
+function noAuthority(v){return v&&Object.keys(v).length===AUTH.length&&AUTH.every(function(k){return v[k]===false;});}
+function sameRef(a,b){return a&&b&&['episode_id','generation_id','identity_ref','schema'].every(function(k){return a[k]===b[k];});}
+function failure(key){var e=new Error(key);e.evidenceKey=key;return e;}
+function securityLabel(id){var m=/^SEC:([A-Z]{2})-([A-Z0-9]+)-(.+)$/.exec(id);return m?m[3]+' · '+m[1]+' / '+m[2]:id;}
+function mount(root) {
+  var select=function(name){return root.querySelector('[data-pe-'+name+']');};
+  var list=select('results'), detail=select('detail'), status=select('status');
+  var query=select('query'), next=select('next'), first=select('first'), signin=select('signin');
+  var epoch=0, pending=null, page=null, chosen=null, currentView=null, currentLang=lang();
+  var statusKey='idle', statusArgs=null, accountId=null;
+  select('controls').hidden=false;
+  function message(key,args){statusKey=key;statusArgs=args||null;status.textContent=text(key,args);signin.hidden=key!=='signin';}
+  function cancel(){epoch++;if(pending){pending.abort();pending=null;}root.removeAttribute('aria-busy');}
+  function clear(){cancel();page=null;chosen=null;currentView=null;list.replaceChildren();detail.replaceChildren();next.hidden=true;first.hidden=true;}
+  function notice(error){clear();message(error.evidenceKey||'unavailable');}
+  function rows(parent,items){items.forEach(function(item){var r=element('div','pe-row');r.append(element('strong','',item.label),element('span','',item.note));parent.append(r);});}
+  function section(title){var s=element('section','pe-section');s.append(element('h3','',title));return s;}
+  function paintView(v){
+    var p=v.presentation, article=element('article','plab-evidence');article.lang=v.language;
+    article.dataset.sourceProjection=v.source_projection_id;
+    var header=element('header');header.append(element('h2','',p.title),element('p','',p.subtitle));
+    header.append(element('p','pe-muted',p.cut_label+': '+v.decision_cut.opened_at+' · '+p.coverage_label));article.append(header);
+    article.append(element('div','pe-state',v.summary));
+    var grid=element('div','pe-grid');v.metrics.forEach(function(m){
+      var card=element('section','pe-card');card.append(element('div','pe-label',m.label),element('p','pe-value',m.display_value));
+      if(m.guidance_status_label)card.append(element('p','pe-muted',p.guidance_status_label+': '+m.guidance_status_label));
+      card.append(element('p','pe-muted',m.note));grid.append(card);
+    });
+    if(!v.metrics.length){var empty=element('section','pe-card');empty.append(element('h3','',p.empty_title),element('p','',p.empty_note));grid.append(empty);}
+    article.append(grid);
+    var comparison=section(p.comparison_title);if(p.comparisons.length)rows(comparison,p.comparisons);else comparison.append(element('p','pe-muted',p.no_comparison));article.append(comparison);
+    var separate=section(p.separate_title);rows(separate,p.separate);article.append(separate);
+    var corrections=section(p.correction_title);corrections.append(element('p','',p.correction_note));article.append(corrections);
+    var disclosure=element('details'), receipt={};disclosure.append(element('summary','',p.lineage_title));
+    ['metrics','source_projection_id','episode_ref','decision_cut','coverage','rights','freshness','point_in_time','correction','source_refs','owner_lane_dispositions','owner_warnings','assembly_receipt','authority'].forEach(function(k){receipt[k]=v[k];});
+    disclosure.append(element('pre','',JSON.stringify(receipt,null,2)));article.append(disclosure);
+    var scope=element('section','pe-foot');scope.append(element('h3','',p.scope_title));p.scope_notes.forEach(function(note){scope.append(element('p','',note));});article.append(scope);
+    detail.replaceChildren(element('div','pe-detail-heading',securityLabel(chosen.security_id)),article);
+  }
+  function refOK(r){return r&&string(r.episode_id)&&r.episode_id.length>0&&string(r.identity_ref)&&string(r.schema)&&generation(r.generation_id);}
+  function validateDirectory(d,requestedOffset,requestedQuery,expectedGeneration){
+    var s=d&&d.selection;
+    if(!d||d.schema!=='prophet.lab_episode_directory/v1'||!generation(d.generation_id)||!noAuthority(d.authority)||!s||!Array.isArray(d.episodes)||d.episodes.length>100)throw failure('bad');
+    if(s.offset!==requestedOffset||s.limit!==25||s.query!==requestedQuery||!Number.isInteger(s.total_matches)||s.total_matches<0||!Number.isInteger(s.total_episodes)||s.total_episodes<s.total_matches)throw failure('bad');
+    if(d.scope!=='B1_CURRENT_GENERATION_ONLY'||d.population_completeness!=='NOT_ASSERTED'||s.order!=='REVERSE_CANONICAL_B1_ORDER')throw failure('bad');
+    if(d.episodes.length!==Math.max(0,Math.min(s.limit,s.total_matches-s.offset)))throw failure('bad');
+    var expectedNext=s.offset+s.limit<s.total_matches?s.offset+s.limit:null;
+    if(s.next_offset!==expectedNext||(expectedGeneration&&expectedGeneration!==d.generation_id))throw failure('changed');
+    var seen=new Set();d.episodes.forEach(function(r){
+      if(!refOK(r.episode_ref)||r.episode_ref.generation_id!==d.generation_id||!string(r.security_id)||!string(r.opened_at)||!string(r.opened_session)||seen.has(r.episode_ref.episode_id))throw failure('bad');
+      seen.add(r.episode_ref.episode_id);
+      var u=new URL(r.research_view_url,location.origin), expected=BASE+'/'+encodeURIComponent(r.episode_ref.episode_id)+'/research-view';
+      if(u.origin!==location.origin||u.pathname!==expected||u.hash||u.searchParams.size!==1||u.searchParams.get('expected_generation')!==d.generation_id)throw failure('bad');
+    });return d;
+  }
+  function validateView(v,ref){
+    if(!v||v.view_version!=='earnings-detail/1'||v.language!==lang()||!sameRef(v.episode_ref,ref)||!noAuthority(v.authority)||!/^piv:[0-9a-f]{64}$/.test(v.source_projection_id))throw failure('bad');
+    if(!v.expectation_revision||v.expectation_revision.state!=='NOT_CONNECTED'||!v.availability||v.availability.state!=='NOT_ASSERTED'||!v.hold||v.hold.state!=='NOT_SUPPLIED')throw failure('bad');
+    if(!v.decision_cut||!string(v.decision_cut.opened_at)||!string(v.summary)||!Array.isArray(v.metrics)||v.metrics.length>2)throw failure('bad');
+    v.metrics.forEach(function(m){if(!m||!string(m.label)||!string(m.display_value)||!string(m.note))throw failure('bad');});
+    var p=v.presentation;
+    if(!p||!['title','subtitle','cut_label','coverage_label','guidance_status_label','comparison_title','no_comparison','separate_title','correction_title','correction_note','lineage_title','scope_title','empty_title','empty_note'].every(function(k){return string(p[k]);}))throw failure('bad');
+    ['comparisons','separate'].forEach(function(k){if(!Array.isArray(p[k])||p[k].length>3||!p[k].every(function(r){return r&&string(r.label)&&string(r.note);}))throw failure('bad');});
+    if(!Array.isArray(p.scope_notes)||p.scope_notes.length>4||!p.scope_notes.every(string))throw failure('bad');return v;
+  }
+  function perform(url,done){
+    cancel();var version=epoch, controller=new AbortController(), timer;
+    pending=controller;root.setAttribute('aria-busy','true');message('loading');
+    var active=function(){return version===epoch&&root.open;};
+    var work=Promise.resolve().then(function(){
+      if(!window.MDXAuth||!window.MDXAuth.client)throw failure('signin');
+      return window.MDXAuth.client();
+    }).then(function(client){return client.auth.getSession();}).then(function(result){
+      if(!active())throw failure('closed');
+      var session=result&&result.data&&result.data.session;
+      if(!session||!session.access_token||!session.user||!session.user.id)throw failure('signin');
+      if(accountId&&accountId!==session.user.id)throw failure('account');
+      accountId=session.user.id;
+      return fetch(url,{headers:{Accept:'application/json',Authorization:'Bearer '+session.access_token},credentials: 'same-origin',cache: 'no-store',redirect: 'error',signal:controller.signal});
+    }).then(function(response){
+      if([401,402,403].indexOf(response.status)!==-1)throw failure(response.status===401?'signin':'forbidden');
+      if(response.status===409)throw failure('changed');if(!response.ok)throw failure('unavailable');
+      if(!/application\/json/i.test(response.headers.get('content-type')||''))throw failure('bad');
+      return response.text();
+    }).then(function(raw){if(raw.length>1048576)throw failure('bad');try{return JSON.parse(raw);}catch(e){throw failure('bad');}});
+    var timeout=new Promise(function(resolve,reject){timer=setTimeout(function(){controller.abort();reject(failure('timeout'));},15000);});
+    Promise.race([work,timeout]).then(function(data){if(active())done(data);}).catch(function(error){if(active()){if(['signin','forbidden','account'].indexOf(error.evidenceKey)!==-1)accountId=null;notice(error);}}).finally(function(){clearTimeout(timer);if(version===epoch){pending=null;root.removeAttribute('aria-busy');}});
+  }
+  function choose(row){
+    chosen=row;currentView=null;detail.replaceChildren();
+    Array.from(list.querySelectorAll('button')).forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.episode===row.episode_ref.episode_id));});
+    var ref=Object.assign({},row.episode_ref), u=new URL(row.research_view_url,location.origin);
+    u.searchParams.set('language',lang());u.searchParams.set('format','json');
+    perform(u.pathname+u.search,function(data){currentView=validateView(data,ref);paintView(currentView);message('idle');});
+  }
+  function paintDirectory(d){
+    list.replaceChildren();list.setAttribute('aria-label',text('records'));
+    d.episodes.forEach(function(row){var li=element('li'),button=element('button');button.type='button';button.dataset.episode=row.episode_ref.episode_id;button.setAttribute('aria-pressed','false');
+      button.append(element('span','',securityLabel(row.security_id)),element('small','',text('recorded')+': '+row.opened_session));
+      button.addEventListener('click',function(){choose(row);});li.append(button);list.append(li);
+    });
+    next.hidden=d.selection.next_offset===null;first.hidden=d.selection.offset===0;
+    message(d.episodes.length?'count':'empty',{shown:d.episodes.length,total:d.selection.total_matches});
+    detail.replaceChildren(element('p','pe-help',text('details')));
+  }
+  function loadDirectory(offset,navigation){
+    if(!root.open)return;
+    var previous=page, paging=!!offset||navigation===true;
+    if(paging&&!previous){notice(failure('changed'));return;}
+    // Navigation follows the submitted search and its exact snapshot, not draft input.
+    var needle=paging?previous.selection.query:query.value.trim();
+    var expectedGeneration=paging?previous.generation_id:null;
+    chosen=null;currentView=null;detail.replaceChildren();list.replaceChildren();next.hidden=true;first.hidden=true;
+    if(!paging)page=null;
+    var params=new URLSearchParams({q:needle,limit:'25',offset:String(offset)});
+    if(expectedGeneration)params.set('expected_generation',expectedGeneration);
+    perform(BASE+'?'+params.toString(),function(data){page=validateDirectory(data,offset,needle,expectedGeneration);paintDirectory(page);});
+  }
+  select('search').addEventListener('submit',function(event){event.preventDefault();loadDirectory(0);});
+  select('refresh').addEventListener('click',function(){clear();loadDirectory(0);});
+  next.addEventListener('click',function(){if(page&&page.selection.next_offset!==null)loadDirectory(page.selection.next_offset,true);});
+  first.addEventListener('click',function(){loadDirectory(0,true);});
+  signin.addEventListener('click',function(){if(window.MDXAuth&&window.MDXAuth.open)window.MDXAuth.open('signin');});
+  root.addEventListener('toggle',function(){if(root.open)loadDirectory(0);else{clear();message('closed');}});
+  window.addEventListener('mdx-auth',function(event){
+    var d=event.detail||{},id=d.user&&d.user.id||null;
+    var resumeSignIn=root.open&&statusKey==='signin'&&d.event==='SIGNED_IN'&&!!id;
+    if(d.event==='SIGNED_OUT'||d.event==='USER_UPDATED'||(accountId&&id!==accountId)){clear();query.value='';message(id?'account':'signin');}
+    accountId=id;
+    // Resume only an open sign-in interruption; repeated events and denials do not re-read.
+    if(resumeSignIn){clear();query.value='';loadDirectory(0);}
+  });
+  window.addEventListener('pagehide',function(){clear();query.value='';message('closed');});
+  document.addEventListener('visibilitychange',function(){if(document.hidden){clear();message('closed');}});
+  new MutationObserver(function(){var value=lang();if(value!==currentLang){currentLang=value;clear();message('idle');if(root.open)loadDirectory(0);}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-lang']});
+  message('idle');
+}
+function boot(){document.querySelectorAll('[data-prophet-earnings-browser]').forEach(mount);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
