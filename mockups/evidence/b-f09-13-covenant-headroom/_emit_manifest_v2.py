@@ -31,7 +31,11 @@ except ImportError:
 if yaml is not None:
     _LEGACY_EVIDENCE = yaml.safe_load(_EVIDENCE_PATH.read_text(encoding="utf-8")) or {}
 
-GENERATED_AT = _LEGACY.get("captured_at")
+# h5_7127 (seat, 2026-09-19): the emitter must be a no-op on its own output. Once
+# manifest.json is already p0_evidence.v2 the provenance lives in its own
+# generated_at/honesty keys, so re-runs reuse them and only re-hash the cells.
+_IS_V2 = _LEGACY.get("schema") == "mastermind.p0_evidence.v2"
+GENERATED_AT = _LEGACY.get("generated_at") if _IS_V2 else _LEGACY.get("captured_at")
 
 
 def _png_dimensions(path: Path) -> tuple[int, int]:
@@ -95,7 +99,7 @@ def main() -> None:
     for fname in null_pngs:
         states.append(_cell(fname, force_state="null_payload"))
 
-    honesty = {
+    honesty = _LEGACY.get("honesty") if _IS_V2 else {
         "fixture_render": _LEGACY_EVIDENCE.get("fixture_render", _LEGACY.get("fixture_render")),
         "fixture_render_disclosure": _LEGACY_EVIDENCE.get(
             "fixture_render_disclosure", _LEGACY.get("fixture_render_disclosure")
