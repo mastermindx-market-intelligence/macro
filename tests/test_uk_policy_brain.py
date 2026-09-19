@@ -371,3 +371,18 @@ def test_doc_version_and_source_url_nulls_are_printed():
     assert "Read the official announcement" in html2
     assert "claude-opus" not in html2
     assert "claude-opus-4-8" not in html2
+
+
+def test_sentinel_activates_uk_policy_desk_on_credentialed_step():
+    """The real hourly publisher must switch on the already-shipped UK desk."""
+    text = (
+        Path(__file__).parent.parent / ".github" / "workflows" / "whitehouse-sentinel.yml"
+    ).read_text(encoding="utf-8")
+    marker = "- name: poll White House feed + Opus alert desk"
+    assert marker in text
+    step = text.split(marker, 1)[1].split("\n      - name:", 1)[0]
+    assert 'UK_POLICY_DESK_ENABLED: "1"' in step
+    assert "CLAUDE_CODE_OAUTH_TOKEN:" in step
+    assert "ANTHROPIC_API_KEY:" in step
+    assert "DEEPSEEK_API_KEY:" in step
+    assert "python -m scripts.build_whitehouse" in step
