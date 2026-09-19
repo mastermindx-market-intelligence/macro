@@ -114,12 +114,16 @@ verified:
       chatgpt3 canonical control stop/upgrade/seal/start/status; tunnel-client health
       --port 45023 --pid 33020 --require-control-plane-poll --json; then chatgpt3 local MCP
       paper_inspect -> paper_catalog -> paper_edit(write_html) -> paper_read(get_screenshot/get_jsx).
+      Follow-up exact source 804d3d59... adds no-effect pre-dispatch refusal hardening and a
+      cold-start-independent timeout discriminator.
     result: >
-      Hosted PR 853 CI run 35433202888 succeeded on exact head
-      1ddbf484f765f6b7b11839254103741e1f56eb64. Sequential full Studio Direct Node suite passed
-      131/131; latest-base synthetic integration a57a2d6f8b1db0da35b07fc644c3e78298d26e6e
-      against protected Mastermind 880e377cfa9d3fbdc921e931a55cc8c4143dc119 passed focused
-      Paper gateway/private-service proof and diff-check. chatgpt3 gateway 0.1.6/tunnel remain
+      Prior PR 853 head 1ddbf484f765f6b7b11839254103741e1f56eb64 had hosted CI success.
+      Current exact source 804d3d59b41450c9c5bb61a9a89439d1f26e328d passed full sequential
+      Studio Direct Node 132/132 and Python lifecycle/control 100/100; current hosted CI run
+      35435634025 is active. Latest-base synthetic integration
+      22d8a04070cd073403a83d55ea61d068a90000be against protected Mastermind
+      880e377cfa9d3fbdc921e931a55cc8c4143dc119 passed focused Paper/effect-timeout/private-service
+      proof and diff-check. chatgpt3 gateway 0.1.6/tunnel remain
       healthy/ready. Paper deep-link paper://file/01M2VWK62FA5S4VVF6G7SBPE5J opened the intended
       scratch file on the Studio with no new login ceremony. Operation
       paper-studio-direct-canary-20260919-sol-001 returned APPLIED_RESPONSE_OBSERVED, changed
@@ -170,7 +174,7 @@ unverified:
       meaningful data/loading/empty/error states.
 unresolved:
   - Mastermind PR 585 exact head ebe89a73e603139732b34f301e66e84e86f09389 has green hosted CI and latest-base proof, but independent semantic review/source release remain outstanding. Reviewer mastermindx-2 is requested.
-  - Studio Direct Paper carrier PR 853 exact head 1ddbf484f765f6b7b11839254103741e1f56eb64 has green hosted CI, latest-base focused proof and a real local gateway edit journey, but remains DRAFT/stacked on PR 840 pending independent review and stack/source release. Reviewer mastermindx-2 is requested.
+  - Studio Direct Paper carrier PR 853 exact head 804d3d59b41450c9c5bb61a9a89439d1f26e328d is DRAFT/stacked on PR 840. Current source adds pre-dispatch effect-truth hardening: bridge identity/hash mismatch and oversized/unserializable arguments are definite no-effect refusals rather than EFFECT_UNKNOWN; post-dispatch loss still taints/no-replays. Exact working-tree proof on the committed bytes passed the full Studio Direct Node suite 132/132 and Python lifecycle/control 100/100. Latest-base synthetic integration 22d8a04070cd073403a83d55ea61d068a90000be against protected 880e377... passed focused Paper/effect-timeout/private-service proof and diff-check. Hosted exact-head run 35435634025 is active; independent reviewer mastermindx-2 remains requested.
   - Mac Studio Paper now has the intended cloud scratch design open and current adapter writes are proven. A fresh chatgpt3 Web conversation is still required because this conversation's MCP catalog was established before the new paper_* tools were deployed.
   - Codex stored ChatGPT auth is invalid and needs the user's interactive login ceremony.
   - Claude project MCP is visible but needs the user's explicit project approval ceremony.
@@ -180,8 +184,9 @@ next_actions:
   - >
     Consume the requested independent mastermindx-2 reviews for PR 585 exact head
     ebe89a73e603139732b34f301e66e84e86f09389 and stacked PR 853 exact head
-    1ddbf484f765f6b7b11839254103741e1f56eb64. Hosted CI/latest-base proof are already green;
-    do not treat green checks as source acceptance.
+    804d3d59b41450c9c5bb61a9a89439d1f26e328d. PR 585 hosted/latest-base proof is green;
+    PR 853 local/latest-base proof is green and exact-head hosted CI remains active. Do not
+    treat checks as source acceptance.
   - >
     After PR 853 review/stack gates allow, start a fresh chatgpt3 Web conversation so its MCP
     catalog includes paper_inspect/paper_catalog/paper_read/paper_edit, then repeat the already
