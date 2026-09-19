@@ -308,6 +308,114 @@ def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
     return summary
 
 
+def _bridge_unavailable(reason: str) -> dict[str, Any]:
+    return {
+        "available": False,
+        "reason": reason,
+        "metric_semantics": "board_admission_not_eventual_winner",
+    }
+
+
+def summarize_board_admission_bridge(
+    discovery: pd.DataFrame,
+    board: pd.DataFrame | None,
+) -> dict[str, Any]:
+    """Describe whether discovery surfaced names before first board admission.
+
+    This is NOT eventual-winner recall.  It answers one narrower, mechanically
+    owned question: within the actual discovery-history window, how often did a
+    ticker appear in Lane B before (or on) the date of its first canonical board
+    admission?  Calendar lead time is reported only for strictly-prior surfaces.
+    """
+    if board is None:
+        return _bridge_unavailable("board_store_absent")
+    if discovery is None or discovery.empty:
+        return _bridge_unavailable("discovery_store_empty")
+    if board.empty:
+        return _bridge_unavailable("board_store_empty")
+    if "session_date" not in discovery.columns:
+        return _bridge_unavailable("discovery_missing_session_date")
+    identity_col = (
+        "security_ref" if "security_ref" in discovery.columns
+        else "security_ref_raw" if "security_ref_raw" in discovery.columns
+        else None
+    )
+    if identity_col is None:
+        return _bridge_unavailable("discovery_missing_identity")
+    if "date" not in board.columns or "ticker" not in board.columns:
+        return _bridge_unavailable("board_missing_identity")
+
+    disc = discovery[[identity_col, "session_date"]].copy()
+    disc = disc[disc[identity_col].notna()].copy()
+    disc["_session"] = pd.to_datetime(disc["session_date"], errors="coerce")
+    disc = disc[disc["_session"].notna()].copy()
+    if disc.empty:
+        return _bridge_unavailable("discovery_dates_unusable")
+    disc["_ticker"] = disc[identity_col].astype(str)
+
+    start = pd.Timestamp(disc["_session"].min()).normalize()
+    end = pd.Timestamp(disc["_session"].max()).normalize()
+
+    brd = board[["date", "ticker"]].copy()
+    brd = brd[brd["ticker"].notna()].copy()
+    brd["_date"] = pd.to_datetime(brd["date"], errors="coerce")
+    brd = brd[brd["_date"].notna()].copy()
+    brd["_date"] = brd["_date"].map(lambda x: pd.Timestamp(x).normalize())
+    brd["_ticker"] = brd["ticker"].astype(str)
+    brd = brd[(brd["_date"] >= start) & (brd["_date"] <= end)]
+    brd = brd.sort_values(["_date", "_ticker"], kind="stable")
+    brd = brd.drop_duplicates(subset=["_date", "_ticker"], keep="first")
+    first_board = brd.drop_duplicates(subset=["_ticker"], keep="first")
+
+    first_disc = (
+        disc.groupby("_ticker", sort=False)["_session"].min()
+        .map(lambda x: pd.Timestamp(x).normalize())
+        .to_dict()
+    )
+
+    prior = same_day = never = later_only = 0
+    leads: list[int] = []
+    for _, row in first_board.iterrows():
+        ticker = row["_ticker"]
+        admitted = pd.Timestamp(row["_date"]).normalize()
+        first = first_disc.get(ticker)
+        if first is None:
+            never += 1
+            continue
+        if first < admitted:
+            prior += 1
+            leads.append(int((admitted - first).days))
+        elif first == admitted:
+            same_day += 1
+        else:
+            later_only += 1
+
+    n = int(len(first_board))
+    lead_series = pd.Series(leads, dtype=float)
+    lead_summary = {
+        "n": int(len(leads)),
+        "median": float(lead_series.median()) if not lead_series.empty else None,
+        "p25": float(lead_series.quantile(0.25)) if not lead_series.empty else None,
+        "p75": float(lead_series.quantile(0.75)) if not lead_series.empty else None,
+    }
+    return {
+        "available": True,
+        "metric_semantics": "board_admission_not_eventual_winner",
+        "window": {"from": str(start.date()), "to": str(end.date())},
+        "n_first_board_admissions": n,
+        "n_prior_discovered": int(prior),
+        "n_same_day_only": int(same_day),
+        "n_never_discovered": int(never),
+        "n_discovered_only_after_admission": int(later_only),
+        "n_no_pre_admission_surface": int(never + later_only),
+        "prior_discovery_recall_rate": (float(prior / n) if n else None),
+        "prior_or_same_day_surface_rate": (
+            float((prior + same_day) / n) if n else None
+        ),
+        "calendar_lead_days": lead_summary,
+    }
+
+
 def grade_market(market: str) -> dict[str, Any]:
     """Refresh one market's derived outcome store from its append-only discovery source."""
     m = str(market or "").upper()
@@ -325,6 +433,8 @@ def grade_market(market: str) -> dict[str, Any]:
     except Exception as exc:
         raise RuntimeError(f"{m} discovery source unreadable: {exc}") from exc
     fresh = grade_frame(m, source)
+    board = board_shadow._read_board_parquet(m, ["date", "ticker"])
+    board_admission_bridge = summarize_board_admission_bridge(source, board)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     changed = True
@@ -361,6 +471,7 @@ def grade_market(market: str) -> dict[str, Any]:
         "terminal_clean8_21": terminal8,
         "terminal_clean15_126": terminal15,
         "candidate_metrics": summarize_outcomes(fresh),
+        "board_admission_bridge": board_admission_bridge,
     }
 
 

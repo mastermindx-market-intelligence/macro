@@ -492,3 +492,91 @@ def test_prophet_discovery_summary_stratifies_origin_tokens_and_availability():
     # Token cohorts overlap by design; they are descriptive evidence, never a
     # partition whose counts may be summed or a hidden promotion/ranking rule.
     assert summary["cohort_semantics"] == "overlapping_descriptive_only"
+
+
+def test_prophet_discovery_board_admission_bridge_separates_prior_same_day_and_miss():
+    from engine import prophet_discovery_grade as pdg
+
+    discovery = pd.DataFrame([
+        {"session_date": "2026-01-01", "security_ref_raw": "A.HK"},
+        {"session_date": "2026-01-03", "security_ref_raw": "B.HK"},
+        {"session_date": "2026-01-05", "security_ref_raw": "C.HK"},
+        # repeated discovery must not double-count the first-surface clock
+        {"session_date": "2026-01-04", "security_ref_raw": "A.HK"},
+    ])
+    board = pd.DataFrame([
+        {"date": "2026-01-05", "ticker": "A.HK"},
+        {"date": "2026-01-03", "ticker": "B.HK"},
+        {"date": "2026-01-05", "ticker": "D.HK"},
+        # outside the observed discovery-history window; excluded from denominator
+        {"date": "2026-01-06", "ticker": "E.HK"},
+        # duplicate same-day board row must not widen the denominator
+        {"date": "2026-01-05", "ticker": "A.HK"},
+    ])
+
+    s = pdg.summarize_board_admission_bridge(discovery, board)
+    assert s["available"] is True
+    assert s["window"] == {"from": "2026-01-01", "to": "2026-01-05"}
+    assert s["n_first_board_admissions"] == 3
+    assert s["n_prior_discovered"] == 1
+    assert s["n_same_day_only"] == 1
+    assert s["n_never_discovered"] == 1
+    assert s["prior_discovery_recall_rate"] == pytest.approx(1 / 3)
+    assert s["prior_or_same_day_surface_rate"] == pytest.approx(2 / 3)
+    assert s["calendar_lead_days"]["n"] == 1
+    assert s["calendar_lead_days"]["median"] == pytest.approx(4.0)
+    assert s["calendar_lead_days"]["p25"] == pytest.approx(4.0)
+    assert s["calendar_lead_days"]["p75"] == pytest.approx(4.0)
+    assert s["metric_semantics"] == "board_admission_not_eventual_winner"
+    assert "eventual_winner_recall" not in s
+
+
+def test_prophet_discovery_board_admission_bridge_degrades_without_board_store():
+    from engine import prophet_discovery_grade as pdg
+
+    discovery = pd.DataFrame([
+        {"session_date": "2026-01-01", "security_ref_raw": "A.HK"},
+    ])
+    s = pdg.summarize_board_admission_bridge(discovery, None)
+    assert s == {
+        "available": False,
+        "reason": "board_store_absent",
+        "metric_semantics": "board_admission_not_eventual_winner",
+    }
+
+
+def test_prophet_discovery_grade_market_receipt_includes_board_admission_bridge(
+    tmp_path, monkeypatch
+):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    src = tmp_path / "prophet_shadow"
+    src.mkdir(parents=True)
+    discovery = _discovery_rows("ABC.TO", session_date="2026-01-02", market="CA")
+    pd.concat([
+        discovery,
+        _discovery_rows("XYZ.TO", session_date="2026-01-03", market="CA"),
+    ], ignore_index=True).to_parquet(src / "ca_discovery.parquet", index=False)
+
+    close = _trend(180)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+    monkeypatch.setattr(
+        pdg.board_shadow,
+        "_read_board_parquet",
+        lambda *_a, **_k: pd.DataFrame([
+            {"date": "2026-01-03", "ticker": "ABC.TO"},
+            {"date": "2026-01-03", "ticker": "XYZ.TO"},
+        ]),
+    )
+
+    receipt = pdg.grade_market("CA")
+    bridge = receipt["board_admission_bridge"]
+    assert bridge["available"] is True
+    assert bridge["n_first_board_admissions"] == 2
+    assert bridge["n_prior_discovered"] == 1
+    assert bridge["n_same_day_only"] == 1
+    assert bridge["prior_discovery_recall_rate"] == pytest.approx(0.5)
