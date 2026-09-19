@@ -1288,6 +1288,9 @@ lanes:
           latched windows. Fail-soft (absent creds/tables -> typed
           READ_UNAVAILABLE, 0 rows, exit 0). Dormant unless
           THESIS_MONITOR_ENABLE=1. Delivery is F08's drain, never this step.
+      - id: produce_brief_deliveries
+        module: scripts.produce_brief_deliveries
+        # MO-B W6-B brief deliveries producer (dormant unless BRIEF_DELIVERIES_ENABLE; non-fatal step)
       - id: notify
         module: scripts.notify
       - id: push_alerts
