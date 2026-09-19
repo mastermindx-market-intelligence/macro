@@ -3774,7 +3774,7 @@ def test_financial_bridge_closed_request_contract(key, value, tmp_path):
     assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
 
 
-def test_financial_bridge_forbids_silent_cross_currency_periods(tmp_path):
+def test_financial_bridge_rejects_unknown_per_period_currency_metadata(tmp_path):
     case = _financial_bridge_case()
     case["prior"]["currency"] = "USD"
     case["current"]["currency"] = "HKD"
@@ -3861,7 +3861,7 @@ def test_financial_bridge_rejects_invalid_specific_fields(field, bad, tmp_path):
     assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
 
 
-def test_financial_bridge_complete_data_and_decimal_context(tmp_path):
+def test_financial_bridge_complete_data_with_explicit_zero_cash_inputs(tmp_path):
     from decimal import localcontext
     case = _financial_bridge_case()
     case["prior"].update(working_capital_increase=0, other_operating_cash_adjustments=0, capital_expenditure=0)
@@ -3973,6 +3973,96 @@ def test_financial_bridge_matches_independent_rational_oracle(tmp_path, seed):
     assert sum(Q(bridge[name]) for name in effects) == profit["current"] - profit["prior"]
     assert Q(bridge["operating_profit_change"]) == profit["current"] - profit["prior"]
     assert bridge["is_causal_estimate"] is False
+
+
+
+def test_financial_bridge_margin_safety_floor_is_explicit(tmp_path):
+    case = _financial_bridge_case()
+    case["current"]["gross_margin_pct"] = "-1000"
+    assert "error" not in _dispatch_financial_bridge(case, tmp_path)
+    case["current"]["gross_margin_pct"] = "-1000.000001"
+    assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
+
+
+def test_financial_bridge_schema_exposes_runtime_numeric_envelope():
+    from engine.neuralweb.financial_scenarios import tool_schema
+    props = tool_schema()["input_schema"]["properties"]["current"]["properties"]
+    assert props["revenue"]["minimum"] == 0
+    assert props["revenue"]["maximum"] == 1_000_000_000_000_000
+    assert props["gross_margin_pct"]["minimum"] == -1000
+    assert props["gross_margin_pct"]["maximum"] == 100
+    assert props["working_capital_increase"]["minimum"] == -1_000_000_000_000_000
+    assert props["working_capital_increase"]["maximum"] == 1_000_000_000_000_000
+    for field in props.values():
+        assert field["maxLength"] == 40
+        assert field["pattern"]
+
+
+def test_financial_bridge_common_currency_is_declared_not_verified(tmp_path):
+    case = _financial_bridge_case()
+    case["currency"] = "USD"
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert result["currency"] == "USD"
+    assert result["input_basis"] == "unverified_supplied_assumptions"
+    assert any("share one scale, currency" in line for line in result["limits"])
+
+
+
+def test_financial_bridge_schema_and_runtime_reject_more_than_six_fractional_places(tmp_path):
+    import jsonschema
+    from engine.neuralweb.financial_scenarios import tool_schema
+    case = _financial_bridge_case()
+    case["current"]["revenue"] = "1.0000000"
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(case, tool_schema()["input_schema"])
+    assert _dispatch_financial_bridge(case, tmp_path).get("error") == "invalid_financial_scenario"
+    case["current"]["revenue"] = "1.000000"
+    jsonschema.validate(case, tool_schema()["input_schema"])
+    assert "error" not in _dispatch_financial_bridge(case, tmp_path)
+
+
+def test_financial_bridge_extreme_admitted_values_remain_exact(tmp_path):
+    from fractions import Fraction as Q
+    case = {
+        "unit": "ones", "currency": "USD",
+        "prior": {
+            "revenue": "1000000000000000", "gross_margin_pct": "-1000",
+            "operating_expenses": "1000000000000000",
+            "working_capital_increase": "-1000000000000000",
+            "other_operating_cash_adjustments": "1000000000000000",
+            "capital_expenditure": "1000000000000000",
+        },
+        "current": {
+            "revenue": "1000000000000000", "gross_margin_pct": "100",
+            "operating_expenses": "1000000000000000",
+            "working_capital_increase": "1000000000000000",
+            "other_operating_cash_adjustments": "-1000000000000000",
+            "capital_expenditure": "1000000000000000",
+        },
+    }
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert "error" not in result
+    for period in ("prior", "current"):
+        values = {k: Q(v) for k, v in case[period].items()}
+        gross = values["revenue"] * values["gross_margin_pct"] / 100
+        operating = gross - values["operating_expenses"]
+        cash = operating + values["other_operating_cash_adjustments"] - values["working_capital_increase"]
+        assert Q(result["periods"][period]["gross_profit"]) == gross
+        assert Q(result["periods"][period]["operating_profit"]) == operating
+        assert Q(result["periods"][period]["simplified_operating_cash"]) == cash
+        assert Q(result["periods"][period]["simplified_cash_after_capex"]) == cash - values["capital_expenditure"]
+
+
+def test_financial_bridge_arithmetic_failure_is_not_mislabeled_invalid_input(tmp_path, monkeypatch):
+    from decimal import Inexact
+    from engine.neuralweb import financial_scenarios as fs
+    case = _financial_bridge_case()
+    def fail(*args, **kwargs):
+        raise Inexact
+    monkeypatch.setattr(fs, "_calculate", fail)
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert result.get("error") == "financial_scenario_arithmetic_unavailable"
+    assert "invalid_financial_scenario" not in str(result)
 
 
 # --- registry: new tool names present in _BRAIN_TOOLS and schemas list --------

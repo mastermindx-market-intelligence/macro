@@ -18,13 +18,13 @@ changed:
   - path: engine/neuralweb/analyst/play_financial_thesis.md
     what: Existing trigger-routed skill connects assumptions, financial consequences, valuation gaps, competing explanations and discriminating evidence.
   - path: tests/test_brain_gateway.py
-    what: Thirty-eight new numerical, invalid-input, missingness, schema-isolation, routing and real-loop tests in the already-registered suite.
+    what: Numerical, invalid-input, missingness, schema/runtime, routing, independent-oracle and real-loop tests in the already-registered suite.
   - path: tests/test_brain_analyst_doctrine.py
     what: Explicit census changes from ten to eleven modules, preserving complete parse equality and existing routes.
 verified:
   - claim: The existing gateway loop consumes real computed financial results with the provider mocked.
     command: python3.12 -m pytest tests/test_brain_gateway.py tests/test_response_eval.py tests/test_brain_tool_economics.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_brain_doctrine.py -q -p no:cacheprovider
-    result: 594 passed, five existing framework deprecation warnings; no live model was invoked.
+    result: 618 passed, five existing framework deprecation warnings on the latest repaired source; no live model was invoked.
   - claim: The tests distinguish missing tool wiring and nested schema state sharing.
     command: pytest tests/test_brain_gateway.py -k financial_bridge before implementation; pytest tests/test_brain_analyst_doctrine.py -k nested_types before schema isolation repair
     result: Twenty-six failures before implementation; one later schema-isolation failure reproduced and repaired. Its unchanged regression now lives in test_brain_gateway.py.
@@ -146,3 +146,42 @@ publication path becomes available after the user's explicit tool-surface invali
 reconcile effect state first and publish only this exact candidate. R0 PR7152 remains
 held after three successful packs, nine cancelled packs and failed ci-gate; the new
 bridge does not waive or replace it.
+
+## Independent review R1 and bounded repair
+
+One-shot read-only Opus review `mastermind-ai-financial-bridge-review-20260919-sol-001`
+returned REQUEST_CHANGES on head `a465efa753b180809bc1fd6099ba45e7afbd3806`.
+It found no algebra, authority-boundary, control-plane, missingness, schema-isolation,
+streaming-dispatch or analyst-sequence defect. It found two release blockers: a test
+name falsely claiming mixed-currency detection and an effectively unbounded negative
+gross-margin envelope. It also flagged schema/runtime drift, arithmetic-error taxonomy,
+a non-discriminating context test name, unpinned mixed routing, current-main census/CI
+compatibility, and stale machine-readable continuation counts.
+
+The repair was test-first. Before production repair, two tests failed for the missing
+margin floor/schema envelope; two Chinese working-capital/capex trigger cases were
+separately made discriminating and failed before their triggers were added. Current
+source now uses one shared numeric-bound function for runtime and schema; gross margin
+is bounded to [-1000%,100%] as a safety envelope; numeric schema fields expose the same
+minimum/maximum plus string length/pattern; the decimal-string contract admits at most
+six fractional places. The misleading currency test now proves only the real contract:
+per-period currency metadata is rejected and the one common top-level currency remains
+an unverified supplied assumption.
+
+Unexpected Decimal arithmetic failure now returns
+`financial_scenario_arithmetic_unavailable`, not `invalid_financial_scenario`; an
+induced `Inexact` test distinguishes that law. An extreme admitted-envelope test checks
+exact outputs independently with Fraction. The weak `complete_data_and_decimal_context`
+test was renamed for its actual explicit-zero behavior; the hostile ambient-context test
+remains the discriminating isolation proof. A mixed TLT/cash-flow query is pinned to
+protocol + catalyst + rates/curve + financial thesis, and Simplified/Traditional Chinese
+working-capital and capex phrases now route to the financial playbook.
+
+Current main was separately checked and still contains exactly the original ten analyst
+modules with ten-module census assertions; the candidate deliberately makes eleven.
+The current-main comparison still changes only the six candidate paths, while CI policy
+has moved and therefore stays a required exact-head integration gate.
+
+Fresh post-repair six-suite selector: **618 passed**, five existing framework warnings,
+exit0. The independent review must be repeated on the new immutable semantic head because
+owned code/tests changed; the R1 REQUEST_CHANGES result does not authorize release.

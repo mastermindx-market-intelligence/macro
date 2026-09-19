@@ -23,8 +23,21 @@ _REQUIREMENTS = {
     "simplified_cash_after_capex": _FIELDS,
 }
 _MAX_ABS = Decimal("1000000000000000")
-_DECIMAL_TEXT = re.compile(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)\Z")
+_MARGIN_MIN_PCT = Decimal("-1000")
+_MARGIN_MAX_PCT = Decimal("100")
+_NONNEGATIVE_FIELDS = frozenset({"revenue", "operating_expenses", "capital_expenditure"})
+_DECIMAL_PATTERN = r"[+-]?(?:[0-9]+(?:\.[0-9]{0,6})?|\.[0-9]{1,6})"
+_DECIMAL_TEXT = re.compile(_DECIMAL_PATTERN)
 _ERROR = "invalid_financial_scenario"
+_ARITHMETIC_ERROR = "financial_scenario_arithmetic_unavailable"
+
+
+def _bounds(name: str) -> tuple[Decimal, Decimal]:
+    if name == "gross_margin_pct":
+        return _MARGIN_MIN_PCT, _MARGIN_MAX_PCT
+    if name in _NONNEGATIVE_FIELDS:
+        return Decimal(0), _MAX_ABS
+    return -_MAX_ABS, _MAX_ABS
 
 
 def _number(value: object, name: str) -> Decimal | None:
@@ -36,11 +49,10 @@ def _number(value: object, name: str) -> Decimal | None:
     if len(text) > 40 or (isinstance(value, str) and not _DECIMAL_TEXT.fullmatch(text)):
         raise ValueError(_ERROR)
     number = Decimal(text)
-    if not number.is_finite() or abs(number) > _MAX_ABS or number.as_tuple().exponent < -6:
+    if not number.is_finite() or number.as_tuple().exponent < -6:
         raise ValueError(_ERROR)
-    if name in ("revenue", "operating_expenses", "capital_expenditure") and number < 0:
-        raise ValueError(_ERROR)
-    if name == "gross_margin_pct" and number > 100:
+    minimum, maximum = _bounds(name)
+    if number < minimum or number > maximum:
         raise ValueError(_ERROR)
     return number
 
@@ -101,6 +113,31 @@ def _bridge(prior: dict, current: dict) -> dict:
     }
 
 
+def _invalid_result() -> dict:
+    return {
+        "error": _ERROR,
+        "is_context_only": True,
+        "note": (
+            "Use the closed scenario fields, a common unit/currency and finite decimals "
+            "(at most 6 fractional places; gross margin -1000% to 100%; other amounts "
+            "within +/-10^15 and nonnegative where specified). Leave unknown inputs "
+            "null; never fill them with invented zeroes."
+        ),
+    }
+
+
+def _arithmetic_unavailable_result() -> dict:
+    return {
+        "error": _ARITHMETIC_ERROR,
+        "is_context_only": True,
+        "note": (
+            "The supplied inputs passed validation, but exact scenario arithmetic could "
+            "not be completed. Do not reinterpret this as a bad input, a zero, or a "
+            "financial conclusion."
+        ),
+    }
+
+
 def analyze(params: object) -> dict:
     """Return exact decimal strings or explicit missing values; invalid input is opaque."""
     try:
@@ -109,42 +146,74 @@ def analyze(params: object) -> dict:
         if not isinstance(params["unit"], str) or params["unit"] not in _UNITS:
             raise ValueError(_ERROR)
         currency = params["currency"]
-        if currency is not None and (not isinstance(currency, str) or not re.fullmatch(r"[A-Z]{3}", currency)):
+        if currency is not None and (
+            not isinstance(currency, str) or not re.fullmatch(r"[A-Z]{3}", currency)
+        ):
             raise ValueError(_ERROR)
-        # Fully explicit per-call context: do not inherit exponent limits, traps
-        # or a mutated DefaultContext from another request/library. The admitted
-        # 15-digit magnitude / 6-place inputs fit exactly in 64 digits.
-        arithmetic = Context(prec=64, rounding=ROUND_HALF_EVEN,
-                             Emin=-999999, Emax=999999, capitals=1, clamp=0,
-                             flags=[], traps=[InvalidOperation, DivisionByZero,
-                                              Overflow, Underflow, Inexact])
-        with localcontext(arithmetic):
+    except (ValueError, TypeError, OverflowError):
+        return _invalid_result()
+
+    # Fully explicit per-call context: do not inherit exponent limits, traps
+    # or a mutated DefaultContext from another request/library. The admitted
+    # input envelope and fixed equations fit exactly inside 64 decimal digits.
+    arithmetic = Context(
+        prec=64,
+        rounding=ROUND_HALF_EVEN,
+        Emin=-999999,
+        Emax=999999,
+        capitals=1,
+        clamp=0,
+        flags=[],
+        traps=[InvalidOperation, DivisionByZero, Overflow, Underflow, Inexact],
+    )
+    with localcontext(arithmetic):
+        # Parsing/validation failures are caller-contract errors. Arithmetic
+        # failures after that boundary are a different state and must never be
+        # mislabeled as "invalid input".
+        try:
             prior, current = _period(params["prior"]), _period(params["current"])
+        except (ValueError, TypeError, DecimalException, OverflowError):
+            return _invalid_result()
+        try:
             periods = {"prior": _projection(prior), "current": _projection(current)}
             bridge = _bridge(prior, current)
-        partial = any(missing for period in periods.values() for missing in period["missing_inputs"].values())
-        return {
-            "schema": "brain.financial_scenario.v1", "status": "partial" if partial else "available",
-            "authority": "analysis_only", "is_context_only": True,
-            "input_basis": "unverified_supplied_assumptions", "unit": params["unit"], "currency": currency,
-            "periods": periods, "operating_profit_bridge": bridge,
-            "equations": {
-                "gross_profit": "revenue * gross_margin_pct / 100",
-                "operating_profit": "gross_profit - operating_expenses",
-                "simplified_operating_cash": "operating_profit + other_operating_cash_adjustments - working_capital_increase",
-                "simplified_cash_after_capex": "simplified_operating_cash - capital_expenditure",
-            },
-            "limits": [
-                "Inputs are not verified market facts; no source, period, currency or accounting-basis validation is implied.",
-                "Amounts must already share one scale, currency and comparable accounting definitions. No FX or period conversion is performed.",
-                "Cash adjustments must explicitly include applicable noncash addbacks, cash taxes, cash interest and other operating adjustments. Missing is not zero.",
-                "Cash figures are simplified scenario arithmetic, not reported cash-flow statements or an audited free-cash-flow measure.",
-                "Growth and this bridge alone do not establish valuation, cause, a house signal or a trade decision.",
-            ],
-        }
-    except (ValueError, TypeError, DecimalException, OverflowError):
-        return {"error": _ERROR, "is_context_only": True,
-                "note": "Use the closed scenario fields, a common unit/currency and finite decimals (at most 6 fractional places, magnitude at most 10^15). Leave unknown inputs null; never fill them with invented zeroes."}
+        except (DecimalException, OverflowError):
+            return _arithmetic_unavailable_result()
+
+    partial = any(
+        missing
+        for period in periods.values()
+        for missing in period["missing_inputs"].values()
+    )
+    return {
+        "schema": "brain.financial_scenario.v1",
+        "status": "partial" if partial else "available",
+        "authority": "analysis_only",
+        "is_context_only": True,
+        "input_basis": "unverified_supplied_assumptions",
+        "unit": params["unit"],
+        "currency": currency,
+        "periods": periods,
+        "operating_profit_bridge": bridge,
+        "equations": {
+            "gross_profit": "revenue * gross_margin_pct / 100",
+            "operating_profit": "gross_profit - operating_expenses",
+            "simplified_operating_cash": (
+                "operating_profit + other_operating_cash_adjustments "
+                "- working_capital_increase"
+            ),
+            "simplified_cash_after_capex": (
+                "simplified_operating_cash - capital_expenditure"
+            ),
+        },
+        "limits": [
+            "Inputs are not verified market facts; no source, period, currency or accounting-basis validation is implied.",
+            "Amounts must already share one scale, currency and comparable accounting definitions. No FX or period conversion is performed.",
+            "Cash adjustments must explicitly include applicable noncash addbacks, cash taxes, cash interest and other operating adjustments. Missing is not zero.",
+            "Cash figures are simplified scenario arithmetic, not reported cash-flow statements or an audited free-cash-flow measure.",
+            "Growth and this bridge alone do not establish valuation, cause, a house signal or a trade decision.",
+        ],
+    }
 
 
 _NUMBER_TYPES = ("number", "string", "null")
@@ -154,16 +223,28 @@ def tool_schema() -> dict:
     """A fresh schema for the existing Brain registry; no provider-specific tools."""
     descriptions = {
         "revenue": "Nonnegative revenue in the common amount unit.",
-        "gross_margin_pct": "Gross margin in percent, e.g. 25 not 0.25; may be negative, never above 100.",
+        "gross_margin_pct": "Gross margin in percent, e.g. 25 not 0.25; bounded to [-1000, 100] as a safety envelope, not an accounting-law claim.",
         "operating_expenses": "Nonnegative expenses below gross profit, in the common amount unit.",
         "working_capital_increase": "Net working-capital increase (cash use); a decrease is negative. Not the ending balance.",
         "other_operating_cash_adjustments": "Signed net operating cash adjustments beyond profit and working capital: noncash addbacks minus cash taxes/interest plus other adjustments. Supply 0 only when explicitly justified.",
         "capital_expenditure": "Nonnegative cash capital spending, in the common amount unit.",
     }
     def period_schema() -> dict:
-        return {"type": "object", "additionalProperties": False,
-                "properties": {name: {"type": list(_NUMBER_TYPES), "description": description}
-                               for name, description in descriptions.items()}}
+        properties: dict[str, dict] = {}
+        for name, description in descriptions.items():
+            minimum, maximum = _bounds(name)
+            properties[name] = {
+                "type": list(_NUMBER_TYPES),
+                "description": description,
+                # JSON Schema applies numeric bounds only to number instances and
+                # pattern/length only to string instances. Runtime remains the
+                # authoritative Decimal parser for either representation.
+                "minimum": int(minimum),
+                "maximum": int(maximum),
+                "maxLength": 40,
+                "pattern": f"^(?:{_DECIMAL_PATTERN})$",
+            }
+        return {"type": "object", "additionalProperties": False, "properties": properties}
     return {
         "name": TOOL_NAME,
         "description": "Reconcile a supplied financial scenario with exact profit/cash arithmetic and a revenue/margin/expense bridge. Establish common units, periods and accounting basis first. Use unknown/null, not invented zero adjustments. Outputs are unverified-input analysis, not live facts, causal proof, valuation or house signals.",

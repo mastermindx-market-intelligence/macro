@@ -393,3 +393,15 @@ def test_fail_soft_missing_dir_and_junk_input(tmp_path):
         routed = a.route(msg)
         assert isinstance(routed, list)
         assert isinstance(a.prompt_block(routed), str)
+
+
+def test_financial_playbook_mixed_macro_route_preserves_discriminating_lenses():
+    ids = _ids(a.route("why is TLT down today and what does this mean for cash flow?"))
+    assert ids == ["protocol", "lens_catalyst", "lens_rates_curve", "play_financial_thesis"]
+
+@pytest.mark.parametrize("message", [
+    "营运资金和资本支出怎么理解",
+    "營運資金和資本支出怎麼理解",
+])
+def test_financial_playbook_routes_chinese_working_capital_and_capex(message):
+    assert "play_financial_thesis" in _ids(a.route(message))

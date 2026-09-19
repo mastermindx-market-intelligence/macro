@@ -15,6 +15,10 @@ triggers:
   - 現金流
   - 投资论点
   - 投資論點
+  - 营运资金
+  - 營運資金
+  - 资本支出
+  - 資本支出
 ---
 FINANCIAL THESIS — inspect the economics before repeating the growth story.
 1) Establish the actual question, comparison periods, common currency/scale, and accounting definitions. Keep verified source facts, user assumptions and your own hypotheses distinct. Do not assume missing figures or convert incompatible periods/currencies silently.
