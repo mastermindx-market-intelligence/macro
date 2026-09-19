@@ -45,8 +45,8 @@ unverified:
     what_would_verify: Run the existing scripts/agentos.py validate on that head or obtain attributable owning CI output; a schema-shape check is not full-store validation.
   - claim: Both A/B seats have consumed the central organizer.
     what_would_verify: An actual response or next normal wave checkpoint linking the document and its affected row/proof changes. Publishing a link is not consumption.
-  - claim: The current 130 capability rows have all been reconciled to production acceptance.
-    what_would_verify: Existing row owners reconcile the current CSV and their exact implementation, production and acceptance receipts; no live count is inferred from this organizer.
+  - claim: The reviewed 130-row recensus is canonical on Macro main.
+    what_would_verify: Merge #7335 after its exact-head binding CI and latest-base release gates, then read back the merged F00C ledger and convergence manifest. The candidate census is reviewed but not canonical until that merge receipt exists.
   - claim: The overview automatically refreshes across Agent OS, GitHub and Linear.
     what_would_verify: Actual deployment and proof by the existing MAS-27 projector owner. This operation creates no automatic updater.
 unresolved:
@@ -54,11 +54,14 @@ unresolved:
   - The current Executive mapping remains unknown after the 429 read; this must not be rewritten as zero Jobs or repaired by creating duplicate Jobs.
   - Owner-reported deployment evidence, exact-head reviews and whole-capability acceptance remain distinct; the current complete-parity program stays PARTIAL.
   - A/B current source custody, local worktree occupancy and receipt consumption were not audited by this records writer. No active implementation carrier was taken over.
+  - #7335 is semantically accepted at head 7746af769e43e7cd049cd65727502e56f266ac01 but remains release-gated by binding CI.
+  - #7351 is semantically accepted at head a1c07e93bd6b713b7483b06ba12b4d77a71f54b7 but remains CI/release-gated; MO-PAID-023 additionally owes a post-merge sentinel cycle and non-gate_off Policy Watch readback.
+  - The current candidate census is 21 PROVEN_LIVE / 23 BUILT_NOT_PROVEN / 37 PARTIAL / 7 SPEC_ONLY / 42 NOT_BUILT across 130 rows. This is not a completion percentage.
 next_actions:
-  - Verify the same two-record PR scope, current-base compatibility and attributable Agent OS checks. Complete its normal records release without touching product, workflow, ledger or another worker's files.
-  - Read the published central document by its stable ID and preserve one current implementation-status section stating which projections actually changed and which did not.
-  - Use one reference on the existing macro#6819 coordination thread to make the organizer and source records discoverable. Do not create another F00 issue, worker, command channel or parallel report loop; do not treat link publication as A/B consumption.
-  - At the existing A/B wave boundary, reconcile changed original row IDs, source/release identity, actual consumer, production/acceptance receipt or gap, current owner and exact next action. Keep this on the existing F00C ledger and source carriers.
+  - Release Macro #7335 only after exact-head binding CI remains green on semantic head 7746af769e43e7cd049cd65727502e56f266ac01 and the latest-base merge-ref still preserves both current-main movement and the records CI wiring. After merge, read back all 130 rows and the convergence manifest before closing absorbed sibling CSV carriers #7011/#7014/#7340/#7343/#7348/#7349/#7353.
+  - Release Macro #7351 only after its exact-head trusted CI and latest-base compatibility gates pass. After merge, require one canonical sentinel cycle and a non-gate_off Policy Watch readback before promoting MO-PAID-023.
+  - Keep the existing Linear document 8685a6bf-9e64-4832-805b-812b752a65f6 current from canonical receipts. It was refreshed and read back on 2026-09-19 with the reviewed candidate census and the two active release gates.
+  - Continue proof-gated Terminal rows through their existing signed-in production journeys rather than building duplicate routes/stores. The 2026-09-19 proof census used Terminal master dd7c6dec712a5b7f40d371e3b83827c694dd8f90.
   - Preserve the blocked MAS-141 write as a known limitation. Do not replay or delegate that refused mutation through another API, host or account; no permission to bypass it is supplied by this handoff.
 do_not_redo:
   - Do not create another MarketOntology project, workstream, capability ledger, lifecycle, queue, identity map or synchronization daemon.
@@ -75,7 +78,9 @@ danger_areas:
   - A future summary edit must distinguish source-observed time from projection-updated time and retain unresolved contradictions rather than cosmetically normalizing them.
   - Executive read failure and publication/consumption failure are different conditions. Neither grants authority to add another execution or transport mechanism.
 prs:
-  - 6819
+  - 7084
+  - 7335
+  - 7351
 decisions:
   - "DEC:MARKET-ONTOLOGY-CENTRAL-CONVERGENCE-2026-09-12"
 ---
@@ -119,3 +124,13 @@ No model-made capability promotion is performed. The initial synthesis is human-
 Source acceptance requires exactly these two added records, valid frontmatter and references under the existing validator, normal attributable checks/review, and merged-file readback. The organizer's live proof is the successful Linear creation plus full content readback, not a fabricated browser screenshot.
 
 A future owner can continue from the stable document, the same source branch/PR and the unresolved list. Do not duplicate the already-created document. Do not reassign workers or introduce a recurring mechanism to compensate for unknown consumption. Stop the affected modifying path on denied or ambiguous effects, reconcile what actually happened, and keep unaffected valid work separate.
+## 2026-09-19 current continuation checkpoint
+
+The September 12 organizer is now being source-published on this same PR rather than replaced. The selected Linear control document was refreshed and read back on 2026-09-19. Its current release frontier is:
+
+- **#7335** — sole F00C writer, exact semantic head `7746af769e43e7cd049cd65727502e56f266ac01`, exact-head Sol semantic review PASS, 130-row candidate census = 21 PROVEN_LIVE / 23 BUILT_NOT_PROVEN / 37 PARTIAL / 7 SPEC_ONLY / 42 NOT_BUILT. Eight colliding CSV carriers are absorbed; none may merge independently before canonical readback. Binding CI still gates release.
+- **#7351** — bounded UK-policy activation, exact semantic head `a1c07e93bd6b713b7483b06ba12b4d77a71f54b7`, semantic review PASS. Trusted CI/release still gates merge; post-merge sentinel execution and non-`gate_off` production readback gate MO-PAID-023 promotion.
+- **Terminal proof census** — current protected master `dd7c6dec712a5b7f40d371e3b83827c694dd8f90` confirms later F08/F11/F12 routes/UI that older records called missing. Those rows remain BUILT_NOT_PROVEN where signed-in production proof is still owed.
+
+This checkpoint changes no lifecycle authority, no A/B lane ownership and no MAS-141 projection. It converts the organizer from a September 12 planning snapshot into a recoverable pointer to the current canonical release work without creating a second ledger.
+
