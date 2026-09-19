@@ -9377,6 +9377,9 @@ jobs:
       # import this topology analyzer directly; the exclusive owner must cover
       # the imported script or contract-delta correctly refuses the curation.
       - "scripts/research_skylit_r6_cross_expiry_topology.py"
+      # Skylit R4 Stage 0 consumes R6/R2 directly from the same registered
+      # market-structure test pack; keep it under the existing options owner.
+      - "scripts/research_skylit_r4_cross_index_coherence.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
