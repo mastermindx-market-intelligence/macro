@@ -29,8 +29,9 @@ Outputs:
     computed.json    — raw payload the template rendered
 
 Both HTML files share the same Chrome-rendered body classes. Capture hides
-only the decorative `.cs-orbit` and `#mmb-launch` page furniture so it cannot
-occlude the panel; no panel content is hidden. Animations are settled and the
+only the decorative `.cs-orbit`, `#mmb-boot`, `#mmb-launch`, and
+`[data-mmb-root]` page furniture so it cannot occlude the panel; no panel
+content is hidden. Animations are settled and the
 panel has opacity 1. The render is the SAME template the production
 page uses — no test-only fixtures or shims.
 """
@@ -200,6 +201,7 @@ def _capture_cells(states: dict[str, Path]) -> None:
     shot_dir.mkdir(parents=True, exist_ok=True)
     environment = os.environ.copy()
     environment["PLAYWRIGHT_MCP_ALLOW_UNRESTRICTED_FILE_ACCESS"] = "true"
+    selector_audit = {state: {"nodes": 0, "visible": 0, "cells": 0} for state in states}
     subprocess.run(
         ["playwright", "cli", "open", "--browser=chromium"],
         check=True,
@@ -250,15 +252,47 @@ def _capture_cells(states: dict[str, Path]) -> None:
                                 "() => {"
                                 "const style = document.createElement('style');"
                                 "style.textContent = "
-                                "'.cs-orbit, #mmb-launch "
+                                "'.cs-orbit, #mmb-boot, #mmb-launch, [data-mmb-root] "
                                 "{ display: none !important; }';"
                                 "document.head.appendChild(style);"
                                 "}",
                             ],
                             check=True,
                             capture_output=True,
+                            text=True,
                             env=environment,
                         )
+                        audit_eval = subprocess.run(
+                            [
+                                "playwright", "cli", "eval",
+                                "() => Array.from("
+                                "document.querySelectorAll("
+                                "'.cs-orbit, #mmb-boot, #mmb-launch'"
+                                ")).map(element => ({"
+                                "selector: element.classList.contains('cs-orbit')"
+                                " ? '.cs-orbit' : '#' + element.id,"
+                                "display: getComputedStyle(element).display"
+                                "}))",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            env=environment,
+                        )
+                        result_section = audit_eval.stdout.split("### Result", 1)[1]
+                        result_block = result_section.split("### Ran Playwright code", 1)[0]
+                        selector_states = json.loads(result_block)
+                        visible_selectors = [
+                            item for item in selector_states if item["display"] != "none"
+                        ]
+                        if len(selector_states) < 2 or visible_selectors:
+                            raise RuntimeError(
+                                "capture page furniture was not fully hidden: "
+                                f"{selector_states!r}"
+                            )
+                        selector_audit[state]["nodes"] += len(selector_states)
+                        selector_audit[state]["visible"] += len(visible_selectors)
+                        selector_audit[state]["cells"] += 1
                         subprocess.run(
                             [
                                 "playwright", "cli", "eval",
@@ -285,6 +319,12 @@ def _capture_cells(states: dict[str, Path]) -> None:
                         )
     finally:
         subprocess.run(["playwright", "cli", "close"], capture_output=True)
+    for state, audit in selector_audit.items():
+        print(
+            "HIDDEN_SELECTORS_VERIFIED "
+            f"{state}: cells={audit['cells']} nodes={audit['nodes']} "
+            f"visible={audit['visible']}"
+        )
 
 
 def main() -> int:
