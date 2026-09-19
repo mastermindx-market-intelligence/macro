@@ -33,63 +33,63 @@ MARGIN = "margin"
 MULTIPLE = "multiple"
 ALLOWED_TARGETS = frozenset({GROWTH, MARGIN, MULTIPLE})
 
-# ZH display names for each event class — plain-word copy used by the
+# EN and ZH display names for each event class — plain-word copy used by the
 # valuation panel's bilingual line. Keys are EN source-of-truth labels
-# (the keys of the three source maps); values are the ZH display name.
-_EVENT_CLASS_ZH: dict[str, str] = {
-    # Special situations (MATURE_CATEGORIES)
-    "Acquisitions":        "收购",
-    "Divestitures":        "剥离",
-    "Activist Campaigns":  "维权行动",
-    "Strategic Reviews":   "战略评估",
-    "Tender Offers":       "要约收购",
-    "Going-Private":       "私有化",
-    "Capital Returns":     "资本回报",
-    "Spin-Offs":           "分拆上市",
-    "Rights Offerings":    "配股发行",
-    "Restructuring":       "重组",
-    "Liquidations":        "清算",
-    "Delistings":          "退市",
-    "Issuer Tenders":      "发行人要约",
-    "Deal Terminations":   "交易终止",
-    "SPACs":               "特殊目的收购公司",
-    "Management Changes":   "管理层变更",
-    "Other":               "其他",
-    # SEC event-spine subtypes — ZH is the official display name; EN verbatim only
-    # where no ZH translation has been established by the desk.
-    "registration_statement":           "登记说明书",
-    "automatic_shelf_registration":     "自动架上登记",
-    "registration_amendment":           "登记修正案",
-    "post_effective_amendment":        "生效后修正",
-    "automatic_shelf_withdrawal":       "自动撤回登记",
-    "withdrawal_request":              "撤回申请",
-    "effectiveness_notice":            "生效通知",
-    "prospectus_event":                "招股说明书事件",
-    "charter_amendment_candidate":     "章程修正候选",
-    "shareholder_vote_candidate":       "股东表决候选",
-    "unregistered_equity_sale_candidate": "未登记股票发行候选",
-    "financing_agreement_candidate":   "融资协议候选",
-    "current_report_candidate":         "当前报告候选",
-    "authorization_or_vote_candidate":  "授权或表决候选",
-    "offering_statement":             "发行说明书",
-    "offering_statement_amendment":    "发行说明书修正",
-    "reg_a_event_candidate":           "Reg A 事件候选",
-    "periodic_reconciliation_source":  "定期对账来源",
-    "ownership_context_source":        "所有权上下文来源",
-    "unsupported_form":                "不支持的表格",
+# (the keys of the three source maps); values are (EN, ZH) display tuples.
+_EVENT_CLASS_NAMES: dict[str, tuple[str, str]] = {
+    # Special situations (MATURE_CATEGORIES) — ZH is the official display name.
+    "Acquisitions":              ("Acquisitions",        "收购"),
+    "Divestitures":             ("Divestitures",       "剥离"),
+    "Activist Campaigns":        ("Activist Campaigns",  "维权行动"),
+    "Strategic Reviews":         ("Strategic Reviews",   "战略评估"),
+    "Tender Offers":             ("Tender Offers",       "要约收购"),
+    "Going-Private":             ("Going-Private",       "私有化"),
+    "Capital Returns":            ("Capital Returns",      "资本回报"),
+    "Spin-Offs":                 ("Spin-Offs",           "分拆上市"),
+    "Rights Offerings":          ("Rights Offerings",    "配股发行"),
+    "Restructuring":             ("Restructuring",       "重组"),
+    "Liquidations":              ("Liquidations",        "清算"),
+    "Delistings":                ("Delistings",          "退市"),
+    "Issuer Tenders":            ("Issuer Tenders",       "发行人要约"),
+    "Deal Terminations":         ("Deal Terminations",   "交易终止"),
+    "SPACs":                    ("SPACs",               "特殊目的收购公司"),
+    "Management Changes":         ("Management Changes",   "管理层变更"),
+    "Other":                     ("Other",               "其他"),
+    # SEC event-spine subtypes — ZH is the official display name; EN verbatim
+    # only where no ZH translation has been established by the desk.
+    "registration_statement":           ("Registration Statement",               "登记说明书"),
+    "automatic_shelf_registration":    ("Automatic Shelf Registration",         "自动架上登记"),
+    "registration_amendment":          ("Registration Amendment",              "登记修正案"),
+    "post_effective_amendment":       ("Post-Effective Amendment",            "生效后修正"),
+    "automatic_shelf_withdrawal":      ("Automatic Shelf Withdrawal",          "自动撤回登记"),
+    "withdrawal_request":             ("Withdrawal Request",                  "撤回申请"),
+    "effectiveness_notice":           ("Effectiveness Notice",                "生效通知"),
+    "prospectus_event":               ("Prospectus Event",                    "招股说明书事件"),
+    "charter_amendment_candidate":     ("Charter Amendment Candidate",         "章程修正候选"),
+    "shareholder_vote_candidate":      ("Shareholder Vote Candidate",          "股东表决候选"),
+    "unregistered_equity_sale_candidate": ("Unregistered Equity Sale Candidate","未登记股票发行候选"),
+    "financing_agreement_candidate":  ("Financing Agreement Candidate",        "融资协议候选"),
+    "current_report_candidate":        ("Current Report Candidate",            "当前报告候选"),
+    "authorization_or_vote_candidate": ("Authorization or Vote Candidate",    "授权或表决候选"),
+    "offering_statement":             ("Offering Statement",                  "发行说明书"),
+    "offering_statement_amendment":   ("Offering Statement Amendment",         "发行说明书修正"),
+    "reg_a_event_candidate":          ("Reg A Event Candidate",              "Reg A 事件候选"),
+    "periodic_reconciliation_source": ("Periodic Reconciliation Source",       "定期对账来源"),
+    "ownership_context_source":        ("Ownership Context Source",            "所有权上下文来源"),
+    "unsupported_form":               ("Unsupported Form",                   "不支持的表格"),
     # Federal Register reg_stages — ZH is the official display name.
-    "executive_order":     "行政命令",
-    "interim_final_rule":  "临时最终规则",
-    "final_rule":          "最终规则",
-    "proposed_rule":       "拟议规则",
-    "rfi":                 "信息征集",
-    "funding_notice":      "资助公告",
-    "notice":              "公告",
+    "executive_order":      ("Executive Order",    "行政命令"),
+    "interim_final_rule":   ("Interim Final Rule","临时最终规则"),
+    "final_rule":           ("Final Rule",         "最终规则"),
+    "proposed_rule":        ("Proposed Rule",      "拟议规则"),
+    "rfi":                  ("Request for Information","信息征集"),
+    "funding_notice":       ("Funding Notice",     "资助公告"),
+    "notice":               ("Notice",             "公告"),
     # Federal Register entity-list themes (engine/policy_calendar._ENTITY_LIST_THEMES).
-    "ai_semiconductors":        "AI芯片",
-    "semicap_equipment":       "半导体设备",
-    "rare_earth_critical_min": "稀土关键矿产",
-    "memory_storage":          "存储",
+    "ai_semiconductors":         ("AI Semiconductors",          "AI芯片"),
+    "semicap_equipment":        ("Semiconductor Equipment",     "半导体设备"),
+    "rare_earth_critical_min":   ("Rare Earth & Critical Minerals","稀土关键矿产"),
+    "memory_storage":            ("Memory & Storage",           "存储"),
 }
 
 # Direction-word verbs in EN and ZH. Plain language, no magnitude /
@@ -146,9 +146,10 @@ def _direction_words(verb_en: str, verb_zh: str, target: str) -> tuple[str, str]
 #     (operating drag reduction or cost action)
 #   - Capital Returns (buybacks) → per-share lift via lower share count, NOT margin
 #     → maps to GROWTH (per-share re-rating)
-#   - Tender Offers / Going-Private / Delistings / Issuer Tenders → multiple
+#   - Tender Offers / Going-Private / Issuer Tenders → multiple
 #     (takeout premium / exit pricing)
 #   - Rights Offerings → multiple (dilutive; new shares at discount presses per-share)
+#   - Delistings → typed null (Form 25 regulatory exit, no clear directional read)
 #   - Other → typed null
 # ---------------------------------------------------------------------------
 SPECIAL_SITUATIONS_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
@@ -280,12 +281,14 @@ def bridge(event_class: object) -> dict | None:
     assert target in ALLOWED_TARGETS, (
         f"target {target!r} not in {sorted(ALLOWED_TARGETS)}"
     )
+    names = _EVENT_CLASS_NAMES.get(key, (key, key))
     return {
         "target": target,
         "direction_word": direction_word_en,
         "direction_word_zh": direction_word_zh,
         "event_class": key,
-        "event_class_zh": _EVENT_CLASS_ZH.get(key, key),
+        "event_class_en": names[0],
+        "event_class_zh": names[1],
     }
 
 

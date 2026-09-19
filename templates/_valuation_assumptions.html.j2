@@ -120,7 +120,7 @@
   {% set _va_event_bridge = va.latest_event_bridge if va and va.latest_event_bridge else None %}
   <p class="va-event-bridge" id="va-event-bridge" data-valuation-event-bridge="v1">
     {% if _va_event_bridge %}
-    <span class="l-en" lang="en">{{ t('Latest filing on file', '最新备案') }} ({{ _va_event_bridge.event_class }}) <span class="va-event-target">{{ _va_event_bridge.direction_word }}</span>.</span><span class="l-zh" lang="zh-CN">{{ t('Latest filing on file', '最新备案') }}（{{ _va_event_bridge.event_class_zh }}）<span class="va-event-target">{{ _va_event_bridge.direction_word_zh }}</span>。</span>
+    <span class="l-en" lang="en">{{ t('Latest filing on file', '最新备案') }} ({{ _va_event_bridge.event_class_en }}) <span class="va-event-target">{{ _va_event_bridge.direction_word }}</span>.</span><span class="l-zh" lang="zh-CN">{{ t('Latest filing on file', '最新备案') }}（{{ _va_event_bridge.event_class_zh }}）<span class="va-event-target">{{ _va_event_bridge.direction_word_zh }}</span>。</span>
     {% else %}
     <span class="l-en" lang="en">{{ t('No filing on file yet for this company.', '该公司暂无备案。') }}</span><span class="l-zh" lang="zh-CN">{{ t('No filing on file yet for this company.', '该公司暂无备案。') }}</span>
     {% endif %}

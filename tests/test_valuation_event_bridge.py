@@ -94,9 +94,9 @@ def test_vocab_closure():
     import re
     snake_pattern = re.compile(r'^[a-z]+(_[a-z]+)*$')
     for k in domain:
-        event_class_zh = veb._EVENT_CLASS_ZH.get(k, k)
-        assert not snake_pattern.match(event_class_zh), (
-            f"{k}: event_class_zh {event_class_zh!r} is a snake_case slug"
+        _en, zh = veb._EVENT_CLASS_NAMES.get(k, (k, k))
+        assert not snake_pattern.match(zh), (
+            f"{k}: event_class_zh {zh!r} is a snake_case slug"
         )
 
 
@@ -320,10 +320,11 @@ def test_panel_renders_one_line_per_event_class_with_target_emphasis():
     for cls, en_dw, zh_dw, zh_label in cases:
         controls["latest_event_bridge"] = veb.bridge(cls)
         html = _render(controls)
-        # EN copy — class label + EN direction word inside the target span.
-        assert f"({cls})" in html, f"{cls!r}: EN class label not rendered"
+        # EN copy — event_class_en label + EN direction word inside the target span.
+        en_label = veb._EVENT_CLASS_NAMES.get(cls, (cls, zh_label))[0]
+        assert f"({en_label})" in html, f"{cls!r}: EN class label {en_label!r} not rendered"
         assert en_dw in html, f"{cls!r}: EN direction word {en_dw!r} not rendered"
-        # ZH copy — class label + ZH direction word.
+        # ZH copy — event_class_zh label + ZH direction word.
         assert f"（{zh_label}）" in html, f"{cls!r}: ZH class label {zh_label!r} not rendered"
         assert zh_dw in html, f"{cls!r}: ZH direction word {zh_dw!r} not rendered"
         # The target emphasis span wraps the direction word, not the class label.
