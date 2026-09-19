@@ -1,0 +1,153 @@
+name: ci-checkout-benchmark
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github/workflows/ci-checkout-benchmark.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-checkout-benchmark-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  blobless-full:
+    name: benchmark-blobless-full
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: mark checkout start
+        run: date +%s.%N > "$RUNNER_TEMP/checkout-start"
+      - name: checkout with current production blobless full-tree shape
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          fetch-depth: 1
+      - name: capture benchmark receipt
+        env:
+          MODE: blobless-full
+        shell: bash
+        run: |
+          set -euo pipefail
+          checkout_end=$(date +%s.%N)
+          checkout_start=$(cat "$RUNNER_TEMP/checkout-start")
+          elapsed=$(awk -v start="$checkout_start" -v end="$checkout_end" 'BEGIN {printf "%.3f", end-start}')
+          tracked=$(git ls-files | wc -l | tr -d ' ')
+          materialized=$(git ls-files -t | awk '$1 != "S" {n++} END {print n+0}')
+          objects_kib=$(du -sk .git/objects | awk '{print $1}')
+          workspace_kib=$(du -sk . | awk '{print $1}')
+          head=$(git rev-parse HEAD)
+          printf '{"mode":"%s","checkout_seconds":%s,"tracked_paths":%s,"materialized_paths":%s,"objects_kib":%s,"workspace_kib":%s,"head":"%s"}\n' \
+            "$MODE" "$elapsed" "$tracked" "$materialized" "$objects_kib" "$workspace_kib" "$head" \
+            | tee "$RUNNER_TEMP/checkout-benchmark-$MODE.json"
+          git count-objects -vH | tee "$RUNNER_TEMP/git-count-objects-$MODE.txt"
+          df -h . | tee "$RUNNER_TEMP/df-$MODE.txt"
+      - name: upload blobless receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-checkout-benchmark-blobless-full
+          path: |
+            ${{ runner.temp }}/checkout-benchmark-blobless-full.json
+            ${{ runner.temp }}/git-count-objects-blobless-full.txt
+            ${{ runner.temp }}/df-blobless-full.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  full-blob:
+    name: benchmark-full-blob
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: mark checkout start
+        run: date +%s.%N > "$RUNNER_TEMP/checkout-start"
+      - name: checkout with one-shot full blob fetch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: capture benchmark receipt
+        env:
+          MODE: full-blob
+        shell: bash
+        run: |
+          set -euo pipefail
+          checkout_end=$(date +%s.%N)
+          checkout_start=$(cat "$RUNNER_TEMP/checkout-start")
+          elapsed=$(awk -v start="$checkout_start" -v end="$checkout_end" 'BEGIN {printf "%.3f", end-start}')
+          tracked=$(git ls-files | wc -l | tr -d ' ')
+          materialized=$(git ls-files -t | awk '$1 != "S" {n++} END {print n+0}')
+          objects_kib=$(du -sk .git/objects | awk '{print $1}')
+          workspace_kib=$(du -sk . | awk '{print $1}')
+          head=$(git rev-parse HEAD)
+          printf '{"mode":"%s","checkout_seconds":%s,"tracked_paths":%s,"materialized_paths":%s,"objects_kib":%s,"workspace_kib":%s,"head":"%s"}\n' \
+            "$MODE" "$elapsed" "$tracked" "$materialized" "$objects_kib" "$workspace_kib" "$head" \
+            | tee "$RUNNER_TEMP/checkout-benchmark-$MODE.json"
+          git count-objects -vH | tee "$RUNNER_TEMP/git-count-objects-$MODE.txt"
+          df -h . | tee "$RUNNER_TEMP/df-$MODE.txt"
+      - name: upload full-blob receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-checkout-benchmark-full-blob
+          path: |
+            ${{ runner.temp }}/checkout-benchmark-full-blob.json
+            ${{ runner.temp }}/git-count-objects-full-blob.txt
+            ${{ runner.temp }}/df-full-blob.txt
+          if-no-files-found: error
+          retention-days: 7
+
+  sparse-core:
+    name: benchmark-sparse-core
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: mark checkout start
+        run: date +%s.%N > "$RUNNER_TEMP/checkout-start"
+      - name: checkout with existing sparse-core profile
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/data/
+            !/site/
+            !/mockups/
+            !/verify_shots/
+      - name: capture benchmark receipt
+        env:
+          MODE: sparse-core
+        shell: bash
+        run: |
+          set -euo pipefail
+          checkout_end=$(date +%s.%N)
+          checkout_start=$(cat "$RUNNER_TEMP/checkout-start")
+          elapsed=$(awk -v start="$checkout_start" -v end="$checkout_end" 'BEGIN {printf "%.3f", end-start}')
+          tracked=$(git ls-files | wc -l | tr -d ' ')
+          materialized=$(git ls-files -t | awk '$1 != "S" {n++} END {print n+0}')
+          objects_kib=$(du -sk .git/objects | awk '{print $1}')
+          workspace_kib=$(du -sk . | awk '{print $1}')
+          head=$(git rev-parse HEAD)
+          printf '{"mode":"%s","checkout_seconds":%s,"tracked_paths":%s,"materialized_paths":%s,"objects_kib":%s,"workspace_kib":%s,"head":"%s"}\n' \
+            "$MODE" "$elapsed" "$tracked" "$materialized" "$objects_kib" "$workspace_kib" "$head" \
+            | tee "$RUNNER_TEMP/checkout-benchmark-$MODE.json"
+          git count-objects -vH | tee "$RUNNER_TEMP/git-count-objects-$MODE.txt"
+          df -h . | tee "$RUNNER_TEMP/df-$MODE.txt"
+      - name: upload sparse-core receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-checkout-benchmark-sparse-core
+          path: |
+            ${{ runner.temp }}/checkout-benchmark-sparse-core.json
+            ${{ runner.temp }}/git-count-objects-sparse-core.txt
+            ${{ runner.temp }}/df-sparse-core.txt
+          if-no-files-found: error
+          retention-days: 7
