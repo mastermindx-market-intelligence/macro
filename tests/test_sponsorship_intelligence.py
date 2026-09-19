@@ -28,6 +28,29 @@ def test_mixed_quiver_timestamp_shapes_do_not_drop_recovered_form4():
     assert parsed.iloc[1] == pd.Timestamp("2026-08-14T20:27:00")
 
 
+def test_top_officer_discovery_keeps_recovered_mixed_timestamp_row():
+    insiders = pd.DataFrame([
+        {"Ticker": "OLD", "Date": "2026-08-03T00:00:00.000", "Name": "Old Officer",
+         "TransactionCode": "S", "Shares": 1000, "PricePerShare": 10,
+         "fileDate": "2026-08-03T20:48:47.000", "officerTitle": "EVP"},
+        {"Ticker": "INTC", "Date": "2026-08-11", "Name": "Lip-Bu Tan",
+         "TransactionCode": "P", "Shares": 105263, "PricePerShare": 95,
+         "fileDate": "2026-08-14T20:27:00+00:00",
+         "officerTitle": "Chief Executive Officer",
+         "isOfficer": True, "isDirector": True},
+    ])
+
+    rows = intel_discovery.scan_top_officer_buys(
+        insiders, today=date(2026, 8, 25), recent_days=45, min_usd=250_000)
+    intc = next(r for r in rows if r["ticker"] == "INTC")
+    assert intc["actor"] == "Lip-Bu Tan"
+    assert intc["usd"] == 9_999_985
+    assert intc["filing_date"] == "2026-08-14"
+    assert intc["trans_date"] == "2026-08-11"
+    assert intc["ranking_eligible"] is False
+    assert intc["qualification_status"] == "measuring"
+
+
 def test_intel_style_named_sponsorship_survives_to_user_brief(monkeypatch):
     asof = pd.Timestamp("2026-08-25")
     congress = pd.DataFrame([

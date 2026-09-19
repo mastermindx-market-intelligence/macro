@@ -240,12 +240,12 @@ def scan_top_officer_buys(insiders, today: date | None = None, recent_days: int 
         public_ts = pd.Series(pd.NaT, index=df.index, dtype="datetime64[ns]")
         for col in ("fileDate", "_first_seen", "Date"):
             if col in df:
-                parsed = pd.to_datetime(df[col], errors="coerce", utc=True).dt.tz_convert(None)
+                parsed = pd.to_datetime(df[col], errors="coerce", utc=True, format="mixed").dt.tz_convert(None)
                 public_ts = public_ts.fillna(parsed)
         if public_ts.notna().sum() == 0:
             return out
         df["public_ts"] = public_ts
-        df["trans_ts"] = pd.to_datetime(df.get("Date"), errors="coerce", utc=True).dt.tz_convert(None)
+        df["trans_ts"] = pd.to_datetime(df.get("Date"), errors="coerce", utc=True, format="mixed").dt.tz_convert(None)
         df["shares_num"] = pd.to_numeric(df.get("Shares"), errors="coerce")
         df["price_num"] = pd.to_numeric(df.get("PricePerShare"), errors="coerce")
         df["trade_usd"] = (df["shares_num"] * df["price_num"]).abs()
