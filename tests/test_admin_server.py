@@ -33,6 +33,12 @@ def _get_with_headers(port, path):
         return r.status, r.read(), dict(r.headers)
 
 
+def _head_with_headers(port, path):
+    req = urllib.request.Request(f"http://127.0.0.1:{port}{path}", method="HEAD")
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return r.status, r.read(), dict(r.headers)
+
+
 def test_static_and_local_api_routes():
     httpd, port = _server()
     try:
@@ -58,6 +64,20 @@ def test_static_and_local_api_routes():
             raise AssertionError("expected 404")
         except urllib.error.HTTPError as e:
             assert e.code == 404
+    finally:
+        httpd.shutdown(); httpd.server_close()
+
+
+def test_head_mirrors_public_get_without_response_body():
+    httpd, port = _server()
+    try:
+        for path in ("/", "/app.js", "/styles.css", "/healthz", "/api/session"):
+            get_code, get_body, get_headers = _get_with_headers(port, path)
+            head_code, head_body, head_headers = _head_with_headers(port, path)
+            assert head_code == get_code == 200
+            assert head_body == b""
+            assert head_headers.get("Content-Type") == get_headers.get("Content-Type")
+            assert head_headers.get("Content-Length") == str(len(get_body))
     finally:
         httpd.shutdown(); httpd.server_close()
 
