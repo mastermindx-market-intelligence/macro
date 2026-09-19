@@ -26,7 +26,10 @@
 (function () {
   'use strict';
 
-  var API = (window.MM_API || '').replace(/\/+$/, '');   // '' => same-origin (app)
+  // Same-origin on every mastermind-x.com host — theme.js's /api/me idiom. The app. host
+  // has no /api/account routes and sends no CORS headers, so resolving MM_API there left
+  // every control on this panel calling a 404 from another origin.
+  var API = /(^|\.)mastermind-x\.com$/i.test(location.hostname || '') ? '' : (window.MM_API || '').replace(/\/+$/, '');
   var SUPA = normSupa(window.SUPABASE_CFG);              // may be filled in from the API
   var SDK_URL = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
 
@@ -117,10 +120,15 @@
     member_since: ['Member since', '注册于'], last_signin: ['Last sign-in', '上次登录'],
     user_id: ['User ID', '用户 ID'], copy: ['Copy', '复制'], copied: ['Copied', '已复制'],
     sign_out: ['Sign out', '退出登录'], sign_out_all: ['Sign out everywhere', '退出所有设备'],
-    danger: ['Danger zone', '危险区域'], delete_acct: ['Delete account', '删除账户'],
-    delete_warn: ['This permanently deletes your account and data.', '这将永久删除你的账户及数据。'],
+    danger: ['Danger zone', '危险区域'], delete_acct: ['Request account deletion', '申请删除账户'],
+    delete_warn: ['This files a request. Our team then removes your account and its data; nothing is removed the moment you send it.',
+      '这会提交一个删除申请。之后由我们的团队删除你的账户及数据；发送申请的当下不会立即删除。'],
     delete_type: ['Type your email to confirm', '输入邮箱以确认'],
-    delete_go: ['Delete permanently', '永久删除'],
+    delete_go: ['Send request', '发送申请'],
+    del_ok: ['Your request is recorded. Reference {code}. Nothing is removed yet; our team completes it and you keep access until then.',
+      '你的请求已记录，参考编号 {code}。目前尚未删除任何内容；之后由我们的团队处理，处理完成前你仍可正常使用。'],
+    del_open: ['You already have a deletion request open. Reference {code}.',
+      '你已有一个进行中的删除申请，参考编号 {code}。'],
     signin_title: ['Sign in to Mastermind', '登录 Mastermind'],
     signin_sub: ['Sync your watchlist, preferences & account across every Mastermind site.',
       '在所有 Mastermind 站点同步你的自选、偏好与账户。'],
@@ -141,6 +149,7 @@
     close: ['Close', '关闭'], loading: ['Loading…', '加载中…']
   };
   function T(k) { var v = STR[k] || ['', '']; return v[lang() === 'zh' ? 1 : 0]; }
+  function errText(r) { var d = r.data || {}; return (lang() === 'zh' && d.error_zh) ? d.error_zh : (d.error || T('err')); }
 
   // ---------------------------------------------------- Supabase JS ----------
   function hasPersisted() {
@@ -198,13 +207,32 @@
       return _sb;
     });
   }
-  function getToken() {
-    // macro rides the shared cookie (credentials:include) — never load the SDK there
-    // (jsdelivr is GFW-blocked; the app broker reads the cookie directly).
-    if (_macro || !SUPA || !hasPersisted()) return Promise.resolve(null);
-    return sbClient().then(function (sb) { return sb ? sb.auth.getSession() : null; })
-      .then(function (r) { var s = r && r.data && r.data.session; return s ? s.access_token : null; })
-      .catch(function () { return null; });
+  async function getToken() {
+    // macro: MDXAuth.client is getSupabaseClient (theme.js:1902), which ALWAYS
+    // returns a Promise (theme.js:1819-1837). Calling .getSession() on that
+    // Promise throws. Await the client, then getSession — the same path
+    // theme.js:3709-3711 uses: getSupabaseClient().then(sb => sb.auth.getSession()).
+    if (_macro) {
+      try {
+        if (!(window.MDXAuth && window.MDXAuth.client)) return null;
+        const sb = await window.MDXAuth.client();
+        const { data } = await sb.auth.getSession();
+        return data?.session?.access_token ?? null;
+      } catch (e) {
+        return null;
+      }
+    }
+    // standalone: use the SDK-backed client.
+    if (!SUPA || !hasPersisted()) return null;
+    try {
+      var standalone = await sbClient();
+      if (!standalone) return null;
+      var result = await standalone.auth.getSession();
+      var session = result && result.data && result.data.session;
+      return session ? session.access_token : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   // ------------------------------------------------------------- API ---------
@@ -213,6 +241,8 @@
     return getToken().then(function (token) {
       var headers = {};
       if (opts.body) headers['Content-Type'] = 'application/json';
+      // A null token is lawful on www (cookie carries identity): still send the
+      // request with credentials:'include' and no Authorization header.
       if (token) headers['Authorization'] = 'Bearer ' + token;
       return fetch(API + path, {
         method: opts.method || 'GET', headers: headers, credentials: 'include',
@@ -584,7 +614,7 @@
       if (r.ok && r.data.ok) {
         setMsg('mmacc-email-msg', r.data.confirmation_required ? T('email_confirm') : T('email_ok'), 'ok');
         setTimeout(load, 500);
-      } else setMsg('mmacc-email-msg', r.data.error || T('err'), 'bad');
+      } else setMsg('mmacc-email-msg', errText(r), 'bad');
     });
   }
   function onSavePw(btn) {
@@ -598,7 +628,7 @@
         setMsg('mmacc-pw-msg', T('pw_ok'), 'ok');
         E('mmacc-pw-in').value = ''; E('mmacc-pw2-in').value = '';
         setTimeout(function () { showField('mmacc-pw-field', false); }, 1100);
-      } else setMsg('mmacc-pw-msg', r.data.error || T('err'), 'bad');
+      } else setMsg('mmacc-pw-msg', errText(r), 'bad');
     });
   }
   function onDelete(btn) {
@@ -606,8 +636,16 @@
     setMsg('mmacc-del-msg', ''); busy(btn, true, T('saving'));
     api('/api/account/delete', { method: 'POST', body: { confirm: v } }).then(function (r) {
       busy(btn, false);
-      if (r.ok && r.data.ok) doSignOut();
-      else setMsg('mmacc-del-msg', r.data.error || T('err'), 'bad');
+      if (r.ok && r.data.ok) {
+        // The control FILES a request; it deletes nothing, so it must not sign the reader
+        // out. Report the reference they will quote to support, then fold the field away
+        // exactly the way onSavePw does.
+        var key = r.data.already_open ? 'del_open' : 'del_ok';
+        var code = (r.data.receipt && r.data.receipt.receipt_code) || '';
+        setMsg('mmacc-del-msg', T(key).replace('{code}', code), 'ok');
+        var ci = E('mmacc-del-in'); if (ci) ci.value = '';
+        setTimeout(function () { showField('mmacc-del-field', false); }, 1100);
+      } else setMsg('mmacc-del-msg', errText(r), 'bad');
     });
   }
   function onSendLink(btn) {
@@ -660,7 +698,11 @@
     else fin();
   }
   function doSignOutAll() {
-    api('/api/account/signout-everywhere', { method: 'POST' }).then(doSignOut, doSignOut);
+    api('/api/account/signout-everywhere', { method: 'POST' }).then(function (r) {
+      if (r.ok) { doSignOut(); }
+      else if (r.status !== 401 && r.status !== 429 && r.status !== 502) { doSignOut(); }
+      else { setMsg('mmacc-email-msg', errText(r), 'bad'); }
+    }, doSignOut);
   }
   function _alertErr(res) {
     if (res && res.status === 0) { _alertGroupState(false); setMsg('mmacc-alert-msg', T('al_unknown'), 'bad'); return; }
@@ -996,7 +1038,7 @@
     var s = document.createElement('script');
     // nav_market.js owns the runtime menu composition, so it must never inherit
     // a stale year-cached response after a navigation release.
-    s.src = pfx + 'nav_market.js?v=20260814-sf-inter-font-upgrade';
+    s.src = pfx + 'nav_market.js?v=20260913-account-actions';
     s.async = true;
     (document.head || document.documentElement).appendChild(s);
   })();

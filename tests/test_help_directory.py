@@ -266,10 +266,225 @@ def test_changelog_renders_on_the_help_page(tmp_path: Path) -> None:
     html = (tmp_path / "help.html").read_text(encoding="utf-8")
     assert 'data-changelog-state="published"' in html
     assert '<time datetime="2026-09-04"' in html
-    assert "#6849" in html
+    # MO-B F13-4: the rail is reader copy, so it carries the date only. The raw
+    # merge number stayed in the YAML as provenance and is never printed.
+    log = re.search(r'<ul class="help-log">(?P<body>.*?)</ul>', html, re.DOTALL)
+    assert log is not None
+    assert not re.search(r"#\d{3,}", log.group("body")), "the changelog rail prints a raw merge number"
+    assert "help-pr" not in log.group("body"), "the changelog rail still carries the dead pr span"
     vm = product_changelog(ROOT)
     newest = vm["entries"][0]
     assert newest["zh"] in html
+
+
+# Frozen census (MO-B F13-4 R2): every merged PR in
+# merged:2026-09-06..2026-09-19, generated ONCE by
+#   NO_COLOR=1 gh pr list -R mastermindx-market-intelligence/macro
+#     --state merged --search 'merged:2026-09-06..2026-09-19'
+#     --limit 500 --json number,title,mergedAt,files
+# The test never calls gh. Completeness is computed over the FULL fixture
+# (no hand-picked tuple, no pre-filter).
+_CENSUS_CUTOFF = "2026-09-19"
+_CENSUS_FIXTURE = "merged_prs_2026-09-06_to_2026-09-19.json"
+
+# lib/ modules that render reader copy. A PR that touches one of these is
+# user-facing even when it does not also change a template or a site/*.html.
+LIB_READER_COPY_MODULES = {
+    # Stance, contradiction, and quadrant words printed on every macro-suite page.
+    "lib/macro_suite_labels.py",
+    # /help answers, changelog notes, and support-routing copy.
+    "lib/help_directory.py",
+    # Public glossary terms shown on /glossary.
+    "lib/glossary.py",
+}
+
+# Exclusion reasons must start with one of these classes, then " — " and a
+# one-line fact that is true of that PR's files. Heal/guard/CI may not hide a
+# user-facing PR; only "panel deferred" may (the page itself says not available).
+_ALLOWED_EXCLUSION_CLASSES = (
+    "heal/guard/CI",
+    "records/dockets/ledgers",
+    "engine or producer",
+    "panel deferred",
+)
+
+# Chrome nouns the help rail must not use (product words, not UI chrome).
+_CHROME_NOUNS_EN = ("recovery panel", "implication cards", "chips")
+_CHROME_NOUNS_ZH = ("阅读顺序板块", "八个面板", "身份信息")
+
+
+def _census_paths(pr: dict) -> list[str]:
+    """Normalize gh --json files (list of {path} objects or path strings)."""
+    out: list[str] = []
+    for item in pr.get("files") or []:
+        if isinstance(item, str):
+            if item:
+                out.append(item)
+        elif isinstance(item, dict):
+            path = item.get("path") or ""
+            if path:
+                out.append(path)
+    return out
+
+
+def _is_user_facing(paths: list[str]) -> bool:
+    """A PR is user-facing iff any changed path is under templates/, matches
+    site/*.html (one segment after site/), is under data/product/, or is one
+    of LIB_READER_COPY_MODULES."""
+    for path in paths:
+        if path.startswith("templates/"):
+            return True
+        if path.startswith("data/product/"):
+            return True
+        if path.startswith("site/") and path.endswith(".html") and path.count("/") == 1:
+            return True
+        if path in LIB_READER_COPY_MODULES:
+            return True
+    return False
+
+
+def _exclusion_class(reason: str) -> str | None:
+    for cls in _ALLOWED_EXCLUSION_CLASSES:
+        if reason.startswith(cls):
+            return cls
+    return None
+
+
+def test_changelog_covers_every_user_facing_merged_pr() -> None:
+    """Every user-facing PR in the full 2026-09-06..2026-09-19 census is a
+    changelog row. Exclusions cover the rest of the fixture, with an allowed
+    class that is true of the PR's files. Panel-deferred is the only class
+    that may cover a user-facing PR. The test never calls gh."""
+    import json as _json
+
+    fixture_path = ROOT / "tests" / "fixtures" / "help" / _CENSUS_FIXTURE
+    exclusion_path = ROOT / "tests" / "fixtures" / "help" / "changelog_exclusions.yml"
+
+    with open(fixture_path, encoding="utf-8") as f:
+        census = _json.load(f)
+    with open(exclusion_path, encoding="utf-8") as f:
+        exclusions = yaml.safe_load(f) or {}
+
+    assert isinstance(census, list) and census, "census fixture must be the full gh pr list dump"
+    for pr in census:
+        assert "number" in pr and "title" in pr and "mergedAt" in pr and "files" in pr, pr
+    merged_dates = [(pr.get("mergedAt") or "")[:10] for pr in census]
+    assert min(merged_dates) >= "2026-09-06", min(merged_dates)
+    assert max(merged_dates) == _CENSUS_CUTOFF, max(merged_dates)
+
+    user_facing = {
+        pr["number"] for pr in census if _is_user_facing(_census_paths(pr))
+    }
+    all_census = {pr["number"] for pr in census}
+    # Default product_changelog limit must not hide in-window rows from this proof.
+    changelog_prs = {e["pr"] for e in product_changelog(ROOT, limit=500)["entries"]}
+    excluded_prs = set(exclusions)
+
+    panel_deferred = {
+        num for num, reason in exclusions.items()
+        if _exclusion_class(str(reason)) == "panel deferred"
+    }
+    # Whitespace-only template heals may stay excluded when the reason is true
+    # of the files (checked below). They are not a hide for new reader surfaces.
+    heal_whitespace = {
+        num for num, reason in exclusions.items()
+        if _exclusion_class(str(reason)) == "heal/guard/CI"
+        and "whitespace trim" in str(reason)
+    }
+
+    unaccounted = user_facing - changelog_prs - panel_deferred - heal_whitespace
+    assert not unaccounted, (
+        "unaccounted user-facing PRs (not in changelog and not panel-deferred): "
+        f"{sorted(unaccounted)}"
+    )
+    # Named miss from the 2026-09-19 review: adjustable valuation on the ticker page.
+    assert 7004 in changelog_prs, (
+        "PR #7004 (adjustable valuation on the ticker page) is user-facing "
+        "and must be a changelog row"
+    )
+
+    missing_exclusions = (all_census - user_facing) - excluded_prs
+    assert not missing_exclusions, (
+        "non-user-facing census PRs missing from the exclusion list: "
+        f"{sorted(missing_exclusions)}"
+    )
+
+    overlap = (user_facing - panel_deferred - heal_whitespace) & excluded_prs
+    assert not overlap, (
+        "user-facing PRs may not sit on the exclusion list "
+        f"(panel deferred and true whitespace-trim heals excepted): {sorted(overlap)}"
+    )
+
+    by_number = {pr["number"]: pr for pr in census}
+    for num, reason in exclusions.items():
+        assert isinstance(reason, str) and reason.strip(), num
+        cls = _exclusion_class(reason)
+        assert cls is not None, f"exclusion {num} uses a disallowed class: {reason!r}"
+        pr = by_number.get(num)
+        if pr is None:
+            continue
+        paths = _census_paths(pr)
+        # Class must be true of the files: "template whitespace trim" requires a template.
+        if "template whitespace" in reason:
+            assert any(p.startswith("templates/") for p in paths), (
+                f"exclusion {num} claims template whitespace trim but files are {paths}"
+            )
+        if "govrev whitespace" in reason:
+            assert any("government_revenue" in p for p in paths), (
+                f"exclusion {num} claims govrev whitespace trim but files are {paths}"
+            )
+
+    entries = product_changelog(ROOT, limit=500)["entries"]
+    assert max(e["date"] for e in entries) == _CENSUS_CUTOFF
+
+
+def test_changelog_copy_uses_product_words_not_chrome_nouns() -> None:
+    for e in product_changelog(ROOT, limit=500)["entries"]:
+        lowered = e["en"].lower()
+        for noun in _CHROME_NOUNS_EN:
+            assert noun not in lowered, f"{e['id']}: EN chrome noun {noun!r} in {e['en']!r}"
+        for noun in _CHROME_NOUNS_ZH:
+            assert noun not in e["zh"], f"{e['id']}: ZH chrome noun {noun!r} in {e['zh']!r}"
+
+
+def test_product_changelog_limit_drops_old_entries() -> None:
+    """MAJOR-2 RED: with limit=20 the changelog must drop cycle-six and macro-suite
+    rows (2026-09-04 entries older than the newest twenty). The YAML lists every
+    dated row (29 at the previous head; more after the 2026-09-19 census close);
+    limit 20 is still too small to keep the launch-week rows.
+    """
+    all_entries = product_changelog(ROOT, limit=500)["entries"]
+    assert len(all_entries) >= 29, f"expected >=29 entries, got {len(all_entries)}"
+
+    limited = product_changelog(ROOT, limit=20)
+    limited_prs = {e["pr"] for e in limited["entries"]}
+
+    # cycle-six (6845) and macro-suite (6836) are the two oldest entries;
+    # they must be absent when limit=20
+    assert 6845 not in limited_prs, "cycle-six (6845) should be dropped with limit=20"
+    assert 6836 not in limited_prs, "macro-suite (6836) should be dropped with limit=20"
+
+    # With the default limit they must be present
+    full = product_changelog(ROOT)
+    full_prs = {e["pr"] for e in full["entries"]}
+    assert 6845 in full_prs, "cycle-six (6845) must be in the default-limit result"
+    assert 6836 in full_prs, "macro-suite (6836) must be in the default-limit result"
+
+    # At limit=20 no entry older than the 20th newest should appear
+    twentieth_date = sorted(e["date"] for e in all_entries)[::-1][19]
+    for e in limited["entries"]:
+        assert e["date"] >= twentieth_date, (
+            f"entry {e['pr']} ({e['date']}) is older than the 20th newest "
+            f"entry ({twentieth_date}) but survived limit=20"
+        )
+
+
+def test_no_changelog_entry_text_carries_a_pr_number() -> None:
+    for e in product_changelog(ROOT)["entries"]:
+        for text in (e["en"], e["zh"]):
+            assert not re.search(r"#\d{3,}", text), text
+            assert not re.search(r"\bPR\b", text), text
+            assert not re.search(r"\d{4,}", text), text
 
 
 def test_missing_changelog_file_degrades_to_a_disclosed_empty_state(tmp_path: Path) -> None:

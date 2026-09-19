@@ -2072,7 +2072,7 @@
 "total": 26
 },
 "CHK": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 895126,
 "confirm": "reject_live_mismatch",
 "confirm_name": "EXPAND ENERGY Corp",
@@ -2090,7 +2090,7 @@
 "total": 368
 },
 "CHRS": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 34,
 "status": "no_dominant",
@@ -2099,7 +2099,7 @@
 "total": 10000
 },
 "CHS": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 823277,
 "confirm": "reject_live_mismatch",
 "confirm_name": "CHS INC",
@@ -2136,7 +2136,7 @@
 "total": 67
 },
 "CHX": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 11,
 "status": "no_dominant",
@@ -2145,7 +2145,7 @@
 "total": 106
 },
 "CIN": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 7,
 "status": "no_dominant",
@@ -2154,7 +2154,7 @@
 "total": 129
 },
 "CIR": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 8,
 "status": "no_dominant",
@@ -2163,7 +2163,7 @@
 "total": 615
 },
 "CIT": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1383094,
 "confirm": "reject_still_active",
 "confirm_name": "SANTANDER DRIVE AUTO RECEIVABLES LLC",
@@ -2180,7 +2180,7 @@
 "total": 851
 },
 "CIT-A": {
-"attempted_utc": "2026-07-18T14:51:27.938968+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 10,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -2189,7 +2189,7 @@
 "total": 13
 },
 "CITGQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -2198,7 +2198,7 @@
 "total": 1
 },
 "CIVI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 25,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -2207,7 +2207,7 @@
 "total": 35
 },
 "CKH": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 859598,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "SEACOR HOLDINGS INC /NEW/",
@@ -2224,7 +2224,7 @@
 "total": 30
 },
 "CLC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 12,
 "status": "no_dominant",
@@ -2250,7 +2250,7 @@
 "total": 17
 },
 "CLFD": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 2,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -2259,7 +2259,7 @@
 "total": 5
 },
 "CLGX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 36047,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "CORELOGIC, INC.",
@@ -2276,7 +2276,7 @@
 "total": 137
 },
 "CLI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 34,
 "status": "no_dominant",
@@ -2285,7 +2285,7 @@
 "total": 1881
 },
 "CLW": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 20,
 "runner_docs": 9,
 "status": "no_dominant",
@@ -2315,7 +2315,7 @@
 "status": "out_of_range"
 },
 "CMCSK": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 2,
 "runner_docs": 1,
 "status": "no_dominant",
@@ -2324,7 +2324,7 @@
 "total": 1
 },
 "CMD": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 29,
 "runner_docs": 6,
 "status": "no_dominant",
@@ -2333,7 +2333,7 @@
 "total": 77
 },
 "CMO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 11,
 "status": "no_dominant",
@@ -2360,7 +2360,7 @@
 "total": 1420
 },
 "CMTL": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 3,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -2369,7 +2369,7 @@
 "total": 8
 },
 "CMVT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 6,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -2378,7 +2378,7 @@
 "total": 15
 },
 "CMX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 14,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -2387,7 +2387,7 @@
 "total": 25
 },
 "CNG": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -2395,7 +2395,7 @@
 "total": 0
 },
 "CNL": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 101,
 "status": "no_dominant",
@@ -2404,7 +2404,7 @@
 "total": 425
 },
 "CNQR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1066026,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "CONCUR TECHNOLOGIES INC",
@@ -2434,7 +2434,7 @@
 "total": 34
 },
 "CNVR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1099215,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "PROTALEX INC",
@@ -2453,7 +2453,7 @@
 "status": "out_of_range"
 },
 "CNXT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 2,
 "runner_docs": 1,
 "status": "no_dominant",
@@ -2462,7 +2462,7 @@
 "total": 2
 },
 "COC-B": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 2,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -2471,7 +2471,7 @@
 "total": 4
 },
 "COG": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 20,
 "status": "no_dominant",
@@ -2480,7 +2480,7 @@
 "total": 553
 },
 "COL": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 41,
 "status": "no_dominant",
@@ -2489,7 +2489,7 @@
 "total": 4262
 },
 "COMS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 12,
 "runner_docs": 1,
 "status": "no_dominant",
@@ -2514,7 +2514,7 @@
 "total": 951
 },
 "CONN": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 12,
 "status": "no_dominant",
@@ -2523,16 +2523,16 @@
 "total": 215
 },
 "COOP": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 9,
 "status": "no_dominant",
 "top_docs": 11,
 "top_name": "GlobalTech Corp  (GLTK)  (CIK 0001938338)",
-"total": 392
+"total": 394
 },
 "CORE": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 14,
 "status": "no_dominant",
@@ -2558,7 +2558,7 @@
 "total": 215
 },
 "CPE": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 11,
 "status": "no_dominant",
@@ -2567,7 +2567,7 @@
 "total": 477
 },
 "CPGX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1629995,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "Columbia Pipeline Group, Inc.",
@@ -2581,7 +2581,7 @@
 "total": 17
 },
 "CPNLQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -2589,7 +2589,7 @@
 "total": 0
 },
 "CPQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 17,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -2598,7 +2598,7 @@
 "total": 22
 },
 "CPS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 814676,
 "confirm": "reject_live_mismatch",
 "confirm_name": "CPS TECHNOLOGIES CORP/DE/",
@@ -2616,7 +2616,7 @@
 "total": 288
 },
 "CPSI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 6,
 "runner_docs": 5,
 "status": "no_dominant",
@@ -2625,7 +2625,7 @@
 "total": 20
 },
 "CPWR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 4,
 "runner_docs": 9,
 "status": "no_dominant",
@@ -2634,7 +2634,7 @@
 "total": 27
 },
 "CRCM": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -2643,7 +2643,7 @@
 "total": 1
 },
 "CRMT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 4,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -2675,7 +2675,7 @@
 "status": "out_of_range"
 },
 "CRZO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -2683,7 +2683,7 @@
 "total": 0
 },
 "CSC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 10,
 "status": "no_dominant",
@@ -2713,7 +2713,7 @@
 "total": 83
 },
 "CSII": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 11,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -2738,7 +2738,7 @@
 "total": 75
 },
 "CST": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 26,
 "status": "no_dominant",
@@ -2747,7 +2747,7 @@
 "total": 778
 },
 "CTB": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 42,
 "status": "no_dominant",
@@ -2772,7 +2772,7 @@
 "total": 23
 },
 "CTRA": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 14,
 "runner_docs": 5,
 "status": "no_dominant",
@@ -2781,7 +2781,7 @@
 "total": 47
 },
 "CTX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 14,
 "status": "no_dominant",
@@ -2804,7 +2804,7 @@
 "total": 71
 },
 "CUB": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 5,
 "status": "no_dominant",
@@ -2829,7 +2829,7 @@
 "total": 33
 },
 "CVC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 25,
 "status": "no_dominant",
@@ -2838,7 +2838,7 @@
 "total": 279
 },
 "CVEO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -2863,7 +2863,7 @@
 "total": 15
 },
 "CVG": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 42,
 "status": "no_dominant",
@@ -2900,7 +2900,7 @@
 "total": 46
 },
 "CXO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1358071,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "CONCHO RESOURCES INC",
@@ -2916,7 +2916,7 @@
 "total": 85
 },
 "CY": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 60,
 "status": "no_dominant",
@@ -2948,7 +2948,7 @@
 "status": "out_of_range"
 },
 "CYN": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 13,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -2976,7 +2976,7 @@
 "total": 40
 },
 "DAKT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 915779,
 "confirm": "reject_still_active",
 "confirm_name": "DAKTRONICS INC /SD/",
@@ -2993,7 +2993,7 @@
 "total": 9
 },
 "DALRQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -3002,7 +3002,7 @@
 "total": 1
 },
 "DAY": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 50,
 "status": "no_dominant",
@@ -3030,7 +3030,7 @@
 "total": 117
 },
 "DCNAQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -3039,7 +3039,7 @@
 "total": 1
 },
 "DCT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 27,
 "runner_docs": 26,
 "status": "no_dominant",
@@ -3067,7 +3067,7 @@
 "total": 796
 },
 "DDR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 894315,
 "confirm": "reject_live_mismatch",
 "confirm_name": "SITE Centers Corp.",
@@ -3087,7 +3087,7 @@
 "total": 191
 },
 "DDS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 46,
 "status": "no_dominant",
@@ -3101,7 +3101,7 @@
 "status": "out_of_range"
 },
 "DF": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 33,
 "status": "no_dominant",
@@ -3110,7 +3110,7 @@
 "total": 974
 },
 "DFS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 39,
 "status": "no_dominant",
@@ -3124,7 +3124,7 @@
 "status": "out_of_range"
 },
 "DHC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 12,
 "status": "no_dominant",
@@ -3162,7 +3162,7 @@
 "total": 453
 },
 "DISCA": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 8,
 "runner_docs": 14,
 "status": "no_dominant",
@@ -3171,7 +3171,7 @@
 "total": 54
 },
 "DISCK": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 4,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -3180,7 +3180,7 @@
 "total": 10
 },
 "DISH": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 56,
 "status": "no_dominant",
@@ -3206,7 +3206,7 @@
 "total": 534
 },
 "DLPH": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 4,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -3247,7 +3247,7 @@
 "total": 34
 },
 "DNR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 945764,
 "confirm": "reject_still_active",
 "confirm_name": "DENBURY INC",
@@ -3264,7 +3264,7 @@
 "total": 316
 },
 "DO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 552,
 "status": "no_dominant",
@@ -3273,7 +3273,7 @@
 "total": 10000
 },
 "DOUG": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 12,
 "status": "no_dominant",
@@ -3282,7 +3282,7 @@
 "total": 522
 },
 "DPHIQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -3291,7 +3291,7 @@
 "total": 1
 },
 "DPLO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -3300,7 +3300,7 @@
 "total": 287
 },
 "DRC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 18,
 "status": "no_dominant",
@@ -3309,7 +3309,7 @@
 "total": 805
 },
 "DRE": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 12,
 "status": "no_dominant",
@@ -3318,7 +3318,7 @@
 "total": 246
 },
 "DRQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1042893,
 "confirm": "reject_live_mismatch",
 "confirm_name": "Innovex International, Inc.",
@@ -3337,7 +3337,7 @@
 "total": 76
 },
 "DSPG": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 9,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -3360,7 +3360,7 @@
 "total": 838
 },
 "DTV": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 17,
 "status": "no_dominant",
@@ -3405,7 +3405,7 @@
 "status": "out_of_range"
 },
 "DWDP": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 4,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -3414,7 +3414,7 @@
 "total": 6
 },
 "DYN": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 9,
 "status": "no_dominant",
@@ -3440,7 +3440,7 @@
 "total": 65
 },
 "EBS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 11,
 "status": "no_dominant",
@@ -3449,7 +3449,7 @@
 "total": 238
 },
 "EC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 16,
 "status": "no_dominant",
@@ -3463,7 +3463,7 @@
 "status": "out_of_range"
 },
 "ECHO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 9,
 "status": "no_dominant",
@@ -3493,7 +3493,7 @@
 "total": 117
 },
 "EDR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 6,
 "status": "no_dominant",
@@ -3518,7 +3518,7 @@
 "total": 1981
 },
 "EE": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 14,
 "status": "no_dominant",
@@ -3527,7 +3527,7 @@
 "total": 1298
 },
 "EFU": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 1,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -3555,7 +3555,7 @@
 "total": 14
 },
 "EGOV": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1065332,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "NIC INC",
@@ -3572,7 +3572,7 @@
 "total": 23
 },
 "EGRX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 827871,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "EAGLE PHARMACEUTICALS, INC.",
@@ -3588,7 +3588,7 @@
 "total": 9
 },
 "EHAB": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 5,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -3597,7 +3597,7 @@
 "total": 16
 },
 "EHTH": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 5,
 "runner_docs": 5,
 "status": "no_dominant",
@@ -3606,7 +3606,7 @@
 "total": 14
 },
 "EKDKQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -3632,7 +3632,7 @@
 "total": 62
 },
 "ELY": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 7,
 "status": "no_dominant",
@@ -3641,7 +3641,7 @@
 "total": 358
 },
 "EMC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 170,
 "status": "no_dominant",
@@ -3666,7 +3666,7 @@
 "total": 30
 },
 "ENH": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 9,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -3675,7 +3675,7 @@
 "total": 17
 },
 "ENRNQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -3683,7 +3683,7 @@
 "total": 0
 },
 "ENV": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 13,
 "status": "no_dominant",
@@ -3692,7 +3692,7 @@
 "total": 159
 },
 "EOP": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 21,
 "status": "no_dominant",
@@ -3701,7 +3701,7 @@
 "total": 488
 },
 "EP": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 39,
 "status": "no_dominant",
@@ -3710,7 +3710,7 @@
 "total": 2684
 },
 "EPAY": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 17,
 "runner_docs": 7,
 "status": "no_dominant",
@@ -3719,7 +3719,7 @@
 "total": 47
 },
 "EQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 9,
 "status": "no_dominant",
@@ -3744,7 +3744,7 @@
 "total": 55
 },
 "ESRX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 6,
 "runner_docs": 30,
 "status": "no_dominant",
@@ -3753,7 +3753,7 @@
 "total": 85
 },
 "ESV": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 314808,
 "confirm": "reject_live_mismatch",
 "confirm_name": "Valaris Ltd",
@@ -3793,7 +3793,7 @@
 "total": 35
 },
 "ETS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -3818,7 +3818,7 @@
 "total": 2062
 },
 "EVHC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 3,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -3827,7 +3827,7 @@
 "total": 6
 },
 "EXPI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 13,
 "runner_docs": 13,
 "status": "no_dominant",
@@ -3836,7 +3836,7 @@
 "total": 55
 },
 "EXPR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 7,
 "runner_docs": 4,
 "status": "no_dominant",
@@ -3875,7 +3875,7 @@
 "total": 134
 },
 "FB": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 52,
 "status": "no_dominant",
@@ -3884,7 +3884,7 @@
 "total": 2843
 },
 "FBC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 20,
 "runner_docs": 8,
 "status": "no_dominant",
@@ -3911,7 +3911,7 @@
 "total": 14
 },
 "FBHS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 1519751,
 "confirm": "reject_live_mismatch",
 "confirm_name": "Fortune Brands Innovations, Inc.",
@@ -3930,7 +3930,7 @@
 "total": 63
 },
 "FBM": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 9,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -3944,7 +3944,7 @@
 "status": "out_of_range"
 },
 "FCS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 11,
 "status": "no_dominant",
@@ -3953,7 +3953,7 @@
 "total": 203
 },
 "FDC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 13,
 "status": "no_dominant",
@@ -3962,7 +3962,7 @@
 "total": 825
 },
 "FDO": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 26,
 "runner_docs": 34,
 "status": "no_dominant",
@@ -3971,7 +3971,7 @@
 "total": 110
 },
 "FF": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 15,
 "status": "no_dominant",
@@ -3989,7 +3989,7 @@
 "total": 1934
 },
 "FII": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 19,
 "status": "no_dominant",
@@ -3998,7 +3998,7 @@
 "total": 321
 },
 "FJ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 3,
 "runner_docs": 1,
 "status": "no_dominant",
@@ -4007,7 +4007,7 @@
 "total": 3
 },
 "FL": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 46,
 "status": "no_dominant",
@@ -4039,7 +4039,7 @@
 "status": "out_of_range"
 },
 "FLOW": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 18,
 "status": "no_dominant",
@@ -4048,7 +4048,7 @@
 "total": 10000
 },
 "FLT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 8,
 "status": "no_dominant",
@@ -4057,7 +4057,7 @@
 "total": 108
 },
 "FLTWQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -4065,7 +4065,7 @@
 "total": 0
 },
 "FMBI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 4,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -4074,7 +4074,7 @@
 "total": 9
 },
 "FMCC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 24,
 "runner_docs": 15,
 "status": "no_dominant",
@@ -4083,7 +4083,7 @@
 "total": 71
 },
 "FMER": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 7,
 "runner_docs": 5,
 "status": "no_dominant",
@@ -4113,7 +4113,7 @@
 "total": 16
 },
 "FNMA": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 15,
 "status": "no_dominant",
@@ -4122,7 +4122,7 @@
 "total": 4986
 },
 "FOE": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 35214,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "FERRO CORP",
@@ -4173,7 +4173,7 @@
 "total": 85
 },
 "FPC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 18,
 "runner_docs": 2,
 "status": "no_dominant",
@@ -4182,7 +4182,7 @@
 "total": 14
 },
 "FRC": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 13,
 "status": "no_dominant",
@@ -4210,7 +4210,7 @@
 "status": "out_of_range"
 },
 "FRX": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 24,
 "runner_docs": 11,
 "status": "no_dominant",
@@ -4219,7 +4219,7 @@
 "total": 75
 },
 "FSB": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 19,
 "status": "no_dominant",
@@ -4228,7 +4228,7 @@
 "total": 741
 },
 "FSH": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 24,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -4237,7 +4237,7 @@
 "total": 40
 },
 "FSL": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 9,
 "runner_docs": 3,
 "status": "no_dominant",
@@ -4285,7 +4285,7 @@
 "status": "out_of_range"
 },
 "FTR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 32,
 "status": "no_dominant",
@@ -4294,7 +4294,7 @@
 "total": 630
 },
 "FWLT": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -4302,7 +4302,7 @@
 "total": 0
 },
 "FYBR": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "candidate_cik": 20520,
 "confirm": "reject_no_name_corroboration",
 "confirm_name": "Frontier Communications Parent, Inc.",
@@ -4320,7 +4320,7 @@
 "total": 24
 },
 "GAPTQ": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 0,
 "runner_docs": 0,
 "status": "no_dominant",
@@ -4328,7 +4328,7 @@
 "total": 0
 },
 "GAS": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 218,
 "status": "no_dominant",
@@ -4337,7 +4337,7 @@
 "total": 10000
 },
 "GCI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 14,
 "status": "no_dominant",
@@ -4362,7 +4362,7 @@
 "total": 126
 },
 "GCP": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 30,
 "runner_docs": 10,
 "status": "no_dominant",
@@ -4391,7 +4391,7 @@
 "total": 5
 },
 "GDI": {
-"attempted_utc": "2026-07-25T15:06:50.235818+00:00",
+"attempted_utc": "2026-09-19T19:23:05.593432+00:00",
 "n_entities": 13,
 "runner_docs": 4,
 "status": "no_dominant",

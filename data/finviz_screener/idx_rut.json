@@ -1,6 +1,6 @@
 {
 "filter":"idx_rut",
-"as_of":"2026-09-19 02:47 UTC",
+"as_of":"2026-09-19 15:00 UTC",
 "n":1944,
 "total_reported":1944,
 "unmapped_industries":[],
@@ -19,7 +19,7 @@
 "industry":"Aerospace & Defense",
 "sector":"Industrials",
 "country":"USA",
-"market_cap_b":11.57
+"market_cap_b":11.58
 },
 {
 "ticker":"FROG",
@@ -52,14 +52,6 @@
 "sector":"Technology",
 "country":"USA",
 "market_cap_b":10.52
-},
-{
-"ticker":"UMBF",
-"company":"UMB Financial Corp",
-"industry":"Banks - Regional",
-"sector":"Financial",
-"country":"USA",
-"market_cap_b":10.22
 },
 {
 "ticker":"TXG",
@@ -763,7 +755,7 @@
 "industry":"Auto & Truck Dealerships",
 "sector":"Consumer Cyclical",
 "country":"USA",
-"market_cap_b":5.89
+"market_cap_b":5.87
 },
 {
 "ticker":"EPRT",
@@ -1198,6 +1190,14 @@
 "market_cap_b":5.19
 },
 {
+"ticker":"MRCY",
+"company":"Mercury Systems Inc",
+"industry":"Aerospace & Defense",
+"sector":"Industrials",
+"country":"USA",
+"market_cap_b":5.19
+},
+{
 "ticker":"ERAS",
 "company":"Erasca Inc",
 "industry":"Biotechnology",
@@ -1228,14 +1228,6 @@
 "sector":"Technology",
 "country":"USA",
 "market_cap_b":5.15
-},
-{
-"ticker":"MRCY",
-"company":"Mercury Systems Inc",
-"industry":"Aerospace & Defense",
-"sector":"Industrials",
-"country":"USA",
-"market_cap_b":5.13
 },
 {
 "ticker":"CNO",
@@ -1750,14 +1742,6 @@
 "market_cap_b":4.41
 },
 {
-"ticker":"GEF",
-"company":"Greif Inc",
-"industry":"Packaging & Containers",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":4.38
-},
-{
 "ticker":"BCO",
 "company":"Brink's Co",
 "industry":"Security & Protection Services",
@@ -1796,6 +1780,14 @@
 "sector":"Basic Materials",
 "country":"USA",
 "market_cap_b":4.37
+},
+{
+"ticker":"GEF",
+"company":"Greif Inc",
+"industry":"Packaging & Containers",
+"sector":"Consumer Cyclical",
+"country":"USA",
+"market_cap_b":4.36
 },
 {
 "ticker":"ENVA",
@@ -2422,6 +2414,14 @@
 "market_cap_b":3.66
 },
 {
+"ticker":"TARS",
+"company":"Tarsus Pharmaceuticals Inc",
+"industry":"Biotechnology",
+"sector":"Healthcare",
+"country":"USA",
+"market_cap_b":3.65
+},
+{
 "ticker":"BANF",
 "company":"Bancfirst Corp",
 "industry":"Banks - Regional",
@@ -2694,22 +2694,6 @@
 "market_cap_b":3.45
 },
 {
-"ticker":"TARS",
-"company":"Tarsus Pharmaceuticals Inc",
-"industry":"Biotechnology",
-"sector":"Healthcare",
-"country":"USA",
-"market_cap_b":3.43
-},
-{
-"ticker":"BELFA",
-"company":"Bel Fuse Inc",
-"industry":"Electronic Components",
-"sector":"Technology",
-"country":"USA",
-"market_cap_b":3.42
-},
-{
 "ticker":"CALM",
 "company":"Cal-Maine Foods Inc",
 "industry":"Farm Products",
@@ -2732,6 +2716,14 @@
 "sector":"Financial",
 "country":"USA",
 "market_cap_b":3.42
+},
+{
+"ticker":"BELFA",
+"company":"Bel Fuse Inc",
+"industry":"Electronic Components",
+"sector":"Technology",
+"country":"USA",
+"market_cap_b":3.4
 },
 {
 "ticker":"BELFB",
@@ -3518,18 +3510,18 @@
 "market_cap_b":2.84
 },
 {
-"ticker":"ATRO",
-"company":"Astronics Corp",
-"industry":"Aerospace & Defense",
-"sector":"Industrials",
-"country":"USA",
-"market_cap_b":2.83
-},
-{
 "ticker":"AGYS",
 "company":"Agilysys Inc",
 "industry":"Software - Application",
 "sector":"Technology",
+"country":"USA",
+"market_cap_b":2.82
+},
+{
+"ticker":"ATRO",
+"company":"Astronics Corp",
+"industry":"Aerospace & Defense",
+"sector":"Industrials",
 "country":"USA",
 "market_cap_b":2.82
 },
@@ -3658,6 +3650,14 @@
 "company":"Intapp Inc",
 "industry":"Software - Application",
 "sector":"Technology",
+"country":"USA",
+"market_cap_b":2.77
+},
+{
+"ticker":"UMBF",
+"company":"UMB Financial Corp",
+"industry":"Banks - Regional",
+"sector":"Financial",
 "country":"USA",
 "market_cap_b":2.77
 },
@@ -4382,14 +4382,6 @@
 "market_cap_b":2.34
 },
 {
-"ticker":"AGM",
-"company":"Federal Agricultural Mortgage Corp",
-"industry":"Credit Services",
-"sector":"Financial",
-"country":"USA",
-"market_cap_b":2.33
-},
-{
 "ticker":"HCI",
 "company":"HCI Group Inc",
 "industry":"Insurance - Property & Casualty",
@@ -4404,6 +4396,14 @@
 "sector":"Consumer Defensive",
 "country":"USA",
 "market_cap_b":2.33
+},
+{
+"ticker":"AGM",
+"company":"Federal Agricultural Mortgage Corp",
+"industry":"Credit Services",
+"sector":"Financial",
+"country":"USA",
+"market_cap_b":2.32
 },
 {
 "ticker":"ROG",
@@ -4550,6 +4550,14 @@
 "market_cap_b":2.24
 },
 {
+"ticker":"CENT",
+"company":"Central Garden & Pet Co",
+"industry":"Packaged Foods",
+"sector":"Consumer Defensive",
+"country":"USA",
+"market_cap_b":2.23
+},
+{
 "ticker":"CENTA",
 "company":"Central Garden & Pet Co",
 "industry":"Packaged Foods",
@@ -4594,14 +4602,6 @@
 "company":"Calix Inc",
 "industry":"Software - Infrastructure",
 "sector":"Technology",
-"country":"USA",
-"market_cap_b":2.22
-},
-{
-"ticker":"CENT",
-"company":"Central Garden & Pet Co",
-"industry":"Packaged Foods",
-"sector":"Consumer Defensive",
 "country":"USA",
 "market_cap_b":2.22
 },
@@ -4902,14 +4902,6 @@
 "market_cap_b":2.09
 },
 {
-"ticker":"UA",
-"company":"Under Armour Inc",
-"industry":"Apparel Manufacturing",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":2.09
-},
-{
 "ticker":"ARR",
 "company":"ARMOUR Residential REIT Inc",
 "industry":"REIT - Mortgage",
@@ -4950,6 +4942,22 @@
 "market_cap_b":2.08
 },
 {
+"ticker":"UA",
+"company":"Under Armour Inc",
+"industry":"Apparel Manufacturing",
+"sector":"Consumer Cyclical",
+"country":"USA",
+"market_cap_b":2.08
+},
+{
+"ticker":"UAA",
+"company":"Under Armour Inc",
+"industry":"Apparel Manufacturing",
+"sector":"Consumer Cyclical",
+"country":"USA",
+"market_cap_b":2.08
+},
+{
 "ticker":"ESTA",
 "company":"Establishment Labs Holdings Inc",
 "industry":"Medical Devices",
@@ -4962,14 +4970,6 @@
 "company":"1st Source Corp",
 "industry":"Banks - Regional",
 "sector":"Financial",
-"country":"USA",
-"market_cap_b":2.07
-},
-{
-"ticker":"UAA",
-"company":"Under Armour Inc",
-"industry":"Apparel Manufacturing",
-"sector":"Consumer Cyclical",
 "country":"USA",
 "market_cap_b":2.07
 },
@@ -6022,14 +6022,6 @@
 "market_cap_b":1.65
 },
 {
-"ticker":"LILA",
-"company":"Liberty Latin America Ltd",
-"industry":"Telecom Services",
-"sector":"Communication Services",
-"country":"USA",
-"market_cap_b":1.65
-},
-{
 "ticker":"PRGS",
 "company":"Progress Software Corp",
 "industry":"Software - Infrastructure",
@@ -6050,6 +6042,14 @@
 "company":"BlackLine Inc",
 "industry":"Software - Application",
 "sector":"Technology",
+"country":"USA",
+"market_cap_b":1.64
+},
+{
+"ticker":"LILA",
+"company":"Liberty Latin America Ltd",
+"industry":"Telecom Services",
+"sector":"Communication Services",
 "country":"USA",
 "market_cap_b":1.64
 },
@@ -6276,6 +6276,14 @@
 "sector":"Consumer Cyclical",
 "country":"USA",
 "market_cap_b":1.55
+},
+{
+"ticker":"ELE",
+"company":"Elemental Royalty Corp",
+"industry":"Gold",
+"sector":"Basic Materials",
+"country":"USA",
+"market_cap_b":1.54
 },
 {
 "ticker":"GIC",
@@ -6780,14 +6788,6 @@
 "sector":"Healthcare",
 "country":"USA",
 "market_cap_b":1.38
-},
-{
-"ticker":"ELE",
-"company":"Elemental Royalty Corp",
-"industry":"Gold",
-"sector":"Basic Materials",
-"country":"USA",
-"market_cap_b":1.37
 },
 {
 "ticker":"EVCM",
@@ -7550,6 +7550,14 @@
 "market_cap_b":1.16
 },
 {
+"ticker":"BBNX",
+"company":"Beta Bionics Inc",
+"industry":"Medical Devices",
+"sector":"Healthcare",
+"country":"USA",
+"market_cap_b":1.15
+},
+{
 "ticker":"HFWA",
 "company":"Heritage Financial Corp",
 "industry":"Banks - Regional",
@@ -8230,14 +8238,6 @@
 "market_cap_b":0.9862
 },
 {
-"ticker":"BBNX",
-"company":"Beta Bionics Inc",
-"industry":"Medical Devices",
-"sector":"Healthcare",
-"country":"USA",
-"market_cap_b":0.9848
-},
-{
 "ticker":"PCRX",
 "company":"Pacira BioSciences Inc",
 "industry":"Drug Manufacturers - Specialty & Generic",
@@ -8342,14 +8342,6 @@
 "market_cap_b":0.9603
 },
 {
-"ticker":"GLIBA",
-"company":"Liberty Capital Corp",
-"industry":"Telecom Services",
-"sector":"Communication Services",
-"country":"USA",
-"market_cap_b":0.9593
-},
-{
 "ticker":"HAFC",
 "company":"Hanmi Financial Corp",
 "industry":"Banks - Regional",
@@ -8374,12 +8366,20 @@
 "market_cap_b":0.9533
 },
 {
+"ticker":"GLIBA",
+"company":"Liberty Capital Corp",
+"industry":"Telecom Services",
+"sector":"Communication Services",
+"country":"USA",
+"market_cap_b":0.9514
+},
+{
 "ticker":"GLIBK",
 "company":"Liberty Capital Corp",
 "industry":"Telecom Services",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":0.9504
+"market_cap_b":0.9514
 },
 {
 "ticker":"UTL",
@@ -8563,7 +8563,7 @@
 "industry":"Gambling",
 "sector":"Consumer Cyclical",
 "country":"USA",
-"market_cap_b":0.9151
+"market_cap_b":0.915
 },
 {
 "ticker":"LXRX",
@@ -8595,7 +8595,7 @@
 "industry":"Security & Protection Services",
 "sector":"Industrials",
 "country":"USA",
-"market_cap_b":0.9075
+"market_cap_b":0.9074
 },
 {
 "ticker":"HSHP",
@@ -8603,7 +8603,7 @@
 "industry":"Marine Shipping",
 "sector":"Industrials",
 "country":"Bermuda",
-"market_cap_b":0.9066
+"market_cap_b":0.9071
 },
 {
 "ticker":"TTI",
@@ -8667,7 +8667,7 @@
 "industry":"Biotechnology",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":0.8886
+"market_cap_b":0.8887
 },
 {
 "ticker":"FCBC",
@@ -9654,6 +9654,14 @@
 "market_cap_b":0.7109
 },
 {
+"ticker":"DGICA",
+"company":"Donegal Group Inc",
+"industry":"Insurance - Property & Casualty",
+"sector":"Financial",
+"country":"USA",
+"market_cap_b":0.7082
+},
+{
 "ticker":"MLAB",
 "company":"Mesa Laboratories Inc",
 "industry":"Scientific & Technical Instruments",
@@ -9668,14 +9676,6 @@
 "sector":"Financial",
 "country":"USA",
 "market_cap_b":0.7068
-},
-{
-"ticker":"DGICA",
-"company":"Donegal Group Inc",
-"industry":"Insurance - Property & Casualty",
-"sector":"Financial",
-"country":"USA",
-"market_cap_b":0.7065
 },
 {
 "ticker":"PFIS",
@@ -9803,7 +9803,7 @@
 "industry":"Biotechnology",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":0.6894
+"market_cap_b":0.6895
 },
 {
 "ticker":"CTKB",
@@ -9926,6 +9926,14 @@
 "market_cap_b":0.6617
 },
 {
+"ticker":"HOV",
+"company":"Hovnanian Enterprises Inc",
+"industry":"Residential Construction",
+"sector":"Consumer Cyclical",
+"country":"USA",
+"market_cap_b":0.6613
+},
+{
 "ticker":"MG",
 "company":"Mistras Group Inc",
 "industry":"Security & Protection Services",
@@ -9948,14 +9956,6 @@
 "sector":"Industrials",
 "country":"USA",
 "market_cap_b":0.6599
-},
-{
-"ticker":"HOV",
-"company":"Hovnanian Enterprises Inc",
-"industry":"Residential Construction",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":0.6598
 },
 {
 "ticker":"SCHL",
@@ -10419,7 +10419,7 @@
 "industry":"REIT - Diversified",
 "sector":"Real Estate",
 "country":"USA",
-"market_cap_b":0.5965
+"market_cap_b":0.5966
 },
 {
 "ticker":"CARS",
@@ -10444,14 +10444,6 @@
 "sector":"Industrials",
 "country":"USA",
 "market_cap_b":0.5908
-},
-{
-"ticker":"CRD-A",
-"company":"Crawford & Co",
-"industry":"Insurance Brokers",
-"sector":"Financial",
-"country":"USA",
-"market_cap_b":0.5903
 },
 {
 "ticker":"NTGR",
@@ -10526,20 +10518,28 @@
 "market_cap_b":0.583
 },
 {
-"ticker":"KELYA",
-"company":"Kelly Services Inc",
-"industry":"Staffing & Employment Services",
-"sector":"Industrials",
-"country":"USA",
-"market_cap_b":0.5824
-},
-{
 "ticker":"CMDB",
 "company":"Costamare Bulkers Holdings Ltd",
 "industry":"Marine Shipping",
 "sector":"Industrials",
 "country":"Monaco",
 "market_cap_b":0.581
+},
+{
+"ticker":"KELYA",
+"company":"Kelly Services Inc",
+"industry":"Staffing & Employment Services",
+"sector":"Industrials",
+"country":"USA",
+"market_cap_b":0.5805
+},
+{
+"ticker":"CRD-A",
+"company":"Crawford & Co",
+"industry":"Insurance Brokers",
+"sector":"Financial",
+"country":"USA",
+"market_cap_b":0.5802
 },
 {
 "ticker":"BWB",
@@ -10566,20 +10566,20 @@
 "market_cap_b":0.5786
 },
 {
+"ticker":"CWH",
+"company":"Camping World Holdings Inc",
+"industry":"Auto & Truck Dealerships",
+"sector":"Consumer Cyclical",
+"country":"USA",
+"market_cap_b":0.5785
+},
+{
 "ticker":"NRDS",
 "company":"Nerdwallet Inc",
 "industry":"Internet Content & Information",
 "sector":"Communication Services",
 "country":"USA",
 "market_cap_b":0.5785
-},
-{
-"ticker":"CWH",
-"company":"Camping World Holdings Inc",
-"industry":"Auto & Truck Dealerships",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":0.5784
 },
 {
 "ticker":"PROK",
@@ -10795,7 +10795,7 @@
 "industry":"Coking Coal",
 "sector":"Basic Materials",
 "country":"USA",
-"market_cap_b":0.536
+"market_cap_b":0.5389
 },
 {
 "ticker":"CERS",
@@ -11286,18 +11286,18 @@
 "market_cap_b":0.4743
 },
 {
-"ticker":"ARKO",
-"company":"ARKO Corp",
-"industry":"Specialty Retail",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":0.4734
-},
-{
 "ticker":"URG",
 "company":"Ur-Energy Inc",
 "industry":"Uranium",
 "sector":"Energy",
+"country":"USA",
+"market_cap_b":0.4735
+},
+{
+"ticker":"ARKO",
+"company":"ARKO Corp",
+"industry":"Specialty Retail",
+"sector":"Consumer Cyclical",
 "country":"USA",
 "market_cap_b":0.4734
 },
@@ -11324,14 +11324,6 @@
 "sector":"Basic Materials",
 "country":"USA",
 "market_cap_b":0.469
-},
-{
-"ticker":"GTN",
-"company":"Gray Media Inc",
-"industry":"Broadcasting",
-"sector":"Communication Services",
-"country":"USA",
-"market_cap_b":0.4676
 },
 {
 "ticker":"ULH",
@@ -11374,6 +11366,14 @@
 "market_cap_b":0.4648
 },
 {
+"ticker":"GTN",
+"company":"Gray Media Inc",
+"industry":"Broadcasting",
+"sector":"Communication Services",
+"country":"USA",
+"market_cap_b":0.4638
+},
+{
 "ticker":"SPIR",
 "company":"Spire Global Inc",
 "industry":"Specialty Business Services",
@@ -11403,7 +11403,7 @@
 "industry":"Telecom Services",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":0.4615
+"market_cap_b":0.4614
 },
 {
 "ticker":"CIX",
@@ -11571,7 +11571,7 @@
 "industry":"Biotechnology",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":0.441
+"market_cap_b":0.4409
 },
 {
 "ticker":"PRTA",
@@ -11710,14 +11710,6 @@
 "market_cap_b":0.4269
 },
 {
-"ticker":"HVT",
-"company":"Haverty Furniture Cos. Inc",
-"industry":"Home Improvement Retail",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":0.4265
-},
-{
 "ticker":"OXM",
 "company":"Oxford Industries Inc",
 "industry":"Apparel Manufacturing",
@@ -11738,6 +11730,14 @@
 "company":"Carlsmed Inc",
 "industry":"Health Information Services",
 "sector":"Healthcare",
+"country":"USA",
+"market_cap_b":0.4254
+},
+{
+"ticker":"HVT",
+"company":"Haverty Furniture Cos. Inc",
+"industry":"Home Improvement Retail",
+"sector":"Consumer Cyclical",
 "country":"USA",
 "market_cap_b":0.4254
 },
@@ -11982,20 +11982,20 @@
 "market_cap_b":0.4
 },
 {
+"ticker":"IHRT",
+"company":"iHeartMedia Inc",
+"industry":"Broadcasting",
+"sector":"Communication Services",
+"country":"USA",
+"market_cap_b":0.3999
+},
+{
 "ticker":"PKBK",
 "company":"Parke Bancorp Inc",
 "industry":"Banks - Regional",
 "sector":"Financial",
 "country":"USA",
 "market_cap_b":0.3984
-},
-{
-"ticker":"IHRT",
-"company":"iHeartMedia Inc",
-"industry":"Broadcasting",
-"sector":"Communication Services",
-"country":"USA",
-"market_cap_b":0.3975
 },
 {
 "ticker":"VOXR",
@@ -12051,7 +12051,7 @@
 "industry":"Railroads",
 "sector":"Industrials",
 "country":"USA",
-"market_cap_b":0.3936
+"market_cap_b":0.3935
 },
 {
 "ticker":"GALT",
@@ -12411,7 +12411,7 @@
 "industry":"Biotechnology",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":0.3594
+"market_cap_b":0.3595
 },
 {
 "ticker":"TSBK",
@@ -12934,20 +12934,28 @@
 "market_cap_b":0.3124
 },
 {
-"ticker":"SLNH",
-"company":"Soluna Holdings Inc",
-"industry":"Capital Markets",
-"sector":"Financial",
-"country":"USA",
-"market_cap_b":0.3109
-},
-{
 "ticker":"ABAT",
 "company":"American Battery Technology Company",
 "industry":"Waste Management",
 "sector":"Industrials",
 "country":"USA",
 "market_cap_b":0.3108
+},
+{
+"ticker":"SLNH",
+"company":"Soluna Holdings Inc",
+"industry":"Capital Markets",
+"sector":"Financial",
+"country":"USA",
+"market_cap_b":0.3108
+},
+{
+"ticker":"NHP",
+"company":"National Healthcare Properties Inc",
+"industry":"REIT - Healthcare Facilities",
+"sector":"Real Estate",
+"country":"USA",
+"market_cap_b":0.3106
 },
 {
 "ticker":"ALTO",
@@ -12998,20 +13006,12 @@
 "market_cap_b":0.3076
 },
 {
-"ticker":"NHP",
-"company":"National Healthcare Properties Inc",
-"industry":"REIT - Healthcare Facilities",
-"sector":"Real Estate",
-"country":"USA",
-"market_cap_b":0.3068
-},
-{
 "ticker":"NREF",
 "company":"NexPoint Real Estate Finance Inc",
 "industry":"REIT - Mortgage",
 "sector":"Real Estate",
 "country":"USA",
-"market_cap_b":0.3066
+"market_cap_b":0.3067
 },
 {
 "ticker":"HLLY",
@@ -13019,7 +13019,7 @@
 "industry":"Auto Parts",
 "sector":"Consumer Cyclical",
 "country":"USA",
-"market_cap_b":0.3051
+"market_cap_b":0.3052
 },
 {
 "ticker":"NODK",
@@ -13326,18 +13326,18 @@
 "market_cap_b":0.2787
 },
 {
-"ticker":"ANIK",
-"company":"Anika Therapeutics Inc",
-"industry":"Drug Manufacturers - Specialty & Generic",
-"sector":"Healthcare",
-"country":"USA",
-"market_cap_b":0.2785
-},
-{
 "ticker":"NC",
 "company":"Nacco Industries Inc",
 "industry":"Thermal Coal",
 "sector":"Energy",
+"country":"USA",
+"market_cap_b":0.2786
+},
+{
+"ticker":"ANIK",
+"company":"Anika Therapeutics Inc",
+"industry":"Drug Manufacturers - Specialty & Generic",
+"sector":"Healthcare",
 "country":"USA",
 "market_cap_b":0.2785
 },
@@ -13611,7 +13611,7 @@
 "industry":"Packaged Foods",
 "sector":"Consumer Defensive",
 "country":"USA",
-"market_cap_b":0.2612
+"market_cap_b":0.2613
 },
 {
 "ticker":"ASLE",
@@ -13722,6 +13722,14 @@
 "company":"Akebia Therapeutics Inc",
 "industry":"Drug Manufacturers - Specialty & Generic",
 "sector":"Healthcare",
+"country":"USA",
+"market_cap_b":0.2538
+},
+{
+"ticker":"BCBP",
+"company":"BCB Bancorp Inc (NJ)",
+"industry":"Banks - Regional",
+"sector":"Financial",
 "country":"USA",
 "market_cap_b":0.2538
 },
@@ -13899,7 +13907,7 @@
 "industry":"Other Industrial Metals & Mining",
 "sector":"Basic Materials",
 "country":"USA",
-"market_cap_b":0.2416
+"market_cap_b":0.2415
 },
 {
 "ticker":"RAIL",
@@ -14118,18 +14126,18 @@
 "market_cap_b":0.2299
 },
 {
-"ticker":"CURV",
-"company":"Torrid Holdings Inc",
-"industry":"Apparel Retail",
-"sector":"Consumer Cyclical",
-"country":"USA",
-"market_cap_b":0.2294
-},
-{
 "ticker":"BETR",
 "company":"Better Home & Finance Holding Co",
 "industry":"Mortgage Finance",
 "sector":"Financial",
+"country":"USA",
+"market_cap_b":0.2293
+},
+{
+"ticker":"CURV",
+"company":"Torrid Holdings Inc",
+"industry":"Apparel Retail",
+"sector":"Consumer Cyclical",
 "country":"USA",
 "market_cap_b":0.2293
 },
@@ -14235,7 +14243,7 @@
 "industry":"Medical Devices",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":0.222
+"market_cap_b":0.2219
 },
 {
 "ticker":"KROS",
@@ -14507,7 +14515,7 @@
 "industry":"Auto Parts",
 "sector":"Consumer Cyclical",
 "country":"USA",
-"market_cap_b":0.2004
+"market_cap_b":0.2005
 },
 {
 "ticker":"SRI",
@@ -14558,14 +14566,6 @@
 "market_cap_b":0.1964
 },
 {
-"ticker":"ESP",
-"company":"Espey Manufacturing & Electronics Corp",
-"industry":"Electrical Equipment & Parts",
-"sector":"Industrials",
-"country":"USA",
-"market_cap_b":0.1961
-},
-{
 "ticker":"FC",
 "company":"Franklin Covey Co",
 "industry":"Education & Training Services",
@@ -14598,6 +14598,14 @@
 "market_cap_b":0.1944
 },
 {
+"ticker":"ESP",
+"company":"Espey Manufacturing & Electronics Corp",
+"industry":"Electrical Equipment & Parts",
+"sector":"Industrials",
+"country":"USA",
+"market_cap_b":0.1938
+},
+{
 "ticker":"TAYD",
 "company":"Taylor Devices Inc",
 "industry":"Specialty Industrial Machinery",
@@ -14611,7 +14619,7 @@
 "industry":"Biotechnology",
 "sector":"Healthcare",
 "country":"USA",
-"market_cap_b":0.1917
+"market_cap_b":0.1916
 },
 {
 "ticker":"ANTX",
@@ -14932,14 +14940,6 @@
 "sector":"Consumer Cyclical",
 "country":"USA",
 "market_cap_b":0.1592
-},
-{
-"ticker":"BCBP",
-"company":"BCB Bancorp Inc (NJ)",
-"industry":"Banks - Regional",
-"sector":"Financial",
-"country":"USA",
-"market_cap_b":0.1578
 },
 {
 "ticker":"AMTX",
@@ -15355,7 +15355,7 @@
 "industry":"Telecom Services",
 "sector":"Communication Services",
 "country":"USA",
-"market_cap_b":0.0985
+"market_cap_b":0.0986
 },
 {
 "ticker":"BZAI",

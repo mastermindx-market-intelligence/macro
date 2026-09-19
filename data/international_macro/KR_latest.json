@@ -8,7 +8,7 @@
   "scope_en": "Republic of Korea national economy; KOSPI is market context.",
   "scope_zh": "大韩民国全国经济；KOSPI仅作市场背景。",
   "asof": "2026-09-18",
-  "built": "2026-09-18 18:17 UTC",
+  "built": "2026-09-19 21:46 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -21,7 +21,7 @@
     "data_limited": false
   },
   "decision": {
-    "score": 35,
+    "score": 31,
     "state": "defensive",
     "state_en": "Defensive",
     "state_zh": "防御",
@@ -43,7 +43,7 @@
       "inflation": -5.0,
       "recession": -6.84,
       "liquidity": 0.0,
-      "risk_state": 0.0
+      "risk_state": -4.0
     },
     "method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",
     "method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。"
@@ -203,21 +203,21 @@
     "curve": 1.32
   },
   "risk": {
-    "state": "elevated",
-    "top_score": 83,
+    "state": "caution",
+    "top_score": 78,
     "dominant_en": "US rate shock",
     "dominant_zh": "美债利率冲击",
     "h21": 0.289,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 83.3,
-      "peak": 83.3,
+      "intensity": 78.0,
+      "peak": 78.0,
       "peak_days_ago": 0,
       "off_peak": 0.0,
-      "velocity": 16.3,
+      "velocity": 10.9,
       "phase": "rising",
       "reached_risk": true,
-      "state_now": "elevated",
+      "state_now": "caution",
       "odds_now": 0.289,
       "odds_peak": 0.289,
       "odds_delta": 0.0,
@@ -244,10 +244,10 @@
         63.7,
         62.9,
         66.5,
-        71.8,
-        83.3
+        70.2,
+        78.0
       ],
-      "spark_pts": "3.0,15.3 6.9,18.8 10.8,19.3 14.7,18.5 18.7,22.4 22.6,23.0 26.5,22.1 30.4,20.3 34.3,16.1 38.2,15.6 42.1,17.3 46.0,15.9 50.0,15.3 53.9,13.7 57.8,15.9 61.7,12.7 65.6,13.4 69.5,9.8 73.4,8.5 77.3,9.7 81.3,9.9 85.2,8.7 89.1,6.9 93.0,3.0",
+      "spark_pts": "3.0,14.5 6.9,18.3 10.8,18.9 14.7,18.0 18.7,22.3 22.6,23.0 26.5,22.0 30.4,20.1 34.3,15.4 38.2,14.9 42.1,16.8 46.0,15.2 50.0,14.5 53.9,12.8 57.8,15.2 61.7,11.7 65.6,12.5 69.5,8.5 73.4,7.1 77.3,8.3 81.3,8.6 85.2,7.3 89.1,5.9 93.0,3.0",
       "spark_peak": {
         "x": 93.0,
         "y": 3.0
@@ -266,22 +266,22 @@
         "tier": "A",
         "label_en": "US rate shock",
         "label_zh": "美债利率冲击",
-        "score": 95.6,
+        "score": 92.2,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "us_rate_2y",
-            "pctile": 0.989,
+            "pctile": 0.971,
             "confirmed": true
           },
           {
             "leg": "us_real_rate",
-            "pctile": 0.966,
+            "pctile": 0.924,
             "confirmed": true
           },
           {
             "leg": "us_rate_10y",
-            "pctile": 0.912,
+            "pctile": 0.87,
             "confirmed": true
           }
         ]
@@ -291,12 +291,12 @@
         "tier": "A",
         "label_en": "Parabolic extension / exhaustion",
         "label_zh": "抛物线伸展／透支",
-        "score": 81.1,
+        "score": 80.9,
         "band": "elevated",
         "firing_legs": [
           {
             "leg": "ext_etf",
-            "pctile": 0.848,
+            "pctile": 0.844,
             "confirmed": false
           },
           {
@@ -311,7 +311,7 @@
         "tier": "A",
         "label_en": "Won depreciation / outflows",
         "label_zh": "韩元贬值／资金外流",
-        "score": 42.9,
+        "score": 35.9,
         "band": "calm",
         "firing_legs": []
       }
@@ -377,8 +377,8 @@
       "key": "fx",
       "label_en": "FX reference",
       "label_zh": "汇率参考",
-      "raw": 1388.38,
-      "value": "1,388.38",
+      "raw": 1379.53,
+      "value": "1,379.53",
       "unit": "",
       "asof": null
     },
@@ -443,7 +443,7 @@
       "title_zh": "韩元压力",
       "why_en": "A live funding, inflation and foreign-flow stress signal.",
       "why_zh": "融资、通胀与外资流压力的实时信号。",
-      "value": "1,388.38",
+      "value": "1,379.53",
       "available": true,
       "metric": "fx",
       "source_key": "bok",
@@ -536,7 +536,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-04",
-      "age_days": 535,
+      "age_days": 536,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -544,7 +544,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 170,
+      "age_days": 171,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -552,7 +552,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-07",
-      "age_days": 79,
+      "age_days": 80,
       "state": "fresh",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -560,7 +560,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 48,
+      "age_days": 49,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"
