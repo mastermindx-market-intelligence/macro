@@ -117,6 +117,25 @@ def test_short_publisher_body_fails_closed():
     assert parsed[0]["research_body"] == ""
 
 
+def test_duplicate_urls_bind_body_by_canonical_guid_identity():
+    first = _body("First GUID body says cloud orders accelerated for AMD.")
+    second = _body("Second GUID body says a separate thesis belongs to another entry.")
+    shared = "https://www.zerohedge.com/markets/shared-url"
+    xml = (
+        "<rss version='2.0'><channel>"
+        f"<item><title>First</title><link>{shared}</link><guid>guid-one</guid>"
+        f"<pubDate>Fri, 18 Sep 2026 19:00:00 GMT</pubDate><description><![CDATA[<p>{first}</p>]]></description></item>"
+        f"<item><title>Second</title><link>{shared}</link><guid>guid-two</guid>"
+        f"<pubDate>Fri, 18 Sep 2026 19:01:00 GMT</pubDate><description><![CDATA[<p>{second}</p>]]></description></item>"
+        "</channel></rss>"
+    )
+    parsed = parse_zerohedge_feed(xml, SOURCE)
+    assert len(parsed) == 2
+    assert parsed[0]["feed_item"]["id"] != parsed[1]["feed_item"]["id"]
+    assert parsed[0]["research_body"].startswith("First GUID body")
+    assert parsed[1]["research_body"].startswith("Second GUID body")
+
+
 def test_candidate_selection_reuses_incumbent_breaking_relevance():
     articles = parse_zerohedge_feed(_rss(two=True), SOURCE)
     chosen = select_candidates(

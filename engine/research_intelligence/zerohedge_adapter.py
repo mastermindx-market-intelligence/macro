@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 from typing import Any, Callable, Iterable
 
 from engine import qbus, qkernel
-from engine.marketing.breaking_feed import _strip_html, parse_feed
+from engine.marketing.breaking_feed import _make_id, _strip_html, parse_feed
 from engine.marketing.breaking_relevance import rank_items
 
 from .extractor import analyze_document
@@ -29,8 +29,8 @@ def _text(elem: Any) -> str:
     return "".join(elem.itertext()).strip()
 
 
-def _rss_bodies_by_url(xml_text: str) -> dict[str, str]:
-    """Return the longest publisher-provided body for each RSS item URL."""
+def _rss_bodies_by_id(xml_text: str, source_key: str) -> dict[str, str]:
+    """Return publisher bodies keyed by the incumbent canonical feed-item id."""
     try:
         root = ET.fromstring(xml_text)
     except ET.ParseError:
@@ -41,13 +41,15 @@ def _rss_bodies_by_url(xml_text: str) -> dict[str, str]:
     bodies: dict[str, str] = {}
     for entry in channel.findall("item"):
         url = _text(entry.find("link"))
-        if not url:
+        guid = _text(entry.find("guid")) or url
+        if not guid:
             continue
+        item_id = _make_id(source_key, guid)
         description = _text(entry.find("description"))
         encoded = _text(entry.find(_CONTENT_TAG))
         body = _strip_html(max((description, encoded), key=len, default=""))
-        if len(body) > len(bodies.get(url, "")):
-            bodies[url] = body
+        if len(body) > len(bodies.get(item_id, "")):
+            bodies[item_id] = body
     return bodies
 
 
@@ -64,10 +66,10 @@ def parse_zerohedge_feed(
         raise ValueError("ZeroHedge research adapter requires RSS input")
     minimum = max(1, int(min_body_chars))
     canonical = parse_feed(xml_text, source_cfg)
-    bodies = _rss_bodies_by_url(xml_text)
+    bodies = _rss_bodies_by_id(xml_text, ZEROHEDGE_SOURCE_KEY)
     out: list[dict[str, Any]] = []
     for item in canonical:
-        body = bodies.get(str(item.get("url") or ""), "")
+        body = bodies.get(str(item.get("id") or ""), "")
         full = len(body) >= minimum and len(body) > len(str(item.get("body_snippet") or ""))
         out.append(
             {
