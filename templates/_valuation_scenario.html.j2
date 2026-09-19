@@ -163,7 +163,7 @@
           while one gated by a more fundamental reason (e.g. "consistent
           period") keeps the existing missing-input phrasing from
           vs_null_en/vs_null_zh. -#}
-      {% set vs_gap_lbl = t('Too thin to run','利润率过低') if (s.missing and s.missing[0] == 'margin_too_thin') else t('No data','无数据') %}
+      {% set vs_gap_lbl = t('Margin too thin to run','利润率过低，无法计算') if (s.missing and s.missing[0] == 'margin_too_thin') else t('No data','无数据') %}
       <div class="vs-mark m-gap" style="left:{{ gap_positions[s.key] }}%" tabindex="0" aria-label="{{ vs_null_en(s) ~ ' · ' ~ vs_null_zh(s) }}"></div>
       <div class="vs-lbl {{ 'below' if loop.index0 is odd else '' }}" style="left:{{ gap_positions[s.key] }}%">{{ names[s.key] }}<b>{{ vs_gap_lbl }}</b></div>
       {% endif %}
