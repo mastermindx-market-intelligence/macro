@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T02:09:31.032474+00:00",
-  "count": 2399,
+  "generated_at": "2026-09-19T02:24:32.793430+00:00",
+  "count": 2400,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -107,6 +107,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-encjyakps8i-b1273c",
+      "title": "Weekly economics thoughts of the week",
+      "institution": "Raymond James",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:42:21Z",
+      "summary_points": [
+        "Fed Policy Ambiguity Amidst Restrictive Signals: FOMC SEP and dot plot revisions create uncertainty on policy reaction function, with reduced explicit guidance complicating inflation-targeting framework despite claims of removing monetary accommodation.",
+        "Household Debt & Income Disconnect: Real household debt declined (mortgage/auto down), but weak nominal/real disposable income growth YoY historically signals downturns, not expansions, indicating consumer vulnerability.",
+        "Inflation Target & Policy Uncertainty: SEP projects 2% inflation by 2029, yet Chairman implies faster timeline, creating critical uncertainty on policy credibility and required restrictive path.",
+        "Housing Sector Strain: NAHB index at 32 (lowest since pandemic), 38% price cuts, and regional declines signal severe residential real estate weakness amid financing cost headwinds.",
+        "Import Prices Surge Threatening Disinflation: Import prices rose 0.7% MoM (vs 0.1% expected), with China at 1.0% MoM (largest since 2004), risking inflationary pressure and complicating Fed policy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
