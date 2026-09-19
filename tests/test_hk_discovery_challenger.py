@@ -934,7 +934,8 @@ def test_w7_lane_a_persists_two_separate_same_population_rank_races(
         assert set(sub["ticker"]) == {"AAA.HK", "BBB.HK", "STALE.HK"}
         assert set(sub["population_n"]) == {3}
         assert set(sub["challenger_offlist_n"]) == {0}
-        assert set(sub["challenger_coverage"]) == {pytest.approx(2 / 3)}
+        assert sub["challenger_coverage"].nunique() == 1
+        assert float(sub["challenger_coverage"].iloc[0]) == pytest.approx(2 / 3)
         ranked = sub.set_index("ticker")
         assert int(ranked.loc["AAA.HK", "challenger_rank"]) == 1
         assert int(ranked.loc["BBB.HK", "challenger_rank"]) == 2
@@ -946,7 +947,7 @@ def test_w7_lane_a_persists_two_separate_same_population_rank_races(
 def test_w7_builder_registers_rank_races_only_after_publication_before_shadow_write():
     source = (ROOT / "scripts" / "build_hk_library.py").read_text()
     persist = source.index('(fdir / "hk_standouts.json").write_text(')
-    h3 = source.index('hki.RANK_DEFINITIONS["h3_ah_discount"]') if False else source.index(
+    h3 = source.index(
         'hk_native_intelligence.RANK_DEFINITIONS["h3_ah_discount"]'
     )
     x1 = source.index(
@@ -955,4 +956,3 @@ def test_w7_builder_registers_rank_races_only_after_publication_before_shadow_wr
     shadow = source.index('board_shadow.write_shadow(calls, market="HK"')
     assert persist < h3 < shadow
     assert persist < x1 < shadow
-
