@@ -37,8 +37,10 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# 2026-09-19 contract-delta (unrun-import-hygiene): the pin must be an
+# unconditional top-level insert — a conditional insert is not a strong pin
+# (tests/test_check_script_import_pinning.py::_strong_pin).
+sys.path.insert(0, str(ROOT))
 
 
 def _today_utc() -> date:
