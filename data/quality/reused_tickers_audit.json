@@ -766,7 +766,7 @@
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60095
+  "ledger_rows": 60098
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
@@ -1031,8 +1031,8 @@
     {
      "ticker": "BBBY",
      "registry_last": "2023-05-19",
-     "store_tip": "2026-09-17",
-     "days_past_death": 1217,
+     "store_tip": "2026-09-18",
+     "days_past_death": 1218,
      "overlap": {
       "n_overlap": 2362,
       "ret_corr_full": 0.9305,
