@@ -259,6 +259,40 @@ def _pairwise(
     *,
     min_common_support_mass: float,
 ) -> list[dict[str, Any]]:
+    available = {
+        root: root_dist[root].get(bucket)
+        for root in roots
+        if root_dist[root].get(bucket) is not None
+    }
+    support_ranges = {
+        root: (float(dist["x"].min()), float(dist["x"].max()))
+        for root, dist in available.items()
+    }
+    common_min = (
+        max(bounds[0] for bounds in support_ranges.values())
+        if len(support_ranges) >= 2
+        else None
+    )
+    common_max = (
+        min(bounds[1] for bounds in support_ranges.values())
+        if len(support_ranges) >= 2
+        else None
+    )
+    global_overlap = (
+        common_min is not None
+        and common_max is not None
+        and common_min <= common_max
+    )
+    restricted: dict[str, pd.DataFrame] = {}
+    retained: dict[str, float] = {}
+    if global_overlap:
+        for root, dist in available.items():
+            narrowed, mass = _restrict_to_common_support(
+                dist, float(common_min), float(common_max)
+            )
+            restricted[root] = narrowed
+            retained[root] = mass
+
     rows: list[dict[str, Any]] = []
     for left, right in itertools.combinations(roots, 2):
         a = root_dist[left].get(bucket)
@@ -276,6 +310,8 @@ def _pairwise(
                     "dispersion_difference_x": None,
                     "entropy_difference": None,
                     "signed_regime_agreement": None,
+                    "left_centroid_x": None,
+                    "right_centroid_x": None,
                     "full_board_wasserstein_1_x": None,
                     "full_board_cosine_similarity": None,
                     "common_support": None,
@@ -293,12 +329,23 @@ def _pairwise(
 
         full_cosine, full_clip_a, full_clip_b = r6._cosine_similarity(a, b, left_spec)
         full_wasserstein = r6._wasserstein_1(a, b)
+        left_min, left_max = support_ranges[left]
+        right_min, right_max = support_ranges[right]
+        support = {
+            "support_scope": "all_present_roots_in_bucket",
+            "roots_defining_support": sorted(available),
+            "left_x_min": left_min,
+            "left_x_max": left_max,
+            "right_x_min": right_min,
+            "right_x_max": right_max,
+            "common_x_min": common_min if global_overlap else None,
+            "common_x_max": common_max if global_overlap else None,
+            "left_retained_mass": retained.get(left, 0.0),
+            "right_retained_mass": retained.get(right, 0.0),
+            "min_required_mass": min_common_support_mass,
+        }
 
-        left_min, left_max = float(a["x"].min()), float(a["x"].max())
-        right_min, right_max = float(b["x"].min()), float(b["x"].max())
-        common_min = max(left_min, right_min)
-        common_max = min(left_max, right_max)
-        if common_min > common_max:
+        if not global_overlap:
             rows.append(
                 {
                     "left": left,
@@ -311,41 +358,22 @@ def _pairwise(
                     "dispersion_difference_x": None,
                     "entropy_difference": None,
                     "signed_regime_agreement": None,
+                    "left_centroid_x": None,
+                    "right_centroid_x": None,
                     "full_board_wasserstein_1_x": full_wasserstein,
                     "full_board_cosine_similarity": full_cosine,
                     "full_board_left_grid_clipped_mass": full_clip_a,
                     "full_board_right_grid_clipped_mass": full_clip_b,
-                    "common_support": {
-                        "left_x_min": left_min,
-                        "left_x_max": left_max,
-                        "right_x_min": right_min,
-                        "right_x_max": right_max,
-                        "common_x_min": None,
-                        "common_x_max": None,
-                        "left_retained_mass": 0.0,
-                        "right_retained_mass": 0.0,
-                        "min_required_mass": min_common_support_mass,
-                    },
+                    "common_support": support,
                 }
             )
             continue
 
-        ar, retained_a = _restrict_to_common_support(a, common_min, common_max)
-        br, retained_b = _restrict_to_common_support(b, common_min, common_max)
-        support = {
-            "left_x_min": left_min,
-            "left_x_max": left_max,
-            "right_x_min": right_min,
-            "right_x_max": right_max,
-            "common_x_min": common_min,
-            "common_x_max": common_max,
-            "left_retained_mass": retained_a,
-            "right_retained_mass": retained_b,
-            "min_required_mass": min_common_support_mass,
-        }
+        ar = restricted[left]
+        br = restricted[right]
         if (
-            retained_a < min_common_support_mass
-            or retained_b < min_common_support_mass
+            retained[left] < min_common_support_mass
+            or retained[right] < min_common_support_mass
             or ar.empty
             or br.empty
         ):
@@ -361,6 +389,8 @@ def _pairwise(
                     "dispersion_difference_x": None,
                     "entropy_difference": None,
                     "signed_regime_agreement": None,
+                    "left_centroid_x": None,
+                    "right_centroid_x": None,
                     "full_board_wasserstein_1_x": full_wasserstein,
                     "full_board_cosine_similarity": full_cosine,
                     "full_board_left_grid_clipped_mass": full_clip_a,
@@ -383,6 +413,8 @@ def _pairwise(
                 "cosine_similarity": cosine,
                 "left_grid_clipped_mass": clip_a,
                 "right_grid_clipped_mass": clip_b,
+                "left_centroid_x": float(ma["centroid_x"]),
+                "right_centroid_x": float(mb["centroid_x"]),
                 "centroid_distance_x": abs(
                     float(ma["centroid_x"]) - float(mb["centroid_x"])
                 ),
@@ -447,10 +479,12 @@ def _bucket_summary(
         if row["cosine_similarity"] is not None
     ]
 
-    # Primary centroid dispersion uses pair-qualified root topology only when every
-    # root with this bucket participates in a complete support-qualified graph.
+    centroid_by_root: dict[str, float] = {}
+    for row in present_pairs:
+        centroid_by_root[row["left"]] = float(row["left_centroid_x"])
+        centroid_by_root[row["right"]] = float(row["right_centroid_x"])
     centroids = np.array(
-        [float(root_meta[root]["metrics"][bucket]["centroid_x"]) for root in comparable_roots],
+        [centroid_by_root[root] for root in comparable_roots if root in centroid_by_root],
         dtype=float,
     )
 
