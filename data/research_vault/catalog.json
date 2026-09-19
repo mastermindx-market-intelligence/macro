@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T00:45:02.954308+00:00",
-  "count": 2395,
+  "generated_at": "2026-09-19T01:09:27.827393+00:00",
+  "count": 2396,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,24 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-bvrjttmkmas-874349",
+      "title": "Audio",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:45Z",
+      "summary_points": [
+        "BoJ Rate Hike & Yen Weakness: Expected rate increase (non-unanimous), yen weakened despite market reaction; BoJ targeting neutral rates, another hike likely.",
+        "UK Productivity Revisions: August retail sales beat (hot weather/World Cup), productivity revised higher via new labor data → implies higher future output, lower inflation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-in7lbnkexwm-9861a7",
       "title": "European Views Not So Fast",
