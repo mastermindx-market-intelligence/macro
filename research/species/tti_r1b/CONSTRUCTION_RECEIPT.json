@@ -1,0 +1,38 @@
+{
+  "evidence_class": "SYNTHETIC_ENGINEERING_ONLY",
+  "source_files_sha256": {
+    "engine/entry_radar/tactical_exhaustion.py": "9b641f7a8c10854a2b561726de84c6fd8058ea646e47cb165c63e530abbc13f7",
+    "scripts/research/terminal_tactical_r1b_preview.py": "b1d4ae991bd9498debdd409af0970b038fa03a3e762bd715bc239a3f66d4a994",
+    "tests/test_entry_radar_w3_detectors.py": "ff888c78da1689cf8a7156ea5998e4c2f6ae36c85a55906d86dc963d9c08a55a",
+    "research/species/tti_r1b/config_v4.json": "24b5a89f8df9c441160f1162c0f08d62796e842e29fff3c55766160fe388bc19",
+    "research/species/TTI_R1B_V4_PREREG.md": "a8afab8d87cfe912aeaed02c105112869943433cf6b7bb7c765bd2768d0dfcd3"
+  },
+  "precommit_base": "dd252f6f399946a835687ecc566b482f658551eb",
+  "radar_command": "python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py -q",
+  "radar_result": "1520 passed, 3 skipped in 75.89s (0:01:15)",
+  "radar_exit_code": 0,
+  "source_stable_during_run": true,
+  "market_data_read": false,
+  "market_outcomes_computed": false,
+  "trial_ledger_modified": false,
+  "registered_r1b_cells": 0,
+  "planned_r1b_cells": 60,
+  "independent_review_received": false,
+  "sequencing_ruling": "Macro #7274 comment 5745472291",
+  "skillpack_repo": "mastermindx-market-intelligence/Mastermind",
+  "skillpack_commit": "ac6180d0ca9107daae54f9eea6bd4b8aef92d630",
+  "new_TTIB_cases": 40,
+  "full_detector_suite": "192 passed",
+  "script_import_pinning": "11 passed",
+  "compilation": "PASS",
+  "diff_check": "PASS",
+  "unchanged_paths": [
+    "data/trial_ledger.jsonl",
+    "research/species/tti_r1b/config_v4.json",
+    "research/species/TTI_R1B_V4_PREREG.md"
+  ],
+  "construction_scope": "candidate_confirmation_and_control_anchor_census_only",
+  "empirical_adapter_built": false,
+  "matched_control_estimates_computed": false,
+  "lod_outcomes_computed": false
+}

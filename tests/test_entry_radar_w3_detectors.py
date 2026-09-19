@@ -305,3 +305,351 @@ def test_W3_10_the_run_helpers_state_that_their_episodes_are_not_a_ledger():
         assert "PR-4" in doc or "PR-5" in doc
     assert "rearm_eligible" in (ch.run_c1.__doc__ or "")
     assert callable(ch.rearm_eligible)
+
+
+# TTI R1-B v4 pure construction: synthetic only; no registry or market reads.
+def _ttib_config():
+    from pathlib import Path
+    return (Path(__file__).resolve().parents[1] /
+            'research/species/tti_r1b/config_v4.json').read_bytes()
+
+
+def _ttib_frame(tail='reclaim', session=None):
+    from datetime import date
+    import pandas as pd
+    from engine.session_digest import session_window_et
+    session = session or date(2026, 9, 17)
+    start, _ = session_window_et(session)
+    rows = [[100, 100.2, 99, 99.4, 100],
+            [99.4, 99.5, 98.8, 99, 100],
+            [99, 99.1, 98.6, 98.98, 100]]
+    if tail == 'reclaim':
+        rows += [[98.98, 99.1, 98.55, 98.95, 100],
+                 [98.95, 99.2, 98.8, 99.1, 100],
+                 [99.1, 99.5, 99, 99.4, 100]]
+    elif tail == 'continue':
+        rows += [[98.6, 98.7, 97.9, 98, 100],
+                 [98, 99.1, 97.8, 98.95, 100],
+                 [98.95, 99.3, 98.8, 99.2, 100]]
+    else:
+        rows += [[98.7, 98.8, 98.6, 98.7, 100]] * 3
+    return pd.DataFrame(rows, index=pd.date_range(start, periods=len(rows), freq='5min'),
+                        columns=['open', 'high', 'low', 'close', 'volume'])
+
+
+def _ttib_run(frame=None, *, minute=600, **kwargs):
+    from datetime import date, timedelta
+    from engine.entry_radar.tactical_exhaustion import construct_session
+    from engine.session_digest import session_window_et
+    from lib.nyse_calendar import session_n_back
+    day = kwargs.pop('session', date(2026, 9, 17))
+    start, _ = session_window_et(day)
+    base = dict(symbol='AMD', session=day, prior_session=session_n_back(day, 1),
+                prior_close=100.0, prior_atr=2.0, asof=start+timedelta(minutes=minute-570),
+                config_bytes=_ttib_config(), price_basis='adjusted')
+    base.update(kwargs)
+    return construct_session(_ttib_frame(session=day) if frame is None else frame, **base)
+
+
+def test_TTIB_frozen_rules_have_an_executable_constructor():
+    import importlib.util
+    assert importlib.util.find_spec('engine.entry_radar.tactical_exhaustion') is not None
+
+
+def test_TTIB_completed_candidate_and_full_latency_are_distinct():
+    r = _ttib_run(minute=585)
+    assert [e['selector'] for e in r['events']] == ['BASE_FRESH_LOW', 'EXHAUSTION_FORMING']
+    e = r['events'][0]
+    assert e['candidate_at'].endswith('13:45:00+00:00')
+    assert e['decision_at'] == e['candidate_at']
+    assert e['entry_reference_at'].endswith('13:50:00+00:00')
+    assert 'entry_price' not in e
+    assert e['candidate_low'] == 98.6
+    assert e['reclaim_level'] == 98.8
+    assert e['continuation_level'] == pytest.approx(98.1)
+
+
+def test_TTIB_reclaim_is_confirmed_later_and_preserves_two_low_anchors():
+    r = _ttib_run(minute=590)
+    e = next(e for e in r['events'] if e['selector'] == 'EXHAUSTION_RECLAIM')
+    assert e['candidate_at'].endswith('13:45:00+00:00')
+    assert e['decision_at'].endswith('13:50:00+00:00')
+    assert e['entry_reference_at'].endswith('13:55:00+00:00')
+    assert e['confirmation_delay_bars'] == 1
+    assert e['candidate_low'] == 98.6 and e['episode_low'] == 98.55
+    assert len(r['control_census']) == 1
+
+
+def test_TTIB_continuation_wins_before_a_later_reclaim():
+    r = _ttib_run(_ttib_frame('continue'))
+    assert r['anchors'][0]['race'] == 'CONTINUATION'
+    first = r['anchors'][0]['anchor_id']
+    assert not any(e['selector'] == 'EXHAUSTION_RECLAIM' and e['anchor_id'] == first
+                   for e in r['events'])
+    assert any(e['selector'] == 'CONTINUATION_RISK' for e in r['events'])
+
+
+def test_TTIB_unresolved_race_expires_after_exactly_three_completed_bars():
+    frame = _ttib_frame('expire')
+    assert _ttib_run(frame, minute=595)['anchors'][0]['race'] == 'PENDING'
+    r = _ttib_run(frame, minute=600)
+    assert r['anchors'][0]['race'] == 'EXPIRED'
+    assert all(e['selector'] in ('BASE_FRESH_LOW', 'EXHAUSTION_FORMING') for e in r['events'])
+
+
+def test_TTIB_equal_low_does_not_create_a_new_candidate():
+    f = _ttib_frame(); f.iloc[2, f.columns.get_loc('low')] = 98.8
+    assert _ttib_run(f, minute=585)['events'] == []
+
+
+@pytest.mark.parametrize('field,value', [('volume', 0), ('volume', -1), ('close', float('nan')),
+                                          ('high', 98.0)])
+def test_TTIB_bad_candidate_is_not_a_measured_signal(field, value):
+    f = _ttib_frame(); f.iloc[2, f.columns.get_loc(field)] = value
+    r = _ttib_run(f, minute=585)
+    assert r['events'] == [] and r['diagnostics']
+
+
+def test_TTIB_zero_volume_confirmation_preserves_forming_but_censors_race():
+    f = _ttib_frame(); f.iloc[3, f.columns.get_loc('volume')] = 0
+    r = _ttib_run(f, minute=590)
+    assert r['anchors'][0]['race'] == 'UNAVAILABLE'
+    assert len(r['events']) == 2
+
+
+def test_TTIB_no_future_bar_can_modify_decision_prefix():
+    import pandas as pd
+    f = _ttib_frame(); expected = _ttib_run(f, minute=585)
+    f.iloc[3:, :] = float('nan')
+    f = pd.concat([f, f.iloc[5:6]])
+    assert _ttib_run(f, minute=585) == expected
+
+
+def test_TTIB_bad_later_bar_never_erases_an_earlier_confirmation():
+    f = _ttib_frame(); before = _ttib_run(f, minute=590)['events']
+    f.iloc[4, f.columns.get_loc('low')] = float('nan')
+    assert _ttib_run(f, minute=600)['events'] == before
+
+
+def test_TTIB_missing_confirmation_bar_is_not_skipped_for_a_later_reclaim():
+    f = _ttib_frame(); r = _ttib_run(f.drop(f.index[3]))
+    assert r['anchors'][0]['race'] == 'UNAVAILABLE'
+    assert not any(e['selector'] == 'EXHAUSTION_RECLAIM' for e in r['events'])
+
+
+def test_TTIB_control_census_does_not_depend_on_future_family_label():
+    a = _ttib_run(_ttib_frame('reclaim'), minute=585)['control_census']
+    b = _ttib_run(_ttib_frame('continue'), minute=585)['control_census']
+    assert a == b and a
+
+
+@pytest.mark.parametrize('override', [dict(prior_atr=0), dict(prior_close=float('nan')),
+                                       dict(price_basis='raw')])
+def test_TTIB_bad_prior_inputs_refuse_the_session(override):
+    r = _ttib_run(**override)
+    assert r['availability'] == 'UNAVAILABLE' and r['events'] == []
+
+
+def test_TTIB_stale_prior_session_is_unavailable():
+    from datetime import date
+    assert _ttib_run(prior_session=date(2026, 9, 14))['availability'] == 'UNAVAILABLE'
+
+
+def test_TTIB_early_close_does_not_become_a_normal_day():
+    from datetime import date
+    assert _ttib_run(session=date(2026, 11, 27))['availability'] == 'UNAVAILABLE'
+
+
+def test_TTIB_recipe_cannot_be_retuned_or_rename_authority():
+    import json
+    c = json.loads(_ttib_config()); c['base_displacement_atr_min'] = 0.1
+    with pytest.raises(ValueError, match='config identity'):
+        _ttib_run(config_bytes=json.dumps(c).encode())
+    r = _ttib_run()
+    assert r['authority'] == 'research_construction_only'
+    assert r['historical_availability_proven'] is False
+    assert r['market_outcomes_computed'] is False
+    assert r['may_alert'] is False and r['may_trade'] is False
+
+
+def test_TTIB_later_anchor_can_confirm_first_and_unqualified_anchor_consumes_nothing():
+    f = _ttib_frame()
+    f.iloc[2] = [99, 99.1, 98.6, 98.65, 100]
+    f.iloc[3] = [98.65, 98.8, 98.5, 98.75, 100]
+    f.iloc[4] = [98.75, 98.79, 98.6, 98.7, 100]
+    f.iloc[5] = [98.7, 99, 98.65, 98.9, 100]
+    r = _ttib_run(f)
+    forming = next(e for e in r['events'] if e['selector'] == 'EXHAUSTION_FORMING')
+    reclaim = next(e for e in r['events'] if e['selector'] == 'RECLAIM_ONLY')
+    assert forming['candidate_at'].endswith('13:50:00+00:00')
+    assert reclaim['candidate_at'] == forming['candidate_at']
+    assert reclaim['decision_at'].endswith('13:55:00+00:00')
+    assert len([e for e in r['events'] if e['selector'] == 'RECLAIM_ONLY']) == 1
+    assert any(e['selector'] == 'EXHAUSTION_RECLAIM' for e in r['events'])
+
+
+def test_TTIB_race_cannot_read_a_candle_one_second_before_completion():
+    from datetime import timedelta
+    f = _ttib_frame()
+    r = _ttib_run(f, asof=f.index[4].to_pydatetime()-timedelta(seconds=1))
+    assert r['anchors'][0]['race'] == 'PENDING'
+    assert len(r['events']) == 2
+
+
+def test_TTIB_duplicate_later_row_preserves_earlier_events_and_censors_pending():
+    import pandas as pd
+    f = _ttib_frame(); before = _ttib_run(f, minute=590)['events']
+    duplicate = pd.concat([f.iloc[:5], f.iloc[4:5], f.iloc[5:]])
+    r = _ttib_run(duplicate)
+    assert r['events'] == before
+    assert any(d['reason'] == 'duplicate_bar' for d in r['diagnostics'])
+
+
+def test_TTIB_zero_range_candidate_is_unavailable():
+    f = _ttib_frame(); f.iloc[2] = [98.6, 98.6, 98.6, 98.6, 100]
+    r = _ttib_run(f, minute=585)
+    assert not r['events']
+    assert any(d['reason'] == 'zero_range_candidate' for d in r['diagnostics'])
+
+
+def test_TTIB_timezone_conversion_preserves_event_times_and_fractional_volume():
+    f = _ttib_frame(); expected = _ttib_run(f)['events']
+    f.index = f.index.tz_convert('Asia/Tokyo'); f['volume'] = 0.125
+    assert _ttib_run(f)['events'] == expected
+
+
+def test_TTIB_premarket_does_not_enter_regular_session_running_low():
+    import pandas as pd
+    from datetime import timedelta
+    f = _ttib_frame(); early = f.iloc[:1].copy()
+    early.index = early.index - timedelta(hours=2)
+    early.iloc[0] = [95, 96, 90, 95, 100]
+    assert _ttib_run(pd.concat([early, f]))['events'] == _ttib_run(f)['events']
+
+
+def test_TTIB_market_holiday_has_no_regular_session_candidates():
+    from datetime import date
+    r = _ttib_run(session=date(2026, 12, 25))
+    assert r['reason'] == 'not_trading_session' and not r['events']
+
+
+def test_TTIB_control_census_keeps_a_later_time_bin_without_extra_selector_fires():
+    import pandas as pd
+    f = _ttib_frame('expire')
+    # Preserve the frozen >=0.20 ATR impulse at the later candidate.
+    f.iloc[4] = [99.1, 99.2, 98.6, 98.7, 100]
+    extension = pd.DataFrame([[98.7, 98.85, 98.58, 98.8, 100]],
+              index=[f.index[-1] + pd.Timedelta(minutes=5)], columns=f.columns)
+    r = _ttib_run(pd.concat([f, extension]), minute=605)
+    assert len(r['control_census']) == 2
+    assert len([e for e in r['events'] if e['selector'] == 'BASE_FRESH_LOW']) == 1
+
+
+def test_TTIB_explanation_cli_is_synthetic_only_and_no_market_input_option():
+    import json, subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = root/'scripts/research/terminal_tactical_r1b_preview.py'
+    assert script.is_file(), 'synthetic replay consumer not implemented'
+    p = subprocess.run([sys.executable, str(script), '--format', 'json'],
+                       cwd=root, capture_output=True, text=True, timeout=30)
+    assert p.returncode == 0, p.stderr
+    report = json.loads(p.stdout)
+    assert report['evidence_class'] == 'SYNTHETIC_ONLY'
+    assert report['market_data_read'] is False and report['outcomes_computed'] is False
+    assert len(report['examples']) == 3
+    states = [e['construction']['anchors'][0]['race'] for e in report['examples']]
+    assert states == ['RECLAIM', 'CONTINUATION', 'EXPIRED']
+    denied = subprocess.run([sys.executable, str(script), '--input-dir', '/tmp'],
+                            cwd=root, capture_output=True, text=True, timeout=30)
+    assert denied.returncode != 0
+
+
+def test_TTIB_markdown_explanation_names_confirmation_and_limits():
+    import subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    p = subprocess.run([sys.executable, str(root/'scripts/research/terminal_tactical_r1b_preview.py'),
+                        '--format', 'markdown'], cwd=root, capture_output=True, text=True, timeout=30)
+    assert p.returncode == 0, p.stderr
+    assert 'SYNTHETIC' in p.stdout and 'not market data' in p.stdout
+    assert 'Candidate' in p.stdout and 'Confirmation' in p.stdout and 'Earliest entry' in p.stdout
+    assert 'No edge or probability' in p.stdout
+
+
+def test_TTIB_displacement_is_a_condition_not_a_visual_low_guess():
+    r = _ttib_run(minute=585, prior_close=99.5)
+    assert r['events'] == []  # (99.5 - 98.6) / 2 < frozen 0.50
+
+
+def test_TTIB_small_recent_impulse_does_not_qualify_even_after_prior_weakness():
+    f = _ttib_frame()
+    f.iloc[0] = [98.9, 99, 98.65, 98.8, 100]
+    f.iloc[1] = [98.8, 98.9, 98.64, 98.7, 100]
+    f.iloc[2] = [98.7, 98.9, 98.6, 98.85, 100]
+    assert _ttib_run(f, minute=585)['events'] == []
+
+
+def test_TTIB_prior_zero_volume_low_is_not_a_session_extreme():
+    import pandas as pd
+    f = _ttib_frame(); extra = f.iloc[:1].copy()
+    # Insert a zero-volume low at 09:30; shift the real three-bar impulse later.
+    f.index = f.index + pd.Timedelta(minutes=5)
+    extra.iloc[0] = [90, 91, 80, 90, 0]
+    r = _ttib_run(pd.concat([extra, f]), minute=590)
+    assert r['events'][0]['candidate_low'] == 98.6
+    assert r['events'][0]['reclaim_level'] == 98.8
+
+
+def test_TTIB_unordered_later_input_cannot_erase_earlier_events():
+    import pandas as pd
+    f = _ttib_frame(); before = _ttib_run(f, minute=590)['events']
+    bad = pd.concat([f.iloc[:4], f.iloc[5:6], f.iloc[4:5]])
+    r = _ttib_run(bad)
+    assert r['events'] == before
+    assert any(d['reason'] == 'off_grid_or_unordered_bar' for d in r['diagnostics'])
+
+
+def test_TTIB_off_grid_bar_is_not_rounded_into_a_causal_candidate():
+    import pandas as pd
+    f = _ttib_frame(); index = list(f.index)
+    index[2] += pd.Timedelta(seconds=1); f.index = pd.DatetimeIndex(index)
+    assert _ttib_run(f, minute=590)['events'] == []
+
+
+def test_TTIB_constructor_has_no_empirical_io_or_production_event_writer():
+    import ast
+    from pathlib import Path
+    source = (Path(__file__).resolve().parents[1]/'engine/entry_radar/tactical_exhaustion.py').read_text()
+    tree = ast.parse(source)
+    allowed = {'__future__', 'bisect', 'datetime', 'hashlib', 'json', 'math', 'numbers',
+               'pandas', 'engine.session_digest', 'lib.nyse_calendar'}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            assert all(n.name in allowed for n in node.names)
+        if isinstance(node, ast.ImportFrom):
+            assert node.module in allowed
+        if isinstance(node, ast.Call):
+            name = node.func.id if isinstance(node.func, ast.Name) else getattr(node.func, 'attr', '')
+            assert name not in {'open', 'read_csv', 'read_parquet', 'read_json', 'read_bytes',
+                                'write_text', 'write_bytes', 'register_trial', 'build_radar_native_event'}
+
+
+def test_TTIB_absent_data_is_unavailable_not_an_available_no_signal_report():
+    r = _ttib_run(_ttib_frame().iloc[:0])
+    assert r['availability'] == 'UNAVAILABLE'
+    assert r['reason'] == 'no_usable_completed_bars'
+    assert r['events'] == []
+
+
+def test_TTIB_late_input_gap_is_partial_without_erasing_valid_earlier_events():
+    f = _ttib_frame(); events = _ttib_run(f, minute=590)['events']
+    r = _ttib_run(f.drop(f.index[4]))
+    assert r['availability'] == 'PARTIAL'
+    assert r['events'] == events
+
+
+def test_TTIB_before_first_bar_close_is_pending_not_a_measured_no_signal():
+    r = _ttib_run(minute=572)
+    assert r['availability'] == 'PENDING'
+    assert r['reason'] == 'no_completed_regular_bar_yet'
