@@ -211,36 +211,20 @@ _thread_token: str | None = None  # thread-local token resolved by _current_user
 
 def _current_user(authorization: str | None = Header(default=None),
                   request: Request = None) -> dict:
-    """Lazy import mirrors ``app/account_prefs.py::_current_user`` — no app.main cycle.
+    """Thin adapter that passes ``request`` to ``require_user`` and syncs the thread-local.
 
-    Accepts EITHER a ``Bearer <token>`` header OR the shared Supabase session cookie
-    (``sb-<ref>-auth-token``) via ``_mm_supabase_access_token`` — the same reader
-    ``paywall`` and ``regwall`` and ``collect`` already use for the beacon.
-    ``require_user`` receives only a ``Bearer`` header; the cookie token is resolved
-    here and forwarded in the same format so ``require_user`` is unchanged.
+    ``require_user`` (``app/main.py``) now handles both Bearer and cookie itself.
+    This function exists only to keep the thread-local ``_thread_token`` in sync
+    (so downstream code that reads it still works) and to stay compatible with
+    the existing ``_current_user`` interface other callers may rely on.
     """
     global _thread_token
-    from app.main import require_user, _mm_supabase_access_token  # noqa: PLC0415
+    from app.main import require_user  # noqa: PLC0415
 
-    # If a Bearer header is present, pass it through directly.
-    if authorization and authorization.startswith("Bearer "):
-        _thread_token = authorization.split(" ", 1)[1]
-        user = require_user(authorization)
-        user["_access_token"] = _thread_token
-        return user
-
-    # No Bearer: try the session cookie.
-    if request is not None:
-        cookie_token = _mm_supabase_access_token(request)
-        if cookie_token:
-            _thread_token = cookie_token
-            user = require_user(f"Bearer {cookie_token}")
-            user["_access_token"] = _thread_token
-            return user
-
-    # Neither present: let require_user issue the 401.
-    _thread_token = None
-    return require_user(authorization)
+    user = require_user(authorization, request)
+    # ``require_user`` injects ``_access_token``; mirror it to the thread-local.
+    _thread_token = user.get("_access_token")
+    return user
 
 
 def _supabase() -> tuple[str, str]:

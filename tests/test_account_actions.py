@@ -219,7 +219,8 @@ def up(monkeypatch) -> _Upstream:
     monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", SERVICE_KEY)
     import app.main as main
     monkeypatch.setattr(main, "SUPABASE_ANON_KEY", ANON_KEY)
-    monkeypatch.setattr(main, "require_user", lambda authorization: dict(USER, _access_token=CALLER_TOKEN))
+    monkeypatch.setattr(main, "require_user",
+                        lambda authorization, request=None: dict(USER, _access_token=CALLER_TOKEN))
     return recorder
 
 
@@ -539,7 +540,8 @@ def test_t4_delete_reports_the_stores_echo_not_the_code_it_minted(client, up):
 
 def test_t4_delete_files_the_token_owners_row_not_a_body_claim(client, up, monkeypatch):
     import app.main as main
-    monkeypatch.setattr(main, "require_user", lambda authorization: dict(USER, _access_token=CALLER_TOKEN))
+    monkeypatch.setattr(main, "require_user",
+                        lambda authorization, request=None: dict(USER, _access_token=CALLER_TOKEN))
     up.answers((201, [dict(ROW)]))
     resp = client.post("/api/account/delete",
                        json={"confirm": "reader@example.com", "user_id": "attacker-uuid"},
@@ -555,7 +557,7 @@ def test_t4_delete_identity_without_an_email_is_refused_before_the_store(client,
     # WITH _access_token so the handler passes the token check and reaches the email check.
     import app.main as main
     monkeypatch.setattr(main, "require_user",
-                        lambda authorization: dict(USER, _access_token=CALLER_TOKEN))
+                        lambda authorization, request=None: dict(USER, _access_token=CALLER_TOKEN))
     data = _assert_plain_failure(_post(client, "/api/account/delete",
                                        {"confirm": "reader@example.com"}), 400)
     assert data["error"] == account_actions.COPY["delete_no_email"][0]
@@ -732,7 +734,7 @@ def test_t5_limits_are_keyed_by_user_and_by_ip(client, up, monkeypatch):
 
     import app.main as main
     monkeypatch.setattr(main, "require_user",
-                        lambda authorization: dict(USER, id="someone-else", _access_token=CALLER_TOKEN))
+                        lambda authorization, request=None: dict(USER, id="someone-else", _access_token=CALLER_TOKEN))
     assert _post(client, "/api/account/password", {"password": PASSWORD}).status_code == 429, \
         "a different account behind the same address is still held by the IP leg"
 
@@ -933,32 +935,36 @@ def test_t10_no_cookie_no_bearer_returns_401_on_get_and_all_four_posts():
 
 
 def test_t11_cookie_path_in_current_user():
-    """The _current_user function accepts the session cookie via _mm_supabase_access_token.
-
-    This is tested via the source: _current_user contains the cookie fallback branch.
-    The actual end-to-end flow (cookie → require_user → token → action) is proven by
-    the existing t1-t4 suite using the up fixture, which exercises require_user.
+    """The cookie fallback lives in ``require_user`` (``app/main.py``), which now accepts
+    ``request`` and calls ``_mm_supabase_access_token`` when no Bearer header is present.
+    ``_current_user`` delegates to ``require_user`` with both arguments. The actual
+    end-to-end flow (cookie → require_user → token → action) is proven by the t1-t4
+    suite using the ``up`` fixture, which exercises ``require_user``.
     """
     import inspect
-    src = inspect.getsource(account_actions._current_user)
+    from app import main as main_module
+    src = inspect.getsource(main_module.require_user)
     assert "_mm_supabase_access_token" in src, \
-        "_current_user must call _mm_supabase_access_token for the cookie fallback"
-    assert "Bearer" in src, \
-        "_current_user must forward the cookie token to require_user as Bearer"
+        "require_user must call _mm_supabase_access_token for the cookie fallback"
+    # _current_user delegates cookie handling to require_user.
+    src_adapter = inspect.getsource(account_actions._current_user)
+    assert "require_user" in src_adapter, \
+        "_current_user must delegate to require_user"
 
 
 def test_t12_current_user_has_bearer_branch():
-    """The _current_user function passes Bearer tokens through unchanged (regression guard).
+    """The ``_current_user`` function delegates Bearer handling to ``require_user``.
 
-    At the old head _current_user called require_user directly. At the new head it adds
-    a cookie branch. The Bearer-through branch is unchanged, so Bearer-only callers still work.
-    The up fixture in t1-t4 proves this end-to-end with the real require_user.
+    At the old head _current_user called require_user directly. At the new head
+    ``require_user`` handles both Bearer and cookie, and _current_user is a thin
+    adapter. The up fixture in t1-t4 proves this end-to-end with the real require_user.
     """
     import inspect
     src = inspect.getsource(account_actions._current_user)
-    # The Bearer branch passes authorization through directly.
-    assert 'authorization.startswith("Bearer "' in src or "authorization and authorization.startswith" in src, \
-        "_current_user must pass Bearer authorization directly to require_user"
+    assert "require_user(authorization, request)" in src, \
+        "_current_user must pass authorization and request to require_user"
+    assert "_access_token" in src, \
+        "_current_user must extract _access_token from require_user's response"
 
 
 def test_t13_doSignOutAll_shows_errText_on_non_2xx_and_does_not_sign_out_on_401_429_502():
