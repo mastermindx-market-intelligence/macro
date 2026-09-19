@@ -1,0 +1,67 @@
+{
+  "schema": "research_qualification_artifact_receipt.v1",
+  "executed_at_utc": "2026-09-16T04:54:41.575897+00:00",
+  "scope": "Local artifact consistency, arithmetic and unchanged R3 regression only; no source acquisition, parser, model or product benchmark.",
+  "r3_regression": {
+    "executed_at_utc": "2026-09-16T04:50:41.120051+00:00",
+    "python": "3.13.5",
+    "tests_run": 53,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "success": true,
+    "sha256": {
+      "revision_oracle.py": "3417b1900fe72dce5015d6dd9e1211524a7e5eb570e40c7f15bda9abe6af6f5b",
+      "test_revision_oracle.py": "a41ad9a559ee3bd1d1defd048c6c4310838cd5539a447be5a44008279811fecf",
+      "public_control_case.json": "05915cffe856fb0f383f5bdc98d2dffddfaf7628d0633a14aa4fa107c8760e1b",
+      "run_assay.py": "f09645fd65b29058cd2c9e4548751202ed0886305044805708422d46994745c6"
+    }
+  },
+  "qualification_counts": {
+    "publisher_documents_text_inspected": 4,
+    "publisher_documents_with_visual_page_inspection": 3,
+    "numeric_observations_prepared": 5,
+    "qualification_questions_prepared": 12,
+    "independently_human_graded_questions": 0,
+    "original_pdf_byte_bindings": 0,
+    "vault_pairs_bound": 0,
+    "authenticated_customer_journeys": 0
+  },
+  "unsupported_type_probe": {
+    "result": {"status": "invalid_claim", "authority": "offline_context_only", "may_rank": false, "may_size": false, "may_trade": false},
+    "fixture": "Original R3 fixture with claim kind changed; not an ING extraction or claimed real comparison."
+  },
+  "artifact_consistency": "PASS; counts, unique case IDs, page bounds and explicit unknown/held fields checked in the detailed local qualification record.",
+  "arithmetic_check": {
+    "published_amount_billion": "1200",
+    "published_baseline_billion": "90",
+    "published_change_percent": "33",
+    "implied_change_percent": "1233.33333333333333333333333333",
+    "baseline_after_33_percent_billion": "119.70",
+    "relation": "arithmetically_inconsistent_as_written",
+    "correct_source_number": null,
+    "source_error_attribution": null
+  },
+  "local_bundle_artifact_sha256": {
+    "CHUNK4_SOURCE_QUALIFICATION.md": "e343e4a1ff263571db90e9592547832f1368557324578571319f66dc8e1b1a0d",
+    "source_qualification_r4.json": "3e3e7bac9919c2c54648d9ecebe257e681c9ec13b6c59eeab4c7ac4d2a21c171"
+  },
+  "repository_report_readback": {
+    "commit": "84a923227cdbb812d61ec9bbdec70da3aa8a57ff",
+    "git_blob": "812f7598de5e937eeaf3ab05b72df43e5665c46f",
+    "bytes": 18648,
+    "local_report_matches_repository_blob": true,
+    "qualification_record_note": "Repository JSON is a compact record of the same observations/cases; the detailed local record includes its creation timestamp and nested arithmetic receipt. Its local bundle digest is not a claim of byte equality with the compact repository JSON."
+  },
+  "not_proven": [
+    "MarketDesk or ING commercial permissions",
+    "Full original PDF/body hashes",
+    "Vault document matching",
+    "Historical operational availability",
+    "Full live four-set census",
+    "Automated extraction",
+    "Model answer quality",
+    "Customer viewer path",
+    "Incremental subscription benefit"
+  ]
+}

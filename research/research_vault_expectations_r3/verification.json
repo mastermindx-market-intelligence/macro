@@ -1,0 +1,122 @@
+{
+  "schema": "offline_research_assay_receipt.v1",
+  "executed_at_utc": "2026-09-16T03:57:42.881369+00:00",
+  "python": "3.13.5",
+  "tests_run": 53,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "success": true,
+  "scope": "Manually normalized public issuer control series and adversarial fixtures; not production or parser performance.",
+  "counts": {
+    "source_documents": 5,
+    "normalized_claims": 6,
+    "real_pair_comparisons": 5,
+    "broker_source_pairs_verified": 0
+  },
+  "sha256": {
+    "revision_oracle.py": "3417b1900fe72dce5015d6dd9e1211524a7e5eb570e40c7f15bda9abe6af6f5b",
+    "test_revision_oracle.py": "a41ad9a559ee3bd1d1defd048c6c4310838cd5539a447be5a44008279811fecf",
+    "public_control_case.json": "05915cffe856fb0f383f5bdc98d2dffddfaf7628d0633a14aa4fa107c8760e1b",
+    "run_assay.py": "f09645fd65b29058cd2c9e4548751202ed0886305044805708422d46994745c6"
+  },
+  "comparisons": [
+    {
+      "before": "initial",
+      "after": "reaffirmed",
+      "result": {
+        "status": "reaffirmation",
+        "delta_low": "0",
+        "delta_high": "0",
+        "direction": "unchanged",
+        "approximate_inputs": true,
+        "interval_meaning": "arithmetic bounds, not a probability interval",
+        "authority": "offline_context_only",
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "percent_low": "0",
+        "percent_high": "0"
+      }
+    },
+    {
+      "before": "reaffirmed",
+      "after": "revised",
+      "result": {
+        "status": "revision",
+        "delta_low": "10",
+        "delta_high": "10",
+        "direction": "higher",
+        "approximate_inputs": true,
+        "interval_meaning": "arithmetic bounds, not a probability interval",
+        "authority": "offline_context_only",
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "percent_low": "13.333333",
+        "percent_high": "13.333333"
+      }
+    },
+    {
+      "before": "revised",
+      "after": "range_revision",
+      "result": {
+        "status": "revision",
+        "delta_low": "6",
+        "delta_high": "8",
+        "direction": "higher",
+        "approximate_inputs": true,
+        "interval_meaning": "arithmetic bounds, not a probability interval",
+        "authority": "offline_context_only",
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false,
+        "percent_low": "7.058824",
+        "percent_high": "9.411765"
+      }
+    },
+    {
+      "before": "range_revision",
+      "after": "actual_2025",
+      "result": {
+        "status": "realization",
+        "actual_position": "inside_stated_range",
+        "actual": "91.4",
+        "stated_low": "91",
+        "stated_high": "93",
+        "approximate_inputs": true,
+        "precision_note": "comparison at the stated source precision",
+        "authority": "offline_context_only",
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false
+      }
+    },
+    {
+      "before": "range_revision",
+      "after": "outlook_2026",
+      "result": {
+        "status": "not_comparable",
+        "reason": "different_period",
+        "authority": "offline_context_only",
+        "may_rank": false,
+        "may_size": false,
+        "may_trade": false
+      }
+    }
+  ],
+  "operational_pit_probe": {
+    "status": "no_eligible_claim",
+    "excluded_unknown": 6
+  },
+  "not_proven": [
+    "Automated extraction accuracy",
+    "Original broker PDF acquisition or rights",
+    "Full source-byte identity",
+    "Live four-set census",
+    "Production viewer behavior",
+    "Incremental account value",
+    "Model answer quality",
+    "Historical operational knowledge"
+  ]
+}
