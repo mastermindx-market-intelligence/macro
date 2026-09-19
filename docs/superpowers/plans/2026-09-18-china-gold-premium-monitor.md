@@ -79,10 +79,12 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
 - runs in the existing authoritative nightly collector lane (no new scheduler);
 - fetches SGE Au99.99 trade-date close and close-aligned global XAU/CNY only;
 - cold-starts with 90 calendar days (enough depth for honest 30-session statistics in normal
-  trading calendars), then refreshes a bounded 14-day overlap nightly; if either raw leg falls
-  outside that overlap the next run automatically expands to cover the whole observed gap plus
-  overlap, bounded by the 370-day full-history horizon; explicit full-history runs remain
-  available for deeper backfill;
+  trading calendars), then refreshes a bounded 14-day overlap nightly; Massive history is
+  requested newest-first so an older-history access/network failure cannot black out the current
+  close-aligned point, while the collector continues retrying cold-start depth until at least 30
+  persisted dates overlap across both raw legs; if either raw leg falls outside the normal
+  overlap the next run expands to cover the whole observed gap plus overlap, bounded by the
+  370-day full-history horizon; explicit full-history runs remain available for deeper backfill;
 - leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its
   own entitled mapping exists;
 - remains display/context-only and cannot rank, size, gate, allocate, or originate trades.

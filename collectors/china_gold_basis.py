@@ -19,6 +19,7 @@ checks technical credential/access state only and does not recreate license gate
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
+import logging
 
 import numpy as np
 import pandas as pd
@@ -36,11 +37,26 @@ _REFRESH_DAYS = 13  # today + 13 prior days = one <=14-day minute-bar request
 _COLD_START_DAYS = 90  # enough calendar depth for honest 30-session product statistics
 _MAX_MASSIVE_RESULTS = 50_000
 
+log = logging.getLogger("collector.gold_china_basis")
 
-def _date_chunks(start, end, *, max_days: int = 14):
-    """Yield inclusive date windows small enough for one minute-aggregate response."""
+
+def _date_chunks(start, end, *, max_days: int = 14, newest_first: bool = False):
+    """Yield inclusive windows small enough for one minute-aggregate response.
+
+    Historical helpers default to ascending order. The live collector requests
+    newest-first so an older-history entitlement/gap can never prevent the current
+    Shanghai-close point from being admitted first.
+    """
     if max_days < 1:
         raise ValueError("max_days must be >= 1")
+    if newest_first:
+        cursor = end
+        while cursor >= start:
+            chunk_start = max(start, cursor - timedelta(days=max_days - 1))
+            yield chunk_start, cursor
+            cursor = chunk_start - timedelta(days=1)
+        return
+
     cursor = start
     while cursor <= end:
         stop = min(end, cursor + timedelta(days=max_days - 1))
@@ -163,13 +179,37 @@ class ChinaGoldBasisAdapter(Adapter):
             raise ValueError(f"{self.name}/{name}: all-NaN after cleaning")
         return out
 
+    def _stored_aligned_points(self) -> int:
+        """Count dates that already have both raw legs in the persisted store."""
+        try:
+            sge = store.read(self.group, "sge_au9999")
+            global_spot = store.read(self.group, "xaucny_spot")
+            if (
+                sge is None
+                or global_spot is None
+                or sge.empty
+                or global_spot.empty
+            ):
+                return 0
+            sge_days = pd.DatetimeIndex(
+                pd.to_datetime(sge.index, errors="coerce", utc=True)
+            ).normalize()
+            global_days = pd.DatetimeIndex(
+                pd.to_datetime(global_spot.index, errors="coerce", utc=True)
+            ).normalize()
+            sge_days = sge_days[~sge_days.isna()]
+            global_days = global_days[~global_days.isna()]
+            return len(sge_days.unique().intersection(global_days.unique()))
+        except Exception:
+            return 0
+
     def _fetch_window_days(
         self,
         *,
         full_history: bool,
         today: date | None = None,
     ) -> int:
-        """Bound normal refreshes while automatically healing a long source gap."""
+        """Bound refreshes while healing both freshness gaps and history depth."""
         if full_history:
             return 370
 
@@ -183,15 +223,21 @@ class ChinaGoldBasisAdapter(Adapter):
 
         oldest = min(value for value in latest if value is not None)
         gap_days = max(0, (today - oldest).days)
-        if gap_days <= _REFRESH_DAYS:
-            return _REFRESH_DAYS
+        if gap_days > _REFRESH_DAYS:
+            # Re-cover the whole outage plus overlap, while keeping an accidental
+            # multi-year gap bounded to the explicit full-history horizon.
+            return min(
+                370,
+                max(_COLD_START_DAYS, gap_days + 14),
+            )
 
-        # Re-cover the whole outage plus overlap, while keeping an accidental
-        # multi-year gap bounded to the explicit full-history horizon.
-        return min(
-            370,
-            max(_COLD_START_DAYS, gap_days + 14),
-        )
+        # A successful partial cold-start must not permanently strand the chart
+        # below the 30-session statistics floor. Keep asking for cold-start depth
+        # until both stored legs overlap on at least 30 observation dates.
+        if self._stored_aligned_points() < 30:
+            return _COLD_START_DAYS
+
+        return _REFRESH_DAYS
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         if not tushare_client.enabled() or not self.massive_key:
@@ -220,23 +266,39 @@ class ChinaGoldBasisAdapter(Adapter):
 
         base = str(config.load().get("polygon", {}).get("base_url") or "https://api.massive.com")
         pieces: list[pd.DataFrame] = []
-        for chunk_start, chunk_end in _date_chunks(start, end, max_days=14):
+        for chunk_start, chunk_end in _date_chunks(
+            start, end, max_days=14, newest_first=True
+        ):
             url = (
                 f"{base.rstrip('/')}/v2/aggs/ticker/{_MASSIVE_TICKER}/range/1/minute/"
                 f"{chunk_start.isoformat()}/{chunk_end.isoformat()}"
             )
-            response = self.http_get(
-                url,
-                retries=3,
-                timeout=60,
-                headers={"Authorization": f"Bearer {self.massive_key}"},
-                params={
-                    "adjusted": "true",
-                    "sort": "asc",
-                    "limit": _MAX_MASSIVE_RESULTS,
-                },
-            )
-            piece = _massive_xaucny_frame(response.json(), tolerance_minutes=2)
+            try:
+                response = self.http_get(
+                    url,
+                    retries=3,
+                    timeout=60,
+                    headers={"Authorization": f"Bearer {self.massive_key}"},
+                    params={
+                        "adjusted": "true",
+                        "sort": "asc",
+                        "limit": _MAX_MASSIVE_RESULTS,
+                    },
+                )
+                piece = _massive_xaucny_frame(response.json(), tolerance_minutes=2)
+            except Exception as exc:
+                # Once the current chunk has produced an aligned point, an older
+                # history failure is a DEPTH degradation, not a reason to black
+                # out today's product. The next nightly keeps attempting depth
+                # until the 30-session readiness floor is reached.
+                if pieces:
+                    log.warning(
+                        "Massive XAUCNY historical chunk %s..%s unavailable; "
+                        "keeping newer close-aligned rows (%s)",
+                        chunk_start, chunk_end, exc,
+                    )
+                    continue
+                raise
             if not piece.empty:
                 pieces.append(piece)
 

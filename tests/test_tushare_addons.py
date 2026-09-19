@@ -1349,6 +1349,12 @@ def test_gold_basis_cold_start_seeds_enough_history_for_30_session_stats(monkeyp
         "last_date",
         lambda group, name: date(2026, 9, 18),
     )
+    deep_idx = pd.date_range("2026-08-01 07:30:00", periods=35, freq="D")
+    monkeypatch.setattr(
+        cgb.store,
+        "read",
+        lambda group, name: pd.DataFrame({"v": range(35)}, index=deep_idx),
+    )
     assert adapter._fetch_window_days(
         full_history=False,
         today=date(2026, 9, 18),
@@ -1398,6 +1404,12 @@ def test_gold_basis_refresh_stays_bounded_when_store_is_current(monkeypatch):
         cgb.store,
         "last_date",
         lambda group, name: latest[name],
+    )
+    deep_idx = pd.date_range("2026-08-01 07:30:00", periods=35, freq="D")
+    monkeypatch.setattr(
+        cgb.store,
+        "read",
+        lambda group, name: pd.DataFrame({"v": range(35)}, index=deep_idx),
     )
 
     assert adapter._fetch_window_days(
@@ -1461,3 +1473,87 @@ def test_gold_basis_exact_massive_endpoint_probe_is_code_gated():
     ]
     assert len(calls) == 1
     assert calls[0]["params"]["limit"] == 5
+
+
+def test_gold_basis_cold_start_prioritizes_current_chunk_and_keeps_recent_data_when_old_history_fails(monkeypatch):
+    from datetime import datetime, timezone
+    from collectors import china_gold_basis as cgb
+
+    class FixedDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(2026, 9, 18, 12, 0, tzinfo=timezone.utc)
+            return value if tz is None else value.astimezone(tz)
+
+    raw_sge = pd.DataFrame(
+        [
+            {"ts_code": "Au99.99", "trade_date": "20260917", "close": 817.25},
+            {"ts_code": "Au99.99", "trade_date": "20260918", "close": 820.50},
+        ]
+    )
+
+    monkeypatch.setattr(cgb, "datetime", FixedDateTime)
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    monkeypatch.setattr(cgb.store, "last_date", lambda group, name: None)
+    monkeypatch.setattr(cgb.tushare_client, "query", lambda api_name, **kwargs: raw_sge.copy())
+
+    adapter = cgb.ChinaGoldBasisAdapter()
+    calls = []
+
+    def fake_get(url, **kwargs):
+        calls.append(url)
+        # The newest chunk must be attempted first. It succeeds with current data;
+        # older-history entitlement/network failures may reduce depth but must not
+        # black out the current product reading.
+        if url.endswith("/2026-09-05/2026-09-18"):
+            return _GoldBasisResp(
+                {
+                    "results": [
+                        {"t": _gold_basis_ms("2026-09-17T07:30:00Z"), "c": 30750.0},
+                        {"t": _gold_basis_ms("2026-09-18T07:30:00Z"), "c": 30960.0},
+                    ]
+                }
+            )
+        raise RuntimeError("older minute history unavailable")
+
+    monkeypatch.setattr(adapter, "http_get", fake_get)
+
+    frames = adapter.fetch(full_history=False)
+
+    assert calls[0].endswith("/2026-09-05/2026-09-18")
+    assert list(frames["xaucny_spot"].index) == [
+        pd.Timestamp("2026-09-17T07:30:00"),
+        pd.Timestamp("2026-09-18T07:30:00"),
+    ]
+    assert list(frames["sge_au9999"]["rmb_per_g"]) == [817.25, 820.50]
+
+
+def test_gold_basis_refresh_keeps_backfilling_until_thirty_aligned_sessions(monkeypatch):
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    idx = pd.date_range("2026-09-08 07:30:00", periods=10, freq="D")
+    frames = {
+        "sge_au9999": pd.DataFrame({"rmb_per_g": range(10)}, index=idx),
+        "xaucny_spot": pd.DataFrame({"cny_per_oz": range(10)}, index=idx),
+    }
+    monkeypatch.setattr(
+        cgb.store,
+        "read",
+        lambda group, name: frames[name].copy(),
+    )
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: date(2026, 9, 17),
+    )
+
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) >= cgb._COLD_START_DAYS

@@ -77,6 +77,11 @@ The indicative close-aligned source contract is:
 - raw legs persist under `gold_china_basis/` and are consumed only by this display engine;
 - a cold store seeds 90 calendar days before switching to the bounded nightly overlap, so a
   rendered "30-session range" is not synthesized from a handful of observations;
+- Massive minute history is requested newest-first. Once a current close-aligned chunk succeeds,
+  an older-history request failure degrades depth rather than blacking out the current reading;
+- the collector keeps requesting cold-start depth until the persisted raw legs overlap on at
+  least 30 observation dates, so a partial first run cannot permanently strand the 30-session
+  statistic at null;
 - if either persisted leg falls outside the normal overlap, the next run expands to cover the
   observed gap plus overlap, capped at the full-history horizon, rather than leaving a hidden
   discontinuity in the last-30-observation window.
