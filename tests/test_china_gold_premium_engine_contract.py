@@ -1509,6 +1509,13 @@ def _dataos_promotion_receipt(root=None):
         "schema": "commodity.china_gold_premium_quality.v1",
         "close_proxy_dataos_promotion_ready": True,
         "close_proxy_dataos_promotion_blockers": [],
+        "status": "available_fresh",
+        "headline_method": "close_proxy",
+        "render_consistent": True,
+        "machine_projection_consistent": True,
+        "stats_5_ready": True,
+        "stats_30_ready": True,
+        "source_asof": "2026-09-18T07:30:00+00:00",
         "source_artifacts": [
             {
                 "role": "sge",
@@ -1689,3 +1696,36 @@ def test_china_gold_dataos_promoter_refuses_source_file_changed_since_receipt(tm
 
     assert result["eligible"] is False
     assert any("current sha256 does not match receipt" in x for x in result["blockers"])
+
+
+def test_china_gold_dataos_promoter_revalidates_live_receipt_fields(tmp_path):
+    import json
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    registry.write_text(_dataos_promotion_registry_text())
+    doc = _dataos_promotion_receipt(tmp_path)
+    # A single forged/stale ready bit must not override the underlying proof.
+    doc.update(
+        {
+            "status": "available_fresh",
+            "headline_method": "close_proxy",
+            "render_consistent": False,
+            "machine_projection_consistent": True,
+            "stats_5_ready": True,
+            "stats_30_ready": True,
+            "source_asof": "2026-09-18T07:30:00+00:00",
+        }
+    )
+    receipt.write_text(json.dumps(doc))
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=False,
+    )
+
+    assert result["eligible"] is False
+    assert "quality receipt render contract is not consistent" in result["blockers"]

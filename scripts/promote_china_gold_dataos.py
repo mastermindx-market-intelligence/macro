@@ -84,6 +84,27 @@ def assess(
     if receipt_blockers not in ([], None):
         blockers.append("quality receipt still carries promotion blockers")
 
+    if receipt.get("status") != "available_fresh":
+        blockers.append(
+            f"quality receipt status is {receipt.get('status') or 'unbound'}, "
+            "required available_fresh"
+        )
+    if receipt.get("headline_method") != "close_proxy":
+        blockers.append(
+            f"quality receipt headline method is "
+            f"{receipt.get('headline_method') or 'unbound'}, required close_proxy"
+        )
+    if receipt.get("render_consistent") is not True:
+        blockers.append("quality receipt render contract is not consistent")
+    if receipt.get("machine_projection_consistent") is not True:
+        blockers.append("quality receipt machine projection is not consistent")
+    if receipt.get("stats_5_ready") is not True:
+        blockers.append("quality receipt 5-session statistic is not ready")
+    if receipt.get("stats_30_ready") is not True:
+        blockers.append("quality receipt 30-session statistic is not ready")
+    if not str(receipt.get("source_asof") or ""):
+        blockers.append("quality receipt source_asof is not bound")
+
     artifacts = receipt.get("source_artifacts")
     by_id = {
         str(item.get("dataset_id")): item

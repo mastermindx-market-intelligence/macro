@@ -159,5 +159,8 @@ promotion-ready, the source owner may run:
 `python -m scripts.promote_china_gold_dataos --apply`
 
 which changes only those two canonical registry rows from `PROPOSED` to `PRODUCED`, verifies the
-written statuses, and stops. It never commits or pushes Git state and refuses missing/duplicate/
-non-PROPOSED target rows or an unready receipt.
+written statuses, and stops. Before writing it independently re-checks the receipt's fresh close-
+proxy method, render/machine agreement, 5-/30-session readiness, selected source timestamp, both
+current artifact files and hashes, and current canonical registry states; the single promotion-ready
+bit is never trusted by itself. It never commits or pushes Git state and refuses missing/duplicate/
+non-PROPOSED target rows or an unready/stale receipt.
