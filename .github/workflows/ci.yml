@@ -153,6 +153,7 @@ on:
       # Close and Send-reply buttons (support replies could not be sent at all).
       # Listed by name so a test-only edit still triggers the lane that runs it.
       - "tests/test_admin_inline_handler_attrs.py"
+      - "tests/test_admin_navigation_ux.py"
       # Absolute-path prune guard (#3802): a walk excluding ".claude"/"worktrees"
       # via `path.parts` also matches the checkout's own path and scans nothing.
       # Named so a test-only edit still triggers the lane that runs it.
