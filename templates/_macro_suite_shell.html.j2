@@ -421,7 +421,9 @@
       <p>{{ t('1-month vector', '一个月位移向量') }}</p>
       <p>{{ t('Nearest boundary', '最近分界') }} / {{ t('Score points to', '距下列坐标轴分界') }}</p>
       <p>{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</p>
+      {%- if not head.vector.present and not head.vector.incomplete %}
       <p>{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</p>
+      {%- endif %}
     {% endcall %}
   </div>
 
@@ -554,7 +556,9 @@
     <p>{{ t('1-month vector', '一个月位移向量') }}</p>
     <p>{{ t('Nearest boundary', '最近分界') }} / {{ t('Score points to', '距下列坐标轴分界') }}</p>
     <p>{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</p>
+    {%- if not view.headline.vector.present and not view.headline.vector.incomplete %}
     <p>{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</p>
+    {%- endif %}
   {% endcall %}
 
   {%- if not view.headline.vector.present %}
@@ -663,12 +667,11 @@
           <div><dt>{{ t('Basis', '基准') }}</dt><dd>{{ bl(metric.basis) }}</dd></div>
           <div><dt>{{ t('Definition version', '定义版本') }}</dt>
                <dd>{% if metric.definition_label %}{{ bl(metric.definition_label) }}{% else %}<span class="mq-dash">—</span>{% endif %}</dd></div>
-          <div><dt>{{ t('Definition', '定义') }}</dt><dd>{% if metric.definition_id %}<code>{{ metric.definition_id }}</code>{% else %}<span class="mq-dash">—</span>{% endif %}{% if metric.definition_version %} · v{{ metric.definition_version }}{% endif %}</dd></div>
         </dl>
         <p>{{ t('Clocks and owner', '时钟与所有者') }}</p>
         {{ clock_list(metric.clocks) }}
         <p class="mq-owner"><span>{{ t('Owner', '所有者') }}</span>
-          {% if metric.owner_name %}{{ bl(metric.owner_name) }}{% else %}{{ scalar_or_dash(metric.owner_ref, True) }}{% endif %}</p>
+          {% if metric.owner_name %}{{ bl(metric.owner_name) }}{% else %}<span class="mq-dash">—</span>{% endif %}</p>
         <p class="mq-owner"><span>{{ t('Authority ceiling', '权限上限') }}</span>
           {% if metric.authority_ceiling %}{{ bl(metric.authority_ceiling) }}{% else %}{{ scalar_or_dash(None, True) }}{% endif %}</p>
         </div>
@@ -748,7 +751,7 @@
       <tbody>
         {%- for row in group.rows %}
         <tr>
-          <th scope="row">{{ bl(row.label) }}<span class="mq-owner-field">{{ scalar_or_dash(row.owner_field, True) }}</span>
+          <th scope="row">{{ bl(row.label) }}
             {%- if row.label_original %}
             {% call mc_details() %}{{ bl(row.label_original) }}{% endcall %}
             {%- endif %}</th>
@@ -802,7 +805,7 @@
         {%- for component in axis.components %}
         <tr>
           <th scope="row">{{ bl(component.label) }}
-            {%- if component.owner_name %}<span class="mq-owner-field">{{ bl(component.owner_name) }}</span>{% else %}<span class="mq-owner-field">{{ scalar_or_dash(component.owner_field, True) }}</span>{% endif %}</th>
+            {%- if component.owner_name %}<span class="mq-owner-field">{{ bl(component.owner_name) }}</span>{% endif %}</th>
           <td>{% if component.raw %}{{ bl(component.raw) }}{% else %}{{ absent(component.raw_absence, True) }}{% endif %}</td>
           <td>{% if component.standardized_present %}{{ component.standardized }}{% else %}{{ absent(component.standardized_absence, True) }}{% endif %}</td>
           <td>{{ scalar_or_dash(component.weight) }}</td>

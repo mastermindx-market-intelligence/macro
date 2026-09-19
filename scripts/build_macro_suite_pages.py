@@ -1450,7 +1450,8 @@ def _plain_as_of_display(iso_date: str) -> dict[str, str] | None:
 
 
 def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
-              env: Environment, root: Path, page_built_at: str,
+              env: Environment, page_built_at: str,
+              root: Path | None = None,
               allow_empty_state_fixture: bool = False) -> Path:
     """Render the suite hub from what the fourteen pages just read.
 
@@ -1468,6 +1469,7 @@ def build_hub(entries: Sequence[Mapping[str, Any]], *, out_dir: Path,
     (Opus review PR #6930 m2); the stamp is only an input to the coverage
     tally's "today" cut.
     """
+    root = Path(root) if root is not None else _REPO_ROOT
     header = macro_suite_view.build_command_header(entries, page_built_at=page_built_at)
     sections = _macro_command_sections(
         entries, page_built_at=page_built_at,

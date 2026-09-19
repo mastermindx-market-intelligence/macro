@@ -241,7 +241,7 @@ class _VisibleTextParser(HTMLParser):
 
 def visible_text_nodes(html: str) -> list[dict[str, str]]:
     """Every customer-visible text node and title=/aria-label= value."""
-    stripped = _SCRIPT_RE.sub("", html)
+    stripped = _strip_noncopy_trees(html)
     parser = _VisibleTextParser()
     try:
         parser.feed(stripped)
@@ -313,7 +313,17 @@ _DETAILS_RE = re.compile(
 )
 _PRIMER_RE = re.compile(r'<details\s+class="mc-primer"[^>]*>.*?</details>', re.S)
 _SCRIPT_RE = re.compile(r'<script\b[^>]*>.*?</script>', re.S)
+_STYLE_RE = re.compile(r'<style\b[^>]*>.*?</style>', re.S)
 _TAG_RE = re.compile(r'<[^>]+>')
+
+
+def _strip_noncopy_trees(html: str) -> str:
+    """Drop <script> and <style> so source comments and CSS class names
+    cannot be mistaken for customer-visible copy (curve-hero inline CSS
+    comments cite pad_l / _chart_payload; class .mq-curve-axis contains
+    the banned substring 'axis')."""
+    html = _SCRIPT_RE.sub("", html)
+    return _STYLE_RE.sub("", html)
 
 # Every ALL-CAPS closed-vocabulary dict key in lib/macro_suite_labels.py
 # (§5 row 61: "CURRENT", "WARMUP", "SOURCE_FAILED", ... — "must never reach
@@ -337,13 +347,13 @@ def _closed_vocabulary_tokens() -> tuple[str, ...]:
 
 def reading_path_text(html: str) -> str:
     """The page's reading path: the built HTML with every `<script>`,
-    `<details class="mc-details">` and `<details class="mc-primer">`
+    `<style>`, `<details class="mc-details">` and `<details class="mc-primer">`
     subtree removed (G2 — those are the two places machine text and primer
     copy may legitimately live), then every remaining tag stripped so
     attribute values (`id=`, `href=`, `datetime=`) never feed the
     banned-substring or bare-timestamp scan — only what a reader actually
     sees does."""
-    stripped = _SCRIPT_RE.sub("", html)
+    stripped = _strip_noncopy_trees(html)
     stripped = _DETAILS_RE.sub(r"\1\3", stripped)
     stripped = _PRIMER_RE.sub("", stripped)
     # Tags become empty, not a space: the page emits the plain word and the
@@ -356,7 +366,7 @@ def reading_path_text(html: str) -> str:
 
 def locale_span_texts(html: str) -> list[tuple[str, str]]:
     """Visible ``.l-en`` / ``.l-zh`` bodies, including details (E-m1)."""
-    stripped = _SCRIPT_RE.sub("", html)
+    stripped = _strip_noncopy_trees(html)
     found: list[tuple[str, str]] = []
     for locale in ("en", "zh"):
         for raw in re.findall(
@@ -540,7 +550,7 @@ def find_violations(html: str) -> list[str]:
     # machine floats (those are already G2b-gated).
     float_html = re.sub(r"<time\b[^>]*>.*?</time>", " ", html, flags=re.S)
     spaced = _TAG_RE.sub(" ", _PRIMER_RE.sub(
-        "", _DETAILS_RE.sub(r"\1\3", _SCRIPT_RE.sub("", float_html))))
+        "", _DETAILS_RE.sub(r"\1\3", _strip_noncopy_trees(float_html))))
     spaced = _WS_RE.sub(" ", spaced)
     for match in _MACHINE_FLOAT_RE.finditer(spaced):
         token = match.group(0)
@@ -564,7 +574,7 @@ def find_violations(html: str) -> list[str]:
     # E-m4: variable letters never lead in customer copy (x=/y=).
     # Allowed only inside .mq-axis-method and <details> bodies.
     # C-n1: count EVERY hit (no early break); strip axis-method via DOM walk.
-    xy_html = _SCRIPT_RE.sub("", html)
+    xy_html = _strip_noncopy_trees(html)
     xy_html = _DETAILS_RE.sub(r"\1\3", xy_html)
     xy_html = _PRIMER_RE.sub("", xy_html)
     xy_html = _strip_axis_method_blocks(xy_html)

@@ -102,6 +102,23 @@ def test_script_content_is_never_scanned() -> None:
     assert guard.find_violations(html) == []
 
 
+def test_style_content_is_never_scanned() -> None:
+    """The rates_curves curve-hero ships an inline <style> whose comments
+    cite pad_l / _chart_payload and whose class .mq-curve-axis contains the
+    banned substring 'axis'. CSS is not customer-visible copy."""
+    html = (
+        '<main class="mq-shell">'
+        '<h1>Rates</h1>'
+        '<style>'
+        '  /* Exactly pad_l/width from lib.macro_suite_view._chart_payload */'
+        '  .mq-curve-axis { stroke: currentColor; }'
+        '</style>'
+        '</main>'
+    )
+    assert guard.find_violations(html) == []
+    assert guard.reading_path_text(html).strip() == "Rates"
+
+
 # --------------------------------------------------------------------------
 # G2b — bare timestamp
 # --------------------------------------------------------------------------
@@ -462,9 +479,19 @@ def test_production_key_space_has_no_machine_text_on_rendered_output(
     for path in pages:
         html = path.read_text(encoding="utf-8")
         # Suite shell only — site chrome (nav, brand) is out of this packet.
-        start = html.find('class="mq-context"')
+        # The context header is `class="mq-context mq-context-compact"` (not a
+        # lone class token), and the shell is `mq-shell`, not `mc-shell`.
+        start = html.find('id="mq-context"')
         if start < 0:
-            start = html.find('class="mc-shell"')
+            start = html.find('id="mq-shell"')
+        if start < 0:
+            start = html.find('class="mq-context')
+        if start < 0:
+            start = html.find('class="mq-shell')
+        if start < 0:
+            start = html.find('class="mc-shell')
+        if start < 0:
+            start = html.find('class="mc-command')
         if start < 0:
             start = 0
         shell = html[start:]
