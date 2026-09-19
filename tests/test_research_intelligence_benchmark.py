@@ -527,3 +527,36 @@ def test_one_output_row_cannot_satisfy_two_gold_analysis_expectations():
     assert result["counts"]["matched_analysis_semantics"] == 1
     assert result["metrics"]["analysis_category_recall"] == 0.5
     assert result["metrics"]["analysis_semantic_recall"] == 0.5
+
+
+def test_grounding_precision_penalizes_salvaged_hallucinated_material():
+    rio = _rio()
+    fabricated = "NVIDIA demand rose 99% because an invented customer doubled orders."
+    rio["claims"][0]["entities"].append("NVIDIA")
+    rio["claims"].append(
+        {
+            "statement": fabricated,
+            "evidence": [{"quote_span": fabricated}],
+            "numbers": ["99%"],
+            "entities": ["NVIDIA"],
+            "horizon": "current",
+            "explicit": True,
+        }
+    )
+
+    result = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(rio),
+        candidate_label="salvageable-but-noisy-model",
+    )
+    assert result["state"] == "ok"
+    assert result["metrics"]["claim_recall"] == 1.0
+    assert result["metrics"]["analysis_semantic_recall"] == 1.0
+    assert result["metrics"]["grounding_precision"] < 1.0
+    assert result["counts"]["emitted_claims"] == 5
+    assert result["counts"]["grounded_claims"] == 4
+    assert result["counts"]["emitted_numbers"] == 2
+    assert result["counts"]["grounded_numbers"] == 1
+    assert result["counts"]["emitted_entities"] == 4
+    assert result["counts"]["evidence_grounded_entities"] == 2
