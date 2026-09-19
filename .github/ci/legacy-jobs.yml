@@ -1278,6 +1278,63 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      - "collectors/federal_register.py"
+      - "engine/activist.py"
+      - "engine/capital_structure/event_spine.py"
+      - "engine/policy_calendar.py"
+      - "engine/special_arb.py"
+      - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/source_identity.py"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_projection.schema.json"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "contracts/capital_structure_event.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/_text_scrub.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      # B-F07-3 event bridge reader/resolver 2026-09-19 (contract-delta)
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/spine_paths.py"
+      - "engine/chronicle/__init__.py"
+      - "engine/chronicle/adapters.py"
+      - "engine/chronicle/earnings_calls.py"
+      - "engine/chronicle/schema.py"
+      - "engine/chronicle/spine.py"
+      - "engine/chronicle/state_log.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_qual.py"
+      - "engine/neuralweb/analyst_doctrine.py"
+      - "engine/neuralweb/ask_brain.py"
+      - "engine/neuralweb/chat_plain_words.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/neuralweb/cortex.py"
+      - "engine/neuralweb/doctrine.py"
+      - "engine/neuralweb/earnings_context_reader.py"
+      - "engine/neuralweb/metabolism.py"
+      - "engine/neuralweb/query.py"
+      - "engine/neuralweb/reflexes.py"
+      - "engine/prophet_integrity.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/research_vault/sidecar.py"
+      - "engine/research_vault/slugs.py"
+      - "engine/seasonality/contracts.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "tests/test_capital_structure_event_spine.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "templates/_valuation_scenario.html.j2"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
@@ -1286,6 +1343,8 @@ jobs:
       - "tests/test_valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "tests/test_valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "tests/test_valuation_event_bridge.py"
       # china S1 archetype test wired into conviction-profile (Meta-CEO A ruling
       # W7A_7054_A_CURE round 1, C2) — same china partial as
       # test_china_special_situations_gate, gate:code HTML structure/copy pin.
@@ -1691,7 +1750,10 @@ jobs:
         #     import engine.cycles, so this job's line had never needed it. Missing it is a
         #     COLLECTION error (pytest exit 2), which fails the whole step rather than one
         #     test — measured on this PR's first run (ci-pack-11, job 96210580631).
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema
+        # B-F07-3 round 7 widening 2026-09-19 (contract-delta): event_versions_io
+        # reads committed parquet; pandas needs pyarrow. Do not add requests —
+        # the valuation producer must stay collector-free in this venv.
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -1763,6 +1825,7 @@ jobs:
           python -m pytest
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py
+          tests/test_valuation_event_bridge.py
           tests/test_china_archetype_d_s1.py -q
 
   chronicle-suite:
@@ -2057,6 +2120,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -3981,6 +4048,16 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_projection.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -7417,6 +7494,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Enumerated, not globbed — the checker
@@ -8027,6 +8108,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -10078,6 +10163,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
       - "tests/test_fms_ui.py"
@@ -11320,6 +11407,22 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/event_spine.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "scripts/compile_capital_structure_events.py"
+      # B-F07-3 event bridge reader/resolver 2026-09-19 (contract-delta)
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/spine_paths.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the
@@ -13389,6 +13492,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
@@ -14906,6 +15013,29 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  market-ontology-f09-usgs-mcs:
+    if: ${{ false }}
+    gate: code
+    # MO-B F09-10 (MO-DELTA-029 child): USGS Mineral Commodity Summaries
+    # collector + critical-minerals supply-concentration projection.
+    # Records-only / disabled (if: false). Kept so the pack registration
+    # records the job; the if: false is the suite contract for disabled jobs.
+    paths:
+      - "config/usgs_mcs_sources.yml"
+      - "collectors/usgs_mcs.py"
+      - "engine/critical_minerals_supply.py"
+      - "tests/test_usgs_mcs.py"
+      - "tests/fixtures/usgs_mcs/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: USGS MCS collector + critical-minerals supply projection
+        run: python -m pytest tests/test_usgs_mcs.py -q
 
   recurring-briefs:
     # F11 packet B-F11-7b (MO-PAID-032): one nightly/weekly step writes each
