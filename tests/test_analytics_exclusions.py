@@ -131,6 +131,19 @@ def test_sessions_applies_exclusion_and_filter(monkeypatch):
     assert "limit 500" in sql
 
 
+def test_sessions_focuses_bot_history_on_visitors_in_window(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.sessions(limit=100, minutes=1440)
+    sql = seen["sql"]
+    # The bot classifier keeps historical evidence for the visitors that can actually
+    # appear in this panel, instead of distinct-scanning every visitor ever recorded.
+    assert ("focus_visitors as (select distinct visitor_id from public.analytics_events "
+            "where visitor_id is not null and created_at > now() - interval '1440 minutes')") in sql
+    assert "visitor_id is not null and visitor_id in (select visitor_id from focus_visitors)" in sql
+    # Farm detection remains historically exact for every fingerprint used by a focused visitor.
+    assert "fp in (select fp from focus_fp)" in sql
+
+
 # ---- soft candidate-identity linkage (anon cookie -> likely registered user) --------
 def test_candidate_cte_ambiguity_guarded_and_routable():
     cte = a._candidate_cte()
