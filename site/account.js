@@ -533,7 +533,11 @@
     else fin();
   }
   function doSignOutAll() {
-    api('/api/account/signout-everywhere', { method: 'POST' }).then(doSignOut, doSignOut);
+    api('/api/account/signout-everywhere', { method: 'POST' }).then(function (r) {
+      if (r.ok) { doSignOut(); }
+      else if (r.status !== 401 && r.status !== 429 && r.status !== 502) { doSignOut(); }
+      else { setMsg('mmacc-email-msg', errText(r), 'bad'); }
+    }, doSignOut);
   }
   function onClick(e) {
     var b = e.target.closest('[data-act]'); if (!b) return;

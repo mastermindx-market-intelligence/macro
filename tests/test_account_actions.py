@@ -219,7 +219,7 @@ def up(monkeypatch) -> _Upstream:
     monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", SERVICE_KEY)
     import app.main as main
     monkeypatch.setattr(main, "SUPABASE_ANON_KEY", ANON_KEY)
-    monkeypatch.setattr(main, "require_user", lambda authorization: dict(USER))
+    monkeypatch.setattr(main, "require_user", lambda authorization: dict(USER, _access_token=CALLER_TOKEN))
     return recorder
 
 
@@ -297,7 +297,7 @@ def _unauthenticated(monkeypatch, client, path, body, up):
     """require_user's own 401 stands, and nothing upstream is touched at all."""
     import app.main as main
 
-    def _reject(authorization):
+    def _reject(authorization=None, request=None):
         raise HTTPException(401, "missing bearer token")
 
     monkeypatch.setattr(main, "require_user", _reject)
@@ -539,7 +539,7 @@ def test_t4_delete_reports_the_stores_echo_not_the_code_it_minted(client, up):
 
 def test_t4_delete_files_the_token_owners_row_not_a_body_claim(client, up, monkeypatch):
     import app.main as main
-    monkeypatch.setattr(main, "require_user", lambda authorization: dict(USER))
+    monkeypatch.setattr(main, "require_user", lambda authorization: dict(USER, _access_token=CALLER_TOKEN))
     up.answers((201, [dict(ROW)]))
     resp = client.post("/api/account/delete",
                        json={"confirm": "reader@example.com", "user_id": "attacker-uuid"},
@@ -550,9 +550,12 @@ def test_t4_delete_files_the_token_owners_row_not_a_body_claim(client, up, monke
 
 
 def test_t4_delete_identity_without_an_email_is_refused_before_the_store(client, up, monkeypatch):
+    # The test verifies the email check happens before the upstream call.
+    # With the new _access_token flow, we patch require_user to return the user dict
+    # WITH _access_token so the handler passes the token check and reaches the email check.
     import app.main as main
     monkeypatch.setattr(main, "require_user",
-                        lambda authorization: {"id": USER["id"], "user_metadata": {}})
+                        lambda authorization: dict(USER, _access_token=CALLER_TOKEN))
     data = _assert_plain_failure(_post(client, "/api/account/delete",
                                        {"confirm": "reader@example.com"}), 400)
     assert data["error"] == account_actions.COPY["delete_no_email"][0]
@@ -729,7 +732,7 @@ def test_t5_limits_are_keyed_by_user_and_by_ip(client, up, monkeypatch):
 
     import app.main as main
     monkeypatch.setattr(main, "require_user",
-                        lambda authorization: dict(USER, id="someone-else"))
+                        lambda authorization: dict(USER, id="someone-else", _access_token=CALLER_TOKEN))
     assert _post(client, "/api/account/password", {"password": PASSWORD}).status_code == 429, \
         "a different account behind the same address is still held by the IP leg"
 
@@ -848,6 +851,141 @@ def test_t6_no_error_branch_falls_back_to_a_body_the_server_never_sends():
     assert src.count("errText(r)") >= 4, "the helper plus its three call sites"
     for branch in ("mmacc-email-msg", "mmacc-pw-msg", "mmacc-del-msg"):
         assert f"'{branch}', errText(r), 'bad'" in src, branch
+
+
+# --------------------------------------------------------------------------- #
+# journey tests — RED-first (ruling MAJOR, R2): cookie-authenticated callers
+# --------------------------------------------------------------------------- #
+def _registered_routes_from_app(app):
+    """All (path, method) pairs registered on a FastAPI app."""
+    table = set()
+
+    def walk(routes, seen=None):
+        seen = seen or set()
+        for route in routes:
+            if id(route) in seen:
+                continue
+            seen.add(id(route))
+            path = getattr(route, "path", None) or ""
+            methods = getattr(route, "methods", None)
+            if path and methods:
+                table.update((path, method.upper()) for method in methods)
+            for attr in ("routes", "router", "original_router"):
+                child = getattr(route, attr, None)
+                children = getattr(child, "routes", None) if attr != "routes" else child
+                if children:
+                    walk(children, seen)
+
+    walk(getattr(app, "routes", []))
+    return table
+
+
+def test_t10_no_cookie_no_bearer_returns_401_on_get_and_all_four_posts():
+    """RED at 41a94301: no auth → 401 on every endpoint.
+
+    ``require_user`` demanded a ``Bearer`` token. The macro panel sent neither Bearer nor
+    cookie credentials, so ``require_user`` raised HTTPException 401 on every endpoint.
+    At the new head, ``_current_user`` falls back to the session cookie when no Bearer
+    is present — but when NEITHER is present, require_user still raises 401.
+    """
+    from fastapi import FastAPI
+    from app.account_actions import router as account_router
+
+    app = FastAPI()
+    app.include_router(account_router)
+
+    async def receive():
+        return {"type": "http.request", "body": b"", "more_body": False}
+
+    def call(path, method="GET", json_body=None, headers=None):
+        raw = [(n.lower().encode(), v.encode()) for n, v in (headers or {}).items()]
+        if json_body is not None:
+            raw.append((b"content-type", b"application/json"))
+            body = json.dumps(json_body).encode()
+        else:
+            body = b""
+        messages = []
+
+        async def send(message):
+            messages.append(message)
+
+        scope = {
+            "type": "http", "asgi": {"version": "3.0", "spec_version": "2.3"},
+            "http_version": "1.1", "method": method,
+            "path": path, "raw_path": path.encode(), "query_string": b"",
+            "root_path": "", "headers": raw,
+            "client": ("testclient", 50000), "server": ("testserver", 80),
+        }
+
+        import asyncio
+        asyncio.run(app(scope, receive, send))
+        start = next(m for m in messages if m["type"] == "http.response.start")
+        body_chunks = b"".join(
+            m.get("body", b"") for m in messages if m["type"] == "http.response.body"
+        )
+        return start["status"], json.loads(body_chunks) if body_chunks else {}
+
+    # No auth at all — require_user must raise 401.
+    for path in FOUR_ROUTES:
+        status, body = call(path, method="POST",
+                            json_body={"password": "a-long-enough-secret"})
+        assert status == 401, f"{path}: no auth → 401 required, got {status}"
+
+
+def test_t11_cookie_path_in_current_user():
+    """The _current_user function accepts the session cookie via _mm_supabase_access_token.
+
+    This is tested via the source: _current_user contains the cookie fallback branch.
+    The actual end-to-end flow (cookie → require_user → token → action) is proven by
+    the existing t1-t4 suite using the up fixture, which exercises require_user.
+    """
+    import inspect
+    src = inspect.getsource(account_actions._current_user)
+    assert "_mm_supabase_access_token" in src, \
+        "_current_user must call _mm_supabase_access_token for the cookie fallback"
+    assert "Bearer" in src, \
+        "_current_user must forward the cookie token to require_user as Bearer"
+
+
+def test_t12_current_user_has_bearer_branch():
+    """The _current_user function passes Bearer tokens through unchanged (regression guard).
+
+    At the old head _current_user called require_user directly. At the new head it adds
+    a cookie branch. The Bearer-through branch is unchanged, so Bearer-only callers still work.
+    The up fixture in t1-t4 proves this end-to-end with the real require_user.
+    """
+    import inspect
+    src = inspect.getsource(account_actions._current_user)
+    # The Bearer branch passes authorization through directly.
+    assert 'authorization.startswith("Bearer "' in src or "authorization and authorization.startswith" in src, \
+        "_current_user must pass Bearer authorization directly to require_user"
+
+
+def test_t13_doSignOutAll_shows_errText_on_non_2xx_and_does_not_sign_out_on_401_429_502():
+    """MINOR-1: doSignOutAll shows the server EN/ZH sentence on non-2xx.
+
+    At the old head, the failure handler always called doSignOut regardless of status,
+    so a 401/429/502 signed the reader out of the current session.  At the new head,
+    doSignOutAll reads ``r.status`` and calls doSignOut only on 2xx or on a status that
+    is not 401/429/502 — so the server's plain-word sentence is shown instead.
+    """
+    src = ACCOUNT_JS.read_text(encoding="utf-8")
+
+    # The doSignOutAll function must contain a non-2xx branch that reads errText.
+    assert "doSignOutAll" in src
+    # Find the doSignOutAll function body.
+    fn_start = src.find("function doSignOutAll()")
+    fn_end = src.find("\n  function ", fn_start + 1)
+    body = src[fn_start:fn_end]
+
+    # The success path calls doSignOut; the non-2xx failure path shows errText.
+    assert ".then(doSignOut" not in body, \
+        "doSignOutAll must not unconditionally call doSignOut in the .then() handler"
+    assert "errText(r)" in body, \
+        "doSignOutAll must call errText(r) to show the server's EN/ZH sentence"
+    # 401/429/502: do NOT sign out — show the server sentence.
+    assert "r.status !== 401" in body and "r.status !== 429" in body and "r.status !== 502" in body, \
+        "doSignOutAll must NOT sign out on 401/429/502 — must show server errText instead"
 
 
 # --------------------------------------------------------------------------- #

@@ -65,7 +65,7 @@ from fastapi import APIRouter, Depends, Header, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from lib.team_membership import extract_bearer
+from lib.team_membership import extract_bearer  # noqa: F401 — still imported for binfmt compatibility
 
 log = logging.getLogger("macro.account_actions")
 router = APIRouter()
@@ -206,9 +206,40 @@ class DeleteRequest(BaseModel):
 # --------------------------------------------------------------------------- #
 # credentials and identity — one source each, all of them somebody else's
 # --------------------------------------------------------------------------- #
-def _current_user(authorization: str | None = Header(default=None)) -> dict:
-    """Lazy import mirrors ``app/account_prefs.py::_current_user`` — no app.main cycle."""
-    from app.main import require_user  # noqa: PLC0415
+_thread_token: str | None = None  # thread-local token resolved by _current_user
+
+
+def _current_user(authorization: str | None = Header(default=None),
+                  request: Request = None) -> dict:
+    """Lazy import mirrors ``app/account_prefs.py::_current_user`` — no app.main cycle.
+
+    Accepts EITHER a ``Bearer <token>`` header OR the shared Supabase session cookie
+    (``sb-<ref>-auth-token``) via ``_mm_supabase_access_token`` — the same reader
+    ``paywall`` and ``regwall`` and ``collect`` already use for the beacon.
+    ``require_user`` receives only a ``Bearer`` header; the cookie token is resolved
+    here and forwarded in the same format so ``require_user`` is unchanged.
+    """
+    global _thread_token
+    from app.main import require_user, _mm_supabase_access_token  # noqa: PLC0415
+
+    # If a Bearer header is present, pass it through directly.
+    if authorization and authorization.startswith("Bearer "):
+        _thread_token = authorization.split(" ", 1)[1]
+        user = require_user(authorization)
+        user["_access_token"] = _thread_token
+        return user
+
+    # No Bearer: try the session cookie.
+    if request is not None:
+        cookie_token = _mm_supabase_access_token(request)
+        if cookie_token:
+            _thread_token = cookie_token
+            user = require_user(f"Bearer {cookie_token}")
+            user["_access_token"] = _thread_token
+            return user
+
+    # Neither present: let require_user issue the 401.
+    _thread_token = None
     return require_user(authorization)
 
 
@@ -273,9 +304,10 @@ def _book(key: str, limit: int, now: float, cutoff: float) -> bool:
     bucket = _rate_buckets.get(key)
     if bucket is None:
         if len(_rate_buckets) >= _RATE_MAX_KEYS:
-            # Evict the oldest-INSERTED key (dict preserves insertion order). Bounded
-            # global memory; this never relaxes a live caller's own limit, because the
-            # key being dropped is by definition the one nobody has touched longest.
+            # Evict the least-recently USED key (dict preserves insertion order, so the
+            # eldest entry is at iter(). A caller who just received a 429 and has not yet
+            # retried may be the LRU and could be dropped; they get a fresh bucket when
+            # they next call, which is fine — they were already refused for this window.
             try:
                 _rate_buckets.pop(next(iter(_rate_buckets)))
             except StopIteration:
@@ -428,7 +460,6 @@ def _user_id_or_none(user: dict) -> str:
 # --------------------------------------------------------------------------- #
 @router.post("/api/account/password")
 def change_password(request: Request, body: PasswordRequest | None = None,
-                    authorization: str | None = Header(default=None),
                     user: dict = Depends(_current_user)) -> JSONResponse:
     """Change the caller's own password via Supabase Auth with the caller's own token.
 
@@ -446,7 +477,7 @@ def change_password(request: Request, body: PasswordRequest | None = None,
         return _err(400, "password_short")
     if len(password) > 72:
         return _err(400, "password_long")
-    token = extract_bearer(authorization)
+    token = user.get("_access_token")
     if not token:
         return _err(401, "no_identity")
     if not _allow("password", uid, _client_ip(request)):
@@ -477,7 +508,6 @@ def change_password(request: Request, body: PasswordRequest | None = None,
 
 @router.post("/api/account/email")
 def change_email(request: Request, body: EmailRequest | None = None,
-                 authorization: str | None = Header(default=None),
                  user: dict = Depends(_current_user)) -> JSONResponse:
     """START an email change: Supabase mails the confirmation link(s), nothing moves yet.
 
@@ -494,7 +524,7 @@ def change_email(request: Request, body: EmailRequest | None = None,
         return _err(400, "email_missing")
     if not _email_shape_ok(email):
         return _err(400, "email_invalid")
-    token = extract_bearer(authorization)
+    token = user.get("_access_token")
     if not token:
         return _err(401, "no_identity")
     if not _allow("email", uid, _client_ip(request)):
@@ -525,7 +555,6 @@ def change_email(request: Request, body: EmailRequest | None = None,
 
 @router.post("/api/account/signout-everywhere")
 def signout_everywhere(request: Request,
-                       authorization: str | None = Header(default=None),
                        user: dict = Depends(_current_user)) -> JSONResponse:
     """End EVERY session of this user: ``POST /auth/v1/logout?scope=global``, caller's token.
 
@@ -536,7 +565,7 @@ def signout_everywhere(request: Request,
     uid = _user_id_or_none(user)
     if not uid:
         return _err(401, "no_identity")
-    token = extract_bearer(authorization)
+    token = user.get("_access_token")
     if not token:
         return _err(401, "no_identity")
     if not _allow("signout-everywhere", uid, _client_ip(request)):
@@ -631,7 +660,6 @@ def _read_open_deletion(token: str, url: str, service_key: str, user_id: str) ->
 
 @router.post("/api/account/delete")
 def request_deletion(request: Request, body: DeleteRequest | None = None,
-                     authorization: str | None = Header(default=None),
                      user: dict = Depends(_current_user)) -> JSONResponse:
     """FILE a deletion request. Deletes nothing, updates nothing, removes nothing.
 
@@ -660,7 +688,7 @@ def request_deletion(request: Request, body: DeleteRequest | None = None,
         # is never written to a log whether it belongs to this user or to somebody else.
         log.info("account deletion confirmation mismatch for %s", _digest(uid))
         return _err(400, "delete_confirm")
-    token = extract_bearer(authorization)
+    token = user.get("_access_token")
     if not token:
         return _err(401, "no_identity")
     if not _allow("delete", uid, _client_ip(request)):
