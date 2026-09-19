@@ -1211,9 +1211,16 @@ def test_read_target_http_failure_is_typed_unavailable(monkeypatch):
 
 
 def test_monitor_read_failure_is_explicit_not_false_calm(monkeypatch):
-    from engine import thesis_condition_monitor as tcm
+    # Keep this unit hermetic: the recurring-briefs CI lane intentionally
+    # installs only pytest, while the real thesis monitor imports numpy/pandas.
+    import sys
+    import types
 
-    monkeypatch.setattr(tcm, "load_tripwire_view", lambda: ([], {}, "read_unavailable"))
+    fake_tcm = types.ModuleType("engine.thesis_condition_monitor")
+    fake_tcm.load_tripwire_view = lambda: ([], {}, "read_unavailable")
+    fake_tcm.fired_windows = lambda entries, latch_state: ()
+    monkeypatch.setitem(sys.modules, "engine.thesis_condition_monitor", fake_tcm)
+
     rows = rb.load_monitors_for_target(_thesis_target())
     assert rows == [{
         "name": "Conditions we watch",
