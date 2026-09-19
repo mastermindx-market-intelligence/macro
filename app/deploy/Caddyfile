@@ -380,7 +380,7 @@
 
 	@gate_html {
 		# Public funnel only — IP gate retains its fail-open availability contract.
-		path / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /research_screener.css /macro.html /start.html /us_stocks.html /research_vault.html /market_memory.html /stock_seasonality.html /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /stocks/* /products/* /tools/* /learn/* /blog/* /research/*
+		path / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /macro.html /start.html /us_stocks.html /research_vault.html /market_memory.html /stock_seasonality.html /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /stocks/* /products/* /tools/* /learn/* /blog/* /research/*
 	}
 
 	handle @gate_html {
@@ -479,7 +479,7 @@
 
 		# Public funnel only: retain fail-open availability if the IP gate is down.
 		@gate_html_err {
-			path / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /research_screener.css /macro.html /start.html /us_stocks.html /research_vault.html /market_memory.html /stock_seasonality.html /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /stocks/* /products/* /tools/* /learn/* /blog/* /research/*
+			path / /index.html /plans.html /help.html /confluence_screener.html /research_screener.html /macro.html /start.html /us_stocks.html /research_vault.html /market_memory.html /stock_seasonality.html /about.html /special_situations.html /china_special_situations.html /etfs.html /china_heatmap.html /support.html /unsubscribe.html /privacy.html /terms.html /disclaimer.html /stocks/* /products/* /tools/* /learn/* /blog/* /research/*
 		}
 		handle @gate_html_err {
 			header Cache-Control "no-store"

@@ -33,9 +33,9 @@ _MONTHS_EN = (
     "July", "August", "September", "October", "November", "December",
 )
 
-THEME_NULL_EN = "Theme lens isn't available yet"
+THEME_NULL_EN = "Theme lens isn't available yet."
 THEME_NULL_ZH = "主题视角尚未提供。"
-EXPOSURE_NULL_EN = "Sign in to see which of these you hold"
+EXPOSURE_NULL_EN = "Sign in to see which of these you hold."
 EXPOSURE_NULL_ZH = "登录后即可看到你持有其中哪些。"
 
 # Sibling-matching event names (templates/ticker.html.j2:1167,1875 via
@@ -241,10 +241,10 @@ def _assumptions_text(assumptions: Mapping[str, Any] | None) -> dict[str, str]:
         margin_en = "margins unchanged"
         margin_zh = "利润率不变"
     elif margin_n > 0:
-        margin_en = f"margins up {margin_n:g} points"
+        margin_en = f"margins up {margin_n:g} point{'s' if abs(margin_n) != 1 else ''}"
         margin_zh = f"利润率上升 {margin_n:g} 个百分点"
     else:
-        margin_en = f"margins down {abs(margin_n):g} points"
+        margin_en = f"margins down {abs(margin_n):g} point{'s' if abs(margin_n) != 1 else ''}"
         margin_zh = f"利润率下降 {abs(margin_n):g} 个百分点"
     en = (
         f"{growth_en}, {margin_en}, valued at {multiple_n:g} times reported earnings."

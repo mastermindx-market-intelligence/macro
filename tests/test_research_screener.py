@@ -551,16 +551,53 @@ def test_template_has_no_skydeck_payload_or_en_only_title():
 
 
 def test_template_aria_labels_go_through_t_macro():
-    """H4(a): the Lenses / Order group labels are bilingual via the page t() macro."""
+    """MAJOR-1: aria-label is a plain bilingual string, never t() macro output."""
     source = TEMPLATE_PATH.read_text(encoding="utf-8")
-    assert 'aria-label="Lenses 视角"' not in source
-    assert 'aria-label="{{ t(\'Lenses\', \'视角\') }}"' in source, source
-    assert 'aria-label="{{ t(\'Order\', \'排列方式\') }}"' in source, source
+    # MAJOR-1: plain bilingual strings (no t() macro, no markup inside aria-label)
+    assert 'aria-label="Lenses · 视角"' in source, source
+    assert 'aria-label="Order · 排列方式"' in source, source
     assert 'aria-describedby="rs-theme-hint"' in source
-    # The Theme chip's visible hint text must be present (bilingual, not just title=).
     assert 'id="rs-theme-hint"' in source
     assert "Theme lens isn&#39;t available yet" in source or "Theme lens isn't available yet" in source
     assert "主题视角尚未提供。" in source
+
+
+def test_no_markup_inside_any_aria_attribute():
+    """MAJOR-1: aria-label must be a plain bilingual string, never t() macro output with markup."""
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    # Find every aria-label value
+    import re
+    for m in re.finditer(r'aria-label="([^"]*)"', source):
+        val = m.group(1)
+        assert "<" not in val, f"aria-label contains markup: {val!r}"
+        assert ">" not in val, f"aria-label contains markup: {val!r}"
+
+
+def test_receipt_li_text_has_no_duplicate_event_name():
+    """MAJOR-2: receipt row renders window_label only (no duplicated event_name prefix)."""
+    pytest.importorskip("jinja2")
+    from jinja2 import Environment, FileSystemLoader
+
+    def t(en, zh=""):
+        return f'<span class="l-en">{en}</span><span class="l-zh">{zh or en}</span>'
+
+    templates = TEMPLATE_PATH.parent
+    env = Environment(loader=FileSystemLoader(str(templates)), autoescape=True)
+    env.globals["t"] = t
+    payload = compile_research_screener(
+        [_state("US-XNAS-AAPL", "AAPL", name="Apple", window_start="2026-09-12")],
+        [_valuation("AAPL", price=180, per_share=220)],
+        as_of=date(2026, 9, 1),
+    )
+    html = env.get_template(TEMPLATE_PATH.name).render(payload=payload, as_of=payload["as_of"])
+    # Extract text inside each <li> of the receipt
+    li_texts = re.findall(r"<li>(.*?)</li>", html, re.DOTALL)
+    catalyst_lis = [t for t in li_texts if "Estimated window" in t or "预计窗口" in t]
+    assert catalyst_lis, f"no catalyst receipt li found in: {li_texts}"
+    for li in catalyst_lis:
+        # Must not have "Estimated window Estimated window" (duplicate event_name + window_label)
+        assert "Estimated window Estimated window" not in li, f"duplicate event_name in receipt li: {li}"
+        assert "预计窗口预计窗口" not in li, f"duplicate event_name in receipt li: {li}"
 
 
 def test_why_cell_wraps_instead_of_clipping():
@@ -581,6 +618,27 @@ def test_help_popover_carries_full_why_not_title():
     assert 'class="tip"' in source
     assert "row.why.en" in source
     assert "title=" not in source
+
+
+def test_help_trigger_role_is_button():
+    """Minor 2: the focusable help trigger uses role="button", matching sibling pages."""
+    source = TEMPLATE_PATH.read_text(encoding="utf-8")
+    assert 'role="button"' in source, "help trigger should use role=button"
+
+
+def test_en_margin_pluralisation():
+    """Minor 4: EN margin copy pluralises correctly (1 point vs N points)."""
+    from engine.research_screener import _assumptions_text
+    # 1 point → singular
+    one_pt = _assumptions_text({"sales_growth_pct": 0, "margin_delta_pp": 1, "earnings_multiple": 20})
+    assert "1 point" in one_pt["en"], f"got: {one_pt['en']}"
+    assert "1 points" not in one_pt["en"]
+    # 2 points → plural
+    two_pt = _assumptions_text({"sales_growth_pct": 0, "margin_delta_pp": 2, "earnings_multiple": 20})
+    assert "2 points" in two_pt["en"], f"got: {two_pt['en']}"
+    # ZH unchanged
+    assert "1 个百分点" in one_pt["zh"]
+    assert "2 个百分点" in two_pt["zh"]
 
 
 _STAMP_RE = re.compile(r'(theme|research_screener)\.css\?v=[0-9a-f]{8}')
