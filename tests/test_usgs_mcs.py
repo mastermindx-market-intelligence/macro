@@ -489,6 +489,55 @@ class TestProjection:
         for key in ("rare_earths", "lithium", "cobalt", "gallium"):
             assert "no_edition_ingested" in art["commodities"][key]["nulls"]
 
+    def test_cobalt_read_leads_with_leading_producer(self, tmp_path):
+        """BLOCKER fix: cobalt reads must name Congo (Kinshasa) as the leading producer."""
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        c = art["commodities"]["cobalt"]
+        assert "Congo (Kinshasa)" in c["read_en"], c["read_en"]
+        assert "Congo (Kinshasa)" in c["read_zh"], c["read_zh"]
+        assert "74%" in c["read_en"], c["read_en"]
+        assert "74%" in c["read_zh"], c["read_zh"]
+        lp = c["leading_producer"]
+        assert lp["country"] == "Congo (Kinshasa)", lp
+        assert lp["share_pct"] == 74.0, lp
+
+    def test_lithium_read_leads_with_leading_producer(self, tmp_path):
+        """BLOCKER fix: lithium reads must name Australia as the leading producer."""
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        c = art["commodities"]["lithium"]
+        assert "Australia" in c["read_en"], c["read_en"]
+        assert "Australia" in c["read_zh"], c["read_zh"]
+        assert "32%" in c["read_en"], c["read_en"]
+        lp = c["leading_producer"]
+        assert lp["country"] == "Australia", lp
+        assert lp["share_pct"] == 32.0, lp
+
+    def test_top3_import_share_pct_cobalt_56(self, tmp_path):
+        """MAJOR fix: cobalt top3 = sum of 3 largest named-country shares = 56."""
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        c = art["commodities"]["cobalt"]
+        # Norway=26, Finland=16, Canada=14 → top 3 named sum = 56.
+        assert c["top3_import_share_pct"] == 56, (
+            f"Expected cobalt top3=56 (Norway 26 + Finland 16 + Canada 14), "
+            f"got {c['top3_import_share_pct']}; "
+            f"sources={c['import_sources_2021_24']}"
+        )
+
+    def test_no_angle_bracket_tokens_in_customer_text(self, tmp_path):
+        """MAJOR fix: no < or > tokens in customer-facing read_en/read_zh."""
+        import re
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        failures = []
+        for key, c in art["commodities"].items():
+            for lang, text in (("en", c["read_en"]), ("zh", c["read_zh"])):
+                if re.search(r"[<>]", text):
+                    failures.append(f"{key}/{lang}: {text}")
+        assert not failures, "Raw < or > tokens found in customer text:\n" + "\n".join(failures)
+
 
 # ---------------------------------------------------------------------------
 # (i) render-path fence

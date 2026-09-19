@@ -57,3 +57,39 @@ next_bounded_child: per-family gap child #1 (USGS MCS raw layer,
 rare_earth_critical_min) BUILT_NOT_PROVEN; live proof owed after nightly
 with USGS_MCS_ENABLED=true. Issuer-key clause not engaged (no issuer join).
 This packet does not edit the F00C ledger CSV.
+
+## Heal h_7110 (2026-09-18)
+
+Head `196002786fb2561597068021137d579a83179ac3` → heal head `[NEW SHA]`.
+BLOCKER: `_read_sentences` now leads with the T7 leading producer (Congo
+74% cobalt, Australia 32% lithium) and uses China-share clause only as
+fallback when no leading-producer is present (or when China IS the leader,
+e.g. gallium 100%, rare earths 69%). MAJOR: `top3_import_share_pct`
+now sorts named-country Fig3 rows by (-pct, name), excludes "Other"/"其他",
+and sums the top 3 — cobalt = 56 (Norway 26 + Finland 16 + Canada 14).
+MAJOR: NIR qualifier `>` renders "more than" / "超过", `<` renders
+"less than" / "低于" — no raw `<`/`>` tokens in customer text.
+MINOR: gallium production verb now uses "produced" (matches
+`world_metric: "Primary production"`); stitch keeps leading "US" capitalised.
+
+Corrected reads at heal head:
+
+- cobalt: "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025,
+  and the US imported about 79% of what it used."
+  ZH: "Congo (Kinshasa)在2025年开采了全球约74%的钴，美国进口了其用量的约79%。"
+  top3_import_share_pct = 56
+- lithium: "Australia mined about 32% of the world's lithium in 2025,
+  and the US imported about more than 50 percent of what it used."
+  ZH: "Australia在2025年开采了全球约32%的锂，美国进口了其用量的约超过50%。"
+  top3_import_share_pct = 97
+- gallium: "China produced about 100% of the world's gallium in 2025,
+  and the US imported about 100% of what it used."
+  ZH: "China在2025年开采了全球约100%的镓，美国进口了其用量的约100%。"
+  top3_import_share_pct = 68
+- rare earths: "China mined about 69% of the world's rare earths in 2025,
+  and the US imported about 67% of what it used."
+  ZH: "中国在2025年开采了全球约69%的稀土，美国进口了其用量的约67%。"
+  top3_import_share_pct = 89
+
+RED-first on f1aac58fedd1: 18 passed (producer landed green).
+HEAL_RESULT: tests 22 passed (18 original + 4 new).

@@ -14170,7 +14170,8 @@ artifacts:
       authority, honesty_header, edition, commodities, coverage_stats,
       source_note}. Per commodity: US net-import reliance, leading-producer
       share (T7 Leading_source_precent_world), top-3 import-source share
-      (sum of the first three Fig3 Percent rows), China share of world
+      (sum of the three largest named-country shares from Fig3, sorted by
+      (-pct, name), excluding "Other"/"其他" rows), China share of world
       production (China ÷ World total from Commodities_Data, same period).
       No score, rank, composite or concentration index. Authority: all
       may_* false; is_context_only=true. FENCE: never fold into fused_obs_z.

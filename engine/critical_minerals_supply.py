@@ -121,13 +121,22 @@ def _nir_text(value: Optional[float], qualifier: str, lang: str) -> str:
             if lang == "en"
             else "这一版未给出美国净进口依赖的数字。"
         )
-    shown = f"{qualifier}{int(value)}" if qualifier in {">", "<"} else f"{int(value)}"
+    if qualifier == ">":
+        word = "more than" if lang == "en" else "超过"
+    elif qualifier == "<":
+        word = "less than" if lang == "en" else "低于"
+    else:
+        word = None
+    if word:
+        shown = f"{word} {int(value)} percent" if lang == "en" else f"{word}{int(value)}%"
+    else:
+        shown = f"{int(value)}%" if lang == "en" else f"{int(value)}%"
     if lang == "en":
-        return f"The United States imported about {shown}% of what it used."
-    return f"美国进口了其用量的约{shown}%。"
+        return f"The United States imported about {shown} of what it used."
+    return f"美国进口了其用量的约{shown}。"
 
 
-def _read_sentences(payload: dict) -> tuple[str, str]:
+def _read_sentences(payload: dict, world_metric: str = "mine production") -> tuple[str, str]:
     label_en = payload["label_en"]
     label_zh = payload["label_zh"]
     bits_en: list[str] = []
@@ -137,16 +146,18 @@ def _read_sentences(payload: dict) -> tuple[str, str]:
     period = (lead.get("period") or "").replace("_estimated", "")
     share = lead.get("share_pct")
     country = lead.get("country")
-    if china_share is not None and period:
+    verb_en = "produced" if "primary" in world_metric.lower() else "mined"
+    verb_zh = "开采了"
+    if country and share is not None and period:
+        bits_en.append(
+            f"{country} {verb_en} about {share:.0f}% of the world's {label_en.lower()} in {period}"
+        )
+        bits_zh.append(f"{country}在{period}年{verb_zh}全球约{share:.0f}%的{label_zh}")
+    elif china_share is not None and period:
         bits_en.append(
             f"China mined about {china_share:.0f}% of the world's {label_en.lower()} in {period}"
         )
         bits_zh.append(f"中国在{period}年开采了全球约{china_share:.0f}%的{label_zh}")
-    elif country and share is not None and period:
-        bits_en.append(
-            f"{country} mined about {share:.0f}% of the world's {label_en.lower()} in {period}"
-        )
-        bits_zh.append(f"{country}在{period}年开采了全球约{share:.0f}%的{label_zh}")
     nir = payload.get("us_net_import_reliance") or {}
     if nir.get("text_en"):
         bits_en.append(nir["text_en"].replace("The United States imported ", "and the US imported ").replace("The United States was ", "and the US was "))
@@ -251,10 +262,12 @@ def _commodity_block(cfg_entry: dict, df: Optional[pd.DataFrame]) -> dict:
         sources.append({"country": row.get("country"), "pct": pct})
     block["import_sources_2021_24"] = sources
     if sources:
-        top = sources[:_TOP_N]
-        nums = [s["pct"] for s in top if s["pct"] is not None]
-        block["top3_import_share_pct"] = sum(nums) if nums else None
-        # Name the input: sum of the first three Fig3 Percent rows.
+        # Exclude "Other" rows; sort by (-pct, name) to handle ties deterministically;
+        # take top 3 and sum their shares.
+        named = [s for s in sources if s.get("country", "").lower() not in ("other", "其他")]
+        ranked = sorted(named, key=lambda s: (-s["pct"], s["country"]))
+        top3 = [s for s in ranked if s["pct"] is not None][: _TOP_N]
+        block["top3_import_share_pct"] = sum(s["pct"] for s in top3) if top3 else None
 
     world = sub[sub["table"] == "world_production"]
     metric_want = (cfg_entry.get("world_metric") or "Mine production").lower()
@@ -320,7 +333,7 @@ def _commodity_block(cfg_entry: dict, df: Optional[pd.DataFrame]) -> dict:
     if block["china_share_world_production_pct"] is None:
         block["nulls"].append("china_share_absent")
 
-    en, zh = _read_sentences(block)
+    en, zh = _read_sentences(block, world_metric=cfg_entry.get("world_metric", "mine production"))
     block["read_en"] = en
     block["read_zh"] = zh
     return block
