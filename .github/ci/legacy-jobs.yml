@@ -14789,6 +14789,47 @@ jobs:
           tests/test_macro_workspace_trade_flows.py
           -q
 
+  macro-turnaround-research:
+    # Point-in-time macro-turnaround research is a code-gated source capability,
+    # not a data-health or render lane. `if: false` keeps this a legacy status
+    # definition; run_ci_pack executes it inside the merge-gate packs. The job
+    # owns one deterministic engine/replay contract and its immutable CLIs.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/macro_turnaround.py"
+      - "engine/macro_turnaround_replay.py"
+      - "engine/release_target_truth.py"
+      - "scripts/__init__.py"
+      - "scripts/build_macro_turnaround_research.py"
+      - "scripts/replay_macro_turnaround.py"
+      - "tests/test_macro_turnaround_research.py"
+      - "tests/test_macro_turnaround_replay.py"
+      - "tests/test_macro_turnaround_replay_cli.py"
+      - "tests/test_macro_turnaround_feature_honesty.py"
+      - "tests/test_macro_turnaround_evidence_change.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install point-in-time replay test dependencies
+        run: pip install pytest pandas pyarrow pyyaml
+      - name: point-in-time macro turnaround research — replay, corrections, immutable output, authority ceiling
+        run: >-
+          python -m pytest
+          tests/test_macro_turnaround_research.py
+          tests/test_macro_turnaround_replay.py
+          tests/test_macro_turnaround_replay_cli.py
+          tests/test_macro_turnaround_feature_honesty.py
+          tests/test_macro_turnaround_evidence_change.py
+          -q
+
+
   market-os-macro-suite-pages:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
