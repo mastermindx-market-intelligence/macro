@@ -21,7 +21,7 @@ MACRO_HTML = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
 # to, and a digest of the payload that key is responsible for busting. They MUST
 # move together -- see test_nav_release_key_moves_with_the_payload_it_busts.
 NAV_RELEASE_KEY = "20260913-account-actions"
-NAV_PAYLOAD_DIGEST = "e8556547"
+NAV_PAYLOAD_DIGEST = "98f7191a"
 
 
 def _payload_digest() -> str:

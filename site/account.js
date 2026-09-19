@@ -792,6 +792,8 @@
       case 'close': return close();
       case 'alert-optin': return onAlertOptin(b);
       case 'alert-cat': return onAlertCat(b);
+      case 'alert-tz': return onAlertTz(b);
+      case 'alert-qh': return _sendQuietHours();
       case 'alert-qh-clear': return onAlertQhClear();
       case 'edit-email': showField('mmacc-email-field'); var ei = E('mmacc-email-in'); if (ei) ei.focus(); return;
       case 'cancel-email': showField('mmacc-email-field', false); setMsg('mmacc-email-msg', ''); return;
