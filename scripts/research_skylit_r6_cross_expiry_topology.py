@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import date
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 from typing import Any
 
 import numpy as np
