@@ -3137,6 +3137,45 @@ def test_company_intelligence_product_surfaces_reach_focused_ci_packs() -> None:
     assert re.search(r"\bhttpx\b", publish_ops_install)
 
 
+
+def test_earnings_worker_control_plane_has_binding_code_gate_owner() -> None:
+    """An ops-only or test-only worker diff must execute its hermetic contract."""
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    by_id = {job.job_id: job for job in jobs}
+    job = by_id["earnings-release-identity"]
+
+    assert job.gate == "code"
+    declared = set(job.definition.get("paths") or [])
+    required = {
+        "ops/bootstrap_earnings_worker.sh",
+        "ops/launchd/com.mastermind.earnings-worker.plist",
+        "ops/launchd/run_earnings_worker.sh",
+        "tools/earnings_worker/README.md",
+        "tests/test_earnings_worker_launchd.py",
+        "config/earnings_qual.yml",
+    }
+    assert required <= declared
+
+    commands = "\n".join(
+        str(step.get("run", ""))
+        for step in job.definition["steps"]
+        if isinstance(step, dict)
+    )
+    assert "tests/test_earnings_worker_launchd.py" in commands
+
+    # These are the two previously-dark shapes from PR #7366 review: changing
+    # only the test contract or only one production control path must select the
+    # binding code-gate owner, not merely a broader gate:data ops pack.
+    for changed in (
+        "tests/test_earnings_worker_launchd.py",
+        "ops/bootstrap_earnings_worker.sh",
+        "ops/launchd/com.mastermind.earnings-worker.plist",
+        "ops/launchd/run_earnings_worker.sh",
+    ):
+        selected, _reason = PACK.select_jobs(jobs, [changed])
+        assert "earnings-release-identity" in {item.job_id for item in selected}
+
+
 def test_ci_pack_partial_clone_keeps_history_without_historical_site_blobs() -> None:
     """ci-plan keeps full history; packs shallow-checkout the current tree.
 
