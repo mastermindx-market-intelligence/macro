@@ -187,22 +187,32 @@
       return _sb;
     });
   }
-  function getToken() {
-    // macro: use MDXAuth (the same client theme.js uses at line 3709) so we get the
-    // session that the shared cookie contains — no SDK load needed (jsdelivr is GFW-blocked).
+  async function getToken() {
+    // macro: MDXAuth.client is getSupabaseClient (theme.js:1902), which ALWAYS
+    // returns a Promise (theme.js:1819-1837). Calling .getSession() on that
+    // Promise throws. Await the client, then getSession — the same path
+    // theme.js:3709-3711 uses: getSupabaseClient().then(sb => sb.auth.getSession()).
     if (_macro) {
-      return (window.MDXAuth && window.MDXAuth.client
-        ? window.MDXAuth.client().getSession()
-        : Promise.reject(new Error('no-mdxauth'))).then(function (r) {
-          var s = r && r.data && r.data.session;
-          return s ? s.access_token : null;
-        }).catch(function () { return null; });
+      try {
+        if (!(window.MDXAuth && window.MDXAuth.client)) return null;
+        const sb = await window.MDXAuth.client();
+        const { data } = await sb.auth.getSession();
+        return data?.session?.access_token ?? null;
+      } catch (e) {
+        return null;
+      }
     }
     // standalone: use the SDK-backed client.
-    if (!SUPA || !hasPersisted()) return Promise.resolve(null);
-    return sbClient().then(function (sb) { return sb ? sb.auth.getSession() : null; })
-      .then(function (r) { var s = r && r.data && r.data.session; return s ? s.access_token : null; })
-      .catch(function () { return null; });
+    if (!SUPA || !hasPersisted()) return null;
+    try {
+      var standalone = await sbClient();
+      if (!standalone) return null;
+      var result = await standalone.auth.getSession();
+      var session = result && result.data && result.data.session;
+      return session ? session.access_token : null;
+    } catch (e) {
+      return null;
+    }
   }
 
   // ------------------------------------------------------------- API ---------
@@ -211,6 +221,8 @@
     return getToken().then(function (token) {
       var headers = {};
       if (opts.body) headers['Content-Type'] = 'application/json';
+      // A null token is lawful on www (cookie carries identity): still send the
+      // request with credentials:'include' and no Authorization header.
       if (token) headers['Authorization'] = 'Bearer ' + token;
       return fetch(API + path, {
         method: opts.method || 'GET', headers: headers, credentials: 'include',

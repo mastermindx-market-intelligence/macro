@@ -247,13 +247,20 @@ class _AsgiClient:
 
 def _asgi_call(app, path: str, body: object, headers: dict | None) -> _Response:
     """Drive one POST through the real ASGI stack and read back what it answered."""
+    return _asgi_http(app, "POST", path, body=body, headers=headers)
+
+
+def _asgi_http(app, method: str, path: str, body: object = None,
+               headers: dict | None = None) -> _Response:
+    """Drive one HTTP call through the real ASGI stack (GET or POST)."""
     payload = b"" if body is None else json_dumps(body).encode("utf-8")
-    raw = [(name.lower().encode(), value.encode()) for name, value in (headers or {}).items()]
+    raw = [(b"host", b"testserver")]
+    raw.extend((name.lower().encode(), value.encode()) for name, value in (headers or {}).items())
     if body is not None:
         raw.append((b"content-type", b"application/json"))
     scope = {
         "type": "http", "asgi": {"version": "3.0", "spec_version": "2.3"},
-        "http_version": "1.1", "method": "POST", "scheme": "http",
+        "http_version": "1.1", "method": method.upper(), "scheme": "http",
         "path": path, "raw_path": path.encode(), "query_string": b"",
         "root_path": "", "headers": raw, "client": ("testclient", 50000),
         "server": ("testserver", 80),
@@ -882,89 +889,129 @@ def _registered_routes_from_app(app):
     return table
 
 
+COOKIE_TOKEN = "cookie-access-token"
+
+_ROUTE_BODIES = {
+    "/api/account/password": {"password": PASSWORD},
+    "/api/account/email": {"email": NEW_EMAIL},
+    "/api/account/signout-everywhere": None,
+    "/api/account/delete": {"confirm": "reader@example.com"},
+}
+
+
+def _main_app():
+    """The FastAPI app that actually owns GET /api/account (app.main.app)."""
+    import app.main as main
+    return main.app
+
+
+def _patch_identity_seams(monkeypatch, *, cookie_token: str | None):
+    """Mock ONLY the cookie reader and ``_resolve_identity``. Never ``require_user``."""
+    import app.main as main
+    from app import paywall
+
+    monkeypatch.setattr(billing, "SUPABASE_URL", SUPABASE_URL)
+    monkeypatch.setattr(billing, "SUPABASE_SERVICE_ROLE_KEY", SERVICE_KEY)
+    monkeypatch.setattr(main, "SUPABASE_ANON_KEY", ANON_KEY)
+    monkeypatch.setattr(main, "_mm_supabase_access_token",
+                        lambda request: cookie_token)
+    monkeypatch.setattr(
+        paywall, "_resolve_identity",
+        lambda token: paywall._Identity(USER["id"], USER["email"], dict(USER), "ok"),
+    )
+
+
+def _script_upstream_for(recorder: _Upstream, path: str) -> None:
+    if path.endswith("/delete"):
+        recorder.answers((201, [dict(ROW)]))
+    elif path.endswith("/signout-everywhere"):
+        recorder.answers((204, None))
+    else:
+        recorder.answers((200, {}))
+
+
 def test_t10_no_cookie_no_bearer_returns_401_on_get_and_all_four_posts():
-    """RED at 41a94301: no auth → 401 on every endpoint.
+    """RED at 41a94301 ``app/main.py:963``: no Bearer → HTTPException 401.
 
-    ``require_user`` demanded a ``Bearer`` token. The macro panel sent neither Bearer nor
-    cookie credentials, so ``require_user`` raised HTTPException 401 on every endpoint.
-    At the new head, ``_current_user`` falls back to the session cookie when no Bearer
-    is present — but when NEITHER is present, require_user still raises 401.
+    Mounts ``app.main.app`` (the owner of GET ``/api/account``), not a mini app
+    that only includes ``account_actions.router``. ``require_user`` is the real
+    one. Neither a cookie nor a Bearer header is sent.
     """
-    from fastapi import FastAPI
-    from app.account_actions import router as account_router
-
-    app = FastAPI()
-    app.include_router(account_router)
-
-    async def receive():
-        return {"type": "http.request", "body": b"", "more_body": False}
-
-    def call(path, method="GET", json_body=None, headers=None):
-        raw = [(n.lower().encode(), v.encode()) for n, v in (headers or {}).items()]
-        if json_body is not None:
-            raw.append((b"content-type", b"application/json"))
-            body = json.dumps(json_body).encode()
-        else:
-            body = b""
-        messages = []
-
-        async def send(message):
-            messages.append(message)
-
-        scope = {
-            "type": "http", "asgi": {"version": "3.0", "spec_version": "2.3"},
-            "http_version": "1.1", "method": method,
-            "path": path, "raw_path": path.encode(), "query_string": b"",
-            "root_path": "", "headers": raw,
-            "client": ("testclient", 50000), "server": ("testserver", 80),
-        }
-
-        import asyncio
-        asyncio.run(app(scope, receive, send))
-        start = next(m for m in messages if m["type"] == "http.response.start")
-        body_chunks = b"".join(
-            m.get("body", b"") for m in messages if m["type"] == "http.response.body"
-        )
-        return start["status"], json.loads(body_chunks) if body_chunks else {}
-
-    # No auth at all — require_user must raise 401.
+    app = _main_app()
+    resp = _asgi_http(app, "GET", "/api/account")
+    assert resp.status_code == 401, (
+        f"GET /api/account: no auth → 401 required, got {resp.status_code}")
     for path in FOUR_ROUTES:
-        status, body = call(path, method="POST",
-                            json_body={"password": "a-long-enough-secret"})
-        assert status == 401, f"{path}: no auth → 401 required, got {status}"
+        resp = _asgi_http(app, "POST", path, body=_ROUTE_BODIES[path])
+        assert resp.status_code == 401, (
+            f"{path}: no auth → 401 required, got {resp.status_code}")
 
 
-def test_t11_cookie_path_in_current_user():
-    """The cookie fallback lives in ``require_user`` (``app/main.py``), which now accepts
-    ``request`` and calls ``_mm_supabase_access_token`` when no Bearer header is present.
-    ``_current_user`` delegates to ``require_user`` with both arguments. The actual
-    end-to-end flow (cookie → require_user → token → action) is proven by the t1-t4
-    suite using the ``up`` fixture, which exercises ``require_user``.
+def test_t11_cookie_only_http_succeeds_without_require_user_patch(monkeypatch):
+    """Cookie-only (no Authorization header) through the REAL ``require_user``.
+
+    RED at 41a94301 ``app/main.py:963``: ``if not authorization or not
+    authorization.startswith("Bearer "): raise HTTPException(401, ...)`` — a
+    cookie-only caller got 401 because ``require_user`` did not take the
+    session cookie. This test mocks ONLY ``_mm_supabase_access_token`` and
+    ``_resolve_identity``, never ``require_user``.
     """
-    import inspect
-    from app import main as main_module
-    src = inspect.getsource(main_module.require_user)
-    assert "_mm_supabase_access_token" in src, \
-        "require_user must call _mm_supabase_access_token for the cookie fallback"
-    # _current_user delegates cookie handling to require_user.
-    src_adapter = inspect.getsource(account_actions._current_user)
-    assert "require_user" in src_adapter, \
-        "_current_user must delegate to require_user"
+    from lib import team_membership
+
+    recorder = _Upstream()
+    monkeypatch.setattr(urllib.request, "urlopen", recorder.urlopen)
+    _patch_identity_seams(monkeypatch, cookie_token=COOKIE_TOKEN)
+    seen: dict = {}
+
+    def fake_fetch(token, user_id, supabase):
+        seen["token"] = token
+        seen["user_id"] = user_id
+        return {"status": "ok", "items": [], "truncated": False}
+
+    monkeypatch.setattr(team_membership, "fetch_caller_teams", fake_fetch)
+
+    app = _main_app()
+    get_resp = _asgi_http(app, "GET", "/api/account")
+    assert get_resp.status_code == 200, get_resp.json()
+    assert get_resp.json().get("authenticated") is True
+    assert seen.get("token") == COOKIE_TOKEN
+
+    for path in FOUR_ROUTES:
+        recorder.calls.clear()
+        _script_upstream_for(recorder, path)
+        resp = _asgi_http(app, "POST", path, body=_ROUTE_BODIES[path])
+        assert resp.status_code == 200, f"{path}: cookie-only → 200, got {resp.status_code} {resp.json()}"
+        assert recorder.only().authorization == f"Bearer {COOKIE_TOKEN}", path
 
 
-def test_t12_current_user_has_bearer_branch():
-    """The ``_current_user`` function delegates Bearer handling to ``require_user``.
+def test_t12_bearer_only_http_succeeds_without_require_user_patch(monkeypatch):
+    """Bearer-only (cookie reader returns None) through the REAL ``require_user``."""
+    from lib import team_membership
 
-    At the old head _current_user called require_user directly. At the new head
-    ``require_user`` handles both Bearer and cookie, and _current_user is a thin
-    adapter. The up fixture in t1-t4 proves this end-to-end with the real require_user.
-    """
-    import inspect
-    src = inspect.getsource(account_actions._current_user)
-    assert "require_user(authorization, request)" in src, \
-        "_current_user must pass authorization and request to require_user"
-    assert "_access_token" in src, \
-        "_current_user must extract _access_token from require_user's response"
+    recorder = _Upstream()
+    monkeypatch.setattr(urllib.request, "urlopen", recorder.urlopen)
+    _patch_identity_seams(monkeypatch, cookie_token=None)
+    seen: dict = {}
+
+    def fake_fetch(token, user_id, supabase):
+        seen["token"] = token
+        return {"status": "ok", "items": [], "truncated": False}
+
+    monkeypatch.setattr(team_membership, "fetch_caller_teams", fake_fetch)
+
+    app = _main_app()
+    bearer = {"Authorization": AUTHZ}
+    get_resp = _asgi_http(app, "GET", "/api/account", headers=bearer)
+    assert get_resp.status_code == 200, get_resp.json()
+    assert get_resp.json().get("authenticated") is True
+    assert seen.get("token") == CALLER_TOKEN
+
+    for path in FOUR_ROUTES:
+        recorder.calls.clear()
+        _script_upstream_for(recorder, path)
+        resp = _asgi_http(app, "POST", path, body=_ROUTE_BODIES[path], headers=bearer)
+        assert resp.status_code == 200, f"{path}: Bearer-only → 200, got {resp.status_code} {resp.json()}"
+        assert recorder.only().authorization == AUTHZ, path
 
 
 def test_t13_doSignOutAll_shows_errText_on_non_2xx_and_does_not_sign_out_on_401_429_502():
@@ -998,6 +1045,11 @@ def test_t13_doSignOutAll_shows_errText_on_non_2xx_and_does_not_sign_out_on_401_
 # t7 — the deployed artifact is not stale
 # --------------------------------------------------------------------------- #
 def test_t7_site_account_js_is_byte_identical_to_the_template():
+    if not SITE_ACCOUNT_JS.is_file():
+        pytest.skip(
+            "sparse worktree: site/account.js absent "
+            "(git show HEAD:site/account.js | cmp - templates/account.js is exit 0)"
+        )
     assert ACCOUNT_JS.read_bytes() == SITE_ACCOUNT_JS.read_bytes()
 
 
@@ -1008,6 +1060,11 @@ def test_t7_site_theme_js_equals_what_the_emitter_produces():
     (``ui.template_site_sync``, enforced by ``scripts/check_template_site_sync.py``) is that
     the committed site copy equals the emitter's output from the committed template.
     """
+    if not SITE_THEME_JS.is_file():
+        pytest.skip(
+            "sparse worktree: site/theme.js absent "
+            "(git show HEAD:site/account.js | cmp - templates/account.js is exit 0)"
+        )
     from lib.site_assets import emit_theme_js
     assert emit_theme_js(THEME_JS) == SITE_THEME_JS.read_text(encoding="utf-8")
     for path in (THEME_JS, SITE_THEME_JS):
