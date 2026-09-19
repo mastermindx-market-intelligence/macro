@@ -532,6 +532,68 @@ def test_controls_blob_ignores_nonfilings_and_selects_latest_classified(issuer_s
     assert va.controls_blob(vs.compute(_rows(), ticker="AAPL"))["latest_event_bridge"] is None
 
 
+def _event_bridge_sentence(html):
+    event_line = re.search(
+        r'<p[^>]*id="va-event-bridge"[^>]*>(.*?)</p>', html, re.DOTALL
+    )[1]
+    return " ".join(re.sub(r"<[^>]+>", "", event_line).split())
+
+
+def _use_committed_capital_spine(monkeypatch):
+    """Point the production Parquet reader at the in-repo capital-structure ledger."""
+    compiler = import_module("scripts.compile_capital_structure_events")
+    from lib import config
+
+    monkeypatch.setattr(
+        compiler, "_data_root", lambda: config.data_dir() / "capital_structure"
+    )
+
+
+def test_production_path_renders_committed_nsa_post_effective_amendment(
+    issuer_spines, monkeypatch
+):
+    """controls_blob(v1) plus the ticker-page renderer on committed NSA fixtures.
+
+    The live valuation cohort stays AAPL-only. This test uses the same producer
+    and template as the generated ticker page, against NSA rows already in
+    data/capital_structure/event_versions.parquet.
+    """
+    _use_committed_capital_spine(monkeypatch)
+    v1 = vs.compute(_rows(), ticker="NSA")
+    controls = va.controls_blob(v1)
+    assert controls is not None
+    bridge = controls["latest_event_bridge"]
+    assert bridge is not None
+    assert bridge["event_class"] == "post_effective_amendment"
+    html = _render(controls)
+    sentence = _event_bridge_sentence(html)
+    assert "post_effective_amendment" in json.dumps(bridge)
+    assert "Latest filing on file (Post-Effective Amendment)" in sentence
+    assert "usually presses margin" in sentence
+    assert "最新备案（生效后修正）" in sentence
+    assert "No filing on file yet for this company." not in sentence
+    assert "该公司暂无备案。" not in sentence
+
+
+def test_production_path_renders_aapl_typed_null_from_committed_spine(
+    issuer_spines, monkeypatch
+):
+    """AAPL's generated page paints the typed-null line; it never fabricates an event."""
+    _use_committed_capital_spine(monkeypatch)
+    v1 = vs.compute(_rows(), ticker="AAPL")
+    controls = va.controls_blob(v1)
+    assert controls is not None
+    assert controls["latest_event_bridge"] is None
+    html = _render(controls)
+    sentence = _event_bridge_sentence(html)
+    assert "No filing on file yet for this company." in sentence
+    assert "该公司暂无备案。" in sentence
+    for phrase in ("usually lifts", "usually presses", "通常推升", "通常压缩"):
+        assert phrase not in sentence
+    assert "Post-Effective Amendment" not in sentence
+    assert "post_effective_amendment" not in sentence
+
+
 # ---------------------------------------------------------------------------
 # Pure-module invariants — no IO / no clock / no network access.
 # ---------------------------------------------------------------------------
