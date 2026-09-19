@@ -61,13 +61,26 @@ def main(argv=None) -> int:
               % result.error_class, flush=True)
 
     print("alert-drain: outcome=%s evaluated=%d fired=%d unevaluable=%d deferred=%d "
-          "suppressed=%d failed=%d category_unfiltered=%d duplicate=%d receipt_written=%s "
-          "run_id=%s"
+          "suppressed=%d failed=%d category_unfiltered=%d duplicate=%d "
+          "effect_unknown=%d in_flight=%d receipt_written=%s run_id=%s"
           % (result.outcome, result.evaluated_n, result.fired_n, result.unevaluable_n,
              result.deferred_n, result.suppressed_n, result.failed_n,
-             result.category_unfiltered_n, result.duplicate_n, result.receipt_written,
+             result.category_unfiltered_n, result.duplicate_n,
+             result.effect_unknown_n, result.in_flight_n, result.receipt_written,
              result.run_id),
           flush=True)
+
+    # effect_unknown rows are quarantined, never retried and never marked delivered, so
+    # nothing downstream will ever resolve them — this line plus the per-row ::warning
+    # from the drain are the ONLY places a human learns they exist. alert_runs carries
+    # no column for either counter and none is invented here (review round 3 MAJOR-3:
+    # an unproven column 400s every close_receipt PATCH and silently forces
+    # outcome='partial' on every run).
+    if result.effect_unknown_n:
+        print("::warning title=alert-drain-effect-unknown-total::"
+              "%d alert row(s) quarantined with an undetermined delivery effect -- "
+              "check the relay log before replaying any of them by hand"
+              % result.effect_unknown_n, flush=True)
     return 0
 
 

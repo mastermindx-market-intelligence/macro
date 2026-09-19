@@ -136,6 +136,9 @@ class _Smtp:
             def login(self, *a):
                 pass
 
+            def noop(self):
+                return (250, b"ok")
+
             def send_message(self, msg):
                 outer.sent.append(msg)
 

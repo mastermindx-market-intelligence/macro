@@ -7057,6 +7057,8 @@ jobs:
         run: python -m pytest tests/test_mailer_alert_template.py -v
       - name: alert outbox delivery drain (engine/alert_delivery_drain.py, scripts/drain_alert_outbox.py)
         run: python -m pytest tests/test_alert_delivery_drain.py -v
+      - name: post-SMTP effect boundary (app/mailer.py write-ahead marker x drain quarantine)
+        run: python -m pytest tests/test_alert_delivery_effect_boundary.py -v
 
   serving-observability:
     if: ${{ false }}

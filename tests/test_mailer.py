@@ -74,6 +74,11 @@ class _FakeSMTP:
     def login(self, user, password):
         self._rec["logins"].append(user)
 
+    def noop(self):
+        # mailer._deliver probes the session after writing its write-ahead
+        # marker: an idle relay that dropped us fails HERE, before any body bytes.
+        return (250, b"ok")
+
     def send_message(self, msg):
         self._rec["messages"].append(msg)
 
@@ -333,7 +338,7 @@ def test_send_failure_returns_failed_and_records_class_only(wired, monkeypatch):
     led, _smtp = wired
     _mail_on(monkeypatch)
 
-    def _boom(msg):
+    def _boom(msg, before_data=None):
         raise ValueError("relay said no: secret-token-abc")
 
     monkeypatch.setattr(mailer, "_smtp_send", _boom)
@@ -344,12 +349,17 @@ def test_send_failure_returns_failed_and_records_class_only(wired, monkeypatch):
 
 
 def test_transient_disconnect_is_retried_once_then_succeeds(wired, monkeypatch):
+    """Stubbing _smtp_send models a failure in the phases that are PROOF OF
+    NON-DELIVERY -- connect / STARTTLS / AUTH. A disconnect while the message itself is
+    in flight no longer surfaces as SMTPServerDisconnected at all: _deliver wraps it as
+    TransportUncertain and it is never retried (tests/test_alert_delivery_effect_boundary.py).
+    So this retry stays correct, and is now provably incapable of duplicating."""
     import smtplib as real_smtplib
     led, _smtp = wired
     _mail_on(monkeypatch)
     calls = {"n": 0}
 
-    def _flaky(msg):
+    def _flaky(msg, before_data=None):
         calls["n"] += 1
         if calls["n"] == 1:
             raise real_smtplib.SMTPServerDisconnected("dropped")
@@ -365,7 +375,7 @@ def test_auth_failure_is_not_retried(wired, monkeypatch):
     _mail_on(monkeypatch)
     calls = {"n": 0}
 
-    def _bad_auth(msg):
+    def _bad_auth(msg, before_data=None):
         calls["n"] += 1
         raise real_smtplib.SMTPAuthenticationError(535, b"bad credentials")
 
@@ -602,7 +612,7 @@ def test_transient_retry_waits_before_the_second_attempt(wired, monkeypatch):
     monkeypatch.setattr(mailer.time, "sleep", lambda s: slept.append(s))
     calls = {"n": 0}
 
-    def _flaky(msg):
+    def _flaky(msg, before_data=None):
         calls["n"] += 1
         if calls["n"] == 1:
             raise real_smtplib.SMTPServerDisconnected("421 too many connections")
@@ -619,7 +629,7 @@ def test_permanent_failure_does_not_sleep(wired, monkeypatch):
     slept: list[float] = []
     monkeypatch.setattr(mailer.time, "sleep", lambda s: slept.append(s))
     monkeypatch.setattr(mailer, "_smtp_send",
-                        lambda msg: (_ for _ in ()).throw(
+                        lambda msg, before_data=None: (_ for _ in ()).throw(
                             real_smtplib.SMTPAuthenticationError(535, b"nope")))
     assert _send() == "failed"
     assert slept == []

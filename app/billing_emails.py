@@ -1265,6 +1265,15 @@ def sweep_trial_ending(*, now: datetime | None = None,
                 out["duplicate"] += 1
             elif status in ("sent", "skipped_no_smtp"):
                 out["sent"] += 1
+            elif status == mailer.EFFECT_UNKNOWN:
+                # Counted with the failures because it is certainly not a delivery we
+                # can claim — but named in the log, because it is not one we can deny
+                # either. No resend risk in this lane: `idem_key` is derived from the
+                # user and the period end, so the next sweep reuses the SAME key and
+                # the ledger's unique constraint answers 'duplicate' without sending.
+                log.warning("billing_emails: trial_ending for %s EFFECT UNKNOWN — the "
+                            "message may have been delivered", user_id)
+                out["failed"] += 1
             else:
                 out["failed"] += 1
         except Exception as exc:  # noqa: BLE001 — one bad row must not end the sweep
