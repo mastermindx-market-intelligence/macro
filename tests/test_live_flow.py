@@ -2312,7 +2312,68 @@ class TestPollerMergePath:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 29b. run_cycle end-to-end regression (prior-dict tide keys — the actual fix)
+# 29b. time-window watermark timezone semantics
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestWatermarkStartClock:
+    @staticmethod
+    def _capture_start_time(monkeypatch, watermark: str) -> str:
+        import scripts.live_flow_poller as poller
+
+        starts: list[str | None] = []
+
+        def fake_fetch(root, session_date, start_time, end_time):
+            starts.append(start_time)
+            return root, None, None
+
+        monkeypatch.setattr(poller, "_fetch_root", fake_fetch)
+        poller.run_cycle(
+            roots=["SPY"],
+            session_date="2026-09-18",
+            delta_mode="time_window",
+            day_state={},
+            baselines={},
+            cfg={
+                "max_concurrent": 2,
+                "cadence_sec": 120,
+                "etf_floor": 0,
+                "name_floor": 0,
+                "etf_anchors": ["SPY"],
+            },
+            cycle_watermarks={"SPY": {"ts": watermark, "seq": 1}},
+        )
+        assert len(starts) == 1
+        assert starts[0] is not None
+        return starts[0]
+
+    def test_naive_theta_watermark_is_et_wall_clock_independent_of_host_tz(
+        self, monkeypatch,
+    ):
+        import os
+        import time
+
+        old_tz = os.environ.get("TZ")
+        try:
+            monkeypatch.setenv("TZ", "America/Los_Angeles")
+            time.tzset()
+            assert self._capture_start_time(
+                monkeypatch, "2026-09-18T13:53:56.805",
+            ) == "13:53:26"
+        finally:
+            if old_tz is None:
+                os.environ.pop("TZ", None)
+            else:
+                os.environ["TZ"] = old_tz
+            time.tzset()
+
+    def test_aware_watermark_converts_to_et_before_overlap(self, monkeypatch):
+        assert self._capture_start_time(
+            monkeypatch, "2026-09-18T17:53:56.805+00:00",
+        ) == "13:53:26"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 29c. run_cycle end-to-end regression (prior-dict tide keys — the actual fix)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestRunCycleEndToEnd:

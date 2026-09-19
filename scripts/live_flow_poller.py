@@ -2181,7 +2181,10 @@ def run_cycle(
         # Advance watermark by subtracting overlap
         try:
             wm_dt = datetime.fromisoformat(wm["ts"].replace("Z", "+00:00"))
-            wm_et = wm_dt.astimezone(ET)
+            wm_et = (
+                wm_dt.replace(tzinfo=ET) if wm_dt.tzinfo is None
+                else wm_dt.astimezone(ET)
+            )
             overlap_dt = wm_et - timedelta(seconds=_OVERLAP_SEC)
             return overlap_dt.strftime("%H:%M:%S")
         except Exception:  # noqa: BLE001
