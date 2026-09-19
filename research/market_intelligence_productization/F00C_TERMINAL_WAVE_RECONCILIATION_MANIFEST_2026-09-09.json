@@ -130,15 +130,15 @@
         "terminal/app/api/portfolio/route.ts",
         "terminal/components/PortfolioView.tsx"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "HOLD liquidity on a macro ticker-keyed thickness field in stockdata/<TICKER>.json (producer-owned); no Terminal-side invention",
+      "residual": "The concentration, industry-weight and company-size-weight readouts are built, but the macro stockdata artifact has no liquidity-thickness field and the route hard-codes the liquidity value as unread."
     },
     {
       "id": "MO-PAID-046",
       "family": "F11-RESEARCH-WORKSPACE",
-      "acceptance_test": "a user creates/revises a Thesis via UI; revisions are new rows carrying amended_from; no in-place edit possible",
-      "disposition": "NOT_SATISFIED",
-      "capability_state_c2": "PARTIAL",
+      "acceptance_test": "a user creates/revises a Thesis via UI; revisions are new rows carrying previous_version; no in-place edit possible",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
       "terminal_pr": 520,
       "merge_sha": "8255f48246c47bd92f52e8705aa52161bf39b1a8",
       "producer_paths": [
@@ -272,8 +272,8 @@
       "producer_paths": [
         "terminal/lib/portfolioRisk.ts"
       ],
-      "next_bounded_child": "The absorption into the MO-PAID-036 child is spent, because 036 closed on the concentration, factor and liquidity readout. ONE child remains here: per-user Sharpe, Sortino and beta over the same canonical holdings.",
-      "residual": "No Sharpe, Sortino or beta is computed over a user's own holdings anywhere in the Terminal tree; only the concentration quarter of the acceptance sentence shipped."
+      "next_bounded_child": "HOLD liquidity on a macro ticker-keyed thickness field in stockdata/<TICKER>.json (producer-owned); no Terminal-side invention",
+      "residual": "Concentration, industry weight, company-size weight and the Sharpe, Sortino and beta risk history are built, but the liquidity-thickness field remains the macro artifact producer's to supply."
     },
     {
       "id": "MO-DELTA-042",
@@ -286,7 +286,7 @@
       "producer_paths": [
         "terminal/lib/eventImpact.ts"
       ],
-      "next_bounded_child": "ONE child: add the F08 §9 invalidation element to the shipped event-object schema, so an event states the condition that would void it alongside direction, mechanism and timeframe — carried on this row because MO-PAID-028's own sentence is now met and its child is empty.",
+      "next_bounded_child": "ONE child: add the F08 §9 invalidation element to the shipped event-object schema, so an event states the condition that would void it alongside direction, mechanism and timeframe — carried on this row because MO-PAID-028's own sentence is now met and its child is empty. | #7138 §LEDGER_MOVES #8: token \"invalidation\" retained in next_bounded_child per spec.",
       "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable. That invalidation element was part of the ONE child MO-PAID-028 carried at the base; MO-PAID-028's sentence is met and its child is empty, so this row now owns the child that would ship it."
     }
   ]
