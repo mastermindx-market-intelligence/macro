@@ -29,7 +29,6 @@ import pandas as pd
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
-from collectors.sec_capital_structure import FORM_POLICY, file_number_provenance_errors  # noqa: E402
 from engine.capital_structure import (
     append_event_versions_strict,
     build_event_version,
@@ -71,6 +70,18 @@ CONTRACT_FILES = {
     "review": "capital_structure_review_item.schema.json",
     "telemetry": "capital_structure_telemetry.schema.json",
 }
+
+
+def _form_policy() -> Mapping[str, Any]:
+    """Load FORM_POLICY only inside compiler work, never at import."""
+    from collectors.sec_capital_structure import FORM_POLICY
+    return FORM_POLICY
+
+
+def _file_number_provenance_errors(filing: object) -> list[str]:
+    """Load file-number checks only when a manifest is validated."""
+    from collectors.sec_capital_structure import file_number_provenance_errors
+    return file_number_provenance_errors(filing)
 
 
 class CapitalStructureCompileDegraded(RuntimeError):
@@ -184,7 +195,7 @@ def _validate_manifest(record: Mapping[str, Any], schema: Mapping[str, Any]) -> 
     errors = _contract_errors(record, schema)
     if not errors:
         errors.extend(_semantic_manifest_errors(record))
-        errors.extend(file_number_provenance_errors(record.get("filing")))
+        errors.extend(_file_number_provenance_errors(record.get("filing")))
     return errors
 
 
@@ -740,7 +751,7 @@ def _source_ledger_receipt(
         "schema": "capital_structure.source_ledger_receipt.v1",
         "record_count": len(records),
         "prefix_sha256": source_ledger_prefix_hash(records),
-        "form_policy_version": str(FORM_POLICY["policy_version"]),
+        "form_policy_version": str(_form_policy()["policy_version"]),
         "immutable_prefix": True,
     }
 
@@ -774,7 +785,8 @@ def _build_telemetry(
         counts.get("source_manifests") or 0
     ):
         raise ValueError("source ledger receipt count must match telemetry source count")
-    if source_receipt.get("form_policy_version") != FORM_POLICY["policy_version"]:
+    policy = _form_policy()
+    if source_receipt.get("form_policy_version") != policy["policy_version"]:
         raise ValueError("new telemetry must stamp the current source form policy")
     hashes = {
         "event_versions": artifact_hashes.get("event_versions"),
@@ -800,12 +812,12 @@ def _build_telemetry(
             "entry_authority": False,
             "prophet_authority": False,
         },
-        "form_policy": FORM_POLICY,
+        "form_policy": policy,
         "coverage_claim": "registration_allowlist_plus_issuer_scoped_reconciliation",
         # Reconciliation is scoped, not blanket market coverage.  It is therefore
         # disclosed in ``form_policy`` but not mislabeled as an uncollected form.
         "known_exclusions": sorted({
-            *FORM_POLICY["capital_relevant_declared_not_collected"],
+            *policy["capital_relevant_declared_not_collected"],
         }),
         "counts": {key: int(value) for key, value in counts.items()},
         "compile_failures": [dict(failure) for failure in failures],

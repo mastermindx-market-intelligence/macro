@@ -1,46 +1,4 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
-- engine/valuation_assumptions.py
-- engine/valuation_event_bridge.py
-- templates/_valuation_assumptions.html.j2
-- tests/test_valuation_event_bridge.py
+  - templates/_valuation_assumptions.html.j2
 manifest: mockups/evidence/b-f07-3-event-bridge/manifest.json
-smells: mockups/evidence/b-f07-3-event-bridge/smells.json
-smells_md: mockups/evidence/b-f07-3-event-bridge/smells.md
-captured_cells:
-- valuation-event-bridge-tender-offer_desktop_dark_en.png
-- valuation-event-bridge-tender-offer_desktop_dark_zh.png
-- valuation-event-bridge-tender-offer_desktop_light_en.png
-- valuation-event-bridge-tender-offer_desktop_light_zh.png
-- valuation-event-bridge-tender-offer_mobile_dark_en.png
-- valuation-event-bridge-tender-offer_mobile_dark_zh.png
-- valuation-event-bridge-tender-offer_mobile_light_en.png
-- valuation-event-bridge-tender-offer_mobile_light_zh.png
-- valuation-event-bridge-restructuring_desktop_dark_en.png
-- valuation-event-bridge-restructuring_desktop_dark_zh.png
-- valuation-event-bridge-restructuring_desktop_light_en.png
-- valuation-event-bridge-restructuring_desktop_light_zh.png
-- valuation-event-bridge-restructuring_mobile_dark_en.png
-- valuation-event-bridge-restructuring_mobile_dark_zh.png
-- valuation-event-bridge-restructuring_mobile_light_en.png
-- valuation-event-bridge-restructuring_mobile_light_zh.png
-- valuation-event-bridge-null_desktop_dark_en.png
-- valuation-event-bridge-null_desktop_dark_zh.png
-- valuation-event-bridge-null_desktop_light_en.png
-- valuation-event-bridge-null_desktop_light_zh.png
-- valuation-event-bridge-null_mobile_dark_en.png
-- valuation-event-bridge-null_mobile_dark_zh.png
-- valuation-event-bridge-null_mobile_light_en.png
-- valuation-event-bridge-null_mobile_light_zh.png
-matrix: 24 cells = tender-offer/restructuring/null × dark/light × EN/ZH × desktop
-  1440/mobile 390
-subject: B-F07-3 valuation panel event-to-assumption bridge line
-state: Tender Offers, Restructuring, and no classified filing
-note: All three states are captured. Functional and capture checks pass. Hosted
-  contract-delta at CODE_HEAD is SUCCESS with 0 introduced (run 35426829901).
-capture: 'Hosts regenerated from the live template and shared theme.css at CODE_HEAD.
-  Chromium captured #va-event-bridge sequentially, at 1440x900 and 390x844, with a
-  200ms settle after each theme/language change. Shared stylesheet supplies both themes.
-  No full e2e suite was run.'
-captured_at: '2026-09-19T06:59:13.817145+00:00'
-resolved_sha_or_none: ff25fb3fcc208d77672b2c12110b219114d7aed6

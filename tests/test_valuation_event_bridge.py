@@ -190,15 +190,34 @@ def test_bridge_returns_typed_null_for_delistings():
     assert out is None, f"'Delistings' must be typed null, got {out!r}"
 
 
+def _federal_register_reg_stages() -> set[str]:
+    """Read collector stage names without importing the network collector."""
+    tree = ast.parse(
+        (ROOT / "collectors" / "federal_register.py").read_text(encoding="utf-8")
+    )
+    for node in tree.body:
+        target_ids: list[str] = []
+        value = None
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            target_ids = [node.target.id]
+            value = node.value
+        elif isinstance(node, ast.Assign):
+            target_ids = [t.id for t in node.targets if isinstance(t, ast.Name)]
+            value = node.value
+        if "_STAGE_WEIGHTS" in target_ids and value is not None:
+            rows = ast.literal_eval(value)
+            return {row[2] for row in rows}
+    raise AssertionError("collectors/federal_register.py has no _STAGE_WEIGHTS")
+
+
 def test_federal_register_policy_events_are_not_issuer_filings():
     """Federal Register stages and entity-list themes cannot be labelled as the
     issuer's latest filing, even though their policy mapping remains explicit."""
-    from collectors.federal_register import _STAGE_WEIGHTS
     from engine.policy_calendar import _ENTITY_LIST_THEMES
 
     issuer_domain = set(veb.classified_event_domain())
     policy_domain = set(veb.POLICY_EVENT_TO_ASSUMPTION)
-    stages = {row[2] for row in _STAGE_WEIGHTS}
+    stages = _federal_register_reg_stages()
     assert policy_domain == stages | set(_ENTITY_LIST_THEMES)
     assert issuer_domain.isdisjoint(policy_domain)
     assert veb.bridge_for_issuer("executive_order") is None
@@ -503,9 +522,35 @@ def test_controls_blob_populates_latest_event_bridge_from_spine(issuer_spines):
     assert "special_situation" not in v1
 
 
+def _write_event_versions_parquet(path: Path, events: list) -> None:
+    """Write event_versions.parquet through the engine column contract."""
+    import pandas as pd
+    from engine.capital_structure.event_versions_io import EVENT_COLUMNS
+
+    rows = []
+    for event in events:
+        filing = event.get("filing") or {}
+        issuer = event.get("issuer") or {}
+        point_in_time = event.get("point_in_time") or {}
+        rows.append({
+            "event_id": event["event_id"],
+            "logical_event_id": f"sec:{filing.get('accession')}",
+            "accession": filing.get("accession"),
+            "cik": issuer.get("cik"),
+            "ticker": issuer.get("ticker"),
+            "form": filing.get("form"),
+            "filing_date": filing.get("filing_date"),
+            "accepted_at": filing.get("accepted_at"),
+            "available_at": point_in_time.get("available_at"),
+            "classification_state": (event.get("classification") or {}).get("state"),
+            "correction_version": (event.get("version") or {}).get("correction_version"),
+            "event_json": json.dumps(event, sort_keys=True, separators=(",", ":")),
+        })
+    pd.DataFrame(rows, columns=EVENT_COLUMNS).to_parquet(path, index=False)
+
+
 def test_controls_blob_reads_validated_capital_spine(issuer_spines):
     """The production Parquet reader supplies real SEC event subtypes."""
-    compiler = import_module("scripts.compile_capital_structure_events")
     from tests.test_capital_structure_event_spine import _observation, _span
 
     events = [
@@ -518,8 +563,8 @@ def test_controls_blob_reads_validated_capital_spine(issuer_spines):
             ), [_span()],
         ),
     ]
-    compiler._event_frame(events).to_parquet(
-        issuer_spines.parent / "event_versions.parquet", index=False
+    _write_event_versions_parquet(
+        issuer_spines.parent / "event_versions.parquet", events
     )
     controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"))
     assert controls["latest_event_bridge"]["event_class"] == "registration_statement"
@@ -553,11 +598,6 @@ COMMITTED_CAPITAL_ROOT = ROOT / "data" / "capital_structure"
 def _use_committed_capital_spine(monkeypatch):
     """Point the shared spine resolver at the in-repo capital-structure ledger."""
     monkeypatch.setattr(spine_paths, "capital_data_root", lambda: COMMITTED_CAPITAL_ROOT)
-    # Round-4 producer (57cfa8d9) still reads compiler._data_root; keep that
-    # name aimed at the same committed ledger so the RED replay is a collector
-    # import failure, not an empty tmp path.
-    compiler = import_module("scripts.compile_capital_structure_events")
-    monkeypatch.setattr(compiler, "_data_root", lambda: COMMITTED_CAPITAL_ROOT)
     return spine_paths.event_versions_path()
 
 
@@ -619,11 +659,13 @@ def test_production_path_renders_aapl_typed_null_from_committed_spine(
 def test_controls_blob_no_collector_import_at_call_time(
     issuer_spines, monkeypatch
 ):
-    """Pop the compiler and block collector modules, then reload the producer.
+    """Block collector modules with monkeypatch.setitem only, then reload.
 
     At 57cfa8d9 the producer imported scripts.compile_capital_structure_events
     at call time, so this test is RED there. At head it must match the
     unblocked NSA post_effective_amendment line and the AAPL typed null.
+    Do not pop sys.modules keys: monkeypatch snapshots at call time, so a
+    preceding pop makes undo DELETE the restored key (test_no_module_leak).
     """
     import importlib
 
@@ -638,9 +680,7 @@ def test_controls_blob_no_collector_import_at_call_time(
     assert baseline_aapl is not None
     assert baseline_aapl["latest_event_bridge"] is None
 
-    sys.modules.pop("scripts.compile_capital_structure_events", None)
-    sys.modules.pop("collectors.sec_capital_structure", None)
-    sys.modules.pop("requests", None)
+    monkeypatch.setitem(sys.modules, "scripts.compile_capital_structure_events", None)
     monkeypatch.setitem(sys.modules, "collectors.sec_capital_structure", None)
     monkeypatch.setitem(sys.modules, "requests", None)
 
