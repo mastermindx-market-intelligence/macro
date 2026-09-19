@@ -15,7 +15,8 @@ from typing import Any, Callable, Iterable
 
 from engine.qual_extraction import citation_normalize, quote_span_verified
 
-from .extractor import _identity, build_prompt, parse_model_output
+from .extractor import _identity, _parse_json, build_prompt, parse_model_output
+from .schema import validate_rio
 
 CASE_SCHEMA = "mastermind.research_intelligence.benchmark_case.v1"
 RESULT_SCHEMA = "mastermind.research_intelligence.benchmark_result.v1"
@@ -37,6 +38,7 @@ _METRIC_KEYS = (
     "claim_recall",
     "number_recall",
     "entity_recall",
+    "grounding_precision",
     "thesis_support_recall",
     "thesis_semantic_accuracy",
     "analysis_category_recall",
@@ -50,6 +52,14 @@ _COUNT_KEYS = (
     "matched_numbers",
     "expected_entities",
     "matched_entities",
+    "emitted_claims",
+    "grounded_claims",
+    "emitted_numbers",
+    "grounded_numbers",
+    "emitted_entities",
+    "evidence_grounded_entities",
+    "emitted_analysis_rows",
+    "grounded_analysis_rows",
     "expected_thesis_support",
     "matched_thesis_support",
     "thesis_semantic_expected",
@@ -186,6 +196,58 @@ def _analysis_row_text(field: str, row: dict[str, Any]) -> str:
         pieces.append(str(row.get("direction") or ""))
         pieces.append(str(row.get("order") or ""))
     return " ".join(piece for piece in pieces if piece)
+
+
+def _analysis_row_count(rio: dict[str, Any]) -> int:
+    analysis = rio["analysis"]
+    count = 1  # thesis
+    count += sum(len(analysis.get(field) or []) for field in _ANALYSIS_FIELDS)
+    count += int(bool((analysis.get("belief_delta") or {}).get("statement")))
+    count += int(bool((analysis.get("consensus_relation") or {}).get("statement")))
+    return count
+
+
+def _grounding_counts(
+    raw_rio: dict[str, Any],
+    grounded_rio: dict[str, Any],
+) -> dict[str, int]:
+    emitted_claims = len(raw_rio["claims"])
+    grounded_claims = len(grounded_rio["claims"])
+    emitted_numbers = sum(len(claim["numbers"]) for claim in raw_rio["claims"])
+    grounded_numbers = sum(len(claim["numbers"]) for claim in grounded_rio["claims"])
+    emitted_entities = sum(len(claim["entities"]) for claim in raw_rio["claims"])
+    evidence_grounded_entities = 0
+    for claim in grounded_rio["claims"]:
+        for entity in claim["entities"]:
+            if any(
+                quote_span_verified(evidence["quote_span"], entity, minimum_chars=1)
+                for evidence in claim["evidence"]
+            ):
+                evidence_grounded_entities += 1
+    return {
+        "emitted_claims": emitted_claims,
+        "grounded_claims": grounded_claims,
+        "emitted_numbers": emitted_numbers,
+        "grounded_numbers": grounded_numbers,
+        "emitted_entities": emitted_entities,
+        "evidence_grounded_entities": evidence_grounded_entities,
+        "emitted_analysis_rows": _analysis_row_count(raw_rio),
+        "grounded_analysis_rows": _analysis_row_count(grounded_rio),
+    }
+
+
+def _grounding_precision(counts: dict[str, int]) -> float:
+    ratios: list[float] = []
+    for emitted_key, grounded_key in (
+        ("emitted_claims", "grounded_claims"),
+        ("emitted_numbers", "grounded_numbers"),
+        ("emitted_entities", "evidence_grounded_entities"),
+        ("emitted_analysis_rows", "grounded_analysis_rows"),
+    ):
+        emitted = counts[emitted_key]
+        if emitted:
+            ratios.append(counts[grounded_key] / emitted)
+    return round(mean(ratios), 6) if ratios else 1.0
 
 
 def validate_case(case: Any, source_body: str) -> dict[str, Any]:
@@ -379,8 +441,19 @@ def _score_counts(
     category_hits: int = 0,
     semantic_hits: int = 0,
     direction_correct: int = 0,
+    grounding_counts: dict[str, int] | None = None,
 ) -> dict[str, int]:
     counts = _expected_counts(checked)
+    grounding = grounding_counts or {
+        "emitted_claims": 0,
+        "grounded_claims": 0,
+        "emitted_numbers": 0,
+        "grounded_numbers": 0,
+        "emitted_entities": 0,
+        "evidence_grounded_entities": 0,
+        "emitted_analysis_rows": 0,
+        "grounded_analysis_rows": 0,
+    }
     return {
         "expected_claims": counts["claims"],
         "matched_claims": claim_hits,
@@ -388,6 +461,7 @@ def _score_counts(
         "matched_numbers": number_hits,
         "expected_entities": counts["entities"],
         "matched_entities": entity_hits,
+        **grounding,
         "expected_thesis_support": counts["thesis_support"],
         "matched_thesis_support": thesis_hits,
         "thesis_semantic_expected": counts["thesis_semantic"],
@@ -424,6 +498,9 @@ def _metrics_from_counts(
             _ratio(counts["matched_entities"], counts["expected_entities"])
             if valid
             else (0.0 if counts["expected_entities"] else None)
+        ),
+        "grounding_precision": (
+            _grounding_precision(counts) if valid else 0.0
         ),
         "thesis_support_recall": (
             _ratio(
@@ -498,7 +575,12 @@ def _maximum_bipartite_matches(
     return matched
 
 
-def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, Any]:
+def _score_grounded(
+    checked: dict[str, Any],
+    obj: dict[str, Any],
+    *,
+    grounding_counts: dict[str, int] | None = None,
+) -> dict[str, Any]:
     gold_claims = checked["expected"]["claims"]
     gold_by_quote = {_norm(row["quote_span"]): index for index, row in enumerate(gold_claims)}
 
@@ -589,6 +671,7 @@ def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, A
         category_hits=category_hits,
         semantic_hits=semantic_hits,
         direction_correct=direction_correct,
+        grounding_counts=grounding_counts,
     )
     metrics = _metrics_from_counts("ok", score_counts)
     return {
@@ -643,13 +726,24 @@ def score_raw_output(
         "output_sha256": _sha256_text(str(raw_output or "")),
     }
     try:
+        raw_obj = _parse_json(str(raw_output or ""))
+        normalized_raw = validate_rio(
+            raw_obj,
+            expected_document_id=checked["document"]["id"],
+            expected_document=checked["document"],
+            require_grounded_claims=False,
+        )
         rio = parse_model_output(
             str(raw_output or ""),
             expected_document_id=checked["document"]["id"],
             expected_document=checked["document"],
             source_body=source_body,
         )
-        scored = _score_grounded(checked, rio)
+        scored = _score_grounded(
+            checked,
+            rio,
+            grounding_counts=_grounding_counts(normalized_raw, rio),
+        )
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         score_counts = _score_counts(checked)
         metrics = _metrics_from_counts("invalid_output", score_counts)
@@ -702,6 +796,10 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         ("expected_claims", "matched_claims"),
         ("expected_numbers", "matched_numbers"),
         ("expected_entities", "matched_entities"),
+        ("emitted_claims", "grounded_claims"),
+        ("emitted_numbers", "grounded_numbers"),
+        ("emitted_entities", "evidence_grounded_entities"),
+        ("emitted_analysis_rows", "grounded_analysis_rows"),
         ("expected_thesis_support", "matched_thesis_support"),
         ("thesis_semantic_expected", "thesis_semantic_correct"),
         ("expected_analysis_categories", "matched_analysis_categories"),
@@ -724,6 +822,10 @@ def _validated_result(raw: Any) -> dict[str, Any]:
             "matched_claims",
             "matched_numbers",
             "matched_entities",
+            "grounded_claims",
+            "grounded_numbers",
+            "evidence_grounded_entities",
+            "grounded_analysis_rows",
             "matched_thesis_support",
             "thesis_semantic_correct",
             "matched_analysis_categories",
