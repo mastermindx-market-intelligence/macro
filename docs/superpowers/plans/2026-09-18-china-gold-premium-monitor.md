@@ -141,9 +141,10 @@ consistent too. Do **not** promote them before that live effect: the registry's 
 requires a produced store to exist on disk today and its accepted consumer projections to agree.
 
 The quality receipt binds that promotion proof to both raw artifacts. For each source role it
-records the stable Data OS id, repo-relative parquet path, row count, SHA-256, latest
-observation timestamp, and whether the selected headline observation exists in that artifact.
-`close_proxy_dataos_promotion_ready=true` is impossible unless both SGE and global artifacts
-exist, contain rows, carry valid SHA-256 bindings, contain the selected headline timestamp, the
-machine projection is consistent, the close proxy is fresh, and 5-/30-session statistics are ready. Fixture-only proof therefore remains promotion-blocked unless it supplies
+records the stable Data OS id, current canonical registry status, repo-relative parquet path,
+row count, SHA-256, latest observation timestamp, and whether the selected headline observation
+exists in that artifact. `close_proxy_dataos_promotion_ready=true` is impossible unless both SGE
+and global artifacts resolve through the registry in `PROPOSED` or `PRODUCED` state, exist,
+contain rows, carry valid SHA-256 bindings, contain the selected headline timestamp, the machine
+projection is consistent, the close proxy is fresh, and 5-/30-session statistics are ready. Fixture-only proof therefore remains promotion-blocked unless it supplies
 explicit artifact bindings.

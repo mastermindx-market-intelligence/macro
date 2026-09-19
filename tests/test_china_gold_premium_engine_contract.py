@@ -986,6 +986,7 @@ def _promotion_source_artifacts_for_audit():
         {
             "role": "sge",
             "dataset_id": "commodity.gold.sge_au9999.close",
+            "registry_status": "PROPOSED",
             "path": "data/gold_china_basis/sge_au9999.parquet",
             "exists": True,
             "rows": 30,
@@ -996,6 +997,7 @@ def _promotion_source_artifacts_for_audit():
         {
             "role": "global",
             "dataset_id": "commodity.gold.xaucny.close_ref",
+            "registry_status": "PROPOSED",
             "path": "data/gold_china_basis/xaucny_spot.parquet",
             "exists": True,
             "rows": 30,
@@ -1417,6 +1419,7 @@ def test_dataos_promotion_allows_newer_unmatched_global_rows_when_headline_row_i
             {
                 "role": "sge",
                 "dataset_id": "commodity.gold.sge_au9999.close",
+                "registry_status": "PROPOSED",
                 "exists": True,
                 "rows": 30,
                 "sha256": "a" * 64,
@@ -1426,6 +1429,7 @@ def test_dataos_promotion_allows_newer_unmatched_global_rows_when_headline_row_i
             {
                 "role": "global",
                 "dataset_id": "commodity.gold.xaucny.close_ref",
+                "registry_status": "PROPOSED",
                 "exists": True,
                 "rows": 31,
                 "sha256": "b" * 64,
@@ -1442,3 +1446,49 @@ def test_dataos_promotion_allows_newer_unmatched_global_rows_when_headline_row_i
         require_machine_projection=True,
         require_source_artifacts=True,
     ) == []
+
+
+def test_gold_premium_dataos_promotion_rejects_invalid_registry_status():
+    from scripts import audit_china_gold_premium as audit
+
+    headline = "2026-09-18T07:30:00+00:00"
+    doc = {
+        "status": "available_fresh",
+        "render_consistent": True,
+        "machine_projection_consistent": True,
+        "stats_5_ready": True,
+        "stats_30_ready": True,
+        "headline_method": "close_proxy",
+        "source_asof": headline,
+        "source_artifacts": [
+            {
+                "role": "sge",
+                "dataset_id": "commodity.gold.sge_au9999.close",
+                "registry_status": "REJECTED",
+                "exists": True,
+                "rows": 30,
+                "sha256": "a" * 64,
+                "asof": headline,
+                "selected_asof_present": True,
+            },
+            {
+                "role": "global",
+                "dataset_id": "commodity.gold.xaucny.close_ref",
+                "registry_status": "PROPOSED",
+                "exists": True,
+                "rows": 30,
+                "sha256": "b" * 64,
+                "asof": headline,
+                "selected_asof_present": True,
+            },
+        ],
+    }
+
+    blockers = audit.live_ready_violations(
+        doc,
+        required_method="close_proxy",
+        require_machine_projection=True,
+        require_source_artifacts=True,
+    )
+
+    assert "source artifact sge registry status is REJECTED" in blockers

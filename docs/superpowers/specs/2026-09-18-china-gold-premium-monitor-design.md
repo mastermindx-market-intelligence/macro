@@ -156,11 +156,13 @@ consistent. Promoting them before that effect, or from page-only proof, would vi
 registry's own truth rule.
 
 Promotion evidence is artifact-bound, not inferred from a green UI alone. The production quality
-receipt includes one SGE and one global-source artifact record with stable dataset id,
-repo-relative path, row count, SHA-256, latest observation timestamp, and a boolean proving the selected
-headline timestamp exists in that artifact. The promotion-ready bit remains false unless both
-artifacts are present and non-empty, their hashes are bound, and both contain the close-proxy
-headline observation that was also proven through the page and machine projection.
+receipt includes one SGE and one global-source artifact record with stable dataset id, canonical
+registry status, repo-relative path, row count, SHA-256, latest observation timestamp, and a
+boolean proving the selected headline timestamp exists in that artifact. The promotion-ready bit
+remains false unless both datasets resolve through the canonical registry in `PROPOSED` or
+`PRODUCED` state, both artifacts are present and non-empty, their hashes are bound, and both
+contain the close-proxy headline observation that was also proven through the page and machine
+projection.
 
 ## Engine boundary
 

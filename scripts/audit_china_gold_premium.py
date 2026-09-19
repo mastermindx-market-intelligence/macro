@@ -103,13 +103,20 @@ def _close_proxy_source_artifacts(
     close_cfg = close_cfg if isinstance(close_cfg, dict) else {}
     try:
         registry = load_registry()
-        dataset_ids = {
-            str(contract.storage): str(contract.dataset_id)
-            for contract in registry.all()
-            if getattr(contract, "storage", None) and getattr(contract, "dataset_id", None)
-        }
+        registry_contracts = {}
+        for contract in registry.all():
+            storage = str(getattr(contract, "storage", "") or "")
+            dataset_id = str(getattr(contract, "dataset_id", "") or "")
+            if not storage or not dataset_id:
+                continue
+            status = getattr(contract, "status", "")
+            status = getattr(status, "value", status)
+            registry_contracts[storage] = {
+                "dataset_id": dataset_id,
+                "status": str(status or ""),
+            }
     except Exception:
-        dataset_ids = {}
+        registry_contracts = {}
     artifacts: list[dict] = []
 
     for role in ("sge", "global"):
@@ -167,10 +174,12 @@ def _close_proxy_source_artifacts(
                 digest = None
 
         storage = f"data/{group}/{name}.parquet" if group and name else ""
+        contract = registry_contracts.get(storage) or {}
         artifacts.append(
             {
                 "role": role,
-                "dataset_id": dataset_ids.get(storage),
+                "dataset_id": contract.get("dataset_id"),
+                "registry_status": contract.get("status") or None,
                 "group": group or None,
                 "name": name or None,
                 "column": column or None,
@@ -431,6 +440,12 @@ def live_ready_violations(
                 if not dataset_id:
                     blockers.append(
                         f"source artifact {role} Data OS id is not bound"
+                    )
+                registry_status = str(item.get("registry_status") or "")
+                if registry_status not in {"PROPOSED", "PRODUCED"}:
+                    blockers.append(
+                        f"source artifact {role} registry status is "
+                        f"{registry_status or 'unbound'}"
                     )
                 try:
                     rows = int(item.get("rows") or 0)
