@@ -6492,6 +6492,7 @@ jobs:
       - "tests/test_sanctions_map_engine.py"
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
+      - "tests/test_sanctions_map_event_pins.py"
       - "tests/test_worldmap_base.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -6503,7 +6504,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyyaml jinja2 requests
       - name: sanctions map engine + page + nav + worldmap + OFAC collector
-        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py -q
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py -q
 
   itr-turn-rotation:
     if: ${{ false }}
