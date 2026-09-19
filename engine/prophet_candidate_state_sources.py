@@ -18,6 +18,8 @@ import math
 import re
 from typing import Any
 
+from engine.us_candidate_episode import CandidateEpisodeStoreSnapshot
+
 _TURN_WATCH_SCHEMA = "prophet.candidate_episode_input.turn_watch/v1"
 _RADAR_EVENT_SCHEMA = "mastermind.entry_event.v1"
 _RECONCILE_RECEIPT_SCHEMA = "prophet.candidate_episode_reconcile_receipt/v1"
@@ -166,29 +168,53 @@ def _insert_unique(
 
 
 def index_turn_watch_events(
-    events: Iterable[Mapping[str, object]],
-    *,
-    candidate_generation_id: str,
-    generation_receipt: Mapping[str, object],
+    snapshot: CandidateEpisodeStoreSnapshot,
 ) -> SourceFactIndex:
-    """Index generation-local TURN WATCH relations from the validated B1 ledger.
+    """Index current TURN WATCH relations from one atomic validated B1 snapshot.
 
-    The B1 event ledger is cumulative. Current emergence therefore binds to the
-    exact immutable generation receipt and consumes only TURN WATCH relation
-    events materialised by that reconcile pass. Historical OPENED edges remain
-    history; they are never relabelled as current triggers.
+    Generation identity, cumulative ledger, and reconcile receipt are derived from
+    the same B1 owner object. Callers cannot pair a generation-looking id with an
+    unrelated receipt or ledger. The ledger is cumulative, so current emergence
+    uses only relations materialised by the snapshot's reconcile pass and removes
+    any relation explicitly withdrawn by B1 RETRACTED.correction_of.
     """
 
-    if not _GENERATION_RE.fullmatch(str(candidate_generation_id or "")):
+    if not isinstance(snapshot, CandidateEpisodeStoreSnapshot):
         raise CandidateStateSourceError(
-            "candidate generation id is invalid"
+            "TURN WATCH indexing requires CandidateEpisodeStoreSnapshot"
         )
+    candidate_generation_id = snapshot.generation_id
+    if not _GENERATION_RE.fullmatch(str(candidate_generation_id or "")):
+        raise CandidateStateSourceError("candidate generation id is invalid")
+
+    generation = snapshot.generation
+    events = generation.events
+    generation_receipt = generation.receipt
+    if not isinstance(events, tuple):
+        raise CandidateStateSourceError("B1 snapshot event ledger is invalid")
+    if not isinstance(generation_receipt, Mapping):
+        raise CandidateStateSourceError("B1 snapshot receipt is invalid")
+
     generation_recorded_at, source_mapped = _generation_receipt_meta(
         generation_receipt
     )
 
+    retracted_relation_ids: set[str] = set()
+    for raw in events:
+        if not isinstance(raw, Mapping):
+            raise CandidateStateSourceError("B1 event must be an object")
+        if raw.get("event_type") != "RETRACTED":
+            continue
+        target = raw.get("correction_of")
+        if not isinstance(target, str) or not target:
+            raise CandidateStateSourceError(
+                "B1 retraction must identify correction_of relation"
+            )
+        retracted_relation_ids.add(target)
+
     facts: dict[str, Mapping[str, object]] = {}
     scanned = 0
+    withdrawn = 0
     for raw in events:
         if not isinstance(raw, Mapping):
             raise CandidateStateSourceError("B1 event must be an object")
@@ -199,6 +225,13 @@ def index_turn_watch_events(
             or raw.get("source_system") != "turn_watch"
             or raw.get("source_schema") != _TURN_WATCH_SCHEMA
         ):
+            continue
+
+        relation_event_id = _text(
+            raw.get("event_id"), "turn_watch B1 relation event_id"
+        )
+        if relation_event_id in retracted_relation_ids:
+            withdrawn += 1
             continue
 
         recorded_at = _text(
@@ -230,9 +263,6 @@ def index_turn_watch_events(
             raise CandidateStateSourceError(
                 "turn_watch occurred_at is after known_at"
             )
-        relation_event_id = _text(
-            raw.get("event_id"), "turn_watch B1 relation event_id"
-        )
         fact = {
             "episode_id": _text(raw.get("episode_id"), "turn_watch episode_id"),
             "source_system": "turn_watch",
@@ -260,8 +290,11 @@ def index_turn_watch_events(
         "source_schema": _TURN_WATCH_SCHEMA,
         "candidate_generation_id": candidate_generation_id,
         "generation_recorded_at": generation_recorded_at,
+        "generation_receipt_sha256": "sha256:"
+        + sha256(_canonical_json(generation_receipt).encode("utf-8")).hexdigest(),
         "source_mapped": source_mapped,
         "b1_events_scanned": scanned,
+        "withdrawn_relations": withdrawn,
         "facts": len(facts),
         "content_sha256": "sha256:"
         + sha256(
@@ -384,14 +417,18 @@ def load_radar_fact_index(path: Path) -> SourceFactIndex:
 
 
 def emergence_inputs(
-    snapshot: object,
+    snapshot: CandidateEpisodeStoreSnapshot,
     *,
-    turn_watch: SourceFactIndex,
     radar: SourceFactIndex,
 ) -> tuple[dict[str, dict[str, object]], dict[str, tuple[str, ...]]]:
-    """Resolve source relations into conservative current-generation B3 inputs."""
+    """Resolve one atomic B1 snapshot into conservative B3 emergence inputs."""
 
-    generation_id = getattr(snapshot, "generation_id", None)
+    if not isinstance(snapshot, CandidateEpisodeStoreSnapshot):
+        raise CandidateStateSourceError(
+            "emergence requires CandidateEpisodeStoreSnapshot"
+        )
+    turn_watch = index_turn_watch_events(snapshot)
+    generation_id = snapshot.generation_id
     if not isinstance(generation_id, str) or not _GENERATION_RE.fullmatch(
         generation_id
     ):
@@ -402,12 +439,6 @@ def emergence_inputs(
     if not isinstance(episodes, tuple):
         raise CandidateStateSourceError(
             "snapshot must expose validated tuple episodes"
-        )
-
-    tw_generation = turn_watch.receipt.get("candidate_generation_id")
-    if tw_generation is not None and tw_generation != generation_id:
-        raise CandidateStateSourceError(
-            "TURN WATCH facts belong to a different B1 generation"
         )
 
     tw_by_episode: dict[str, list[Mapping[str, object]]] = {}

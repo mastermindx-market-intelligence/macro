@@ -9,22 +9,16 @@ from engine.prophet_candidate_state_sources import (
     index_turn_watch_events,
     load_radar_fact_index,
 )
+from engine.us_candidate_episode import (
+    CandidateEpisodeStoreSnapshot,
+    ValidatedCandidateEpisodeGeneration,
+)
 
 GEN = "peg:" + "a" * 64
 GEN_OTHER = "peg:" + "b" * 64
 RECORDED = "2026-09-18T09:08:31Z"
 OLDER_RECORDED = "2026-09-17T09:08:31Z"
-
-
-class G:
-    def __init__(self, episodes):
-        self.episodes = tuple(episodes)
-
-
-class S:
-    def __init__(self, episodes, generation_id=GEN):
-        self.generation_id = generation_id
-        self.generation = G(episodes)
+TURN_SCHEMA = "prophet.candidate_episode_input.turn_watch/v1"
 
 
 def generation_receipt(*, recorded_at=RECORDED, mapped=1):
@@ -33,6 +27,37 @@ def generation_receipt(*, recorded_at=RECORDED, mapped=1):
         "recorded_at": recorded_at,
         "source_counts": {"turn_watch": {"mapped": mapped}},
     }
+
+
+def snapshot(
+    episodes,
+    *,
+    events=(),
+    generation_id=GEN,
+    recorded_at=RECORDED,
+    mapped=None,
+):
+    events = tuple(events)
+    if mapped is None:
+        mapped = sum(
+            1
+            for event in events
+            if event.get("event_type") in {"OPENED", "OBSERVED"}
+            and event.get("source_system") == "turn_watch"
+            and event.get("source_schema") == TURN_SCHEMA
+            and event.get("recorded_at") == recorded_at
+        )
+    generation = ValidatedCandidateEpisodeGeneration(
+        path=Path("/validated-b1-generation"),
+        events=events,
+        suppressions=(),
+        episodes=tuple(episodes),
+        receipt=generation_receipt(recorded_at=recorded_at, mapped=mapped),
+    )
+    return CandidateEpisodeStoreSnapshot(
+        generation_id=generation_id,
+        generation=generation,
+    )
 
 
 def episode(eid="pe:1", *, experts=()):
@@ -61,13 +86,37 @@ def turn_relation(
         "event_type": event_type,
         "episode_id": eid,
         "source_system": "turn_watch",
-        "source_schema": "prophet.candidate_episode_input.turn_watch/v1",
+        "source_schema": TURN_SCHEMA,
         "source_event_id": source_id,
         "source_receipt": "sha256:" + "3" * 64,
         "occurred_at": occurred_at or known_at,
         "known_at": known_at,
         "recorded_at": recorded_at,
+        "correction_of": None,
         "payload": {"structural_anchor": {"kind": "turn_watch_reset_low"}},
+    }
+
+
+def retract_relation(
+    target_relation_id,
+    *,
+    eid="pe:1",
+    relation_id="pee:" + "f" * 64,
+):
+    return {
+        "schema": "prophet.candidate_episode_event/v1",
+        "event_id": relation_id,
+        "event_type": "RETRACTED",
+        "episode_id": eid,
+        "source_system": "candidate_episode_correction",
+        "source_schema": "prophet.candidate_episode_correction/v1",
+        "source_event_id": "correction:" + "e" * 64,
+        "source_receipt": "sha256:" + "d" * 64,
+        "occurred_at": "2026-09-18T09:09:00Z",
+        "known_at": "2026-09-18T09:09:00Z",
+        "recorded_at": "2026-09-18T09:09:01Z",
+        "correction_of": target_relation_id,
+        "payload": {"reason": "withdrawn owner relation"},
     }
 
 
@@ -95,14 +144,14 @@ def radar(address="AAPL|C1|2026-09-17", *, family="radar_1d_turn", subtype="x"):
 
 
 def tw_index(rows, *, mapped=None, recorded_at=RECORDED, generation_id=GEN):
-    rows = list(rows)
     return index_turn_watch_events(
-        rows,
-        candidate_generation_id=generation_id,
-        generation_receipt=generation_receipt(
+        snapshot(
+            [],
+            events=list(rows),
+            generation_id=generation_id,
             recorded_at=recorded_at,
-            mapped=len(rows) if mapped is None else mapped,
-        ),
+            mapped=mapped,
+        )
     )
 
 
@@ -113,7 +162,7 @@ def empty_radar():
     )
 
 
-def test_turn_watch_index_is_bound_to_generation_receipt_and_keeps_relation_provenance():
+def test_turn_watch_index_is_bound_to_atomic_snapshot_and_keeps_relation_provenance():
     current_open = turn_relation()
     current_observed = turn_relation(
         event_type="OBSERVED",
@@ -129,10 +178,12 @@ def test_turn_watch_index_is_bound_to_generation_receipt_and_keeps_relation_prov
     foreign["event_id"] = "pee:" + "7" * 64
     foreign["source_system"] = "candidate"
 
-    index = tw_index(
-        [historical, foreign, current_observed, current_open],
+    source_snapshot = snapshot(
+        [episode()],
+        events=[historical, foreign, current_observed, current_open],
         mapped=2,
     )
+    index = index_turn_watch_events(source_snapshot)
 
     assert list(index.facts_by_event_id) == sorted(
         [current_open["event_id"], current_observed["event_id"]]
@@ -146,10 +197,44 @@ def test_turn_watch_index_is_bound_to_generation_receipt_and_keeps_relation_prov
     assert fact["known_at"] == current_open["known_at"]
     assert fact["occurred_at"] == current_open["occurred_at"]
     assert fact["recorded_at"] == RECORDED
+    assert index.receipt["candidate_generation_id"] == GEN
     assert index.receipt["generation_recorded_at"] == RECORDED
     assert index.receipt["source_mapped"] == 2
     assert index.receipt["facts"] == 2
+    assert index.receipt["withdrawn_relations"] == 0
+    assert str(index.receipt["generation_receipt_sha256"]).startswith("sha256:")
     assert index.degraded_reasons == ()
+
+
+def test_detached_generation_receipt_components_are_no_longer_an_api():
+    with pytest.raises(TypeError):
+        index_turn_watch_events(
+            [turn_relation()],
+            candidate_generation_id=GEN_OTHER,
+            generation_receipt=generation_receipt(recorded_at=OLDER_RECORDED),
+        )
+
+
+def test_retracted_b1_relation_cannot_survive_into_b3_emergence():
+    observed = turn_relation(
+        event_type="OBSERVED",
+        relation_id="pee:" + "8" * 64,
+        source_id="turn_watch:" + "8" * 64,
+    )
+    withdrawn = retract_relation(observed["event_id"])
+    source_snapshot = snapshot(
+        [episode()],
+        events=[observed, withdrawn],
+        mapped=1,
+    )
+    index = index_turn_watch_events(source_snapshot)
+    assert dict(index.facts_by_event_id) == {}
+    assert index.receipt["withdrawn_relations"] == 1
+
+    emergence, degraded = emergence_inputs(source_snapshot, radar=empty_radar())
+    assert emergence["pe:1"]["state"] == "UNESTIMABLE"
+    assert emergence["pe:1"]["reason"] == "SOURCE_NOT_SUPPLIED"
+    assert degraded["pe:1"] == ()
 
 
 def test_turn_watch_old_open_plus_current_observed_uses_current_observation_only():
@@ -160,10 +245,12 @@ def test_turn_watch_old_open_plus_current_observed_uses_current_observation_only
         relation_id="pee:" + "9" * 64,
         known_at="2026-09-17T20:10:00Z",
     )
-    index = tw_index([historical_open, current_observed], mapped=1)
-    emergence, degraded = emergence_inputs(
-        S([episode()]), turn_watch=index, radar=empty_radar()
+    source_snapshot = snapshot(
+        [episode()],
+        events=[historical_open, current_observed],
+        mapped=1,
     )
+    emergence, degraded = emergence_inputs(source_snapshot, radar=empty_radar())
 
     assert emergence["pe:1"] == {
         "state": "TRIGGERED",
@@ -176,13 +263,12 @@ def test_turn_watch_old_open_plus_current_observed_uses_current_observation_only
 
 
 def test_historical_only_turn_watch_open_does_not_promote_current_emergence():
-    index = tw_index(
-        [turn_relation(recorded_at=OLDER_RECORDED)],
+    source_snapshot = snapshot(
+        [episode()],
+        events=[turn_relation(recorded_at=OLDER_RECORDED)],
         mapped=1,
     )
-    emergence, _ = emergence_inputs(
-        S([episode()]), turn_watch=index, radar=empty_radar()
-    )
+    emergence, _ = emergence_inputs(source_snapshot, radar=empty_radar())
     assert emergence["pe:1"]["state"] == "UNESTIMABLE"
     assert emergence["pe:1"]["reason"] == "SOURCE_NOT_SUPPLIED"
 
@@ -202,14 +288,13 @@ def test_generation_local_relations_cannot_exceed_receipt_mapped_count():
         tw_index([turn_relation()], mapped=0)
 
 
-def test_turn_watch_generation_identity_mismatch_fails_before_projection():
-    index = tw_index(
-        [turn_relation()],
-        mapped=1,
-        generation_id=GEN_OTHER,
-    )
-    with pytest.raises(CandidateStateSourceError, match="different B1 generation"):
-        emergence_inputs(S([episode()]), turn_watch=index, radar=empty_radar())
+def test_emergence_requires_atomic_b1_snapshot_not_shape_compatible_parts():
+    class FakeSnapshot:
+        generation_id = GEN
+        generation = object()
+
+    with pytest.raises(CandidateStateSourceError, match="CandidateEpisodeStoreSnapshot"):
+        emergence_inputs(FakeSnapshot(), radar=empty_radar())
 
 
 def test_radar_forward_addresses_remain_provisional_even_when_hex_shaped():
@@ -265,16 +350,12 @@ def test_missing_radar_source_is_named_degraded_not_clean_empty(tmp_path: Path):
 
 def test_unversioned_radar_relation_cannot_manufacture_triggered_state():
     expert_id = "a" * 16
-    tw = tw_index([], mapped=0)
+    source_snapshot = snapshot([episode(experts=(expert_id,))], events=[], mapped=0)
     rd = index_radar_rows(
         [radar(expert_id)],
         source_receipt={"sha256": "sha256:" + "6" * 64, "bytes": 1},
     )
-    emergence, degraded = emergence_inputs(
-        S([episode(experts=(expert_id,))]),
-        turn_watch=tw,
-        radar=rd,
-    )
+    emergence, degraded = emergence_inputs(source_snapshot, radar=rd)
 
     assert emergence["pe:1"]["state"] == "UNESTIMABLE"
     assert emergence["pe:1"]["reason"] == "SOURCE_RELATION_UNRESOLVED"
@@ -283,10 +364,8 @@ def test_unversioned_radar_relation_cannot_manufacture_triggered_state():
 
 def test_current_turn_watch_open_is_a_source_proven_trigger():
     relation = turn_relation()
-    tw = tw_index([relation], mapped=1)
-    emergence, degraded = emergence_inputs(
-        S([episode()]), turn_watch=tw, radar=empty_radar()
-    )
+    source_snapshot = snapshot([episode()], events=[relation], mapped=1)
+    emergence, degraded = emergence_inputs(source_snapshot, radar=empty_radar())
     assert emergence["pe:1"] == {
         "state": "TRIGGERED",
         "reason": None,
@@ -318,10 +397,8 @@ def test_turn_watch_latest_fact_uses_parsed_utc_time_not_raw_string(earlier, lat
         known_at=later,
         occurred_at=later,
     )
-    tw = tw_index([first, second], mapped=2)
-    emergence, _ = emergence_inputs(
-        S([episode()]), turn_watch=tw, radar=empty_radar()
-    )
+    source_snapshot = snapshot([episode()], events=[first, second], mapped=2)
+    emergence, _ = emergence_inputs(source_snapshot, radar=empty_radar())
     assert emergence["pe:1"]["source_ref"] == "pee:b"
 
 
@@ -339,10 +416,8 @@ def test_equal_instant_uses_stable_source_id_tie_break():
         known_at=same,
         occurred_at=same,
     )
-    tw = tw_index([second, first], mapped=2)
-    emergence, _ = emergence_inputs(
-        S([episode()]), turn_watch=tw, radar=empty_radar()
-    )
+    source_snapshot = snapshot([episode()], events=[second, first], mapped=2)
+    emergence, _ = emergence_inputs(source_snapshot, radar=empty_radar())
     assert emergence["pe:1"]["source_ref"] == "pee:a"
 
 
@@ -364,15 +439,11 @@ def test_mixed_historical_current_input_is_order_independent():
         relation_id="pee:b",
         known_at="2026-09-17T19:00:00Z",
     )
-    one = tw_index([old, a, b], mapped=2)
-    two = tw_index([b, old, a], mapped=2)
+    one = snapshot([episode()], events=[old, a, b], mapped=2)
+    two = snapshot([episode()], events=[b, old, a], mapped=2)
 
-    got_one = emergence_inputs(
-        S([episode()]), turn_watch=one, radar=empty_radar()
-    )[0]
-    got_two = emergence_inputs(
-        S([episode()]), turn_watch=two, radar=empty_radar()
-    )[0]
+    got_one = emergence_inputs(one, radar=empty_radar())[0]
+    got_two = emergence_inputs(two, radar=empty_radar())[0]
     assert got_one == got_two
     assert got_one["pe:1"]["source_token"] == "B1_OBSERVED"
     assert got_one["pe:1"]["source_ref"] == "pee:b"
