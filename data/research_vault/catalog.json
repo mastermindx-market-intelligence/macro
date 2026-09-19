@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T09:55:58.238104+00:00",
-  "count": 2421,
+  "generated_at": "2026-09-19T11:25:48.582884+00:00",
+  "count": 2426,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,47 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7lmxc2lmgvp-380fae",
+      "title": "Strategy Daily",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:55:31Z",
+      "summary_points": [
+        "Fed Hawkish Pivot: 3.75-4.00% rate hike signals hawkish shift; market prices 3-4 hikes (October pause risk), testing TIPS demand amid falling energy prices.",
+        "Energy-EUR Linkage: Energy prices dictate EUR direction; EZ CPI data and France's 2027 budget uncertainty (Le Pen risk) drive OAT spread tightening concerns.",
+        "Geopolitical Tensions: Houthi-Saudi clashes and Trump-Gulf meeting amplify risk premiums, impacting energy markets and regional stability.",
+        "France Budget Uncertainty: Le Pen's potential influence on 2027 budget creates structural EUR risk, compounding fiscal policy volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-j5jzlymnymf-be87c2",
+      "title": "Japan Macro 1",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:50:38Z",
+      "summary_points": [
+        "CPI Data & Iran-Driven Inflation: Japan's August CPI headline at +1.9% (core +1.7%), with Iran conflict driving doubled medical treatment and non-durable goods inflation, offsetting electricity/gas declines from subsidies.",
+        "BOJ Core Inflation Drivers: Goods inflation dominates BOJ core CPI (Chart 6), while food supply chain risks (fresh food as key contributor) critically influence policy and asset valuations, outperforming all-items CPI since 2022.",
+        "Policy Impact & Trajectory: BOJ's planned food tax cut (8%→1%) may temporarily slow core-core inflation but net re-acceleration to +2.5% by Q2 2027 due to oil costs, with core CPI expected to rise above +2.5% into early 2027.",
+        "Goods vs.",
+        "Services Divergence: Goods prices (peaked 2022–23) decline while services inflation stabilizes and recently rises, signaling a shift in inflation dynamics central to BOJ policy focus."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-jnothg7v4v1-7e5d74",
       "title": "GS Miller Global Reflections AI trade recouped Monday losses 18 Sep 2026",
@@ -674,6 +715,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-db4l77uwehm-8be5a3",
+      "title": "Next (NXT.L) 1H27 results demonstrate ongoing strong earnings momentum, underpinned by the hyper growth, immature Internatio...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T20:10:52Z",
+      "summary_points": [
+        "1H27 Performance & FY27 Guidance: Strong PBT beat (£569m, +10.5% yoy), international sales growth (+23.9% yoy), FY27 PBT guidance raised to £1,255m (+6.7% sales growth); Buy-rated with PT 17,000p - International Growth Momentum: Robust international sales growth (+23.9% yoy), EU app MAU triple-digit YoY growth (Shop Fashion & Homeware), and Middle East/US MAU acceleration signaling scalable market penetration - Cash Flow & Profitability Resilience: Free cash flow expanding (£852.9m → £942.0m), net cash flow from operations rebounding (797 → 1,299), gross margins sustained above 54%, EBIT margins stable at 36-38% - Key Risk Factors: UK consumer deterioration threatening domestic growth, sterling weakness vs USD (impacting gross margins), and weaker international brand traction (slower aggregator scaling, lower marketing ROI) - EU Market Upside: EU app MAU triple-digit growth (vs UK MAU moderation) and 9% UK market share in fragmented apparel market (highest in UK) highlight structural EU-driven growth potential - Flow & Valuation Signals: Persistent target price premiums (e.g., 17,300p vs closing 15,660p) indicate institutional bullish sentiment; revised PT 17,000p (19.7x 2028E P/E) reflects updated 4.3% discount rate"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-a2ztmprcglg-517d2c",
       "title": "Europe Retail Retail Matters On leads a bifurcated sportswear market",
       "institution": "Goldman Sachs",
@@ -934,6 +992,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-659kjlmdg1f-e6d921",
+      "title": "Another ECB hike is no more likely than not",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:27:59Z",
+      "summary_points": [
+        "ECB Rate Hike Forecast: December 25bp hike to 2.75% driven by energy inflation; ECB maintains tightening balance until energy-driven inflation abates, with no further hikes beyond December.",
+        "Geopolitical Energy Risk: Houthi attacks on Saudi pipeline disrupt Strait of Hormuz, embedding persistent risk premium; pushes inflation peak to 4.4% (vs. 9% prior) and elevates core inflation by 0.1pp.",
+        "Two-Sided Policy Risks: Upside risk from energy shocks/supply chain disruptions could force higher 2027 policy rates if inflation doesn’t ease; downside risk from falling energy prices/growth faltering may derail December hike, with year-end wage demands posing key inflation pressure (peak ~4.5%).",
+        "Inflation & Growth Revisions: Revised inflation forecasts to 3.1% (2026) and 3.5% (2027); ECB may need one additional rate hike (December) to anchor expectations, but no further tightening beyond that."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vcjug88mmtc-8900ce",
       "title": "UK—Retail Sales Firmer Than Expected in August",
       "institution": "Goldman Sachs",
@@ -1049,6 +1127,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4mognkqozbf-46e7ee",
+      "title": "India Weekly Kickstart NIFTY closed the week flat as oil stabilized",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:13Z",
+      "summary_points": [
+        "AI Enablers Surge 60% YTD: Cohort of 42 AI infrastructure stocks (power, data centers, semiconductors) surged 60% YTD driven by earnings accumulation, outperforming Nifty (12% decline) with 39% forward earnings growth vs.",
+        "MSCI India Small Mid’s 22%.",
+        "Monsoon Deficit & Agricultural Risk: 15% below-normal monsoon (Jun-Sep 2026), with South Peninsula (-28%) and North-East (-25%) severely impacted, signaling acute water scarcity, crop yield threats, and supply chain vulnerabilities.",
+        "NIFTY Target Anchored by Macro Fundamentals: Goldman Sachs forecasts NIFTY to reach 26,500 by June 2027, supported by robust GDP growth (7.4-7.7% CY24-CY27), moderate CPI (5.0-5.3%), and improving fiscal balance (-4.7% to -4.2% of GDP).",
+        "Pharma vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
       "language": "en",
       "needs_metadata": false
     },
