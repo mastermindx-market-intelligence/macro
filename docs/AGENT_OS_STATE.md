@@ -2,21 +2,19 @@
 
 # Agent OS state
 
-Generated: 2026-09-18T15:26:31Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
+Generated: 2026-09-19T15:41:11Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-09-18T15:26:30.992347+00:00 |
+| active_builds | data/governance/active_builds.json@2026-09-19T15:41:10.904490+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
-| records | 69 WS · 320 DEC · 276 DSC · 466 handoffs |
+| records | 69 WS · 321 DEC · 278 DSC · 470 handoffs |
 
 ## Degraded inputs
 
-- record excluded (malformed): agentos/discoveries/DSC-POINTER-TAP-MUST-BE-TIMED-ON-EVENT-STAMPS.md: [unfalsifiable-claim] 'falsifier' carries no runnable token — needs a command, a 'file:line', or a '#PR' (README rule 4), got 'Drive a real browser, hold the main thread N ms from a windo'
 - active_builds.v1 open_prs is TRUNCATED at the gh --limit cap — some open PRs are missing from the join, so a wave may read 'unknown' while its PR is open
 - Mastermind checkout not found — p0 ids unvalidated, p0_active unknown
-- uncommitted-work scan skipped over 1 worktrees (one `git status` each) — re-run with --scan-uncommitted for stranded work
 
 ## Workstreams
 
@@ -24,7 +22,7 @@ Generated: 2026-09-18T15:26:31Z  |  69 workstreams (50 active · 1 awaiting_ci �
 |---|---|---|---|---|---|---|
 | [`WS:ACCOUNT-IDENTITY-HARDENING`](../agentos/workstreams/WS-ACCOUNT-IDENTITY-HARDENING.md) | blocked | terminal-platform | shared-auth-entitlements | awaiting_ci:2 done:2 in_progress:1 | #441(unknown) #443(unknown) #444(unknown) #445(unknown) #446(unknown) #6170(unknown) #6175(unknown) | Decide the CI gate fix (parallel viewport jobs vs build-once + next start), coordinating the required-check contexts with branch protection and merge-on-green.yml. |
 | [`WS:ADVANCED-DATA-OPTIONS`](../agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md) | active | coo-fable | options-intelligence | done:7 todo:2 | #5830(unknown) #5838(unknown) #5849(unknown) #5860(unknown) #5872(unknown) #5974(unknown) #6080(unknown) #6267(unknown) | AD-1T1 is PROVEN_LIVE and must not be reopened or rerun merely to show activity. The exact next product dependency is AD-1T2: restore the store-bearing M1 to the theta-m1 product workflow and production-prove AD-1 end to end, including the consumer/availability path needed by downstream Options Alpha PIT composition. AD-2 remains CLOSED until AD-1 production acceptance. Broken R2 sync is not an AD-1T2 prerequisite unless new evidence proves it necessary. |
-| [`WS:AGENT-EVAL-FABRIC`](../agentos/workstreams/WS-AGENT-EVAL-FABRIC.md) | active | coo-fable | project-active-build-control | done:6 in_progress:2 todo:3 | #6760(unknown) | Retained Mastermind #162 release owner: reconcile the explicit identity HOLD (5573811544), preserve current-head APPROVED review 5134108615, then perform only the same-carrier release action whose current gates pass. Independently, retained Mastermind #398 source owner reconciles the six-path audit repair and current effects. Do not reopen Macro #6699 or rebuild protected EVAL foundations. |
+| [`WS:AGENT-EVAL-FABRIC`](../agentos/workstreams/WS-AGENT-EVAL-FABRIC.md) | active | coo-fable | project-active-build-control | done:7 in_progress:1 todo:3 | #6760(unknown) | Obtain the incumbent Fable C2 ruling when that exact principal regains capacity; do not self-adopt #687/#692 or mutate historical E1. In parallel unblock #398 only through a lawful current-Macro grounding workspace. #841 is merged/do-not-redo. |
 | [`WS:AGENT-OS`](../agentos/workstreams/WS-AGENT-OS.md) | active | chairman | project-active-build-control | done:9 todo:1 | #5472(unknown) #5556(unknown) #5472(unknown) #5649(unknown) #5561(unknown) #6317(unknown) #6135(unknown) #6383(unknown) | MAS-28 W1 implementation is merged and accepted as report-only / BUILT_NOT_PROVEN. The next MAS-28 operation is calibration only: run the representative frozen corpus required by MAS-28, record false positives, false negatives and incomplete observations, and return a recommendation to remain report-only, amend rules, or propose a separate bounded enforcement review. Do not arm a hard gate from W1. The pre-existing Agent OS Phase 4 W4 remains a separate high-blast-radius report-only hook wave and is still todo; this records correction does not commission it. |
 | [`WS:ALPHA-INTELLIGENCE-INTEGRATION`](../agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md) | active | fable | mastermind-semantic-system-map | done:4 in_progress:2 todo:4 | — | Next dependency is to commission K3-D Economic Propagation and K2-C Institutional adapter pilot as two separate bounded waves after a fresh path/authority collision census. They may proceed in parallel only if those surfaces remain genuinely disjoint. K3-D must inherit the c0 D0 rulings, including the four named DNR kills, Data OS exact-identity authority, typed abstention for unresolved identities, no fourth graph/store, and no new grader/ranker. K2-C must adopt K2-B/K1 contracts and prove owner-reader, source/rights, PIT/lineage and correction behavior without creating an institutional aggregation truth store. Do not start K5 OpportunityCase / Prophet integration until BOTH K2 and K3 are complete. K3-E merge itself authorizes no consumer wiring, Market OS UI, rank, gate, size, trade or deployment. |
 | [`WS:BIOCATALYST-CORE-PRODUCT`](../agentos/workstreams/WS-BIOCATALYST-CORE-PRODUCT.md) | parked | coo-fable | biocatalyst | done:2 | — | Wave P1-AVAIL-1 (MAS-172) is done: root cause = signed-out Chairman browser, no product defect, entitled matrix re-proven PASS 2026-08-28; parked again once Sol posts terminal acceptance. No other CORE-PRODUCT wave is commissioned; P1-2 still requires a separate explicit Sol ruling. The 2026-08-26T02:00Z source/launch-soak boundary remains owned by its source-governance path: window end grants no expansion authority; exact evidence must be frozen and adjudicated before any successor source/cohort transition. |
@@ -331,6 +329,7 @@ Generated: 2026-09-18T15:26:31Z  |  69 workstreams (50 active · 1 awaiting_ci �
 - agentos/decisions/DEC-CS-V2-WHOLE-GENERATION-APPEND-ONLY-FENCE.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-D0R-RED-TEAM-ADJUDICATION-2026-08-17.md: [review-overdue] review_by 2026-08-18 has passed
 - agentos/decisions/DEC-E3-EVENT-INTELLIGENCE-COMPILER-NOT-SCORER.md: [review-overdue] review_by 2026-08-23 has passed
+- agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed
 - agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed
 - agentos/decisions/DEC-SI-METHOD-LAW-CHANNELS.md: [review-overdue] review_by 2026-09-15 has passed
 - agentos/decisions/DEC-W2C-M0B-V1-SOURCE-WINDOW-UNACHIEVABLE.md: [review-overdue] review_by 2026-08-27 has passed

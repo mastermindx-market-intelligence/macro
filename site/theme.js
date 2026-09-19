@@ -487,7 +487,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20260814-sf-inter-font-upgrade'; s.async = true;
+    s.src = pfx + 'account.js?v=20260913-account-actions'; s.async = true;
     document.head.appendChild(s);
   })();
 
@@ -1290,12 +1290,17 @@
       window.requestAnimationFrame(function () { input.focus(); });
     }
 
-    function closeSearch() {
+    function closeSearch(restoreFocus) {
       box.classList.remove('open');
       document.body.classList.remove('nav-search-focus');
       trigger.setAttribute('aria-expanded', 'false');
       input.blur();
       selected = -1;
+      if (restoreFocus) {
+        window.requestAnimationFrame(function () {
+          try { trigger.focus({ preventScroll: true }); } catch (e) { trigger.focus(); }
+        });
+      }
     }
 
     function idleTick() {
@@ -1332,7 +1337,7 @@
     }
 
     trigger.addEventListener('click', openSearch);
-    closeButton.addEventListener('click', closeSearch);
+    closeButton.addEventListener('click', function () { closeSearch(true); });
     input.addEventListener('compositionstart', function () { isComposing = true; });
     input.addEventListener('compositionend', function () {
       isComposing = false;
@@ -1358,7 +1363,8 @@
         e.preventDefault();
         go(pageRows[selected >= 0 ? selected : 0]);
       } else if (e.key === 'Escape') {
-        closeSearch();
+        e.preventDefault();
+        closeSearch(true);
       }
     });
     dropdown.addEventListener('mousedown', function (e) {
@@ -5153,7 +5159,7 @@
      <script> tags, so this dynamic request and a page-authored one share ONE
      cache key. An unbaked build (local/custom, serving templates/ raw) leaves
      it '' and simply requests the unversioned URL. */
-  var MM_BRAIN_VER = "405c0e15";
+  var MM_BRAIN_VER = "cc2fa93e";
   /* The hosts mm_brain.js decorates with per-card "Ask the Brain" buttons. */
   var MMB_EXPLAIN_SEL = '.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face';
   var _mmBrainScript = null, _mmBrainWaiters = [], _mmBootEl = null, _mmBootWarmed = false;
