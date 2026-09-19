@@ -194,7 +194,7 @@ def test_refresh_can_preserve_a_validated_output_tree_for_a_post_ci_sidecar(
         refresh,
         "fetch_transcript_index",
         lambda _url, destination: (
-            destination.write_text("{}", encoding="utf-8") or {}
+            destination.write_text("{}", encoding="utf-8") and {}
         ),
     )
     monkeypatch.setattr(
@@ -227,6 +227,57 @@ def test_refresh_can_preserve_a_validated_output_tree_for_a_post_ci_sidecar(
     assert seen == {"build": output, "publish": output}
 
 
+
+def test_stale_score_plane_holds_v1_but_leaves_validated_tree_for_sibling(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output = tmp_path / "persistent-output"
+    monkeypatch.setattr(refresh, "ensure_earnings_inputs", lambda _source: {})
+    monkeypatch.setattr(
+        refresh,
+        "fetch_transcript_index",
+        lambda _url, destination: (
+            destination.write_text("{}", encoding="utf-8") and {}
+        ),
+    )
+
+    def stale(*_args, **_kwargs):
+        raise refresh.ScoreFreshnessError("score plane stale by fixture")
+
+    monkeypatch.setattr(refresh, "assert_earnings_score_freshness", stale)
+
+    def build(argv: list[str]) -> int:
+        target = Path(argv[argv.index("--out-dir") + 1])
+        target.mkdir(parents=True)
+        (target / "manifest.json").write_text("{}", encoding="utf-8")
+        return 0
+
+    monkeypatch.setattr(refresh, "build_company_intelligence", build)
+    monkeypatch.setattr(
+        refresh,
+        "validate_generation",
+        lambda _path: {
+            "status": "ready",
+            "generation_id": "b" * 24,
+            "company_count": 1,
+            "event_count": 1,
+            "warnings": [],
+        },
+    )
+
+    def must_not_publish(*_args, **_kwargs):
+        raise AssertionError("stale v1 root was published")
+
+    rc = refresh.refresh(
+        tmp_path / "work",
+        out_dir=output,
+        fetch_scores=lambda **_kwargs: 0,
+        publish_generation=must_not_publish,
+    )
+    assert rc == refresh.SCORE_FRESHNESS_STALE
+    assert (output / "manifest.json").is_file()
+
+
 def test_workflow_is_scheduled_off_render_and_handles_only_safe_cas_conflict() -> None:
     workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/company-intelligence.yml").read_text(encoding="utf-8")
     assert 'cron: "17 */3 * * *"' in workflow
@@ -239,6 +290,16 @@ def test_workflow_is_scheduled_off_render_and_handles_only_safe_cas_conflict() -
     assert "python -m scripts.publish_company_theme_exposure_r2" in workflow
     assert 'if [ "$side_rc" -eq 2 ]' in workflow
     assert "timeout-minutes: 25" in workflow
+    # A stale qualitative score plane holds only the v1 root. The independent
+    # Event Workspace sibling still runs; dependent sidecars stay behind v1.
+    stale_edges = [
+        i for i in range(len(workflow))
+        if workflow.startswith('elif [ "$rc" -eq 3 ]', i)
+    ]
+    workspace_call = workflow.index("python -m scripts.refresh_event_workspaces")
+    assert len(stale_edges) == 2
+    assert stale_edges[0] < workspace_call < stale_edges[1]
+    assert "qualitative earnings score plane stale; v1 root held" in workflow
 
 
 def test_scheduled_workflow_contains_its_sparse_import_closure() -> None:
