@@ -659,6 +659,7 @@ def project(journey: dict | None) -> dict:
         {"generation_id": generation["generation_id"],
          "target_kind": generation["semantic"]["target_kind"],
          "reason": generation["semantic"].get("reason"),
+         "recorded_at": generation["lifecycle"]["recorded_at"],
          "supersedes_generation_id": generation["semantic"]["supersedes_generation_id"]}
         for generation in journey["generations"] if generation["kind"] == "correction"
     ]

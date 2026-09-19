@@ -273,6 +273,7 @@ def test_correction_history_is_visible_in_the_actual_d2_cell():
     entry, sig, dvol = _frames(fired=False)
     assert btc_d2_research.capture_source(
         journey, entry_asof=str(entry.date()), sig_df=sig, dvol_df=dvol,
+        recorded_at="2026-09-18T12:34:56Z",
     )
     projected = btc_d2_research.project(journey)
     payload = signal_lab.build_scorecard(
@@ -283,4 +284,8 @@ def test_correction_history_is_visible_in_the_actual_d2_cell():
     assert "Correction history" in cell.get_text()
     assert "修订历史" in cell.get_text()
     assert "Source inputs restated" in cell.get_text()
+    assert "Correction scope: source evidence" in cell.get_text()
+    assert "修订范围：来源证据" in cell.get_text()
+    assert "2026-09-18T12:34:56Z" in cell.get_text()
+    assert projected["corrections"][0]["recorded_at"] == "2026-09-18T12:34:56Z"
     assert projected["corrections"][0]["supersedes_generation_id"] in str(cell)

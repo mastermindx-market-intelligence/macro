@@ -84,6 +84,12 @@
       {% for correction in journey.corrections %}
         {% set label = reason_labels.get(correction.reason, ('Research evidence restated', '研究证据已重述')) %}
         <div>{{ t(label[0], label[1]) }}</div>
+        {% if correction.target_kind == 'source' %}
+          <div>{{ t('Correction scope: source evidence', '修订范围：来源证据') }}</div>
+        {% else %}
+          <div>{{ t('Correction scope: outcome evidence', '修订范围：结果证据') }}</div>
+        {% endif %}
+        <div>{{ t('Recorded: ', '记录时间：') }}{{ correction.recorded_at or '—' }}</div>
         <div>{{ t('Supersedes: ', '取代：') }}<code>{{ correction.supersedes_generation_id }}</code></div>
         <div>{{ t('Correction: ', '修订：') }}<code>{{ correction.generation_id }}</code></div>
       {% endfor %}

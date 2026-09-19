@@ -255,6 +255,8 @@ def test_outcome_and_later_data_restatement_are_append_only_generations():
     assert correction["semantic"]["target_kind"] == "outcome"
     assert correction["semantic"]["supersedes_generation_id"] == original_outcome["generation_id"]
     projection = d2.project(journey)
+    assert projection["corrections"][-1]["target_kind"] == "outcome"
+    assert projection["corrections"][-1]["recorded_at"] == "2026-09-22T05:00:00Z"
     assert projection["outcome"]["down_hit"] is False
     assert projection["outcome_generation_id"] == correction["generation_id"]
 
