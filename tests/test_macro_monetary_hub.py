@@ -61,6 +61,7 @@ _TEMPLATE_NAMES = (
     "macro_consumer_payments.html.j2",
     "macro_national_debt_liabilities.html.j2",
     "macro_rates_curves.html.j2",
+    "_curve_panel.html.j2",
     "macro_trade_flows.html.j2",
     "_macro_suite_shell.html.j2",
     "_seo_head.html.j2",
@@ -326,8 +327,19 @@ def test_a_missing_workspace_artifact_never_renders_as_zero_percent(tmp_path: Pa
     hub = _render(tmp_path, data_root)[builder.HUB_PAGE.output]
     authored = _authored(hub)
     # Hub glance path must not invent a calm 0% for a missing source.
+    # Main's mq-hub-absent class lived on the pre-Command hub attention row;
+    # P5 replaced that DOM with the command rail. Preserve both intents:
+    # missing is never 0%, and the housing destination stays on the rail.
     assert "0%" not in authored
     assert re.findall(r'data-mc-section="([a-z]+)"', hub) == list(EXPECTED_SECTION_ORDER)
+    assert 'href="macro_housing_real_estate.html"' in hub
+    if 'data-mq-workspace="housing_real_estate"' in hub:
+        marker = 'data-mq-workspace="housing_real_estate"'
+        idx = hub.index(marker)
+        tag_start = hub.rfind("<li", 0, idx)
+        block = hub[tag_start:idx + 1200]
+        assert "mq-hub-absent" in block
+        assert "0%" not in block
 
 
 def test_a_manifest_that_omits_a_workspace_still_keeps_the_full_rail(tmp_path: Path) -> None:
