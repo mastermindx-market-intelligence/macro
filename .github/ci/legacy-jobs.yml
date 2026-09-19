@@ -5860,6 +5860,14 @@ jobs:
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
       - tests/test_f02_owner_map_receipts.py
+      # W9B_REC_NS: the Supabase namespace note that tests/test_w9b_rec_ns.py reads from
+      # disk and pins (existence, anchors 0013/0023/0024/0026, no PAT/key/20-letter-shaped
+      # credential token, no standalone BUILT). Declared for the same reason as the
+      # records lanes above — an edit touching only this note must select the job that
+      # runs the suite pinning it, so the pin fires pre-merge on the PR instead of
+      # post-merge on main. A declaration only ever widens this job's scope.
+      - tests/test_w9b_rec_ns.py
+      - research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md
       # B-REC-B5-1 (round 3 FIX-1, widened in round 4): every record read from disk by the
       # three suites this job's last step runs — test_b_rec2_wave_boundary_records.py,
       # test_b_rec3_wave_boundary_records.py and test_f00c_terminal_reconciliation.py.
@@ -6009,7 +6017,7 @@ jobs:
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
-            tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py -q
+            tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
   capability-broker:
     if: ${{ false }}
