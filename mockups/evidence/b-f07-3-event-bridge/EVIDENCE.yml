@@ -43,4 +43,4 @@ capture: 'Hosts regenerated from the live template and shared theme.css at CODE_
   200ms settle after each theme/language change. Shared stylesheet supplies both themes.
   No full e2e suite was run.'
 captured_at: '2026-09-19T06:59:13.817145+00:00'
-resolved_sha_or_none: 81b1e53e7d6bc2e5a7fa5d28dd220bddfa1c6656
+resolved_sha_or_none: ff25fb3fcc208d77672b2c12110b219114d7aed6
