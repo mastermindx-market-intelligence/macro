@@ -161,6 +161,7 @@ promotion-ready, the source owner may run:
 which changes only those two canonical registry rows from `PROPOSED` to `PRODUCED`, verifies the
 written statuses, and stops. Before writing it independently re-checks the receipt's fresh close-
 proxy method, render/machine agreement, 5-/30-session readiness, selected source timestamp, both
-current artifact files and hashes, and current canonical registry states; the single promotion-ready
-bit is never trusted by itself. It never commits or pushes Git state and refuses missing/duplicate/
-non-PROPOSED target rows or an unready/stale receipt.
+current artifact files and hashes, current canonical registry states, and a receipt no older than
+24 hours; the single promotion-ready bit is never trusted by itself and cannot be replayed days
+later. It never commits or pushes Git state and refuses missing/duplicate/non-PROPOSED target rows
+or an unready/stale receipt.

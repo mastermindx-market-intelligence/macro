@@ -1496,6 +1496,7 @@ def test_gold_premium_dataos_promotion_rejects_invalid_registry_status():
 
 def _dataos_promotion_receipt(root=None):
     import hashlib
+    from datetime import datetime, timezone
 
     sge_bytes = b"sge-parquet-fixture"
     global_bytes = b"global-parquet-fixture"
@@ -1509,6 +1510,7 @@ def _dataos_promotion_receipt(root=None):
         "schema": "commodity.china_gold_premium_quality.v1",
         "close_proxy_dataos_promotion_ready": True,
         "close_proxy_dataos_promotion_blockers": [],
+        "checked_at": datetime.now(timezone.utc).isoformat(),
         "status": "available_fresh",
         "headline_method": "close_proxy",
         "render_consistent": True,
@@ -1729,3 +1731,27 @@ def test_china_gold_dataos_promoter_revalidates_live_receipt_fields(tmp_path):
 
     assert result["eligible"] is False
     assert "quality receipt render contract is not consistent" in result["blockers"]
+
+
+def test_china_gold_dataos_promoter_rejects_stale_receipt_replay(tmp_path):
+    import json
+    from datetime import datetime, timezone
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    registry.write_text(_dataos_promotion_registry_text())
+    doc = _dataos_promotion_receipt(tmp_path)
+    doc["checked_at"] = "2026-09-17T10:00:00+00:00"
+    receipt.write_text(json.dumps(doc))
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=False,
+        now=datetime(2026, 9, 19, 16, 0, tzinfo=timezone.utc),
+    )
+
+    assert result["eligible"] is False
+    assert "quality receipt is older than 24 hours" in result["blockers"]

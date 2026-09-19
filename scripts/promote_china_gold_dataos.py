@@ -15,6 +15,7 @@ import argparse
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -71,6 +72,8 @@ def assess(
     registry_payload: dict,
     *,
     repo_root: Path | None = None,
+    now: datetime | None = None,
+    max_receipt_age_hours: float = 24.0,
 ) -> dict:
     """Return the exact promotion plan without mutating source."""
     blockers: list[str] = []
@@ -78,6 +81,30 @@ def assess(
         blockers.append(
             f"receipt schema is {receipt.get('schema')!r}, required {SCHEMA!r}"
         )
+    now = now or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    else:
+        now = now.astimezone(timezone.utc)
+    checked_raw = str(receipt.get("checked_at") or "")
+    try:
+        checked_at = datetime.fromisoformat(checked_raw.replace("Z", "+00:00"))
+        if checked_at.tzinfo is None:
+            checked_at = checked_at.replace(tzinfo=timezone.utc)
+        else:
+            checked_at = checked_at.astimezone(timezone.utc)
+    except ValueError:
+        checked_at = None
+    if checked_at is None:
+        blockers.append("quality receipt checked_at is not bound")
+    else:
+        age_hours = (now - checked_at).total_seconds() / 3600.0
+        if age_hours < -0.25:
+            blockers.append("quality receipt checked_at is materially in the future")
+        elif age_hours > float(max_receipt_age_hours):
+            blockers.append(
+                f"quality receipt is older than {max_receipt_age_hours:g} hours"
+            )
     if receipt.get("close_proxy_dataos_promotion_ready") is not True:
         blockers.append("quality receipt is not close-proxy Data OS promotion-ready")
     receipt_blockers = receipt.get("close_proxy_dataos_promotion_blockers")
@@ -210,6 +237,7 @@ def promote(
     receipt_path: Path | str | None = None,
     registry_path: Path | str | None = None,
     apply: bool = False,
+    now: datetime | None = None,
 ) -> dict:
     receipt_path = Path(receipt_path) if receipt_path is not None else (
         config.data_dir() / "quality" / "china_gold_premium.json"
@@ -225,7 +253,12 @@ def promote(
         if registry_path.parent.name == "config"
         else registry_path.parent
     )
-    result = assess(receipt, registry_payload, repo_root=repo_root)
+    result = assess(
+        receipt,
+        registry_payload,
+        repo_root=repo_root,
+        now=now,
+    )
     result.update(
         {
             "receipt_path": str(receipt_path),

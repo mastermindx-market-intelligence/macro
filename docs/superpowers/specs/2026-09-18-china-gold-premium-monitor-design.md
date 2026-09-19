@@ -167,10 +167,10 @@ projection.
 The status transition is deliberately explicit. `scripts.promote_china_gold_dataos` is dry-run by
 default; `--apply` is permitted only from a promotion-ready receipt and updates exactly the two
 source dataset rows. It independently revalidates the underlying live receipt fields plus the
-current on-disk artifact SHA-256s and canonical registry states before any write; a stale or forged
-promotion-ready bit cannot authorize the transition by itself. The utility is not a lifecycle/
-scheduler plane and performs no Git commit or push. Re-running after both rows are already
-`PRODUCED` is idempotent.
+current on-disk artifact SHA-256s, canonical registry states, and receipt age before any write.
+A receipt older than 24 hours or materially future-dated cannot authorize the transition, and the
+promotion-ready bit is never trusted by itself. The utility is not a lifecycle/scheduler plane and
+performs no Git commit or push. Re-running after both rows are already `PRODUCED` is idempotent.
 
 ## Engine boundary
 
