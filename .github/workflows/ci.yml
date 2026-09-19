@@ -3460,6 +3460,7 @@ on:
       - "tests/test_tech_lab_cli.py"
       - "tests/test_tech_parity_fixtures.py"
       - "tests/test_vps_live_orchestration.py"
+      - "tests/test_release_publication_recovery.py"
       - "scripts/_narrative_ttl.py"
       - "scripts/analyze_index_add_overnight.py"
       - "scripts/append_sync_gauge.py"
