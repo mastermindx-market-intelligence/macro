@@ -241,3 +241,29 @@ def test_narrow_publisher_rows_and_research_glow_do_not_force_overflow():
     assert 'white-space: normal;' in CSS
     assert '.rt-page::before {' in CSS
     assert 'width: min(420px, 100%);' in CSS
+
+
+def test_late_polish_uses_reader_language_for_cost_research_and_publishing():
+    assert 'card("Recorded trend"' in APP
+    assert 'card("Ledger trend"' not in APP
+    assert 'card("Current state"' in APP
+    assert 'card("State Artifact"' not in APP
+    assert 'card("Pair G history"' in APP
+    assert 'P1 — Operator attention' not in APP
+    assert 'Macro theses <span class="cnt">' in APP
+    assert 'Macro Thesis Ledger <span class="cnt">' not in APP
+    assert 'Publishing history will appear after the first distribution.' in APP
+    assert 'Experiments will appear after the first preview run.' in APP
+    assert 'Off — preview only' in APP
+    assert 'Preview a run' in APP
+    assert 'Preview only. Nothing is sent or recorded.' in APP
+    assert '>Publisher is dark<' not in APP
+    assert '>Publishing is off<' in APP
+    assert 'chip("remote-only"' in APP
+    assert 'chip("R2-only"' not in APP
+    assert '<summary>Data sources <span class="cnt">' in APP
+    assert 'Lobe Manifest <span class="cnt">' not in APP
+    assert 'nwPill("BH-WITHHELD"' not in APP
+    assert 'ready for review' in APP
+    assert 'Independent evidence' in APP
+    assert 'not gauntleted (F-ORTH-1)' not in APP
