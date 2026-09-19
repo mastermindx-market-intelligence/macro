@@ -77,18 +77,28 @@ NO_COVERAGE_THESIS_FMT_EN = (
 NO_COVERAGE_THESIS_FMT_ZH = (
     "{names} 尚未出现在本周简报中——在我们关联的股票名称出现之前，无法撰写简报。"
 )
-# Singleton instances for the degenerate case (empty-ticker targets treated as anonymous).
-NO_COVERAGE_THESIS_EN = NO_COVERAGE_THESIS_FMT_EN.format(names="AAPL", verb="is")
-NO_COVERAGE_THESIS_ZH = NO_COVERAGE_THESIS_FMT_ZH.format(names="AAPL", verb="is")
+# Generic sentence for anonymous / empty-ticker targets (no ticker names to insert).
+NO_COVERAGE_THESIS_EN = (
+    "This thesis has no tickers to look up — "
+    "no market read can be written until tickers are added."
+)
+NO_COVERAGE_THESIS_ZH = (
+    "此论点没有可查询的股票代码——在添加股票代码之前，无法撰写市场解读。"
+)
 NO_COVERAGE_WATCHLIST_FMT_EN = (
-    "None of the names in this watchlist appeared in this week's brief yet."
+    "{names} {verb} not in this week's brief yet — "
+    "we can't write a watchlist brief until the names it follows appear."
 )
 NO_COVERAGE_WATCHLIST_FMT_ZH = (
+    "{names} 尚未出现在本周简报中——在我们关联的股票名称出现之前，无法撰写观察列表简报。"
+)
+# Singleton instances for anonymous / empty-ticker watchlists.
+NO_COVERAGE_WATCHLIST_EN = (
+    "None of the names in this watchlist appeared in this week's brief yet."
+)
+NO_COVERAGE_WATCHLIST_ZH = (
     "本周简报中尚未出现此观察列表中的任何名称。"
 )
-# Singleton instances for the degenerate case.
-NO_COVERAGE_WATCHLIST_EN = NO_COVERAGE_WATCHLIST_FMT_EN
-NO_COVERAGE_WATCHLIST_ZH = NO_COVERAGE_WATCHLIST_FMT_ZH
 TRANSLATION_PENDING_ZH = "（翻译待补）"
 
 

@@ -689,7 +689,8 @@ def test_no_coverage_watchlist_degrades_when_members_miss_artifact():
     """H6 / MAJOR 2 (watchlist branch): a watchlist whose members do not
     appear in any priority_queue / divergences / watch_items row of the
     artifact must degrade, not silently emit only the backdrop.
-    Named watchlist gets the kind-appropriate "not in this week's brief yet" copy.
+    Named watchlist gets the kind-appropriate "not in this week's brief yet" copy
+    that names the actual tickers (MAJOR 1 fix: was generic "None of the names…").
     """
     sub = _sub(kind="watchlist")
     target = {
@@ -702,10 +703,115 @@ def test_no_coverage_watchlist_degrades_when_members_miss_artifact():
     }
     state, reason = rb.classify(sub, _briefing(), target)
     assert state == "degraded"
-    assert reason == rb.NO_COVERAGE_WATCHLIST_EN
+    # Named watchlist with tickers → named miss template, not generic sentence.
+    assert "XXXX" in reason
+    assert "None of the names in this watchlist" not in reason
     body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
-    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_WATCHLIST_EN
-    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_WATCHLIST_ZH
+    hay_en = body["market_read"][0]["sentence_en"]
+    hay_zh = body["market_read"][0]["sentence_zh"]
+    assert "XXXX" in hay_en
+    assert "XXXX" in hay_zh
+    # Must NOT be the generic anonymous watchlist sentence
+    assert hay_en != rb.NO_COVERAGE_WATCHLIST_EN
+    assert hay_zh != rb.NO_COVERAGE_WATCHLIST_ZH
+
+
+def test_empty_ticker_theme_composes_generic_sentence():
+    """Round 3 MAJOR 1 / MINOR 3a: a named theme (empty tickers) must NOT
+    show 'AAPL' in the EN or ZH no-coverage sentence — it gets the generic
+    anonymous-sentence constant, never the hardcoded ticker name."""
+    sub = _sub()
+    target = {
+        "kind": "thesis",
+        "id": THESIS_ID,
+        "name": "Stagflation regime watch",
+        "version_or_asof": "3",
+        "tickers": [],          # empty = anonymous/theme
+        "unavailable": False,
+    }
+    state, reason = rb.classify(sub, _briefing(), target)
+    assert state == "degraded"
+    assert reason == rb.NO_COVERAGE_REASON
+    body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
+    hay_en = body["market_read"][0]["sentence_en"]
+    hay_zh = body["market_read"][0]["sentence_zh"]
+    # Must be the generic sentence — no hardcoded AAPL in either language.
+    assert hay_en == rb.NO_COVERAGE_THESIS_EN, (
+        f"Empty-ticker theme must use generic sentence, got: {hay_en!r}"
+    )
+    assert hay_zh == rb.NO_COVERAGE_THESIS_ZH
+    assert "AAPL" not in hay_en
+    assert "AAPL" not in hay_zh
+
+
+def test_untitled_thesis_composes_generic_sentence():
+    """Round 3 MAJOR 1 / MINOR 3b: an untitled thesis (empty tickers) must NOT
+    show 'AAPL' — it gets the generic anonymous sentence."""
+    sub = _sub()
+    target = {
+        "kind": "thesis",
+        "id": THESIS_ID,
+        "name": "Untitled thesis",
+        "version_or_asof": "1",
+        "tickers": [],
+        "unavailable": False,
+    }
+    state, reason = rb.classify(sub, _briefing(), target)
+    assert state == "degraded"
+    assert reason == rb.NO_COVERAGE_REASON
+    body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
+    hay_en = body["market_read"][0]["sentence_en"]
+    hay_zh = body["market_read"][0]["sentence_zh"]
+    assert hay_en == rb.NO_COVERAGE_THESIS_EN
+    assert hay_zh == rb.NO_COVERAGE_THESIS_ZH
+    assert "AAPL" not in hay_en
+    assert "AAPL" not in hay_zh
+
+
+def test_named_watchlist_miss_uses_ticker_names():
+    """Round 3 MAJOR 1 / MINOR 3c: a named watchlist whose tickers miss the
+    artifact must name those tickers in both EN and ZH, not use the generic
+    anonymous watchlist sentence. Uses an NVDA-only production-shape artifact."""
+    sub = _sub(kind="watchlist")
+    # NVDA-only production artifact (no AAPL, no MSFT)
+    nvda_artifact = {
+        "schema": "intelligence.briefing.v1",
+        "as_of": "2026-11-15",
+        "generated_utc": "2026-11-15T23:30:00+00:00",
+        "macro_context": {"posture": "Risk-on environment."},
+        "priority_queue": [
+            {
+                "ticker": "NVDA",
+                "situation": "AI infrastructure buildout continues.",
+                "situation_zh": "人工智能基础设施建设继续推进。",
+            },
+        ],
+        "divergences": [],
+    }
+    target = {
+        "kind": "watchlist",
+        "id": WATCH_ID,
+        "name": "Tech leaders",
+        "version_or_asof": None,
+        "tickers": ["AAPL", "MSFT"],   # AAPL+MSFT not in artifact → miss
+        "unavailable": False,
+    }
+    state, reason = rb.classify(sub, nvda_artifact, target)
+    assert state == "degraded"
+    # classify puts the named-template reason into degraded_reason
+    assert "AAPL" in reason
+    assert "MSFT" in reason
+    body = rb.compose_body(target, nvda_artifact, monitors=[], degraded_reason=reason)
+    hay_en = body["market_read"][0]["sentence_en"]
+    hay_zh = body["market_read"][0]["sentence_zh"]
+    # Must name the actual tickers, not generic "None of the names…"
+    assert "AAPL" in hay_en, f"EN sentence must name AAPL: {hay_en!r}"
+    assert "MSFT" in hay_en, f"EN sentence must name MSFT: {hay_en!r}"
+    assert "AAPL" in hay_zh, f"ZH sentence must name AAPL: {hay_zh!r}"
+    assert "MSFT" in hay_zh, f"ZH sentence must name MSFT: {hay_zh!r}"
+    # And must NOT be the generic watchlist sentence
+    assert hay_en != rb.NO_COVERAGE_WATCHLIST_EN
+    assert hay_zh != rb.NO_COVERAGE_WATCHLIST_ZH
 
 
 def test_no_target_user_id_returns_target_unavailable(monkeypatch):
