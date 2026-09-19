@@ -12,6 +12,12 @@
 {% set _zh = {'high': '高', 'med': '中', 'medium': '中', 'low': '低'} -%}
 <span class="cnx-imp {{ importance }}">{{ t(importance | upper, _zh.get(importance, importance | upper)) }}</span>
 {%- endmacro %}
+{# Locale-safe CNY display: producer units are 万元; show bn in EN and 亿 in ZH. #}
+{% macro cny_yi_pair(n) -%}
+{%- set _yi = (n | abs) / 100 -%}
+{%- set _sg = '+' if n >= 0 else '−' -%}
+<span class="l-en">{{ _sg }}¥{{ '%.1f'|format(_yi / 10) }}bn</span><span class="l-zh">{{ _sg }}¥{{ '{:,.0f}'.format(_yi) }}亿</span>
+{%- endmacro %}
 {% macro help(en, zh='', cls='') -%}
 <span class="help{% if cls %} {{ cls }}{% endif %}">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -829,7 +835,7 @@
   }
 {%- if mode != 'stocks' %}
   /* ===== MX5 CHINA GLANCE REDESIGN (body.page-china scope) ===== */
-  body.page-china .aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  body.page-china .aurora{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden}
   /* Base aurora: green blobs (risk-on default) */
   body.page-china .aurora::before{content:"";position:absolute;top:-220px;left:12%;width:820px;height:560px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(34,217,122,.12) 0%,transparent 70%)}
   body.page-china .aurora::after{content:"";position:absolute;bottom:-100px;right:-100px;width:700px;height:600px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(99,102,241,.10) 0%,transparent 70%)}
@@ -849,7 +855,14 @@
      it tints is already said out loud by the score, the verdict word and the
      regime pill, so nothing is lost. Depth in light comes from the panel/canvas
      value step and the shadow recipe. Dark keeps the aurora untouched. */
-  [data-theme="light"] body.page-china .aurora{display:none}
+  html[data-theme="light"] body.page-china .aurora,
+  html[data-theme="light"] body.page-china .aurora::before,
+  html[data-theme="light"] body.page-china .aurora::after,
+  html[data-theme="light"] body.page-china .aurora .au-a3,
+  [data-theme="light"] body.page-china .aurora,
+  body.page-china[data-theme="light"] .aurora{
+    display:none !important;background:none !important;filter:none !important;opacity:0 !important}
+  html[data-theme="light"] body.page-china::before{background:none !important}
   /* Reduced-motion: no animations */
   @media(prefers-reduced-motion:reduce){body.page-china .aurora,body.page-china .aurora::before,body.page-china .aurora::after,body.page-china .aurora .au-a3{animation:none}}
   /* zh direction-convention mirrors (operator ruling 2026-07-21): the aurora state wash
@@ -1177,6 +1190,7 @@
   html[data-lang="zh"] body.page-china .cnx-okchip{background:rgba(224,100,100,.13);color:#eda8a8}
   html[data-lang="zh"] body.page-china .cnx-badchip{background:rgba(69,184,115,.13);color:#8fd7ae}
   body.page-china .cnx-nchip{display:inline-block;font-size:10px;font-weight:650;border-radius:6px;padding:2px 8px;margin:2px 4px 0 0;background:rgba(255,255,255,.06);color:var(--muted)}
+  body.page-china .cnx-orient{display:block;margin-top:6px;font-size:11px;color:var(--muted);line-height:1.4;font-weight:400}
   body.page-china .cnx-ledd{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
   body.page-china .cnx-ledd .rk{color:var(--muted);font-size:10.5px}
   /* heatmap in dialog */
@@ -1427,7 +1441,8 @@
     box-shadow:var(--mx5-hover-shadow);transform:translateY(-1px);
   }
   body.page-china .sxg-face.mx5-card-face:focus-visible{
-    outline:none;box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px;
+    box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);
   }
   body.page-china .mx5-mkt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
   @media(max-width:1100px){body.page-china .mx5-mkt-grid{grid-template-columns:repeat(2,1fr);}}
@@ -1451,7 +1466,9 @@
     background:var(--mx5-hover-bg);border-color:var(--mx5-hover-border);
     box-shadow:var(--mx5-hover-shadow);transform:translateY(-1px);
   }
-  body.page-china .mx5-mkt-tile:focus-visible{outline:none;box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);}
+  body.page-china .mx5-mkt-tile:focus-visible{
+    outline:2px solid color-mix(in srgb, var(--link) 70%, transparent);outline-offset:2px;
+    box-shadow:var(--mx5-focus-ring),var(--mx5-hover-shadow);}
   body.page-china .mx5-mkt-ticker{
     font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--ink-3);text-transform:uppercase;margin-bottom:3px;
   }
@@ -2232,7 +2249,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
       <div class="mx5-sentiment-zone-text" style="color:var(--fg-col)">
         {% if _fe_score is not none %}
-        <span>{{ t(_fe_label, _fe_label) }}</span>
+        <span>{{ t(_fe_label, {'Fear':'恐惧','Euphoria':'亢奋','Neutral':'中性','Greed':'贪婪','Panic':'恐慌'}.get(_fe_label, _fe_label)) }}</span>
         {% elif I.turnover %}
         <span>{{ t(I.turnover.band | title, {'apathy':'清淡','normal':'正常','active':'活跃','mania':'狂热'}.get(I.turnover.band, I.turnover.band | title)) }}</span>
         {% else %}
@@ -2304,7 +2321,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-flows')">
       <div class="cnx-ctitle">{{ t('Connect Flows','互联通资金') }}</div>
       {% if I.southbound %}
-      <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</div>
+      <div class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ cny_yi_pair(I.southbound.net) }}</div>
       <div class="cnx-bigsub" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ t('Southbound buying' if I.southbound.net >= 0 else 'Southbound selling', '南向买入' if I.southbound.net >= 0 else '南向卖出') }}</div>
       <div class="cnx-kv"><span class="k">{{ t('Streak','连续') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20 {{ t('days','天') }}</span></div>
       {% endif %}
@@ -2486,10 +2503,14 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <table class="cnx-mt">
           <tr><th>{{ t('Index','指数') }}</th><th class="r">1D</th><th class="r">7D</th><th class="r">30D</th><th class="r">{{ t('Read','判断') }}</th></tr>
           {% for ix in ms.mtf.indices %}
-          <tr><td>{{ ix.label }}</td>
-            <td class="r">{{ ix.scores[0] if ix.scores else '—' }}</td>
-            <td class="r">{{ ix.scores[2] if ix.scores and ix.scores | length > 2 else '—' }}</td>
-            <td class="r">{{ ix.scores[3] if ix.scores and ix.scores | length > 3 else '—' }}</td>
+          {% set _cells = ix.cells or {} %}
+          {% set _d = _cells.D if _cells.D is defined else none %}
+          {% set _w = _cells.W if _cells.W is defined else none %}
+          {% set _m = _cells.M if _cells.M is defined else none %}
+          <tr><td>{{ t(ix.label_en or ix.label or '', ix.label_zh or ix.label_en or ix.label or '') }}</td>
+            <td class="r">{{ (_d.arrow if _d and _d.arrow else (ix.confluence_en or '')) }}</td>
+            <td class="r">{{ (_w.arrow if _w and _w.arrow else (ix.confluence_en or '')) }}</td>
+            <td class="r">{{ (_m.arrow if _m and _m.arrow else (ix.confluence_en or '')) }}</td>
             <td class="r {{ 'cnx-tt-up' if ix.mean > 0.33 else ('cnx-tt-dn' if ix.mean < -0.1 else 'cnx-tt-fl') }}">{{ t((ix.confluence_en or '')|truncate(16, true, '…'), (ix.confluence_zh or '')|truncate(16, true, '…')) }}</td>
           </tr>
           {% endfor %}
@@ -2585,15 +2606,17 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-sep"></div>
         <div class="cnx-eyebrow">{{ t('Key rates & cross-asset','关键利率与跨资产') }}</div>
         <div class="cnx-ihgrid">
-          {# USD/CNH #}
-          {% set _cnh = none %}
-          {% for tl in (market_tiles or []) %}{% if 'CNH' in (tl.tag | string) or 'yuan' in (tl.label | string) %}{% if not _cnh %}{% set _cnh = tl %}{% endif %}{% endif %}{% endfor %}
+          {# USD/CNH — namespace is required because loop assignment does not leak in Jinja. #}
+          {% set _cnh_ns = namespace(tile=none) %}
+          {% for tl in (market_tiles or []) %}{% if 'CNH' in (tl.tag | string) or 'yuan' in (tl.label | string) %}{% if not _cnh_ns.tile %}{% set _cnh_ns.tile = tl %}{% endif %}{% endif %}{% endfor %}
+          {% set _cnh = _cnh_ns.tile %}
           {% if _cnh %}
-          <div class="cnx-ihcard"><div class="t">USD/CNH</div><div class="p">{{ _cnh.level }}</div><span class="cnx-nchip">{{ t('offshore yuan','离岸人民币') }}</span></div>
+          <div class="cnx-ihcard"><div class="t">USD/CNH</div><div class="p">{{ _cnh.level }}</div><span class="cnx-nchip">{{ t('offshore yuan','离岸人民币') }}</span>{% if _cnh.meaning_en %}<span class="cnx-orient"><span class="l-en">{{ _cnh.meaning_en }}</span><span class="l-zh">{{ _cnh.meaning_zh }}</span></span>{% endif %}</div>
           {% endif %}
           {# 10Y CGB #}
-          {% set _cgb = none %}
-          {% for tl in (market_tiles or []) %}{% if 'CGB' in (tl.tag | string) or 'yield' in (tl.tag | string) %}{% if not _cgb %}{% set _cgb = tl %}{% endif %}{% endif %}{% endfor %}
+          {% set _cgb_ns = namespace(tile=none) %}
+          {% for tl in (market_tiles or []) %}{% if 'CGB' in (tl.tag | string) or 'yield' in (tl.tag | string) %}{% if not _cgb_ns.tile %}{% set _cgb_ns.tile = tl %}{% endif %}{% endif %}{% endfor %}
+          {% set _cgb = _cgb_ns.tile %}
           {% if _cgb %}
           <div class="cnx-ihcard"><div class="t">10Y CGB</div><div class="p">{{ _cgb.level }}</div><span class="cnx-nchip">{{ t('govt bond yield','国债收益率') }}</span></div>
           {% endif %}
@@ -2797,7 +2820,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             <div class="cnx-eyebrow">{{ t('Southbound flow · mainland → Hong Kong','南向资金 · 内地 → 香港') }}</div>
             {% if I.southbound %}
             <div style="display:flex;gap:12px;align-items:baseline;margin:2px 0 8px">
-              <span class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ '+¥' if I.southbound.net >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.net | abs) / 100) }}亿</span>
+              <span class="cnx-bignum" style="color:{{ 'var(--up)' if I.southbound.net >= 0 else 'var(--down)' }}">{{ cny_yi_pair(I.southbound.net) }}</span>
             </div>
             <div class="cnx-kv"><span class="k">{{ t('20-day cumulative','20日累计') }}</span><span class="v {{ 'cnx-tt-up' if I.southbound.cum_20d >= 0 else 'cnx-tt-dn' }}">{{ '+¥' if I.southbound.cum_20d >= 0 else '−¥' }}{{ '{:,.0f}'.format((I.southbound.cum_20d | abs) / 100) }}亿</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Buy-day streak','净买入天数') }}</span><span class="v">{{ I.southbound.pos_days_20 }}/20</span></div>
