@@ -3,9 +3,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 from datetime import date
 from itertools import permutations
 from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 from typing import Any, Callable
 
 import numpy as np
