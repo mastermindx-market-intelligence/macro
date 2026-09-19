@@ -60,15 +60,20 @@ waves:
       clean writer/release custody.
   - id: L0
     title: Reduce Fast tool-selection latency and make usage accounting truthful
-    status: in_progress
+    status: awaiting_review_ci
+    pr: 7406
     next_action: >
-      Consume FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md. Read-only
-      diagnosis is complete: current Macro Fast discloses54 tools/~34.9k schema
-      chars, while qualified profiles can reduce schema bytes82-90%; production
-      NVDA spent ~64.6s in two model rounds versus <250ms in tools. First source
-      implementation is progressive tool visibility + cumulative usage accounting,
-      not deterministic prefetch. Shared ask_brain/brain_gateway source remains
-      held until #7217/#7152/#7100/#7144 writer/collision reconciliation.
+      PR7406 exact head f6b55d71d66bf35f873d38ea8de11555b6b981c3 is the
+      path-disjoint classifier/profile repair. It fixes current-move, options-setup,
+      portfolio and self-contained-financial seed routing while preserving existing
+      higher-specificity/domain behavior; the existing gateway already consumes the
+      corrected seed tuple. Local proof: Ask Brain181 pass; seed-router/analyst-wiring/
+      tool-economics87 pass; gateway readback matches the intended plans. Independent
+      review is WAITING_CAPACITY on agent-dispatch root1789815565.734869 and hosted
+      checks are accruing. This PR does NOT implement schema filtering, grounding
+      suppression, prefetch or cumulative usage accounting. After review/CI and real
+      Fast canary, the shared-gateway L0 continuation may add progressive visibility
+      only after #7217/#7152/#7100/#7144 custody clears.
   - id: A0
     title: Make evidence discipline and rival-hypothesis analysis the default
     status: in_progress
@@ -132,11 +137,11 @@ artifacts:
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
 next_action: >
-  Consume the next material return on the two incumbent carriers: PR7217 needs one
-  independent exact-head review before source acceptance, while PR7374 must return
-  its provider-neutral/security repair on the same branch. Do not revive duplicate
-  PR7365 or the separate local R1 prototype. In parallel, continue read-only gateway
-  latency/context diagnosis from the preserved production Fast runs. R0 PR7152,
+  Consume the next material return on the incumbent carriers: PR7217 needs one
+  independent exact-head review; PR7374 must return its provider-neutral/security
+  repair; PR7406 needs its independent profile-routing review plus current-head CI.
+  Do not revive duplicate PR7365 or closed PR7403. Shared gateway prompt/schema/
+  usage changes remain held behind #7217/#7152/#7100/#7144 custody. R0 PR7152,
   Source Continuity and real browser/customer proof remain separate release gates.
 ---
 
