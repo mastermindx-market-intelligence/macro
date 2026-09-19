@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T22:12:06.548066+00:00",
-  "count": 2457,
+  "generated_at": "2026-09-19T22:27:11.871062+00:00",
+  "count": 2458,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1775,6 +1775,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-megzxd2zdji-d1359c",
+      "title": "Japan Weekly Kickstart Has it been better to travel or to arrive with the BOJ",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:49Z",
+      "summary_points": [
+        "BOJ Rate Hike & Bank Sector Outperformance: BOJ raised policy rate to 1.25% (from 0.1%), driving banks to outperform TOPIX by 27pts YTD and 10pts QTD, with banks contributing significantly to TOPIX NTM EPS growth.",
+        "Net Flows & Yen Positioning Shift: Domestic institutions/foreigners net sold ¥476bn/¥274bn, while individuals net bought ¥426bn; speculative yen positioning flipped to net long post-yen strengthening, signaling reduced foreign selling pressure.",
+        "Elevated Valuation & Momentum Risks: TOPIX forward P/E at 15.6 (+1 s.d.) and P/B at 1.8 (+2.9 s.d.) indicate overvaluation, with index above 25d/200d MAs, raising correction risk amid slowing earnings growth (19% FY26 → 9% FY28).",
+        "Critical Sector Allocation: Overweight Machinery, IT/Services, Banks, Electrical, Steel; Underweight Electric Power/Gas, Foods, Pharma, Transport—driven by bank outperformance and tech-led momentum.",
+        "AI Beneficiaries & Sector Divergence: AI Beneficiaries surged 50% YTD with 114% spread vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
