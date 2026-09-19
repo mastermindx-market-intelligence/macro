@@ -1,15 +1,15 @@
 {
   "schema": "mastermind.page_evidence_receipt.v1",
   "packet_slug": "b-f09-13-covenant-headroom",
-  "manifest_sha": "6e26b1f092eebcd590374445c8ae68c01c770098",
-  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = e96e04057aa6fcbb695527b4371454f3a03db09d for this packet's tree state. The packet is committed in the FINAL committed head on branch claude/mo-b-f09-13-covenant-headroom.",
-  "captured_at": "2026-09-13T23:16:00Z",
-  "captured_by": "META-CEO-B-FABLE-round-3",
-  "render_method": "fixture_render_via_same_template_and_builder",
+  "manifest_sha": "4993b0c4f74ad2e3c7f55e5591e43b186fc42ea8",
+  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = 3bd6070bd9129cd5704972a0ed1ee0e7a576abf4 for this packet's tree state. The packet is committed as the last evidence commit on branch claude/mo-b-f09-13-covenant-headroom.",
+  "captured_at": "2026-09-19T01:31:58Z",
+  "captured_by": "HEAL-h3-7127",
+  "render_method": "fixture_render_via_evidence_recipe_script",
   "fixture_render": true,
-  "fixture_render_disclosure": "The spec R7(a) fixture was rendered into HTML by invoking the SAME production Jinja2 template + builder the page will use on main, then 16 PNG cells were captured from that HTML via Playwright/Chromium at dark/light × EN/ZH × 1440/390. Real body classes applied via the page's own setTheme/setLang; no hidden decorative layers; settled animations; opacity 1. The HTML files in rendered-html/ remain the deterministic source for every PNG cell the spec names, and a browser that opens them reproduces the 16 cells identically.",
+  "fixture_render_disclosure": "The spec R7(a) fixture was rendered by the committed evidence recipe script, which invokes the production Jinja2 template and engine; 16 PNG cells were captured from that HTML via Playwright/Chromium at dark/light × EN/ZH × 1440/390. The page's own setTheme and setLang routines set the presentation state, and the recipe fails if the resulting attributes do not match. No hidden decorative layers; settled animations; opacity 1. The HTML files in rendered-html/ remain the deterministic source for every PNG cell the spec names.",
   "page_route": "/research/capital_structure/",
-  "panel_selector": "#cs-covenant-headroom",
+  "panel_selector": "#cs-covenant-room",
   "page_title": "Capital Structure",
   "panel_title_en": "How much room is left under the covenant",
   "panel_title_zh": "契约限额下还剩多少空间",
@@ -25,7 +25,7 @@
     },
     {
       "id": "computed",
-      "label": "Computed state rendered from the (a) fixture through the SAME template + builder",
+      "label": "Computed state rendered from the (a) fixture through the committed evidence recipe script",
       "html": "rendered-html/computed.html",
       "payload": "payloads/computed.json",
       "schema": "capital_structure.covenant_headroom.v1",
@@ -34,39 +34,136 @@
     }
   ],
   "cells": [
-    {"state": "null",     "theme": "dark",  "lang": "en", "viewport": "1440x900", "screenshot": "shots/null.dark.en.1440.png"},
-    {"state": "null",     "theme": "dark",  "lang": "zh", "viewport": "1440x900", "screenshot": "shots/null.dark.zh.1440.png"},
-    {"state": "null",     "theme": "light", "lang": "en", "viewport": "1440x900", "screenshot": "shots/null.light.en.1440.png"},
-    {"state": "null",     "theme": "light", "lang": "zh", "viewport": "1440x900", "screenshot": "shots/null.light.zh.1440.png"},
-    {"state": "null",     "theme": "dark",  "lang": "en", "viewport": "390x844",  "screenshot": "shots/null.dark.en.390.png"},
-    {"state": "null",     "theme": "dark",  "lang": "zh", "viewport": "390x844",  "screenshot": "shots/null.dark.zh.390.png"},
-    {"state": "null",     "theme": "light", "lang": "en", "viewport": "390x844",  "screenshot": "shots/null.light.en.390.png"},
-    {"state": "null",     "theme": "light", "lang": "zh", "viewport": "390x844",  "screenshot": "shots/null.light.zh.390.png"},
-    {"state": "computed", "theme": "dark",  "lang": "en", "viewport": "1440x900", "screenshot": "shots/computed.dark.en.1440.png"},
-    {"state": "computed", "theme": "dark",  "lang": "zh", "viewport": "1440x900", "screenshot": "shots/computed.dark.zh.1440.png"},
-    {"state": "computed", "theme": "light", "lang": "en", "viewport": "1440x900", "screenshot": "shots/computed.light.en.1440.png"},
-    {"state": "computed", "theme": "light", "lang": "zh", "viewport": "1440x900", "screenshot": "shots/computed.light.zh.1440.png"},
-    {"state": "computed", "theme": "dark",  "lang": "en", "viewport": "390x844",  "screenshot": "shots/computed.dark.en.390.png"},
-    {"state": "computed", "theme": "dark",  "lang": "zh", "viewport": "390x844",  "screenshot": "shots/computed.dark.zh.390.png"},
-    {"state": "computed", "theme": "light", "lang": "en", "viewport": "390x844",  "screenshot": "shots/computed.light.en.390.png"},
-    {"state": "computed", "theme": "light", "lang": "zh", "viewport": "390x844",  "screenshot": "shots/computed.light.zh.390.png"}
+    {
+      "state": "null",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "1440x900",
+      "screenshot": "shots/null.dark.en.1440.png"
+    },
+    {
+      "state": "null",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "screenshot": "shots/null.dark.zh.1440.png"
+    },
+    {
+      "state": "null",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "1440x900",
+      "screenshot": "shots/null.light.en.1440.png"
+    },
+    {
+      "state": "null",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "screenshot": "shots/null.light.zh.1440.png"
+    },
+    {
+      "state": "null",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "390x844",
+      "screenshot": "shots/null.dark.en.390.png"
+    },
+    {
+      "state": "null",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "390x844",
+      "screenshot": "shots/null.dark.zh.390.png"
+    },
+    {
+      "state": "null",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "390x844",
+      "screenshot": "shots/null.light.en.390.png"
+    },
+    {
+      "state": "null",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "390x844",
+      "screenshot": "shots/null.light.zh.390.png"
+    },
+    {
+      "state": "computed",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "1440x900",
+      "screenshot": "shots/computed.dark.en.1440.png"
+    },
+    {
+      "state": "computed",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "screenshot": "shots/computed.dark.zh.1440.png"
+    },
+    {
+      "state": "computed",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "1440x900",
+      "screenshot": "shots/computed.light.en.1440.png"
+    },
+    {
+      "state": "computed",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "1440x900",
+      "screenshot": "shots/computed.light.zh.1440.png"
+    },
+    {
+      "state": "computed",
+      "theme": "dark",
+      "lang": "en",
+      "viewport": "390x844",
+      "screenshot": "shots/computed.dark.en.390.png"
+    },
+    {
+      "state": "computed",
+      "theme": "dark",
+      "lang": "zh",
+      "viewport": "390x844",
+      "screenshot": "shots/computed.dark.zh.390.png"
+    },
+    {
+      "state": "computed",
+      "theme": "light",
+      "lang": "en",
+      "viewport": "390x844",
+      "screenshot": "shots/computed.light.en.390.png"
+    },
+    {
+      "state": "computed",
+      "theme": "light",
+      "lang": "zh",
+      "viewport": "390x844",
+      "screenshot": "shots/computed.light.zh.390.png"
+    }
   ],
   "render_evidence": {
-    "real_body_classes": true,
+    "page_theme_routines": true,
+    "presentation_attributes_verified": true,
     "no_hidden_decorative_layers": true,
     "settled_animations": true,
     "opacity": 1,
     "template": "templates/capital_structure.html.j2",
-    "builder": "scripts/build_capital_structure_page.py (_covenant_headroom)",
     "engine": "engine/covenant_headroom.py (compute_headroom)",
-    "panel_marker": "section.cs-latest-card.cs-covenant-headroom#cs-covenant-headroom",
+    "panel_marker": "section.cs-latest-card.cs-covenant-room#cs-covenant-room",
     "fixtures": [
       "tests/fixtures/capital_structure/covenant_credit_agreement_submission.txt",
       "tests/fixtures/capital_structure/covenant_manifest_ledger.json"
-    ]
+    ],
+    "render_recipe_script": "mockups/evidence/b-f09-13-covenant-headroom/_render_panel.py"
   },
   "notes": [
-    "16 PNG cells captured via Playwright/Chromium from rendered-html/{null,computed}.html at dark/light × EN/ZH × 1440/390 — 8 null + 8 computed, all unique content-addressed. Both HTML files were produced by invoking the production Jinja2 template with the production builder (SAME path the nightly render takes).",
+    "16 PNG cells captured via Playwright/Chromium from rendered-html/{null,computed}.html at dark/light × EN/ZH × 1440/390 — 8 null + 8 computed, all unique content-addressed. Both HTML files were produced by the committed evidence recipe script invoking the production Jinja2 template and engine.",
     "null state has no terms, no issuer: refusal=no_terms_extracted, terms=[], coverage.issuers_covered=0.",
     "computed state injects the spec R7(a) fixture (CRSR FY 2022-12-31) so the panel shows a real grid: maximum_total_net_leverage_ratio (Limit 3.50x, Reported 2.25x, Room 1.25x) + minimum_interest_coverage_ratio (Limit 3.00x, Reported 5.33x, Room 2.33x) with EDGAR link to accession 0001564590-22-038930 (EX-10.1, filed 2022-12-02).",
     "Spec B1-B4 (definition_differs for the four non-computable terms) and B5 (single-definition law via engine.stock_fundamentals._net_debt) are tested in tests/test_covenant_headroom.py and are exercised by the empty/null path; the fixture only populates the two computable terms so the computed cell shows the spec's exact grid.",

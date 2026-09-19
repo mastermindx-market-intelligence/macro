@@ -25,14 +25,14 @@ Outputs:
   mockups/evidence/b-f09-13-covenant-headroom/rendered-html/
     null.html        — page with no_terms_extracted panel (8 PNG cells)
     computed.html    — page with the (a) fixture rendered through the
-                       SAME template + builder (8 PNG cells)
+                       SAME production template (8 PNG cells)
   mockups/evidence/b-f09-13-covenant-headroom/payloads/
     null.json        — raw payload the template rendered
     computed.json    — raw payload the template rendered
 
 Both HTML files share the same Chrome-rendered body classes, no hidden
 decorative layers, settled animations, opacity 1 (no motion in the
-panel itself). The render is the SAME template + builder the production
+panel itself). The render is the SAME template the production
 page uses — no test-only fixtures or shims.
 """
 from __future__ import annotations
@@ -43,12 +43,11 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+from playwright.sync_api import sync_playwright
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 
-from engine.capital_structure import covenant_terms  # noqa: E402
-import scripts.build_capital_structure_page as builder  # noqa: E402
 
 
 EVIDENCE = Path(__file__).resolve().parent
@@ -73,6 +72,7 @@ def _build_root() -> Path:
     for f in (REPO / "templates").iterdir():
         if f.is_file():
             shutil.copy(f, td / "templates" / f.name)
+            shutil.copy(f, td / "site" / f.name)
     # Empty observations parquet.
     pd.DataFrame({
         "observation_id": [], "logical_observation_id": [],
@@ -111,7 +111,7 @@ def _render(root: Path, covenant_headroom: dict) -> str:
         autoescape=True,
         undefined=StrictUndefined,
     )
-    return env.get_template("capital_structure.html.j2").render(
+    html = env.get_template("capital_structure.html.j2").render(
         active_section="research",
         active_page="capital_structure",
         premium=None,
@@ -119,6 +119,7 @@ def _render(root: Path, covenant_headroom: dict) -> str:
         policy_projection=None,
         covenant_headroom=covenant_headroom,
     )
+    return "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
 
 
 def _fixture_observation() -> dict:
@@ -193,21 +194,67 @@ def _computable_observation() -> dict:
     }
 
 
+def _capture_cells(states: dict[str, Path]) -> None:
+    """Capture the receipt's 16 presentation cells in one browser run."""
+    shot_dir = EVIDENCE / "shots"
+    shot_dir.mkdir(parents=True, exist_ok=True)
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page(viewport={"width": 1440, "height": 900})
+        for state, site_root in states.items():
+            page.goto((site_root / f"{state}.html").resolve().as_uri())
+            page.wait_for_load_state("domcontentloaded")
+            for theme in ("dark", "light"):
+                for language in ("en", "zh"):
+                    for width, height in ((1440, 900), (390, 844)):
+                        page.set_viewport_size({"width": width, "height": height})
+                        page.evaluate(
+                            "([theme, language]) => {"
+                            "window.setTheme(theme);"
+                            "window.setLang(language);"
+                            "}"
+                            ,
+                            [theme, language],
+                        )
+                        actual_theme = page.get_attribute("html", "data-theme")
+                        actual_language = page.get_attribute("html", "data-lang")
+                        if (actual_theme, actual_language) != (theme, language):
+                            raise RuntimeError(
+                                f"presentation state was not applied: "
+                                f"{actual_theme!r}, {actual_language!r}"
+                            )
+                        page.wait_for_selector("#cs-covenant-room", state="visible")
+                        page.wait_for_timeout(150)
+                        locator = page.locator("#cs-covenant-room")
+                        locator.screenshot(
+                            path=str(
+                                shot_dir
+                                / f"{state}.{theme}.{language}.{width}.png"
+                            )
+                        )
+        browser.close()
+
+
 def main() -> int:
-    # ── Null state: empty observations parquet, what the production page
-    #    will render before the producer covers anything.
+    # ── Null state: the closed-set fail-closed refusal the page will render
+    from engine import covenant_headroom as headroom_engine
+    fixed_now = "2026-09-19T01:21:00Z"
+    null_payload = headroom_engine.compute_headroom(
+        [], {}, {}, generated_at="2026-09-13T00:00:00Z",
+        coverage={"covered_manifests": 0, "eligible_exhibits": 2450,
+                  "issuers_covered": 0, "state": "uncovered"},
+    )
+    null_payload["computed_at"] = fixed_now
     root_null = _build_root()
-    null_payload = builder._covenant_headroom(root_null)
     null_html = _render(root_null, null_payload)
     (HTML_DIR / "null.html").write_text(null_html, encoding="utf-8")
+    (root_null / "site" / "null.html").write_text(null_html, encoding="utf-8")
     (PAYLOAD_DIR / "null.json").write_text(
         json.dumps(null_payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 
-    # ── Computed state: inject the spec R7(a) fixture directly into the
-    #    engine via compute_headroom (SAME builder + SAME template).
-    from engine import covenant_headroom as headroom_engine
+    # Computed state: inject the R7(a) fixture into the production engine.
     stmt = {
         "cik": "0001743759",
         "op_income": 60_000_000.0,
@@ -228,9 +275,11 @@ def main() -> int:
                   "issuers_covered": 1, "state": "covered"},
         cik_by_source_manifest_id={"sm-covenant-crsr-ex101-20221202": "0001743759"},
     )
+    computed_payload["computed_at"] = fixed_now
     root_computed = _build_root()
     computed_html = _render(root_computed, computed_payload)
     (HTML_DIR / "computed.html").write_text(computed_html, encoding="utf-8")
+    (root_computed / "site" / "computed.html").write_text(computed_html, encoding="utf-8")
     (PAYLOAD_DIR / "computed.json").write_text(
         json.dumps(computed_payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -240,6 +289,8 @@ def main() -> int:
     print(f"WROTE {HTML_DIR / 'computed.html'}")
     print(f"WROTE {PAYLOAD_DIR / 'null.json'}")
     print(f"WROTE {PAYLOAD_DIR / 'computed.json'}")
+    _capture_cells({"null": root_null / "site", "computed": root_computed / "site"})
+    print("WROTE 16 presentation cells")
     return 0
 
 
