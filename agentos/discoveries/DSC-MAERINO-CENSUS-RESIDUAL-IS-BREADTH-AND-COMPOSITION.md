@@ -48,7 +48,10 @@ verified_by: >
   Brain/Research OS; engine/research_factory/schema.py shows trial/experimental
   candidate types, trial accounting and screening/challenge/review states rather than
   a generic document-investigation lifecycle; engine/marketing/earnings_call_lane.py
-  states that no runtime caller currently wires its enqueue/run entry points.
+  states that no runtime caller currently wires its enqueue/run entry points;
+  real-path /alt_data.html publishes Hugging Face model-download and GitHub
+  developer-adoption tables and current source contains collectors/huggingface.py plus
+  hf_model_momentum.
 scope:
   - macro
   - WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER
