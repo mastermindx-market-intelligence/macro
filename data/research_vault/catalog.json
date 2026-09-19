@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T20:11:50.189332+00:00",
-  "count": 2451,
+  "generated_at": "2026-09-19T20:26:52.127794+00:00",
+  "count": 2452,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1633,6 +1633,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-djmqpfka1hy-0daca9",
+      "title": "LATAM Today September 18, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:17Z",
+      "summary_points": [
+        "Argentina Q2 GDP & Trade Surge: Real GDP rose 2.0% yoy (beat consensus), driven by exports (+13.7% yoy) and primary sectors (mining +16.4%, fishing +44.7%); trade surplus forecast $1.7bn Aug, energy balance $10.6bn boosted by Middle East conflict.",
+        "Mexico Q2 Growth & Q3 Risk: Q2 GDP expanded 1.42% qoq sa on domestic demand (consumption +0.9%, investment +4.3%); Q3 outlook weakened by soft business confidence, credit cycle peak, and USMCA trade policy uncertainty.",
+        "Inflation & Policy Rate Shift: LA-IT5 inflation eased to 4.9% (Dec-26) from 10.2% (Jun-22); policy rate declined sharply from 11.45% (Apr-23) to 8.25% (Dec-26), signaling easing monetary policy critical for duration positioning.",
+        "Consensus Rate Expectation: Goldman Sachs aligns with 8.25% policy rate by Dec-26, confirming market expectation of sustained rate decline for yield curve and duration strategy adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
