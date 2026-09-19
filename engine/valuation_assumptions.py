@@ -1,6 +1,7 @@
 """User-adjustable valuation assumptions (B-F07-2).
 
-No network and no clock. Reads a valuation_scenario.v1 blob and emits
+No network and no clock. Reads a valuation_scenario.v1 blob and the local
+issuer event spines through their existing readers, then emits
 valuation_scenario_controls.v1 for the sandbox panel. The three V1 server
 cards stay the authority; this module only names the three free parameters
 and evaluates the same closed-form per-share identity at caller-supplied
@@ -26,8 +27,8 @@ from __future__ import annotations
 
 import logging
 import math
-from pathlib import Path
 from importlib import import_module
+from pathlib import Path
 
 from engine import valuation_event_bridge as _veb
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
@@ -50,30 +51,38 @@ _MARGIN_BASE_FLOOR = 0.01
 # without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
 # verbatim copy, not MISSING_LABELS["margin_too_thin"].
 _V1_MISSING_LABELS = MISSING_LABELS
-_ISSUER_SPINE_EVENTS_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "data"
-    / "chronicle"
-    / "events.jsonl"
-)
 
 
-def _load_events_jsonl(path: Path) -> list[dict]:
-    return import_module("engine.chronicle.spine").load_events_jsonl(path)
+def latest_issuer_spine_event_class(ticker: object) -> str | None:
+    """Read the latest non-null issuer class from the existing local spines.
 
-
-def latest_issuer_spine_event_class(
-    ticker: object,
-    issuer_spine_path: Path | None = None,
-) -> str | None:
-    """Return the issuer's latest classified issuer-spine subtype."""
+    Chronicle's JSONL and the SEC compiler's validated Parquet ledger retain
+    their own path and schema ownership. No caller-injected event class, CWD
+    lookup, policy event, or unclassified prospectus can populate the line.
+    """
     if not isinstance(ticker, str) or not ticker.strip():
         return None
     wanted = ticker.strip().upper()
-    path = issuer_spine_path or _ISSUER_SPINE_EVENTS_PATH
-    if not path.exists():
-        return None
-    events = _load_events_jsonl(path)
+    spine = import_module("engine.chronicle.spine")
+    compiler = import_module("scripts.compile_capital_structure_events")
+    events = spine.load_events_jsonl(
+        Path(spine.__file__).resolve().parents[2] / spine.EVENTS_REL
+    )
+    capital_path = compiler._data_root() / "event_versions.parquet"
+    if capital_path.exists():
+        import pandas as pd
+
+        frame = pd.read_parquet(capital_path)
+        issuer_rows = frame.loc[frame["ticker"].fillna("").str.upper() == wanted]
+        for event in compiler._load_existing_events(issuer_rows):
+            if (event.get("classification") or {}).get("state") != "classified":
+                continue
+            events.append({
+                "id": event["event_id"],
+                "tickers": [event["issuer"]["ticker"]],
+                "kind": event["event"]["subtype"],
+                "ts": event["point_in_time"]["available_at"],
+            })
     latest_key = None
     latest_event = None
     for event in events:
@@ -84,7 +93,7 @@ def latest_issuer_spine_event_class(
             str(ticker).strip().upper() for ticker in tickers
         }:
             continue
-        event_class = str(event.get("kind") or event.get("source") or "").strip()
+        event_class = str(event.get("kind") or "").strip()
         if not event_class or _veb.bridge_for_issuer(event_class) is None:
             continue
         available = event.get("ts") or event.get("date")
@@ -96,7 +105,7 @@ def latest_issuer_spine_event_class(
             latest_event = event
     if latest_event is None:
         return None
-    return str(latest_event.get("kind") or latest_event.get("source") or "").strip() or None
+    return str(latest_event["kind"]).strip()
 
 
 def _issuer_event_class(v1_blob: dict) -> str | None:

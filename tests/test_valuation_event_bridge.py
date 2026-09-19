@@ -11,7 +11,8 @@ import json
 import ast
 from pathlib import Path
 import re
-import pandas as pd
+import pytest
+from importlib import import_module
 
 import jinja2
 
@@ -23,6 +24,17 @@ from engine import i18n as i18n
 from tests.test_valuation_scenario import _rows
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+@pytest.fixture(autouse=True)
+def issuer_spines(tmp_path, monkeypatch):
+    """Use the owners' paths, with no dependency on live issuer coverage."""
+    chronicle = import_module("engine.chronicle.spine")
+    compiler = import_module("scripts.compile_capital_structure_events")
+    path = tmp_path / "events.jsonl"
+    monkeypatch.setattr(chronicle, "EVENTS_REL", path)
+    monkeypatch.setattr(compiler, "_data_root", lambda: tmp_path)
+    return path
 
 # ---------------------------------------------------------------------------
 # Closed-map invariant — every entry must satisfy the target/direction shape.
@@ -81,9 +93,7 @@ def test_vocab_closure():
         for form in spine_forms
         for items in (None, *sorted(route_tokens))
     }
-    expected = set(MATURE_CATEGORIES) | spine_subtypes | {
-        "tender_offer", "earnings", "signal_close"
-    }
+    expected = set(MATURE_CATEGORIES) | spine_subtypes
     assert set(veb.classified_event_domain()) == expected
 
 
@@ -335,11 +345,16 @@ def test_panel_renders_every_member_without_machine_slugs():
     slug_pattern = re.compile(r"\b[a-z]+(?:_[a-z_]+)+\b")
     for cls in veb.classified_event_domain():
         bridge = veb.bridge(cls)
-        if bridge is None:
-            assert cls in veb._EVENT_CLASS_NAMES
-            continue
         controls["latest_event_bridge"] = bridge
         html = _render(controls)
+        event_line = re.search(r'<p[^>]*id="va-event-bridge"[^>]*>(.*?)</p>', html, re.DOTALL)[1]
+        sentence = " ".join(re.sub(r"<[^>]+>", "", event_line).split())
+        assert slug_pattern.search(sentence) is None
+        if bridge is None:
+            assert cls in veb._EVENT_CLASS_NAMES
+            assert "No filing on file yet for this company." in sentence
+            assert "该公司暂无备案。" in sentence
+            continue
         assert slug_pattern.search(bridge["event_class_en"]) is None
         assert slug_pattern.search(bridge["event_class_zh"]) is None
         assert bridge["event_class_en"] in " ".join(html.split())
@@ -433,10 +448,10 @@ def test_panel_does_not_inject_style_or_store_anything_from_bridge_line():
 
 # ---------------------------------------------------------------------------
 # Producer test — controls_blob populates latest_event_bridge from the
-# v1_blob's special_situation field (MAJOR-3).
+# existing spine readers, using the same controls_blob(v1) call as the builder.
 # ---------------------------------------------------------------------------
 
-def test_controls_blob_populates_latest_event_bridge_from_spine(tmp_path, monkeypatch):
+def test_controls_blob_populates_latest_event_bridge_from_spine(issuer_spines):
     """The production controls call reads the canonical issuer event spine."""
     v1 = vs.compute(_rows(), ticker="AAPL")
     assert v1 is not None
@@ -444,15 +459,15 @@ def test_controls_blob_populates_latest_event_bridge_from_spine(tmp_path, monkey
 
     spine_events = [
             {
-                "id": "old-prospectus",
+                "id": "newer-prospectus",
                 "tickers": ["aapl"],
-                "kind": "prospectus_event",
-                "ts": "2026-01-01T00:00:00Z",
+                "kind": event_spine.route_form("424B5").subtype,
+                "ts": "2026-03-01T00:00:00Z",
             },
             {
                 "id": "new-tender-offer",
                 "tickers": ["AAPL"],
-                "kind": "tender_offer",
+                "kind": "Tender Offers",
                 "ts": "2026-02-01T00:00:00Z",
             },
             {
@@ -462,24 +477,59 @@ def test_controls_blob_populates_latest_event_bridge_from_spine(tmp_path, monkey
                 "ts": "2026-03-01T00:00:00Z",
             },
     ]
-    spine_path = tmp_path / "events.jsonl"
-    spine_path.write_text(
+    issuer_spines.write_text(
         "".join(json.dumps(event, sort_keys=True) + "\n" for event in spine_events),
         encoding="utf-8",
     )
 
-    monkeypatch.setattr(va, "_ISSUER_SPINE_EVENTS_PATH", spine_path)
     controls = va.controls_blob(v1)
     assert controls is not None
     bridge = controls["latest_event_bridge"]
     assert bridge is not None
-    assert bridge["event_class"] == "tender_offer"
+    assert bridge["event_class"] == "Tender Offers"
     assert bridge["target"] == "multiple"
-    monkeypatch.setattr(
-        va, "_ISSUER_SPINE_EVENTS_PATH", spine_path.with_name("missing.jsonl")
+    html = " ".join(_render(controls).split())
+    assert "Latest filing on file (Tender Offers)" in html
+    assert "最新备案（要约收购）" in html
+    assert "No filing on file yet" not in html
+    assert "special_situation" not in v1
+
+
+def test_controls_blob_reads_validated_capital_spine(issuer_spines):
+    """The production Parquet reader supplies real SEC event subtypes."""
+    compiler = import_module("scripts.compile_capital_structure_events")
+    from tests.test_capital_structure_event_spine import _observation, _span
+
+    events = [
+        event_spine.build_event_version(_observation(ticker="AAPL"), [_span()]),
+        event_spine.build_event_version(
+            _observation(
+                ticker="AAPL", form="424B5", accession="0000000001-26-000002",
+                accepted_at="2026-08-02T10:00:00Z",
+                first_seen_at="2026-08-02T10:00:03Z",
+            ), [_span()],
+        ),
+    ]
+    compiler._event_frame(events).to_parquet(
+        issuer_spines.parent / "event_versions.parquet", index=False
     )
-    controls = va.controls_blob(v1)
-    assert controls is not None and controls["latest_event_bridge"] is None
+    controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"))
+    assert controls["latest_event_bridge"]["event_class"] == "registration_statement"
+    assert "Latest filing on file (Registration Statement)" in " ".join(_render(controls).split())
+
+
+def test_controls_blob_ignores_nonfilings_and_selects_latest_classified(issuer_spines):
+    events = [
+        {"id": "old", "tickers": ["AAPL"], "kind": "Tender Offers", "ts": "2026-01-01T00:00:00Z"},
+        {"id": "latest", "tickers": ["aapl"], "kind": "Restructuring", "ts": "2026-02-01T00:00:00Z"},
+        {"id": "policy", "tickers": ["AAPL"], "kind": "final_rule", "ts": "2026-03-01T00:00:00Z"},
+        {"id": "earnings", "tickers": ["AAPL"], "kind": "earnings", "ts": "2026-04-01T00:00:00Z"},
+    ]
+    issuer_spines.write_text("\n".join(json.dumps(e) for e in reversed(events)))
+    controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"))
+    assert controls["latest_event_bridge"]["event_class"] == "Restructuring"
+    issuer_spines.write_text("\n".join(json.dumps(e) for e in events[2:]))
+    assert va.controls_blob(vs.compute(_rows(), ticker="AAPL"))["latest_event_bridge"] is None
 
 
 # ---------------------------------------------------------------------------

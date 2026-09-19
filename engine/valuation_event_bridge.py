@@ -45,7 +45,6 @@ _EVENT_CLASS_NAMES: dict[str, tuple[str, str]] = {
     "Activist Campaigns":        ("Activist Campaigns",  "维权行动"),
     "Strategic Reviews":         ("Strategic Reviews",   "战略评估"),
     "Tender Offers":             ("Tender Offers",       "要约收购"),
-    "tender_offer":              ("Tender offer",        "要约收购"),
     "Going-Private":             ("Going-Private",       "私有化"),
     "Capital Returns":            ("Capital Returns",      "资本回报"),
     "Spin-Offs":                 ("Spin-Offs",           "分拆上市"),
@@ -58,12 +57,6 @@ _EVENT_CLASS_NAMES: dict[str, tuple[str, str]] = {
     "SPACs":                    ("SPACs",               "特殊目的收购公司"),
     "Management Changes":         ("Management Changes",   "管理层变更"),
     "Other":                     ("Other",               "其他"),
-    "earnings":                  ("Earnings",             "财报"),
-    "signal_close":              ("Signal close",         "信号关闭"),
-    "risk_band":                 ("Risk band",            "风险区间"),
-    "report":                    ("Report",               "报告"),
-    "state_flip":                ("State flip",           "状态切换"),
-    "print":                     ("Print",                "打印"),
     # SEC event-spine subtypes — ZH is the official display name; EN verbatim
     # only where no ZH translation has been established by the desk.
     "registration_statement":           ("Registration Statement",               "登记说明书"),
@@ -193,12 +186,6 @@ SPECIAL_SITUATIONS_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     "Capital Returns":   (GROWTH,   *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
     # "Other" is the catch-all bucket — no clear directional read.
     "Other":              None,
-    "earnings":           None,
-    "signal_close":       None,
-    "risk_band":          None,
-    "report":             None,
-    "state_flip":         None,
-    "print":              None,
 }
 
 # ---------------------------------------------------------------------------
@@ -213,9 +200,6 @@ EVENT_SPINE_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     "registration_statement":          (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
     "automatic_shelf_registration":   (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
     "registration_amendment":         (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
-    "offering_statement":             (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
-    "offering_statement_amendment":   (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
-    "tender_offer":                   (MULTIPLE, *_direction_words(_EN_LIFTS, _ZH_LIFTS,   MULTIPLE)),
     # Post-effective amendments and withdrawals return capital — no growth press.
     "post_effective_amendment":       (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
     "automatic_shelf_withdrawal":     (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),

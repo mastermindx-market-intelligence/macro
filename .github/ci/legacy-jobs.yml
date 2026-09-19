@@ -1280,7 +1280,6 @@ jobs:
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
-      - "engine/**"
       - "collectors/federal_register.py"
       - "engine/activist.py"
       - "engine/capital_structure/event_spine.py"
@@ -1288,6 +1287,13 @@ jobs:
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/source_identity.py"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_projection.schema.json"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "templates/_valuation_scenario.html.j2"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
