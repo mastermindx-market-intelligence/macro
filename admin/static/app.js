@@ -41,11 +41,7 @@ const API_CACHE_BYPASS = new Set([
    a tab they were just on paid for the whole fold again. The genuinely live number
    on that screen (the "N active" pill) is /fp/realtime, and it stays on BYPASS
    above, so nothing the operator watches for freshness is cached at all. */
-const API_CACHE_TTL_OVERRIDES = [
-  [/^\/api\/intelligence_os(?:\/|$)/, 300000],
-  [/^\/api\/metabolism(?:\/|$)/, 60000],
-  [/^\/api\/analytics\/fp\//, 60000],
-];
+const API_CACHE_TTL_OVERRIDES = [[/^\/api\/analytics\/fp\//, 60000]];
 
 function apiCacheTtl(path) {
   const pathname = String(path || "").split("?", 1)[0];
@@ -154,8 +150,7 @@ function describeNonJson(r, raw) {
   const ctype = (r.headers.get("content-type") || "").split(";")[0].trim() || "no content-type";
   const status = `HTTP ${r.status}${r.statusText ? " " + r.statusText : ""}`;
   if (!raw) {
-    return `${status} — empty response. The admin service closed the connection without ` +
-           `answering (on the VPS: systemctl status admin, journalctl -u admin -n 50).`;
+    return `${status} — empty response from the admin service. Retry; if it persists, check service health.`;
   }
   const head = raw.replace(/\s+/g, " ").trim().slice(0, 180);
   if (/^\s*<(?:!doctype|html|\?xml)/i.test(raw)) {
@@ -673,6 +668,13 @@ async function refreshSupportNavDot() {
 }
 function setTopbarTitle(t) { const el = $("#topbar-title"); if (el) el.textContent = t; }
 
+function resetNavSearch() {
+  const input = $("#navSearch");
+  if (!input || !input.value) return;
+  input.value = "";
+  input.dispatchEvent(new Event("input"));
+}
+
 function setSidebarOpen(open) {
   const sidebar = $("#sidebar"), scrim = $("#sidebarScrim"), toggle = $("#sidebarToggle");
   if (!sidebar || !scrim || !toggle) return;
@@ -699,6 +701,7 @@ function go(id) {
   hideLobeTip();
   setActiveNav(id);
   setTopbarTitle(TAB_LABELS[id] || id);
+  resetNavSearch();
   if (window.matchMedia("(max-width: 900px)").matches) setSidebarOpen(false);
   RENDER[id]();
 }
@@ -830,13 +833,20 @@ function renderControlRoom() {
   const view = $("#view");
   view.innerHTML = "";
   const shell = h('<div class="control-room-frame-shell"></div>');
+  const status = h('<div class="control-room-load" role="status">Opening Control Room…</div>');
   const frame = document.createElement("iframe");
   frame.className = "control-room-frame";
   frame.src = CONTROL_ROOM_URL;
   frame.title = "Chairman Control Room";
   frame.referrerPolicy = "no-referrer";
+  frame.addEventListener("load", () => status.remove(), { once: true });
+  shell.appendChild(status);
   shell.appendChild(frame);
   view.appendChild(shell);
+  window.setTimeout(() => {
+    if (!status.isConnected || CURRENT !== "control_room") return;
+    status.innerHTML = `Control Room is taking longer than expected. <a href="${esc(CONTROL_ROOM_URL)}" target="_blank" rel="noopener">Open directly ↗</a>`;
+  }, 6000);
 }
 
 RENDER.control_room = renderControlRoom;
@@ -1201,7 +1211,7 @@ RENDER.research_tools = () => {
       </section>
 
       <section class="rt-section" aria-labelledby="rt-methods-heading">
-        <h2 id="rt-methods-heading">Proprietary methods</h2>
+        <h2 id="rt-methods-heading">Methods</h2>
         <div class="rt-grid">
           <a class="rt-card rt-card-signal" href="https://admin.mastermind-x.com/research-tools/signal_lab.html" target="_blank" rel="noopener">
             <span class="rt-icon">
@@ -1688,7 +1698,7 @@ RENDER.vector = async () => {
   const d5Banner = re && re.pre_window_mvrv_fire ? `
     <div class="card" style="border-color:var(--warn);margin-bottom:10px">
       <div class="big" style="color:var(--warn)">ALERT — an early "cheap Bitcoin" signal fired ${esc(re.pre_window_mvrv_fire)}</div>
-      <div class="sub">This happened before the planned buy-back window opens (${esc(re.window_start || "?")}). It's a heads-up only — nothing is bought early; the position stays 100% in cash until the scheduled dates. This early signal is still only being tracked, not acted on.</div>
+      <div class="sub">Early signal only. The position stays in cash until the planned buy-back window opens (${esc(re.window_start || "?")}).</div>
     </div>` : "";
   const reSection = re ? `
     <div class="section">Planned buy-back schedule</div>
@@ -1708,17 +1718,18 @@ RENDER.vector = async () => {
       <div class="note mono muted">as of ${esc(re.asof || "?")} · to pause buy-backs, edit the halt switch in config (this page only shows numbers)</div>
     </div>` : "";
   v.innerHTML = `
-    <div class="sub" style="margin-bottom:10px">Your private view of the Bitcoin allocation override. Subscribers only see a "Proprietary cycle timer" label — this page shows the full honest picture behind it: the numbers both for and against the call. Read-only (no buttons to act on here).${d.stub ? ` <span class="statpill s-warn">placeholder data — will be replaced with measured results</span>` : ""}</div>
+    <div class="sub" style="margin-bottom:10px">Read-only view of the Bitcoin allocation override, its counterfactual, and the evidence behind it.${d.stub ? ` <span class="statpill s-warn">placeholder data</span>` : ""}</div>
     ${d5Banner}
     <div class="grid">
       ${card("Override status", `<div class="big" style="color:${o.active ? "var(--warn)" : "var(--ok)"}">${o.active ? "ACTIVE" : "off"}</div>
         <div class="sub">${esc(o.id || "?")} · ${o.active ? `unlocks ${esc(o.release || "?")}` : "not engaged"} · <b>${o.graded ? "scored" : "never scored yet"}</b></div>
         <div class="note">${esc(o.status || "")}</div>`)}
       ${card("Model vs. what we allow", `<div class="big">${rawOpt == null ? "—" : rawOpt + "%"}<span class="sub"> vs ${gatedOpt == null ? "—" : gatedOpt + "%"}</span></div>
-        <div class="sub">what the model would hold vs what we actually allow · this year the model averaged ${cf.ytd_raw_mean_pct == null ? "—" : cf.ytd_raw_mean_pct + "%"} · it wanted more than 0% on ${cf.ytd_raw_days_gt0 ?? "—"} of ${cf.ytd_days ?? "—"} days</div>
-        <div class="note">${esc(cf.raw_source || "")}${cf.parity_ok === false ? ' · <b style="color:var(--bad)">MISMATCH — this recalculation no longer matches the live model</b>' : ""}</div>`)}
+        <div class="sub">Model target vs allowed position · YTD model average ${cf.ytd_raw_mean_pct == null ? "—" : cf.ytd_raw_mean_pct + "%"} · non-zero on ${cf.ytd_raw_days_gt0 ?? "—"}/${cf.ytd_days ?? "—"} days</div>
+        ${cf.parity_ok === false ? '<div class="note" style="color:var(--bad)"><b>Model parity mismatch</b></div>' : ""}
+        ${cf.raw_source ? `<details class="tech-details"><summary>Source</summary>${esc(cf.raw_source)}</details>` : ""}`)}
       ${card("Warning signs", `<div class="big" style="color:${fl.evaluable === fl.total ? "var(--ok)" : "var(--warn)"}">${esc(fl.headline || "—")}</div>
-        <div class="sub">${(fl.items || []).filter(i => i.level !== "ok").length ? (fl.items || []).filter(i => i.level !== "ok").length + " warning(s) active" : "all clear"} — but a warning sign that can't actually trigger tells you nothing</div>`)}
+        <div class="sub">${(fl.items || []).filter(i => i.level !== "ok").length ? (fl.items || []).filter(i => i.level !== "ok").length + " active" : "none active"} · ${fl.evaluable ?? 0}/${fl.total ?? 0} evaluable</div>`)}
       ${card("Evidence behind the call", `<div class="big">${pv.basis_n ?? "?"} cases</div>
         <div class="sub">confidence trimmed by ${esc(damp || "—")} · timing fit ±${pv.pivot_fit_mae_days ?? "—"} days <b>(fitted on past data)</b></div>`)}
     </div>
@@ -1908,7 +1919,7 @@ async function anUmamiStrip() {
   try {
     const st = await api("/api/analytics");
     const dash = (st && st.dashboard_url) || "https://cloud.umami.is";
-    if (!st.configured) { c.innerHTML = `<div class="sub">Umami tag live on every page; the granular API needs a paid plan. GA4 is GFW-blocked for China. <a href="${esc(dash)}" target="_blank" rel="noopener">Open Umami ↗</a></div>`; return; }
+    if (!st.configured) { c.innerHTML = `<div class="sub">Traffic tracking is active. Detailed analytics need Umami API access. <a href="${esc(dash)}" target="_blank" rel="noopener">Open Umami ↗</a></div>`; return; }
     const rep = await api("/api/analytics/report?days=7");
     c.innerHTML = rep.ok
       ? `<div class="sub">Umami (7d): <b>${fmtNum(rep.summary.visitors)}</b> visitors · <b>${fmtNum(rep.summary.pageviews)}</b> pageviews · <a href="${esc(dash)}" target="_blank" rel="noopener">dashboard ↗</a></div>`
@@ -2052,7 +2063,7 @@ function anVisitorsTable(rows, q, tz) {
 }
 AN_RENDER.sessions = async () => {
   const b = $("#anBody");
-  b.innerHTML = `<div class="section">Recent sessions <span class="sub">— one row per VISIT: who (visitor id), their IP + location. The tracker's session id is per browser tab and per origin, so a macro → Terminal → macro sitting used to file three rows; here anything under 30 minutes apart from the same person is stitched into one, and the Site column shows the trip. Click replay to see the exact path.</span></div>
+  b.innerHTML = `<div class="section">Recent sessions <span class="sub">— grouped into visits; replay shows the full path.</span></div>
     ${anTableBar("sessions")}
     <div id="anTbl"><div class="spin">loading…</div></div>`;
   anWireTableBar("sessions");
@@ -2060,7 +2071,7 @@ AN_RENDER.sessions = async () => {
 };
 AN_RENDER.visitors = async () => {
   const b = $("#anBody");
-  b.innerHTML = `<div class="section">Frequent visitors <span class="sub">— one profile per person. Signed-in users are shown by name when available (otherwise email), with every device/cookie merged into one; anonymous visitors keep their cookie id. Visits are counted on the same 30-minute stitching rule as the Sessions tab, so the two agree. Most visits first — click to open full history + tickers searched.</span></div>
+  b.innerHTML = `<div class="section">Frequent visitors <span class="sub">— most visits first; open a profile for history and ticker activity.</span></div>
     ${anTableBar("visitors")}
     <div id="anTbl"><div class="spin">loading…</div></div>`;
   anWireTableBar("visitors");
@@ -2228,7 +2239,7 @@ RENDER.users = async () => {
     <div class="section">Recent users <span class="cnt" id="uCnt"></span></div>
     <div id="uTbl"><div class="spin">loading…</div></div>
     <div class="section" style="margin-top:22px">Subscribers &amp; entitlements <span class="cnt" id="entCnt"></span>
-      <span class="sub">— manage tier, trials, and comp passes (writes user_entitlements)</span></div>
+      <span class="sub">— manage tiers, trials, and access passes</span></div>
     <div id="entSummary"></div>
     <div class="ent-toolbar">
       <div id="entChips" class="ent-chips"></div>
@@ -2407,7 +2418,7 @@ function entMenu(i, btn) {
   if (!u) return;
   const live = !!u.stripe_customer_id;
   const stripeWarn = live
-    ? `<div class="ent-warn">This user has a Stripe customer id. If they hold a LIVE subscription, comp actions are blocked unless you also cancel their paid sub — the nightly reconciler would otherwise revert the comp.</div>`
+    ? `<div class="ent-warn">This user is linked to Stripe. Complimentary access may conflict with an active paid subscription.</div>`
     : "";
   entModal(`<div class="ent-dialog-head">
       <div><div class="ent-dialog-title">${esc(u.name || u.email || u.user_id)}</div>
@@ -2429,8 +2440,8 @@ function entMenu(i, btn) {
 /* Shared force/cancel checkboxes shown for stripe-linked users. */
 function _entForceBox(u) {
   if (!u.stripe_customer_id) return "";
-  return `<label class="ent-check"><input type="checkbox" id="entForce"> force over a live Stripe subscription</label>
-    <label class="ent-check"><input type="checkbox" id="entCancel"> cancel their paid Stripe subscription first (required with force)</label>`;
+  return `<label class="ent-check"><input type="checkbox" id="entForce"> Override paid-subscription protection</label>
+    <label class="ent-check"><input type="checkbox" id="entCancel"> Cancel the paid subscription first</label>`;
 }
 function _entForceParams() {
   const f = $("#entForce"), c = $("#entCancel");
@@ -2458,14 +2469,14 @@ function entChangeTier(i) {
       ${_entForceBox(u)}
       <div class="ent-form-actions">
         <button class="ent-act" onclick="entCloseModal()">Cancel</button>
-        <button class="ent-act ent-primary" onclick="entChangeTierGo(${i})">Apply comp</button>
+        <button class="ent-act ent-primary" onclick="entChangeTierGo(${i})">Apply access</button>
       </div>
     </div>`);
 }
 async function entChangeTierGo(i) {
   const u = ENT.rows[i];
   const tier = $("#entTier").value;
-  if (!confirm(`Write a comp entitlement setting ${entIdentity(u)} to tier "${tier}"?`)) return;
+  if (!confirm(`Set ${entIdentity(u)} to the ${tier} tier?`)) return;
   await _entPost({ user_id: u.user_id, action: "change_tier", params: { tier, ..._entForceParams() } },
     `tier → ${tier}`);
 }
@@ -2481,7 +2492,7 @@ function entTrial(i, mode) {
       <button class="ent-x" onclick="entCloseModal()">✕</button></div>
     <div class="ent-form">
       <label>Extend by (days)<input id="entDays" type="number" min="1" max="365" value="7"></label>
-      <div class="ent-dialog-sub">On a live Stripe trial this calls Stripe (Subscription.modify, no proration). Otherwise it writes a trialing comp window.</div>
+      <div class="ent-dialog-sub">Extends the current trial. Stripe-backed trials update in Stripe; complimentary trials update here.</div>
       <div class="ent-form-actions">
         <button class="ent-act" onclick="entCloseModal()">Cancel</button>
         <button class="ent-act ent-primary" onclick="entExtendGo(${i})">Extend</button>
@@ -2551,10 +2562,10 @@ async function revLoad(force) {
   if (!body) return;
   const d = await api("/api/revenue" + (force ? "?force=1" : ""));
   if (!d.ok) {
-    body.innerHTML = `<div class="card"><h3>Revenue — not connected</h3>
-      <div class="sub">${esc(d.error === "stripe not configured"
-        ? "Stripe is not configured on this server (STRIPE_SECRET_KEY unset). Revenue analytics read live from Stripe; set the key in /etc/macro-api.env to enable this panel."
-        : (d.error || d.reason || "could not load"))}</div></div>`;
+    const detail = d.error === "stripe not configured"
+      ? `Connect Stripe to load live revenue.<details class="tech-details"><summary>Technical details</summary>Set <code>STRIPE_SECRET_KEY</code> in <code>/etc/macro-api.env</code>.</details>`
+      : esc(d.error || d.reason || "could not load");
+    body.innerHTML = `<div class="card"><h3>Revenue unavailable</h3><div class="sub">${detail}</div></div>`;
     return;
   }
 
@@ -2675,20 +2686,21 @@ RENDER.system = async () => {
         ${swap ? meter("Swap", swap.used_pct, fmtBytes(swap.used) + " / " + fmtBytes(swap.total)) : ""}
         ${meter("Disk", disk.used_pct, fmtBytes(disk.used) + " / " + fmtBytes(disk.total))}
         <div class="sub">running for ${up} · load 5m/15m ${cpu.load5 != null ? cpu.load5.toFixed(2) : "—"} / ${cpu.load15 != null ? cpu.load15.toFixed(2) : "—"}</div>
-        ` : `<div class="sub">Server stats are only available when this console is running on the server itself.</div>`}
+        ` : `<div class="sub">Server metrics are unavailable from this host.</div>`}
       </div>
       <div class="card"><h3>Site uptime</h3><div id="upBoard"><button class="btn" id="upBtn">Check all sites are up</button></div></div>
     </div>
-    <div class="section">Background services <span class="cnt">${sv.available ? sv.ok_count + "/" + sv.total + " up" : "server only"}</span></div>
+    <div class="section">Background services <span class="cnt">${sv.available ? sv.ok_count + "/" + sv.total + " running" : "unavailable"}</span></div>
     <div id="svcs"></div>`;
   const svcs = $("#svcs");
-  if (!sv.available) svcs.innerHTML = `<div class="card sub">${esc(sv.reason || "systemctl unavailable")}</div>`;
+  if (!sv.available) svcs.innerHTML = `<div class="card sub">Service status is unavailable from this host.${sv.reason ? `<details class="tech-details"><summary>Technical details</summary>${esc(sv.reason)}</details>` : ""}</div>`;
   else (sv.services || []).forEach(s => {
     const led = s.ok ? "ok" : (s.active === "activating" ? "warn" : "bad");
-    const mem = s.memory != null ? " · " + fmtBytes(s.memory) : "";
+    const serviceMem = s.memory != null ? " · " + fmtBytes(s.memory) : "";
+    const stateWord = s.ok ? "running" : s.active === "activating" ? "starting" : String(s.active || "unknown").replace(/_/g, " ");
     svcs.appendChild(h(`<div class="svc"><span class="led ${led}" style="width:10px;height:10px;border-radius:50%;flex:none"></span>
-      <div><div class="nm">${esc(s.label)}</div><div class="meta mono">${esc(s.unit)} — ${esc(s.active || "?")}/${esc(s.sub || "")}${mem}${s.restarts ? " · " + s.restarts + " restarts" : ""}</div></div>
-      <span class="spacer"></span><span class="statpill ${s.ok ? "s-ok" : "s-bad"}">${esc(s.active || "?")}</span></div>`));
+      <div><div class="nm">${esc(s.label)}</div><details class="tech-details"><summary>Technical details</summary><span class="mono">${esc(s.unit)} · ${esc(s.active || "?")}/${esc(s.sub || "")}${serviceMem}${s.restarts ? " · " + s.restarts + " restarts" : ""}</span></details></div>
+      <span class="spacer"></span><span class="statpill ${s.ok ? "s-ok" : "s-bad"}">${esc(stateWord)}</span></div>`));
   });
   $("#upBtn").onclick = async () => {
     $("#upBoard").innerHTML = "<span class='muted'>probing…</span>";
@@ -2707,7 +2719,7 @@ RENDER.features = async () => {
   const note = meta.deployed
     ? (writable
         ? `Turning a switch on or off saves it straight to the live site's settings; the change takes effect within a few minutes.`
-        : `Read-only. To change switches from here, a GitHub access token (<code>GH_TOKEN</code>, with Contents-write permission) must be set on the server.`)
+        : `Read-only. Changes are unavailable from this server.<details class="tech-details"><summary>Technical details</summary>Set <code>GH_TOKEN</code> with Contents write permission.</details>`)
     : `Turn features on or off. Changes are saved locally and go live on the next build.`;
   let html = `<div class="sub" style="margin-bottom:12px">${note}</div>`;
   data.order.forEach(cat => { html += `<div class="section">${esc(cat)} <span class="cnt">${data.groups[cat].length}</span></div><div id="g-${cat.replace(/\W/g, "")}"></div>`; });
@@ -2724,7 +2736,7 @@ function flagRow(f, writable) {
     else { cb.checked = !cb.checked; toast(r.error || "toggle failed", true); }
   };
   row.appendChild(sw);
-  row.appendChild(h(`<div><div class="lab">${esc(f.label)} ${f.master ? '<span class="tag master">main switch</span>' : ""} <span class="rowtags"></span></div><div class="note">${esc(f.note)} <code class="muted">${esc(f.path)}</code></div></div>`));
+  row.appendChild(h(`<div><div class="lab">${esc(f.label)} ${f.master ? '<span class="tag master">main switch</span>' : ""} <span class="rowtags"></span></div><div class="note">${esc(f.note)}</div>${f.path ? `<details class="tech-details"><summary>Config key</summary><code>${esc(f.path)}</code></details>` : ""}</div>`));
   refreshRowTags(row, f, f.value === true);
   return row;
 }
@@ -2741,10 +2753,10 @@ RENDER.brief = async () => {
   const mb = d.master_brain, ad = d.ai_desk;
   const intervalSel = (target, cur) => `<select data-int="${target}" data-prev="${cur}">${[1, 2, 3, 4, 5, 6, 7].map(n => `<option value="${n}" ${n === cur ? "selected" : ""}>every ${n} day${n > 1 ? "s" : ""}</option>`).join("")}</select>`;
   v.innerHTML = `
-    ${!d.deepseek_key ? `<div class="banner show" style="position:static">⚠︎ No AI key set (<code>DEEPSEEK_API_KEY</code>) — briefs won't generate even if turned on.</div>` : ""}
+    ${!d.deepseek_key ? `<div class="banner show" style="position:static">AI briefs are unavailable until a provider key is configured.<details class="tech-details"><summary>Technical details</summary>Set <code>DEEPSEEK_API_KEY</code>.</details></div>` : ""}
     <div class="section">AI morning briefs</div>
     <div class="row"><label class="switch"><input type="checkbox" id="mbEn" ${mb.enabled ? "checked" : ""}><span class="slider"></span></label>
-      <div><div class="lab">Generate the morning briefs</div><div class="note">topics: ${(mb.lenses || []).map(esc).join(", ")} · AI model <code>${esc(mb.model || "?")}</code></div></div>
+      <div><div class="lab">Generate morning briefs</div><div class="note">${(mb.lenses || []).map(esc).join(", ")}</div><details class="tech-details"><summary>Model</summary><code>${esc(mb.model || "?")}</code></details></div>
       <span class="spacer"></span>${intervalSel("master_brain", mb.interval_days)}</div>
     <div class="row"><label class="switch"><input type="checkbox" id="mbZh" ${mb.translate_zh ? "checked" : ""}><span class="slider"></span></label>
       <div><div class="lab">Chinese version (中文)</div><div class="note">adds a low-cost AI translation to each brief</div></div></div>
@@ -2756,7 +2768,7 @@ RENDER.brief = async () => {
     </tbody></table>
     <div class="section">AI analyst desk</div>
     <div class="row"><label class="switch"><input type="checkbox" id="adEn" ${ad.enabled ? "checked" : ""}><span class="slider"></span></label>
-      <div><div class="lab">Generate the desk note</div><div class="note">${ad.panel_enabled ? "4-analyst debate panel" : "single analyst"} · last ${ad.age_days == null ? "—" : ad.age_days + "d ago"} · ${ad.theses} calls on record</div></div>
+      <div><div class="lab">Generate analyst desk note</div><div class="note">${ad.panel_enabled ? "Analyst panel" : "Single analyst"} · last ${ad.age_days == null ? "—" : ad.age_days + "d ago"} · ${ad.theses} calls tracked</div></div>
       <span class="spacer"></span>${intervalSel("ai_desk", ad.interval_days)}</div>`;
   const meta = SUMMARY.meta || {};
   const writable = !meta.deployed || (meta.integrations && meta.integrations.github_write);
@@ -2809,7 +2821,7 @@ RENDER.deploy = async () => {
   [["daily.yml", "▶ Rebuild & deploy", "primary"], ["pages.yml", "⟳ Redeploy site only", ""], ["weekly.yml", "↻ Weekly deep build", ""]].forEach(([wf, label, cls]) => {
     const b = h(`<button class="btn ${cls}" style="margin-right:8px">${label}</button>`); b.disabled = !hasTok; b.onclick = () => dispatch(wf); a.appendChild(b);
   });
-  if (!hasTok) a.appendChild(h(`<div class="sub" style="margin-top:8px">The buttons above need a GitHub access token (<code>GH_TOKEN</code>, Actions-write) set on the server. The run history below works without one.</div>`));
+  if (!hasTok) a.appendChild(h(`<div class="sub" style="margin-top:8px">Deploy actions are unavailable; run history is still available.<details class="tech-details"><summary>Technical details</summary>Set <code>GH_TOKEN</code> with Actions write permission.</details></div>`));
   const data = await api("/api/deploy"); const runs = $("#runs");
   if (!data.ok) { runs.innerHTML = `<div class="card sub">Could not load runs: ${esc(data.error || "?")}</div>`; return; }
   runs.innerHTML = `<table><thead><tr><th>Build</th><th>Trigger</th><th>Status</th><th>Branch</th><th>Started</th><th></th></tr></thead><tbody>
@@ -2830,7 +2842,7 @@ RENDER.health = async () => {
       ok: ["s-ok", "ok"], stale: ["s-warn", "out of date"], dead: ["s-bad", "down"],
       failed: ["s-bad", "failed"], error: ["s-bad", "error"], check_failed: ["s-bad", "check failed"],
       not_run: ["s-bad", "didn't run"], blocked: ["s-warn", "blocked"],
-      no_creds: ["s-mut", "needs creds"], empty: ["s-warn", "empty"],
+      no_creds: ["s-mut", "setup needed"], empty: ["s-warn", "empty"],
     };
     const [cls, lbl] = map[s] || ["s-mut", s];
     return `<span class="statpill ${cls}">${esc(lbl)}</span>`;
@@ -2844,11 +2856,11 @@ RENDER.health = async () => {
       src.gated ? `${src.gated} need creds` : "", src.empty ? `${src.empty} empty` : "",
       src.stale ? `${src.stale} out of date` : ""].filter(Boolean).join(" · ") || "all delivering";
   v.innerHTML = `
-    <div class="sub" style="margin-bottom:10px">Health of the nightly data pipeline and each data feed it pulls from.</div>
+    <div class="sub" style="margin-bottom:10px">Nightly data health and feed freshness.</div>
     <div class="grid">
       ${card("Nightly pipeline", `<div class="big" style="color:${verdictColor}">${d.healthy ? "Healthy" : "Attention"}</div><div class="sub">last run ${fmtAge(d.age_hours)} ago · ${esc(reason)}</div>`)}
       ${card("Data feeds", `<div class="big" style="color:${down > 0 ? "var(--bad)" : "var(--text)"}">${src.ok}/${src.total}</div><div class="sub">${esc(feedExtra)}</div>`)}
-      ${card("Auto-paused feeds", `<div class="big" style="color:${d.broad_outage ? "var(--bad)" : "var(--text)"}">${d.breaker_tripped}</div><div class="sub">paused after repeated errors${d.broad_outage ? " · MANY FEEDS DOWN" : ""}</div>`)}
+      ${card("Paused feeds", `<div class="big" style="color:${d.broad_outage ? "var(--bad)" : "var(--text)"}">${d.breaker_tripped}</div><div class="sub">paused after repeated errors${d.broad_outage ? " · many feeds down" : ""}</div>`)}
     </div>
     <div class="section">Dashboard freshness</div>
     <div class="grid">${(d.markets || []).map(m => `<div class="card"><h3>${esc(m.label)}</h3><div class="big" style="font-size:18px">${m.exists ? fmtAge(m.age_hours) + " ago" : "<span style='color:var(--bad)'>missing</span>"}</div><div class="sub">${esc(m.date || "")}${m.age_source === "mtime" ? " <span style='opacity:.55'>(file time)</span>" : ""}</div></div>`).join("")}</div>
@@ -2871,7 +2883,7 @@ RENDER.cost = async () => {
   const barCls = (p) => (Number(p) || 0) >= 40 ? "bad" : (Number(p) || 0) >= 20 ? "warn" : "";
   const pctBar = (p) => `<div class="bar"><i class="${barCls(p)}" style="width:${Math.max(1, Math.min(100, Number(p) || 0))}%"></i></div>`;
   const srcBadge = (s) => {
-    const map = { ledger: ["s-ok", "ledger"], bot: ["s-warn", "bot · VPS"], codex: ["s-mut", "codex"] };
+    const map = { ledger: ["s-ok", "ledger"], bot: ["s-warn", "bot"], codex: ["s-mut", "codex"] };
     const [cls, lbl] = map[s] || ["s-mut", s || "?"];
     return `<span class="statpill ${cls}" style="font-size:10px">${esc(lbl)}</span>`;
   };
@@ -2882,7 +2894,7 @@ RENDER.cost = async () => {
   };
 
   if (!u) {
-    v.innerHTML = `<div class="section">AI Cost</div><div class="card sub muted">Unified cost model unavailable — no usage ledger yet. Rows land in data/ai_costs/usage.jsonl as lanes record calls.</div>`;
+    v.innerHTML = `<div class="section">AI Cost</div><div class="card sub muted">No measured AI usage is available yet.<details class="tech-details"><summary>Technical details</summary>Usage is read from <code>data/ai_costs/usage.jsonl</code>.</details></div>`;
     return;
   }
 
@@ -2890,7 +2902,7 @@ RENDER.cost = async () => {
 
   // ── (a) headline spend ──
   const headHtml = `
-    <div class="sub" style="margin-bottom:10px">Every measured AI call across all lobes — unified from the usage ledger, the Mastermind bot, and Codex. Percentages are each lobe's share of spend, so a lobe that has become too heavy a burden stands out and you can decide whether to throttle it.</div>
+    <div class="sub" style="margin-bottom:10px">Measured AI spend and usage, ranked so the largest cost centers stand out.</div>
     <div class="grid">
       ${card("30-day spend · all sources", `<div class="big">${fmtUSD(T.usd)}</div><div class="sub">${fmtTokens(T.tokens)} tokens · ${T.calls || 0} calls</div>`)}
       ${card("Subscription-equivalent", `<div class="big">${fmtUSD(T.subscription_usd)}</div><div class="sub">OAuth / CLI flat-fee value — not billed</div>`)}
@@ -2928,7 +2940,7 @@ RENDER.cost = async () => {
     </details>`;
   }).join("");
   const lobeHtml = `<div class="section">Cost by lobe <span class="cnt">${lobes.length}</span></div>
-    <div class="card sub muted" style="margin-bottom:8px">Ranked by 30-day cost. Bar = share of total spend (amber ≥20%, red ≥40%). Click a lobe to expand its engines / lanes. A lobe can rank high in <b>tokens</b> yet low in <b>cost</b> when it runs a cheap model (e.g. DeepSeek) — watch the $ column for burden.</div>
+    <div class="sub" style="margin-bottom:8px">Ranked by 30-day spend. Expand a row for lane detail.</div>
     ${lobeRows || `<div class="card sub muted">No measured spend yet.</div>`}`;
 
   // ── (c) tracking coverage ──
@@ -2973,10 +2985,10 @@ RENDER.cost = async () => {
   }
 
   // ── (g) raw key usage (async-loaded below) — preserved ──
-  const rawKeySection = `<div class="section">Raw key usage (rate-limit headers)</div>
-    <div class="card sub muted" style="margin-bottom:8px">
-      Shared fallback translation: Claude Opus/Fable → Codex Sol · Sonnet → Terra · Haiku → Luna · DeepSeek V4 Pro → Sol · V4 Flash → Terra.
-    </div>
+  const rawKeySection = `<div class="section">Rate-limit usage</div>
+    <details class="tech-details" style="margin-bottom:8px"><summary>Fallback mapping</summary>
+      Claude Opus/Fable → Codex Sol · Sonnet → Terra · Haiku → Luna · DeepSeek V4 Pro → Sol · V4 Flash → Terra.
+    </details>
     <div class="card" id="costKeysCard"><div class="sub muted">Loading…</div></div>`;
 
   // ── (h) legacy forward estimate — collapsed ──
@@ -3073,7 +3085,7 @@ RENDER.cost = async () => {
       </tr>`;
     }).join("")}
     </tbody></table>
-    <div class="sub muted" style="margin-top:8px">est. = locally-observed rolling window estimate · reported = provider response quota/rate-limit value · MM 7d = Mastermind bot sessions in last 7 days · Bot (MM) = bot-reported Claude key-pool health (OK / cooling reset / AUTH DEAD)</div>`;
+    <details class="tech-details" style="margin-top:8px"><summary>How to read this table</summary>Estimates use locally observed rolling windows; reported values come from provider rate-limit responses. MM 7d is Mastermind bot activity from the last seven days.</details>`;
   })();
 };
 
@@ -3084,7 +3096,7 @@ RENDER.content = async () => {
     <div class="grid">
       ${card("Pages", `<div class="big">${d.total_pages}</div><div class="sub">published pages</div>`)}
       ${card("Total size", `<div class="big">${d.total_mb} MB</div><div class="sub">${d.total_kb} KB</div>`)}
-      ${card("Is the site up?", `<div id="upBox"><button class="btn" id="upBtn2">Check live site</button></div>`)}
+      ${card("Live site", `<div id="upBox"><button class="btn" id="upBtn2">Check status</button></div>`)}
       ${card("Links", `<div id="lkBox"><button class="btn" id="lkBtn">Check internal links</button></div>`)}
     </div>
     <div class="section">All pages <span class="cnt">${d.total_pages}</span></div>
@@ -3093,12 +3105,12 @@ RENDER.content = async () => {
     </tbody></table>`;
   $("#upBtn2").onclick = async () => {
     $("#upBox").innerHTML = "<span class='muted'>probing…</span>"; const u = await api("/api/uptime");
-    $("#upBox").innerHTML = u.ok ? `<div class="big" style="font-size:18px;color:var(--ok)">200 OK</div><div class="sub">${u.ms} ms · ${(u.bytes / 1024).toFixed(0)} KB</div>`
-      : `<div class="big" style="font-size:18px;color:var(--bad)">${esc(u.status || "down")}</div><div class="sub">${esc(u.error || "")}</div>`;
+    $("#upBox").innerHTML = u.ok ? `<div class="big" style="font-size:18px;color:var(--ok)">Online</div><div class="sub">${u.ms} ms · ${(u.bytes / 1024).toFixed(0)} KB</div>`
+      : `<div class="big" style="font-size:18px;color:var(--bad)">Offline</div><div class="sub">${esc(u.error || u.status || "")}</div>`;
   };
   $("#lkBtn").onclick = async () => {
     $("#lkBox").innerHTML = "<span class='muted'>scanning…</span>"; const l = await api("/api/content/links");
-    $("#lkBox").innerHTML = `<div class="big" style="font-size:18px;color:${l.count ? "var(--warn)" : "var(--ok)"}">${l.count} broken</div><div class="sub">scanned ${l.checked_pages} of ${l.total_pages != null ? l.total_pages : l.checked_pages} pages${l.truncated ? " · TRUNCATED" : ""}${l.ci_built_count ? ` · ${l.ci_built_count} built by CI (not broken)` : ""}</div>`;
+    $("#lkBox").innerHTML = `<div class="big" style="font-size:18px;color:${l.count ? "var(--warn)" : "var(--ok)"}">${l.count} broken</div><div class="sub">Checked ${l.checked_pages} of ${l.total_pages != null ? l.total_pages : l.checked_pages} pages${l.truncated ? " · partial scan" : ""}.${l.ci_built_count ? `<details class="tech-details"><summary>Technical details</summary>${l.ci_built_count} CI-built pages were excluded from broken-link results.</details>` : ""}</div>`;
     if (l.count) { const sec = h(`<div></div>`); sec.innerHTML = `<div class="section">Broken internal links <span class="cnt">${l.count}</span></div>
       <table><thead><tr><th>Page</th><th>Link</th></tr></thead><tbody>${l.broken.map(b => `<tr><td class="mono">${esc(b.page)}</td><td class="mono" style="color:var(--bad)">${esc(b.link)}</td></tr>`).join("")}</tbody></table>`; $("#view").appendChild(sec); }
   };
@@ -3485,8 +3497,8 @@ function nwHero(d) {
   const dh = d.desc_health || {};
   const chip = (label, n, cls) => `<span class="pill"><span class="led ${cls}"></span>${n != null ? n : "—"} ${label}</span>`;
   const note = d.source === "synapse_registry"
-    ? "Lobe map sourced live from the signal registry (config/synapse.yml). Freshness and cortex activity fill in after the nightly pipeline writes health.json."
-    : `Live health as of ${esc(d.as_of || "—")}. Every lobe below is a cross-engine artifact on the Neural Web bus.`;
+    ? "System map is available now; freshness and review activity appear after the nightly pipeline runs."
+    : `Live health as of ${esc(d.as_of || "—")}. Each lobe below is a shared intelligence component.`;
   const descLine = (dh.curated != null || dh.stale != null || dh.auto != null)
     ? `<div class="sub muted" style="margin-top:4px;font-size:11px">descriptions: ${dh.curated || 0} curated · ${dh.stale || 0} outdated · ${dh.auto || 0} auto</div>`
     : "";
@@ -3721,7 +3733,7 @@ function mbHeroCard(o) {
   return `<div class="mb-hero">
     <div class="mb-hero-top">
       <span class="mb-hero-kicker">Master Brain</span>
-      <span class="mb-hero-name">Neural Web Orchestrator</span>
+      <span class="mb-hero-name">Nightly orchestration</span>
       <span class="statpill ${stCls}">${esc(st)}</span>
       <span class="spacer"></span>
       <button class="btn primary" id="mb-open">Open Master Brain →</button>
@@ -3744,7 +3756,7 @@ RENDER.neural_web = async () => {
       <div class="lobe-grid">${g.lobes.map(nwLobeCard).join("")}</div>`;
   });
   html += `<details class="nw-section" style="margin-top:6px">
-      <summary class="section" style="cursor:pointer;user-select:none;list-style:none">▸ Operator HQ — full diagnostic detail</summary>
+      <summary class="section" style="cursor:pointer;user-select:none;list-style:none">▸ Diagnostics</summary>
       <div id="nw-legacy"><div class="spin">loading…</div></div>
     </details>`;
   /* Build id→lobe lookup for popup */
@@ -3999,7 +4011,7 @@ async function renderLobeDetail(id) {
 
   v.innerHTML = `
     ${nwCrumbs(d.label)}
-    ${d.missing ? `<div class="missing-banner"><span>⚠</span><div>This artifact isn't present on this clone — freshness metrics fill in after the nightly pipeline writes it. Its purpose and data flow (below) come from the signal registry and are always available.</div></div>` : ""}
+    ${d.missing ? `<div class="missing-banner"><span>⚠</span><div>Current data is not available yet. The description and data flow below are still available.</div></div>` : ""}
     <div style="margin-bottom:18px">
       <div class="nw-hero-row" style="margin-bottom:10px">
         <span class="status-dot" data-status="${esc(d.status)}" style="width:14px;height:14px"></span>
@@ -4020,7 +4032,7 @@ async function renderLobeDetail(id) {
       <div style="line-height:1.55">${esc(d.description || "No description registered for this lobe.")}</div>
       ${d.description_technical && d.description_technical !== d.description ? `<details style="margin-top:12px"><summary class="note muted" style="cursor:pointer;user-select:none">Technical note (from the signal registry)</summary><div class="note mono muted" style="margin-top:6px;line-height:1.5">${esc(d.description_technical)}</div></details>` : ""}
       ${d.independence_note ? `<details style="margin-top:12px"><summary class="note muted" style="cursor:pointer;user-select:none">Independence note (R-ORTH covariance spine)</summary><div class="note muted" style="margin-top:6px;line-height:1.5">${esc(d.independence_note)}${d.co_fire_cluster ? ` Co-fire cluster engines: ${esc(d.co_fire_cluster.join(", "))}.` : ""}</div></details>` : ""}
-      <div class="note muted" style="margin-top:10px">Producer <code>${esc(d.producer || "?")}</code> · artifact <code>${esc(d.path || "?")}</code> · source ${esc(d.purpose_source || "config/synapse.yml")}</div>
+      <details class="tech-details" style="margin-top:10px"><summary>Technical details</summary>Producer <code>${esc(d.producer || "?")}</code> · artifact <code>${esc(d.path || "?")}</code> · source ${esc(d.purpose_source || "config/synapse.yml")}</details>
     </div>
     <div class="section">Data transmission</div>
     <div class="transmission">
@@ -4208,8 +4220,8 @@ function iosHero(d) {
 function iosReasonCard(c) {
   const rows = (c.top_reason_codes || []);
   if (!rows.length) return "";
-  return `<div class="card"><h3>Why Eval OS answered the way it did</h3>
-    <div class="sub" style="margin-bottom:6px">Top reason codes across all ${fmtNum(c.artifacts)} outputs. A reason is a disclosure, not a fault.</div>
+  return `<div class="card"><h3>Why outputs have their current status</h3>
+    <div class="sub" style="margin-bottom:6px">Most common status reasons across ${fmtNum(c.artifacts)} outputs. These are explanations, not necessarily faults.</div>
     <div>${rows.map(r => `<span class="statpill s-mut mono">${esc(r.code)} · ${esc(String(r.n))}</span>`).join(" ")}</div></div>`;
 }
 
@@ -4418,39 +4430,38 @@ RENDER.orchestrator = async () => {
       <span class="mb-hero-name">Neural Web Orchestrator</span>
       <span class="statpill ${ORCH_STATUS_CLS(st)}" title="${esc(st)}">${esc(cortexWord(st))}</span>
       <span class="spacer"></span>
-      <button class="btn" id="orchWake" title="workflow_dispatch daily.yml — runs the full nightly pipeline now">&#9201; Wake orchestrator</button>
+      <button class="btn" id="orchWake" title="Run the full nightly pipeline now">&#9201; Run nightly pipeline</button>
     </div>
     <div class="sub" style="margin-top:6px">${esc(hero.summary || "No run recorded yet — the first nightly pipeline run writes the orchestrator run log.")}</div>
     <div id="orchDailyStrip"></div>
     <div class="mb-hero-chips">
       <span class="statpill s-mut" title="lobes whose data contract is out of date">${hero.lobes_stale != null ? hero.lobes_stale : "—"}/${hero.lobes_total != null ? hero.lobes_total : "—"} stale feeds</span>
       <span class="statpill s-mut">${hero.what_changed_n != null ? hero.what_changed_n : "—"} changes</span>
-      <span class="statpill ${ORCH_STATUS_CLS(cx.status)}" title="cortex status: ${esc(cx.status || "unknown")}">cortex ${esc(cortexWord(cx.status || "unknown"))}</span>
-      <span class="statpill ${hero.nudges_n ? "s-warn" : "s-mut"}" title="as ingested from the bot's last feedback artifact — may lag the Mastermind AI page">${hero.nudges_n || 0} bot nudge${hero.nudges_n === 1 ? "" : "s"}</span>
-      <span class="statpill s-mut">${hero.directives_n || 0} directive${hero.directives_n === 1 ? "" : "s"}</span>
-      <span class="statpill s-mut">feedback ${esc(hero.feedback_state || "absent")}</span>
+      <span class="statpill ${ORCH_STATUS_CLS(cx.status)}" title="review status: ${esc(cx.status || "unknown")}">review ${esc(cortexWord(cx.status || "unknown"))}</span>
+      <span class="statpill ${hero.nudges_n ? "s-warn" : "s-mut"}">${hero.nudges_n || 0} request${hero.nudges_n === 1 ? "" : "s"}</span>
+      <span class="statpill s-mut">${hero.directives_n || 0} instruction${hero.directives_n === 1 ? "" : "s"}</span>
     </div>
     ${cortexDegradeLine(cx) ? `<div class="sub" style="margin-top:6px;color:var(--warn)">⚠︎ ${esc(cortexDegradeLine(cx))}</div>` : ""}
-    <div class="note muted" style="margin-top:8px">${esc(hero.next_run_note || "")} · ${hero.n_entries || 0} run${hero.n_entries === 1 ? "" : "s"} logged${hero.last_review_at ? ` · last review ${esc(String(hero.last_review_at).slice(0, 16).replace("T", " "))}` : ""}${prob.tier ? ` · cortex probation ${esc(prob.tier)}${prob.granted ? "" : " (not granted)"}` : ""}</div>
+    <div class="note muted" style="margin-top:8px">${esc(hero.next_run_note || "")} · ${hero.n_entries || 0} run${hero.n_entries === 1 ? "" : "s"} logged${hero.last_review_at ? ` · last review ${esc(String(hero.last_review_at).slice(0, 16).replace("T", " "))}` : ""}${prob.tier ? `<details class="tech-details"><summary>Review tier</summary>${esc(prob.tier)}${prob.granted ? "" : " · not granted"}</details>` : ""}</div>
   </div>`;
 
   const numInput = (key, val, lo, hi) => `<input type="number" data-orchset="${key}" data-prev="${val}" min="${lo}" max="${hi}" value="${val}" style="width:86px">`;
   const boolSwitch = (key, val) => `<label class="switch"><input type="checkbox" data-orchsetb="${key}" ${val ? "checked" : ""}><span class="slider"></span></label>`;
-  const settingsHtml = `<div class="section">Settings <span class="cnt">config.yml &middot; orchestrator</span></div>
+  const settingsHtml = `<div class="section">Settings</div>
     <div class="row">${boolSwitch("ingest_bot_feedback", s.ingest_bot_feedback)}
-      <div><div class="lab">Ingest bot feedback</div><div class="note">Read the Mastermind bot's nudges and directives into the nightly build so Master Brain can acknowledge them. <code class="muted">orchestrator.ingest_bot_feedback</code></div></div></div>
+      <div><div class="lab">Include AI feedback</div><div class="note">Bring AI requests and instructions into the nightly review.</div><details class="tech-details"><summary>Config key</summary><code>orchestrator.ingest_bot_feedback</code></details></div></div>
     <div class="row">${boolSwitch("brief_attention_nudges", s.brief_attention_nudges)}
-      <div><div class="lab">Flag nudges in the daily brief</div><div class="note">Pending bot requests show up as items for you to review in the morning brief. <code class="muted">orchestrator.brief_attention_nudges</code></div></div></div>
+      <div><div class="lab">Show AI requests in morning brief</div><div class="note">Put pending requests into the morning review queue.</div><details class="tech-details"><summary>Config key</summary><code>orchestrator.brief_attention_nudges</code></details></div></div>
     <div class="row"><div class="lab" style="min-width:220px">Review cadence</div>${numInput("review_every_n_runs", s.review_every_n_runs, 2, 50)}
-      <div class="note">How often Master Brain writes its report card (every N runs). Range 2&#x2013;50.</div></div>
-    <div class="row"><div class="lab" style="min-width:220px">Site rows</div>${numInput("site_rows", s.site_rows, 10, 365)}
-      <div class="note">How many run-log rows to keep in the published site artifact (10&#x2013;365).</div></div>`;
+      <div class="note">Write a review every N nightly runs (2–50).</div></div>
+    <div class="row"><div class="lab" style="min-width:220px">Run history kept</div>${numInput("site_rows", s.site_rows, 10, 365)}
+      <div class="note">Number of nightly runs to keep in the published history (10–365).</div></div>`;
 
   const entries = d.entries || [];
   const runlogHtml = `<div class="section">Run log <span class="cnt">${entries.length}</span></div>
     <div class="sub muted" style="margin-bottom:8px">One row per nightly pipeline run &mdash; what Master Brain saw and what changed.</div>`
     + (entries.length
-    ? `<table><thead><tr><th>Run</th><th>Workflow</th><th>Status</th><th title="lobes whose data contract is out of date">Stale feeds</th><th>Changes</th><th>Cortex</th><th>Nudges</th><th>Summary</th></tr></thead><tbody>
+    ? `<table><thead><tr><th>Run</th><th>Job</th><th>Status</th><th title="feeds whose data contract is out of date">Stale feeds</th><th>Changes</th><th>Review</th><th>Requests</th><th>Summary</th></tr></thead><tbody>
       ${entries.map(e => {
         const rawKinds = e.what_changed_kinds && Object.keys(e.what_changed_kinds).length ? Object.entries(e.what_changed_kinds).map(([k, n]) => `${k}:${n}`).join(", ") : "";
         const kindsPhrase = changedKindsPhrase(e.what_changed_kinds);
@@ -4465,11 +4476,11 @@ RENDER.orchestrator = async () => {
           <td class="sub" title="${esc(e.summary || "")}">${esc(orchTrunc(e.summary, 90))}</td>
         </tr>`;
       }).join("")}</tbody></table>`
-    : `<div class="sub muted">No run-log entries yet. The nightly pipeline (daily.yml, 02:00 UTC) writes the first one.</div>`);
+    : `<div class="sub muted">No nightly runs recorded yet. Run history appears after the first pipeline run.</div>`);
 
   const reviews = d.reviews || [];
   const reviewsHtml = `<div class="section">Reviews <span class="cnt">every ${esc(String(s.review_every_n_runs || 5))} runs</span></div>
-    <div class="sub muted" style="margin-bottom:8px">Every ${esc(String(s.review_every_n_runs || 5))} runs, Master Brain writes itself a report card.</div>`
+    <div class="sub muted" style="margin-bottom:8px">Every ${esc(String(s.review_every_n_runs || 5))} runs, Master Brain summarizes changes and open issues.</div>`
     + (reviews.length
     ? reviews.map(r => {
       const c = r.completed || {};
@@ -4487,8 +4498,8 @@ RENDER.orchestrator = async () => {
 
   const nudges = dia.nudges || [];
   const directives = dia.operator_directives || [];
-  const dialogueHtml = `<div class="section">Bot dialogue <span class="cnt">${esc(dia.feedback_state || "absent")}</span></div>
-    <div class="sub muted" style="margin-bottom:8px">What the trading bot asked for &mdash; and whether it was heard.</div>
+  const dialogueHtml = `<div class="section">AI requests <span class="cnt">${esc(dia.feedback_state || "absent")}</span></div>
+    <div class="sub muted" style="margin-bottom:8px">Requests from the AI system and whether Master Brain acknowledged them.</div>
     ${nudges.length ? `<table><thead><tr><th>Code</th><th>Kind</th><th>Severity</th><th>Detail</th><th class="r">Builds seen</th><th>Ack</th></tr></thead><tbody>
       ${nudges.map(n => {
         const kindCode = String(n.kind || "");
@@ -4502,8 +4513,8 @@ RENDER.orchestrator = async () => {
           <td>${codesSeen.includes(n.code) ? '<span class="statpill s-ok">ack</span>' : '<span class="statpill s-mut">pending</span>'}</td>
         </tr>`;
       }).join("")}</tbody></table>`
-      : `<div class="sub muted">No nudges from the bot in the current feedback artifact.</div>`}
-    ${directives.length ? `<div class="section" style="margin-top:14px">Operator directives <span class="cnt">${directives.length}</span></div>
+      : `<div class="sub muted">No AI requests are currently open.</div>`}
+    ${directives.length ? `<div class="section" style="margin-top:14px">Instructions <span class="cnt">${directives.length}</span></div>
       ${directives.map(dd => `<div class="card" style="margin-bottom:8px">
         <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
           <code>${esc(dd.id || "—")}</code><span class="sub">${esc(dd.created || "")}</span>
@@ -4511,7 +4522,7 @@ RENDER.orchestrator = async () => {
         </div>
         <div class="sub" style="margin-top:4px">${esc(dd.text || "")}</div>
       </div>`).join("")}` : ""}
-    <div class="note muted" style="margin-top:8px">New directives are composed on the <a href="#" id="orchToMai">Mastermind AI</a> page — by hand in its composer, auto-drafted from open findings with its "⚡ Act on all findings" button, or queued automatically each cycle when its "Auto-act on findings" setting is on. The orchestrator only observes and acknowledges them.</div>`;
+    <div class="note muted" style="margin-top:8px">Create and manage instructions on the <a href="#" id="orchToMai">Mastermind AI</a> page. This page tracks whether Master Brain acknowledged them.</div>`;
 
   const chatHtml = `<div class="section">Chat</div>
     <div class="sub muted" style="margin-bottom:8px">Ask Master Brain about its recent runs. Plain answers from the run log.</div>
@@ -4521,7 +4532,7 @@ RENDER.orchestrator = async () => {
         <textarea id="orchChatIn" rows="2" maxlength="2000" placeholder="e.g. What did you complete last night, and what's still stale?"></textarea>
         <button class="btn primary" id="orchChatSend">Send</button>
       </div>
-      <div class="note muted" style="margin-top:6px">Read-only pipeline persona &mdash; never trading advice. Without an LLM key it degrades to a deterministic run-log digest.</div>
+      <div class="note muted" style="margin-top:6px">Read-only run-history chat.<details class="tech-details"><summary>Technical details</summary>Without an AI key, answers fall back to a deterministic run-log digest.</details></div>
     </div>`;
 
   /* Prophet suggestions compact block (PR-R4) — loaded from /api/prophet */
@@ -4570,11 +4581,11 @@ RENDER.orchestrator = async () => {
   });
   const wakeBtn = $("#orchWake");
   if (wakeBtn) wakeBtn.onclick = async () => {
-    if (!confirm("Wake the orchestrator now? This dispatches daily.yml (full pipeline run) on GitHub Actions.")) return;
+    if (!confirm("Run the nightly pipeline now? This can update the live dashboard.")) return;
     wakeBtn.disabled = true;
     const r = await post("/api/orchestrator/wake", {});
     wakeBtn.disabled = false;
-    if (r.ok) toast("Orchestrator woken — daily.yml dispatched");
+    if (r.ok) toast("Nightly pipeline started");
     else toast((r.error || "wake failed") + (r.hint ? ` — ${r.hint}` : ""), true);
   };
   const toMai = $("#orchToMai"); if (toMai) toMai.onclick = (e) => { e.preventDefault(); go("mastermind_ai"); };
@@ -4661,7 +4672,7 @@ RENDER.prophet = async () => {
            ${blk.maturity_state === "accruing" ? `<div class="note muted">ACCRUING — not enough matured picks yet</div>` : ""}
          </div>`;
        }).join("")}</div>`
-    : `<div class="section">Cross-market record</div><div class="sub muted">prophet_status.json not yet written — accruing after first nightly run.</div>`;
+    : `<div class="section">Cross-market record</div><div class="sub muted">No cross-market record yet; results appear after the first nightly run.</div>`;
 
   /* --- Dashboard integrity strip --- */
   const integrityBlk = ps.dashboard_integrity || {};
@@ -4758,7 +4769,7 @@ RENDER.prophet = async () => {
          ${tr.h21_win_rate != null ? `<div class="kv"><span>21d win rate</span><b>${(tr.h21_win_rate * 100).toFixed(1)}%</b></div>` : ""}
          ${tr.accruing ? `<div class="note muted">All horizons accruing — effective-N floors not yet met.</div>` : ""}
        </div>`
-    : `<div class="section">Track record (US)</div><div class="sub muted">us_track_history.json not yet written.</div>`;
+    : `<div class="section">Track record (US)</div><div class="sub muted">No US track record yet.</div>`;
 
   /* --- Learning-loop postmortem (read-only pointer at the committed artifact) ---
      Both columns of the veto counterfactual ship together on purpose: losses avoided
@@ -4767,7 +4778,7 @@ RENDER.prophet = async () => {
   const llHtml = ll
     ? `<div class="section">Learning loop — postmortem <span class="cnt">${esc(ll.as_of || "—")}</span></div>
        <div class="card">
-         <div class="sub">${Number(ll.n_episodes || 0)} episodes · ${Number(ll.n_matured || 0)} matured across ${Number(ll.n_board_dates || 0)} board dates · ${Number(ll.n_in_flight || 0)} in flight (counted in no rate) · <b>${Number(ll.n_losers || 0)}</b> losers · <b>${Number(ll.n_winners || 0)}</b> winners · H=${esc(String(ll.horizon ?? "—"))}${ll.llm_used === false ? " · no LLM in the classification path" : ""}</div>
+         <div class="sub">${Number(ll.n_episodes || 0)} episodes · ${Number(ll.n_matured || 0)} matured across ${Number(ll.n_board_dates || 0)} board dates · ${Number(ll.n_in_flight || 0)} in flight (counted in no rate) · <b>${Number(ll.n_losers || 0)}</b> losers · <b>${Number(ll.n_winners || 0)}</b> winners · H=${esc(String(ll.horizon ?? "—"))}${ll.llm_used === false ? " · rule-based classification" : ""}</div>
          <div class="tbl-scroll" style="margin-top:8px"><table><thead><tr><th>Failure label</th><th>Visible at entry</th><th>Losers</th><th>share</th><th>Winners</th><th>share</th><th>nulls</th></tr></thead><tbody>
          ${(ll.labels || []).map(f => `<tr>
            <td>${esc(f.en || f.label || "—")} <span class="sub muted mono">${esc(f.label || "")}</span></td>
@@ -4792,7 +4803,8 @@ RENDER.prophet = async () => {
            <td class="mono">${Number(v.net_pct_if_vetoed || 0) >= 0 ? "+" : ""}${Number(v.net_pct_if_vetoed || 0).toFixed(2)}pp</td>
          </tr>`).join("")}
          </tbody></table></div>
-         <div class="note muted" style="margin-top:4px">Equal-weight arithmetic counterfactual, not a backtest — it ignores sizing and the overlap between episodes surfaced on one board night. Measurement tier: no rule here is live. Artifact <code>${esc(ll.artifact || "")}</code> · report <code>${esc(ll.report || "")}</code> · protocol <code>${esc(ll.protocol || "")}</code>.</div>
+         <div class="note muted" style="margin-top:4px">Equal-weight counterfactual only; it ignores sizing and overlapping episodes. No rule here is live.</div>
+         <details class="tech-details"><summary>Technical details</summary>Artifact <code>${esc(ll.artifact || "")}</code> · report <code>${esc(ll.report || "")}</code> · protocol <code>${esc(ll.protocol || "")}</code></details>
        </div>`
     : `<div class="section">Learning loop — postmortem</div><div class="sub muted">${esc(d.learning_loop_note || "not yet written.")}</div>`;
 
@@ -4800,7 +4812,7 @@ RENDER.prophet = async () => {
   const spendPct = sp.budget_pct != null ? sp.budget_pct : 0;
   const spendHtml = `<div class="section">Deliberation spend today <span class="cnt">${esc(sp.deliberation_model || "—")}</span></div>
     ${meter("Today's deliberation tokens", spendPct, `${(sp.today_tokens_model || 0).toLocaleString()} / ${(sp.cap || 0).toLocaleString()}`, spendPct >= 80 ? "bad" : spendPct >= 50 ? "warn" : "")}
-    <div class="note muted" style="margin-top:4px">Est. cost today: $${Number(sp.today_usd_model || 0).toFixed(4)} &mdash; cap ${(sp.cap || 0).toLocaleString()} tokens/day (config.yml <code>prophet.deliberation_daily_token_cap</code>)</div>`;
+    <div class="note muted" style="margin-top:4px">Estimated cost today: ${Number(sp.today_usd_model || 0).toFixed(4)} · daily cap ${(sp.cap || 0).toLocaleString()} tokens</div>`;
 
   /* --- Owner-private episodic Trade Memory --- */
   const tmConfigured = !!(tm && tm.configured);
@@ -4859,13 +4871,13 @@ RENDER.prophet = async () => {
   /* --- Settings form --- */
   const numInputP = (key, val, lo, hi) => `<input type="number" data-prophset="${esc(key)}" data-prev="${esc(String(val != null ? val : ''))}" min="${Number(lo)}" max="${Number(hi)}" value="${esc(String(val != null ? val : ''))}" style="width:120px">`;
   const boolSwitchP = (key, val) => `<label class="switch"><input type="checkbox" data-prophsetb="${key}" ${val ? "checked" : ""}><span class="slider"></span></label>`;
-  const settingsHtml = `<div class="section">Settings <span class="cnt">config.yml &middot; prophet</span></div>
+  const settingsHtml = `<div class="section">Settings</div>
     <div class="row">${boolSwitchP("fable_enabled", cfg.fable_enabled)}
-      <div><div class="lab">Fable deliberation enabled</div><div class="note">Use the deliberation model (claude-fable-5) for cohort audits and pick autopsies when within budget. Falls back to claude-opus-4-8 on model-not-found. <code class="muted">prophet.fable_enabled</code></div></div></div>
-    <div class="row"><div class="lab" style="min-width:220px">Autopsy cap per cycle</div>${numInputP("autopsy_cap_per_cycle", cfg.autopsy_cap_per_cycle, 0, 50)}
-      <div class="note">Max per-pick autopsy artifacts written per audit cycle (0–50). Token economy guard. <code class="muted">prophet.autopsy_cap_per_cycle</code></div></div>
-    <div class="row"><div class="lab" style="min-width:220px">Daily token cap</div>${numInputP("deliberation_daily_token_cap", cfg.deliberation_daily_token_cap, 0, 5000000)}
-      <div class="note">Daily deliberation token budget. When exhausted, lanes fall back to claude-opus-4-8. Range 0–5,000,000. <code class="muted">prophet.deliberation_daily_token_cap</code></div></div>`;
+      <div><div class="lab">Deep deliberation</div><div class="note">Use the deeper review path for cohort audits and pick reviews when budget is available.</div><details class="tech-details"><summary>Technical details</summary>Primary <code>claude-fable-5</code> · fallback <code>claude-opus-4-8</code> · <code>prophet.fable_enabled</code></details></div></div>
+    <div class="row"><div class="lab" style="min-width:220px">Detailed reviews per cycle</div>${numInputP("autopsy_cap_per_cycle", cfg.autopsy_cap_per_cycle, 0, 50)}
+      <div class="note">Maximum per-pick reviews written in one audit cycle (0–50).</div><details class="tech-details"><summary>Config key</summary><code>prophet.autopsy_cap_per_cycle</code></details></div>
+    <div class="row"><div class="lab" style="min-width:220px">Daily review budget</div>${numInputP("deliberation_daily_token_cap", cfg.deliberation_daily_token_cap, 0, 5000000)}
+      <div class="note">Daily token budget for deeper reviews. Standard review takes over when the budget is exhausted.</div><details class="tech-details"><summary>Config key</summary><code>prophet.deliberation_daily_token_cap</code></details></div>`;
 
   v.innerHTML = tradeMemoryHtml + mktCardsHtml + integrityHtml + suggestionsHtml + autopsiesHtml + pmHtml + llHtml + fitHtml + trHtml + spendHtml + settingsHtml;
 
@@ -5055,19 +5067,24 @@ RENDER.macro_thesis = async () => {
   v.innerHTML = `<div class="section">Macro Thesis Ledger <span class="cnt">${Number((d.forward && d.forward.summary && d.forward.summary.n) || 0)} forward · ${Number((d.retro && d.retro.summary && d.retro.summary.n) || 0)} retro</span></div>
     <div class="card">
       <h3>Record the synthesis, then grade it</h3>
-      <div class="sub">A multivariable macro thesis is written down point-in-time and graded at fixed horizons, building a track record of macro synthesis. Human now, Neural Web later.</div>
-      <div class="note muted"><b>Authority: ${esc(d.authority)}</b></div>
-      <div class="note muted">${esc(d.store)}</div>
-      <div class="note muted">${esc(d.firewall)}</div>
+      <div class="sub">Record each macro thesis at the time it is formed, then grade it at fixed horizons.</div>
+      <details class="tech-details"><summary>Technical details</summary>
+        <div><b>Authority:</b> ${esc(d.authority)}</div>
+        <div>${esc(d.store)}</div>
+        <div>${esc(d.firewall)}</div>
+      </details>
     </div>
-    <form id="macroThesisForm" class="tm-form">
-      <label class="tm-wide"><span>Thesis JSON</span><textarea name="thesis" rows="16" spellcheck="false" placeholder="Paste one thesis object">${esc(template)}</textarea></label>
-      <div class="tm-wide"><button class="btn" type="submit">Register thesis</button><span id="macroThesisSaveState" class="sub muted"></span></div>
-    </form>
+    <details class="card" style="margin-top:10px">
+      <summary style="cursor:pointer;font-weight:650">Register a thesis</summary>
+      <form id="macroThesisForm" class="tm-form" style="margin-top:12px">
+        <label class="tm-wide"><span>Advanced thesis input (JSON)</span><textarea name="thesis" rows="16" spellcheck="false" placeholder="Paste one thesis object">${esc(template)}</textarea></label>
+        <div class="tm-wide"><button class="btn" type="submit">Register thesis</button><span id="macroThesisSaveState" class="sub muted"></span></div>
+      </form>
+    </details>
     <div class="section">Forward register</div>
     ${mtSectionHtml(d.forward, "No forward theses registered yet.")}
     <div class="section">Retro library</div>
-    <div class="note muted">Retro rows are curated in hindsight. They exist for schema exercise and Neural Web reconstruction training, and are never pooled into the forward track record.</div>
+    <div class="note muted">Retro theses are hindsight examples and are kept separate from the forward track record.</div>
     ${mtSectionHtml(d.retro, "No retro theses recorded yet.")}`;
 
   const form = $("#macroThesisForm");
@@ -5439,7 +5456,7 @@ function conNeedsYou(pl) {
     cards.push(`<button class="needs-card act" onclick="go('marketing_publish')">
       <span class="needs-ico">${CON_ICONS.bolt}</span>
       <span class="needs-body"><span class="needs-title">Finish the go-live checklist to start posting</span>
-        <span class="needs-sub">The publisher is dark. Paste the Buffer token and Arm it in the checklist, then keep approvals flowing.</span></span>
+        <span class="needs-sub">Publishing is off. Finish the checklist, then keep approvals flowing.</span></span>
       <span class="needs-cta">Go-live checklist →</span>
     </button>`);
   }
@@ -5509,8 +5526,8 @@ RENDER.marketing_overview = async () => {
       ${card("Portfolio", `
         <div class="kv"><span>Envelope</span><b>$${Number(port.total_envelope_usd || 0).toLocaleString()}</b></div>
         <div class="kv"><span>Departments</span><b>${(port.allocations || []).length}</b></div>
-        <div class="kv"><span>Opp queue depth</span><b>${Number(cmo.opportunity_queue_depth || 0)}</b></div>
-        <div class="kv"><span>Director</span><b>${esc(cmo.director || "Fable")}</b></div>`)}
+        <div class="kv"><span>Open opportunities</span><b>${Number(cmo.opportunity_queue_depth || 0)}</b></div>
+        ${cmo.director ? `<details class="tech-details"><summary>Director model</summary>${esc(cmo.director)}</details>` : ""}`)}
     </div>`;
 
   /* Allocations table */
@@ -5566,14 +5583,14 @@ RENDER.marketing_overview = async () => {
   /* Settings (read-only display) */
   const cfgData = await api("/api/marketing/experiments").catch(() => ({}));
   const activeVariant = (cfgData && cfgData.active_trial_variant) || "7_trading_days";
-  const settingsHtml = `<div class="section">Settings <span class="cnt">config/marketing.yml · read-only</span></div>
-    <div class="note muted" style="margin-bottom:8px">Settings are read-only in v1. Edit <code>config/marketing.yml</code> directly to change knobs.</div>
+  const settingsHtml = `<div class="section">Settings <span class="cnt">read-only</span></div>
+    <div class="note muted" style="margin-bottom:8px">Settings are read-only here.<details class="tech-details"><summary>Technical details</summary>Edit <code>config/marketing.yml</code> to change these values.</details></div>
     <div class="row"><div class="lab" style="min-width:220px">Trial variant</div>
       <span class="statpill s-mut">${esc(activeVariant)}</span>
       <div class="note" style="margin-left:8px">Active trial measurement window.</div></div>`;
 
   /* Flywheel illustration — animated growth loop + linked legend */
-  const flywheelHtml = `<div class="section">How the machine works</div>
+  const flywheelHtml = `<div class="section">How marketing flows</div>
     ${mktFlywheelHoverCSS()}
     <div class="card mkt-fw-card">
       <div class="mkt-fw-viz">
@@ -5810,7 +5827,7 @@ function flrAuthorship(a) {
   /* Defect branches lead; the house-lane disclosure is a fact, not an alarm. */
   let stance;
   if (model === 0 && tmpl > 0) {
-    stance = `<span style="color:var(--loss)">No model wrote anything tonight.</span> Every post carries house-template copy — the word-salad shape the operator called out. The model desk is where to look.`;
+    stance = `<span style="color:var(--loss)">No model wrote anything tonight.</span> Planned posts fell back to house templates. Check the Model Desk for the upstream cause.`;
   } else if (a.template_on_planned_kind) {
     stance = `<span style="color:var(--loss)">${flrN(a.template_on_planned_kind)} planned posts were written by a template, not a model.</span> That is a defect, not a fallback.`;
   } else if (house > 0) {
@@ -5898,7 +5915,7 @@ function flrCollisions(loss) {
   const top = att[0];
   return `<div class="card">
     <h3>Duplicate collisions <span class="cnt">which post killed how many</span></h3>
-    <div class="note muted" style="margin-bottom:10px">The gate reads desks in a fixed order. The first desk keeps its post; every later desk writing the same fact collides against it and is held. A big number here is a fact-supply problem, not a gate problem — six desks were handed one fact and told to say it six ways.</div>
+    <div class="note muted" style="margin-bottom:10px">When desks cover the same fact, the first distinct post is kept and later near-duplicates are held.</div>
     <table><thead><tr><th>Held</th><th>The post they all collided with</th><th>Desks that lost posts</th></tr></thead>
       <tbody>${rows}</tbody></table>
     <div class="note" style="margin-top:9px">Worst single case: <b>${esc(top.headline || top.post_id)}</b> held ${flrN(top.killed)} sibling posts.</div>
@@ -5924,7 +5941,7 @@ function flrDeskYield(loss) {
   }).join("");
   const worst = rows[0], best = rows[rows.length - 1];
   const spread = (worst && best && worst.yield != null && best.yield != null)
-    ? `<div class="note" style="margin-top:9px"><b>${esc(best.account)}</b> clears ${flrPct(best.yield)} of its planned posts; <b>${esc(worst.account)}</b> clears ${flrPct(worst.yield)}. That gap is the reading order, not the writing quality — whichever desk the gate reads first keeps its posts.</div>`
+    ? `<div class="note" style="margin-top:9px"><b>${esc(best.account)}</b> clears ${flrPct(best.yield)}; <b>${esc(worst.account)}</b> clears ${flrPct(worst.yield)}. Ordering can affect the gap when desks cover the same fact.</div>`
     : "";
   return `<div class="card">
     <h3>Desk yield <span class="cnt">worst first</span></h3>
@@ -6205,13 +6222,13 @@ RENDER.marketing_models = async () => {
     const provs = (pool.providers || []).length
       ? `<div class="card">
           <h3>Single-key providers <span class="cnt">not balanced</span></h3>
-          <div class="note muted" style="margin-bottom:10px">One key each, used directly rather than spread. ChatGPT sits here — it is the primary rung, so its state is what decides whether the marketing lanes write anything tonight.</div>
+          <div class="note muted" style="margin-bottom:10px">Direct provider keys. The primary provider's state determines whether model-written lanes can run.</div>
           ${(pool.providers || []).map(keyRow).join("")}
         </div>`
       : "";
     poolHtml = `<div class="card">
       <h3>Claude key pool <span class="cnt">${flrN(pool.ready)} of ${flrN(pool.total)} ready</span></h3>
-      <div class="note muted" style="margin-bottom:10px">The balancer spreads fallback calls across these keys, resting any key that hits a rate limit until its window reopens. Names and load only — no token value is ever read into this console.</div>
+      <div class="note muted" style="margin-bottom:10px">Fallback keys are balanced automatically; rate-limited keys rest until their window reopens.</div>
       ${(pool.keys || []).map(keyRow).join("")}
       <div class="note" style="margin-top:9px">${esc(pool.verdict || "")}</div>
     </div>${provs}`;
@@ -6304,7 +6321,7 @@ RENDER.marketing_lanes = async () => {
   ).join(" ");
 
   v.innerHTML = `<div class="section">X lanes ${chips}</div>
-    <div class="note muted" style="margin:0 0 12px">Every lane that can produce a post, and whether it is actually running. A dark lane is built and idle — either it has no input tonight or something upstream of it stopped.</div>
+    <div class="note muted" style="margin:0 0 12px">Publishing lanes and their current state. Dark lanes are built but idle.</div>
     ${rows}`;
 };
 
@@ -6349,8 +6366,7 @@ RENDER.marketing_departments = async () => {
         </h3>
         <div class="mkt-dept-tagline">${esc(dept.tagline || dept.primary_outcome || "")}</div>
         <div class="mkt-dept-footer">
-          <span class="statpill ${dept.director_model === "fable" ? "s-ok" : "s-warn"}" style="font-size:10px">${esc(dept.director_model || "opus")}</span>
-          ${engCount ? `<span class="statpill s-mut">${engCount} engine${engCount !== 1 ? "s" : ""}</span>` : ""}
+          ${engCount ? `<span class="statpill s-mut">${engCount} capabilit${engCount === 1 ? "y" : "ies"}</span>` : ""}
           <span class="statpill s-mut">Wave ${esc(String(dept.wave != null ? dept.wave : "—"))}</span>
         </div>
       </a>`;
@@ -6380,12 +6396,12 @@ RENDER.marketing_campaigns = async () => {
   /* Honest reframe: the campaign engine is seeded, not yet firing. Say so plainly,
      then lead the eye to the part that IS live (the radar). No fake controls. */
   const CMP_FLOW = ["Objective", "Audience", "Channels", "Assets", "Experiment", "Receipts"];
-  const explainHtml = `<div class="section">Campaigns <span class="cnt">campaign engine — seeded, not yet active</span></div>
+  const explainHtml = `<div class="section">Campaigns <span class="cnt">setup in progress</span></div>
     <div class="cmp-explain">
-      <div class="cmp-explain-h">What a campaign will be</div>
-      <p>A campaign is a full plan around one goal: an <b>objective</b>, the <b>audience</b> it targets, the <b>channels</b> (desks) it runs on, the <b>assets</b> it needs, an <b>experiment</b> to measure it, and <b>receipts</b> proving what it did. None are running yet — the ones below are seeded shells.</p>
+      <div class="cmp-explain-h">Campaign framework</div>
+      <p>Each campaign combines one objective, audience, channel plan, creative assets, an experiment, and measurable results.</p>
       <div class="cmp-flow">${CMP_FLOW.map((s, i) => `<span class="cmp-flow-step">${esc(s)}</span>${i < CMP_FLOW.length - 1 ? '<span class="cmp-flow-arrow">→</span>' : ""}`).join("")}</div>
-      <p style="margin-top:8px">A campaign activates when <b>you charter it</b> and a <b>live funnel</b> exists to feed it — that funnel is a coming lane. Until then this page tracks the raw material: the live opportunity radar below.</p>
+      <p style="margin-top:8px">Campaigns activate once chartered and connected to a live acquisition path. Until then, this page shows opportunities and prepared campaign plans.</p>
     </div>`;
 
   /* Live pipeline stat chips — so the page stops looking dead. Publications /
@@ -6402,10 +6418,10 @@ RENDER.marketing_campaigns = async () => {
   </div>`;
 
   /* Opportunity radar — the real, nightly part. Retitled so it reads as live. */
-  const oppHtml = `<div class="section">Live opportunity radar <span class="cnt">feeds future campaigns · ${Number(opps.open || 0)} open · ${Number(opps.scored || 0)} scored</span></div>
-    <div class="con-lede" style="margin-bottom:10px">Scored nightly from the intelligence layer — the seed pool a chartered campaign will draw from.</div>`
+  const oppHtml = `<div class="section">Live opportunities <span class="cnt">${Number(opps.open || 0)} open · ${Number(opps.scored || 0)} scored</span></div>
+    <div class="con-lede" style="margin-bottom:10px">Updated nightly. These are the scored ideas available to future campaigns.</div>`
     + (oppList.length
-      ? `<table><thead><tr><th>Problem / desire</th><th>EV</th><th>Score</th><th>Half-life</th><th>Status</th></tr></thead><tbody>
+      ? `<table><thead><tr><th>Problem / desire</th><th>Expected value</th><th>Score</th><th>Window</th><th>Status</th></tr></thead><tbody>
          ${oppList.map(o => `<tr>
            <td class="sub" style="max-width:260px">${esc(o.problem_or_desire || "—")}</td>
            <td class="sub r">${o.expected_value != null ? Number(o.expected_value).toFixed(2) : "—"}</td>
@@ -6414,11 +6430,11 @@ RENDER.marketing_campaigns = async () => {
            <td><span class="statpill ${o.status === "active" ? "s-ok" : o.status === "scored" ? "s-warn" : "s-mut"}">${esc(o.status || "open")}</span></td>
          </tr>`).join("")}
          </tbody></table>`
-      : nwEmpty("No opportunities scored yet", "Opportunity bus populates after first nightly run."));
+      : nwEmpty("No opportunities scored yet", "Opportunities appear after the nightly scan."));
 
   /* Campaigns */
   const cmpHtml = `<div class="section">Campaigns
-    <span class="cnt">${Number(cmpgns.active || 0)} active · ${Number(cmpgns.shadow || 0)} shadow</span></div>`
+    <span class="cnt">${Number(cmpgns.active || 0)} active · ${Number(cmpgns.shadow || 0)} preview</span></div>`
     + (cmpList.length
       ? `<table><thead><tr><th>Objective</th><th>Audience</th><th>Promise</th><th>Channels</th><th>Authority</th><th>Status</th></tr></thead><tbody>
          ${cmpList.map(c => `<tr>
@@ -6427,7 +6443,7 @@ RENDER.marketing_campaigns = async () => {
            <td class="sub" style="max-width:180px">${esc(c.promise || "—")}</td>
            <td class="sub mono">${esc((c.channels || []).join(", ") || "—")}</td>
            <td>${mktAuthPill(c.authority_level)}</td>
-           <td><span class="statpill ${c.status === "active" ? "s-ok" : c.status === "shadow" ? "s-mut" : "s-warn"}">${esc(c.status || "—")}</span></td>
+           <td><span class="statpill ${c.status === "active" ? "s-ok" : c.status === "shadow" ? "s-mut" : "s-warn"}">${esc(c.status === "shadow" ? "preview" : (c.status || "—"))}</span></td>
          </tr>`).join("")}
          </tbody></table>`
       : nwEmpty("No campaigns yet", "Campaigns compile after opportunities are scored."));
@@ -6460,14 +6476,14 @@ RENDER.marketing_channels = async () => {
     <span class="statpill ${MKT_STAGE_CLS[dn.stage] || "s-mut"}">Stage ${esc(dn.stage || "A")}</span>
   </div>
   <div class="grid">
-    ${card("Actuation path", `
-      <div class="kv"><span>Path</span><b>${esc(actuation.path || "human_in_loop")}</b></div>
-      <div class="kv"><span>API eligible</span><b>${actuation.api_eligible ? "Yes" : "No"}</b></div>
-      <div class="kv"><span>Control loop</span><b>${esc(actuation.control_loop || "drafted")}</b></div>`)}
+    ${card("Publishing", `
+      <div class="kv"><span>Mode</span><b>${esc(String(actuation.path || "human in loop").replace(/_/g, " "))}</b></div>
+      <div class="kv"><span>Direct API</span><b>${actuation.api_eligible ? "Available" : "Not available"}</b></div>
+      <div class="kv"><span>State</span><b>${esc(String(actuation.control_loop || "drafted").replace(/_/g, " "))}</b></div>`)}
     ${card("Distinctness", `
       ${meter("Max variant similarity", simPct, simPct + "%", simPct >= 70 ? "bad" : simPct >= 50 ? "warn" : "")}
       <div class="kv"><span>Flagged pairs</span><b>${Number(dist.flags || 0)}</b></div>
-      <div class="note muted">Pairs above 0.7 Jaccard similarity are flagged.</div>`)}
+      <details class="tech-details"><summary>How this is measured</summary>Pairs above 0.7 Jaccard similarity are flagged.</details>`)}
     ${card("Publications", `
       <div class="kv"><span>Total</span><b>${Number(pubs.total || 0)}</b></div>
       <div class="kv"><span>Receipts</span><b>${Number(pubs.receipts || 0)}</b></div>
@@ -6475,11 +6491,8 @@ RENDER.marketing_channels = async () => {
   </div>`;
 
   /* Mixed-tilt model note */
-  const mixedTiltNote = `<div class="card" style="margin-bottom:12px;font-size:12px;color:var(--muted);line-height:1.55">
-    <b style="color:var(--text)">Every desk posts a mix.</b>
-    The tilt only shifts emphasis so desks feel distinct without being clones.
-    The same Prophet signal is rendered with different copy per desk — distinctness-safe under platform rules.
-    Signal alerts carry cashtags and a buy marker chart; no indicator vocabulary appears in public copy.
+  const mixedTiltNote = `<div class="sub" style="margin-bottom:12px">
+    Each desk mixes formats with a different emphasis so the accounts stay distinct.
   </div>`;
 
   /* Real account panels — the operator's per-desk control surface. */
@@ -6572,8 +6585,7 @@ function chanAccountPanel(a, channelSet, overrides, pubByAcct) {
         <div><div class="lbl">Posted</div><div class="val">${posts.length}</div></div>
         <div><div class="lbl">Last post</div><div class="val">${lastPost ? esc((lastPost.published_at || "").slice(0, 10) || "—") : "—"}</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:14px">${wiredHtml}
-        <span class="acct-followers-todo">Followers — not tracked yet</span></div>
+      <div style="display:flex;align-items:center;gap:14px">${wiredHtml}</div>
       <div class="acct-note-line" data-acct-msg="${esc(id)}"></div>
       ${recent}
     </div>
@@ -6662,13 +6674,13 @@ RENDER.marketing_ads = async () => {
           ${gate.spend_permitted ? "LIVE" : "no spend"}</div>
         ${gateRow(arms.paid_enabled, "Paid ads enabled")}
         ${gateRow(arms.envelope_set, "Daily budget set")}
-        ${gateRow(arms.operator_armed, "Armed by operator")}
+        ${gateRow(arms.operator_armed, "Manually armed")}
         <div class="note muted">${esc(gate.plain || "")}</div>`)}
       ${card("Budget ceiling", `
         <div class="kv"><span>Per day</span><b>$${Number(env.daily_usd || 0).toFixed(2)}</b></div>
         <div class="kv"><span>Per ad, per day</span><b>$${Number(env.per_arm_daily_cap_usd || 0).toFixed(2)}</b></div>
         <div class="kv"><span>Platform minimum</span><b>$${Number(env.min_daily_usd || 0).toFixed(2)}</b></div>
-        <div class="note muted">Read-only · config/marketing.yml</div>`)}
+        <details class="tech-details"><summary>Configuration source</summary><code>config/marketing.yml</code></details>`)}
       ${card("Split tests", `
         <div class="kv"><span>Tests</span><b>${Number(counts.arenas || 0)}</b></div>
         <div class="kv"><span>Gathering data</span><b>${Number(counts.seeding || 0)}</b></div>
@@ -6765,7 +6777,7 @@ RENDER.marketing_experiments = async () => {
     </div>`;
 
   /* Trial variant selector (display only) */
-  const variantHtml = `<div class="section">Trial variant <span class="cnt">read-only · config/marketing.yml</span></div>
+  const variantHtml = `<div class="section">Trial variant <span class="cnt">read-only</span></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
     ${variants.map(vr => `
       <div class="card" style="padding:10px 14px;${vr === active ? "border:1px solid var(--accent);background:rgba(106,141,255,.08)" : "opacity:.6"}">
@@ -6893,7 +6905,6 @@ async function renderMktDept(id) {
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
         ${mktLifecyclePill(dept.lifecycle_state)}
         ${mktAuthPill(dept.authority_level)}
-        <span class="statpill ${dept.director_model === "fable" ? "s-ok" : "s-warn"}" style="font-size:10px">${esc(dept.director_model || "opus")}</span>
       </div>
     </div>`;
 
@@ -7047,7 +7058,7 @@ function csFunnel(d) {
     if (st.odd) {
       loss = `<div class="fn-odd-word">${flrN(st.out)} out of ${flrN(st.in)} in — these two counters don't nest, so no loss figure is honest here.</div>`;
     } else if (isNull) {
-      loss = `<div class="fn-lost-none">not measured on this payload</div>`;
+      loss = `<div class="fn-lost-none">not measured yet</div>`;
     } else if (st.in == null) {
       loss = `<div class="fn-lost-none">start of the line</div>`;
     } else if (st.lost === 0) {
@@ -7075,7 +7086,7 @@ function csFunnel(d) {
   } else if (typeof last.out === "number" && first.out) {
     verdict = `<b>${flrN(last.out)} of ${flrN(first.out)} planned posts reached the outbox rail.</b> Each station's second number is what stopped there.`;
   } else {
-    verdict = `The funnel is still filling in. Stations without a number were not measured on this payload.`;
+    verdict = `The funnel is still filling in. Stations without a number were not measured yet.`;
   }
   const caveats = [];
   if (oddNames.length) {
@@ -8724,7 +8735,7 @@ RENDER.marketing_health = async () => {
         <button class="btn" data-clear-halt="${esc(h.account)}">Clear halt</button>
       </div>`).join("")}
       <div class="muted small">Clearing writes to the tracked registry and commits it.
-        Until that reaches main, the VPS's next pull restores the halt.</div>
+        Until that change is merged, the next deployment can restore the previous state.</div>
     </section>` : `<section class="card"><h3>No desk is halted</h3></section>`;
 
   const wireBlock = `<section class="card">
@@ -8920,17 +8931,12 @@ async function mlRollback(versionId, btn) {
 RENDER.marketing_outbox = async () => {
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
-  /* These three reads are independent.  The rejection ledger used to wait for the
-     full Outbox fold, then Sentinel waited for that — making page-open latency the
-     SUM of three I/O paths.  Start one wave and keep the two auxiliaries fail-soft. */
-  const [d, rejectionData, sentinelData] = await Promise.all([
-    api("/api/marketing/outbox").catch(e => ({ ok: false, error: e && e.message })),
-    api("/api/marketing/rejections").catch(() => null),
-    api("/api/marketing/sentinel").catch(() => null),
-  ]);
+  const d = await api("/api/marketing/outbox");
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Outbox unavailable", (d && d.error) || "panel error"); return; }
   OBX_LAST = d;
-  OBX_REJ = rejectionData;
+  /* Fail-soft: the rejection box must never take the Outbox down with it. */
+  OBX_REJ = null;
+  try { OBX_REJ = await api("/api/marketing/rejections"); } catch (e) { OBX_REJ = null; }
 
   const cap = d.cap != null ? d.cap : "—";
   const asOf = d.as_of || null;
@@ -8940,15 +8946,18 @@ RENDER.marketing_outbox = async () => {
 
   /* Cross-link to Sentinel — surface any policy holds so a reviewer here knows
      the gate caught something worth reading before they approve. Fail-soft:
-     Sentinel is advisory and cannot take the Outbox down. */
+     the outbox never blocks on the sentinel fetch. Computed once on mount (the
+     header is static across in-place refreshes). */
   let sentinelChip = "";
-  const held = sentinelData && sentinelData.ok
-    ? (sentinelData.policy_quarantined || []).length : 0;
-  if (held > 0) {
-    sentinelChip = `<span class="obx-sentinel-link" onclick="go('marketing_sentinel')" role="button" tabindex="0"
-      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('marketing_sentinel')}"
-      >&#9940; ${held} held by Sentinel</span>`;
-  }
+  try {
+    const sd = await api("/api/marketing/sentinel");
+    const held = sd && sd.ok ? (sd.policy_quarantined || []).length : 0;
+    if (held > 0) {
+      sentinelChip = `<span class="obx-sentinel-link" onclick="go('marketing_sentinel')" role="button" tabindex="0"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('marketing_sentinel')}"
+        >&#9940; ${held} held by Sentinel</span>`;
+    }
+  } catch (_e) { /* sentinel optional — ignore */ }
 
   /* Header. THE PILL USED TO BE A STRING LITERAL reading "Review only — nothing
      posts externally", with the lede underneath promising "in this shadow phase
@@ -9028,25 +9037,12 @@ function obxRenderLive(d) {
      while the tile row happily rendered a Recalled tile that could only ever
      read 0. A state the payload carries and the page cannot show is a state the
      operator cannot act on. */
-  /* accounts[].items is intentionally the LIVE/retryable working set.
-     Terminal posted/quarantined/recalled rows live in the bounded history window
-     instead of being duplicated by the thousands in every payload.  Seed terminal
-     totals (and total failed, which includes spent failures) from the server's
-     all-items summary, then derive the live states that need decision-overlay
-     semantics from the working set. */
-  const serverSummary = (d.summary && typeof d.summary === "object") ? d.summary : null;
-  const effSummary = {
-    queued: 0, held: 0, approved: 0, posting: 0,
-    posted: serverSummary ? Number(serverSummary.posted || 0) : 0,
-    failed: serverSummary ? Number(serverSummary.failed || 0) : 0,
-    quarantined: serverSummary ? Number(serverSummary.quarantined || 0) : 0,
-    recalled: serverSummary ? Number(serverSummary.recalled || 0) : 0,
-  };
+  const effSummary = { queued: 0, held: 0, approved: 0, posting: 0, posted: 0,
+                       failed: 0, quarantined: 0, recalled: 0 };
   accounts.forEach(a => (a.items || []).forEach(it => {
     const s = obxEffState(it);
     const key = (s === "approve_ok") ? "approved" : s;
-    if (["queued", "held", "approved", "posting"].includes(key)) effSummary[key] += 1;
-    else if (!serverSummary && effSummary[key] != null) effSummary[key] += 1;
+    if (effSummary[key] != null) effSummary[key] += 1;
   }));
 
   /* Global work count — undecided/re-armable items across all desks, minus
@@ -9597,7 +9593,7 @@ function pubGoLive(d) {
       <div class="golive-title">Buffer channel connected</div>
       <div class="golive-do">${flagshipCh
         ? `Flagship desk <b>@mastermindx001</b> has a Buffer channel id.`
-        : `Connect the flagship Buffer channel and set its id in <span class="k">config/marketing.yml</span> → <span class="k">publish.channels</span>.`}</div>
+        : `Connect the flagship Buffer channel before publishing.`}</div>
     </div>
     <div class="golive-aside"></div>
   </div>`;
@@ -9618,7 +9614,7 @@ function pubGoLive(d) {
       <div class="golive-title">Buffer token</div>
       <div class="golive-do" id="golive-token-do">${tokenPresent
         ? `Token saved to repo secrets. Paste a new value only to replace it.`
-        : `Not visible from this machine — a repo secret cannot be read back, and this admin process has no local copy. If the runner is posting, the token is set. Paste one here only to replace it (stdin only; never shown or logged).`}</div>
+        : `The saved token cannot be displayed here. Paste a new value only if you want to replace it.`}</div>
       <div class="golive-tokbox">
         <input type="password" id="pub-token-input" class="golive-tokinput" autocomplete="off"
                spellcheck="false" placeholder="Buffer API token" aria-label="Buffer API token">
@@ -9638,11 +9634,11 @@ function pubGoLive(d) {
         : `<span class="warn">Arm state unknown</span>`);
   let armDo;
   if (!armKnown) {
-    armDo = `${as.error ? esc(as.error) : "GitHub API unreachable — arm state unknown."} The runner always follows the <span class="k">MARKETING_PUBLISH_ENABLED</span> repo variable.`;
+    armDo = `${as.error ? esc(as.error) : "Publishing state could not be read."} <details class="tech-details"><summary>Technical details</summary>The runner follows the <code>MARKETING_PUBLISH_ENABLED</code> repository variable.</details>`;
   } else if (armed) {
     armDo = `The publisher is armed. Approved, due items post at the next slot. Disarm any time — it is an instant kill switch.`;
   } else {
-    armDo = `Arm the publisher to start posting approved, due items. It writes the <span class="k">MARKETING_PUBLISH_ENABLED</span> repo variable — one source of truth, instantly reversible.`;
+    armDo = `Arm the publisher to start posting approved, due items at their scheduled slots.`;
   }
   const armBtnLabel = armed ? "Disarm" : "Arm publisher";
   const armBtnCls = armed ? "btn sm" : "btn sm primary";
@@ -9885,7 +9881,7 @@ function pubNextDispatchSection(d) {
   if (!Array.isArray(d.next_dispatch)) {
     return `<div class="card" id="pub-next">
       <div class="section">Next dispatches <span class="cnt">${cd}</span></div>
-      <div class="note muted">This build can't list them without running the preview — the panel it reads was added after this payload was built.</div>
+      <div class="note muted">Preview is required to load these items in this build.</div>
       <button class="btn primary" onclick="pubRunDryRun(this)" style="margin-top:8px">Run dry-run</button>
     </div>`;
   }
@@ -10225,7 +10221,7 @@ RENDER.marketing_publish = async () => {
   /* Configuration is reference material, not a control — collapsed, and below
      the three sections that answer an actual question. */
   const cfgCard = `<details class="card pub-cfg-details">
-    <summary class="section" style="cursor:pointer">Configuration <span class="cnt">config/marketing.yml · read-only</span></summary>
+    <summary class="section" style="cursor:pointer">Configuration <span class="cnt">read-only</span></summary>
     <div class="pub-cfg-grid" style="margin-top:10px">
       <div><span class="eyebrow">Backend</span> <b>${esc(cfg.backend || "buffer")}</b></div>
       <div><span class="eyebrow">Daily cap</span> ${pubCapLabel(cfg)}</div>
@@ -10458,7 +10454,7 @@ RENDER.marketing_sentinel = async () => {
   /* --- Day-0 accruing state: report file not yet written. Honest, not empty. --- */
   if (d.note && d.plan_status == null) {
     v.innerHTML = `<div class="section">Sentinel</div>
-      <div class="sent-lede">The pre-publication gate reads the whole day's post plan before anything can go out — checking for near-duplicate posts across the six accounts, advice-style phrasing, missing disclosures, and cadence caps. It de-escalates only: it can hold or trim a post, never write one.</div>
+      <div class="sent-lede">Pre-publication review checks duplicates, risky phrasing, disclosures, and cadence before anything can post.</div>
       <div class="sent-hero sent-hero-accruing">
         <div class="sent-hero-dot sent-dot-hold"></div>
         <div class="sent-hero-main">
@@ -10496,7 +10492,7 @@ RENDER.marketing_sentinel = async () => {
     ? "The kill-switch is OFF: approved posts will go out to X. Every hold below is the last line before publication."
     : live === false
       ? "The kill-switch is holding. Posts are gated and reviewed, but nothing leaves the building. This is the safe resting state."
-      : "This machine could not read the publish switch, so assume posts CAN go out — the runner follows the repo variable either way. Open the Publisher to see and set it.";
+      : "Publishing state could not be read here. Treat publishing as potentially active and open Publisher to verify.";
   /* What the GATE saw when it ran, kept separate from what is true now. When the
      two disagree the operator must be told, not quietly shown the newer one. */
   const gateSaw = d.publish_enabled === true || d.publish_enabled === false
@@ -10558,7 +10554,7 @@ RENDER.marketing_sentinel = async () => {
   if (policyQ.length) {
     const cards = policyQ.map(sentPolicyCard);
     policyHtml = `<div class="section" id="sent-policy">Policy flags <span class="cnt">${policyQ.length} held for a human read</span></div>
-      <div class="sent-lede sent-lede-tight">These posts tripped a ban-risk rule — near-duplicate text across accounts, advice-style phrasing, or a missing disclosure. Read each one. They stay held until you grant an exception; nothing here posts on its own.</div>
+      <div class="sent-lede sent-lede-tight">These posts tripped a policy rule and stay held until reviewed or explicitly excepted.</div>
       ${sentReasonFilterBar(policyQ)}
       <div id="sent-flag-list">${blList(cards, 8, 40)}</div>`;
   } else {
@@ -10579,7 +10575,7 @@ RENDER.marketing_sentinel = async () => {
       <td class="sent-of-slot">${esc(q.slot || "")}</td>
     </tr>`);
     overHtml = `<details class="sent-overflow" id="sent-overflow">
-      <summary><span class="sent-of-count">${overQ.length}</span> posts trimmed by cadence &amp; media caps <span class="sent-of-why">— the plan over-generates on purpose; caps sit at the new-account tier (2 posts / account / day). These are queued, not problems.</span></summary>
+      <summary><span class="sent-of-count">${overQ.length}</span> posts trimmed by cadence &amp; media caps <span class="sent-of-why">— queued, not errors.</span></summary>
       <div class="table-wrap"><table class="exp-table sent-of-table">
         <thead><tr><th>Desk</th><th>Type</th><th>Cashtag</th><th>Headline</th><th>Slot</th></tr></thead>
         <tbody>${sentBoundedRows(rows, 20, 80, 5)}</tbody>
@@ -10866,7 +10862,7 @@ function sentChecksGrid(checks, topR, policyQ) {
 /* Doctrine footer — where the caps live. Text only, no external links. */
 function sentFooter(d) {
   const stamp = d && d.produced_at ? ` · gate ran ${esc(sentStamp(d.produced_at))}` : "";
-  return `<div class="sent-footer">Caps set by the D08 red-team appendix · ramp tiers in <code>config/marketing.yml</code> <code>sentinel:</code>${stamp}</div>`;
+  return `<div class="sent-footer">Posting caps and review rules${stamp}</div>`;
 }
 
 /* Sentinel contract card — plain words, no config-key slugs. Explains the small
@@ -11972,7 +11968,7 @@ const ALLIES_NEXT = {
    dialog and the action button. These are decisions being recorded, never sends. */
 const ALLIES_MOVE_COPY = {
   operator_approved: { verb: "Approve", line: "Mark this ally worth approaching. You decide when and how to reach out — outside this system." },
-  contacted:         { verb: "Mark contacted", line: "Record that you (the operator) have made contact. This does not send anything; it logs that you did." },
+  contacted:         { verb: "Mark contacted", line: "Record that you made contact. This does not send anything." },
   active:            { verb: "Mark active", line: "Record that this ally is now an active partner." },
   retired:           { verb: "Retire", line: "Shelve this ally. You can retire from any stage; it drops off the active pipeline." },
 };
@@ -12240,7 +12236,7 @@ function alliesConfirm(tid, to) {
       <button class="allies-x" onclick="alliesCloseModal()" aria-label="Close">✕</button>
     </div>
     <div class="allies-confirm-body">
-      <div class="allies-confirm-law"><b>Operator action.</b> This records your decision to the operator ledger. Nothing is sent.</div>
+      <div class="allies-confirm-law"><b>Manual action.</b> This records your decision. Nothing is sent.</div>
       <div class="allies-confirm-line">${esc(mv.line)}</div>
       <label class="allies-note-label" for="allies-note">Note (optional, for the ledger)</label>
       <textarea id="allies-note" class="allies-note" maxlength="280" rows="2" placeholder="e.g. reached out via their public contact form"></textarea>
@@ -12259,7 +12255,7 @@ async function alliesDoTransition(tid, to) {
   const note = (document.getElementById("allies-note") || {}).value || "";
   const r = await post("/api/marketing/allies/transition", { target_id: tid, to_status: to, note });
   if (r && r.ok) {
-    toast("Decision recorded to operator ledger — nothing sent");
+    toast("Decision recorded — nothing sent");
     alliesCloseModal();
     go("marketing_allies");  /* re-fold + re-render so the pipeline advances */
   } else {
@@ -12897,11 +12893,11 @@ function seoSearchConsoleBlock(sc) {
 /* ---- MASTERMIND AI (bot proxy) — W-AI ------------------------------------ */
 const MAI_SETTING_FIELDS = [   /* [key, kind, label, note, min, max] — bounds mirror the bot's */
   ["loop_enabled", "bool", "Self-improvement loop", "Main switch for the bot's improvement loop."],
-  ["llm_review", "bool", "LLM review", "Use the LLM for the every-N-loops review pass."],
+  ["llm_review", "bool", "AI review", "Use AI for the every-N-loops review pass."],
   ["review_every_n_loops", "int", "Review every N loops", "Roll-up review cadence (2–50).", 2, 50],
   ["nudges_max", "int", "Max nudges", "Cap on coded nudges published to the macro repo (1–10).", 1, 10],
   ["attribution_min_n", "int", "Attribution min n", "Minimum sample size before attribution claims (6–100).", 6, 100],
-  ["directives_max_open", "int", "Max open directives", "Cap on concurrently open operator directives (1–10).", 1, 10],
+  ["directives_max_open", "int", "Max open instructions", "Cap on concurrently open instructions (1–10).", 1, 10],
   ["directive_expiry_days", "int", "Directive expiry days", "Days a published directive waits for an acknowledgement before expiring (3–60).", 3, 60],
   ["auto_act_on_findings", "bool", "Auto-act on findings", "Queue auto-drafted directives from open findings on every loop cycle — no button press needed."],
 ];
@@ -12939,7 +12935,7 @@ function guestAccessCardHtml(g) {
   return `<div class="section">Public chat access ${stateChip} ${fileChip}</div>
     <div class="note muted" style="margin:0 0 12px;line-height:1.5">Let anyone use the <b>Mastermind AI</b> chat widget's <b>Fast</b> lane for free — including signed-out visitors — up to a daily cap per person (counted by cookie <i>and</i> IP, so clearing cookies doesn't reset it). Signed-in free users get the same daily Fast cap while this is on. Pro, Deep Research, and image attach stay sign-in / paid. Changes apply within about 20 seconds — no restart.</div>
     <div class="row"><label class="switch"><input type="checkbox" id="guestEnabled" ${en ? "checked" : ""}><span class="slider"></span></label>
-      <div><div class="lab">Guest access (free Fast lane)</div><div class="note">When off, the widget is sign-in-gated exactly as before. Fails closed (off) if the config file is missing. <code class="muted">enabled</code></div></div></div>
+      <div><div class="lab">Guest access</div><div class="note">When off, the widget is sign-in-gated exactly as before. Fails closed (off) if the config file is missing. <code class="muted">enabled</code></div></div></div>
     <div class="row"><div class="lab" style="min-width:220px">Free messages per day</div>
       <input type="number" id="guestLimit" data-prev="${en || lim ? lim : 30}" min="1" max="500" value="${lim}" style="width:86px">
       <button class="btn" id="guestSave" style="margin-left:8px">Save</button>
@@ -12996,9 +12992,9 @@ RENDER.mastermind_ai = async () => {
     let botBase = "http://127.0.0.1:8000";  /* default shown immediately */
     v.innerHTML = `<div id="guestAccessCard"><div class="spin">loading…</div></div>
     <div class="banner show" style="position:static;margin-bottom:16px;padding:12px 16px;border-radius:6px;display:block">
-      <div style="font-size:15px;font-weight:700;margin-bottom:6px">Bot service unreachable (<span id="maiBotBase">${esc(botBase)}</span>)</div>
-      <div>The Mastermind bot runs on the operator&#39;s Mac, not this server. Run cycle and settings will fail until <code>MASTERMIND_BOT_BASE</code> points at a reachable bot API.</div>
-      <div class="sub muted" style="margin-top:6px">Detail: ${detailSnip}</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:6px">Mastermind AI is unavailable</div>
+      <div>Run-cycle and bot settings are temporarily unavailable.</div>
+      <details class="tech-details"><summary>Technical details</summary>Bot endpoint <code id="maiBotBase">${esc(botBase)}</code> · set <code>MASTERMIND_BOT_BASE</code> to a reachable API. ${detailSnip}</details>
     </div>
     <div id="loopStripWrap"></div>`;
     /* Public chat-widget guest access is admin-served — available even when the bot is down. */
@@ -13049,24 +13045,24 @@ RENDER.mastermind_ai = async () => {
     <div class="mb-hero-chips">
       ${loopAgeChip}
       <span class="statpill s-mut">loop #${d.loop_n != null ? d.loop_n : "—"}</span>
-      ${nudgesN != null ? `<span class="statpill ${nudgesN ? "s-warn" : "s-mut"}" title="coded fix-requests published to the NW orchestrator">${nudgesN} nudge${nudgesN === 1 ? "" : "s"}</span>` : ""}
-      ${refl.contract_drift_n != null ? `<span class="statpill ${refl.contract_drift_n ? "s-bad" : "s-mut"}" title="NW context fields the bot's decision rules need but cannot use">${refl.contract_drift_n} contract drift${refl.contract_drift_n === 1 ? "" : "s"}</span>` : ""}
+      ${nudgesN != null ? `<span class="statpill ${nudgesN ? "s-warn" : "s-mut"}">${nudgesN} request${nudgesN === 1 ? "" : "s"}</span>` : ""}
+      ${refl.contract_drift_n != null ? `<span class="statpill ${refl.contract_drift_n ? "s-bad" : "s-mut"}" title="data fields needed by current decision rules but unavailable">${refl.contract_drift_n} data mismatch${refl.contract_drift_n === 1 ? "" : "es"}</span>` : ""}
       ${countChips(typeof flagsObj === "object" && !Array.isArray(flagsObj) ? flagsObj : null)}
     </div>
     ${loopStale ? `<div class="sub" style="margin-top:6px;color:var(--bad)">⚠︎ The bot hasn't completed a self-improvement cycle in ${fmtAge(loopAgeH)} — its cron may have stopped or the bot may be down. "Loop on" is only the setting, not proof it's running.</div>` : ""}
   </div>
-  <div class="note muted" style="margin:0 0 20px;line-height:1.5">Every night the bot audits the Neural Web data it trades against. A contract-drift finding means a data field its decision rules consume is missing or dead in the published artifact. A nudge is the fix request it publishes back to the macro pipeline. Nudges flow out automatically. Formal directives are queued from open findings automatically each cycle when "Auto-act on findings" is on — or by hand via "Act on findings" / the composer below.</div>`;
+  <div class="note muted" style="margin:0 0 20px;line-height:1.5">The nightly loop reviews its data dependencies, records issues, and queues approved follow-up work.</div>`;
 
   const settingRow = ([key, kind, label, note, lo, hi]) => {
     const val = st[key];
     if (kind === "bool")
       return `<div class="row"><label class="switch"><input type="checkbox" data-maiset="${key}" data-kind="bool" ${val ? "checked" : ""}><span class="slider"></span></label>
-        <div><div class="lab">${esc(label)}</div><div class="note">${esc(note)} <code class="muted">${esc(key)}</code>${val == null ? ' <span class="tag inert">not reported</span>' : ""}</div></div></div>`;
+        <div><div class="lab">${esc(label)}</div><div class="note">${esc(note)}${val == null ? ' <span class="tag inert">not reported</span>' : ""}</div><details class="tech-details"><summary>Config key</summary><code>${esc(key)}</code></details></div></div>`;
     return `<div class="row"><div class="lab" style="min-width:220px">${esc(label)}</div>
       <input type="number" data-maiset="${key}" data-kind="int" data-prev="${val != null ? val : ""}" value="${val != null ? val : ""}"${lo != null ? ` min="${lo}"` : ""}${hi != null ? ` max="${hi}"` : ""} style="width:86px">
-      <div class="note">${esc(note)} <code class="muted">${esc(key)}</code></div></div>`;
+      <div><div class="note">${esc(note)}</div><details class="tech-details"><summary>Config key</summary><code>${esc(key)}</code></details></div></div>`;
   };
-  const settingsHtml = `<div class="section">Settings <span class="cnt">bot-side</span></div>` + MAI_SETTING_FIELDS.map(settingRow).join("");
+  const settingsHtml = `<div class="section">Settings</div>` + MAI_SETTING_FIELDS.map(settingRow).join("");
 
   v.innerHTML = `<div id="guestAccessCard"><div class="spin">loading…</div></div>`
     + `<div id="loopStripWrap"></div>` + heroHtml + settingsHtml
@@ -13200,10 +13196,10 @@ RENDER.mastermind_ai = async () => {
       const src = String(dd.source || "operator");
       return src.startsWith("nudge:")
         ? `<span class="statpill s-mut mono" title="auto-drafted from the ${esc(src.slice(6))} finding">auto: ${esc(src.slice(6))}</span>`
-        : `<span class="statpill s-mut">operator</span>`;
+        : `<span class="statpill s-mut">manual</span>`;
     };
     const dirsHtml = `<div class="card" style="margin-top:14px">
-      <div class="section" style="margin:0 0 8px">Operator directives <span class="cnt">${st.directives_max_open != null ? `${openN}/${st.directives_max_open} slots used` : `${openN} open`}</span></div>
+      <div class="section" style="margin:0 0 8px">Instructions <span class="cnt">${st.directives_max_open != null ? `${openN}/${st.directives_max_open} slots used` : `${openN} open`}</span></div>
       ${dirs.length ? dirs.map(dd => `<div class="card" style="margin-bottom:8px">
           <div style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">
             <code>${esc(dd.id || "—")}</code><span class="sub">${esc(String(dd.ts || dd.created || "").slice(0, 16).replace("T", " "))}</span>
@@ -13211,7 +13207,7 @@ RENDER.mastermind_ai = async () => {
             ${srcChip(dd)}
           </div>
           <div class="sub" style="margin-top:4px">${esc(dd.text || "")}</div>
-        </div>`).join("") : `<div class="sub muted">No directives queued.</div>`}
+        </div>`).join("") : `<div class="sub muted">No instructions queued.</div>`}
       ${maiDirectiveComposer()}
     </div>`;
     const d4 = await api("/api/mastermind_ai/reflection");
@@ -13243,7 +13239,7 @@ RENDER.mastermind_ai = async () => {
       : `<div class="sub muted">No open findings — the bot's last audit found every contract field it needs alive in the web.</div>`;
     const statChips = [];
     const driftN = (d4.contract_drift || []).length;   /* nw_reflection.v1: contract_drift is a LIST */
-    statChips.push(`<span class="statpill ${driftN ? "s-bad" : "s-mut"}" title="from the latest reflection artifact">${driftN} contract drift${driftN === 1 ? "" : "s"}</span>`);
+    statChips.push(`<span class="statpill ${driftN ? "s-bad" : "s-mut"}" title="data fields required by current decision rules but unavailable">${driftN} data mismatch${driftN === 1 ? "" : "es"}</span>`);
     if (d4.nudges_dropped_n) statChips.push(`<span class="statpill s-warn" title="finding candidates cut by the max-nudges cap">${d4.nudges_dropped_n} dropped by cap</span>`);
     if (d4.coverage && typeof d4.coverage === "object") statChips.push(countChips(d4.coverage));
     else if (d4.coverage != null) statChips.push(`<span class="statpill s-mut">coverage · ${esc(String(d4.coverage))}</span>`);
@@ -13438,7 +13434,7 @@ async function mmlLoad() {
   const bySurf = Object.entries(st.by_surface || {}).map(([k, n]) => `${esc(k)} ${n}`).join(" · ") || "none yet";
   /* Ingest health — an empty/aging ledger used to look identical to a quiet week. */
   const ing = d.ingest || {};
-  const darkHtml = ing.dark ? `<div class="banner show" style="position:static;display:block;margin-top:10px">⚠️ Ingest dark${ing.last_ts ? ` since ${esc(String(ing.last_ts).slice(0, 10))}` : ""} — ${ing.last_ts ? `no new AI responses in ${ing.dark_days} day${ing.dark_days === 1 ? "" : "s"}` : "no AI responses have ever been ingested"}. Both surfaces write straight to R2: check the plain R2_* creds in /etc/macro-api.env on the VPS (macro brain) and the Terminal copilot env, then hit “⟳ Refresh from R2”.</div>` : "";
+  const darkHtml = ing.dark ? `<div class="banner show" style="position:static;display:block;margin-top:10px">Response ingest is paused${ing.last_ts ? ` — no new responses for ${ing.dark_days} day${ing.dark_days === 1 ? "" : "s"}` : ""}. Refresh after checking response storage.<details class="tech-details"><summary>Technical details</summary>Macro and Terminal write to R2; check their R2 credentials if this persists.</details></div>` : "";
   /* Asymmetric case: overall ledger looks alive because ONE surface still writes. */
   const surfDarkHtml = ing.dark ? "" : Object.entries(ing.last_by_surface || {}).map(([s, ts]) => {
     const days = (Date.now() - Date.parse(ts)) / 86400e3;
@@ -13449,19 +13445,19 @@ async function mmlLoad() {
      un-classified corpus shows nothing rather than four zeroes. */
   const verdictChips = Object.entries(st.verdicts || {}).map(([v, n]) => {
     const [cls, label] = mmlVerdictMeta(v);
-    return `<span class="statpill ${cls}" title="LLM verdict: ${esc(label)}">${esc(label)} ${n}</span>`;
+    return `<span class="statpill ${cls}" title="Conflict verdict: ${esc(label)}">${esc(label)} ${n}</span>`;
   }).join("");
   const heroHtml = `<div class="mb-hero">
     <div class="mb-hero-top">
       <span class="mb-hero-kicker">Mastermind AI</span>
-      <span class="mb-hero-name">Response logs — evaluation corpus</span>
+      <span class="mb-hero-name">Response quality</span>
       <span class="spacer"></span>
-      <button class="btn" id="mmlRefresh" title="Pull new rows from R2 (both surfaces write there)">⟳ Refresh from R2</button>
-      <button class="btn" id="mmlClassify" title="Ask a small model to label the un-verdicted conflict candidates: our data wrong, or the market genuinely split?">⚡ Classify conflicts (LLM)</button>
+      <button class="btn" id="mmlRefresh" title="Load the newest response logs">⟳ Refresh</button>
+      <button class="btn" id="mmlClassify" title="Classify unresolved conflict candidates">⚡ Classify conflicts</button>
       <button class="btn" id="mmlExportJ" title="Download current filter as JSONL">⭳ JSONL</button>
       <button class="btn" id="mmlExportC" title="Download current filter as CSV">⭳ CSV</button>
     </div>
-    <div class="sub" style="margin-top:6px">Every answer the Mastermind assistant gives — across the Macro Dashboard chat and the Terminal copilot — logged for batch evaluation, training-set curation, and context/skill improvement. Grade and tag responses inline; verdicts save to a local sidecar.</div>
+    <div class="sub" style="margin-top:6px">Review, grade, and tag assistant responses from the Macro Dashboard and Terminal.</div>
     <div class="mb-hero-chips">
       <span class="statpill s-mut" title="rows in the local ledger">${st.total || 0} logged</span>
       <span class="statpill s-mut">${bySurf}</span>
@@ -13485,16 +13481,16 @@ async function mmlLoad() {
     <select id="mmlThumb" class="btn">${[["all", "any 👍/👎"], ["up", "👍 up"], ["down", "👎 down"]].map(([o, t]) => `<option value="${o}"${f.thumb === o ? " selected" : ""}>${t}</option>`).join("")}</select>
     <input id="mmlModel" class="btn" style="width:120px" placeholder="model…" value="${esc(f.model || "")}">
     <input id="mmlSearch" class="btn" style="width:180px" placeholder="search text…" value="${esc(f.search || "")}">
-    <select id="mmlVerdict" class="btn" title="LLM contradiction verdict">${[["all", "any verdict"], ["system_error", "data may be wrong"], ["market_divergence", "market split"], ["none", "no conflict"], ["unclear", "unclear"]].map(([o, t]) => `<option value="${o}"${f.verdict === o ? " selected" : ""}>${t}</option>`).join("")}</select>
+    <select id="mmlVerdict" class="btn" title="Conflict verdict">${[["all", "any verdict"], ["system_error", "data may be wrong"], ["market_divergence", "market split"], ["none", "no conflict"], ["unclear", "unclear"]].map(([o, t]) => `<option value="${o}"${f.verdict === o ? " selected" : ""}>${t}</option>`).join("")}</select>
     <label class="sub" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="mmlStar"${f.starred ? " checked" : ""}> flagged</label>
     <label class="sub" style="display:flex;align-items:center;gap:4px"><input type="checkbox" id="mmlErr"${f.error ? " checked" : ""}> errors</label>
-    <label class="sub" style="display:flex;align-items:center;gap:4px" title="only rows carrying the model's captured reasoning"><input type="checkbox" id="mmlThink"${f.thinking ? " checked" : ""}> 🧠 thinking</label>
+    <label class="sub" style="display:flex;align-items:center;gap:4px" title="only rows with captured reasoning"><input type="checkbox" id="mmlThink"${f.thinking ? " checked" : ""}> 🧠 reasoning</label>
     <label class="sub" style="display:flex;align-items:center;gap:4px" title="only rows whose answer or reasoning uses conflict language"><input type="checkbox" id="mmlContra"${f.contra ? " checked" : ""}> ⚡ conflicts</label>
     <button class="btn primary" id="mmlApply">Apply</button>
     <span class="sub muted">${d.matched || 0} match</span>
   </div>`;
 
-  const rowsHtml = MML.rows.length ? MML.rows.map(mmlRowHtml).join("") : `<tr><td colspan="6" class="sub muted" style="padding:18px">No responses logged yet. Once the brain chat or Terminal copilot answers a user (and R2 is configured), hit “Refresh from R2”.</td></tr>`;
+  const rowsHtml = MML.rows.length ? MML.rows.map(mmlRowHtml).join("") : `<tr><td colspan="6" class="sub muted" style="padding:18px">No responses logged yet. Refresh after the assistant has answered on Macro or Terminal.</td></tr>`;
   const tableHtml = `<table style="margin-top:12px"><thead><tr>
     <th style="width:130px">When</th><th style="width:90px">Surface</th><th>Question → answer</th>
     <th style="width:120px">Model</th><th class="r" style="width:70px">Tokens</th><th style="width:130px">Eval</th>
@@ -13514,8 +13510,8 @@ async function mmlLoad() {
    rate, and an unjudged row means the judge failed, not that the answer did. */
 function mmlEvalSummaryHtml(s) {
   if (!s || !s.ok) {
-    return `<div class="section" style="margin-top:14px">Weekly answer quality (auto-eval)</div>
-      <div class="card"><div class="sub muted">No weekly eval has run yet${s && s.error && s.error !== "absent" ? ` (${esc(String(s.error))})` : ""}. The brain-eval workflow runs Sundays 13:00 UTC; run it by hand with <span class="mono">python scripts/run_brain_eval.py</span> (add <span class="mono">--dry-run</span> for the mechanical checks only, no LLM spend).</div></div>`;
+    return `<div class="section" style="margin-top:14px">Weekly answer quality</div>
+      <div class="card"><div class="sub muted">No weekly evaluation has run yet${s && s.error && s.error !== "absent" ? ` (${esc(String(s.error))})` : ""}. Scheduled evaluations run Sundays at 13:00 UTC.<details class="tech-details"><summary>Run manually</summary><code>python scripts/run_brain_eval.py</code> · add <code>--dry-run</code> for mechanical checks only.</details></div></div>`;
   }
   const pct = r => (r == null ? "—" : Math.round(100 * r) + "%");
   const lanes = Object.entries(s.by_lane || {}).sort();
@@ -13530,7 +13526,7 @@ function mmlEvalSummaryHtml(s) {
   const tagHtml = (s.top_tags || []).length
     ? (s.top_tags || []).map(t => `<span class="statpill s-warn">${esc(t.tag)} ×${t.n}</span>`).join(" ")
     : `<span class="statpill s-ok">no failure tags</span>`;
-  return `<div class="section" style="margin-top:14px">Weekly answer quality (auto-eval) ${s.dry_run ? `<span class="statpill s-warn">dry run — mechanical checks only</span>` : ""}</div>
+  return `<div class="section" style="margin-top:14px">Weekly answer quality ${s.dry_run ? `<span class="statpill s-warn">checks only</span>` : ""}</div>
     <div class="card">
       <div class="kv"><span>Last run</span><b>${esc(s.iso_week || "?")} <span class="sub muted mono">${esc(String(s.run_at || "").replace("T", " ").slice(0, 16))} · ${s.window_days || 7}d window</span></b></div>
       <div class="kv"><span>Overall pass rate</span><b>${pct(s.pass_rate)} <span class="sub muted">${s.passed || 0}/${s.judged || 0} judged of ${s.sampled || 0} sampled · pass is ≥${s.pass_threshold || 80}/100${s.mean_total == null ? "" : ` · mean ${s.mean_total}`}</span></b></div>
@@ -13538,7 +13534,7 @@ function mmlEvalSummaryHtml(s) {
       ${(s.judged || 0) < (s.sampled || 0) ? `<div class="kv"><span>Unjudged</span><b class="sub" style="color:var(--warn)">${(s.sampled || 0) - (s.judged || 0)} row(s) — the judge failed on these, they are NOT counted as failures</b></div>` : ""}
       ${s.hard_fails ? `<div class="kv"><span>Hard fails</span><b style="color:var(--bad)">${s.hard_fails} — a leaked internal guide or a refusal; these cannot pass on score</b></div>` : ""}
       <div class="mb-hero-chips" style="margin-top:8px">${benchHtml} ${tagHtml}</div>
-      <div class="note muted" style="margin-top:6px">Internal QA telemetry only — these scores never appear in product copy. An LLM judge grades the eight rubric axes; the leak / invented-odds / refusal / language checks are deterministic and outrank it.</div>
+      <div class="note muted" style="margin-top:6px">Internal QA only; these scores never appear in product copy.<details class="tech-details"><summary>How scoring works</summary>A model judge grades the rubric; deterministic leak, invented-odds, refusal, and language checks take precedence.</details></div>
     </div>`;
 }
 
@@ -13664,7 +13660,7 @@ function mmlWire() {
     btn.disabled = true; btn.textContent = "⚡ classifying…";
     mmlStatus("Reading the un-verdicted conflict candidates…");
     const r = await post("/api/mastermind_ai/response_logs/classify", { limit: 20 });
-    btn.disabled = false; btn.textContent = "⚡ Classify conflicts (LLM)";
+    btn.disabled = false; btn.textContent = "⚡ Classify conflicts";
     if (r && r.ok) {
       /* `candidates` is the count BEFORE the batch limit — i.e. how much work is left,
          so the operator knows whether to press the button again. */
@@ -13680,8 +13676,8 @@ function mmlWire() {
       toast("A classification batch is already running", true);
     } else if (r && r.error === "no_llm_key") {
       /* Non-blocking: the deterministic ⚡ scan keeps working without a key. */
-      mmlStatus("No LLM key — set DEEPSEEK_API_KEY for the admin process to classify conflicts. The ⚡ keyword scan still works.");
-      toast("DEEPSEEK_API_KEY not set on this host", true);
+      mmlStatus("AI classification is unavailable, but keyword conflict scanning still works.");
+      toast("AI classification is unavailable", true);
     } else {
       mmlStatus("");
       toast((r && r.error) || "Classify failed", true);
@@ -13796,7 +13792,7 @@ async function mmlExport(fmt) {
 
 RENDER.alerts = async () => {
   const v = $("#view");
-  v.innerHTML = `<div class="sub" style="margin-bottom:12px">Recent alerts from the live site feed. Log your action against any alert — Acted, Dismissed, Overrode, or Snoozed — to build the operator capture ledger (L4 instrumentation). All writes go through /api/actions behind auth.</div>
+  v.innerHTML = `<div class="sub" style="margin-bottom:12px">Recent live-site alerts and the action taken on each.</div>
     <div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
   const d = await api("/api/alerts");
   if (!d.ok) {
@@ -13818,10 +13814,15 @@ RENDER.alerts = async () => {
       <td class="r mono">${a.priority != null ? a.priority : "—"}</td>
       <td class="sub mono">${esc((a.emit_ts || "").slice(0, 10))}</td>
       <td style="white-space:nowrap">
-        <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="acted">Acted</button>
-        <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="dismissed">Dismiss</button>
-        <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="overrode">Override</button>
-        <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="snoozed">Snooze</button>
+        <details class="row-actions">
+          <summary class="btn">Actions</summary>
+          <div class="row-actions-menu">
+            <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="acted">Mark acted</button>
+            <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="snoozed">Snooze</button>
+            <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="dismissed">Dismiss</button>
+            <button class="btn alert-act-btn" data-alert-id="${esc(a.alert_id || "")}" data-emit-ts="${esc(a.emit_ts || "")}" data-action="overrode">Override</button>
+          </div>
+        </details>
       </td></tr>`).join("")}
     </tbody></table>${calCard}`;
   // Wire action buttons — POST {surface: alert_id, action, direction_note, alert_emit_ts}
@@ -13871,10 +13872,7 @@ function supStatusPill(s) {
 RENDER.support_tickets = async () => {
   const v = $("#view");
   v.innerHTML = `
-    <div class="sub" style="margin-bottom:12px">Support requests filed from the site's contact form
-      (<code>POST /api/support/ticket</code>). Open a ticket to read the thread and reply — a reply is
-      recorded here <b>and</b> emailed to the sender. With no SMTP relay configured the reply is still
-      recorded and the thread says so.</div>
+    <div class="sub" style="margin-bottom:12px">Open a ticket to read the conversation, reply, and update its status. Replies are saved here and emailed when mail delivery is available.</div>
     <div class="section">Tickets <span class="cnt" id="supCnt"></span></div>
     <div class="ent-toolbar">
       <div id="supChips" class="ent-chips"></div>
@@ -14086,11 +14084,7 @@ function ecLogPill(s) {
 RENDER.email_center = async () => {
   const v = $("#view");
   v.innerHTML = `
-    <div class="sub" style="margin-bottom:12px">Who we can email, who has told us to stop, and what has
-      actually been sent. Segments come from <code>app/email_segments.py</code> — the same definitions the
-      sender uses, so this page and the send cannot disagree. <b>Can receive</b> excludes every suppressed
-      address and every opted-out user by construction, and <code>mailer.send</code> re-checks both for each
-      recipient at send time.</div>
+    <div class="sub" style="margin-bottom:12px">Manage who can receive email, suppressions, campaigns, and delivery history.</div>
     <div id="ecMail"><div class="spin">loading…</div></div>
     <div class="ent-toolbar" style="margin-top:14px">
       <div class="ent-chips">
@@ -14307,7 +14301,7 @@ async function ecSuppressAdd() {
    a bounce or a complaint and writes the removal to the operator ledger. */
 async function ecSuppressRemove(encEmail, reason) {
   const email = decodeURIComponent(encEmail || "");
-  if (!confirm(`Remove the "${reason}" suppression on ${email}?\n\nMarketing email to this address will be allowed again. This is recorded in the operator action ledger.`)) return;
+  if (!confirm(`Remove the "${reason}" suppression on ${email}?\n\nMarketing email to this address will be allowed again.`)) return;
   const r = await post("/api/email_center/suppression", { action: "remove", email, confirm: true });
   if (!r || !r.ok) { toast((r && r.error) || "could not remove", true); return; }
   toast(`Removed the ${r.was} suppression on ${r.email}`);
@@ -14325,11 +14319,7 @@ async function ecLoadCampaigns() {
   box.innerHTML = `
     <div class="section">Compose</div>
     <div class="card">
-      <div class="sub" style="margin-bottom:10px">Both languages ship in every email (English first, then a
-        中文 rule, then the Chinese half) — we do not guess a reader's language from a stored preference.
-        Body is plain paragraphs separated by a blank line; a line that is exactly
-        <code>[Label](https://…)</code> becomes the single call-to-action button. Queueing does not send:
-        the sweeper on the API host does, and only when it is armed.</div>
+      <div class="sub" style="margin-bottom:10px">Each campaign includes English and Chinese. Save a draft, preview it, then queue it for delivery.</div>
       <input type="hidden" id="ecCampId" value="">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div><label class="sub">Subject (EN)</label><input id="ecSubjEn" class="ent-search" style="width:100%" maxlength="200" placeholder="What changed, in one line"></div>
@@ -14439,7 +14429,7 @@ async function ecCampSave() {
 
 async function ecCampAct(id, action) {
   const c = (EC._camps || []).find(x => x.id === id) || {};
-  if (action === "queue" && !confirm(`Queue "${c.subject || id}" to segment "${c.segment || "?"}"?\n\nThe sweeper will send it the next time it wakes, IF marketing mail is armed on the API host. Suppression and opt-out are re-checked for every recipient at send time.`)) return;
+  if (action === "queue" && !confirm(`Queue "${c.subject || id}" to segment "${c.segment || "?"}"?\n\nIt will send when marketing email is armed; suppressions and opt-outs are checked again before delivery.`)) return;
   if (action === "delete" && !confirm(`Delete the draft "${c.subject || id}"?`)) return;
   if (action === "abort" && !confirm(`Abort "${c.subject || id}"?\n\nAnything already sent stays sent — this stops the rest.`)) return;
   const r = await post("/api/email_center/campaign", { action, id });
@@ -14459,7 +14449,7 @@ RENDER.long_hold = async () => {
   }
 
   const ageStr = d.age_hours != null ? ` · ${fmtAge(d.age_hours)} old` : "";
-  const genStr = d.generated_at ? `generated ${esc(d.generated_at.slice(0, 16).replace("T", " "))} UTC${ageStr}` : "no winner autopsy artifact yet";
+  const genStr = d.generated_at ? `updated ${esc(d.generated_at.slice(0, 16).replace("T", " "))} UTC${ageStr}` : "Winner review data is not available yet";
   const wa = d.winner_autopsy || {};
   const tf = d.thesis_funnel || {};
   const lb = d.labels || {};
@@ -14512,7 +14502,7 @@ RENDER.long_hold = async () => {
     // Breakaway Watch
     let watchHtml = "";
     if (!watch.available) {
-      watchHtml = `<div class="sub muted">Watch list not yet populated (prices needed — runs on Mac host nightly). State counts: ${JSON.stringify(watch.state_counts || {})}</div>`;
+      watchHtml = `<div class="sub muted">Watch list is not available yet.${Object.keys(watch.state_counts || {}).length ? `<details class="tech-details"><summary>State counts</summary>${esc(JSON.stringify(watch.state_counts))}</details>` : ""}</div>`;
     } else {
       const sc = watch.state_counts || {};
       const chips = Object.entries(sc).map(([k, n]) =>
@@ -14601,12 +14591,12 @@ RENDER.context_lobe = async () => {
   // always ok=true; error note signals artifact is absent
   const freshStr = d.freshness
     ? `produced ${esc(String(d.freshness).slice(0, 16).replace("T", " "))} UTC · ${fmtAge(d.age_hours)} old`
-    : "artifact not yet written (runs on Mac host nightly)";
+    : "Current context data is not available yet";
 
   // ---- display-only / annotate-only banner ----
   const banner = `<div class="banner show" style="margin-bottom:12px;padding:8px 12px;border-radius:6px;background:var(--surface2,#1e2030);border:1px solid var(--border,#334)">
-    <span style="font-weight:600">Display-only · annotate_only</span>
-    <span class="sub" style="margin-left:8px">Neural Web context layer — no signals, no escalations, no scores may originate here</span>
+    <span style="font-weight:600">Display-only</span>
+    <span class="sub" style="margin-left:8px">Context and annotations only; this page does not create signals or scores.</span>
   </div>`;
 
   // ---- error / absent ----
@@ -14814,7 +14804,7 @@ RENDER.chronicle = async () => {
   }).join("");
   const stateLogHtml = stateRows
     ? `<table><thead><tr><th>Date</th><th>Regimes</th><th>Risk</th></tr></thead><tbody>${stateRows}</tbody></table>`
-    : nwEmpty("No captures yet", "state_log.jsonl fills in after the first nightly run.");
+    : nwEmpty("No captures yet", "State history will appear after the first nightly run.");
 
   const gapNotes = d.gap_notes || [];
   const gapHtml = gapNotes.length
@@ -14848,23 +14838,23 @@ RENDER.personas = async () => {
   }
 
   const banner = `<div class="banner show" style="margin-bottom:12px;padding:8px 12px;border-radius:6px;background:var(--surface2,#1e2030);border:1px solid var(--border,#334)">
-    <span style="font-weight:600">Read-only · spec layer</span>
-    <span class="sub" style="margin-left:8px">W1 additive overlay — nothing generates from a spec; desk_network and copywriter.personas stay canonical</span>
+    <span style="font-weight:600">Read-only</span>
+    <span class="sub" style="margin-left:8px">Persona definitions and account readiness; no content is generated from this page.</span>
   </div>`;
 
   const rows = d.personas || [];
   if (!rows.length) {
-    v.innerHTML = banner + card("Persona Roster", nwEmpty("No specs yet", d.note || "config/personas/ is empty."));
+    v.innerHTML = banner + card("Persona Roster", nwEmpty("No personas yet", d.note || "No persona definitions are available."));
     return;
   }
 
   const c = d.counts || {};
   const countsHtml = `
-    <div class="kv"><span>Specs committed</span><b>${c.total != null ? c.total : "—"}</b></div>
+    <div class="kv"><span>Personas defined</span><b>${c.total != null ? c.total : "—"}</b></div>
     <div class="kv"><span>Live</span><b>${c.live != null ? c.live : "—"}</b></div>
-    <div class="kv"><span>Configured (account disabled)</span><b>${c.configured != null ? c.configured : "—"}</b></div>
-    <div class="kv"><span>Planned (spec only)</span><b>${c.planned != null ? c.planned : "—"}</b></div>
-    <div class="kv"><span>Invalid</span><b>${c.invalid != null ? c.invalid : "—"}</b></div>`;
+    <div class="kv"><span>Ready (account off)</span><b>${c.configured != null ? c.configured : "—"}</b></div>
+    <div class="kv"><span>Planned</span><b>${c.planned != null ? c.planned : "—"}</b></div>
+    <div class="kv"><span>Needs attention</span><b>${c.invalid != null ? c.invalid : "—"}</b></div>`;
 
   const STATUS_CLS = { LIVE: "s-ok", CONFIGURED: "s-warn", PLANNED: "s-mut", INVALID: "s-bad" };
 
@@ -14883,9 +14873,9 @@ RENDER.personas = async () => {
       <td><b class="mono">${esc(r.id)}</b><div class="note">${esc(r.archetype || "")}</div></td>
       <td><span class="statpill s-mut">${esc(r.persona_kind || "—")}</span></td>
       <td class="sub">${esc(r.voice || "—")}${r.zh ? `<div class="note">zh-first</div>` : ""}</td>
-      <td><span class="statpill s-mut">${esc(r.pipeline || "—")}</span><div class="note">${esc(r.model_tier || "")}</div></td>
+      <td><span class="statpill s-mut">${esc(String(r.pipeline || "—").replace(/_/g, " "))}</span>${r.model_tier ? `<details class="tech-details"><summary>Model tier</summary>${esc(r.model_tier)}</details>` : ""}</td>
       <td class="sub">${esc(r.cadence_label || "—")}</td>
-      <td><span class="statpill ${isoCls}">${esc(iso.label || "—")}</span><div class="note">${iso.done ? "partially recorded" : "not recorded"}</div></td>
+      <td><span class="statpill ${isoCls}">${esc(iso.label || "—")}</span><div class="note">${iso.done ? "partial" : "not complete"}</div></td>
       <td class="sub muted">${esc((r.health || {}).state || "no data yet")}</td>
       <td class="sub">${esc(sc.min_impressions_label || "—")} impressions
         <div class="note">${esc(sc.promote_label || "")}</div>
@@ -14897,28 +14887,28 @@ RENDER.personas = async () => {
 
   const tableHtml = `<table>
     <thead><tr>
-      <th>Persona</th><th>Kind</th><th>Voice</th><th>Pipeline</th><th>Cadence</th>
-      <th>Isolation</th><th>Health</th><th>Scorecard gates</th><th>Status</th>
+      <th>Persona</th><th>Kind</th><th>Voice</th><th>Content path</th><th>Cadence</th>
+      <th>Isolation</th><th>Health</th><th>Promotion rules</th><th>Status</th>
     </tr></thead>
     <tbody>${personaRows}</tbody></table>`;
 
   const isoItems = d.isolation_items || [];
   const isoLegend = isoItems.length
-    ? `<div class="section">Isolation Checklist <span class="cnt">${isoItems.length}</span></div>
+    ? `<div class="section">Account isolation checklist <span class="cnt">${isoItems.length}</span></div>
        <div class="card">${isoItems.map(i => `<div class="note">${esc(i)}</div>`).join("")}
-       <div class="note muted">Recorded per account at provisioning (W3 gate). "Registration identity" has no spec field at W1.</div></div>`
+       <div class="note muted">Recorded per account before activation.</div></div>`
     : "";
 
   const health = d.health_signals || [];
   const healthLegend = health.length
-    ? `<div class="section">Health Signals <span class="cnt">${health.length}</span></div>
+    ? `<div class="section">Health checks <span class="cnt">${health.length}</span></div>
        <div class="card">${health.map(h => `<div class="note">${esc(h)} — no data yet</div>`).join("")}
-       <div class="note muted">The per-account health monitor ships in W2; every cell reads "no data yet" rather than 0.</div></div>`
+       <div class="note muted">Health data appears once monitoring starts.</div></div>`
     : "";
 
   const orphans = d.accounts_without_spec || [];
   const orphanHtml = orphans.length
-    ? `<div class="section">desk_network accounts with no spec <span class="cnt">${orphans.length}</span></div>
+    ? `<div class="section">Accounts without a persona <span class="cnt">${orphans.length}</span></div>
        <div class="card">${orphans.map(o => `<div class="note mono">${esc(o)}</div>`).join("")}</div>`
     : "";
 
@@ -14933,7 +14923,7 @@ RENDER.personas = async () => {
     ${isoLegend}
     ${healthLegend}
     ${orphanHtml}
-    ${alphaNote ? `<div class="section">Pre-registered gates</div><div class="card"><div class="note">${esc(alphaNote.alpha_note)}</div></div>` : ""}`;
+    ${alphaNote ? `<div class="section">Promotion rules</div><div class="card"><div class="note">${esc(alphaNote.alpha_note)}</div></div>` : ""}`;
 };
 
 /* ---- Causal Lab --------------------------------------------------------- */
@@ -14944,12 +14934,12 @@ RENDER.causal_lab = async () => {
 
   const freshStr = d.freshness
     ? `produced ${esc(String(d.freshness).slice(0, 16).replace("T", " "))} UTC · ${fmtAge(d.age_hours)} old`
-    : "artifact not yet written (runs on Mac host nightly)";
+    : "Current causal data is not available yet";
 
   // display-only / annotate-only banner
   const banner = `<div class="banner show" style="margin-bottom:12px;padding:8px 12px;border-radius:6px;background:var(--surface2,#1e2030);border:1px solid var(--border,#334)">
-    <span style="font-weight:600">Display-only · annotate_only · not_a_signal</span>
-    <span class="sub" style="margin-left:8px">CHF epistemic infrastructure — causal-candidate screened, not gauntleted. No authority surface.</span>
+    <span style="font-weight:600">Display-only</span>
+    <span class="sub" style="margin-left:8px">Research-only causal candidates; no production authority.</span>
   </div>`;
 
   if (d.error) {
@@ -14982,7 +14972,7 @@ RENDER.causal_lab = async () => {
 
   // scan width (cumulative causal_scan FDR family width — CHF-R3)
   const sw = d.scan_width || {};
-  const swHtml = `<div class="kv"><span>Cumulative causal_scan width</span><b>${sw.cumulative_width || 0}</b></div>
+  const swHtml = `<div class="kv"><span>Cumulative scan width</span><b>${sw.cumulative_width || 0}</b></div>
     <div class="sub muted" style="margin-top:4px">${esc(sw.description || "")}</div>`;
 
   // frontier summary
@@ -15036,7 +15026,7 @@ RENDER.causal_lab = async () => {
        <div class="kv"><span>Collider risk</span><b>${ac.collider_risk || 0}</b></div>
        <div class="kv"><span>Total annotations</span><b>${ac.total || 0}</b></div>
        <div class="kv sub muted"><span>Audit asof</span><b>${esc(ac.asof || "—")}</b></div>`
-    : `<div class="sub muted">causal_confluence_audit.json not yet written (W6 step pending)</div>`;
+    : `<div class="sub muted">Audit results are not available yet.</div>`;
 
   // latest annotations
   const anns = d.latest_audit_annotations || [];
@@ -15054,30 +15044,30 @@ RENDER.causal_lab = async () => {
   // data absent notes
   const danotes = d.data_absent_notes || [];
   const daHtml = danotes.length
-    ? `<div class="section">Data Absent Notes</div><div class="card">${danotes.map(n => `<div class="note muted">${esc(n)}</div>`).join("")}</div>`
+    ? `<div class="section">Missing data notes</div><div class="card">${danotes.map(n => `<div class="note muted">${esc(n)}</div>`).join("")}</div>`
     : "";
 
   v.innerHTML = `
     ${banner}
     <div class="sub muted" style="margin-bottom:8px">${esc(freshStr)}</div>
     ${daHtml}
-    <div class="section">Heartbeat</div>
+    <div class="section">Status</div>
     <div class="card">${hbHtml}</div>
-    <div class="section">Funnel Counts</div>
+    <div class="section">Candidate funnel</div>
     <div class="card">${funnelHtml}</div>
-    <div class="section">Causal Scan Width</div>
+    <div class="section">Scan coverage</div>
     <div class="card">${swHtml}</div>
-    <div class="section">Frontier Map</div>
+    <div class="section">Research frontier</div>
     <div class="card">${frHtml}</div>
-    <div class="section">Surprise Queue</div>
+    <div class="section">Surprises</div>
     <div class="card">${sqHtml}</div>
-    <div class="section">LLM Lane</div>
+    <div class="section">Model review</div>
     <div class="card">${llHtml}</div>
-    <div class="section">Latest Edges <span class="cnt">${d.n_edges || 0}</span></div>
+    <div class="section">Latest candidates <span class="cnt">${d.n_edges || 0}</span></div>
     <div class="card">${edgesHtml}</div>
-    <div class="section">Anti-Mirage Audit Counts</div>
+    <div class="section">Bias checks</div>
     <div class="card">${acHtml}</div>
-    <div class="section">Latest Audit Annotations <span class="cnt">${anns.length}</span></div>
+    <div class="section">Latest review notes <span class="cnt">${anns.length}</span></div>
     <div class="card">${annsHtml}</div>`;
 };
 
@@ -15101,7 +15091,7 @@ RENDER.metabolism = async () => {
       return "Paused — every autonomous stage exits without acting. The loop cannot author code, open PRs, or advance ledgers.";
     if (d.state === "armed")
       return "Armed — the loop senses, proposes, builds and merges on its own schedule.";
-    return "Cannot read the switch — no GitHub token configured on this server.";
+    return "Loop state is unavailable from this server.";
   };
 
   // Hero card
@@ -15113,7 +15103,7 @@ RENDER.metabolism = async () => {
   // Toggle button
   let toggleHtml = "";
   if (!d.has_token) {
-    toggleHtml = `<div class="sub" style="color:var(--warn);margin-top:8px">Set <code>GH_TOKEN</code> in <code>/etc/macro-admin.env</code> (needs Actions read + Variables read/write) to control the loop from here.</div>`;
+    toggleHtml = `<div class="sub" style="color:var(--warn);margin-top:8px">Loop controls are unavailable from this server.<details class="tech-details"><summary>Technical details</summary>Set <code>GH_TOKEN</code> in <code>/etc/macro-admin.env</code> with Actions read and Variables read/write.</details></div>`;
   } else {
     const btnLabel = d.armed ? "Pause the loop" : "Arm the loop";
     const btnCls = d.armed ? "" : "primary";
@@ -15139,10 +15129,12 @@ RENDER.metabolism = async () => {
 
   // Organism summary card
   const orgHtml = (() => {
-    if (!d.organism) return `<div class="sub muted">organism_state.json not found — loop has not run yet.</div>`;
+    if (!d.organism) return `<div class="sub muted">No loop state has been recorded yet.</div>`;
     const rows = Object.entries(d.organism)
-      .map(([k, val]) => `<div class="kv"><span>${esc(k)}</span><b>${esc(String(val == null ? "—" : val))}</b></div>`)
-      .join("");
+      .map(([k, val]) => {
+        const label = String(k).replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+        return `<div class="kv"><span>${esc(label)}</span><b>${esc(String(val == null ? "—" : val))}</b></div>`;
+      }).join("");
     return rows || `<div class="sub muted">Empty.</div>`;
   })();
 
@@ -15202,22 +15194,22 @@ RENDER.metabolism = async () => {
   const durLabel = loopDur.label || "No completed live loops yet — worst case ≈ 2.5h";
 
   const throttleHtml = `
-    <div style="margin-bottom:8px">
-      ${thrIntensity.value != null ? `<div class="kv"><span>METAB_INTENSITY (repo var)</span><b class="mono">${esc(thrIntensity.value)}</b></div>` : ""}
-      ${thrPace.value != null ? `<div class="kv"><span>METAB_PACE (repo var)</span><b class="mono">${esc(thrPace.value)}</b></div>` : ""}
-      ${thrKeys.value != null ? `<div class="kv"><span>METAB_KEYS_ENABLED (repo var)</span><b class="mono">${esc(thrKeys.value) || "(empty = all keys)"}</b></div>` : ""}
+    <details class="tech-details" style="margin-bottom:8px"><summary>Current configuration</summary>
+      ${thrIntensity.value != null ? `<div class="kv"><span>Intensity variable</span><b class="mono">${esc(thrIntensity.value)}</b></div>` : ""}
+      ${thrPace.value != null ? `<div class="kv"><span>Pace variable</span><b class="mono">${esc(thrPace.value)}</b></div>` : ""}
+      ${thrKeys.value != null ? `<div class="kv"><span>Key variable</span><b class="mono">${esc(thrKeys.value) || "(empty = all keys)"}</b></div>` : ""}
       ${thr.note ? `<div class="sub muted" style="margin-top:4px">${esc(thr.note)}</div>` : ""}
-    </div>
+    </details>
     <div class="kv" style="margin-bottom:8px"><span class="sub" title="Median wall-clock from last completed runs, excluding pace-gate skips">Loop timing</span><b>${esc(durLabel)}</b></div>
     ${thrSelectorHtmlV11("intensity", "Ideas per loop", INTENSITY_OPTS, thrIntensity.effective || "normal")}
     ${thrSelectorHtmlV11("pace", "Loops per 5-hour window", PACE_OPTS, thrPace.effective_ladder || thrPace.effective || "low")}
     <div style="margin-bottom:10px">
-      <span class="sub">Keys enabled (csv of 1/2/3/legacy — empty = all)</span>
+      <span class="sub">Keys enabled</span>
       <div style="display:flex;gap:8px;margin-top:4px;align-items:center;flex-wrap:wrap">
         <input id="thrKeysInput" type="text" value="${esc(thrKeys.value || "")}" placeholder="e.g. 1,2,3,legacy or empty for all" style="padding:4px 8px;background:var(--bg2,#1e1e2e);border:1px solid var(--border,#333);color:var(--text,#ccc);border-radius:4px;width:240px">
-        <button class="btn" id="thrKeysSetBtn">Set keys_enabled</button>
+        <button class="btn" id="thrKeysSetBtn">Save keys</button>
       </div>
-      <div class="sub muted" style="margin-top:4px">1=claude_code_oauth_1, 2=claude_code_oauth_2, 3=claude_code_oauth_3, legacy=CLAUDE_CODE_OAUTH_TOKEN</div>
+      <details class="tech-details"><summary>Key mapping</summary>1 = primary · 2 = secondary · 3 = tertiary · legacy = legacy token</details>
       <div id="thrKeysErr" style="color:var(--bad);font-size:12px;margin-top:4px"></div>
     </div>`;
 
@@ -15353,7 +15345,7 @@ RENDER.metabolism = async () => {
     <div class="card" id="metAutoRunCard">${autoRunHtml}</div>
     <div class="section">Metabolism Throttle</div>
     <div class="card" id="metThrCard">${d.has_token ? throttleHtml : `<div class="sub muted">GitHub token required to read/set throttle variables.</div>`}</div>
-    <div class="section">Run Now</div>
+    <div class="section">Run now</div>
     <div class="card" id="metRunCard">${d.has_token ? runNowHtml : `<div class="sub muted">GitHub token required to dispatch workflows.</div>`}</div>
     <div class="section">Key Usage</div>
     <div class="card" id="metBudgetCard">${budgetHtml}</div>
@@ -15764,11 +15756,11 @@ RENDER.codex = async () => {
   }
 
   const modeHtml = `
-    <div style="margin-bottom:8px">
-      ${modeSel.value != null ? `<div class="kv"><span>CODEX_MODE (repo var)</span><b class="mono">${esc(modeSel.value)}</b></div>` : `<div class="kv"><span>CODEX_MODE</span><b class="mono muted">(not set — effective: off)</b></div>`}
-      ${intHrs.value != null ? `<div class="kv"><span>CODEX_INTERVAL_HOURS (repo var)</span><b class="mono">${esc(intHrs.value)}</b></div>` : ""}
-      ${lanesSel.value != null ? `<div class="kv"><span>CODEX_LANES (repo var)</span><b class="mono">${esc(lanesSel.value)}</b></div>` : ""}
-    </div>
+    <details class="tech-details" style="margin-bottom:10px"><summary>Current configuration</summary>
+      <div class="kv"><span>Mode variable</span><b class="mono">${esc(modeSel.value != null ? modeSel.value : "not set")}</b></div>
+      ${intHrs.value != null ? `<div class="kv"><span>Interval variable</span><b class="mono">${esc(intHrs.value)}</b></div>` : ""}
+      ${lanesSel.value != null ? `<div class="kv"><span>Lanes variable</span><b class="mono">${esc(lanesSel.value)}</b></div>` : ""}
+    </details>
     ${codexSelectorHtml("mode", "Mode", modeSel.allowed || ["auto","interval","off"], modeSel.effective || "off")}
     <div style="margin-bottom:10px">
       <span class="sub">Interval hours (interval mode; 1–48)</span>
@@ -15877,17 +15869,17 @@ RENDER.codex = async () => {
     </tbody></table>`;
 
   v.innerHTML = `
-    <div class="section">Codex Mode</div>
+    <div class="section">Research mode</div>
     <div class="card" id="cdxModeCard">${modeHtml}</div>
     <div class="section">Usage</div>
     <div class="card">${usageHtml}</div>
     <div class="section">Run Now</div>
     <div class="card" id="cdxRunCard">${runNowHtml}</div>
-    <div class="section">Recent Case Attempts <span class="cnt">${attempts.length}</span></div>
+    <div class="section">Recent case attempts <span class="cnt">${attempts.length}</span></div>
     <div class="card">${attemptsHtml}</div>
-    <div class="section">Loop Journal</div>
+    <div class="section">Loop history</div>
     <div class="card">${loopHtml}</div>
-    <div class="section">Recent Workflow Runs <span class="cnt">${runs.length}</span></div>
+    <div class="section">Recent runs <span class="cnt">${runs.length}</span></div>
     <div class="card">${runsHtml}</div>`;
 
   // Wire mode / lanes selector buttons
@@ -15971,24 +15963,14 @@ function startTableObserver() {
   _tableObserver.observe(view, { childList: true, subtree: true });
 }
 
-function schedulePostBootAdvisories() {
-  /* First interaction wins over speculative work.  requestIdleCallback means the
-     browser main thread is idle, NOT that the operator is done clicking; warming
-     multi-second server folds here made the next tab compete with background work.
-     Keep only the tiny support badge off the critical paint path.  Expensive panels
-     still prefetch on pointer intent via TAB_PREFETCH_PATHS above. */
-  const run = () => refreshSupportNavDot();
-  if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1500 });
-  else setTimeout(run, 150);
-}
-
 async function boot() {
   renderSidebar();
   wireSidebarDrawer();
   startTableObserver();
   await refresh();
   route();
-  schedulePostBootAdvisories();
+  refreshOutboxNavDot();   /* advisory pending-count dot on the Outbox nav item */
+  refreshSupportNavDot();  /* advisory open-ticket dot on the Support Tickets nav item */
 }
 (async function init() {
   /* The landing snapshot is the one fetch the first paint genuinely blocks on (every
