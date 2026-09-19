@@ -14,6 +14,7 @@ Usage:
     python -m scripts.audit_china_gold_premium
     python -m scripts.audit_china_gold_premium --strict-render
     python -m scripts.audit_china_gold_premium --strict-render --require-live-ready
+    python -m scripts.audit_china_gold_premium --strict-render --require-live-ready --require-method close_proxy
 """
 from __future__ import annotations
 
@@ -200,7 +201,11 @@ def write_receipt(
     return doc
 
 
-def live_ready_violations(doc: dict) -> list[str]:
+def live_ready_violations(
+    doc: dict,
+    *,
+    required_method: str | None = None,
+) -> list[str]:
     """Return blockers for the post-merge live-product acceptance gate."""
     blockers: list[str] = []
     if not doc.get("render_consistent"):
@@ -212,10 +217,21 @@ def live_ready_violations(doc: dict) -> list[str]:
         blockers.append("5-session average is not ready")
     if not doc.get("stats_30_ready"):
         blockers.append("30-session range is not ready")
+    if required_method is not None:
+        method = str(doc.get("headline_method") or "none")
+        if method != required_method:
+            blockers.append(
+                f"headline method is {method}, required {required_method}"
+            )
     return blockers
 
 
-def run(*, strict_render: bool = False, require_live_ready: bool = False) -> int:
+def run(
+    *,
+    strict_render: bool = False,
+    require_live_ready: bool = False,
+    required_method: str | None = None,
+) -> int:
     cfg = config.load()
     premium_cfg = (cfg.get("commodities") or {}).get("china_gold_premium") or {}
     vm = china_gold_premium.build_view_model(premium_cfg)
@@ -237,7 +253,10 @@ def run(*, strict_render: bool = False, require_live_ready: bool = False) -> int
         return 2 if strict_render or require_live_ready else 0
 
     if require_live_ready:
-        blockers = live_ready_violations(doc)
+        blockers = live_ready_violations(
+            doc,
+            required_method=required_method,
+        )
         if blockers:
             print(
                 "::error title=China gold premium live proof incomplete::"
@@ -280,11 +299,18 @@ def main(argv: list[str] | None = None) -> int:
             "both the 5- and 30-session statistics are ready"
         ),
     )
+    ap.add_argument(
+        "--require-method",
+        choices=("canonical", "close_proxy", "intraday"),
+        default=None,
+        help="with --require-live-ready, require this exact headline method",
+    )
     args = ap.parse_args(argv)
     try:
         return run(
             strict_render=args.strict_render,
             require_live_ready=args.require_live_ready,
+            required_method=args.require_method,
         )
     except Exception as exc:  # noqa: BLE001 — audit crashes must be visible
         log.error("China gold premium audit crashed: %s", exc)

@@ -570,14 +570,66 @@ def test_gold_premium_main_forwards_require_live_ready(monkeypatch):
 
     seen = {}
 
-    def fake_run(*, strict_render=False, require_live_ready=False):
+    def fake_run(*, strict_render=False, require_live_ready=False, required_method=None):
         seen.update(
             strict_render=strict_render,
             require_live_ready=require_live_ready,
+            required_method=required_method,
         )
         return 0
 
     monkeypatch.setattr(audit, "run", fake_run)
 
     assert audit.main(["--strict-render", "--require-live-ready"]) == 0
-    assert seen == {"strict_render": True, "require_live_ready": True}
+    assert seen == {
+        "strict_render": True,
+        "require_live_ready": True,
+        "required_method": None,
+    }
+
+
+def test_gold_premium_live_ready_gate_can_require_close_proxy_method():
+    from scripts import audit_china_gold_premium as audit
+
+    ready = {
+        "status": "available_fresh",
+        "render_consistent": True,
+        "stats_5_ready": True,
+        "stats_30_ready": True,
+        "headline_method": "close_proxy",
+    }
+    assert audit.live_ready_violations(ready, required_method="close_proxy") == []
+
+    canonical = dict(ready, headline_method="canonical")
+    assert (
+        "headline method is canonical, required close_proxy"
+        in audit.live_ready_violations(canonical, required_method="close_proxy")
+    )
+
+
+def test_gold_premium_main_forwards_required_method(monkeypatch):
+    from scripts import audit_china_gold_premium as audit
+
+    seen = {}
+
+    def fake_run(*, strict_render=False, require_live_ready=False, required_method=None):
+        seen.update(
+            strict_render=strict_render,
+            require_live_ready=require_live_ready,
+            required_method=required_method,
+        )
+        return 0
+
+    monkeypatch.setattr(audit, "run", fake_run)
+
+    assert audit.main([
+        "--strict-render",
+        "--require-live-ready",
+        "--require-method",
+        "close_proxy",
+    ]) == 0
+    assert seen == {
+        "strict_render": True,
+        "require_live_ready": True,
+        "required_method": "close_proxy",
+    }

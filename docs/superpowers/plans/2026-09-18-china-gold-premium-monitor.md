@@ -108,10 +108,11 @@ observability/proof only and creates no new lifecycle or scoring authority.
 
 The exact post-merge acceptance command is:
 
-`python -m scripts.audit_china_gold_premium --strict-render --require-live-ready`
+`python -m scripts.audit_china_gold_premium --strict-render --require-live-ready --require-method close_proxy`
 
-That command exits nonzero unless the source is fresh, the rendered panel matches the engine,
-and both the 5-session average and 30-session range are honestly available. The normal nightly
+That command exits nonzero unless the Shanghai-close proxy is the selected fresh method, the
+rendered panel matches the engine, and both the 5-session average and 30-session range are
+honestly available. The normal nightly
 continues to accept an honest unavailable receipt; only the explicit acceptance invocation turns
 source/history readiness into a completion gate.
 
