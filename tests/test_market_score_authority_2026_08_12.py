@@ -187,6 +187,38 @@ def test_history_chart_prefers_measured_raw_score(tmp_path, monkeypatch):
     assert build_site._ms_history_view()[0]["score"] == 78
 
 
+def test_history_chart_appends_newer_settled_board_endpoint(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    path = data_dir / "market_state" / "forward_log.jsonl"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"asof": "2026-09-11", "score": 66, "raw_score": 66}) + "\n")
+    monkeypatch.setattr(build_site.config, "data_dir", lambda: data_dir)
+
+    out = build_site._ms_history_view(
+        {"asof": "2026-09-14", "score": 56, "raw_score": 56}
+    )
+
+    assert out == [
+        {"asof": "2026-09-11", "score": 66},
+        {"asof": "2026-09-14", "score": 56},
+    ]
+    assert path.read_text().count("2026-09-14") == 0  # display repair never mutates PIT ledger
+
+
+def test_history_chart_does_not_regress_to_older_current_snapshot(tmp_path, monkeypatch):
+    data_dir = tmp_path / "data"
+    path = data_dir / "market_state" / "forward_log.jsonl"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps({"asof": "2026-09-14", "score": 56, "raw_score": 56}) + "\n")
+    monkeypatch.setattr(build_site.config, "data_dir", lambda: data_dir)
+
+    out = build_site._ms_history_view(
+        {"asof": "2026-09-11", "score": 66, "raw_score": 66}
+    )
+
+    assert out[-1] == {"asof": "2026-09-14", "score": 56}
+
+
 def test_rotation_view_separates_current_pulse_from_legacy_damage_cohort(monkeypatch):
     from engine import sector_pulse
 

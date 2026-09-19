@@ -348,15 +348,16 @@ def test_stocks_mode_renders_standout_card_body():
 
 def test_stocks_mode_keeps_existing_action_board_and_prophet_scorecards():
     """The declutter pass must preserve the two established decision surfaces.
-    They stay in the default document flow; only lower-priority research boards
-    are hidden from the landing scan."""
+    S2's surviving L1 panels stay in flow; only leftover research boards
+    that are not in the frozen 7-panel list stay hidden."""
     html = _render("stocks")
     assert 'id="action-board"' in html
     assert 'class="panel span12 notable" id="us-standouts"' in html
     assert 'id="stocks-command"' not in html
     assert 'id="all-prophet-signals"' not in html
-    assert "body.page-stocks #equity-scoreboard," in html
-    assert "body.page-stocks #holdings{display:none!important}" in html
+    assert "body.page-stocks #cross-asset-macro{display:none!important}" in html
+    assert "body.page-stocks #holdings{display:none!important}" not in html
+    assert "body.page-stocks #equity-scoreboard," not in html
 
 
 def test_stocks_mode_dossier_block_intentionally_absent():
