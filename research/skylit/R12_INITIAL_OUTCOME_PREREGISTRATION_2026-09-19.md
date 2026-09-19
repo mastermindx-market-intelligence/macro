@@ -49,6 +49,8 @@ For R2/R6 daily settled state:
 
 Therefore this prereg **does not** assume the feature was knowable before the open of D.
 
+For version 1, the research decision cutoff is conservatively **after session D has completed**. Any PIT price controls may therefore use bars through D close; no information from target session T may enter.
+
 ### 2.2 Primary outcome session
 
 For any sample whose feature receipt says:
@@ -112,9 +114,39 @@ This is explicitly an **OHLC proxy**, not intraday path efficiency and not a whi
 
 This is secondary and cannot rescue a failed primary family.
 
+### 3.1 Primary version-1 cohort/source candidate
+
+The first review candidate is deliberately narrow and does not mix price providers.
+
+Fixed root set:
+
+`SPY, QQQ, IWM, XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY`.
+
+Target/control price plane candidate:
+
+- owner/producer: existing `scripts/fetch_basket_ohlcv.py` collection path;
+- store: `data/baskets/ohlcv/<ROOT>.parquet`;
+- schema: daily `open, high, low, close, volume`;
+- current source basis: yfinance auto-adjusted full OHLC history;
+- no per-root fallback to Massive/Yahoo/another store inside this family.
+
+Why this is admissible for T1/T2/T3:
+
+- all three targets are same-session **price ratios**;
+- a common multiplicative adjustment to O/H/L/C cancels algebraically from these ratios;
+- later cumulative adjustment-factor rewrites therefore do not create split/dividend level drift in the target definition itself.
+
+This does **not** make arbitrary vendor corrections irrelevant. At execution, every consumed target row must bind the current file/content receipt; a material source correction creates a new scientific reconstruction while the original evaluation vintage remains auditable where required.
+
+Roots lacking a valid bar for T are missing, not silently filled from another price plane.
+
+SPX/SPXW are not part of this first target cohort. Index-root outcome studies require a separately bound canonical index OHLC owner.
+
+This cohort/source remains `REVIEW_REQUIRED` until independent review confirms the exact current producer contract and receipt implementation.
+
 ### Target-source prohibition
 
-Until a canonical target owner/receipt is reviewed and inserted into a successor accepted freeze:
+Until the target owner/receipt and the cohort above are accepted in this prereg:
 
 - do not materialize T1/T2/T3 values;
 - do not calculate their distributions;
@@ -220,14 +252,16 @@ Secondary only; cannot determine the family verdict.
 
 ### Baseline / controls
 
-Must be source-bound before unblinding:
+Version-1 candidate controls, all available no later than D close:
 
-- raw survivor-map absolute change;
-- PIT trailing realized-volatility control;
-- PIT underlying liquidity control;
-- root fixed effect or root-stratified reporting.
+- `log1p(raw_survivor_change_abs_mass)`;
+- 20-session close-to-close realized volatility through D;
+- 5-session close-to-close return through D;
+- root fixed effects for the frozen 14-root cohort.
 
-No post-target control is legal.
+No target-session information, target liquidity, or post-target control is legal.
+
+The broad original R2 contract's liquidity question remains a later sensitivity arm; version 1 avoids an unreviewed historical dollar-volume adjustment convention.
 
 ---
 
@@ -270,15 +304,17 @@ T1 `range_pct_T`.
 
 ### Simple baselines / controls
 
-Before outcome opening, bind:
+Version-1 candidate baseline/control block:
 
-- dominant-expiration gross share;
-- whole-board/simple centroid descriptor;
-- scalar net GEX or equivalent existing simple structural state;
-- PIT trailing realized volatility;
-- PIT liquidity.
+- `dominant_expiration_gross_share`;
+- `abs(front_back_centroid_gap_x)` when defined;
+- 20-session close-to-close realized volatility through D;
+- 5-session close-to-close return through D;
+- root fixed effects for the frozen 14-root cohort.
 
-If R6 does not add stable value beyond simpler state, the complex thesis is rejected for predictive use even if the visualization remains useful.
+If R6 does not add stable value beyond this simpler state, the complex thesis is rejected for predictive use even if the visualization remains useful.
+
+A scalar signed-GEX baseline may be added only if its exact accepted owner/unit/population is bound **before target values are opened**; it is not silently substituted later.
 
 ---
 
@@ -334,15 +370,57 @@ No future price target is opened until:
 For R2-D1 and R6-D1 once accepted:
 
 - continuous features remain continuous;
-- train-era median/IQR or mean/std scaling, if needed, is fit on training only and frozen;
+- continuous predictors are standardized from **training-era values only**;
+- root fixed effects are categorical and not standardized;
 - no threshold/bucket search on calibration or outer-test targets;
 - no nonlinear/ML model in version 1.
 
-Initial comparison should use an interpretable fixed-form regression/model appropriate to the target distribution.
+### 10.1 Version-1 estimator candidate
 
-The exact estimator and robust/cluster uncertainty implementation is **REVIEW_REQUIRED_BEFORE_ACCEPTED_PREREG**.
+Use fixed-form ordinary least squares with an intercept and frozen root fixed effects.
 
-No outcome values may be opened to choose the estimator.
+**R2 baseline M0**
+
+`T1 ~ root_FE + z(log1p(raw_survivor_change_abs_mass)) + z(rv20_D) + z(ret5_D)`
+
+**R2 augmented M1**
+
+`M0 + z(position_abs_share)`
+
+**R6 baseline M0**
+
+`T2 ~ root_FE + z(dominant_expiration_gross_share) + z(abs(front_back_centroid_gap_x)) + z(rv20_D) + z(ret5_D)`
+
+When front/back centroid gap is structurally unavailable because only one expiry exists, that sample is not R6-D1 eligible.
+
+**R6 augmented M1**
+
+`M0 + z(max_adjacent_wasserstein_1_x)`
+
+Training fits coefficients/scalers. Calibration is used only as a sealed implementation/reliability check; it may not select features, transformations, thresholds, roots, or model family. After calibration is opened, any material model change requires a new prereg version and a future outer-test boundary.
+
+### 10.2 Primary predictive comparison candidate
+
+On the untouched outer era:
+
+- compute paired absolute errors for M0 and M1 by root-session;
+- primary metric = relative MAE improvement `(MAE_M0 - MAE_M1) / MAE_M0`;
+- uncertainty = session-block bootstrap of the paired error difference, keeping all roots from a session together.
+
+Mechanism diagnostics:
+
+- R2 added coefficient is reported with session-clustered robust uncertainty;
+- R6 added coefficient must have the preregistered **negative** sign for its directional hypothesis.
+
+No p-value, coefficient, or secondary target can rescue a primary outer-test failure.
+
+### 10.3 Practical-improvement threshold
+
+Candidate review threshold: point relative-MAE improvement >= **2%** and the 95% session-block bootstrap interval for the paired MAE improvement excludes zero in the favorable direction.
+
+This 2% floor is **not accepted yet** and may be changed by independent review only while target values remain closed. Once any target value is opened, it cannot be lowered.
+
+No outcome values may be opened to choose the estimator or practical threshold.
 
 ---
 
@@ -364,18 +442,29 @@ Vendor claims (80/66/33 taps, 2/3 Trinity, Flow Score, etc.) are not labels and 
 
 ## 12. Power / minimum-N gate
 
-**Not frozen yet; target values remain closed.**
+**Candidate, not accepted; target values remain closed.**
 
-Before ACCEPTED_PREREG, a reviewer must freeze a minimum information/power rule using only:
+Before ACCEPTED_PREREG, source-only eligibility counts may be measured.
 
-- source-only eligible feature-session counts;
+Version-1 candidate floor for opening the untouched outer test:
+
+- >= 126 unique target sessions in the outer era;
+- >= 500 evaluable root-session rows in the outer era;
+- >= 8 of the frozen 14 roots represented;
+- each represented root has >= 63 outer-era observations.
+
+These are information floors, not evidence of power.
+
+Independent review must additionally freeze a minimum-effect/power rationale using only:
+
+- source-only eligible counts;
 - root/session clustering structure;
 - declared standardized minimum effect of interest;
 - declared alpha/power.
 
-The power rule may inspect **eligibility counts**, not target values, target variance, observed correlations, or effect estimates.
+It may **not** inspect target values, target variance, observed correlations, model errors, or feature/outcome effect estimates to relax the floor.
 
-If the required N cannot be supported, the family is `INSUFFICIENT_POWER` or remains descriptive. Do not lower the effect threshold after target inspection.
+If the required information cannot be supported, the family is `INSUFFICIENT_POWER` or remains descriptive. The study does not shorten the outer era after seeing results.
 
 ---
 
