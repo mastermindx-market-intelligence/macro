@@ -4888,13 +4888,27 @@
       var rowStep = Math.max(1, parseInt(grid.getAttribute('data-showmore-rows'), 10) || 3);
       var cardStep = Math.max(1, parseInt(grid.getAttribute('data-showmore'), 10) || 12);
       var items = [].filter.call(grid.children, function (el) { return el.nodeType === 1; });
-      var total = items.length;
       // P0 #6185: group HEADINGS are grid children (the candidate board prints one per
       // stage) but they are not records, so counting children would state a number no
-      // record kind on the page has. Paging still walks every child — a row stays a row —
-      // while the DISPLAYED count walks records only. Grids with no headings are
-      // unaffected: recTotal === total.
+      // record kind on the page has. The plan-book grid additionally names one lifecycle
+      // excluded from its DEFAULT pager: resolved history stays in the DOM for the
+      // lifecycle filter, but it is not part of the unresolved inventory/page count.
+      // Remove only that declared lifecycle from this pager's private population and
+      // leave it sm-hidden for the existing lifecycle-filter CSS to reveal on demand.
+      // Other grids carry no exclusion attribute and retain child-unit paging exactly.
+      var excludeLife = grid.getAttribute('data-showmore-exclude-life') || '';
       function isHd(el){ return el.hasAttribute('data-sm-heading'); }
+      function isDefaultExcluded(el){
+        return !!excludeLife && el.getAttribute('data-life') === excludeLife;
+      }
+      if (excludeLife) {
+        items = items.filter(function (el) {
+          if (!isDefaultExcluded(el)) return true;
+          el.classList.add('sm-hidden');
+          return false;
+        });
+      }
+      var total = items.length;
       var recTotal = items.filter(function (el) { return !isHd(el); }).length;
       // Live column count from the resolved grid tracks ("330px 330px 330px" → 3);
       // "none"/empty (not a grid / display:none, e.g. an inactive tab) falls back to 1.

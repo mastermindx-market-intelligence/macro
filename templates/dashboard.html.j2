@@ -16503,7 +16503,7 @@ html[data-theme="light"] :is(
         <div class="mx-empty-why">{{ t('No qualifying rows today · refreshes after the next close', '今日无符合条件的条目 · 下一收盘后刷新') }}</div>
       </div>
       {%- else %}
-      <div class="nbgrid" data-showmore-rows="3" id="us-life-grid" data-mp1-grid="1">
+      <div class="nbgrid" data-showmore-rows="3" data-showmore-exclude-life="resolved" id="us-life-grid" data-mp1-grid="1">
       {%- with items=_upb.plans, cand_map=_cand_map, trg_map=_plan_trg_map, episode_map=(us_prophet_episodes or {}) %}{% include "_us_prophet_plan_cards.html.j2" %}{% endwith -%}
       </div>{# end #us-life-grid #}
       {#- Repair round 2, finding R1+R3 (COMMISSIONING ADJUDICATION, replaces
@@ -16565,12 +16565,12 @@ html[data-theme="light"] :is(
       {%- set _life_visible_locked = (life_gate_visible_locked if (life_gate_visible_locked is defined and life_gate_visible_locked is not none) else life_gate.locked) -%}
       <div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">{{ _life_visible_locked }} more plan rows on tonight's board</span>
-          <span class="l-zh">今晚榜单还有 {{ _life_visible_locked }} 条计划</span>
+          <span class="l-en">{{ _life_visible_locked }} more tracked plan rows in this plan book</span>
+          <span class="l-zh">计划簿中还有 {{ _life_visible_locked }} 条跟踪记录</span>
         </div>
         <div class="us-tw-p">
-          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
-          <span class="l-zh">当前显示 {{ life_gate.total }} 条计划中的前 {{ _life_visible_preview }} 条。登录后可查看完整排名榜单、全部生命周期状态与表格视图。</span>
+          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} tracked plan rows. Sign in to see the full tracked plan book and every lifecycle state.</span>
+          <span class="l-zh">当前显示 {{ life_gate.total }} 条跟踪记录中的前 {{ _life_visible_preview }} 条。登录后可查看完整跟踪计划簿与全部生命周期状态。</span>
         </div>
         <div class="us-tw-acts">
           <a class="us-tw-btn" href="plans.html">{{ t('See plans', '查看方案') }}</a>
@@ -17162,6 +17162,27 @@ html[data-theme="light"] :is(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* A historical record can link to a newer episode in another lifecycle
+         cell. Delegate from the stable panel rather than the replaceable grid,
+         so entitled hydration and show-more do not strand the link. Select the
+         already-loaded target's published lifecycle before the browser performs
+         its native fragment jump. Modified clicks, missing/withheld targets and
+         malformed destinations remain untouched. */
+      box.addEventListener('click', function (e) {
+        if (e.defaultPrevented || (typeof e.button === 'number' && e.button !== 0) ||
+            e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        var link = e.target && e.target.closest ? e.target.closest('a.pv-newer') : null;
+        if (!link || !link.closest('#us-life-grid')) return;
+        var href = link.getAttribute('href') || '';
+        if (href.charAt(0) !== '#') return;
+        var targetId;
+        try { targetId = decodeURIComponent(href.slice(1)); } catch (err) { return; }
+        var target = document.getElementById(targetId);
+        if (!target || !target.closest || !target.closest('#us-life-grid')) return;
+        var targetLife = target.getAttribute('data-life');
+        if (!targetLife || VALID_LIFE.indexOf(targetLife) === -1) return;
+        setLife(targetLife);
+      });
       /* Initial state: query string wins outright. Only when it carries no
          `life` param do we fall back, ONCE, to an inbound legacy #life=
          fragment — read here and never again; the fragment is not re-read on
@@ -20175,6 +20196,7 @@ if (document.readyState === 'loading') {
       freshLifeGrid.className = lifeGrid.className;
       freshLifeGrid.id = 'us-life-grid';
       freshLifeGrid.setAttribute('data-showmore-rows', '3');
+      freshLifeGrid.setAttribute('data-showmore-exclude-life', 'resolved');
       freshLifeGrid.setAttribute('data-mp1-grid', '1');
       freshLifeGrid.innerHTML = lifeGrid.innerHTML + payload.plan_cards_html;
       lifeGrid.parentNode.insertBefore(freshLifeGrid, lifeGrid);

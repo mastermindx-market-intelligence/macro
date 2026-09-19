@@ -372,3 +372,100 @@ def test_e_no_js_assignment_impersonates_an_href_or_src_attribute():
         "comment spelling one followed by = and a quoted string, is enough to "
         "cause this."
     )
+
+
+# ═══════════ F — tracked-record pager uses the default-visible population ════
+def _show_more_script() -> str:
+    src = (ROOT / "templates" / "theme.js").read_text()
+    start = src.index("  function smBL(")
+    end_marker = "  window.initShowMore = initShowMore;"
+    end = src.index(end_marker, start) + len(end_marker)
+    return src[start:end]
+
+
+def test_f_plan_grid_declares_resolved_as_default_pager_exclusion_on_both_build_paths():
+    dash = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    assert 'data-showmore-exclude-life="resolved" id="us-life-grid"' in dash
+    assert "freshLifeGrid.setAttribute('data-showmore-exclude-life', 'resolved')" in dash
+
+
+def test_f_tracked_pager_counts_only_default_visible_unresolved_records():
+    """The default plan grid hides resolved history. Its pager must walk/count
+    the same unresolved population, while lifecycle filters remain free to
+    reveal every matching sm-hidden record later."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "node is required by the existing code-gated JavaScript contract"
+    harness = r"""
+class Classes {
+  constructor(){ this.values = new Set(); }
+  contains(v){ return this.values.has(v); }
+  add(v){ this.values.add(v); }
+  remove(v){ this.values.delete(v); }
+}
+class Element {
+  constructor(tag, attrs){
+    this.tagName = tag; this.nodeType = 1; this.attrs = attrs || {};
+    this.dataset = {}; this.children = []; this.classList = new Classes();
+    this.style = {}; this.listeners = {}; this.parentNode = null;
+    this.nextSibling = null; this.innerHTML = ''; this.className = '';
+    this.offsetWidth = 100;
+  }
+  hasAttribute(name){ return Object.prototype.hasOwnProperty.call(this.attrs, name); }
+  getAttribute(name){ return this.hasAttribute(name) ? this.attrs[name] : null; }
+  setAttribute(name, value){ this.attrs[name] = String(value); }
+  appendChild(child){ this.children.push(child); child.parentNode = this; return child; }
+  addEventListener(name, fn){ this.listeners[name] = fn; }
+  scrollIntoView(){}
+}
+const parent = new Element('section');
+parent.insertBefore = function(child){ this.inserted = child; child.parentNode = this; };
+const grid = new Element('div', {
+  'data-showmore-rows': '3',
+  'data-showmore-exclude-life': 'resolved',
+});
+grid.parentNode = parent;
+const lives = [
+  'ready','resolved','entered','ready','entered','resolved','ready','entered',
+  'ready','entered','resolved','ready','entered','ready','entered','resolved',
+  'ready','entered','ready','entered','ready','entered'
+];
+const records = lives.map(function(life){
+  const el = new Element('article', {'data-life': life});
+  el.life = life; el.parentNode = grid; return el;
+});
+grid.children = records;
+global.document = {
+  querySelectorAll: () => [grid],
+  createElement: (tag) => new Element(tag),
+};
+global.window = {
+  getComputedStyle: () => ({getPropertyValue: () => '100px 100px 100px 100px 100px'}),
+  addEventListener: () => {},
+};
+""" + _show_more_script() + r"""
+initShowMore();
+const bar = parent.inserted;
+if (!bar) throw new Error('show-more bar was not created');
+const count = bar.children[0];
+const buttons = bar.children[1];
+const more = buttons.children[0];
+const all = buttons.children[1];
+const unresolved = records.filter(x => x.life !== 'resolved');
+const resolved = records.filter(x => x.life === 'resolved');
+const visibleUnresolved = () => unresolved.filter(x => !x.classList.contains('sm-hidden')).length;
+const hiddenResolved = () => resolved.filter(x => x.classList.contains('sm-hidden')).length;
+if (visibleUnresolved() !== 15) throw new Error('default visible unresolved=' + visibleUnresolved());
+if (hiddenResolved() !== resolved.length) throw new Error('resolved history leaked into default pager');
+if (!count.innerHTML.includes('Showing <b>15</b> of <b>18</b>')) throw new Error(count.innerHTML);
+if (!more.innerHTML.includes('Show 3 more')) throw new Error(more.innerHTML);
+if (!all.innerHTML.includes('Show all 18')) throw new Error(all.innerHTML);
+all.listeners.click();
+if (visibleUnresolved() !== 18) throw new Error('show-all unresolved=' + visibleUnresolved());
+if (hiddenResolved() !== resolved.length) throw new Error('show-all exposed resolved history');
+if (!count.innerHTML.includes('Showing <b>18</b> of <b>18</b>')) throw new Error(count.innerHTML);
+"""
+    proc = subprocess.run([node, "-e", harness], capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr or proc.stdout
