@@ -132,3 +132,11 @@ nightly successfully lands and validates both `data/gold_china_basis/*.parquet` 
 promotes those exact rows to `PRODUCED` only when the same receipt proves the machine projection
 consistent too. Do **not** promote them before that live effect: the registry's honesty law
 requires a produced store to exist on disk today and its accepted consumer projections to agree.
+
+The quality receipt binds that promotion proof to both raw artifacts. For each source role it
+records the stable Data OS id, repo-relative parquet path, row count, SHA-256, and latest
+observation timestamp. `close_proxy_dataos_promotion_ready=true` is impossible unless both SGE
+and global artifacts exist, contain rows, carry valid SHA-256 bindings, match the headline source
+timestamp, the machine projection is consistent, the close proxy is fresh, and 5-/30-session
+statistics are ready. Fixture-only proof therefore remains promotion-blocked unless it supplies
+explicit artifact bindings.

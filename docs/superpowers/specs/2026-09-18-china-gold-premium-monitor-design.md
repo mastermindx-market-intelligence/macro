@@ -130,6 +130,13 @@ promotes those same rows to `PRODUCED` only when the same receipt proves the mac
 consistent. Promoting them before that effect, or from page-only proof, would violate the
 registry's own truth rule.
 
+Promotion evidence is artifact-bound, not inferred from a green UI alone. The production quality
+receipt includes one SGE and one global-source artifact record with stable dataset id,
+repo-relative path, row count, SHA-256, and latest observation timestamp. The promotion-ready bit
+remains false unless both artifacts are present and non-empty, their hashes are bound, and their
+latest timestamp matches the close-proxy headline that was also proven through the page and
+machine projection.
+
 ## Engine boundary
 
 Create engine/china_gold_premium.py. It owns source-reference validation, provider-neutral store

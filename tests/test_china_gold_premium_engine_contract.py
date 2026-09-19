@@ -689,8 +689,11 @@ def test_gold_premium_receipt_exposes_close_proxy_dataos_promotion_readiness(tmp
     )
 
     assert doc["machine_projection_consistent"] is True
-    assert doc["close_proxy_dataos_promotion_ready"] is True
-    assert doc["close_proxy_dataos_promotion_blockers"] == []
+    assert doc["close_proxy_dataos_promotion_ready"] is False
+    assert (
+        "source artifacts were not proven"
+        in doc["close_proxy_dataos_promotion_blockers"]
+    )
 
 
 def test_gold_premium_receipt_blocks_dataos_promotion_for_honest_unavailable(tmp_path):
@@ -963,3 +966,288 @@ def test_gold_premium_dataos_promotion_requires_machine_projection_proof(tmp_pat
         "machine projection was not proven consistent"
         in doc["close_proxy_dataos_promotion_blockers"]
     )
+
+
+def _promotion_machine_for_audit():
+    return {
+        "available": True,
+        "method": "close_proxy",
+        "state": "premium",
+        "premium_pct": 0.1674,
+        "source_asof": "2026-09-18T07:30:00+00:00",
+        "source_fresh": True,
+        "official_canonical_available": False,
+        "context_only": True,
+    }
+
+
+def _promotion_source_artifacts_for_audit():
+    return [
+        {
+            "role": "sge",
+            "dataset_id": "commodity.gold.sge_au9999.close",
+            "path": "data/gold_china_basis/sge_au9999.parquet",
+            "exists": True,
+            "rows": 30,
+            "sha256": "a" * 64,
+            "asof": "2026-09-18T07:30:00+00:00",
+        },
+        {
+            "role": "global",
+            "dataset_id": "commodity.gold.xaucny.close_ref",
+            "path": "data/gold_china_basis/xaucny_spot.parquet",
+            "exists": True,
+            "rows": 30,
+            "sha256": "b" * 64,
+            "asof": "2026-09-18T07:30:00+00:00",
+        },
+    ]
+
+
+def test_gold_premium_dataos_promotion_rejects_incomplete_source_artifact_binding(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = _live_proxy_vm_for_audit()
+    vm["chart"]["proxy"] = [
+        {"date": f"2026-08-{i:02d}"} for i in range(1, 31)
+    ]
+
+    doc = audit.write_receipt(
+        vm,
+        _live_proxy_html_for_audit(),
+        machine_projection=_promotion_machine_for_audit(),
+        source_artifacts=[{"role": "sge", "exists": True}],
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["close_proxy_dataos_promotion_ready"] is False
+    assert (
+        "source artifact global was not proven"
+        in doc["close_proxy_dataos_promotion_blockers"]
+    )
+
+
+def test_gold_premium_dataos_promotion_accepts_two_bound_current_source_artifacts(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = _live_proxy_vm_for_audit()
+    vm["chart"]["proxy"] = [
+        {"date": f"2026-08-{i:02d}"} for i in range(1, 31)
+    ]
+
+    doc = audit.write_receipt(
+        vm,
+        _live_proxy_html_for_audit(),
+        machine_projection=_promotion_machine_for_audit(),
+        source_artifacts=_promotion_source_artifacts_for_audit(),
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["close_proxy_dataos_promotion_ready"] is True
+    assert doc["close_proxy_dataos_promotion_blockers"] == []
+
+
+def test_gold_premium_run_binds_real_source_store_artifacts_for_dataos_promotion(
+    tmp_path, monkeypatch
+):
+    import json
+
+    import pandas as pd
+
+    from engine import china_gold_premium
+    from lib import config, store
+    from scripts import audit_china_gold_premium as audit
+
+    data_root = tmp_path / "data"
+    site_root = tmp_path / "site"
+    commodity_root = data_root / "commodity"
+    site_root.mkdir(parents=True)
+    commodity_root.mkdir(parents=True)
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "data_dir", lambda: data_root)
+
+    idx = pd.date_range("2026-08-20 07:30:00", periods=30, freq="D")
+    store.upsert(
+        "gold_china_basis",
+        "sge_au9999",
+        pd.DataFrame({"rmb_per_g": [820.0 + i * 0.1 for i in range(30)]}, index=idx),
+        normalize_index=False,
+    )
+    store.upsert(
+        "gold_china_basis",
+        "xaucny_spot",
+        pd.DataFrame({"cny_per_oz": [25450.0 + i for i in range(30)]}, index=idx),
+        normalize_index=False,
+    )
+
+    def leg(name, column, label):
+        return {
+            "group": "gold_china_basis",
+            "name": name,
+            "column": column,
+            "source_label": label,
+            "entitled": True,
+        }
+
+    premium_cfg = {
+        "canonical": {},
+        "intraday": {},
+        "close_proxy": {
+            "sge": leg("sge_au9999", "rmb_per_g", "Shanghai Gold Exchange Au99.99"),
+            "global": leg("xaucny_spot", "cny_per_oz", "Global XAU/CNY spot"),
+            "max_skew_minutes": 2,
+            "max_age_days": 4,
+        },
+    }
+    now = pd.Timestamp("2026-09-18T12:00:00Z")
+    vm = china_gold_premium.build_view_model(premium_cfg, now=now)
+    assert vm["current_method"] == "close_proxy"
+    assert vm["stats"]["range_30"] is not None
+
+    site_root.joinpath("commodities.html").write_text(
+        '<section id="gold-china-premium" '
+        f'data-cgp-state="{vm["state"]}" '
+        f'data-cgp-display-source="{vm["chart"]["display_source"]}" '
+        f'data-cgp-currency="{vm["price_currency"]}" '
+        f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
+        f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
+    )
+    machine = {
+        "available": True,
+        "method": "close_proxy",
+        "state": vm["state"],
+        "premium_pct": vm["premium_pct"],
+        "price_currency": "CNY",
+        "source_asof": vm["close_proxy"]["asof"],
+        "source_fresh": True,
+        "avg_5_pct": vm["stats"]["avg_5"],
+        "range_30_pct": vm["stats"]["range_30"],
+        "official_canonical_available": False,
+        "context_only": True,
+    }
+    commodity_root.joinpath("latest.json").write_text(
+        json.dumps({"gold_context": {"china_physical_premium": machine}})
+    )
+
+    monkeypatch.setattr(
+        audit.config,
+        "load",
+        lambda: {
+            "storage": {"site_dir": "site"},
+            "commodities": {"china_gold_premium": premium_cfg},
+        },
+    )
+    real_build_view_model = china_gold_premium.build_view_model
+    monkeypatch.setattr(
+        audit.china_gold_premium,
+        "build_view_model",
+        lambda cfg: real_build_view_model(cfg, now=now),
+    )
+
+    rc = audit.run(strict_render=True)
+    receipt = json.loads(
+        data_root.joinpath("quality", "china_gold_premium.json").read_text()
+    )
+
+    assert rc == 0
+    assert receipt["close_proxy_dataos_promotion_ready"] is True
+    assert receipt["close_proxy_dataos_promotion_blockers"] == []
+    assert [item["role"] for item in receipt["source_artifacts"]] == ["sge", "global"]
+    for item in receipt["source_artifacts"]:
+        assert item["exists"] is True
+        assert item["rows"] == 30
+        assert len(item["sha256"]) == 64
+        assert item["asof"] == vm["close_proxy"]["asof"]
+        assert item["path"].startswith("data/gold_china_basis/")
+
+
+def test_gold_premium_audit_treats_unreadable_source_store_as_honest_unavailable(
+    tmp_path, monkeypatch
+):
+    import json
+
+    from lib import config
+    from scripts import audit_china_gold_premium as audit
+
+    data_root = tmp_path / "data"
+    site_root = tmp_path / "site"
+    commodity_root = data_root / "commodity"
+    source_root = data_root / "gold_china_basis"
+    site_root.mkdir(parents=True)
+    commodity_root.mkdir(parents=True)
+    source_root.mkdir(parents=True)
+
+    # Existing-but-corrupt source files model an upstream artifact outage. The
+    # scheduled proof path must report honest unavailability, not crash the
+    # entire commodity builder merely because the audit cannot parse a source.
+    source_root.joinpath("sge_au9999.parquet").write_bytes(b"not parquet")
+    source_root.joinpath("xaucny_spot.parquet").write_bytes(b"not parquet")
+
+    site_root.joinpath("commodities.html").write_text(
+        '<section id="gold-china-premium" '
+        'data-cgp-state="unavailable" '
+        'data-cgp-display-source="canonical" '
+        'data-cgp-currency="USD"></section>'
+    )
+    commodity_root.joinpath("latest.json").write_text(
+        json.dumps(
+            {
+                "gold_context": {
+                    "china_physical_premium": {
+                        "available": False,
+                        "method": None,
+                        "state": "unavailable",
+                        "premium_pct": None,
+                        "source_asof": None,
+                        "source_fresh": False,
+                        "official_canonical_available": False,
+                        "context_only": True,
+                    }
+                }
+            }
+        )
+    )
+
+    def leg(name, column, label):
+        return {
+            "group": "gold_china_basis",
+            "name": name,
+            "column": column,
+            "source_label": label,
+            "entitled": True,
+        }
+
+    premium_cfg = {
+        "canonical": {},
+        "intraday": {},
+        "close_proxy": {
+            "sge": leg("sge_au9999", "rmb_per_g", "Shanghai Gold Exchange Au99.99"),
+            "global": leg("xaucny_spot", "cny_per_oz", "Global XAU/CNY spot"),
+            "max_skew_minutes": 2,
+            "max_age_days": 4,
+        },
+    }
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "data_dir", lambda: data_root)
+    monkeypatch.setattr(
+        config,
+        "load",
+        lambda: {
+            "storage": {"site_dir": "site"},
+            "commodities": {"china_gold_premium": premium_cfg},
+        },
+    )
+
+    rc = audit.main(["--strict-render"])
+    receipt = json.loads(
+        data_root.joinpath("quality", "china_gold_premium.json").read_text()
+    )
+
+    assert rc == 0
+    assert receipt["status"] == "honest_unavailable"
+    assert receipt["close_proxy_dataos_promotion_ready"] is False
+    assert [item["rows"] for item in receipt["source_artifacts"]] == [0, 0]

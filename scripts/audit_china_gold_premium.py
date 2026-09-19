@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import sys
@@ -27,11 +28,13 @@ from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 
+import pandas as pd
+
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from engine import china_gold_premium  # noqa: E402
-from lib import config  # noqa: E402
+from lib import config, store  # noqa: E402
 
 
 log = logging.getLogger("china_gold_premium_audit")
@@ -67,6 +70,93 @@ def _method_meta(vm: dict) -> dict:
     if method == "canonical":
         return vm.get("canonical") or {}
     return {}
+
+
+_CLOSE_PROXY_DATASET_IDS = {
+    "sge": "commodity.gold.sge_au9999.close",
+    "global": "commodity.gold.xaucny.close_ref",
+}
+
+
+def _iso_utc(value) -> str | None:
+    if value is None:
+        return None
+    try:
+        ts = pd.Timestamp(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if pd.isna(ts):
+        return None
+    if ts.tzinfo is None:
+        ts = ts.tz_localize("UTC")
+    else:
+        ts = ts.tz_convert("UTC")
+    return ts.isoformat()
+
+
+def _close_proxy_source_artifacts(premium_cfg: dict) -> list[dict]:
+    """Bind the configured close-proxy raw stores to the production receipt."""
+    close_cfg = (
+        premium_cfg.get("close_proxy")
+        if isinstance(premium_cfg, dict)
+        else None
+    )
+    close_cfg = close_cfg if isinstance(close_cfg, dict) else {}
+    artifacts: list[dict] = []
+
+    for role in ("sge", "global"):
+        spec = close_cfg.get(role)
+        spec = spec if isinstance(spec, dict) else {}
+        group = str(spec.get("group") or "")
+        name = str(spec.get("name") or "")
+        column = str(spec.get("column") or "")
+        path = (
+            config.data_dir() / group / f"{name}.parquet"
+            if group and name
+            else None
+        )
+        exists = bool(path and path.exists())
+        try:
+            display_path = (
+                str(path.relative_to(config.ROOT))
+                if path is not None
+                else None
+            )
+        except ValueError:
+            display_path = str(path) if path is not None else None
+
+        try:
+            frame = store.read(group, name) if group and name else None
+        except Exception:
+            frame = None
+        rows = int(len(frame)) if frame is not None else 0
+        asof = (
+            _iso_utc(frame.index[-1])
+            if frame is not None and not frame.empty
+            else None
+        )
+        digest = None
+        if exists and path is not None:
+            try:
+                digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            except OSError:
+                digest = None
+
+        artifacts.append(
+            {
+                "role": role,
+                "dataset_id": _CLOSE_PROXY_DATASET_IDS[role],
+                "group": group or None,
+                "name": name or None,
+                "column": column or None,
+                "path": display_path,
+                "exists": exists,
+                "rows": rows,
+                "sha256": digest,
+                "asof": asof,
+            }
+        )
+    return artifacts
 
 
 def evaluate(
@@ -245,6 +335,7 @@ def write_receipt(
     html: str,
     *,
     machine_projection: dict | None = None,
+    source_artifacts: list[dict] | None = None,
     out_path: Path | str | None = None,
     checked_at: str | None = None,
 ) -> dict:
@@ -254,10 +345,12 @@ def write_receipt(
         machine_projection=machine_projection,
         checked_at=checked_at,
     )
+    doc["source_artifacts"] = list(source_artifacts or [])
     promotion_blockers = live_ready_violations(
         doc,
         required_method="close_proxy",
         require_machine_projection=True,
+        require_source_artifacts=True,
     )
     doc["close_proxy_dataos_promotion_ready"] = not promotion_blockers
     doc["close_proxy_dataos_promotion_blockers"] = promotion_blockers
@@ -274,6 +367,7 @@ def live_ready_violations(
     *,
     required_method: str | None = None,
     require_machine_projection: bool = False,
+    require_source_artifacts: bool = False,
 ) -> list[str]:
     """Return blockers for the post-merge live-product acceptance gate."""
     blockers: list[str] = []
@@ -291,6 +385,39 @@ def live_ready_violations(
         and doc.get("machine_projection_consistent") is not True
     ):
         blockers.append("machine projection was not proven consistent")
+    if require_source_artifacts:
+        artifacts = doc.get("source_artifacts")
+        if not isinstance(artifacts, list) or not artifacts:
+            blockers.append("source artifacts were not proven")
+        else:
+            by_role = {
+                str(item.get("role")): item
+                for item in artifacts
+                if isinstance(item, dict) and item.get("role")
+            }
+            source_asof = str(doc.get("source_asof") or "")
+            for role in ("sge", "global"):
+                item = by_role.get(role)
+                if not isinstance(item, dict) or item.get("exists") is not True:
+                    blockers.append(f"source artifact {role} was not proven")
+                    continue
+                try:
+                    rows = int(item.get("rows") or 0)
+                except (TypeError, ValueError):
+                    rows = 0
+                if rows < 1:
+                    blockers.append(f"source artifact {role} has no rows")
+                digest = str(item.get("sha256") or "")
+                if len(digest) != 64 or any(
+                    ch not in "0123456789abcdef" for ch in digest.lower()
+                ):
+                    blockers.append(f"source artifact {role} sha256 is not bound")
+                artifact_asof = str(item.get("asof") or "")
+                if artifact_asof != source_asof:
+                    blockers.append(
+                        f"source artifact {role} asof {artifact_asof or 'none'} "
+                        f"does not match headline {source_asof or 'none'}"
+                    )
     if required_method is not None:
         method = str(doc.get("headline_method") or "none")
         if method != required_method:
@@ -338,6 +465,7 @@ def run(
         vm,
         html,
         machine_projection=machine_projection,
+        source_artifacts=_close_proxy_source_artifacts(premium_cfg),
     )
 
     if doc["status"] == "render_mismatch":
