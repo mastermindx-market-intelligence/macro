@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T01:40:33.464844+00:00",
-  "count": 2398,
+  "generated_at": "2026-09-19T02:09:31.032474+00:00",
+  "count": 2399,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-fdbolpd0jhx-1b9510",
+      "title": "Macro & Markets forecast edition",
+      "institution": "Nordea",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:48:01Z",
+      "summary_points": [
+        "USD Strength Drivers: Fed hawkish hike confirms cycle, US growth center status, AI-driven foreign capital inflows into equities/credit sustain dollar strength with no reassessment catalysts.",
+        "EUR Vulnerability: Euro Area lagging in AI/critical tech, limited fiscal integration, ECB policy uncertainty (rate hike risks), and geopolitical exposure reinforce dollar strength.",
+        "Rate Differential Correlation: Strong inverse link between US-EA 2Y rate differential and EUR/USD; historical peaks (2022-2023) drove EUR weakness, critical for FX positioning.",
+        "US Equity Demand: Robust foreign capital inflows into US equities (strongest interest) and credit, signaling sustained appetite despite volatility, supporting dollar.",
+        "Euro Structural Weakness: Geopolitical risks, lack of EUR-supportive initiatives (e.g., fiscal integration), and ECB rate hike downside risks compound EUR underperformance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-elleqgdqjed-13383a",
       "title": "FSA FI Daily Commentary 18 September 2026",
