@@ -20,6 +20,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>Research list{% if as_of %} — {{ as_of }}{% endif %} | MastermindX</title>
+{# seo_title / seo_desc are EN-only meta tags. _seo_head.html.j2 renders them as
+   plain text into <meta content=""> for social scrapers; it has no bilingual
+   mechanism for seo vars. This is the documented exception (m4 META-CEO ruling
+   h_7102_r2, 2026-09-19). #}
 {% set seo_title = 'Research list — which names deserve a look first, and why' %}
 {% set seo_desc = 'A research list of companies, ordered by name. Each line says why, and which panel produced that fact.' %}
 {% set seo_path = 'research_screener.html' %}

@@ -1,5 +1,5 @@
 {
-  "schema": "mastermind.p0_evidence.v2",
+  "schema": "mastermind.page_evidence_receipt.v1",
   "axes": {
     "access": [
       "anonymous"

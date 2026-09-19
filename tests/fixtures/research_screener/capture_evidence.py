@@ -166,7 +166,12 @@ def main() -> int:
     ]
 
     manifest = {
-        "schema": "mastermind.page_evidence_receipt.v1",
+        # This fixture tool writes p0_evidence.v1-fixture rather than
+        # mastermind.p0_evidence.v2 because it lacks the house tool's
+        # per-object sha256/bytes and per-state metrics (panel_count,
+        # document_height_px, visible_word_count). The real capture must use
+        # scripts/capture_page_evidence.py.
+        "schema": "mastermind.p0_evidence.v1-fixture",
         "axes": {
             "access": ["anonymous"],
             "force_states": [],

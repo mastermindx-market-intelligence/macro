@@ -550,7 +550,7 @@ def test_template_has_no_skydeck_payload_or_en_only_title():
     assert "research_screener.css" in source
 
 
-def test_template_aria_labels_go_through_t_macro():
+def test_template_aria_labels_are_plain_bilingual_strings():
     """MAJOR-1: aria-label is a plain bilingual string, never t() macro output."""
     source = TEMPLATE_PATH.read_text(encoding="utf-8")
     # MAJOR-1: plain bilingual strings (no t() macro, no markup inside aria-label)

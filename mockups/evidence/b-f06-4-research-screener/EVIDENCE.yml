@@ -1,3 +1,7 @@
+# recapture: NEEDED
+# 2026-09-19 h_7102_r2: manifest is the 2026-09-13 capture at 17265624 (p0 v1 shape);
+# the aria-label/t() fix at <code head> is not depicted; recapture with
+# scripts/capture_page_evidence.py is a follow-on lane.
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/research_screener.html.j2
