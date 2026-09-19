@@ -58,7 +58,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from collections import deque
+from collections import deque, OrderedDict
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Header, Request
@@ -92,7 +92,7 @@ _RATE_WINDOW_SECONDS = 900.0
 _RATE_LIMITS = {"password": 5, "email": 5, "delete": 5, "signout-everywhere": 10}
 _RATE_MAX_KEYS = 5_000
 _rate_lock = threading.Lock()
-_rate_buckets: dict[str, deque] = {}
+_rate_buckets: OrderedDict[str, deque] = OrderedDict()
 
 #: Every user-facing sentence this module can put on a screen, EN and ZH together in one
 #: table so a twin can never go missing. Values are (en, zh); the ZH side is real Chinese
@@ -288,16 +288,17 @@ def _book(key: str, limit: int, now: float, cutoff: float) -> bool:
     bucket = _rate_buckets.get(key)
     if bucket is None:
         if len(_rate_buckets) >= _RATE_MAX_KEYS:
-            # Evict the least-recently USED key (dict preserves insertion order, so the
-            # eldest entry is at iter(). A caller who just received a 429 and has not yet
-            # retried may be the LRU and could be dropped; they get a fresh bucket when
-            # they next call, which is fine — they were already refused for this window.
+            # Evict the least-recently USED key (move_to_end is called on access so the
+            # dict iteration order is LRU, not insertion order).
             try:
                 _rate_buckets.pop(next(iter(_rate_buckets)))
             except StopIteration:
                 pass
         bucket = deque()
         _rate_buckets[key] = bucket
+    else:
+        # Mark as recently used so next(iter()) is truly the LRU slot.
+        _rate_buckets.move_to_end(key)
     while bucket and bucket[0] <= cutoff:
         bucket.popleft()
     if len(bucket) >= limit:

@@ -1075,8 +1075,10 @@ def account(user: dict = Depends(require_user),
         # convention as `from app import billing` four lines up.
         from lib import team_membership  # noqa: PLC0415
         from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
+        # Use the resolved token from require_user (which handles both Bearer and cookie).
+        # authorization Header may be absent when only the session cookie was present.
         teams = team_membership.fetch_caller_teams(
-            team_membership.extract_bearer(authorization),
+            user.get("_access_token"),
             str(user.get("id") or ""),
             _supabase(),
         )

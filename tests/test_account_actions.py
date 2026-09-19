@@ -553,11 +553,11 @@ def test_t4_delete_files_the_token_owners_row_not_a_body_claim(client, up, monke
 
 def test_t4_delete_identity_without_an_email_is_refused_before_the_store(client, up, monkeypatch):
     # The test verifies the email check happens before the upstream call.
-    # With the new _access_token flow, we patch require_user to return the user dict
-    # WITH _access_token so the handler passes the token check and reaches the email check.
+    # Patch require_user with a user record that has no email — the handler must
+    # detect this and return 400 before touching the store.
     import app.main as main
     monkeypatch.setattr(main, "require_user",
-                        lambda authorization, request=None: dict(USER, _access_token=CALLER_TOKEN))
+                        lambda authorization, request=None: {"id": USER["id"], "user_metadata": {}})
     data = _assert_plain_failure(_post(client, "/api/account/delete",
                                        {"confirm": "reader@example.com"}), 400)
     assert data["error"] == account_actions.COPY["delete_no_email"][0]

@@ -188,9 +188,18 @@
     });
   }
   function getToken() {
-    // macro rides the shared cookie (credentials:include) — never load the SDK there
-    // (jsdelivr is GFW-blocked; the app broker reads the cookie directly).
-    if (_macro || !SUPA || !hasPersisted()) return Promise.resolve(null);
+    // macro: use MDXAuth (the same client theme.js uses at line 3709) so we get the
+    // session that the shared cookie contains — no SDK load needed (jsdelivr is GFW-blocked).
+    if (_macro) {
+      return (window.MDXAuth && window.MDXAuth.client
+        ? window.MDXAuth.client().getSession()
+        : Promise.reject(new Error('no-mdxauth'))).then(function (r) {
+          var s = r && r.data && r.data.session;
+          return s ? s.access_token : null;
+        }).catch(function () { return null; });
+    }
+    // standalone: use the SDK-backed client.
+    if (!SUPA || !hasPersisted()) return Promise.resolve(null);
     return sbClient().then(function (sb) { return sb ? sb.auth.getSession() : null; })
       .then(function (r) { var s = r && r.data && r.data.session; return s ? s.access_token : null; })
       .catch(function () { return null; });
