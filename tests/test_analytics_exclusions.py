@@ -93,7 +93,7 @@ def test_excluded_cte_empty_config_is_valid_and_matches_nothing(monkeypatch):
 # ---- surface functions: SQL generation (network monkeypatched) -------------
 def _capture(monkeypatch, ret=None):
     seen = {"all": []}
-    def fake_query(sql):
+    def fake_query(sql, *args, **kwargs):
         seen["sql"] = sql
         seen["all"].append(sql)
         return list(ret) if ret is not None else []
@@ -129,6 +129,19 @@ def test_sessions_applies_exclusion_and_filter(monkeypatch):
     assert "excluded as" in sql
     assert "g.city ilike '%richmond%'" in sql
     assert "limit 500" in sql
+
+
+def test_sessions_focuses_bot_history_on_visitors_in_window(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.sessions(limit=100, minutes=1440)
+    sql = seen["sql"]
+    # The bot classifier keeps historical evidence for the visitors that can actually
+    # appear in this panel, instead of distinct-scanning every visitor ever recorded.
+    assert ("focus_visitors as (select distinct visitor_id from public.analytics_events "
+            "where visitor_id is not null and created_at > now() - interval '1440 minutes')") in sql
+    assert "visitor_id is not null and visitor_id in (select visitor_id from focus_visitors)" in sql
+    # Farm detection remains historically exact for every fingerprint used by a focused visitor.
+    assert "fp in (select fp from focus_fp)" in sql
 
 
 # ---- soft candidate-identity linkage (anon cookie -> likely registered user) --------
@@ -289,6 +302,35 @@ def test_overview_reports_bot_count_and_humans_only(monkeypatch):
     joined = " ".join(seen["all"])
     assert "not in (select visitor_id from bots)" in joined                     # humans-only counts
     assert "e.visitor_id in (select visitor_id from bots)" in joined            # bots counted separately
+
+
+def test_overview_bounds_bot_classification_to_requested_window(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.overview(minutes=1440)
+    sqls = seen["all"]
+    assert len(sqls) == 6
+    focused = [sql for sql in sqls if "focus_visitors as (" in sql]
+    # Every windowed Overview leg must scope the expensive bot classifier; only the
+    # explicitly all-time summary remains historically unbounded.
+    assert len(focused) == 5
+    assert all("created_at > now() - interval '1440 minutes'" in sql for sql in focused)
+    unbounded = [sql for sql in sqls if "focus_visitors as (" not in sql]
+    assert len(unbounded) == 1
+    assert "select count(*)::int as events" in unbounded[0]
+
+
+def test_overview_alltime_timeout_does_not_blank_live_window(monkeypatch):
+    monkeypatch.setattr(a, "status", lambda: {"configured": True})
+
+    def fake_query(sql, *args, **kwargs):
+        if "focus_visitors as (" not in sql:
+            raise TimeoutError("historical summary too slow")
+        return []
+
+    monkeypatch.setattr(a, "_query", fake_query)
+    out = a.overview(minutes=1440)
+    assert out["ok"] is True
+    assert out["alltime"] == {}
 
 
 # ---- geo overrides ---------------------------------------------------------
