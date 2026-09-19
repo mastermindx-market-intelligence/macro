@@ -9114,9 +9114,21 @@ jobs:
     # this actual R2/data-plane test job selectable for source-, workflow-, and
     # test-only edits instead of allowing a false-green plan.
     paths:
+      - "engine/company_intelligence/**"
+      - "scripts/build_company_intelligence.py"
+      - "scripts/publish_company_intelligence_r2.py"
       - "scripts/refresh_company_intelligence.py"
       - ".github/workflows/company-intelligence.yml"
-      - "tests/test_company_intelligence_refresh.py"
+      - "engine/company_theme_exposure/**"
+      - "scripts/build_company_theme_exposure.py"
+      - "scripts/publish_company_theme_exposure_r2.py"
+      - "tests/test_publish_r2.py"
+      - "tests/test_*company_intelligence*.py"
+      - "tests/test_company_theme_exposure.py"
+      - "tests/test_publish_company_theme_exposure_r2.py"
+      - "tests/test_earnings_story*.py"
+      - "tests/test_publish_earnings_story_packets_r2.py"
+      - "tests/test_refresh_earnings_story_packets.py"
     # scripts/publish_r2._client's retry posture — 10 adaptive attempts and the
     # 15s/60s connect/read bounds that replaced the 4/standard config which died
     # 2026-07-16 mid-nightly. The assertion reads botocore's normalized config, so
