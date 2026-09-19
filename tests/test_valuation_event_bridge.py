@@ -9,8 +9,10 @@ from __future__ import annotations
 
 import json
 import ast
+import logging
 from pathlib import Path
 import re
+import sys
 import pytest
 from importlib import import_module
 
@@ -18,6 +20,8 @@ import jinja2
 
 from engine import valuation_event_bridge as veb
 from engine.capital_structure import event_spine
+from engine.capital_structure import spine_paths
+from engine.capital_structure.event_versions_io import spine_ticker_row_count
 from engine import valuation_assumptions as va
 from engine import valuation_scenario as vs
 from engine import i18n as i18n
@@ -30,12 +34,14 @@ ROOT = Path(__file__).resolve().parent.parent
 def issuer_spines(tmp_path, monkeypatch):
     """Use the owners' paths, with no dependency on live issuer coverage."""
     chronicle = import_module("engine.chronicle.spine")
-    compiler = import_module("scripts.compile_capital_structure_events")
     from lib import config
     path = tmp_path / "events.jsonl"
     monkeypatch.setattr(chronicle, "EVENTS_REL", path)
-    monkeypatch.setattr(compiler, "_data_root", lambda: tmp_path)
+    monkeypatch.setattr(spine_paths, "capital_data_root", lambda: tmp_path)
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    compiler = sys.modules.get("scripts.compile_capital_structure_events")
+    if compiler is not None:
+        monkeypatch.setattr(compiler, "_data_root", lambda: tmp_path)
     return path
 
 # ---------------------------------------------------------------------------
@@ -541,14 +547,18 @@ def _event_bridge_sentence(html):
     return " ".join(re.sub(r"<[^>]+>", "", event_line).split())
 
 
-def _use_committed_capital_spine(monkeypatch):
-    """Point the production Parquet reader at the in-repo capital-structure ledger."""
-    compiler = import_module("scripts.compile_capital_structure_events")
-    from lib import config
+COMMITTED_CAPITAL_ROOT = ROOT / "data" / "capital_structure"
 
-    monkeypatch.setattr(
-        compiler, "_data_root", lambda: config.data_dir() / "capital_structure"
-    )
+
+def _use_committed_capital_spine(monkeypatch):
+    """Point the shared spine resolver at the in-repo capital-structure ledger."""
+    monkeypatch.setattr(spine_paths, "capital_data_root", lambda: COMMITTED_CAPITAL_ROOT)
+    # Round-4 producer (57cfa8d9) still reads compiler._data_root; keep that
+    # name aimed at the same committed ledger so the RED replay is a collector
+    # import failure, not an empty tmp path.
+    compiler = import_module("scripts.compile_capital_structure_events")
+    monkeypatch.setattr(compiler, "_data_root", lambda: COMMITTED_CAPITAL_ROOT)
+    return spine_paths.event_versions_path()
 
 
 def test_production_path_renders_committed_nsa_post_effective_amendment(
@@ -581,7 +591,13 @@ def test_production_path_renders_aapl_typed_null_from_committed_spine(
     issuer_spines, monkeypatch
 ):
     """AAPL's generated page paints the typed-null line; it never fabricates an event."""
-    _use_committed_capital_spine(monkeypatch)
+    path = _use_committed_capital_spine(monkeypatch)
+    assert path == COMMITTED_CAPITAL_ROOT / "event_versions.parquet"
+    assert path.exists()
+    # Prove the resolver opened the committed ledger: NSA is present in that
+    # file and AAPL is honestly absent (0 rows), not skipped by an empty tmp.
+    assert spine_ticker_row_count("NSA") >= 1
+    assert spine_ticker_row_count("AAPL") == 0
     v1 = vs.compute(_rows(), ticker="AAPL")
     controls = va.controls_blob(v1)
     assert controls is not None
@@ -603,26 +619,35 @@ def test_production_path_renders_aapl_typed_null_from_committed_spine(
 def test_controls_blob_no_collector_import_at_call_time(
     issuer_spines, monkeypatch
 ):
-    """Blocking requests and collectors.sec_capital_structure does not raise,
-    and produces the same output as without the block."""
-    # First, get the baseline output (no blocking).
+    """Pop the compiler and block collector modules, then reload the producer.
+
+    At 57cfa8d9 the producer imported scripts.compile_capital_structure_events
+    at call time, so this test is RED there. At head it must match the
+    unblocked NSA post_effective_amendment line and the AAPL typed null.
+    """
+    import importlib
+
+    _use_committed_capital_spine(monkeypatch)
     v1_nsa = vs.compute(_rows(), ticker="NSA")
     v1_aapl = vs.compute(_rows(), ticker="AAPL")
     baseline_nsa = va.controls_blob(v1_nsa)
     baseline_aapl = va.controls_blob(v1_aapl)
+    assert baseline_nsa is not None
+    assert baseline_nsa["latest_event_bridge"] is not None
+    assert baseline_nsa["latest_event_bridge"]["event_class"] == "post_effective_amendment"
+    assert baseline_aapl is not None
+    assert baseline_aapl["latest_event_bridge"] is None
 
-    # Block both modules before the next import.
-    import sys
-    with monkeypatch.context() as m:
-        m.setitem(sys.modules, "requests", None)
-        m.setitem(sys.modules, "collectors.sec_capital_structure", None)
-        # Import fresh after blocking.
-        import importlib
-        va_module = importlib.import_module("engine.valuation_assumptions")
-        blocked_nsa = va_module.controls_blob(v1_nsa)
-        blocked_aapl = va_module.controls_blob(v1_aapl)
+    sys.modules.pop("scripts.compile_capital_structure_events", None)
+    sys.modules.pop("collectors.sec_capital_structure", None)
+    sys.modules.pop("requests", None)
+    monkeypatch.setitem(sys.modules, "collectors.sec_capital_structure", None)
+    monkeypatch.setitem(sys.modules, "requests", None)
 
-    # Same output, no exception.
+    va_module = importlib.reload(import_module("engine.valuation_assumptions"))
+    blocked_nsa = va_module.controls_blob(v1_nsa)
+    blocked_aapl = va_module.controls_blob(v1_aapl)
+
     assert blocked_nsa is not None, "NSA controls_blob must not return None"
     assert blocked_aapl is not None, "AAPL controls_blob must not return None"
     assert (
@@ -633,6 +658,67 @@ def test_controls_blob_no_collector_import_at_call_time(
         blocked_aapl.get("latest_event_bridge")
         == baseline_aapl.get("latest_event_bridge")
     ), "AAPL latest_event_bridge must match baseline"
+
+
+def test_issuer_event_lookup_failure_returns_typed_null_and_warns(
+    issuer_spines, monkeypatch, caplog
+):
+    """A raising bridge_for_issuer must not break the panel: typed null + warning."""
+    caplog.set_level(logging.WARNING)
+    issuer_spines.write_text(
+        json.dumps({
+            "id": "e1",
+            "tickers": ["AAPL"],
+            "kind": "Tender Offers",
+            "ts": "2026-01-01T00:00:00Z",
+        })
+        + "\n",
+        encoding="utf-8",
+    )
+    real = veb.bridge_for_issuer
+
+    def boom(event_class):
+        if event_class:
+            raise RuntimeError("bridge boom")
+        return real(event_class)
+
+    monkeypatch.setattr(veb, "bridge_for_issuer", boom)
+    with caplog.at_level(logging.WARNING, logger="engine.valuation_assumptions"):
+        controls = va.controls_blob(vs.compute(_rows(), ticker="AAPL"))
+    assert controls is not None
+    assert controls["latest_event_bridge"] is None
+    assert any(
+        "valuation: issuer event lookup failed:" in record.getMessage()
+        for record in caplog.records
+    )
+
+
+def test_engine_valuation_modules_do_not_import_scripts_or_collectors():
+    """Producer, bridge, and the parquet reader never import scripts or collectors."""
+    banned = (
+        "import scripts",
+        "from scripts",
+        "import collectors",
+        "from collectors",
+        'import_module("scripts',
+        "import_module('scripts",
+        'import_module("collectors',
+        "import_module('collectors",
+    )
+    paths = (
+        ROOT / "engine" / "valuation_assumptions.py",
+        ROOT / "engine" / "valuation_event_bridge.py",
+        ROOT / "engine" / "capital_structure" / "event_versions_io.py",
+        ROOT / "engine" / "capital_structure" / "spine_paths.py",
+    )
+    for path in paths:
+        src = path.read_text(encoding="utf-8")
+        for line in src.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
+            for token in banned:
+                assert token not in stripped, f"{path.name} contains {token!r}: {stripped}"
 
 
 # ---------------------------------------------------------------------------

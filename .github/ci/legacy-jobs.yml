@@ -1306,6 +1306,9 @@ jobs:
       - "engine/capital_structure/sec_discovery_clock.py"
       - "engine/capital_structure/source_ledger_io.py"
       - "engine/capital_structure/source_store.py"
+      # B-F07-3 event bridge reader/resolver 2026-09-19 (contract-delta)
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/spine_paths.py"
       - "engine/chronicle/__init__.py"
       - "engine/chronicle/adapters.py"
       - "engine/chronicle/earnings_calls.py"
@@ -11402,6 +11405,9 @@ jobs:
       - "engine/capital_structure/source_ledger_io.py"
       - "engine/capital_structure/source_store.py"
       - "scripts/compile_capital_structure_events.py"
+      # B-F07-3 event bridge reader/resolver 2026-09-19 (contract-delta)
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/spine_paths.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the

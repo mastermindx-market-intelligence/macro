@@ -25,11 +25,8 @@ and a future null path can reuse V1 diction without re-typing.
 """
 from __future__ import annotations
 
-import json
 import logging
 import math
-from importlib import import_module
-from pathlib import Path
 
 from engine import valuation_event_bridge as _veb
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
@@ -55,65 +52,34 @@ _V1_MISSING_LABELS = MISSING_LABELS
 
 
 def latest_issuer_spine_event_class(ticker: object) -> str | None:
-    """Read the latest non-null issuer class from the existing local spines.
+    """Read the latest non-null issuer class from the local event spines.
 
-    Chronicle's JSONL and the Parquet ledger are read directly; no
-    scripts.compile_capital_structure_events import (which would pull in
-    collectors.sec_capital_structure and the requests library).
+    Chronicle JSONL and the capital-structure parquet ledger are read through
+    their engine-owned readers. Collector modules are not imported.
     """
     if not isinstance(ticker, str) or not ticker.strip():
         return None
     wanted = ticker.strip().upper()
-
-    # Read Chronicle JSONL spine (no network, no scripts import).
     try:
-        spine = import_module("engine.chronicle.spine")
-        events = spine.load_events_jsonl(
-            Path(spine.__file__).resolve().parents[2] / spine.EVENTS_REL
-        )
-    except Exception:
-        events = []
-
-    # Read the Parquet event_versions ledger directly via pandas.
-    # This avoids importing scripts.compile_capital_structure_events at call-time
-    # (which would trigger collectors.sec_capital_structure -> requests).
-    # Path resolution mirrors _data_root() from that module:
-    #   config.data_dir() / "capital_structure" / "event_versions.parquet"
-    try:
-        from lib import config
-        import pandas as pd
-
-        # Primary path: config.data_dir() / "capital_structure" / "event_versions.parquet"
-        capital_path = config.data_dir() / "capital_structure" / "event_versions.parquet"
-        if not capital_path.exists():
-            # Fallback: the parquet may be at config.data_dir() / "event_versions.parquet"
-            # (used when _data_root is patched to return config.data_dir() directly)
-            alt_path = config.data_dir() / "event_versions.parquet"
-            if alt_path.exists():
-                capital_path = alt_path
-        if capital_path.exists():
-            frame = pd.read_parquet(capital_path)
-            ticker_rows = frame.loc[frame["ticker"].fillna("").str.upper() == wanted]
-            for _, row in ticker_rows.iterrows():
-                try:
-                    event = json.loads(row["event_json"])
-                except Exception:
-                    continue
-                classification = (event.get("classification") or {}).get("state", "")
-                if classification != "classified":
-                    continue
-                issuer = event.get("issuer") or {}
-                filing = event.get("filing") or {}
-                point_in_time = event.get("point_in_time") or {}
-                events.append({
-                    "id": str(event.get("event_id") or ""),
-                    "tickers": [str(issuer.get("ticker") or "")],
-                    "kind": str(event.get("event", {}).get("subtype") or ""),
-                    "ts": str(point_in_time.get("available_at") or ""),
-                })
+        return _select_latest_classified_event_class(wanted)
     except Exception as exc:
-        log.warning("could not read capital_structure event_versions parquet: %s", exc)
+        log.warning("valuation: issuer event lookup failed: %s", exc)
+        return None
 
+
+def _select_latest_classified_event_class(wanted: str) -> str | None:
+    from engine.chronicle import spine as chronicle_spine
+    from engine.capital_structure.event_versions_io import iter_classified_spine_events
+    from engine.capital_structure.spine_paths import chronicle_events_path
+
+    events = list(chronicle_spine.load_events_jsonl(chronicle_events_path()))
+    for event in iter_classified_spine_events(wanted):
+        events.append({
+            "id": event["event_id"],
+            "tickers": [event["issuer"]["ticker"]],
+            "kind": event["event"]["subtype"],
+            "ts": event["point_in_time"]["available_at"],
+        })
     latest_key = None
     latest_event = None
     for event in events:
@@ -121,7 +87,7 @@ def latest_issuer_spine_event_class(ticker: object) -> str | None:
             continue
         tickers = event.get("tickers")
         if not isinstance(tickers, list) or wanted not in {
-            str(t).strip().upper() for t in tickers
+            str(item).strip().upper() for item in tickers
         }:
             continue
         event_class = str(event.get("kind") or "").strip()

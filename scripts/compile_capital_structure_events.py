@@ -38,6 +38,10 @@ from engine.capital_structure import (
     route_form,
 )  # noqa: E402
 from engine.capital_structure.event_spine import compute_event_id  # noqa: E402
+from engine.capital_structure.event_versions_io import (  # noqa: E402
+    EVENT_COLUMNS,
+    _load_existing_events,
+)
 from engine.capital_structure.source_ledger_io import (
     SOURCE_LEDGER_FILENAME,
     read_source_ledger,
@@ -50,12 +54,6 @@ from engine.capital_structure.source_identity import (
     source_ledger_prefix_hash,
     validate_manifest_ledger,
 )  # noqa: E402
-
-EVENT_COLUMNS = [
-    "event_id", "logical_event_id", "accession", "cik", "ticker", "form",
-    "filing_date", "accepted_at", "available_at", "classification_state",
-    "correction_version", "event_json",
-]
 EDGE_COLUMNS = [
     "edge_id", "schema", "from_event_id", "to_event_id", "relationship",
     "link_method", "observed_at", "immutable_record",
@@ -495,73 +493,6 @@ def _validate_edge_identity(edge: Mapping[str, Any], *, label: str) -> None:
     expected = "edge:cs:" + hashlib.sha256(_canonical_json(body)).hexdigest()[:24]
     if edge_id != expected:
         raise ValueError(f"{label} edge_id digest mismatch: {edge_id!r} != {expected!r}")
-
-
-def _load_existing_events(
-    frame: pd.DataFrame | None,
-    event_schema: Mapping[str, Any] | None = None,
-) -> list[dict[str, Any]]:
-    if frame is None:
-        return []
-    if frame.columns.tolist() != EVENT_COLUMNS:
-        raise ValueError(
-            "event ledger columns must exactly equal "
-            f"{EVENT_COLUMNS}; got {frame.columns.tolist()}"
-        )
-    if frame.empty:
-        return []
-    schema = event_schema or _load_contract("event")
-    events: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    for index, row in frame.iterrows():
-        value = row["event_json"]
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"event ledger row {index} has null/non-string event_json")
-        try:
-            event = json.loads(value)
-        except json.JSONDecodeError as exc:
-            raise ValueError(f"event ledger row {index} has malformed event_json") from exc
-        if not isinstance(event, Mapping):
-            raise ValueError(f"event ledger row {index} event_json must be an object")
-        _validate_contract(event, schema, label=f"event ledger row {index}")
-        _validate_event_identity(event, label=f"event ledger row {index}")
-        event_id = str(event.get("event_id") or "")
-        if event_id in seen:
-            raise ValueError(f"event ledger contains duplicate event_id {event_id}")
-        seen.add(event_id)
-        filing = event.get("filing") or {}
-        issuer = event.get("issuer") or {}
-        point_in_time = event.get("point_in_time") or {}
-        version = event.get("version") or {}
-        classification = event.get("classification") or {}
-        expected = {
-            "event_id": event_id,
-            "logical_event_id": f"sec:{filing.get('accession')}",
-            "accession": filing.get("accession"),
-            "cik": issuer.get("cik"),
-            "ticker": issuer.get("ticker"),
-            "form": filing.get("form"),
-            "filing_date": filing.get("filing_date"),
-            "accepted_at": filing.get("accepted_at"),
-            "available_at": point_in_time.get("available_at"),
-            "classification_state": classification.get("state"),
-            "correction_version": int(version.get("correction_version")),
-        }
-        for column, expected_value in expected.items():
-            actual = _normalize_cell(row[column])
-            if column == "correction_version" and actual is not None:
-                actual = int(actual)
-            if actual != expected_value:
-                raise ValueError(
-                    f"event ledger row {index} denormalized {column} mismatch: "
-                    f"{actual!r} != {expected_value!r}"
-                )
-        canonical = json.dumps(event, sort_keys=True, separators=(",", ":"))
-        if value != canonical:
-            raise ValueError(f"event ledger row {index} event_json is not canonical")
-        events.append(dict(event))
-    _validate_event_history(events)
-    return events
 
 
 def _load_existing_edges(
