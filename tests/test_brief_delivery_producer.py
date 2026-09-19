@@ -205,12 +205,15 @@ def test_idempotent_second_run_reports_duplicate(monkeypatch):
     r1 = prod.run(now_utc=now_utc, dry_run=False)
     assert r1.written_n == 1
     assert r1.duplicate_n == 0
+    assert r1.planned_n == 1
+    assert r1.outcome == "ok"
     assert len(store) == 1
 
     r2 = prod.run(now_utc=now_utc, dry_run=False)
     assert r2.written_n == 0
-    assert r2.planned_n == 0       # pre-SELECT filtered the pair
-    assert r2.duplicate_n == 1     # MAJOR 2: pre-SELECT skip increments duplicate_n
+    assert r2.duplicate_n == r2.planned_n  # before-dedup planned_n; skip is a duplicate
+    assert r2.planned_n == 1
+    assert r2.outcome == "ok"
     assert len(store) == 1         # still exactly 1 row in DB
 
 
@@ -241,6 +244,8 @@ def test_dry_run_produces_zero_posts(monkeypatch):
     result = prod.run(now_utc=_utc_now_for_et(_et(2026, 9, 16, 18, 30)), dry_run=True)
     assert result.planned_n == 1
     assert result.written_n == 0
+    assert result.duplicate_n == 0
+    assert result.outcome == "ok"  # dry-run is not a failure (M1)
     assert post_count == []  # no POSTs attempted
 
 
@@ -300,7 +305,7 @@ def test_read_unavailable_returns_result_object(monkeypatch):
 def test_fake_409_counts_as_duplicate(monkeypatch):
     """HTTP 409 / 23505 from insert_delivery: written=False, duplicate=True, duplicate_n++.
     Mirrors thesis_condition_monitor.py:656-658. This drives the real branch in
-    insert_delivery (:185-186) through a fake transport."""
+    insert_delivery 409 branch through a fake transport."""
     active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
 
     def fake_read_active_subscriptions(limit=500):
@@ -372,3 +377,70 @@ def test_non_409_post_failure_reports_partial_outcome(monkeypatch):
     assert result.written_n == 0
     assert result.planned_n == 1
     assert result.outcome in ("partial", "error")  # m4: not "ok"
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — BLOCKER 1(i): armed mode + real env + fake transport POSTs
+# GET returns PRODUCTION-SHAPED rows (exactly the selected columns, no extra keys).
+# ---------------------------------------------------------------------------
+
+def _select_cols(path: str) -> list[str] | None:
+    """Parse PostgREST `select=` from a `_pg` path (table?query)."""
+    from urllib.parse import parse_qs
+
+    if "?" not in path:
+        return None
+    raw = (parse_qs(path.split("?", 1)[1], keep_blank_values=True).get("select") or [None])[0]
+    if not raw:
+        return None
+    return [c.strip() for c in raw.split(",") if c.strip()]
+
+
+def _project_selected(row: dict, path: str) -> dict:
+    """Return only the columns the producer actually selected (production shape)."""
+    cols = _select_cols(path)
+    if cols is None:
+        return dict(row)
+    return {k: row[k] for k in cols if k in row}
+
+
+def test_armed_mode_posts_one_production_shaped_active_row(monkeypatch):
+    """B1(i): ENABLE=1 + both Supabase env vars + fake transport.
+
+    GET returns exactly the selected columns (no stuffed extra keys). One due
+    active daily sub on a Wednesday after close → written_n == 1, error_class
+    is None, exactly one POST. Fails at 4c9392ab because select omits `state`
+    and run() then drops every row.
+    """
+    store_row = {
+        "id": "sub-001",
+        "state": "active",
+        "cadence": "daily_after_us_close",
+        "user_id": "u1",
+        "subject_ref": "macro",
+    }
+    posts: list = []
+
+    def fake_pg(method, path, body=None, prefer=None, timeout=6):
+        if method == "GET" and path.startswith("brief_subscriptions"):
+            return [_project_selected(store_row, path)]
+        if method == "GET" and path.startswith("brief_deliveries"):
+            return []
+        if method == "POST" and "brief_deliveries" in path:
+            posts.append(body)
+            return None
+        raise AssertionError("unexpected %s %s" % (method, path))
+
+    monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "test-service-role-key")
+    monkeypatch.setenv("BRIEF_DELIVERIES_ENABLE", "1")
+    monkeypatch.setattr(prod, "_pg", fake_pg)
+
+    result = prod.run(
+        now_utc=_utc_now_for_et(_et(2026, 9, 16, 18, 30)),
+        dry_run=False,
+    )
+    assert result.written_n == 1
+    assert result.error_class is None
+    assert result.outcome == "ok"
+    assert len(posts) == 1

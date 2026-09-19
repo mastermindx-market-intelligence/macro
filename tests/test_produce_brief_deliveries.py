@@ -171,6 +171,26 @@ def test_read_unavailable_emits_warning_at_column_0(monkeypatch, capsys):
 # Test 6 — No env values printed
 # ---------------------------------------------------------------------------
 
+def test_dormant_cli_real_run_emits_no_warning(monkeypatch, capsys):
+    """B1(ii) / m1: ENABLE unset exercises the real run() path (no stub).
+
+    Exit 0, DORMANT on stdout, no ::warning on stdout or stderr. Fails at
+    654771a0 because the warning fired whenever read_state was unavailable,
+    including dormant mode.
+    """
+    monkeypatch.delenv("BRIEF_DELIVERIES_ENABLE", raising=False)
+    monkeypatch.delenv("SUPABASE_URL", raising=False)
+    monkeypatch.delenv("SUPABASE_SERVICE_ROLE_KEY", raising=False)
+
+    rc = entry.main(["--now", "2026-09-16T22:30:00+00:00"])
+    captured = capsys.readouterr()
+
+    assert rc == 0
+    assert "DORMANT" in captured.out
+    assert "::warning" not in captured.out
+    assert "::warning" not in captured.err
+
+
 def test_no_env_values_in_output(monkeypatch, capsys):
     """Stdout must not contain env var names or values."""
     def fake_run(**kwargs):

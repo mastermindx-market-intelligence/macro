@@ -31,10 +31,10 @@ from lib.nyse_calendar import ET, _CLOSE_PLUS_SETTLE, is_session
 class ProducerResult:
     """Shape mirrors MonitorResult / drain result for ergonomic parity."""
 
-    outcome: str  # ok | read_unavailable
+    outcome: str  # ok | read_unavailable | partial | error
     read_state: str
     error_class: str | None
-    planned_n: int  # rows planned (before dedup)
+    planned_n: int  # due active rows before the pre-SELECT skip (dedup)
     duplicate_n: int  # rows skipped as already present
     written_n: int  # rows actually POSTed (0 when dry_run or DORMANT)
     run_id: str
@@ -152,7 +152,7 @@ def read_active_subscriptions(limit: int = 500) -> TypedRead:
     path = (
         "brief_subscriptions"
         "?state=eq.active"
-        "&select=id,cadence,user_id,subject_ref"
+        "&select=id,state,cadence,user_id,subject_ref"
         f"&order=id.desc&limit={limit}"
     )
     return typed_get(path)
@@ -176,7 +176,7 @@ def insert_delivery(row: dict, *, dry_run: bool) -> tuple[bool, bool]:
     Returns (written, duplicate):
       written=True, duplicate=False  -> row POSTed successfully
       written=False, duplicate=True   -> 409 / 23505 treated as duplicate
-      written=False, duplicate=False  -> other HTTP error
+      written=False, duplicate=False  -> dry-run (not a failure) or other HTTP error
     """
     if dry_run:
         return (False, False)
@@ -313,7 +313,7 @@ def run(
         }
         planned.append(row)
 
-    # Write (or plan)
+    # Write (or plan). Dry-run rows are neither written nor failed (M1).
     written_n = 0
     duplicate_n = pre_existing_n
     failed_n = 0
@@ -323,26 +323,26 @@ def run(
             written_n += 1
         elif is_dup:
             duplicate_n += 1
+        elif dry_run:
+            continue
         else:
             # Non-409 HTTP error — row not written, counted as failed (m4)
             failed_n += 1
 
-    # Outcome is "ok" only when all planned rows either wrote or were dup;
-    # "partial" when some failed; "error" when none wrote and all failed.
-    if failed_n == 0 and written_n == 0 and duplicate_n == 0:
+    # Healthy dry-run / all-duplicate / all-written → ok.
+    # Never outcome=error for a dormant dry-run with no HTTP failure.
+    if failed_n == 0:
         outcome = "ok"
-    elif written_n > 0 and failed_n == 0:
-        outcome = "ok"
-    elif written_n == 0 and failed_n > 0:
-        outcome = "error"
-    else:
+    elif written_n > 0:
         outcome = "partial"
+    else:
+        outcome = "error"
 
     return ProducerResult(
         outcome=outcome,
         read_state=sub_result.state,
         error_class=None,
-        planned_n=len(planned),
+        planned_n=len(candidates),
         duplicate_n=duplicate_n,
         written_n=written_n,
         run_id=run_id,
