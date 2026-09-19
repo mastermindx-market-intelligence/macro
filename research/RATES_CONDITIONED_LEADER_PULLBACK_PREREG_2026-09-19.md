@@ -52,13 +52,14 @@ The committed Early Admission results package reports **39,877** stored episode 
 - `survive_a`, `mfe_42`, `reached_2r`, `fwd21`, `fwd42`;
 - `f_above200` and `f_rs63`.
 
-The same results package reports **3,630 C2r** rows and **11,111 C4** rows before this rates study applies its coverage/leader filters.
+The same results package reports **3,630 C2r** base-study rows and **11,111 C4** base-study rows. The parquet also contains separately marked `addon` exemplar rows (including store-less add-on names from the old study). **Primary inference requires `addon == false`**; add-ons may print only as named descriptive traces and never enter Ns, thresholds, p-values, intervals or verdicts.
 
 Source-code receipt: the Early Admission `features()` function computes `f_above200` and `f_rs63` from information available at session T; the ruler computes `false_bounce` only when the full +15-session window exists, as `min(low[T+1:T+15]) < 0.98 × P_low`.
 
 Therefore:
 
 - `date` is the only decision-session key for this study;
+- `addon == false` is a hard primary-population gate;
 - a row with `false_bounce == null` is **OUTCOME_TRUNCATED** and is excluded from the primary estimand, counted explicitly, and never coerced to false;
 - `f_above200 == null` or non-finite/null `f_rs63` makes the row **LEADER_STATE_UNAVAILABLE** for the leader-vs-nonleader analysis;
 - the runner must verify this exact required column set before reading rate-state outcomes and refuse on drift;
@@ -151,7 +152,9 @@ Therefore:
 - an episode-weighted estimate may print only as a descriptive sensitivity and cannot determine the verdict;
 - temporal sign-stability uses the already-established house boundary **2020-07-01** (pre = before; post = on/after), not a median split chosen from these outcomes;
 - a result with fewer than **30 unique dates** in either compared rate arm overall, or fewer than **10 unique dates per arm in either temporal half**, is `UNINFORMATIVE`, regardless of episode count;
-- uncertainty uses a deterministic **calendar-month block bootstrap** over date-level observations, 10,000 resamples, seed `20260919`.
+- uncertainty uses whole **calendar-quarter blocks**, not individual dates or months, because the 22-observation rate window creates overlapping/serially correlated treatment states; the runner prints unique quarters per arm and requires at least **8 quarters per arm overall** and **3 quarters per arm in each temporal half**;
+- confidence intervals use 10,000 quarter-block resamples, seed `20260919`;
+- inferential p-values use a null-centered quarter-block bootstrap: subtract each arm's observed mean from its date-level outcomes, add the pooled mean, resample whole calendar quarters with replacement, recompute the arm difference, then set the predeclared **two-sided** p-value to `(1 + count(|Δ*_null| >= |Δ_obs|)) / (B + 1)`; no normal approximation or episode-level p-value may substitute.
 
 This date-level law is mandatory.
 
@@ -209,13 +212,13 @@ A later rate-conditioned *entry-time* comparison is a different experiment. This
 
 ## 6. Missingness and population law
 
-An episode is primary-eligible only when (a) its stored `false_bounce` is non-null, (b) its leader-state fields are available for the relevant stratum, and (c) all primary rate features have the required observed endpoints by T−1.
+An episode is primary-eligible only when (a) `addon == false`, (b) its stored `false_bounce` is non-null, (c) its leader-state fields are available for the relevant stratum, and (d) all primary rate features have the required observed endpoints by T−1.
 
 - Missing rate endpoint => `RATE_CONTEXT_UNAVAILABLE`, never zero.
 - Carried aligned value => may be displayed as stale context, never used as a new observed endpoint.
 - Mixed-date nominal/real/breakeven values must disclose their own dates.
 - No backfilling from later corrected artifacts into a claimed historical receipt.
-- Every exclusion reason is counted separately: OUTCOME_TRUNCATED, LEADER_STATE_UNAVAILABLE, RATE_CONTEXT_UNAVAILABLE, and any schema/date refusal.
+- Every exclusion reason is counted separately: ADDON_EXCLUDED, OUTCOME_TRUNCATED, LEADER_STATE_UNAVAILABLE, RATE_CONTEXT_UNAVAILABLE, and any schema/date refusal.
 
 Run the price/episode baseline on:
 1. full eligible episode population,
@@ -232,7 +235,7 @@ This retrospective diagnostic cannot promote a signal.
 
 For the primary **false-bounce** difference (the existing rule: the post-trigger path undercuts the trigger's available decline low by >2% within +15 sessions):
 
-- **SUPPORTIVE_DIAGNOSTIC:** easing reduces false bounces by **≥10 pp**, interval excludes zero in the favorable direction, BH-adjusted **q ≤ 0.10**, sign is favorable on both sides of the fixed 2020-07-01 split, and the overall/half date floors are met.
+- **SUPPORTIVE_DIAGNOSTIC:** easing reduces false bounces by **≥10 pp**, interval excludes zero in the favorable direction, BH-adjusted **q ≤ 0.10**, sign is favorable on both sides of the fixed 2020-07-01 split, and the overall/half date **and quarter** floors are met.
 - **SUGGESTIVE:** false-bounce reduction ≥5 pp, same sign in both temporal halves, but the stronger hurdle is not met.
 - **NULL:** smaller/inconsistent.
 - **ADVERSE:** easing cohort is materially worse.
