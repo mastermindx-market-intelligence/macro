@@ -510,7 +510,7 @@ def _validated_result(raw: Any) -> dict[str, Any]:
 def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     """Aggregate only directly comparable, text-free case receipts by candidate."""
     groups: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
-    bindings: dict[str, tuple[str, str]] = {}
+    bindings: dict[str, tuple[str, str, str]] = {}
     metric_shapes: dict[str, tuple[bool, ...]] = {}
     expected_shapes: dict[str, tuple[int, int, int, int]] = {}
 
