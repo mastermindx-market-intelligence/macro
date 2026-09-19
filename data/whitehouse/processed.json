@@ -1133,6 +1133,144 @@
       "at": "2026-09-15T21:26:06.761943+00:00",
       "activated": false,
       "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50361": {
+      "id": "wh-2026-09-16-national-pow-mia-recognition-day-2026",
+      "at": "2026-09-16T20:07:30.770697+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50347": {
+      "id": "wh-2026-09-16-safer-stronger-built-in-america-president-trumps-record-in-north-carolina",
+      "at": "2026-09-16T20:07:32.357557+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "tw-2026-09-10-tga-build": {
+      "id": "tw-2026-09-10-tga-build",
+      "at": "2026-09-16T20:07:42.697321+00:00",
+      "activated": true,
+      "importance": 78
+    },
+    "https://www.whitehouse.gov/?p=50364": {
+      "id": "wh-2026-09-16-fact-sheet-president-donald-j-trump-restores-reciprocity-in-government-procureme",
+      "at": "2026-09-16T22:57:38.654022+00:00",
+      "activated": true,
+      "importance": 68
+    },
+    "https://www.whitehouse.gov/?p=50367": {
+      "id": "wh-2026-09-16-restoring-reciprocity-in-government-procurement",
+      "at": "2026-09-16T22:58:00.366814+00:00",
+      "activated": true,
+      "importance": 68
+    },
+    "https://www.whitehouse.gov/?p=50362": {
+      "id": "wh-2026-09-16-fact-sheet-president-donald-j-trump-provides-meaningful-water-quality-improvemen",
+      "at": "2026-09-16T22:58:10.636611+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=50372": {
+      "id": "wh-2026-09-16-providing-meaningful-water-quality-improvements-through-collaboration-and-oversi",
+      "at": "2026-09-16T22:58:12.589513+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50365": {
+      "id": "wh-2026-09-16-constitution-day-citizenship-day-and-constitution-week-2026",
+      "at": "2026-09-16T22:58:14.692494+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50359": {
+      "id": "wh-2026-09-16-congressional-bills-s-32-and-s-307-signed-into-law",
+      "at": "2026-09-16T22:58:16.484915+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50382": {
+      "id": "wh-2026-09-17-president-trumps-top-250-victories-for-people-of-faith",
+      "at": "2026-09-17T13:27:01.702572+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=50428": {
+      "id": "wh-2026-09-17-withdrawals-sent-to-the-senate",
+      "at": "2026-09-17T18:13:32.438415+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50419": {
+      "id": "wh-2026-09-17-presidential-message-on-national-hispanic-heritage-month",
+      "at": "2026-09-17T18:13:34.704577+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=50439": {
+      "id": "wh-2026-09-17-fact-sheet-president-donald-j-trump-reinvigorates-americas-hunting-heritage",
+      "at": "2026-09-17T22:13:01.855847+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=50437": {
+      "id": "wh-2026-09-17-fact-sheet-president-donald-j-trump-restores-american-saltwater-angling-and-recr",
+      "at": "2026-09-17T22:13:03.431458+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50434": {
+      "id": "wh-2026-09-17-restoring-american-saltwater-angling-and-recreation",
+      "at": "2026-09-17T22:13:05.171669+00:00",
+      "activated": false,
+      "importance": 35
+    },
+    "https://www.whitehouse.gov/?p=50433": {
+      "id": "wh-2026-09-17-reinvigorating-americas-hunting-heritage",
+      "at": "2026-09-17T22:13:06.593848+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50506": {
+      "id": "wh-2026-09-18-president-trump-extends-most-favored-nation-pricing-to-every-medicaid-program-in",
+      "at": "2026-09-18T19:36:04.579753+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50510": {
+      "id": "wh-2026-09-18-what-they-are-saying-president-trump-delivers-historic-victories-for-americas-hu",
+      "at": "2026-09-18T19:36:16.739825+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50534": {
+      "id": "wh-2026-09-18-fact-sheet-president-donald-j-trump-further-enhances-program-integrity-and-inter",
+      "at": "2026-09-18T22:34:50.093976+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50541": {
+      "id": "wh-2026-09-18-enhancing-program-integrity-and-integrity-and-interagency-coordination-in-the-ad",
+      "at": "2026-09-18T22:35:00.630228+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50538": {
+      "id": "wh-2026-09-18-congressional-bill-h-r-5334-signed-into-law",
+      "at": "2026-09-18T22:35:27.009633+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50532": {
+      "id": "wh-2026-09-18-restriction-on-entry-of-certain-nonimmigrant-workers-faad",
+      "at": "2026-09-18T22:35:59.657384+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50524": {
+      "id": "wh-2026-09-18-fact-sheet-president-donald-j-trump-announces-lower-drug-prices-for-all-50-state",
+      "at": "2026-09-18T22:36:11.273995+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

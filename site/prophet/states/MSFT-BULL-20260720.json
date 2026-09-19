@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MSFT-BULL-20260720",
-  "asof": "2026-09-16",
+  "asof": "2026-09-18",
   "phase": "between_t1_t2",
   "detection_phase": "between_t1_t2",
-  "management_confidence": 76.0,
-  "raw_confidence": 74.9,
-  "delta_vs_base": 16.0,
+  "management_confidence": 75.4,
+  "raw_confidence": 75.2,
+  "delta_vs_base": 15.4,
   "recommended_action": "hold",
   "human_state": "Advancing to T2",
   "components": {
     "validity": 100.0,
-    "progress": 65.5,
-    "pace": 70.6,
-    "retention": 82.7,
-    "overlay": 53.0
+    "progress": 65.4,
+    "pace": 70.5,
+    "retention": 82.2,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.532,
-    "dist_to_t1_r": -0.032,
-    "dist_to_t2_r": 1.468,
-    "horizon_pct_used": 128.9,
-    "p1": 1.0214,
-    "p2": 0.5107,
+    "dist_to_stop_r": 2.523,
+    "dist_to_t1_r": -0.023,
+    "dist_to_t2_r": 1.477,
+    "horizon_pct_used": 133.3,
+    "p1": 1.0156,
+    "p2": 0.5078,
     "p3": null,
-    "move_r": 1.532,
+    "move_r": 1.523,
     "mfe_r": 1.852,
     "mae_r": -0.343
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-30",
   "_first_t1_ts": "2026-08-08",
   "_first_t2_ts": null,
-  "days_elapsed": 58,
-  "tau": 1.2889
+  "days_elapsed": 60,
+  "tau": 1.3333
 }

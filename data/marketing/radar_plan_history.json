@@ -2,6 +2,61 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-19",
+      "tickers": [
+        "ASTE",
+        "LUV",
+        "NABL",
+        "PLMR",
+        "TTD"
+      ]
+    },
+    {
+      "as_of": "2026-09-18",
+      "tickers": [
+        "AAP",
+        "ALGT",
+        "ARDC",
+        "CLH",
+        "COF",
+        "DAL",
+        "ELV",
+        "F",
+        "GLW",
+        "IPGP",
+        "KBDC",
+        "MMS",
+        "MUSA",
+        "NX",
+        "OI",
+        "PLAB",
+        "RBLX",
+        "SGI",
+        "SIG",
+        "TFC",
+        "UTHR",
+        "VICR",
+        "WFC",
+        "WHR",
+        "WULF",
+        "XBI",
+        "XBP"
+      ]
+    },
+    {
+      "as_of": "2026-09-17",
+      "tickers": [
+        "ASO",
+        "COO",
+        "ELV",
+        "EZPW",
+        "LRCX",
+        "PCG",
+        "URBN",
+        "UTL"
+      ]
+    },
+    {
       "as_of": "2026-09-16",
       "tickers": [
         "AGNT",
@@ -53,56 +108,6 @@
         "GMED",
         "RHP",
         "SEDG"
-      ]
-    },
-    {
-      "as_of": "2026-09-11",
-      "tickers": [
-        "ALGM",
-        "ASTE",
-        "CHTR",
-        "MPT",
-        "PCG",
-        "POST",
-        "SIG",
-        "VTR",
-        "WMB"
-      ]
-    },
-    {
-      "as_of": "2026-09-10",
-      "tickers": [
-        "ADM",
-        "ALV",
-        "BABA",
-        "DYN",
-        "EZPW",
-        "FN",
-        "KMT",
-        "LAUR",
-        "LILA",
-        "SEI"
-      ]
-    },
-    {
-      "as_of": "2026-09-09",
-      "tickers": [
-        "ABM",
-        "ACM",
-        "BABA",
-        "CARR",
-        "COIN",
-        "CRNX",
-        "FCFS",
-        "ITB",
-        "LZB",
-        "MPT",
-        "PRVA",
-        "SEDG",
-        "SGI",
-        "VRSN",
-        "WERN",
-        "WFC"
       ]
     }
   ]

@@ -18,8 +18,13 @@ stop doing its job:
      non-pull_request event) as OK — plus the new suite (this file) is itself
      wired into a job, or scripts/audit_unrun_tests.py's gate would flag it as
      one more unwired suite in the very lane whose job is finding those.
+  4. SPARSE EXACTNESS — both head and base bind the tested commit's tracked-path
+     inventory before deriving closure, so omitted non-Python leaves remain
+     visible without materializing the generated-heavy site/data trees.
 """
 from __future__ import annotations
+
+from contextlib import contextmanager
 
 import json
 import signal
@@ -154,6 +159,82 @@ def test_curated_exclusive_closure_findings_is_the_shared_implementation() -> No
 
 def test_gated_unrun_suites_is_the_shared_implementation() -> None:
     assert CCD.gated_unrun_suites is AUDIT_SUITES_FN
+
+
+def test_head_findings_binds_exact_tree_inventory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Omitted tracked leaves remain visible while contract-delta derives head scope."""
+    tree = tmp_path / "tree"
+    manifest = tree / CCD.MANIFEST_REL
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text("jobs: {}\n", encoding="utf-8")
+    sha = "1" * 40
+    events: list[tuple] = []
+
+    monkeypatch.setattr(CCD, "ROOT", tree)
+    monkeypatch.setattr(
+        CCD,
+        "_git",
+        lambda *args, cwd: sha + "\n",
+    )
+
+    def write_inventory(output: Path, tested_tree_sha: str, *, root: Path):
+        events.append(("write", output, tested_tree_sha, root))
+        output.write_text("fixture", encoding="utf-8")
+        return object()
+
+    @contextmanager
+    def activate_inventory(source: Path, tested_tree_sha: str, *, root: Path):
+        events.append(("enter", source, tested_tree_sha, root, source.exists()))
+        yield object()
+        events.append(("exit",))
+
+    monkeypatch.setattr(CCD, "write_tracked_path_inventory", write_inventory, raising=False)
+    monkeypatch.setattr(
+        CCD, "planner_tracked_path_inventory", activate_inventory, raising=False
+    )
+
+    def closure_findings(path: Path):
+        assert events[-1][0] == "enter"
+        assert path == manifest
+        return {"unrun-picks-boards": ["site/theme.css"]}
+
+    def suite_findings():
+        assert events[-1][0] == "enter"
+        return ["tests/test_unwired.py"]
+
+    monkeypatch.setattr(CCD, "curated_exclusive_closure_findings", closure_findings)
+    monkeypatch.setattr(CCD, "gated_unrun_suites", suite_findings)
+
+    assert CCD._head_findings() == {
+        "closure": {"unrun-picks-boards": ["site/theme.css"]},
+        "suites": ["tests/test_unwired.py"],
+    }
+    assert [event[0] for event in events] == ["write", "enter", "exit"]
+    assert events[0][2:] == (sha, tree)
+    assert events[1][2:4] == (sha, tree)
+    assert events[1][4] is True
+
+
+def test_base_worker_binds_exact_tree_inventory_before_census() -> None:
+    """Head/base symmetry requires the detached-tree worker to use the same oracle."""
+    source = CCD._WORKER_SOURCE
+    assert "write_tracked_path_inventory" in source
+    assert "planner_tracked_path_inventory" in source
+    assert "with _tracked_tree_inventory():" in source
+
+
+def test_base_worker_inventory_bootstrap_cannot_swallow_internal_import_errors() -> None:
+    """Only a genuinely old base may lack the inventory API; broken imports must red."""
+    helper = CCD._WORKER_SOURCE.split(
+        "@contextmanager\ndef _tracked_tree_inventory():", 1
+    )[1].split(
+        "\n\ntry:\n    from scripts.run_ci_pack", 1
+    )[0]
+    assert "except ModuleNotFoundError as exc:" in helper
+    assert 'if exc.name != "scripts.ci_scope_dependencies":' in helper
+    assert "except ImportError:" not in helper
 
 
 def test_worker_bootstrap_fallback_tries_the_canonical_functions_first() -> None:

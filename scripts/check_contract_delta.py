@@ -102,10 +102,21 @@ the two dominant costs instead of paying for them back to back. Semantics and
 output are unchanged; only wall time moves. `.github/workflows/ci.yml` also
 raised `contract-delta`'s `timeout-minutes` 25 -> 45 as a second, independent
 margin (the job is off the critical path — packs run ~30 min regardless).
+
+SPARSE TRACKED-PATH ORACLE (2026-09-16). The hosted checkout intentionally
+omits generated-heavy `site/` and `data/`, but a test can still add a literal
+read of a tracked non-Python leaf there. PR #7228 did exactly that with
+`site/theme.css`; physical-only existence checks erased the dependency and this
+gate reported `0 introduced`, allowing current main to inherit an absolute
+closure red. Both the head census and detached-base worker now bind the tested
+commit to `ci.tracked_paths.v1` before deriving scope. The oracle supplies only
+Git-tree existence; source bytes are never fabricated, and an omitted Python
+file whose content is required still fails closed.
 """
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import json
 import os
 import shutil
@@ -123,6 +134,11 @@ sys.path.insert(0, str(ROOT))
 
 from scripts.run_ci_pack import curated_exclusive_closure_findings  # noqa: E402
 from scripts.audit_unrun_tests import gated_unrun_suites  # noqa: E402
+from scripts.ci_scope_dependencies import (  # noqa: E402
+    TrackedPathInventoryError,
+    planner_tracked_path_inventory,
+    write_tracked_path_inventory,
+)
 
 
 class ContractDeltaError(RuntimeError):
@@ -133,6 +149,35 @@ class ContractDeltaError(RuntimeError):
 # finding computation — head in-process, base via a subprocess worker
 # ─────────────────────────────────────────────────────────────────────────────
 
+@contextmanager
+def _tracked_tree_inventory(repo_root: Path):
+    """Expose omitted tracked leaves to one immutable-tree scope census.
+
+    `contract-delta` deliberately excludes generated-heavy `site/` and `data/`
+    directories from its hosted checkout. Static dependency analysis still has
+    to know that a literal non-Python leaf exists there: otherwise a new
+    `Path("site/theme.css").read_text()` edge disappears before the differential
+    can report it. The inventory is an existence oracle only; any omitted Python
+    source whose bytes are needed still fails closed through
+    `ScopeMaterializationError`.
+    """
+    tested_tree_sha = _git("rev-parse", "HEAD", cwd=repo_root).strip()
+    with tempfile.TemporaryDirectory(prefix="contract-delta-inventory-") as tmp:
+        inventory = Path(tmp) / "tracked-paths.v1"
+        try:
+            write_tracked_path_inventory(
+                inventory, tested_tree_sha, root=repo_root
+            )
+            with planner_tracked_path_inventory(
+                inventory, tested_tree_sha, root=repo_root
+            ):
+                yield tested_tree_sha
+        except TrackedPathInventoryError as exc:
+            raise ContractDeltaError(
+                f"exact-tree inventory refused for {repo_root}: {exc}"
+            ) from exc
+
+
 def _head_findings() -> dict[str, Any]:
     """Findings for THIS process's own tree, via the canonical shared functions.
 
@@ -141,11 +186,12 @@ def _head_findings() -> dict[str, Any]:
     `scripts/audit_unrun_tests.py`'s own gate use for their absolute verdicts.
     """
     manifest = ROOT / MANIFEST_REL
-    closure = curated_exclusive_closure_findings(manifest)
-    return {
-        "closure": {job_id: sorted(paths) for job_id, paths in closure.items()},
-        "suites": sorted(gated_unrun_suites()),
-    }
+    with _tracked_tree_inventory(ROOT):
+        closure = curated_exclusive_closure_findings(manifest)
+        return {
+            "closure": {job_id: sorted(paths) for job_id, paths in closure.items()},
+            "suites": sorted(gated_unrun_suites()),
+        }
 
 
 # Deliberately references the pre-existing (pre-this-PR) primitive names in its
@@ -153,8 +199,12 @@ def _head_findings() -> dict[str, Any]:
 # why this cannot instead just import scripts.check_contract_delta itself (this
 # file does not exist on a base tree that predates this gate).
 _WORKER_SOURCE = r'''
+from contextlib import contextmanager
+import importlib
 import json
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, ".")
@@ -166,6 +216,46 @@ def _fail(message: str) -> None:
     sys.exit(1)
 
 
+@contextmanager
+def _tracked_tree_inventory():
+    """Bind exact tracked-path existence when this base supports the v1 oracle."""
+    try:
+        deps = importlib.import_module("scripts.ci_scope_dependencies")
+    except ModuleNotFoundError as exc:
+        if exc.name != "scripts.ci_scope_dependencies":
+            raise
+        # Bootstrap compatibility only: a deliberately old base can predate the
+        # inventory module. Any nested missing import still fails the worker.
+        yield
+        return
+    planner_tracked_path_inventory = getattr(
+        deps, "planner_tracked_path_inventory", None
+    )
+    write_tracked_path_inventory = getattr(
+        deps, "write_tracked_path_inventory", None
+    )
+    if planner_tracked_path_inventory is None or write_tracked_path_inventory is None:
+        # A base between the dependency module's birth and the v1 inventory API.
+        yield
+        return
+
+    tested_tree_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    ).stdout.strip()
+    root = Path.cwd()
+    with tempfile.TemporaryDirectory(prefix="contract-delta-inventory-") as tmp:
+        inventory = Path(tmp) / "tracked-paths.v1"
+        write_tracked_path_inventory(inventory, tested_tree_sha, root=root)
+        with planner_tracked_path_inventory(
+            inventory, tested_tree_sha, root=root
+        ):
+            yield
+
+
 try:
     from scripts.run_ci_pack import curated_exclusive_closure_findings as _closure_fn
     from scripts.audit_unrun_tests import gated_unrun_suites as _suites_fn
@@ -175,8 +265,11 @@ except ImportError:
 
 if _closure_fn is not None and _suites_fn is not None:
     try:
-        closure = {jid: sorted(paths) for jid, paths in _closure_fn(MANIFEST).items()}
-        suites = sorted(_suites_fn())
+        with _tracked_tree_inventory():
+            closure = {
+                jid: sorted(paths) for jid, paths in _closure_fn(MANIFEST).items()
+            }
+            suites = sorted(_suites_fn())
     except Exception as exc:  # noqa: BLE001 — surfaced as a script-level refusal
         _fail(f"{type(exc).__name__}: {exc}")
     print(json.dumps({"closure": closure, "suites": suites}))
@@ -196,26 +289,27 @@ except Exception as exc:  # noqa: BLE001
     _fail(f"cannot import CI-contract primitives: {type(exc).__name__}: {exc}")
 
 try:
-    jobs = [replace(j, exclusive=False) for j in load_legacy_jobs(MANIFEST)]
-    inferred, _note = infer_job_scopes(jobs)
-    would_infer = {j.job_id: j for j in inferred}
-    declared = {j.job_id: j for j in load_legacy_jobs(MANIFEST) if j.exclusive}
-    closure = {}
-    for job_id, job in sorted(declared.items()):
-        own_closure = [p for p in would_infer[job_id].paths if "*" not in p]
-        if not own_closure:
-            _fail(f"{job_id} derives no closure — curation cannot be checked")
-        uncovered = sorted(p for p in own_closure if not _matches_any(job.paths, p))
-        if uncovered:
-            closure[job_id] = uncovered
+    with _tracked_tree_inventory():
+        jobs = [replace(j, exclusive=False) for j in load_legacy_jobs(MANIFEST)]
+        inferred, _note = infer_job_scopes(jobs)
+        would_infer = {j.job_id: j for j in inferred}
+        declared = {j.job_id: j for j in load_legacy_jobs(MANIFEST) if j.exclusive}
+        closure = {}
+        for job_id, job in sorted(declared.items()):
+            own_closure = [p for p in would_infer[job_id].paths if "*" not in p]
+            if not own_closure:
+                _fail(f"{job_id} derives no closure — curation cannot be checked")
+            uncovered = sorted(p for p in own_closure if not _matches_any(job.paths, p))
+            if uncovered:
+                closure[job_id] = uncovered
 
-    rows = census()
-    unrun = sorted(r["test"] for r in rows)
-    baseline = _load_baseline()
-    normalized, malformed = _validate_waivers(_load_waivers())
-    if malformed:
-        _fail("malformed waivers: " + "; ".join(malformed))
-    suites = sorted(r for r in unrun if r not in baseline and r not in normalized)
+        rows = census()
+        unrun = sorted(r["test"] for r in rows)
+        baseline = _load_baseline()
+        normalized, malformed = _validate_waivers(_load_waivers())
+        if malformed:
+            _fail("malformed waivers: " + "; ".join(malformed))
+        suites = sorted(r for r in unrun if r not in baseline and r not in normalized)
 except SystemExit:
     raise
 except Exception as exc:  # noqa: BLE001
