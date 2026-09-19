@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T16:26:31.249918+00:00",
-  "count": 2440,
+  "generated_at": "2026-09-19T16:41:28.111191+00:00",
+  "count": 2441,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -847,6 +847,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gakjs6nhf9l-afdecc",
+      "title": "Americas Crypto & Exchanges Overviewing the SEC innovation exemption order permitting trading of tokenized equities",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T20:11:04Z",
+      "summary_points": [
+        "Exemption Constraints: 5-year SEC exemption for TSVs requires AMM order books (not CLOBs), native tokenization, issuer opt-out, and symbol/volume limits; non-compliant venues excluded.",
+        "Native Tokenization Imperative: Only native tokens (direct on-chain ownership with voting/dividend rights) qualify under exemptions; non-native wrappers lack rights and are excluded.",
+        "Regulatory Reform Gap: Incremental SEC/CFTC actions insufficient; broader legislative reform (e.g., CLARITY Act) needed for scalable tokenization beyond current exemptions.",
+        "DTC Pilot Advantage: Traditional exchanges (NDAQ/NYSE) leverage SEC-approved DTC pilots (e.g., Russell 1000 tokenization) within existing frameworks, minimizing volume impact vs.",
+        "TSVs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
