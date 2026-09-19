@@ -1,3 +1,70 @@
+---
+workstream: "WS:GMI-THEME-GRAPH"
+session: sol/theme-intelligence-c-early-leadership-20260919
+model: sol
+ended_because: ci_handoff
+mission: >
+  Deliver one bounded closed-session parent/subtheme leadership observation through the
+  incumbent subsector rotation publisher into an actual ThemeState consumer, preserving
+  current ownership, PIT truth, and every ranking/trading permission boundary.
+state_before: >
+  The rotation path exposed legacy quadrant/score fields but no explainable completed-session
+  parent/subtheme observation. The Finviz archive froze the first same-date fetch without a
+  market-close gate, and current canonical consumers could not see short-window reacceleration
+  when a parent or 60-session window remained mixed.
+changed:
+  - path: engine/subsector_rotation.py
+    what: "Added bounded completed-session measurement, coverage truth, reason codes, clocks/basis contract, and all-false capability permissions."
+  - path: scripts/build_subsector_rotation.py
+    what: "Added completed-session cutoff, bounded existing-owner loading, fail-closed receipt, and attachment in the actual publisher."
+  - path: engine/neuralweb/thematic_state.py
+    what: "Preserved the descriptive leadership observation in the incumbent canonical consumer."
+  - path: tests/test_subsector_closed_session_leadership.py
+    what: "Added measurement discriminators for parent/child separation, short/long disagreement, concentration, stale/sparse/missing data, and failed breakouts."
+  - path: tests/test_build_subsector_closed_session_leadership.py
+    what: "Added cutoff, owner-loading, failure-receipt, and actual publisher integration tests."
+  - path: tests/test_thematic_state_leadership_receipt.py
+    what: "Added canonical consumer receipt verification."
+  - path: agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md
+    what: "Recorded the exact Lane C lifecycle, commits, proof, coverage, gates, and Lane A pickup action."
+verified:
+  - claim: "All subsector regressions, including the new measurement discriminators, pass on the rebased implementation."
+    command: "python3 -m pytest -q tests/test_subsector*.py"
+    result: "102 passed, 3 skipped."
+  - claim: "The builder and actual ThemeState consumer preserve the additive receipt."
+    command: "python3 -m pytest -q tests/test_thematic_state.py tests/test_thematic_state_leadership_receipt.py tests/test_build_subsector_closed_session_leadership.py"
+    result: "44 passed, 3 skipped."
+  - claim: "The existing sector intelligence pages remain valid."
+    command: "python3 -m pytest -q tests/test_sector_intelligence_page.py"
+    result: "20 passed with exact HEAD sparse redirect stubs materialized for the test."
+  - claim: "The implementation and review carrier are present in the draft review surface."
+    command: "git show --stat d1727e80a8bead258a545ceb6d938286baf64d31 && gh pr view 7455"
+    result: "Implementation committed; draft PR #7455 open."
+unverified:
+  - claim: "Merged and deployed bytes publish the observation in production after a naturally completed session."
+    what_would_verify: "Incumbent merge/release, natural publication, deployed-byte comparison, and browser receipt."
+  - claim: "The observation has predictive edge or acceptable false-alert economics."
+    what_would_verify: "Evaluation/F predeclared baselines, outcome tracking, false-alert tests, and formal promotion."
+  - claim: "The inherited close series has the exact split/dividend basis F will accept."
+    what_would_verify: "Owner/F corporate-action contract review against the exact price reader and correction lineage."
+unresolved:
+  - "Lane A has not yet adopted or mapped the additive observation into its shared consumer contract."
+  - "GMI/F04 has not adjudicated dedicated CPU, accelerator, HBM/DRAM, NAND/SSD, server, storage, or optics identities."
+  - "Independent review is pending; Vercel is rate-limited and inactive merge-queue contexts fail by design."
+next_actions:
+  - "Lane A picks up draft PR #7455 and reconciles leadership_observation plus measurement_receipt without broadening permissions."
+  - "Route identity proposals to GMI/F04 and corporate-action/evaluation questions to F."
+  - "After independent review, the incumbent owner may decide merge; release still requires natural deployed/browser proof."
+do_not_redo:
+  - "Do not copy or activate held persistence/sector-control research from #7064 or #7095."
+  - "Do not retune basket/theme scoring, signal gates, sector signals, Prophet, or generated marketdata to make semiconductors bullish."
+  - "Do not treat current membership as historical PIT truth or evidence-only cohorts as canonical themes."
+danger_areas:
+  - "Forward-filling stale member tails fabricates zero returns and false persistence."
+  - "A positive short window can coexist with a negative long window and deteriorating acceleration; do not collapse them."
+  - "Descriptive leadership is not ranking, entry permission, sizing authority, predictive alpha, or production acceptance."
+---
+
 # Theme Intelligence Lane C Return — Early Leadership and Subthemes
 
 Prepared: 2026-09-19  
