@@ -5773,11 +5773,23 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
+      # Catalyst-stock context is R2-only (site/stockdata is gitignored), so a
+      # clean stock_briefs checkout has no deterministic ladder record to brief.
+      # Restore the EXISTING store before the model leaf runs. Fail this additive
+      # job on a missing/incomplete restore instead of publishing a green batch of
+      # no_context records; publish does not depend on stock_briefs.
+      - name: restore stockdata context for AI stock briefs
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs stockdata
       # The per-stock technical-signal leg reads the Git-tracked S&P 500/600/400
       # panels directly from checkout. This reader must never overlay them from
       # Actions cache; only daily.collect may seed, refresh and commit those files.
       - name: precompute AI stock briefs (build_stock_briefs)
-        run: python -m scripts.build_stock_briefs || echo "stock briefs skipped (additive)"
+        run: python -m scripts.build_stock_briefs
       - name: commit stock briefs
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"

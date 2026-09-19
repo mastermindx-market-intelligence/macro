@@ -917,6 +917,44 @@ def test_daily_collector_keeps_us_panel_seed_cache_authority():
 
 
 
+def test_stock_briefs_restores_r2_stock_context_before_precompute():
+    """The clean brief job must materialize its canonical R2-only stock context."""
+    document = yaml.safe_load(DAILY.read_text()) or {}
+    steps = document["jobs"]["stock_briefs"]["steps"]
+    build_indexes = [
+        index for index, step in enumerate(steps)
+        if "python -m scripts.build_stock_briefs" in str(step.get("run") or "")
+    ]
+    assert len(build_indexes) == 1
+    build_index = build_indexes[0]
+    assert str(steps[build_index].get("run") or "").strip() == (
+        "python -m scripts.build_stock_briefs"
+    ), (
+        "stock_briefs is an additive job that does not gate publish; do not turn a "
+        "deterministic context failure into a green workflow with shell fail-open."
+    )
+
+    restores = [
+        (index, step) for index, step in enumerate(steps[:build_index])
+        if str(step.get("run") or "").strip()
+        == "python -m scripts.fetch_r2 --dirs stockdata"
+    ]
+    assert len(restores) == 1, (
+        "stock_briefs starts from a clean checkout while site/stockdata is R2-only. "
+        "Restore the existing stockdata store before catalyst_stock asks for its "
+        "deterministic ladder context; a green no_context batch is not usable output."
+    )
+    restore_index, restore = restores[0]
+    assert restore_index < build_index
+    gha = lambda name: "$" + "{{ secrets." + name + " }}"
+    assert restore.get("env") == {
+        "R2_ENDPOINT": gha("R2_ENDPOINT"),
+        "R2_ACCESS_KEY_ID": gha("R2_ACCESS_KEY_ID"),
+        "R2_SECRET_ACCESS_KEY": gha("R2_SECRET_ACCESS_KEY"),
+        "R2_BUCKET": gha("R2_BUCKET"),
+    }, "scope the existing R2 credentials to the stockdata restore step only"
+
+
 def _write_panel_workflow(root: Path, filename: str, body: str) -> Path:
     workflow = root / ".github/workflows" / filename
     workflow.parent.mkdir(parents=True, exist_ok=True)
