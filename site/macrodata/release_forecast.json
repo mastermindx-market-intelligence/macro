@@ -1,6 +1,6 @@
 {
   "schema": "release_forecast.v2",
-  "asof": "2026-09-18T07:55:39Z",
+  "asof": "2026-09-18T18:53:44Z",
   "display_only": true,
   "authority": {
     "can_score": false,
@@ -529,7 +529,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -572,7 +572,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 10
+        "model_maturity": 11
       },
       "cutoff_label": "T-1"
     },
@@ -638,7 +638,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -757,7 +757,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -855,7 +855,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -898,7 +898,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 10
+        "model_maturity": 11
       },
       "cutoff_label": "early"
     },
@@ -971,7 +971,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -1118,7 +1118,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -1161,7 +1161,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 10
+        "model_maturity": 11
       },
       "cutoff_label": "early"
     },
@@ -1243,7 +1243,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -1641,7 +1641,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -1865,7 +1865,7 @@
       "regime_axis": "inflation",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -1954,7 +1954,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -1997,7 +1997,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 10
+        "model_maturity": 11
       },
       "cutoff_label": "early"
     },
@@ -2039,7 +2039,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"
@@ -2082,7 +2082,7 @@
         "weight_coverage": 1.0,
         "fresh_proxy_coverage": 1.0,
         "non_vintaged_share": 0.0,
-        "model_maturity": 10
+        "model_maturity": 11
       },
       "cutoff_label": "early"
     },
@@ -2130,7 +2130,7 @@
       "regime_axis": "growth",
       "policy_backdrop": {
         "fed_stance": "hawkish",
-        "gap_bp": -2,
+        "gap_bp": 0,
         "implied_cuts_12m": -4.0,
         "next_fomc": "2026-10-28",
         "guidance_direction": "unknown"

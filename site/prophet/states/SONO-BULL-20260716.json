@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SONO-BULL-20260716",
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 40.6,
@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 22.5,
-    "pace": 7.3,
-    "retention": 39.8,
-    "overlay": 67.0
+    "progress": 12.1,
+    "pace": 6.0,
+    "retention": 17.4,
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.344,
-    "dist_to_t1_r": 1.156,
-    "dist_to_t2_r": 2.656,
-    "horizon_pct_used": 137.8,
-    "p1": 0.2294,
-    "p2": 0.1147,
+    "dist_to_stop_r": 1.151,
+    "dist_to_t1_r": 1.349,
+    "dist_to_t2_r": 2.849,
+    "horizon_pct_used": 140.0,
+    "p1": 0.1004,
+    "p2": 0.0502,
     "p3": null,
-    "move_r": 0.344,
+    "move_r": 0.151,
     "mfe_r": 0.864,
     "mae_r": -0.244
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 62,
-  "tau": 1.3778
+  "days_elapsed": 63,
+  "tau": 1.4
 }

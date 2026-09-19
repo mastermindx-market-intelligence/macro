@@ -1,18 +1,18 @@
 {
   "date": "2026-09-17",
   "class": "quiet",
-  "market_vol_ratio": 1.039,
-  "up_share": null,
-  "basis": "volume_only",
+  "market_vol_ratio": 1.059,
+  "up_share": 0.687,
+  "basis": "updown",
   "n_megacap_rvol2": 0,
   "megacap_rvol": {
-    "TMUS": 1.72,
-    "AMD": 1.71,
-    "BRK-B": 1.54,
-    "BAC": 1.23,
-    "CRM": 1.21,
+    "TMUS": 1.74,
+    "AMD": 1.72,
+    "BRK-B": 1.58,
+    "CRM": 1.34,
+    "MRK": 1.28,
+    "BAC": 1.24,
     "TSLA": 1.18,
-    "MRK": 1.18,
     "JPM": 1.17
   },
   "calendar": {

@@ -1,16 +1,16 @@
 {
   "schema": "ai_desk_track_record.v1",
   "as_of": "2026-09-18",
-  "scored_total": 10,
-  "open": 259,
+  "scored_total": 12,
+  "open": 260,
   "unscored_soft": 1,
   "expired": 0,
   "overall": {
-    "n": 10,
+    "n": 12,
     "hits": 5,
-    "misses": 5,
-    "hit_rate": 0.5,
-    "dir_accuracy": 0.3
+    "misses": 7,
+    "hit_rate": 0.417,
+    "dir_accuracy": 0.25
   },
   "by_conviction": {
     "high": {
@@ -37,11 +37,11 @@
   },
   "by_kind": {
     "rel_return": {
-      "n": 10,
+      "n": 12,
       "hits": 5,
-      "misses": 5,
-      "hit_rate": 0.5,
-      "dir_accuracy": 0.3
+      "misses": 7,
+      "hit_rate": 0.417,
+      "dir_accuracy": 0.25
     },
     "level": {
       "n": 0,
@@ -52,8 +52,26 @@
     }
   },
   "by_regime": {},
-  "calibration_note": "10 scored, hit-rate 0.5 (directional accuracy 0.3).",
+  "calibration_note": "12 scored, hit-rate 0.417 (directional accuracy 0.25).",
   "recent": [
+    {
+      "id": "2026-06-18-radar-travel",
+      "subject": "travel",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "miss",
+      "realized": -0.1125,
+      "check_by": "2026-09-17"
+    },
+    {
+      "id": "2026-06-18-radar-defense",
+      "subject": "defense",
+      "lean": "positive_divergence",
+      "conviction": null,
+      "outcome": "miss",
+      "realized": -0.1253,
+      "check_by": "2026-09-17"
+    },
     {
       "id": "2026-06-18-radar-reshoring",
       "subject": "reshoring",
@@ -125,25 +143,7 @@
       "outcome": "hit",
       "realized": -0.012,
       "check_by": "2026-09-17"
-    },
-    {
-      "id": "2026-06-18-radar-ai_agents",
-      "subject": "ai_agents",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "hit",
-      "realized": 0.1661,
-      "check_by": "2026-09-17"
-    },
-    {
-      "id": "2026-06-18-radar-housing",
-      "subject": "housing",
-      "lean": "positive_divergence",
-      "conviction": null,
-      "outcome": "miss",
-      "realized": -0.1458,
-      "check_by": "2026-09-17"
     }
   ],
-  "calibration_note_zh": "\u5df2\u8bc4\u5206 10 \u6761\uff0c\u547d\u4e2d\u7387 0.5\uff08\u65b9\u5411\u51c6\u786e\u7387 0.3\uff09\u3002"
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 12 \u6761\uff0c\u547d\u4e2d\u7387 0.417\uff08\u65b9\u5411\u51c6\u786e\u7387 0.25\uff09\u3002"
 }
