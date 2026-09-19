@@ -155,3 +155,13 @@ class TestMovesPayload:
         p = moves_payload("X", "2024-06-14", 100.0, 20.0)
         conv = p["convention"].lower()
         assert "not a buy" in conv and "prophecy" in conv
+
+
+def test_moves_payload_carries_input_source_provenance():
+    p = moves_payload(
+        "INTC", "2026-09-17", 107.02, 62.52,
+        input_source="thetadata_snapshot",
+    )
+    assert p["input_source"] == "thetadata_snapshot"
+    assert p["expected_move"] is not None
+    assert p["expected_move"]["lo"] < 107.02 < p["expected_move"]["hi"]
