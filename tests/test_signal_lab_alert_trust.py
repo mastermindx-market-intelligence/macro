@@ -217,13 +217,37 @@ def test_signal_lab_renders_bounded_recent_prospective_history_without_legacy_re
         "last_matured": None,
         "recent_history": [
             {
-                "entry_asof": "2026-09-20", "fired": True, "status": "matured",
+                "entry_asof": "2026-09-20", "entry_close": 100.0,
+                "source_asof": "2026-09-19", "check_after": "2026-09-23",
+                "fired": True, "trigger_evidence": {
+                    "current_z": 2.4, "previous_z": 1.1,
+                    "mode": "single_z_ge_2", "recomputed_fired": True,
+                    "rule": "z>=2.0 or second consecutive z>=1.5",
+                },
+                "status": "matured",
                 "outcome": {"down_hit": True, "fwd_min_pct": -6.2, "fwd_max_pct": 1.1},
+                "outcome_evidence": None,
+                "generation_count": 2,
+                "source_generation_id": "sha256:history-source",
+                "outcome_generation_id": "sha256:history-outcome",
+                "source_recorded_at": "2026-09-21T05:00:00Z",
+                "outcome_recorded_at": "2026-09-24T05:00:00Z",
                 "corrected": False, "corrections": [], "reason": None,
             },
             {
-                "entry_asof": None, "fired": None, "status": "unavailable",
-                "outcome": None, "corrected": True, "corrections": [{"generation_id": "x"}],
+                "entry_asof": None, "entry_close": None,
+                "source_asof": None, "check_after": None,
+                "fired": None, "trigger_evidence": None,
+                "status": "unavailable", "outcome": None, "outcome_evidence": None,
+                "generation_count": 1,
+                "source_generation_id": None, "outcome_generation_id": None,
+                "source_recorded_at": None, "outcome_recorded_at": None,
+                "corrected": True,
+                "corrections": [{
+                    "generation_id": "x", "target_kind": "source",
+                    "reason": "source_restatement", "recorded_at": "2026-09-20T05:00:00Z",
+                    "supersedes_generation_id": "y",
+                }],
                 "reason": "generation_integrity_error",
             },
         ],
@@ -236,6 +260,11 @@ def test_signal_lab_renders_bounded_recent_prospective_history_without_legacy_re
     assert "近期前瞻观察（2）" in html
     assert "2026-09-20" in html
     assert "matured — target hit" in html
+    assert "Prospective history detail" in html
+    assert "前瞻历史详情" in html
+    assert "DVOL range z-score: 2.40" in html
+    assert "Source generation:" in html
+    assert "sha256:history-source" in html
     assert "Research evidence is damaged; original records retained" in html
     assert "restated 1×" in html
     assert "Prospective rows only; legacy history is never reconstructed." in html

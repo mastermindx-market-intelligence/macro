@@ -115,34 +115,37 @@
 <details class="extra d2-history">
   <summary>{{ t('Recent prospective observations (' ~ r.research_journey.recent_history|length ~ ')', '近期前瞻观察（' ~ r.research_journey.recent_history|length ~ '）') }}</summary>
   {% for history in r.research_journey.recent_history %}
-    <div class="d2-history-row" data-d2-history-entry="{{ history.entry_asof or '' }}">
-      <strong>{{ history.entry_asof or '—' }}</strong> ·
-      {% if history.fired is sameas true %}
-        {{ t('fired', '已触发') }}
-      {% elif history.fired is sameas false %}
-        {{ t('no fire', '未触发') }}
-      {% else %}
-        {{ t('unavailable', '不可用') }}
-      {% endif %} ·
-      {% if history.status == 'matured' and history.outcome %}
-        {% if history.fired is not sameas true %}
-          {{ t('matured — no signal', '已成熟 — 未触发信号') }}
-        {% elif history.outcome.down_hit %}
-          {{ t('matured — target hit', '已成熟 — 目标命中') }}
+    <details class="d2-history-row" data-d2-history-entry="{{ history.entry_asof or '' }}">
+      <summary>
+        <strong>{{ history.entry_asof or '—' }}</strong> ·
+        {% if history.fired is sameas true %}
+          {{ t('fired', '已触发') }}
+        {% elif history.fired is sameas false %}
+          {{ t('no fire', '未触发') }}
         {% else %}
-          {{ t('matured — target missed', '已成熟 — 目标未命中') }}
+          {{ t('unavailable', '不可用') }}
+        {% endif %} ·
+        {% if history.status == 'matured' and history.outcome %}
+          {% if history.fired is not sameas true %}
+            {{ t('matured — no signal', '已成熟 — 未触发信号') }}
+          {% elif history.outcome.down_hit %}
+            {{ t('matured — target hit', '已成熟 — 目标命中') }}
+          {% else %}
+            {{ t('matured — target missed', '已成熟 — 目标未命中') }}
+          {% endif %}
+          · {{ history.outcome.fwd_min_pct }}% / {{ history.outcome.fwd_max_pct }}%
+        {% elif history.status == 'pending' %}
+          {{ t('pending', '待评估') }}
+        {% else %}
+          {% set history_label = reason_labels.get(history.reason, ('unavailable', '不可用')) %}
+          {{ t(history_label[0], history_label[1]) }}
         {% endif %}
-        · {{ history.outcome.fwd_min_pct }}% / {{ history.outcome.fwd_max_pct }}%
-      {% elif history.status == 'pending' %}
-        {{ t('pending', '待评估') }}
-      {% else %}
-        {% set history_label = reason_labels.get(history.reason, ('unavailable', '不可用')) %}
-        {{ t(history_label[0], history_label[1]) }}
-      {% endif %}
-      {% if history.corrected %}
-        · {{ t('restated ' ~ history.corrections|length ~ '×', '已修订 ' ~ history.corrections|length ~ ' 次') }}
-      {% endif %}
-    </div>
+        {% if history.corrected %}
+          · {{ t('restated ' ~ history.corrections|length ~ '×', '已修订 ' ~ history.corrections|length ~ ' 次') }}
+        {% endif %}
+      </summary>
+      {{ observation(history, 'Prospective history detail', '前瞻历史详情') }}
+    </details>
   {% endfor %}
   <div>{{ t('Prospective rows only; legacy history is never reconstructed.', '仅显示前瞻记录；不会重建历史旧记录。') }}</div>
 </details>
