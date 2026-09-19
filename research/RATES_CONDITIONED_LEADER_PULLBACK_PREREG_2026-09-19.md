@@ -42,6 +42,28 @@ The existing study reports 39,877 episode rows. Use the stored rows; do not rege
 
 Episode identity, trigger timestamp, P0, stop geometry, feature snapshot, and outcomes remain the original study's definitions. No rates information may alter those fields.
 
+### 1.1a Frozen artifact-schema receipt
+
+The committed Early Admission results package reports **39,877** stored episode rows. Its declared parquet schema contains, among others:
+
+- `date` — the original decision session used by this protocol as T;
+- `construction`;
+- `false_bounce`;
+- `survive_a`, `mfe_42`, `reached_2r`, `fwd21`, `fwd42`;
+- `f_above200` and `f_rs63`.
+
+The same results package reports **3,630 C2r** rows and **11,111 C4** rows before this rates study applies its coverage/leader filters.
+
+Source-code receipt: the Early Admission `features()` function computes `f_above200` and `f_rs63` from information available at session T; the ruler computes `false_bounce` only when the full +15-session window exists, as `min(low[T+1:T+15]) < 0.98 × P_low`.
+
+Therefore:
+
+- `date` is the only decision-session key for this study;
+- a row with `false_bounce == null` is **OUTCOME_TRUNCATED** and is excluded from the primary estimand, counted explicitly, and never coerced to false;
+- `f_above200 == null` or non-finite/null `f_rs63` makes the row **LEADER_STATE_UNAVAILABLE** for the leader-vs-nonleader analysis;
+- the runner must verify this exact required column set before reading rate-state outcomes and refuse on drift;
+- the runner does not regenerate the episode artifact or reinterpret the old trigger/ruler.
+
 ### 1.2 Structural-strength subgroup
 
 The first study is **stock-leader-like**, not yet a full sector-leader study.
@@ -177,7 +199,7 @@ Using the **same original episode T and the same original outcome endpoint/defin
 3. MFE_42;
 4. ≥2R-before-stop rate;
 5. entry-vs-low and td→trough, as geometry checks only;
-6. if the stored artifact already contains a lawful 10-session/21-session return field, print it; otherwise do not silently invent a new endpoint in the grading run.
+6. print the already-stored `fwd21` field as descriptive return context when non-null; `fwd42` may also print descriptively. Do not derive a new return endpoint in this run.
 
 C4 repeats the same analysis as a secondary trigger family.
 
@@ -187,13 +209,13 @@ A later rate-conditioned *entry-time* comparison is a different experiment. This
 
 ## 6. Missingness and population law
 
-An episode is rate-eligible only when all primary rate features have the required observed endpoints by T−1.
+An episode is primary-eligible only when (a) its stored `false_bounce` is non-null, (b) its leader-state fields are available for the relevant stratum, and (c) all primary rate features have the required observed endpoints by T−1.
 
 - Missing rate endpoint => `RATE_CONTEXT_UNAVAILABLE`, never zero.
 - Carried aligned value => may be displayed as stale context, never used as a new observed endpoint.
 - Mixed-date nominal/real/breakeven values must disclose their own dates.
 - No backfilling from later corrected artifacts into a claimed historical receipt.
-- Every exclusion reason is counted.
+- Every exclusion reason is counted separately: OUTCOME_TRUNCATED, LEADER_STATE_UNAVAILABLE, RATE_CONTEXT_UNAVAILABLE, and any schema/date refusal.
 
 Run the price/episode baseline on:
 1. full eligible episode population,
