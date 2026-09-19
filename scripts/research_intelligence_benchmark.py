@@ -120,6 +120,10 @@ def _parser() -> argparse.ArgumentParser:
     score.add_argument("--source-body", required=True)
     score.add_argument("--model-output", required=True)
     score.add_argument("--candidate-label", required=True)
+    score.add_argument(
+        "--observation",
+        help="optional benchmark_observation.v1 JSON with latency/token/cost measurements",
+    )
     score.add_argument("--output", required=True)
 
     aggregate = sub.add_parser(
@@ -160,11 +164,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             case = _read_json(args.case)
             body = _read_text(args.source_body, maximum=_MAX_BODY_BYTES)
             raw_output = _read_text(args.model_output, maximum=_MAX_OUTPUT_BYTES)
+            observation = _read_json(args.observation) if args.observation else None
             result = score_raw_output(
                 case,
                 body,
                 raw_output,
                 candidate_label=args.candidate_label,
+                observation=observation,
             )
             _write_json(args.output, result, private=False)
             print(
@@ -174,6 +180,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "case_id": result["case_id"],
                         "candidate_label": result["candidate_label"],
                         "overall_score": result["overall_score"],
+                        "observation_present": result.get("observation") is not None,
                         "output": str(Path(args.output).expanduser()),
                     },
                     sort_keys=True,
