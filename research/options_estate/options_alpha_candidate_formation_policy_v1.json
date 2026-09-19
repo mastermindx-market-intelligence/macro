@@ -1,6 +1,6 @@
 {
   "schema": "options.alpha_candidate_formation_policy/v1",
-  "policy_id": "oa_repeated_measured_campaign/v1",
+  "policy_id": "oa_member_persistent_measured_campaign/v1",
   "policy_version": 1,
   "status": "preregistered_inactive_until_activation",
   "registered_on": "2026-09-18",
@@ -30,7 +30,7 @@
   },
   "formation": {
     "campaign_phase": "prospective_after_rule_freeze",
-    "minimum_repeated_count": 1,
+    "minimum_member_count": 2,
     "require_final_member_measured_microstructure": true,
     "minimum_source_print_count": 1,
     "minimum_nbbo_valid_print_count": 1,
@@ -54,7 +54,7 @@
       "BEFORE_ACTIVATION_BOUNDARY",
       "CAMPAIGN_RECEIPT_INVALID",
       "CAMPAIGN_NOT_PROSPECTIVE",
-      "NO_REPEAT_PERSISTENCE",
+      "INSUFFICIENT_CAMPAIGN_MEMBERS",
       "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
       "NO_VALID_NBBO_MEASUREMENT",
       "EVIDENCE_CLOCK_INVALID",
