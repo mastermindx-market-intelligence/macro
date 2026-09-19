@@ -1,0 +1,213 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.alpha_exact_option_outcome_policy.v1.schema.json",
+  "title": "Options Alpha exact-option outcome policy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "state",
+    "population",
+    "entry",
+    "exit",
+    "quote_source",
+    "cost",
+    "clock",
+    "status_vocabulary",
+    "forbidden_substitutes",
+    "authority"
+  ],
+  "properties": {
+    "schema": {
+      "const": "options.alpha_exact_option_outcome_policy/v1"
+    },
+    "policy_id": {
+      "const": "oa3.long_single_leg_h60_nbbo/v1"
+    },
+    "state": {
+      "const": "preregistered_inactive"
+    },
+    "population": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_expression_receipt_required",
+        "selection_before_outcomes",
+        "position",
+        "quantity_contracts",
+        "standard_multiplier",
+        "standard_deliverable_only",
+        "same_day_expiration_allowed",
+        "package_supported",
+        "short_option_supported"
+      ],
+      "properties": {
+        "exact_expression_receipt_required": {"const": true},
+        "selection_before_outcomes": {"const": true},
+        "position": {"const": "long"},
+        "quantity_contracts": {"const": 1},
+        "standard_multiplier": {"const": 100},
+        "standard_deliverable_only": {"const": true},
+        "same_day_expiration_allowed": {"const": false},
+        "package_supported": {"const": false},
+        "short_option_supported": {"const": false}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "boundary",
+        "selected_side",
+        "quote_event_window_seconds",
+        "minimum_displayed_contracts"
+      ],
+      "properties": {
+        "boundary": {"const": "expression.available_at"},
+        "selected_side": {"const": "ask"},
+        "quote_event_window_seconds": {"const": 60},
+        "minimum_displayed_contracts": {"const": 1}
+      }
+    },
+    "exit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "selected_side",
+        "quote_event_window_seconds",
+        "minimum_displayed_contracts"
+      ],
+      "properties": {
+        "target": {"const": "entry_quote.event_at+PT60M"},
+        "selected_side": {"const": "bid"},
+        "quote_event_window_seconds": {"const": 60},
+        "minimum_displayed_contracts": {"const": 1}
+      }
+    },
+    "quote_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "endpoint",
+        "interval",
+        "quote_rule_reference",
+        "exact_contract_required",
+        "firm_condition_required",
+        "known_exchange_required",
+        "raw_response_receipt_required",
+        "executable_fill_claim"
+      ],
+      "properties": {
+        "endpoint": {"const": "/v3/option/history/quote"},
+        "interval": {"const": "tick"},
+        "quote_rule_reference": {
+          "const": "first_role_side_firm_known_exchange_opra_nbbo_tick/v1"
+        },
+        "exact_contract_required": {"const": true},
+        "firm_condition_required": {"const": true},
+        "known_exchange_required": {"const": true},
+        "raw_response_receipt_required": {"const": true},
+        "executable_fill_claim": {"const": false}
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fee_per_side_usd",
+        "multiplier",
+        "return_formula",
+        "cost_interpretation"
+      ],
+      "properties": {
+        "fee_per_side_usd": {"const": "0.65"},
+        "multiplier": {"const": 100},
+        "return_formula": {
+          "const": "100*((100*exit_bid-0.65)-(100*entry_ask+0.65))/(100*entry_ask+0.65)"
+        },
+        "cost_interpretation": {
+          "const": "frozen_research_quote_ruler_not_actual_account_fee_or_fill"
+        }
+      }
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "same_nyse_rth_session_required",
+        "entry_never_precedes_expression_availability",
+        "retrieval_after_maturity_allowed",
+        "actual_retrieval_available_at_recorded",
+        "benchmark_live_capture_lag_rule_inherited"
+      ],
+      "properties": {
+        "same_nyse_rth_session_required": {"const": true},
+        "entry_never_precedes_expression_availability": {"const": true},
+        "retrieval_after_maturity_allowed": {"const": true},
+        "actual_retrieval_available_at_recorded": {"const": true},
+        "benchmark_live_capture_lag_rule_inherited": {"const": false}
+      }
+    },
+    "status_vocabulary": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "pending"},
+        {"const": "complete"},
+        {"const": "unavailable"},
+        {"const": "excluded"},
+        {"const": "invalid"}
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "forbidden_substitutes": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "mid"},
+        {"const": "last"},
+        {"const": "eod_mark"},
+        {"const": "intrinsic"},
+        {"const": "black_scholes"},
+        {"const": "neighbor_contract"},
+        {"const": "underlying_return"},
+        {"const": "later_best_print"}
+      ],
+      "items": false,
+      "minItems": 8,
+      "maxItems": 8
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_originate_signal",
+        "may_score",
+        "may_rank",
+        "may_select",
+        "may_issue",
+        "may_size",
+        "may_trade",
+        "may_publish_pick",
+        "may_train_prophet",
+        "may_feed_neural_web",
+        "may_claim_fill"
+      ],
+      "properties": {
+        "may_originate_signal": {"const": false},
+        "may_score": {"const": false},
+        "may_rank": {"const": false},
+        "may_select": {"const": false},
+        "may_issue": {"const": false},
+        "may_size": {"const": false},
+        "may_trade": {"const": false},
+        "may_publish_pick": {"const": false},
+        "may_train_prophet": {"const": false},
+        "may_feed_neural_web": {"const": false},
+        "may_claim_fill": {"const": false}
+      }
+    }
+  }
+}
