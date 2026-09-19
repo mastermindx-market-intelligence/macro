@@ -145,6 +145,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "state": "ok",
                         "case_id": request["case_id"],
                         "source_content_sha256": request["source_content_sha256"],
+                        "gold_contract_sha256": request["gold_contract_sha256"],
                         "prompt_sha256": request["prompt_sha256"],
                         "output": str(Path(args.output).expanduser()),
                         "visibility": "private_source_bound",
