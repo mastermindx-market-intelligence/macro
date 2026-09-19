@@ -647,3 +647,28 @@ def test_subscription_cost_basis_is_kept_distinct_from_marginal_api_cost():
     economics = aggregate["candidates"][0]["run_observations"]
     assert economics["cost_bases"] == ["amortized_subscription"]
     assert economics["provenance_state"] == "operator_supplied_observation"
+
+
+def test_semantic_precision_penalizes_extra_unmatched_analysis_rows():
+    rio = _rio()
+    rio["analysis"]["forecasts"].append(
+        {
+            "statement": "General conditions could matter later.",
+            "horizon": "future",
+            "confidence": "low",
+            "support_claim_indices": [1],
+        }
+    )
+    result = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(rio),
+        candidate_label="verbose-model",
+    )
+    assert result["state"] == "ok"
+    assert result["metrics"]["analysis_semantic_recall"] == 1.0
+    assert result["metrics"]["analysis_semantic_precision"] == 0.75
+    assert result["counts"]["expected_analysis_semantics"] == 3
+    assert result["counts"]["matched_analysis_semantics"] == 3
+    assert result["counts"]["observed_analysis_semantic_rows"] == 4
+    assert result["overall_score"] < 1.0
