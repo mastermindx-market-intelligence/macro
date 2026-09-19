@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T02:09:31.032474+00:00",
-  "count": 2399,
+  "generated_at": "2026-09-19T03:55:04.331665+00:00",
+  "count": 2404,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -90,6 +90,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-btrg0bo0pyj-b0a692",
+      "title": "GS Coppola US Rates The Week That Was The Week That Will Be 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:53:29Z",
+      "summary_points": [
+        "Fed Rate Hike & Data Pressure: Fed hiked 25bp to 3.75–4.00%, with strong retail sales vs. soft housing; Treasury yields pressured by tightening expectations.",
+        "Next week’s PMIs, claims, and Treasury auctions critical for growth/rate outlook.",
+        "Geopolitical & Policy Curve Dynamics: Middle East tensions and Fed hawkishness (higher neutral rate, buyback program) anchor 15-20y sector, flattening curve; persistent inflation and borrowing costs key risks.",
+        "Hyperscaler Debt Crowding: $420B 2027 IG debt issuance (65-75% USD), 35% of hyperscalers’ CapEx debt-funded, creating structural long-end market crowding and reduced warehouse willingness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fdbolpd0jhx-1b9510",
       "title": "Macro & Markets forecast edition",
       "institution": "Nordea",
@@ -107,6 +127,48 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-encjyakps8i-b1273c",
+      "title": "Weekly economics thoughts of the week",
+      "institution": "Raymond James",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:42:21Z",
+      "summary_points": [
+        "Fed Policy Ambiguity Amidst Restrictive Signals: FOMC SEP and dot plot revisions create uncertainty on policy reaction function, with reduced explicit guidance complicating inflation-targeting framework despite claims of removing monetary accommodation.",
+        "Household Debt & Income Disconnect: Real household debt declined (mortgage/auto down), but weak nominal/real disposable income growth YoY historically signals downturns, not expansions, indicating consumer vulnerability.",
+        "Inflation Target & Policy Uncertainty: SEP projects 2% inflation by 2029, yet Chairman implies faster timeline, creating critical uncertainty on policy credibility and required restrictive path.",
+        "Housing Sector Strain: NAHB index at 32 (lowest since pandemic), 38% price cuts, and regional declines signal severe residential real estate weakness amid financing cost headwinds.",
+        "Import Prices Surge Threatening Disinflation: Import prices rose 0.7% MoM (vs 0.1% expected), with China at 1.0% MoM (largest since 2004), risking inflationary pressure and complicating Fed policy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-onqmfi9hmxu-fbddd3",
+      "title": "Ii macro brief AI in europe part two comparing capex and strategy",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-19T01:27:11Z",
+      "summary_points": [
+        "Capex Gap: EU AI infrastructure investment lags US/China by orders of magnitude (US AI capex >2% GDP vs.",
+        "EU's negligible fraction), with Europe trailing in physical infrastructure.",
+        "Adoption Strategy Shift: EU pivots from regulation to enabling AI adoption (via computing access, infrastructure, skills per Draghi Report), prioritizing scaling gains over matching US/China capex.",
+        "US Exposure Risk: European assets directly tied to US AI dynamics via 1.3% GDP in US tech equity capital gains and embedded semiconductor supply chain roles.",
+        "Infrastructure Bottlenecks: Europe faces slower data center growth due to high energy prices, aging grid, and 1–2 year construction timelines vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -147,6 +209,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5utskuuzqh-4c097e",
+      "title": "Transformational Innovation Opportunities (TRIO)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:48Z",
+      "summary_points": [
+        "AI Power Demand Acceleration: Data center power demand surging (7.8%-25.5% growth 2020-2025), driven by AI; utilities view AI as durable multiyear catalyst with contracts expected by 2027.",
+        "Execution & Delivery Risks: Critical for BTM solutions amid regulatory/political constraints; project delays, supply chain disruptions, and power delivery bottlenecks threaten data center expansion (noted for smaller providers).",
+        "Geopolitical Theme Dominance: \"China Onshore Tech\" and \"Asia's new mobility\" drive selection shifts; US-China tensions and regional policy shifts (e.g., EU regulations) directly impact portfolio positioning.",
+        "CIO Selection Volatility: 10+ companies (e.g., Honeywell, Mitsubishi) exhibit frequent \"Most Preferred\" → \"Not Listed\" transitions, signaling active tactical realignment due to macro/geopolitical shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-v5cobzfubog-fa4c72",
+      "title": "UBS Equity Preference List Singapore 2026 09 18",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:38Z",
+      "summary_points": [
+        "Policy Catalysts: EQDP upsized to SGD 6.5bn (from 5bn) with 2028 CPF Investment Scheme as structural liquidity support for Singapore equities.",
+        "Valuation Justification: Attractive rating maintained amid geopolitical risk; valuations above 10-year P/E average justified by structural regime shift (not overvaluation).",
+        "Sector Concentration Risk: Heavy bank/REIT weighting (DBS 32.0%, OCBC 20.5%, UOB 10.5%; REITs) creates interest rate sensitivity and property market vulnerability.",
+        "Portfolio Flow Risk: Top 3 holdings = 63% of total allocation, amplifying volatility from sector-specific shocks.",
+        "DBS Weight Impact: 32.0% weight in DBS Group Holdings (ROE 15-17% target, >6% dividend yield) dominates portfolio, heightening exposure to recession/credit costs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
