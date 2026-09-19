@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T12:55:59.169479+00:00",
-  "count": 2430,
+  "generated_at": "2026-09-19T13:11:02.317336+00:00",
+  "count": 2431,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -984,6 +984,27 @@
         "EM carry trade cracks: CFTC data shows rising net open interest in MXN/ZAR/BRL, signaling heightened risk for low-yield EM currencies (CLP, PHP) amid higher US yields.",
         "Trump-Xi summit impact: Likely extends trade truce with narrow agreements, mitigating USD upside risk but exposing Japanese dovish appointees to policy risk.",
         "USD/JPY bullish trend: Driven by Fed inflation-fighting stance, BoJ rate hikes, and US policy credibility; targets 149 by 2026 amid Middle East escalation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m3f5xglzli5-f0a24d",
+      "title": "High Yield & Loan Strategy Introducing the BofA Loan Credit Stress Indicator",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:30:47Z",
+      "summary_points": [
+        "BoFA Loan CSI Neutral: 49% reading (66% R-squared for spread variation) signals neutral credit conditions; Distress (58% R-squared) and Debt leverage are critical inputs for market dysfunction assessment.",
+        "AI Spread Premium: IG AI bonds trade at 38bps above ex-AI (108bps vs 70bps), while HY AI spreads at 294bps (135bps premium over ex-AI), indicating relative value and elevated risk in high-yield segments.",
+        "Loan vs HY CSI Divergence: Loan CSI (49%) vs HY CSI (34%) shows narrowed but persistent stress divergence, driven by floating-rate issuer fragility and AI obsolescence risk post-2022.",
+        "AI Issuance Scale: $549bn USD AI-related issuance YTD (IG $259bn dominant), concentrated in Data Center/Compute Hardware (60% of IG/Private Credit), signaling aggressive capital allocation.",
+        "HY AI Risk Exposure: HY AI spreads at 294bps (avg."
       ],
       "tags": [],
       "tickers": [],
