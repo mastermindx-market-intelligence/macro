@@ -581,3 +581,32 @@ def test_gold_premium_partial_embeds_machine_proof_attrs_for_current_method():
 
     assert 'data-cgp-source-asof="2026-09-18T02:10:00+00:00"' in html
     assert 'data-cgp-premium="0.167400"' in html
+
+
+def test_stats_do_not_mislabel_partial_history_as_5_or_30_sessions():
+    m = _mod()
+    dates = pd.date_range("2026-09-16", periods=3, freq="D")
+    frames = {
+        ("sge", "pm"): pd.DataFrame({"value": [700.0, 701.0, 702.0]}, index=dates),
+        ("london", "am"): pd.DataFrame({"value": [3100.0, 3101.0, 3102.0]}, index=dates),
+        ("fx", "daily"): pd.DataFrame({"value": [7.0, 7.0, 7.0]}, index=dates),
+    }
+    cfg = {
+        "canonical": {
+            "sge": _leg("sge", "pm", label="SGE SHAUPM"),
+            "london": _leg("london", "am", label="LBMA AM"),
+            "fx": _leg("fx", "daily", label="USDCNY"),
+            "max_age_days": 5,
+        }
+    }
+
+    vm = m.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-09-18T18:00:00Z"),
+    )
+
+    assert vm["available"] is True
+    assert len(vm["chart"]["canonical"]) == 3
+    assert vm["stats"]["avg_5"] is None
+    assert vm["stats"]["range_30"] is None

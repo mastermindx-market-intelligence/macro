@@ -132,6 +132,15 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
     else:
         status = "available_stale"
 
+    methods = {}
+    for method_name in ("canonical", "intraday", "close_proxy"):
+        method = vm.get(method_name) or {}
+        methods[method_name] = {
+            "available": bool(method.get("available")),
+            "fresh": bool(method.get("fresh")),
+            "asof": method.get("asof"),
+        }
+
     return {
         "schema": SCHEMA,
         "checked_at": checked_at,
@@ -152,6 +161,8 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
         "source_asof": meta.get("asof"),
         "sources": list(meta.get("sources") or []),
         "reason_code": vm.get("reason_code"),
+        "official_canonical_available": methods["canonical"]["available"],
+        "methods": methods,
         "violations": violations,
     }
 

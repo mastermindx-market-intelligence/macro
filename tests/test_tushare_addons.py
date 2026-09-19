@@ -1327,3 +1327,22 @@ def test_gold_basis_store_namespace_survives_us_nightly_china_reset():
     # that namespace belongs to asia-close. This source is US-nightly-owned, so
     # its store namespace must never match that reset pattern.
     assert not fnmatch(f"data/{adapter.group}", "data/china_*")
+
+
+def test_gold_basis_cold_start_seeds_enough_history_for_30_session_stats(monkeypatch):
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    monkeypatch.setattr(adapter, "stored_series", lambda: [])
+    assert adapter._fetch_window_days(full_history=False) >= 90
+
+    monkeypatch.setattr(
+        adapter,
+        "stored_series",
+        lambda: ["sge_au9999", "xaucny_spot"],
+    )
+    assert adapter._fetch_window_days(full_history=False) == cgb._REFRESH_DAYS
+    assert adapter._fetch_window_days(full_history=True) == 370

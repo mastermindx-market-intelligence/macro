@@ -274,7 +274,7 @@ def test_proxy_only_view_model_is_available_and_keeps_canonical_separate():
     assert len(vm["chart"]["proxy"]) == 18
     assert vm["chart"]["display_source"] == "proxy"
     assert vm["stats"]["avg_5"] is not None
-    assert vm["stats"]["range_30"] is not None
+    assert vm["stats"]["range_30"] is None  # 18 observations must not masquerade as 30 sessions
     assert vm["sge_price_oz"] == pytest.approx(vm["chart"]["proxy"][-1]["sge_price_oz"])
     assert vm["reference_price_oz"] == pytest.approx(vm["chart"]["proxy"][-1]["reference_price_oz"])
 
@@ -540,3 +540,62 @@ def test_gold_premium_quality_receipt_detects_stale_rendered_asof_or_value(tmp_p
         "rendered 2026-09-17T07:30:00+00:00"
     ) in doc["violations"]
     assert "premium_pct: expected 0.1674, rendered 0.1111" in doc["violations"]
+
+
+def test_gold_premium_quality_receipt_preserves_method_separation(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = {
+        "available": True,
+        "status": "available",
+        "state": "premium",
+        "current_method": "close_proxy",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "chart": {"display_source": "proxy"},
+        "canonical": {
+            "available": False,
+            "fresh": False,
+            "asof": None,
+            "sources": [],
+        },
+        "intraday": {
+            "available": False,
+            "fresh": False,
+            "asof": None,
+            "sources": [],
+        },
+        "close_proxy": {
+            "available": True,
+            "fresh": True,
+            "asof": "2026-09-18T07:30:00+00:00",
+            "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+        },
+    }
+    html = (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" '
+        'data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" '
+        'data-cgp-source-asof="2026-09-18T07:30:00+00:00" '
+        'data-cgp-premium="0.167400"></section>'
+    )
+
+    doc = audit.write_receipt(
+        vm,
+        html,
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["methods"]["canonical"] == {
+        "available": False,
+        "fresh": False,
+        "asof": None,
+    }
+    assert doc["methods"]["close_proxy"] == {
+        "available": True,
+        "fresh": True,
+        "asof": "2026-09-18T07:30:00+00:00",
+    }
+    assert doc["official_canonical_available"] is False

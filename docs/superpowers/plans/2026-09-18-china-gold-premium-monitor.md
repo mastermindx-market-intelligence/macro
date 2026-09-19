@@ -78,6 +78,9 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
   `gold_china_basis/` (no second store or publication plane);
 - runs in the existing authoritative nightly collector lane (no new scheduler);
 - fetches SGE Au99.99 trade-date close and close-aligned global XAU/CNY only;
+- cold-starts with 90 calendar days (enough depth for honest 30-session statistics in normal
+  trading calendars), then refreshes a bounded 14-day overlap nightly; explicit full-history
+  runs remain available for deeper backfill;
 - leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its
   own entitled mapping exists;
 - remains display/context-only and cannot rank, size, gate, allocate, or originate trades.
@@ -88,8 +91,11 @@ evidence proves rendering and fail-closed behavior but is not a live vendor-call
 
 The existing nightly builder band also runs `scripts.audit_china_gold_premium` immediately
 after `build_commodities`. The audit independently re-reads the current source stores and
-engine view-model, compares them with the actual rendered Gold panel, and writes
-`data/quality/china_gold_premium.json` through the existing quality/commit plane. Source
-unavailability is an honest green receipt; a source→VM→render mismatch is a red builder
-substep. This receipt is observability/proof only and creates no new lifecycle or scoring
-authority.
+engine view-model, compares method/state/currency/source-asof/premium with machine-readable
+attributes on the actual rendered Gold panel, and writes
+`data/quality/china_gold_premium.json` through the existing quality/commit plane. The receipt
+also preserves availability/freshness separately for canonical, intraday, and close-proxy
+methods so a live proxy can never be mistaken for official-benchmark coverage. Source
+unavailability is an honest green receipt; a source→VM→render mismatch is a visible builder
+failure receipt. This receipt is observability/proof only and creates no new lifecycle or
+scoring authority.

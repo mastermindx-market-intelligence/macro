@@ -660,9 +660,13 @@ def build_view_model(
         "sge_price_oz": sge_price_oz,
         "reference_price_oz": reference_price_oz,
         "stats": {
-            "avg_5": float(history.tail(5).mean()) if not history.empty else None,
+            "avg_5": (
+                float(history.tail(5).mean()) if len(history) >= 5 else None
+            ),
             "range_30": (
-                [float(last30.min()), float(last30.max())] if not last30.empty else None
+                [float(last30.min()), float(last30.max())]
+                if len(history) >= 30
+                else None
             ),
         },
         "canonical": {

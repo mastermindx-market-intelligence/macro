@@ -32,6 +32,7 @@ _MASSIVE_TICKER = "C:XAUCNY"
 _CLOSE_HOUR_UTC = 7
 _CLOSE_MINUTE_UTC = 30
 _REFRESH_DAYS = 13  # today + 13 prior days = one <=14-day minute-bar request
+_COLD_START_DAYS = 90  # enough calendar depth for honest 30-session product statistics
 _MAX_MASSIVE_RESULTS = 50_000
 
 
@@ -161,6 +162,17 @@ class ChinaGoldBasisAdapter(Adapter):
             raise ValueError(f"{self.name}/{name}: all-NaN after cleaning")
         return out
 
+    def _fetch_window_days(self, *, full_history: bool) -> int:
+        """Bound first-run depth without paying the backfill cost every night."""
+        if full_history:
+            return 370
+        required = {"sge_au9999", "xaucny_spot"}
+        return (
+            _REFRESH_DAYS
+            if required.issubset(set(self.stored_series()))
+            else _COLD_START_DAYS
+        )
+
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         if not tushare_client.enabled() or not self.massive_key:
             raise RuntimeError(
@@ -168,7 +180,7 @@ class ChinaGoldBasisAdapter(Adapter):
             )
 
         now = datetime.now(timezone.utc)
-        days = 370 if full_history else _REFRESH_DAYS
+        days = self._fetch_window_days(full_history=full_history)
         start = (now - timedelta(days=days)).date()
         end = now.date()
 
