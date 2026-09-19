@@ -333,3 +333,15 @@ def test_missing_topic_context_fails_closed():
         assert "topic_key" in str(exc)
     else:
         raise AssertionError("longitudinal delta requires explicit topic context")
+
+
+def test_rights_safe_summary_refuses_nonhex_digest_spoofing():
+    previous, current = _pair()
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
+    delta["comparison_id"] = "X" * 64
+    try:
+        summary(delta)
+    except ValueError as exc:
+        assert "identity" in str(exc)
+    else:
+        raise AssertionError("safe summary must reject non-SHA digest fields")
