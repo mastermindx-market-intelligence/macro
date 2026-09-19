@@ -719,3 +719,44 @@ def test_intraday_without_compatible_canonical_history_does_not_render_blank_pro
     assert "No compatible history for this intraday method yet." in html
     assert "当前日内方法尚无兼容的历史序列。" in html
     assert "Proxy history remains methodologically separate." in html
+
+
+def test_gold_premium_partial_renders_accessible_table_for_active_history():
+    html = _render_premium_partial(_available_ui_vm())
+
+    assert '<details class="cgp-data">' in html
+    assert '<table class="cgp-data-table">' in html
+    assert '<caption>' in html
+    assert 'China gold premium history table' in html
+    assert '中国黄金溢价历史表' in html
+    assert 'scope="col"' in html
+    for text in (
+        "Observation",
+        "Premium %",
+        "Spread / oz",
+        "Shanghai / oz",
+        "Reference / oz",
+        "5-session avg",
+        "2026-09-16",
+        "+0.12%",
+        "+5.10",
+        "4,305.10",
+        "4,300.00",
+        "+0.10%",
+    ):
+        assert text in html
+
+
+def test_intraday_without_compatible_history_omits_data_table():
+    vm = _available_ui_vm()
+    vm["current_method"] = "intraday"
+    vm["chart"] = {
+        "canonical": [],
+        "proxy": [],
+        "intraday": vm["chart"]["intraday"],
+        "display_source": None,
+    }
+
+    html = _render_premium_partial(vm)
+
+    assert '<table class="cgp-data-table">' not in html

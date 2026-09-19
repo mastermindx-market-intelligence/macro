@@ -2,6 +2,13 @@
 {% set price_currency = g.get('price_currency') or 'USD' %}
 {% set chart_source = g.chart.get('display_source') if g.get('chart') else none %}
 {% set display_source = chart_source or 'canonical' %}
+{% if chart_source == 'proxy' %}
+  {% set history_rows = g.chart.get('proxy') or [] %}
+{% elif chart_source == 'canonical' %}
+  {% set history_rows = g.chart.get('canonical') or [] %}
+{% else %}
+  {% set history_rows = [] %}
+{% endif %}
 {% set sge_display = g.get('sge_price_oz') if g.get('sge_price_oz') is not none else g.get('sge_usd_oz') %}
 {% set reference_display = g.get('reference_price_oz') if g.get('reference_price_oz') is not none else g.get('london_usd_oz') %}
 {% if g.get('current_method') == 'close_proxy' %}
@@ -133,6 +140,40 @@
       </span>
     </div>
   </div>
+
+  <details class="cgp-data">
+    <summary><span class="l-en">View data table</span><span class="l-zh">查看数据表</span></summary>
+    <div class="cgp-data-scroll" tabindex="0">
+      <table class="cgp-data-table">
+        <caption><span class="l-en">China gold premium history table</span><span class="l-zh">中国黄金溢价历史表</span></caption>
+        <thead>
+          <tr>
+            <th scope="col"><span class="l-en">Observation</span><span class="l-zh">观测日期</span></th>
+            <th scope="col"><span class="l-en">Premium %</span><span class="l-zh">溢价率 %</span></th>
+            <th scope="col"><span class="l-en">Spread / oz</span><span class="l-zh">每盎司价差</span></th>
+            <th scope="col"><span class="l-en">Shanghai / oz</span><span class="l-zh">上海 / 盎司</span></th>
+            <th scope="col"><span class="l-en">Reference / oz</span><span class="l-zh">参考价 / 盎司</span></th>
+            <th scope="col"><span class="l-en">5-session avg</span><span class="l-zh">5期均值</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in history_rows[-120:] %}
+          <tr>
+            <th scope="row">{{ row.get('date') or row.get('ts') or '—' }}</th>
+            <td>{{ '%+.2f%%'|format(row.get('premium_pct')) if row.get('premium_pct') is not none else '—' }}</td>
+            <td>{{ '%+.2f'|format(row.get('spread_price_oz')) if row.get('spread_price_oz') is not none else '—' }}</td>
+            <td>{{ '{:,.2f}'.format(row.get('sge_price_oz')) if row.get('sge_price_oz') is not none else '—' }}</td>
+            <td>{{ '{:,.2f}'.format(row.get('reference_price_oz')) if row.get('reference_price_oz') is not none else '—' }}</td>
+            <td>{{ '%+.2f%%'|format(row.get('ma5_pct')) if row.get('ma5_pct') is not none else '—' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if history_rows|length > 120 %}
+    <p class="cgp-note"><span class="l-en">Showing the latest 120 observations.</span><span class="l-zh">显示最近120个观测值。</span></p>
+    {% endif %}
+  </details>
   {% endif %}
   {% if g.current_method == 'intraday' and chart_source is none %}
   <p class="cgp-note cgp-history-note">
