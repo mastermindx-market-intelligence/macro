@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T00:24:29.422600+00:00",
-  "count": 2394,
+  "generated_at": "2026-09-19T00:45:02.954308+00:00",
+  "count": 2395,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -229,6 +229,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-otihftgc4dx-d87954",
+      "title": "Taiwan Weekly Kickstart TAIEX +2",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T20:10:58Z",
+      "summary_points": [
+        "TSMC Concentration Risk: Regional funds hold 12.1% in TSMC but are 350bp underweight vs EM benchmark (15.6% weight), signaling potential forced selling due to concentration limits.",
+        "QFI Tech Outflows: Foreign investors (QFIs) net selling Taiwan’s tech sector (especially TSMC) since July 2024, with cumulative negative flows (Exhibit 17), indicating reduced foreign appetite for semiconductor leadership.",
+        "Domestic vs Foreign Flow Divergence: Domestic funds control 86% of net open interest (Index/ETF) and 91% (Single Stock), while QFIs net sell futures (-21.8bn) despite net buying cash equities (+6.0bn), amplifying volatility risk.",
+        "Near 10-Year Low Allocation: Global mutual funds reduced Taiwan exposure by 10bp/50bp over 1.5 months (vs 7.4% weight), with EM funds trimming 455bp, signaling near 10-year lows in long-only positioning.",
+        "Fundamentals & Targets: Consensus 2026 EPS growth at 14% (IT/TSMC-driven), TAIEX 12M target at 54,000 (current 47,181), and IT/TSMC/Tech Hardware rated Outperform, supporting bullish tech momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 30,
       "language": "en",
       "needs_metadata": false
     },
