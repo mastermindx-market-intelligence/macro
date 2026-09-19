@@ -999,9 +999,10 @@ def run(store, corpus_path: str | Path, now: datetime | None = None,
     conn = corpus_mod.open_db(corpus_path)
     pending_receipts: list = []  # (key, body) — flushed only after a publish
     try:
-        # Titles already published can only be healed on load (receipted docs never
-        # re-ingest); read_strict does not do it, so run the same repair here.
-        catalog_mod.heal_titles(cat)
+        # Display fields already published can only be healed on load (receipted
+        # docs never re-ingest); read_strict does not do it, so run the same
+        # repair here (titles, summary markdown/splits, institution spellings).
+        catalog_mod.heal_display(cat)
 
         # Heal filename-shaped titles already in the catalog (receipted docs are
         # never re-ingested, so this is the only path that reaches them).
