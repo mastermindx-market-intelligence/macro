@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_premium_interaction_checks.v1",
-  "semantic_head": "b7a4f813ad939eca6468195ef32b63c48f131f06",
+  "semantic_head": "17eceee3dcfb59294c0b12b997fd6e5b6c4d430a",
   "checks": [
     {
       "label": "proxy",

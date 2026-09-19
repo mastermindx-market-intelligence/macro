@@ -1,13 +1,13 @@
 # China Gold Premium — visual evidence
 
-This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `b7a4f813ad939eca6468195ef32b63c48f131f06`.
+This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `17eceee3dcfb59294c0b12b997fd6e5b6c4d430a`.
 
 ## States
 
 - **available** — deterministic, fixture-only entitled inputs are passed through the production `engine.china_gold_premium` math. The final intraday fixture reproduces the screenshot arithmetic: Shanghai USD-eq 4398.94 versus London 4391.59 = +0.1674%.
 - **unavailable** — required live source rows are absent. The panel remains visible and explicitly refuses to substitute futures, an ETF, or an unofficial web quote.
 
-The canonical manifest contains both routes across dark/light × EN/ZH × desktop 1440/mobile 390: **16/16 captured**. The friendly `panel-*.png` files are supplemental element crops of the Gold panel itself.
+The canonical manifest contains the intraday, unavailable, and no-compatible-history routes across dark/light × EN/ZH × desktop 1440/mobile 390: **24/24 captured**. The friendly `panel-*.png` files are supplemental element crops of the Gold panel itself.
 
 ## Mobile overflow finding
 
