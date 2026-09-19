@@ -10458,7 +10458,7 @@ jobs:
       - name: waves 9E/9F — shadow context packets + prophet annotation boundary
         run: python -m pytest tests/test_government_revenue_shadow_context.py tests/test_government_revenue_prophet_annotation.py -q
       - name: workspace / dossier / briefcase UI contracts
-        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py -q
+        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
       # D3 temporal contract: typed rail states (producer) + the Change Tape
       # clock/diff/successor renders (node harness, same runner requirement as
       # the UI suite above, whose _run_runtime it imports).
