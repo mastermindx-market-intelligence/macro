@@ -89,8 +89,10 @@ pages:
   macro:china:
     priority: "P0"
     archetype: "regime_dashboard"
+    design_system: {compliant: false, governed_regions: [{region: body.page-china, template: templates/china.html.j2}]}
     primary_user_question: "What is the China regime right now?"
     evidence: [templates/_navlinks.html.j2]
+    note: "Regional primary-route parity gate (Chairman, 2026-09-19): standalone #7054 migration rolled back; keep the pre-#7054 family composition until macro/China/HK/Canada move coherently or an explicit non-primary canary is authorized."
 
   macro:china_history:
     archetype: "regime_dashboard"
