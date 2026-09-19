@@ -136,10 +136,21 @@ def _category_delta(
     current_rows = _category_rows(current, field, current_claim_hashes)
     prior_keys = set(prior_rows)
     current_keys = set(current_rows)
+    shared_keys = sorted(prior_keys & current_keys)
+    modified = [
+        {
+            "statement_sha256": key,
+            "before": prior_rows[key],
+            "after": current_rows[key],
+        }
+        for key in shared_keys
+        if prior_rows[key] != current_rows[key]
+    ]
     return {
         "added": [current_rows[key] for key in sorted(current_keys - prior_keys)],
         "removed": [prior_rows[key] for key in sorted(prior_keys - current_keys)],
-        "shared": [current_rows[key] for key in sorted(prior_keys & current_keys)],
+        "modified": modified,
+        "shared": [current_rows[key] for key in shared_keys if prior_rows[key] == current_rows[key]],
     }
 
 
@@ -230,16 +241,26 @@ def compare_institutional_rio(
     changed_categories = [
         field
         for field, delta in categories.items()
-        if delta["added"] or delta["removed"]
+        if delta["added"] or delta["removed"] or delta["modified"]
     ]
     direction_changed = prior_thesis["direction"] != current_thesis["direction"]
     conviction_changed = (
         _normalized_hash(prior_thesis.get("conviction"))
         != _normalized_hash(current_thesis.get("conviction"))
     )
+    prior_thesis_support = _support_hashes(
+        prior_thesis.get("support_claim_indices") or [],
+        prior_claim_hashes,
+    )
+    current_thesis_support = _support_hashes(
+        current_thesis.get("support_claim_indices") or [],
+        current_claim_hashes,
+    )
+    thesis_support_changed = prior_thesis_support != current_thesis_support
     material_change = bool(
         direction_changed
         or conviction_changed
+        or thesis_support_changed
         or claims["added_sha256"]
         or claims["removed_sha256"]
         or mechanisms["added_sha256"]
@@ -265,14 +286,9 @@ def compare_institutional_rio(
             "conviction_before_sha256": _normalized_hash(prior_thesis.get("conviction")),
             "conviction_after_sha256": _normalized_hash(current_thesis.get("conviction")),
             "conviction_changed": conviction_changed,
-            "support_before_claim_sha256": _support_hashes(
-                prior_thesis.get("support_claim_indices") or [],
-                prior_claim_hashes,
-            ),
-            "support_after_claim_sha256": _support_hashes(
-                current_thesis.get("support_claim_indices") or [],
-                current_claim_hashes,
-            ),
+            "support_before_claim_sha256": prior_thesis_support,
+            "support_after_claim_sha256": current_thesis_support,
+            "support_changed": thesis_support_changed,
             "mechanisms": mechanisms,
         },
         "claims": {
