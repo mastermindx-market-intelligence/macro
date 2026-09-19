@@ -19,8 +19,9 @@ Design constraints (R3, packet W8B_F09_11):
 * A non-fast-forward rejection is normal (origin/main moves every few minutes
   under ``[skip ci]`` data commits); a single-shot "refuse when main moved"
   rule would therefore NEVER land. We retry without rewriting local history
-  by snapshotting the two paths into a temp directory, fetching the remote
-  tip, resetting hard onto it, then restoring the two paths and re-staging.
+  by snapshotting THIS RUN's produced files, fetching the remote tip,
+  re-checking out onto it, then overlaying those files (never rmtree of
+  the cache directory — a foreign file the remote added must survive).
 * Every refusal path exits 0 — the drip is fail-soft (cache goes stale, not
   wrong). Non-zero returns are reserved for "this is not a git worktree".
 * Every GitHub annotation is a bare ``print(... flush=True)`` starting the
@@ -97,6 +98,12 @@ _AUTH_RE = re.compile(
     r"authentication failed",
     re.IGNORECASE,
 )
+_GH013_RE = re.compile(
+    r"GH013|"
+    r"repository rule violations|"
+    r"push declined due to repository rule",
+    re.IGNORECASE,
+)
 _REF_LOCK_RE = re.compile(
     r"cannot lock ref|"
     r"is at .* but expected|"
@@ -115,7 +122,7 @@ def _classify_push_failure(stderr: str) -> PushResult:
     first_line = stderr.strip().split("\n", 1)[0] if stderr.strip() else ""
     if _NON_FF_RE.search(stderr):
         return PushResult(kind="non_fast_forward")
-    if _HOOK_RE.search(stderr) or _AUTH_RE.search(stderr):
+    if _HOOK_RE.search(stderr) or _AUTH_RE.search(stderr) or _GH013_RE.search(stderr):
         return PushResult(kind="push_error", detail=first_line)
     if _REF_LOCK_RE.search(stderr):
         # A lost-race ref lock is structurally identical to a non-ff:
@@ -202,41 +209,56 @@ def _staged_blob_size_bytes(cwd: Path) -> int:
     return total
 
 
-def _copy_allowed_paths_to(cwd: Path, dst_root: Path) -> dict[str, str]:
-    """Snapshot the two allowed paths to a temp dir. Returns a mapping
-    ``relative_path -> absolute_under_dst_root`` suitable for restoring after
-    a ``git reset --hard`` wiped the working tree. Only copies files that
-    actually exist; the caller treats absence as "no change"."""
+def _path_is_allowed(path: str) -> bool:
+    """True iff ``path`` is inside one of ALLOWED_PATHS (file or prefix)."""
+    for allowed in ALLOWED_PATHS:
+        if path == allowed or path.startswith(allowed.rstrip("/") + "/"):
+            return True
+    return False
+
+
+def _disallowed_commit_paths(cwd: Path) -> list[str] | None:
+    """Paths in ``HEAD^..HEAD`` that are outside ALLOWED_PATHS.
+
+    Returns None when ``HEAD^`` is missing (cannot verify). An empty list
+    means the persist commit is path-scoped."""
+    proc = _run(["git", "diff", "--name-only", "HEAD^..HEAD"], cwd=cwd)
+    if proc.returncode != 0:
+        return None
+    bad: list[str] = []
+    for line in proc.stdout.splitlines():
+        path = line.strip()
+        if path and not _path_is_allowed(path):
+            bad.append(path)
+    return bad
+
+
+def _snapshot_run_artifacts(cwd: Path, rel_paths: list[str], dst_root: Path) -> dict[str, str]:
+    """Copy only this run's produced files (never a whole directory tree)."""
     mapping: dict[str, str] = {}
-    for rel in ALLOWED_PATHS:
+    for rel in rel_paths:
         src = cwd / rel
-        if not src.exists():
+        if not src.is_file():
             continue
         dst = dst_root / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
-        if src.is_dir():
-            shutil.copytree(src, dst, dirs_exist_ok=True)
-        else:
-            shutil.copy2(src, dst)
+        shutil.copy2(src, dst)
         mapping[rel] = str(dst)
     return mapping
 
 
-def _restore_allowed_paths(cwd: Path, dst_root: Path, mapping: dict[str, str]) -> None:
-    """Reverse of ``_copy_allowed_paths_to`` — back into the working tree
-    after a reset."""
-    for rel, abs_under_dst in mapping.items():
-        src = Path(abs_under_dst)
+def _overlay_run_artifacts(cwd: Path, mapping: dict[str, str]) -> None:
+    """Copy this run's files onto the working tree without wiping siblings.
+
+    A foreign file the remote added (e.g. cache/foreign.json) must survive.
+    Never rmtree a destination directory."""
+    for rel, abs_src in mapping.items():
+        src = Path(abs_src)
+        if not src.is_file():
+            continue
         dst = cwd / rel
         dst.parent.mkdir(parents=True, exist_ok=True)
-        if src.is_dir():
-            # Remove the destination first so copytree does not collide on an
-            # existing directory that the previous reset left behind.
-            if dst.exists():
-                shutil.rmtree(dst)
-            shutil.copytree(src, dst)
-        else:
-            shutil.copy2(src, dst)
+        shutil.copy2(src, dst)
 
 
 def _commit(cwd: Path, subject: str) -> bool:
@@ -278,13 +300,22 @@ def _attempt_push(cwd: Path, base: str, remote: str) -> PushResult:
     return _classify_push_failure(stderr)
 
 
-def _resync_to_remote(cwd: Path, base: str, remote: str) -> dict[str, str]:
-    """Snapshot -> fetch -> reset hard -> restore.
+def _resync_to_remote(
+    cwd: Path,
+    base: str,
+    remote: str,
+    artifacts: list[str] | None = None,
+) -> dict[str, str]:
+    """Fetch the remote tip, re-checkout onto it, overlay this run's artifacts.
+
+    Overlay, never wipe: a foreign file the remote added must survive.
     MAJOR-1: a failed ``git fetch --depth 1`` ABORTS the resync — we never
     ``git reset --hard FETCH_HEAD`` onto a stale tip."""
+    print("::notice title=debt-maturity-drip::resync_to_remote", flush=True)
+    rels = list(artifacts or ())
     with tempfile.TemporaryDirectory(prefix="dm-drip-") as tmp:
         tmp_root = Path(tmp)
-        snapshot = _copy_allowed_paths_to(cwd, tmp_root)
+        snapshot = _snapshot_run_artifacts(cwd, rels, tmp_root)
         fetch_proc = _run(
             ["git", "fetch", "-q", "--depth", "1", remote, base],
             cwd=cwd,
@@ -298,7 +329,7 @@ def _resync_to_remote(cwd: Path, base: str, remote: str) -> dict[str, str]:
                 "aborting resync rather than resetting to stale FETCH_HEAD"
             )
         _run(["git", "reset", "-q", "--hard", "FETCH_HEAD"], cwd=cwd)
-        _restore_allowed_paths(cwd, tmp_root, snapshot)
+        _overlay_run_artifacts(cwd, snapshot)
         return snapshot
 
 
@@ -334,6 +365,29 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
+    # ANCESTOR — refuse unless HEAD is already on origin/<base>'s history.
+    # A workflow_dispatch from a PR branch must never fast-forward main to
+    # a feature tip. Fetch first so the check is against a fresh tip.
+    fetch_base = _run(["git", "fetch", "-q", args.remote, args.base], cwd=cwd)
+    if fetch_base.returncode != 0:
+        _warning(
+            "debt-maturity-drip",
+            f"git fetch {args.remote} {args.base} failed; refusing to push "
+            "(cache goes stale, not wrong)",
+        )
+        return 0
+    ancestor = _run(
+        ["git", "merge-base", "--is-ancestor", "HEAD", f"{args.remote}/{args.base}"],
+        cwd=cwd,
+    )
+    if ancestor.returncode != 0:
+        _warning(
+            "debt-maturity-drip",
+            f"HEAD is not an ancestor of {args.remote}/{args.base}; refusing to push "
+            "(cache goes stale, not wrong)",
+        )
+        return 0
+
     # STAGE — never an unfiltered add, never a directory-wide add. A modify outside
     # ALLOWED_PATHS must remain unstaged.
     existing = _existing_allowed_paths(cwd)
@@ -362,10 +416,15 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
+    # Capture the staged list BEFORE committing — after commit the index is
+    # empty and a post-commit ``_staged_files`` count would report 0.
+    artifacts = _staged_files(cwd)
+    staged = len(artifacts)
+
     if args.dry_run:
         _notice(
             "debt-maturity-drip",
-            f"dry-run: would commit {len(_staged_files(cwd))} files ({staged_mib:.1f} MiB)",
+            f"dry-run: would commit {staged} files ({staged_mib:.1f} MiB)",
         )
         return 0
 
@@ -378,13 +437,27 @@ def main(argv: list[str] | None = None) -> int:
         _warning("debt-maturity-drip", "commit refused; nothing pushed")
         return 0
 
-    # Count staged files BEFORE the push so the success notice reports the real
-    # count (the index may change between the push and the next _staged_files call).
-    staged = len(_staged_files(cwd))
+    # PATH-SCOPE — the persist commit's tree-vs-parent must be ⊆ ALLOWED_PATHS
+    # (computed here, not only in the workflow YAML) before any push.
+    bad = _disallowed_commit_paths(cwd)
+    if bad is None:
+        _warning(
+            "debt-maturity-drip",
+            "cannot compute persist commit path-scope (HEAD^ missing); refusing to push "
+            "(cache goes stale, not wrong)",
+        )
+        return 0
+    if bad:
+        _warning(
+            "debt-maturity-drip",
+            f"blocked path in persist commit: {bad[0]}; refusing to push "
+            "(cache goes stale, not wrong)",
+        )
+        return 0
 
     # PUSH — origin/main moves every few minutes under [skip ci] data commits,
     # so a single-shot push regularly sees a non-fast-forward; retry the
-    # snapshot-fetch-reset-restore cycle up to --attempts times.
+    # fetch → re-checkout → overlay cycle up to --attempts times.
     #
     # MAJOR-1: classify every outcome.  push_error (auth / hook / GH013) is a
     # hard refusal — exit immediately without retry.  non_fast_forward and
@@ -410,20 +483,21 @@ def main(argv: list[str] | None = None) -> int:
         # non_fast_forward or ref_lock — retryable.
         if attempt >= max(args.attempts, 0):
             break
-        # Re-checkout cycle, then the loop re-runs EMPTY/CEILING/COMMIT/PUSH
-        # against the refreshed tree.
+        # Re-checkout onto the remote tip, overlay THIS RUN's artifacts only.
         try:
-            _resync_to_remote(cwd, args.base, args.remote)
-        except Exception as exc:  # pragma: no cover — defensive guard around shutil
+            _resync_to_remote(cwd, args.base, args.remote, artifacts)
+        except Exception as exc:
             _warning("debt-maturity-drip", f"re-checkout failed: {exc!r}")
-            break
-        # Re-stage the two allowed paths after the reset restored them.
+            return 0
+        # Re-stage the two allowed paths after the overlay.
         existing = _existing_allowed_paths(cwd)
         for rel in existing:
             _run(["git", "add", "--", rel], cwd=cwd)
         if _diff_is_empty(cwd):
             _notice("debt-maturity-drip", "no changes to persist after re-checkout")
             return 0
+        artifacts = _staged_files(cwd)
+        staged = len(artifacts)
         staged_bytes = _staged_blob_size_bytes(cwd)
         staged_mib = staged_bytes / (1024 * 1024)
         if staged_mib > args.max_mb:
@@ -436,6 +510,15 @@ def main(argv: list[str] | None = None) -> int:
         if not _commit(cwd, subject):
             _run(["git", "reset", "-q"], cwd=cwd)
             _warning("debt-maturity-drip", f"commit refused on attempt {attempt + 1}; nothing pushed")
+            return 0
+        bad = _disallowed_commit_paths(cwd)
+        if bad is None or bad:
+            detail = "HEAD^ missing" if bad is None else bad[0]
+            _warning(
+                "debt-maturity-drip",
+                f"blocked path in persist commit: {detail}; refusing to push "
+                "(cache goes stale, not wrong)",
+            )
             return 0
 
     # MAJOR-1: terminal warning names the class instead of always saying "moved under N attempts".

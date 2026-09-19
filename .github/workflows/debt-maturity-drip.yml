@@ -72,30 +72,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 1
+          # fetch-depth: 2 so HEAD^ exists. fetch-depth: 1 made
+          # `git diff --name-only HEAD^..HEAD` a no-op (missing parent).
+          fetch-depth: 2
 
       - name: verify HEAD is a descendant of origin/main (path-scope guard)
         run: |
-          git fetch origin main --depth 1
+          git fetch origin main --depth 2
           if ! git merge-base --is-ancestor HEAD origin/main; then
             echo "::error::HEAD ($GITHUB_SHA) is not a descendant of origin/main — refusing to push"
             echo "::error::This workflow may only push commits that are already on main's history"
             exit 1
           fi
           echo "merge-base check passed: HEAD is on main's history"
-          # Also assert the tree diff is a subset of the allowed paths.
-          # We only staged two specific paths; verify nothing else changed.
-          DIFF=$(git diff --name-only HEAD^..HEAD || true)
-          for f in $DIFF; do
-            case "$f" in
-              data/debt_maturity/cache/*|data/edgar/statements.parquet) ;;
-              *)
-                echo "::error::Blocked: commit contains non-allowed path: $f"
-                exit 1
-                ;;
-            esac
-          done
-          echo "path-scope assertion passed: commit only touches allowed paths"
+          # Path-scope of the persist commit is enforced in the helper
+          # (git diff --name-only HEAD^..HEAD ⊆
+          #  data/debt_maturity/cache/* | data/edgar/statements.parquet)
+          # BEFORE push. Do not apply that check to whatever happens to
+          # be origin/main's tip — that would fail every non-drip night.
 
       - name: python 3.12 (Homebrew venv — self-hosted runner)
         run: |
@@ -121,3 +115,25 @@ jobs:
         env:
           DEBT_MATURITY_DRIP_PUSH: ${{ github.event.inputs.push || '1' }}
         run: python -m scripts.debt_maturity_drip_push --base main
+
+      - name: assert persist commit path-scope
+        run: |
+          subj=$(git log -1 --format=%s)
+          case "$subj" in
+            "debt-maturity-drip: persist"*)
+              DIFF=$(git diff --name-only HEAD^..HEAD)
+              for f in $DIFF; do
+                case "$f" in
+                  data/debt_maturity/cache/*|data/edgar/statements.parquet) ;;
+                  *)
+                    echo "::error::Blocked: commit contains non-allowed path: $f"
+                    exit 1
+                    ;;
+                esac
+              done
+              echo "path-scope assertion passed: persist commit only touches allowed paths"
+              ;;
+            *)
+              echo "HEAD is not a persist commit; path-scope skipped"
+              ;;
+          esac
