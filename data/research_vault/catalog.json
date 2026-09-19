@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T19:26:45.595647+00:00",
-  "count": 2449,
+  "generated_at": "2026-09-19T19:41:45.748898+00:00",
+  "count": 2450,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1574,6 +1574,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 17,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jotuhqbtf8r-606bd4",
+      "title": "Japan Economic Flash Continue to Expect Next Rate Hike in January Next Year",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:27Z",
+      "summary_points": [
+        "Policy Phase Change & Hike Timing: BOJ raised policy rate to 1.25% (25bp) via 7-2 vote, signaling shift to anchor prices at 2% target; next hike expected Jan 2027 (avoiding Dec 2026 due to fiscal calendar), but accelerated if yen depreciation risks materialize.",
+        "Key Acceleration Trigger: BOJ will not hike earlier unless inflation exceeds target (citing 2022-23 US/Europe as reference), with rapid yen depreciation posing the primary near-term risk to delay.",
+        "Critical Monitoring Risks: BOJ prioritizes tracking Middle East geopolitics, AI-driven economic shifts, exchange rate volatility, wage trends (Shunto negotiations), and financial conditions (rates, lending, asset prices) as rates rise."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
