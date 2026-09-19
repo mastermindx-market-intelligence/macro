@@ -162,6 +162,10 @@ def test_perfect_grounded_output_scores_all_available_dimensions():
     assert result["overall_score"] == 1.0
     assert all(value in (1.0, None) for value in result["metrics"].values())
     assert result["counts"]["matched_claims"] == 4
+    assert result["counts"]["expected_thesis_support"] == 1
+    assert result["counts"]["matched_thesis_support"] == 1
+    assert result["counts"]["direction_expected"] == 1
+    assert result["counts"]["direction_correct"] == 1
     assert result["provenance_state"] == "operator_label_only"
     assert len(result["gold_contract_sha256"]) == 64
 
@@ -191,6 +195,8 @@ def test_invalid_output_fails_closed_and_receipt_contains_no_source_text():
     assert result["metrics"]["validity"] == 0.0
     assert result["overall_score"] == 0.0
     assert result["counts"]["matched_claims"] == 0
+    assert result["counts"]["matched_thesis_support"] == 0
+    assert result["counts"]["direction_correct"] == 0
     assert Q0 not in serialized
     assert Q1 not in serialized
     assert BODY not in serialized
@@ -333,3 +339,47 @@ def test_aggregate_refuses_different_gold_contract_for_same_source_and_prompt():
         assert "gold contract differs" in str(exc)
     else:
         raise AssertionError("different private gold must never produce a ranking")
+
+
+def test_aggregate_refuses_metric_tampering_even_when_overall_is_recomputed():
+    first = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    second = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-b",
+    )
+    second["metrics"]["claim_recall"] = 0.5
+    present = [
+        float(value)
+        for value in second["metrics"].values()
+        if value is not None
+    ]
+    second["overall_score"] = round(sum(present) / len(present), 6)
+    try:
+        aggregate_results([first, second])
+    except ValueError as exc:
+        assert "metrics disagree with counts/state" in str(exc)
+    else:
+        raise AssertionError("tampered metric must fail even with matching overall")
+
+
+def test_invalid_output_cannot_retain_matched_credit():
+    result = score_raw_output(
+        _case(),
+        BODY,
+        "invalid",
+        candidate_label="broken-model",
+    )
+    result["counts"]["matched_claims"] = 1
+    try:
+        aggregate_results([result])
+    except ValueError as exc:
+        assert "invalid benchmark output cannot retain matched credit" in str(exc)
+    else:
+        raise AssertionError("invalid output cannot keep matched benchmark credit")
