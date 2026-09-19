@@ -64,6 +64,7 @@ from engine.entry_radar import challengers as ch
 from engine.entry_radar import four_hour as fh
 from engine.entry_radar import live_eval as le
 from engine.entry_radar import live_ledger as ll
+from engine.entry_radar import minute_resolution as mr
 from engine.entry_radar import vendor_minutes as vm
 from engine.session_digest import is_early_close, session_window_et
 from tests.test_entry_radar_w4_pack import (
@@ -956,3 +957,229 @@ def test_W4R_H4_the_fingerprint_moves_with_the_ADJUSTED_CLOSE_and_nothing_else()
     missing = ll.session_at_offset(AS_OF, -5000)
     assert le.substrate_fingerprint(daily, missing) is None, \
         "a session outside the substrate must be UNCHECKABLE, never a false match"
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 — bounded minute ambiguity resolution, no new data plane
+# ---------------------------------------------------------------------------
+
+def _tti_minute(start: datetime, *, o: float = 100.0, h: float = 100.2,
+                l: float = 99.8, c: float = 100.0, v: float = 100.0) -> ch.MinuteBar:
+    return ch.MinuteBar(start=start, open=o, high=h, low=l, close=c, volume=v)
+
+
+def _tti_tape(start: datetime, overrides: dict[int, dict] | None = None,
+              *, basis: str = ch.BASIS_ADJUSTED) -> ch.SessionTape:
+    rows = []
+    overrides = overrides or {}
+    for i in range(5):
+        kw = {"o": 100.0, "h": 100.2, "l": 99.8, "c": 100.0, "v": 100.0}
+        kw.update(overrides.get(i, {}))
+        rows.append(_tti_minute(start + timedelta(minutes=i), **kw))
+    return ch.SessionTape(session=start.date(), minutes=tuple(rows),
+                          price_basis=basis, vintage="synthetic-minute-resolution")
+
+
+def test_TTID1_target_first_is_resolved_from_complete_positive_volume_minutes():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"h": 101.2}, 3: {"l": 98.8}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "target_first"
+    assert got.event_minute_start == start + timedelta(minutes=1)
+    assert got.minutes_inspected == 2
+    assert got.complete_window is True
+
+
+def test_TTID1_adverse_first_is_resolved_before_a_later_target():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {0: {"l": 98.9}, 4: {"h": 101.1}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "adverse_first"
+    assert got.event_minute_start == start
+    assert got.minutes_inspected == 1
+
+
+def test_TTID1_open_beyond_one_barrier_resolves_same_minute_range_order():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {2: {"o": 101.1, "h": 101.3, "l": 98.8, "c": 99.5}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "target_first"
+    assert got.reason == "minute_open_at_or_beyond_target"
+
+
+def test_TTID1_same_minute_both_touch_is_preserved_when_open_is_between_barriers():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {2: {"o": 100.0, "h": 101.2, "l": 98.8, "c": 100.1}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "same_minute_ambiguous"
+    assert got.event_minute_start == start + timedelta(minutes=2)
+
+
+def test_TTID1_missing_minute_refuses_to_resolve_even_when_later_hit_is_visible():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {4: {"h": 101.2}})
+    tape = ch.SessionTape(session=tape.session, minutes=tape.minutes[:2] + tape.minutes[3:],
+                          price_basis=tape.price_basis, vintage=tape.vintage)
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "incomplete_minute_window"
+    assert got.complete_window is False
+
+
+def test_TTID1_zero_volume_minute_refuses_price_order_evidence():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"v": 0.0}, 4: {"h": 101.2}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "nonpositive_volume_minute"
+
+
+def test_TTID1_wrong_basis_and_malformed_order_refuse_instead_of_sorting_or_guessing():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    wrong = _tti_tape(start, basis=ch.BASIS_RAW)
+    got = mr.resolve_long_barrier_order(wrong, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "price_basis_mismatch")
+
+    good = _tti_tape(start)
+    unordered = ch.SessionTape(session=good.session,
+                               minutes=(good.minutes[1], good.minutes[0], *good.minutes[2:]),
+                               price_basis=good.price_basis, vintage=good.vintage)
+    got2 = mr.resolve_long_barrier_order(unordered, interval_start=start,
+                                         interval_end=start + timedelta(minutes=5),
+                                         entry=100.0, target=101.0, adverse=99.0)
+    assert (got2.status, got2.reason) == ("unavailable", "unordered_or_duplicate_minutes")
+
+
+def test_TTID1_neither_and_provenance_are_explicit_on_a_complete_window():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "neither"
+    assert got.minutes_inspected == 5
+    assert got.source_vintage == "synthetic-minute-resolution"
+    assert got.price_basis == ch.BASIS_ADJUSTED
+    assert got.to_dict()["authority"] == "research_resolution_only"
+
+
+
+def test_TTID1_open_beyond_adverse_resolves_adverse_before_same_minute_target():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {2: {"o": 98.9, "h": 101.2, "l": 98.7, "c": 100.0}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "adverse_first"
+    assert got.reason == "minute_open_at_or_beyond_adverse"
+
+
+def test_TTID1_invalid_ohlc_is_unavailable_not_repaired():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"o": 100.0, "h": 99.5, "l": 99.0, "c": 100.0}})
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "invalid_minute_ohlcv")
+
+
+def test_TTID1_caller_contract_refuses_wrong_window_and_barrier_order():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    with pytest.raises(mr.MinuteResolutionError, match="exact_five_minute"):
+        mr.resolve_long_barrier_order(tape, interval_start=start,
+                                      interval_end=start + timedelta(minutes=4),
+                                      entry=100.0, target=101.0, adverse=99.0)
+    with pytest.raises(mr.MinuteResolutionError, match="long_barrier_order"):
+        mr.resolve_long_barrier_order(tape, interval_start=start,
+                                      interval_end=start + timedelta(minutes=5),
+                                      entry=100.0, target=99.0, adverse=101.0)
+    off_grid = start + timedelta(minutes=1)
+    off_grid_tape = _tti_tape(off_grid)
+    with pytest.raises(mr.MinuteResolutionError, match="session_five_minute_grid"):
+        mr.resolve_long_barrier_order(off_grid_tape, interval_start=off_grid,
+                                      interval_end=off_grid + timedelta(minutes=5),
+                                      entry=100.0, target=101.0, adverse=99.0)
+
+
+def test_TTID1_interval_outside_the_tapes_session_is_unavailable():
+    start = datetime(2026, 9, 17, 22, 0, tzinfo=timezone.utc)  # 18:00 ET, post-RTH
+    tape = _tti_tape(start)
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "interval_outside_tape_session")
+
+
+
+def test_TTID1_resolver_is_pure_and_cannot_fetch_write_or_emit_events():
+    path = RADAR_DIR / "minute_resolution.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    imports: set[str] = set()
+    calls: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imports.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            imports.add(node.module or "")
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                calls.add(node.func.id)
+            elif isinstance(node.func, ast.Attribute):
+                calls.add(node.func.attr)
+    forbidden_import_roots = {
+        "requests", "httpx", "urllib", "urllib3", "socket", "boto3", "aiohttp",
+        "engine.entry_radar.vendor_minutes", "engine.entry_radar.entry_events",
+        "engine.entry_radar.live_ledger", "engine.entry_radar.spool",
+    }
+    assert not any(i in forbidden_import_roots for i in imports), imports
+    assert not ({"open", "write", "write_text", "write_bytes", "replace", "unlink"} & calls)
+
+
+
+def test_TTID1_missing_source_vintage_refuses_a_resolution_claim():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start)
+    tape = ch.SessionTape(session=tape.session, minutes=tape.minutes,
+                          price_basis=tape.price_basis, vintage="")
+    got = mr.resolve_long_barrier_order(tape, interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    assert (got.status, got.reason) == ("unavailable", "source_vintage_missing")
+
+
+def test_TTID1_resolution_never_claims_historical_availability_from_session_tape():
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    got = mr.resolve_long_barrier_order(_tti_tape(start), interval_start=start,
+                                        interval_end=start + timedelta(minutes=5),
+                                        entry=100.0, target=101.0, adverse=99.0)
+    payload = got.to_dict()
+    assert payload["source_clock_proven"] is False
+    assert payload["source_evidence_class"] == "availability_time_unproven"
+
+
+def test_TTID1_authority_and_clock_class_are_not_caller_overridable():
+    fields = mr.MinuteResolution.__dataclass_fields__
+    assert fields["authority"].init is False
+    assert fields["source_clock_proven"].init is False
+    assert fields["source_evidence_class"].init is False
+
+
+def test_TTID1_adjusted_basis_is_a_fixed_contract_not_a_caller_override():
+    import inspect
+    sig = inspect.signature(mr.resolve_long_barrier_order)
+    assert "expected_price_basis" not in sig.parameters
