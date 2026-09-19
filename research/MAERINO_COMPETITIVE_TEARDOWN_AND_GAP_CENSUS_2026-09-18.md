@@ -239,26 +239,41 @@ surfaces. The separate attested historical parity lane is not complete.
 This exceeds Maerino's public prototype on provenance and current source governance,
 but does not yet make the Maerino agentic follow-up loop automatic.
 
-### 8. Research Factory
+### 8. Follow-up research execution boundary
 
-**Classification: substantial implementation exists; direct earnings-event intake
-bridge is NOT_BUILT.**
+**Classification: interactive cited research path exists; autonomous event-triggered
+forensic investigation loop is NOT_PROVEN / owner boundary unresolved.**
 
-Current main contains the existing `engine/research_factory/` owner with ledgers,
-state, source adapters, challenger/review machinery, monitoring and probes.
+Current Company Event Intelligence authority already defines the user-facing path:
+Company Intelligence / IR Intelligence owns the event workspace, and **Ask Mastermind**
+handles cited event and cross-quarter questions through the existing Brain. The
+Company Event spine assigns Neural Web / Brain the job of retrieving bounded context
+and exact evidence on demand. This is the lawful interactive research surface.
 
-Search of current main found no direct:
-- `event_workspace.v1 -> Research Factory` join;
-- `qa_exchange.v1 -> Research Factory` join.
+The existing `engine/research_factory/` is **not** a generic document-investigation
+queue. Its canonical candidate/state contracts are trial/experimental research:
+Oracle/Cortex/alpha/species/external-idea and other preregistered candidate families,
+with trial accounting, screening/challenge, human-review and paper/promotion states.
+A company-event question such as "compare this accounting choice with two peers" does
+not automatically satisfy that contract.
 
-Therefore the Maerino-relevant residual is not "build an autonomous research engine."
-It is:
+Search of current main found no production path that autonomously does:
 
-> take a receipt-bound company-event anomaly/question, submit a bounded candidate to
-> the existing Research Factory / Fundamental Forensics sources, execute under current
-> research governance, and return receipted findings to the event/company context.
+`event_workspace.v1 / qa_exchange.v1 -> durable forensic investigation -> bounded
+company/peer filing retrieval -> reviewed receipted finding -> event context return`.
 
-No second hypothesis store, queue, grader or scheduler is permitted.
+Therefore **do not route this gap to Research Factory merely because its name contains
+"research."** The composition boundary remains to be adjudicated among existing owners:
+
+- Earnings / Company Event Intelligence: event truth and the originating question;
+- Mastermind Brain / Research OS: interactive cited research experience;
+- Fundamental Forensics / FIF: filing and financial-fact evidence;
+- Executive/agent orchestration only if/when a durable autonomous investigation job
+  is explicitly chartered.
+
+Research Factory becomes relevant only if a returned investigation yields a separate
+falsifiable investable hypothesis that legitimately fits its candidate/trial contract.
+No second research queue, hypothesis store, grader or scheduler is permitted.
 
 ### 9. Cross-company economic read-through
 
@@ -281,7 +296,7 @@ new Maerino-parity component.
 | "Maerino is broader on transcripts" | Mastermind production Wire breadth and weekly receipts | Not demonstrated |
 | "Mastermind lacks sector-specific KPIs" | `IssuerProfile` + four homebuilder extractors | False architecturally; breadth remains limited |
 | "Mastermind already has broad KPI convergence" | FIF-7 is todo | False |
-| "Research Factory solves Maerino follow-up already" | Factory exists but no event-workspace intake bridge found | Partial; missing composition |
+| "Research Factory solves Maerino follow-up already" | Factory candidate schema is alpha/trial-oriented, while Company Intelligence already routes cited questions to Brain | False; autonomous forensic composition remains unproven |
 | "Current macro publication is healthy" | latest FOMC/claims degraded on public feed | False at current edge; #7241 owns repair |
 | "Economic read-through is ready" | K3-D current state says not built | False |
 
@@ -329,27 +344,34 @@ Target output:
 - correction rebuild behavior;
 - typed absence instead of guessed completeness.
 
-### Gap D — event-triggered research escalation
+### Gap D — event-triggered forensic follow-up
 
-Owners:
-- Earnings Intelligence: event/question source object;
-- Research Factory: research lifecycle;
-- Fundamental Forensics/FIF: filing and financial-fact evidence;
-- no new shared store.
+**Owner: unresolved composition boundary; do not assign to Research Factory by name.**
 
-Target vertical:
+Known owner pieces:
+- Earnings / Company Event Intelligence owns the receipt-bound event/question context;
+- Brain / Mastermind Research OS already owns interactive cited event research;
+- Fundamental Forensics/FIF owns filing and financial-fact evidence;
+- Research Factory remains reserved for candidates that satisfy its experimental/trial
+  contract, not generic document investigations.
+
+Target capability:
 ```text
 receipt-bound event fact / Q&A claim
- -> deterministic anomaly or open-question trigger
- -> existing Research Factory candidate
- -> bounded source request
- -> company/peer filing investigation
+ -> open question / anomaly
+ -> bounded company + peer evidence request
+ -> cited filing/event investigation
  -> reviewed receipted finding
- -> event/company context projection
+ -> event/company context return
 ```
 
-First proof should be one real event with one genuinely useful follow-up question and
-one returned finding; infrastructure-only completion is insufficient.
+The next architecture action is **owner/composition adjudication**, not implementation.
+It must either reuse an existing durable deep-investigation/job carrier or explicitly
+extend the current Research OS/agent execution boundary without creating a second
+queue/store/control plane. First capability proof should be one real event, one useful
+follow-up question, one bounded peer/company investigation, and one returned receipted
+finding visible in the original research context. Infrastructure-only closure is not
+accepted.
 
 ### Gap E — economic propagation / read-through
 
@@ -373,9 +395,10 @@ No new Maerino program should be created.
    reopening AAPL.
 2. Keep **FIF-3 -> FIF-7** dependency honest; when FIF-7 is admissible, use Maerino as
    product pressure for fast broad KPI/guidance coverage.
-3. Design the smallest **event -> existing Research Factory** intake/return adapter,
-   but do not implement it by creating a second queue/store or by racing active owner
-   paths.
+3. Adjudicate the **event -> autonomous forensic follow-up** composition boundary.
+   Reuse Brain/Research OS and FIF evidence where they already own the job; do not
+   force document investigations into Research Factory's alpha/trial candidate model
+   or create a second queue/store/control plane.
 4. Let **K3-D** own later cross-company read-through.
 5. Let **#7241** finish the current macro recovery on its existing carrier.
 
@@ -424,5 +447,7 @@ Mastermind:
 - `engine/company_intelligence/event_workspace_build.py`
 - `research/earnings_intelligence/E0_E1_E2_CONTRACT_FREEZE.md`
 - `research/economic_propagation/D0_THREE_GRAPH_SEPARATION_MAP.md`
+- `research/COMPANY_EVENT_INTELLIGENCE_SPINE_AND_PREMIUM_IR_SUITE_BUILD_DOCKET_2026-08-01.md`
+- `engine/research_factory/schema.py`
 - public production: `/stocks/earnings/`, `/api/event-workspace/{ticker}`,
   `/live/release_publications.json`
