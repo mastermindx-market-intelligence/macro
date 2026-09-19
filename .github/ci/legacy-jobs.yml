@@ -2052,6 +2052,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -4929,6 +4931,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml
+      - name: provider workload guard (no developer subscriptions in product inference)
+        run: python -m pytest tests/test_provider_workload_policy.py -q
       - name: build check (committed outputs match YAML regeneration byte-for-byte)
         run: python scripts/build_ruling_graph.py --check
       - name: conflict checker (hard fail on new FDR family or privacy boundary violations)
@@ -6088,7 +6092,7 @@ jobs:
         # writes to was dark too, which is how _capture_usage could bill free
         # Ollama calls to the Claude subscription lane unnoticed.  It guards the
         # same waterfall as the files beside it — keep it in this step.
-        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py -q
+        run: python -m pytest tests/test_codex_provider.py tests/test_llm_auth.py tests/test_provider_workload_policy.py tests/test_key_pool.py tests/test_ollama_provider.py tests/test_ai_costs.py tests/test_provider_health.py tests/test_provider_capacity.py -q
       - name: V10 key economy suite (enabled-set, header capture, usage snapshot)
         run: python -m pytest tests/test_key_pool_economy.py -q
       - name: cortex provider routing + tool loop suite
@@ -7400,6 +7404,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -8010,6 +8016,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -11303,6 +11311,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -13368,6 +13378,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      # Shared llm_auth workload guard: retain transitive import coverage.
+      - "engine/provider_workload_policy.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
