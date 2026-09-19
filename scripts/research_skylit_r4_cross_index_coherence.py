@@ -76,9 +76,29 @@ def _validate_states(
         frame = state.get("frame")
         if not isinstance(frame, pd.DataFrame) or frame.empty:
             raise R4Refusal(f"qualified R2 frame unavailable for {root}")
-        clocks.add(str(state.get("decision_eligible_not_before_session")))
-        tiers.add(str(state.get("position_tier", r2.POSITION_TIER)))
-        units.add(str(state.get("exposure_unit", r2.EXPOSURE_UNIT)))
+        declared_root = str(state.get("root", "")).upper()
+        if declared_root != root:
+            raise R4Refusal(
+                f"state/root identity mismatch: key={root} state={declared_root or '<missing>'}"
+            )
+        frame_roots = set(frame["root"].astype(str).str.upper()) if "root" in frame.columns else set()
+        if frame_roots != {root}:
+            raise R4Refusal(
+                f"frame/root identity mismatch for {root}: {sorted(frame_roots)}"
+            )
+
+        clock = state.get("decision_eligible_not_before_session")
+        tier = state.get("position_tier", r2.POSITION_TIER)
+        unit = state.get("exposure_unit", r2.EXPOSURE_UNIT)
+        if not isinstance(clock, str) or not clock.strip():
+            raise R4Refusal(f"missing decision-eligible clock for {root}")
+        if not isinstance(tier, str) or not tier.strip():
+            raise R4Refusal(f"missing position tier for {root}")
+        if not isinstance(unit, str) or not unit.strip():
+            raise R4Refusal(f"missing exposure unit for {root}")
+        clocks.add(clock.strip())
+        tiers.add(tier.strip())
+        units.add(unit.strip())
 
     if len(clocks) != 1:
         raise R4Refusal(f"cross-root decision clocks are not aligned: {sorted(clocks)}")
