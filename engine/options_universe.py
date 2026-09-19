@@ -54,6 +54,33 @@ def baskets_universe() -> list[str]:
     return list(seen)
 
 
+def gex_symbols_uncapped(cfg: dict | None = None) -> list[str]:
+    """Resolve the full existing options roster before the expensive-fetch cap.
+
+    This is the SAME anchor + active-basket membership identity used by ``gex_symbols``.
+    It carries no vendor data and grants no new collection authority; consumers that can
+    operate cheaply from an already-existing source (for example the moves-only ThetaData
+    snapshot fallback) may use the full roster without widening the capped raw-chain/GEX lane.
+    """
+    if cfg is None:
+        cfg = (config.load().get("polygon", {}) or {}).get("gex", {}) or {}
+    anchors = list(cfg.get("symbols") or DEFAULT_ANCHORS)
+    out: list[str] = []
+    seen: set[str] = set()
+    for t in anchors:
+        u = str(t).upper()
+        if u not in seen:
+            seen.add(u)
+            out.append(u)
+    if cfg.get("include_baskets", False):
+        for t in baskets_universe():
+            u = str(t).upper()
+            if u not in seen:
+                seen.add(u)
+                out.append(u)
+    return out
+
+
 def gex_symbols(cfg: dict | None = None) -> list[str]:
     """The effective options universe = config anchors (`polygon.gex.symbols`, or the
     DEFAULT_ANCHORS) optionally unioned with the baskets universe (`include_baskets`), deduped
@@ -62,17 +89,15 @@ def gex_symbols(cfg: dict | None = None) -> list[str]:
     if cfg is None:
         cfg = (config.load().get("polygon", {}) or {}).get("gex", {}) or {}
     anchors = list(cfg.get("symbols") or DEFAULT_ANCHORS)
-    out: list[str] = []
-    seen: set[str] = set()
-    for t in anchors:                          # anchors first — they keep their slots under the cap
+    # Count the deduped anchor prefix exactly as before so a cap can never drop one.
+    anchor_seen: set[str] = set()
+    n_anchors = 0
+    for t in anchors:
         u = str(t).upper()
-        if u not in seen:
-            seen.add(u); out.append(u)
-    n_anchors = len(out)
-    if cfg.get("include_baskets", False):
-        for t in baskets_universe():
-            if t not in seen:
-                seen.add(t); out.append(t)
+        if u not in anchor_seen:
+            anchor_seen.add(u)
+            n_anchors += 1
+    out = gex_symbols_uncapped(cfg)
     cap = int(cfg.get("max_underlyings", 400) or 400)
     capped = out[:max(cap, n_anchors)]         # never let the cap drop an anchor
     if len(out) > len(capped):

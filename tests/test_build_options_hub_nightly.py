@@ -22,6 +22,8 @@ import json
 
 import pandas as pd
 
+import scripts.build_options_hub_nightly as hub_builder
+
 from scripts.build_options_hub_nightly import (
     _attach_gex_history,
     _nulled_nonfinite,
@@ -236,6 +238,8 @@ from scripts.build_options_hub_nightly import (  # noqa: E402
     resolve_moves_inputs,
     _moves_publishable,
     _build_moves_payload,
+    _moves_only_coverage_roots,
+    _publish_moves_only_coverage,
 )
 from engine.moves_engine import moves_payload  # noqa: E402
 
@@ -405,3 +409,115 @@ def test_moves_publishable_rejects_cross_root_or_regressing_session():
     assert _moves_publishable(p, "INTC", "2026-09-16")
     malformed = {**p, "asof": "9999-99-99"}
     assert not _moves_publishable(malformed, "INTC", "2026-09-17")
+
+
+# ── MOVES breadth post-pass selection ─────────────────────────────────────────
+
+def test_moves_only_coverage_roots_add_uncapped_roster_without_repeating_primary_roots():
+    got = _moves_only_coverage_roots(
+        ["SPY", "INTC"],
+        roots_override=None,
+        date_override=None,
+        universe_roots=["SPY", "AAPL", "INTC", "BABA", "AAPL", "UBER"],
+    )
+    assert got == ["AAPL", "BABA", "UBER"]
+
+
+def test_moves_only_coverage_roots_skip_broadening_for_explicit_roots_or_historical_date():
+    universe = ["SPY", "AAPL", "INTC"]
+    assert _moves_only_coverage_roots(
+        ["SPY"], roots_override=["SPY"], date_override=None, universe_roots=universe,
+    ) == []
+    assert _moves_only_coverage_roots(
+        ["SPY"], roots_override=None, date_override="2026-09-17", universe_roots=universe,
+    ) == []
+
+
+def test_moves_only_coverage_roots_normalize_case_and_dedupe_roster():
+    got = _moves_only_coverage_roots(
+        ["spy"], roots_override=None, date_override=None,
+        universe_roots=["SPY", "aapl", "AAPL", "intc"],
+    )
+    assert got == ["AAPL", "INTC"]
+
+
+def test_moves_only_postpass_writes_and_uploads_only_moves_plane(monkeypatch, tmp_path):
+    builds = []
+    writes = []
+    uploads = []
+
+    def fake_build(root, asof, gex_payload, vol_payload, **kwargs):
+        builds.append((root, asof, gex_payload, vol_payload, kwargs.get("regime")))
+        return moves_payload(
+            root, asof, 100.0, 20.0, input_source="thetadata_snapshot",
+        )
+
+    def fake_write(path, payload):
+        writes.append((path.relative_to(tmp_path).as_posix(), payload["root"]))
+
+    def fake_upload(_s3, _bucket, path, key):
+        uploads.append((path.relative_to(tmp_path).as_posix(), key))
+        return True
+
+    monkeypatch.setattr(hub_builder, "_build_moves_payload", fake_build)
+    monkeypatch.setattr(hub_builder, "_write_json", fake_write)
+    monkeypatch.setattr(hub_builder, "_upload_r2", fake_upload)
+
+    result = _publish_moves_only_coverage(
+        ["AAPL", "BABA"],
+        asof="2026-09-17",
+        out_dir=tmp_path,
+        s3=object(),
+        bucket="bucket",
+        moves_grades_by_root={},
+        moves_learned_mult=None,
+        snapshot_asof_ceiling="2026-09-18",
+        max_workers=1,
+    )
+
+    assert builds == [
+        ("AAPL", "2026-09-17", {}, {}, None),
+        ("BABA", "2026-09-17", {}, {}, None),
+    ]
+    assert writes == [("moves/AAPL.json", "AAPL"), ("moves/BABA.json", "BABA")]
+    assert uploads == [
+        ("moves/AAPL.json", "options_hub/moves/AAPL.json"),
+        ("moves/BABA.json", "options_hub/moves/BABA.json"),
+    ]
+    assert result == {"requested": 2, "written": 2, "uploaded": 2, "failed": []}
+
+
+def test_moves_only_postpass_keeps_failed_builds_inert(monkeypatch, tmp_path):
+    def fake_build(root, *_args, **_kwargs):
+        if root == "BAD":
+            raise RuntimeError("boom")
+        return moves_payload(root, "2026-09-17", 100.0, 20.0, input_source="thetadata_snapshot")
+
+    monkeypatch.setattr(hub_builder, "_build_moves_payload", fake_build)
+    monkeypatch.setattr(hub_builder, "_write_json", lambda *_args, **_kwargs: None)
+
+    result = _publish_moves_only_coverage(
+        ["GOOD", "BAD"], asof="2026-09-17", out_dir=tmp_path,
+        s3=None, bucket="", moves_grades_by_root={}, moves_learned_mult=None,
+        max_workers=1,
+    )
+    assert result["requested"] == 2
+    assert result["written"] == 1
+    assert result["uploaded"] == 0
+    assert result["failed"] == ["BAD"]
+
+
+def test_moves_only_default_roster_includes_existing_gex_state_index_roots(monkeypatch, tmp_path):
+    from engine import options_universe
+
+    monkeypatch.setattr(options_universe, "gex_symbols_uncapped", lambda: ["SPY", "AAA"])
+    index_dir = tmp_path / "site" / "options_structure" / "gex_state"
+    index_dir.mkdir(parents=True)
+    (index_dir / "_index.json").write_text(json.dumps({
+        "schema": "options_structure.gex_state_index/v1",
+        "rows": {"NDX": {"asof": "2026-09-17"}, "GLD": {"asof": "2026-09-17"}},
+    }))
+    monkeypatch.setattr(hub_builder, "_REPO", tmp_path)
+    assert _moves_only_coverage_roots(
+        ["SPY"], roots_override=None, date_override=None,
+    ) == ["AAA", "NDX", "GLD"]

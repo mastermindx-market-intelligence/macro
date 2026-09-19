@@ -63,3 +63,20 @@ def test_graceful_when_membership_absent(monkeypatch, tmp_path):
     # with no baskets file, include_baskets just yields the anchors
     assert ou.gex_symbols({"symbols": ou.DEFAULT_ANCHORS, "include_baskets": True}) == \
         [s.upper() for s in ou.DEFAULT_ANCHORS]
+
+
+def test_uncapped_symbols_preserve_full_existing_roster_before_fetch_cap(monkeypatch):
+    monkeypatch.setattr(ou, "baskets_universe", lambda: ["AAA", "BBB", "AAA", "CCC"])
+    cfg = {
+        "symbols": ["spy", "QQQ"],
+        "include_baskets": True,
+        "max_underlyings": 3,
+    }
+    assert ou.gex_symbols(cfg) == ["SPY", "QQQ", "AAA"]
+    assert ou.gex_symbols_uncapped(cfg) == ["SPY", "QQQ", "AAA", "BBB", "CCC"]
+
+
+def test_uncapped_symbols_match_capped_when_no_cap_is_hit(monkeypatch):
+    monkeypatch.setattr(ou, "baskets_universe", lambda: ["AAA", "BBB"])
+    cfg = {"symbols": ["SPY"], "include_baskets": True, "max_underlyings": 50}
+    assert ou.gex_symbols_uncapped(cfg) == ou.gex_symbols(cfg) == ["SPY", "AAA", "BBB"]

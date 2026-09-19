@@ -839,6 +839,137 @@ def _build_moves_payload(
     return payload
 
 
+def _moves_only_coverage_roots(
+    primary_roots,
+    *,
+    roots_override=None,
+    date_override=None,
+    universe_roots=None,
+) -> list[str]:
+    """Return extra roster roots eligible for the natural-run moves-only post-pass.
+
+    The primary Options Hub loop remains the sole owner of vol/GEX/VEX/OI and its
+    aggregates. This selector widens ONLY ``moves/v1`` over the existing company options
+    roster. Explicit ``--roots`` commands stay exact, and explicit ``--date`` replays do
+    not consult current snapshots for historical sessions.
+    """
+    if roots_override or date_override:
+        return []
+    if universe_roots is None:
+        from engine.options_universe import gex_symbols_uncapped
+
+        # Start with the full company roster, then union the EXISTING gex_state index keys.
+        # The index contributes identity only (which Terminal roots already have structural
+        # levels); no Cboe-derived value crosses into moves/v1, whose data stays ThetaData-only.
+        universe_roots = list(gex_symbols_uncapped())
+        try:
+            index_path = _REPO / "site" / "options_structure" / "gex_state" / "_index.json"
+            index_doc = json.loads(index_path.read_text(encoding="utf-8"))
+            index_rows = index_doc.get("rows") if isinstance(index_doc, dict) else None
+            if isinstance(index_rows, dict):
+                universe_roots.extend(index_rows.keys())
+        except (OSError, ValueError, TypeError) as exc:
+            log.warning("options_hub_builder: gex_state roster index unavailable — %s", exc)
+
+    primary = {str(root).upper() for root in (primary_roots or [])}
+    out: list[str] = []
+    seen = set(primary)
+    for root in universe_roots or []:
+        u = str(root).upper()
+        if not u or u in seen:
+            continue
+        seen.add(u)
+        out.append(u)
+    return out
+
+
+def _publish_moves_only_coverage(
+    roots,
+    *,
+    asof: str,
+    out_dir: Path,
+    s3,
+    bucket: str,
+    moves_grades_by_root: dict,
+    moves_learned_mult: dict | None,
+    snapshot_asof_ceiling: str | None = None,
+    max_workers: int = 4,
+) -> dict:
+    """Build and publish ONLY ``moves/v1`` for roster roots outside the primary loop.
+
+    Snapshot work is bounded below ThetaData's measured eight-request ceiling. Network/source
+    resolution is parallel; file/R2 publication stays serial so this helper cannot create a
+    second publication owner or widen any GEX/OI aggregate. One root failure is inert to peers.
+    """
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for root in roots or []:
+        u = str(root).upper()
+        if not u or u in seen:
+            continue
+        seen.add(u)
+        ordered.append(u)
+    if not ordered:
+        return {"requested": 0, "written": 0, "uploaded": 0, "failed": []}
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _build_one(root: str):
+        heartbeat(f"moves-only {root}")
+        try:
+            payload = _build_moves_payload(
+                root, asof, {}, {},
+                calibration=per_ticker_calibration(
+                    moves_grades_by_root.get(root, []), ci_fn=_wilson_ci),
+                learned_band_mult=moves_learned_mult,
+                regime=None,
+                snapshot_asof_ceiling=snapshot_asof_ceiling,
+            )
+            return root, payload, None
+        except Exception as exc:  # noqa: BLE001 — one missing/bad root never blocks peers
+            return root, None, exc
+
+    workers = max(1, min(int(max_workers or 1), 4, len(ordered)))
+    if workers == 1:
+        built = [_build_one(root) for root in ordered]
+    else:
+        with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="moves-only") as executor:
+            built = list(executor.map(_build_one, ordered))
+
+    written = 0
+    uploaded = 0
+    failed: set[str] = set()
+    for root, payload, build_error in built:
+        if build_error is not None or payload is None:
+            failed.add(root)
+            log.warning("options_hub_builder: moves-only %s build failed — %s", root, build_error)
+            continue
+        try:
+            moves_path = out_dir / "moves" / f"{root}.json"
+            _write_json(moves_path, payload)
+            written += 1
+            if s3 and bucket and _moves_publishable(payload, root, asof):
+                if _upload_r2(s3, bucket, moves_path, f"{R2_PREFIX}moves/{root}.json"):
+                    uploaded += 1
+                else:
+                    failed.add(root)
+        except Exception as exc:  # noqa: BLE001 — publication remains inert per root
+            failed.add(root)
+            log.warning("options_hub_builder: moves-only %s publish failed — %s", root, exc)
+
+    failed_ordered = [root for root in ordered if root in failed]
+    log.info(
+        "options_hub_builder: moves-only coverage requested=%d written=%d uploaded=%d failed=%d",
+        len(ordered), written, uploaded, len(failed_ordered),
+    )
+    return {
+        "requested": len(ordered),
+        "written": written,
+        "uploaded": uploaded,
+        "failed": failed_ordered,
+    }
+
+
 # --------------------------------------------------------------------------- #
 # Completeness guard helper (pure — testable without main())
 # --------------------------------------------------------------------------- #
@@ -1625,16 +1756,49 @@ def main() -> None:
             oi_change_rows=list(_oi_change_rows),
         )
 
+    # ── moves-only breadth pass ───────────────────────────────────────────────
+    # The expensive primary loop remains capped to roots that have settled ThetaData
+    # store coverage. Expected move has a cheaper and independent source contract: one
+    # current spot+ATM-IV pair. Widen ONLY moves/v1 to the existing uncapped options
+    # roster, after every cross-root aggregate has already been finalized. Explicit
+    # --roots and historical --date invocations stay exact and never broaden here.
+    _moves_only_result = {"requested": 0, "written": 0, "uploaded": 0, "failed": []}
+    _moves_only_roots = _moves_only_coverage_roots(
+        roots, roots_override=args.roots, date_override=args.date,
+    )
+    if _moves_only_roots:
+        log.info(
+            "options_hub_builder: moves-only breadth pass over %d extra roster root(s)",
+            len(_moves_only_roots),
+        )
+        _moves_only_result = _publish_moves_only_coverage(
+            _moves_only_roots,
+            asof=asof,
+            out_dir=out_dir,
+            s3=s3,
+            bucket=bucket,
+            moves_grades_by_root=moves_grades_by_root,
+            moves_learned_mult=moves_learned_mult,
+        )
+
     # ── summary / completion sentinel ────────────────────────────────────────
     _total_roots = len(roots)
     _processed   = len(roots_ok) + len(roots_skipped) + len(roots_timeout)
-    _is_partial  = (roots_skipped or roots_timeout or _processed < _total_roots)
+    _is_partial  = bool(
+        roots_skipped
+        or roots_timeout
+        or _processed < _total_roots
+        or _moves_only_result["failed"]
+    )
 
     log.info(
         "options_hub_builder: COMPLETE asof=%s roots_ok=%d roots_skipped=%d "
-        "roots_timeout=%d roots_gex_guarded=%d total=%d partial=%s",
+        "roots_timeout=%d roots_gex_guarded=%d total=%d "
+        "moves_extra=%d/%d moves_failed=%d partial=%s",
         asof, len(roots_ok), len(roots_skipped), len(roots_timeout),
-        len(roots_gex_skipped), _total_roots, _is_partial,
+        len(roots_gex_skipped), _total_roots,
+        _moves_only_result["written"], _moves_only_result["requested"],
+        len(_moves_only_result["failed"]), _is_partial,
     )
     if roots_skipped:
         log.warning("options_hub_builder: error-skipped roots: %s", roots_skipped)
@@ -1644,6 +1808,11 @@ def main() -> None:
         log.warning(
             "options_hub_builder: GEX R2 upload suppressed (guard) for %d roots: %s",
             len(roots_gex_skipped), roots_gex_skipped,
+        )
+    if _moves_only_result["failed"]:
+        log.warning(
+            "options_hub_builder: moves-only coverage failed for %d roots: %s",
+            len(_moves_only_result["failed"]), _moves_only_result["failed"],
         )
 
     # ── run_status ───────────────────────────────────────────────────────────
@@ -1660,6 +1829,11 @@ def main() -> None:
             "roots_timeout":         len(roots_timeout),
             "roots_gex_guarded":     len(roots_gex_skipped),
             "roots_gex_guarded_list": roots_gex_skipped,
+            "moves_extra_requested":  _moves_only_result["requested"],
+            "moves_extra_written":    _moves_only_result["written"],
+            "moves_extra_uploaded":   _moves_only_result["uploaded"],
+            "moves_extra_failed":     len(_moves_only_result["failed"]),
+            "moves_extra_failed_list": _moves_only_result["failed"],
             # CONTRACT v2 object counts
             "context_json":          "ok" if (out_dir / "context.json").exists() else "missing",
             "asof":                  asof,
