@@ -1161,6 +1161,42 @@ def test_target_http_failure_writes_honest_miss_not_deleted_target_copy(monkeypa
     assert "no longer available" not in sentence.lower()
 
 
+def test_cli_warns_on_target_read_outage_without_private_content(monkeypatch, capsys):
+    client = FakeClient()
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: _briefing(as_of="2026-09-18"))
+    monkeypatch.setattr(
+        rb,
+        "read_subscriptions",
+        lambda cadence: rb.SubscriptionReadResult(rows=(_sub(run_date="2026-09-18"),)),
+    )
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda sub: rb.TargetReadResult(state="unavailable", error_class="http_503"),
+    )
+    monkeypatch.setattr(
+        rb,
+        "write_delivery",
+        lambda row, dry_run=False: client.write(row, dry_run=dry_run),
+    )
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+
+    rc = entry.main([
+        "--cadence",
+        "daily_after_us_close",
+        "--run-date",
+        "2026-09-18",
+    ])
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "::warning title=recurring-briefs-target-read-unavailable::" in out
+    assert "1 target read(s) unavailable" in out
+    assert USER_ID not in out
+    assert THESIS_ID not in out
+    assert SUB_ID[:8] not in out
+
+
 def test_read_target_http_failure_is_typed_unavailable(monkeypatch):
     monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
 

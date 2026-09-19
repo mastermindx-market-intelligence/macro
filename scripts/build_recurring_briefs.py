@@ -101,6 +101,13 @@ def main(argv: list[str] | None = None) -> int:
             f"no target objects were read and no rows were written",
             flush=True,
         )
+    elif result.read_unavailable > 0:
+        print(
+            f"::warning title=recurring-briefs-target-read-unavailable::"
+            f"{result.read_unavailable} target read(s) unavailable; "
+            f"honest degraded rows written without inferring deletion",
+            flush=True,
+        )
 
     # H7: dry-run prints aggregate counts plus one privacy-safe slot/state
     # line per planned row. Writes remain off (frozen-spec item 2).
