@@ -3885,6 +3885,96 @@ def test_financial_scenario_schema_nested_types_are_isolated():
         field_types.pop()
 
 
+@pytest.mark.parametrize("trapping", [False, True])
+def test_financial_bridge_independent_of_ambient_exponent_and_traps(tmp_path, trapping):
+    from decimal import localcontext, ROUND_HALF_EVEN
+    case = _financial_bridge_case()
+    for period in ("prior", "current"):
+        case[period].update(revenue=20, gross_margin_pct=25, operating_expenses=1,
+                            working_capital_increase=0, capital_expenditure=0,
+                            other_operating_cash_adjustments=0)
+    with localcontext() as context:
+        context.prec, context.Emin, context.Emax = 3, -1, 1
+        context.rounding, context.clamp = ROUND_HALF_EVEN, 1
+        for signal in context.traps:
+            context.traps[signal] = trapping
+        context.clear_flags()
+        before = repr(context)
+        result = _dispatch_financial_bridge(case, tmp_path)
+        assert result["periods"]["current"]["gross_profit"] == "5"
+        assert result["periods"]["current"]["operating_profit"] == "4"
+        assert result["periods"]["current"]["simplified_cash_after_capex"] == "4"
+        assert result["status"] == "available"
+        assert repr(context) == before
+
+
+def test_financial_bridge_stream_uses_real_dispatch_and_bilingual_progress(tmp_path):
+    from contextlib import ExitStack
+    root = _make_temp_root()
+    client = _CaptureClient([
+        _MockResponse([_MockBlock("tool_use", name="analyze_financial_scenario",
+                                 input_=_financial_bridge_case(), id_="finance1")], "tool_use"),
+        _MockResponse([_MockBlock("text", "Supplied assumptions yield cash after capex of -5.5 million.")]),
+    ])
+    providers = [{"client": client, "model": "deepseek-v4-pro"}]
+    with ExitStack() as stack:
+        stack.enter_context(patch.object(gw, "_brain_quota_dir", return_value=tmp_path))
+        stack.enter_context(patch.object(gw, "_build_lane_providers", return_value=providers))
+        stack.enter_context(patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}))
+        stack.enter_context(patch.object(gw, "_ensure_thread", return_value=None))
+        stack.enter_context(patch("lib.ai_costs.record_usage", return_value=True))
+        events = _sse(list(gw.chat_stream("Analyze the supplied financial scenario and cash flow.",
+                                         "user-financial-stream", lane="fast", root=root)))
+    tools = [event for event in events if event.get("type") == "tool"]
+    assert len(tools) == 1
+    assert tools[0]["label_en"] == gw._TOOL_LABELS["analyze_financial_scenario"][0]
+    assert tools[0]["label_zh"] == gw._TOOL_LABELS["analyze_financial_scenario"][1]
+    assert events[-1]["type"] == "done"
+    assert any("-5.5" in str(event) for event in events if event.get("type") == "delta")
+    assert len(client.stream_kwargs) == 2
+    results = [part for message in client.stream_kwargs[1]["messages"]
+               if isinstance(message.get("content"), list) for part in message["content"]
+               if isinstance(part, dict) and part.get("type") == "tool_result"]
+    computed = json.loads(results[-1]["content"])
+    assert computed["periods"]["current"]["simplified_cash_after_capex"] == "-5.5"
+    assert computed["periods"]["prior"]["simplified_cash_after_capex"] is None
+    assert computed["input_basis"] == "unverified_supplied_assumptions"
+
+
+@pytest.mark.parametrize("seed", range(12))
+def test_financial_bridge_matches_independent_rational_oracle(tmp_path, seed):
+    from fractions import Fraction as Q
+    from random import Random
+    rng = Random(seed)
+    def amount(n):
+        return ("-" if n < 0 else "") + str(abs(n) // 10**6) + "." + str(abs(n) % 10**6).zfill(6)
+    case = {"unit": "ones", "currency": "USD"}
+    for period in ("prior", "current"):
+        case[period] = {name: amount(rng.randint(0, 10**21))
+                        for name in ("revenue", "operating_expenses", "capital_expenditure")}
+        case[period]["gross_margin_pct"] = amount(rng.randint(-10**9, 100 * 10**6))
+        for name in ("working_capital_increase", "other_operating_cash_adjustments"):
+            case[period][name] = amount(rng.randint(-10**21, 10**21))
+    result = _dispatch_financial_bridge(case, tmp_path)
+    assert result["status"] == "available"
+    profit = {}
+    for period in ("prior", "current"):
+        values = {name: Q(value) for name, value in case[period].items()}
+        gross = values["revenue"] * values["gross_margin_pct"] / 100
+        operating = gross - values["operating_expenses"]
+        cash = operating + values["other_operating_cash_adjustments"] - values["working_capital_increase"]
+        for output, expected in (("gross_profit", gross), ("operating_profit", operating),
+                                 ("simplified_operating_cash", cash),
+                                 ("simplified_cash_after_capex", cash - values["capital_expenditure"])):
+            assert Q(result["periods"][period][output]) == expected
+        profit[period] = operating
+    bridge = result["operating_profit_bridge"]
+    effects = ("revenue_effect_at_prior_margin", "margin_effect_at_current_revenue", "operating_expense_effect")
+    assert sum(Q(bridge[name]) for name in effects) == profit["current"] - profit["prior"]
+    assert Q(bridge["operating_profit_change"]) == profit["current"] - profit["prior"]
+    assert bridge["is_causal_estimate"] is False
+
+
 # --- registry: new tool names present in _BRAIN_TOOLS and schemas list --------
 
 _W6D_TOOLS = [

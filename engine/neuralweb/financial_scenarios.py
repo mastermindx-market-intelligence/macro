@@ -6,7 +6,8 @@ must establish a common currency/scale/accounting basis before calling this tool
 from __future__ import annotations
 
 import re
-from decimal import Decimal, InvalidOperation, localcontext
+from decimal import (Context, Decimal, DecimalException, DivisionByZero, Inexact,
+                     InvalidOperation, Overflow, ROUND_HALF_EVEN, Underflow, localcontext)
 
 TOOL_NAME = "analyze_financial_scenario"
 _FIELDS = (
@@ -110,8 +111,14 @@ def analyze(params: object) -> dict:
         currency = params["currency"]
         if currency is not None and (not isinstance(currency, str) or not re.fullmatch(r"[A-Z]{3}", currency)):
             raise ValueError(_ERROR)
-        with localcontext() as context:
-            context.prec = 64
+        # Fully explicit per-call context: do not inherit exponent limits, traps
+        # or a mutated DefaultContext from another request/library. The admitted
+        # 15-digit magnitude / 6-place inputs fit exactly in 64 digits.
+        arithmetic = Context(prec=64, rounding=ROUND_HALF_EVEN,
+                             Emin=-999999, Emax=999999, capitals=1, clamp=0,
+                             flags=[], traps=[InvalidOperation, DivisionByZero,
+                                              Overflow, Underflow, Inexact])
+        with localcontext(arithmetic):
             prior, current = _period(params["prior"]), _period(params["current"])
             periods = {"prior": _projection(prior), "current": _projection(current)}
             bridge = _bridge(prior, current)
@@ -135,7 +142,7 @@ def analyze(params: object) -> dict:
                 "Growth and this bridge alone do not establish valuation, cause, a house signal or a trade decision.",
             ],
         }
-    except (ValueError, TypeError, InvalidOperation, OverflowError):
+    except (ValueError, TypeError, DecimalException, OverflowError):
         return {"error": _ERROR, "is_context_only": True,
                 "note": "Use the closed scenario fields, a common unit/currency and finite decimals (at most 6 fractional places, magnitude at most 10^15). Leave unknown inputs null; never fill them with invented zeroes."}
 

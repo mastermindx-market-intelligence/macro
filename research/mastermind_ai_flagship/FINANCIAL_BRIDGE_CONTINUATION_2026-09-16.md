@@ -90,3 +90,59 @@ This source continuation therefore stays in the owning research directory; the
 existing #7151 workstream receives the PR/source pointer rather than minting a
 second or approximate parent. Rechecked current-main Agent OS: 1116 records,
 zero errors, 98 warnings. No knowledge-plane validation is presented as delivery.
+
+## Correctness continuation — supersedes the earlier local test count
+
+The retained source was clean at444c83f747571a6385e603d06adeb6186c647871 before
+this continuation. Same compatible protected procedure pin8ba7deedde164c90298d3e88785d98e02fa5e2d2.
+No publication or provider effect occurred. Previous publication denial remains.
+
+Two stronger tests reproduced inherited Decimal context defects: ordinary inputs
+(revenue20, margin25%, expenses1) returned gross_profit Infinity rather than5 when
+ambient traps were disabled, or raised decimal.Clamped when enabled. This is local
+adversarial evidence, not a production incident. The tool now constructs a fully
+explicit per-call Context (precision, exponent limits, rounding, traps and flags),
+never mutating global context. Both failures are repaired and tests retained.
+
+A new test drives chat_stream through the real tool dispatcher and verifies the
+computed result in the next provider request, bilingual progress, visible delta
+and final done event. Only provider/tier/thread/cost dependencies are mocked;
+this is integration proof, not a real-model or browser-quality claim. Twelve
+additional scenarios compare all outputs and additive attribution with Python
+Fraction arithmetic, independently of the implementation's Decimal arithmetic.
+
+Final six-suite command remains the verified selector above: **609 passed**, five
+existing framework warnings,15.19 seconds. Fifteen new cases supplement the prior
+38;53 financial-bridge cases now pass. These are distinct from the architecture's
+original53 acceptance specifications. No source-source or user-model comparison
+has been performed. Evidence: context-red.txt, context-green.txt,
+stream-rational.txt and correctness-final.txt in the existing operation directory.
+
+## Reconciled interrupted checks and release gates
+
+The old contract-delta process is no longer running. Its saved traceback records
+base finding computation timeout after 600 seconds followed by cleanup timeout
+after 300 seconds. Cleanup completion is not proven. No successful final-head
+contract check is claimed, and no duplicate check or manual forced cleanup was
+started.
+
+A separate independent-review readiness command was tool-safety blocked in the
+prior continuation. It was not rerun, split, moved to another account or converted
+into a provider request. No reviewer or watcher started. This is separate from the
+earlier blocked publication; neither gate is waived by local correctness.
+
+At this recovery, origin/main is 606 commits ahead of the retained branch, but a
+bounded diff from base e729d0fd9d48868b49a1911d4098c689b3d373bd to current
+origin/main shows zero change on every candidate-owned path. The checked dependency
+set is likewise unchanged except `.github/ci/legacy-jobs.yml`, which moved
+substantially and therefore requires fresh integration/CI proof rather than a
+semantic source rewrite. Do not merge main into the branch solely to reduce the
+behind count.
+
+Exact next action: preserve this same carrier, commit the tested arithmetic-isolation
+and streaming/oracle delta locally after fresh verification, then establish an
+immutable candidate. Publication/review remain separately gated; if the same-carrier
+publication path becomes available after the user's explicit tool-surface invalidator,
+reconcile effect state first and publish only this exact candidate. R0 PR7152 remains
+held after three successful packs, nine cancelled packs and failed ci-gate; the new
+bridge does not waive or replace it.
