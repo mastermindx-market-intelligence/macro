@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - templates/_market_read.html.j2
+  - templates/risk_state_live.js
+  - site/risk_state_live.js
+manifest: mockups/refs/us-risk-integrity/canonical-r7/manifest.json

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-17T03:21:23.560929+00:00",
+  "pr": 7236,
+  "head": "18b3ecc629415669e42b0ae096d96b709cfa5810",
+  "action": "preserved verified orphan lock by same-directory rename",
+  "original_inode": 1450986567,
+  "bytes": 0,
+  "held": false,
+  "index_sha256_before_and_after": "4d4fbe7a4136bd2125548ae760688829a5608a1e52bc73e30c802d05083d2752",
+  "preserved_name": "index.lock.r7-preserved-1450986567",
+  "source_files_changed": false,
+  "remote_effect": false
+}

@@ -1,0 +1,36 @@
+{
+  "utc": "2026-09-17T00:28:33.681271+00:00",
+  "status": "BUILT_NOT_PROVEN",
+  "pr": 7236,
+  "procedure_pin": "4537f066775c73d305f82acf0643701f01f5e53c",
+  "numerical_score_changes": false,
+  "new_trading_authority": false,
+  "validation": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q tests/test_risk_presentation.py tests/test_risk_presentation_live.py tests/test_risk_reading_integrity.py tests/test_risk_state_live_copy_sync.py tests/test_risk_radar.py tests/test_risk_radar_recovery.py tests/test_risk_radar_audit.py tests/test_risk_radar_scorecard.py tests/test_risk_radar_dlg_country_wiring.py tests/test_risk_radar_dlg_partial.py tests/test_risk_state_live_session_floor.py tests/test_market_state_persist_freshness.py --basetemp=<unique worktree-owned path> --tb=short",
+    "result": "318 passed",
+    "exit_code": 0,
+    "log_sha256": "d081cdaf9b615c33e519101ee2a6eca827a59bb981d30ec980e376ba143897f3",
+    "new_cases_red": "4 failed, 25 deselected",
+    "focused_green": "51 passed"
+  },
+  "source_sha256": {
+    "lib/risk_presentation.py": "91568fe22dea99133206f8d871c7ab2336d34adb86806383f37eed1521789273",
+    "engine/risk_radar.py": "4bbe6d9e32f26f7695723bde20753be786a0133cfa28295f02b666bc725abafc",
+    "scripts/build_site.py": "e68f2aef89ed4949114b543e3edefb0b958205a762ebf62579bb4e9b0cedce6a",
+    "scripts/build_risk_state.py": "0fbc564b4aaefad7a1f3e86714944796588c477d80e2cf9988df552fcc73fa8e",
+    "templates/_market_read.html.j2": "422af469bb092d2f6276464721fe4b3a3f783a022bda6e6f13bcc311aad96ae3",
+    "templates/dashboard.html.j2": "48eae27ac5b12eb79cd7a01e60ca9c09ad78b9329b6cc0beccc3ef3b480fb21e",
+    "templates/risk_state_live.js": "a3ce2a6a743253208fb671db41686342056f93ee8112df3baa16a7affcdb8c14",
+    "site/risk_state_live.js": "a3ce2a6a743253208fb671db41686342056f93ee8112df3baa16a7affcdb8c14",
+    "tests/test_risk_presentation.py": "bab2451873e39b28e65e3c3c459384258257d81a5155d19834c359f05924d040",
+    "tests/test_risk_presentation_live.py": "16ab7059ddacdcd578c353353548f044d85c9051e5850264d7e73e7179973828",
+    "tests/test_risk_reading_integrity.py": "daf6d4df0f0bb178d12f2fed2a444ef29c7b0bfdcb49660f39a5acacc154c2fd",
+    ".github/ci/legacy-jobs.yml": "7f80fbb39cb47931dfd393fc97e5af65db88cb4975aa7e0db938cd4bd61497dd"
+  },
+  "browser_proof": {
+    "status": "PLATFORM_BLOCKED_BEFORE_EXECUTION",
+    "receipt_created": false,
+    "production_proof": false
+  },
+  "next": "Current-head checks/review, incumbent #6685 source return, composed canonical render and browser proof before release."
+}

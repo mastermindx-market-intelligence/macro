@@ -429,8 +429,8 @@ def _comp_stress(latest: dict) -> dict | None:
 # --------------------------------------------------------------- assembly ----
 
 _HEADLINES = {
-    "RISK_ON": ("Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.",
-                "风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。"),
+    "RISK_ON": ("Risk-on composite — the measured blend is supportive; broad participation needs separate confirmation.",
+                "偏多综合读数——实测综合指标提供支撑；广泛参与度仍需单独确认。"),
     "MIXED": ("Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
               "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"),
     "RISK_OFF": ("Risk-off — stress is elevated; defend capital first.",

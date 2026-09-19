@@ -6739,6 +6739,12 @@ def main() -> int:
     except Exception as _ree:  # noqa: BLE001 — additive display band, never fatal
         log.warning("risk_envelope compose/write skipped: %s", _ree)
 
+    # One downstream interpretation, shared with the live feed. Do not feed the
+    # envelope back into its measured-state producer or alter the stored score.
+    if isinstance(_us_ms_view, dict):
+        from lib.risk_presentation import market_read
+        _us_ms_view = dict(_us_ms_view, presentation=market_read(_us_ms_view, _risk_envelope))
+
     # MSX-2: pre-compute chart_liquidity_meta (needed by _msig_stances before vm assembles)
     _chart_liq_meta = _chart_liquidity_meta(f)
     _fx_context = _build_fx_context()

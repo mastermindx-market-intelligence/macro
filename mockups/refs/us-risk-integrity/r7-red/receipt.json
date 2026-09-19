@@ -1,0 +1,300 @@
+{
+  "status": "FAIL",
+  "utc": "2026-09-17T02:37:07.930959+00:00",
+  "source_head": "18b3ecc629415669e42b0ae096d96b709cfa5810",
+  "page_sha256": "f25e9c4216563a6d30dbd07d5071de3a0c5f5256e843ce0369c9740815cd9d83",
+  "production_proof": false,
+  "full_program_acceptance": false,
+  "external_requests_blocked": true,
+  "fixture_live_ticks": true,
+  "body_character_keystrokes": 0,
+  "tab_discovery": 0,
+  "cases": [
+    {
+      "case": "1440-dark-en",
+      "kind": "canonical_local_render",
+      "errors": [
+        "qualified label escapes its own score panel",
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 239.875,
+        "width": 227.203125,
+        "height": 27.546875
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 358.9375
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.270588 0.721569 0.45098)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "1440-dark-zh",
+      "kind": "canonical_local_render",
+      "errors": [
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 239.875,
+        "width": 95,
+        "height": 27.546875
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 360.9375
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.878431 0.392157 0.392157)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "1440-light-en",
+      "kind": "canonical_local_render",
+      "errors": [
+        "qualified label escapes its own score panel",
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 239.875,
+        "width": 227.203125,
+        "height": 27.546875
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 358.9375
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.143922 0.459373 0.325882)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "1440-light-zh",
+      "kind": "canonical_local_render",
+      "errors": [
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 279,
+        "y": 239.875,
+        "width": 95,
+        "height": 27.546875
+      },
+      "panel_geometry": {
+        "x": 41,
+        "y": 103,
+        "width": 407.390625,
+        "height": 360.9375
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.710745 0.246588 0.26102)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "390-dark-en",
+      "kind": "canonical_local_render",
+      "errors": [
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 154.4375,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 325.9375
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.270588 0.721569 0.45098)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "390-dark-zh",
+      "kind": "canonical_local_render",
+      "errors": [
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 65,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 318
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(224, 160, 48)",
+      "score_color": "color(srgb 0.878431 0.392157 0.392157)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "390-light-en",
+      "kind": "canonical_local_render",
+      "errors": [
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "Confirmation incomplete",
+      "score": "61",
+      "headline": "Breadth is weak; some inputs are stale or incomplete.",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 154.4375,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 325.9375
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.143922 0.459373 0.325882)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "Capped reading — measured blend 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    },
+    {
+      "case": "390-light-zh",
+      "kind": "canonical_local_render",
+      "errors": [
+        "same measured verdict hides existing flip explanation",
+        "accessibility calls cap the measured blend"
+      ],
+      "label": "确认不完整",
+      "score": "61",
+      "headline": "广度偏弱；部分输入已过期或不完整。",
+      "old_panel_count": 1,
+      "geometry": {
+        "x": 182.609375,
+        "y": 213.90625,
+        "width": 65,
+        "height": 18.84375
+      },
+      "panel_geometry": {
+        "x": 19,
+        "y": 143,
+        "width": 352,
+        "height": 318
+      },
+      "settled_aria": "Risk-on — score 61",
+      "label_color": "rgb(185, 121, 26)",
+      "score_color": "color(srgb 0.710745 0.246588 0.26102)",
+      "same_verdict_flip": {
+        "before": "",
+        "after": "none"
+      },
+      "fixture_capped_subline": "封顶读数——实测综合读数 61/100",
+      "fixture_capped_aria": "Measured blend 50; Mixed"
+    }
+  ],
+  "failures": [
+    "1440-dark-en: qualified label escapes its own score panel",
+    "1440-dark-en: same measured verdict hides existing flip explanation",
+    "1440-dark-en: accessibility calls cap the measured blend",
+    "1440-dark-zh: same measured verdict hides existing flip explanation",
+    "1440-dark-zh: accessibility calls cap the measured blend",
+    "1440-light-en: qualified label escapes its own score panel",
+    "1440-light-en: same measured verdict hides existing flip explanation",
+    "1440-light-en: accessibility calls cap the measured blend",
+    "1440-light-zh: same measured verdict hides existing flip explanation",
+    "1440-light-zh: accessibility calls cap the measured blend",
+    "390-dark-en: same measured verdict hides existing flip explanation",
+    "390-dark-en: accessibility calls cap the measured blend",
+    "390-dark-zh: same measured verdict hides existing flip explanation",
+    "390-dark-zh: accessibility calls cap the measured blend",
+    "390-light-en: same measured verdict hides existing flip explanation",
+    "390-light-en: accessibility calls cap the measured blend",
+    "390-light-zh: same measured verdict hides existing flip explanation",
+    "390-light-zh: accessibility calls cap the measured blend"
+  ]
+}

@@ -126,6 +126,7 @@
 {{ t(b[0], b[1]) }}<br><br>{{ t(s[0], s[1]) }}
 {%- endmacro %}
 {% import "_risk_radar_card.html.j2" as rrc %}
+{% import "_market_read.html.j2" as mr %}
 {# rr_leg + risk_radar_card moved to the shared partial _risk_radar_card.html.j2
    (used by the US Macro/Stocks pages AND the China/HK/Canada Market-State boards). #}
 {# ignition-radar / mag7-panel / leadership-board imports removed 2026-07-23 (operator ruling; DO_NOT_REBUILD §2/§4) #}
@@ -4581,6 +4582,10 @@ body.page-macro.mx4-grid #mx5-score-numeral  { fill: var(--mx5-gauge, #f59e0b); 
    override was dropped in the merge: it conflicted with #2542 and left risk-on pills grey
    while yellow/red were coloured.) */
 
+/* Interpretation is severity ink; the unmodified measured score keeps direction ink. */
+body.page-macro.mx4-grid .mx5-verdict-word[data-risk-qualified="true"] {
+  color: var(--warn); white-space: normal; overflow-wrap: anywhere; max-width: 100%;
+}
 /* Thesis + flip */
 body.page-macro.mx4-grid .mx5-thesis{
   font-size:13px;font-weight:450;line-height:1.55;
@@ -7409,7 +7414,7 @@ html[data-theme="light"] :is(
             <span class="v-outof">/100</span>
             <div class="mx2-score-label-stack">
               <span class="mx2-score-label">{{ t('Market state','市场状态') }}</span>
-              <p class="v-word" id="ms-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh }}</span><span class="arr">{{ _va }}</span></p>
+              <p class="v-word" id="ms-word">{{ mr.word(MS) }}<span class="arr">{{ _va }}</span></p>
             </div>
             <div class="mx2-score-live-wrap">
               <span class="ms-live" id="ms-live-pill"></span>
@@ -7646,7 +7651,7 @@ html[data-theme="light"] :is(
       <div class="mx5-sc-gauge-row {{ _mx5_sc_cls }}">
         {# Compact semicircle gauge; data-* attrs for risk_state_live.js patchMacro #}
         <svg class="mx5-gauge-svg" viewBox="0 -4 140 101" fill="none"
-             aria-label="{{ MS.label_en }} — score {{ _mx5_score }}{% if _mx5_ghost %}; capped from six-signal blend {{ _mx5_raw }}{% endif %}"
+             aria-label="{{ mr.aria(MS) }}"
              data-gauge-arc-len="{{ _mx5_arc_len }}"
              data-gauge-radius="56"
              data-gauge-cx="70" data-gauge-cy="75">
@@ -7702,11 +7707,10 @@ html[data-theme="light"] :is(
         <div>
           <div class="mx5-score-line">
             <span class="mx5-big-score">{{ _mx5_score }}</span>
-            <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
+            <span class="mx5-verdict-word" data-baked-verdict="{{ MS.verdict }}" data-risk-qualified="{{ 'true' if (MS.get('presentation') or {}).get('qualified') else 'false' }}">{{ mr.word(MS) }}</span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">{{ {'green':'GREEN','yellow':'YELLOW','red':'RED'}.get(MS.color,'—') }} &mdash; {{ {'green':'Trend-following supported','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,'') }}</span>
-            <span class="l-zh">{{ {'green':'偏多 — 顺势而为受支撑','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'') }}</span>
+            {{ mr.subline(MS) }}
             {% if _mx5_ghost and _mx5_capw %}
             {{ help('The dial is capped at ' ~ _mx5_score ~ '; the six-signal blend is ' ~ _mx5_raw ~ '. The cap can only pull the dial down, never up.',
                     '刻度盘上限为 ' ~ _mx5_score ~ '；六项信号合成为 ' ~ _mx5_raw ~ '。上限只能压低刻度盘，不会抬高。') }}
@@ -7979,8 +7983,7 @@ html[data-theme="light"] :is(
 
       {# Thesis line (from engine headline_en/zh) #}
       <div class="mx5-thesis">
-        <span class="l-en">{{ MS.headline_en if MS.headline_en else (MS.label_en ~ ' — see evidence panel.') }}</span>
-        <span class="l-zh">{{ MS.headline_zh if MS.headline_zh else (MS.label_zh or MS.label_en) }}</span>
+        {{ mr.headline(MS) }}
       </div>
 
       {# Flip condition #}
@@ -8546,12 +8549,17 @@ html[data-theme="light"] :is(
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
+              {% set _primary_read = MS.get('presentation') or {} %}
+              {% if _primary_read.get('qualified') or MS.verdict == 'RISK_ON' and not _primary_read %}
+              <span class="l-en">{{ _primary_read.get('action_en') or 'Review risk evidence' }}</span>
+              <span class="l-zh">{{ _primary_read.get('action_zh') or '查看风险证据' }}</span>
+              {% else %}
               <span class="l-en">{{ {'green':'Follow the trend. Add on strength.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.') }}</span>
               <span class="l-zh">{{ {'green':'顺势而为，强势中加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
+              {% endif %}
             </div>
             <div class="mx5-action-sub">
-              <span class="l-en">{{ MS.label_en }} &middot; {{ MS.score }}/100</span>
-              <span class="l-zh">{{ MS.label_zh or MS.label_en }} &middot; {{ MS.score }}/100</span>
+              {{ mr.word(MS) }} &middot; {{ MS.score }}/100
             </div>
           </div>
         </div>
@@ -13066,12 +13074,18 @@ html[data-theme="light"] :is(
         <div class="riskdlg-sec-h"><span class="l-en">Scare ladder</span><span class="l-zh">压力梯度</span><small>{{ t('highest first','由高到低') }}</small></div>
         <div class="scare-ladder riskdlg-scare-list" style="margin-bottom:0">
           {% for sc in latest.risk_radar.scares %}
-          {% set _sc_s2 = sc.score if (sc.score is defined and sc.score is not none) else none %}
+          {# Existing cached artifacts already carry coverage; do not wait for a rebuild
+             to stop rendering their absent eligible evidence as calm. #}
+          {% set _sc_absent = (sc.reading_state is defined and sc.reading_state == 'UNAVAILABLE')
+              or (sc.n_legs_resolved is number and sc.n_legs_resolved == 0)
+              or (sc.weight_coverage is number and sc.weight_coverage == 0) %}
+          {% set _sc_s2 = sc.score if (not _sc_absent and sc.score is defined and sc.score is not none) else none %}
           {% set _scc = ('sc-band-high' if (_sc_s2 is not none and _sc_s2 >= 70) else ('sc-band-watch' if (_sc_s2 is not none and _sc_s2 >= 50) else ('sc-band-elev' if (_sc_s2 is not none and _sc_s2 >= 35) else 'sc-band-calm'))) %}
           {% set _scband = (sc.band if sc.band is defined and sc.band else ('WATCH' if (_sc_s2 is not none and _sc_s2 >= 50) else ('ELEVATED' if (_sc_s2 is not none and _sc_s2 >= 35) else 'CALM'))) %}
+          {% if _sc_absent %}{% set _scc = 'sc-band-unavailable' %}{% set _scband = 'Unavailable' %}{% endif %}
           {# lookup by |upper — engine bands are lowercase ('calm','caution','risk-off'), the old
              uppercase-keyed map silently fell through to raw EN in the ZH view #}
-          {% set _scband_zh = {'WATCH':'警惕','ELEVATED':'走高','CALM':'平静','HIGH':'高危','CAUTION':'谨慎','RISK-OFF':'避险'}.get(_scband|upper, _scband) %}
+          {% set _scband_zh = {'WATCH':'警惕','ELEVATED':'走高','CALM':'平静','HIGH':'高危','CAUTION':'谨慎','RISK-OFF':'避险','UNAVAILABLE':'不可用'}.get(_scband|upper, _scband) %}
           <div class="riskdlg-scare" data-band="{{ _scc }}">
             <span class="rkc-sc-ico">{{ rkc_scare_glyph(rkc_scare_fam(sc)|trim) }}</span>
             <span class="sc-name">

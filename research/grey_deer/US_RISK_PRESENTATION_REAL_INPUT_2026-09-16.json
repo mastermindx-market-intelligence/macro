@@ -1,0 +1,30 @@
+{
+  "scope": "real stored input through candidate formatter and canonical Jinja macros; not production deployment",
+  "base": "ec44523d17eedeea35bdf4513a0d4843a4e81a64",
+  "source_session": "2026-09-15",
+  "input_sha256": {
+    "market_state": "99cc6ad8d0202c1cda3507792724ef86e06b0dbfbb166e30998a9400fa55182e",
+    "risk_envelope": "e0177b5cfcef457f6871d845371930a0d14633776f4e5bb5394dadf96e7e777b"
+  },
+  "presentation": {
+    "schema": "market_read.presentation.v1",
+    "authority": "presentation_only",
+    "measured_verdict": "RISK_ON",
+    "score": 61,
+    "qualified": true,
+    "label_en": "Fragile",
+    "label_zh": "脆弱",
+    "headline_en": "The supportive composite and settled risk evidence disagree. Breadth is weak.",
+    "headline_zh": "偏多综合读数与已结算风险证据存在分歧。广度偏弱。",
+    "subline_en": "Measured blend — read with caution",
+    "subline_zh": "实测综合读数——需谨慎解读",
+    "action_en": "Review risk evidence",
+    "action_zh": "查看风险证据",
+    "hazard_stage": "FRAGILE",
+    "context_session": "2026-09-15",
+    "context_basis": "settled",
+    "breadth_score": 14
+  },
+  "numeric_state_unchanged": true,
+  "render_sha256": "02f5acff555352efdbd379d7225fe2a0d1906f963ec2623a28a6a83a6307ae56"
+}

@@ -1,0 +1,36 @@
+{# Copy only. lib/risk_presentation.py owns the interpretation; numeric state is unchanged. #}
+{% macro word(ms) -%}
+{% set p = ms.get('presentation') or {} %}
+<span class="l-en">{{ p.get('label_en') or ('Risk-on composite' if ms.get('verdict') == 'RISK_ON' else ms.get('label_en', 'Unavailable')) }}</span>
+<span class="l-zh">{{ p.get('label_zh') or ('偏多综合读数' if ms.get('verdict') == 'RISK_ON' else ms.get('label_zh', '不可用')) }}</span>
+{%- endmacro %}
+
+{% macro subline(ms) -%}
+{% set p = ms.get('presentation') or {} %}
+<span class="l-en">{{ p.get('subline_en') or 'Displayed score — not a probability' }}</span>
+<span class="l-zh">{{ p.get('subline_zh') or '显示分数——并非概率' }}</span>
+{%- endmacro %}
+
+{% macro headline(ms) -%}
+{% set p = ms.get('presentation') or {} %}
+{% if p.get('headline_en') and p.get('headline_zh') %}
+<span class="l-en">{{ p.headline_en }}</span><span class="l-zh">{{ p.headline_zh }}</span>
+{% elif ms.get('verdict') == 'RISK_ON' %}
+<span class="l-en">The composite is supportive; broad participation confirmation is unavailable.</span>
+<span class="l-zh">综合读数偏多，但广泛参与度的确认信息不可用。</span>
+{% else %}
+<span class="l-en">{{ ms.get('headline_en') or 'Review the available market evidence.' }}</span>
+<span class="l-zh">{{ ms.get('headline_zh') or '请查看现有市场证据。' }}</span>
+{% endif %}
+{%- endmacro %}
+
+{# Plain accessible text uses the same qualification/provenance as visible copy. #}
+{% macro aria(ms) -%}
+{% set p = ms.get('presentation') or {} -%}
+Displayed score {{ ms.get('score') if ms.get('score') is not none else '—' }};
+{{ p.get('label_en') or ('Risk-on composite' if ms.get('verdict') == 'RISK_ON' else ms.get('label_en', 'Unavailable')) }}.
+{{ p.get('subline_en') or 'Displayed score — not a probability' }}.
+显示分数 {{ ms.get('score') if ms.get('score') is not none else '—' }}；
+{{ p.get('label_zh') or ('偏多综合读数' if ms.get('verdict') == 'RISK_ON' else ms.get('label_zh', '不可用')) }}。
+{{ p.get('subline_zh') or '显示分数——并非概率' }}。
+{%- endmacro %}
