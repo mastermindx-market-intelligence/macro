@@ -4,7 +4,7 @@
 **Decision date (census input):** 2026-09-13
 **Commit (data/reference/):** `4023da6ca48e` (latest nightly data commit touching the identity plane)
 **Commit (reviewed head):** `536bc2c4fd0cf663dac25fae98bdab086c6090d1` (final committed code head sha on branch `claude/mo-b-f06-5-cik-collision-census-repair`; h_7122 built on this head)
-**Commit (this note's own):** `54d2838637a660d40b0dbd2106f62fdb04e990db` — measured against code head 54d28386… (the commit carrying this note's previous revision; this note's own commit is its child)
+**Commit (measured against):** `54d2838637a660d40b0dbd2106f62fdb04e990db` — code head 54d28386… (the commit carrying this note's previous revision; this note's own commit is its child)
 **Author:** W7B F06-5 sub-agent (Chairman override regime; Fable 5.1 seat ruling)
 **Ledger row:** `research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv` row **MO-PAID-020**
 **Packet:** `[MO-B F06-5]` — ticker/CIK collision census + at most ONE bounded renderer/CIK-access repair
