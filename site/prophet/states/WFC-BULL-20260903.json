@@ -10,27 +10,27 @@
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 76.8,
+    "validity": 74.6,
     "progress": 0.0,
     "pace": 52.8,
     "retention": 50.0,
     "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.822,
+    "dist_to_stop_r": 0.805,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 31.1,
-    "p1": -0.1186,
-    "p2": -0.0593,
+    "p1": -0.13,
+    "p2": -0.065,
     "p3": null,
-    "move_r": -0.178,
+    "move_r": -0.195,
     "mfe_r": 0.024,
-    "mae_r": -0.182
+    "mae_r": -0.195
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,7 +40,7 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.46000091552734546,
-  "_mae": -3.459997253417967,
+  "_mae": -3.709997253417967,
   "_max_p1": 0.01612341098939171,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,

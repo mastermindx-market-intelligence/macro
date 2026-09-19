@@ -10,21 +10,21 @@
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 5.5,
+    "validity": 10.9,
     "progress": 0.0,
     "pace": 3.1,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.157,
+    "dist_to_stop_r": 0.214,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 68.9,
-    "p1": -0.5623,
-    "p2": -0.2811,
+    "p1": -0.5243,
+    "p2": -0.2621,
     "p3": null,
-    "move_r": -0.843,
+    "move_r": -0.786,
     "mfe_r": 0.129,
     "mae_r": -0.843
   },

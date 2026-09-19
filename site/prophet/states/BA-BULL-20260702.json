@@ -5,26 +5,26 @@
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 23.8,
-  "raw_confidence": 22.1,
+  "raw_confidence": 23.7,
   "delta_vs_base": -36.2,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 19.6,
+    "validity": 23.4,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.299,
+    "dist_to_stop_r": 0.341,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 162.2,
-    "p1": -0.4672,
-    "p2": -0.2336,
+    "p1": -0.4391,
+    "p2": -0.2195,
     "p3": null,
-    "move_r": -0.701,
+    "move_r": -0.659,
     "mfe_r": 0.319,
     "mae_r": -0.701
   },
