@@ -2489,7 +2489,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
               {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}
               {{ t('BUILDING','累积中') }} → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}
               {% else %}{{ t('Stable','稳定') }}{% endif %}</span></div>
-            <div class="cnx-kv"><span class="k">{{ t('Signal agreement','信号一致度') }}</span><span class="v">{{ (latest.confidence*100)|round|int }}%</span></div>
             <div class="cnx-kv"><span class="k">{{ t('Cycle backdrop','商业周期') }}</span><span class="v">{{ td(latest.cycle_tag) }}</span></div>
           </div>
           <div>
@@ -2515,6 +2514,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           </tr>
           {% endfor %}
         </table>
+        {% else %}
+        <div class="note"><span class="l-en">Driver table unavailable — the index rows are not ready.</span><span class="l-zh">驱动表暂不可用 — 指数行尚未就绪。</span></div>
         {% endif %}
         {# China state cockpit — phase card, context chips #}
         {% if cn_market_state_json %}
