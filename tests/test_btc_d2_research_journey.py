@@ -113,6 +113,7 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert projection["trigger_evidence"]["current_z"] >= 2.0
     assert projection["trigger_evidence"]["previous_z"] < 1.5
     assert projection["trigger_evidence"]["mode"] == "single_z_ge_2"
+    assert projection["trigger_evidence"]["recomputed_fired"] is True
     assert projection["trading_authority"] is False
     assert projection["outcome"] is None
 
@@ -135,7 +136,42 @@ def test_projection_explains_a_non_fire_without_changing_generation_identity():
     assert projection["fired"] is False
     assert projection["trigger_evidence"]["current_z"] < 1.5
     assert projection["trigger_evidence"]["mode"] == "threshold_not_met"
+    assert projection["trigger_evidence"]["recomputed_fired"] is False
     assert projection["trigger_evidence"]["rule"] == "z>=2.0 or second consecutive z>=1.5"
+
+
+def test_projection_fails_closed_when_hashed_fire_flag_conflicts_with_frozen_rows():
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
+    semantic = copy.deepcopy(journey["generations"][0]["semantic"])
+    semantic["prediction"]["fired"] = False
+    inconsistent = d2.new_journey()
+    assert d2.append_generation(
+        inconsistent,
+        d2.make_generation("source", semantic, recorded_at="2026-09-17T05:00:00Z"),
+    )
+    projection = d2.project(inconsistent)
+    assert projection["status"] == "unavailable"
+    assert projection["fired"] is None
+    assert projection["reason"] == "source_evaluator_mismatch"
+    assert projection["trigger_evidence"]["recomputed_fired"] is True
+    assert projection["trading_authority"] is False
+
+
+def test_projection_fails_closed_when_hashed_available_source_cannot_be_replayed():
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
+    semantic = copy.deepcopy(journey["generations"][0]["semantic"])
+    semantic["inputs"].pop("evaluation_dates")
+    unreplayable = d2.new_journey()
+    assert d2.append_generation(
+        unreplayable,
+        d2.make_generation("source", semantic, recorded_at="2026-09-17T05:00:00Z"),
+    )
+    projection = d2.project(unreplayable)
+    assert projection["status"] == "unavailable"
+    assert projection["fired"] is None
+    assert projection["reason"] == "source_trigger_evidence_unavailable"
+    assert projection["trigger_evidence"] is None
+    assert projection["trading_authority"] is False
 
 
 def test_late_source_arrival_appends_correction_without_rewriting_first_generation():

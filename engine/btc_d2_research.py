@@ -551,6 +551,7 @@ def _project_trigger_evidence(source_semantic: dict) -> dict | None:
             "current_z": round(current_z, 2),
             "previous_z": round(previous_z, 2) if previous_z is not None else None,
             "mode": mode,
+            "recomputed_fired": mode != "threshold_not_met",
             "rule": "z>=2.0 or second consecutive z>=1.5",
         }
     except (TypeError, ValueError, OverflowError):
@@ -611,6 +612,23 @@ def project(journey: dict | None) -> dict:
         "reason": source_semantic.get("reason"),
     })
     if source_semantic.get("status") != "available":
+        return base
+    trigger_evidence = base["trigger_evidence"]
+    stored_fired = prediction.get("fired")
+    if trigger_evidence is None:
+        base.update({
+            "fired": None,
+            "reason": "source_trigger_evidence_unavailable",
+        })
+        return base
+    if (
+        stored_fired is not True
+        and stored_fired is not False
+    ) or stored_fired != trigger_evidence["recomputed_fired"]:
+        base.update({
+            "fired": None,
+            "reason": "source_evaluator_mismatch",
+        })
         return base
     base["status"] = "pending"
     outcome_generation, outcome_semantic = _effective_outcome(

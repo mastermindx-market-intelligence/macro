@@ -1,6 +1,7 @@
 """Exact Signal Lab evidence destination for alert trust."""
 from __future__ import annotations
 
+import copy
 from datetime import date
 
 from bs4 import BeautifulSoup
@@ -120,6 +121,7 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
             "current_z": 2.37,
             "previous_z": 1.12,
             "mode": "single_z_ge_2",
+            "recomputed_fired": True,
             "rule": "z>=2.0 or second consecutive z>=1.5",
         },
         "trading_authority": False,
@@ -219,6 +221,32 @@ def test_matured_no_fire_observation_is_not_presented_as_a_prediction_miss():
     assert "已成熟 · 未触发信号" in html
     assert "Matured · down target missed" not in html
     assert "Matured · down target hit" not in html
+    assert "Research only — no trading authority" in html
+
+
+def test_signal_lab_fails_closed_on_a_hashed_but_internally_inconsistent_d2_source():
+    from engine import btc_d2_research
+    from tests.test_btc_d2_research_journey import _capture_available
+    _, journey, _, _, _ = _capture_available(fired=True)
+    semantic = copy.deepcopy(journey["generations"][0]["semantic"])
+    semantic["prediction"]["fired"] = False
+    inconsistent = btc_d2_research.new_journey()
+    assert btc_d2_research.append_generation(
+        inconsistent,
+        btc_d2_research.make_generation(
+            "source", semantic, recorded_at="2026-09-17T05:00:00Z",
+        ),
+    )
+    projected = btc_d2_research.project(inconsistent)
+    payload = signal_lab.build_scorecard(
+        gate=_gate(), evaluation_date=date(2026, 9, 17), d2_research=projected,
+    )
+    html = _render_d2_scorecard(payload)
+    assert projected["status"] == "unavailable"
+    assert projected["fired"] is None
+    assert "Raw D2 observation: unavailable" in html
+    assert "Frozen fire flag conflicts with source inputs" in html
+    assert "冻结触发标记与来源输入冲突" in html
     assert "Research only — no trading authority" in html
 
 
