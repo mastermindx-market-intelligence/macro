@@ -405,6 +405,9 @@ def decompose_survivors(
     return {
         "survivor_contracts": int(len(joined)),
         "raw_survivor_change_net": float(np.sum(raw)),
+        # Raw topology movement before attribution. Unlike the net scalar, this
+        # cannot disappear merely because opposite strike/side changes cancel.
+        "raw_survivor_change_abs_mass": float(np.sum(np.abs(raw))),
         "component_net": net,
         "component_abs_mass": abs_mass,
         "component_abs_share": share,
