@@ -762,3 +762,57 @@ def test_probe_partial_has_distinct_exit_code(monkeypatch, capsys):
     )
     assert probe.main(["public query"]) == 3
     assert '"status":"partial"' in capsys.readouterr().out
+
+
+def test_public_minimal_scope_is_explicitly_unverified_caller_attestation():
+    from engine.neuralweb import public_research as pr
+    post = _FakePost([
+        {"results": [{"title": "A", "url": "https://example.com/a", "content": "a"}]},
+        {"results": [{"url": "https://example.com/a", "raw_content": "full"}],
+         "failed_results": []},
+    ])
+    result = pr.investigate_public(
+        "public query",
+        query_scope="public_minimal",
+        api_key="k",
+        post_json=post,
+        open_top=1,
+    )
+    assert result["query_scope"] == "public_minimal"
+    assert result["query_scope_basis"] == "caller_attested_unverified"
+    assert any(
+        "caller attestation" in note.lower()
+        and "not semantic privacy verification" in note.lower()
+        for note in result["limits"]
+    )
+
+
+def test_valid_scope_invalid_bounds_preserves_scope_attestation_with_zero_transport():
+    from engine.neuralweb import public_research as pr
+    post = _FakePost([])
+    result = pr.investigate_public(
+        "public query",
+        query_scope="public_minimal",
+        api_key="k",
+        post_json=post,
+        open_top=0,
+    )
+    assert result["status"] == "unavailable"
+    assert result["error"] == "invalid_public_research_request"
+    assert result["query_scope"] == "public_minimal"
+    assert result["query_scope_basis"] == "caller_attested_unverified"
+    assert post.calls == []
+
+
+def test_rejected_scope_has_no_attestation_basis():
+    from engine.neuralweb import public_research as pr
+    post = _FakePost([])
+    result = pr.investigate_public(
+        "public query",
+        query_scope="private",
+        api_key="k",
+        post_json=post,
+    )
+    assert result["query_scope"] is None
+    assert result["query_scope_basis"] is None
+    assert post.calls == []

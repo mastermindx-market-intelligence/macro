@@ -298,3 +298,46 @@ Because these changes alter R1 semantics after the first PASS, the repaired
 immutable head requires a fresh exact-head review and fresh hosted CI before source
 acceptance. The first PASS remains useful review history, not acceptance of changed
 bytes.
+
+## Exact-head re-review M1 repair — query scope is an attestation, not proof
+
+The second exact-head Opus review of
+`dbe6dfab8b7d3c213894943d20ca315cf470bd5d` returned **PASS with no
+blockers** and one pre-canary major: receipts carried
+`query_scope=public_minimal` but did not themselves say that this was an
+unverified caller/server attestation. A downstream machine consumer could therefore
+over-read the marker as proof that Mastermind had semantically removed private
+context.
+
+The repaired contract now carries:
+- `query_scope=public_minimal`;
+- `query_scope_basis=caller_attested_unverified`;
+- and a receipt-local `limits` statement that the marker is a caller attestation,
+  **not semantic privacy verification**.
+
+The `investigate_public` docstring and gate comment state the same boundary. This
+function still does not inspect PII, secrets, portfolio context or minimization
+quality. That responsibility remains with the future server task resolver.
+
+A valid `public_minimal` scope is now preserved even when later request bounds are
+invalid, so receipts distinguish “scope attested but request malformed” from “scope
+was refused.” A refused/missing scope has `query_scope=None` and
+`query_scope_basis=None`.
+
+TDD before implementation: three new tests failed:
+- successful investigation lacked `query_scope_basis`;
+- valid-scope/invalid-bounds receipt lost the scope marker;
+- rejected scope lacked an explicit null basis.
+
+After repair, those three pass. Full R1 qualification suite: **40 passed**.
+Fresh exact existing Brain owner selector on the repaired source:
+**916 passed, 5 existing warnings, exit 0**.
+
+Current official Tavily docs were rechecked before this repair and explicitly
+document Search `filter_by_published_date` / `include_usage` and Extract
+`include_usage`; no source change was needed for those fields. Provider contract
+still requires a sanctioned real canary before production qualification.
+
+Because the aggregate receipt schema changed, the repaired immutable head requires
+another exact-head independent review and fresh hosted CI. Earlier PASS reviews are
+review history, not acceptance of the changed bytes.
