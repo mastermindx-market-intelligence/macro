@@ -27,6 +27,7 @@ from __future__ import annotations
 import logging
 import math
 
+from engine import valuation_event_bridge as _veb
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
 
 log = logging.getLogger(__name__)
@@ -154,6 +155,11 @@ def controls_blob(v1_blob):
         return None
 
     if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
+        _latest_event_class = (
+            (v1_blob.get("special_situation") or {}).get("latest_event_class")
+            if v1_blob and isinstance(v1_blob, dict)
+            else None
+        )
         return {
             "schema": "valuation_scenario_controls.v1",
             "ticker": ticker,
@@ -169,6 +175,7 @@ def controls_blob(v1_blob):
                 "net_margin_base": net_margin_base,
             },
             "margin_base_floor": _MARGIN_BASE_FLOOR,
+            "latest_event_bridge": _veb.bridge_for_issuer(_latest_event_class),
         }
 
     scenarios = v1_blob.get("scenarios") or []
@@ -211,6 +218,17 @@ def controls_blob(v1_blob):
             "earnings_multiple": mult_s,
         }
 
+    # B-F07-3 event bridge: the issuer's latest classified spine event
+    # drives the bridge line. Typed null when no event exists. No network,
+    # no new collector — reads from the v1_blob's pinned special_situation field
+    # (set by the capital_structure spine pipeline during the nightly build).
+    _latest_event_class = (
+        (v1_blob.get("special_situation") or {}).get("latest_event_class")
+        if v1_blob and isinstance(v1_blob, dict)
+        else None
+    )
+    _latest_event_bridge = _veb.bridge_for_issuer(_latest_event_class)
+
     return {
         "schema": "valuation_scenario_controls.v1",
         "ticker": ticker,
@@ -233,4 +251,5 @@ def controls_blob(v1_blob):
             "earnings_multiple": mult,
             "per_share": default_ps,
         },
+        "latest_event_bridge": _latest_event_bridge,
     }

@@ -20,7 +20,7 @@ filing would touch. The user moves the slider; the bridge never moves it.
 Event-class sources (closed set, exhaustive):
   - ``engine/special_situations.py``           — MATURE_CATEGORIES (issuer-level)
   - ``engine/capital_structure/event_spine.py`` — SEC form-route subtypes
-  - ``engine/policy_calendar.py``              — reg_stage + entity-list themes
+  - ``engine/policy_calendar.py`` / ``collectors/federal_register.py`` — reg_stages
 """
 from __future__ import annotations
 
@@ -33,13 +33,11 @@ MARGIN = "margin"
 MULTIPLE = "multiple"
 ALLOWED_TARGETS = frozenset({GROWTH, MARGIN, MULTIPLE})
 
-# ZH display names for each event class — plain-Word copy used by the
+# ZH display names for each event class — plain-word copy used by the
 # valuation panel's bilingual line. Keys are EN source-of-truth labels
-# (the keys of the three source maps); values are the ZH display name. The
-# bridge looks them up when the class is one of the special-situations
-# categories; for SEC and policy kinds, the bridge returns the EN key
-# verbatim in both languages (no ZH translation exists in the repo).
+# (the keys of the three source maps); values are the ZH display name.
 _EVENT_CLASS_ZH: dict[str, str] = {
+    # Special situations (MATURE_CATEGORIES)
     "Acquisitions":        "收购",
     "Divestitures":        "剥离",
     "Activist Campaigns":  "维权行动",
@@ -55,8 +53,37 @@ _EVENT_CLASS_ZH: dict[str, str] = {
     "Issuer Tenders":      "发行人要约",
     "Deal Terminations":   "交易终止",
     "SPACs":               "特殊目的收购公司",
-    "Management Changes":  "管理层变更",
+    "Management Changes":   "管理层变更",
     "Other":               "其他",
+    # SEC event-spine subtypes (EN verbatim in ZH — no ZH translation exists)
+    "registration_statement":           "registration_statement",
+    "automatic_shelf_registration":     "automatic_shelf_registration",
+    "registration_amendment":          "registration_amendment",
+    "post_effective_amendment":        "post_effective_amendment",
+    "automatic_shelf_withdrawal":      "automatic_shelf_withdrawal",
+    "withdrawal_request":              "withdrawal_request",
+    "effectiveness_notice":            "effectiveness_notice",
+    "prospectus_event":                "prospectus_event",
+    "charter_amendment_candidate":     "charter_amendment_candidate",
+    "shareholder_vote_candidate":       "shareholder_vote_candidate",
+    "unregistered_equity_sale_candidate": "unregistered_equity_sale_candidate",
+    "financing_agreement_candidate":   "financing_agreement_candidate",
+    "current_report_candidate":         "current_report_candidate",
+    "authorization_or_vote_candidate":  "authorization_or_vote_candidate",
+    "offering_statement":              "offering_statement",
+    "offering_statement_amendment":    "offering_statement_amendment",
+    "reg_a_event_candidate":           "reg_a_event_candidate",
+    "periodic_reconciliation_source":  "periodic_reconciliation_source",
+    "ownership_context_source":        "ownership_context_source",
+    "unsupported_form":                "unsupported_form",
+    # Federal Register reg_stages (EN verbatim in ZH)
+    "executive_order":     "executive_order",
+    "interim_final_rule":  "interim_final_rule",
+    "final_rule":          "final_rule",
+    "proposed_rule":       "proposed_rule",
+    "rfi":                 "rfi",
+    "funding_notice":      "funding_notice",
+    "notice":              "notice",
 }
 
 # Direction-word verbs in EN and ZH. Plain language, no magnitude /
@@ -104,74 +131,104 @@ def _direction_words(verb_en: str, verb_zh: str, target: str) -> tuple[str, str]
 # ---------------------------------------------------------------------------
 # Source 1: engine.special_situations — MATURE_CATEGORIES.
 # Canonical issuer-level event classes the desk promotes.
+#
+# Semantic basis:
+#   - Acquisitions / Spin-Offs / SPACs / Activist / Strategic Review → growth
+#     (fresh top-line or re-rating catalyst)
+#   - Divestitures → growth (spin-off or partial sale lifts per-share economics)
+#   - Restructuring / Liquidations / Deal Terminations / Management Changes → margin
+#     (operating drag reduction or cost action)
+#   - Capital Returns (buybacks) → per-share lift via lower share count, NOT margin
+#     → maps to GROWTH (per-share re-rating)
+#   - Tender Offers / Going-Private / Delistings / Issuer Tenders → multiple
+#     (takeout premium / exit pricing)
+#   - Rights Offerings → multiple (dilutive; new shares at discount presses per-share)
+#   - Other → typed null
 # ---------------------------------------------------------------------------
 SPECIAL_SITUATIONS_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
-    # growth — fresh top-line is the directional read
-    "Acquisitions":       (GROWTH, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
-    "Spin-Offs":          (GROWTH, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
-    "SPACs":              (GROWTH, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
+    # growth — fresh top-line or per-share re-rating
+    "Acquisitions":       (GROWTH,  *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
+    "Spin-Offs":          (GROWTH,  *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
+    "SPACs":              (GROWTH,  *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
     "Activist Campaigns": (GROWTH, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
-    "Strategic Reviews":  (GROWTH, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
-    "Divestitures":       (GROWTH, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  GROWTH)),
-    # margin — operating drag is the directional read
-    "Restructuring":      (MARGIN, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
-    "Capital Returns":    (MARGIN, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
-    "Liquidations":       (MARGIN, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
-    "Deal Terminations":  (MARGIN, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
-    "Management Changes": (MARGIN, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
-    # multiple — premium / exit pricing is the directional read
-    "Tender Offers":      (MULTIPLE, *_direction_words(_EN_LIFTS,   _ZH_LIFTS,    MULTIPLE)),
-    "Going-Private":      (MULTIPLE, *_direction_words(_EN_LIFTS,   _ZH_LIFTS,    MULTIPLE)),
-    "Delistings":         (MULTIPLE, *_direction_words(_EN_LIFTS,   _ZH_LIFTS,    MULTIPLE)),
-    "Issuer Tenders":     (MULTIPLE, *_direction_words(_EN_LIFTS,   _ZH_LIFTS,    MULTIPLE)),
-    "Rights Offerings":   (MULTIPLE, *_direction_words(_EN_LIFTS,   _ZH_LIFTS,    MULTIPLE)),
+    "Strategic Reviews":  (GROWTH,  *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
+    "Divestitures":       (GROWTH,  *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
+    # margin — operating drag reduction
+    "Restructuring":      (MARGIN,  *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
+    "Liquidations":       (MARGIN,  *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
+    "Deal Terminations":  (MARGIN,  *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
+    "Management Changes":  (MARGIN,  *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MARGIN)),
+    # multiple — takeout premium / exit / dilutive
+    "Tender Offers":      (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    "Going-Private":      (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    "Delistings":        (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    "Issuer Tenders":    (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    "Rights Offerings":  (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    # Capital Returns (buybacks): per-share lift via lower share count → GROWTH.
+    # The lift is a per-share re-rating, not a margin press.
+    "Capital Returns":   (GROWTH,   *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
     # "Other" is the catch-all bucket — no clear directional read.
     "Other":              None,
 }
 
 # ---------------------------------------------------------------------------
-# Source 2: engine.capital_structure.event_spine — SEC event-kind subtypes.
-# Only the subtypes with a meaningful directional read are mapped; mechanical
-# lifecycle kinds (effectiveness, periodic reports, proxies, prospectus
-# filings) return None — no directional read for those event classes.
+# Source 2: engine.capital_structure.event_spine — SEC form-route subtypes.
+# Keys are exactly the subtype strings returned by route_form() (lines 167-249).
+# Only subtypes with a meaningful directional read are mapped; mechanical
+# lifecycle kinds (effectiveness_notice, periodic_reconciliation_source, etc.)
+# return None — no directional read for informational filings.
 # ---------------------------------------------------------------------------
 EVENT_SPINE_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     # New equity issuance under a registration typically funds growth.
-    "registration_statement":        (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
-    "automatic_shelf_registration":  (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
-    "registration_amendment":        (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
-    # Post-effective / withdrawal events typically return capital — margin.
-    "post_effective_amendment":      (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    "automatic_shelf_withdrawal":    (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    "withdrawal_request":            (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    # Mechanical / informational lifecycle kinds — no directional read.
-    "effectiveness_notice":          None,
-    "periodic_report":               None,
-    "proxy_solicitation":            None,
-    "prospectus_filing":             None,
-    "insider_transaction":           None,
-    "ownership_change":              None,
-    "ownership_initial":             None,
+    "registration_statement":          (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
+    "automatic_shelf_registration":   (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
+    "registration_amendment":         (GROWTH,  *_direction_words(_EN_LIFTS,   _ZH_LIFTS,   GROWTH)),
+    # Post-effective amendments and withdrawals return capital — no growth press.
+    "post_effective_amendment":       (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    "automatic_shelf_withdrawal":     (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    "withdrawal_request":             (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    # Mechanical / lifecycle kinds — no directional read.
+    "effectiveness_notice":            None,
+    "prospectus_event":                None,
+    "charter_amendment_candidate":     None,
+    "shareholder_vote_candidate":      None,
+    "unregistered_equity_sale_candidate": None,
+    "financing_agreement_candidate":  None,
+    "current_report_candidate":        None,
+    "authorization_or_vote_candidate": None,
+    "offering_statement":              None,
+    "offering_statement_amendment":   None,
+    "reg_a_event_candidate":           None,
+    "periodic_reconciliation_source":  None,
+    "ownership_context_source":        None,
+    "unsupported_form":                None,
 }
 
 # ---------------------------------------------------------------------------
-# Source 3: engine.policy_calendar — Federal Register reg_stages + themes.
-# Sector-level (not issuer-level); directional reads are domain standards
-# the bridge owns as plain words. None = no directional read for that kind.
+# Source 3: collectors.federal_register — Federal Register reg_stages.
+# Keys are the canonical reg_stage strings from _STAGE_WEIGHTS (lines 60-70).
+# Domain standards — directional reads are owned here as plain words.
+# None = no actionable directional read for valuation.
 # ---------------------------------------------------------------------------
 POLICY_CALENDAR_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
-    "entity_list_update":            (MARGIN, *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    "export_control_rule":           (MARGIN, *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    "final_rule":                    (MARGIN, *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    "proposed_rule":                 (MARGIN, *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
-    "request_for_information":       None,
-    "notice":                        None,
+    # Executive orders are sector-wide macro events — press margin (cost/mandate).
+    "executive_order":     (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    # Interim final rules have immediate force — press margin.
+    "interim_final_rule": (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    # Final rules are enacted regulation — press margin.
+    "final_rule":         (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    # Proposed rules signal future compliance cost — press margin.
+    "proposed_rule":      (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    # RFIs are information-gathering; no directional read.
+    "rfi":                None,
+    # Funding notices signal grant/contract opportunity — press margin.
+    "funding_notice":     (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    # General notices carry no specific directional read.
+    "notice":             None,
 }
 
 # ---------------------------------------------------------------------------
 # Closed (exhaustive) union — every event class the repo already produces.
-# Adding a new event class requires an entry in one of the three source maps;
-# the union is the public surface.
 # ---------------------------------------------------------------------------
 EVENT_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     **SPECIAL_SITUATIONS_TO_ASSUMPTION,
@@ -185,9 +242,7 @@ def bridge(event_class: object) -> dict | None:
     event_class}``, or ``None``.
 
     Returns ``None`` when the input is not a string, is empty after stripping,
-    or is absent from the closed map. The closed map covers every event
-    class the repo already produces; classes that fall through are typed
-    as ``None`` rather than silently mapped to one of the three targets.
+    or is absent from the closed map.
     """
     if not isinstance(event_class, str):
         return None
@@ -198,7 +253,6 @@ def bridge(event_class: object) -> dict | None:
     if pair is None:
         return None
     target, direction_word_en, direction_word_zh = pair
-    # Hard invariant: every non-None pair targets one of the three F07-2 inputs.
     assert target in ALLOWED_TARGETS, (
         f"target {target!r} not in {sorted(ALLOWED_TARGETS)}"
     )
@@ -223,10 +277,5 @@ def bridge_for_issuer(latest_event_class: object) -> dict | None:
 
 
 def classified_event_domain() -> dict[str, tuple[str, str, str] | None]:
-    """Read-only view of the closed map.
-
-    Used by tests (every entry must satisfy the closed-map invariant) and
-    by the build script (so a new event class added to one of the three
-    source modules shows up here without extra wiring).
-    """
+    """Read-only view of the closed map."""
     return dict(EVENT_TO_ASSUMPTION)
