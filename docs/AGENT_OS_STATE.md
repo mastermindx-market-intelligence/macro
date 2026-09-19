@@ -2,21 +2,19 @@
 
 # Agent OS state
 
-Generated: 2026-09-18T15:26:31Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
+Generated: 2026-09-19T04:00:29Z  |  69 workstreams (50 active · 1 awaiting_ci · 2 awaiting_review · 4 blocked · 8 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-09-18T15:26:30.992347+00:00 |
+| active_builds | data/governance/active_builds.json@2026-09-19T04:00:28.959014+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
-| records | 69 WS · 320 DEC · 276 DSC · 466 handoffs |
+| records | 69 WS · 321 DEC · 276 DSC · 467 handoffs |
 
 ## Degraded inputs
 
-- record excluded (malformed): agentos/discoveries/DSC-POINTER-TAP-MUST-BE-TIMED-ON-EVENT-STAMPS.md: [unfalsifiable-claim] 'falsifier' carries no runnable token — needs a command, a 'file:line', or a '#PR' (README rule 4), got 'Drive a real browser, hold the main thread N ms from a windo'
 - active_builds.v1 open_prs is TRUNCATED at the gh --limit cap — some open PRs are missing from the join, so a wave may read 'unknown' while its PR is open
 - Mastermind checkout not found — p0 ids unvalidated, p0_active unknown
-- uncommitted-work scan skipped over 1 worktrees (one `git status` each) — re-run with --scan-uncommitted for stranded work
 
 ## Workstreams
 
@@ -331,6 +329,7 @@ Generated: 2026-09-18T15:26:31Z  |  69 workstreams (50 active · 1 awaiting_ci �
 - agentos/decisions/DEC-CS-V2-WHOLE-GENERATION-APPEND-ONLY-FENCE.md: [review-overdue] review_by 2026-08-25 has passed
 - agentos/decisions/DEC-D0R-RED-TEAM-ADJUDICATION-2026-08-17.md: [review-overdue] review_by 2026-08-18 has passed
 - agentos/decisions/DEC-E3-EVENT-INTELLIGENCE-COMPILER-NOT-SCORER.md: [review-overdue] review_by 2026-08-23 has passed
+- agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md: [review-overdue] review_by 2026-09-13 has passed
 - agentos/decisions/DEC-PROPHET-US-PERMANENCE-NET.md: [review-overdue] review_by 2026-09-10 has passed
 - agentos/decisions/DEC-SI-METHOD-LAW-CHANNELS.md: [review-overdue] review_by 2026-09-15 has passed
 - agentos/decisions/DEC-W2C-M0B-V1-SOURCE-WINDOW-UNACHIEVABLE.md: [review-overdue] review_by 2026-08-27 has passed

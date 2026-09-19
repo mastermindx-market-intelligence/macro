@@ -445,3 +445,5 @@
 {"id": "2026-09-17-REXR-20260918081732-6", "ticker": "REXR", "subject": "REXR", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-15", "outcome": "unscored", "scored_at": "2026-09-18T08:17:33.968941+00:00"}
 {"id": "2026-09-17-WAT-20260918191031-3", "ticker": "WAT", "subject": "WAT", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-08", "outcome": "unscored", "scored_at": "2026-09-18T19:10:33.047051+00:00"}
 {"id": "2026-09-17-PLUS-20260918191031-4", "ticker": "PLUS", "subject": "PLUS", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-15", "outcome": "unscored", "scored_at": "2026-09-18T19:10:33.047060+00:00"}
+{"id": "2026-09-17-WAT-20260919095039-3", "ticker": "WAT", "subject": "WAT", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-16", "outcome": "unscored", "scored_at": "2026-09-19T09:50:40.618531+00:00"}
+{"id": "2026-09-17-PLUS-20260919095039-4", "ticker": "PLUS", "subject": "PLUS", "lean": "neutral", "conviction": "low", "kind": "soft", "check_by": "2026-10-16", "outcome": "unscored", "scored_at": "2026-09-19T09:50:40.618541+00:00"}
