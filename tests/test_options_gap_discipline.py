@@ -1003,7 +1003,7 @@ def test_r8_positive_delta_oi_yields_bounds_not_opening_point_estimate():
     high = got["cohorts"]["high_turnover_volume_gt_prior_oi"]
     assert high["contracts"] == 1
     assert high["net_oi_increase"] == 1
-    bounds = got["identified_bounds"]
+    bounds = got["conditional_trade_only_bounds"]
     assert bounds["min_open_open_volume"] == pytest.approx(30)
     assert bounds["max_open_open_volume"] == pytest.approx(90)
     assert bounds["min_close_close_volume"] == pytest.approx(0)
@@ -1024,7 +1024,7 @@ def test_r8_negative_delta_oi_yields_symmetric_feasible_bounds():
         store_api=_r8_api(eod, prior, later),
         calendar_api=Calendar,
     )
-    bounds = got["identified_bounds"]
+    bounds = got["conditional_trade_only_bounds"]
     assert bounds["min_open_open_volume"] == pytest.approx(0)
     assert bounds["max_open_open_volume"] == pytest.approx(30)
     assert bounds["min_close_close_volume"] == pytest.approx(40)
@@ -1043,10 +1043,12 @@ def test_r8_abs_delta_oi_above_volume_is_inconsistent_and_excluded_from_bounds()
         calendar_api=Calendar,
     )
     assert got["coverage"]["fully_matched_contracts"] == 1
-    assert got["coverage"]["oi_volume_inconsistent_contracts"] == 1
-    assert got["coverage"]["oi_volume_consistent_contracts"] == 0
-    assert got["identified_bounds"]["total_volume"] == pytest.approx(0)
-    assert got["identified_bounds"]["open_open_share_lower"] is None
+    assert got["coverage"]["trade_conservation_incompatible_contracts"] == 1
+    assert got["coverage"]["trade_conservation_compatible_contracts"] == 0
+    bounds = got["conditional_trade_only_bounds"]
+    assert bounds["total_volume"] == pytest.approx(0)
+    assert bounds["open_open_share_lower"] is None
+    assert "exercise" in bounds["assumption"]
 
 
 def test_r8_missing_later_oi_stays_missing_not_zero():
