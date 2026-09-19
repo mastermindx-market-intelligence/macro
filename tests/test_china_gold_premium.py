@@ -760,3 +760,54 @@ def test_intraday_without_compatible_history_omits_data_table():
     html = _render_premium_partial(vm)
 
     assert '<table class="cgp-data-table">' not in html
+
+
+def test_close_proxy_vm_render_and_audit_agree_end_to_end():
+    from scripts import audit_china_gold_premium as audit
+
+    m = _mod()
+    idx = pd.date_range("2026-08-10 07:30:00", periods=40, freq="D")
+    frames = {
+        ("gold_china_basis", "sge_au9999"): pd.DataFrame(
+            {"rmb_per_g": np.linspace(805.0, 825.0, len(idx))}, index=idx
+        ),
+        ("gold_china_basis", "xaucny_spot"): pd.DataFrame(
+            {"cny_per_oz": np.linspace(25050.0, 25550.0, len(idx))}, index=idx
+        ),
+    }
+    cfg = {
+        "canonical": {},
+        "intraday": {},
+        "close_proxy": {
+            "sge": _leg(
+                "gold_china_basis",
+                "sge_au9999",
+                column="rmb_per_g",
+                label="Shanghai Gold Exchange Au99.99",
+            ),
+            "global": _leg(
+                "gold_china_basis",
+                "xaucny_spot",
+                column="cny_per_oz",
+                label="Global XAU/CNY spot",
+            ),
+            "max_skew_minutes": 2,
+            "max_age_days": 4,
+        },
+    }
+
+    vm = m.build_view_model(
+        cfg,
+        reader=lambda group, name: frames.get((group, name)),
+        now=pd.Timestamp("2026-09-18T12:00:00Z"),
+    )
+    html = _render_premium_partial(vm)
+    receipt = audit.evaluate(vm, html, checked_at="2026-09-18T12:00:00+00:00")
+
+    assert vm["current_method"] == "close_proxy"
+    assert receipt["status"] == "available_fresh"
+    assert receipt["render_consistent"] is True
+    assert receipt["rendered_display_source"] == "proxy"
+    assert receipt["rendered_currency"] == "CNY"
+    assert receipt["rendered_source_asof"] == vm["close_proxy"]["asof"]
+    assert receipt["rendered_premium_pct"] == pytest.approx(vm["premium_pct"], abs=5e-7)
