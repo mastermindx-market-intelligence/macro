@@ -1077,8 +1077,11 @@ def account(user: dict = Depends(require_user),
         from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
         # Use the resolved token from require_user (which handles both Bearer and cookie).
         # authorization Header may be absent when only the session cookie was present.
+        # Fall back to extracting from the header when callers bypass require_user (direct
+        # route-level tests; production path always passes through require_user).
+        caller_token = user.get("_access_token") or team_membership.extract_bearer(authorization)
         teams = team_membership.fetch_caller_teams(
-            user.get("_access_token"),
+            caller_token,
             str(user.get("id") or ""),
             _supabase(),
         )
