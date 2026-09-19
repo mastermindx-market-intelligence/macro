@@ -31,9 +31,11 @@ def issuer_spines(tmp_path, monkeypatch):
     """Use the owners' paths, with no dependency on live issuer coverage."""
     chronicle = import_module("engine.chronicle.spine")
     compiler = import_module("scripts.compile_capital_structure_events")
+    from lib import config
     path = tmp_path / "events.jsonl"
     monkeypatch.setattr(chronicle, "EVENTS_REL", path)
     monkeypatch.setattr(compiler, "_data_root", lambda: tmp_path)
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     return path
 
 # ---------------------------------------------------------------------------
@@ -592,6 +594,45 @@ def test_production_path_renders_aapl_typed_null_from_committed_spine(
         assert phrase not in sentence
     assert "Post-Effective Amendment" not in sentence
     assert "post_effective_amendment" not in sentence
+
+
+# ---------------------------------------------------------------------------
+# RED-first: no collector imports at call time (requests / collectors.*).
+# ---------------------------------------------------------------------------
+
+def test_controls_blob_no_collector_import_at_call_time(
+    issuer_spines, monkeypatch
+):
+    """Blocking requests and collectors.sec_capital_structure does not raise,
+    and produces the same output as without the block."""
+    # First, get the baseline output (no blocking).
+    v1_nsa = vs.compute(_rows(), ticker="NSA")
+    v1_aapl = vs.compute(_rows(), ticker="AAPL")
+    baseline_nsa = va.controls_blob(v1_nsa)
+    baseline_aapl = va.controls_blob(v1_aapl)
+
+    # Block both modules before the next import.
+    import sys
+    with monkeypatch.context() as m:
+        m.setitem(sys.modules, "requests", None)
+        m.setitem(sys.modules, "collectors.sec_capital_structure", None)
+        # Import fresh after blocking.
+        import importlib
+        va_module = importlib.import_module("engine.valuation_assumptions")
+        blocked_nsa = va_module.controls_blob(v1_nsa)
+        blocked_aapl = va_module.controls_blob(v1_aapl)
+
+    # Same output, no exception.
+    assert blocked_nsa is not None, "NSA controls_blob must not return None"
+    assert blocked_aapl is not None, "AAPL controls_blob must not return None"
+    assert (
+        blocked_nsa.get("latest_event_bridge")
+        == baseline_nsa.get("latest_event_bridge")
+    ), "NSA latest_event_bridge must match baseline"
+    assert (
+        blocked_aapl.get("latest_event_bridge")
+        == baseline_aapl.get("latest_event_bridge")
+    ), "AAPL latest_event_bridge must match baseline"
 
 
 # ---------------------------------------------------------------------------
