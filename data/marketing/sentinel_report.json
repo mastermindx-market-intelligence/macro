@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-19T09:34:35Z",
+  "produced_at": "2026-09-19T21:56:12Z",
   "as_of": "2026-09-19",
   "plan_status": "refused",
   "publish_enabled": false,
@@ -20,12 +20,48 @@
   },
   "quarantined": [
     {
+      "id": "post-flagship-018",
+      "account": "flagship",
+      "slot": "D1-S18",
+      "type": "signal",
+      "cashtag": "$WULF",
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "stale_receipts_ledger"
+      ]
+    },
+    {
       "id": "post-flagship-020",
       "account": "flagship",
       "slot": "D1-S20",
       "type": "macro",
       "cashtag": "",
       "headline": "",
+      "class": "policy",
+      "reasons": [
+        "stale_receipts_ledger"
+      ]
+    },
+    {
+      "id": "post-flagship-035",
+      "account": "flagship",
+      "slot": "D1-S35",
+      "type": "signal",
+      "cashtag": "$SIG",
+      "headline": "",
+      "class": "policy",
+      "reasons": [
+        "stale_receipts_ledger"
+      ]
+    },
+    {
+      "id": "post-conf-flagship-004",
+      "account": "flagship",
+      "slot": "CONF-04",
+      "type": "signal",
+      "cashtag": "$SRE",
+      "headline": "$SRE just lined up a pattern we track.",
       "class": "policy",
       "reasons": [
         "stale_receipts_ledger"
@@ -68,30 +104,6 @@
       ]
     },
     {
-      "id": "post-meagan-013",
-      "account": "meagan",
-      "slot": "D1-S13",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "Jobless claims averaging 203k a week this month, 13.1% below a year ago.",
-      "class": "policy",
-      "reasons": [
-        "stale_receipts_ledger"
-      ]
-    },
-    {
-      "id": "post-meagan-050",
-      "account": "meagan",
-      "slot": "D1-S50",
-      "type": "chart",
-      "cashtag": "$TTD",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "stale_receipts_ledger"
-      ]
-    },
-    {
       "id": "post-theme-004",
       "account": "meagan",
       "slot": "D1-S5",
@@ -104,48 +116,24 @@
       ]
     },
     {
-      "id": "post-sophia-054",
-      "account": "sophia",
-      "slot": "D1-S54",
-      "type": "receipt",
-      "cashtag": "$ASTE",
-      "headline": "",
+      "id": "post-theme-005",
+      "account": "kelly",
+      "slot": "D1-S3",
+      "type": "theme_list",
+      "cashtag": "$FSLY",
+      "headline": "Cloud Computing selling off, -1.8% avg on Friday",
       "class": "policy",
       "reasons": [
         "stale_receipts_ledger"
       ]
     },
     {
-      "id": "post-kelly-044",
-      "account": "kelly",
-      "slot": "D1-S44",
+      "id": "post-cici-049",
+      "account": "cici",
+      "slot": "D1-S49",
       "type": "receipt",
       "cashtag": "$LUV",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "stale_receipts_ledger"
-      ]
-    },
-    {
-      "id": "post-kelly-050",
-      "account": "kelly",
-      "slot": "D1-S50",
-      "type": "chart",
-      "cashtag": "$NABL",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "stale_receipts_ledger"
-      ]
-    },
-    {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
+      "headline": "Southwest, $LUV, held 40.9 again, the most-traded price of the past six months.",
       "class": "policy",
       "reasons": [
         "stale_receipts_ledger"
@@ -158,6 +146,18 @@
       "type": "theme_list",
       "cashtag": "$AKAM",
       "headline": "Telecommunications selling off, -1.2% avg on Friday",
+      "class": "policy",
+      "reasons": [
+        "stale_receipts_ledger"
+      ]
+    },
+    {
+      "id": "post-housepick-003",
+      "account": "mastermind_news",
+      "slot": "D1-S1",
+      "type": "watchlist",
+      "cashtag": "$CRWD",
+      "headline": "",
       "class": "policy",
       "reasons": [
         "stale_receipts_ledger"
