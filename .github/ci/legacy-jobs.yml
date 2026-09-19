@@ -3818,9 +3818,14 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow requests pyyaml
-      - name: whole-board breadth collector + heatmap payload contract
-        run: python -m pytest tests/test_china_board_breadth.py tests/test_market_heatmap.py -q
+        run: pip install pytest pandas numpy pyarrow requests pyyaml jinja2
+      - name: whole-board breadth collector + heatmap publication contracts
+        run: >
+          python -m pytest
+          tests/test_china_board_breadth.py
+          tests/test_market_heatmap.py
+          tests/test_china_heatmap_freshness.py
+          -q
 
   china-search-universe:
     if: ${{ false }}
@@ -4167,6 +4172,9 @@ jobs:
       # scripts/build_site.py's guarded macro-suite hook.
       - "scripts/build_macro_suite_pages.py"
       - "scripts/build_market_heatmap.py"
+      # China heatmap incident guard: build_market_heatmap imports the binding
+      # source/payload/session verifier. Exclusive scope must cover that edge.
+      - "scripts/check_china_heatmap_freshness.py"
       - "scripts/build_market_memory_page.py"
       - "scripts/build_market_structure_page.py"
       - "scripts/build_output_health.py"
@@ -7914,6 +7922,9 @@ jobs:
       # scripts/build_site.py's guarded macro-suite hook.
       - "scripts/build_macro_suite_pages.py"
       - "scripts/build_market_heatmap.py"
+      # China heatmap incident guard: build_market_heatmap imports the binding
+      # source/payload/session verifier. Exclusive scope must cover that edge.
+      - "scripts/check_china_heatmap_freshness.py"
       - "scripts/build_market_memory_page.py"
       - "scripts/build_market_structure_page.py"
       - "scripts/build_risk_envelope.py"
@@ -12005,6 +12016,9 @@ jobs:
       # scripts/build_site.py's guarded macro-suite hook.
       - "scripts/build_macro_suite_pages.py"
       - "scripts/build_market_heatmap.py"
+      # China heatmap incident guard: build_market_heatmap imports the binding
+      # source/payload/session verifier. Exclusive scope must cover that edge.
+      - "scripts/check_china_heatmap_freshness.py"
       - "scripts/build_market_memory_page.py"
       - "scripts/build_market_structure_page.py"
       - "scripts/build_masterminds.py"

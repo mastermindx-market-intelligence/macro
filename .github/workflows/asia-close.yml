@@ -307,7 +307,9 @@ jobs:
           # reports/*.md graders) that no `git add` here covers — left unstaged they
           # abort `git pull --rebase` ("unstaged changes") and the push silently dies
           # after 5 retries, discarding the whole collection (froze 2026-07-02..07).
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           git add data/ site/qledger/
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           if git diff --cached --quiet; then echo "no asia data changes"; else
             git commit -m "data: asia collection $(date -u +%F)"
             push_retry_init "asia data"
@@ -335,6 +337,30 @@ jobs:
               push_backoff
             done
             push_lost
+          fi
+      # Binding owner for the public A-share treemap.  Before 2026-09-16 this
+      # lane refreshed china_search/closes.parquet but never rebuilt the heatmap;
+      # unrelated render lanes occasionally stamped a new generated_utc over an
+      # old session, so the public JSON stayed at 2026-09-09 after the source had
+      # recovered through 2026-09-15. Freeze one clock per build/check pair, build
+      # JSON + the crawlable/fallback SSR page from the post-rebase close panel,
+      # and record a heatmap-local failure without suppressing unrelated CN/HK
+      # outputs.  A terminal step after the publish tail turns the job red.
+      - name: build + verify China A-share heatmap (binding session contract)
+        continue-on-error: true
+        run: |
+          marker="$RUNNER_TEMP/china-heatmap-failed"
+          # Freeze one wall clock for this JSON + SSR + verifier pair only. A
+          # later post-rebase attempt samples again so a long run cannot carry a
+          # pre-settle expected-session decision across the 09:00 UTC boundary.
+          heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if python -m scripts.build_market_heatmap --market china --render-page --now "$heatmap_now" \
+             && python -m scripts.check_china_heatmap_freshness --now "$heatmap_now"; then
+            rm -f "$marker"
+          else
+            touch "$marker"
+            git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html
+            exit 1
           fi
       - name: timings band — build-china (W2)
         run: python3 scripts/nightly_timings.py mark --band build-china || echo "::warning::timings band mark failed (non-fatal)"
@@ -839,7 +865,23 @@ jobs:
           # refuse stash/rebase wreckage (2026-08-01 d29e4dd44d: a conflicted
           # autostash apply was staged wholesale — 1,704 pages shipped markers)
           bash "${GITHUB_WORKSPACE:-.}/scripts/ci/strip_conflict_markers.sh"
+          # Re-sample immediately before the no-change early exit. The first
+          # heatmap build can run before the 09:00 UTC settle boundary while this
+          # long job reaches its commit step after it; without this check a clean
+          # staging tree would exit 0 and leave yesterday silently accepted. A
+          # heatmap-only failure restores the pre-engine HEAD pair and sets the
+          # delayed-failure marker, but does not suppress other CN/HK outputs.
+          heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if python -m scripts.check_china_heatmap_freshness --now "$heatmap_now"; then
+            rm -f "$RUNNER_TEMP/china-heatmap-failed"
+          else
+            touch "$RUNNER_TEMP/china-heatmap-failed"
+            git checkout HEAD -- site/marketdata/china_heatmap.json site/china_heatmap.html
+            echo "::warning title=China heatmap held before staging::current-clock freshness failed; the pre-engine pair was restored and other CN/HK outputs continue"
+          fi
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           git add data/ site/
+          bash scripts/ci/options_signal_nightly.sh exclude-broad
           # separate + tolerant: `git add site/ templates/` exits 128 when a pathspec
           # matches nothing, and this step runs under `-eo pipefail` — a missing
           # templates/ would abort the commit and lose the whole render rather than
@@ -879,6 +921,38 @@ jobs:
             # the rebase (the next externalize_css prunes the orphan); on any other
             # conflict it exits nonzero, leaving the rebase for the abort+retry below.
             if { git pull --rebase --autostash -X theirs origin main || bash scripts/rebase_autoresolve_hashed_css.sh; } && push_autostash_ok; then
+              # The pushed tree is this post-rebase tree, not the one validated
+              # before the first commit. Re-sample the session clock for every
+              # attempt: a long run can cross the 09:00 UTC mainland-settle edge,
+              # and yesterday must not remain acceptable after that boundary.
+              # Freeze the fresh value only across this JSON + SSR + verifier pair.
+              # On failure restore the post-fetch origin/main pair, publish unrelated
+              # outputs, and let the terminal marker check turn the job red.
+              heatmap_now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              if python -m scripts.build_market_heatmap --market china --render-page --now "$heatmap_now" \
+                 && python -m scripts.check_china_heatmap_freshness --now "$heatmap_now"; then
+                rm -f "$RUNNER_TEMP/china-heatmap-failed"
+              else
+                touch "$RUNNER_TEMP/china-heatmap-failed"
+                # HEAD is this run's engine commit and may already contain a map
+                # that was acceptable before, but stale after, the 09:00 UTC
+                # settle edge. Restore the post-fetch main pair, not HEAD, and
+                # commit the compensation before push: unrelated outputs survive
+                # while this run can never introduce a newly stale heatmap tree.
+                git checkout origin/main -- site/marketdata/china_heatmap.json site/china_heatmap.html
+                git add site/marketdata/china_heatmap.json site/china_heatmap.html
+                if ! git diff --cached --quiet -- site/marketdata/china_heatmap.json site/china_heatmap.html; then
+                  if ! push_staged_clean site/marketdata/china_heatmap.json site/china_heatmap.html; then
+                    echo "::error title=China heatmap rollback refused::origin/main heatmap pair failed the staged conflict-marker guard"
+                    exit 1
+                  fi
+                  git commit -m "render-heal: hold stale China heatmap at origin main" || {
+                    echo "::error title=China heatmap rollback failed::could not commit the compensating origin/main pair"
+                    exit 1
+                  }
+                fi
+                echo "::warning title=China heatmap repair held::post-rebase heatmap failed its binding session contract; origin/main heatmap bytes were restored, other CN/HK outputs continue, and the job will fail after publish"
+              fi
               # post-rebase template↔site re-sync (ui.template_site_sync): externalize_css
               # above lifts the plain-copy landing/chat pages' inline <style> to hashed files,
               # diverging site/index.html + site/chat.html from their templates — and this lane
@@ -964,7 +1038,7 @@ jobs:
           fi
       # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel
       # still records the night in the grace window (elapsed ≈ cap → the warning fires).
-      # LAST, deliberately — behind the R2 publish + freshness verify above, unlike
+      # LAST telemetry-producing step, deliberately — behind the R2 publish + freshness verify above, unlike
       # daily.yml's engine job where the finish step is hoisted ahead of its tail. The
       # engine exception is scoped to a pages-artifact upload: on run 31067383446
       # (2026-08-06, cancelled at the 200m cap + 5m grace) steps 117-121 — including the
@@ -974,6 +1048,14 @@ jobs:
       # exactly the two bounded R2 steps that were measured to fit, so nothing here can
       # strand the row, and ordering the finish step last keeps the ledger's
       # `commit-publish` band covering the whole publish tail instead of cutting it short.
+      - name: fail if China heatmap missed settled close
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/china-heatmap-failed" ]; then
+            echo "::error title=China heatmap stale::the binding JSON + SSR heatmap contract failed; unrelated CN/HK outputs were still allowed to publish"
+            echo "### ❌ China heatmap did not reach the settled mainland close; see the build/recheck annotations above." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
         run: bash scripts/ci/nightly_timings_finish.sh 165

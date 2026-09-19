@@ -2278,6 +2278,21 @@ lanes:
       - id: collect_asia
         module: scripts.collect
         args: [--group, asia]
+      - id: build_china_heatmap
+        module: scripts.build_market_heatmap
+        args: [--market, china, --render-page]
+        note: >
+          Binding settled-close producer for the China A-share JSON and standalone
+          SSR page. Runs after the collected close panel is committed and before the
+          China dashboard spine. The workflow supplies a freshly sampled --now clock
+          to each build/check pair and rebuilds again after every push-loop rebase.
+      - id: check_china_heatmap_freshness
+        module: scripts.check_china_heatmap_freshness
+        note: >
+          Fail-closed source/membership/JSON/SSR/session contract. The workflow also
+          re-invokes this verifier immediately before broad staging and after every
+          rebase; one declaration records the canonical module in this lane while the
+          workflow-order regression suite pins each repeated boundary.
       # build_china stays a SERIAL head (2026-07-14 band restructure): it writes the
       # china regime gate + regime_history, china_standouts.json and the risk_radar_intl
       # CN forward log/calibration — inputs read by nearly every builder in band A. Its
