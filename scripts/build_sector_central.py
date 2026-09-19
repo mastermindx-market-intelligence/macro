@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import sys
 from pathlib import Path
 
@@ -21,11 +22,27 @@ from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from lib import config  # noqa: E402
+from lib import config, nyse_calendar  # noqa: E402
+from lib import sector_participation as w1_contract  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_sector_central")
+
+
+_w1_generation_id = w1_contract.generation_id
+_validate_w1_package = w1_contract.validate_package
+_atomic_project_bytes = w1_contract.atomic_replace_bytes
+
+
+def read_sector_participation_20(*, site: Path | None = None) -> dict:
+    """Project one validated W1 generation and return its UI pointer."""
+    return w1_contract.read_public_pointer(
+        source_path=config.data_dir() / "breadth" / "sector_participation_20.json",
+        site=site,
+        current_expected_session=nyse_calendar.expected_last_session().isoformat(),
+        logger=log,
+    )
 
 
 #: Board lanes that carry the reduce-side read. The graduation-gap chip only ever
@@ -429,6 +446,11 @@ def main() -> int:
         log.warning("sector_central: grader failed: %s", e)
         data["grader"] = {"available": False, "note": "grader error"}
 
+    # W1: 20-session sector participation — a separate DESCRIPTIVE context attached
+    # AFTER the grader above, never inside cc.compute() or the graded object
+    # (research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md §2).
+    data["sector_participation"] = read_sector_participation_20(site=site)
+
     payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
     (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
     fdir = site / "sectordata"
@@ -560,6 +582,9 @@ def main() -> int:
         src = root / "templates" / asset
         if src.exists():
             shutil.copy2(src, site / asset)
+    # W1 browser projection follows the same import-light package owner as the
+    # producer and reader; first Money activation remains the only runtime fetch.
+    w1_contract.copy_client_asset(template_root=root / "templates", site=site)
     for need in ("sector_cycles_data.js", "sector_cycles_series_data.js",
                  "sector_cycles_narr_data.js", "sector_cycles_dna_data.js",
                  "mm_charts.js", "cycle.css"):

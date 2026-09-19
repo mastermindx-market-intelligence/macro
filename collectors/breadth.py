@@ -14,18 +14,90 @@
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 import io
+import json
 import logging
 import re
 import time
+from datetime import date
+from pathlib import Path
 
+import numpy as np
 import pandas as pd
+import requests
 import yfinance as yf
 
-from collectors.base import Adapter
-from lib import config, delisted_symbols
+from collectors.base import Adapter, is_connection_error, safe_exc_text
+from lib import config, delisted_symbols, nyse_calendar
+from lib import sector_participation as w1_contract
 
 log = logging.getLogger(__name__)
+
+
+class LicensedSourceError(RuntimeError):
+    """A licensed response could not become W1 evidence.
+
+    ``member_state`` distinguishes an unavailable/refused request (``U``) from an
+    identity/basis/shape qualification failure (``I``).  ``fatal`` is reserved for
+    account-wide authentication/entitlement refusal: the bounded orchestrator may
+    finish already-running calls but must stop scheduling new W1 requests.
+    """
+
+    def __init__(self, message: str, *, member_state: str = "U", fatal: bool = False):
+        super().__init__(message)
+        self.member_state = member_state if member_state in {"I", "U"} else "U"
+        self.fatal = bool(fatal)
+
+
+#: research/skylit/W1_SOURCE_IMPLEMENTATION_RULING_2026-09-11.md §2 / §"Why this is
+#: not a new data platform": of the stores inspected, the ONLY one covered by the
+#: Massive entitlement (research/licenses/MASSIVE_ENTITLEMENT_RECORD.md) is
+#: collectors/massive_stock_day.py, and it is RAW — see lib/dataos/price.py
+#: KNOWN_STORE_BASES. Every *adjusted* store inspected (data/stocks, data/yahoo,
+#: baskets_ohlcv, baskets_extras, and this module's own _closes_cache.parquet) is
+#: yfinance-derived, and no qualified licensed provenance has been established for
+#: any of them — a limitation of what was inspected, not a claim that no adjusted
+#: store anywhere could ever carry one. W1_LICENSED_BASIS names what THIS reader
+#: actually returns, straight from the licensed vendor's own adjusted=true
+#: aggregate — closing that gap directly rather than reusing either existing side.
+W1_LICENSED_BASIS = w1_contract.PRICE_BASIS
+_W1_PACKAGE_SCHEMA = w1_contract.PACKAGE_SCHEMA
+_W1_MEMBER_STATES = w1_contract.MEMBER_STATES
+
+
+def _w1_http_controls(provider_cfg: dict) -> tuple[float, int, float]:
+    """Derive bounded W1 controls from the existing licensed-provider owner.
+
+    The provider's general timeout/retry settings remain the source of truth when
+    tighter than W1's bounded ceiling. Optional W1 keys may tighten them further,
+    but cannot turn a 503-name descriptive sidecar into an unbounded retry lane.
+    """
+    general_timeout = max(1.0, float(provider_cfg.get("request_timeout", 20.0)))
+    general_retries = max(1, int(provider_cfg.get("retries", 2)))
+    timeout = max(1.0, min(20.0, float(
+        provider_cfg.get("w1_request_timeout_seconds", min(20.0, general_timeout)))))
+    retries = max(1, min(2, int(
+        provider_cfg.get("w1_request_retries", min(2, general_retries)))))
+    backoff = max(0.0, min(1.0, float(
+        provider_cfg.get("w1_request_backoff_seconds", 1.0))))
+    return timeout, retries, backoff
+
+
+def _w1_request_ceiling_seconds(provider_cfg: dict) -> float:
+    """Worst-case wall time of one bounded request under Adapter.http_get."""
+    timeout, retries, backoff = _w1_http_controls(provider_cfg)
+    sleeps = backoff * ((2 ** (retries - 1)) - 1) if retries > 1 else 0.0
+    return timeout * retries + sleeps
+
+
+_w1_canonicalize = w1_contract.canonicalize
+_w1_observation_id = w1_contract.observation_id
+_w1_generation_material = w1_contract.generation_material
+_w1_generation_id = w1_contract.generation_id
+_w1_json_bytes = w1_contract.json_bytes
+_validate_w1_package = w1_contract.validate_package
 
 # A real US listing symbol: a letter, then up to 5 more letters/digits/dashes
 # (class shares like BRK-B after the .->- swap). Anything else in the Symbol
@@ -586,6 +658,23 @@ class BreadthAdapter(Adapter):
                 log.info("breadth updown: volume cache absent — updown.parquet not updated")
         except Exception as e:  # noqa: BLE001 — updown must never break the breadth build
             log.warning("breadth updown accrual failed (%s) — breadth.parquet unaffected", e)
+
+        # W1 is a fail-soft side publication owned only by the exact US S&P adapter.
+        # It never enters ``out`` and therefore cannot alter or suppress the protected
+        # 50/200 breadth frames. Full-history runs retain their historical behavior and
+        # do not spend a separate live licensed-request budget.
+        if self._owns_sector_participation_20() and not full_history:
+            try:
+                w1_result, w1_failures = self.fetch_sector_participation_20(members)
+                if not self.publish_sector_participation_20(
+                        w1_result, w1_failures, members,
+                        path=self.cache_path.parent / "sector_participation_20.json"):
+                    log.warning(
+                        "sector participation W1 did not replace its prior generation")
+            except Exception as e:  # noqa: BLE001 — old breadth remains publishable
+                log.warning(
+                    "sector participation W1 failed (%s) — existing 50/200 breadth "
+                    "outputs remain unchanged", e)
         return out
 
     def compute_sectors(self, closes: pd.DataFrame,
@@ -617,6 +706,738 @@ class BreadthAdapter(Adapter):
         out = pd.DataFrame(cols).dropna(how="all")
         p50 = [c for c in out.columns if c.endswith("|pct_above_50")]
         return out.dropna(subset=p50, how="all")
+
+    # ── W1: 20-session sector participation (additive; does not touch the
+    # existing 50/200 acquisition/output above) ────────────────────────────
+    def _owns_sector_participation_20(self) -> bool:
+        """Only the exact US S&P reference owner may acquire or publish W1.
+
+        Several regional/smaller-cap adapters inherit this class.  Exact type
+        identity is deliberate: inherited methods are available for reuse in
+        hermetic tests, but no sibling runtime may spend the licensed request
+        budget or mutate the canonical US package.
+        """
+        return type(self) is BreadthAdapter
+
+    def licensed_daily_window(self, ticker: str, start: date, end: date) -> pd.Series:
+        """Return one qualified, split-adjusted daily series for ``[start, end]``.
+
+        Transport completeness and historical observation completeness are different
+        facts.  A malformed/truncated envelope is refused; a successful bounded
+        response that simply has no row for an expected session remains a sparse
+        series.  The latter carries ``missing_sessions`` so downstream 20-session
+        windows can become ``M`` without discarding unaffected history.  Rows present
+        for an expected session but carrying an invalid close are kept separately in
+        ``invalid_sessions`` so the package can distinguish ``I`` from ``M``.
+
+        No raw response or credential is persisted.  The API key travels only in the
+        Authorization header, and the returned attrs contain bounded request/source
+        identity sufficient to explain the derived generation.
+        """
+        from collections.abc import Mapping
+
+        if end < start:
+            raise LicensedSourceError(f"{ticker}: window {start}..{end} runs backwards")
+        cfg = dict(config.load().get("polygon") or {})
+        base = str(cfg.get("base_url") or "https://api.polygon.io").rstrip("/")
+        key = (config.secret(str(cfg.get("api_key_env", "POLYGON_API_KEY")))
+               or config.secret("MASSIVE_API_KEY"))
+        if not key:
+            raise LicensedSourceError(f"{ticker}: no licensed vendor key configured", fatal=True)
+        url = f"{base}/v2/aggs/ticker/{ticker}/range/1/day/{start.isoformat()}/{end.isoformat()}"
+        timeout, retries, backoff = _w1_http_controls(cfg)
+        try:
+            response = self.http_get(
+                url,
+                retries=retries,
+                backoff_base=backoff,
+                timeout=timeout,
+                headers={"Authorization": f"Bearer {key}"},
+                params={"adjusted": "true", "sort": "asc", "limit": 50000},
+            )
+        except Exception as exc:  # noqa: BLE001 — translated to typed W1 source state
+            status_code = getattr(getattr(exc, "response", None), "status_code", None)
+            fatal = bool(
+                is_connection_error(exc)
+                or status_code in {401, 403, 407, 429}
+                or (isinstance(status_code, int) and status_code >= 500)
+            )
+            raise LicensedSourceError(
+                f"{ticker}: licensed source transport failed ({safe_exc_text(exc)})",
+                fatal=fatal,
+            ) from exc
+        try:
+            payload = response.json()
+        except Exception as exc:  # noqa: BLE001 — malformed response cannot become evidence
+            raise LicensedSourceError(
+                f"{ticker}: licensed response body was not valid JSON/object data",
+                member_state="I",
+            ) from exc
+
+        if not isinstance(payload, Mapping):
+            raise LicensedSourceError(
+                f"{ticker}: licensed response body must be a mapping/object", member_state="I")
+        status = payload.get("status")
+        if status not in ("OK", "DELAYED"):
+            failure_text = " ".join(
+                str(payload.get(key) or "") for key in ("status", "error", "message"))
+            lowered = failure_text.casefold().replace("_", " ")
+            fatal_markers = (
+                "not authorized", "unauthorized", "forbidden", "api key",
+                "invalid key", "entitlement", "subscription", "permission",
+                "plan", "rate limit", "too many requests", "service unavailable",
+                "internal server", "temporarily unavailable",
+            )
+            raise LicensedSourceError(
+                f"{ticker}: licensed response status {status!r}, not successful",
+                fatal=any(marker in lowered for marker in fatal_markers),
+            )
+        response_ticker = payload.get("ticker")
+        if not isinstance(response_ticker, str):
+            raise LicensedSourceError(
+                f"{ticker}: licensed response omitted the requested ticker identity", member_state="I")
+        # Case is identity.  The only accepted normalization is the vendor's class-
+        # share separator (BRK-B <-> BRK.B); broad uppercasing would turn a malformed
+        # response into apparently matching evidence.
+        if response_ticker != ticker and response_ticker.replace(".", "-") != ticker.replace(".", "-"):
+            raise LicensedSourceError(
+                f"{ticker}: licensed response echoed ticker {response_ticker!r} — identity mismatch",
+                member_state="I")
+        adjusted = payload.get("adjusted")
+        if adjusted is False:
+            raise LicensedSourceError(
+                f"{ticker}: licensed response explicitly reports adjusted=false", member_state="I")
+        if adjusted is not True:
+            raise LicensedSourceError(
+                f"{ticker}: licensed response did not explicitly report adjusted=true",
+                member_state="I")
+        if payload.get("next_url"):
+            raise LicensedSourceError(
+                f"{ticker}: licensed response was truncated (next_url present) — "
+                "refusing a partial window rather than paginating")
+
+        results = payload.get("results")
+        if not isinstance(results, list):
+            raise LicensedSourceError(
+                f"{ticker}: licensed response results must be a list", member_state="I")
+        request_id = payload.get("request_id")
+        if request_id is not None and not isinstance(request_id, str):
+            raise LicensedSourceError(
+                f"{ticker}: licensed response request_id is malformed", member_state="I")
+        declared_count = payload.get("resultsCount")
+        if (isinstance(declared_count, bool) or not isinstance(declared_count, int)
+                or declared_count != len(results)):
+            raise LicensedSourceError(
+                f"{ticker}: resultsCount {declared_count!r} does not match "
+                f"the {len(results)} returned result row(s)", member_state="I")
+
+        expected = pd.DatetimeIndex(
+            pd.Timestamp(d) for d in nyse_calendar.sessions_between(start, end))
+        expected_set = set(expected)
+        lo, hi = pd.Timestamp(start), pd.Timestamp(end)
+        rows: dict[pd.Timestamp, float] = {}
+        seen_sessions: set[pd.Timestamp] = set()
+        invalid_sessions: set[pd.Timestamp] = set()
+        duplicate_sessions: set[pd.Timestamp] = set()
+
+        for row in results:
+            if not isinstance(row, Mapping):
+                raise LicensedSourceError(
+                    f"{ticker}: licensed result row must be a mapping/object", member_state="I")
+            ts = row.get("t")
+            if isinstance(ts, bool) or not isinstance(ts, (int, float, np.integer, np.floating)):
+                raise LicensedSourceError(
+                    f"{ticker}: licensed result row carried an invalid timestamp", member_state="I")
+            try:
+                session = (pd.Timestamp(ts, unit="ms", tz="UTC")
+                           .tz_convert("America/New_York").normalize().tz_localize(None))
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise LicensedSourceError(
+                    f"{ticker}: licensed result timestamp could not be qualified", member_state="I") from exc
+
+            # An unexpected row is never accepted into the evidence set. Vendor APIs
+            # can return a boundary row outside the requested interval; ignoring it is
+            # safe because it contributes to neither the requested denominator nor a
+            # missing/invalid classification. An in-range non-session contradicts the
+            # qualified NYSE-session response contract and is refused below.
+            if session < lo or session > hi:
+                continue
+            if session not in expected_set:
+                raise LicensedSourceError(
+                    f"{ticker}: licensed response carried an in-range non-session row "
+                    f"for {session.date().isoformat()}", member_state="I")
+            if session in seen_sessions:
+                duplicate_sessions.add(session)
+                continue
+            seen_sessions.add(session)
+
+            close = row.get("c")
+            if (isinstance(close, bool)
+                    or not isinstance(close, (int, float, np.integer, np.floating))
+                    or not np.isfinite(close) or float(close) <= 0):
+                invalid_sessions.add(session)
+                continue
+            rows[session] = float(close)
+
+        if duplicate_sessions:
+            raise LicensedSourceError(
+                f"{ticker}: licensed response carried duplicate session(s) "
+                f"{sorted(duplicate_sessions)[:3]} — refusing rather than overwriting",
+                member_state="I")
+
+        series = pd.Series(rows, dtype=float).sort_index()
+        missing_sessions = sorted(expected_set - seen_sessions)
+        acquired_at = pd.Timestamp.now(tz="UTC").isoformat()
+        series.attrs.update({
+            "price_source": "licensed_vendor",
+            "adjusted": True,
+            "basis": W1_LICENSED_BASIS,
+            "vintage": acquired_at,
+            "acquired_at": acquired_at,
+            "requested_ticker": ticker,
+            "response_ticker": response_ticker,
+            "requested_start": start.isoformat(),
+            "requested_end": end.isoformat(),
+            "response_status": status,
+            "response_count": len(results),
+            "request_id": request_id,
+            "missing_sessions": [d.date().isoformat() for d in missing_sessions],
+            "invalid_sessions": [d.date().isoformat() for d in sorted(invalid_sessions)],
+        })
+        return series
+
+    def compute_sector_participation_20(self, closes: pd.DataFrame,
+                                        members: pd.DataFrame) -> pd.DataFrame | None:
+        """Compute typed 20-session participation on the expected NYSE calendar.
+
+        The returned frame retains the compact sector columns used by the existing
+        collector path and carries the exact same-generation per-member evidence in
+        ``DataFrame.attrs``.  Every member/session is typed ``A/B/H/M/I/U``; the
+        browser never reconstructs a moving average from prices.
+        """
+        from urllib.parse import quote
+
+        if "sector" not in members.columns or "symbol" not in members.columns:
+            return None
+        if closes is None or closes.empty:
+            return None
+
+        roster_columns = ["symbol", "sector"] + (["name"] if "name" in members.columns else [])
+        roster = members.loc[:, roster_columns].dropna(subset=["symbol", "sector"]).copy()
+        if roster.empty:
+            return None
+        roster["symbol"] = roster["symbol"].astype(str)
+        roster["sector"] = roster["sector"].astype(str)
+        if "name" not in roster.columns:
+            roster["name"] = roster["symbol"]
+        else:
+            roster["name"] = [
+                " ".join(str(value).split()) if pd.notna(value) and str(value).strip() else symbol
+                for value, symbol in zip(roster["name"], roster["symbol"])
+            ]
+        duplicate = roster["symbol"].duplicated(keep=False)
+        if duplicate.any():
+            names = sorted(roster.loc[duplicate, "symbol"].unique())
+            raise ValueError(
+                "duplicate roster membership is invalid until the identity owner "
+                f"resolves it: {names[:5]}")
+        sec_map = roster.set_index("symbol")["sector"]
+        name_map = roster.set_index("symbol")["name"]
+
+        source_evidence = dict(closes.attrs.get("member_evidence") or {})
+        start, end = closes.index.min().date(), closes.index.max().date()
+        full = pd.DatetimeIndex(
+            pd.Timestamp(d) for d in nyse_calendar.sessions_between(start, end))
+        raw = closes.reindex(full)
+        universe = pd.Index(sec_map.index).union(raw.columns.astype(str))
+        raw.columns = raw.columns.astype(str)
+        raw = raw.reindex(columns=universe)
+
+        clean = pd.DataFrame(index=raw.index, columns=raw.columns, dtype=float)
+        invalid = pd.DataFrame(False, index=raw.index, columns=raw.columns, dtype=bool)
+        for symbol in raw.columns:
+            original = raw[symbol]
+            bool_mask = original.map(
+                lambda value: isinstance(value, (bool, np.bool_)) if pd.notna(value) else False)
+            numeric = pd.to_numeric(original.where(~bool_mask), errors="coerce")
+            valid = numeric.notna() & np.isfinite(numeric) & (numeric > 0)
+            clean[symbol] = numeric.where(valid)
+            invalid[symbol] = original.notna() & (~valid | bool_mask)
+
+            evidence = dict(source_evidence.get(str(symbol)) or {})
+            for day in evidence.get("invalid_sessions") or []:
+                stamp = pd.Timestamp(day)
+                if stamp in invalid.index:
+                    invalid.at[stamp, symbol] = True
+                    clean.at[stamp, symbol] = np.nan
+            accepted_pairs = [
+                [stamp.date().isoformat(), float(value)]
+                for stamp, value in clean[symbol].items() if pd.notna(value)
+            ]
+            evidence["accepted_values_id"] = "sha256:" + hashlib.sha256(
+                json.dumps(accepted_pairs, separators=(",", ":"), allow_nan=False).encode("utf-8")
+            ).hexdigest()
+            evidence.setdefault("basis", W1_LICENSED_BASIS)
+            evidence.setdefault("adjusted", True)
+            source_evidence[str(symbol)] = evidence
+
+        ma20 = clean.rolling(20, min_periods=20).mean()
+        roll_max = clean.rolling(20, min_periods=20).max()
+        roll_min = clean.rolling(20, min_periods=20).min()
+        is_constant = roll_max == roll_min
+        above = (clean > ma20) & ~is_constant
+        eligible = ma20.notna()
+
+        cols: dict[str, pd.Series] = {}
+        for sector, symbols in sec_map.groupby(sec_map).groups.items():
+            tickers = list(symbols)
+            expected_n = len(tickers)
+            elig_n = eligible[tickers].sum(axis=1)
+            above_n = above[tickers].sum(axis=1)
+            pct = 100 * above_n / elig_n.where(elig_n > 0)
+            floor_ok = (elig_n >= 5) & (elig_n >= 0.9 * expected_n)
+            cols[f"{sector}|above_20"] = above_n.astype(float)
+            cols[f"{sector}|eligible_20"] = elig_n.astype(float)
+            cols[f"{sector}|expected_20"] = pd.Series(float(expected_n), index=clean.index)
+            cols[f"{sector}|pct_above_20"] = pct.where(floor_ok)
+        if not cols:
+            return None
+        out = pd.DataFrame(cols, index=clean.index)
+
+        sessions = [stamp.date().isoformat() for stamp in clean.index]
+        member_payload: dict[str, dict] = {}
+        for symbol, sector in sec_map.items():
+            evidence = dict(source_evidence.get(symbol) or {})
+            forced_state = evidence.get("state")
+            if evidence.get("unavailable"):
+                forced_state = forced_state or "U"
+            if forced_state not in (None, "I", "U"):
+                forced_state = "U"
+
+            valid_mask = clean[symbol].notna()
+            observed_mask = valid_mask | invalid[symbol]
+            observed_positions = np.flatnonzero(observed_mask.to_numpy())
+            first_observed = int(observed_positions[0]) if len(observed_positions) else None
+            states: list[str] = []
+            distances: list[float | None] = []
+            for position in range(len(clean.index)):
+                if forced_state in ("I", "U"):
+                    state = forced_state
+                elif position < 19:
+                    state = "H"
+                else:
+                    window_start = position - 19
+                    invalid_window = invalid[symbol].iloc[window_start:position + 1]
+                    valid_window = valid_mask.iloc[window_start:position + 1]
+                    if bool(invalid_window.any()):
+                        state = "I"
+                    elif bool(valid_window.all()):
+                        state = "A" if bool(above[symbol].iloc[position]) else "B"
+                    else:
+                        missing_positions = np.flatnonzero((~valid_window).to_numpy()) + window_start
+                        leading_shortfall = (
+                            first_observed is not None
+                            and len(missing_positions) > 0
+                            and bool((missing_positions < first_observed).all())
+                        )
+                        state = "H" if leading_shortfall else "M"
+                states.append(state)
+                if state in ("A", "B"):
+                    price = float(clean[symbol].iloc[position])
+                    average = float(ma20[symbol].iloc[position])
+                    distances.append(round((price / average - 1.0) * 10000.0, 4))
+                else:
+                    distances.append(None)
+
+            member_payload[symbol] = {
+                "name": str(name_map[symbol]),
+                "sector": sector,
+                "states": states,
+                "distance_bps": distances,
+                "href": "stock.html#" + quote(symbol, safe=""),
+            }
+
+        acquired = sorted(
+            str((source_evidence.get(symbol) or {}).get("acquired_at"))
+            for symbol in sec_map.index
+            if (source_evidence.get(symbol) or {}).get("acquired_at"))
+        observed_rows = clean.notna().any(axis=1)
+        observed_max = (
+            clean.index[observed_rows].max().date().isoformat()
+            if bool(observed_rows.any()) else None)
+        out.attrs.update({
+            "sessions": sessions,
+            "members": member_payload,
+            "member_evidence": source_evidence,
+            "requested_start": sessions[0] if sessions else None,
+            "requested_end": sessions[-1] if sessions else None,
+            "observed_max_session": observed_max,
+            "acquired_at": acquired[-1] if acquired else None,
+            "computed_at": pd.Timestamp.now(tz="UTC").isoformat(),
+        })
+        return out
+
+    def fetch_sector_participation_20(
+            self, members: pd.DataFrame, *, end: date | None = None,
+            window_days: int | None = None, fetch_one=None,
+            max_workers: int | None = None,
+            operation_budget_seconds: float | None = None,
+            display_sessions: int = 252,
+    ) -> tuple[pd.DataFrame | None, dict[str, str]]:
+        """Acquire the full reference roster under one bounded operation budget.
+
+        Work is scheduled incrementally, never all 503 names at once.  An account-wide
+        auth/entitlement refusal stops new submissions; a per-member refusal remains
+        ``U`` for that member.  The returned frame always covers the complete roster and
+        expected-session range, even when every request fails, so an explicit
+        unavailable generation can be published without shrinking denominators.
+        """
+        from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+
+        uses_default_reader = fetch_one is None
+        fetch_one = fetch_one or self.licensed_daily_window
+        end = end or nyse_calendar.expected_last_session()
+        if window_days is None:
+            if display_sessions < 1:
+                raise ValueError("display_sessions must be positive")
+            start = nyse_calendar.session_n_back(end, display_sessions + 19 - 1)
+            if start is None:
+                raise ValueError("NYSE calendar could not resolve the W1 warmup range")
+        else:
+            start = nyse_calendar.last_session_on_or_before(
+                end - pd.Timedelta(days=window_days))
+        symbols = [str(symbol) for symbol in members["symbol"].dropna().unique()]
+        cfg = dict(config.load().get("polygon") or {})
+        configured_workers = (
+            max_workers if max_workers is not None
+            else cfg.get("w1_max_workers", cfg.get("workers", 5)))
+        workers = max(1, min(8, int(configured_workers)))
+        budget = float(operation_budget_seconds if operation_budget_seconds is not None
+                       else cfg.get("w1_operation_budget_seconds", 180.0))
+        request_reserve = _w1_request_ceiling_seconds(cfg) if uses_default_reader else 0.0
+        sessions = pd.DatetimeIndex(
+            pd.Timestamp(day) for day in nyse_calendar.sessions_between(start, end))
+        failures: dict[str, str] = {}
+        evidence: dict[str, dict] = {}
+        columns: dict[str, pd.Series] = {}
+
+        def mark_failure(symbol: str, message: str, state: str = "U") -> None:
+            failures[symbol] = message
+            evidence[symbol] = {
+                "state": state if state in {"I", "U"} else "U",
+                "unavailable": state != "I",
+                "reason": message,
+            }
+
+        if budget <= 0 or not symbols:
+            for symbol in symbols:
+                mark_failure(symbol, "W1 acquisition operation budget expired before scheduling")
+        else:
+            deadline = time.monotonic() + budget
+            executor = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="w1-participation")
+            pending: dict = {}
+            cursor = 0
+            fatal_message: str | None = None
+            budget_expired = False
+
+            def submit_until_full() -> None:
+                nonlocal cursor
+                while (fatal_message is None and cursor < len(symbols)
+                       and len(pending) < workers
+                       and time.monotonic() + request_reserve <= deadline):
+                    symbol = symbols[cursor]
+                    cursor += 1
+                    pending[executor.submit(fetch_one, symbol, start, end)] = symbol
+
+            submit_until_full()
+            try:
+                while pending and fatal_message is None:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        budget_expired = True
+                        break
+                    done, _ = wait(
+                        tuple(pending), timeout=remaining, return_when=FIRST_COMPLETED)
+                    if not done:
+                        budget_expired = True
+                        break
+                    for future in done:
+                        symbol = pending.pop(future)
+                        try:
+                            series = future.result()
+                            if not isinstance(series, pd.Series):
+                                raise LicensedSourceError(
+                                    f"{symbol}: source reader returned a non-Series result",
+                                    member_state="I")
+                            columns[symbol] = series
+                            attrs = dict(series.attrs)
+                            evidence[symbol] = {
+                                "missing_sessions": list(attrs.get("missing_sessions") or []),
+                                "invalid_sessions": list(attrs.get("invalid_sessions") or []),
+                                "acquired_at": attrs.get("acquired_at") or attrs.get("vintage"),
+                                "requested_ticker": attrs.get("requested_ticker"),
+                                "response_ticker": attrs.get("response_ticker"),
+                                "requested_start": attrs.get("requested_start"),
+                                "requested_end": attrs.get("requested_end"),
+                                "response_status": attrs.get("response_status"),
+                                "response_count": attrs.get("response_count"),
+                                "request_id": attrs.get("request_id"),
+                                "basis": attrs.get("basis"),
+                                "adjusted": attrs.get("adjusted"),
+                            }
+                        except LicensedSourceError as exc:
+                            mark_failure(symbol, str(exc), exc.member_state)
+                            if exc.fatal:
+                                fatal_message = str(exc)
+                        except Exception as exc:  # noqa: BLE001 — member is unavailable, not dropped
+                            mark_failure(symbol, f"{symbol}: {safe_exc_text(exc)}", "U")
+                    if fatal_message is None:
+                        submit_until_full()
+                if fatal_message is None and cursor < len(symbols):
+                    # No new request may start unless its bounded worst case fits in
+                    # the remaining whole-operation budget. Unscheduled members are U.
+                    budget_expired = True
+            finally:
+                if fatal_message is not None or budget_expired:
+                    reason = (f"W1 acquisition stopped after fatal source refusal: {fatal_message}"
+                              if fatal_message is not None
+                              else "W1 acquisition operation budget expired")
+                    for future in list(pending):
+                        future.cancel()
+                    # An operation-level refusal or deadline means this response set
+                    # is incomplete, regardless of how many names finished first.
+                    # Discard every partial success so 90%+ late failures cannot mint
+                    # a replacement generation from a truncated acquisition.
+                    columns.clear()
+                    for symbol in symbols:
+                        mark_failure(symbol, reason, "U")
+                    executor.shutdown(wait=False, cancel_futures=True)
+                else:
+                    executor.shutdown(wait=True)
+
+        frame = pd.DataFrame(index=sessions, columns=symbols, dtype=float)
+        for symbol, series in columns.items():
+            if series.empty:
+                continue
+            normalized = series.copy()
+            normalized.index = pd.DatetimeIndex(pd.to_datetime(normalized.index)).tz_localize(None).normalize()
+            common = frame.index.intersection(normalized.index)
+            frame.loc[common, symbol] = normalized.reindex(common).to_numpy()
+        frame.attrs["member_evidence"] = evidence
+        result = self.compute_sector_participation_20(frame, members)
+        if result is not None:
+            result.attrs["latest_expected_session"] = end.isoformat()
+            result.attrs["display_sessions"] = min(int(display_sessions), len(sessions))
+        return result, failures
+
+    def build_sector_participation_20_package(
+            self, result: pd.DataFrame, failures: dict[str, str],
+            members: pd.DataFrame) -> dict:
+        """Build the one public/private W1 generation from typed member evidence."""
+        if result is None or result.empty:
+            raise ValueError("no W1 result is available for publication")
+        source_sessions = list(result.attrs.get("sessions") or [])
+        member_payload = copy.deepcopy(result.attrs.get("members") or {})
+        if not source_sessions or not member_payload:
+            raise ValueError("W1 result is missing same-generation member evidence")
+        display_sessions = int(result.attrs.get("display_sessions") or len(source_sessions))
+        if display_sessions < 1 or display_sessions > len(source_sessions):
+            raise ValueError("W1 display session count is outside the qualified source range")
+        public_offset = len(source_sessions) - display_sessions
+        sessions = source_sessions[public_offset:]
+        for symbol, evidence in member_payload.items():
+            states = evidence.get("states")
+            distances = evidence.get("distance_bps")
+            if (not isinstance(states, list) or len(states) != len(source_sessions)
+                    or not isinstance(distances, list) or len(distances) != len(source_sessions)):
+                raise ValueError(f"W1 member {symbol} is not aligned to the qualified source range")
+            evidence["states"] = "".join(states[public_offset:])
+            evidence["distance_bps"] = distances[public_offset:]
+
+        roster_columns = ["symbol", "sector"] + (["name"] if "name" in members.columns else [])
+        roster = members.loc[:, roster_columns].dropna(subset=["symbol", "sector"]).copy()
+        roster["symbol"] = roster["symbol"].astype(str)
+        roster["sector"] = roster["sector"].astype(str)
+        if "name" not in roster.columns:
+            roster["name"] = roster["symbol"]
+        else:
+            roster["name"] = [
+                " ".join(str(value).split()) if pd.notna(value) and str(value).strip() else symbol
+                for value, symbol in zip(roster["name"], roster["symbol"])
+            ]
+        if roster["symbol"].duplicated(keep=False).any():
+            raise ValueError("duplicate roster membership blocks W1 publication")
+        expected_members = set(roster["symbol"])
+        if set(member_payload) != expected_members:
+            raise ValueError("W1 member evidence does not cover the full reference roster")
+        roster_by_symbol = roster.set_index("symbol")
+        for symbol in sorted(expected_members):
+            member_payload[symbol]["name"] = str(roster_by_symbol.at[symbol, "name"])
+            if member_payload[symbol].get("sector") != roster_by_symbol.at[symbol, "sector"]:
+                raise ValueError(f"W1 member {symbol} sector disagrees with the reference roster")
+        roster_pairs = sorted(
+            (row.symbol, row.name, row.sector) for row in roster.itertuples(index=False))
+        roster_bytes = json.dumps(roster_pairs, separators=(",", ":"), ensure_ascii=False).encode()
+        roster_id = "sha256:" + hashlib.sha256(roster_bytes).hexdigest()
+
+        sectors: dict[str, dict] = {}
+        for sector in sorted(roster["sector"].unique()):
+            names = sorted(roster.loc[roster["sector"] == sector, "symbol"])
+            above: list[int] = []
+            eligible: list[int] = []
+            expected: list[int] = []
+            pct: list[float | None] = []
+            excluded = {state: [] for state in ("H", "M", "I", "U")}
+            for position in range(len(sessions)):
+                states = [member_payload[name]["states"][position] for name in names]
+                above_n = states.count("A")
+                eligible_n = above_n + states.count("B")
+                expected_n = len(names)
+                above.append(above_n)
+                eligible.append(eligible_n)
+                expected.append(expected_n)
+                pct.append(
+                    100.0 * above_n / eligible_n
+                    if eligible_n >= 5 and eligible_n >= 0.9 * expected_n else None)
+                for state in excluded:
+                    excluded[state].append(states.count(state))
+            sectors[sector] = {
+                "above": above,
+                "eligible": eligible,
+                "expected": expected,
+                "pct": pct,
+                "excluded": excluded,
+            }
+
+        failed_names = sorted(set(str(name) for name in failures) & expected_members)
+        source_evidence = dict(result.attrs.get("member_evidence") or {})
+        receipt_fields = (
+            "requested_ticker", "response_ticker", "response_status",
+            "response_count", "requested_start", "requested_end", "missing_sessions",
+            "invalid_sessions", "accepted_values_id", "basis", "adjusted",
+            "state", "unavailable", "reason",
+        )
+        source_receipts: dict[str, dict] = {}
+        for name in sorted(member_payload):
+            evidence = dict(source_evidence.get(name) or {})
+            source_receipts[name] = {
+                field: copy.deepcopy(evidence[field])
+                for field in receipt_fields if evidence.get(field) is not None
+            }
+        response_material = {
+            "basis": W1_LICENSED_BASIS,
+            "requested_start": result.attrs.get("requested_start") or source_sessions[0],
+            "requested_end": result.attrs.get("requested_end") or source_sessions[-1],
+            "members": {name: source_receipts[name] for name in sorted(member_payload)},
+            "unavailable_members": failed_names,
+        }
+        response_set_id = "sha256:" + hashlib.sha256(json.dumps(
+            response_material, sort_keys=True, separators=(",", ":"),
+            ensure_ascii=False, allow_nan=False,
+        ).encode()).hexdigest()
+        latest_expected = (
+            result.attrs.get("latest_expected_session")
+            or result.attrs.get("requested_end")
+            or sessions[-1]
+        )
+        source_session = result.attrs.get("observed_max_session")
+        published_at = pd.Timestamp.now(tz="UTC").isoformat()
+        package = {
+            "schema": _W1_PACKAGE_SCHEMA,
+            "available": any(
+                value is not None
+                for sector in sectors.values()
+                for value in sector["pct"]
+            ),
+            "method": {
+                "name": "sector_participation_20",
+                "window_sessions": 20,
+                "comparison": "close > MA20",
+                "coverage_basis": "complete expected NYSE sessions through selected session",
+                "display_floor": {"min_eligible": 5, "min_coverage": 0.9},
+                "state_legend": {
+                    "A": "eligible_above_ma20",
+                    "B": "eligible_equal_or_below_ma20",
+                    "H": "insufficient_history",
+                    "M": "required_expected_session_missing",
+                    "I": "invalid_identity_basis_or_observation",
+                    "U": "source_request_unavailable_or_refused",
+                },
+            },
+            "reference": {
+                "universe": "S&P 500",
+                "roster_id": roster_id,
+                "member_count": len(member_payload),
+                "observed_at": None,
+                "reconstruction": (
+                    "The current validated reference roster is held constant across "
+                    "the requested historical window; this is not point-in-time membership."
+                ),
+                "reconstruction_zh": (
+                    "当前已验证参考名单在整个历史请求窗口内保持不变；"
+                    "这不是按历史时点还原的成分股名单。"
+                ),
+            },
+            "source": {
+                "provider": "licensed_vendor",
+                "basis": W1_LICENSED_BASIS,
+                "requested_start": result.attrs.get("requested_start") or source_sessions[0],
+                "requested_end": result.attrs.get("requested_end") or source_sessions[-1],
+                "source_session": source_session,
+                "latest_expected_session": latest_expected,
+                "acquired_at": result.attrs.get("acquired_at"),
+                "request_identity": {
+                    "resource": "/v2/aggs/ticker/{ticker}/range/1/day/{start}/{end}",
+                    "adjusted": True,
+                    "sort": "asc",
+                    "limit": 50000,
+                },
+                "response_set_id": response_set_id,
+                "requested_member_count": len(member_payload),
+                "accepted_member_count": len(member_payload) - len(failed_names),
+                "unavailable_member_count": len(failed_names),
+            },
+            "computed_at": result.attrs.get("computed_at"),
+            "published_at": published_at,
+            "sessions": sessions,
+            "sectors": sectors,
+            "members": member_payload,
+        }
+        package["observation_id"] = _w1_observation_id(package)
+        package["generation_id"] = _w1_generation_id(package)
+        _validate_w1_package(package)
+        return package
+
+    def publish_sector_participation_20(self, result: pd.DataFrame | None,
+                                        failures: dict[str, str], members: pd.DataFrame,
+                                        *, path=None) -> bool:
+        """Atomically replace one validated W1 JSON generation.
+
+        Any acquisition/build/write/replace failure leaves the prior valid generation
+        byte-identical.  There is no sidecar and no independently visible detail file.
+        """
+        if result is None or result.empty:
+            log.warning("sector participation W1: no new generation; preserving prior package")
+            return False
+        target = Path(path or (config.data_dir() / "breadth" / "sector_participation_20.json"))
+        try:
+            package = self.build_sector_participation_20_package(result, failures, members)
+            if not package.get("available") and target.exists():
+                try:
+                    prior = json.loads(target.read_text(encoding="utf-8"))
+                    _validate_w1_package(prior)
+                except Exception:  # noqa: BLE001 — an invalid prior is not protected
+                    pass
+                else:
+                    log.warning(
+                        "sector participation W1: new generation is below the display "
+                        "qualification floor; preserving prior valid package")
+                    return False
+            w1_contract.write_validated_package(package, target)
+            return True
+        except Exception as exc:  # noqa: BLE001 — old valid generation is the fallback
+            log.warning("sector participation W1 publication failed; prior generation kept: %s", exc)
+            return False
 
     def compute(self, closes: pd.DataFrame) -> pd.DataFrame:
         w50, w200 = self.cfg["ma_windows"]
