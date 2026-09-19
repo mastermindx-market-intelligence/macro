@@ -1,18 +1,18 @@
 {
   "schema": "masterminds.latest.v2",
   "n": 3,
-  "built": "2026-09-13 09:50 UTC",
-  "asof": "2026-09-11",
+  "built": "2026-09-18 18:19 UTC",
+  "asof": "2026-09-17",
   "stale_after_min": 1440,
   "cards": [
     {
       "key": "mm_conservative",
       "name": "Mastermind \u2014 Conservative",
-      "cagr": 7.84,
+      "cagr": 7.85,
       "sharpe": 1.12,
-      "maxdd": -17.3,
-      "asof": "2026-09-11",
-      "gross_now": 0.64,
+      "maxdd": -17.4,
+      "asof": "2026-09-17",
+      "gross_now": 0.65,
       "alloc": [
         {
           "asset": "SPY",
@@ -36,35 +36,35 @@
           "asset": "HG=F",
           "label_en": "Copper",
           "label_zh": "\u94dc",
-          "weight": 14.9
+          "weight": 13.9
         },
         {
           "asset": "BTC-USD",
           "label_en": "Bitcoin",
           "label_zh": "\u6bd4\u7279\u5e01",
-          "weight": 4.1
+          "weight": 5.7
+        },
+        {
+          "asset": "GC=F",
+          "label_en": "Gold",
+          "label_zh": "\u9ec4\u91d1",
+          "weight": 0.6
         }
       ]
     },
     {
       "key": "mm_moderate",
       "name": "Mastermind \u2014 Moderate",
-      "cagr": 11.32,
+      "cagr": 11.39,
       "sharpe": 1.05,
-      "maxdd": -24.1,
-      "asof": "2026-09-11",
-      "gross_now": 1.13,
+      "maxdd": -24.2,
+      "asof": "2026-09-17",
+      "gross_now": 1.14,
       "alloc": [
         {
           "asset": "SPY",
           "label_en": "S&P 500",
           "label_zh": "\u6807\u666e500",
-          "weight": 28.4
-        },
-        {
-          "asset": "QQQ",
-          "label_en": "Nasdaq 100",
-          "label_zh": "\u7eb3\u6307100",
           "weight": 28.4
         },
         {
@@ -74,57 +74,75 @@
           "weight": 28.4
         },
         {
+          "asset": "QQQ",
+          "label_en": "Nasdaq 100",
+          "label_zh": "\u7eb3\u6307100",
+          "weight": 28.3
+        },
+        {
           "asset": "HG=F",
           "label_en": "Copper",
           "label_zh": "\u94dc",
-          "weight": 21.9
+          "weight": 19.9
         },
         {
           "asset": "BTC-USD",
           "label_en": "Bitcoin",
           "label_zh": "\u6bd4\u7279\u5e01",
-          "weight": 5.8
+          "weight": 8.1
+        },
+        {
+          "asset": "GC=F",
+          "label_en": "Gold",
+          "label_zh": "\u9ec4\u91d1",
+          "weight": 0.8
         }
       ]
     },
     {
       "key": "mm_aggressive",
       "name": "Mastermind \u2014 Aggressive",
-      "cagr": 16.97,
-      "sharpe": 0.98,
-      "maxdd": -34.9,
-      "asof": "2026-09-11",
-      "gross_now": 2.21,
+      "cagr": 16.89,
+      "sharpe": 0.97,
+      "maxdd": -35.0,
+      "asof": "2026-09-17",
+      "gross_now": 2.18,
       "alloc": [
         {
           "asset": "SPY",
           "label_en": "S&P 500",
           "label_zh": "\u6807\u666e500",
-          "weight": 62.9
+          "weight": 62.8
         },
         {
           "asset": "HYG",
           "label_en": "High-yield credit",
           "label_zh": "\u9ad8\u6536\u76ca\u4fe1\u7528",
-          "weight": 62.9
+          "weight": 62.8
         },
         {
           "asset": "QQQ",
           "label_en": "Nasdaq 100",
           "label_zh": "\u7eb3\u6307100",
-          "weight": 50.7
+          "weight": 45.6
         },
         {
           "asset": "HG=F",
           "label_en": "Copper",
           "label_zh": "\u94dc",
-          "weight": 35.2
+          "weight": 32.0
         },
         {
           "asset": "BTC-USD",
           "label_en": "Bitcoin",
           "label_zh": "\u6bd4\u7279\u5e01",
-          "weight": 9.4
+          "weight": 13.0
+        },
+        {
+          "asset": "GC=F",
+          "label_en": "Gold",
+          "label_zh": "\u9ec4\u91d1",
+          "weight": 1.3
         }
       ]
     }

@@ -134,6 +134,38 @@ def _r(v, n=2):
     return round(float(v), n) if v is not None and pd.notna(v) else None
 
 
+# One window, one helper — heat-grid, detail, and asset_vm all read this.
+# 22 sessions ≈ 1 calendar month of trading days (pct_change(22) = last vs iloc[-23]).
+CHG_1M_BARS = 22
+CHG_1D_BARS = 1
+# Dispersion ceiling for "one trend" / "in sync". Same truth for hero and chip.
+SYNC_DIVERSITY_MAX = 0.4
+# Complex-level Protect fires at this share of take-profits rows (pre-r1 gate).
+FRAC_TOP_PROTECT = 0.25
+# Unknown momentum/shock codes never echo the raw slug (same pattern as _lbl).
+_UNLABELLED_STATE = ("Unlabelled state", "未标注状态")
+# Index-level shock states that count as the blow-off gate for Protect.
+_INDEX_BLOWOFF_SHOCKS = frozenset({"blowoff", "exogenous_bid"})
+
+
+def _chg_pct(close, bars: int = CHG_1M_BARS) -> float | None:
+    """Percent change from `bars` sessions ago. None when the window is short."""
+    if close is None:
+        return None
+    c = close.dropna() if hasattr(close, "dropna") else close
+    need = bars + 1
+    if len(c) < need:
+        return None
+    prev, last = c.iloc[-need], c.iloc[-1]
+    try:
+        prev_f, last_f = float(prev), float(last)
+    except (TypeError, ValueError):
+        return None
+    if prev_f == 0 or pd.isna(prev) or pd.isna(last):
+        return None
+    return _r(100 * (last_f / prev_f - 1), 1)
+
+
 # --------------------------------------------------------------------------- #
 # alert timeline (mirrors build_vector._group_timeline)
 # --------------------------------------------------------------------------- #
@@ -165,6 +197,44 @@ CATALYST_TYPE_LABELS: dict[str, tuple[str, str]] = {
     "EIA_WPSR": ("EIA oil report", "EIA油品报告"),
     "OPEC":     ("OPEC meeting",   "OPEC会议"),
 }
+
+# Catalyst EVENT labels → ZH twin. Production always emits label_zh; missing
+# keys fall through to a prettified English stand-in (never blank, never raise).
+CATALYST_LABEL_ZH: dict[str, str] = {
+    "FOMC decision": "美联储议息决议",
+    "FOMC rate decision": "美联储议息会议",
+    "EIA crude/petroleum inventories": "EIA 原油库存周报",
+    "OPEC ministerial meeting": "OPEC 部长级会议",
+}
+
+
+def _prettify_label(s: str | None) -> str:
+    return (s or "").replace("_", " ").strip()
+
+
+def resolve_catalyst_row(cat: dict, build_date) -> dict:
+    """Attach type_en/zh, label_zh, days_out. Never blocks on a missing ZH."""
+    from datetime import date as _date
+    _type = cat.get("type", "") or ""
+    _bi = CATALYST_TYPE_LABELS.get(
+        _type, (_prettify_label(_type) or _type, _prettify_label(_type) or _type),
+    )
+    label = cat.get("label") or ""
+    existing_zh = (cat.get("label_zh") or "").strip()
+    label_zh = (
+        existing_zh
+        or CATALYST_LABEL_ZH.get(label)
+        or _prettify_label(label)
+        or _bi[1]
+        or "Event"
+    )
+    try:
+        _cat_date = _date.fromisoformat(cat["date"])
+        _days_out = (_cat_date - build_date).days
+    except Exception:  # noqa: BLE001
+        _days_out = None
+    return {**cat, "type_en": _bi[0], "type_zh": _bi[1],
+            "label_zh": label_zh, "days_out": _days_out}
 
 # Plain bilingual names for likely_cause slugs from commodity_news.py
 CAUSE_LABELS: dict[str, tuple[str, str]] = {
@@ -198,8 +268,9 @@ def _group_timeline(events: list[dict]) -> list[dict]:
              "label_zh":  bi[1],
              "filter":    FILTER_OF.get(e["type"], "other"),
              "asset_label": META.get(e.get("asset"), {}).get("label", e.get("asset", "")),
+             "asset_label_zh": META.get(e.get("asset"), {}).get("zh", e.get("asset", "")),
              "time":      ts.strftime("%H:%M UTC") if (ts.hour or ts.minute) else "",
-             "daylabel":  ts.strftime("%a %b %d")}
+             "daylabel":  ts.strftime("%Y-%m-%d")}
         days.setdefault(ts.strftime("%Y-%m-%d"), []).append(e)
     return [{"day": d, "daylabel": evs[0]["daylabel"], "events": evs}
             for d, evs in sorted(days.items(), reverse=True)]
@@ -438,7 +509,8 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
              alert_tilt_val: float | None = None) -> dict:
     last = df.iloc[-1]
     close = df["close"]
-    chg = _r(100 * (close.iloc[-1] / close.iloc[-22] - 1), 1)  # ~1-month
+    chg = _chg_pct(close, CHG_1M_BARS)
+    chg_1d = _chg_pct(close, CHG_1D_BARS)
     cal_a = calib.get("assets", {}).get(asset, {})
     verdicts = {s: e.get("verdict", "") for s, e in cal_a.get("signals", {}).items()}
     if cal_a.get("risk_drawdown"):
@@ -452,6 +524,7 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         "unit": META[asset]["unit"], "price": _r(close.iloc[-1], 2),
         "price_fmt": (f"{float(close.iloc[-1]):,.2f}" if close.iloc[-1] is not None else None),
         "chg": chg,
+        "chg_1d": chg_1d,
         # canonical front-month futures symbol so live.js refreshes the price tile
         "sym": {"gold": "GC=F", "silver": "SI=F", "copper": "HG=F", "oil": "CL=F"}.get(asset),
         "alloc_pct": alloc_pct, "market_mode": last.get("market_mode", "—"),
@@ -555,17 +628,19 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         _tx = forex_link.transmission()
         _usd_dir_raw = _tx.get("usd_dir") if _tx else None
         if _usd_dir_raw:
-            vm["dollar_usd_dir"] = (
+            mapped = (
                 "up" if "strength" in _usd_dir_raw else
-                ("down" if "weak" in _usd_dir_raw else _usd_dir_raw)
+                ("down" if "weak" in _usd_dir_raw else None)
             )
+            vm["dollar_usd_dir"] = mapped if mapped in ("up", "down") else None
         _stance = forex_link.stance()
         vm["dollar_stance_sentence"] = _stance.get("sentence_en") if _stance else None
         # B3: per-asset effect/stability from transmission.assets
         if _ck:
             _ta = forex_link.transmission_asset(_ck)
             if _ta:
-                vm["dollar_effect"] = _ta.get("effect")
+                _eff = _ta.get("effect")
+                vm["dollar_effect"] = _eff if _eff in ("headwind", "tailwind") else None
                 vm["dollar_stability"] = _ta.get("stability")
         # B3: gold-only real-rate regime (headwind/tailwind context)
         if asset == "gold":
@@ -643,6 +718,19 @@ _CONF_STATE_ACTION: dict[str, tuple[str, str]] = {
     "Neutral":                    ("Watch — not enough signal yet", "观望——信号不足"),
 }
 
+# Take-profits BOARD states — ONE counted set. Hero n_top, board.tops, and
+# the heat-grid "never green on a counted member" treatment all key off this.
+BOARD_TOP_STATES = frozenset({
+    "Blowing off — extended",
+    "Extended — late cycle",
+    "Euphoric top — rolling over",
+})
+
+
+def is_board_stretched(state: str | None) -> bool:
+    """True iff this confluence state is a take-profits BOARD row."""
+    return (state or "") in BOARD_TOP_STATES
+
 # Grid groupings: class → (en_label, zh_label)
 _GRID_GROUPS: list[tuple[str, str, str, list[str]]] = [
     ("energy",   "Energy",       "能源",      ["oil", "natgas", "gasoline", "heating_oil"]),
@@ -650,18 +738,124 @@ _GRID_GROUPS: list[tuple[str, str, str, list[str]]] = [
     ("grains",   "Grains & Softs","谷物与软商品",
      ["corn", "wheat", "soybeans", "live_cattle", "coffee", "sugar", "cocoa", "cotton"]),
 ]
+_GRID_MEMBER_ORDER: tuple[str, ...] = tuple(
+    n for _k, _e, _z, ns in _GRID_GROUPS for n in ns
+)
+
+
+def stretched_members(members_conf: list) -> list[dict]:
+    """Take-profits board set in grid order — the counted set the hero names."""
+    by_name: dict[str, dict] = {}
+    extras: list[dict] = []
+    for m in members_conf or []:
+        if not is_board_stretched(m.get("state")):
+            continue
+        name = m.get("name") or ""
+        if name in by_name:
+            continue
+        by_name[name] = m
+        if name not in _GRID_MEMBER_ORDER:
+            extras.append(m)
+    return [by_name[n] for n in _GRID_MEMBER_ORDER if n in by_name] + extras
+
+
+def _stretched_name_list(members: list[dict]) -> tuple[str, str]:
+    ens, zhs = [], []
+    for m in members:
+        name = m.get("name") or ""
+        en, zh = MEMBER_LABELS.get(name, (name.replace("_", " ").title(), name))
+        ens.append(en)
+        zhs.append(zh)
+    return ", ".join(ens), "、".join(zhs)
 
 
 def _plain_mom_state(s: str | None) -> tuple[str, str]:
     if not s:
         return ("—", "—")
-    return MOMENTUM_STATE_LABELS.get(s, (s, s))
+    return MOMENTUM_STATE_LABELS.get(s, _UNLABELLED_STATE)
 
 
 def _plain_shock(s: str | None) -> tuple[str, str]:
     if not s:
         return ("—", "—")
-    return SHOCK_STATE_LABELS.get(s, (s, s))
+    return SHOCK_STATE_LABELS.get(s, _UNLABELLED_STATE)
+
+
+# Heat-grid legend: each (tone, token, en, zh) is reachable from _heat_cell.
+HEAT_LEGEND: list[tuple[str, str, str, str]] = [
+    ("c-up",       "--up",    "Momentum up",   "短期动量向上"),
+    ("c-dn",       "--dn",    "Momentum down", "短期动量转弱"),
+    ("c-blowoff",  "--amb",   "Blow-off",      "喷发"),
+    ("c-extended", "--amb",   "Extended",      "超涨延伸"),
+    ("c-washout",  "--blue",  "Washing out",   "洗盘"),
+    ("c-flat",     "--line2", "Mixed",         "中性"),
+]
+
+
+def _heat_cell(
+    shock_st: str | None,
+    mom_state: str | None,
+    board_state: str | None = None,
+) -> tuple[str, str, str]:
+    """Heat-grid tone + short-state. Shock outranks momentum so a blow-off
+    can never paint as trending-up green. A take-profits BOARD member whose
+    shock is normal never paints green either (amber edge, word Extended).
+    All four shock-enum values route first; unknown momentum falls through
+    to Mixed, never a slug."""
+    shock_st = (shock_st or "").strip()
+    mom_state = (mom_state or "").strip()
+    if shock_st == "blowoff":
+        en, zh = _plain_shock("blowoff")
+        return "c-blowoff", en, zh
+    if shock_st == "washout":
+        en, zh = _plain_shock("washout")
+        return "c-washout", en, zh
+    if shock_st == "exogenous_bid":
+        en, zh = _plain_shock("exogenous_bid")
+        return "c-blowoff", en, zh
+    if shock_st == "exogenous_pressure":
+        en, zh = _plain_shock("exogenous_pressure")
+        return "c-washout", en, zh
+    if is_board_stretched(board_state):
+        return "c-extended", "Extended", "超涨延伸"
+    if mom_state == "bull":
+        en, zh = _plain_mom_state("bull")
+        return "c-up", en, zh
+    if mom_state == "bear":
+        en, zh = _plain_mom_state("bear")
+        return "c-dn", en, zh
+    en, zh = _plain_mom_state("neutral")
+    return "c-flat", en, zh
+
+
+def _chg_tone(cell_tone: str, chg: float | None) -> str:
+    """Change-digit class: shock / board-stretched rows inherit the actionable
+    tone, not the sign — a counted member must never paint a green digit."""
+    if cell_tone == "c-blowoff":
+        return "amb"
+    if cell_tone == "c-extended":
+        return "amb"
+    if cell_tone == "c-washout":
+        return "blue"
+    if chg is None:
+        return "mut"
+    return "up" if chg >= 0 else "dn"
+
+
+def _sync_read(diversity) -> dict:
+    """ONE dispersion truth for the hero 'in sync' clause and the index chip."""
+    if diversity is None:
+        return {"in_sync": None, "sync_en": None, "sync_zh": None}
+    try:
+        div = float(diversity)
+    except (TypeError, ValueError):
+        return {"in_sync": None, "sync_en": None, "sync_zh": None}
+    in_sync = div <= SYNC_DIVERSITY_MAX
+    return {
+        "in_sync": in_sync,
+        "sync_en": "one trend" if in_sync else "many trends",
+        "sync_zh": "一致" if in_sync else "多方向",
+    }
 
 
 def _plain_cycle(s: str | None) -> tuple[str, str]:
@@ -750,74 +944,142 @@ def _mtf_grade_plain(grade: str | None) -> tuple[str, str]:
 # --------------------------------------------------------------------------- #
 # sector_stance helper
 # --------------------------------------------------------------------------- #
-def sector_stance(conf: dict, breadth: dict) -> dict:
+def sector_stance(
+    conf: dict,
+    breadth: dict,
+    in_sync: bool | None = None,
+    index_shock: str | None = None,
+) -> dict:
     """Return the plain-word sector stance for the hero section.
 
-    tone ∈ {act, getready, watch, protect, standaside}
-    Rules (in priority order):
-      1. Many members Euphoric/Extended → protect
-      2. Many Washout bottom-forming     → getready
-      3. 12-mo broad but short-term thin (n_bull_momentum/n_members < 0.4) → watch
-      4. Broad + strong momentum         → act
-      else                               → standaside
+    tone ∈ {act, selective, getready, watch, protect, standaside}
+
+    Take-profits three-way (seat ruling, W6 r2) outranks the rest:
+      1. Act — in-sync AND zero take-profits/blow-off board rows (existing
+         breadth gate still required; "in sync" only when in_sync is True).
+      2. Selective — 1 to <FRAC_TOP_PROTECT of members stretched: name the
+         count, never "in sync", never complex-level Protect.
+      3. Protect — ≥FRAC_TOP_PROTECT of members in take-profits/blow-off
+         states OR the index-level shock itself firing.
+
+    Then, with zero stretched rows:
+      Many Washout bottom-forming     → getready
+      12-mo broad but short-term thin → watch
+      Broad + strong momentum         → act
+      else                            → standaside
     """
     _null = {
         "word_en": "Stand aside", "word_zh": "按兵不动",
         "sub_en":  "Not enough signal to read the complex right now.",
         "sub_zh":  "目前信号不足，无法判断大宗商品整体走势。",
         "tone":    "standaside",
+        "tip_en":  "", "tip_zh": "",
     }
     try:
         members_conf = (conf.get("members") or []) if isinstance(conf, dict) else []
-        n_members = max(1, breadth.get("n_members") or 1)
+        n_breadth = max(1, breadth.get("n_members") or 1)
+        n_board = len(members_conf) if members_conf else n_breadth
         n_bull = breadth.get("n_bull_momentum") or 0
         n_up = breadth.get("n_up_trend") or 0
 
-        top_states = {"Blowing off — extended", "Extended — late cycle",
-                      "Euphoric top — rolling over"}
         bottom_states = {"Washout bottom forming", "Basing — early bottom signs"}
 
-        n_top = sum(1 for m in members_conf if (m.get("state") or "") in top_states)
+        stretched = stretched_members(members_conf)
+        n_top = len(stretched)
+        names_en, names_zh = _stretched_name_list(stretched)
         n_bot = sum(1 for m in members_conf if (m.get("state") or "") in bottom_states)
 
-        frac_top = n_top / n_members
-        frac_bot = n_bot / n_members
-        frac_up  = n_up  / n_members
-        frac_mom = n_bull / n_members
+        frac_top = n_top / max(1, n_board)
+        frac_bot = n_bot / n_breadth
+        frac_up  = n_up  / n_breadth
+        frac_mom = n_bull / n_breadth
+        if in_sync is None:
+            in_sync = _sync_read(breadth.get("trend_diversity")).get("in_sync")
 
-        if frac_top >= 0.25:
+        index_conf = (conf.get("index") or {}) if isinstance(conf, dict) else {}
+        index_top = is_board_stretched(index_conf.get("state"))
+        shock_firing = (index_shock or "") in _INDEX_BLOWOFF_SHOCKS
+        index_protect = index_top or shock_firing
+
+        # Glance sub = count + stance only. Counted names live on tip_en/tip_zh
+        # (hero LENS, Tier 2) — auditable, no cap.
+        tip_en = names_en
+        tip_zh = names_zh
+
+        # 3. Protect — proportional board gate or index-level shock.
+        if frac_top >= FRAC_TOP_PROTECT or index_protect:
+            total = int(n_board)
+            if n_top <= 0:
+                sub_en = "The index itself is blowing off — trim, don't add."
+                sub_zh = "指数本身处于喷发——减仓，勿追加。"
+                tip_en = tip_zh = ""
+            elif n_top == 1:
+                sub_en = (f"1 of {total} commodities is stretched or euphoric"
+                          " — trim, don't add.")
+                sub_zh = f"{total}个品种中有1个处于超买或亢奋状态——减仓，勿追加。"
+            else:
+                sub_en = (f"{n_top} of {total} commodities are stretched or euphoric"
+                          " — trim, don't add.")
+                sub_zh = f"{total}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。"
             return {
                 "word_en": "Protect gains",  "word_zh": "保护利润",
-                "sub_en":  f"{n_top} of {int(n_members)} commodities are stretched or euphoric — trim, don't add.",
-                "sub_zh":  f"{int(n_members)}个品种中有{n_top}个处于超买或亢奋状态——减仓，勿追加。",
-                "tone":    "protect",
+                "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "protect",
+                "tip_en":  tip_en, "tip_zh": tip_zh,
             }
+
+        # 2. Scoped middle — some stretched, below the complex-level gate.
+        if n_top >= 1:
+            total = int(n_board)
+            if n_top == 1:
+                sub_en = f"1 of {total} stretched — trim that, don't add"
+                sub_zh = f"{total}个品种中有1个超涨——减那个，勿追加。"
+            else:
+                sub_en = f"{n_top} of {total} stretched — trim those, don't add"
+                sub_zh = f"{total}个品种中有{n_top}个超涨——减那些，勿追加。"
+            return {
+                "word_en": "In favour",  "word_zh": "倾向做多",
+                "sub_en":  sub_en, "sub_zh": sub_zh, "tone": "selective",
+                "tip_en":  tip_en, "tip_zh": tip_zh,
+            }
+
         if frac_bot >= 0.20:
             return {
                 "word_en": "Get ready",  "word_zh": "准备就绪",
-                "sub_en":  f"{n_bot} of {int(n_members)} commodities are washing out or basing — watch for early turns.",
-                "sub_zh":  f"{int(n_members)}个品种中有{n_bot}个正在洗盘或筑底——关注早期转势信号。",
+                "sub_en":  f"{n_bot} of {int(n_breadth)} commodities are washing out or basing — watch for early turns.",
+                "sub_zh":  f"{int(n_breadth)}个品种中有{n_bot}个正在洗盘或筑底——关注早期转势信号。",
                 "tone":    "getready",
+                "tip_en":  "", "tip_zh": "",
             }
         if frac_up >= 0.6 and frac_mom < 0.4:
             return {
                 "word_en": "Watch — don't chase",  "word_zh": "观望，勿追高",
-                "sub_en":  (f"Long-term trends are broad ({int(n_up)}/{int(n_members)} trending up), "
-                            f"but short-term momentum is thin ({int(n_bull)}/{int(n_members)}). "
+                "sub_en":  (f"Long-term trends are broad ({int(n_up)}/{int(n_breadth)} trending up), "
+                            f"but short-term momentum is thin ({int(n_bull)}/{int(n_breadth)}). "
                             "Not a fresh breakout — late-move divergence."),
-                "sub_zh":  (f"长期趋势广泛（{int(n_members)}个中有{int(n_up)}个向上），"
-                            f"但短期动量偏弱（{int(n_bull)}/{int(n_members)}）。"
+                "sub_zh":  (f"长期趋势广泛（{int(n_breadth)}个中有{int(n_up)}个向上），"
+                            f"但短期动量偏弱（{int(n_bull)}/{int(n_breadth)}）。"
                             "并非新突破——后期走势背离。"),
                 "tone":    "watch",
+                "tip_en":  "", "tip_zh": "",
             }
         if frac_up >= 0.5 and frac_mom >= 0.4:
+            if in_sync is True:
+                sync_en = "the complex is in sync."
+                sync_zh = "整体共振。"
+            elif in_sync is False:
+                sync_en = "but members are telling different stories."
+                sync_zh = "但各品种走势并不一致。"
+            else:
+                sync_en = "breadth is broad."
+                sync_zh = "广度较宽。"
             return {
                 "word_en": "Act",  "word_zh": "行动",
-                "sub_en":  (f"Broad trend ({int(n_up)}/{int(n_members)} up) with solid momentum "
-                            f"({int(n_bull)}/{int(n_members)}) — the complex is in sync."),
-                "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_members)}向上），"
-                            f"动量稳健（{int(n_bull)}/{int(n_members)}）——整体共振。"),
+                "sub_en":  (f"Broad trend ({int(n_up)}/{int(n_breadth)} up) with solid momentum "
+                            f"({int(n_bull)}/{int(n_breadth)}) — {sync_en}"),
+                "sub_zh":  (f"趋势广泛（{int(n_up)}/{int(n_breadth)}向上），"
+                            f"动量稳健（{int(n_bull)}/{int(n_breadth)}）——{sync_zh}"),
                 "tone":    "act",
+                "tip_en":  "", "tip_zh": "",
             }
         return _null
     except Exception:  # noqa: BLE001 — always returns a safe dict
@@ -860,8 +1122,15 @@ def _build_sector_vm_inner(
     idx_snap     = index_snap.get("index") or {}
     members_conf = (conf.get("members") or []) if isinstance(conf, dict) else []
 
+    # --- one dispersion truth (hero + index chip) -----------------------------
+    sync = _sync_read(breadth_snap.get("trend_diversity"))
+
     # --- stance ---------------------------------------------------------------
-    stance = sector_stance(conf, breadth_snap)
+    stance = sector_stance(
+        conf, breadth_snap,
+        in_sync=sync.get("in_sync"),
+        index_shock=idx_snap.get("shock_state"),
+    )
 
     # --- breadth block --------------------------------------------------------
     n_members = breadth_snap.get("n_members") or 0
@@ -871,6 +1140,9 @@ def _build_sector_vm_inner(
         "n_bull_momentum": breadth_snap.get("n_bull_momentum") or 0,
         "n_low_risk":      breadth_snap.get("n_low_risk") or 0,
         "trend_diversity": _r(breadth_snap.get("trend_diversity"), 2),
+        "in_sync":         sync.get("in_sync"),
+        "sync_en":         sync.get("sync_en"),
+        "sync_zh":         sync.get("sync_zh"),
     }
 
     # --- index block ----------------------------------------------------------
@@ -914,7 +1186,7 @@ def _build_sector_vm_inner(
     cycle_dominant: dict | None = max(cycle_summary, key=lambda e: e["count"]) if cycle_summary else None
 
     # --- board (tops + bottoms) -----------------------------------------------
-    top_states   = {"Blowing off — extended", "Extended — late cycle", "Euphoric top — rolling over"}
+    # tops use the shared BOARD_TOP_STATES predicate (is_board_stretched).
     bottom_states = {"Washout bottom forming", "Basing — early bottom signs",
                      "Washing out — high risk"}
 
@@ -926,11 +1198,11 @@ def _build_sector_vm_inner(
         # pick the dominant score side
         bot_score = m.get("bottom_score") or 0
         top_score = m.get("top_score") or 0
-        score = top_score if state in top_states else bot_score
+        score = top_score if is_board_stretched(state) else bot_score
         # fired receipt — de-slug labels already embedded in commodity_confluence._LABELS
         bottom_fired = m.get("bottom_fired") or []
         top_fired    = m.get("top_fired") or []
-        receipt = top_fired if state in top_states else bottom_fired
+        receipt = top_fired if is_board_stretched(state) else bottom_fired
         return {
             "name":        name,
             "label_en":    en,
@@ -943,7 +1215,7 @@ def _build_sector_vm_inner(
         }
 
     tops    = sorted(
-        [_board_entry(m) for m in members_conf if (m.get("state") or "") in top_states],
+        [_board_entry(m) for m in members_conf if is_board_stretched(m.get("state"))],
         key=lambda x: -(x["score"] or 0)
     )
     bottoms = sorted(
@@ -963,7 +1235,7 @@ def _build_sector_vm_inner(
             continue
         last = df.iloc[-1]
         cl = df["close"].dropna()
-        chg = _r(100 * (cl.iloc[-1] / cl.iloc[-23] - 1), 1) if len(cl) >= 23 else None
+        chg = _chg_pct(cl, CHG_1M_BARS)
         mom_state = str(last.get("momentum_state", "") or "")
         shock_st  = str(last.get("shock_state", "") or "")
         cycle_ph  = (_cycle_positions.get(name) or {}).get("phase")
@@ -971,23 +1243,13 @@ def _build_sector_vm_inner(
         _basing   = bool(_mconf.get("basing"))
         _igniting = bool(_mconf.get("armed_recent"))
         _dual     = _dual_read(mom_state, str(last.get("ts_trend", "") or ""), _roc20(cl))
-        # tone class for the cell left-border
-        if mom_state == "bull":
-            tone = "c-up"
-        elif shock_st in ("washout", "blowoff"):
-            tone = "c-wash"
-        elif mom_state == "bear":
-            tone = "c-dn"
-        else:
-            tone = "c-flat"
-
-        mom_en, mom_zh = _plain_mom_state(mom_state if mom_state else None)
+        tone, mom_en, mom_zh = _heat_cell(shock_st, mom_state, _mconf.get("state"))
         cyc_en, cyc_zh = _plain_cycle_state(cycle_ph, _basing)
-        chg_sign = "up" if (chg or 0) >= 0 else "dn"
+        chg_tone = _chg_tone(tone, chg)
 
         mem_lookup[name] = {
             "chg_1m_pct": chg,
-            "chg_sign":   chg_sign,
+            "chg_tone":   chg_tone,
             "tone":       tone,
             "state_short_en": mom_en,
             "state_short_zh": mom_zh,
@@ -1013,7 +1275,7 @@ def _build_sector_vm_inner(
                 "label_en":     en,
                 "label_zh":     zh,
                 "chg_1m_pct":   info.get("chg_1m_pct"),
-                "chg_sign":     info.get("chg_sign", "up"),
+                "chg_tone":     info.get("chg_tone", "mut"),
                 "tone":         info.get("tone", "c-flat"),
                 "state_short_en": info.get("state_short_en", "—"),
                 "state_short_zh": info.get("state_short_zh", "—"),
@@ -1089,11 +1351,14 @@ def _build_sector_vm_inner(
         en, zh = MEMBER_LABELS.get(name, (name.replace("_", " ").title(), name))
         df = member_results.get(name)
         if df is None or not isinstance(df, pd.DataFrame) or df.empty:
-            detail.append({"name": name, "label_en": en, "label_zh": zh, "available": False})
+            detail.append({
+                "name": name, "label_en": en, "label_zh": zh, "available": False,
+                "dollar_usd_dir": None, "dollar_effect": None,
+            })
             continue
         last = df.iloc[-1]
         cl = df["close"].dropna()
-        chg = _r(100 * (cl.iloc[-1] / cl.iloc[-23] - 1), 1) if len(cl) >= 23 else None
+        chg = _chg_pct(cl, CHG_1M_BARS)
 
         # confluence call
         mconf = conf_by_name.get(name, {})
@@ -1152,6 +1417,8 @@ def _build_sector_vm_inner(
             "mtf_rows":     mtf_rows,
             "verdict":      verdict,
             "is_core4":     name in core4,
+            "dollar_usd_dir": (a_vm or {}).get("dollar_usd_dir"),
+            "dollar_effect":  (a_vm or {}).get("dollar_effect"),
             # --- W-C display-tier chips (never scored, never ranked) ----------
             "basing":          _basing,
             "igniting":        bool(mconf.get("armed_recent")),
@@ -1315,7 +1582,6 @@ def main() -> int:
     from engine import commodity_news
     ncfg = config.load().get("commodity_news", {})
     catalysts = commodity_news.upcoming_catalysts(horizon_days=ncfg.get("catalysts_horizon_days", 14))
-    news_disclaimer = commodity_news.DISCLAIMER_TEXT
     if commodity_news.enabled():
         annotated = 0
         for day in timeline:
@@ -1355,19 +1621,9 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td)
     env.filters["money"] = lambda v: ("—" if v is None else f"${v:,.2f}")
-    # Resolve catalyst type slugs to bilingual labels + days_out countdown for the template
-    from datetime import date as _date
+    # Resolve catalyst type slugs + ZH event label + days_out for the template
     _build_date = results["gold"].index.max().date()
-    catalysts_resolved = []
-    for _cat in (catalysts or []):
-        _type = _cat.get("type", "")
-        _bi = CATALYST_TYPE_LABELS.get(_type, (_type.replace("_", " "), _type.replace("_", " ")))
-        try:
-            _cat_date = _date.fromisoformat(_cat["date"])
-            _days_out = (_cat_date - _build_date).days
-        except Exception:  # noqa: BLE001
-            _days_out = None
-        catalysts_resolved.append({**_cat, "type_en": _bi[0], "type_zh": _bi[1], "days_out": _days_out})
+    catalysts_resolved = [resolve_catalyst_row(_cat, _build_date) for _cat in (catalysts or [])]
     # Cross-asset read (display-tier CONTEXT, not a scored signal): oil trend-episode
     # -> Canadian energy (XEG), using the frozen C1 episode definition. See
     # research/COMMODITY_C1R2_OIL_XEG_PREREG.md and engine/trend_episode.py.
@@ -1401,7 +1657,7 @@ def main() -> int:
             C=C, as_of=as_of, built=built, cal_span=cal_span, complex=cx,
             assets=assets, order=ORDER, timeline=timeline,
             timeline_days=acfg["timeline_days"], n_alerts=len(recent_events),
-            catalysts=catalysts_resolved, news_disclaimer=news_disclaimer,
+            catalysts=catalysts_resolved,
             vm=vm, idx_ew_spark=idx_ew_spark, oil_episode=oil_episode,
             conviction_labels=CONVICTION_LABELS, coverage=coverage)
     except Exception as _re:  # noqa: BLE001 — never crash the whole site build

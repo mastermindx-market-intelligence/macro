@@ -246,3 +246,34 @@ def test_entitlement_hidden_toggle_takes_its_row_with_it(path: pathlib.Path) -> 
         "entitlement-hidden, so an empty 2px band renders on the composer for "
         "every non-Pro session; hide the row on the same condition"
     )
+
+
+@pytest.mark.parametrize("path", COPIES, ids=lambda p: str(p.relative_to(ROOT)))
+def test_explain_panel_affordance_is_touch_and_keyboard_reachable(
+    path: pathlib.Path,
+) -> None:
+    """Panel explain control must not depend on mouse hover to become usable."""
+    if not path.exists():
+        pytest.skip(f"{path} absent (sparse checkout)")
+    text = path.read_text(encoding="utf-8")
+    start, close = _css_template_span(text)
+    css = text[start + 1 : close]
+
+    assert ".mmb-exp{position:absolute;top:6px;right:6px;width:40px;height:40px" in css
+    assert "touch-action:manipulation" in css
+    assert "html[data-theme=\"light\"] .mmb-exp{" in css
+    assert (
+        ".sx:hover .mmb-exp,.sx:focus-within .mmb-exp,"
+        ".mmb-exp:focus-visible{opacity:1;pointer-events:auto}"
+    ) in css
+    assert ".mmb-exp:focus-visible{outline:2px solid" in css
+    assert "@media (hover:none),(pointer:coarse){.mmb-exp{opacity:1;pointer-events:auto}}" in css
+    assert "@media(prefers-reduced-motion:reduce){.mmb-exp{transition:none}}" in css
+    assert "btn.title = L('Ask the Brain', '询问 Mastermind AI');" in text
+    assert "btn.setAttribute('aria-label', btn.title);" in text
+
+
+def test_mm_brain_template_and_site_copy_stay_identical() -> None:
+    if not all(path.exists() for path in COPIES):
+        pytest.skip("paired asset absent (sparse checkout)")
+    assert COPIES[0].read_bytes() == COPIES[1].read_bytes()

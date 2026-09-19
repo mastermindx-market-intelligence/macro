@@ -924,13 +924,17 @@
   .mmb-sug:hover{border-color:color-mix(in srgb,var(--mmb-info) 40%,transparent);background:color-mix(in srgb,var(--mmb-info) 8%,transparent);color:var(--mmb-text);transform:translateX(2px)}
   .mmb-sug:active{transform:translateX(2px) scale(.99)}
   .mmb-sug .g{color:var(--mmb-muted);margin-right:6px}
-  /* "explain this panel" hover affordance on dashboard island cards */
-  .mmb-exp{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;cursor:pointer;padding:0;
-    background:var(--mmb-exp-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-    border:1px solid var(--mmb-line);box-shadow:var(--mmb-exp-shadow);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s,border-color .15s,box-shadow .15s;z-index:5}
-  .mmb-exp svg{width:12px;height:12px;fill:var(--mmb-exp-fg);opacity:.9}
-  .sx:hover .mmb-exp{opacity:1;pointer-events:auto}
-  .mmb-exp:hover{border-color:color-mix(in srgb,var(--mmb-info) 45%,transparent);box-shadow:0 0 12px -4px var(--mmb-info)}
+  /* "explain this panel" affordance on dashboard island cards */
+  .mmb-exp{position:absolute;top:6px;right:6px;width:40px;height:40px;border-radius:var(--r-pill,999px);cursor:pointer;padding:0;
+    background:var(--mmb-exp-bg,var(--panel));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);touch-action:manipulation;
+    border:1px solid var(--mmb-line,var(--line));box-shadow:var(--mmb-exp-shadow,none);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s,border-color .15s,box-shadow .15s;z-index:5}
+  html[data-theme="light"] .mmb-exp{background:var(--mmb-exp-bg,var(--panel));box-shadow:var(--mmb-exp-shadow,0 4px 12px -4px color-mix(in srgb,var(--text) 20%,transparent))}
+  .mmb-exp svg{width:12px;height:12px;fill:var(--mmb-exp-fg,var(--link));opacity:.9}
+  .sx:hover .mmb-exp,.sx:focus-within .mmb-exp,.mmb-exp:focus-visible{opacity:1;pointer-events:auto}
+  .mmb-exp:hover{border-color:color-mix(in srgb,var(--mmb-info,var(--link)) 45%,transparent);box-shadow:0 0 12px -4px var(--mmb-info,var(--link))}
+  .mmb-exp:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info,var(--link)) 70%,transparent);outline-offset:2px}
+  @media (hover:none),(pointer:coarse){.mmb-exp{opacity:1;pointer-events:auto}}
+  @media(prefers-reduced-motion:reduce){.mmb-exp{transition:none}}
   `;
 
   /* ── glyphs ── */
@@ -3865,7 +3869,7 @@
     send(L('Explain the "' + t + '" panel — what is it showing right now, and what should I do about it?',
            '解释「' + t + '」面板 — 它现在显示什么？我该怎么做？'));
   }
-  /* inject a hover "ask the Brain" orb into each dashboard island card face.
+  /* inject an "ask the Brain" orb into each dashboard island card face.
      No-op on pages without .sx island cards (Terminal, plain pages). */
   function initExplain() {
     var faces = root.ownerDocument ? DOC.querySelectorAll('.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face') : [];
@@ -3875,7 +3879,8 @@
       if (face.querySelector('.mmb-exp')) return; /* one per host */
       var cs = (DOC.defaultView || window).getComputedStyle(face);
       if (cs && cs.position === 'static') face.style.position = 'relative';
-      var btn = DOC.createElement('button'); btn.className = 'mmb-exp'; btn.type = 'button'; btn.title = 'Ask the Brain';
+      var btn = DOC.createElement('button'); btn.className = 'mmb-exp'; btn.type = 'button';
+      btn.title = L('Ask the Brain', '询问 Mastermind AI'); btn.setAttribute('aria-label', btn.title);
       btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>';
       btn.addEventListener('click', function (e) {
         e.stopPropagation(); e.preventDefault();
