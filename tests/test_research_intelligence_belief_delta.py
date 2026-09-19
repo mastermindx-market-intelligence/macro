@@ -19,6 +19,7 @@ PRIOR_MECHANISM = "cloud ordering supports server demand"
 CURRENT_MECHANISM = "accelerating cloud orders and supply normalization support server demand"
 PRIOR_FORECAST = "Server demand should remain firm through the September quarter."
 CURRENT_FORECAST = "Server demand should accelerate into the December quarter."
+SECOND_CLAIM = "Supply availability remains the main constraint on near-term server shipments."
 
 
 def _sha(text: str) -> str:
@@ -254,3 +255,65 @@ def test_rights_safe_summary_refuses_forged_text_channel():
         assert "changed_categories" in str(exc)
     else:
         raise AssertionError("summary must reject caller-controlled text channels")
+
+
+def test_same_forecast_statement_with_changed_horizon_is_modified_not_shared():
+    previous, _current = _pair()
+    current = _rio(
+        doc_id="fixture-2026-08-15-amd",
+        published_at="2026-08-15T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
+    current["analysis"]["forecasts"][0]["horizon"] = "next year"
+    delta = compare_institutional_rio(previous, current)
+    assert delta["categories"]["forecasts"]["added"] == []
+    assert delta["categories"]["forecasts"]["removed"] == []
+    assert len(delta["categories"]["forecasts"]["modified"]) == 1
+    assert delta["categories"]["forecasts"]["shared"] == []
+    assert delta["changed_categories"] == ["forecasts"]
+    assert delta["material_change"] is True
+
+
+def test_thesis_support_shift_is_material_even_when_belief_text_is_stable():
+    previous = _rio(
+        doc_id="fixture-2026-08-01-support",
+        published_at="2026-08-01T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
+    current = _rio(
+        doc_id="fixture-2026-08-15-support",
+        published_at="2026-08-15T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
+    second = {
+        "statement": SECOND_CLAIM,
+        "evidence": [{"quote_span": SECOND_CLAIM}],
+        "numbers": [],
+        "entities": [],
+        "horizon": "current",
+        "explicit": True,
+    }
+    previous["claims"].append(dict(second))
+    current["claims"].append(dict(second))
+    previous["analysis"]["thesis"]["support_claim_indices"] = [0]
+    current["analysis"]["thesis"]["support_claim_indices"] = [1]
+
+    delta = compare_institutional_rio(previous, current)
+    assert delta["claims"]["added_sha256"] == []
+    assert delta["claims"]["removed_sha256"] == []
+    assert delta["thesis"]["direction_changed"] is False
+    assert delta["thesis"]["support_changed"] is True
+    assert delta["thesis"]["support_before_claim_sha256"] != delta["thesis"]["support_after_claim_sha256"]
+    assert delta["material_change"] is True
