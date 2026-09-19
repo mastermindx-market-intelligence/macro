@@ -97,3 +97,38 @@ absent (`git cat-file -t` fatal); isolated replay with empty PYTHONPATH gave
 16 failed, 2 passed. The body claim of "18 passed on f1aac58fedd1" was wrong.
 HEAL_RESULT: tests 22 passed (18 original + 4 new: cobalt/lithium verbatim
 read pins, cobalt top3=56, lithium top3=97, no-angle-bracket assertion).
+
+## Heal h_7110 round 3 (2026-09-19)
+
+Head `4db6b1e5bd717f817660f839deb621df0dc6c0a4` → heal head `3f515003cc37c9b0a656a389ba2848c749df1f28`.
+MAJOR 1 (META-CEO RULING): ZH reads now use Chinese country names via
+`COUNTRY_ZH` map + `_country_zh()` helper; unmapped names log a warning
+and fall back to English.  ZH leads now: 刚果（金）/澳大利亚/中国.
+MAJOR 2 (research doc): rare-earths top-3 assertion now checks ordered
+named-country tuple (China 71, Malaysia 13, Estonia 5 — tie at 5 broken
+by alphabetical name), not just the sum.
+MINOR 1: stitch `.capitalize()` removed — missing-NIR sentence keeps
+"US" capitalised (was "uS").
+MINOR 2: NIR `'<'.format(25, 'zh')` now returns 少于 not 低于.
+
+Corrected reads at heal head `3f515003cc` (round 3 heal):
+
+- cobalt: EN: "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025,
+  and the US imported about 79 percent of what it used."
+  ZH: "刚果（金）在2025年开采了全球约74%的钴，美国进口了其用量的约79%。"
+  top3_import_share_pct = 56
+- lithium: EN: "Australia mined about 32% of the world's lithium in 2025,
+  and the US imported more than 50 percent of what it used."
+  ZH: "澳大利亚在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。"
+  top3_import_share_pct = 97
+- gallium: EN: "China produced about 100% of the world's gallium in 2025,
+  and the US imported about 100 percent of what it used."
+  ZH: "中国在2025年生产了全球约100%的镓，美国进口了其用量的约100%。"
+  top3_import_share_pct = 68
+- rare earths: EN: "China mined about 69% of the world's rare earths in 2025,
+  and the US imported about 67 percent of what it used."
+  ZH: "中国在2025年开采了全球约69%的稀土，美国进口了其用量的约67%。"
+  top3_import_share_pct = 89
+
+HEAL_RESULT: 25 passed (was 23 — new: test_zh_reads_contain_no_latin_country_names
+RED at 67f90b54, test_rare_earths_top3_named_country_order).
