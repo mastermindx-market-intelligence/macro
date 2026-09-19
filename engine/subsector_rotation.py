@@ -36,6 +36,7 @@ from pathlib import Path
 from typing import Mapping, Sequence
 
 import numpy as np
+import pandas as pd
 
 log = logging.getLogger(__name__)
 
@@ -58,6 +59,19 @@ _NAMES_ZH = _load_names_zh()
 HORIZONS = ["1D", "1W", "1M", "MTD", "3M", "6M", "1Y", "YTD"]
 MOM_HORIZONS = ["1W", "1M", "3M", "6M", "1Y"]
 WEEKS = {"1W": 1.0, "1M": 4.345, "3M": 13.04, "6M": 26.07, "1Y": 52.14}
+
+# Lane C — closed-session leadership is an additive, descriptive observation.
+# These windows are completed market sessions, never calendar-day approximations.
+CLOSED_SESSION_WINDOWS = (1, 3, 5, 10, 20, 60)
+CLOSED_SESSION_LEADERSHIP_SCHEMA = "subsector_rotation.closed_session_leadership.v1"
+CLOSED_SESSION_PERMISSIONS = {
+    "may_rank": False,
+    "may_gate": False,
+    "may_size": False,
+    "may_escalate": False,
+    "may_trade": False,
+}
+
 
 
 def _zscore(values: dict[str, float]) -> dict[str, float]:
@@ -206,6 +220,597 @@ def attach_turn(rows: list[dict], perf_by_key: Mapping[str, Mapping],
     except Exception as e:  # noqa: BLE001 — additive layer, never fatal
         log.warning("turn read failed: %s", e)
         return {}
+
+
+def _normalise_daily_frame(frame, sessions: pd.DatetimeIndex, asof: pd.Timestamp) -> dict | None:
+    """Normalise one owner-provided daily tape onto the completed market calendar.
+
+    The owner close series is not rewritten for corporate actions here. Missing bars
+    after a ticker becomes live are forward-filled exactly as the incumbent basket
+    composite does; the number of such fills is disclosed in coverage instead of hidden.
+    """
+    if frame is None:
+        return None
+    if isinstance(frame, pd.Series):
+        df = frame.to_frame("close")
+    elif isinstance(frame, pd.DataFrame):
+        df = frame.copy()
+    else:
+        return None
+    if "close" not in df or df["close"].dropna().empty:
+        return None
+    idx = pd.DatetimeIndex(df.index)
+    if idx.tz is not None:
+        idx = idx.tz_localize(None)
+    df.index = idx.normalize()
+    df = df[~df.index.duplicated(keep="last")].sort_index().loc[:asof]
+    close = pd.to_numeric(df["close"], errors="coerce").where(lambda x: x > 0)
+    close = close[~close.index.duplicated(keep="last")]
+    if close.dropna().empty:
+        return None
+    raw_close = close.reindex(sessions)
+    first = raw_close.first_valid_index()
+    last = raw_close.last_valid_index()
+    if first is None or last is None:
+        return None
+    all_internal_missing_sessions = int(raw_close.loc[first:last].isna().sum())
+    trailing_missing_sessions = int((sessions > last).sum())
+    # Fill only gaps bounded by real observations. A stale tail stays unavailable;
+    # carrying the last price through the cutoff would manufacture zero returns
+    # and false persistence for a member that no longer has a current tape.
+    filled_close = raw_close.ffill().where(raw_close.index <= last)
+    daily_return = filled_close.pct_change(fill_method=None)
+    daily_return = daily_return.where(filled_close.notna())
+
+    volume = None
+    if "volume" in df:
+        volume = pd.to_numeric(df["volume"], errors="coerce").reindex(sessions)
+    return {
+        "close": filled_close,
+        "raw_close": raw_close,
+        "return": daily_return,
+        "volume": volume,
+        "first_observed_session": first.date().isoformat(),
+        "last_observed_session": last.date().isoformat(),
+        "all_internal_missing_sessions": all_internal_missing_sessions,
+        "trailing_missing_sessions": trailing_missing_sessions,
+    }
+
+
+def _compound_on_dates(series: pd.Series | None, dates: pd.DatetimeIndex) -> float | None:
+    if series is None or len(dates) == 0:
+        return None
+    vals = pd.to_numeric(series.reindex(dates), errors="coerce")
+    if len(vals) != len(dates) or vals.isna().any():
+        return None
+    return float((1.0 + vals).prod() - 1.0)
+
+
+def _pct(value: float | None) -> float | None:
+    return round(value * 100.0, 4) if value is not None and np.isfinite(value) else None
+
+
+def _relative_strength_summary(
+    group_returns: pd.Series | None,
+    benchmark_returns: pd.Series | None,
+    dates: pd.DatetimeIndex,
+) -> dict:
+    """Relative-strength change and log-ratio slope over completed sessions."""
+    unavailable = {
+        "change_pct": None,
+        "slope_pct_per_session": None,
+    }
+    if group_returns is None or benchmark_returns is None or len(dates) == 0:
+        return unavailable
+    frame = pd.concat(
+        [
+            pd.to_numeric(group_returns.reindex(dates), errors="coerce").rename("group"),
+            pd.to_numeric(benchmark_returns.reindex(dates), errors="coerce").rename("benchmark"),
+        ],
+        axis=1,
+    )
+    if len(frame) != len(dates) or frame.isna().any().any():
+        return unavailable
+    if (frame <= -1.0).any().any():
+        return unavailable
+    relative_log = np.log1p(frame["group"]) - np.log1p(frame["benchmark"])
+    if not np.isfinite(relative_log.to_numpy(dtype=float)).all():
+        return unavailable
+    cumulative_log = relative_log.cumsum()
+    change = float(np.expm1(cumulative_log.iloc[-1]))
+    slope = None
+    if len(cumulative_log) >= 2:
+        slope = float(np.polyfit(np.arange(len(cumulative_log)), cumulative_log, 1)[0])
+    return {
+        "change_pct": _pct(change),
+        "slope_pct_per_session": _pct(slope),
+    }
+
+
+def _window_participation(
+    member_returns: pd.DataFrame,
+    dates: pd.DatetimeIndex,
+    market_return: float | None,
+    parent_return: float | None,
+) -> tuple[dict, list[str]]:
+    measured: dict[str, float] = {}
+    for ticker in member_returns.columns:
+        value = _compound_on_dates(member_returns[ticker], dates)
+        if value is not None:
+            measured[ticker] = value
+    reasons: list[str] = []
+    if not measured:
+        return {
+            "priced_members": 0,
+            "positive_share": None,
+            "beat_market_share": None,
+            "beat_parent_share": None,
+            "dispersion_pct": None,
+            "top_abs_move_share": None,
+            "top_abs_move_ticker": None,
+        }, reasons
+
+    vals = np.array(list(measured.values()), dtype=float)
+    n = len(vals)
+    total_abs = float(np.abs(vals).sum())
+    top_ticker = max(measured, key=lambda t: abs(measured[t])) if total_abs > 0 else None
+    top_share = abs(measured[top_ticker]) / total_abs if top_ticker else 0.0
+    if n >= 3 and top_share >= 0.5:
+        reasons.append("ONE_NAME_CONCENTRATION")
+    return {
+        "priced_members": n,
+        "positive_share": round(float(np.mean(vals > 0)), 4),
+        "beat_market_share": (
+            round(float(np.mean(vals > market_return)), 4) if market_return is not None else None
+        ),
+        "beat_parent_share": (
+            round(float(np.mean(vals > parent_return)), 4) if parent_return is not None else None
+        ),
+        "dispersion_pct": round(float(np.std(vals, ddof=0)) * 100.0, 4),
+        "top_abs_move_share": round(top_share, 4),
+        "top_abs_move_ticker": top_ticker,
+    }, reasons
+
+
+def _volume_reclaim_evidence(prepared: Mapping[str, Mapping], asof: pd.Timestamp) -> dict:
+    high_volume_positive: list[bool] = []
+    above_20d_mean: list[bool] = []
+    reclaimed_20d_mean: list[bool] = []
+    members_with_volume = 0
+    members_with_reclaim = 0
+    for item in prepared.values():
+        close = item["close"].loc[:asof].dropna()
+        ret = item["return"].loc[:asof]
+        if len(close) >= 21:
+            latest = float(close.iloc[-1])
+            previous = float(close.iloc[-2])
+            prior_mean = float(close.iloc[-21:-1].mean())
+            current_mean = float(close.iloc[-20:].mean())
+            above_20d_mean.append(latest >= current_mean)
+            reclaimed_20d_mean.append(previous < prior_mean and latest >= prior_mean)
+            members_with_reclaim += 1
+        volume = item.get("volume")
+        if volume is not None:
+            volume = volume.loc[:asof]
+            hist = volume.iloc[-21:].dropna()
+            latest_ret = ret.iloc[-1] if len(ret) else np.nan
+            if len(hist) >= 21 and np.isfinite(latest_ret):
+                high_volume_positive.append(
+                    bool(hist.iloc[-1] > hist.iloc[:-1].mean() and latest_ret > 0)
+                )
+                members_with_volume += 1
+    return {
+        "members_with_volume": members_with_volume,
+        "high_volume_positive_share": (
+            round(float(np.mean(high_volume_positive)), 4) if high_volume_positive else None
+        ),
+        "members_with_20d_reclaim_evidence": members_with_reclaim,
+        "above_20d_mean_share": (
+            round(float(np.mean(above_20d_mean)), 4) if above_20d_mean else None
+        ),
+        "reclaimed_20d_mean_share": (
+            round(float(np.mean(reclaimed_20d_mean)), 4) if reclaimed_20d_mean else None
+        ),
+    }
+
+
+def _leadership_node(
+    *,
+    key: str,
+    name: str,
+    relationship_kind: str,
+    declared_members: Sequence[str],
+    prepared_all: Mapping[str, Mapping],
+    market_returns: pd.Series,
+    return_sessions: pd.DatetimeIndex,
+    parent_returns: pd.Series | None,
+    windows: Sequence[int],
+) -> dict:
+    declared = [str(t).strip().upper() for t in declared_members if str(t).strip()]
+    unique = list(dict.fromkeys(declared))
+    duplicate_count = len(declared) - len(unique)
+    prepared = {t: prepared_all[t] for t in unique if t in prepared_all}
+    member_returns = pd.DataFrame(
+        {ticker: item["return"] for ticker, item in prepared.items()}, index=return_sessions
+    )
+    group_returns = member_returns.mean(axis=1, skipna=True) if len(member_returns.columns) else pd.Series(
+        index=return_sessions, dtype=float
+    )
+    group_returns = group_returns.where(member_returns.notna().sum(axis=1) > 0)
+
+    coverage_window_sessions = max(windows) if windows else 60
+    coverage_dates = return_sessions[-coverage_window_sessions:]
+    internal_missing_sessions = 0
+    trailing_missing_sessions = 0
+    pre_listing_sessions = 0
+    stale_members = []
+    short_history_members = []
+    complete_window_members = 0
+    for ticker, item in prepared.items():
+        first_seen = pd.Timestamp(item["first_observed_session"])
+        last_seen = pd.Timestamp(item["last_observed_session"])
+        scoped_raw = item["raw_close"].reindex(coverage_dates)
+        active = scoped_raw.loc[
+            (scoped_raw.index >= first_seen) & (scoped_raw.index <= last_seen)
+        ]
+        internal_missing_sessions += int(active.isna().sum())
+        lag_sessions = int((coverage_dates > last_seen).sum())
+        trailing_missing_sessions += lag_sessions
+        pre_listing = int((coverage_dates < first_seen).sum())
+        pre_listing_sessions += pre_listing
+        window_returns = item["return"].reindex(coverage_dates)
+        first_return = window_returns.first_valid_index()
+        leading_unavailable = (
+            len(coverage_dates)
+            if first_return is None
+            else int((coverage_dates < first_return).sum())
+        )
+        complete_window = len(coverage_dates) > 0 and not window_returns.isna().any()
+        if complete_window:
+            complete_window_members += 1
+        elif leading_unavailable:
+            short_history_members.append({
+                "ticker": ticker,
+                "first_observed_session": item.get("first_observed_session"),
+                "leading_unavailable_sessions": leading_unavailable,
+            })
+        if lag_sessions:
+            stale_members.append({
+                "ticker": ticker,
+                "last_observed_session": item.get("last_observed_session"),
+                "lag_sessions": lag_sessions,
+            })
+    missing_member_sessions = internal_missing_sessions + trailing_missing_sessions
+    current_session_members = len(prepared) - len(stale_members)
+    coverage = {
+        "declared_member_assignments": len(declared),
+        "unique_members": len(unique),
+        "priced_members": len(prepared),
+        "current_session_members": current_session_members,
+        "members_with_complete_window_history": complete_window_members,
+        "unpriced_members": sorted(set(unique) - set(prepared)),
+        "short_history_members": short_history_members,
+        "stale_members": stale_members,
+        "duplicate_members_removed": duplicate_count,
+        "coverage_window_sessions": coverage_window_sessions,
+        "pre_listing_member_sessions": pre_listing_sessions,
+        "internal_missing_member_sessions": internal_missing_sessions,
+        "trailing_missing_member_sessions": trailing_missing_sessions,
+        "missing_member_sessions": missing_member_sessions,
+    }
+    node_reasons = [
+        "DESCRIPTIVE_SHADOW_ONLY",
+        "CURRENT_MEMBERSHIP_TECHNICAL_WINDOW_NOT_PIT",
+        "CORPORATE_ACTION_BASIS_INHERITED_UNVERIFIED",
+    ]
+    if len(unique) < 3:
+        node_reasons.append("SPARSE_GROUP")
+    if len(prepared) < len(unique):
+        node_reasons.append("PARTIAL_MEMBER_COVERAGE")
+    if duplicate_count:
+        node_reasons.append("DUPLICATE_MEMBERS_DEDUPED")
+    if internal_missing_sessions:
+        node_reasons.append("MISSING_MEMBER_SESSIONS")
+    if short_history_members:
+        node_reasons.append("SHORT_MEMBER_HISTORY")
+    if stale_members:
+        node_reasons.append("STALE_MEMBER_TAPE")
+    recent_member_returns = member_returns.tail(max(windows) if windows else 60)
+    if not recent_member_returns.empty and (recent_member_returns.abs() >= 0.5).any().any():
+        node_reasons.append("EXTREME_SINGLE_SESSION_MOVE")
+
+    windows_out: dict[str, dict] = {}
+    available_windows = 0
+    for n in windows:
+        dates = return_sessions[-n:] if len(return_sessions) >= n else pd.DatetimeIndex([])
+        group_ret = _compound_on_dates(group_returns, dates)
+        market_ret = _compound_on_dates(market_returns, dates)
+        parent_ret = _compound_on_dates(parent_returns, dates) if parent_returns is not None else None
+        reasons: list[str] = []
+        if group_ret is None or market_ret is None:
+            reasons.append("INSUFFICIENT_HISTORY")
+        else:
+            available_windows += 1
+        participation, participation_reasons = _window_participation(
+            member_returns, dates, market_ret, parent_ret
+        )
+        reasons.extend(participation_reasons)
+        rs_market = _relative_strength_summary(group_returns, market_returns, dates)
+        rs_parent = _relative_strength_summary(group_returns, parent_returns, dates)
+        windows_out[str(n)] = {
+            "return_pct": _pct(group_ret),
+            "market_return_pct": _pct(market_ret),
+            "excess_vs_market_pct": (
+                _pct(group_ret - market_ret) if group_ret is not None and market_ret is not None else None
+            ),
+            "parent_return_pct": _pct(parent_ret),
+            "excess_vs_parent_pct": (
+                _pct(group_ret - parent_ret) if group_ret is not None and parent_ret is not None else None
+            ),
+            "relative_strength": {
+                "change_vs_market_pct": rs_market["change_pct"],
+                "slope_vs_market_pct_per_session": rs_market["slope_pct_per_session"],
+                "change_vs_parent_pct": rs_parent["change_pct"],
+                "slope_vs_parent_pct_per_session": rs_parent["slope_pct_per_session"],
+            },
+            "participation": participation,
+            "reason_codes": sorted(set(reasons)),
+        }
+
+    short_return = windows_out.get("5", {}).get("return_pct")
+    long_return = windows_out.get("60", {}).get("return_pct")
+    if short_return is not None and long_return is not None:
+        if short_return > 0 and long_return < 0:
+            node_reasons.append("SHORT_WINDOW_POSITIVE_LONG_WINDOW_NEGATIVE")
+        elif short_return < 0 and long_return > 0:
+            node_reasons.append("SHORT_WINDOW_NEGATIVE_LONG_WINDOW_POSITIVE")
+
+    level = windows_out.get("20", {})
+    level_excess = level.get("excess_vs_market_pct")
+    level_state = (
+        "UNAVAILABLE" if level_excess is None else
+        "LEADING" if level_excess > 0 else
+        "LAGGING" if level_excess < 0 else "NEUTRAL"
+    )
+
+    current_dates = return_sessions[-5:] if len(return_sessions) >= 5 else pd.DatetimeIndex([])
+    prior_dates = return_sessions[-10:-5] if len(return_sessions) >= 10 else pd.DatetimeIndex([])
+    current_group = _compound_on_dates(group_returns, current_dates)
+    prior_group = _compound_on_dates(group_returns, prior_dates)
+    current_market = _compound_on_dates(market_returns, current_dates)
+    prior_market = _compound_on_dates(market_returns, prior_dates)
+    current_parent = _compound_on_dates(parent_returns, current_dates) if parent_returns is not None else None
+    prior_parent = _compound_on_dates(parent_returns, prior_dates) if parent_returns is not None else None
+    current_excess = (
+        current_group - current_market if current_group is not None and current_market is not None else None
+    )
+    prior_excess = (
+        prior_group - prior_market if prior_group is not None and prior_market is not None else None
+    )
+    change = current_excess - prior_excess if current_excess is not None and prior_excess is not None else None
+    acceleration_state = (
+        "UNAVAILABLE" if change is None else
+        "IMPROVING" if change > 0 else
+        "DETERIORATING" if change < 0 else "STABLE"
+    )
+    parent_change = None
+    if all(v is not None for v in (current_group, current_parent, prior_group, prior_parent)):
+        parent_change = (current_group - current_parent) - (prior_group - prior_parent)
+
+    persistence_dates = return_sessions[-10:] if len(return_sessions) >= 10 else pd.DatetimeIndex([])
+    relative_daily = (group_returns - market_returns).reindex(persistence_dates).dropna()
+    parent_relative_daily = (
+        (group_returns - parent_returns).reindex(persistence_dates).dropna()
+        if parent_returns is not None else pd.Series(dtype=float)
+    )
+
+    volume_reclaim = _volume_reclaim_evidence(prepared, return_sessions[-1]) if len(return_sessions) else {
+        "members_with_volume": 0,
+        "high_volume_positive_share": None,
+        "members_with_20d_reclaim_evidence": 0,
+        "above_20d_mean_share": None,
+        "reclaimed_20d_mean_share": None,
+    }
+    if volume_reclaim["members_with_volume"] == 0:
+        node_reasons.append("MISSING_VOLUME_EVIDENCE")
+
+    return {
+        "key": key,
+        "name": name,
+        "relationship_kind": relationship_kind,
+        "status": (
+            "UNAVAILABLE" if available_windows == 0 else
+            "MEASURED" if (
+                available_windows == len(windows)
+                and len(prepared) == len(unique)
+                and complete_window_members == len(prepared)
+                and missing_member_sessions == 0
+            ) else "PARTIAL"
+        ),
+        "coverage": coverage,
+        "windows": windows_out,
+        "strength_level": {
+            "window_sessions": 20,
+            "excess_vs_market_pct": level_excess,
+            "state": level_state,
+        },
+        "acceleration": {
+            "window_sessions": 5,
+            "current_excess_vs_market_pct": _pct(current_excess),
+            "prior_excess_vs_market_pct": _pct(prior_excess),
+            "change_pct_points": _pct(change),
+            "change_vs_parent_pct_points": _pct(parent_change),
+            "state": acceleration_state,
+        },
+        "persistence": {
+            "window_sessions": 10,
+            "measured_sessions": int(len(relative_daily)),
+            "positive_excess_session_share": (
+                round(float((relative_daily > 0).mean()), 4) if len(relative_daily) else None
+            ),
+            "positive_vs_parent_session_share": (
+                round(float((parent_relative_daily > 0).mean()), 4)
+                if len(parent_relative_daily) else None
+            ),
+        },
+        "volume_reclaim": volume_reclaim,
+        "reason_codes": sorted(set(node_reasons)),
+    }
+
+
+def compute_closed_session_leadership(
+    tree: Sequence[Mapping],
+    member_bars: Mapping[str, object],
+    market_bars: object,
+    *,
+    asof: str | None = None,
+    parent_keys: set[str] | None = None,
+    windows: Sequence[int] = CLOSED_SESSION_WINDOWS,
+) -> dict:
+    """Measure parent/subtheme leadership over explicitly completed daily sessions.
+
+    This is a current-constituency technical observation, not a historical membership
+    replay and not a forecast. The caller supplies the completed-session cutoff; bars
+    after that date are excluded. Parent returns count each instrument once even when a
+    ticker appears in several subthemes.
+    """
+    if isinstance(market_bars, pd.Series):
+        market_frame = market_bars.to_frame("close")
+    elif isinstance(market_bars, pd.DataFrame):
+        market_frame = market_bars.copy()
+    else:
+        market_frame = pd.DataFrame()
+    if "close" not in market_frame or market_frame["close"].dropna().empty:
+        return {
+            "schema": CLOSED_SESSION_LEADERSHIP_SCHEMA,
+            "status": "UNAVAILABLE",
+            "asof": None,
+            "benchmark": "SPY",
+            "windows_sessions": list(windows),
+            "basis": {
+                "bars": "COMPLETED_DAILY_SESSIONS_ONLY",
+                "membership": "CURRENT_SOURCE_TREE_TECHNICAL_WINDOW",
+                "membership_is_point_in_time": False,
+                "corporate_action_basis": "OWNER_CLOSE_SERIES_UNVERIFIED",
+            },
+            "permissions": dict(CLOSED_SESSION_PERMISSIONS),
+            "is_context_only": True,
+            "is_forecast": False,
+            "bar_status": "UNCONFIRMED",
+            "themes": {},
+            "reason_codes": ["MARKET_BENCHMARK_UNAVAILABLE"],
+        }
+    market_idx = pd.DatetimeIndex(market_frame.index)
+    if market_idx.tz is not None:
+        market_idx = market_idx.tz_localize(None)
+    market_frame.index = market_idx.normalize()
+    market_frame = market_frame[~market_frame.index.duplicated(keep="last")].sort_index()
+    market_close = pd.to_numeric(market_frame["close"], errors="coerce").where(lambda x: x > 0)
+    requested = pd.Timestamp(asof).normalize() if asof else market_close.dropna().index.max()
+    market_close = market_close.loc[:requested].dropna()
+    if market_close.empty:
+        completed_asof = requested
+        sessions = pd.DatetimeIndex([])
+        market_returns = pd.Series(dtype=float)
+    else:
+        completed_asof = pd.Timestamp(market_close.index[-1]).normalize()
+        sessions = pd.DatetimeIndex(market_close.index)
+        market_returns = market_close.pct_change(fill_method=None)
+    return_sessions = pd.DatetimeIndex(market_returns.dropna().index)
+
+    wanted = set(parent_keys) if parent_keys is not None else None
+    selected = [th for th in tree if wanted is None or str(th.get("theme") or th.get("key") or "") in wanted]
+    needed = {
+        str(t).strip().upper()
+        for th in selected for sub in (th.get("subsectors") or [])
+        for t in (sub.get("members") or []) if str(t).strip()
+    }
+    prepared_all = {}
+    for ticker in sorted(needed):
+        item = _normalise_daily_frame(member_bars.get(ticker), sessions, completed_asof)
+        if item is not None:
+            prepared_all[ticker] = item
+
+    themes: dict[str, dict] = {}
+    all_statuses: list[str] = []
+    for th in selected:
+        theme = str(th.get("theme") or th.get("key") or "").strip()
+        if not theme:
+            continue
+        subs = list(th.get("subsectors") or [])
+        declared_parent = [
+            str(t).strip().upper() for sub in subs for t in (sub.get("members") or []) if str(t).strip()
+        ]
+        unique_parent = list(dict.fromkeys(declared_parent))
+        parent_returns_frame = pd.DataFrame(
+            {t: prepared_all[t]["return"] for t in unique_parent if t in prepared_all},
+            index=return_sessions,
+        )
+        parent_returns = (
+            parent_returns_frame.mean(axis=1, skipna=True).where(parent_returns_frame.notna().sum(axis=1) > 0)
+            if len(parent_returns_frame.columns) else pd.Series(index=return_sessions, dtype=float)
+        )
+        parent = _leadership_node(
+            key=theme, name=theme, relationship_kind="PARENT_SOURCE_GROUP",
+            declared_members=declared_parent, prepared_all=prepared_all,
+            market_returns=market_returns, return_sessions=return_sessions,
+            parent_returns=None, windows=windows,
+        )
+        subthemes = []
+        for sub in subs:
+            key = str(sub.get("key") or "").strip()
+            if not key:
+                continue
+            subthemes.append(_leadership_node(
+                key=key, name=str(sub.get("name") or key),
+                relationship_kind="SUBTHEME_SOURCE_GROUP",
+                declared_members=sub.get("members") or [], prepared_all=prepared_all,
+                market_returns=market_returns, return_sessions=return_sessions,
+                parent_returns=parent_returns, windows=windows,
+            ))
+        statuses = [parent["status"], *[row["status"] for row in subthemes]]
+        theme_status = (
+            "UNAVAILABLE" if all(x == "UNAVAILABLE" for x in statuses) else
+            "MEASURED" if all(x == "MEASURED" for x in statuses) else "PARTIAL"
+        )
+        all_statuses.append(theme_status)
+        themes[theme] = {
+            "schema": CLOSED_SESSION_LEADERSHIP_SCHEMA,
+            "status": theme_status,
+            "asof": completed_asof.date().isoformat() if len(sessions) else None,
+            "parent": parent,
+            "subthemes": subthemes,
+            "reason_codes": ["DESCRIPTIVE_SHADOW_ONLY"],
+            "is_context_only": True,
+            "is_forecast": False,
+            "bar_status": "CLOSED",
+        }
+
+    overall = (
+        "UNAVAILABLE" if not themes or all(x == "UNAVAILABLE" for x in all_statuses) else
+        "MEASURED" if all(x == "MEASURED" for x in all_statuses) else "PARTIAL"
+    )
+    return {
+        "schema": CLOSED_SESSION_LEADERSHIP_SCHEMA,
+        "status": overall,
+        "asof": completed_asof.date().isoformat() if len(sessions) else None,
+        "benchmark": "SPY",
+        "windows_sessions": list(windows),
+        "basis": {
+            "bars": "COMPLETED_DAILY_SESSIONS_ONLY",
+            "membership": "CURRENT_SOURCE_TREE_TECHNICAL_WINDOW",
+            "membership_is_point_in_time": False,
+            "parent_weighting": "EQUAL_WEIGHT_UNIQUE_INSTRUMENT_DAILY_REBALANCED",
+            "subtheme_weighting": "EQUAL_WEIGHT_UNIQUE_INSTRUMENT_DAILY_REBALANCED",
+            "corporate_action_basis": "OWNER_CLOSE_SERIES_UNVERIFIED",
+        },
+        "permissions": dict(CLOSED_SESSION_PERMISSIONS),
+        "is_context_only": True,
+        "is_forecast": False,
+        "bar_status": "CLOSED",
+        "themes": themes,
+        "reason_codes": ["DESCRIPTIVE_SHADOW_ONLY"],
+    }
 
 
 def perf_from_close(close, asof: str | None = None) -> dict | None:

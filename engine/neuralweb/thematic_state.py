@@ -270,6 +270,7 @@ def _read_subsector(root: Path) -> tuple[dict, list[str]]:
                 "rs": t.get("rs"),
                 "accel_z": t.get("z_accel"),
                 "emerging_score": t.get("emerging_score"),
+                "leadership_observation": t.get("leadership_observation"),
             }
     return by_name, stale
 
