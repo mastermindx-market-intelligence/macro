@@ -542,3 +542,42 @@ def test_gold_premium_quality_receipt_preserves_method_separation(tmp_path):
     assert doc["history_points"] == 30
     assert doc["stats_5_ready"] is True
     assert doc["stats_30_ready"] is True
+
+
+def test_gold_premium_live_ready_gate_requires_fresh_render_and_full_stats():
+    from scripts import audit_china_gold_premium as audit
+
+    ready = {
+        "status": "available_fresh",
+        "render_consistent": True,
+        "stats_5_ready": True,
+        "stats_30_ready": True,
+    }
+    assert audit.live_ready_violations(ready) == []
+
+    unavailable = dict(ready, status="honest_unavailable")
+    assert "status is honest_unavailable, not available_fresh" in audit.live_ready_violations(unavailable)
+
+    stale = dict(ready, status="available_stale")
+    assert "status is available_stale, not available_fresh" in audit.live_ready_violations(stale)
+
+    short_history = dict(ready, stats_30_ready=False)
+    assert "30-session range is not ready" in audit.live_ready_violations(short_history)
+
+
+def test_gold_premium_main_forwards_require_live_ready(monkeypatch):
+    from scripts import audit_china_gold_premium as audit
+
+    seen = {}
+
+    def fake_run(*, strict_render=False, require_live_ready=False):
+        seen.update(
+            strict_render=strict_render,
+            require_live_ready=require_live_ready,
+        )
+        return 0
+
+    monkeypatch.setattr(audit, "run", fake_run)
+
+    assert audit.main(["--strict-render", "--require-live-ready"]) == 0
+    assert seen == {"strict_render": True, "require_live_ready": True}

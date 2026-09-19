@@ -106,6 +106,15 @@ after site-wide normalization and immediately before the broad stage, overwritin
 so production proof binds to the exact HTML tree that will be committed. This receipt is
 observability/proof only and creates no new lifecycle or scoring authority.
 
+The exact post-merge acceptance command is:
+
+`python -m scripts.audit_china_gold_premium --strict-render --require-live-ready`
+
+That command exits nonzero unless the source is fresh, the rendered panel matches the engine,
+and both the 5-session average and 30-session range are honestly available. The normal nightly
+continues to accept an honest unavailable receipt; only the explicit acceptance invocation turns
+source/history readiness into a completion gate.
+
 The two raw source datasets already have stable Data OS ids declared as `PROPOSED`:
 `commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. After the first real
 nightly successfully lands and validates both `data/gold_china_basis/*.parquet` files, closeout

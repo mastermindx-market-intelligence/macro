@@ -107,6 +107,14 @@ runs in the existing engine-output commit script after site-wide normalization a
 before staging, overwriting the same receipt so the final proof binds to the exact committed HTML
 tree. The receipt has no signal, ranking, lifecycle, retry, or publication authority.
 
+Post-merge acceptance uses the same checker with an explicit completion gate:
+
+`python -m scripts.audit_china_gold_premium --strict-render --require-live-ready`
+
+This mode exits nonzero unless the selected source method is fresh, the rendered panel matches the
+engine, and both the 5-session average and 30-session range are ready. The scheduled nightly keeps
+honest unavailability nonfatal; only the explicit acceptance invocation requires live readiness.
+
 The 5-session average is emitted only after five aligned observations exist, and the 30-session
 range only after thirty. Until then those statistics are null/“—” rather than mislabeled
 short-history aggregates.

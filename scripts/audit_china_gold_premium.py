@@ -13,6 +13,7 @@ a market-data outage.
 Usage:
     python -m scripts.audit_china_gold_premium
     python -m scripts.audit_china_gold_premium --strict-render
+    python -m scripts.audit_china_gold_premium --strict-render --require-live-ready
 """
 from __future__ import annotations
 
@@ -199,7 +200,22 @@ def write_receipt(
     return doc
 
 
-def run(*, strict_render: bool = False) -> int:
+def live_ready_violations(doc: dict) -> list[str]:
+    """Return blockers for the post-merge live-product acceptance gate."""
+    blockers: list[str] = []
+    if not doc.get("render_consistent"):
+        blockers.append("render contract is not consistent")
+    status = str(doc.get("status") or "unknown")
+    if status != "available_fresh":
+        blockers.append(f"status is {status}, not available_fresh")
+    if not doc.get("stats_5_ready"):
+        blockers.append("5-session average is not ready")
+    if not doc.get("stats_30_ready"):
+        blockers.append("30-session range is not ready")
+    return blockers
+
+
+def run(*, strict_render: bool = False, require_live_ready: bool = False) -> int:
     cfg = config.load()
     premium_cfg = (cfg.get("commodities") or {}).get("china_gold_premium") or {}
     vm = china_gold_premium.build_view_model(premium_cfg)
@@ -218,7 +234,17 @@ def run(*, strict_render: bool = False) -> int:
             f"::error title=China gold premium render mismatch::{detail}; "
             "see data/quality/china_gold_premium.json"
         )
-        return 2 if strict_render else 0
+        return 2 if strict_render or require_live_ready else 0
+
+    if require_live_ready:
+        blockers = live_ready_violations(doc)
+        if blockers:
+            print(
+                "::error title=China gold premium live proof incomplete::"
+                + "; ".join(blockers)
+                + "; see data/quality/china_gold_premium.json"
+            )
+            return 3
 
     if doc["status"] == "honest_unavailable":
         print(
@@ -246,9 +272,20 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="exit 2 when the rendered Gold panel disagrees with the engine VM",
     )
+    ap.add_argument(
+        "--require-live-ready",
+        action="store_true",
+        help=(
+            "exit 3 unless the source is fresh, the render is consistent, and "
+            "both the 5- and 30-session statistics are ready"
+        ),
+    )
     args = ap.parse_args(argv)
     try:
-        return run(strict_render=args.strict_render)
+        return run(
+            strict_render=args.strict_render,
+            require_live_ready=args.require_live_ready,
+        )
     except Exception as exc:  # noqa: BLE001 — audit crashes must be visible
         log.error("China gold premium audit crashed: %s", exc)
         return 2
