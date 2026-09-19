@@ -1251,3 +1251,96 @@ def test_gold_premium_audit_treats_unreadable_source_store_as_honest_unavailable
     assert receipt["status"] == "honest_unavailable"
     assert receipt["close_proxy_dataos_promotion_ready"] is False
     assert [item["rows"] for item in receipt["source_artifacts"]] == [0, 0]
+
+
+def test_close_proxy_artifact_dataset_ids_are_resolved_from_dataos_registry(
+    tmp_path, monkeypatch
+):
+    import pandas as pd
+
+    from lib import config, store
+    from scripts import audit_china_gold_premium as audit
+
+    data_root = tmp_path / "data"
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "data_dir", lambda: data_root)
+    idx = pd.DatetimeIndex([pd.Timestamp("2026-09-18T07:30:00")])
+    store.upsert(
+        "gold_china_basis",
+        "sge_au9999",
+        pd.DataFrame({"rmb_per_g": [820.5]}, index=idx),
+        normalize_index=False,
+    )
+    store.upsert(
+        "gold_china_basis",
+        "xaucny_spot",
+        pd.DataFrame({"cny_per_oz": [25490.0]}, index=idx),
+        normalize_index=False,
+    )
+
+    class Contract:
+        def __init__(self, dataset_id, storage):
+            self.dataset_id = dataset_id
+            self.storage = storage
+
+    class Registry:
+        def all(self):
+            return (
+                Contract(
+                    "fixture.sge.authority",
+                    "data/gold_china_basis/sge_au9999.parquet",
+                ),
+                Contract(
+                    "fixture.global.authority",
+                    "data/gold_china_basis/xaucny_spot.parquet",
+                ),
+            )
+
+    monkeypatch.setattr(audit, "load_registry", lambda: Registry(), raising=False)
+    cfg = {
+        "close_proxy": {
+            "sge": {
+                "group": "gold_china_basis",
+                "name": "sge_au9999",
+                "column": "rmb_per_g",
+            },
+            "global": {
+                "group": "gold_china_basis",
+                "name": "xaucny_spot",
+                "column": "cny_per_oz",
+            },
+        }
+    }
+
+    artifacts = audit._close_proxy_source_artifacts(cfg)
+
+    assert [item["dataset_id"] for item in artifacts] == [
+        "fixture.sge.authority",
+        "fixture.global.authority",
+    ]
+
+
+def test_gold_premium_dataos_promotion_requires_registry_dataset_id_binding(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = _live_proxy_vm_for_audit()
+    vm["chart"]["proxy"] = [
+        {"date": f"2026-08-{i:02d}"} for i in range(1, 31)
+    ]
+    artifacts = _promotion_source_artifacts_for_audit()
+    artifacts[0] = dict(artifacts[0], dataset_id=None)
+
+    doc = audit.write_receipt(
+        vm,
+        _live_proxy_html_for_audit(),
+        machine_projection=_promotion_machine_for_audit(),
+        source_artifacts=artifacts,
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["close_proxy_dataos_promotion_ready"] is False
+    assert (
+        "source artifact sge Data OS id is not bound"
+        in doc["close_proxy_dataos_promotion_blockers"]
+    )

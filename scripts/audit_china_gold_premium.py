@@ -35,6 +35,7 @@ sys.path.insert(0, str(_ROOT))
 
 from engine import china_gold_premium  # noqa: E402
 from lib import config, store  # noqa: E402
+from lib.dataos.registry import load_registry  # noqa: E402
 
 
 log = logging.getLogger("china_gold_premium_audit")
@@ -72,12 +73,6 @@ def _method_meta(vm: dict) -> dict:
     return {}
 
 
-_CLOSE_PROXY_DATASET_IDS = {
-    "sge": "commodity.gold.sge_au9999.close",
-    "global": "commodity.gold.xaucny.close_ref",
-}
-
-
 def _iso_utc(value) -> str | None:
     if value is None:
         return None
@@ -102,6 +97,15 @@ def _close_proxy_source_artifacts(premium_cfg: dict) -> list[dict]:
         else None
     )
     close_cfg = close_cfg if isinstance(close_cfg, dict) else {}
+    try:
+        registry = load_registry()
+        dataset_ids = {
+            str(contract.storage): str(contract.dataset_id)
+            for contract in registry.all()
+            if getattr(contract, "storage", None) and getattr(contract, "dataset_id", None)
+        }
+    except Exception:
+        dataset_ids = {}
     artifacts: list[dict] = []
 
     for role in ("sge", "global"):
@@ -142,10 +146,11 @@ def _close_proxy_source_artifacts(premium_cfg: dict) -> list[dict]:
             except OSError:
                 digest = None
 
+        storage = f"data/{group}/{name}.parquet" if group and name else ""
         artifacts.append(
             {
                 "role": role,
-                "dataset_id": _CLOSE_PROXY_DATASET_IDS[role],
+                "dataset_id": dataset_ids.get(storage),
                 "group": group or None,
                 "name": name or None,
                 "column": column or None,
@@ -401,6 +406,11 @@ def live_ready_violations(
                 if not isinstance(item, dict) or item.get("exists") is not True:
                     blockers.append(f"source artifact {role} was not proven")
                     continue
+                dataset_id = str(item.get("dataset_id") or "")
+                if not dataset_id:
+                    blockers.append(
+                        f"source artifact {role} Data OS id is not bound"
+                    )
                 try:
                     rows = int(item.get("rows") or 0)
                 except (TypeError, ValueError):
