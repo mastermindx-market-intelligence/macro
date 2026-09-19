@@ -148,6 +148,7 @@ def test_request_is_exact_w1_prompt_and_marked_private():
     assert request["case_id"] == "fixture-amd-001"
     assert BODY in request["user_prompt"]
     assert request["source_content_sha256"] == hashlib.sha256(BODY.encode()).hexdigest()
+    assert len(request["gold_contract_sha256"]) == 64
 
 
 def test_perfect_grounded_output_scores_all_available_dimensions():
@@ -162,6 +163,7 @@ def test_perfect_grounded_output_scores_all_available_dimensions():
     assert all(value in (1.0, None) for value in result["metrics"].values())
     assert result["counts"]["matched_claims"] == 4
     assert result["provenance_state"] == "operator_label_only"
+    assert len(result["gold_contract_sha256"]) == 64
 
 
 def test_missing_claim_reduces_recall_and_category_score():
@@ -305,3 +307,29 @@ def test_private_prompt_writer_forces_owner_only_permissions(tmp_path):
     _write_json(target, {"secret": Q0}, private=True)
     assert stat.S_IMODE(target.stat().st_mode) == 0o600
     assert json.loads(target.read_text(encoding="utf-8")) == {"secret": Q0}
+
+
+def test_aggregate_refuses_different_gold_contract_for_same_source_and_prompt():
+    first = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    changed_gold = _case()
+    changed_gold["expected"]["thesis_direction"] = "bearish"
+    second = score_raw_output(
+        changed_gold,
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-b",
+    )
+    assert first["source_content_sha256"] == second["source_content_sha256"]
+    assert first["prompt_sha256"] == second["prompt_sha256"]
+    assert first["gold_contract_sha256"] != second["gold_contract_sha256"]
+    try:
+        aggregate_results([first, second])
+    except ValueError as exc:
+        assert "gold contract differs" in str(exc)
+    else:
+        raise AssertionError("different private gold must never produce a ranking")
