@@ -503,8 +503,8 @@ def channel_records(signals: dict, affiliations: dict | None = None, *,
         m = rec(r["ticker"])
         if m is not None:
             m["metrics"].update(congress_net=r.get("net"), congress_members=members)
-            if r.get("events"):
-                m["metrics"].setdefault("sponsorship", {})["congress"] = r["events"][:5]
+            # Named congressional rows are rights-gated from commercial sponsorship.
+            # Keep only the pre-existing aggregate political metrics here.
         if r.get("net", 0) <= 0:
             continue
         if members >= 3:

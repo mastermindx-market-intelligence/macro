@@ -11,32 +11,47 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from engine import altdata, altdata_signals, intel_discovery, intelligence
 from scripts.build_portfolio_ctx import build_ctx
 from engine.portfolio_brief import compose_brief
-from collectors.quiver import InsidersAdapter
+from collectors.sec_insider import parse_live_form4_submission
 
 
-def test_insider_catchup_paginates_a_busy_filing_date(monkeypatch):
-    adapter = object.__new__(InsidersAdapter)
-    calls = []
+def test_official_sec_form4_parser_recovers_large_ceo_open_market_purchase():
+    filing = """<SEC-DOCUMENT>
+<ACCEPTANCE-DATETIME>20260814162715
+ACCESSION NUMBER:        0000050863-26-000177
+<ownershipDocument>
+  <issuer><issuerCik>0000050863</issuerCik><issuerName>INTEL CORP</issuerName><issuerTradingSymbol>INTC</issuerTradingSymbol></issuer>
+  <reportingOwner><reportingOwnerId><rptOwnerCik>0001008463</rptOwnerCik><rptOwnerName>TAN LIP BU</rptOwnerName></reportingOwnerId>
+    <reportingOwnerRelationship><isDirector>1</isDirector><isOfficer>1</isOfficer><officerTitle>CEO</officerTitle></reportingOwnerRelationship></reportingOwner>
+  <aff10b5One>0</aff10b5One>
+  <nonDerivativeTable><nonDerivativeTransaction>
+    <transactionDate><value>2026-08-11</value></transactionDate>
+    <transactionCoding><transactionCode>P</transactionCode></transactionCoding>
+    <transactionAmounts><transactionShares><value>105263</value></transactionShares><transactionPricePerShare><value>95.00</value></transactionPricePerShare><transactionAcquiredDisposedCode><value>A</value></transactionAcquiredDisposedCode></transactionAmounts>
+    <postTransactionAmounts><sharesOwnedFollowingTransaction><value>1314669</value></sharesOwnedFollowingTransaction></postTransactionAmounts>
+    <ownershipNature><directOrIndirectOwnership><value>I</value></directOrIndirectOwnership><natureOfOwnership><value>by Family Trust</value></natureOfOwnership></ownershipNature>
+  </nonDerivativeTransaction></nonDerivativeTable>
+</ownershipDocument>"""
+    rows = parse_live_form4_submission(
+        filing,
+        source_url="https://www.sec.gov/Archives/edgar/data/50863/0000050863-26-000177.txt",
+        filed_date="2026-08-14",
+        first_seen="2026-08-14T20:28:00+00:00",
+    )
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["Ticker"] == "INTC"
+    assert row["Name"] == "TAN LIP BU"
+    assert row["officerTitle"] == "CEO"
+    assert row["TransactionCode"] == "P"
+    assert row["Shares"] * row["PricePerShare"] == 9_999_985
+    assert row["fileDate"] == "2026-08-14T20:27:15+00:00"
+    assert row["accession"] == "0000050863-26-000177"
+    assert row["source"] == "sec_edgar_form4"
+    assert row["provenance_class"] == "official_public_record"
 
-    def fake_get(endpoint, params=None):
-        calls.append(dict(params or {}))
-        page = int((params or {}).get("page", 1))
-        if page in (1, 2):
-            return [{"Ticker": "T", "row": i + (page - 1) * 250} for i in range(250)]
-        if page == 3:
-            return [{"Ticker": "T", "row": 500}]
-        return []
 
-    monkeypatch.setattr(adapter, "_get", fake_get)
-    rows = adapter._get_date_rows("20260814")
-    assert len(rows) == 501
-    assert [c["page"] for c in calls] == [1, 2, 3]
-    assert all(c["date"] == "20260814" and c["page_size"] == 250 for c in calls)
-
-
-def test_mixed_quiver_timestamp_shapes_do_not_drop_recovered_form4():
-    # The committed Quiver tape contains millisecond ISO strings while a date-scoped
-    # catch-up response may carry a plain/offset ISO timestamp. Pandas otherwise
+def test_mixed_official_timestamp_shapes_do_not_drop_recovered_form4():
+    # Historical timestamp shapes can coexist with the official SEC live rail. Pandas otherwise
     # infers the first strict shape for the entire Series and turns the recovered
     # row into NaT, silently deleting exactly the historical hole we are repairing.
     mixed = pd.Series([
@@ -72,43 +87,62 @@ def test_top_officer_discovery_keeps_recovered_mixed_timestamp_row():
     assert intc["qualification_status"] == "measuring"
 
 
-def test_intel_style_named_sponsorship_survives_to_user_brief(monkeypatch):
+def test_official_named_sponsorship_survives_to_user_brief_and_named_political_rows_do_not(monkeypatch):
     asof = pd.Timestamp("2026-08-25")
     congress = pd.DataFrame([
         {"Ticker": "INTC", "TransactionDate": "2026-07-24", "ReportDate": "2026-08-21",
-         "Transaction": "Purchase", "Representative": "Nancy Pelosi", "BioGuideID": "P000197",
-         "Party": "D", "House": "Representatives", "Range": "$500,001 - $1,000,000",
+         "Transaction": "Purchase", "Representative": "Example House Member", "BioGuideID": "X000001",
+         "Party": "I", "House": "Representatives", "Range": "$500,001 - $1,000,000",
          "Amount": 500001.0, "Description": "PURCHASED 10,000 SHARES."},
     ])
-    insiders = pd.DataFrame([
-        {"Ticker": "INTC", "Date": "2026-08-11", "Name": "Lip-Bu Tan",
-         "TransactionCode": "P", "Shares": 105263, "PricePerShare": 95,
-         "fileDate": "2026-08-14", "officerTitle": "Chief Executive Officer",
-         "isOfficer": True, "isDirector": True, "directOrIndirectOwnership": "I"},
-        # A larger unrelated sale makes aggregate insider flow negative.  The CEO buy is
-        # still a public fact and must survive even though it earns no bullish insider vote.
-        {"Ticker": "INTC", "Date": "2026-08-12", "Name": "Other Officer",
-         "TransactionCode": "S", "Shares": 250000, "PricePerShare": 95,
-         "fileDate": "2026-08-14", "officerTitle": "EVP",
-         "isOfficer": True, "isDirector": False, "directOrIndirectOwnership": "D"},
-    ])
+    filing = """<SEC-DOCUMENT>
+<ACCEPTANCE-DATETIME>20260814162715
+ACCESSION NUMBER:        0000050863-26-000177
+<ownershipDocument>
+  <issuer><issuerCik>0000050863</issuerCik><issuerName>INTEL CORP</issuerName><issuerTradingSymbol>INTC</issuerTradingSymbol></issuer>
+  <reportingOwner><reportingOwnerId><rptOwnerCik>0001008463</rptOwnerCik><rptOwnerName>TAN LIP BU</rptOwnerName></reportingOwnerId>
+    <reportingOwnerRelationship><isDirector>1</isDirector><isOfficer>1</isOfficer><officerTitle>CEO</officerTitle></reportingOwnerRelationship></reportingOwner>
+  <aff10b5One>0</aff10b5One>
+  <nonDerivativeTable><nonDerivativeTransaction>
+    <transactionDate><value>2026-08-11</value></transactionDate>
+    <transactionCoding><transactionCode>P</transactionCode></transactionCoding>
+    <transactionAmounts><transactionShares><value>105263</value></transactionShares><transactionPricePerShare><value>95</value></transactionPricePerShare><transactionAcquiredDisposedCode><value>A</value></transactionAcquiredDisposedCode></transactionAmounts>
+    <postTransactionAmounts><sharesOwnedFollowingTransaction><value>1314669</value></sharesOwnedFollowingTransaction></postTransactionAmounts>
+    <ownershipNature><directOrIndirectOwnership><value>I</value></directOrIndirectOwnership><natureOfOwnership><value>by Family Trust</value></natureOfOwnership></ownershipNature>
+  </nonDerivativeTransaction></nonDerivativeTable>
+</ownershipDocument>"""
+    ceo_buy = parse_live_form4_submission(
+        filing,
+        source_url="https://www.sec.gov/Archives/edgar/data/50863/0000050863-26-000177.txt",
+        filed_date="2026-08-14",
+        first_seen="2026-08-14T20:28:00+00:00",
+    )[0]
+    other_sale = {
+        **ceo_buy, "Name": "OTHER OFFICER", "officerTitle": "EVP", "Date": "2026-08-12",
+        "TransactionCode": "S", "Shares": 250000,
+        "accession": "0000050863-26-000178", "transactionIndex": 0,
+    }
+    insiders = pd.DataFrame([ceo_buy, other_sale])
 
     monkeypatch.setattr(altdata, "_now", lambda: asof)
-    monkeypatch.setattr(altdata, "_read", lambda ds: {
-        "congress": congress, "insiders": insiders}.get(ds))
-    political = altdata.political_netflow(window_days=90, top=1)
-    insider = altdata.insider_netflow(window_days=90, top=1)
-    signals = {"political": political, "insiders": insider}
+    monkeypatch.setattr(altdata, "_read", lambda ds: {"congress": congress, "insiders": insiders}.get(ds))
+    signals = {
+        "political": altdata.political_netflow(window_days=90, top=1),
+        "insiders": altdata.insider_netflow(window_days=90, top=1),
+    }
 
     monkeypatch.setattr(altdata_signals, "_write", lambda out: None)
     alt = altdata_signals.build({"as_of": "2026-08-25", "signals": signals})
     intc_alt = alt["tickers"]["INTC"]
-    json.dumps(intc_alt, allow_nan=False)  # publication payload must be strict JSON
+    json.dumps(intc_alt, allow_nan=False)
     assert intc_alt["channels"] == ["congress_buy"]
     assert intc_alt["insider_net_usd"] < 0
     buy_event = next(e for e in intc_alt["sponsorship"]["insiders"] if e.get("side") == "buy")
-    assert buy_event["actor"] == "Lip-Bu Tan" and buy_event["usd"] == 9_999_985
-    assert intc_alt["sponsorship"]["congress"][0]["actor"] == "Nancy Pelosi"
+    assert buy_event["actor"] == "TAN LIP BU" and buy_event["usd"] == 9_999_985
+    assert buy_event["source"] == "sec_edgar_form4"
+    assert buy_event["provenance_class"] == "official_public_record"
+    assert "congress" not in intc_alt["sponsorship"]
+    assert "Example House Member" not in json.dumps(intc_alt)
 
     bundle = intelligence.build({}, [], alt["tickers"], today=date(2026, 8, 25))
     assert bundle["tickers"]["INTC"]["alt"]["sponsorship"] == intc_alt["sponsorship"]
@@ -117,8 +151,9 @@ def test_intel_style_named_sponsorship_survives_to_user_brief(monkeypatch):
         None, None, None, bundle_universe={"INTC"}, today=date(2026, 8, 25),
         fresh_insiders=insiders)
     disc = discovery["by_ticker"]["INTC"]
-    assert disc["source"] == "top_officer_buy" and disc["actor"] == "Lip-Bu Tan"
+    assert disc["source"] == "top_officer_buy" and disc["actor"] == "TAN LIP BU"
     assert disc["off_desk"] is False and discovery["is_context_only"] is True
+    assert disc["provenance_class"] == "official_public_record"
 
     sources = {
         "risk_state": {}, "us_standouts": {}, "subsector": {}, "sector_central": {},
@@ -129,20 +164,19 @@ def test_intel_style_named_sponsorship_survives_to_user_brief(monkeypatch):
         "washout_turn": {}, "dossier_index": set(),
     }
     ctx = build_ctx(sources, ["INTC"], "2026-08-25")
-    ctx_buy = next(e for e in ctx["tickers"]["INTC"]["insider"]["events"]
-                   if e.get("side") == "buy")
-    assert ctx_buy["actor"] == "Lip-Bu Tan"
-    assert ctx["tickers"]["INTC"]["congress"][0]["actor"] == "Nancy Pelosi"
+    ctx_buy = next(e for e in ctx["tickers"]["INTC"]["insider"]["events"] if e.get("side") == "buy")
+    assert ctx_buy["actor"] == "TAN LIP BU"
+    assert "actor" not in ctx["tickers"]["INTC"]["congress"][0]
 
     brief = compose_brief(
         ctx, [{"ticker": "INTC"}], "2026-08-25", "2026-08-25T21:00:00+00:00",
         population="positions")
     filings = next(section for section in brief["sections"] if section["key"] == "filings")
     english = [line["en"] for line in filings["lines"]]
-    assert any("Lip-Bu Tan (Chief Executive Officer)" in line and "$9,999,985" in line
-               for line in english)
-    assert any("Congress disclosure: Nancy Pelosi" in line and "$500,001 - $1,000,000" in line
-               for line in english)
+    assert any("TAN LIP BU (CEO)" in line and "$9,999,985" in line for line in english)
+    assert any("a Congress buy in INTC" in line for line in english)
+    assert not any("Example House Member" in line for line in english)
+
 
 
 

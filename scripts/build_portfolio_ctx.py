@@ -841,11 +841,8 @@ def _build_congress_index(congress_rows, asof: str) -> dict[str, list[dict]]:
             "filed": report_s,
             "amount_mid": amount_mid,
         }
-        for dst, src in (("actor", "Representative"), ("bioguide", "BioGuideID"),
-                         ("amount_range", "Range"), ("description", "Description")):
-            value = row.get(src)
-            if value is not None and str(value).strip().lower() not in {"", "nan", "none", "<na>"}:
-                item[dst] = str(value).strip()
+        # Member-level congressional details are intentionally not copied into
+        # the customer context; the legacy aggregate disclosure block remains.
         index.setdefault(tk, []).append(item)
     return index
 

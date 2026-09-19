@@ -19,11 +19,15 @@ import io
 import json
 import logging
 import re
+import time
+import xml.etree.ElementTree as ET
 import zipfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from collectors.base import Adapter, is_connection_error
 from lib import config
 
 log = logging.getLogger(__name__)
@@ -195,6 +199,293 @@ def _parse(quarter: str, zf: "zipfile.ZipFile", universe: set[str] | None) -> pd
     if universe:
         out = out[out.index.isin(universe)]
     return out[(out["buy_usd"] > 0) | (out["sell_usd"] > 0)]
+
+
+
+# =============================================================================
+# LIVE OFFICIAL FORM-4 RAIL
+#
+# The quarterly bulk panel remains the historical/research owner below. This
+# additive rail fills the freshness gap for named sponsorship using SEC EDGAR
+# itself. It scans the official daily Form index, fetches the public complete
+# submission, parses the ownership XML, and stores only original Form-4 P/S
+# transactions. Amendments are excluded to avoid double-counting.
+# =============================================================================
+
+_LIVE_DAILY_IDX = "https://www.sec.gov/Archives/edgar/daily-index/{yr}/QTR{q}/form.{ds}.idx"
+_LIVE_ARCHIVES = "https://www.sec.gov/Archives"
+_LIVE_LOOKBACK_DAYS = 7
+_LIVE_BACKFILL_DAYS = 60
+_LIVE_MAX_FETCH = 20000
+_LIVE_PACE_SECONDS = 0.12
+
+
+def _live_cache_path():
+    return config.data_dir() / "sec_insider" / "live_form4.parquet"
+
+
+def _live_qtr(d: date) -> int:
+    return (d.month - 1) // 3 + 1
+
+
+def _live_cik_ticker() -> dict[int, str]:
+    """Reuse the repository's canonical SEC issuer identity map."""
+    try:
+        from collectors.edgar_8k import _company_tickers
+        raw = _company_tickers() or {}
+    except Exception:  # noqa: BLE001
+        return {}
+    out: dict[int, str] = {}
+    vals = raw.values() if isinstance(raw, dict) else raw
+    for row in vals:
+        try:
+            cik = int(row.get("cik_str"))
+        except (TypeError, ValueError):
+            continue
+        ticker = row.get("ticker")
+        if ticker:
+            out.setdefault(cik, str(ticker).upper().strip())
+    return out
+
+
+def parse_live_form4_idx(text: str, cik_ticker: dict[int, str]) -> list[dict]:
+    """Issuer-side original Form-4 rows from one official daily form index. PURE."""
+    out: list[dict] = []
+    lines = text.splitlines()
+    start = next((i + 1 for i, ln in enumerate(lines) if set(ln.strip()) == {"-"}), 0)
+    for ln in lines[start:]:
+        if not ln.strip():
+            continue
+        parts = re.split(r"\s{2,}", ln.strip())
+        if len(parts) < 5 or parts[0].strip() != "4":
+            continue
+        try:
+            cik = int(parts[-3].strip())
+        except ValueError:
+            continue
+        ticker = cik_ticker.get(cik)
+        if not ticker:
+            continue
+        raw_date = parts[-2].strip()
+        if not re.fullmatch(r"\d{8}", raw_date):
+            continue
+        filename = parts[-1].strip()
+        accession = filename.rsplit("/", 1)[-1].removesuffix(".txt")
+        out.append({
+            "accession": accession,
+            "issuer_cik": str(cik),
+            "ticker": ticker,
+            "date_filed": f"{raw_date[:4]}-{raw_date[4:6]}-{raw_date[6:8]}",
+            "filename": filename,
+        })
+    return out
+
+
+def _live_text(node: ET.Element | None, path: str) -> str | None:
+    if node is None:
+        return None
+    value = node.findtext(path)
+    if value is None:
+        return None
+    value = str(value).strip()
+    return value or None
+
+
+def _live_bool(value: str | None) -> bool | None:
+    if value is None:
+        return None
+    value = value.strip().lower()
+    if value in {"1", "true", "yes"}:
+        return True
+    if value in {"0", "false", "no"}:
+        return False
+    return None
+
+
+def _live_float(value: str | None) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(str(value).replace(",", "").strip())
+    except ValueError:
+        return None
+
+
+def _accepted_at_utc(text: str, filed_date: str | None = None) -> str | None:
+    match = re.search(r"<ACCEPTANCE-DATETIME>(\d{14})", text)
+    if match:
+        local = datetime.strptime(match.group(1), "%Y%m%d%H%M%S").replace(
+            tzinfo=ZoneInfo("America/New_York"))
+        return local.astimezone(timezone.utc).isoformat()
+    if filed_date:
+        try:
+            return datetime.strptime(filed_date, "%Y-%m-%d").replace(
+                tzinfo=timezone.utc).isoformat()
+        except ValueError:
+            pass
+    return None
+
+
+def parse_live_form4_submission(
+    text: str, *, source_url: str | None = None,
+    filed_date: str | None = None, first_seen: str | None = None,
+) -> list[dict]:
+    """Parse original Form-4 non-derivative P/S rows from a complete submission. PURE."""
+    match = re.search(r"(<ownershipDocument\b.*?</ownershipDocument>)", text, re.S)
+    if not match:
+        return []
+    try:
+        root = ET.fromstring(match.group(1))
+    except ET.ParseError:
+        return []
+
+    ticker = (_live_text(root, "./issuer/issuerTradingSymbol") or "").upper().strip()
+    if not ticker:
+        return []
+    issuer_cik = _live_text(root, "./issuer/issuerCik")
+    owner = root.find("./reportingOwner")
+    if owner is None:
+        return []
+    owner_name = _live_text(owner, "./reportingOwnerId/rptOwnerName")
+    owner_cik = _live_text(owner, "./reportingOwnerId/rptOwnerCik")
+    relationship = owner.find("./reportingOwnerRelationship")
+    title = _live_text(relationship, "./officerTitle")
+    is_director = _live_bool(_live_text(relationship, "./isDirector"))
+    is_officer = _live_bool(_live_text(relationship, "./isOfficer"))
+    is_ten = _live_bool(_live_text(relationship, "./isTenPercentOwner"))
+    aff10b5 = _live_bool(_live_text(root, "./aff10b5One"))
+    accepted_at = _accepted_at_utc(text, filed_date)
+    accession_m = re.search(r"ACCESSION NUMBER:\s*([0-9-]+)", text)
+    accession = accession_m.group(1) if accession_m else None
+    observed = first_seen or datetime.now(timezone.utc).isoformat()
+
+    rows: list[dict] = []
+    codes = set(_cfg().get("open_market_codes", ["P", "S"]))
+    for tx_i, tx in enumerate(root.findall("./nonDerivativeTable/nonDerivativeTransaction")):
+        code = _live_text(tx, "./transactionCoding/transactionCode")
+        if code not in codes:
+            continue
+        rows.append({
+            "Ticker": ticker,
+            "Date": _live_text(tx, "./transactionDate/value"),
+            "Name": owner_name,
+            "AcquiredDisposedCode": _live_text(
+                tx, "./transactionAmounts/transactionAcquiredDisposedCode/value"),
+            "TransactionCode": code,
+            "Shares": _live_float(_live_text(
+                tx, "./transactionAmounts/transactionShares/value")),
+            "PricePerShare": _live_float(_live_text(
+                tx, "./transactionAmounts/transactionPricePerShare/value")),
+            "SharesOwnedFollowing": _live_float(_live_text(
+                tx, "./postTransactionAmounts/sharesOwnedFollowingTransaction/value")),
+            "fileDate": accepted_at or filed_date,
+            "officerTitle": title,
+            "isDirector": is_director,
+            "isOfficer": is_officer,
+            "isTenPercentOwner": is_ten,
+            "directOrIndirectOwnership": _live_text(
+                tx, "./ownershipNature/directOrIndirectOwnership/value"),
+            "natureOfOwnership": _live_text(tx, "./ownershipNature/natureOfOwnership/value"),
+            "aff10b5One": aff10b5,
+            "issuerCik": issuer_cik,
+            "reportingOwnerCik": owner_cik,
+            "accession": accession,
+            "transactionIndex": tx_i,
+            "source": "sec_edgar_form4",
+            "provenance_class": "official_public_record",
+            "source_url": source_url,
+            "_first_seen": observed,
+        })
+    return rows
+
+
+class SecInsiderLiveAdapter(Adapter):
+    """Fresh official SEC Form-4 event tape for named sponsorship intelligence."""
+
+    name = "sec_insider_live"
+    group = "sec_insider"
+    stale_after_days = 4
+
+    def _business_days(self, calendar_days: int) -> list[date]:
+        today = datetime.now(timezone.utc).date()
+        return [today - timedelta(days=i) for i in range(calendar_days)
+                if (today - timedelta(days=i)).weekday() < 5]
+
+    def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+        cik_ticker = _live_cik_ticker()
+        if not cik_ticker:
+            raise RuntimeError("sec_insider_live: issuer CIK→ticker master unavailable")
+        cache_p = _live_cache_path()
+        prev = pd.read_parquet(cache_p) if cache_p.exists() else pd.DataFrame()
+        have = set(prev["accession"].dropna().astype(str)) if (
+            not prev.empty and "accession" in prev.columns) else set()
+        lookback = _LIVE_BACKFILL_DAYS if full_history else _LIVE_LOOKBACK_DAYS
+
+        candidates: list[dict] = []
+        idx_ok = 0
+        seen_accessions: set[str] = set()
+        for day in self._business_days(lookback):
+            url = _LIVE_DAILY_IDX.format(
+                yr=day.year, q=_live_qtr(day), ds=day.strftime("%Y%m%d"))
+            try:
+                response = self.http_get(url, retries=2, timeout=30, headers=_headers())
+            except Exception as exc:  # noqa: BLE001
+                if is_connection_error(exc) and idx_ok == 0:
+                    raise
+                continue
+            idx_ok += 1
+            for row in parse_live_form4_idx(response.text, cik_ticker):
+                accession = row["accession"]
+                if accession in have or accession in seen_accessions:
+                    continue
+                seen_accessions.add(accession)
+                candidates.append(row)
+
+        candidates.sort(key=lambda row: (row["date_filed"], row["accession"]), reverse=True)
+        candidates = candidates[:_LIVE_MAX_FETCH]
+        observed = datetime.now(timezone.utc).isoformat()
+        fresh_rows: list[dict] = []
+        for row in candidates:
+            source_url = f"{_LIVE_ARCHIVES}/{row['filename']}"
+            try:
+                response = self.http_get(
+                    source_url, retries=2, timeout=30, headers=_headers())
+            except Exception as exc:  # noqa: BLE001
+                if is_connection_error(exc) and not fresh_rows and prev.empty:
+                    raise
+                continue
+            fresh_rows.extend(parse_live_form4_submission(
+                response.text, source_url=source_url, filed_date=row["date_filed"],
+                first_seen=observed))
+            time.sleep(_LIVE_PACE_SECONDS)
+
+        fresh = pd.DataFrame(fresh_rows)
+        if fresh.empty:
+            if not prev.empty:
+                heartbeat = pd.DataFrame(
+                    {"new": [0], "total": [len(prev)]},
+                    index=[pd.Timestamp(datetime.now(timezone.utc).date())])
+                return {"sec_insider_live__ingest": heartbeat}
+            if idx_ok:
+                heartbeat = pd.DataFrame(
+                    {"new": [0], "total": [0]},
+                    index=[pd.Timestamp(datetime.now(timezone.utc).date())])
+                return {"sec_insider_live__ingest": heartbeat}
+            raise RuntimeError("sec_insider_live: no official daily indexes reachable")
+
+        combined = pd.concat([prev, fresh], ignore_index=True) if not prev.empty else fresh
+        dedup = [c for c in ("accession", "transactionIndex") if c in combined.columns]
+        combined = combined.drop_duplicates(
+            subset=dedup or None, keep="first").reset_index(drop=True)
+        cache_p.parent.mkdir(parents=True, exist_ok=True)
+        combined.to_parquet(cache_p)
+        log.info("sec_insider_live: +%d open-market rows from %d filings, cache=%d",
+                 len(fresh), len(candidates), len(combined))
+        heartbeat = pd.DataFrame(
+            {"new": [len(fresh)], "total": [len(combined)]},
+            index=[pd.Timestamp(datetime.now(timezone.utc).date())])
+        return {"sec_insider_live__ingest": heartbeat}
+
 
 
 # =============================================================================

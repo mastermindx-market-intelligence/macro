@@ -36,9 +36,8 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
-          # Enables targeted `only=quiver_insiders` repair on the existing batch owner.
-          # Secret remains GitHub-side; missing key still degrades through collector law.
-          QUIVER_API_KEY: ${{ secrets.QUIVER_API_KEY }}
+          # Named insider sponsorship backfill is keyless SEC EDGAR
+          # (`only=sec_insider_live`); no vendor secret is required.
         run: |
           if [ -n "${{ github.event.inputs.only }}" ]; then
             python -m scripts.collect --full-history --only "${{ github.event.inputs.only }}"

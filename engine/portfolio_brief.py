@@ -601,10 +601,11 @@ def _filings_section(ctx: dict, covered: list[str], today: str) -> dict | None:
     t_date = _parse_iso(today)
     lines: list[dict] = []
 
-    # Congress buys/sells filed within 7 days of today, cap 3. side verbatim.
+    # Congress buys/sells filed within 7 days of today, cap 3. Keep this generic:
+    # member-level named disclosure is not promoted into the commercial brief.
     if t_date is not None:
         cutoff = t_date - timedelta(days=7)
-        cong_lines: list[dict] = []
+        cong_lines: list[tuple[str, str, str]] = []
         for t in covered:
             for c in ((ctx_tk.get(t) or {}).get("congress") or []):
                 if not isinstance(c, dict):
@@ -615,39 +616,17 @@ def _filings_section(ctx: dict, covered: list[str], today: str) -> dict | None:
                 side = c.get("side")
                 if side not in ("buy", "sell", "other"):
                     continue
-                cong_lines.append({**c, "ticker": t, "filed": str(c.get("filed"))[:10]})
-        # Named/range-qualified rows remain distinct even when ticker/date/side match.
-        _seen_cong: set = set()
-        deduped = []
-        for c in cong_lines:
-            key = (c.get("filed"), c.get("ticker"), c.get("side"), c.get("actor"),
-                   c.get("amount_range"), c.get("description"))
-            if key in _seen_cong:
-                continue
-            _seen_cong.add(key)
-            deduped.append(c)
-        cong_lines = sorted(
-            deduped, key=lambda r: (r.get("filed") or "", r.get("ticker") or ""),
-            reverse=True)
-        _SIDE_EN = {"buy": "purchase", "sell": "sale", "other": "trade"}
-        _SIDE_GENERIC_EN = {"buy": "buy", "sell": "sell", "other": "trade"}
-        _SIDE_ZH = {"buy": "\u8d2d\u5165", "sell": "\u552e\u51fa", "other": "\u4ea4\u6613"}
-        for c in cong_lines[:3]:
-            filed, t, side = c["filed"], c["ticker"], c["side"]
-            actor = c.get("actor")
-            amount = c.get("amount_range")
-            amount_en = f"; disclosed range {amount}" if amount else ""
-            amount_zh = f"\uff1b\u62ab\u9732\u533a\u95f4 {amount}" if amount else ""
-            if actor:
-                en = (f"Congress disclosure: {actor} reported a {t} {_SIDE_EN[side]} "
-                      f"(filed {filed}{amount_en}).")
-                zh = (f"\u56fd\u4f1a\u62ab\u9732\uff1a{actor} \u62a5\u544a\u4e86\u4e00\u7b14 {t} "
-                      f"{_SIDE_ZH[side]}\uff08{filed}{amount_zh}\uff09\u3002")
-            else:
-                en = f"This week: a Congress {_SIDE_GENERIC_EN[side]} in {t} (filed {filed})."
-                zh = f"\u672c\u5468\uff1a{t} \u51fa\u73b0\u4e00\u7b14\u56fd\u4f1a{_SIDE_ZH[side]}\u62ab\u9732\uff08{filed}\uff09\u3002"
-            lines.append({"en": en, "zh": zh})
-
+                cong_lines.append((str(c.get("filed"))[:10], t, side))
+        seen: set[tuple[str, str, str]] = set()
+        cong_lines = [c for c in cong_lines if not (c in seen or seen.add(c))]
+        cong_lines.sort(key=lambda r: (r[0], r[1]), reverse=True)
+        side_en = {"buy": "buy", "sell": "sell", "other": "trade"}
+        side_zh = {"buy": "购入", "sell": "售出", "other": "交易"}
+        for filed, t, side in cong_lines[:3]:
+            lines.append({
+                "en": f"This week: a Congress {side_en[side]} in {t} (filed {filed}).",
+                "zh": f"本周：{t} 出现一笔国会{side_zh[side]}披露（{filed}）。",
+            })
 
     # Prefer named Form-4 events when available; otherwise preserve the aggregate tape.
     named_insiders: list[tuple[float, str, dict]] = []

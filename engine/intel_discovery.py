@@ -290,6 +290,12 @@ def scan_top_officer_buys(insiders, today: date | None = None, recent_days: int 
                 "filing_date": pub.date().isoformat(),
                 "trans_date": pd.Timestamp(trans).date().isoformat() if pd.notna(trans) else None,
                 "age_days": age,
+                "accession": (None if pd.isna(getattr(r, "accession", None))
+                              else str(getattr(r, "accession")).strip()),
+                "source_url": (None if pd.isna(getattr(r, "source_url", None))
+                               else str(getattr(r, "source_url")).strip()),
+                "provenance_class": (None if pd.isna(getattr(r, "provenance_class", None))
+                                     else str(getattr(r, "provenance_class")).strip()),
                 "reason": f"{role_label} open-market buy ${usd:,.0f} · filed {pub.date().isoformat()}",
             })
         out.sort(key=lambda d: (d["disc_score"], d["event_strength"], d["usd"]), reverse=True)
@@ -638,10 +644,10 @@ def build(radar_tickers: list | None, obligations=None, insider=None,
 def _read_fresh_insiders():
     try:
         import pandas as pd
-        p = config.data_dir() / "quiver" / "insiders.parquet"
+        p = config.data_dir() / "sec_insider" / "live_form4.parquet"
         return pd.read_parquet(p) if p.exists() else None
     except Exception as e:  # noqa: BLE001
-        log.debug("fresh insider tape read failed (%s)", e)
+        log.debug("fresh official Form-4 tape read failed (%s)", e)
         return None
 
 def _read_obligations():

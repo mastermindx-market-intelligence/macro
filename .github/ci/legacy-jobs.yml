@@ -10891,8 +10891,9 @@ jobs:
         run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_ticker_shape.py -q
       - name: named sponsorship intelligence end-to-end contract
         # Same intelligence family, same pandas/jinja dependency closure. This proves a named
-        # Form-4 + congressional disclosure survives PIT normalization through the user brief,
-        # while the top-officer discovery source remains measuring/ranking-ineligible.
+        # Official SEC Form-4 evidence survives PIT normalization through the user brief;
+        # named congressional rows remain quarantined from commercial sponsorship output,
+        # and the top-officer discovery source stays measuring/ranking-ineligible.
         run: python -m pytest tests/test_sponsorship_intelligence.py -q
       # R1A-M (2026-09-02): exact market pulse roster/markup (needs the same
       # jinja2 + pandas closure scripts.build_intel_hub already pulls in this

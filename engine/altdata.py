@@ -141,7 +141,10 @@ def _now() -> pd.Timestamp:
 
 
 def _read(dataset: str) -> pd.DataFrame | None:
-    p = config.data_dir() / "quiver" / f"{dataset}.parquet"
+    # Customer-facing named insider sponsorship is sourced from official SEC EDGAR.
+    p = ((config.data_dir() / "sec_insider" / "live_form4.parquet")
+         if dataset == "insiders"
+         else (config.data_dir() / "quiver" / f"{dataset}.parquet"))
     if not p.exists():
         return None
     try:
@@ -248,18 +251,8 @@ def political_netflow(window_days: int = 90, top: int = 15) -> dict:
         buy_members = sum(1 for x in actor_flow if x > 0)
         sell_members = sum(1 for x in actor_flow if x < 0)
         participants = len(actor_flow)
-        events = []
-        for r in g.sort_values(["date", "usd"], ascending=[False, False]).head(8).itertuples(index=False):
-            events.append({
-                "actor": _json_scalar(r.member), "bioguide": _json_scalar(r.bioguide),
-                "party": _json_scalar(r.party), "side": r.side,
-                "chamber": _json_scalar(r.chamber),
-                "transaction_date": (r.transaction_date.date().isoformat() if pd.notna(r.transaction_date) else None),
-                "filed": (r.date.date().isoformat() if pd.notna(r.date) else None),
-                "amount_mid": (round(float(r.usd), 0) if pd.notna(r.usd) else None),
-                "amount_range": _json_scalar(r.amount_range),
-                "description": _json_scalar(r.description),
-            })
+        # Member-level congressional rows are not published into the commercial
+        # sponsorship substrate. Existing aggregate political metrics remain unchanged.
         rows.append({
             "ticker": tk,
             # Political direction is MEMBER breadth, not raw transaction count: one
@@ -272,7 +265,6 @@ def political_netflow(window_days: int = 90, top: int = 15) -> dict:
             "buys": buys, "sells": sells,
             "est_usd": round(float(g.loc[g["side"] == "buy", "usd"].sum(skipna=True)), 0),
             "parties": "/".join(sorted({p for p in g["party"].dropna().unique()})) or None,
-            "events": events,
         })
     by_ticker = {r["ticker"]: r for r in rows}
     rows.sort(key=lambda r: (r["net"], r["members"], r["est_usd"]), reverse=True)
@@ -1067,6 +1059,12 @@ def insider_netflow(window_days: int = 90, top: int = 15) -> dict:
         "is_officer": df.get("isOfficer", pd.Series(index=idx, dtype=object)),
         "is_director": df.get("isDirector", pd.Series(index=idx, dtype=object)),
         "direct": df.get("directOrIndirectOwnership", pd.Series(index=idx, dtype=object)).map(_s),
+        "nature": df.get("natureOfOwnership", pd.Series(index=idx, dtype=object)).map(_s),
+        "aff10b5": df.get("aff10b5One", pd.Series(index=idx, dtype=object)),
+        "accession": df.get("accession", pd.Series(index=idx, dtype=object)).map(_s),
+        "source": df.get("source", pd.Series(index=idx, dtype=object)).map(_s),
+        "provenance_class": df.get("provenance_class", pd.Series(index=idx, dtype=object)).map(_s),
+        "source_url": df.get("source_url", pd.Series(index=idx, dtype=object)).map(_s),
     })
     d = d[d["ticker"].notna() & d["date"].notna()]
     now = _now()
@@ -1099,6 +1097,12 @@ def insider_netflow(window_days: int = 90, top: int = 15) -> dict:
                 "is_officer": _boolish(r.is_officer),
                 "is_director": _boolish(r.is_director),
                 "ownership": _json_scalar(r.direct),
+                "ownership_nature": _json_scalar(r.nature),
+                "aff10b5_one": _boolish(r.aff10b5),
+                "accession": _json_scalar(r.accession),
+                "source": _json_scalar(r.source),
+                "provenance_class": _json_scalar(r.provenance_class),
+                "source_url": _json_scalar(r.source_url),
             })
         rows.append({
             "ticker": tk,
