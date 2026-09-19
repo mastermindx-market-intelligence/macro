@@ -116,10 +116,12 @@ var __events = [];
 var __fetchCalls = [];
 var __fetchImpl = null;
 var __routeCatalogPayload = null;
+var __routeCatalogFetches = 0;
 
 global.fetch = function (url, opts) {
-  /* Never count route-catalog.json; it is optional infrastructure. */
+  /* Count route-catalog.json separately from API calls. */
   if (String(url).indexOf('route-catalog.json') >= 0) {
+    __routeCatalogFetches += 1;
     if (__routeCatalogPayload === null) {
       return Promise.resolve({ok: false, status: 404, json: function () { return Promise.reject(new Error('404')); }});
     }
@@ -291,6 +293,7 @@ def _run_ci(setup_js: str, wait_ms: int = 80) -> dict:
         f"  var retryEl = findById(emp, 'ci-retry');\n"
         f"  OUT({{\n"
         f"    fetchCalls: __fetchCalls,\n"
+        f"    routeCatalogFetches: __routeCatalogFetches,\n"
         f"    mode: __root._attrs['data-ci-mode'] || null,\n"
         f"    eventId: __root._attrs['data-ci-event-id'] || null,\n"
         f"    bodyText: allBodyText(),\n"
@@ -357,6 +360,10 @@ __fetchImpl = function (url) {{
     assert not any("/api/company-intelligence/" in u for u in out["fetchCalls"]), (
         "v1 /api/company-intelligence/ was requested on a v2-200 path — fallback law violated",
         out["fetchCalls"],
+    )
+    assert out["routeCatalogFetches"] == 0, (
+        "v2-covered dossier fetched the optional route catalog even though v2 never consumes it",
+        out,
     )
 
     # Mode and identity
@@ -745,6 +752,7 @@ __fetchImpl = function (url) {{
 """
     )
     assert out["mode"] == "v1", out
+    assert out["routeCatalogFetches"] == 1, out
     assert out["earningsRecordState"] == "exact", out
     assert out["earningsRecordHref"] == (
         "earnings/aapl-2026q2-call-record.html?from=company-intelligence&tx=2026Q2"
