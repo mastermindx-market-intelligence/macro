@@ -178,10 +178,35 @@ unverified:
       components/tokens -> responsive browser proof across required dark/light, EN/ZH and
       meaningful data/loading/empty/error states.
 unresolved:
-  - Mastermind PR 585 exact head 67bfaab41f1c5fa61cbfb8d205e4220c31e90af4 keeps the bridge bytes unchanged and adds only final sole-Web-carrier wording in the native MCP server/doc. Prior ebe89a73 hosted CI is green; current hosted run 35435966648 is active. Latest-base synthetic integration c08c8384fb034afa0391f3af29a0222e7d4aaa56 against protected 880e377... passes 33 Paper tests, the D8 ratchet and diff-check. Independent semantic review/source release remain outstanding; reviewer mastermindx-2 is requested.
-  - Studio Direct Paper carrier PR 853 exact head d99b1ff601f2e937c66711875d483f0b5398a10d is DRAFT/stacked on PR 840. Current source preserves the pre-dispatch effect-truth hardening and additionally marks paper_edit openWorld=true while clarifying that standalone node-delete tools are blocked even though bounded replacement operations remain allowed. Exact-head proof passed the full Studio Direct Node suite 132/132 and Python lifecycle/control 100/100. Latest-base synthetic integration 480e80dca16f867e805ddaa17318f89236d06d61 against protected 880e377... passed focused Paper/private-service proof and diff-check. Hosted exact-head run 35435731033 is active; independent reviewer mastermindx-2 remains requested.
-  - Runtime refresh of inert chatgpt4 stopped safely at the canonical STOP gate with `not staged: plist hash mismatch`; no upgrade/seal/restart followed. Reconciliation found all four Studio Direct private LaunchAgents changed at exactly 2026-09-19T02:14:24-0700 and differ from canonical `_build_plist` by exactly one semantic key: external `Nice=5`. Config hashes remain valid. Treat this as a separate host/thermal-priority overlay: do not remove it, re-seal around it or weaken strict plist validation from the Paper carrier. Current deployed chatgpt3/chatgpt4 remain on their prior 0.1.6 source bytes until that host-policy owner reconciles the plist/manifest contract.
-  - Mac Studio Paper now has the intended cloud scratch design open and current adapter writes are proven. A fresh chatgpt3 Web conversation is still required because this conversation's MCP catalog was established before the new paper_* tools were deployed.
+  - >
+    Mastermind PR 585 exact head 67bfaab41f1c5fa61cbfb8d205e4220c31e90af4 keeps the
+    bridge bytes unchanged and adds only final sole-Web-carrier wording in the native MCP
+    server/doc. Prior ebe89a73 hosted CI is green; current hosted run 35435966648 is active.
+    Latest-base synthetic integration c08c8384fb034afa0391f3af29a0222e7d4aaa56 against
+    protected 880e377... passes 33 Paper tests, the D8 ratchet and diff-check. Independent
+    semantic review/source release remain outstanding; reviewer mastermindx-2 is requested.
+  - >
+    Studio Direct Paper carrier PR 853 exact head d99b1ff601f2e937c66711875d483f0b5398a10d
+    is DRAFT/stacked on PR 840. Current source preserves the pre-dispatch effect-truth hardening
+    and additionally marks paper_edit openWorld=true while clarifying that standalone node-delete
+    tools are blocked even though bounded replacement operations remain allowed. Exact-head proof
+    passed the full Studio Direct Node suite 132/132 and Python lifecycle/control 100/100.
+    Latest-base synthetic integration 480e80dca16f867e805ddaa17318f89236d06d61 against protected
+    880e377... passed focused Paper/private-service proof and diff-check. Hosted exact-head run
+    35435731033 is active; independent reviewer mastermindx-2 remains requested.
+  - >
+    Runtime refresh of inert chatgpt4 stopped safely at the canonical STOP gate with
+    `not staged: plist hash mismatch`; no upgrade/seal/restart followed. Reconciliation found all
+    four Studio Direct private LaunchAgents changed at exactly 2026-09-19T02:14:24-0700 and
+    differ from canonical `_build_plist` by exactly one semantic key, external `Nice=5`. Config
+    hashes remain valid. Treat this as a separate host/thermal-priority overlay: do not remove it,
+    re-seal around it or weaken strict plist validation from the Paper carrier. Current deployed
+    chatgpt3/chatgpt4 remain on their prior 0.1.6 source bytes until that host-policy owner
+    reconciles the plist/manifest contract.
+  - >
+    Mac Studio Paper now has the intended cloud scratch design open and current adapter writes are
+    proven. A fresh chatgpt3 Web conversation is still required because this conversation's MCP
+    catalog was established before the new paper_* tools were deployed.
   - Codex stored ChatGPT auth is invalid and needs the user's interactive login ceremony.
   - Claude project MCP is visible but needs the user's explicit project approval ceremony.
   - The Executive registry/supervisor has no accepted Paper-local write-capable operator profile; adding one is separate reviewed existing-control-plane work.
