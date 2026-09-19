@@ -681,3 +681,31 @@ def test_prophet_rank_race_store_absence_is_explicit(tmp_path, monkeypatch):
         "metric_semantics": "same_population_same_outcomes_shadow_rank_race",
     }
 
+def test_prophet_rank_race_refuses_stored_coverage_mismatch():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture(covered=5)
+    pairs["challenger_coverage"] = 1.0
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is False
+    assert summary["reason"] == "rank_pair_population_contract_violation"
+
+
+def test_prophet_rank_race_store_refuses_foreign_market_rows(tmp_path, monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    pairs, _outcomes = _rank_race_fixture()
+    pairs["market"] = "CA"
+    path = tmp_path / "prophet_shadow" / "hk_rank_pairs.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pairs.to_parquet(path, index=False)
+
+    result = pdg.evaluate_rank_races("HK")
+    assert result == {
+        "available": False,
+        "reason": "rank_pair_store_foreign_market",
+        "metric_semantics": "same_population_same_outcomes_shadow_rank_race",
+    }
+
