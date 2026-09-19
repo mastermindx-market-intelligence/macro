@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# FMS 36(b) congressional-notification acquisition — DISPATCH-ONLY lane.
+# FMS 36(b) congressional-notification acquisition — daily + manual lane.
 #
 # Defense D6-B1 (spec research/defense_intelligence/DEFENSE_D6B1_FMS_IMPLEMENTATION_SPEC_2026-08-25.md
 # §10; D6-B0 freeze DEFENSE_D6B_FMS_SOURCE_AND_STAGE_ARCHITECTURE_FREEZE_2026-08-25.md).
@@ -11,9 +11,9 @@
 # deterministic ``government_fms_case.v1`` read model, and commit the
 # append-only source triad plus the case graph back to the dispatched ref.
 #
-# Deliberately NO schedule (spec §10 — Sol sets cadence later). Re-dispatching
-# against unchanged official bytes is an idempotent no-op (the CLI refuses to
-# append a duplicate observation for the same URL/bytes).
+# Sol cadence continuation: one daily default-branch check at 10:43 UTC.
+# Repeated official bytes append no duplicate observations or receipts. A new
+# projection/check timestamp is not a new notification or source-publication time.
 #
 # This lane publishes NOTHING beyond the canonical triad + graph: it never
 # writes a site twin. Twin publication remains exclusively owned by
@@ -22,6 +22,8 @@
 name: fms-acquire
 
 on:
+  schedule:
+    - cron: "43 10 * * *"
   workflow_dispatch:
     inputs:
       ref:
@@ -29,23 +31,35 @@ on:
         required: true
         type: string
 
+env:
+  FMS_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+  FMS_TARGET_REF: ${{ inputs.ref || github.event.repository.default_branch }}
+
 permissions:
   contents: write
 
-concurrency:
-  # Shares the government-revenue-live group so an acquisition can never race
-  # the serialized Government Revenue persist/publish cycle.
-  group: government-revenue-live
-  cancel-in-progress: false
-
 jobs:
   acquire:
+    # Release this lock before the called publisher takes the SAME lock.
+    # A workflow-level parent lock would deadlock its dependent publisher.
+    concurrency:
+      group: government-revenue-live
+      cancel-in-progress: false
+    outputs:
+      publish_default: ${{ steps.persist.outputs.publish_default }}
     runs-on: [self-hosted, macstudio-light]
     timeout-minutes: 30
     steps:
+      - name: validate selected branch before acquisition
+        id: validate_target
+        run: |
+          set -euo pipefail
+          test -n "$FMS_TARGET_REF"
+          git check-ref-format "refs/heads/$FMS_TARGET_REF"
+
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref }}
+          ref: ${{ env.FMS_TARGET_REF }}
           fetch-depth: 1
 
       - name: python 3.12 (Homebrew venv — self-hosted runner)
@@ -57,6 +71,7 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: acquire FMS congressional notifications (State + FR fetch → DSCA staged replay → R2 write → readback proof → triad + graph)
+        id: acquire_notifications
         env:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
@@ -64,11 +79,13 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: python -m collectors.fms_notifications_live acquire
 
-      - name: commit triad + graph back to the dispatched ref (fms files only)
+      - name: commit triad + graph back to the selected ref (fms files only)
+        id: persist
         run: |
           set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
-            echo "::notice title=fms-acquire::no new observation — official bytes unchanged (idempotent no-op)"
+            echo "::notice title=fms-acquire::no projection file changes; notification dates remain source-bound"
+            echo "projection_changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # Fail closed if the CLI touched anything beyond the four
@@ -87,4 +104,40 @@ jobs:
             data/government_revenue/fms_projection_state.json \
             data/government_revenue/fms_case_graph.json
           git commit -m "fms-acquire: official 36(b) notification acquisition $(date -u +%FT%H:%MZ)"
-          git push origin "HEAD:${{ inputs.ref }}"
+          git push origin "HEAD:$FMS_TARGET_REF"
+          echo "projection_changed=true" >> "$GITHUB_OUTPUT"
+          # Only released main code committing main may request the main publisher.
+          # GITHUB_TOKEN pushes do not trigger its on:push subscription.
+          if [ "${FMS_DEFAULT_BRANCH:-}" = "main" ] && [ "$FMS_TARGET_REF" = "main" ] && [ "${GITHUB_REF:-}" = "refs/heads/main" ]; then
+            echo "publish_default=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish_default=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: record check outcome separately from notification freshness
+        id: check_summary
+        if: always()
+        env:
+          ACQUISITION_OUTCOME: ${{ steps.acquire_notifications.outcome }}
+          PERSIST_OUTCOME: ${{ steps.persist.outcome }}
+          PROJECTION_CHANGED: ${{ steps.persist.outputs.projection_changed || 'unknown' }}
+        run: |
+          set -euo pipefail
+          {
+            printf '### FMS acquisition check\n\n'
+            printf 'Checked at: %s\n\n' "$(date -u +%FT%TZ)"
+            printf 'Acquisition step: %s\n\n' "$ACQUISITION_OUTCOME"
+            printf 'Commit step: %s\n\n' "$PERSIST_OUTCOME"
+            printf 'Projection files changed: %s\n\n' "$PROJECTION_CHANGED"
+            printf 'This check does not advance source publication time or prove a new notification. Projection changes may include health or generation metadata.\n'
+            printf 'Site publication is a separate dependent job; acquisition success is not publication success.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Reuse the sole publisher, without another writer or dispatch permission.
+  # Implicit success() on needs prevents a failed acquisition from publishing.
+  publish:
+    needs: acquire
+    if: needs.acquire.outputs.publish_default == 'true'
+    uses: ./.github/workflows/government-revenue-live.yml
+    with:
+      projection_only: true
