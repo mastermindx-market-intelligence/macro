@@ -1260,7 +1260,6 @@ def test_collector_store_is_consumed_by_engine_and_audited_render_without_transl
     from engine import china_gold_premium as cgp
     from lib import config, store
     from scripts import audit_china_gold_premium as audit
-    from scripts import build_commodities
 
     cfg = copy.deepcopy(config.load())
     cfg["storage"]["site_dir"] = "site"
@@ -1312,9 +1311,23 @@ def test_collector_store_is_consumed_by_engine_and_audited_render_without_transl
         f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
         f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
     )
-    machine = build_commodities._china_gold_premium_machine_view(
-        {"detail": [{"name": "gold", "china_gold_premium": vm}]}
-    )
+    # The builder's compact projection is pinned independently in
+    # tests/test_china_gold_premium.py. Keep this source-plane test hermetic to
+    # the china-native-collectors CI job, which intentionally does not install
+    # heavy page-render dependencies such as Plotly.
+    machine = {
+        "available": bool(vm.get("available")),
+        "method": vm.get("current_method"),
+        "state": vm.get("state"),
+        "premium_pct": vm.get("premium_pct"),
+        "price_currency": vm.get("price_currency"),
+        "source_asof": vm["close_proxy"].get("asof"),
+        "source_fresh": bool(vm["close_proxy"].get("fresh")),
+        "avg_5_pct": vm["stats"].get("avg_5"),
+        "range_30_pct": vm["stats"].get("range_30"),
+        "official_canonical_available": bool(vm["canonical"].get("available")),
+        "context_only": True,
+    }
     commodity_dir = data_root / "commodity"
     commodity_dir.mkdir(parents=True)
     commodity_dir.joinpath("latest.json").write_text(
