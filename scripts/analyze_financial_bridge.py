@@ -6,7 +6,12 @@ No file path/provider/network/credential knobs; no persistence.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import sys
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
 from engine.neuralweb.brain_financial_bridge import analyze_financial_bridge, invalid_result
 
 MAX_INPUT_BYTES = 32768
