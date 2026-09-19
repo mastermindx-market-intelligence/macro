@@ -3637,7 +3637,7 @@ jobs:
         # with Draft202012Validator, which is a COLLECTION-time import — without it
         # the step dies at exit 2 having asserted nothing, which reads as a lane
         # failure rather than as the missing dep it is.
-        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema
+        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema jinja2
       - name: china native interaction + sell-side collector tests (W1 CNH)
         run: python -m pytest tests/test_china_irm_collector.py tests/test_china_einteraction_collector.py tests/test_china_reports_collector.py tests/test_china_holder_counts_collector.py -q
       # China Alpha Intelligence P1 (#6050): institutional-visit tape, derived
@@ -3661,7 +3661,7 @@ jobs:
       # above: the only suite pinning the non-China producer that joins the ONE event
       # system (keep-FIRST, typed nulls, deterministic event_key, scoring isolation).
       - name: europe policy/geo PIT event-bus tests (F02 MO-PAID-034)
-        run: python -m pytest tests/test_europe_news_intel.py -q
+        run: python -m pytest tests/test_europe_news_intel.py tests/test_europe_news_panel.py -q
       # The fail-closed full-A TuShare spine (#5116). Same WIRING LAW as every step
       # above, and the same shape of hole: the suite was named by NO run: step when
       # it merged, so the spine's fail-closed contract — the manifest schema, the
@@ -11348,6 +11348,10 @@ jobs:
       - "engine/ird_velocity.py"
       - "engine/rri_shadow.py"
       - "scripts/build_international_macro.py"
+      # W7-1 / #7362 closure widening 2026-09-19 (contract-delta): the
+      # international macro builder now lazily imports the Europe official-press
+      # panel, so this job's exclusive scope must name that module.
+      - "engine/europe_news_intel.py"
       # B1A closure widening 2026-08-24 (contract-delta): the security_state producer stage in build_stock_library lazily imports the company-intelligence reader chain and Data OS identity.
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
