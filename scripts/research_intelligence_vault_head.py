@@ -45,7 +45,10 @@ def _emit(value: dict[str, Any], *, stream=sys.stdout) -> None:
 def _parse_date(value: str | None, fallback: date) -> date:
     if not value:
         return fallback
-    return date.fromisoformat(value)
+    parsed = date.fromisoformat(value)
+    if parsed > fallback:
+        raise ValueError("as-of date cannot be in the future")
+    return parsed
 
 
 def _load_press_config(path: Path) -> dict[str, Any]:
@@ -64,7 +67,13 @@ def _require_store(local_dir: str | None) -> StrictConditionalWriteStore:
             "store_unavailable",
             "Research Vault strict conditional store is not configured",
         )
-    store.validate_strict_conditional_write_capability()
+    try:
+        store.validate_strict_conditional_write_capability()
+    except Exception as exc:
+        raise ResearchIntelligenceStoreError(
+            "conditional_write_unavailable",
+            "Research Vault strict compare-and-swap is unavailable",
+        ) from exc
     return store
 
 
@@ -102,6 +111,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         as_of = _parse_date(args.as_of, now.date())
         store = _require_store(args.local)
         catalog = catalog_mod.read_strict(store, now=now)
+        catalog_health = catalog_mod.health(catalog, now=now)
+        if catalog_health.get("state") != catalog_mod.STATE_FRESH:
+            raise ValueError("Research Vault catalog is stale")
         cfg = _load_press_config(Path(args.config).expanduser())
         head, triage = rank_vault_head(
             catalog.get("items") or [],
@@ -185,7 +197,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             stream=sys.stdout if failures == 0 else sys.stderr,
         )
         return 0 if failures == 0 else 2
-    except (OSError, TypeError, ValueError, ResearchIntelligenceStoreError) as exc:
+    except (
+        OSError,
+        TypeError,
+        ValueError,
+        catalog_mod.CatalogUnavailable,
+        ResearchIntelligenceStoreError,
+    ) as exc:
         _emit(
             {
                 "state": "error",
