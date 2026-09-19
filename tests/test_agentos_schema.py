@@ -15,6 +15,7 @@ print, never through a logger.
 from __future__ import annotations
 
 import datetime as _dt
+import importlib.util
 import json
 import os
 import shutil
@@ -50,6 +51,14 @@ pytestmark = [
                "run: git sparse-checkout add agentos",
     ),
 ]
+
+
+def _load_agentos_module():
+    spec = importlib.util.spec_from_file_location("agentos_fast_yaml_test", CLI)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _validate(root: Path, **env: str) -> subprocess.CompletedProcess[str]:
@@ -92,6 +101,34 @@ def test_every_record_type_is_present() -> None:
     assert list((STORE / "workstreams").glob("WS-*.md"))
     assert list((STORE / "decisions").glob("DEC-*.md"))
     assert list((STORE / "discoveries").glob("DSC-*.md"))
+
+
+def test_fast_yaml_loader_uses_c_loader_without_slow_fallback(monkeypatch) -> None:
+    """Valid records take the C safe-loader path when PyYAML provides it."""
+    agentos = _load_agentos_module()
+    if agentos._FAST_YAML_LOADER is None:
+        pytest.skip("PyYAML C SafeLoader unavailable on this runtime")
+
+    def slow_path_must_not_run(_text):
+        raise AssertionError("valid YAML unexpectedly fell back to yaml.safe_load")
+
+    monkeypatch.setattr(agentos.yaml, "safe_load", slow_path_must_not_run)
+    assert agentos._yaml_safe_load("alpha: 1\nitems: [x, y]\n") == {
+        "alpha": 1,
+        "items": ["x", "y"],
+    }
+
+
+def test_fast_yaml_loader_preserves_historical_malformed_diagnostic() -> None:
+    """C-parser failure must replay through safe_load before surfacing."""
+    agentos = _load_agentos_module()
+    malformed = "alpha: [one, two\n"
+    with pytest.raises(agentos.yaml.YAMLError) as historical:
+        agentos.yaml.safe_load(malformed)
+    with pytest.raises(agentos.yaml.YAMLError) as accelerated:
+        agentos._yaml_safe_load(malformed)
+    assert type(accelerated.value) is type(historical.value)
+    assert str(accelerated.value) == str(historical.value)
 
 
 # --------------------------------------------------- mutation proofs (hard)
