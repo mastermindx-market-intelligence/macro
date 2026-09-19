@@ -485,7 +485,16 @@ def summarize_rank_races(
         ["_date", "_definition"], sort=False
     ):
         pops = pd.to_numeric(group["population_n"], errors="coerce").dropna().unique()
-        if len(pops) != 1 or int(pops[0]) != len(group):
+        if len(pops) != 1:
+            return _rank_race_unavailable(
+                "rank_pair_population_contract_violation"
+            )
+        population_n = float(pops[0])
+        if (
+            not np.isfinite(population_n)
+            or population_n != int(population_n)
+            or int(population_n) != len(group)
+        ):
             return _rank_race_unavailable(
                 "rank_pair_population_contract_violation"
             )

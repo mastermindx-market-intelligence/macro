@@ -669,6 +669,19 @@ def test_prophet_rank_race_refuses_corrupt_population_denominator():
     assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
 
 
+def test_prophet_rank_race_refuses_fractional_population_denominator():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    pairs["population_n"] = pairs["population_n"].astype(float)
+    first_date = pairs["date"].iloc[0]
+    pairs.loc[pairs["date"] == first_date, "population_n"] = 10.5
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is False
+    assert summary["reason"] == "rank_pair_population_contract_violation"
+    assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
+
+
 def test_prophet_rank_race_store_absence_is_explicit(tmp_path, monkeypatch):
     from engine import prophet_discovery_grade as pdg
     from lib import config
