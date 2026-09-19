@@ -10062,6 +10062,11 @@ jobs:
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
         run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
+      # V4 B2-0 records-only evidence regression. This must be owned by
+      # an existing merge-binding CODE gate, not only by the data-gated
+      # anticipation lane. No new job/runner/control plane is introduced.
+      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
+        run: python -m pytest tests/test_prophet_b2_disposition.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -10102,17 +10107,6 @@ jobs:
       # two committed 700-row price fixtures, so it needs no data root and no network.
       - name: union admission (recall spine, badges, scored-gate zero-diff)
         run: python -m pytest tests/test_us_early_turn_union_admission.py -q
-      # V4 B2-0 (prophet-us) — the frozen B-15..B-19 disposition matrix + its
-      # correction/supersession, point-in-time replay, and fail-closed mutation law.
-      # Registered beside the union-admission step because the matrix's PROVEN_CLOSED
-      # evidence IS that suite's pins: the records surface rots the moment the
-      # admission gate moves in a job nothing here watches. Pure-stdlib records module
-      # plus this job's existing import closure (the B1 event-core read reuses the
-      # pyarrow already on the pip line); no data root, no network, and the suite's
-      # tree-scan pins that no engine/scripts module imports the matrix (records
-      # tier, zero authority).
-      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
-        run: python -m pytest tests/test_prophet_b2_disposition.py -q
       # §6.9 R5 — the per-name "why not" receipts. Enumerated at BIRTH, in the job that
       # already owns the admission gate these receipts REPORT ON: the suite's core law is
       # that the headline reason is specificity-ordered rather than gate-ordered, which is
