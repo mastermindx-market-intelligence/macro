@@ -57,6 +57,17 @@ def _sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def _sha256_json(value: Any) -> str:
+    payload = json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    return _sha256_text(payload)
+
+
 def _is_sha256(value: Any) -> bool:
     return (
         isinstance(value, str)
@@ -219,6 +230,7 @@ def build_benchmark_request(case: Any, source_body: str) -> dict[str, Any]:
         "schema": REQUEST_SCHEMA,
         "case_id": checked["case_id"],
         "source_content_sha256": checked["source_content_sha256"],
+        "gold_contract_sha256": _sha256_json(checked["expected"]),
         "visibility": "private_source_bound",
         "system_prompt": system,
         "user_prompt": user,
@@ -390,6 +402,7 @@ def score_raw_output(
         "candidate_label": label,
         "provenance_state": "operator_label_only",
         "source_content_sha256": checked["source_content_sha256"],
+        "gold_contract_sha256": _sha256_json(checked["expected"]),
         "prompt_sha256": _sha256_text(system + "\n" + user),
         "output_sha256": _sha256_text(str(raw_output or "")),
     }
@@ -430,7 +443,12 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         raise ValueError("benchmark result identity/state is malformed")
     if raw.get("provenance_state") != "operator_label_only":
         raise ValueError("benchmark result provenance state is invalid")
-    for field in ("source_content_sha256", "prompt_sha256", "output_sha256"):
+    for field in (
+        "source_content_sha256",
+        "gold_contract_sha256",
+        "prompt_sha256",
+        "output_sha256",
+    ):
         if not _is_sha256(raw.get(field)):
             raise ValueError(f"benchmark result {field} is invalid")
 
@@ -504,10 +522,16 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
             raise ValueError("duplicate benchmark case for candidate")
         groups[label][case_id] = item
 
-        binding = (item["source_content_sha256"], item["prompt_sha256"])
+        binding = (
+            item["source_content_sha256"],
+            item["prompt_sha256"],
+            item["gold_contract_sha256"],
+        )
         prior_binding = bindings.setdefault(case_id, binding)
         if prior_binding != binding:
-            raise ValueError("benchmark case binding differs across candidates")
+            raise ValueError(
+                "benchmark source, prompt, or gold contract differs across candidates"
+            )
 
         shape = tuple(item["metrics"][key] is None for key in _METRIC_KEYS)
         prior_shape = metric_shapes.setdefault(case_id, shape)
@@ -538,7 +562,12 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
         raise ValueError("candidate case coverage differs")
     case_ids = sorted(next(iter(case_sets)))
     binding_payload = [
-        [case_id, bindings[case_id][0], bindings[case_id][1]]
+        [
+            case_id,
+            bindings[case_id][0],
+            bindings[case_id][1],
+            bindings[case_id][2],
+        ]
         for case_id in case_ids
     ]
     case_set_sha256 = _sha256_text(
