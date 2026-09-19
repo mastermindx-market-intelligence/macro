@@ -767,6 +767,12 @@
     root.setAttribute('data-ci-mode', 'v1');
     root.setAttribute('data-ci-plane', 'company_intelligence.v1');
 
+    // The public earnings route catalog is only consumed by the legacy v1
+    // history/record handoff. v2 renders its own event-workspace CTA and never
+    // reads routeCatalog, so downloading the ~1 MB catalog on every v2-covered
+    // dossier was pure cold-load waste.
+    loadRouteCatalog();
+
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var timeout = window.setTimeout(function () { if (ctrl) ctrl.abort(); }, 10000);
     fetch('/api/company-intelligence/' + encodeURIComponent(ticker), {
@@ -799,6 +805,5 @@
   empty.hidden = true;
   loading.hidden = false;
   root.setAttribute('aria-busy', 'true');
-  loadRouteCatalog();
   doV2Fetch();
 })();
