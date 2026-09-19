@@ -36,6 +36,69 @@
     }
     return _dataPromises[url];
   }
+
+  // User-visible freshness projection for the China heatmap. The VPS sentinel
+  // remains the SOLE freshness judge/calendar owner; the browser only renders
+  // its public verdict. Missing/one-off unreadable health never invents a
+  // warning. A sentinel-confirmed blind streak does.
+  var STALENESS_URL = '/live/staleness.json';
+  function chinaHeatmapHealth(report) {
+    if (!report || typeof report !== 'object') return null;
+    var surfaces = report.surfaces || {};
+    var surface = surfaces.china_heatmap || null;
+    var active = Array.isArray(report.active_breach)
+      && report.active_breach.indexOf('china_heatmap') >= 0;
+    var blind = Array.isArray(report.blind_surfaces)
+      && report.blind_surfaces.indexOf('china_heatmap') >= 0;
+    var asof = surface && typeof surface.asof === 'string' ? surface.asof : '';
+    if (active || (surface && surface.status === 'stale')) {
+      return { state: 'stale', asof: asof };
+    }
+    if (blind) return { state: 'blind', asof: asof };
+    return null;
+  }
+  function paintChinaHeatmapHealth(root, data) {
+    if (!root || !data || data.market !== 'china') return;
+    var slot = root.querySelector('.hm-freshness');
+    if (!slot) return;
+    fetch(STALENESS_URL, { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('health http ' + r.status);
+        return r.json();
+      })
+      .then(function (report) {
+        var health = chinaHeatmapHealth(report);
+        slot.classList.remove('stale', 'blind');
+        if (!health) {
+          slot.hidden = true;
+          slot.innerHTML = '';
+          return;
+        }
+        slot.hidden = false;
+        slot.classList.add(health.state);
+        var dateEn = health.asof ? ' · Latest verified close: ' + esc(health.asof) : '';
+        var dateZh = health.asof ? ' · 最近确认收盘：' + esc(health.asof) : '';
+        if (health.state === 'stale') {
+          slot.innerHTML = L(
+            '<b>Heatmap freshness degraded</b>' + dateEn + ' · Verify the date shown before acting.',
+            '<b>热力图数据可能已过期</b>' + dateZh + ' · 操作前请核对图中日期。'
+          );
+        } else {
+          slot.innerHTML = L(
+            '<b>Heatmap freshness check unavailable</b> · Verify the date shown before acting.',
+            '<b>热力图新鲜度校验暂不可用</b> · 操作前请核对图中日期。'
+          );
+        }
+      })
+      .catch(function () {
+        // A single browser-side health fetch failure is not evidence that the
+        // map is stale. The sentinel's own blind-streak policy owns that state.
+        slot.hidden = true;
+        slot.innerHTML = '';
+        slot.classList.remove('stale', 'blind');
+      });
+  }
+
   // In-page freshness: the intraday lane recommits the feed every ~30 min during
   // US market hours, so an open dashboard re-pulls its map every 10 min (visible
   // tabs only) and repaints in place when generated_utc advances. The shared
@@ -851,6 +914,7 @@
     }
     root.innerHTML = ''
       + (SHOW_DASH ? '<div class="hx-pulse" aria-live="polite"></div><div class="hx-stats"></div>' : '')
+      + (data.market === 'china' ? '<div class="hm-freshness" hidden role="status" aria-live="polite"></div>' : '')
       + '<div class="hm-bar">'
       +   '<div class="hm-tfs" role="tablist" aria-label="Timeframe"></div>'
       +   (SHOW_DASH ? '<label class="hm-search"><span class="mag" aria-hidden="true">🔎</span><input type="text" autocomplete="off" spellcheck="false" aria-label="Filter tiles" placeholder="' + (isZh() ? '筛选个股…' : 'Filter…') + '"></label>' : '')
@@ -862,6 +926,8 @@
       + '<div class="hm-tm-wrap"><div class="hm-tm"></div></div>'
       + '<div class="hm-hint">' + hint + '</div>'
       + (SHOW_DASH ? '<div class="hx-boards"></div>' : '');
+
+    paintChinaHeatmapHealth(root, data);
 
     var tfsEl = root.querySelector('.hm-tfs');
     var legendEl = root.querySelector('.hm-legend');
@@ -1713,7 +1779,10 @@
       +   '<div class="hm-sc-legend"></div>'
       +   '<div class="hm-sc-breadth"></div>'
       + '</div>';
-    root.innerHTML = head + '<div class="hm-sc-map"><div class="hm-sc-tm"></div></div>' + foot;
+    root.innerHTML = head
+      + (data.market === 'china' ? '<div class="hm-freshness" hidden role="status" aria-live="polite"></div>' : '')
+      + '<div class="hm-sc-map"><div class="hm-sc-tm"></div></div>' + foot;
+    paintChinaHeatmapHealth(root, data);
     root.querySelector('.hm-sc-exp').addEventListener('click', openOverlay);
 
     function paintMeta() {
@@ -1985,6 +2054,10 @@
       + 'html[data-theme="light"][data-lang="zh"]{--hm-up-v:#d83a48;--hm-dn-v:#149a5e;}'
       + '.hm-scope{font-family:Inter,-apple-system,"Segoe UI",Roboto,Helvetica,sans-serif;}'
       + '.hm-scope .up{color:var(--ink-up, var(--up));} .hm-scope .dn{color:var(--ink-down, var(--down));}'
+      + '.hm-freshness{margin:0 0 10px;padding:8px 11px;border-radius:10px;border:1px solid color-mix(in srgb,var(--ink-warn,var(--warn)) 38%,var(--line));background:color-mix(in srgb,var(--ink-warn,var(--warn)) 11%,transparent);color:var(--text);font:600 11.5px/1.45 var(--font-ui,Inter,sans-serif);}'
+      + '.hm-freshness[hidden]{display:none!important;}'
+      + '.hm-freshness.stale{border-color:color-mix(in srgb,var(--ink-down,var(--down)) 46%,var(--line));background:color-mix(in srgb,var(--ink-down,var(--down)) 10%,transparent);}'
+      + '.hm-freshness b{font-weight:800;color:inherit;}'
       // control bar
       + '.hm-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:12px;padding:8px 12px;border-radius:13px;background:var(--hm-glass);border:1px solid var(--hm-edge);}'
       + '.hm-tfs{display:flex;flex-wrap:wrap;gap:2px;background:color-mix(in srgb,var(--panel2) 60%,transparent);border:1px solid var(--hm-edge);border-radius:10px;padding:3px;}'
