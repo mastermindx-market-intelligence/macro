@@ -19,9 +19,16 @@
     "f_rs63_value": 0
   },
   "rate_clock": {
-    "max_source_date_relative_to_decision": "T-1",
+    "source_date_relation_to_decision": "strictly_before_T",
+    "primary_common_end_date": "R = latest finite date before T present in both DGS10 and DFII10",
+    "maximum_R_age_calendar_days": 4,
+    "nominal_real_5step_grid": "common finite DGS10/DFII10 observed-date intersection ending at R",
+    "d10_22": "DGS10 observed-source-session interval ending at R",
+    "d2_5": "DGS2 five-observation change only if DGS2 has finite observation at R",
+    "breakeven": "descriptive own-date only",
     "source_rows_only": true,
-    "forward_fill_is_observation": false
+    "forward_fill_is_observation": false,
+    "historical_receipt_certified": false
   },
   "rate_series": {
     "d10_5": "DGS10 5 observed-source-session bp change",
