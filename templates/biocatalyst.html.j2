@@ -48,7 +48,7 @@
         <p class="bci-wmn-deck">{{ t('Source-grounded events ordered for research attention. Timing, identity gaps and unavailable estimates stay visible instead of being filled with a score.', '按研究关注度排列有来源依据的事件。时间、身份缺口和不可估计项都会明确显示，不会被一个总分掩盖。') }}</p>
       </div>
       <a class="bci-wmn-trial-link" href="#bci-trial-intelligence">
-        <span class="l-en">Open Trial Intelligence</span><span class="l-zh">打开试验智能</span><span aria-hidden="true">↓</span>
+        <span class="l-en">Trial Intelligence Workspace</span><span class="l-zh">试验智能工作台</span><span aria-hidden="true">↓</span>
       </a>
     </header>
     <div class="bci-wmn-toolbar" aria-label="What Matters Next controls">
@@ -68,15 +68,15 @@
       <label class="bci-wmn-view-label" for="bci-wmn-view">
         <span class="bci-control-label">{{ t('Queue', '队列') }}</span>
         <select id="bci-wmn-view">
-          <option value="upcoming">{{ t('Upcoming', '即将发生') }}</option>
-          <option value="reconcile">{{ t('Needs reconciliation', '需要核对') }}</option>
-          <option value="history">{{ t('Resolved history', '已解决历史') }}</option>
+          <option value="upcoming" data-label-en="Upcoming" data-label-zh="即将发生">Upcoming</option>
+          <option value="reconcile" data-label-en="Needs reconciliation" data-label-zh="需要核对">Needs reconciliation</option>
+          <option value="history" data-label-en="Resolved history" data-label-zh="已解决历史">Resolved history</option>
         </select>
       </label>
       <label class="bci-wmn-lane-label" for="bci-wmn-lane">
         <span class="bci-control-label">{{ t('Research lane', '研究通道') }}</span>
         <select id="bci-wmn-lane">
-          <option value="">{{ t('All lanes', '全部通道') }}</option>
+          <option value="" data-label-en="All lanes" data-label-zh="全部通道">All lanes</option>
           <option value="ACT_NOW">ACT NOW</option>
           <option value="RESEARCH_NEXT">RESEARCH NEXT</option>
           <option value="MONITOR">MONITOR</option>

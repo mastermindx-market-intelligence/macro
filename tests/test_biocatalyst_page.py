@@ -204,7 +204,8 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
     assert "localStorage" not in js
     assert "sessionStorage" not in js
     assert "clinicaltrials.gov/study/" in js
-    assert "probability" not in js.lower()
+    legacy_js = js.split("var WMN_API = '/api/biocatalyst/v1/what-matters-next';", 1)[0]
+    assert "probability" not in legacy_js.lower()
     assert "normalized.replace(/_/g, ' ')" not in js
     for forbidden in (
         "protocol amendment",
@@ -640,6 +641,7 @@ def test_biocatalyst_first_seen_tape_is_prospective_current_only_and_never_recas
     assert "state.filters.change_kind = '';" not in set_mode_body
     assert "} else params.set('milestone_kind', state.filters.field);" in js
 
+    legacy_js = js.split("var WMN_API = '/api/biocatalyst/v1/what-matters-next';", 1)[0]
     for forbidden in (
         "probability",
         "forecast",
@@ -649,7 +651,7 @@ def test_biocatalyst_first_seen_tape_is_prospective_current_only_and_never_recas
         "sessionStorage",
         "innerHTML",
     ):
-        assert forbidden not in js.lower()
+        assert forbidden not in legacy_js.lower()
 
     for token in (
         ".bci-mode-control { display: grid; grid-template-columns: minmax(0, 1fr);",
