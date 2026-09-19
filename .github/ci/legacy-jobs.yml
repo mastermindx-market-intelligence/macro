@@ -1161,6 +1161,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - engine/group_member_observations.py
+      - lib/dataos/nulls.py
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
@@ -11304,6 +11306,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/group_member_observations.py
+      - lib/dataos/nulls.py
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -13941,7 +13945,8 @@ jobs:
           python -m pytest
           tests/test_group_pulse_contract.py
           tests/test_group_pulse_episodes.py
-          tests/test_group_pulse_tripwire.py -q -rs
+          tests/test_group_pulse_tripwire.py
+          tests/test_group_member_observations.py -q -rs
 
   group-read-surface:
     # GR1 of the Group Reads program: the USER-FACING basket read surfaces —
@@ -13996,9 +14001,11 @@ jobs:
         with:
           node-version: "20"
       - name: install minimal deps
-        run: pip install pytest numpy pandas pyyaml
+        run: pip install pytest numpy pandas pyyaml jinja2 pyarrow
       - name: basket read band + board group-pulse column (GR1)
-        run: python -m pytest tests/test_group_read_surface.py -q -rs
+        run: >-
+          python -m pytest tests/test_group_read_surface.py
+          tests/test_theme_detail_member_observations.py -q -rs
 
   group-earnings-pulse:
     # Group Reads W-GR2: engine/group_earnings.py -> site/basketdata/earnings_pulse.json,

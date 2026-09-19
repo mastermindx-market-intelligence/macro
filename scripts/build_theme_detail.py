@@ -9,6 +9,7 @@ Additive + graceful: a missing stockdata record renders a "thin" chip, never a c
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from datetime import datetime, timezone
@@ -212,6 +213,48 @@ def member_context_index(region: str = "us") -> dict[str, dict[str, dict]]:
         return {}
 
 
+def member_observation_index(site: Path, region: str = "us") -> dict[str, dict]:
+    """Verified complete-member evidence keyed by US basket id.
+
+    The companion is usable only when its closed contract validates and its recorded
+    legacy digest matches the exact pulse bytes beside it.  Missing or mismatched
+    evidence degrades to quiet absence; the detail page never trusts last-good files
+    merely because they agree with one another.
+    """
+    if region != "us":
+        return {}
+    pulse_path = Path(site) / "basketdata" / "pulse.json"
+    companion_path = Path(site) / "basketdata" / "member_observations.json"
+    try:
+        pulse_bytes = pulse_path.read_bytes()
+        companion = json.loads(companion_path.read_bytes())
+        from engine import group_member_observations as observations
+
+        errors = observations.validate_member_bundle(companion)
+        pulse_digest = hashlib.sha256(pulse_bytes).hexdigest()
+        if errors or (companion.get("source") or {}).get("legacy_pulse_sha256") != pulse_digest:
+            if errors:
+                log.warning("member observations refused: %s", "; ".join(errors[:4]))
+            else:
+                log.warning("member observations refused: pulse digest mismatch")
+            return {}
+        common = {
+            "schema": companion["schema"],
+            "authority": companion["authority"],
+            "as_of": companion["as_of"],
+            "generated_at": companion["generated_at"],
+            "projection_digest": companion["projection_digest"],
+            "legacy_pulse_sha256": pulse_digest,
+        }
+        return {
+            group_id: {**common, "group": group}
+            for group_id, group in (companion.get("groups") or {}).items()
+        }
+    except (OSError, UnicodeDecodeError, ValueError, TypeError) as exc:
+        log.info("member observations unavailable: %s", exc)
+        return {}
+
+
 def standout_index(region: str = "us") -> dict[str, dict]:
     """{ticker -> {score, dir}} from a market's standout BUY board, the cross-reference that
     lets a theme page flag which of its members are CURRENTLY on the standout board (and which
@@ -248,6 +291,7 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
     cache: dict = {}
     board = standout_index(region)          # ticker -> {score, dir} from the standout buy board
     mctx = member_context_index(region)     # basket_id -> {ticker -> within-basket ctx}
+    member_observations = member_observation_index(site, region)
     n = 0
     for b in data.get("baskets", []):
         bid = b["id"]
@@ -265,6 +309,9 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
         th = {**tmap.get(bid, {}), "weights": ti.get("weights")}   # weights for the composition bar
         detail = {
             "basket": basket_view, "members": members, "theme": th,
+            # Complete evidence is a separate display-only projection.  It must
+            # never replace the legacy members passed to action/scoring owners.
+            "member_observations": member_observations.get(bid),
             "act_now": basket_score.act_now_stocks(members, th),
             "history": basket_history.score_series(bid, "score", region),
             "timeline": basket_history.change_timeline(bid, region=region),
@@ -281,8 +328,11 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
             "bench_label": ti.get("bench_label", "S&P 500"),       # regional benchmark for the "vs <bench>" labels
             "bench_label_zh": ti.get("bench_label_zh", "标普500"),
         }
+        observation = detail.get("member_observations") or {}
         html = tmpl.render(detail_json=json.dumps(detail, separators=(",", ":"), default=str),
                            basket_name=b.get("name", bid), generated_utc=built,
+                           member_observation_digest=observation.get("projection_digest"),
+                           member_observation_pulse_sha256=observation.get("legacy_pulse_sha256"),
                            back_href=detail["back"],
                            back_label_en=("Sector Intelligence" if region == "us"
                                           else "China Sector Intelligence" if region == "china"

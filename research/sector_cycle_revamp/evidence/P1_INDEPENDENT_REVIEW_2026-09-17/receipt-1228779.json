@@ -1,0 +1,32 @@
+{
+  "operation": "sector-cycle-p1-native-visual-followup-20260917-sol-001",
+  "native_session_id": "68a0cade-26b1-472d-b873-e4e531f25090",
+  "semantic_head": "1228779a94584da2686c1173413c24fe290fce3a",
+  "parent_attested_head_and_clean_tracked_state_before_after": true,
+  "native_model": "claude-opus-5",
+  "tools_available": [
+    "Read",
+    "Grep",
+    "Glob"
+  ],
+  "tools_used": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "permission_mode": "plan",
+  "mcp_servers": [],
+  "exit_code": 0,
+  "verdict": "PASS_BOUNDED_VISUAL_SOURCE",
+  "previous_semantic_review": "review-ce16.md",
+  "num_turns": 18,
+  "reported_native_accounting_usd": 1.9041955,
+  "new_cash_charge_claim": false,
+  "finished_at": "2026-09-17T20:53:00.606037+00:00",
+  "final_response_sha256": "4c13543ef89cf1c35ec60f59bd7b80d14aa40b10bab9a5028563209bf6391d33",
+  "terminal": true,
+  "watcher": "none",
+  "release_authorized": false,
+  "production_accepted": false,
+  "scope": "Presentation/visual follow-up; previous unchanged calculation/receipt review retained; hosted CI and publication integration still required"
+}

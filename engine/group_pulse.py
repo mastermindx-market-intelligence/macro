@@ -264,6 +264,7 @@ MEMBER_STORE_REL: tuple[str, ...] = ("baskets", "ohlcv")
 
 _LEDGER_REL: tuple[str, ...] = ("group_pulse", "episodes.parquet")
 _SITE_REL: tuple[str, ...] = ("basketdata", "pulse.json")
+_SITE_MEMBER_OBSERVATIONS_REL: tuple[str, ...] = ("basketdata", "member_observations.json")
 _SITE_EPISODES_REL: tuple[str, ...] = ("basketdata", "episodes.json")
 
 #: episodes.json — the web-readable projection of the ledger's CLOSED rows. The
@@ -325,7 +326,8 @@ def _share(num: int, den: int) -> float | None:
 # loaders
 # ---------------------------------------------------------------------------
 
-def load_membership(data_root: Path) -> dict[str, dict]:
+def load_membership(data_root: Path,
+                    receipt_out: list[dict[str, Any]] | None = None) -> dict[str, dict]:
     """US baskets from data/baskets/membership.json (non-US prefixes filtered out).
 
     A membership failure yields a ZERO-basket artifact, which is a louder failure
@@ -339,11 +341,27 @@ def load_membership(data_root: Path) -> dict[str, dict]:
               f"— 0 baskets in pulse.json for this run", flush=True)
         return {}
     try:
-        raw = json.loads(mp.read_text())
+        raw_bytes = mp.read_bytes()
+        raw = json.loads(raw_bytes)
     except Exception as e:  # noqa: BLE001
         print(f"::warning title=group-pulse::membership.json unreadable ({e}) "
               f"— 0 baskets in pulse.json for this run", flush=True)
         return {}
+    if receipt_out is not None:
+        from engine import group_member_observations as _member_observations
+
+        stamp = raw.get("version") or raw.get("curated") or raw.get("date")
+        effective = None
+        try:
+            effective = datetime.fromisoformat(str(stamp)[:10]).date().isoformat()
+        except (TypeError, ValueError):
+            pass
+        receipt_out.append(_member_observations.raw_bytes_receipt(
+            raw_bytes,
+            source_ref="data/baskets/membership.json",
+            basis="curated_membership",
+            effective_at=effective,
+        ))
     baskets = raw.get("baskets") or {}
     if isinstance(baskets, list):
         baskets = {b["id"]: b for b in baskets if b.get("id")}
@@ -941,7 +959,11 @@ def basket_pulse(basket_id: str, basket: dict, panel: dict, as_of: pd.Timestamp,
                  washouts: dict, stages: dict, generated_at: str,
                  frames: dict, episodes: list[dict],
                  stage_source_ok: bool = True,
-                 bench_ok: bool = True) -> dict | None:
+                 bench_ok: bool = True,
+                 member_observation_out: dict[str, dict] | None = None,
+                 source_receipts: Sequence[dict[str, Any]] | None = None,
+                 member_observation_errors: list[str] | None = None,
+                 member_benchmark_ok: bool | None = None) -> dict | None:
     """One `group_pulse.v1` object.  Returns None when the basket has no live member."""
     members, present = frames["members"], frames["present"]
     mask, daily = frames["mask"], frames["daily"]
@@ -989,7 +1011,7 @@ def basket_pulse(basket_id: str, basket: dict, panel: dict, as_of: pd.Timestamp,
     if direction["cohesion"] is None:
         warnings.append("cohesion_unavailable")
 
-    return {
+    legacy_obj = {
         "schema": SCHEMA,
         "authority": AUTHORITY["authority"],
         "generated_at": generated_at,
@@ -1003,6 +1025,36 @@ def basket_pulse(basket_id: str, basket: dict, panel: dict, as_of: pd.Timestamp,
         "episode": episode,
         "coverage_warnings": warnings,
     }
+    if member_observation_out is not None:
+        try:
+            if source_receipts is None:
+                raise ValueError("member observation capture requires source_receipts")
+            from engine import group_member_observations as _member_observations
+
+            member_records = [
+                {"member_key": ticker, "source_symbol": ticker, "identity_ref": None}
+                for ticker in members
+            ]
+            member_observation_out[basket_id] = _member_observations.project_group_members(
+                group_id=basket_id,
+                member_records=member_records,
+                panel=panel,
+                as_of=as_of,
+                covered_members=sets["covered"],
+                active_members=sets["active"],
+                legacy_pulse=legacy_obj,
+                source_receipts=source_receipts,
+                generated_at=generated_at,
+                benchmark_available=(bench_ok if member_benchmark_ok is None
+                                     else member_benchmark_ok),
+            )
+        except Exception as exc:  # noqa: BLE001 - broad lanes retain the legacy read
+            if member_observation_errors is None:
+                raise
+            member_observation_errors.append(
+                f"{basket_id}: {type(exc).__name__}: {' '.join(str(exc).split())[:240]}"
+            )
+    return legacy_obj
 
 
 # ---------------------------------------------------------------------------
@@ -1328,11 +1380,16 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
         data_root = config.data_dir()
     data_root = Path(data_root)
     generated_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    membership_receipts: list[dict[str, Any]] = []
+    capture_errors: list[str] = []
 
-    baskets = load_membership(data_root)
+    baskets = load_membership(data_root, receipt_out=membership_receipts)
     if not baskets:
         return {"payload": {}, "episodes": {}, "as_of": None,
-                "elapsed_s": round(time.time() - t0, 2), "n_baskets": 0}
+                "elapsed_s": round(time.time() - t0, 2), "n_baskets": 0,
+                "member_observation_groups": {},
+                "source_receipts": membership_receipts,
+                "member_observation_errors": capture_errors}
 
     tickers = basket_tickers(baskets)
     closes, volumes, missing = load_member_tape(tickers, data_root)
@@ -1341,7 +1398,10 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
               f"{data_root.joinpath(*MEMBER_STORE_REL)} — pulse.json is EMPTY this run",
               flush=True)
         return {"payload": {}, "episodes": {}, "as_of": None,
-                "elapsed_s": round(time.time() - t0, 2), "n_baskets": 0}
+                "elapsed_s": round(time.time() - t0, 2), "n_baskets": 0,
+                "member_observation_groups": {},
+                "source_receipts": membership_receipts,
+                "member_observation_errors": capture_errors}
     if missing:
         log.info("group_pulse: %d/%d member tickers have no readable tape",
                  len(missing), len(tickers))
@@ -1356,12 +1416,93 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
 
     panel = build_member_panel(closes, volumes, bench)
     as_of = panel["index"].max()
+    # The legacy panel intentionally retains its established benchmark fill rules.
+    # P1's measured daily comparison needs two ACTUAL valid closes on the same
+    # owner-panel rows as the member return. Never promote a filled/stale benchmark
+    # or a mismatched multi-session move into an observed member-relative reading.
+    member_benchmark_ok = False
+    if bench_ok and len(panel["index"]) >= 2:
+        pair = bench.reindex(panel["index"][-2:]).to_numpy(dtype="float64")
+        member_benchmark_ok = bool(np.isfinite(pair).all() and (pair > 0).all())
+    source_receipts: list[dict[str, Any]] = []
+    try:
+        from engine import group_member_observations as _member_observations
+
+        source_receipts.append(_member_observations.normalized_frame_receipt(
+            closes,
+            source_ref="group_pulse:member_close_panel",
+            basis="total_return_close",
+            effective_at=as_of,
+        ))
+        legacy_states = (
+            (
+                "group_pulse:legacy_activity_state",
+                "legacy_activity_state",
+                panel["active"],
+                panel["covered"],
+            ),
+            (
+                "group_pulse:legacy_trend_50_state",
+                "legacy_trend_50_state",
+                panel["above_ma50"],
+                panel["covered"] & panel["has_ma50"],
+            ),
+            (
+                "group_pulse:legacy_trend_200_state",
+                "legacy_trend_200_state",
+                panel["above_ma200"],
+                panel["covered"] & panel["has_ma200"],
+            ),
+        )
+        for source_ref, basis, values, eligible in legacy_states:
+            state = values.loc[[as_of]].astype("float64").where(eligible.loc[[as_of]])
+            source_receipts.append(_member_observations.normalized_frame_receipt(
+                state, source_ref=source_ref, basis=basis, effective_at=as_of,
+            ))
+        source_receipts.append(_member_observations.normalized_frame_receipt(
+            panel["rets"],
+            source_ref="group_pulse:member_raw_return_panel",
+            basis="raw_daily_change",
+            effective_at=as_of,
+        ))
+        if member_benchmark_ok:
+            source_receipts.append(_member_observations.normalized_frame_receipt(
+                panel["spy_adj"],
+                source_ref="group_pulse:member_benchmark_relative_return_panel",
+                basis="benchmark_relative_daily_change",
+                effective_at=as_of,
+            ))
+        if volumes is not None and not volumes.empty:
+            source_receipts.append(_member_observations.normalized_frame_receipt(
+                volumes,
+                source_ref="group_pulse:member_volume_panel",
+                basis="reported_volume",
+                effective_at=as_of,
+            ))
+        if bench_ok and not bench.loc[:as_of].empty:
+            source_receipts.append(_member_observations.normalized_frame_receipt(
+                bench.loc[:as_of],
+                source_ref="group_pulse:benchmark:SPY",
+                basis="total_return_close_benchmark",
+                effective_at=as_of,
+            ))
+    except Exception as exc:  # noqa: BLE001 - legacy output remains available
+        capture_errors.append(
+            f"source_receipts: {type(exc).__name__}: {' '.join(str(exc).split())[:240]}"
+        )
+        source_receipts = []
+    source_receipts.extend(membership_receipts)
+    capture_enabled = any(
+        row.get("kind") == "normalized_frame" and "close" in str(row.get("basis"))
+        for row in source_receipts
+    )
     washouts = member_washouts(closes)
     stages = member_stages(closes, volumes, bench)
     stage_ok = bool(stages) and any(v is not None for v in stages.values())
 
     payload: dict[str, dict] = {}
     episodes: dict[str, list[dict]] = {}
+    member_observation_groups: dict[str, dict] = {}
     for bid, b in baskets.items():
         try:
             frames = basket_frames(b, panel, as_of)
@@ -1370,9 +1511,15 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
                 frames["daily"]["activity_share"].tolist(),
                 frames["daily"]["activity_n"].tolist(),
                 frames["members_by_day"])
-            obj = basket_pulse(bid, b, panel, as_of, washouts, stages, generated_at,
-                               frames, eps, stage_source_ok=stage_ok,
-                               bench_ok=bench_ok)
+            obj = basket_pulse(
+                bid, b, panel, as_of, washouts, stages, generated_at,
+                frames, eps, stage_source_ok=stage_ok, bench_ok=bench_ok,
+                member_observation_out=(member_observation_groups
+                                        if capture_enabled else None),
+                source_receipts=source_receipts,
+                member_observation_errors=capture_errors,
+                member_benchmark_ok=member_benchmark_ok,
+            )
         except Exception as e:  # noqa: BLE001 — one bad basket never sinks the sweep
             print(f"::warning title=group-pulse::basket {bid} failed ({e}) — it is "
                   f"ABSENT from pulse.json this run", flush=True)
@@ -1384,20 +1531,51 @@ def compute(data_root: Path | None = None) -> dict[str, Any]:
         episodes[bid] = eps
 
     return {"payload": payload, "episodes": episodes, "as_of": _iso(as_of),
-            "elapsed_s": round(time.time() - t0, 2), "n_baskets": len(payload)}
+            "elapsed_s": round(time.time() - t0, 2), "n_baskets": len(payload),
+            "member_observation_groups": member_observation_groups,
+            "source_receipts": source_receipts,
+            "member_observation_errors": capture_errors}
 
 
-def write_site_artifact(payload: dict, site_root: Path | None = None) -> Path:
+def site_payload_bytes(payload: dict) -> bytes:
+    """The exact legacy pulse wire bytes; callers may hash and write this once."""
+    body = json.dumps(payload, separators=(",", ":"), sort_keys=False, default=str)
+    return body.encode("utf-8") + b"\n"
+
+
+def write_site_artifact(payload: dict, site_root: Path | None = None, *,
+                        wire_bytes: bytes | None = None) -> Path:
     """Write site/basketdata/pulse.json.  Returns the written path."""
     if site_root is None:
         from lib import config
         site_root = config.ROOT / config.load()["storage"]["site_dir"]
     out = Path(site_root).joinpath(*_SITE_REL)
     out.parent.mkdir(parents=True, exist_ok=True)
-    body = json.dumps(payload, separators=(",", ":"), sort_keys=False, default=str)
-    out.write_text(body + "\n", encoding="utf-8")
+    body = wire_bytes if wire_bytes is not None else site_payload_bytes(payload)
+    out.write_bytes(body)
     log.info("group_pulse: wrote %s (%d baskets, %dKB)", out, len(payload),
-             len(body.encode()) // 1024)
+             len(body) // 1024)
+    return out
+
+
+def write_member_observations_artifact(bundle: dict,
+                                       site_root: Path | None = None) -> Path:
+    """Write the closed companion only after its owner validator passes."""
+    from engine import group_member_observations as _member_observations
+    from engine.company_intelligence.contracts import canonical_json_bytes
+
+    errors = _member_observations.validate_member_bundle(bundle)
+    if errors:
+        raise ValueError("member observation bundle invalid: " + "; ".join(errors))
+    if site_root is None:
+        from lib import config
+        site_root = config.ROOT / config.load()["storage"]["site_dir"]
+    out = Path(site_root).joinpath(*_SITE_MEMBER_OBSERVATIONS_REL)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    body = canonical_json_bytes(bundle)
+    out.write_bytes(body)
+    log.info("group_pulse: wrote %s (%d groups, %dKB)",
+             out, len(bundle.get("groups") or {}), len(body) // 1024)
     return out
 
 
@@ -1514,7 +1692,47 @@ def run(data_root: Path | None = None, site_root: Path | None = None,
     for the caller's log line.
     """
     res = compute(data_root)
-    path = write_site_artifact(res["payload"], site_root)
+    pulse_wire = site_payload_bytes(res["payload"])
+    observation_errors = list(res.get("member_observation_errors") or [])
+    observation_groups = res.get("member_observation_groups") or {}
+    observation_bundle = None
+    if (res["payload"] and not observation_errors
+            and set(observation_groups) != set(res["payload"])):
+        observation_errors.append(
+            "member observation groups do not match the current pulse key set"
+        )
+    if res["payload"] and not observation_errors:
+        try:
+            from engine import group_member_observations as _member_observations
+
+            first_pulse = next(iter(res["payload"].values()))
+            observation_bundle = _member_observations.assemble_member_bundle(
+                groups=observation_groups,
+                as_of=res["as_of"],
+                generated_at=first_pulse.get("generated_at"),
+                source_receipts=res.get("source_receipts") or [],
+                legacy_pulse_bytes=pulse_wire,
+            )
+        except Exception as exc:  # noqa: BLE001 - broad lanes retain legacy output
+            observation_errors.append(
+                f"bundle: {type(exc).__name__}: {' '.join(str(exc).split())[:240]}"
+            )
+            observation_bundle = None
+
+    path = write_site_artifact(res["payload"], site_root, wire_bytes=pulse_wire)
+    observation_path = None
+    observation_digest = None
+    if observation_bundle is not None:
+        try:
+            observation_path = write_member_observations_artifact(
+                observation_bundle, site_root
+            )
+            observation_digest = observation_bundle["projection_digest"]
+        except Exception as exc:  # noqa: BLE001 - stale companion is never overwritten
+            observation_errors.append(
+                f"write: {type(exc).__name__}: {' '.join(str(exc).split())[:240]}"
+            )
+
     if data_root is None:
         from lib import config
         data_root = config.data_dir()
@@ -1526,4 +1744,8 @@ def run(data_root: Path | None = None, site_root: Path | None = None,
     return {"as_of": res["as_of"], "n_baskets": res["n_baskets"],
             "elapsed_s": res["elapsed_s"], "artifact": str(path), "ledger": ledger,
             "episodes_artifact": str(episodes_path),
-            "n_closed_episodes": sum(len(v) for v in history.values())}
+            "n_closed_episodes": sum(len(v) for v in history.values()),
+            "member_observations_artifact": (str(observation_path)
+                                             if observation_path else None),
+            "member_observations_digest": observation_digest,
+            "member_observation_errors": observation_errors}
