@@ -701,6 +701,20 @@ local block that is deleted when DS-PR-0 lands. Builders inspect it before touch
 customer surface; review compares rendered work against it. It is a mockup — nothing imports
 it in production.
 
+### 17.1 Editable design projection
+
+The canonical editable projection is the Figma file **Mastermind Product Design System —
+Canonical**, file key `IKqTiq7jeVBJusBfoHnPsH`. It mirrors repository tokens/components for
+composition and review; it does **not** outrank this document, `docs/DESIGN_DOCTRINE.md`,
+`templates/theme.css`, or the executable specimen. Material reference work records exact
+Figma frame/node identifiers in its migration packet.
+
+Paper may be used as the high-velocity agentic composition/code round-trip surface when its
+MCP is available, but Paper output is governed by the same repository vocabulary and packet
+law. No Paper document, Figma file, generated screenshot, or exported code may establish a
+parallel token root/component registry. A design-tool-only primitive is provisional until it
+is accepted into the repository system and editable projection together.
+
 ---
 
 ## 18. Red-team record
