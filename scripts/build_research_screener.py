@@ -105,9 +105,37 @@ def render_html(root: Path, payload: dict[str, Any]) -> str:
     return tpl.render(payload=payload, as_of=payload.get("as_of"))
 
 
+def _ensure_yaml_importable() -> None:
+    """lib.pages imports lib.config, which imports PyYAML at module level.
+
+    The bake path only needs inject_text / dbase_prefix / asset stamping.
+    dbase_prefix already falls back when config.load() fails, so a missing
+    PyYAML must not make ``import lib.pages`` raise. Prefer a real yaml;
+    otherwise install a tiny stub so the CI research-screener job (no
+    PyYAML) and a stdlib-thin venv can still bake.
+    """
+    try:
+        import yaml  # noqa: F401
+        return
+    except ImportError:
+        pass
+    if "yaml" in sys.modules:
+        return
+    import types
+
+    stub = types.ModuleType("yaml")
+
+    def _safe_load(_stream: Any, *_args: Any, **_kwargs: Any) -> dict[str, Any]:
+        return {"storage": {"data_dir": "data", "site_dir": "site"}}
+
+    stub.safe_load = _safe_load  # type: ignore[attr-defined]
+    sys.modules["yaml"] = stub
+
+
 def stamp_page_html(site: Path, html: str) -> str:
     """Apply the same lib/pages content stamp other page stylesheets use."""
     try:
+        _ensure_yaml_importable()
         from scripts.optimize_assets import make_optimizer
         return make_optimizer(site)(html, site)
     except Exception as exc:  # noqa: BLE001 — next site-wide sweep heals
@@ -122,6 +150,7 @@ def stamp_page_html(site: Path, html: str) -> str:
 
 def bake_html(root: Path, payload: dict[str, Any]) -> str:
     """Render + stamp + data-base shim. Matches the committed site HTML."""
+    _ensure_yaml_importable()
     from lib.pages import dbase_prefix, inject_text
 
     site = root / "site"

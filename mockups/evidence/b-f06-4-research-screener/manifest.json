@@ -1,5 +1,5 @@
 {
-  "schema": "mastermind.page_evidence_receipt.v1",
+  "schema": "mastermind.p0_evidence.v2",
   "axes": {
     "access": [
       "anonymous"
@@ -34,18 +34,10 @@
   "outcome": "captured",
   "pages": [
     {
-      "crop": "1ed815b7fcabbdde",
-      "theme": "dark",
-      "lang": "en",
-      "viewport": [
-        1440,
-        900
-      ],
-      "viewport_label": "desktop",
+      "page_id": "research_screener.html",
+      "route": "/research_screener.html",
       "console_errors": [],
       "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
       "gaps": [
         {
           "captured": false,
@@ -77,327 +69,143 @@
           "reason": "no force-state path documented for this packet yet",
           "value": "alert"
         }
-      ]
-    },
-    {
-      "crop": "228ec3c32b00b355",
-      "theme": "dark",
-      "lang": "zh",
-      "viewport": [
-        1440,
-        900
       ],
-      "viewport_label": "desktop",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
+      "states": [
         {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 282974,
+          "captured": true,
+          "file": "1ed815b7fcabbdde.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "ae546608754de397c1a8703c1db2d0fb569d247d30afcee7d5c5755c5c39df9b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
         },
         {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 257812,
+          "captured": true,
+          "file": "421473034d98dd70.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "en",
+          "sha256": "8afae7d81819cbfc2890df8965b2f8db14f5dab589136e3fc14d7f443989643e",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
         },
         {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 285585,
+          "captured": true,
+          "file": "228ec3c32b00b355.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "cc14bf21eb185a00c6064b57249afea9eeb0f3e1f605c4b35c265557b25612e8",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
         },
         {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 260798,
+          "captured": true,
+          "file": "60ada0a61478a38e.png",
+          "force_state": null,
+          "height": 900,
+          "locale": "zh",
+          "sha256": "ff23a4f22d6afac2f71d3ac97f0d44995a537bab4ef05ecf87f81ca863b0365d",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
         },
         {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
-        }
-      ]
-    },
-    {
-      "crop": "421473034d98dd70",
-      "theme": "light",
-      "lang": "en",
-      "viewport": [
-        1440,
-        900
-      ],
-      "viewport_label": "desktop",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 150859,
+          "captured": true,
+          "file": "65f43ab31fb50ab3.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "ddf41469fbfff217f0f90a27771e5f1195bbd00654b1b229936e82e7b986c5c7",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
         },
         {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 142653,
+          "captured": true,
+          "file": "c99dc52c2ef6ccb7.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "en",
+          "sha256": "03ab2e5fdc995931934d15886f29239017b31c8680c41505c97d0afe99f32275",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
         },
         {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 152474,
+          "captured": true,
+          "file": "b7b62d65aae13efb.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "ab6c439a18470fed71a3e5935439af7ddc231f35c7523b8340c0da4cdc421390",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
         },
         {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
-        }
-      ]
-    },
-    {
-      "crop": "60ada0a61478a38e",
-      "theme": "light",
-      "lang": "zh",
-      "viewport": [
-        1440,
-        900
-      ],
-      "viewport_label": "desktop",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
-        }
-      ]
-    },
-    {
-      "crop": "65f43ab31fb50ab3",
-      "theme": "dark",
-      "lang": "en",
-      "viewport": [
-        390,
-        844
-      ],
-      "viewport_label": "mobile",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
-        }
-      ]
-    },
-    {
-      "crop": "b7b62d65aae13efb",
-      "theme": "dark",
-      "lang": "zh",
-      "viewport": [
-        390,
-        844
-      ],
-      "viewport_label": "mobile",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
-        }
-      ]
-    },
-    {
-      "crop": "c99dc52c2ef6ccb7",
-      "theme": "light",
-      "lang": "en",
-      "viewport": [
-        390,
-        844
-      ],
-      "viewport_label": "mobile",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
-        }
-      ]
-    },
-    {
-      "crop": "c1cd98da763c4cdd",
-      "theme": "light",
-      "lang": "zh",
-      "viewport": [
-        390,
-        844
-      ],
-      "viewport_label": "mobile",
-      "console_errors": [],
-      "failed_responses": [],
-      "url": "research_screener.html",
-      "captured": true,
-      "gaps": [
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "free"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "essential"
-        },
-        {
-          "captured": false,
-          "dimension": "access",
-          "reason": "requires authenticated session; not automatable without approved fixtures",
-          "value": "premium"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "calm"
-        },
-        {
-          "captured": false,
-          "dimension": "force_state",
-          "reason": "no force-state path documented for this packet yet",
-          "value": "alert"
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 145493,
+          "captured": true,
+          "file": "c1cd98da763c4cdd.png",
+          "force_state": null,
+          "height": 844,
+          "locale": "zh",
+          "sha256": "cf09cac5fa4a098aa618b2ad70d7cca680a6cc5f44097d8edf9463dee83ee096",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
         }
       ]
     }
