@@ -88,6 +88,82 @@ def _gate_cfg() -> dict:
         return {"gated": False, "preview_rows": 3}
 
 
+def _fmt_money_mn(v) -> str:
+    """$ millions -> human string. Local copy so this fail-soft builder never
+    imports scripts.build_site (plotly at module scope)."""
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return "—"
+    sign = "+" if v >= 0 else "−"
+    a = abs(v)
+    if a >= 1000:
+        return f"{sign}${a / 1000:.1f}B"
+    return f"{sign}${a:.0f}M"
+
+
+def _accumulation_rows() -> tuple[list[dict], int | None]:
+    """Same shape as scripts.build_site.accumulation_panel, inlined so this
+    builder stays import-light. Fail-open to ([], None). Pool N is returned
+    from the same ``sector_residual_panel`` pass — no second decomposition."""
+    try:
+        from engine.holdings_signals import sector_residual_panel
+        from engine.playbook import SECTOR_NAMES
+        n = 12
+        try:
+            n = int((config.load().get("holdings_signals") or {}).get("panel_top_n", 12))
+        except Exception:  # noqa: BLE001
+            n = 12
+        raw, universe_n = sector_residual_panel(n)
+        rows = []
+        for s in raw:
+            rows.append({
+                "fund": s["fund"], "sector": SECTOR_NAMES.get(s["fund"], s["fund"]),
+                "ticker": s["ticker"], "name": s["name"],
+                "raw_change": s["raw_change"], "active_change": s["active_change"],
+                "active_pct": s["active_pct"],
+                "flow_str": _fmt_money_mn(s["est_flow_mn"]) if s.get("est_flow_mn") is not None else "—",
+                "flow_mn": s["est_flow_mn"] if s.get("est_flow_mn") is not None else None,
+                "direction": s["direction"], "confirmed": s["confirmed"],
+                "ladder": s["ladder"], "window": f"{s['t0']}..{s['t1']}",
+                "vol": s.get("vol"),
+            })
+        return rows, universe_n
+    except Exception as e:  # noqa: BLE001 — panel is additive
+        log.warning("sector_central: accumulation rows failed (%s)", e)
+        return [], None
+
+
+def _theme_tape_view(site: Path):
+    """Fail-open theme-tape join for the demoted #theme-tape landing. None →
+    the partial emits nothing (honest-null)."""
+    try:
+        rot_p = site / "marketdata" / "subsector_rotation.json"
+        us_p = site / "factordata" / "us_standouts.json"
+        if not rot_p.exists():
+            return None
+        from engine.theme_tape import build_theme_tape
+        standouts = None
+        if us_p.exists():
+            try:
+                standouts = json.loads(us_p.read_text(encoding="utf-8"))
+            except Exception as e:  # noqa: BLE001
+                log.warning("sector_central: us_standouts.json unreadable (%s)", e)
+        fsight = None
+        fs_p = site / "basketdata" / "foresight_cascade.json"
+        if fs_p.exists():
+            try:
+                fsight = json.loads(fs_p.read_text(encoding="utf-8"))
+            except Exception as e:  # noqa: BLE001
+                log.warning("sector_central: foresight_cascade.json unreadable (%s)", e)
+        return build_theme_tape(
+            json.loads(rot_p.read_text(encoding="utf-8")),
+            standouts, foresight=fsight)
+    except Exception as e:  # noqa: BLE001
+        log.warning("sector_central: theme tape unavailable (%s)", e)
+        return None
+
+
 def split_actnow(action_board: dict | None, preview: int, *, gated: bool = True):
     """Tier-preview split for the Act-Now board. Returns (pgate, locked).
 
@@ -440,6 +516,7 @@ def main() -> int:
         # whose withheld rows are unreachable for everyone, paying or not.
         log.error("sector_central: payload write failed (%s) — board ungated", e)
         _sc_pgate = None
+    _acc_rows, _acc_uni = _accumulation_rows()
     try:
         html = env.get_template("sector_central.html.j2").render(
             flows_html=flows_html,
@@ -450,6 +527,9 @@ def main() -> int:
             flow=ctx.get("flow"),
             basket_member_syms=ctx.get("basket_member_syms") or [],
             action_board=_action_board,
+            accumulation=_acc_rows,
+            accumulation_universe_n=_acc_uni,
+            theme_tape=_theme_tape_view(site),
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — a template error must NOT abort the daily engine job

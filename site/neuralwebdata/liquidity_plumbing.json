@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.liquidity_plumbing.v1",
-  "asof": "2026-09-11",
+  "asof": "2026-09-17",
   "phase_status": {
     "p0_p1_quantity_quality": "integrated",
     "p3_funding_spreads": "integrated",
@@ -23,109 +23,93 @@
     "summary": "Net liquidity is expanding on Treasury/RRP plumbing (e.g. the Treasury spending down its cash account), not Fed asset growth — a real but transient tailwind. Credit and funding stress gauges are not confirming stress. RRP buffer is empty — the next liquidity drain hits bank reserves directly."
   },
   "fed": {
-    "assets_bn": 6740.619,
-    "assets_chg_20d_bn": -19.336,
-    "reserve_balances_bn": 2991.31,
-    "walcl_stale_days": 2,
+    "assets_bn": 6746.548,
+    "assets_chg_20d_bn": 0.849,
+    "reserve_balances_bn": 3013.794,
+    "walcl_stale_days": 1,
     "policy_stance": "hawkish",
-    "administered_rate_posture": "on_hold",
-    "asof": "2026-09-11"
+    "administered_rate_posture": "unknown",
+    "asof": "2026-09-17"
   },
   "treasury": {
-    "tga_bn": 818.11,
-    "tga_chg_20d_bn": -141.295,
-    "net_issuance_20d_bn": 183.037,
+    "tga_bn": 991.708,
+    "tga_chg_20d_bn": 29.756,
+    "net_issuance_20d_bn": 137.917,
     "expected_tga_pressure": "unknown_until_financing_estimates_parser",
     "coupon_supply_pressure": "context_only",
     "tga_impulse": {
-      "active": true,
-      "direction": "drawdown",
-      "magnitude_bn": 141.3,
-      "days": 10,
-      "since": "2026-08-26",
+      "active": false,
+      "direction": null,
+      "magnitude_bn": null,
+      "days": null,
+      "since": null,
       "quarter_end_adjacent": false,
-      "summary_en": "Treasury spent down $141B of its cash account since Aug 26 — that cash re-enters the financial system (supportive while it lasts).",
-      "summary_zh": "自8月26日起，美国财政部已动用现金账户中的$141B — 这部分资金重新流入金融体系（短期内具支撑性）。"
+      "summary_en": "No TGA impulse detected.",
+      "summary_zh": "未检测到TGA冲量。"
     },
-    "asof": "2026-09-10"
+    "asof": "2026-09-16"
   },
   "rrp": {
-    "rrp_bn": 5.255,
-    "rrp_chg_20d_bn": 4.805,
+    "rrp_bn": 0.276,
+    "rrp_chg_20d_bn": -0.041,
     "buffer_state": "exhausted"
   },
   "quantity": {
-    "netliq_bn": 5917.254,
-    "netliq_chg_20d_bn": 124.336,
-    "netliq_chg_65d_bn": -6.672,
-    "netliq_pctile_expanding": 0.805197,
+    "netliq_bn": 5754.564,
+    "netliq_chg_20d_bn": -54.412,
+    "netliq_chg_65d_bn": 21.001,
+    "netliq_pctile_expanding": 0.756722,
     "overlay": "expanding"
   },
   "quality": {
     "label": "stress-expansion",
-    "fed_share": 0.09,
+    "fed_share": 0.24,
     "mechanical": true,
     "stress_confirming": false,
     "stress_overlay": {
       "hy_oas_pct": 2.7,
-      "hy_oas_z": 0.2,
-      "nfci": -0.564,
+      "hy_oas_z": -0.22,
+      "nfci": -0.56,
       "nfci_trend": "loose",
       "confirming_stress": false
     },
-    "walcl_stale_days": 2
+    "walcl_stale_days": 1
   },
   "funding": {
     "effr_minus_iorb_bp": -2.0,
     "effr_minus_iorb_d20_bp": 0.0,
-    "effr_minus_iorb_pctile": 0.9143,
+    "effr_minus_iorb_pctile": 0.9146,
     "sofr_minus_iorb_bp": -3.0,
-    "sofr_minus_iorb_d20_bp": 0.0,
-    "sofr_minus_iorb_pctile": 0.8089,
+    "sofr_minus_iorb_d20_bp": -3.0,
+    "sofr_minus_iorb_pctile": 0.8087,
     "sofr_99pctl_minus_iorb_bp": 5.0,
-    "sofr_99pctl_minus_iorb_d20_bp": -1.0,
+    "sofr_99pctl_minus_iorb_d20_bp": -2.0,
     "sofr_99pctl_minus_iorb_pctile": 0.7281,
     "srf_takeup_bn": null,
     "discount_window_primary_credit_bn": null,
     "reserve_scarcity_state": "tightening",
-    "asof": "2026-09-10"
+    "asof": "2026-09-16"
   },
   "components": {
     "walcl": {
-      "level_bn": 6740.6,
-      "d20_bn": -19.3,
-      "d65_bn": 15.2,
-      "pctile": 0.77
+      "level_bn": 6746.5,
+      "d20_bn": 0.8,
+      "d65_bn": 21.2,
+      "pctile": 0.772
     },
     "rrp": {
-      "level_bn": 5.3,
-      "d20_bn": 4.8,
-      "d65_bn": 4.9,
-      "pctile": 0.4904
+      "level_bn": 0.3,
+      "d20_bn": -0.0,
+      "d65_bn": -10.4,
+      "pctile": 0.1206
     },
     "tga": {
-      "level_bn": 818.1,
-      "d20_bn": -148.5,
-      "d65_bn": 17.0,
-      "pctile": 0.8926
+      "level_bn": 991.7,
+      "d20_bn": 55.3,
+      "d65_bn": 10.6,
+      "pctile": 0.9532
     },
     "netliq_sparkline_90d": [
-      {
-        "d": "2026-06-15",
-        "v": 5745.0
-      },
-      {
-        "d": "2026-06-16",
-        "v": 5733.6
-      },
-      {
-        "d": "2026-06-17",
-        "v": 5773.1
-      },
-      {
-        "d": "2026-06-18",
-        "v": 5821.1
-      },
       {
         "d": "2026-06-22",
         "v": 5789.7
@@ -360,23 +344,39 @@
       },
       {
         "d": "2026-09-11",
-        "v": 5917.3
+        "v": 5913.2
+      },
+      {
+        "d": "2026-09-14",
+        "v": 5868.0
+      },
+      {
+        "d": "2026-09-15",
+        "v": 5748.4
+      },
+      {
+        "d": "2026-09-16",
+        "v": 5749.5
+      },
+      {
+        "d": "2026-09-17",
+        "v": 5754.6
       }
     ],
     "reserves": {
-      "level_bn": 2991.3,
-      "d20_bn": 89.5,
-      "d65_bn": -415.8,
-      "pctile": 0.7724
+      "level_bn": 3013.8,
+      "d20_bn": 95.2,
+      "d65_bn": -392.6,
+      "pctile": 0.7782
     }
   },
   "foreign_dollar": {
-    "swap_lines_bn": 0.101,
-    "facility_loans_bn": 5.907,
+    "swap_lines_bn": 0.094,
+    "facility_loans_bn": 6.95,
     "fima_repo_bn": null,
     "state": "quiescent",
     "note": "IRD-R5: swap-line levels are confirmation tier — they grade severity after price signals fire, never trigger alerts. FIMA repo: no free per-facility breakout; aggregate rides H.4.1 repo line.",
-    "asof": "2026-09-09"
+    "asof": "2026-09-16"
   },
   "entry_effect": {
     "direction": "tailwind",
@@ -390,7 +390,7 @@
   "degraded": false,
   "schema_version": 1,
   "produced_by": "scripts/build_liquidity_plumbing.py",
-  "produced_at": "2026-09-12T10:39:08Z",
-  "inputs_hash": "sha256:a25e57da87392d445a5d62b952295fa30128378eb26c434d47555e7438d687f8",
+  "produced_at": "2026-09-18T18:51:18Z",
+  "inputs_hash": "sha256:b02c22b54c35bcce3993fbc97df339a3164d9bbdc8d03c084a724a5e5d878ee0",
   "tier": "shadow"
 }

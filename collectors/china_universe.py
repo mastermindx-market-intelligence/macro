@@ -278,6 +278,73 @@ class ChinaUniverseAdapter(Adapter):
         log.info("china_universe: Sina returned %d ranked A-shares", len(out))
         return out.set_index("ticker")
 
+    def _cached_universe(self) -> pd.DataFrame:
+        """Last-known-good Sina-shaped universe from ``members.parquet``.
+
+        Membership moves slowly while closes must advance every session. A transient
+        Sina/DNS outage must therefore degrade membership discovery, not freeze the
+        entire price plane. The cache is accepted only when it has the same minimum
+        population and the columns needed to reconstruct the live Sina shape; a first
+        run or malformed cache still fails honestly.
+        """
+        if not self.members_path.exists():
+            raise RuntimeError("cached members.parquet absent")
+        cached = pd.read_parquet(self.members_path)
+        if "ticker" in cached.columns and cached.index.name != "ticker":
+            cached = cached.set_index("ticker")
+        cached.index = cached.index.astype(str)
+        required = {"name_zh", "mktcap_yi"}
+        missing = sorted(required - set(cached.columns))
+        if missing:
+            raise RuntimeError(f"cached membership missing columns: {missing}")
+        cached = cached.loc[~cached.index.duplicated(keep="last"), ["name_zh", "mktcap_yi"]].copy()
+        cached = cached[cached.index.str.endswith((".SS", ".SZ"))]
+        cached["mktcap_yi"] = pd.to_numeric(cached["mktcap_yi"], errors="coerce")
+        cached = cached.dropna(subset=["mktcap_yi"]).sort_values("mktcap_yi", ascending=False)
+        size = int(self.cfg["size"])
+        cached = cached.head(size)
+        minimum = min(size, max(1, (size * 3 + 3) // 4))
+        if len(cached) < minimum:
+            raise RuntimeError(f"cached universe too small: {len(cached)} rows (need {minimum})")
+        cached.index.name = "ticker"
+        return cached
+
+    def _load_universe(self) -> pd.DataFrame:
+        """Live Sina membership, degrading to the committed last-known-good table."""
+        try:
+            return self._sina_universe()
+        except Exception as live_exc:
+            # Degrade only source/network/data-shape failures. A programming
+            # defect (KeyError/TypeError/AssertionError, etc.) must stay loud
+            # rather than being laundered into a healthy-looking cached run.
+            recoverable = (
+                is_connection_error(live_exc)
+                or isinstance(live_exc, (
+                    OSError,
+                    RuntimeError,
+                    ValueError,
+                ))
+            )
+            if not recoverable:
+                raise
+            try:
+                cached = self._cached_universe()
+            except Exception as cache_exc:
+                raise RuntimeError(
+                    f"Sina membership unavailable ({type(live_exc).__name__}: {live_exc}); "
+                    f"cached membership unusable ({type(cache_exc).__name__}: {cache_exc})"
+                ) from live_exc
+            detail = f"{type(live_exc).__name__}: {live_exc}"
+            print(
+                "::warning title=china-universe-membership-fallback::"
+                f"Sina membership unavailable ({detail}); serving cached membership "
+                f"for {len(cached)} names and continuing the close refresh.",
+                flush=True,
+            )
+            log.warning("china_universe: Sina unavailable; using %d cached members (%s)",
+                        len(cached), detail)
+            return cached
+
     # -- closes (yfinance) -----------------------------------------------------
     def _download_closes(self, tickers: list[str], period: str) -> pd.DataFrame:
         bs = int(self.ycfg["batch_size"])
@@ -608,7 +675,7 @@ class ChinaUniverseAdapter(Adapter):
             raise RuntimeError("china_universe disabled in config")
         self.dir.mkdir(parents=True, exist_ok=True)
 
-        uni = self._sina_universe()
+        uni = self._load_universe()
 
         # Union with CSI index constituents (CSI 300 + CSI 1000 by default).
         # Stocks already ranked by Sina are kept with their real mktcap; extras

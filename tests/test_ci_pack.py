@@ -1014,6 +1014,78 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
     assert "unowned path" not in reason, reason
 
 
+def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
+    """P0B's hermetic first-frame contract must run in the merge gate.
+
+    The generated-page population receipt remains data-dependent and belongs
+    in ``engine-render-guards``.  The template/composer/CSS/loader contract is
+    source-only, so merely listing it in that ``gate: data`` job would leave
+    the PR's real ``--gate code`` execution falsely green.
+    """
+    manifest = _yaml(MANIFEST)
+    code_job = manifest["jobs"]["stock-dashboard-first-frame"]
+    code_suite = "tests/test_stock_dashboard_first_frame.py"
+    data_suite = "tests/test_stock_dashboard_first_frame_data.py"
+
+    assert code_job["gate"] == "code"
+    assert code_job["scope"] == "exclusive"
+    required_paths = {
+        "templates/hk.html.j2",
+        "templates/canada.html.j2",
+        "templates/stock-dashboard.css",
+        "templates/dashboard-icons.js",
+        "site/hk-stock-v36.js",
+        "site/canada-stock-v36.js",
+        "site/stock-dashboard.css",
+        "site/dashboard-icons.js",
+        "scripts/render_stock_dashboard_fixture.py",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/hk-js-disabled-dark-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
+        code_suite,
+    }
+    assert required_paths <= set(code_job["paths"])
+    assert any(code_suite in str(step.get("run") or "") for step in code_job["steps"])
+    assert _job_pip_packages(code_job) == {"beautifulsoup4", "jinja2", "pytest"}
+
+    data_job = manifest["jobs"]["engine-render-guards"]
+    data_runs = "\n".join(str(step.get("run") or "") for step in data_job["steps"])
+    assert data_job["gate"] == "data"
+    assert data_suite in data_runs
+    assert code_suite not in data_runs
+
+    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    code_jobs = [job for job in jobs if job.gate == "code"]
+    for changed in (
+        [code_suite],
+        ["templates/hk.html.j2"],
+        ["site/canada-stock-v36.js"],
+        ["scripts/render_stock_dashboard_fixture.py"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"],
+    ):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "stock-dashboard-first-frame" in {job.job_id for job in selected}, reason
+        assert "unowned path" not in reason, reason
+
+
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
@@ -3567,6 +3639,24 @@ CURATED_EXCLUSIVE = {
     # hook guard moved to tests/test_render_builder_ownership.py so this
     # job's closure stays the page family rather than the whole site builder.
     "market-os-macro-suite-pages",
+    # 2026-09-05 (P0B current-head repair): the first-frame suite executes its
+    # frozen Jinja/browser recipes through subprocess boundaries. Inference
+    # therefore conservatively added scripts/**, site/**, and templates/**,
+    # making this four-second gate a fallback selector for unrelated index and
+    # free-content edits. The suite no longer imports the broad Canada/HK test
+    # helpers; its measured 30-file closure is now declared exactly (including
+    # the two moving-data path *labels* the recipe validates but never opens).
+    # Exclusivity drops only those three opaque fallback roots while retaining
+    # every executable, template, fixture, receipt, and helper input it owns.
+    "stock-dashboard-first-frame",
+    # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
+    # hermetic PR owner for one recovered package and its root lineage test,
+    # and declared both exact path surfaces — but omitted `scope: exclusive`.
+    # Inference therefore unioned opaque package-test edges into whole-tree
+    # fallback breadth and made this job a third unscoped always-on selector
+    # for templates/index.html (133 > 132). Curate the stated owner boundary;
+    # do not fund that unrelated match by raising the packing ceiling.
+    "research-vault-source-lineage",
 }
 
 
@@ -3584,6 +3674,19 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
+    """The recovered MarketDesk owner must not become a whole-tree CI rider."""
+    manifest = _yaml(MANIFEST)
+    job = manifest["jobs"]["research-vault-source-lineage"]
+
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    assert set(job["paths"]) == {
+        "collectors/marketdesk_extractor/**",
+        "tests/test_marketdesk_extractor_lineage.py",
+    }
 
 
 def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
@@ -3674,6 +3777,19 @@ def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -
             )
             match = PACK._job_diff_match(job, [dependency])
             assert match and match[1] == "declared", (job_id, dependency, match)
+
+
+def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None:
+    """The risk-dialog suite reads the shipped token source, so its job owns it."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["unrun-picks-boards"]
+
+    assert job.exclusive is True
+    assert "site/theme.css" in job.paths
+    selected, reason = PACK.select_jobs([job], ["site/theme.css"])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, ["site/theme.css"])
+    assert match and match[1] == "declared", match
 
 
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
@@ -3942,12 +4058,102 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The companion test below pins all three always-on gates so the OPPOSITE
     regression — a future curation silently narrowing a deliberate whole-tree
     gate off its subject — reds loudly instead of shipping a false green.
+
+    JOB COUNTS RE-BASED to 132/129/125 (wave 9, 2026-09-13,
+    B-HEAL-CI-PACK-CEILING-1). Measured on main 021b2ae3a4a6, diffing
+    selected-job NAME sets per probe against the wave-8 baseline manifest
+    (a8075391fa89); that baseline manifest re-measured on today's tree gives
+    130/126/121 at 5,560/5,313/5,299 — the wave-8 figures above to the job
+    and the weight-second — so the whole delta is manifest-side:
+
+        templates/index.html          131 jobs / 5,703 weight (AT ceiling 131 —
+          the zero-headroom defect again)
+          entrants: market-os-macro-workspaces (fallback, w39)
+        scripts/build_free_content.py 128 jobs / 5,460 weight (was ceiling 127)
+          entrants: market-os-macro-workspaces (fallback, w39),
+                    public-render-fastlane (fallback, w17)
+        engine/prophet/plan_book.py   124 jobs / 5,454 weight (was ceiling 122)
+          entrants: ccw-w3-credit-momentum (fallback, w10),
+                    market-os-macro-workspaces (fallback, w39),
+                    public-render-fastlane (fallback, w17)
+
+    Nothing leaves any probe. Unlike wave 8, NONE of the three entrants is a
+    deliberately-unscoped always-on gate: no block text claims whole-tree
+    breadth on purpose, and every match is an inferred opaque-fallback claim
+    that its own block does not justify. Each is therefore a CURATION
+    CANDIDATE with a named follow-on; all three are ratcheted here so main
+    goes green today, and the ceiling keeps flagging them until curated:
+
+    ``ccw-w3-credit-momentum`` (legacy-jobs.yml ~6299; no ``paths:``, no
+    ``scope:``; its header is a coverage inventory — "CCW-W3 credit momentum
+    organ: engine/credit_momentum.py …" — with no self-justification for
+    breadth). Present at wave 8 with ZERO probe-relevant ambiguities; #6904
+    (merge 49451c5148c4) appended tests/test_credit_window.py to its step,
+    and that suite carries five opaque constructs (:173/:175 tmp_path
+    rglobs, :187 a ``root / "engine"`` ``.glob("*.py")`` AST scan in
+    ``test_not_imported_by_any_scoring_module``, :196, :452 a
+    ``git ls-files data/…`` subprocess) that resolve to ``engine/**`` and
+    ``engine/**/*.py``. The one honest claim is on top-level ``engine/*.py``
+    whose names contain score/regime/axis, which inference widens to the
+    whole engine tree — the ``options-estate-guards`` shape, not the
+    ``reference-integrity`` one. Follow-on: B-CUR-CCW-W3-1.
+
+    ``public-render-fastlane`` (legacy-jobs.yml ~9033; no ``paths:``, no
+    ``scope:``; block text describes "Public fast-path contract … Renders to
+    a tmp dir; network-free", no always-on justification). Present at wave 8
+    matching only templates/index.html (already funded). #6828 (F13-X1,
+    8431aeafcc39) appended tests/test_help_directory.py + its contract suite
+    to its step, B-F13-3 (dcd0eee135cc) added the ``--deselect``, and #6909
+    (F13-1) appended three glossary suites. test_help_directory.py's closure is 543
+    files because of ``import scripts.build_site as bs`` at :67 — inside the
+    body of ``test_build_site_renders_help_page_with_the_full_view_model``,
+    the ONE test the job's own command ``--deselect``s (inference does not
+    read ``--deselect``); that closure reaches engine/alert_triage.py:639
+    (dynamic import), engine/codex_lane/runner.py:531/:748 (subprocess
+    invocation) and collectors/sec_document_spine.py:776 (filesystem glob),
+    i.e. ``engine/**`` + ``scripts/**``. The contract sibling's closure is 9
+    files. Smear from a test the job never runs. Follow-on:
+    B-CUR-PUBLIC-RENDER-FASTLANE-1.
+
+    ``market-os-macro-workspaces`` (legacy-jobs.yml ~14122; born after wave 8,
+    Market Ontology F01 R1A). Declares 21 ``paths:`` (its contract schema,
+    ``engine/market_os/**``, scripts/build_macro_workspaces.py and its 18
+    suites) but NOT ``scope: exclusive``, so the declaration is unioned
+    under inference and none of the declared paths covers any probe; every
+    probe match is fallback: scripts/build_macro_workspaces.py:52
+    (subprocess invocation → ``engine/**``, ``scripts/**``,
+    ``templates/**``), tests/test_macro_workspace_build.py:69 (filesystem
+    roots=scripts) and tests/test_macro_workspace_prior_publication.py:301/
+    :470 (dynamic import → ``engine/**``, ``scripts/**``). Its block text is
+    a NARROW self-description — "All four suites are offline and
+    synthetic-fixture driven; the only real input ever read at build time
+    is data/regime/latest.json" — and its sibling
+    ``market-os-macro-suite-pages`` was curated ``scope: exclusive`` at
+    birth. Follow-on: B-CUR-MARKET-OS-MACRO-WORKSPACES-1.
+
+    Ceilings are set at measurement + 1 per the wave-3 rule (132/129/125),
+    re-funding the headroom promise on all three axes — templates/index.html
+    sat AT its ceiling again. WEIGHT and PACK ceilings stay unmoved (5,800 /
+    5,600 / 5,600 and 10 packs): measured weights are 5,703 / 5,460 / 5,454;
+    packs are 10 / 10 / 10 (the two code probes were 9 at wave 8), and with
+    PACK_TARGET_SECONDS = 600 an 11th pack needs > 6,000 weight-seconds,
+    above every weight ceiling, so the weight axis still reds first. This
+    nodeid lives only in a ``gate: data`` job (``workflow-yaml``), so PR
+    packs (``--gate code``) never run it; it runs only on push to main via
+    integration-baseline.yml (direct pytest, :197) and in data-health.yml's
+    ``--gate data`` packs — so the two breaches reached main unseen: the runner
+    reproduces 131/128/124 exactly (integration-baseline run 34716383790 at
+    c78d5a4f), the last fully green integration-baseline run on main is
+    34290518926 at 4603d7bb392d (2026-09-08 23:24Z) — none of the 54
+    non-cancelled runs since it was green as of this measurement — and the
+    seat's finding places this step's own last green at 4b2f97f196d5
+    (2026-09-09 00:20Z, 690 passed).
     """
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     for probe, max_jobs, max_weight in (
-        ("templates/index.html", 131, 5_800),
-        ("scripts/build_free_content.py", 127, 5_600),
-        ("engine/prophet/plan_book.py", 122, 5_600),
+        ("templates/index.html", 132, 5_800),
+        ("scripts/build_free_content.py", 129, 5_600),
+        ("engine/prophet/plan_book.py", 125, 5_600),
     ):
         selected, reason = PACK.select_jobs(jobs, [probe])
         weight = sum(job.weight for job in selected)

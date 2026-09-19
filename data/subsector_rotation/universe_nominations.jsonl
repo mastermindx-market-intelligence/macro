@@ -68,3 +68,4 @@
 {"date":"2026-09-10","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.323,"both_confirmed":false}
 {"date":"2026-09-11","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.52,"both_confirmed":false}
 {"date":"2026-09-11","theme":"Artificial Intelligence","donor":"aienterprise","receiver":"aiedge","confidence":0.412,"both_confirmed":false}
+{"date":"2026-09-15","theme":"Artificial Intelligence","donor":"aicompute","receiver":"aiadssearch","confidence":0.312,"both_confirmed":false}

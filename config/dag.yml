@@ -1306,6 +1306,9 @@ lanes:
           latched windows. Fail-soft (absent creds/tables -> typed
           READ_UNAVAILABLE, 0 rows, exit 0). Dormant unless
           THESIS_MONITOR_ENABLE=1. Delivery is F08's drain, never this step.
+      # MO-PAID-032 recurring briefs producer (non-fatal step; daily_after_us_close cadence)
+      - id: recurring_briefs_producer
+        module: scripts.build_recurring_briefs
       - id: notify
         module: scripts.notify
       - id: push_alerts
@@ -3194,6 +3197,9 @@ lanes:
         module: scripts.build_vector
       - id: build_aibrief
         module: scripts.build_aibrief
+      # MO-PAID-032 recurring briefs producer (non-fatal step; weekly cadence)
+      - id: recurring_briefs_producer
+        module: scripts.build_recurring_briefs
       - id: quarterly_cortex_fdr
         module: scripts.quarterly_cortex_fdr
         note: >
