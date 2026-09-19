@@ -30,4 +30,4 @@ capture: |
   and a 200ms settle post-data-theme/data-lang stamp. Screenshots cropped to
   the #va-event-bridge element only (Tier-2 receipt, not the full panel).
 captured_at: 2026-09-19T01:27Z
-resolved_sha_or_none: 90ad6215ddae
+resolved_sha_or_none: 0ee59a25f49d
