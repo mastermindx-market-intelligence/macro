@@ -1,6 +1,6 @@
 # China Gold Premium — visual evidence
 
-This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8`.
+This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `b7a4f813ad939eca6468195ef32b63c48f131f06`.
 
 ## States
 
@@ -25,3 +25,16 @@ The inherited whole-page overflow remains owned by R1 #7198. This feature accept
 ## Source honesty
 
 No live SGE/LBMA benchmark data is claimed here. Available-state inputs are fixtures used only to prove UI behavior and calculation wiring. The official SHAUPM/LBMA-AM method remains unavailable until its own entitled mapping exists; the separate close-proxy source path has been wired but still awaits its first natural secret-bearing nightly effect.
+
+## Interactive mode proof
+
+`interaction_checks.json` exercises the live chart controls rather than inspecting only the default frame:
+
+- premium → spread → price mode transitions;
+- English and Chinese legend updates;
+- 1M → Max range changes;
+- CNY proxy and USD intraday units;
+- moving-average/reference legend visibility by mode;
+- non-empty chart paths, correct zero-line behavior, zero browser errors, and contained desktop/mobile geometry.
+
+Eight interaction screenshots accompany the machine receipt.

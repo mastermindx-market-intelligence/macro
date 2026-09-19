@@ -24,7 +24,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-19T10:10:58Z",
+  "generated_at": "2026-09-19T10:26:41Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -35,62 +35,62 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-400.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-400.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-600.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-600.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-800.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-800.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-700.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-700.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-500.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-500.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/account.js?v=20260814-sf-inter-font-upgrade",
+          "source_url": "http://127.0.0.1:59042/account.js?v=20260814-sf-inter-font-upgrade",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/terminal_overlay.js",
+          "source_url": "http://127.0.0.1:59042/terminal_overlay.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-400.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-400.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-600.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-600.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-800.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-800.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-700.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-700.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-500.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-500.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/account.js?v=20260814-sf-inter-font-upgrade"
+          "url": "http://127.0.0.1:59042/account.js?v=20260814-sf-inter-font-upgrade"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/terminal_overlay.js"
+          "url": "http://127.0.0.1:59042/terminal_overlay.js"
         }
       ],
       "gaps": [
@@ -146,7 +146,7 @@
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 5864,
+            "document_height_px": 5832,
             "elements_wider_than_viewport": 1,
             "horizontal_overflow": true
           }
@@ -172,7 +172,7 @@
           "viewport": "desktop"
         },
         "panel_count": 12,
-        "payload_bytes_total": 589529,
+        "payload_bytes_total": 352422,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -181,7 +181,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 788
+        "visible_word_count": 786
       },
       "page_id": "commodities_gold_premium_intraday.html",
       "registry_route": "/commodities_gold_premium_intraday.html",
@@ -192,13 +192,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 707037,
+          "bytes": 706257,
           "captured": true,
-          "file": "7957edc8a3742cd8.png",
+          "file": "22635a27cadc57a2.png",
           "force_state": null,
           "height": 3856,
           "locale": "en",
-          "sha256": "7957edc8a3742cd855aa32e34fe3101e1341988ea84cf2aeb9e75453e1f72504",
+          "sha256": "22635a27cadc57a250f8d03c26cc27ce915d0440b51265a80256ce237e59510a",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -209,13 +209,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 667462,
+          "bytes": 666374,
           "captured": true,
-          "file": "c8bb286372997155.png",
+          "file": "e6f9afa44f89561e.png",
           "force_state": null,
           "height": 3856,
           "locale": "en",
-          "sha256": "c8bb2863729971552d9a9efdb9cb3615d096f42f916bf0689f852021aa734f3a",
+          "sha256": "e6f9afa44f89561e43652c064b7b44b59f2eb42fe67d07b814833c1d16161a74",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -226,13 +226,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 703731,
+          "bytes": 702312,
           "captured": true,
-          "file": "fbbdd66123c797d0.png",
+          "file": "c94ea0bdc495b095.png",
           "force_state": null,
           "height": 3735,
           "locale": "zh",
-          "sha256": "fbbdd66123c797d0addaf136def6fa01cb4e646594cfb1410a729730ba1ba7f9",
+          "sha256": "c94ea0bdc495b095992c5cad0dd5cd5777002039ed1bea14181cd6610e1c7df1",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -243,13 +243,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 671348,
+          "bytes": 670098,
           "captured": true,
-          "file": "24a52f064b5bb17b.png",
+          "file": "2c820803c39ec443.png",
           "force_state": null,
           "height": 3735,
           "locale": "zh",
-          "sha256": "24a52f064b5bb17bd53d7a468f7e8f3cbd9504fcbcd5697263f4024ca7eca944",
+          "sha256": "2c820803c39ec443ff4dbe9313ef98521ee2d0b10a748cd8d2132cb0e4303519",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -260,13 +260,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 592191,
+          "bytes": 590942,
           "captured": true,
-          "file": "fa5a07650ec998ee.png",
+          "file": "899f6b99d29b255d.png",
           "force_state": null,
-          "height": 5864,
+          "height": 5832,
           "locale": "en",
-          "sha256": "fa5a07650ec998ee7acaa8e7512f6f0317619a429c771326a5c4fbb2f4f93040",
+          "sha256": "899f6b99d29b255dcbe89b545a089a909bfaa542d23e9f4686f840b935fc5f82",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -277,13 +277,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 568437,
+          "bytes": 567081,
           "captured": true,
-          "file": "4955da8d26834cee.png",
+          "file": "b4351bbedab72ee0.png",
           "force_state": null,
-          "height": 5864,
+          "height": 5832,
           "locale": "en",
-          "sha256": "4955da8d26834cee3d8423a1a253faf6c029b08813e96854a72de6d76619f82d",
+          "sha256": "b4351bbedab72ee018acdd3b75bfdaa09edd964b444defcb107b161f506eb481",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -294,13 +294,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 574433,
+          "bytes": 573126,
           "captured": true,
-          "file": "c89b6a1eae731e84.png",
+          "file": "496c6f475a921f58.png",
           "force_state": null,
           "height": 5463,
           "locale": "zh",
-          "sha256": "c89b6a1eae731e843d57c18e787d54e0f538f622061db27fdeddc21828985c24",
+          "sha256": "496c6f475a921f583cb329e67001efeb6179a4d4a8dca3939c81d90884744161",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -311,13 +311,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 552067,
+          "bytes": 550806,
           "captured": true,
-          "file": "87645c16578bb52b.png",
+          "file": "4201a75030a101a9.png",
           "force_state": null,
           "height": 5463,
           "locale": "zh",
-          "sha256": "87645c16578bb52bd35e5127dc258c0a06b709372dc4fccffb38566e94c2e68b",
+          "sha256": "4201a75030a101a9fd3767f18b8a0faf8c25ada570122153e00b0cf45a352379",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -329,62 +329,62 @@
     {
       "console_errors": [
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-400.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-400.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-600.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-600.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-800.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-800.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-700.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-700.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/fonts/Inter-500.woff2",
+          "source_url": "http://127.0.0.1:59042/fonts/Inter-500.woff2",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/account.js?v=20260814-sf-inter-font-upgrade",
+          "source_url": "http://127.0.0.1:59042/account.js?v=20260814-sf-inter-font-upgrade",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         },
         {
-          "source_url": "http://127.0.0.1:50186/terminal_overlay.js",
+          "source_url": "http://127.0.0.1:59042/terminal_overlay.js",
           "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
         }
       ],
       "failed_responses": [
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-400.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-400.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-600.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-600.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-800.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-800.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-700.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-700.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/fonts/Inter-500.woff2"
+          "url": "http://127.0.0.1:59042/fonts/Inter-500.woff2"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/account.js?v=20260814-sf-inter-font-upgrade"
+          "url": "http://127.0.0.1:59042/account.js?v=20260814-sf-inter-font-upgrade"
         },
         {
           "status": 404,
-          "url": "http://127.0.0.1:50186/terminal_overlay.js"
+          "url": "http://127.0.0.1:59042/terminal_overlay.js"
         }
       ],
       "gaps": [
@@ -466,7 +466,7 @@
           "viewport": "desktop"
         },
         "panel_count": 12,
-        "payload_bytes_total": 352422,
+        "payload_bytes_total": 550589,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -503,13 +503,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 612851,
+          "bytes": 612860,
           "captured": true,
-          "file": "07cf33b11e741aef.png",
+          "file": "6895d03d3af03251.png",
           "force_state": null,
           "height": 3294,
           "locale": "en",
-          "sha256": "07cf33b11e741aef0680257fd0fdb0ffde0377e41cd8ef381003b2670cf4a21b",
+          "sha256": "6895d03d3af03251e8811f9b637e1b7a0c38af7218268cf17b212b41299cf7ac",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -520,13 +520,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 640696,
+          "bytes": 640348,
           "captured": true,
-          "file": "cb27002e5a541ecf.png",
+          "file": "52b6b3ca11dc8979.png",
           "force_state": null,
           "height": 3172,
           "locale": "zh",
-          "sha256": "cb27002e5a541ecf913ae0c657d6067dce7bfaabc8ad2e5a4232d596cfbf7ea2",
+          "sha256": "52b6b3ca11dc89791981b5d8ae62ebf49cd1248f37bfc05858ddee031a2393eb",
           "theme": "dark",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -537,13 +537,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 605379,
+          "bytes": 605375,
           "captured": true,
-          "file": "7b2d1a6b6b6308ed.png",
+          "file": "a02ceac71323cec1.png",
           "force_state": null,
           "height": 3172,
           "locale": "zh",
-          "sha256": "7b2d1a6b6b6308ed5811f26a72ac24d1e439c7998635c002a2c72688ccb2d1ef",
+          "sha256": "a02ceac71323cec1456591d59065043993a8010e8968145589cbc1ba371d664b",
           "theme": "light",
           "viewport": "desktop",
           "viewport_height": 900,
@@ -554,13 +554,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "dark",
-          "bytes": 555349,
+          "bytes": 555354,
           "captured": true,
-          "file": "941a2f5c803a7987.png",
+          "file": "7f593a1d25b0f64b.png",
           "force_state": null,
           "height": 5381,
           "locale": "en",
-          "sha256": "941a2f5c803a79878b76213c7bb8dc544935de37845f658f07b49bd032f737b3",
+          "sha256": "7f593a1d25b0f64b7808ec0daf4399a2e8eb2fb2deb5ae1e51a08bd2bbd49c08",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -571,13 +571,13 @@
           "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
-          "bytes": 532010,
+          "bytes": 532434,
           "captured": true,
-          "file": "2e7ab255c5b476e1.png",
+          "file": "d9cfed4d9a468c43.png",
           "force_state": null,
           "height": 5381,
           "locale": "en",
-          "sha256": "2e7ab255c5b476e1732644e72e986b22c6a06fb96fe53bfaa14a489353bbc77c",
+          "sha256": "d9cfed4d9a468c43e280e27da771b35eda229ee84f51889fa30d70bf27b0b63a",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -588,13 +588,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "dark",
-          "bytes": 536634,
+          "bytes": 536701,
           "captured": true,
-          "file": "f268ca48081bb6c7.png",
+          "file": "c513f205ab180a4d.png",
           "force_state": null,
           "height": 4995,
           "locale": "zh",
-          "sha256": "f268ca48081bb6c70a947cd05888ebf565e30b8756f77983aec8516557e8b5b2",
+          "sha256": "c513f205ab180a4d50293f3220ddb8f56e1ca978af69103f4ea4cb516c624c3d",
           "theme": "dark",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -605,13 +605,13 @@
           "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
-          "bytes": 515785,
+          "bytes": 515815,
           "captured": true,
-          "file": "5cead07ab51fcaf4.png",
+          "file": "ab393c05fe3bc2e8.png",
           "force_state": null,
           "height": 4995,
           "locale": "zh",
-          "sha256": "5cead07ab51fcaf430444675c902d88293fd2307583f7c99d064cb8d0e78c370",
+          "sha256": "ab393c05fe3bc2e85f5c7a37e1aebec88865e4483de9989a2b2c79cc2d7c110c",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -631,7 +631,7 @@
     "mode": "explicit_routes",
     "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
     "priority": null,
-    "registry": ".proof-china-gold-current/no.json",
+    "registry": ".proof-cgp-current/no.json",
     "registry_rows": 0,
     "repo": null,
     "selected": 2
@@ -640,9 +640,9 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/gold-china-premium-cfd96ad9ddc87b11",
-    "resolved_sha_or_none": "fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8",
+    "resolved_sha_or_none": "b7a4f813ad939eca6468195ef32b63c48f131f06",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/gold-china-premium-cfd96ad9ddc87b11 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/gold-china-premium-cfd96ad9ddc87b11/.proof-china-gold-current"
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/gold-china-premium-cfd96ad9ddc87b11/.proof-cgp-current"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

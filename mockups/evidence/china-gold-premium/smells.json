@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-19T10:10:58Z",
+  "generated_at": "2026-09-19T10:26:41Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -24,7 +24,7 @@
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 5864,
+            "document_height_px": 5832,
             "elements_wider_than_viewport": 1,
             "horizontal_overflow": true
           }
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 12,
-        "payload_bytes_total": 589529,
+        "payload_bytes_total": 352422,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -59,7 +59,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 788
+        "visible_word_count": 786
       },
       "page_id": "commodities_gold_premium_intraday.html",
       "route": "/commodities_gold_premium_intraday.html"
@@ -100,7 +100,7 @@
           "viewport": "desktop"
         },
         "panel_count": 12,
-        "payload_bytes_total": 352422,
+        "payload_bytes_total": 550589,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 10,
@@ -120,9 +120,9 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/gold-china-premium-cfd96ad9ddc87b11",
-    "resolved_sha_or_none": "fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8",
+    "resolved_sha_or_none": "b7a4f813ad939eca6468195ef32b63c48f131f06",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/gold-china-premium-cfd96ad9ddc87b11 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
-    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/gold-china-premium-cfd96ad9ddc87b11/.proof-china-gold-current"
+    "site_dir": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/gold-china-premium-cfd96ad9ddc87b11/.proof-cgp-current"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

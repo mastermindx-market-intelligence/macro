@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_basis_visual_checks.v1",
-  "semantic_head": "fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8",
+  "semantic_head": "b7a4f813ad939eca6468195ef32b63c48f131f06",
   "capture": "actual commodities page fixture; Gold panel crop; feature-free pickup overflow comparison",
   "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
@@ -23,12 +23,10 @@
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-dark-en-desktop.png",
-      "sha256": "b81435d73fae11a056c76f5899aff08d8ace00bc5c7f335e445508c3220b06c3",
-      "bytes": 118718,
+      "sha256": "e09783a319aac10e3ec51cc6ad9e61c0813ffa033f5ac73a3aa60ffff78b328e",
+      "bytes": 117175,
       "page_errors": []
     },
     {
@@ -50,12 +48,10 @@
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-light-en-desktop.png",
-      "sha256": "7eb4a2232993fdae19662c74bab4d9305bc56b751fbe5fe4bbc6f595a9d7ac6f",
-      "bytes": 89603,
+      "sha256": "98b3e5554138ffa3da70ee7fb75eb85c3739d290878d7215a7ae3173d36f0d80",
+      "bytes": 88398,
       "page_errors": []
     },
     {
@@ -77,12 +73,10 @@
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-dark-zh-desktop.png",
-      "sha256": "9fb1f35a8d10a5abf634140221592b46368901163a624e142effc373fc07f02c",
-      "bytes": 119891,
+      "sha256": "b051af1b460cd54bbec0cbb80010f402b3d1e27bb981b071dbf1f37768d44dbe",
+      "bytes": 118071,
       "page_errors": []
     },
     {
@@ -104,12 +98,10 @@
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-light-zh-desktop.png",
-      "sha256": "142be91aa43ea5eafd0ddf1e4d3cae2e66b67d377151e5e7aee235a570c9ddd5",
-      "bytes": 94324,
+      "sha256": "1bf6e560731fbf0f57438210ab1f249810edc38ac4646710d7dbd78d02ddece6",
+      "bytes": 92659,
       "page_errors": []
     },
     {
@@ -127,16 +119,14 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 785.609375
+        "height": 753.671875
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-en-mobile.png",
-      "sha256": "67793b237f713bdb8944e1f4d13665eb10f4083e2aec1f2d7c0d8c820057b0b3",
-      "bytes": 82891,
+      "sha256": "3eef98b261841d619f8f7e1f492f04f9cc57e82173a2c0c6a4e83a8314308116",
+      "bytes": 80101,
       "page_errors": []
     },
     {
@@ -154,16 +144,14 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 785.609375
+        "height": 753.671875
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-light-en-mobile.png",
-      "sha256": "1d0a2b96e8860f6354de3b49235563e9886dff9c97da1db69c625cd131cf8dcf",
-      "bytes": 62799,
+      "sha256": "137f9b608e26162265b526f981ea3e5a17bdec3973f2f7eeb6b07c02c3aa5080",
+      "bytes": 60984,
       "page_errors": []
     },
     {
@@ -185,12 +173,10 @@
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-zh-mobile.png",
-      "sha256": "72c5895a8d3df333f5cc99ccbe484799102775b3808273bb665ef90955bb05e1",
-      "bytes": 80422,
+      "sha256": "e0fb069e621edda73a22d74993bb49f08406a9f4a608de7d89d629d43e443daf",
+      "bytes": 78738,
       "page_errors": []
     },
     {
@@ -212,12 +198,10 @@
       },
       "method": "proxy",
       "currency": "CNY",
-      "source_asof": "2026-09-18T07:30:00+00:00",
-      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-light-zh-mobile.png",
-      "sha256": "db0e2a2cdc672927a7c802722454e02532eb7d040fbb5e8a15c1de875a83362c",
-      "bytes": 65263,
+      "sha256": "fb6360ce6870ca2ff59ec9ec077486a2090ec05c86beaacae5d51c9162456d5b",
+      "bytes": 63743,
       "page_errors": []
     }
   ]

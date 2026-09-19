@@ -1,7 +1,7 @@
 # China Gold Basis Proxy — visual evidence
 
 This corpus captures the actual Commodity Vector Gold panel at exact integrated PR #7325 head
-`fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8`. The geometry comparison uses feature-free pickup base
+`b7a4f813ad939eca6468195ef32b63c48f131f06`. The geometry comparison uses feature-free pickup base
 `4b420718773b57df57f5fe779bb990a0b7e7704d`.
 
 ## What is proven
