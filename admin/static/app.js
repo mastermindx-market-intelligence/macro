@@ -41,7 +41,11 @@ const API_CACHE_BYPASS = new Set([
    a tab they were just on paid for the whole fold again. The genuinely live number
    on that screen (the "N active" pill) is /fp/realtime, and it stays on BYPASS
    above, so nothing the operator watches for freshness is cached at all. */
-const API_CACHE_TTL_OVERRIDES = [[/^\/api\/analytics\/fp\//, 60000]];
+const API_CACHE_TTL_OVERRIDES = [
+  [/^\/api\/intelligence_os(?:\/|$)/, 300000],
+  [/^\/api\/metabolism(?:\/|$)/, 60000],
+  [/^\/api\/analytics\/fp\//, 60000],
+];
 
 function apiCacheTtl(path) {
   const pathname = String(path || "").split("?", 1)[0];
@@ -9022,12 +9026,25 @@ function obxRenderLive(d) {
      while the tile row happily rendered a Recalled tile that could only ever
      read 0. A state the payload carries and the page cannot show is a state the
      operator cannot act on. */
-  const effSummary = { queued: 0, held: 0, approved: 0, posting: 0, posted: 0,
-                       failed: 0, quarantined: 0, recalled: 0 };
+  /* accounts[].items is intentionally the LIVE/retryable working set.
+     Terminal posted/quarantined/recalled rows live in the bounded history window
+     instead of being duplicated by the thousands in every payload.  Seed terminal
+     totals (and total failed, which includes spent failures) from the server's
+     all-items summary, then derive the live states that need decision-overlay
+     semantics from the working set. */
+  const serverSummary = (d.summary && typeof d.summary === "object") ? d.summary : null;
+  const effSummary = {
+    queued: 0, held: 0, approved: 0, posting: 0,
+    posted: serverSummary ? Number(serverSummary.posted || 0) : 0,
+    failed: serverSummary ? Number(serverSummary.failed || 0) : 0,
+    quarantined: serverSummary ? Number(serverSummary.quarantined || 0) : 0,
+    recalled: serverSummary ? Number(serverSummary.recalled || 0) : 0,
+  };
   accounts.forEach(a => (a.items || []).forEach(it => {
     const s = obxEffState(it);
     const key = (s === "approve_ok") ? "approved" : s;
-    if (effSummary[key] != null) effSummary[key] += 1;
+    if (["queued", "held", "approved", "posting"].includes(key)) effSummary[key] += 1;
+    else if (!serverSummary && effSummary[key] != null) effSummary[key] += 1;
   }));
 
   /* Global work count — undecided/re-armable items across all desks, minus
@@ -15952,14 +15969,32 @@ function startTableObserver() {
   _tableObserver.observe(view, { childList: true, subtree: true });
 }
 
+function schedulePostBootWarmup() {
+  /* Nothing below is needed for first paint.  Let the requested page become usable,
+     then fill advisory nav dots and start the measured slow-panel caches in the
+     background.  If the operator opens Intelligence OS while it is warming, api()'s
+     in-flight coalescing joins this exact request rather than launching a second walk. */
+  const run = () => {
+    refreshOutboxNavDot();
+    refreshSupportNavDot();
+    [
+      "/api/intelligence_os",
+      "/api/metabolism",
+      "/api/neural_web/lobes",
+      "/api/orchestrator",
+    ].forEach(path => api(path).catch(() => {}));
+  };
+  if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1500 });
+  else setTimeout(run, 150);
+}
+
 async function boot() {
   renderSidebar();
   wireSidebarDrawer();
   startTableObserver();
   await refresh();
   route();
-  refreshOutboxNavDot();   /* advisory pending-count dot on the Outbox nav item */
-  refreshSupportNavDot();  /* advisory open-ticket dot on the Support Tickets nav item */
+  schedulePostBootWarmup();
 }
 (async function init() {
   /* The landing snapshot is the one fetch the first paint genuinely blocks on (every

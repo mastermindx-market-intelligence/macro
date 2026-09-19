@@ -210,6 +210,23 @@ def test_spa_reuses_recent_reads_and_prefetches_nav_targets():
     assert 'it.addEventListener("pointerenter", () => scheduleTabPrefetch(id)' in source
     assert 'it.addEventListener("pointerleave", cancelTabPrefetch' in source
     assert 'neural_web: ["/api/neural_web/lobes"]' in source
+    # First paint must not wait for advisory badges or the 5-minute Intelligence
+    # OS estate walk; the latter is warmed only once the requested page is usable.
+    assert "function schedulePostBootWarmup()" in source
+    assert '.forEach(path => api(path).catch(() => {}))' in source
+    for path in (
+        "/api/intelligence_os",
+        "/api/metabolism",
+        "/api/neural_web/lobes",
+        "/api/orchestrator",
+    ):
+        assert f'"{path}"' in source
+    boot_body = source.split("async function boot()", 1)[1].split(
+        "(async function init()", 1
+    )[0]
+    assert "schedulePostBootWarmup();" in boot_body
+    assert "refreshOutboxNavDot();" not in boot_body
+    assert "refreshSupportNavDot();" not in boot_body
 
 
 def _post(port, path, body, headers=None, host=None):
@@ -486,9 +503,12 @@ if __name__ == "__main__":
         fn(); print("PASS", fn.__name__)
 
 
-def test_analytics_panels_get_a_longer_response_cache_than_other_apis():
-    """The fp panels are window snapshots, not live readings — 15s was shorter than
-    the time it takes to read one, so every trip back to a tab re-folded the panel."""
+def test_expensive_snapshot_panels_get_ttls_that_match_their_real_freshness():
+    """Slow snapshot folds stay hot; genuinely live endpoints remain separately bypassed."""
+    assert _api_cache_ttl("/api/intelligence_os") == 300.0
+    assert _api_cache_ttl("/api/intelligence_os/engine") == 300.0
+    assert _api_cache_ttl("/api/metabolism") == 60.0
+    assert _api_cache_ttl("/api/metabolism/history") == 60.0
     assert _api_cache_ttl("/api/analytics/fp/visitors") == 60.0
     assert _api_cache_ttl("/api/analytics/fp/overview") == 60.0
     assert _api_cache_ttl("/api/health") == 15.0
