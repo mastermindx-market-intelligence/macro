@@ -547,20 +547,20 @@ class TestProjection:
         )
 
     def test_rare_earths_top3_named_country_order(self, tmp_path):
-        """MINOR 3: assert rare-earths top-3 named-country tuple, not just the sum."""
+        """MINOR 3: assert the ENGINE-selected rare-earths top-3, not a re-sort in the test."""
         _, engine, store = self._ingest(tmp_path)
         art = engine.compute_critical_minerals_supply(store=store, write=False)
         c = art["commodities"]["rare_earths"]
-        sources = c["import_sources_2021_24"]
-        named = [(s["country"], s["pct"]) for s in sources
-                 if s.get("country", "").lower() not in ("other", "其他")]
-        ranked = sorted(named, key=lambda s: (-s[1], s[0]))
-        top3 = ranked[:3]
-        # China 71, Malaysia 13, Estonia 5 (tie at 5 with Japan; "Estonia" < "Japan" alphabetically)
+        top3 = [(s["country"], s["pct"]) for s in c["top3_import_sources"]]
+        # Fixture named order by (-pct, name): China 71, Malaysia 13, Estonia 5
+        # (Japan also 5; "Estonia" < "Japan"). File-order top-3 is China/Malaysia/Japan,
+        # same sum 89, so a sum-only or in-test re-sort does not lock engine order.
         assert top3 == [("China", 71.0), ("Malaysia", 13.0), ("Estonia", 5.0)], (
-            f"Expected [('China', 71), ('Japan', 13), ('Estonia', 5)], got {top3}; "
-            f"all named={named}"
+            f"Expected [('China', 71.0), ('Malaysia', 13.0), ('Estonia', 5.0)], got {top3}; "
+            f"top3_import_share_pct={c['top3_import_share_pct']}; "
+            f"import_sources_2021_24={c['import_sources_2021_24']}"
         )
+        assert c["top3_import_share_pct"] == 89
 
     def test_no_angle_bracket_tokens_in_customer_text(self, tmp_path):
         """MAJOR fix: no < or > tokens in customer-facing read_en/read_zh."""
@@ -587,6 +587,38 @@ class TestProjection:
             if re.search(r"[A-Za-z]{3,}", zh):
                 failures.append(f"{key}: {zh}")
         assert not failures, "Latin country names found in ZH reads:\n" + "\n".join(failures)
+
+
+class TestRound4PlainLanguage:
+    """h_7110_rv3 MINOR 1 / MINOR 2: pin stitch and _nir_text '<' without ingest."""
+
+    def test_missing_nir_stitch_keeps_us_capitalised(self):
+        _, engine = _load_modules()
+        payload = {
+            "label_en": "cobalt",
+            "label_zh": "钴",
+            "leading_producer": {
+                "country": "Congo (Kinshasa)",
+                "share_pct": 74,
+                "period": "2025",
+            },
+            "us_net_import_reliance": {
+                "text_en": "US net import reliance is not given as a number in this edition.",
+                "text_zh": "这一版未给出美国净进口依赖的数字。",
+            },
+        }
+        en, _zh = engine._read_sentences(payload)
+        assert en == (
+            "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025, "
+            "and US net import reliance is not given as a number in this edition."
+        ), en
+
+    def test_nir_text_less_than_en_and_zh(self):
+        _, engine = _load_modules()
+        assert engine._nir_text(25, "<", "zh") == "美国进口了其用量的少于25%。"
+        assert engine._nir_text(25, "<", "en") == (
+            "The United States imported less than 25 percent of what it used."
+        )
 
 
 # ---------------------------------------------------------------------------

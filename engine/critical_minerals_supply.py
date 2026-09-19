@@ -237,6 +237,7 @@ def _commodity_block(cfg_entry: dict, df: Optional[pd.DataFrame]) -> dict:
         "leading_producer": None,
         "import_sources_2021_24": [],
         "top3_import_share_pct": None,
+        "top3_import_sources": [],
         "china_share_world_production_pct": None,
         "world_production": None,
         "reserves_top": None,
@@ -303,6 +304,9 @@ def _commodity_block(cfg_entry: dict, df: Optional[pd.DataFrame]) -> dict:
         ranked = sorted(named, key=lambda s: (-s["pct"], s["country"]))
         top3 = [s for s in ranked if s["pct"] is not None][: _TOP_N]
         block["top3_import_share_pct"] = sum(s["pct"] for s in top3) if top3 else None
+        block["top3_import_sources"] = [
+            {"country": s["country"], "pct": s["pct"]} for s in top3
+        ]
 
     world = sub[sub["table"] == "world_production"]
     metric_want = (cfg_entry.get("world_metric") or "Mine production").lower()

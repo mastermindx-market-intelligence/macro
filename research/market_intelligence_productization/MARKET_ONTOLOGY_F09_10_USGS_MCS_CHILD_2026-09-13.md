@@ -58,60 +58,61 @@ rare_earth_critical_min) BUILT_NOT_PROVEN; live proof owed after nightly
 with USGS_MCS_ENABLED=true. Issuer-key clause not engaged (no issuer join).
 This packet does not edit the F00C ledger CSV.
 
-## Heal h_7110 (2026-09-18)
+## Heal h_7110 (2026-09-18) — historical, not current head
 
-Head `196002786fb2561597068021137d579a83179ac3` → heal head `4db6b1e5bd717f817660f839deb621df0dc6c0a4`.
-BLOCKER: `_read_sentences` now leads with the T7 leading producer (Congo
-74% cobalt, Australia 32% lithium) and uses China-share clause only as
-fallback when no leading-producer is present (or when China IS the leader,
-e.g. gallium 100%, rare earths 69%). MAJOR: `top3_import_share_pct`
-now sorts named-country Fig3 rows by (-pct, name), excludes "Other"/"其他",
-and sums the top 3 — cobalt = 56 (Norway 26 + Finland 16 + Canada 14).
-MAJOR: NIR qualifier `>` renders "more than" / "超过", `<` renders
-"less than" / "低于" — no raw `<`/`>` tokens in customer text.
-MINOR: gallium production verb now uses "produced" (matches
-`world_metric: "Primary production"`); stitch keeps leading "US" capitalised.
-
-Corrected reads at heal head `4db6b1e5bd` (round 2 heal):
-
-- cobalt: "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025,
-  and the US imported 79% of what it used."
-  ZH: "Congo (Kinshasa)在2025年开采了全球约74%的钴，美国进口了其用量的79%。"
-  top3_import_share_pct = 56
-- lithium: "Australia mined about 32% of the world's lithium in 2025,
-  and the US imported more than 50 percent of what it used."
-  ZH: "Australia在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。"
-  top3_import_share_pct = 97
-- gallium: "China produced about 100% of the world's gallium in 2025,
-  and the US imported 100% of what it used."
-  ZH: "China在2025年生产了全球约100%的镓，美国进口了其用量的100%。"
-  top3_import_share_pct = 68
-- rare earths: "China mined about 69% of the world's rare earths in 2025,
-  and the US imported 67% of what it used."
-  ZH: "中国在2025年开采了全球约69%的稀土，美国进口了其用量的67%。"
-  top3_import_share_pct = 89
+Round-1 (on `196002786fb2561597068021137d579a83179ac3`) led reads with
+the T7 leading producer, sorted named-country Fig3 rows by (-pct, name)
+excluding Other/其他, and expanded NIR `>` / `<` so customer text has
+no raw angle-bracket tokens. Gallium EN uses "produced". Round-2 head
+`67f90b545d6ca2af9c9880456ab224e151286771` closed nested "about more than"
+NIR wording and gallium verb_zh (produced → 生产了). ZH country names
+were still USGS English in those rounds; they are not quoted here because
+they are not the current reads.
 
 RED-first on f1aac58fedd1: at that commit the files `collectors/usgs_mcs.py`,
 `engine/critical_minerals_supply.py`, and `config/usgs_mcs_sources.yml` were
 absent (`git cat-file -t` fatal); isolated replay with empty PYTHONPATH gave
 16 failed, 2 passed. The body claim of "18 passed on f1aac58fedd1" was wrong.
-HEAL_RESULT: tests 22 passed (18 original + 4 new: cobalt/lithium verbatim
-read pins, cobalt top3=56, lithium top3=97, no-angle-bracket assertion).
 
-## Heal h_7110 round 3 (2026-09-19)
+## Heal h_7110 round 3 (2026-09-19) — historical, not current head
 
-Head `4db6b1e5bd717f817660f839deb621df0dc6c0a4` → heal head `3f515003cc37c9b0a656a389ba2848c749df1f28`.
-MAJOR 1 (META-CEO RULING): ZH reads now use Chinese country names via
-`COUNTRY_ZH` map + `_country_zh()` helper; unmapped names log a warning
-and fall back to English.  ZH leads now: 刚果（金）/澳大利亚/中国.
-MAJOR 2 (research doc): rare-earths top-3 assertion now checks ordered
-named-country tuple (China 71, Malaysia 13, Estonia 5 — tie at 5 broken
-by alphabetical name), not just the sum.
-MINOR 1: stitch `.capitalize()` removed — missing-NIR sentence keeps
-"US" capitalised (was "uS").
-MINOR 2: NIR `'<'.format(25, 'zh')` now returns 少于 not 低于.
+PR head after round 3, from `gh pr view 7110 --json headRefOid`, was
+`8043e187f092e127ea89f66943fb4f4620cabf84` (code `3f515003cc37c9b0a656a389ba2848c749df1f28`
+plus the research-doc commit). ZH reads use Chinese country names via
+`COUNTRY_ZH` / `_country_zh()`. NIR `_nir_text(25, '<', 'zh')` returns 少于
+not 低于. Stitch keeps "US". Independent review h_7110_rv3 at that head
+was FIX_REQUIRED: the Files-changed banner was stale, there was no stitch
+test, no `_nir_text` `<` pin, and the rare-earths top-3 test re-sorted
+inside the test (file-order China/Malaysia/Japan sums to the same 89).
 
-Corrected reads at heal head `3f515003cc` (round 3 heal):
+## Heal h_7110 round 4 (2026-09-19, Grok)
+
+Closes h_7110_rv3 (1 MAJOR, 3 minors) on top of
+`8043e187f092e127ea89f66943fb4f4620cabf84`. The PR body records the tip
+40-hex from `gh pr view 7110 --json headRefOid` after push (head-sha law).
+A committed file cannot contain its own commit SHA; this section names
+the reviewed head and the measured sentences, not a guessed tip.
+
+MAJOR 1 (truth): Files-changed is the real `git diff --stat origin/main...HEAD`
+and the real `gh pr view --json files` list. No "this heal commit only"
+figure. This file no longer quotes mixed-language ZH
+(`Congo (Kinshasa)在…` / `Australia在…` / `China在…`) as current reads
+and no longer presents `4db6b1e5bd717f817660f839deb621df0dc6c0a4` or
+`3f515003cc37c9b0a656a389ba2848c749df1f28` as the PR head.
+
+MINOR 1 (stitch test): `_read_sentences` with missing-NIR text pins
+`Congo (Kinshasa) mined about 74% of the world's cobalt in 2025, and US net import reliance is not given as a number in this edition.`
+
+MINOR 2 (`<` pin): `_nir_text(25, '<', 'zh')` == `美国进口了其用量的少于25%。`
+and EN `The United States imported less than 25 percent of what it used.`
+
+MINOR 3 (discriminator): the artifact stores `top3_import_sources` beside
+`top3_import_share_pct`. The test asserts the engine-selected triple
+`[("China", 71.0), ("Malaysia", 13.0), ("Estonia", 5.0)]` and does not
+re-sort `import_sources_2021_24` inside the test. Error strings name that
+tuple. RED at `67f90b545d6ca2af9c9880456ab224e151286771` (no `top3_import_sources` key).
+
+Corrected reads (measured; EN/ZH include `about`/`约`/`percent` as emitted):
 
 - cobalt: EN: "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025,
   and the US imported about 79 percent of what it used."
@@ -129,6 +130,4 @@ Corrected reads at heal head `3f515003cc` (round 3 heal):
   and the US imported about 67 percent of what it used."
   ZH: "中国在2025年开采了全球约69%的稀土，美国进口了其用量的约67%。"
   top3_import_share_pct = 89
-
-HEAL_RESULT: 25 passed (was 23 — new: test_zh_reads_contain_no_latin_country_names
-RED at 67f90b54, test_rare_earths_top3_named_country_order).
+  top3_import_sources = [("China", 71.0), ("Malaysia", 13.0), ("Estonia", 5.0)]
