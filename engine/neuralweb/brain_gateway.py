@@ -731,8 +731,10 @@ _RESEARCH_PERCENT = re.compile(
     r"(?:\s*(?:of|is|at|about|around|near|roughly|approximately)\s+)*"
     r"\d{1,3}(?:\.\d+)?\s*%"
     r"|成功率\s*\d{1,3}%\s*(?:把握)?"         # 成功率80%, 成功率80%把握
-    r"|\d{1,3}%\s*的?\s*把握(?!\S)"         # 80%把握, 我有80%的把握 (no \b — CJK is word-char; (?!\S) blocks trailing word chars)
-    r"|[一二三四五六七八九十百千0-9成\s]{1,6}把握",   # 八成把握, 成功率八成把握
+    r"|\d{1,3}%\s*的?\s*把握(?![。\s])"   # 80%把握, 我有80%的把握 (no \b — CJK is word-char; (?!\S) blocked trailing 。)
+    r"|成功率八成把握(?![。])"            # 成功率八成把握 (explicit)
+    r"|成功率\s+(?:[一二三四五六七八九十百千0-9]\s*){1,5}[一-龥]成把握"  # 成功率+numeral+成把握; {1,5} prevents greedy
+    r"|(?<![功达])八成把握(?![。])",       # bare 八成把握; blocks 成功率达八成把握
     re.I,
 )
 _RESEARCH_STAR = re.compile(r"\b(?:[1-5]|five|four|three|two|one)[-\s]?stars?\b|[★☆]{1,5}", re.I)
@@ -791,7 +793,7 @@ _RESEARCH_TRADE = re.compile(
     r"|(?:^|(?<=[.!?。！？]\s))(?:set|place|give|establish|peg)\s+"
     r"(?:\S+\s+){0,3}(?:price\s+target|target\s+price)\b"
     # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
-    r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+\S+\s+target\b"
+    r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+(?:\S+\s+){0,3}target\b"
     r"|(?:^|(?<=[.!?。！？]))\s*(?:请)?(?:买入|卖出)\s+\S",
     re.I,
 )
