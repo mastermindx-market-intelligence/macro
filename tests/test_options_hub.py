@@ -1349,6 +1349,29 @@ class TestR5PitSpotVolStage0:
         assert sensitivity["fallback_sessions_excluded"] == 0
         assert sensitivity["term_support_counts"]["nearest_short_fallback"] == len(sessions)
 
+    def test_effective_clock_tracks_last_qualified_term_point_not_requested_asof(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        last_mask = frame["date"] == sessions[-1]
+        last_day = pd.to_datetime(frame.loc[last_mask, "date"])
+        frame.loc[last_mask, "expiration"] = (
+            last_day + pd.to_timedelta(20, unit="D")
+        ).dt.date.astype(str).values
+
+        _, coverage = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        assert coverage["source_effective_through_session"] == sessions[-2]
+        expected_eligible = nyse_calendar.session_n_forward(
+            pd.Timestamp(sessions[-1]).date(), 1
+        )
+        assert expected_eligible is not None
+        assert coverage["decision_eligible_not_before_session"] == str(expected_eligible)
+        assert coverage["fallback_sessions_excluded"] == 1
+
+
     def test_source_digest_changes_when_consumed_iv_is_corrected(self):
         frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
         _, first = build_spot_iv_shocks(
