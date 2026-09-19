@@ -47,10 +47,48 @@ def _case() -> dict:
             ],
             "thesis_direction": "bullish",
             "thesis_support_claim_indices": [0],
+            "thesis_concepts": [
+                ["stronger", "strengthening"],
+                ["cloud"],
+                ["demand"],
+            ],
             "analysis_support": {
                 "forecasts": [[1]],
                 "catalysts": [[2]],
                 "falsifiers": [[3]],
+            },
+            "analysis_semantics": {
+                "forecasts": [
+                    {
+                        "support_claim_indices": [1],
+                        "concept_groups": [
+                            ["supply"],
+                            ["normalize", "normalization"],
+                            ["december"],
+                        ],
+                    }
+                ],
+                "catalysts": [
+                    {
+                        "support_claim_indices": [2],
+                        "concept_groups": [
+                            ["october"],
+                            ["launch"],
+                            ["catalyst"],
+                        ],
+                    }
+                ],
+                "falsifiers": [
+                    {
+                        "support_claim_indices": [3],
+                        "concept_groups": [
+                            ["falling", "fall"],
+                            ["cloud"],
+                            ["orders"],
+                            ["weaken", "weakened"],
+                        ],
+                    }
+                ],
             },
         },
     }
@@ -164,6 +202,10 @@ def test_perfect_grounded_output_scores_all_available_dimensions():
     assert result["counts"]["matched_claims"] == 4
     assert result["counts"]["expected_thesis_support"] == 1
     assert result["counts"]["matched_thesis_support"] == 1
+    assert result["counts"]["thesis_semantic_expected"] == 1
+    assert result["counts"]["thesis_semantic_correct"] == 1
+    assert result["counts"]["expected_analysis_semantics"] == 3
+    assert result["counts"]["matched_analysis_semantics"] == 3
     assert result["counts"]["direction_expected"] == 1
     assert result["counts"]["direction_correct"] == 1
     assert result["provenance_state"] == "operator_label_only"
@@ -196,6 +238,8 @@ def test_invalid_output_fails_closed_and_receipt_contains_no_source_text():
     assert result["overall_score"] == 0.0
     assert result["counts"]["matched_claims"] == 0
     assert result["counts"]["matched_thesis_support"] == 0
+    assert result["counts"]["thesis_semantic_correct"] == 0
+    assert result["counts"]["matched_analysis_semantics"] == 0
     assert result["counts"]["direction_correct"] == 0
     assert Q0 not in serialized
     assert Q1 not in serialized
@@ -383,3 +427,55 @@ def test_invalid_output_cannot_retain_matched_credit():
         assert "invalid benchmark output cannot retain matched credit" in str(exc)
     else:
         raise AssertionError("invalid output cannot keep matched benchmark credit")
+
+
+def test_semantic_anchor_recall_rejects_generic_text_with_correct_support():
+    rio = _rio()
+    rio["analysis"]["thesis"]["summary"] = "The note presents a constructive server outlook."
+    rio["analysis"]["thesis"]["mechanism"] = ["fundamental conditions support the thesis"]
+    rio["analysis"]["forecasts"][0]["statement"] = "Conditions may improve later."
+    rio["analysis"]["forecasts"][0]["horizon"] = ""
+    rio["analysis"]["catalysts"][0]["statement"] = "A future event could matter."
+    rio["analysis"]["falsifiers"][0]["statement"] = "The thesis could fail under adverse conditions."
+
+    result = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(rio),
+        candidate_label="generic-supported-model",
+    )
+    assert result["state"] == "ok"
+    assert result["metrics"]["thesis_support_recall"] == 1.0
+    assert result["metrics"]["analysis_category_recall"] == 1.0
+    assert result["metrics"]["thesis_semantic_accuracy"] == 0.0
+    assert result["metrics"]["analysis_semantic_recall"] == 0.0
+    assert result["counts"]["matched_analysis_semantics"] == 0
+    assert result["overall_score"] < 1.0
+
+
+def test_semantic_gold_changes_gold_contract_hash():
+    first = _case()
+    changed = _case()
+    changed["expected"]["analysis_semantics"]["forecasts"][0]["concept_groups"][1] = [
+        "tighten",
+        "tightening",
+    ]
+    first_request = build_benchmark_request(first, BODY)
+    changed_request = build_benchmark_request(changed, BODY)
+    assert first_request["prompt_sha256"] == changed_request["prompt_sha256"]
+    assert (
+        first_request["gold_contract_sha256"]
+        != changed_request["gold_contract_sha256"]
+    )
+
+
+def test_aggregate_explicitly_grants_no_model_promotion_authority():
+    good = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    aggregate = aggregate_results([good])
+    assert aggregate["ranking_basis"] == "private_gold_grounded_extraction_metrics"
+    assert aggregate["promotion_authority"] == "none"
