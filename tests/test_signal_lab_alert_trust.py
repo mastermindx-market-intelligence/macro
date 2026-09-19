@@ -190,7 +190,55 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert len(cells) == 5
     assert "Prospective research journey" in cells[0].get_text(" ", strip=True)
     assert "Prospective research journey" not in cells[3].get_text(" ", strip=True)
+    assert "Recent prospective observations" not in html
 
+
+def test_signal_lab_renders_bounded_recent_prospective_history_without_legacy_reconstruction():
+    research = {
+        "schema": "btc_d2_forward.v1",
+        "status": "pending",
+        "entry_asof": "2026-09-21",
+        "entry_close": 101.0,
+        "source_asof": "2026-09-20",
+        "check_after": "2026-09-24",
+        "fired": False,
+        "trigger_evidence": None,
+        "trading_authority": False,
+        "source_generation_id": "sha256:current",
+        "outcome_generation_id": None,
+        "generation_count": 1,
+        "outcome": None,
+        "outcome_evidence": None,
+        "reason": None,
+        "corrected": False,
+        "corrections": [],
+        "source_recorded_at": "2026-09-22T05:00:00Z",
+        "outcome_recorded_at": None,
+        "last_matured": None,
+        "recent_history": [
+            {
+                "entry_asof": "2026-09-20", "fired": True, "status": "matured",
+                "outcome": {"down_hit": True, "fwd_min_pct": -6.2, "fwd_max_pct": 1.1},
+                "corrected": False, "corrections": [], "reason": None,
+            },
+            {
+                "entry_asof": None, "fired": None, "status": "unavailable",
+                "outcome": None, "corrected": True, "corrections": [{"generation_id": "x"}],
+                "reason": "generation_integrity_error",
+            },
+        ],
+    }
+    payload = signal_lab.build_scorecard(
+        gate=_gate(), evaluation_date=date(2026, 9, 21), d2_research=research,
+    )
+    html = _render_d2_scorecard(payload)
+    assert "Recent prospective observations (2)" in html
+    assert "近期前瞻观察（2）" in html
+    assert "2026-09-20" in html
+    assert "matured — target hit" in html
+    assert "Research evidence is damaged; original records retained" in html
+    assert "restated 1×" in html
+    assert "Prospective rows only; legacy history is never reconstructed." in html
 
 def _render_d2_scorecard(payload):
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))

@@ -20,6 +20,7 @@ Schema (one JSON object per line):
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import os
@@ -35,6 +36,7 @@ log = logging.getLogger(__name__)
 
 LABEL_H = 3        # trading-day forward horizon (matches the backtest label)
 LABEL_THR = 0.05   # +-5%
+D2_RECENT_HISTORY_LIMIT = 8
 _DVOL_UNSET = object()
 
 
@@ -268,13 +270,14 @@ def grade(
 
 
 def latest_d2_journey(rows: list[dict] | None = None) -> dict:
-    """Current observation plus one explicitly historical completed result.
+    """Current observation plus bounded prior prospective research history.
 
-    A bad current envelope must remain visibly bad, not be replaced by an older
-    good result. Both projections are derived copies of this ledger only.
+    Only rows that already carry the prospective research_d2 envelope enter
+    this projection. Legacy rows are never reconstructed. A bad current/prior
+    envelope remains visibly unavailable rather than being silently skipped.
     """
     rows = rows if rows is not None else load()
-    current = None
+    projections: list[dict] = []
     for row in reversed(rows):
         if not isinstance(row, dict) or "research_d2" not in row:
             continue
@@ -282,17 +285,26 @@ def latest_d2_journey(rows: list[dict] | None = None) -> dict:
         projection = btc_d2_research.project(journey)
         if not isinstance(journey, dict) or journey.get("schema") != btc_d2_research.SCHEMA:
             projection["reason"] = "generation_integrity_error"
-        if current is None:
-            current = projection
-            current["last_matured"] = None
-            if current["status"] == "matured":
-                return current
-        elif projection["status"] == "matured":
-            current["last_matured"] = projection
-            return current
-    if current is None:
+        projections.append(projection)
+
+    if not projections:
         current = btc_d2_research.project(None)
         current["last_matured"] = None
+        current["recent_history"] = []
+        return current
+
+    current = projections[0]
+    recent_history: list[dict] = []
+    last_matured = None
+    for projection in projections[1:]:
+        if last_matured is None and projection["status"] == "matured":
+            last_matured = copy.deepcopy(projection)
+            continue
+        if len(recent_history) < D2_RECENT_HISTORY_LIMIT:
+            recent_history.append(copy.deepcopy(projection))
+
+    current["last_matured"] = last_matured
+    current["recent_history"] = recent_history
     return current
 
 

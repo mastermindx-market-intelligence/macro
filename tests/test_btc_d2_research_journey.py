@@ -593,8 +593,48 @@ def test_latest_projection_retains_completed_observation_after_rollover():
     projected = LED.latest_d2_journey(rows)
     assert projected["status"] == "pending"
     assert projected["last_matured"] == _d2().project(rows[0]["research_d2"])
+    assert projected["recent_history"] == []
     projected["last_matured"]["outcome"]["down_hit"] = False
     assert rows == before
+
+
+def test_recent_history_is_bounded_to_prospective_rows_and_keeps_corruption_visible():
+    d2 = _d2()
+    rows = [{"asof": "2023-01-01", "outcome": {"matured": True}}]  # legacy only
+    expected_entries = []
+    for offset in range(10):
+        entry, sig, dvol = _frames(fired=offset % 2 == 0)
+        shift = pd.Timedelta(days=offset * 70)
+        sig = sig.copy()
+        sig.index += shift
+        dvol = dvol.copy()
+        dvol.index += shift
+        entry = entry + shift
+        journey = d2.new_journey()
+        assert d2.capture_source(
+            journey,
+            entry_asof=str(entry.date()),
+            sig_df=sig,
+            dvol_df=dvol,
+            recorded_at=f"2026-09-{offset + 1:02d}T05:00:00Z",
+        )
+        rows.append({"asof": str(entry.date()), "research_d2": journey})
+        expected_entries.append(str(entry.date()))
+
+    rows[-4]["research_d2"] = {"schema": "future-or-corrupt", "generations": []}
+    projected = LED.latest_d2_journey(rows)
+    assert projected["entry_asof"] == expected_entries[-1]
+    assert projected["last_matured"] is None
+    assert len(projected["recent_history"]) == LED.D2_RECENT_HISTORY_LIMIT
+    assert [item["entry_asof"] for item in projected["recent_history"][:2]] == [
+        expected_entries[-2], expected_entries[-3],
+    ]
+    assert any(
+        item["status"] == "unavailable"
+        and item["reason"] == "generation_integrity_error"
+        for item in projected["recent_history"]
+    )
+    assert all(item.get("entry_asof") != "2023-01-01" for item in projected["recent_history"])
 
 
 @pytest.mark.parametrize("broken", [None, [], 17, {"schema": "btc_d2_forward.v1", "generations": None}])
@@ -607,6 +647,7 @@ def test_corrupt_current_observation_never_impersonates_completed_history(broken
     assert projected["reason"] == "generation_integrity_error"
     assert projected["source_generation_id"] is None
     assert projected["last_matured"]["entry_asof"] == rows[0]["asof"]
+    assert projected["recent_history"] == []
     assert rows == before
 
 
