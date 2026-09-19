@@ -81,7 +81,9 @@ def test_vocab_closure():
         for form in spine_forms
         for items in (None, *sorted(route_tokens))
     }
-    expected = set(MATURE_CATEGORIES) | spine_subtypes
+    expected = set(MATURE_CATEGORIES) | spine_subtypes | {
+        "tender_offer", "earnings", "signal_close"
+    }
     assert set(veb.classified_event_domain()) == expected
 
 
@@ -434,64 +436,50 @@ def test_panel_does_not_inject_style_or_store_anything_from_bridge_line():
 # v1_blob's special_situation field (MAJOR-3).
 # ---------------------------------------------------------------------------
 
-def test_controls_blob_populates_latest_event_bridge_from_spine(tmp_path):
-    """controls_blob reads the issuer's real capital-structure spine artifact."""
+def test_controls_blob_populates_latest_event_bridge_from_spine(tmp_path, monkeypatch):
+    """The production controls call reads the canonical issuer event spine."""
     v1 = vs.compute(_rows(), ticker="AAPL")
     assert v1 is not None
     assert "special_situation" not in v1
 
-    events = [
-        {
-            "event_id": "old",
-            "ticker": "aapl",
-            "available_at": "2026-01-01T00:00:00Z",
-            "event_json": json.dumps({"event_id": "old", "event": {"subtype": "unsupported_form"}}),
-        },
-        {
-            "event_id": "new",
-            "ticker": "AAPL",
-            "available_at": "2026-02-01T00:00:00Z",
-            "event_json": json.dumps({"event_id": "new", "event": {"subtype": "registration_statement"}}),
-        },
-        {
-            "event_id": "other-issuer",
-            "ticker": "MSFT",
-            "available_at": "2026-03-01T00:00:00Z",
-            "event_json": json.dumps({"event_id": "other-issuer", "event": {"subtype": "unsupported_form"}}),
-        },
+    spine_events = [
+            {
+                "id": "old-prospectus",
+                "tickers": ["aapl"],
+                "kind": "prospectus_event",
+                "ts": "2026-01-01T00:00:00Z",
+            },
+            {
+                "id": "new-tender-offer",
+                "tickers": ["AAPL"],
+                "kind": "tender_offer",
+                "ts": "2026-02-01T00:00:00Z",
+            },
+            {
+                "id": "other-issuer",
+                "tickers": ["MSFT"],
+                "kind": "registration_statement",
+                "ts": "2026-03-01T00:00:00Z",
+            },
     ]
-    frame = pd.DataFrame(events)
-    spine_path = tmp_path / "event_versions.parquet"
-    frame.to_parquet(spine_path, index=False)
+    spine_path = tmp_path / "events.jsonl"
+    spine_path.write_text(
+        "".join(json.dumps(event, sort_keys=True) + "\n" for event in spine_events),
+        encoding="utf-8",
+    )
 
-    assert va.latest_issuer_spine_event_class("AAPL", events_path=spine_path) == "registration_statement"
-    controls = va.controls_blob(v1, issuer_events_path=spine_path)
-    assert controls is not None
-    assert controls["latest_event_bridge"] is not None
-    assert controls["latest_event_bridge"]["event_class"] == "registration_statement"
-
-    # Null path: no special_situation field
+    monkeypatch.setattr(va, "_ISSUER_SPINE_EVENTS_PATH", spine_path)
     controls = va.controls_blob(v1)
     assert controls is not None
-    # latest_event_bridge key is always present (even if None)
-    assert "latest_event_bridge" in controls
-    # Without a special_situation field the bridge is None
-    assert controls["latest_event_bridge"] is None
-
-    # Populated path: inject a known event class
-    v1_with_event = dict(v1)
-    v1_with_event["special_situation"] = {"latest_event_class": "Tender Offers"}
-    controls2 = va.controls_blob(v1_with_event)
-    assert controls2 is not None
-    assert controls2["latest_event_bridge"] is not None
-    assert controls2["latest_event_bridge"]["target"] == "multiple"
-    assert controls2["latest_event_bridge"]["event_class"] == "Tender Offers"
-
-    # Another event class
-    v1_with_event["special_situation"] = {"latest_event_class": "Restructuring"}
-    controls3 = va.controls_blob(v1_with_event)
-    assert controls3["latest_event_bridge"]["target"] == "margin"
-    assert controls3["latest_event_bridge"]["event_class"] == "Restructuring"
+    bridge = controls["latest_event_bridge"]
+    assert bridge is not None
+    assert bridge["event_class"] == "tender_offer"
+    assert bridge["target"] == "multiple"
+    monkeypatch.setattr(
+        va, "_ISSUER_SPINE_EVENTS_PATH", spine_path.with_name("missing.jsonl")
+    )
+    controls = va.controls_blob(v1)
+    assert controls is not None and controls["latest_event_bridge"] is None
 
 
 # ---------------------------------------------------------------------------

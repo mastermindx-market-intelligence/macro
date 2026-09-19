@@ -1,6 +1,6 @@
-"""Pure user-adjustable valuation assumptions (B-F07-2).
+"""User-adjustable valuation assumptions (B-F07-2).
 
-No IO, no network, no clock. Reads a valuation_scenario.v1 blob and emits
+No network and no clock. Reads a valuation_scenario.v1 blob and emits
 valuation_scenario_controls.v1 for the sandbox panel. The three V1 server
 cards stay the authority; this module only names the three free parameters
 and evaluates the same closed-form per-share identity at caller-supplied
@@ -24,10 +24,10 @@ and a future null path can reuse V1 diction without re-typing.
 """
 from __future__ import annotations
 
-import json
 import logging
 import math
 from pathlib import Path
+from importlib import import_module
 
 from engine import valuation_event_bridge as _veb
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
@@ -50,64 +50,57 @@ _MARGIN_BASE_FLOOR = 0.01
 # without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
 # verbatim copy, not MISSING_LABELS["margin_too_thin"].
 _V1_MISSING_LABELS = MISSING_LABELS
-_CAPITAL_STRUCTURE_EVENTS_REL = Path("data") / "capital_structure" / "event_versions.parquet"
+_ISSUER_SPINE_EVENTS_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "chronicle"
+    / "events.jsonl"
+)
+
+
+def _load_events_jsonl(path: Path) -> list[dict]:
+    return import_module("engine.chronicle.spine").load_events_jsonl(path)
 
 
 def latest_issuer_spine_event_class(
     ticker: object,
-    *,
-    repository_root: Path | None = None,
-    events_path: Path | None = None,
+    issuer_spine_path: Path | None = None,
 ) -> str | None:
-    """Return the issuer's latest classified capital-structure spine subtype."""
+    """Return the issuer's latest classified issuer-spine subtype."""
     if not isinstance(ticker, str) or not ticker.strip():
         return None
     wanted = ticker.strip().upper()
-    path = Path(events_path or (repository_root or Path.cwd()) / _CAPITAL_STRUCTURE_EVENTS_REL)
+    path = issuer_spine_path or _ISSUER_SPINE_EVENTS_PATH
     if not path.exists():
         return None
-    import pandas as pd
-
-    frame = pd.read_parquet(path)
-    required = {"ticker", "event_json", "available_at", "event_id"}
-    if not required.issubset(frame.columns):
-        return None
+    events = _load_events_jsonl(path)
     latest_key = None
     latest_event = None
-    for row in frame.to_dict(orient="records"):
-        if str(row.get("ticker") or "").upper() != wanted:
-            continue
-        event_json = row.get("event_json")
-        if not isinstance(event_json, str) or not event_json:
-            continue
-        try:
-            event = json.loads(event_json)
-        except (TypeError, json.JSONDecodeError):
-            continue
+    for event in events:
         if not isinstance(event, dict):
             continue
-        available = row.get("available_at")
-        if available is None:
-            available = (event.get("point_in_time") or {}).get("available_at")
+        tickers = event.get("tickers")
+        if not isinstance(tickers, list) or wanted not in {
+            str(ticker).strip().upper() for ticker in tickers
+        }:
+            continue
+        event_class = str(event.get("kind") or event.get("source") or "").strip()
+        if not event_class or _veb.bridge_for_issuer(event_class) is None:
+            continue
+        available = event.get("ts") or event.get("date")
         if not available:
             continue
-        key = (str(available), str(row.get("event_id") or ""))
+        key = (str(available), str(event.get("id") or ""))
         if latest_key is None or key > latest_key:
             latest_key = key
             latest_event = event
     if latest_event is None:
         return None
-    subtype = (latest_event.get("event") or {}).get("subtype")
-    return str(subtype).strip() if isinstance(subtype, str) and subtype.strip() else None
+    return str(latest_event.get("kind") or latest_event.get("source") or "").strip() or None
 
 
-def _issuer_event_class(v1_blob: dict, issuer_events_path: Path | None = None) -> str | None:
-    special = v1_blob.get("special_situation")
-    if isinstance(special, dict):
-        return special.get("latest_event_class")
-    return latest_issuer_spine_event_class(
-        v1_blob.get("ticker"), events_path=issuer_events_path
-    )
+def _issuer_event_class(v1_blob: dict) -> str | None:
+    return latest_issuer_spine_event_class(v1_blob.get("ticker"))
 
 
 def round2(v):
@@ -181,7 +174,7 @@ def _control_defaults():
     return {c["key"]: c["default"] for c in CONTROLS}
 
 
-def controls_blob(v1_blob, *, issuer_events_path: Path | None = None):
+def controls_blob(v1_blob):
     """Build valuation_scenario_controls.v1 from a V1 compute() blob, or None.
 
     Returns None when the V1 blob is missing, when net income is missing or
@@ -214,7 +207,7 @@ def controls_blob(v1_blob, *, issuer_events_path: Path | None = None):
     if fy is None or not period_end:
         return None
 
-    latest_event_class = _issuer_event_class(v1_blob, issuer_events_path)
+    latest_event_class = _issuer_event_class(v1_blob)
     if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
         return {
             "schema": "valuation_scenario_controls.v1",
