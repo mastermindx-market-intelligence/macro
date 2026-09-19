@@ -619,7 +619,9 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "terminal#584 merged dd7c6dec" in workspace_settings["real_producer"]
     assert "SectionTeam" in workspace_settings["real_consumer"]
     assert "signed-in production" in workspace_settings["missing_contract_or_proof"]
-    assert "#584 OPEN" not in (workspace_settings["missing_contract_or_proof"] + workspace_settings["next_bounded_child"] + workspace_settings["adjudication_notes"])
+    assert "#584 OPEN" not in workspace_settings["missing_contract_or_proof"]
+    assert "#584 OPEN" not in workspace_settings["next_bounded_child"]
+    assert "The old '#584 OPEN / no route/UI' record is superseded." in workspace_settings["adjudication_notes"]
 
     export = r["MO-PAID-086"]
     assert export["capability_state_c2"] == "BUILT_NOT_PROVEN"
@@ -631,7 +633,7 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     implication = r["MO-PAID-039"]
     assert implication["capability_state_c2"] == "BUILT_NOT_PROVEN"
     assert "admin.mastermind-x.com" in implication["real_consumer"]
-    assert "Intelligence Hub" in implication["real_consumer"]
+    assert "templates/intelligence_hub.html.j2" in implication["real_consumer"]
     assert "@never_site" in implication["missing_contract_or_proof"]
     assert "retarget/remove" in implication["next_bounded_child"]
     assert "single existing measurement builder" in implication["next_bounded_child"]
