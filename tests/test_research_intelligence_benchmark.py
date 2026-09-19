@@ -2,15 +2,18 @@ from __future__ import annotations
 
 import hashlib
 import json
+import stat
 
 from engine.research_intelligence.benchmark import (
     CASE_SCHEMA,
     aggregate_results,
     build_benchmark_request,
     score_raw_output,
+    score_rio,
 )
 from engine.research_intelligence.extractor import _identity
 from engine.research_intelligence.schema import SCHEMA
+from scripts.research_intelligence_benchmark import _write_json
 
 
 Q0 = "AMD server demand accelerated by 35% year over year as cloud buyers raised orders."
@@ -185,6 +188,7 @@ def test_invalid_output_fails_closed_and_receipt_contains_no_source_text():
     assert result["state"] == "invalid_output"
     assert result["metrics"]["validity"] == 0.0
     assert result["overall_score"] == 0.0
+    assert result["counts"]["matched_claims"] == 0
     assert Q0 not in serialized
     assert Q1 not in serialized
     assert BODY not in serialized
@@ -199,6 +203,33 @@ def test_source_hash_mismatch_is_rejected():
         assert "source hash" in str(exc)
     else:
         raise AssertionError("source mismatch must fail closed")
+
+
+def test_duplicate_gold_claim_is_rejected():
+    case = _case()
+    case["expected"]["claims"].append(dict(case["expected"]["claims"][0]))
+    try:
+        build_benchmark_request(case, BODY)
+    except ValueError as exc:
+        assert "duplicate expected claim" in str(exc)
+    else:
+        raise AssertionError("duplicate gold claims must fail closed")
+
+
+def test_direct_rio_scoring_rechecks_source_grounding():
+    rio = _rio()
+    fabricated = "Fabricated evidence says AMD demand rose by 99%."
+    for claim in rio["claims"]:
+        claim["statement"] = fabricated
+        claim["evidence"] = [{"quote_span": fabricated}]
+        claim["numbers"] = ["99%"]
+        claim["entities"] = ["AMD"]
+    try:
+        score_rio(_case(), BODY, rio)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("direct RIO scoring must not trust fabricated evidence")
 
 
 def test_aggregate_ranks_by_mean_score_without_source_text():
@@ -218,4 +249,59 @@ def test_aggregate_ranks_by_mean_score_without_source_text():
     assert aggregate["candidates"][0]["candidate_label"] == "strong-model"
     assert aggregate["candidates"][0]["mean_overall_score"] == 1.0
     assert aggregate["candidates"][1]["mean_overall_score"] == 0.0
+    assert len(aggregate["case_set_sha256"]) == 64
     assert BODY not in json.dumps(aggregate)
+
+
+def test_aggregate_refuses_unequal_case_coverage():
+    first = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    other_case = _case()
+    other_case["case_id"] = "fixture-amd-002"
+    second = score_raw_output(
+        other_case,
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-b",
+    )
+    try:
+        aggregate_results([first, second])
+    except ValueError as exc:
+        assert "case coverage differs" in str(exc)
+    else:
+        raise AssertionError("unequal case coverage must not produce a ranking")
+
+
+def test_aggregate_refuses_tampered_scores():
+    first = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    second = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-b",
+    )
+    second["overall_score"] = 0.123
+    try:
+        aggregate_results([first, second])
+    except ValueError as exc:
+        assert "overall_score disagrees" in str(exc)
+    else:
+        raise AssertionError("tampered score must fail closed")
+
+
+def test_private_prompt_writer_forces_owner_only_permissions(tmp_path):
+    target = tmp_path / "request.json"
+    target.write_text("old", encoding="utf-8")
+    target.chmod(0o644)
+    _write_json(target, {"secret": Q0}, private=True)
+    assert stat.S_IMODE(target.stat().st_mode) == 0o600
+    assert json.loads(target.read_text(encoding="utf-8")) == {"secret": Q0}
