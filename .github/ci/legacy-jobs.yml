@@ -2405,6 +2405,8 @@ jobs:
       - "scripts/build_options_screener.py"
       # Skylit R2 Stage 0 research analyzer (tests in options gap discipline).
       - "scripts/research_skylit_r2_exposure_decomposition.py"
+      # Skylit R6 topology is imported by tests/test_market_structure.py.
+      - "scripts/research_skylit_r6_cross_expiry_topology.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
       - "scripts/build_options_sparse_selector_prereg.py"
