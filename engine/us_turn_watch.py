@@ -1016,7 +1016,8 @@ def _pick_basket(bids: list[str], membership: dict[str, dict],
 
 def evaluate(ticker: str, close: pd.Series, *, benchmark: pd.Series | None = None,
              basket_ctx: dict[str, Any] | None = None, market: str = "US",
-             store: str | None = None, rs_pct: pd.Series | None = None) -> dict[str, Any]:
+             store: str | None = None, rs_pct: pd.Series | None = None,
+             _skip_untriggered_details: bool = False) -> dict[str, Any]:
     """One deck row: the trigger union plus the whole pre-computed checklist. Never raises.
 
     ``basket_ctx`` carries the cohort columns the caller resolved once for the whole run
@@ -1079,6 +1080,11 @@ def evaluate(ticker: str, close: pd.Series, *, benchmark: pd.Series | None = Non
         }
 
         row["triggers_fired"] = [t for t in TRIGGER_IDS if row["triggers"][t]["fired"]]
+        # The bulk producer discards this row if its entire trigger union is
+        # empty. Keep every trigger and RS participant; skip only explanatory
+        # details that no consumer receives. Standalone evaluation stays complete.
+        if _skip_untriggered_details and not row["triggers_fired"]:
+            return row
         row["htf_washout"] = htf_washout(close)
         row["base"] = base_context(close)
         row["reset"] = reset_low(close)
@@ -1230,7 +1236,8 @@ def compute_deck_with_candidates(
             "turn_state_evaluated": turn_evaluated,
         }
         row = evaluate(tk, closes[tk], benchmark=bench, basket_ctx=ctx, market=market,
-                       store=stores.get(tk), rs_pct=rs_cross.get(tk))
+                       store=stores.get(tk), rs_pct=rs_cross.get(tk),
+                       _skip_untriggered_details=True)
         if row.get("triggers_fired"):
             rows.append(row)
 
