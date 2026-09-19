@@ -3511,10 +3511,10 @@ jobs:
     # B-F09-13 (MO-PAID-062 slice 2): zero-authority covenant headroom
     # view-model for the one extracted issuer. Pure engine + closed-set
     # defenses (REFUSALS, COVENANT_METRIC_MAP, _NO_EXTRAPOLATION_KEYS,
-    # _ZERO_AUTHORITY_KEYS). The capital-structure-intelligence job above is
-    # `gate: data` and never runs on PRs, so this `gate: code` job is the
-    # gate that actually runs the test on every PR. Same tmp_path fixture
-    # discipline as board-shadow-substrate: no committed data/site moves.
+    # _ZERO_AUTHORITY_KEYS). This legacy job is disabled by `if: ${{ false }}`;
+    # the trusted executor packs run the test on pull requests instead. Same
+    # tmp_path fixture discipline as board-shadow-substrate: no committed
+    # data/site moves.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
