@@ -165,13 +165,13 @@ def _build_evidence_frame(
     )
     board["zero_prior_oi"] = matched & (board["prior_open_interest"] == 0)
 
-    board["oi_volume_consistent"] = False
+    board["trade_conservation_compatible"] = False
     delta_abs = np.abs(board["delta_oi"])
-    board.loc[matched, "oi_volume_consistent"] = (
+    board.loc[matched, "trade_conservation_compatible"] = (
         delta_abs.loc[matched] <= board.loc[matched, "volume"] + 1e-9
     )
 
-    consistent = matched & board["oi_volume_consistent"]
+    consistent = matched & board["trade_conservation_compatible"]
     delta = board["delta_oi"]
     volume = board["volume"]
     board["min_open_open_volume"] = np.nan
@@ -236,8 +236,8 @@ def analyze_session(
 
     eligible = board[board["eligible_later_oi"]].copy()
     matched = eligible[eligible["fully_matched"]].copy()
-    consistent = matched[matched["oi_volume_consistent"]].copy()
-    inconsistent = matched[~matched["oi_volume_consistent"]].copy()
+    consistent = matched[matched["trade_conservation_compatible"]].copy()
+    inconsistent = matched[~matched["trade_conservation_compatible"]].copy()
     high = matched[matched["high_turnover"]].copy()
     normal = matched[
         (matched["prior_open_interest"] > 0) & ~matched["high_turnover"]
@@ -274,7 +274,7 @@ def analyze_session(
             "prior_oi_known_contracts": prior_known_n,
             "settled_oi_known_contracts": settled_known_n,
             "fully_matched_contracts": matched_n,
-            "oi_volume_consistent_contracts": int(len(consistent)),
+            "trade_conservation_compatible_contracts": int(len(consistent)),
             "oi_volume_inconsistent_contracts": int(len(inconsistent)),
             "volume_contract_rate": _safe_fraction(volume_valid_n, eligible_n),
             "prior_oi_contract_rate": _safe_fraction(prior_known_n, eligible_n),
@@ -286,8 +286,13 @@ def analyze_session(
             "ordinary_turnover_volume_le_prior_oi": _cohort(normal),
             "known_zero_prior_oi": _cohort(zero_prior),
         },
-        "identified_bounds": {
-            "consistent_contracts_only": True,
+        "conditional_trade_only_bounds": {
+            "assumption": (
+                "deltaOI = open_open_trade_volume - close_close_trade_volume; "
+                "no exercise, assignment, corporate-action adjustment, correction, "
+                "or other non-trade OI change"
+            ),
+            "trade_conservation_compatible_contracts_only": True,
             "total_volume": total_consistent_volume,
             "min_open_open_volume": min_open,
             "max_open_open_volume": max_open,
@@ -308,8 +313,8 @@ def analyze_session(
                 "not that every observed trade opened"
             ),
             "open_close_bounds": (
-                "feasible OO/CC bounds from V=OO+CC+M and deltaOI=OO-CC; "
-                "not participant identity"
+                "conditional trade-only bounds under V=OO+CC+M and deltaOI=OO-CC; "
+                "not identified when non-trade OI changes may have occurred"
             ),
             "institution_identity": "unknown_without_participant_type_source",
             "dealer_side": "unknown_from_daily_volume_and_oi_alone",
@@ -317,7 +322,8 @@ def analyze_session(
         "limitations": [
             "same-session expirations are excluded from later-OI matching rather than treated as missing zero",
             "missing prior or later OI remains missing and is never zero-imputed",
-            "contracts with abs(deltaOI) > volume are reported inconsistent and excluded from open/close bounds",
+            "contracts with abs(deltaOI) > volume violate the trade-only conservation baseline; this may reflect exercise/assignment, corporate actions, corrections, timing/identity issues, or other non-trade OI changes",
+            "even when abs(deltaOI) <= volume, conditional trade-only bounds are not ground truth if non-trade OI changes occurred",
             "this Stage-0 object uses daily aggregate volume; it does not infer trade aggressor, sweep, package, institution or dealer identity",
             "no future underlying return, realized volatility, option PnL or trade outcome is read",
         ],
