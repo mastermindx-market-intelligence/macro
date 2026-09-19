@@ -22,11 +22,14 @@ was generated on the run_date — the binding clock is the artifact's
 ``generated_at``, so ``weekly_saturday`` does not false-degrade every Saturday.
 Same rule lets a daily nightly that crosses UTC midnight pass.
 
-When enabled (with --dry-run or by force via the flag), writes nothing
-(frozen-spec item 2) and prints aggregate-only diagnostics — subscription,
-ready, degraded, planned, duplicate, error counts plus the slot. No
-per-row line; aggregate-only is the F11-7b repair-round contract. Persistent
-write failures surface the same way the thesis monitor does.
+With RECURRING_BRIEFS_ENABLE unset the CLI is DORMANT: it returns before
+any subscription read, decision or write and prints one aggregate line plus a
+``::notice``. When enabled, ``--dry-run`` writes nothing and prints
+aggregate-only diagnostics — subscription, ready, degraded, planned,
+duplicate, error counts plus the slot; without ``--dry-run`` it writes. Never
+a per-row line and never subscription text; aggregate-only is the F11-7b
+repair-round contract. Persistent write failures surface the same way the
+thesis monitor does.
 """
 from __future__ import annotations
 
@@ -69,8 +72,8 @@ def main(argv: list[str] | None = None) -> int:
     if not enabled:
         # Sol #7106 review (2026-09-19, REQUEST_CHANGES): a dormant run must not
         # read subscriptions and must not print user-authored target/body text
-        # into workflow logs. Until the privacy/session/read-state repair lands,
-        # DORMANT means zero reads, zero decisions, zero writes, zero user text.
+        # into workflow logs. The privacy/session/read-state repair lives in this
+        # carrier; DORMANT means zero reads, zero decisions, zero writes, zero user text.
         print(
             "recurring briefs: DORMANT (RECURRING_BRIEFS_ENABLE unset) — "
             "no subscription read, no decisions, no writes",

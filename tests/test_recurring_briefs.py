@@ -1373,18 +1373,25 @@ def test_cli_dry_run_emits_no_user_text(monkeypatch, capsys):
     client = FakeClient()
     _patch_run(monkeypatch, artifact=_briefing(), target=private_target, client=client)
     monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    # 2026-09-14 is a Monday (NYSE session): the run passes the session gate and
+    # plans the row, so the enabled printer really runs over the private body.
+    # (Grok h_7106_rv6 m1: on a non-session date planned_n == 0 and this test
+    # proved nothing about the printer.)
     rc = entry.main(
         [
             "--cadence",
             "daily_after_us_close",
             "--dry-run",
             "--run-date",
-            "2026-09-13",
+            "2026-09-14",
         ]
     )
     assert rc == 0
     captured = capsys.readouterr()
     combined = (captured.out or "") + "\n" + (captured.err or "")
+    assert "1 planned" in combined, (
+        f"the enabled dry-run printer did not run over a planned row: {combined!r}"
+    )
     assert PRIVATE_TARGET_NAME not in combined, (
         f"private target name leaked into CLI output: {combined!r}"
     )
