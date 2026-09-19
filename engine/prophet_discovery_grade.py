@@ -489,6 +489,20 @@ def summarize_rank_races(
             return _rank_race_unavailable(
                 "rank_pair_population_contract_violation"
             )
+        stored_cov = pd.to_numeric(
+            group["challenger_coverage"], errors="coerce"
+        ).dropna().unique()
+        observed_cov = float(
+            pd.to_numeric(group["challenger_rank"], errors="coerce").notna().sum()
+            / len(group)
+        )
+        if (
+            len(stored_cov) != 1
+            or abs(float(stored_cov[0]) - observed_cov) > 1e-6
+        ):
+            return _rank_race_unavailable(
+                "rank_pair_population_contract_violation"
+            )
 
     graded = outcomes.copy()
     graded["_date"] = graded["session_date"].astype(str)
@@ -595,6 +609,14 @@ def evaluate_rank_races(market: str) -> dict[str, Any]:
         )
     if pairs.empty:
         return _rank_race_unavailable("rank_pair_store_empty")
+    if "market" in pairs.columns:
+        foreign = {
+            str(value).upper()
+            for value in pairs["market"].dropna().unique()
+            if str(value).upper() != m
+        }
+        if foreign:
+            return _rank_race_unavailable("rank_pair_store_foreign_market")
 
     population = (
         pairs[["date", "ticker"]]
