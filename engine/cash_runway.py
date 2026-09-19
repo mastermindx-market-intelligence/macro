@@ -93,6 +93,9 @@ def _empty_result(status: str, canon_cik: str, as_of: date | None) -> dict[str, 
         "capex_usd": None,
         "free_cash_flow_usd": None,
         "monthly_burn_usd": None,
+        "monthly_burn_display": None,
+        "annual_burn_usd": None,
+        "annual_burn_display": None,
         "runway_months": None,
         "runway_display": None,
         "near_term_cover_pct": None,
@@ -262,6 +265,9 @@ def extract_cash_runway(
             "capex_usd": None,
             "free_cash_flow_usd": None,
             "monthly_burn_usd": None,
+            "monthly_burn_display": None,
+            "annual_burn_usd": None,
+            "annual_burn_display": None,
             "runway_months": None,
             "runway_display": None,
             "near_term_cover_pct": None,
@@ -283,17 +289,25 @@ def extract_cash_runway(
     fcf = (ocf_val or 0) - (capex_val or 0)
 
     monthly_burn: float | None = None
+    monthly_burn_display: str | None = None
+    annual_burn: float | None = None
+    annual_burn_display: str | None = None
     runway_months: float | None = None
     runway_display: str | None = None
 
     if fcf < 0:
-        monthly_burn = -fcf / 12
+        annual_burn = -fcf
+        monthly_burn = annual_burn / 12
+        annual_burn_display = _usd_dollars(annual_burn)
+        monthly_burn_display = _usd_dollars(monthly_burn)
         runway_months = (cash_val or 0) / monthly_burn
-        # Cap display at > 10 years (> 120 months)
+        # Cap display at > 10 years (> 120 months). Closed enum: the
+        # template composes the user-facing EN/ZH sentence from this
+        # token plus the numeric runway_months.
         if runway_months > 120:
-            runway_display = "more than 10 years"
+            runway_display = "more_than_10_years"
         else:
-            runway_display = f"{round(runway_months, 1)} months"
+            runway_display = "months"
     else:
         runway_display = "self_funding"
 
@@ -318,6 +332,9 @@ def extract_cash_runway(
         "capex_usd": capex_val,
         "free_cash_flow_usd": fcf,
         "monthly_burn_usd": monthly_burn,
+        "monthly_burn_display": monthly_burn_display,
+        "annual_burn_usd": annual_burn,
+        "annual_burn_display": annual_burn_display,
         "runway_months": round(runway_months, 1) if runway_months is not None else None,
         "runway_display": runway_display,
         "near_term_cover_pct": near_term_cover_pct,
