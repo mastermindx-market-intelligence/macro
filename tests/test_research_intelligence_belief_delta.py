@@ -360,3 +360,27 @@ def test_rights_safe_summary_refuses_nonhex_digest_spoofing():
         assert "identity" in str(exc)
     else:
         raise AssertionError("safe summary must reject non-SHA digest fields")
+
+
+def test_rights_safe_summary_refuses_inconsistent_change_flags():
+    previous, current = _pair()
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
+    delta["change_detected"] = False
+    try:
+        summary(delta)
+    except ValueError as exc:
+        assert "change_detected disagrees" in str(exc)
+    else:
+        raise AssertionError("safe summary must reject inconsistent change flags")
+
+
+def test_rights_safe_summary_refuses_nonhash_claim_entries():
+    previous, current = _pair()
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
+    delta["claims"]["added_sha256"] = [PRIOR_CLAIM]
+    try:
+        summary(delta)
+    except ValueError as exc:
+        assert "claim counts" in str(exc)
+    else:
+        raise AssertionError("safe summary must reject non-hash claim entries")
