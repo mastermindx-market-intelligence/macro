@@ -93,9 +93,9 @@
     "label": "neutral",
     "name": "Defense & Aerospace",
     "name_zh": "\u519b\u5de5\u822a\u5929",
-    "rank": 8,
+    "rank": 5,
     "reco": "hold",
-    "score": 50
+    "score": 53
   },
   "cn_food_bev": {
     "label": "deteriorating",
@@ -117,7 +117,7 @@
     "label": "neutral",
     "name": "Insurers",
     "name_zh": "\u4fdd\u9669",
-    "rank": 7,
+    "rank": 8,
     "reco": "hold",
     "score": 51
   },
@@ -141,7 +141,7 @@
     "label": "deteriorating",
     "name": "Innovative Pharma & CXO",
     "name_zh": "\u521b\u65b0\u836f\u4e0eCXO",
-    "rank": 6,
+    "rank": 7,
     "reco": "avoid",
     "score": 51
   },
@@ -157,7 +157,7 @@
     "label": "deteriorating",
     "name": "Robotics & Automation",
     "name_zh": "\u673a\u5668\u4eba\u4e0e\u81ea\u52a8\u5316",
-    "rank": 5,
+    "rank": 6,
     "reco": "avoid",
     "score": 52
   },

@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T11:56:21.152138+00:00",
-  "count": 2427,
+  "generated_at": "2026-09-19T12:40:57.610581+00:00",
+  "count": 2429,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -909,6 +909,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mgvagwnz4co-05fa7b",
+      "title": "Equity Strategy China China AI from localization to monetization",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:32:40Z",
+      "summary_points": [
+        "Memory Localization Acceleration: CXMT DRAM share to rise from 3-4% to 10% by 2026; YMTX NAND share to jump from 7-8% to 14% (2025-2026), driven by scale and manufacturing experience amid geopolitical supply chain risks.",
+        "AI Accelerator Market Dominance: Domestic vendors captured ~50% of China’s AI accelerator market in 2025 (vs <30% in 2024), projected to reach 80% by 2028, signaling rapid localization.",
+        "Monetization Crisis in Applications: Near-term AI application growth hampered by lack of \"killer app,\" pricing/margin pressure, low switching costs, and token deflation (e.g., DeepSeek V4.1 Flash at $0.15/1M vs.",
+        "Anthropic’s $10.00).",
+        "Geopolitical Valuation Premium & Risk: Localization beneficiaries (e.g., SMIC, NAURA) trade at 50-150x 2027E P/E due to policy support, but face US sanctions risk and potential P/E compression if US AI cycle softens."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 69,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-h8kxjqedtsy-effee8",
       "title": "GEMs Flow Talk Sentiment remains bullish, but investors remain concerned about performance",
       "institution": "Bank of America",
@@ -926,6 +947,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0lblnliqfsc-2d46c5",
+      "title": "Global Rates Weekly From Jackson to action",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:31:21Z",
+      "summary_points": [
+        "BoJ Decision & AU Labor Risk: BoJ decision is top risk event; AU labor report asymmetry (4.4% unemployment) may trigger Nov hike expectations.",
+        "US 10Y Yield & Curve Dynamics: US 10Y yield at cycle high; Fed likely hikes 75bp by Sep-Dec 2026, with 2s30s flattener positioning.",
+        "OAT-Bund Spread Widening Risk: 10y OAT-Bund spread near 100bp; 10bp Bund selloff could widen spread by 4bp, risking 100bp breach.",
+        "Fed Terminal Rate Mispricing: Markets undervalue terminal rate >5% (vs Taylor rule 5.3-5.4%); real FF fell 200bp since early 2025.",
+        "RBA Curve Dynamics: Markets price 20bp Sep RBA hike; recommend AU 2s10s flattener (entry 36bp, target 10bp) amid hawkish stance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
