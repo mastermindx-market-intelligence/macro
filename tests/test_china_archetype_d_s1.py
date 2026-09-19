@@ -131,3 +131,13 @@ def test_primary_regional_family_migration_is_atomic():
         "primary regional macro routes must migrate together; "
         f"partial design-system state: {states}"
     )
+
+
+def test_rollback_keeps_honest_live_quote_loading():
+    """Live-only index cells load honestly and do not strand a permanent bare dash."""
+    for sym in ("000300.SS", "399006.SZ"):
+        assert f'data-sym="{sym}" data-mkt="cn" data-bare aria-busy="true"' in SRC
+    assert "mx5-mkt-price nb-px mx-skel" in SRC
+    assert "function cnxSkelFallback()" in SRC
+    assert "No quote" in SRC and "暂无报价" in SRC
+    assert "the tape is still catching up" in SRC and "行情仍在同步" in SRC
