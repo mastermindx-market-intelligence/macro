@@ -35,6 +35,13 @@ Run:
     python3 scripts/massive_entitlement_probe.py --out data/massive/capability_manifest.json
     python3 scripts/massive_entitlement_probe.py --skip-ws --strict
 
+Futures rights gate:
+    Futures probes are OFF by default. Massive's Individual Futures plans are expressly
+    personal/non-business use. Only pass --probe-futures after the operator has confirmed
+    this key/account is covered by Business/commercial rights or written permission for
+    the intended Mastermind use. The flag measures technical entitlement; it never grants
+    storage, redistribution, display, or product rights.
+
 Tests: tests/test_massive_entitlement_probe.py (no network — the HTTP layer is stubbed).
 """
 
@@ -57,6 +64,7 @@ import requests
 SCHEMA = "massive_capability_manifest.v1"
 DEFAULT_OUT = "data/massive/capability_manifest.json"
 DEFAULT_BASE_URL = "https://api.polygon.io"
+FUTURES_BASE_URL = "https://api.massive.com"
 DEFAULT_KEY_ENVS = ("POLYGON_API_KEY", "MASSIVE_API_KEY")
 USER_AGENT = "macro-dashboard-entitlement-probe/1"
 
@@ -65,6 +73,13 @@ USER_AGENT = "macro-dashboard-entitlement-probe/1"
 SYM = "AAPL"
 OPT_REF_CONTRACT = "O:SPY251219C00650000"
 INDEX_SYM = "I:SPX"
+
+# Futures GA invalidated the August 2026 assumption that Massive had no futures
+# product. Keep this a tiny capability probe, not a collector: one documented ES
+# contract and one historical 1-minute aggregate window on the dedicated Massive host.
+FUTURES_REF_PRODUCT = "ES"
+FUTURES_REF_CONTRACT = "ESU6"
+FUTURES_REF_DAY = "2026-05-22"
 
 # --- scrubbing -------------------------------------------------------------------------
 _URL_RE = re.compile(r"https?://[^\s'\"<>]+")
@@ -236,6 +251,33 @@ def _ev_exchanges(payload: Any) -> dict:
     hit = next((r for r in rows if isinstance(r, dict) and r.get("id") == 4), None)
     return {"count": len(rows), "exchange_id_4_present": hit is not None,
             "exchange_id_4_name": (hit or {}).get("name")}
+
+
+def _ev_futures_contract(payload: Any) -> dict:
+    res = (payload or {}).get("results") if isinstance(payload, dict) else None
+    rows = res if isinstance(res, list) else []
+    first = rows[0] if rows and isinstance(rows[0], dict) else {}
+    return {
+        "results_count": len(rows),
+        "non_empty": bool(rows),
+        "ticker": first.get("ticker"),
+        "product_code": first.get("product_code"),
+        "trading_venue": first.get("trading_venue"),
+        "date": first.get("date"),
+    }
+
+
+def _ev_futures_aggs(payload: Any) -> dict:
+    res = (payload or {}).get("results") if isinstance(payload, dict) else None
+    rows = res if isinstance(res, list) else []
+    first = rows[0] if rows and isinstance(rows[0], dict) else {}
+    return {
+        "results_count": len(rows),
+        "non_empty": bool(rows),
+        "ticker": first.get("ticker"),
+        "session_end_date": first.get("session_end_date"),
+        "window_start_present": first.get("window_start") is not None,
+    }
 
 
 def _ev_options_chain(payload: Any) -> dict:
@@ -436,6 +478,43 @@ def run_rest_battery(prober: RestProber, probe_day: str | None = None) -> dict[s
     p("fx_prev", "/v2/aggs/ticker/C:EURUSD/prev", evidence=_ev_aggs)
     p("crypto_prev", "/v2/aggs/ticker/X:BTCUSD/prev", evidence=_ev_aggs)
 
+    return prober.results
+
+
+def run_futures_rest_battery(prober: RestProber) -> dict[str, dict]:
+    """Probe the current Massive Futures REST product without collecting a dataset.
+
+    Futures moved to GA after the original August TP-0 probe. The product uses the
+    dedicated api.massive.com host, so callers must instantiate a second RestProber
+    with FUTURES_BASE_URL rather than mutating the legacy stocks/options base URL.
+    """
+    p = prober.probe
+    p(
+        "futures_contracts_es",
+        "/futures/v1/contracts",
+        params={
+            "product_code": FUTURES_REF_PRODUCT,
+            "ticker": FUTURES_REF_CONTRACT,
+            "date": FUTURES_REF_DAY,
+            "limit": 1,
+        },
+        evidence=_ev_futures_contract,
+    )
+    p(
+        "futures_aggs_minute_es",
+        f"/futures/v1/aggs/{FUTURES_REF_CONTRACT}",
+        params={
+            "resolution": "1min",
+            "window_start.gte": FUTURES_REF_DAY,
+            "sort": "window_start.asc",
+            "limit": 1,
+        },
+        evidence=_ev_futures_aggs,
+    )
+    for name in ("futures_contracts_es", "futures_aggs_minute_es"):
+        rec = prober.results.get(name)
+        if isinstance(rec, dict):
+            rec.setdefault("evidence", {})["api_host"] = "api.massive.com"
     return prober.results
 
 
@@ -672,6 +751,14 @@ def _non_empty(block: dict, name: str) -> bool:
     return bool((rec.get("evidence") or {}).get("non_empty"))
 
 
+def _entitled_with_rows(block: dict, name: str) -> bool | None:
+    """Entitlement with one extra honesty gate: HTTP 200 + empty remains unknown."""
+    verdict = _entitled(block, name)
+    if verdict is True:
+        return True if _non_empty(block, name) else None
+    return verdict
+
+
 def derive(rest: dict, ws: dict) -> dict:
     """Turn per-probe verdicts into the handful of facts downstream design actually asks."""
     notes: list[str] = []
@@ -710,6 +797,14 @@ def derive(rest: dict, ws: dict) -> dict:
     if idx is None:
         idx = _entitled(ws, "ws_indices")
 
+    futures_contracts = _entitled_with_rows(rest, "futures_contracts_es")
+    futures_minute_history = _entitled_with_rows(rest, "futures_aggs_minute_es")
+    if futures_contracts is None or futures_minute_history is None:
+        notes.append(
+            "futures capability uses api.massive.com; 200+empty or an unrun probe "
+            "remains unknown rather than entitled."
+        )
+
     ws_rt = _entitled(ws, "ws_stocks_realtime")
     if ws_rt is not None and rt_trades is not None and ws_rt != rt_trades:
         notes.append("REST real-time trades and the real-time WS cluster disagree — "
@@ -723,6 +818,8 @@ def derive(rest: dict, ws: dict) -> dict:
         "options_entitled": opts,
         "options_realtime": opts_rt,
         "indices_entitled": idx,
+        "futures_contracts_entitled": futures_contracts,
+        "futures_minute_history_entitled": futures_minute_history,
         "plan_guess": _plan_guess(rt_trades, rt_quotes, sec_aggs, depth, opts, idx),
         "notes": notes,
     }
@@ -807,6 +904,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--key-env", default=None,
                     help="env var holding the key (default: POLYGON_API_KEY then MASSIVE_API_KEY)")
     ap.add_argument("--skip-ws", action="store_true", help="REST battery only")
+    ap.add_argument(
+        "--probe-futures",
+        action="store_true",
+        help=(
+            "also probe api.massive.com Futures; OFF by default and only lawful after "
+            "operator confirms Business/commercial rights or written permission"
+        ),
+    )
     ap.add_argument("--timeout", type=float, default=15.0, help="per-request timeout (s)")
     ap.add_argument("--strict", action="store_true", help="exit 1 when any probe errored")
     args = ap.parse_args(argv)
@@ -822,6 +927,14 @@ def main(argv: list[str] | None = None) -> int:
     base = _base_url()
     prober = RestProber(key, base_url=base, timeout=args.timeout)
     rest = run_rest_battery(prober)
+
+    # Futures GA uses api.massive.com rather than the legacy api.polygon.io base.
+    # It is intentionally opt-in: technical entitlement and commercial rights are
+    # different gates, and Massive Individual plans are not licensed for business use.
+    if args.probe_futures:
+        futures_prober = RestProber(key, base_url=FUTURES_BASE_URL, timeout=args.timeout)
+        rest.update(run_futures_rest_battery(futures_prober))
+
     ws: dict[str, dict] = {}
     if not args.skip_ws:
         ws = run_ws_battery(key, timeout=min(args.timeout, 10.0))
