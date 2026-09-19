@@ -1,3 +1,4 @@
+from datetime import timedelta
 from types import SimpleNamespace
 
 import pandas as pd
@@ -15,19 +16,19 @@ class Calendar:
     def session_n_forward(d, n):
         cur = d
         for _ in range(n):
-            cur += pd.Timedelta(days=1)
+            cur += timedelta(days=1)
             while cur.weekday() >= 5:
-                cur += pd.Timedelta(days=1)
-        return cur.date() if isinstance(cur, pd.Timestamp) else cur
+                cur += timedelta(days=1)
+        return cur
 
     @staticmethod
     def session_n_back(d, n):
         cur = d
         for _ in range(n):
-            cur -= pd.Timedelta(days=1)
+            cur -= timedelta(days=1)
             while cur.weekday() >= 5:
-                cur -= pd.Timedelta(days=1)
-        return cur.date() if isinstance(cur, pd.Timestamp) else cur
+                cur -= timedelta(days=1)
+        return cur
 
 
 def _eod(volume):
