@@ -1289,3 +1289,34 @@ def test_no_new_cron_in_this_packet():
     ours_weekly = weekly[weekly.find("recurring briefs producer"):]
     ours_weekly = ours_weekly[: ours_weekly.find("\n      - name: ")]
     assert "cron:" not in ours_weekly
+
+# ---------------------------------------------------------------- Sol hotfix
+# Sol #7106 review 2026-09-19 (REQUEST_CHANGES): with RECURRING_BRIEFS_ENABLE
+# unset the daily/weekly workflow step still called run(), read every
+# subscription and printed one _row_summary per planned row into the Actions
+# log — user-authored target/body text. Dormant now means: no read, no run,
+# no user text. The full repair (aggregate-only diagnostics, NYSE-session gate,
+# typed read state) is a separate round on this producer path.
+
+
+def test_cli_dormant_reads_nothing_and_prints_no_user_text(monkeypatch, capsys):
+    monkeypatch.delenv("RECURRING_BRIEFS_ENABLE", raising=False)
+    private = "PRIVATE THESIS: acquisition target 7f3a9c"
+
+    def _must_not_read(*a, **k):
+        raise AssertionError("dormant run must not read subscriptions")
+
+    def _must_not_run(*a, **k):
+        raise AssertionError("dormant run must not call run()")
+
+    monkeypatch.setattr(rb, "read_subscriptions", _must_not_read)
+    monkeypatch.setattr(rb, "run", _must_not_run)
+    import scripts.build_recurring_briefs as cli
+
+    assert cli.main(["--cadence", "daily_after_us_close"]) == 0
+    assert cli.main(["--cadence", "weekly_saturday"]) == 0
+    out = capsys.readouterr().out
+    assert "DORMANT" in out
+    assert "no subscription read" in out
+    assert private not in out
+    assert "planned" not in out

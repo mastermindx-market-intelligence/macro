@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T11:25:48.582884+00:00",
-  "count": 2426,
+  "generated_at": "2026-09-19T13:43:23.188652+00:00",
+  "count": 2432,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -106,6 +106,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jvgt4a75da3-82d9b5",
+      "title": "Japan Macro",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:50:46Z",
+      "summary_points": [
+        "LDP Leadership Instability: Aoki replaces Ishii as Upper House secretary-general amid budget delays, threatening Diet proceedings and triggering internal LDP tensions despite PMO trust efforts.",
+        "Fiscal Policy Continuity: Retention of Finance and Economic Policy Ministers signals stable \"responsible fiscal policy,\" with subdued market reaction but lingering inflation concerns.",
+        "Leadership Dynamics Risk: Takaichi’s appointments (Aso, Suzuki, Kajiyama) target 2027 support, while Hayashi’s potential LDP presidency bid introduces policy continuity disruption risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -890,6 +909,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-mgvagwnz4co-05fa7b",
+      "title": "Equity Strategy China China AI from localization to monetization",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:32:40Z",
+      "summary_points": [
+        "Memory Localization Acceleration: CXMT DRAM share to rise from 3-4% to 10% by 2026; YMTX NAND share to jump from 7-8% to 14% (2025-2026), driven by scale and manufacturing experience amid geopolitical supply chain risks.",
+        "AI Accelerator Market Dominance: Domestic vendors captured ~50% of China’s AI accelerator market in 2025 (vs <30% in 2024), projected to reach 80% by 2028, signaling rapid localization.",
+        "Monetization Crisis in Applications: Near-term AI application growth hampered by lack of \"killer app,\" pricing/margin pressure, low switching costs, and token deflation (e.g., DeepSeek V4.1 Flash at $0.15/1M vs.",
+        "Anthropic’s $10.00).",
+        "Geopolitical Valuation Premium & Risk: Localization beneficiaries (e.g., SMIC, NAURA) trade at 50-150x 2027E P/E due to policy support, but face US sanctions risk and potential P/E compression if US AI cycle softens."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 69,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-h8kxjqedtsy-effee8",
       "title": "GEMs Flow Talk Sentiment remains bullish, but investors remain concerned about performance",
       "institution": "Bank of America",
@@ -907,6 +947,89 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0lblnliqfsc-2d46c5",
+      "title": "Global Rates Weekly From Jackson to action",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:31:21Z",
+      "summary_points": [
+        "BoJ Decision & AU Labor Risk: BoJ decision is top risk event; AU labor report asymmetry (4.4% unemployment) may trigger Nov hike expectations.",
+        "US 10Y Yield & Curve Dynamics: US 10Y yield at cycle high; Fed likely hikes 75bp by Sep-Dec 2026, with 2s30s flattener positioning.",
+        "OAT-Bund Spread Widening Risk: 10y OAT-Bund spread near 100bp; 10bp Bund selloff could widen spread by 4bp, risking 100bp breach.",
+        "Fed Terminal Rate Mispricing: Markets undervalue terminal rate >5% (vs Taylor rule 5.3-5.4%); real FF fell 200bp since early 2025.",
+        "RBA Curve Dynamics: Markets price 20bp Sep RBA hike; recommend AU 2s10s flattener (entry 36bp, target 10bp) amid hawkish stance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rb5cea6auhl-7f51cf",
+      "title": "Global FX weekly Raise you a hawk",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:30:57Z",
+      "summary_points": [
+        "Fed's hawkish stance: 2 rate hikes (Oct/Dec) amid strong US data, limiting USD upside despite Fed targeting 2y yields at 5%; US-China stability constrains USD rally.",
+        "BoJ meeting high stakes: Post-Fed hawkish move makes BoJ meeting critical; market pricing of hikes plausible with expected hawkish communication.",
+        "EM carry trade cracks: CFTC data shows rising net open interest in MXN/ZAR/BRL, signaling heightened risk for low-yield EM currencies (CLP, PHP) amid higher US yields.",
+        "Trump-Xi summit impact: Likely extends trade truce with narrow agreements, mitigating USD upside risk but exposing Japanese dovish appointees to policy risk.",
+        "USD/JPY bullish trend: Driven by Fed inflation-fighting stance, BoJ rate hikes, and US policy credibility; targets 149 by 2026 amid Middle East escalation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-m3f5xglzli5-f0a24d",
+      "title": "High Yield & Loan Strategy Introducing the BofA Loan Credit Stress Indicator",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:30:47Z",
+      "summary_points": [
+        "BoFA Loan CSI Neutral: 49% reading (66% R-squared for spread variation) signals neutral credit conditions; Distress (58% R-squared) and Debt leverage are critical inputs for market dysfunction assessment.",
+        "AI Spread Premium: IG AI bonds trade at 38bps above ex-AI (108bps vs 70bps), while HY AI spreads at 294bps (135bps premium over ex-AI), indicating relative value and elevated risk in high-yield segments.",
+        "Loan vs HY CSI Divergence: Loan CSI (49%) vs HY CSI (34%) shows narrowed but persistent stress divergence, driven by floating-rate issuer fragility and AI obsolescence risk post-2022.",
+        "AI Issuance Scale: $549bn USD AI-related issuance YTD (IG $259bn dominant), concentrated in Data Center/Compute Hardware (60% of IG/Private Credit), signaling aggressive capital allocation.",
+        "HY AI Risk Exposure: HY AI spreads at 294bps (avg."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-38o4qoivecq-db9e77",
+      "title": "India Watch Monsoon Tracker In the tail end but no signs of pickup",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:54Z",
+      "summary_points": [
+        "Monsoon deficit at 15% below normal: Cumulative rainfall (June 1–Sept 17) remains 15% below normal with no rebound signs, worsening agricultural and water security risks.",
+        "Reservoirs 21% below prior year: Critical water storage levels at 21% below last year, compounding drought risks and threatening power generation and irrigation.",
+        "IOD positive amplifying climate risk: Positive Indian Ocean Dipole aligns with El Niño-like conditions, historically correlating with weaker monsoons and intensifying deficit-driven agricultural stress.",
+        "Regional drought hotspots: Western (Maharashtra, Gujarat), Central (Madhya Pradesh), and Southern India (Karnataka, Tamil Nadu) face severe deficits, heightening supply chain vulnerabilities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
