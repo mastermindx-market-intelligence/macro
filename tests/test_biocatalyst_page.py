@@ -776,7 +776,9 @@ def test_biocatalyst_what_matters_next_is_primary_decision_surface():
         "NOT_ESTIMABLE",
         "function makeWmnRow(",
         "function showWmnDetail(",
-        "function selectWmnEvent(",
+        "function selectWhatMattersNextRow(",
+        "function showGenerationBoundTrialDetail(",
+        "window.BioCatalystTrialWorkspace = Object.freeze({",
         "generation_id",
         "event_fact_ref",
         "Research triage only",
@@ -800,4 +802,29 @@ def test_biocatalyst_what_matters_next_is_primary_decision_surface():
         assert f'data-mode="{legacy_mode}"' in html
     assert "Trial Screen" in html
     assert "First-seen Tape" in html
+
+
+def test_biocatalyst_wmn_trial_detail_stays_generation_bound_and_reuses_trial_inspector():
+    """A WMN registry event may open Trial Intelligence, but never by fetching latest."""
+
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    wmn = js[js.index("var WMN_API = '/api/biocatalyst/v1/what-matters-next';"):]
+
+    assert "function selectWhatMattersNextRow(" in wmn
+    assert "function validGenerationBoundTrial(trial)" in wmn
+    assert "payload.trial!==null" in wmn
+    assert "window.BioCatalystTrialWorkspace" in wmn
+    assert "trialWorkspace.showGenerationBoundTrialDetail(payload.trial,trigger)" in wmn
+
+    # The legacy selector owns latest-record reads. The WMN path must only use
+    # its generation-bound detail endpoint and the narrow render bridge.
+    assert "TRIAL_API + '/'" not in wmn
+    assert "selectTrial(" not in wmn
+    assert "fetchJson(WMN_DETAIL_API+'?'+params.toString()" in wmn
+
+    legacy = js[:js.index("var WMN_API = '/api/biocatalyst/v1/what-matters-next';")]
+    bridge = legacy[legacy.index("function showGenerationBoundTrialDetail("):]
+    assert "fetchJson(" not in bridge.split("function updateMetadata(payload)", 1)[0]
+    assert "openInspector(" in bridge
+    assert "showDetail(detail, null, null)" in bridge
 
