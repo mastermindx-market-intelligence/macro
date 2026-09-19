@@ -2731,3 +2731,85 @@ def test_research_intelligence_cli_regrounds_before_store_construction(
     assert store_calls == []
     assert json.loads(capsys.readouterr().err)["code"] == "grounding_invalid"
     assert not (tmp_path / "store").exists()
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Rates rose 2.1%.\nHigher rates pressure duration assets.\n",
+        "Rates rose 2.1%.\r\nHigher rates pressure duration assets.\r\n",
+        "Rates rose 2.1%.\rHigher rates pressure duration assets.\r",
+        "\r\nRates rose 2.1%.\rHigher rates pressure duration assets.\n東京 €\r\n",
+    ],
+    ids=["lf", "crlf", "cr", "mixed-unicode"],
+)
+def test_research_intelligence_cli_preserves_source_file_newlines(tmp_path, body):
+    """The file-path CLI must persist the bytes W1 actually analyzed."""
+    store_dir = tmp_path / "store"
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    analysis_path.write_text(json.dumps(_analysis(body=body)), encoding="utf-8")
+    body_path.write_bytes(body.encode("utf-8"))
+    base = [
+        sys.executable,
+        str(ROOT / "scripts/research_intelligence_store.py"),
+        "--local",
+        str(store_dir),
+    ]
+    put_args = [
+        *base, "put", "--analysis", str(analysis_path),
+        "--source-body", str(body_path),
+    ]
+    put = subprocess.run(
+        put_args, cwd=tmp_path, text=True, capture_output=True, timeout=30,
+    )
+    assert put.returncode == 0, put.stderr
+    receipt = json.loads(put.stdout)
+    assert receipt["state"] == "created"
+
+    show = subprocess.run(
+        [*base, "show", "--document-id", "vault/desk/report-1"],
+        cwd=tmp_path, text=True, capture_output=True, timeout=30,
+    )
+    assert show.returncode == 0, show.stderr
+    view = json.loads(show.stdout)
+    assert view["source_content_sha256"] == hashlib.sha256(body_path.read_bytes()).hexdigest()
+    assert view["source_content_sha256"] == _sha(body)
+    assert view["artifact_sha256"] == receipt["artifact_sha256"]
+    assert view["view"] == "safe_summary"
+    assert "Rates rose 2.1%." not in show.stdout
+
+    replay = subprocess.run(
+        put_args, cwd=tmp_path, text=True, capture_output=True, timeout=30,
+    )
+    assert replay.returncode == 0, replay.stderr
+    assert json.loads(replay.stdout)["state"] == "unchanged"
+    assert json.loads(replay.stdout)["artifact_sha256"] == receipt["artifact_sha256"]
+
+
+@pytest.mark.parametrize("newline", ["\r\n", "\r", "\r\n\r"], ids=["crlf", "cr", "mixed"])
+def test_research_intelligence_cli_rejects_newline_rewritten_receipt_before_io(
+    tmp_path, monkeypatch, capsys, newline
+):
+    """A receipt for normalized text must not authorize the actual file bytes."""
+    import scripts.research_intelligence_store as cli
+
+    body = f"Rates rose 2.1%.{newline}Higher rates pressure duration assets.{newline}"
+    normalized = body.replace("\r\n", "\n").replace("\r", "\n")
+    analysis_path = tmp_path / "analysis.json"
+    body_path = tmp_path / "report.md"
+    analysis_path.write_text(json.dumps(_analysis(body=normalized)), encoding="utf-8")
+    body_path.write_bytes(body.encode("utf-8"))
+    store_dir = tmp_path / "store"
+
+    def forbidden_store(*_args, **_kwargs):
+        raise AssertionError("newline-rewritten receipt reached store construction")
+
+    monkeypatch.setattr(cli, "build_store", forbidden_store)
+    result = cli.main([
+        "--local", str(store_dir), "put", "--analysis", str(analysis_path),
+        "--source-body", str(body_path),
+    ])
+    assert result == 2
+    assert json.loads(capsys.readouterr().err)["code"] == "source_body_mismatch"
+    assert not store_dir.exists()
