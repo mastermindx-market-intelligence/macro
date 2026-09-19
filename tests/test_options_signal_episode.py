@@ -2924,8 +2924,11 @@ def test_daily_options_pit_checkpoint_is_immediate_success_only_metadata_replay(
         "data/options_signal_episode/outcomes_session.jsonl",
         "data/options_signal_episode/campaigns.jsonl",
     }
-    declared = helper.split("readonly -a OIP_EPISODE_PATHS=(", 1)[1].split(")", 1)[0]
+    declared = helper.split("readonly -a OIP_EPISODE_CORE_PATHS=(", 1)[1].split(")", 1)[0]
     assert {line.strip() for line in declared.splitlines() if line.strip()} == expected_paths
+    assert "oip_collect_episode_paths" in helper
+    assert 'OIP_EPISODE_PATHS=("${OIP_EPISODE_CORE_PATHS[@]}")' in helper
+    assert 'OIP_EPISODE_PATHS+=("$entry")' in helper
     episode_helper = helper.split("publish_episode() {", 1)[1].split(
         "\npublish_campaign() {", 1
     )[0]
@@ -3208,6 +3211,187 @@ def test_five_ledger_episode_helper_keeps_head_and_publishes_exact_scope(
         assert (lane / path).read_text() == '{"version":2}\n'
     assert foreign.read_text() == "keep me unstaged\n"
     assert "data/foreign.json" in git("status", "--porcelain")
+
+
+def test_episode_helper_publishes_bounded_session_outcome_parts_in_exact_scope(
+    tmp_path: Path,
+) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    helper = repo / "scripts/ci/options_signal_nightly.sh"
+    origin = tmp_path / "origin.git"
+    lane = tmp_path / "lane"
+    subprocess.run(
+        ["git", "init", "--bare", "-q", "--initial-branch=main", str(origin)],
+        check=True,
+    )
+    subprocess.run(["git", "init", "-q", "-b", "main", str(lane)], check=True)
+
+    def git(*args: str) -> str:
+        return subprocess.run(
+            ["git", *args], cwd=lane, text=True, capture_output=True, check=True
+        ).stdout.strip()
+
+    git("config", "user.name", "test")
+    git("config", "user.email", "test@example.invalid")
+    git("remote", "add", "origin", str(origin))
+    core = (
+        "data/options_signal_episode/checkpoint.json",
+        "data/options_signal_episode/episodes.jsonl",
+        "data/options_signal_episode/outcomes_h60.jsonl",
+        "data/options_signal_episode/outcomes_session.jsonl",
+        "data/options_signal_episode/campaigns.jsonl",
+    )
+    for path in core:
+        target = lane / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('{"version":1}\n')
+    git("add", *core)
+    git("commit", "-m", "baseline")
+    git("push", "-u", "origin", "main")
+    parent = git("rev-parse", "HEAD")
+
+    for path in core:
+        (lane / path).write_text('{"version":2}\n')
+    part = lane / "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"
+    part.parent.mkdir(parents=True)
+    part.write_text('{"bounded_part":1}\n')
+
+    result = subprocess.run(
+        ["bash", str(helper), "publish-episode"],
+        cwd=lane,
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(repo),
+            "GITHUB_RUN_ID": "episode-parts-test",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "RUNNER_TEMP": str(tmp_path),
+        },
+        text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    remote_tip = subprocess.run(
+        ["git", "--git-dir", str(origin), "rev-parse", "main"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    assert remote_tip != parent
+    changed = set(subprocess.run(
+        ["git", "--git-dir", str(origin), "diff-tree", "--no-commit-id", "-r", "--name-only", remote_tip],
+        text=True, capture_output=True, check=True,
+    ).stdout.splitlines())
+    assert changed == {*core, "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"}
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show",
+         "main:data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":1}\n'
+    assert git("rev-parse", "HEAD") == parent
+    assert part.read_text() == '{"bounded_part":1}\n'
+
+
+def test_episode_helper_refuses_concurrent_unseen_session_outcome_part(
+    tmp_path: Path,
+) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    helper = repo / "scripts/ci/options_signal_nightly.sh"
+    origin = tmp_path / "origin.git"
+    lane = tmp_path / "lane"
+    racer = tmp_path / "racer"
+    subprocess.run(
+        ["git", "init", "--bare", "-q", "--initial-branch=main", str(origin)],
+        check=True,
+    )
+    subprocess.run(["git", "init", "-q", "-b", "main", str(lane)], check=True)
+
+    def git(*args: str) -> str:
+        return subprocess.run(
+            ["git", *args], cwd=lane, text=True, capture_output=True, check=True
+        ).stdout.strip()
+
+    git("config", "user.name", "test")
+    git("config", "user.email", "test@example.invalid")
+    git("remote", "add", "origin", str(origin))
+    core = (
+        "data/options_signal_episode/checkpoint.json",
+        "data/options_signal_episode/episodes.jsonl",
+        "data/options_signal_episode/outcomes_h60.jsonl",
+        "data/options_signal_episode/outcomes_session.jsonl",
+        "data/options_signal_episode/campaigns.jsonl",
+    )
+    for path in core:
+        target = lane / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('{"version":1}\n')
+    part1_rel = "data/options_signal_episode/outcomes_session_parts/part-000001.jsonl"
+    part1 = lane / part1_rel
+    part1.parent.mkdir(parents=True)
+    part1.write_text('{"bounded_part":1,"generation":1}\n')
+    git("add", *core, part1_rel)
+    git("commit", "-m", "baseline")
+    git("push", "-u", "origin", "main")
+    parent = git("rev-parse", "HEAD")
+
+    subprocess.run(["git", "clone", "-q", str(origin), str(racer)], check=True)
+    subprocess.run(["git", "config", "user.name", "racer"], cwd=racer, check=True)
+    subprocess.run(["git", "config", "user.email", "racer@example.invalid"], cwd=racer, check=True)
+
+    for path in core:
+        (lane / path).write_text('{"version":2}\n')
+    part1.write_text('{"bounded_part":1,"generation":2}\n')
+
+    wrapper = tmp_path / "run-concurrent-part-race.sh"
+    wrapper.write_text(
+        "#!/usr/bin/env bash\n"
+        "set -euo pipefail\n"
+        "oip_after_stage_snapshot() {\n"
+        "  local p=\"$RACER/data/options_signal_episode/outcomes_session_parts/part-000002.jsonl\"\n"
+        "  mkdir -p \"$(dirname \"$p\")\"\n"
+        "  printf '%s\\n' '{\"bounded_part\":2,\"from\":\"concurrent-run\"}' > \"$p\"\n"
+        "  git -C \"$RACER\" add -- data/options_signal_episode/outcomes_session_parts/part-000002.jsonl\n"
+        "  git -C \"$RACER\" commit -qm 'concurrent accepted part'\n"
+        "  git -C \"$RACER\" push -q origin HEAD:main\n"
+        "}\n"
+        "export OIP_NIGHTLY_SOURCE_ONLY=1\n"
+        f'. "{helper}"\n'
+        "publish_episode\n"
+    )
+    wrapper.chmod(0o755)
+    result = subprocess.run(
+        ["bash", str(wrapper)],
+        cwd=lane,
+        env={
+            **os.environ,
+            "GITHUB_WORKSPACE": str(repo),
+            "GITHUB_RUN_ID": "episode-concurrent-part-race",
+            "GITHUB_RUN_ATTEMPT": "1",
+            "RUNNER_TEMP": str(tmp_path),
+            "RACER": str(racer),
+        },
+        text=True, capture_output=True, check=False,
+    )
+    assert result.returncode != 0
+    diagnostics = result.stdout + result.stderr
+    assert "unseen session-outcome part" in diagnostics
+
+    remote_tip = subprocess.run(
+        ["git", "--git-dir", str(origin), "rev-parse", "main"],
+        text=True, capture_output=True, check=True,
+    ).stdout.strip()
+    assert remote_tip != parent
+    for path in core:
+        assert subprocess.run(
+            ["git", "--git-dir", str(origin), "show", f"main:{path}"],
+            text=True, capture_output=True, check=True,
+        ).stdout == '{"version":1}\n'
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show", f"main:{part1_rel}"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":1,"generation":1}\n'
+    assert subprocess.run(
+        ["git", "--git-dir", str(origin), "show",
+         "main:data/options_signal_episode/outcomes_session_parts/part-000002.jsonl"],
+        text=True, capture_output=True, check=True,
+    ).stdout == '{"bounded_part":2,"from":"concurrent-run"}\n'
+    assert git("rev-parse", "HEAD") == parent
 
 
 @pytest.mark.parametrize(
@@ -4891,6 +5075,90 @@ def test_all_session_horizons_have_independent_idempotent_semantic_keys(
             append_session_outcomes(path, [drift])
 
 
+def test_session_outcome_writer_refuses_orphan_parts_without_base(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    episode = _episode()
+    bars = _session_bars(episode, "10d")
+    row = derive_session_outcome(
+        episode, "eod", bars,
+        computed_at=datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc),
+        price_source="fixture/TEST.parquet",
+        bar_seconds=1800,
+        price_delay_minutes=15,
+    )
+    base = tmp_path / "outcomes_session.jsonl"
+    parts = tmp_path / "outcomes_session_parts"
+    parts.mkdir()
+    (parts / "part-000001.jsonl").write_bytes(
+        json.dumps(row, ensure_ascii=False, separators=(",", ":"), sort_keys=True, allow_nan=False).encode("utf-8") + b"\n"
+    )
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    with pytest.raises(ContractError, match="parts exist without the canonical base prefix"):
+        append_session_outcomes(base, [row])
+    assert not base.exists()
+
+
+def test_session_outcome_parts_preserve_one_logical_append_only_stream(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    episode = _episode()
+    bars = _session_bars(episode, "10d")
+    computed_at = datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc)
+    rows = [
+        derive_session_outcome(
+            episode,
+            horizon,
+            bars,
+            computed_at=computed_at,
+            price_source="fixture/TEST.parquet",
+            bar_seconds=1800,
+            price_delay_minutes=15,
+        )
+        for horizon in SESSION_HORIZONS
+    ]
+    encoded = [
+        json.dumps(
+            row, ensure_ascii=False, separators=(",", ":"), sort_keys=True,
+            allow_nan=False,
+        ).encode("utf-8") + b"\n"
+        for row in rows
+    ]
+    path = tmp_path / "outcomes_session.jsonl"
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+
+    # Materialize a legacy monolithic prefix first, then make that exact byte
+    # count the rollover boundary. Later rows must extend via bounded parts
+    # without rewriting one byte of the historical prefix.
+    assert append_session_outcomes(path, rows[:3]) == 3
+    prefix = path.read_bytes()
+    monkeypatch.setattr(
+        episode_engine, "SESSION_OUTCOME_PART_MAX_BYTES", max(map(len, encoded)) + 8,
+        raising=False,
+    )
+    assert len(prefix) > episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    assert append_session_outcomes(path, rows[3:]) == 2
+    assert path.read_bytes() == prefix
+
+    parts_dir = path.parent / "outcomes_session_parts"
+    parts = sorted(parts_dir.glob("part-*.jsonl"))
+    assert [part.name for part in parts] == ["part-000001.jsonl", "part-000002.jsonl"]
+    assert all(part.stat().st_size <= episode_engine.SESSION_OUTCOME_PART_MAX_BYTES for part in parts)
+    expected = b"".join(encoded)
+    assert episode_engine.session_outcome_logical_bytes(path) == expected
+    assert episode_engine.load_session_outcomes(path) == rows
+    assert append_session_outcomes(path, rows) == 0
+
+    drift = copy.deepcopy(rows[-1])
+    drift["provenance"]["price_source"] = "other/TEST.parquet"
+    validate_session_outcome(drift)
+    with pytest.raises(ContractError, match="conflicting append payload"):
+        append_session_outcomes(path, [drift])
+    assert episode_engine.session_outcome_logical_bytes(path) == expected
+
+
 def test_session_append_failure_keeps_checkpoint_last_and_h60_bytes_stable(
     tmp_path: Path, monkeypatch,
 ) -> None:
@@ -5726,3 +5994,29 @@ def test_episode_v1_ignores_additive_source_microstructure_without_identity_drif
     assert rich_episode == base_episode
     assert "microstructure" not in rich_episode["feature_snapshot"]
     assert "vol_gt_oi_ratio" not in rich_episode["feature_snapshot"]
+
+@pytest.mark.parametrize("dangling_kind", ["base", "parts"])
+def test_session_outcome_shared_reader_rejects_dangling_symlink(
+    tmp_path: Path, dangling_kind: str,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    if dangling_kind == "base":
+        base.symlink_to(tmp_path / "missing-session-ledger.jsonl")
+        expected = "session outcome base is not a regular file"
+    else:
+        base.write_bytes(b"")
+        (tmp_path / "outcomes_session_parts").symlink_to(
+            tmp_path / "missing-session-parts"
+        )
+        expected = "session outcome parts path is not a directory"
+
+    with pytest.raises(EpisodeSourceContractError, match=expected):
+        session_outcome_logical_bytes(base)
+    with pytest.raises(episode_engine.ContractError, match=expected):
+        episode_engine.load_session_outcomes(base)
