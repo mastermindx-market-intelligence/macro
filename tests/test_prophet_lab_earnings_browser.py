@@ -73,8 +73,15 @@ import subprocess
 import shutil
 from copy import deepcopy
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+import app.prophet_lab as api
 from engine.prophet_lab.episode_directory import build_episode_directory
-from tests.test_prophet_lab_api import _d5_snapshot
+from tests.test_prophet_lab_api import (
+    _d5_snapshot,
+    _d5_master as _api_master,
+    _D5_EPISODE_ID,
+)
 
 @pytest.fixture(scope="module")
 def runtime_payload():
@@ -108,3 +115,26 @@ def test_browser_runtime_contract(runtime_payload, scenario):
     assert result.returncode == 0, result.stderr
     receipt = json.loads(result.stdout)
     assert receipt['scenario'] == scenario and receipt['status'] == 'PASS'
+
+
+def test_matching_generation_pin_reuses_one_atomic_b1_snapshot(monkeypatch):
+    monkeypatch.delenv("PROPHET_LAB_DISABLED", raising=False)
+    snapshot = _d5_snapshot()
+    loads = []
+
+    def load_snapshot(_root):
+        loads.append(snapshot.generation_id)
+        return snapshot
+
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", load_snapshot)
+    monkeypatch.setattr(api, "_load_issuer_master", lambda _: _api_master(include_cik=False))
+    app = FastAPI()
+    app.include_router(api.router)
+    app.dependency_overrides[api.require_site_full_user] = lambda: {"id": "test-entitled"}
+    with TestClient(app) as client:
+        response = client.get(
+            f"/api/prophet/lab/v1/episodes/{_D5_EPISODE_ID}/research-view",
+            params={"expected_generation": snapshot.generation_id},
+        )
+    assert response.status_code == 200
+    assert loads == [snapshot.generation_id]
