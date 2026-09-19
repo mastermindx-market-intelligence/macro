@@ -1,3 +1,6 @@
+# recapture: NEEDED
+# Historical PNG inventory only; the manifests retain their original capture SHAs.
+# These images do not prove the current template/builder head.
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - mockups/evidence/credit-window-f09-2/254027842789e6fa.png
