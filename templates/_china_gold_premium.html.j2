@@ -59,14 +59,14 @@
 
   <p class="cgp-stance">
     {% if g.state == 'premium' %}
-      <span class="l-en">Shanghai is priced above {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} — firmer local physical demand. Context, not an entry signal.</span>
-      <span class="l-zh">上海价格高于{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}——本地实物需求更强。仅作背景，不是入场信号。</span>
+      <span class="l-en">Shanghai is priced above {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} — firmer local physical-market pricing. The gap can reflect demand, import constraints, supply, or market structure. Context, not an entry signal.</span>
+      <span class="l-zh">上海价格高于{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}——本地实物市场定价更强。该价差可能反映需求、进口约束、供应或市场结构。仅作背景，不是入场信号。</span>
     {% elif g.state == 'discount' %}
-      <span class="l-en">Shanghai is priced below {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} — softer local physical demand. Context, not an entry signal.</span>
-      <span class="l-zh">上海价格低于{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}——本地实物需求偏弱。仅作背景，不是入场信号。</span>
+      <span class="l-en">Shanghai is priced below {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} — softer local physical-market pricing. The gap can reflect demand, import constraints, supply, or market structure. Context, not an entry signal.</span>
+      <span class="l-zh">上海价格低于{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}——本地实物市场定价偏弱。该价差可能反映需求、进口约束、供应或市场结构。仅作背景，不是入场信号。</span>
     {% else %}
-      <span class="l-en">Shanghai and {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} are near parity. Context, not an entry signal.</span>
-      <span class="l-zh">上海与{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}接近平价。仅作背景，不是入场信号。</span>
+      <span class="l-en">Shanghai and {{ 'global spot' if g.current_method == 'close_proxy' else 'London' }} are near parity. Relative pricing can still shift with demand, import constraints, supply, or market structure. Context, not an entry signal.</span>
+      <span class="l-zh">上海与{{ '全球现货' if g.current_method == 'close_proxy' else '伦敦' }}接近平价。相对定价仍可能受需求、进口约束、供应或市场结构影响。仅作背景，不是入场信号。</span>
     {% endif %}
   </p>
 

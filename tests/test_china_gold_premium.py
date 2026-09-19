@@ -610,3 +610,14 @@ def test_stats_do_not_mislabel_partial_history_as_5_or_30_sessions():
     assert len(vm["chart"]["canonical"]) == 3
     assert vm["stats"]["avg_5"] is None
     assert vm["stats"]["range_30"] is None
+
+
+def test_gold_premium_copy_describes_relative_pricing_without_claiming_demand_causality():
+    html = _render_premium_partial(_available_ui_vm())
+
+    assert "firmer local physical-market pricing" in html
+    assert "demand, import constraints, supply, or market structure" in html
+    assert "本地实物市场定价更强" in html
+    assert "需求、进口约束、供应或市场结构" in html
+    assert "firmer local physical demand" not in html
+    assert "本地实物需求更强" not in html
