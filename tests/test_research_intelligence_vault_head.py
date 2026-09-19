@@ -3,10 +3,12 @@ from __future__ import annotations
 import hashlib
 import json
 
+from engine.research_intelligence import vault_head as vault_head_mod
 from engine.research_intelligence.schema import SCHEMA
 from engine.research_intelligence.vault_head import (
     MAX_HEAD_SIZE,
     deep_read_candidate,
+    rank_vault_head,
     read_full_vault_body,
     select_ranked_head,
 )
@@ -245,3 +247,32 @@ def test_catalog_metadata_change_is_not_mistaken_for_current_intelligence(tmp_pa
     assert first["state"] == "persisted"
     assert second["state"] == "persisted"
     assert second["write_state"] == "corrected"
+
+
+def test_rank_vault_head_refuses_unreconciled_denominator():
+    original = vault_head_mod.research_triage.rank
+    vault_head_mod.research_triage.rank = lambda *args, **kwargs: {
+        "rows": [{"report_id": REPORT_ID, "rank": 1, "w_score": 0.9, "status": "selected"}],
+        "reconciled": False,
+    }
+    try:
+        rank_vault_head([ITEM], as_of=__import__("datetime").date(2026, 9, 18), limit=1)
+    except ValueError as exc:
+        assert "reconcile" in str(exc)
+    else:
+        raise AssertionError("unreconciled triage must not produce a cognition head")
+    finally:
+        vault_head_mod.research_triage.rank = original
+
+
+def test_extractor_exception_is_an_explicit_nontruth_state(tmp_path):
+    store = LocalStore(tmp_path / "vault")
+    _seed_pdf(store)
+
+    def boom(_pdf):
+        raise RuntimeError("extractor exploded")
+
+    result = read_full_vault_body(store, REPORT_ID, extractor=boom)
+    assert result["state"] == "extractor_failed"
+    assert result["error_class"] == "RuntimeError"
+    assert "body" not in result
