@@ -29,6 +29,14 @@ changed:
     what: "Recorded seven of seven mutations/discriminators killed."
   - path: research/theme_intelligence_acceptance/acceptance_spec_result.json
     what: "Recorded the executable-specification PASS receipt."
+  - path: research/theme_intelligence_acceptance/lane_c_cases.v1.json
+    what: "Froze Lane C exact-head identity, positive controls, repair blockers, dark-test paths, and authority expectations."
+  - path: research/theme_intelligence_acceptance/lane_c_acceptance.py
+    what: "Implemented read-only exact-head checks for Lane C source behavior, shared-consumer health, repository admission, provenance, and regression suites."
+  - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
+    what: "Recorded the byte-reproducible Lane C REJECTED_FOR_REPAIR receipt."
+  - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
+    what: "Returned Lane C positive evidence, eight repair blockers, remaining gates, and exact repair-and-return requirements to Lane A."
   - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-19-theme-intelligence-lane-f.md
     what: "Returned Lane F state and exact gates to Lane A."
 verified:
@@ -62,9 +70,12 @@ verified:
   - claim: "The carrier changes no production source or generated product data."
     command: "git diff --name-only 68f80a8edf78966a3a89e1294038654944e9c217..800cdcfe159a4deb0eac109420b0878eeadf45f8"
     result: "PASS: only research/theme_intelligence_acceptance paths."
+  - claim: "Lane C exact head was independently checked and rejected for repair without touching its source carrier."
+    command: "python3 research/theme_intelligence_acceptance/lane_c_acceptance.py --candidate-root <detached-48156a43-checkout> --run-suites"
+    result: "PASS as evaluator: seven positive controls reproduced; eight preregistered repair blockers reproduced; candidate verdict REJECTED_FOR_REPAIR; receipt SHA-256 a3079a57207ae310e886fda10633b2ebd24c1336c022e892b19590e27898c871."
 unverified:
-  - claim: "A-E returned implementations satisfy the full mandatory discriminator matrix."
-    what_would_verify: "Each sibling must return a pushed exact head; Lane F must run exact-head real-path and mutation checks on that head. No sibling remote exact head existed at this return checkpoint."
+  - claim: "A, B, D, and E returned implementations satisfy the full mandatory discriminator matrix."
+    what_would_verify: "Each remaining sibling must return a pushed exact head; Lane F must run exact-head real-path and mutation checks on that head."
   - claim: "The evaluator implementation has an independent external code-review PASS."
     what_would_verify: "A read-only reviewer must review the final exact head; current evidence is executable specification plus adversarial self-tests, not independent reviewer identity."
   - claim: "Hosted CI executes the Lane F command."
@@ -76,10 +87,12 @@ unverified:
 unresolved:
   - "PR #7453 remains Draft/HOLD and must not be readied or merged by Lane F."
   - "Current frozen subject verdict is REJECTED_CURRENT_SOURCE; repair disposition belongs to Lane A and incumbent source owners."
-  - "Full mandatory discriminator coverage remains NOT_YET_PROVEN until A-E return exact heads and their real-path interfaces."
+  - "Lane C exact head 48156a43dfe0166ab658a99625f5b72dbd029eb4 is REJECTED_FOR_REPAIR on eight blockers; its positive computation tests do not authorize merge."
+  - "Full mandatory discriminator coverage remains NOT_YET_PROVEN for A, B, D, and E and for Lane C correction/history, evidence-family, corporate-action, deployed-byte, and prospective gates."
   - "Hosted CI wiring and independent external review remain open gates."
 next_actions:
-  - "Lane A: consume PR #7453 and its three exact receipts; route the two actionable repair findings through existing source owners without copying Lane F into production."
+  - "Lane A: consume PR #7453 and its four exact receipts; route the two current-source defects and Lane C's eight repair blockers through existing owners without copying Lane F into production."
+  - "Lane C/incumbent source owner: repair stale reclaim and shared-consumer health, return a valid clean handoff, and commit exact real-price manifest/result bytes; then request exact-head reacceptance."
   - "Lane A/incumbent CI owner: add or decline the single package-level command wiring; do not create six competing manifest edits."
   - "Lane F successor: when each A-E remote exact head exists, re-pin it, run the relevant mandatory discriminators and real input -> producer -> shared consumer -> served route checks, and return accepted/rejected/not-proven per lane."
   - "Lawful reviewer: independently review the final Lane F exact head before any merge adjudication."
@@ -109,11 +122,11 @@ danger_areas:
 - Merge: not performed.
 - Deployment/publication: not performed.
 - Browser proof: not performed.
-- Product acceptance: current subject rejected; A-E not yet proven.
+- Product acceptance: current subject rejected; Lane C exact head rejected for repair; A, B, D, and E not yet proven.
 
 ## Capability delta
 
-Lane F now has a deterministic, source-independent acceptance capability that binds one immutable Git subject, calls the real production falsifier and lane classifier, verifies eight committed input/artifact/card blobs, and separates evaluator success from product acceptance. It emits reproducible evidence and tests seven false-green/adversarial cases while preserving all production and authority boundaries.
+Lane F now has a deterministic, source-independent acceptance capability that binds immutable Git subjects, calls real production functions, verifies committed input/artifact/card bytes, and separates evaluator success from product acceptance. It emits reproducible evidence for the current semantic incident and for returned sibling exact heads while preserving all production and authority boundaries.
 
 ## Current exact verdict
 
@@ -129,3 +142,11 @@ This proves the incident and the evaluator, not a production repair or predictiv
 ## Return to Lane A
 
 Lane A should use PR #7453 as the Lane F evidence carrier, reconcile the two repair findings with its own source ownership, and retain the current holds until exact-head checks, one coordinated CI admission, external review, lawful merge/publication, and browser proof are complete. Lane F should resume exact-head acceptance as sibling carriers return; no sibling had a pushed exact head at this checkpoint.
+
+## Lane C exact-head return
+
+Lane C returned exact head `48156a43dfe0166ab658a99625f5b72dbd029eb4` / tree `22f65ea49693890b40f7d2fcfd2fc10d7c2bf1a2`. Lane F reproduced its positive bounded computation evidence—102/3, 44/3, and 20-test suites, parent/subtheme separation, and all-false permissions—but rejected the head for repair.
+
+The exact blockers are stale reclaim evidence, missing stale/unavailable health propagation into ThemeState, three dark new test suites, an Agent OS-unparseable handoff, eight diff-check failures, and a non-reproducible 47-record real-price proof. Correction-safe first-seen history, repeat-render identity, duplicate evidence-family identity, corporate-action correctness, deployed/browser parity, and prospective outcomes remain not proven.
+
+Machine receipt: `research/theme_intelligence_acceptance/lane_c_exact_head_result.json` (SHA-256 `a3079a57207ae310e886fda10633b2ebd24c1336c022e892b19590e27898c871`). Lane C must return a repaired exact head before reacceptance; Lane A retains integration and CI coordination.
