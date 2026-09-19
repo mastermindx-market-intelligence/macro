@@ -230,6 +230,10 @@ def _available_ui_vm():
         "spread_usd_oz": 7.35,
         "sge_usd_oz": 4398.94,
         "london_usd_oz": 4391.59,
+        "price_currency": "USD",
+        "spread_price_oz": 7.35,
+        "sge_price_oz": 4398.94,
+        "reference_price_oz": 4391.59,
         "stats": {"avg_5": 0.22, "range_30": [-0.23, 0.41]},
         "canonical": {
             "available": True,
@@ -251,6 +255,9 @@ def _available_ui_vm():
                     "spread_usd_oz": 5.1,
                     "sge_usd_oz": 4305.1,
                     "london_usd_oz": 4300.0,
+                    "spread_price_oz": 5.1,
+                    "sge_price_oz": 4305.1,
+                    "reference_price_oz": 4300.0,
                     "ma5_pct": 0.10,
                 },
                 {
@@ -259,6 +266,9 @@ def _available_ui_vm():
                     "spread_usd_oz": -3.5,
                     "sge_usd_oz": 4346.5,
                     "london_usd_oz": 4350.0,
+                    "spread_price_oz": -3.5,
+                    "sge_price_oz": 4346.5,
+                    "reference_price_oz": 4350.0,
                     "ma5_pct": 0.02,
                 },
                 {
@@ -267,9 +277,14 @@ def _available_ui_vm():
                     "spread_usd_oz": 7.35,
                     "sge_usd_oz": 4398.94,
                     "london_usd_oz": 4391.59,
+                    "spread_price_oz": 7.35,
+                    "sge_price_oz": 4398.94,
+                    "reference_price_oz": 4391.59,
                     "ma5_pct": 0.07,
                 },
             ],
+            "proxy": [],
+            "display_source": "canonical",
             "intraday": {
                 "ts": "2026-09-18T02:10:00+00:00",
                 "premium_pct": 0.1674,
@@ -668,3 +683,36 @@ def test_hidden_metric_legends_are_not_revived_by_component_display_css():
 
     css = (Path(__file__).resolve().parents[1] / "templates" / "commodities.html.j2").read_text()
     assert ".cgp-leg[hidden] { display:none; }" in css
+
+
+def test_intraday_without_compatible_canonical_history_does_not_render_blank_proxy_chart():
+    vm = _available_ui_vm()
+    vm["current_method"] = "intraday"
+    vm["price_currency"] = "USD"
+    vm["chart"] = {
+        "canonical": [],
+        "proxy": [
+            {
+                "date": "2026-09-18",
+                "premium_pct": 0.12,
+                "spread_price_oz": 30.0,
+                "sge_price_oz": 25530.0,
+                "reference_price_oz": 25500.0,
+                "ma5_pct": 0.12,
+            }
+        ],
+        "intraday": {
+            "ts": "2026-09-18T02:10:00+00:00",
+            "premium_pct": 0.1674,
+            "spread_usd_oz": 7.35,
+            "sge_usd_oz": 4398.94,
+            "london_usd_oz": 4391.59,
+            "ma5_pct": 0.1674,
+        },
+        "display_source": None,
+    }
+
+    html = _render_premium_partial(vm)
+
+    assert "Indicative intraday basis" in html
+    assert 'class="cgp-chart"' not in html

@@ -1,7 +1,7 @@
 {# Gold-only China physical-premium panel. Expects g = d.china_gold_premium. #}
 {% set price_currency = g.get('price_currency') or 'USD' %}
-{% set display_source = g.chart.get('display_source') if g.get('chart') else none %}
-{% set display_source = display_source or 'canonical' %}
+{% set chart_source = g.chart.get('display_source') if g.get('chart') else none %}
+{% set display_source = chart_source or 'canonical' %}
 {% set sge_display = g.get('sge_price_oz') if g.get('sge_price_oz') is not none else g.get('sge_usd_oz') %}
 {% set reference_display = g.get('reference_price_oz') if g.get('reference_price_oz') is not none else g.get('london_usd_oz') %}
 {% if g.get('current_method') == 'close_proxy' %}
@@ -81,7 +81,7 @@
       <strong>{{ '¥' if price_currency == 'CNY' else '$' }}{{ '{:,.2f}'.format(reference_display) }}</strong></div>
   </div>
 
-  {% if g.chart.canonical or g.chart.get('proxy') %}
+  {% if (chart_source == 'canonical' and g.chart.canonical) or (chart_source == 'proxy' and g.chart.get('proxy')) %}
   <div class="cgp-controls" aria-label="China premium chart mode">
     <div class="cgp-mode-tabs" role="group" aria-label="Chart metric">
       <button type="button" class="cgp-btn is-active" data-cgp-mode="premium"><span class="l-en">% Premium</span><span class="l-zh">溢价率 %</span></button>
