@@ -91,7 +91,11 @@ Use existing canonical daily rate series only:
 
 No new collector, cache, curve, receipt DB, or alignment plane.
 
-**Knowledge-clock rule for this retrospective diagnostic:** because historical intraday receipt timestamps are not certified, an episode on session T may use only rate source observations dated **T−1 or earlier**. Same-session Treasury values are excluded from the primary study even if present in current corrected history. This is conservative availability handling, not proof that T−1 was actually the exact production receipt.
+**Knowledge-clock rule for this retrospective diagnostic:** because historical intraday receipt timestamps are not certified, an episode on session T may use only rate source observations strictly dated **before T**. Same-session Treasury values are excluded from the primary study even if present in current corrected history. This is conservative availability handling, not proof of an exact production receipt.
+
+For primary nominal/real state, define **R** as the latest finite source date before T that is present in BOTH DGS10 and DFII10. Require `T - R <= 4 calendar days`; otherwise the episode is `RATE_CONTEXT_UNAVAILABLE`. The 10y nominal and 10y real five-observation changes are computed over their **common finite observed-date intersection ending at R**, so their start/end clocks cannot drift silently. The 22-observation nominal change also ends at R. The policy-confirmation sensitivity uses DGS2 only if DGS2 has a finite observation at R; otherwise that sensitivity is unavailable for the episode.
+
+T10YIE remains descriptive and carries its own source date. It may not supply or repair the primary common clock.
 
 Use genuine observed source rows. Do not interpret forward-filled grid rows as new measurements.
 
@@ -99,11 +103,11 @@ Use genuine observed source rows. Do not interpret forward-filled grid rows as n
 
 ## 2. Frozen rate-state definitions
 
-Let `d10_5` = 10y nominal change over the last five **observed source sessions** available by T−1, in bp.  
-Let `d10_22` = analogous 22-observation change.  
-Let `d2_5` = 2y nominal five-observation change.  
-Let `dr10_5` = 10y real five-observation change.  
-Let `dbe10_5` = 10y breakeven five-observation change.
+Let `d10_5` = 10y nominal change over the five-step **common DGS10/DFII10 observed-date grid ending at R**, in bp.  
+Let `d10_22` = 10y nominal change over its 22 observed-source-session interval ending at R.  
+Let `d2_5` = 2y nominal five-observation change ending at R, available only when DGS2 itself observes R.  
+Let `dr10_5` = 10y real change over the same common five-step DGS10/DFII10 observed-date grid as `d10_5`.  
+Let `dbe10_5` = 10y breakeven five-observation change using its own disclosed source date; descriptive only.
 
 No daily normalization across weekends/holidays. A Friday→Monday observation change is the total change between those observations.
 
@@ -216,7 +220,7 @@ An episode is primary-eligible only when (a) `addon == false`, (b) its stored `f
 
 - Missing rate endpoint => `RATE_CONTEXT_UNAVAILABLE`, never zero.
 - Carried aligned value => may be displayed as stale context, never used as a new observed endpoint.
-- Mixed-date nominal/real/breakeven values must disclose their own dates.
+- Primary 10y nominal/real values may not be mixed across end dates; both end at R. Breakeven may carry a separate disclosed date because it is descriptive only.
 - No backfilling from later corrected artifacts into a claimed historical receipt.
 - Every exclusion reason is counted separately: ADDON_EXCLUDED, OUTCOME_TRUNCATED, LEADER_STATE_UNAVAILABLE, RATE_CONTEXT_UNAVAILABLE, and any schema/date refusal.
 
