@@ -63,3 +63,14 @@ def test_experiments_table_hides_secondary_details_until_needed():
     assert '>Dismiss</button>' in APP
     assert '>Override</button>' in APP
     assert '.row-actions-menu' in CSS
+
+
+def test_site_access_keeps_provider_details_out_of_primary_copy():
+    assert 'Country detection not configured' in APP
+    assert '<summary>Technical details</summary>' in APP
+    assert 'Country source is resolved by <code>/api/gate/check</code>' in APP
+    assert '<div class="section">Blocked IPs ' in APP
+    assert '<div class="section">Always allowed ' in APP
+    assert '<div class="section">Blocked countries ' in APP
+    assert 'Names via browser Intl.DisplayNames' not in APP
+    assert 'Off = fail-open.' not in APP
