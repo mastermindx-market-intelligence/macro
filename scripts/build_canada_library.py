@@ -901,6 +901,11 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
     # forward anticipation cone — hoist the engine + its gate ONCE (the cone is close-driven and the
     # S&P/TSX benchmark close is read once for the residual-alpha leg; both reads would otherwise repeat
     # per name). None-safe: if the engine is unavailable, the cone is simply skipped for every name.
+    #
+    # CA-NATIVE-INTEL Wave 9 disposition: SCREEN_SHADOW.  This inherited US
+    # calibration may shape display/profile context only; it is not
+    # MARKET_VALIDATED for Canada and must not bind the Canada board population,
+    # rank, or entry permission.
     try:
         from engine.anticipation import anticipate as _anticipate, load_gate as _load_gate
         _ant_gate = _load_gate("US")
@@ -1232,7 +1237,11 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
         # challenger freezes only ticker/alignment/owner-entry state — never score,
         # rank, board_pos, Featured, or the published board object.
         try:
-            from engine import board_shadow, canada_discovery_challenger
+            from engine import (
+                board_shadow,
+                canada_discovery_challenger,
+                canada_native_intelligence,
+            )
 
             _ca_disc_frozen = canada_discovery_challenger.freeze_evidence(
                 cand, align_map, entry_sig,
@@ -1243,6 +1252,16 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
                     _ca_disc_frozen, _asof_arg,
                 )
 
+            # CA-NATIVE-INTEL / CA-RANK-RACE: one typed ACCRUING name family,
+            # evaluated on EXACTLY the incumbent buy+watch calls that the
+            # existing CA shadow writer receives later in build_canada.py.
+            # No C1 oil-to-name score, no family fusion, no official-pick
+            # authority, and no conservative score are introduced here.
+            board_shadow.register_challenger(
+                "CA",
+                canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION,
+                rank_fn=canada_native_intelligence.rank_residual_calls,
+            )
             board_shadow.register_challenger(
                 "CA", canada_discovery_challenger.DEFINITION,
                 discovery_fn=_ca_discovery_fn,
