@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T02:24:32.793430+00:00",
-  "count": 2400,
+  "generated_at": "2026-09-19T02:54:46.438144+00:00",
+  "count": 2401,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -168,6 +168,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-q5utskuuzqh-4c097e",
+      "title": "Transformational Innovation Opportunities (TRIO)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:48Z",
+      "summary_points": [
+        "AI Power Demand Acceleration: Data center power demand surging (7.8%-25.5% growth 2020-2025), driven by AI; utilities view AI as durable multiyear catalyst with contracts expected by 2027.",
+        "Execution & Delivery Risks: Critical for BTM solutions amid regulatory/political constraints; project delays, supply chain disruptions, and power delivery bottlenecks threaten data center expansion (noted for smaller providers).",
+        "Geopolitical Theme Dominance: \"China Onshore Tech\" and \"Asia's new mobility\" drive selection shifts; US-China tensions and regional policy shifts (e.g., EU regulations) directly impact portfolio positioning.",
+        "CIO Selection Volatility: 10+ companies (e.g., Honeywell, Mitsubishi) exhibit frequent \"Most Preferred\" → \"Not Listed\" transitions, signaling active tactical realignment due to macro/geopolitical shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
