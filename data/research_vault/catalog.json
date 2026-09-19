@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T04:25:13.637839+00:00",
-  "count": 2406,
+  "generated_at": "2026-09-19T05:40:53.849752+00:00",
+  "count": 2409,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -90,6 +90,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-jnothg7v4v1-7e5d74",
+      "title": "GS Miller Global Reflections AI trade recouped Monday losses 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:53:32Z",
+      "summary_points": [
+        "GSPUARTI Technical Risk: 46.06% decline from peak signals severe stress in AI beneficiary positioning (last price 126.35), critical technical risk for AI-focused portfolios.",
+        "Germany-France Fiscal Hedge: Germany’s €140bn 2027 defense spending (+€31.4bn vs 2026) drives outperformance in GSXULOWD; tactical short hedge on French Domestic basket (GSXEFDRD) ahead of 2024 elections.",
+        "French Bond Divergence: OATBUND G decline to -0.9719 signals fiscal stress vs. positive GS German/French exposure index (0.69), indicating diverging Eurozone debt sentiment.",
+        "AI Momentum & UK Data: AI trade recouped losses with breakout momentum; UK Consumer Confidence surveys signal negative trend for GSXEUKCO, creating fundamental/data-driven alpha opportunity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-btrg0bo0pyj-b0a692",
       "title": "GS Coppola US Rates The Week That Was The Week That Will Be 18 Sep 2026",
       "institution": "S&T",
@@ -106,6 +126,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3ezysidfims-105b4b",
+      "title": "Narrowing breadth warning signal or healthy rotation",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-19T01:50:42Z",
+      "summary_points": [
+        "Fed Policy Tightening & S&P Breadth Deterioration: Fed raised rates to 3.75%-4.00% (25bps); S&P 500 shows 32% of constituents ≥20% below peaks (vs. 8% in 2016), signaling narrowing breadth and heightened correction risk despite near-record highs.",
+        "Tech Sector Fragility Dominates Risk: 56.2% of Tech constituents in bear market (vs.",
+        "S&P 500 average 32.2%), driving concentrated weakness; resilience hinges on large tech names holding, with >71% bear-market participation indicating severe pressure.",
+        "Critical Technical Support at 7,492: S&P 500 must hold 7,492.11 to avoid deeper pullback to 7,314 and 200-day SMA (7,175); break below confirms extended correction, threatening path to 7,938-8,022."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -290,6 +330,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rzmjzsnwg59-8ce4ef",
+      "title": "Daily US",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:48Z",
+      "summary_points": [
+        "Cash Return Fundamentals: Long-run pretax real cash return estimated at 0.7%—insufficient to offset inflation/taxation, challenging cash allocation strategies amid sustained high rates.",
+        "Geopolitical & Energy Risks: Middle East conflict (7th month), Brent crude >$100, and energy supply crunch pose near-term volatility; historical data confirms long-term investing resilience outweighs temporary drawdown costs.",
+        "Central Bank Policy Shifts: BoJ hiked rates to 1.25% (highest since 1995) amid 2.1% underlying inflation; BoE signaled 25bps hike despite current hold, reflecting global tightening cycle.",
+        "Risk Asset Valuation & Technicals: S&P 500 forward P/E at 19.1x (vs trailing 22.6x) signals robust earnings growth; steepening Treasury curve (2Y +1.0% vs 10Y flat) favors risk assets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
