@@ -139,7 +139,7 @@
           "hk_prophet_v2"
         ],
         "request_count": 29,
-        "screenshot_completion": 1,
+        "screenshot_completion": 1.0,
         "section_count": 1,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
@@ -375,7 +375,7 @@
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 29,
-        "screenshot_completion": 1,
+        "screenshot_completion": 1.0,
         "section_count": 7,
         "source_present": false,
         "todo_placeholder_hit_count": 0,
