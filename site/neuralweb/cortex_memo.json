@@ -1,32 +1,33 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-09-13T21:33:48+00:00",
-  "summary": "Context-only committee read: the measured US tape remains RISK_ON (66), but the confirmed Q3/Stagflation label is weakly supported (confidence 0.307) and transitioning: current axes indicate Q2/Reflation for 3 of the 7 confirmation sessions. Breadth is narrow (39.1% above 50-day; breadth divergence present), while volatility and credit remain calm. Liquidity is supportive but low quality and transient\u2014principally a $141B TGA drawdown, with Fed assets contracting and the RRP buffer exhausted. The risk radar is CAUTION, yet its measured 21-session pullback rate is 16.0% versus the 17.8% base rate, so it is an early watch condition, not an adverse edge. No signal, position, ranking, sizing instruction, or escalation is originated here.",
+  "as_of": "2026-09-18T19:51:14+00:00",
+  "summary": "Shadow/context-only deliberation as of 2026-09-18: the headline is RISK_ON with a calm, receding risk radar and normalizing volatility, but confirmation quality is incomplete. The confirmed US Q3 label is unsupported by its own current axes: raw signs indicate Q2 and the transition counter is only 1/7. Liquidity is supportive but mechanical and transient rather than Fed-asset-led; the RRP buffer is exhausted. Market participation remains weak: 31.6% of members are above their 50-day average, breadth divergence is present, no confirmation chip is fresh, and the global-breadth scare remains elevated at 81.6. Therefore this is a tension requiring observation, not a new signal, trade, score, ranking, or escalation. Factor evidence is immature: only nine panel dates, history floor unmet, no Pair G records, and no factor-attention track record. One falsifiable context hypothesis was registered for later grading: dual FX/rates-credit contradiction plus raw/confirmed quad mismatch should precede a transition to the raw quad within seven sessions at a hit rate of at least 60% over at least 20 independent episodes.",
   "what_fired": [
-    "Confirmed US regime label Q3 conflicts with its current Q2-sign axes and with both rates/credit and FX cross-asset readings.",
-    "RISK_ON tape coexists with breadth divergence: only 39.1% of constituents are above their 50-day averages.",
-    "Liquidity support is mechanical/TGA-led, with only 9% Fed contribution and the RRP buffer exhausted; credit and funding stress do not currently confirm deterioration.",
-    "Factor panel history is immature: 9 dates versus the 60-date Pair G threshold; no factor contradictions are available and factor-attention authority remains unearned.",
-    "All 15 returned Master Brain theses remain open despite check-by dates having passed."
+    "World-state headline changed back to RISK_ON while the risk radar moved from caution to calm; 21-day measured pullback rate is 13.0% versus a 17.8% base rate, explicitly an early contextual reading rather than an edge.",
+    "Risk-radar de-escalation is eligible: growth, internals, and bubble intensities receded, while the 21-day drawdown estimate stayed flat.",
+    "Dealer gamma changed from short to long and volatility is normalizing; these remain display/context observations.",
+    "Three shadow attention records were written: US regime label versus cross-asset evidence; risk-on headline versus weak participation; and expired open Master Brain theses requiring ledger review.",
+    "A seven-session regime/cross-asset hypothesis was registered with a pre-committed hit-rate gate; it carries no present authority."
   ],
-  "contradictions_review": "Five display-only contradictions were returned. The material macro tension is the confirmed Q3 label versus rates/credit and FX, reinforced by the label's own unsupported axes and pending Q2 transition. The briefing divergence is a descriptive demand-versus-supply disagreement across 14 names. One options contradiction concerns rising put skew on a buy-lane name, but its prior is explicitly unsupported and therefore is de-escalation context only. Pair G is dormant because the factor panel has only 9 dates. Three shadow attention flags were recorded with pre-committed resolution criteria: regime-label reconciliation, breadth/liquidity reconciliation, and stale-thesis governance cleanup.",
+  "contradictions_review": "Five current contradiction edges were reviewed. The central macro conflict is that FX and rates-credit both contradict confirmed Q3 while the regime's own raw axes read Q2. Separately, the risk-on/calm headline conflicts with weak breadth, absent fresh market-confirmation chips, and persistent elevated global-breadth stress. The briefing also contains 38 ticker-level demand-versus-supply divergences. Six buy-lane names have rising put skew, but that options evidence is display-only and the relevant bullish skew-deceleration prior is unsupported, so it can only de-escalate confidence. Pair G factor contradictions are unavailable because the panel has only nine dates and requires at least 60. Several Master Brain theses remain marked open despite passed check-by dates; the China-overweight thesis now faces China Q4, contracting liquidity, and mature China risk-off context, while a long-Treasury thesis has one stated falsifier leg met by the 2.68% real 10-year yield. These are attention conflicts, not directional calls.",
   "decaying_families": [
-    "Radar signed-excess history is negative at 5, 21, and 63 days and remains unarmed; current CAUTION also has a below-base 21-day pullback rate.",
-    "Altdata is unarmed after losing out of sample; its 21-day and 63-day pooled signed excess is negative.",
-    "Policy claims show negative signed excess across available 5-, 21-, and 63-day horizons and remain unarmed.",
-    "AI, stock, thematic, narrative, and policy-intent desk families show negative 63-day signed excess; none is armed.",
-    "Factor composite is non-tradeable; investment, low-vol, low-beta, and composite scorecard legs have negative IC, while the live panel has not met its history floor."
+    "Policy claims remain unarmed and show negative signed excess across available 5-, 21-, and 63-day samples; the evidence is thin or the allocation test is vacuous.",
+    "Radar claims are unarmed and exhibit negative shrunken signed excess on pooled 5-, 21-, and 63-day horizons despite large samples; current calm readings should not be treated as alpha.",
+    "Stock-desk and thematic-desk 63-day families show persistently negative signed excess across pooled and regime slices; their arming tests are vacuous.",
+    "Alt-data is held because pooled out-of-sample performance remains negative; demand-chain, policy-intent, narrative-brain, and desk-radar families are still accruing or underpowered.",
+    "Factor composite is non-tradeable: no scorecard survivors, negative IC for investment, low-volatility, low-beta, and composite legs, with only nine current panel dates.",
+    "The spine sample returned was dominated by Canadian-board unsigned-MFE proxy records and repeated horizons; it is unsuitable for inferring recent general claim quality without narrower family and date controls."
   ],
   "deserves_operator": [
-    "Reconcile the confirmed Q3 label with Q2-sign axes after the 7-session confirmation rule, and verify whether rates/credit and FX stop contradicting it for three consecutive sessions. Attention claim 814e7b115d8caa10.",
-    "Watch breadth independently of the RISK_ON headline: clear only after above-50-day breadth exceeds 50% and breadth_div is false for five sessions; retain concern if breadth stays below 40% while 20-day net-liquidity turns non-positive or HY OAS exceeds 3.0%. Attention claim 2b57785192252285.",
-    "Close the governance gap in the Master Brain ledger: every overdue open thesis should be scored, retired, or explicitly extended within five sessions. Attention claim d008f20dee937cfe.",
-    "Do not infer safety from missing Pair G records: the contradiction ledger is dormant because history is insufficient, not because borrowed-strength contradictions are absent.",
-    "Treat the China market-state surface as unavailable due to its SLA breach and note multiple failed China/HK data sources before relying on regional context."
+    "US regime-label reconciliation: confirmed Q3 versus raw Q2 and simultaneous FX/rates-credit contradiction. Clear if Q3 transitions to Q2 within seven sessions or both contradictions disappear for three consecutive sessions.",
+    "Participation-quality tension: RISK_ON/calm versus 31.6% above the 50-day average, breadth divergence, zero fresh confirmation chips, and global-breadth stress at 81.6. Clear if breadth exceeds 50% and market_confirmed becomes true; retain if breadth stays below 40% or global breadth remains above 75.",
+    "Master Brain ledger hygiene: every displayed open thesis has a check-by date no later than 2026-09-04. Clear when expired theses are scored, retired, or explicitly extended with new timestamped falsifiers.",
+    "Data-quality caution: the factor panel is below its history floor, Pair G is dormant, options-flow history is immature, and multiple China/HK sources failed. Absence of contradictions in those planes is incomplete coverage, not agreement.",
+    "Liquidity quality: the apparent tailwind is mechanical and transient, RRP is exhausted, and the underlying 20-day net-liquidity change is negative despite the expanding overlay. Watch for reserve-sensitive deterioration; do not treat this as an originating input."
   ],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-18",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -38,8 +39,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 69,
-      "total_rows": 77
+      "ungradeable": 80,
+      "total_rows": 88
     },
     "is_context_only": true
   },
@@ -52,6 +53,7 @@
     "read_kernel": 1,
     "read_master_brain_theses": 1,
     "flag_attention": 1,
+    "stake_hypothesis": 2,
     "write_memo": 1
   },
   "is_context_only": true,
@@ -62,36 +64,20 @@
     "model_used": "claude-opus-4-8",
     "provider_attempts": [
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf29zLLz3cZ8mMUQ1ybY9'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf2A1dUebKtVkJqX8gPR2'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf2A6ELzf3BAz76TTsxSr'}"
-      },
-      {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
-        "attempted": true,
-        "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cf2AKhDd3vUFoUgDurhFt'}"
+        "ok": true,
+        "error_type": null,
+        "error_message": null
       },
       {
         "provider": "codex",
@@ -134,10 +120,10 @@
         "error_message": null
       }
     ],
-    "tool_call_batches": 4,
-    "individual_tool_calls": 9,
+    "tool_call_batches": 6,
+    "individual_tool_calls": 11,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-09-13T10:22:38Z"
+    "context_as_of": "2026-09-18T18:56:41Z"
   }
 }
