@@ -137,15 +137,15 @@ This date-level law is mandatory.
 
 ## 4. Primary question
 
-On fixed C2r `leader_like` episodes, does `EASING_AFTER_PRESSURE` reduce the existing bake-off **false-start rate** versus eligible non-relief dates?
+On fixed C2r `leader_like` episodes, does `EASING_AFTER_PRESSURE` reduce the existing bake-off **false-bounce rate** versus eligible non-relief dates?
 
 The trigger timestamp is unchanged. Rates may classify the episode after its existing trigger is known; they do not move T.
 
 ### Primary estimand
 
-For each decision date, compute the leader-like C2r false-start rate using the existing bake-off label.
+For each decision date, compute the leader-like C2r false-bounce rate using the existing bake-off label.
 
-Compare date-level mean false-start rate:
+Compare date-level mean false-bounce rate:
 
 `EASING_AFTER_PRESSURE` vs all eligible `d10_22 > 0` dates that are not easing.
 
@@ -172,8 +172,8 @@ This asks whether rate relief is specifically useful for structurally strong pul
 
 Using the **same original episode T and the same original outcome endpoint/definitions**, report:
 
-1. stop-A survival;
-2. false-bounce rate;
+1. the original composite false-start label as a secondary diagnostic only (it can extend through +42 sessions);
+2. stop-A survival;
 3. MFE_42;
 4. ≥2R-before-stop rate;
 5. entry-vs-low and td→trough, as geometry checks only;
@@ -208,10 +208,10 @@ This separates **coverage selection** from **rate information**.
 
 This retrospective diagnostic cannot promote a signal.
 
-For the primary false-start difference:
+For the primary **false-bounce** difference (the existing rule: the post-trigger path undercuts the trigger's available decline low by >2% within +15 sessions):
 
-- **SUPPORTIVE_DIAGNOSTIC:** easing reduces false starts by **≥10 pp**, interval excludes zero in the favorable direction, BH-adjusted **q ≤ 0.10**, sign is favorable on both sides of the fixed 2020-07-01 split, and the overall/half date floors are met.
-- **SUGGESTIVE:** reduction ≥5 pp, same sign in both temporal halves, but the stronger hurdle is not met.
+- **SUPPORTIVE_DIAGNOSTIC:** easing reduces false bounces by **≥10 pp**, interval excludes zero in the favorable direction, BH-adjusted **q ≤ 0.10**, sign is favorable on both sides of the fixed 2020-07-01 split, and the overall/half date floors are met.
+- **SUGGESTIVE:** false-bounce reduction ≥5 pp, same sign in both temporal halves, but the stronger hurdle is not met.
 - **NULL:** smaller/inconsistent.
 - **ADVERSE:** easing cohort is materially worse.
 - **UNINFORMATIVE:** date floor, coverage, clock, or data-quality gate fails.
@@ -229,7 +229,7 @@ The policy-confirmed sensitivity must agree in sign to strengthen the mechanism;
 
 The seven registered inferential looks are closed:
 
-1. A1 — C2r leader-like, EASING_AFTER_PRESSURE vs eligible non-easing pressure dates, false-start pp difference (**primary**).
+1. A1 — C2r leader-like, EASING_AFTER_PRESSURE vs eligible non-easing pressure dates, false-bounce pp difference (**primary**).
 2. A2 — C2r leader-minus-nonleader interaction across easing vs non-easing pressure dates (**primary falsifier**).
 3. A3 — C2r POLICY_CONFIRMED_RELIEF sensitivity, same leader-like false-start metric.
 4. A4 — C2r fixed 5bp magnitude sensitivity, same metric.
@@ -298,7 +298,7 @@ Before running:
 
 ## 12. Why this is the correct next question
 
-The failed historical lesson is not “leader pullbacks never work.” It is narrower: **a naive leader reset with vetoes removed did not work**, and early triggers buy closer to lows at the cost of many more false starts.
+The failed historical lesson is not “leader pullbacks never work.” It is narrower: **a naive leader reset with vetoes removed did not work**, and early triggers buy closer to lows at the cost of many more false bounces / later stop-outs.
 
 The Chairman's rates thesis gives a specific, orthogonal mechanism for that unresolved tradeoff:
 
