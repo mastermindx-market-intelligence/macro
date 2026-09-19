@@ -796,3 +796,51 @@ def test_campaign_shared_session_reader_rejects_dangling_symlink(
 
     with pytest.raises(CampaignContractError, match=expected):
         campaign_engine.load_ledger(base, campaign_engine.SESSION_PATH)
+
+def test_prefix_receipt_verification_does_not_rehash_large_prefix_bytes(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    encoded = [
+        canonical_bytes({"row": index}) + b"\n"
+        for index in range(1, 6)
+    ]
+    snapshot = campaign_engine._snapshot_from_raw(
+        tmp_path / "source.jsonl",
+        "source.jsonl",
+        b"".join(encoded),
+    )
+    receipts = []
+    for count in (4, 1, 3, 2, 4):
+        receipts.append(
+            {
+                "path": "source.jsonl",
+                "records": count,
+                "prefix_sha256": hashlib.sha256(
+                    b"".join(encoded[:count])
+                ).hexdigest(),
+            }
+        )
+
+    original_sha256 = campaign_engine._sha256
+    large_hash_calls: list[int] = []
+
+    def tracked_sha256(raw: bytes) -> str:
+        if len(raw) > max(len(item) for item in encoded):
+            large_hash_calls.append(len(raw))
+        return original_sha256(raw)
+
+    monkeypatch.setattr(campaign_engine, "_sha256", tracked_sha256)
+    cache: campaign_engine.PrefixCache = {}
+    for receipt in receipts:
+        assert (
+            campaign_engine._verify_receipt(
+                receipt,
+                snapshot,
+                "source.jsonl",
+                cache,
+            )
+            == receipt["records"]
+        )
+
+    assert large_hash_calls == []
