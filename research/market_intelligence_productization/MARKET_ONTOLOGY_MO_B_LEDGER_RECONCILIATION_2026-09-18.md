@@ -1,5 +1,101 @@
 # MARKET_ONTOLOGY_MO_B_LEDGER_RECONCILIATION_2026-09-18
 
+## CURRENT — SINGLE-WRITER CONVERGENCE (Sol, 2026-09-19)
+
+This section **supersedes the older HOLD table and row-state prose below where they disagree**. The older sections remain as historical evidence of the pre-convergence packet; they are not the current ledger ruling.
+
+**Operation:** `marketontology-f00c-single-writer-convergence-20260919-sol-001`  
+**Canonical writer:** this PR, #7335  
+**CSV integration commit:** `e6ea08107305a95b4eda41782c304206b1cb8439`  
+**Widened regression commit:** `6bdd406959fb2873906ccaea0341fba93415e9f7`  
+**Convergence manifest commit:** `74c3e281b3810b11321c1f4aecd00b3991daf03a`  
+**Integration baseline:** `main@5332d876e75837c158c6f42a2862734451bb7158`  
+**Protected F00C blob:** `8bbb8d78c34c40ef1b22bdf5477de87f411319f5`  
+**Final candidate F00C blob:** `665150d0d150348cd1b7934cd9a69edab5ebfb16`
+
+### Why this convergence exists
+
+Eight open/stale F00C carriers were capable of rewriting the same 130-row CSV:
+`#7011 #7014 #7335 #7340 #7343 #7348 #7349 #7353`.
+
+The newer six writers covered 79 unique rows with 23 overlaps. Old #7014 contributed one additional unique row, MO-DELTA-017. The one-writer fold therefore covers **80 unique rows**; the remaining **50 rows are byte-identical** to the protected baseline, pinned by SHA-256
+`b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d`.
+
+No sibling CSV carrier may merge independently after this fold. Their evidence is preserved by exact source-head identity in the existing reconciliation manifest.
+
+### Deterministic precedence
+
+1. protected main baseline;
+2. #7335 broad reconciliation;
+3. #7340 W5-F;
+4. #7343 W5-H (newer shared-row evidence wins over W5-F);
+5. #7348 recurring-brief delta;
+6. #7349 W5-J1;
+7. #7353 W5-J2;
+8. #7014 unique MO-DELTA-017 evidence only;
+9. explicit Sol row adjudications.
+
+Newer evidence may strengthen proof but may not silently restore rejected vocabulary, completed build instructions, duplicate stores, or superseded owner assumptions.
+
+### Current ledger census
+
+```text
+BUILT_NOT_PROVEN=23
+NOT_BUILT=42
+PARTIAL=37
+PROVEN_LIVE=21
+SPEC_ONLY=7
+TOTAL=130
+```
+
+The F00C CSV intentionally keeps its established five-word `capability_state_c2` vocabulary:
+`NOT_BUILT | SPEC_ONLY | PARTIAL | BUILT_NOT_PROVEN | PROVEN_LIVE`.
+
+Company-wide `DARK_OR_DISCONNECTED` remains a valid capability-state concept, but **this CSV's current validator does not admit it**. Therefore MO-PAID-023's live `gate_off` UK behavior is encoded as `BUILT_NOT_PROVEN` with the dark/disconnected activation defect written explicitly in `state_delta`, proof and next-action fields. Do not widen this ledger schema ad hoc.
+
+### Sol adjudications that must survive
+
+- **MO-PAID-034 → PROVEN_LIVE:** exact current-main machine proof shows 140 canonical qbus `europe_news_intel` rows (79 EC Press Corner + 61 Bank of England), current 2026-09-18 crawls, deterministic event keys and typed excluded-source rights/nulls. This row accepts the qbus machine surface; no Europe UI is required.
+- **MO-DELTA-029 → PROVEN_LIVE:** the commodity coverage matrix itself is live across all five families. Physical-supply gaps remain separate and explicit.
+- **MO-PAID-067 → PROVEN_LIVE:** the incumbent `build_site -> build_capital_structure_page.render -> #cs-policy-projection` path is live. #7111 was closed as redundant; do not recreate a second direct builder call.
+- **MO-DELTA-011 → PROVEN_LIVE:** public Glossary is live with >=50 defined terms/source groups.
+- **MO-DELTA-014 → BUILT_NOT_PROVEN:** #524 + #578 ship concentration + Sharpe/Sortino/beta; only signed-in production proof remains. Liquidity belongs to MO-PAID-036.
+- **MO-PAID-058 → BUILT_NOT_PROVEN:** #6959 implements paid/PRO → priority vs Free → community through one canonical support destination; a real signed-in PRO ticket receipt remains.
+- **MO-PAID-088 → PROVEN_LIVE:** later W5-J2 proof shows live Help HTTP 200 with 14 answers and a dated changelog.
+- **MO-DELTA-019 / MO-PAID-060 → PROVEN_LIVE:** #6904 + live `ipo.html#credit-window` prove the HY/IG issuance-window gate.
+- **MO-PAID-032 → PARTIAL:** Terminal #579 ships subscription intake/inbox/schema; the cadence producer is still absent.
+- **MO-PAID-020 / MO-PAID-021 → PROVEN_LIVE:** MSFT second-issuer security_state and B1B cockpit are live.
+- **MO-PAID-007 / MO-DELTA-032 → PROVEN_LIVE:** one canonical deterministic policy-lifecycle implementation is live; no second tracker/store.
+- **MO-PAID-023 → BUILT_NOT_PROVEN:** UK/HM Treasury desk exists but production is still `gate_off`; #7351 owns the bounded activation edge. Merge is not sufficient—promotion requires a canonical post-merge sentinel cycle and non-`gate_off` Policy Watch readback.
+- **MO-PAID-046:** immutable thesis lineage is `previous_version`. `amended_from` is superseded and must not be reintroduced.
+- **MO-DELTA-004 stays PARTIAL:** the exposure-map composer exists but still has no production consumer.
+- **MO-PAID-031 stays SPEC_ONLY:** grounded research mode remains on open/draft #7100, not merged.
+
+### Current-base compatibility receipt
+
+Protected `main` later advanced to `dfcab9236060b22578ed5714ff18debd90647c28`, but the F00C blob remained **byte-identical** to the integration baseline (`8bbb8d78...`).
+
+Across the five #7335-owned paths, protected movement touched only `.github/ci/legacy-jobs.yml`, and only one unrelated line:
+`tests/test_marketing_earnings_call_projection.py` was added to the marketing test command.
+
+That change is path/subject-disjoint from #7335's self-mod-fence records test wiring. It is not copied into this branch by hand and does not require a semantic rereview.
+
+The merge-ref observed for head `74c3e281...` was based on `a3c8e9a2...`, not the later protected tip, so **release remains blocked until GitHub publishes a fresh latest-base merge-ref / CI receipt that includes the newer marketing line**. Do not merge protected main into this branch merely to make ancestry current.
+
+### Release law
+
+This records PR may be accepted only after:
+- exact current semantic head is reviewed;
+- all 80 union rows remain pinned and the other 50 baseline rows remain unchanged;
+- latest-base merge-ref includes current protected main with the unrelated marketing CI change preserved;
+- required fences / contract-delta / records pack are green on that exact semantic head;
+- no unresolved review thread or newer F00C writer invalidates the fold.
+
+The sibling CSV PRs close **only after** this carrier's readback proves their accepted evidence is present.
+
+
+---
+
 **origin/main SHA:** `0dbc87292d2728e891c4a72288ff5f58f02149fe`
 **CSV blob sha256:** `078d1f6dc29b49aba2eb61c7ff9208b871e5c3df1928288ca75ba81329f33dd5`
 **Ratified by:** Meta-CEO B seat 026851bd, 2026-09-18
