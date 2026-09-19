@@ -206,6 +206,17 @@ jobs:
           run_py "build vector + landing hub" scripts.build_vector
           run_py "AI brief page (build_aibrief)" scripts.build_aibrief
           exit 0
+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        # AFTER this job's brief producers (build_aibrief above). Slot =
+        # site/master_brief.json field state_asof. Writes public.brief_deliveries
+        # only (insert on conflict do nothing). Fail-soft: absent creds/tables
+        # -> typed miss, 0 rows, exit 0.
+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
+        run: python -m scripts.build_recurring_briefs --cadence weekly_saturday || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: rebuild stock-search libraries (resilient — guarantees the analyzers ship)
         # build_china/build_hk/build_canada (and build_intl via a build_vector hook)
         # swallow errors; rebuild the per-stock search JSON (site/chinastockdata,
