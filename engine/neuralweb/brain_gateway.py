@@ -729,7 +729,10 @@ _RESEARCH_PERCENT = re.compile(
     r"confident|conviction|sure|certain|probability|odds|chance)\b"
     r"|(?:confidence|conviction|probability|odds)\s+"
     r"(?:\s*(?:of|is|at|about|around|near|roughly|approximately)\s+)*"
-    r"\d{1,3}(?:\.\d+)?\s*%",
+    r"\d{1,3}(?:\.\d+)?\s*%"
+    r"|成功率\s*\d{1,3}%\s*(?:把握)?"         # 成功率80%, 成功率80%把握
+    r"|\d{1,3}%\s*的?\s*把握(?!\S)"         # 80%把握, 我有80%的把握 (no \b — CJK is word-char; (?!\S) blocks trailing word chars)
+    r"|[一二三四五六七八九十百千0-9成\s]{1,6}把握",   # 八成把握, 成功率八成把握
     re.I,
 )
 _RESEARCH_STAR = re.compile(r"\b(?:[1-5]|five|four|three|two|one)[-\s]?stars?\b|[★☆]{1,5}", re.I)
@@ -746,11 +749,14 @@ _RESEARCH_FALSIFIER = re.compile(r"\bfalsifier\b|\brefuted\b|证伪", re.I)
 # Spec (4): *imperative* buy/sell/size/target — not "funds continued to buy"
 # or "Fed target of 2 percent".
 #
-# EN price-target / target-price branch requires an imperative verb
-# (set/place/hit/cut/raise/lower/peg/establish/give/target) immediately
-# before "price target" / "target price" / "target", so a citing sentence
-# that *reports* a published price target ("The daily briefing listed a
-# published price target of 240.") is kept.
+# EN price-target / target-price branch is sentence-anchored and requires
+# the verb to be at sentence-start (start-of-string or after .!?。！？ + space),
+# so a citing sentence that *reports* a published price target ("The daily
+# briefing listed a published price target of 240.") is kept. The intervening
+# object is absorbed by (?:\S+\s+){0,3} so "Give NVDA a price target of 240
+# now." matches imperatively even with an object token between the verb and
+# "price target". "hit a target" (no "price" in phrase) is kept as a
+# reportative noun phrase.
 #
 # EN buy/sell branch mirrors the ZH shape: sentence-initial (start-of-
 # string or right after `.!?。！？` + space), then `buy|sell`, then
@@ -779,8 +785,13 @@ _RESEARCH_TRADE = re.compile(
     r"|\b(?:you\s+should|please)\s+(?:buy|sell)\b"
     r"|\b(?:buy|sell)\s+(?:now|immediately|today)\b"
     r"|\bsize\s+(?:it|the\s+position|your\s+(?:position|size|book))\b"
-    r"|\b(?:set|place|hit|cut|raise|lower|peg|establish|give|target)\s+"
-    r"(?:a\s+)?(?:price\s+target|target\s+price|target)\b"
+    # MAJOR 1 fix: sentence-anchored price/target-price imperative;
+    # absorbs 0-3 intervening tokens so "Give NVDA a price target of 240"
+    # matches even with an object between verb and price-target phrase.
+    r"|(?:^|(?<=[.!?。！？]\s))(?:set|place|give|establish|peg)\s+"
+    r"(?:\S+\s+){0,3}(?:price\s+target|target\s+price)\b"
+    # Sentence-anchored bare target imperative (set/cut/raise/lower + "a target").
+    r"|(?:^|(?<=[.!?。！？]\s))(?:set|cut|raise|lower)\s+\S+\s+target\b"
     r"|(?:^|(?<=[.!?。！？]))\s*(?:请)?(?:买入|卖出)\s+\S",
     re.I,
 )
@@ -857,11 +868,12 @@ def _user_plane_get(path: str, user_jwt: str, timeout: int = 5) -> list | None:
 
 
 # Architecture §7.7 user-facing condition words. Never "falsifier".
+# Values are plain EN+ZH sentences — the user reads the ZH plain word, not an enum.
 _RESEARCH_MONITOR_STATE_PLAIN = {
-    "ARMED": "change condition",
-    "FIRED": "at risk",
-    "RECOVERED": "recovered",
-    "DEGRADED": "data unavailable",
+    "ARMED": "change condition / 变更条件",
+    "FIRED": "at risk / 有风险",
+    "RECOVERED": "recovered / 已恢复",
+    "DEGRADED": "data unavailable / 数据不可用",
 }
 
 

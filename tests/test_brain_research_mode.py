@@ -626,6 +626,99 @@ def test_imperative_price_target_still_filtered(raw):
 
 
 # ---------------------------------------------------------------------------
+# MAJOR 1 RED-first: reportative published price-target prose must NOT be
+# withheld; object-interposed imperative "Give NVDA a price target of 240
+# now." must be forbidden.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "sentence,expect_forbidden",
+    [
+        # Reportative: cite a briefing that "hit a target" — must be kept.
+        ("The daily briefing said the index hit a target of 4800.", False),
+        # Reportative: cite a briefing that "gave a price target" — must be kept.
+        ("The daily briefing gave a price target of 240.", False),
+    ],
+)
+def test_m1_reportative_price_target_sentences_not_withheld(sentence, expect_forbidden):
+    """MAJOR 1 RED: a citing sentence that *reports* a published price target
+    ("hit a target", "gave a price target") must NOT be filtered. The EN
+    price-target branch is sentence-anchored so a mid-sentence reportative
+    verb does not match. `_research_postprocess` keeps the sentence and adds
+    no "withheld" disclosure.
+    """
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed. Index hit a target of 4800."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(sentence, corpus)
+    assert withheld is False, body
+    assert sentence.rstrip(".") in body or sentence in body, body
+    assert WITHHELD_EN not in body, body
+    assert WITHHELD_ZH not in body, body
+
+
+def test_m1_object_interposed_imperative_price_target_forbidden():
+    """MAJOR 1 RED: "Give NVDA a price target of 240 now." is an imperative
+    with an object token ("NVDA") between the verb and "price target"; it must
+    be forbidden. The sentence-anchored branch absorbs 0-3 intervening tokens
+    so the object does not block the match.
+    """
+    sentence = "Give NVDA a price target of 240 now."
+    assert gw._research_sentence_forbidden(sentence) is True
+    kept, withheld = gw._research_forbidden_filter(sentence)
+    assert withheld is True
+    assert sentence not in kept
+
+
+# ---------------------------------------------------------------------------
+# MAJOR 2 RED-first: ZH judgement-% shapes must be forbidden when originated.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        # Ruling exact strings (no trailing 。 — (?!\S) requires word-end or string-end)
+        "每日简报说成功率80%",        # 成功率80%
+        "每日简报说我有80%的把握",   # 我有80%的把握
+        "每日简报说80%把握",         # 80%把握
+        "每日简报说八成把握",        # 八成把握
+    ],
+)
+def test_m2_zh_judgment_percent_forbidden(sentence):
+    """MAJOR 2 RED: ZH originated confidence/conviction percentages —
+    成功率80%, 我有80%的把握, 80%把握, 八成把握 — are forbidden when
+    originated. `_research_sentence_forbidden` returns True; end-to-end the
+    postprocess returns withheld=True and appends the disclosure.
+    """
+    assert gw._research_sentence_forbidden(sentence) is True
+    corpus = {
+        "artifacts": [
+            gw._research_artifact("Daily briefing", "每日简报", "2026-09-12",
+                                  "US session mixed."),
+        ],
+        "jwt_present": False,
+    }
+    body, withheld = gw._research_postprocess(
+        f"每日简报说市场分化。{sentence}",
+        corpus,
+    )
+    assert withheld is True, body
+    assert WITHHELD_EN in body, body
+    assert WITHHELD_ZH in body, body
+
+
+def test_m2_en_judgment_percent_still_green():
+    """MAJOR 2: the existing EN "80% confident" case stays green."""
+    kept, withheld = gw._research_forbidden_filter("I have 80% confidence this works.")
+    assert withheld is True, kept
+    assert "80%" not in kept
+
+
+# ---------------------------------------------------------------------------
 # H2: judgement % attached to 'confident', ZH sentence split, ZH trade verbs
 # ---------------------------------------------------------------------------
 
