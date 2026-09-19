@@ -34,29 +34,30 @@ waves:
   - id: R1
     title: Investigate a material current evidence gap through a primary public source
     status: in_progress
+    pr: 7374
     depends_on: [R0]
     next_action: >
-      R1 backend contract is frozen in PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md:
-      provider-neutral search_public_sources + open_public_source; OpenAI Responses
-      web search is the first smart-discovery candidate, Brave the independent
-      lower-cost baseline, and opened source content remains the evidence authority.
-      Build/qualify the smallest company-evidence vertical slice after current
-      provider/workload credential admission; never reuse ChatGPT/Codex credentials.
+      Retain PR7374 as the single R1 source carrier. Exact head
+      d021c98d8e6f95c9bf6bc0e1e32d466c795b7d59 is under REQUEST_CHANGES:
+      close its bounded provider-response memory-safety finding and split the
+      provider-neutral public-evidence core from Tavily-specific search/extract
+      transport per comment5740501106. Keep Tavily as a qualification candidate,
+      not the authority. Then obtain fresh exact-head review/CI before any live
+      provider canary or Brain registration.
   - id: R2
     title: Deliver an earnings-to-financial-bridge thesis investigation
-    status: awaiting_ci
-    pr: 7365
+    status: awaiting_review
+    pr: 7217
     depends_on: [R0]
     next_action: >
-      Retain Draft PR7365 and exact repaired head
-      ef008862f60f72f712a7d1e0a47a01313a81c123. Current local proof is
-      618 passed with five existing warnings. The second exact-head read-only Opus
-      review returned PASS (digest c5cc8f3576456c12b82de07a1793ed3b38ffbfb483b100c583e1535e2353bcd0)
-      after the first review's blockers were repaired test-first. Exact-head hosted
-      CI remains queued/running. Source Continuity refuses REMOTE_CENSUS_INCOMPLETE
-      because the protected verifier caps the open-PR census at256 while the repo
-      currently exceeds that count; do not patch that owner or invent a PASS.
-      After review/CI, compose with accepted R0 before any production proof.
+      PR7217 is the incumbent financial-calculation/Brain integration carrier at
+      95e1ff263f368d5efe41d9626edeb22303b7b2ce. Exact-head hosted fences/CI,
+      contract-delta, all12 semantic packs and ci-gate are green. Independent review
+      remains WAITING_CAPACITY; the MacBook Opus surface is not logged in and no
+      reviewer START/PASS is claimed. Preserve PR7365 ef008862... as terminal
+      evidence-only duplicate; its unique financial-thesis playbook may be adapted
+      to calculate_financial_bridge only in a later bounded consolidation after
+      clean writer/release custody.
   - id: R3
     title: Save and update a research case through real monitoring
     status: todo
@@ -101,13 +102,12 @@ artifacts:
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
 next_action: >
-  Consume concluded exact-head CI for PR7365 at ef008862f60f72f712a7d1e0a47a01313a81c123.
-  Exact-head independent review is PASS; repair only any new material CI/integration
-  finding on this same branch.
-  Keep Draft/HOLD until review, CI, canonical continuity handling, R0 composition
-  and real customer/browser proof are each satisfied. R1 public-research backend
-  qualification may proceed independently through existing provider/source owners.
-  No new product behavior is live.
+  Consume the next material return on the two incumbent carriers: PR7217 needs one
+  independent exact-head review before source acceptance, while PR7374 must return
+  its provider-neutral/security repair on the same branch. Do not revive duplicate
+  PR7365 or the separate local R1 prototype. In parallel, continue read-only gateway
+  latency/context diagnosis from the preserved production Fast runs. R0 PR7152,
+  Source Continuity and real browser/customer proof remain separate release gates.
 ---
 
 ## 2026-09-19 source publication, adversarial review and current gates
@@ -170,6 +170,85 @@ vertical-slice proof are appended to the qualification artifact.
 This is a design/qualification delta only. No API credential, customer search,
 provider request, Brain tool, deployment, signal authority or external worker was
 activated by this ruling.
+
+## 2026-09-19 carrier reconciliation and live-model diagnosis
+
+Current protected procedure pin: Mastermind `733389933e605e508517732fb6c69b6c18b7fef6`,
+Skillpack1.0.1/bootstrap1. This section supersedes the older claim below that PR7365
+is the canonical R2 calculator source; historical evidence remains useful but its
+source authority does not.
+
+### R2 canonical carrier
+
+Immutable chronology established PR7217 as the earlier financial-calculation
+operation. PR7365 was terminally frozen by Sol at
+`ef008862f60f72f712a7d1e0a47a01313a81c123`; do not merge or resume its
+`analyze_financial_scenario` calculator. Its exact-head Opus PASS remains evidence
+about that duplicate implementation. Preserve only its unique
+`play_financial_thesis.md` concept/routing tests for possible later consolidation.
+
+PR7217 is the incumbent calculator + actual Brain consumer:
+`calculate_financial_bridge`, head
+`95e1ff263f368d5efe41d9626edeb22303b7b2ce`. Its hosted release evidence is
+terminal green: fences run35424761646 and CI run35424761828; contract-delta,
+ci-plan, all12 semantic packs and ci-gate succeeded. It remains BUILT_NOT_PROVEN
+because independent review is WAITING_CAPACITY, Source Continuity/custody and R0
+composition remain held, and there is no production customer/browser acceptance.
+Direct MacBook read-only Opus was checked and reports Not logged in; no reviewer was
+fabricated.
+
+### R1 canonical carrier
+
+PR7374 is the single public-research source writer. A separate local provider-neutral
+prototype was discovered to overlap and is frozen/unpublished; it must not become a
+second source authority. PR7374 head
+`d021c98d8e6f95c9bf6bc0e1e32d466c795b7d59` is under REQUEST_CHANGES. Existing
+Sol finding comment5740387306 requires provider-response byte bounds before JSON
+decode. Architecture reconciliation comment5740501106 additionally requires:
+provider-neutral core request/evidence semantics, structured minimal-public evidence
+requests rather than raw customer prompt/query, search!=opened evidence, Tavily
+Search/Extract behind an adapter rather than core authority, HTTPS-only normalized
+opened evidence, and provider substitution compatibility. Keep Tavily's hardening
+and probe/tests where compatible; no credential/provider canary or Brain registration
+is authorized before repaired exact-head review/CI.
+
+### Production Fast diagnosis — model capable, harness still weak
+
+Production health returned deployed commit/checkout `dfcab92360`. The deployed
+system prompt still contains the broad “hypotheticals — decline” line, so R0 remains
+a real consistency repair even though not every hypothetical is refused.
+
+Real production Fast SSE run
+`b0f915de059046e1a46d698d7c609d40` used reported model
+`deepseek-v4-pro` on a supplied EPS5→6 / P-E20→15 case. It used no tools and
+correctly derived price100→90 / return−10%, explained earnings-vs-multiple logic,
+offered plausible rerating mechanisms and named forward revisions/rates as the
+discriminating evidence. It consumed12440 input tokens and1160 output tokens in
+~18.96s. This falsifies the broad claim that the Fast DeepSeek model cannot perform
+financial reasoning; the product weakness is conditional/harness-dependent.
+
+A current NVDA Fast SSE run
+`eeaae8751b774e6d9dbef5555b123699` used `get_market_events` and
+`get_symbol_context`, formed two competing explanations, listed supporting and
+contradictory observations, rejected post-close/low-grade items as causal evidence,
+and named missing intraday/sector-relative evidence rather than pretending certainty.
+The durable run completed (done=true, cancelled=false, truncated=false) even though
+the first client socket timed out. Replay shows1880 input tokens,2396 output tokens,
+two model rounds (~31.0s + ~33.6s), tool time under250ms total, first visible answer
+~55s and total66.127s.
+
+Therefore current flagship priorities are not “replace DeepSeek because it cannot
+analyze.” They are: (1) remove inconsistent scope/harness suppression; (2) add real
+public research/search+opened-source evidence; (3) move arithmetic to deterministic
+tools; (4) make evidence/alternative-testing procedures default rather than
+prompt-dependent; and (5) reduce model-round latency/context/tool overhead. Tool
+latency was negligible versus model rounds in the NVDA canary.
+
+A synchronous Fast diagnostic separately returned HTTP524 around15.5s; do not replay
+that exact request. The actual widget's SSE path deliberately registers a durable
+server run before streaming and supports status/resume, so future quality canaries
+must use the durable SSE/run-status path rather than treating the synchronous endpoint
+as the normal long-turn customer route.
 
 ## Current continuation — arithmetic integrity and streaming proof
 
