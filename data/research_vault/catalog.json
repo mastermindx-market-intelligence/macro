@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T09:10:35.776434+00:00",
-  "count": 2419,
+  "generated_at": "2026-09-19T09:25:45.160328+00:00",
+  "count": 2420,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1088,6 +1088,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 26,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-j3oobcgdnbj-74c483",
+      "title": "Americas Business & Information Services Child care online searches remain healthy though RTO is plateauing",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:30Z",
+      "summary_points": [
+        "Child Care Search Demand Stronger for BFAM: Google search volumes for \"child care near me\" remain 15-20% above pre-COVID (57 vs 48 Q3 avg), with strong revenue correlation (0.64) vs KLC’s weak link (0.15), signaling sustained demand tailwind for BFAM.",
+        "BFAM Occupancy & Back-Up Care Drive EPS: High-60s occupancy (up from mid-60s) and 19% y/y back-up care growth support double-digit EPS growth, contrasting KLC’s expected 300bps occupancy decline to ~65% by 2026 due to execution gaps.",
+        "BFAM Valuation Discount vs Peer: Buy-rated at $93 (14.0x NTM P/E), trading at 17.6% discount to peer median (17.0x), while KLC neutral at $3.90 (5.0x P/E) vs 41.2% discount to peer median (8.5x).",
+        "Divergent RTO Impact: BFAM revenue positively correlates (0.22) with office recovery (53% of pre-COVID), while KLC negatively correlates (0.78), highlighting BFAM’s employer-sponsored model advantage over KLC’s community centers.",
+        "KLC Execution Risks Materialize: Leadership gaps, inconsistent tours, and weak inquiry-to-enrollment conversion drive occupancy decline, with initiatives (AI, segmentation) offering uncertain near-term relief."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
