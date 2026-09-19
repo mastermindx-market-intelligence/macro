@@ -11,14 +11,14 @@ claim: >
   and returns a reviewed receipted finding to the originating event context. Public
   Earnings Wire breadth is already 5,581 call records.
 falsifier: >
-  Refute or revise this claim by demonstrating on current main and the real production
-  path either (a) a broad disjoint issuer cohort already publishing receipt-bound
-  post-print issuer/sector KPI digests through event_workspace, (b) FIF-7 accepted
-  complete with broad KPI/guidance convergence, or (c) a production event-triggered
-  forensic loop that performs bounded company/peer evidence acquisition and returns
-  a reviewed receipted finding to the original company-event context. A source-only
-  design, fixture, transcript-only Wire record, or interactive one-shot chat answer
-  does not falsify the autonomous-loop claim.
+  Re-run the current-source and real-path probes recorded in #7347 and refute or revise
+  this claim by demonstrating either (a) a broad disjoint issuer cohort already
+  publishing receipt-bound post-print issuer/sector KPI digests through
+  event_workspace, (b) FIF-7 accepted complete with broad KPI/guidance convergence,
+  or (c) a production event-triggered forensic loop that performs bounded company/peer
+  evidence acquisition and returns a reviewed receipted finding to the original
+  company-event context. A source-only design, fixture, transcript-only Wire record,
+  or interactive one-shot chat answer does not falsify the autonomous-loop claim.
 so_what: >
   Do not create a Maerino-parity workstream, second research engine, second metric
   registry, queue or store. Preserve E3-C for cross-issuer event/Q&A admission and
@@ -32,11 +32,11 @@ so_what: >
 kind: data
 verified_at: 2026-09-18
 verified_by: >
-  Macro main 1c4e91ca1d193e60c777377b22dabdc6fbb4c8a1;
-  real-path GET /stocks/earnings/ showed 5,581 records;
-  GET /api/event-workspace/{AAPL,DHI,PHM,KBH,TOL} returned live public glances
-  while KR returned 404; production_registry source and tests pin len==5;
-  WS:FINANCIAL-INTELLIGENCE-FABRIC records FIF-7 todo;
+  #7347 records the exact commands/probes and source pin. Macro main
+  1c4e91ca1d193e60c777377b22dabdc6fbb4c8a1; real-path GET /stocks/earnings/
+  showed 5,581 records; GET /api/event-workspace/{AAPL,DHI,PHM,KBH,TOL} returned
+  live public glances while KR returned 404; production_registry source and tests pin
+  len==5; WS:FINANCIAL-INTELLIGENCE-FABRIC records FIF-7 todo;
   COMPANY_EVENT_INTELLIGENCE_SPINE assigns bounded cited event questions to existing
   Brain/Research OS; engine/research_factory/schema.py shows trial/experimental
   candidate types, trial accounting and screening/challenge/review states rather than
@@ -47,7 +47,7 @@ scope:
   - WS:FINANCIAL-INTELLIGENCE-FABRIC
   - WS:ALPHA-INTELLIGENCE-INTEGRATION
   - research/MAERINO_COMPETITIVE_TEARDOWN_AND_GAP_CENSUS_2026-09-18.md
-confidence: high
+confidence: verified
 ---
 
 # Boundary
