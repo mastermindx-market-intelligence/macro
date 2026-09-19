@@ -956,3 +956,84 @@ def test_w7_builder_registers_rank_races_only_after_publication_before_shadow_wr
     shadow = source.index('board_shadow.write_shadow(calls, market="HK"')
     assert persist < h3 < shadow
     assert persist < x1 < shadow
+
+
+# --- Wave 7b: broad-coverage beta-neutral RS SCREEN rank race ---
+def test_w7b_bnrs_authority_is_explicitly_screen_not_selection_alpha():
+    assert hki.BNRS_STATUS == "SCREEN"
+    assert hki.BNRS_AUTHORITY == "candidate_intelligence_screen"
+    assert hki.BNRS_DEFINITION == "hk_beta_neutral_rs_screen_rank_v1"
+    assert hki.BNRS_DEFINITION not in set(hki.RANK_DEFINITIONS.values())
+
+
+def test_w7b_bnrs_ranker_scores_exact_incumbent_population_missing_stays_null():
+    calls = [
+        {"ticker": "LEADER.HK"},
+        {"ticker": "MID.HK"},
+        {"ticker": "MISSING.HK"},
+        {"ticker": "NAN.HK"},
+        {"ticker": "LEADER.HK"},  # duplicate owner identity: first occurrence wins
+        {"ticker": None},
+    ]
+    screen = {
+        "LEADER.HK": 2.1,
+        "MID.HK": 0.25,
+        "NAN.HK": float("nan"),
+        "OFFLIST.HK": 9.9,
+    }
+    out = hki.rank_bnrs_calls(calls, screen)
+    assert list(out) == ["LEADER.HK", "MID.HK", "MISSING.HK", "NAN.HK"]
+    assert "OFFLIST.HK" not in out
+    assert out["LEADER.HK"]["score_raw"] == pytest.approx(2.1)
+    assert out["MID.HK"]["score_raw"] == pytest.approx(0.25)
+    assert out["MISSING.HK"] == {"score_raw": None, "score_conservative": None}
+    assert out["NAN.HK"] == {"score_raw": None, "score_conservative": None}
+    assert all(v["score_conservative"] is None for v in out.values())
+
+
+def test_w7b_bnrs_ranker_persists_same_population_in_existing_lane_a(tmp_path, monkeypatch):
+    _hk_on(monkeypatch)
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(
+        bs,
+        "_read_incumbent_positions",
+        lambda _market, _asof: {"LEADER.HK": 1, "MID.HK": 2, "MISS.HK": 3},
+    )
+    bs.CHALLENGER_REGISTRY.clear()
+    calls = [
+        {"ticker": "LEADER.HK", "group": "buy", "board_definition": "hk_prophet_v2"},
+        {"ticker": "MID.HK", "group": "buy", "board_definition": "hk_prophet_v2"},
+        {"ticker": "MISS.HK", "group": "watch", "board_definition": "hk_prophet_v2"},
+    ]
+    try:
+        bs.register_challenger(
+            "HK", hki.BNRS_DEFINITION,
+            rank_fn=lambda incoming: hki.rank_bnrs_calls(
+                incoming, {"LEADER.HK": 1.8, "MID.HK": 0.4}
+            ),
+        )
+        receipt = bs.write_shadow(calls, market="HK", asof=ASOF)
+        assert receipt["written"] == 3
+        stored = pd.read_parquet(bs._lane_a_path("HK"))
+        assert set(stored["ticker"]) == {"LEADER.HK", "MID.HK", "MISS.HK"}
+        assert set(stored["population_n"]) == {3}
+        assert set(stored["challenger_offlist_n"]) == {0}
+        assert float(stored["challenger_coverage"].iloc[0]) == pytest.approx(2 / 3)
+        by = stored.set_index("ticker")
+        assert int(by.loc["LEADER.HK", "challenger_rank"]) == 1
+        assert int(by.loc["MID.HK", "challenger_rank"]) == 2
+        assert pd.isna(by.loc["MISS.HK", "challenger_rank"])
+    finally:
+        bs.CHALLENGER_REGISTRY.clear()
+
+
+def test_w7b_builder_reuses_existing_bnrs_after_publication_before_shadow_write():
+    source = (ROOT / "scripts" / "build_hk_library.py").read_text()
+    compute = source.index("bnrs = (hk_stock_signals.beta_neutral_rs(")
+    persist = source.index('(fdir / "hk_standouts.json").write_text(')
+    definition = source.index("hk_native_intelligence.BNRS_DEFINITION", persist)
+    shadow = source.index('board_shadow.write_shadow(calls, market="HK"')
+    assert compute < persist < definition < shadow
+    # The shadow race reuses the already-computed screen map; it must not mint
+    # another beta-neutral calculation after publication.
+    assert "beta_neutral_rs(" not in source[persist:shadow]

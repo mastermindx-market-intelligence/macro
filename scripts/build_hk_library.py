@@ -2236,6 +2236,17 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         # board_shadow, and non-ACCRUING family reads stay null.
         _hk_rank_family_rows = _hk_disc_evidence["native_families"]
 
+        # Broad-coverage SCREEN race: reuse the beta-neutral RS map computed
+        # earlier for the live screen. It is captured only after publication,
+        # cannot originate names, and remains distinct from H3/X1 selection
+        # evidence and from the live fused hk_edge.
+        _hk_bnrs_rank_values = dict(bnrs or {})
+
+        def _hk_bnrs_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_bnrs_calls(
+                _calls, _hk_bnrs_rank_values,
+            )
+
         def _hk_h3_rank_fn(_calls: list[dict]) -> dict:
             return hk_native_intelligence.rank_family_calls(
                 _calls, _hk_rank_family_rows, "h3_ah_discount",
@@ -2249,6 +2260,11 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         def _hk_discovery_fn(_asof_arg: str) -> list[dict]:
             return hk_discovery_challenger.build_candidates(_hk_disc_evidence, _asof_arg)
 
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.BNRS_DEFINITION,
+            rank_fn=_hk_bnrs_rank_fn,
+        )
         board_shadow.register_challenger(
             "HK",
             hk_native_intelligence.RANK_DEFINITIONS["h3_ah_discount"],

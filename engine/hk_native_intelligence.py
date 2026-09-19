@@ -39,6 +39,47 @@ RANK_DEFINITIONS = {
     "x1_atwin_momentum": "hk_x1_atwin_momentum_rank_v1",
 }
 
+# Broad-coverage HK screen. The masterplan explicitly classifies beta-neutral
+# relative strength as candidate/intelligence SCREEN input only until separately
+# promoted. Keep it outside RANK_DEFINITIONS so it cannot be mistaken for the
+# two ACCRUING selection-evidence families above.
+BNRS_STATUS = "SCREEN"
+BNRS_AUTHORITY = "candidate_intelligence_screen"
+BNRS_DEFINITION = "hk_beta_neutral_rs_screen_rank_v1"
+
+
+def rank_bnrs_calls(
+    calls: Iterable[Mapping[str, Any]],
+    screen_values: Mapping[str, Any] | None,
+) -> dict[str, dict[str, float | None]]:
+    """Project existing beta-neutral RS onto exactly the incumbent population.
+
+    This is a zero-authority SCREEN race. It never originates a name, never
+    substitutes missing with zero and has no conservative haircut because no
+    such calibration is frozen for this screen.
+    """
+    values = screen_values or {}
+    out: dict[str, dict[str, float | None]] = {}
+    for call in calls or ():
+        raw_ticker = call.get("ticker") if isinstance(call, Mapping) else None
+        if raw_ticker in (None, ""):
+            continue
+        ticker = str(raw_ticker)
+        if ticker in out:
+            continue
+        score: float | None = None
+        try:
+            candidate = float(values.get(ticker))
+        except (TypeError, ValueError):
+            candidate = float("nan")
+        if np.isfinite(candidate):
+            score = candidate
+        out[ticker] = {
+            "score_raw": score,
+            "score_conservative": None,
+        }
+    return out
+
 
 def rank_family_calls(
     calls: Iterable[Mapping[str, Any]],
