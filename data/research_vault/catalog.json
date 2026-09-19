@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T14:56:13.766809+00:00",
-  "count": 2436,
+  "generated_at": "2026-09-19T15:11:16.749068+00:00",
+  "count": 2437,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -664,6 +664,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ufoyag77ai5-ae6a24",
+      "title": "Prime Services Weekly Report 9.18.26",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:46:08Z",
+      "summary_points": [
+        "Leverage Exposure Surge: Gross leverage +4.6 pts to 309.2% (65th percentile), Net leverage +0.7 pts to 77.5% (34th percentile)—heightened risk exposure despite GS Fundamental L/S Performance Estimate falling -1.02% (vs MSCI World TR +0.35%).",
+        "Euro Equity Buying Acceleration: European equities net bought fastest in 5 months (1.9x short covers vs long buys), led by Germany/France/Ireland (7/11 sectors net bought), with Industrials/Info Tech as top contributors.",
+        "Energy Sector Overweight Sell-Off: Global Energy net sold fastest in 4 months (equal short/long sales), over-weight vs MSCI World by +0.4% (91st percentile), with Gross/Net allocations at 4.7%/5.5% (high percentile vs past 5 years).",
+        "Real Estate Rotation Momentum: Real Estate leads with highest long buying (+2.71 SDs) and short selling (-1.98 SDs), indicating significant sector rotation momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
