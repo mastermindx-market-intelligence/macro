@@ -21,10 +21,11 @@ credential token appears anywhere in the note.
 
 - Branch: `claude/mo-b-rec-ns-note-20260913`, off `origin/main` at
   `e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b`. Base `main`. Draft, no labels, not marked ready.
-- Head sha: `153254dbf5593e8c0d425a03a183d0bd247ba19b`
-- Files changed (3, equal to `gh pr view --json files` at this head):
+- Head sha: `586835f2201e58534f85e3e26c266670f459c114`
+- Files changed (4, equal to `gh pr view --json files` at this head):
   - `.github/ci/legacy-jobs.yml` (MODIFIED, +9 −1)
-  - `research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md` (ADDED, 338 lines)
+  - `PR_BODY_W9B_REC_NS.md` (ADDED, 245 lines)
+  - `research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md` (MODIFIED, +63 −8)
   - `tests/test_w9b_rec_ns.py` (ADDED, 112 lines)
 
 One line per spec item:
@@ -241,5 +242,37 @@ Intended row attributions, written here because this PR writes nothing to the le
   the gap this note records is in the receipts directory, not in `capability_state_c2`. A row
   that meant "the receipt is in the handoff kit but not in this repository" would widen the
   vocabulary, and the records stack is the one that decides whether to widen it.
+
+## Heal h_7150 (2026-09-18)
+
+Meta-CEO B ruling seat 026851bd, 2026-09-18: BLOCKER and MAJOR closed on branch
+`claude/mo-b-rec-ns-note-20260913` with one new commit `586835f2201e58534f85e3e26c266670f459c114`.
+
+BLOCKER fixed — date of `origin/main` read:
+- Old: "both on 2026-09-13" for `e0e3fda2fa2a44d8d64c3f0a52b9d56c1de3653b`
+- True: `e0e3fda2fa2a` was committed 2026-09-14T00:06Z (UTC-7)
+- Fix: note line 12 now reads "committed 2026-09-14T00:06Z"
+
+MAJOR fixed — re-verify block added to note at line 17–60:
+- Current `origin/main` = `9aae769b3e9900b287127b6f2ffda7c980e4beb6`
+- Receipts 0012–0016: verified present on macro
+- RESERVATIONS 0017–0023: all `state=taken, pr_state=merged, applied=True`
+- Terminal PRs 577/579/581: all CLOSED/MERGED; the 0024 collision resolved by records stack;
+  0026 confirmed as `state=reserved` per the seat ruling h_t581
+- Commands verbatim in the note re-verify block
+
+MINOR fixed — HOLD language on 0024-claimers:
+- Note §3 "What this note deliberately does not do" now reads "three Terminal pull requests that
+  **named** `0024` (HOLD — collision still live at the time of writing; the re-verify block above
+  shows the subsequent resolution)"
+
+Files changed at this head (equal to `gh pr view --json files`):
+  `.github/ci/legacy-jobs.yml` (MODIFIED)
+  `PR_BODY_W9B_REC_NS.md` (ADDED)
+  `research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md` (MODIFIED)
+  `tests/test_w9b_rec_ns.py` (ADDED)
+
+Test suite: `python3 -m pytest tests/test_w9b_rec_ns.py -q -p no:cacheprovider` → green at both
+old head (8eca1c3) and new head (586835f2).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
