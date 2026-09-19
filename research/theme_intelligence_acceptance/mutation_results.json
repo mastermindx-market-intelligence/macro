@@ -1,0 +1,56 @@
+{
+  "mutations": [
+    {
+      "expected_effect": "watch check must remain rejected",
+      "id": "false_watch_green_without_transition",
+      "killed": true,
+      "observed_product_verdict": "REJECTED_CURRENT_SOURCE"
+    },
+    {
+      "expected_effect": "fired priority mutation must fail the lane matrix",
+      "id": "fired_priority_removed",
+      "killed": true,
+      "observed_failed_case_ids": [
+        "fired_dominates_precipice"
+      ]
+    },
+    {
+      "expected_effect": "crowding priority mutation must fail the lane matrix",
+      "id": "high_crowding_priority_removed",
+      "killed": true,
+      "observed_failed_case_ids": [
+        "high_crowding_dominates_precipice"
+      ]
+    },
+    {
+      "expected_effect": "artifact/card mismatch must fail path consistency",
+      "id": "published_card_lane_mismatch",
+      "killed": true,
+      "observed_status": "FAIL"
+    },
+    {
+      "expected_effect": "published state/fired mismatch must fail path consistency",
+      "id": "published_falsifier_state_mismatch",
+      "killed": true,
+      "observed_status": "FAIL"
+    },
+    {
+      "expected_effect": "authority escalation must fail invariance",
+      "id": "rank_authority_enabled",
+      "killed": true,
+      "observed_status": "FAIL"
+    },
+    {
+      "expected_effect": "the preregistered bounded semantic repair must clear all source checks",
+      "id": "clean_precipice_repair_discriminator",
+      "killed": true,
+      "observed_product_verdict": "ACCEPTABLE_SOURCE_SEMANTICS"
+    }
+  ],
+  "n_killed": 7,
+  "n_mutations": 7,
+  "operation_key": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "schema": "theme_intelligence.acceptance_mutations.v1",
+  "status": "PASS",
+  "subject": "68f80a8edf78966a3a89e1294038654944e9c217"
+}

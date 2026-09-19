@@ -1,0 +1,12 @@
+{
+  "baseline_failed_checks": [
+    "watch_invalidation",
+    "lane_matrix"
+  ],
+  "baseline_product_verdict": "REJECTED_CURRENT_SOURCE",
+  "mutation_count": 7,
+  "mutations_killed": 7,
+  "schema": "theme_intelligence.acceptance_spec_result.v1",
+  "status": "PASS",
+  "subject": "68f80a8edf78966a3a89e1294038654944e9c217"
+}
