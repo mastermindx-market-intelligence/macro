@@ -328,6 +328,7 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
         "always() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
 
