@@ -8,6 +8,7 @@ RIOs themselves.
 """
 from __future__ import annotations
 
+from collections import Counter
 from datetime import datetime
 import hashlib
 import json
@@ -150,16 +151,26 @@ def _row_sort_key(row: dict[str, Any]) -> str:
     )
 
 
-def _set_delta(
+def _multiset_delta(
     previous: Iterable[str],
     current: Iterable[str],
 ) -> dict[str, list[str]]:
-    prior = set(previous)
-    now = set(current)
+    prior = Counter(value for value in previous if value)
+    now = Counter(value for value in current if value)
+    added: list[str] = []
+    removed: list[str] = []
+    shared: list[str] = []
+    for value in sorted(set(prior) | set(now)):
+        common = min(prior[value], now[value])
+        shared.extend([value] * common)
+        if now[value] > prior[value]:
+            added.extend([value] * (now[value] - prior[value]))
+        elif prior[value] > now[value]:
+            removed.extend([value] * (prior[value] - now[value]))
     return {
-        "added_sha256": sorted(now - prior),
-        "removed_sha256": sorted(prior - now),
-        "shared_sha256": sorted(prior & now),
+        "added_sha256": added,
+        "removed_sha256": removed,
+        "shared_sha256": shared,
     }
 
 
@@ -258,13 +269,13 @@ def compare_institutional_rio_evidence(
 
     prior_claim_hashes = _claim_hashes(prior)
     current_claim_hashes = _claim_hashes(now)
-    claims = _set_delta(prior_claim_hashes, current_claim_hashes)
+    claims = _multiset_delta(prior_claim_hashes, current_claim_hashes)
 
     prior_thesis = prior["analysis"]["thesis"]
     current_thesis = now["analysis"]["thesis"]
     prior_mechanisms = _hashed_values(prior_thesis.get("mechanism") or [])
     current_mechanisms = _hashed_values(current_thesis.get("mechanism") or [])
-    mechanisms = _set_delta(prior_mechanisms, current_mechanisms)
+    mechanisms = _multiset_delta(prior_mechanisms, current_mechanisms)
 
     prior_numbers = _hashed_values(
         number for claim in prior["claims"] for number in claim.get("numbers") or []
@@ -272,7 +283,7 @@ def compare_institutional_rio_evidence(
     current_numbers = _hashed_values(
         number for claim in now["claims"] for number in claim.get("numbers") or []
     )
-    numbers = _set_delta(prior_numbers, current_numbers)
+    numbers = _multiset_delta(prior_numbers, current_numbers)
 
     prior_entities = sorted(
         {
