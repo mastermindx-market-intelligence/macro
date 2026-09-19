@@ -495,13 +495,18 @@ def channel_records(signals: dict, affiliations: dict | None = None, *,
             r["channels"][channel] = detail
 
     # --- congress: cluster (>=3 members) outranks a single buyer ---
-    for r in signals.get("political", {}).get("buys", []):
+    # The page leaderboards are capped, but machine intelligence must see EVERY ticker.
+    political = signals.get("political", {}) or {}
+    political_rows = list((political.get("by_ticker") or {}).values()) or political.get("buys", [])
+    for r in political_rows:
         members = int(r.get("members") or 0)
-        if r.get("net", 0) <= 0:
-            continue
         m = rec(r["ticker"])
         if m is not None:
             m["metrics"].update(congress_net=r.get("net"), congress_members=members)
+            # Named congressional rows are rights-gated from commercial sponsorship.
+            # Keep only the pre-existing aggregate political metrics here.
+        if r.get("net", 0) <= 0:
+            continue
         if members >= 3:
             add(r["ticker"], "congress_cluster", f"{members} members net +{r['net']}", drops=("congress_buy",))
         else:
@@ -540,14 +545,18 @@ def channel_records(signals: dict, affiliations: dict | None = None, *,
         elif sp >= _LOBBY_FLOOR:
             add(r["ticker"], "lobbying", f"${sp:,.0f} lobbied")
 
-    # --- insiders: cluster (>=3 buyers) outranks a single buy ---
-    for r in signals.get("insiders", {}).get("buys", []):
-        if (r.get("net_usd") or 0) <= 0:
-            continue
+    # --- insiders: cluster (>=3 DISTINCT buyers) outranks a single buy ---
+    insiders = signals.get("insiders", {}) or {}
+    insider_rows = list((insiders.get("by_ticker") or {}).values()) or insiders.get("buys", [])
+    for r in insider_rows:
         buyers = int(r.get("buyers") or 0)
         m = rec(r["ticker"])
         if m is not None:
             m["metrics"].update(insider_net_usd=r.get("net_usd"), insider_buyers=buyers)
+            if r.get("events"):
+                m["metrics"].setdefault("sponsorship", {})["insiders"] = r["events"][:5]
+        if (r.get("net_usd") or 0) <= 0:
+            continue
         if buyers >= 3:
             add(r["ticker"], "insider_cluster", f"{buyers} insiders, ${r['net_usd']:,.0f} net", drops=("insider_buy",))
         else:

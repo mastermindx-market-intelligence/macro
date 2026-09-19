@@ -4794,6 +4794,11 @@ jobs:
         run: python -m pytest tests/test_push_retry.py -q
       - name: append-only base fence (real-incident replay, withhold, quiet-night property)
         run: python -m pytest tests/test_append_only_base_fence.py -q
+      - name: targeted Quiver insider backfill workflow contract
+        # The sponsorship repair extends the existing backfill workflow rather than minting
+        # another collector lane. Keep its secret handoff + --only contract under a code-gated
+        # workflow owner so the production recovery path cannot ship as a dark test.
+        run: python -m pytest tests/test_quiver_backfill_workflow.py -q
 
   transmission-chains:
     if: ${{ false }}
@@ -10885,6 +10890,12 @@ jobs:
         run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
         run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_ticker_shape.py -q
+      - name: named sponsorship intelligence end-to-end contract
+        # Same intelligence family, same pandas/jinja dependency closure. This proves a named
+        # Official SEC Form-4 evidence survives PIT normalization through the user brief;
+        # named congressional rows remain quarantined from commercial sponsorship output,
+        # and the top-officer discovery source stays measuring/ranking-ineligible.
+        run: python -m pytest tests/test_sponsorship_intelligence.py -q
       # R1A-M (2026-09-02): exact market pulse roster/markup (needs the same
       # jinja2 + pandas closure scripts.build_intel_hub already pulls in this
       # job) plus the route-scoped controller's node-executed contract.

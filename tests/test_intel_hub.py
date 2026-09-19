@@ -559,3 +559,38 @@ if __name__ == "__main__":
         if k.startswith("test_") and callable(v) and "monkeypatch" not in inspect.signature(v).parameters and "tmp_path" not in inspect.signature(v).parameters:
             print("run via pytest (fixtures needed):", k)
     print("use pytest")
+
+
+
+def test_measuring_discovery_is_visible_and_graded_but_not_ranked():
+    b = _bundle({"INUNI": _news("pos")}, [_sig("INUNI", 70)])
+    cand = {"ticker": "OFF", "source": "top_officer_buy", "disc_score": 0.45,
+            "event_strength": 0.95, "ranking_eligible": False,
+            "qualification_status": "measuring", "off_desk": True,
+            "reason": "CEO open-market buy $10,000,000"}
+    disc = {"by_ticker": {"OFF": cand}, "candidates": [cand], "off_desk": [cand],
+            "n": 1, "n_off_desk": 1}
+    hub = H.build(b, None, {}, today=_TODAY, discovery=disc)
+    assert "OFF" not in [d["ticker"] for d in hub["command"]]
+    assert "OFF" in [d["ticker"] for d in hub["discovery"]]
+    row = next(r for r in hub["track_rows"] if r["t"] == "OFF")
+    assert row["source"] == "top_officer_buy" and row["stage"] == "discovery"
+    assert row["opp"] is None and row["edge"] is None and row["lean"] == 1
+    assert hub["universe_scope"]["n_measuring_off_desk"] == 1
+
+
+def test_measuring_on_desk_discovery_does_not_move_opportunity_or_edge():
+    base = _bundle({"INTC": _news("neutral", n=0)})
+    plain = H.build(base, None, {}, today=_TODAY)["command"][0]
+    cand = {"ticker": "INTC", "source": "top_officer_buy", "disc_score": 0.45,
+            "event_strength": 0.95, "ranking_eligible": False,
+            "qualification_status": "measuring", "off_desk": False,
+            "reason": "CEO open-market buy $10,000,000"}
+    disc = {"by_ticker": {"INTC": cand}, "candidates": [cand], "n": 1, "n_off_desk": 0}
+    measured_hub = H.build(base, None, {}, today=_TODAY, discovery=disc)
+    measured = measured_hub["command"][0]
+    assert measured["opportunity_score"] == plain["opportunity_score"]
+    assert measured["edge_remaining"] == plain["edge_remaining"]
+    assert "discovery" in measured["flags"]
+    row = next(r for r in measured_hub["track_rows"] if r["t"] == "INTC")
+    assert row["source"] == "top_officer_buy"

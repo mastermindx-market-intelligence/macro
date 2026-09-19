@@ -84,6 +84,13 @@ quiver:
   base_url: https://api.quiverquant.com
   timeout: 60
   retries: 3
+  # Insider Form-4 is decision-relevant for weeks, and the provider's live endpoint can
+  # miss a filing permanently when one nightly collection is skipped. Re-read a bounded
+  # filing-date overlap; append-only keep-first storage makes this a repair, not a rewrite.
+  # One week covers ordinary runner/provider delays; deeper repairs use the existing
+  # targeted backfill workflow with --full-history so nightly cost stays bounded.
+  insider_catchup_days: 7
+  insider_backfill_days: 180
 
 # TrumpFlow latent-stake entity graph. The graph is deterministic (curated
 # data/trumpflow/intel.json). `extract` gates the OPTIONAL LLM edge-extractor

@@ -25,7 +25,7 @@ them with `lib.store.read` (which assumes a datetime index). The engine
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 
@@ -192,7 +192,6 @@ class InsidersAdapter(QuiverAdapter):
     name = "quiver_insiders"; dataset = "insiders"
     endpoint = "/beta/live/insiders"
     key_cols = ("Ticker", "Date", "Name", "TransactionCode", "Shares", "fileDate")
-
 
 class FlightsAdapter(QuiverAdapter):
     # TOMBSTONE 2026-07-12: last event 2025-07-23 (~354d stale despite stale_after_days=60).

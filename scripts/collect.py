@@ -50,7 +50,7 @@ _QUIVER_KEYS = (
 _CONCURRENT_HOSTS: dict[str, str] = {
     # SEC EDGAR — fair-access <10 req/s shared across data.sec.gov / www.sec.gov / efts.sec.gov
     "edgar_8k": "sec", "edgar_13f": "sec", "edgar_trumpflow": "sec",
-    "beneficial_ownership": "sec", "edgar_dilution": "sec",
+    "beneficial_ownership": "sec", "sec_insider_live": "sec", "edgar_dilution": "sec",
     "sec_capital_structure": "sec",
     # Must remain immediately after the filing spine inside the serial SEC host
     # group: its bounded Company Facts queue is anchored only by verified
@@ -203,6 +203,7 @@ def all_adapters() -> dict:
         ("edgar_8k", "collectors.edgar_8k", "Edgar8KAdapter"),     # SEC 8-K material-event velocity (theme_event radar leg) + per-ticker material_8k convergence channel
         ("symbol_directory", "collectors.symbol_directory", "SymbolDirectoryAdapter"),  # LHB-R8: daily exchange symbol-directory archival (nasdaqlisted+otherlisted) + weekly CIK map -> data/symbol_directory/
         ("beneficial_ownership", "collectors.beneficial_ownership", "BeneficialOwnershipAdapter"),  # keyless SC 13D/13G sweep + filer enrichment -> per-ticker ownership-regime (engine/beneficial_ownership.py)
+        ("sec_insider_live", "collectors.sec_insider", "SecInsiderLiveAdapter"),  # official daily Form-4 P/S tape -> named sponsorship
         ("edgar_dilution", "collectors.edgar_dilution", "EdgarDilutionAdapter"),  # S-3/S-3ASR/424B* daily-index sweep -> data/edgar/dilution_events.parquet (nwqs-c dilution context; display-only)
         ("sec_capital_structure", "collectors.sec_capital_structure", "SecCapitalStructureAdapter"),  # immutable SEC filing evidence spine; canonical capital-structure source manifests (context-only)
         ("sec_capital_structure_companyfacts", "collectors.sec_capital_structure_companyfacts", "SecCapitalStructureCompanyFactsAdapter"),  # bounded Company Facts source evidence only, anchored by verified CS complete submissions; no share-count consumption
@@ -384,7 +385,7 @@ _CRYPTO = {"coinmetrics", "bgeo", "coinbase", "okx", "deribit", "feargreed",
            "coingecko", "crypto_universe", "defillama", "mempool",
            "wikipedia_btc", "farside"}
 _SLOW = set(_QUIVER_KEYS) | {
-    "edgar_8k", "edgar_13f", "edgar_trumpflow", "beneficial_ownership",
+    "edgar_8k", "edgar_13f", "edgar_trumpflow", "beneficial_ownership", "sec_insider_live",
     "edgar_dilution",  # nwqs-c: S-3/424B daily-index sweep; nightly-only
     "sec_capital_structure",  # immutable SEC evidence + PIT discovery; nightly-only
     "sec_capital_structure_companyfacts",  # bounded anchored SEC Company Facts source evidence; nightly-only

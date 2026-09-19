@@ -727,14 +727,21 @@ def _earnings_block(by_ticker_row: dict | None) -> dict | None:
     return {"next": nxt, "days_to": days_to}
 
 
-def _insider_block(insider_row: dict | None) -> dict | None:
-    """Insider tallies — buyers/sellers/net_mn/bps, verbatim. Omit if the ticker absent."""
-    if not isinstance(insider_row, dict):
-        return None
+def _insider_block(insider_row: dict | None, alt_row: dict | None = None) -> dict | None:
+    """Insider tallies plus already-originated named filing evidence, verbatim.
+
+    The legacy factor row remains the source of buyers/sellers/net_mn/bps.  The alt-data
+    substrate may additionally carry deterministic Form-4 event facts under
+    ``sponsorship.insiders``; copying those here does not mint a score or stance.
+    """
     blk: dict = {}
-    for k in ("buyers", "sellers", "net_mn", "bps"):
-        if k in insider_row:
-            blk[k] = insider_row[k]
+    if isinstance(insider_row, dict):
+        for k in ("buyers", "sellers", "net_mn", "bps"):
+            if k in insider_row:
+                blk[k] = insider_row[k]
+    sponsor = ((alt_row or {}).get("sponsorship") or {}).get("insiders") if isinstance(alt_row, dict) else None
+    if isinstance(sponsor, list) and sponsor:
+        blk["events"] = sponsor[:5]
     return blk or None
 
 
@@ -808,24 +815,35 @@ def _build_congress_index(congress_rows, asof: str) -> dict[str, list[dict]]:
         if not report_s or report_s < cutoff or report_s > asof:
             continue
         party = row.get("Party")
+        amount_range = row.get("Range")
         amount = row.get("Amount")
-        try:
-            amount_mid = float(amount) if amount is not None else None
-            # guard against NaN (a float column with a missing value) → null, so the
-            # artifact always passes json.dumps(allow_nan=False).
-            if amount_mid is not None and amount_mid != amount_mid:
+        amount_mid = None
+        if amount_range is not None:
+            nums = re.findall(r"[\d][\d,]*\.?\d*", str(amount_range).replace("$", ""))
+            try:
+                vals = [float(v.replace(",", "")) for v in nums]
+                amount_mid = sum(vals) / len(vals) if vals else None
+            except (TypeError, ValueError):
                 amount_mid = None
-        except (TypeError, ValueError):
-            amount_mid = None
+        if amount_mid is None:
+            try:
+                amount_mid = float(amount) if amount is not None else None
+                if amount_mid is not None and amount_mid != amount_mid:
+                    amount_mid = None
+            except (TypeError, ValueError):
+                amount_mid = None
         tx = row.get("TransactionDate")
-        index.setdefault(tk, []).append({
+        item = {
             "side": _congress_side(str(row.get("Transaction") or "")),
             "chamber": _congress_chamber(str(row.get("House") or "")),
             "party": (str(party)[0] if party else None),
             "tx_date": (str(tx)[:10] if tx is not None else None),
             "filed": report_s,
             "amount_mid": amount_mid,
-        })
+        }
+        # Member-level congressional details are intentionally not copied into
+        # the customer context; the legacy aggregate disclosure block remains.
+        index.setdefault(tk, []).append(item)
     return index
 
 
@@ -1231,7 +1249,7 @@ def build_ctx(sources: dict, tickers: list[str] | None, asof: str) -> dict:
             block["earnings"] = earnings
             cov["earnings"] += 1
 
-        ins = _insider_block(insider.get(t))
+        ins = _insider_block(insider.get(t), by_ticker.get(t))
         if ins is not None:
             block["insider"] = ins
             cov["insider"] += 1
