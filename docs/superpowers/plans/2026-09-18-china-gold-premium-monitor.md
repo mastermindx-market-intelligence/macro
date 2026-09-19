@@ -93,6 +93,13 @@ Production proof for this slice is the normal post-merge nightly source accrual 
 the existing daily commodity builder and served-page browser verification. Pre-merge fixture
 evidence proves rendering and fail-closed behavior but is not a live vendor-call receipt.
 
+The same builder also projects a compact display-tier
+`gold_context.china_physical_premium` object into the incumbent
+`data/commodities/latest.json` machine feed. It carries only current method/state/value,
+freshness/as-of and the 5/30-session context statistics plus an explicit
+`context_only: true`; it omits source-vendor detail and all conviction/action/ranking fields.
+This is a machine projection of the same accepted context, not a new signal or authority plane.
+
 The existing nightly builder band also runs `scripts.audit_china_gold_premium` immediately
 after `build_commodities`. The audit independently re-reads the current source stores and
 engine view-model, compares method/state/currency/source-asof/premium with machine-readable

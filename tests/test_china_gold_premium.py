@@ -811,3 +811,48 @@ def test_close_proxy_vm_render_and_audit_agree_end_to_end():
     assert receipt["rendered_currency"] == "CNY"
     assert receipt["rendered_source_asof"] == vm["close_proxy"]["asof"]
     assert receipt["rendered_premium_pct"] == pytest.approx(vm["premium_pct"], abs=5e-7)
+
+
+def test_china_gold_machine_projection_is_compact_context_only():
+    from scripts import build_commodities
+
+    premium = _available_ui_vm()
+    premium["current_method"] = "close_proxy"
+    premium["price_currency"] = "CNY"
+    premium["close_proxy"] = {
+        "available": True,
+        "fresh": True,
+        "asof": "2026-09-18T07:30:00+00:00",
+        "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+    }
+    premium["canonical"] = {
+        "available": False,
+        "fresh": False,
+        "asof": None,
+        "sources": [],
+    }
+    vm = {
+        "detail": [
+            {"name": "gold", "china_gold_premium": premium},
+            {"name": "silver"},
+        ]
+    }
+
+    out = build_commodities._china_gold_premium_machine_view(vm)
+
+    assert out == {
+        "available": True,
+        "method": "close_proxy",
+        "state": "premium",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "source_asof": "2026-09-18T07:30:00+00:00",
+        "source_fresh": True,
+        "avg_5_pct": 0.22,
+        "range_30_pct": [-0.23, 0.41],
+        "official_canonical_available": False,
+        "context_only": True,
+    }
+    assert "sources" not in out
+    assert "conviction" not in out
+    assert "action" not in out
