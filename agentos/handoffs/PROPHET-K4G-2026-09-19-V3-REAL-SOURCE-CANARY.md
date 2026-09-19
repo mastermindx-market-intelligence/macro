@@ -36,11 +36,14 @@ verified:
   - claim: Durable records are structurally valid.
     command: python3 scripts/agentos.py validate; Python compile; git diff --check.
     result: 1139 records, zero errors, 88 existing warnings; compile and whitespace pass.
+  - claim: A real canonical negative episode yields the required typed unavailable state inside budget.
+    command: Native B1/security-master episode selection plus unchanged D5 current-event discovery.
+    result: UAVS episode pe:SEC:US-XASE-UAVS:epoch_0:sa:ad359e348ce74708c3f13e77:1 returned NOT_COVERED/no_current_generation_event in 0.589s with all authority false.
 unverified:
   - claim: The incumbent R2 publisher can promote v3 on the real publication path.
     what_would_verify: Normal owner-controlled publication after merge plus marker/index/workspace readback.
   - claim: A real entitled paid user completes covered and typed-unavailable paths in production.
-    what_would_verify: Existing #6797 authenticated browser acceptance after deployment.
+    what_would_verify: Existing #6797 authenticated browser acceptance after deployment; AAPL and UAVS are now source-qualified locators only.
   - claim: Independent review accepts the exact final head.
     what_would_verify: MastermindX1 review return on PR 7426 after the final source commit.
 unresolved:

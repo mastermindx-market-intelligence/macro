@@ -138,6 +138,7 @@
     "current-source-verification.json": "bd1d1f8ed20b010daffbf42fb3f0372f84b683e239b2b118666f58805af9caf5",
     "legacy-trace.json": "dc2d3c604a7f194a5d35ae6f6c236432de24f2e21237c8d8b07d4480cf3e17f6",
     "receipt.json": "3028b0835cd498b8be0edc009037724a07eb04abf61cbbbc0d0af58085691ef3",
+    "typed-unavailable.json": "bb91f6b2dc47cac7c73bba3e9a57ea5a08d5b512321773a64e9edcf3a054bfc1",
     "v3-trace.json": "ed35a5f640319702e6f849a84a28410d9b2b42e03b3affa4e4ab51be1f4caf19"
   },
   "final_verification": {
@@ -177,6 +178,49 @@
   "production_source_mutated": false,
   "schema": "company_intelligence.k4g_v3_real_source_proof/v1",
   "semantic_source_head": "c177408379f39200b75b7dd0569e7c274abc4c14",
+  "typed_unavailable_preflight": {
+    "authority": {
+      "can_change_entry_open": false,
+      "can_change_execution": false,
+      "can_gate": false,
+      "can_originate_signal": false,
+      "can_rank": false,
+      "can_size": false
+    },
+    "calls": [
+      {
+        "bytes": 2301,
+        "seconds": 0.2899,
+        "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/company_intelligence/event_workspaces/manifest.json"
+      },
+      {
+        "bytes": 2301,
+        "seconds": 0.2986,
+        "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/company_intelligence/event_workspaces/generations/28fd09b9e05e598559b1f324/manifest.json"
+      }
+    ],
+    "cik": "0000008504",
+    "company_id": "ISS:US-XASE-UAVS",
+    "coverage": {
+      "basis": "no_current_generation_event",
+      "state": "NOT_COVERED"
+    },
+    "episode_generation_id": "peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd",
+    "episode_id": "pe:SEC:US-XASE-UAVS:epoch_0:sa:ad359e348ce74708c3f13e77:1",
+    "identity_state": "RESOLVED",
+    "market_outcomes_read": false,
+    "opened_at": "2026-09-17T20:00:00Z",
+    "production_authenticated": false,
+    "production_source_mutated": false,
+    "quality": {
+      "flags": [
+        "current_event_not_published"
+      ]
+    },
+    "schema": "prophet.d5_real_typed_unavailable_preflight/v1",
+    "seconds": 0.589,
+    "source_head": "3d9d48c0187f4b1571a7bf6fcb2376d1726c7682"
+  },
   "v3_canary": {
     "events": 5,
     "generation_id": "9c164cba55347e5f561c1e65",
