@@ -600,3 +600,120 @@ def test_ca_discovery_persists_only_zero_authority_lane_b_rows(tmp_path, monkeyp
         assert not stored["visible_to_user"].fillna(False).astype(bool).any()
     finally:
         bs.CHALLENGER_REGISTRY.clear()
+
+# --- CA-NATIVE-INTEL / CA-RANK-RACE: typed ACCRUING family, zero authority ---
+def test_ca_native_authority_types_are_explicit_and_non_fused():
+    from engine import canada_native_intelligence as cni
+
+    assert cni.RESIDUAL_MOMENTUM_STATUS == "ACCRUING"
+    assert cni.RESIDUAL_MOMENTUM_AUTHORITY == "name_intelligence_shadow"
+    assert cni.RESIDUAL_MOMENTUM_DEFINITION == "ca_residual_momentum_rank_v1"
+    assert cni.C1_OIL_STATUS == "ACCRUING"
+    assert cni.C1_OIL_AUTHORITY == "sector_context_only"
+    assert cni.ANTICIPATION_US_GATE_DISPOSITION == "SCREEN_SHADOW"
+    assert not hasattr(cni, "master_score")
+    assert not hasattr(cni, "composite_score")
+
+
+def test_ca_residual_ranker_scores_only_incumbent_calls_and_keeps_missing_null():
+    from engine import canada_native_intelligence as cni
+
+    calls = [
+        {"ticker": "A.TO", "edge_z": 1.4},
+        {"ticker": "B.TO", "edge_z": 0.2},
+        {"ticker": "MISS.TO", "edge_z": None},
+        {"ticker": "NAN.TO", "edge_z": float("nan")},
+    ]
+    out = cni.rank_residual_calls(calls)
+    assert set(out) == {"A.TO", "B.TO", "MISS.TO", "NAN.TO"}
+    assert out["A.TO"]["score_raw"] > out["B.TO"]["score_raw"]
+    assert out["A.TO"]["score_conservative"] is None
+    assert out["B.TO"]["score_conservative"] is None
+    assert out["MISS.TO"] == {
+        "score_raw": None,
+        "score_conservative": None,
+    }
+    assert out["NAN.TO"] == {
+        "score_raw": None,
+        "score_conservative": None,
+    }
+
+
+def test_ca_residual_ranker_dedupes_incumbent_identity_without_originating_names():
+    from engine import canada_native_intelligence as cni
+
+    calls = [
+        {"ticker": "A.TO", "edge_z": 0.4},
+        {"ticker": "A.TO", "edge_z": 9.9},
+        {"ticker": "B.TO", "edge_z": -0.2},
+        {"ticker": None, "edge_z": 1.0},
+    ]
+    out = cni.rank_residual_calls(calls)
+    assert list(out) == ["A.TO", "B.TO"]
+    assert out["A.TO"]["score_raw"] == pytest.approx(0.4)
+    assert out["B.TO"]["score_raw"] == pytest.approx(-0.2)
+
+
+def test_ca_residual_ranker_persists_same_population_in_existing_lane_a(
+    tmp_path, monkeypatch,
+):
+    import pandas as pd
+    from engine import board_shadow as bs
+    from engine import canada_native_intelligence as cni
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    monkeypatch.delenv("CN_LANE", raising=False)
+    monkeypatch.setattr(
+        bs, "_read_incumbent_positions",
+        lambda *_a, **_k: {"A.TO": 1, "B.TO": 2, "MISS.TO": 3},
+    )
+    bs.CHALLENGER_REGISTRY.clear()
+    calls = [
+        {"ticker": "A.TO", "edge_z": 1.2, "board_definition": "ca_prophet_branch_b_v1"},
+        {"ticker": "B.TO", "edge_z": 0.3, "board_definition": "ca_prophet_branch_b_v1"},
+        {"ticker": "MISS.TO", "edge_z": None, "board_definition": "ca_prophet_branch_b_v1"},
+    ]
+    try:
+        bs.register_challenger(
+            "CA", cni.RESIDUAL_MOMENTUM_DEFINITION,
+            rank_fn=cni.rank_residual_calls,
+        )
+        receipt = bs.write_shadow(calls, market="CA", asof="2026-09-18")
+        assert receipt["written"] == 3
+        stored = pd.read_parquet(tmp_path / "prophet_shadow" / "ca_rank_pairs.parquet")
+        assert set(stored["ticker"]) == {"A.TO", "B.TO", "MISS.TO"}
+        assert set(stored["challenger_definition"]) == {
+            cni.RESIDUAL_MOMENTUM_DEFINITION
+        }
+        assert set(stored["population_n"]) == {3}
+        assert stored["challenger_offlist_n"].max() == 0
+        by = stored.set_index("ticker")
+        assert int(by.loc["A.TO", "challenger_rank"]) == 1
+        assert int(by.loc["B.TO", "challenger_rank"]) == 2
+        assert pd.isna(by.loc["MISS.TO", "challenger_rank"])
+        assert stored["challenger_score_conservative"].isna().all()
+    finally:
+        bs.CHALLENGER_REGISTRY.clear()
+
+
+def test_ca_builder_registers_native_rank_race_after_publication():
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
+    ).read_text()
+    persist = source.index("_write_canada_standouts(board, site)")
+    native = source.index(
+        "canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION",
+        persist,
+    )
+    discovery = source.index(
+        "canada_discovery_challenger.DEFINITION",
+        persist,
+    )
+    return_board = source.index("    return board", discovery)
+    assert persist < native < return_board
+    assert persist < discovery < return_board
+
