@@ -13,6 +13,21 @@ from scripts.build_portfolio_ctx import build_ctx
 from engine.portfolio_brief import compose_brief
 
 
+def test_mixed_quiver_timestamp_shapes_do_not_drop_recovered_form4():
+    # The committed Quiver tape contains millisecond ISO strings while a date-scoped
+    # catch-up response may carry a plain/offset ISO timestamp. Pandas otherwise
+    # infers the first strict shape for the entire Series and turns the recovered
+    # row into NaT, silently deleting exactly the historical hole we are repairing.
+    mixed = pd.Series([
+        "2026-08-03T20:48:47.000",
+        "2026-08-14T20:27:00+00:00",
+        "2026-08-15",
+    ])
+    parsed = altdata._dt_naive(mixed)
+    assert parsed.notna().all()
+    assert parsed.iloc[1] == pd.Timestamp("2026-08-14T20:27:00")
+
+
 def test_intel_style_named_sponsorship_survives_to_user_brief(monkeypatch):
     asof = pd.Timestamp("2026-08-25")
     congress = pd.DataFrame([

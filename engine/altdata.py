@@ -101,8 +101,15 @@ def _dt(series: pd.Series) -> pd.Series:
 
 
 def _dt_naive(series: pd.Series) -> pd.Series:
-    """Datetime coercion normalized to UTC-naive for safe PIT comparisons."""
-    return pd.to_datetime(series, errors="coerce", utc=True).dt.tz_convert(None)
+    """Datetime coercion normalized to UTC-naive for safe PIT comparisons.
+
+    Quiver append-only tables can legitimately mix ISO shapes across vintages
+    (for example ``...00.000`` beside ``...00+00:00``).  Pandas 2+ infers one
+    strict format for a whole Series by default, which silently coerces the
+    other valid shapes to NaT.  ``format="mixed"`` parses each scalar by its
+    own ISO shape before the common UTC normalization.
+    """
+    return pd.to_datetime(series, errors="coerce", utc=True, format="mixed").dt.tz_convert(None)
 
 
 def _boolish(v) -> bool | None:
