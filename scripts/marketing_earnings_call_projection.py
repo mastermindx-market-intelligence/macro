@@ -41,17 +41,25 @@ def _repo_root() -> Path:
 
 
 def _load_marketing_config(root: Path) -> dict[str, Any]:
+    """Load the operator-owned route or fail closed before any enqueue work."""
+
     path = root / "config" / "marketing.yml"
     try:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except Exception as exc:  # noqa: BLE001
-        print(
-            "::warning title=earnings-call-marketing-config-unavailable::"
-            f"{path}: {exc}; continuing with fail-safe config defaults",
-            flush=True,
+        raise RuntimeError(f"{path}: {exc}") from exc
+    if not isinstance(data, dict):
+        raise RuntimeError(f"{path}: root must be a mapping")
+
+    wire = data.get("wire_routing")
+    classes = wire.get("classes") if isinstance(wire, dict) else None
+    earnings_owner = classes.get("earnings") if isinstance(classes, dict) else None
+    if not str(earnings_owner or "").strip():
+        raise RuntimeError(
+            f"{path}: wire_routing.classes.earnings is required; "
+            "refusing config-less fallback routing"
         )
-        return {}
-    return data if isinstance(data, dict) else {}
+    return data
 
 
 def _compact(result: dict[str, Any]) -> dict[str, Any]:
@@ -62,6 +70,7 @@ def _compact(result: dict[str, Any]) -> dict[str, Any]:
         "capped_rows",
         "gap",
         "integrity_blocked",
+        "config_blocked",
         "queued",
         "dry_run",
         "duplicates",
@@ -87,7 +96,29 @@ def run(
     max_call_age_days: int,
     max_events: int,
 ) -> tuple[dict[str, Any], int]:
-    cfg = _load_marketing_config(root)
+    try:
+        cfg = _load_marketing_config(root)
+    except RuntimeError as exc:
+        result = {
+            "input_rows": 0,
+            "eligible_rows": 0,
+            "stale_rows": 0,
+            "capped_rows": 0,
+            "gap": None,
+            "integrity_blocked": False,
+            "config_blocked": True,
+            "results": [],
+            "queued": 0,
+            "dry_run": 0,
+            "duplicates": 0,
+            "corrections_required": 0,
+        }
+        print(
+            "::error title=earnings-call-marketing-config-invalid::" + str(exc),
+            flush=True,
+        )
+        return result, 2
+
     result = lane.run_ledger(
         root=root,
         cfg=cfg,
