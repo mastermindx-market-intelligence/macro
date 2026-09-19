@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T20:42:06.119815+00:00",
-  "count": 2453,
+  "generated_at": "2026-09-19T21:11:58.164181+00:00",
+  "count": 2454,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1695,6 +1695,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e8axdwi33ua-25f1d3",
+      "title": "China Weekly Kickstart Markets flat",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:07Z",
+      "summary_points": [
+        "GDP Forecast Downgrade: China’s mixed August data → lower Q3 GDP forecast; Goldman Sachs forecasts China’s real GDP YoY growth to decline from 5.4% (2023) to 4.5% (2026) - ERP Elevated: China A shares ERP remains at 9.2% (0.4 s.d.), indicating higher risk premium and valuation pressure - H Shares Outperformance: Proprietary model predicts H shares to outperform A shares in next 3 months (Exhibit 16) - Policy Tension Barometer: GSSRUSCN at 48 reflects heightened geopolitical (77) and trade (34) risks - Sector Divergence: Tech Hardware (+11.2% YTD) and Semiconductors (+23.0% YTD) surge vs Consumer Services (-27.3% YTD) and Retailing (-24.1% YTD) - Southbound Flows: Southbound flows US$5.3bn ytd (strong capital inflow trend) - Real Estate Drag: Real Estate exhibits steep decline vs CSI300 (from ~130 to ~30), signaling structural weakness"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
