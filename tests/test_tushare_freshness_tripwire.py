@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -101,3 +101,101 @@ def test_annotation_starts_the_line_and_is_flushed(capsys: pytest.CaptureFixture
     line = [ln for ln in capsys.readouterr().out.splitlines() if "::warning" in ln]
     assert line, "no annotation emitted for a stale plane"
     assert line[0].startswith("::warning"), f"annotation must start the line, got: {line[0][:40]!r}"
+
+
+def test_china_search_core_gate_catches_the_2026_09_09_freeze(monkeypatch, capsys):
+    import scripts.check_tushare_freshness as m
+
+    monkeypatch.setattr(m, "_latest_date", lambda rel: "2026-09-09")
+    now = datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)
+
+    assert m.check_china_search_core(now) == 3
+    line = capsys.readouterr().out
+    assert line.startswith("::error title=China core price store stale::")
+    assert "expected mainland session 2026-09-11" in line
+    assert "2 sessions behind" in line
+
+
+def test_china_search_core_gate_accepts_current_and_ahead_store(monkeypatch, capsys):
+    import scripts.check_tushare_freshness as m
+
+    now = datetime(2026, 9, 14, 4, 0, tzinfo=timezone.utc)
+    monkeypatch.setattr(m, "_latest_date", lambda rel: "2026-09-11")
+    assert m.check_china_search_core(now) == 0
+    assert "freshness OK" in capsys.readouterr().out
+
+    monkeypatch.setattr(m, "_latest_date", lambda rel: "2026-09-14")
+    assert m.check_china_search_core(now) == 0
+    line = capsys.readouterr().out
+    assert line.startswith("::warning title=China core price store ahead of exchange clock::")
+
+
+def test_latest_date_reads_wide_tz_aware_close_index(monkeypatch, tmp_path):
+    import pandas as pd
+    import scripts.check_tushare_freshness as m
+
+    store = tmp_path / "china_search" / "closes.parquet"
+    store.parent.mkdir(parents=True)
+    pd.DataFrame(
+        {"600000.SS": [10.0, 10.2]},
+        index=pd.DatetimeIndex(["2026-09-10 00:00", "2026-09-11 00:00"],
+                               tz="Asia/Shanghai"),
+    ).to_parquet(store)
+    monkeypatch.setattr(m.config, "data_dir", lambda: tmp_path)
+
+    assert m._latest_date("china_search/closes.parquet") == "2026-09-11"
+
+
+def test_collect_asia_group_uses_the_binding_core_health_result(monkeypatch):
+    import inspect
+    import scripts.collect as collect
+    import scripts.check_tushare_freshness as freshness
+
+    monkeypatch.setattr(freshness, "check_china_search_core", lambda now=None: 3)
+    assert collect._required_group_health("asia") == 3
+    assert collect._required_group_health("us") == 0
+    source = inspect.getsource(collect.main)
+    call = source.rindex("_required_group_health(")
+    assert call > source.index("_src_reg_run()"),         "required-store health must run after every post-collect task"
+    assert call < source.rindex("return 0 if ok > 0 else 1"),         "the binding result must decide the collect command's final exit"
+
+
+def test_mainland_session_clock_survives_utc_to_shanghai_midnight(monkeypatch, capsys):
+    from lib import cn_calendar
+    import scripts.check_tushare_freshness as m
+
+    boundary = datetime(2026, 9, 11, 16, 0, tzinfo=timezone.utc)
+    assert cn_calendar.expected_last_session(boundary).isoformat() == "2026-09-11"
+    monkeypatch.setattr(m, "_latest_date", lambda rel: "2026-09-11")
+    assert m.check_china_search_core(boundary) == 0
+    assert "expected mainland session 2026-09-11" in capsys.readouterr().out
+
+
+def test_collect_asia_binding_can_only_be_bypassed_explicitly(monkeypatch, capsys):
+    import scripts.collect as collect
+
+    monkeypatch.setattr(
+        "scripts.check_tushare_freshness.check_china_search_core",
+        lambda now=None: 3,
+    )
+    assert collect._required_group_health("asia", skip_quality=False) == 3
+    assert collect._required_group_health("asia", skip_quality=True) == 0
+    assert "BYPASS" in capsys.readouterr().out
+
+
+def test_asia_workflow_propagates_collect_failure_before_commit_and_build():
+    workflow = (Path(__file__).resolve().parents[1] / ".github" / "workflows" /
+                "asia-close.yml").read_text(encoding="utf-8")
+    collect_start = workflow.index("name: collect China/HK data")
+    collect_end = workflow.index("name: timings band — collect-commit-push", collect_start)
+    commit_start = workflow.index("name: commit collected asia data", collect_end)
+    build_start = workflow.index("name: build china a-share dashboard", commit_start)
+    collect_block = workflow[collect_start:collect_end]
+    downstream = workflow[commit_start:build_start + 100]
+
+    assert "run: python -m scripts.collect --group asia" in collect_block
+    assert "--skip-quality" not in collect_block
+    assert "continue-on-error" not in collect_block
+    assert "|| true" not in collect_block
+    assert "if: always()" not in downstream
+    assert collect_start < commit_start < build_start
