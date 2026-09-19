@@ -6501,6 +6501,7 @@ jobs:
       - "tests/test_sanctions_map_engine.py"
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
+      - "tests/test_sanctions_map_event_pins.py"
       - "tests/test_worldmap_base.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -6510,9 +6511,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyyaml jinja2 requests
+        # W7-2 sanctions-map public-news layer 2026-09-19 (contract-delta): engine.europe_news_intel reads
+        # data/europe_news_vector/events.parquet with pandas, so this job needs the pyarrow engine (seat fix, ci-pack-5 red at 2d5fdc60).
+        run: pip install pytest pandas numpy pyyaml jinja2 requests pyarrow
       - name: sanctions map engine + page + nav + worldmap + OFAC collector
-        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py -q
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py -q
 
   itr-turn-rotation:
     if: ${{ false }}
