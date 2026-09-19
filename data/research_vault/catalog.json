@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T22:57:13.109025+00:00",
-  "count": 2459,
+  "generated_at": "2026-09-19T23:12:18.802493+00:00",
+  "count": 2460,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -2351,6 +2351,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ptvh18vu9bk-1effc9",
+      "title": "Global Economics Comment Is Poor Economic Sentiment Really About the Economy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:13Z",
+      "summary_points": [
+        "Fundamental-Sentiment Divergence: Strong US fundamentals (labor market, GDP, consumer spending) coexist with globally weak sentiment driven by post-pandemic inflation, political biases, and persistent low happiness since 2020—creating a critical misalignment for economic forecasting.",
+        "Institutional Distrust as Core Risk: Falling trust in key institutions (medicine, science, government) since 2016 explains most post-2020 happiness decline, rendering consumer sentiment an unreliable economic indicator and amplifying persistent societal risk for discretionary sectors.",
+        "K-Shaped Sentiment Erosion: Lower-socioeconomic households exhibit disproportionately negative sentiment due to cost-of-living pressures and structural divides, signaling uneven recovery risks to equity valuations and consumer-driven sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
