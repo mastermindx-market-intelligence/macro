@@ -95,3 +95,74 @@ Stop an implementation lane on unresolved ownership, unsupported source rights, 
 [NOC] https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm
 
 [LHX] https://investors.l3harris.com/news/news-details/2026/L3Harris-Technologies-Reports-Robust-Second-Quarter-2026-Results/default.aspx
+
+## September 19 owner-boundary resolution
+
+The four qualification defects above are still present in the live
+`/api/company-intelligence/{ticker}` responses. The intervening producer is not dead:
+the scheduled Company Intelligence lane continues to complete and promote immutable R2
+generations. The defect is upstream and structural.
+
+### Exact source chain
+
+The live Company Intelligence root marker currently points at generation
+`ffd6797aef39d75064a35ab0`, whose source manifest names an earnings generation and
+50,982 history rows. The current earnings root marker has continued advancing score
+generations, but its immutable `history.parquet` remains:
+
+- 50,982 rows / 3,529 tickers;
+- latest call date **2026-07-31**;
+- MD5 `440447335f37a51419937dba493b3168`;
+- source `equitydesk_backfill/delta_2026-07-31/earnings_call_data.json`;
+- source update max **2026-08-01 08:08:38.565289+00:00**.
+
+By contrast, the same manifest's score plane has continued through September 2026. The
+Windows/Terminal earnings worker confirms this is intentional current architecture: it hydrates the
+existing R2 generation, scores new transcript bodies, upserts `scores.parquet`, and republishes.
+It does **not** append quantitative rows to `history.parquet`.
+
+Reading the exact immutable history object reproduces the four Defense problems at the source:
+
+| Ticker | Last relevant legacy history row | What the row means for Defense |
+|---|---|---|
+| LMT | FY2026 Q2: revenue_growth 11; gross_margin 10.8 | 10.8 is already mislabeled upstream relative to the issuer's segment operating-margin disclosure |
+| RTX | FY2026 Q2: revenue_growth 16; eps_growth 21 | basis is generic in the legacy row; issuer basis is organic/adjusted |
+| NOC | FY2026 Q2: revenue_growth 5; eps_growth 8 | comparison basis needed to reconcile reported GAAP EPS is absent |
+| LHX | FY2026 Q1 is latest | FY2026 Q2 is absent from the immutable history entirely |
+
+This means `engine/company_intelligence/views.py` is not inventing the bad values; it is faithfully
+projecting generic legacy columns. A downstream rename or hard-coded override would conceal the
+source defect and create a second financial truth.
+
+### Existing owner capability is insufficient for a direct swap
+
+The accepted Earnings `event_workspace.v1` route is not a general four-company escape hatch:
+production requests for LMT, RTX, NOC and LHX all return
+`event_workspace_not_covered`.
+
+The Financial Intelligence Fabric is the correct long-term filing-semantic owner, but its Agent OS
+record still says production attested issuer service is **NOT_BUILT**. FIF-3 remains in progress,
+with golden AAPL statement/query slices proven; it explicitly forbids calling those fixtures
+production issuer coverage.
+
+The older committed SEC quarterly table is useful as a research cross-check but is also not a
+current product solution: its current extraction for these names stops at FY2026 Q1, while the
+separate EPS quarterly artifact has Q2 availability rows. Defense must not compose those stores
+into a new canonical financial service.
+
+### Defense V1 ruling
+
+For the first investor-loop dossier:
+
+1. use official issuer/SEC facts with explicit period, accounting basis, units, source and
+   publication/known-at clock as a bounded **research bridge**;
+2. preserve missing current-quarter facts instead of falling back to generic legacy labels;
+3. keep procurement economics as scenarios/ranges until company attribution and margin evidence
+   exist;
+4. consume Earnings/FIF production facts when those owners generalize—never fork their semantic
+   models;
+5. no valuation/asymmetry conclusion may be labeled supported when the financial denominator came
+   from the stale generic history fields.
+
+The cross-session landmine is recorded as
+`DSC:EARNINGS-HISTORY-FROZEN-WHILE-SCORES-ADVANCE`.
