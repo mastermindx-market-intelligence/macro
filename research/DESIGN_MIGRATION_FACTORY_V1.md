@@ -232,6 +232,16 @@ reference ships with the first of these, satisfying first-of-archetype), `watchl
 `products/*` polish (H-product), sector_central pair (C/E — the E reference ships with the
 first desk migrated).
 
+**Regional primary-route parity gate (Chairman, 2026-09-19).** The standalone China
+Archetype-D release in PR #7054 was rejected in production because it stranded `china.html`
+on a materially different primary-route composition from the US/HK/Canada macro family. The
+primary China route is rolled back to its pre-#7054 regional composition while retaining D as
+its long-term archetype assignment. Do **not** replay #7054 as a one-route migration. The next
+primary-route D migration must move `macro.html`/`china.html`/`hk.html`/`canada.html` as a
+coherent family release, or use an explicitly authorized non-primary canary that does not alter
+a customer's normal geography route. Historical #7054 screenshots/tests are audit evidence,
+not release authority.
+
 **P2 — the neglected middle (~30 desks):** intelligence desks (E) in reach order
 (`china_intel`, `policy_watch` twins, `alt_data`, `smart_money`, `capital_structure`,
 `fundamental_forensics`, `market_memory`, `foresight`, `neural_web` post-naming), remaining

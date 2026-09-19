@@ -500,8 +500,13 @@ candidate (20/30 vs 18/30 on the census's 15-dimension scorecard — census §6 
 strength instead of entangling with china's open data-truth defects (regime named two ways,
 policy in both directions — engine-lane work, not design); (b) it is P0 #3 and the estate's
 main anonymous SEO entry — highest reach per pixel; (c) the two pages share the `mx4/mx5`
-idiom family, so the reference transfers to china/hk mechanically as follower migrations —
-china becomes the first Archetype-D consumer and the test that the reference generalizes.
+idiom family, so the reference transfers to china/hk mechanically as follower migrations.
+**Regional primary-route parity gate (Chairman, 2026-09-19):** PR #7054's attempt to make
+China the first standalone Archetype-D consumer was rejected after production review and the
+primary `china.html` route was returned to its pre-#7054 family composition. D remains the
+long-term route archetype; the next primary-route migration must move macro/China/HK/Canada
+coherently (or use an explicitly authorized non-primary canary), so one geography is never
+stranded on a different core dashboard experience. Historical #7054 evidence is audit-only.
 The reference (`mockups/design_system/macro_reference.html`) compresses 13 L1 sections → 5
 (hero+caveat · what changed · four drivers · watching band · named deep links), every demoted
 module keeping a named landing.
