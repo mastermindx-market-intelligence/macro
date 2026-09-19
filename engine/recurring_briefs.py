@@ -36,6 +36,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from lib.nyse_calendar import ET as NYSE_ET, is_session as is_nyse_session
+
 ROOT = Path(__file__).resolve().parent.parent
 
 SUPABASE_URL = os.environ.get(
@@ -107,6 +109,13 @@ TRANSLATION_PENDING_ZH = "（翻译待补）"
 
 
 @dataclass(frozen=True)
+class SubscriptionReadResult:
+    rows: tuple[dict, ...] = ()
+    state: str = "ok"  # ok | unavailable
+    error_class: str | None = None
+
+
+@dataclass(frozen=True)
 class RunResult:
     subscription_n: int
     ready_n: int
@@ -118,11 +127,23 @@ class RunResult:
     read_missing: int = 0
     read_unavailable: int = 0
     planned_rows: tuple = ()
+    subscription_read_state: str = "ok"  # ok | unavailable | not_due
+    subscription_read_error: str | None = None
+    skipped_non_session: bool = False
 
 
 # ---------------------------------------------------------------------------
 # Pure functions
 # ---------------------------------------------------------------------------
+
+def owner_run_date(now_utc: datetime | None = None) -> date:
+    """ET calendar date of the existing nightly owner, not the UTC rollover date."""
+    if now_utc is None:
+        now_utc = datetime.now(timezone.utc)
+    elif now_utc.tzinfo is None:
+        now_utc = now_utc.replace(tzinfo=timezone.utc)
+    return now_utc.astimezone(NYSE_ET).date()
+
 
 def _as_date(value: Any) -> date | None:
     if value is None or value == "":
@@ -615,9 +636,10 @@ def load_published_artifact(cadence: str, root: Path | None = None) -> dict | No
     return data if isinstance(data, dict) else None
 
 
-def read_subscriptions(cadence: str) -> list[dict]:
+def read_subscriptions(cadence: str) -> SubscriptionReadResult:
+    """Read active subscriptions without conflating an outage with a healthy empty set."""
     if not SUPABASE_SERVICE_ROLE_KEY:
-        return []
+        return SubscriptionReadResult(state="unavailable", error_class="no_credentials")
     path = (
         "brief_subscriptions?state=eq.active"
         f"&cadence=eq.{cadence}"
@@ -625,11 +647,17 @@ def read_subscriptions(cadence: str) -> list[dict]:
     )
     try:
         rows = _pg("GET", path)
-    except urllib.error.HTTPError:
-        return []
+    except urllib.error.HTTPError as exc:
+        code = getattr(exc, "code", None)
+        return SubscriptionReadResult(
+            state="unavailable",
+            error_class=f"http_{code}" if code else "http_error",
+        )
     except Exception:
-        return []
-    return rows if isinstance(rows, list) else []
+        return SubscriptionReadResult(state="unavailable", error_class="request_failed")
+    if not isinstance(rows, list):
+        return SubscriptionReadResult(state="unavailable", error_class="invalid_payload")
+    return SubscriptionReadResult(rows=tuple(rows))
 
 
 def _thesis_tickers(subject_ref: dict | None, content: dict | None) -> list[str]:
@@ -812,7 +840,22 @@ def run(
     root: Path | None = None,
 ) -> RunResult:
     if run_date is None:
-        run_date = datetime.now(timezone.utc).date()
+        run_date = owner_run_date()
+
+    # The owner nightly intentionally runs seven days a week for other lanes.
+    # A daily brief is due only when the US cash market actually held a session.
+    # Return before reading subscriptions/targets so weekends and NYSE holidays
+    # cannot manufacture a fake "after US close" slot or touch user objects.
+    if cadence == CADENCE_DAILY and not is_nyse_session(run_date):
+        return RunResult(
+            subscription_n=0,
+            ready_n=0,
+            degraded_n=0,
+            slot=None,
+            subscription_read_state="not_due",
+            skipped_non_session=True,
+        )
+
     artifact = load_published_artifact(cadence, root=root)
     if isinstance(artifact, dict):
         slot = (
@@ -830,7 +873,19 @@ def run(
             or run_date
         )
 
-    subscriptions = read_subscriptions(cadence)
+    subscription_read = read_subscriptions(cadence)
+    if subscription_read.state != "ok":
+        return RunResult(
+            subscription_n=0,
+            ready_n=0,
+            degraded_n=0,
+            slot=slot,
+            read_unavailable=1,
+            subscription_read_state="unavailable",
+            subscription_read_error=subscription_read.error_class,
+        )
+
+    subscriptions = subscription_read.rows
     ready_n = 0
     degraded_n = 0
     duplicate_n = 0
@@ -907,4 +962,5 @@ def run(
         read_missing=read_missing,
         read_unavailable=read_unavailable,
         planned_rows=tuple(planned_rows),
+        subscription_read_state="ok",
     )
