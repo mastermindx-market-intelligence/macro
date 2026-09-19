@@ -1412,7 +1412,7 @@ RENDER.site_gate = async () => {
     } else if (src === "geoip") {
       cdBadge = `<span class="statpill s-ok">Active (GeoIP database)</span>`;
     } else {
-      cdBadge = `<span class="statpill s-warn">Not detecting yet — add the EdgeOne country header (see setup)</span>`;
+      cdBadge = `<span class="statpill s-warn">Country detection not configured</span>`;
     }
   }
   const geoDbBadge = cd.geoip_db
@@ -1468,24 +1468,27 @@ RENDER.site_gate = async () => {
           <label class="switch"><input type="checkbox" id="sgEnabled"${rules.enabled ? " checked" : ""}><span class="slider"></span></label>
           <div>
             <b id="sgEnabledLabel">${rules.enabled ? "On — visitors matching a rule below see the coming-soon page." : "Off — everyone can access the site."}</b>
-            <div class="sub" style="margin-top:4px">Off = fail-open. Disabling never exposes admin; it only bypasses the public-site gate.</div>
+            <div class="sub" style="margin-top:4px">Turn this off to let everyone reach the public site. Admin access is unaffected.</div>
           </div>
         </div>
       `)}
       ${card("Country detection", `
         <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px">
-          ${cdBadge}${lastSeen}${geoDbBadge}
+          ${cdBadge}${lastSeen}
         </div>
-        <div class="sub">Source resolved on the last /api/gate/check call. Configure via EdgeOne: add <b>EO-Client-IPCountry</b> header.</div>
+        <details class="tech-details"><summary>Technical details</summary>
+          <div>${geoDbBadge}</div>
+          <div style="margin-top:4px">Country source is resolved by <code>/api/gate/check</code>. EdgeOne should send <code>EO-Client-IPCountry</code>.</div>
+        </details>
       `)}
       ${card("Your IP", `
         <div class="big mono" style="font-size:16px">${esc(yourIP)}</div>
         ${selfWarn}
-        <div class="sub" style="margin-top:6px">Your IP is auto-added to the allow-list on every save so you can never lock yourself out.</div>
+        <div class="sub" style="margin-top:6px">Kept on the allow-list automatically when you save.</div>
       `)}
     </div>
 
-    <div class="section">IP Blocklist <span class="cnt" id="sgBlockCount">${blockedIps.length}</span></div>
+    <div class="section">Blocked IPs <span class="cnt" id="sgBlockCount">${blockedIps.length}</span></div>
     <div class="card">
       <div class="sg-ip-add" style="margin-bottom:8px">
         <input id="sgBlockIPInput" class="inp" style="flex:1;font-family:var(--mono);font-size:13px" placeholder="1.2.3.4 or 203.0.113.0/24 (IPv4 CIDR or IPv6)">
@@ -1497,18 +1500,18 @@ RENDER.site_gate = async () => {
       </div>
     </div>
 
-    <div class="section">Allow-list (bypass) <span class="cnt" id="sgAllowCount">${allowIps.length}</span></div>
+    <div class="section">Always allowed <span class="cnt" id="sgAllowCount">${allowIps.length}</span></div>
     <div class="card">
-      <div class="sub" style="margin-bottom:8px">Always allowed (bypass every block). Your current IP is auto-added. Remove stale entries here.</div>
+      <div class="sub" style="margin-bottom:8px">These addresses can always reach the public site. Your current IP is added when you save.</div>
       <div id="sgAllowIPList" style="display:flex;flex-wrap:wrap;gap:6px">
         ${allowIps.map(ip => allowChipHtml(ip)).join("")}
         ${allowIps.length === 0 ? `<span class="sub muted">None</span>` : ""}
       </div>
     </div>
 
-    <div class="section">Country Blocklist <span class="cnt" id="sgCCCount">${blockedCCSet.size}</span></div>
+    <div class="section">Blocked countries <span class="cnt" id="sgCCCount">${blockedCCSet.size}</span></div>
     <div class="card">
-      <div class="sub" style="margin-bottom:8px">Click to toggle. Names via browser Intl.DisplayNames — no hardcoded CJK.</div>
+      <div class="sub" style="margin-bottom:8px">Choose the countries that should see the coming-soon page.</div>
       <input id="sgCCFilter" class="inp" style="width:100%;margin-bottom:10px;font-size:13px" placeholder="Filter countries…">
       <div id="sgCCGrid" class="sg-cc-grid">${countryItems}</div>
     </div>
