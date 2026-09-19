@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T11:25:48.582884+00:00",
-  "count": 2426,
+  "generated_at": "2026-09-19T11:56:21.152138+00:00",
+  "count": 2427,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -106,6 +106,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jvgt4a75da3-82d9b5",
+      "title": "Japan Macro",
+      "institution": "Mizuho",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:50:46Z",
+      "summary_points": [
+        "LDP Leadership Instability: Aoki replaces Ishii as Upper House secretary-general amid budget delays, threatening Diet proceedings and triggering internal LDP tensions despite PMO trust efforts.",
+        "Fiscal Policy Continuity: Retention of Finance and Economic Policy Ministers signals stable \"responsible fiscal policy,\" with subdued market reaction but lingering inflation concerns.",
+        "Leadership Dynamics Risk: Takaichi’s appointments (Aso, Suzuki, Kajiyama) target 2027 support, while Hayashi’s potential LDP presidency bid introduces policy continuity disruption risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
