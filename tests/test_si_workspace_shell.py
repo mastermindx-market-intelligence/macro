@@ -156,11 +156,12 @@ VIEW_ORGANS = {
     "overview": ('id="ftr-tape-strip"', 'id="regime"', 'id="actnow-section"', 'id="grader"'),
     "map": ('id="rotmap-section"', 'id="si-map"', 'id="sc-cyclemap"', 'id="board"'),
     "moving": ('id="si-movement"', 'id="rc-events-mount"', 'id="rotation-app"',
-               'id="desk-watch-mount"'),
+               'id="desk-watch-mount"', 'id="accumulation-section"'),
     "money": ('id="si-money"', 'id="internals-section"', 'id="heatmap-scorecard"',
               'id="scc-leadership"'),
     "explore": ('id="explore-section"', 'id="table-section"', 'id="chart-section"',
-                'id="tm-mount"', "_forming_narratives.html.j2"),
+                'id="tm-mount"', "_forming_narratives.html.j2",
+                'id="theme-heat-section"'),
 }
 
 
@@ -198,6 +199,7 @@ LEGACY_ANCHORS = {
     "si-movement": "moving",
     "rc-events-mount": "moving",
     "rotation-app": "moving",
+    "accumulation-section": "moving",
     "si-money": "money",
     "internals-section": "money",
     "scc-leadership": "money",
@@ -206,6 +208,7 @@ LEGACY_ANCHORS = {
     "chart-section": "explore",
     "forming-narratives": "explore",
     "tm-mount": "explore",
+    "si-heat-section": "explore",
 }
 
 
@@ -220,7 +223,9 @@ def test_legacy_anchor_is_routed(anchor: str, view: str) -> None:
 def test_legacy_anchor_target_exists_in_that_view(anchor: str, view: str) -> None:
     """The other half of the contract, and the half a router-only pin cannot see:
     routing to a view whose scroll target is not there lands the user on the right
-    page and shows them nothing."""
+    page and shows them nothing. For all keys except H1's si-heat-section the
+    anchor and the scroll target are the same id; si-heat-section scrolls to
+    the pre-existing <span id="theme-heat-section"> in #explore-section."""
     src = _page()
     if anchor == "forming-narratives":     # lives inside the included partial
         body = _view_body(src, view)
@@ -228,8 +233,12 @@ def test_legacy_anchor_target_exists_in_that_view(anchor: str, view: str) -> Non
         assert 'id="forming-narratives"' in (TPL / "_forming_narratives.html.j2").read_text(
             encoding="utf-8")
         return
-    assert 'id="%s"' % anchor in _view_body(src, view), \
-        f"#{anchor} routes to {view} but no element with that id is in that view"
+    # H1 (Meta-CEO B W7A_7056_HEAL): si-heat-section is the router key, but its
+    # scroll target is the existing <span id="theme-heat-section"> in the
+    # explore view (kept from the original S2 nested-anchor demotion).
+    target = "theme-heat-section" if anchor == "si-heat-section" else anchor
+    assert 'id="%s"' % target in _view_body(src, view), \
+        f"#{anchor} routes to {view} but no element with id={target!r} is in that view"
 
 
 def test_unknown_hash_falls_back_to_overview() -> None:
@@ -554,3 +563,120 @@ def test_router_asset_is_paired_into_site() -> None:
     tup = builder.split("for asset in (", 1)[1].split("):", 1)[0]
     assert '"si_workspace.js"' in tup, "builder does not copy the router asset"
     assert '<script src="si_workspace.js"></script>' in _page()
+
+
+# ─────────────────────────────────────────────────────────────── H1 route() replay
+
+# H1 (Meta-CEO B W7A_7056_HEAL): the new "Theme heat & reasons" link re-expresses
+# the dead #theme-heat-section hash as #si-heat-section, mapped to [explore,
+# theme-heat-section] so activate() shows the explore view and scrolls to the
+# existing <span id="theme-heat-section"> in #explore-section. This test
+# EXECUTES route() the way qwen's review measured it (node replay with stubs,
+# capture activate() calls) — substring pins do not catch a key the parser
+# reads but the short-circuit at if(h.indexOf('theme-')===0) never reaches.
+
+import json as _json
+import subprocess as _subprocess
+import textwrap as _textwrap
+
+
+def _replay_router(hashes):
+    """Run si_workspace.js in a node VM with minimal DOM stubs, capture
+    activate() calls for each hash. Returns dict hash → [view, target]."""
+    node_script = _textwrap.dedent("""\
+        const fs = require('fs');
+        const vm = require('vm');
+        const src = fs.readFileSync('templates/si_workspace.js', 'utf8');
+        // Inject capture into activate() so we can read what route() resolved to.
+        const patched = src.replace(
+          'function activate(view,target){',
+          'function activate(view,target){globalThis.__lastActivate=[view,target];'
+        );
+        const ctx = {
+          document: {
+            documentElement: { getAttribute: () => null },
+            querySelectorAll: () => [],
+            querySelector: () => null,
+            getElementById: () => ({
+              getAttribute: () => null, setAttribute: () => {},
+              querySelectorAll: () => [], querySelector: () => null,
+              appendChild: () => {}, scrollIntoView: () => {},
+              classList: { toggle: () => {}, add: () => {}, remove: () => {} },
+            }),
+            title: 'Test',
+            dispatchEvent: () => {},
+            addEventListener: () => {},
+            createElement: () => ({
+              setAttribute: () => {}, addEventListener: () => {},
+              appendChild: () => {}, async: false, getAttribute: () => null,
+              hasAttribute: () => false,
+            }),
+            getElementsByTagName: () => [],
+            head: { appendChild: () => {} },
+          },
+          history: { replaceState: () => {} },
+          location: { hash: '' },
+          console,
+          setTimeout, clearTimeout,
+          addEventListener: () => {},
+          dispatchEvent: () => {},
+          CustomEvent: function (type, init) { return { type: type, detail: init && init.detail }; },
+          Event: function (type) { return { type: type }; },
+        };
+        vm.createContext(ctx);
+        ctx.window = ctx;
+        vm.runInContext(patched, ctx);
+        // node argv: [node, *hashes] (the -e flag is consumed by node, not argv)
+        const hashes = process.argv.slice(1);
+        const results = {};
+        for (const h of hashes) {
+          ctx.__lastActivate = null;
+          ctx.location.hash = h;
+          ctx.__siRoute();
+          results[h] = ctx.__lastActivate;
+        }
+        process.stdout.write(JSON.stringify(results));
+    """)
+    out = _subprocess.run(
+        ['node', '-e', node_script, *hashes],
+        capture_output=True, text=True, cwd=str(ROOT),
+    )
+    assert out.returncode == 0, f"node replay failed: {out.stderr}"
+    return _json.loads(out.stdout)
+
+
+def test_route_si_heat_section_resolves_to_explore_with_theme_heat_target() -> None:
+    """H1 contract: #si-heat-section must route to explore view with the
+    theme-heat-section scroll target. RED-first on 5fe3207ba0cf — that head's
+    LEGACY_ANCHORS_S2 did not carry si-heat-section, so route() fell through
+    to activate('overview', null)."""
+    out = _replay_router([
+        'si-heat-section', 'accumulation-section', 'actnow-section',
+    ])
+    assert out['si-heat-section'] == ['explore', 'theme-heat-section'], (
+        f"#si-heat-section must resolve to explore view, scroll to "
+        f"theme-heat-section — got {out['si-heat-section']!r}"
+    )
+    # Regression pins: legacy keys must still resolve.
+    assert out['accumulation-section'] == ['moving', 'accumulation-section']
+    assert out['actnow-section'] == ['overview', 'actnow-section']
+
+
+def test_no_theme_prefixed_key_remains_in_legacy_anchors_table() -> None:
+    """H1 invariant: the parsed LEGACY_ANCHORS literal (21 keys, byte-identical
+    to origin/main) and the LEGACY_ANCHORS_S2 runtime merge MUST NOT carry any
+    `theme-*` key — the LINE 324 short-circuit means such a key is dead data.
+    Sibling fixture pin: tests/test_xpv2_sector_r3_fixture.py::TestLegacyAnchors
+    asserts the parsed literal is exactly 21 keys; this one confirms S2 adds
+    only non-theme keys."""
+    src = _router()
+    # Parse the LEGACY_ANCHORS literal block (parsed) and LEGACY_ANCHORS_S2 (merged).
+    parsed = src.split("var LEGACY_ANCHORS={", 1)[1].split("};", 1)[0]
+    s2 = src.split("var LEGACY_ANCHORS_S2={", 1)[1].split("};", 1)[0]
+    for label, block in (("LEGACY_ANCHORS", parsed), ("LEGACY_ANCHORS_S2", s2)):
+        keys = re.findall(r"'([^']+)':\[", block)
+        offenders = [k for k in keys if k.startswith("theme-")]
+        assert not offenders, (
+            f"{label} still carries theme-* key(s) {offenders} — LINE 324 "
+            "short-circuit makes them dead router entries"
+        )

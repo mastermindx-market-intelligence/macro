@@ -117,11 +117,53 @@ def _finalize_like_render_lane(out: Path) -> None:
     render, not a pair. Precedent: ``_finalize_like_render_lane`` in
     tests/test_macro_rates_curves_bonds_guard.py (T10), which replays the same
     CSS-externalize and asset-stamp sweeps at the text level for site/bonds.html.
+    daily.yml's site-wide wh_banner inject is also NOT replayed here — that is
+    two-state chrome, carried over from the committed page by
+    ``_carry_committed_wh_banner`` in the caller.
     """
     from scripts import externalize_css, inject_data_base, optimize_assets
     inject_data_base.inject(out)
     externalize_css.externalize(out)
     optimize_assets.optimize(out)
+
+
+def _carry_committed_wh_banner(fresh: str, committed: str) -> str:
+    """Carry the committed page's wh_banner tag onto the fresh render.
+
+    daily.yml's "White House Watch" step runs ``python -m scripts.inject_wh_banner``
+    over every generated page ("MUST be the last page-mutating step so no later
+    builder strips the tag"), while the public-render lane (public_render.sh)
+    does not — so a committed page carries the tag iff the NIGHTLY last touched
+    it. glossary.html gained its tag in the 2026-09-13 nightly (dashboard-bot
+    commit 00fc3dfa93e3 "engine: regime update"), which is exactly when
+    ``test_site_pair_matches_a_fresh_render_of_the_template`` went red: the
+    fresh render is tag-free, the committed page is not, and the whole
+    divergence is that one line before ``</body>``. Replaying the inject
+    unconditionally would only move the red to the opposite state (the next
+    public-render run re-ships the page WITHOUT the tag — help/plans/support/
+    unsubscribe.html all ship without it today), so the committed page's banner
+    state is overlaid: one committed tag is spliced in before ``</body>``
+    byte-for-byte, none means the fresh render ships as-is — the same treatment
+    ``build_free_content._carry_over_wh_banner`` gives this sweep on ``--fix``
+    and ``_overlay_committed_chrome`` in
+    tests/test_macro_rates_curves_bonds_guard.py gives the same two-state
+    chrome on bonds. The tag is copied byte-for-byte instead of regenerated via
+    ``inject_wh_banner.inject_text`` because the committed copy already carries
+    optimize_assets' ``?v=`` stamp (the stamp is normalised away later, but
+    copying keeps this faithful to whatever the lane actually wrote). The regex
+    is imported from scripts/build_free_content.py rather than restated so the
+    two cannot drift — the same import tests/test_unsubscribe_page.py makes.
+    """
+    from scripts.build_free_content import _WHB_TAG_RE
+    if _WHB_TAG_RE.search(fresh):
+        return fresh
+    match = _WHB_TAG_RE.search(committed)
+    if not match:
+        return fresh
+    idx = fresh.lower().rfind("</body>")
+    if idx == -1:
+        return fresh + match.group(0)
+    return fresh[:idx] + match.group(0) + fresh[idx:]
 
 
 def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
@@ -156,6 +198,18 @@ def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
     genuine drift signal (the same regex also drops the duplicate ``?v=`` query
     that link carries, but the hash lives in the filename and is still
     asserted).
+
+    The White House alert-ticker tag is the ONE remaining sweep the helper
+    cannot replay: daily.yml's "White House Watch" step runs
+    ``python -m scripts.inject_wh_banner`` over every generated page, while the
+    public-render lane does not, so the committed page carries the tag iff the
+    nightly last touched it — glossary.html gained its tag in the 2026-09-13
+    nightly (commit 00fc3dfa93e3), which is exactly when this test went red,
+    the whole divergence being that one line before ``</body>``. The committed
+    page's banner state is therefore CARRIED onto the fresh render (see
+    ``_carry_committed_wh_banner``) — never stripped from the committed page to
+    green this test, and never replayed unconditionally, which would only move
+    the red to the opposite banner state.
     """
     from scripts import build_public_pages
     out = tmp_path / "site"
@@ -163,9 +217,9 @@ def test_site_pair_matches_a_fresh_render_of_the_template(tmp_path):
     page = out / "glossary.html"
     _copy_named_local_assets(page, config.site_dir(), out)
     _finalize_like_render_lane(out)
-    fresh = page.read_text(encoding="utf-8")
     site_path = config.site_dir() / "glossary.html"
     on_disk = site_path.read_text(encoding="utf-8")
+    fresh = _carry_committed_wh_banner(page.read_text(encoding="utf-8"), on_disk)
     fresh_body = re.sub(r"<!--.*?-->", "", fresh, flags=re.S)
     on_disk_body = re.sub(r"<!--.*?-->", "", on_disk, flags=re.S)
     fresh_body = re.sub(r"\?v=[0-9a-f]{8}", "", fresh_body)
