@@ -204,6 +204,9 @@ def _capture_cells(states: dict[str, Path]) -> None:
         for state, site_root in states.items():
             page.goto((site_root / f"{state}.html").resolve().as_uri())
             page.wait_for_load_state("domcontentloaded")
+            page.add_style_tag(
+                content=".cs-orbit, #mmb-launch { display: none !important; }"
+            )
             for theme in ("dark", "light"):
                 for language in ("en", "zh"):
                     for width, height in ((1440, 900), (390, 844)):
@@ -223,6 +226,11 @@ def _capture_cells(states: dict[str, Path]) -> None:
                                 f"presentation state was not applied: "
                                 f"{actual_theme!r}, {actual_language!r}"
                             )
+                        page.add_style_tag(
+                            content=(
+                                ".cs-orbit, #mmb-launch { display: none !important; }"
+                            )
+                        )
                         page.wait_for_selector("#cs-covenant-room", state="visible")
                         page.wait_for_timeout(150)
                         locator = page.locator("#cs-covenant-room")

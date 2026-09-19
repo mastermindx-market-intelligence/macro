@@ -132,7 +132,7 @@
     {% for term in covenant_headroom.terms %}
     {% if term.state == 'computed' and term.room_turns is not none %}
     {% if term.limit_kind == 'minimum' and term.room_turns < 0 %}
-    <p>{{ t('The credit agreement requires at least', '信贷协议要求最低') }}
+    <p>{{ t('The credit agreement requires at least', '信贷协议要求收益与利息之比至少为') }}
        <strong>{{ '%.1f'|format(term.limit_raw) }}</strong>
        <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
        {{ t('of earnings to interest; the last annual report shows', '；最近的年报显示为') }}
@@ -143,7 +143,7 @@
        <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
        {{ t('.', '。') }}</p>
     {% elif term.limit_kind == 'minimum' %}
-    <p>{{ t('The credit agreement requires at least', '信贷协议要求最低') }}
+    <p>{{ t('The credit agreement requires at least', '信贷协议要求收益与利息之比至少为') }}
        <strong>{{ '%.1f'|format(term.limit_raw) }}</strong>
        <span class="l-en">{{ t('x', '倍') }}</span><span class="l-zh">{{ '倍' }}</span>
        {{ t('of earnings to interest; the last annual report shows', '；最近的年报显示为') }}

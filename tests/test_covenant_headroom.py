@@ -1024,11 +1024,52 @@ def test_committed_computed_payload_renders_every_term_semantics():
     assert "1.2" in html
 
 
-def test_committed_computed_payload_over_limit_copy_has_no_room_claim():
+def test_committed_computed_payload_below_floor_copy_has_no_room_claim():
     """An over-limit ceiling reads as over the limit, never as room left.
 
     This is RED on the previous template because its only negative-room path
     still emitted the same "of room" sentence.
+    """
+    from pathlib import Path
+    import json
+
+    root = Path(__file__).resolve().parents[1]
+    payload = json.loads(
+        (
+            root
+            / "mockups/evidence/b-f09-13-covenant-headroom/payloads/computed.json"
+        ).read_text(encoding="utf-8")
+    )
+    minimum = next(
+        term
+        for term in payload["terms"]
+        if term["term_name"] == "minimum_interest_coverage_ratio"
+    )
+    minimum["limit_raw"] = 3.0
+    minimum["reported"]["value"] = 2.375
+    minimum["room_turns"] = -0.625
+    maximum = next(
+        term
+        for term in payload["terms"]
+        if term["term_name"] == "maximum_total_net_leverage_ratio"
+    )
+    maximum["state"] = "definition_differs"
+    maximum.pop("reported", None)
+    maximum.pop("room_turns", None)
+
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
+
+    assert "falls below the floor by" in html
+    assert "0.625" in html
+    assert "of room" not in html
+
+
+def test_committed_computed_payload_over_limit_copy_has_no_room_claim():
+    """An over-limit ceiling reads as over the limit, never as room left.
+
+    RED against dcfa3454 popped the floor term's ``room_turns`` while the old
+    template still selected it with ``selectattr('room_turns')``; Jinja raised
+    ``UndefinedError`` before either copy assertion ran.
     """
     from pathlib import Path
     import json
@@ -1184,11 +1225,35 @@ def test_grid_no_headroom_word_in_null_html():
     )
 
 
-def test_refusal_row_uses_plain_label_not_hyphenated_term_name():
-    """MAJOR 1 / MAJOR 4: a refusal row must display the refusal label
-    (e.g. "Definition differs" / "定义不一致"), not the hyphenated term name
-    (e.g. "maximum secured net leverage ratio")."""
+def test_refusal_rows_use_full_plain_sentences_in_both_languages():
+    """Every unavailable-state label is a complete plain sentence in EN and ZH."""
     import engine.covenant_headroom as headroom
+
+    expected = {
+        "identity_unresolved": (
+            "We could not identify one issuer for these covenant terms.",
+            "我们无法为这些契约条款确定唯一发行人。",
+        ),
+        "metric_absent": (
+            "The financial inputs needed for this covenant term are not available.",
+            "本契约条款所需的财务输入目前不可用。",
+        ),
+        "ratio_undefined": (
+            "The reported figures do not allow this covenant ratio to be calculated.",
+            "披露数字不足以计算该契约比率。",
+        ),
+        "definition_differs": (
+            "The agreement defines this covenant differently from the reported figures.",
+            "协议对该契约的定义与披露数字不同。",
+        ),
+        "terms_ambiguous": (
+            "The agreement language leaves this covenant term unclear.",
+            "协议语言使该契约条款的含义不明确。",
+        ),
+    }
+    for reason, (label_en, label_zh) in expected.items():
+        assert headroom._NULL_COPY[reason]["label_en"] == label_en
+        assert headroom._NULL_COPY[reason]["label_zh"] == label_zh
 
     # definition_differs: maximum_secured_net_leverage_ratio always refuses
     obs = _direct_obs(
@@ -1201,8 +1266,7 @@ def test_refusal_row_uses_plain_label_not_hyphenated_term_name():
         cik_by_source_manifest_id=_cik_by_source_manifest_id(),
     )
     html, _ = _render_covenant_panel(covenant_headroom=payload)
-    # The label is "Definition differs" / "定义不一致"
-    assert "Definition differs" in html or "定义不一致" in html
+    assert "The agreement defines this covenant differently" in html
     # The raw term name with underscores must NOT appear as a visible label
     assert "maximum_secured_net_leverage_ratio" not in html
     assert "maximum secured net leverage ratio" not in html

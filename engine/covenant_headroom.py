@@ -129,8 +129,8 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         ),
     },
     "identity_unresolved": {
-        "label_en": "Identity unresolved",
-        "label_zh": "身份未解决",
+        "label_en": "We could not identify one issuer for these covenant terms.",
+        "label_zh": "我们无法为这些契约条款确定唯一发行人。",
         "en": (
             "The extracted covenant terms could not be bound to a single "
             "issuer — we will not guess."
@@ -140,8 +140,8 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         ),
     },
     "metric_absent": {
-        "label_en": "Metric absent",
-        "label_zh": "缺少指标",
+        "label_en": "The financial inputs needed for this covenant term are not available.",
+        "label_zh": "本契约条款所需的财务输入目前不可用。",
         "en": (
             "The covenant term was extracted, but the financial inputs "
             "(net debt, EBITDA, interest) are not in this build."
@@ -151,8 +151,8 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         ),
     },
     "ratio_undefined": {
-        "label_en": "Ratio undefined",
-        "label_zh": "比率未定义",
+        "label_en": "The reported figures do not allow this covenant ratio to be calculated.",
+        "label_zh": "披露数字不足以计算该契约比率。",
         "en": (
             "The covenant limit could not be turned into a room number "
             "— the term was extracted but the reported EBITDA is zero, "
@@ -164,8 +164,8 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         ),
     },
     "definition_differs": {
-        "label_en": "Definition differs",
-        "label_zh": "定义不一致",
+        "label_en": "The agreement defines this covenant differently from the reported figures.",
+        "label_zh": "协议对该契约的定义与披露数字不同。",
         "en": (
             "The agreement's definitions (e.g. secured leverage, fixed "
             "charges, liquidity, restricted-payments basket) are not the "
@@ -178,8 +178,8 @@ _NULL_COPY: dict[str, dict[str, str]] = {
         ),
     },
     "terms_ambiguous": {
-        "label_en": "Terms ambiguous",
-        "label_zh": "条款存在歧义",
+        "label_en": "The agreement language leaves this covenant term unclear.",
+        "label_zh": "协议语言使该契约条款的含义不明确。",
         "en": (
             "The clause text matched the pattern, but the surrounding "
             "language leaves it ambiguous whether the limit applies at "
