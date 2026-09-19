@@ -5,8 +5,9 @@ import json
 import stat
 
 from engine.research_intelligence.evidence_delta import (
+    COMPARISON_KIND,
     SCHEMA,
-    compare_institutional_rio,
+    compare_institutional_rio_evidence,
     summary,
 )
 from engine.research_intelligence.schema import SCHEMA as RIO_SCHEMA
@@ -82,7 +83,7 @@ def _rio(
             "falsifiers": [],
             "counterarguments": [],
             "implications": [],
-            "evidence_delta": {"statement": "", "support_claim_indices": []},
+            "belief_delta": {"statement": "", "support_claim_indices": []},
             "consensus_relation": {"statement": "", "support_claim_indices": []},
             "uncertainties": [],
         },
@@ -177,7 +178,7 @@ def test_support_lineage_is_claim_hash_based_and_document_bound():
     assert delta["current"]["document_id"] == current["document"]["id"]
 
 
-def test_same_belief_with_new_document_is_not_material_change():
+def test_identical_rio_surface_with_new_document_has_no_surface_change():
     previous, _current = _pair()
     current = _rio(
         doc_id="fixture-2026-08-15-amd",
@@ -228,7 +229,7 @@ def test_non_chronological_pair_and_same_document_id_fail_closed():
     except ValueError as exc:
         assert "distinct document ids" in str(exc)
     else:
-        raise AssertionError("same-document correction is not longitudinal memory")
+        raise AssertionError("same-document correction is not a longitudinal pair")
 
 
 def test_rights_safe_summary_contains_counts_not_private_text():
@@ -302,7 +303,7 @@ def test_same_forecast_statement_with_changed_horizon_is_modified_not_shared():
     assert delta["surface_change_dimensions"] == ["category_forecasts"]
 
 
-def test_thesis_support_shift_is_material_even_when_belief_text_is_stable():
+def test_thesis_support_shift_is_a_surface_change_without_semantic_authority():
     previous = _rio(
         doc_id="fixture-2026-08-01-support",
         published_at="2026-08-01T12:00:00+00:00",
