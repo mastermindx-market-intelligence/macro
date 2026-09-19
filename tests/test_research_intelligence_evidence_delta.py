@@ -466,3 +466,42 @@ def test_repeated_same_statement_rows_preserve_multiplicity():
     assert forecasts["modified"] == []
     assert delta["surface_change_detected"] is True
     assert "category_forecasts" in delta["surface_change_dimensions"]
+
+
+def test_repeated_identical_claim_hashes_preserve_multiplicity():
+    previous = _rio(
+        doc_id="fixture-2026-08-01-claim-multi",
+        published_at="2026-08-01T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
+    current = _rio(
+        doc_id="fixture-2026-08-15-claim-multi",
+        published_at="2026-08-15T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
+    duplicate = dict(previous["claims"][0])
+    duplicate["evidence"] = [dict(previous["claims"][0]["evidence"][0])]
+    duplicate["numbers"] = list(previous["claims"][0]["numbers"])
+    duplicate["entities"] = list(previous["claims"][0]["entities"])
+    previous["claims"].append(duplicate)
+
+    delta = compare_institutional_rio_evidence(
+        previous,
+        current,
+        topic_key=TOPIC_KEY,
+    )
+    assert len(delta["claims"]["shared_sha256"]) == 1
+    assert len(delta["claims"]["removed_sha256"]) == 1
+    assert delta["claims"]["added_sha256"] == []
+    assert delta["claims"]["previous_count"] == 2
+    assert delta["claims"]["current_count"] == 1
+    assert delta["surface_change_detected"] is True
+    assert "claims" in delta["surface_change_dimensions"]
