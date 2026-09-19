@@ -12342,6 +12342,25 @@ jobs:
       - name: china/HK collectors and the collect.py sweeps + store-freshness tripwires
         run: python -m pytest tests/test_action_board_lane_split.py tests/test_china_alpha_w3c_infra.py tests/test_china_fundamentals_collector.py tests/test_content_stamp_freshness.py tests/test_data_quality_audit.py tests/test_build_earnings_scores_from_history.py tests/test_earnings_qual.py tests/test_earnings_seasons.py tests/test_earnings_w4_feed.py tests/test_earnings_w5.py tests/test_hk_fundamentals_collector.py tests/test_hk_narrative.py tests/test_hk_track_record_vm.py tests/test_housing_hf.py tests/test_collect_failfast.py -q
 
+  us-breadth-completed-close:
+    # US completed-session price validity. Kept adjacent to the existing breadth
+    # collector owner but on the code gate because source-response semantics are
+    # the capability under review. Its location is deliberately not EOF: #7206
+    # carries an independent deep-stock completed-close job and both additive
+    # registrations must compose without a content conflict.
+    if: ${{ false }}
+    gate: code
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install bounded collector test dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml requests yfinance
+      - name: completed-session response validity and unchanged seam behavior
+        run: python -m pytest tests/test_us_breadth_completed_close.py tests/test_breadth_split_seam.py -q
+
   unrun-russell-breadth:
     # the Russell-2000 breadth collector — the one P1 suite needing a wheel the shared set lacks.
     if: ${{ false }}
