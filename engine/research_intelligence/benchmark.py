@@ -23,6 +23,16 @@ RESULT_SCHEMA = "mastermind.research_intelligence.benchmark_result.v1"
 AGGREGATE_SCHEMA = "mastermind.research_intelligence.benchmark_aggregate.v1"
 REQUEST_SCHEMA = "mastermind.research_intelligence.benchmark_request.v1"
 OBSERVATION_SCHEMA = "mastermind.research_intelligence.benchmark_observation.v1"
+BENCHMARK_VERSION = "mastermind.research_intelligence.grounded_extraction_benchmark.v2"
+_BENCHMARK_CONTRACT_TEXT = (
+    "private-gold exact-source RIO evaluation; W1 re-grounding; key-claim/numeric/entity recall; "
+    "raw-to-grounded precision; thesis support/direction; private semantic concept anchors; "
+    "one-to-one maximum insight matching; semantic recall+precision; equal-weight applicable "
+    "quality metrics; run economics non-scoring; no model-promotion authority"
+)
+BENCHMARK_CONTRACT_SHA256 = hashlib.sha256(
+    (BENCHMARK_VERSION + "\n" + _BENCHMARK_CONTRACT_TEXT).encode("utf-8")
+).hexdigest()
 
 _DIRECTIONS = {"bullish", "bearish", "mixed", "neutral", "unclear"}
 _ANALYSIS_FIELDS = (
@@ -493,6 +503,8 @@ def build_benchmark_request(case: Any, source_body: str) -> dict[str, Any]:
     return {
         "schema": REQUEST_SCHEMA,
         "case_id": checked["case_id"],
+        "benchmark_version": BENCHMARK_VERSION,
+        "benchmark_contract_sha256": BENCHMARK_CONTRACT_SHA256,
         "source_content_sha256": checked["source_content_sha256"],
         "gold_contract_sha256": _sha256_json(checked["expected"]),
         "visibility": "private_source_bound",
@@ -830,6 +842,8 @@ def score_raw_output(
         "case_id": checked["case_id"],
         "candidate_label": label,
         "provenance_state": "operator_label_only",
+        "benchmark_version": BENCHMARK_VERSION,
+        "benchmark_contract_sha256": BENCHMARK_CONTRACT_SHA256,
         "source_content_sha256": checked["source_content_sha256"],
         "gold_contract_sha256": _sha256_json(checked["expected"]),
         "prompt_sha256": _sha256_text(system + "\n" + user),
@@ -886,6 +900,10 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         raise ValueError("benchmark result identity/state is malformed")
     if raw.get("provenance_state") != "operator_label_only":
         raise ValueError("benchmark result provenance state is invalid")
+    if raw.get("benchmark_version") != BENCHMARK_VERSION:
+        raise ValueError("benchmark result version is invalid")
+    if raw.get("benchmark_contract_sha256") != BENCHMARK_CONTRACT_SHA256:
+        raise ValueError("benchmark result contract hash is invalid")
     for field in (
         "source_content_sha256",
         "gold_contract_sha256",
@@ -1050,7 +1068,7 @@ def _aggregate_observations(items: list[dict[str, Any]]) -> dict[str, Any]:
 def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     """Aggregate only directly comparable, text-free case receipts by candidate."""
     groups: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
-    bindings: dict[str, tuple[str, str, str]] = {}
+    bindings: dict[str, tuple[str, str, str, str]] = {}
     metric_shapes: dict[str, tuple[bool, ...]] = {}
     expected_shapes: dict[str, tuple[int, int, int, int, int, int, int, int]] = {}
 
@@ -1066,11 +1084,12 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
             item["source_content_sha256"],
             item["prompt_sha256"],
             item["gold_contract_sha256"],
+            item["benchmark_contract_sha256"],
         )
         prior_binding = bindings.setdefault(case_id, binding)
         if prior_binding != binding:
             raise ValueError(
-                "benchmark source, prompt, or gold contract differs across candidates"
+                "benchmark source, prompt, gold, or scoring contract differs across candidates"
             )
 
         shape = tuple(item["metrics"][key] is None for key in _METRIC_KEYS)
@@ -1096,6 +1115,8 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     if not groups:
         return {
             "schema": AGGREGATE_SCHEMA,
+            "benchmark_version": BENCHMARK_VERSION,
+            "benchmark_contract_sha256": BENCHMARK_CONTRACT_SHA256,
             "ranking_basis": "private_gold_grounded_extraction_metrics",
             "promotion_authority": "none",
             "case_set_sha256": _sha256_text("[]"),
@@ -1112,6 +1133,7 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
             bindings[case_id][0],
             bindings[case_id][1],
             bindings[case_id][2],
+            bindings[case_id][3],
         ]
         for case_id in case_ids
     ]
@@ -1143,6 +1165,8 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     rows.sort(key=lambda row: (-row["mean_overall_score"], row["candidate_label"]))
     return {
         "schema": AGGREGATE_SCHEMA,
+        "benchmark_version": BENCHMARK_VERSION,
+        "benchmark_contract_sha256": BENCHMARK_CONTRACT_SHA256,
         "ranking_basis": "private_gold_grounded_extraction_metrics",
         "promotion_authority": "none",
         "case_set_sha256": case_set_sha256,
