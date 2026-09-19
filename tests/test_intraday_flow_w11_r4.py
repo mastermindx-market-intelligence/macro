@@ -149,7 +149,7 @@ def test_mixed_state_probe_both_lanes():
     en = " ".join(r["en"])
     zh = " ".join(r["zh"])
     assert "options flow not coming through" in en
-    assert "期权流数据未送达" in zh
+    assert "流数据未送达" in zh
     assert "feeds still connecting" not in en
     assert "some feeds not coming through" not in en
     assert r["tipRowsEn"] == [

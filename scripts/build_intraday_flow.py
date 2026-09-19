@@ -928,7 +928,7 @@ def _build_leader_record(
     return rec
 
 
-def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path) -> None:
+def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path, as_of_arg: str | None = None) -> None:
     """Nightly mode: build site/flowtracker/base.json and render HTML."""
     ift_cfg = cfg.get("intraday_flow") or {}
     universe = _resolve_universe(cfg, data_root)
@@ -936,7 +936,20 @@ def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path) ->
     out_dir = site_root / "flowtracker"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    as_of = datetime.now(timezone.utc).isoformat()
+    # Lock the as_of stamp when the caller passes one (tests / conflict
+    # resolution re-renders). Without --as-of, the builder stamps the
+    # current UTC instant — fine for nightly, but breaks G3-iii byte-diff
+    # determinism across two consecutive runs.
+    if as_of_arg:
+        # Normalize: accept either bare ISO or with timezone suffix.
+        try:
+            dt = datetime.fromisoformat(str(as_of_arg).replace("Z", "+00:00"))
+            as_of = dt.isoformat()
+        except ValueError:
+            log.warning("build_intraday_flow nightly: --as-of %r not ISO 8601 — falling back to now()", as_of_arg)
+            as_of = datetime.now(timezone.utc).isoformat()
+    else:
+        as_of = datetime.now(timezone.utc).isoformat()
 
     # Build per-ticker basket map for client-side filtering.
     tk_baskets: dict[str, list[str]] = {}
@@ -1038,7 +1051,11 @@ def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path) ->
             "n_leaders":  len(leaders),
             "base_json":  _bj,
             "as_of":      as_of,
-            "checked_at": datetime.now(timezone.utc).isoformat(),
+            # Lock checked_at to the same as_of stamp under --as-of so the
+            # builder remains byte-deterministic across two consecutive runs
+            # (G3-iii). When --as-of is absent, checked_at is the current
+            # UTC instant — fine for nightly, just not for G3-iii.
+            "checked_at": as_of,
         }
         _store.write_status(_rs)
         log.info("build_intraday_flow nightly: run_status updated")
@@ -1216,7 +1233,7 @@ def _load_base_json_index(site_root: Path) -> dict[str, dict]:
         return {}
 
 
-def _run_fastpath(cfg: dict, data_root: Path, site_root: Path) -> None:
+def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | None = None) -> None:
     """Fastpath mode: compute live pulse from today's intraday bars.
 
     Writes site/live/flow_pulse.json + site/live/flow_pulse_lastgood.json.
@@ -1240,7 +1257,14 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path) -> None:
     # volume ≥ time-of-day baseline — design §2.2/§2.5 + engine docstring §4).
     base_index = _load_base_json_index(site_root)
 
-    now_utc = datetime.now(timezone.utc)
+    if as_of_arg:
+        try:
+            now_utc = datetime.fromisoformat(str(as_of_arg).replace("Z", "+00:00"))
+        except ValueError:
+            log.warning("build_intraday_flow fastpath: --as-of %r not ISO 8601 — falling back to now()", as_of_arg)
+            now_utc = datetime.now(timezone.utc)
+    else:
+        now_utc = datetime.now(timezone.utc)
     tickers_out: list[dict] = []
 
     for ticker in universe:
@@ -1384,6 +1408,15 @@ def main() -> int:
         default=None,
         help="Override site/ directory (for fixture generation / testing)",
     )
+    ap.add_argument(
+        "--as-of",
+        default=None,
+        help=(
+            "Override the as_of stamp (ISO 8601 UTC). When set, the builder "
+            "produces byte-deterministic output across runs (used by tests and "
+            "conflict-resolution renders to lock the stamp)."
+        ),
+    )
     args = ap.parse_args()
 
     cfg = config.load()
@@ -1410,9 +1443,9 @@ def main() -> int:
 
     try:
         if args.mode == "nightly":
-            _run_nightly(cfg, data_root, site_root, tpl_root)
+            _run_nightly(cfg, data_root, site_root, tpl_root, args.as_of)
         else:
-            _run_fastpath(cfg, data_root, site_root)
+            _run_fastpath(cfg, data_root, site_root, args.as_of)
     except Exception as e:  # noqa: BLE001 — fail-soft; never break the pipeline
         log.error("build_intraday_flow %s: unexpected error: %s", args.mode, e)
 

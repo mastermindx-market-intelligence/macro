@@ -793,9 +793,9 @@ function feedHeadline(q, t, o) {
   if (worst === 1) return { en:'feeds still connecting', zh:'数据连接中' };
   if (at.length >= 2) return { en:'some feeds not coming through', zh:'部分数据未送达' };
   var lane = at[0].id;
-  if (lane==='quotes') return { en:'prices not coming through', zh:'行情数据未送达' };
-  if (lane==='tape') return { en:'trades not coming through', zh:'资金带数据未送达' };
-  return { en:'options flow not coming through', zh:'期权流数据未送达' };
+  if (lane==='quotes') return { en:'prices not coming through', zh:'报价未送达' };
+  if (lane==='tape') return { en:'trades not coming through', zh:'成交未送达' };
+  return { en:'options flow not coming through', zh:'流数据未送达' };
 }
 
 // ── Stance (mirror engine/intraday_flow.stance — deterministic precedence) ─
