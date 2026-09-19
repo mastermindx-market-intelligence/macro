@@ -1,0 +1,117 @@
+{
+  "operation": "prophet-rotation-diagnostics-w1-20260915-sol-001",
+  "base_sha": "142c8f6123b2a5da50e1ec95b6d0f7cb2167a009",
+  "production_proven": false,
+  "browser_proven": false,
+  "proof_scope": "actual local existing GET /api/prophet with pinned unchanged audit; browser not run",
+  "current_source_sha256": {
+    "admin/prophet_diagnostics.py": "663bf025f1e8f53953607b2c39a100d7203b741d6d1cd6fa223b6ffadd1025f1",
+    "admin/prophet.py": "bc4ff0610383d8f8ba4474c291dc1b6729e5f9740c37b7beefe8f96fb7b74523",
+    "admin/static/app.js": "1563d503afec1e12d902ee9a4f08038d8f5bcce027867ccd55efb9373c688a4a"
+  },
+  "served_diagnostics": {
+    "schema": "prophet.rotation_diagnostics.v1",
+    "authority": "operator_diagnostic_only",
+    "available": true,
+    "status": "partial",
+    "reasons": [
+      "legacy_conversion_not_episode_linked",
+      "mixed_vintages"
+    ],
+    "source": {
+      "path": "data/prophet_miss_audit/latest.json",
+      "sha256": "44ff637b623111d3061511aa368f1a5e457f1a4a85af6698cce650193a0f3151"
+    },
+    "dates": {
+      "prices": "2026-09-14",
+      "board": "2026-09-11",
+      "rotation": "2026-09-11",
+      "baskets": "2026-09-14",
+      "basket_board": "2026-09-11"
+    },
+    "dates_aligned": false,
+    "populations": {
+      "universe": 1496,
+      "runners_63": 150,
+      "runners_21": 50
+    },
+    "conversion": {
+      "sighted": 124,
+      "ever_plan_matched": 21,
+      "legacy_rate": 0.1694,
+      "basis": "ticker_ever_plan_match",
+      "on_time_rate": null,
+      "on_time_state": "not_measured"
+    }
+  },
+  "case_rows": [
+    {
+      "basket_id": "ai_infra",
+      "name": "AI Infrastructure",
+      "as_of": "2026-09-14",
+      "counts": {
+        "buy": 1,
+        "watch": 2,
+        "leaders": 0,
+        "ran": 0
+      },
+      "visibility": "setup_lane_present",
+      "entry_actionability": "not_measured",
+      "members_on_board": [
+        "AMAT",
+        "CIEN",
+        "GLW"
+      ]
+    },
+    {
+      "basket_id": "energy_complex",
+      "name": "US Energy Complex",
+      "as_of": "2026-09-14",
+      "counts": {
+        "buy": 0,
+        "watch": 0,
+        "leaders": 2,
+        "ran": 0
+      },
+      "visibility": "leader_only",
+      "entry_actionability": "not_measured",
+      "members_on_board": [
+        "DINO",
+        "VLO"
+      ]
+    },
+    {
+      "basket_id": "us_sector_energy",
+      "name": "Energy (Equal-Weight)",
+      "as_of": "2026-09-14",
+      "counts": {
+        "buy": 0,
+        "watch": 0,
+        "leaders": 1,
+        "ran": 0
+      },
+      "visibility": "leader_only",
+      "entry_actionability": "not_measured",
+      "members_on_board": [
+        "VLO"
+      ]
+    }
+  ],
+  "tests_before_frontend_hardening": {
+    "passed": 128,
+    "failed": 0,
+    "skipped": 1
+  },
+  "latest_tests": {
+    "passed": 133,
+    "failed": 3,
+    "skipped": 1,
+    "status": "release_blocked"
+  },
+  "agentos_validation": {
+    "records": 1117,
+    "errors": 0,
+    "warnings": 97
+  },
+  "independent_review": "REQUEST_REPAIR on prior frontend; final-source re-review owed"
+}

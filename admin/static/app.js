@@ -4564,6 +4564,205 @@ RENDER.orchestrator = async () => {
 };
 
 /* ---- PROPHET (NW lobe governor) ------------------------------------------ */
+
+/* ROTATION_DIAGNOSTICS_START */
+function prophetRotationDiagnosticsHtml(payload) {
+  const exactDate = value => {
+    if (typeof value !== 'string' || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value) || value.startsWith('0000-')) return null;
+    const parsed = new Date(value + 'T00:00:00Z');
+    return Number.isFinite(parsed.valueOf()) && parsed.toISOString().slice(0,10) === value ? value : null;
+  };
+  // --- Guard: strict type check on payload object ---
+  if (
+    typeof payload !== "object" || payload === null ||
+    Array.isArray(payload)
+  ) {
+    return '<div class="section">Rotation diagnostics unavailable</div>';
+  }
+
+  // --- Extract top-level fields with defaults ---
+  const schema      = payload.schema;
+  const available   = payload.available;
+  const status      = payload.status;
+  const reasons     = Array.isArray(payload.reasons) ? payload.reasons : [];
+  const populations = (typeof payload.populations === "object" && payload.populations !== null)
+    ? payload.populations : null;
+  const conversion  = (typeof payload.conversion === "object" && payload.conversion !== null)
+    ? payload.conversion : null;
+  const dates       = (typeof payload.dates === "object" && payload.dates !== null)
+    ? payload.dates : null;
+  const baskets     = Array.isArray(payload.baskets) ? payload.baskets : null;
+
+  // --- Guard: schema/authority must be correct operator-only diagnostic ---
+  if (
+    schema !== "prophet.rotation_diagnostics.v1" ||
+    payload.authority !== "operator_diagnostic_only"
+  ) {
+    return '<div class="section">Rotation diagnostics unavailable</div>';
+  }
+
+  // --- unavailable block ---
+  if (available !== true || !["available", "partial"].includes(status)) {
+    const typedReason = reasons.length
+      ? reasons.map(r => esc(String(r))).join('; ')
+      : 'unknown reason';
+    return `<div class="section">Rotation diagnostics</div>
+<div class="card"><div class="sub">Source unavailable — ${typedReason}</div></div>`;
+  }
+
+  // --- unavailable basket block ---
+  if (!Array.isArray(baskets)) {
+    return `<div class="section">Rotation diagnostics</div>
+<div class="card"><div class="sub">Rotation diagnostics unavailable — basket data missing</div></div>`;
+  }
+
+  // --- Build counts HTML helper ---
+  const countsHtml = (buy, watch, leaders, ran) => {
+    const fmt = (v) => Number.isSafeInteger(v) && v >= 0 ? String(v) : 'Unavailable';
+    return `<span title="buy">${fmt(buy)}</span>/<span title="watch">${fmt(watch)}</span>/<span title="leaders">${fmt(leaders)}</span>/<span title="ran">${fmt(ran)}</span>`;
+  };
+
+  // --- Visibility pill helper ---
+  const visPill = (vis) => {
+    const map = {
+      leader_only:        { label: 'Leaders or prior runners only', cls: 's-warn' },
+      setup_lane_present: { label: 'Buy/watch lane present — entry not verified', cls: 's-mut' },
+      not_visible:       { label: 'Not visible in these lanes', cls: 's-mut' },
+      unknown:           { label: 'Visibility unknown', cls: 's-mut' },
+    };
+    const info = map[vis] || { label: esc(vis || '?'), cls: 's-mut' };
+    return `<span class="statpill ${info.cls}" title="${esc(vis || '')}">${esc(info.label)}</span>`;
+  };
+
+  // --- Populations ---
+  const popU  = (populations && typeof populations.universe  === 'number' && Number.isSafeInteger(populations.universe) && populations.universe >= 0)  ? populations.universe  : null;
+  const pop63 = (populations && typeof populations.runners_63 === 'number' && Number.isSafeInteger(populations.runners_63) && populations.runners_63 >= 0) ? populations.runners_63 : null;
+  const pop21 = (populations && typeof populations.runners_21 === 'number' && Number.isSafeInteger(populations.runners_21) && populations.runners_21 >= 0) ? populations.runners_21 : null;
+
+  // --- Dates alignment summary ---
+  const dateValues = ['prices','board','rotation','baskets','basket_board'].map(key => exactDate(dates && dates[key]));
+  const datesAligned = dateValues.every(value => value !== null) ? new Set(dateValues).size === 1 : null;
+  let datesNote = '';
+  if (datesAligned === false) {
+    datesNote = 'Input dates differ';
+  } else if (datesAligned === true) {
+    datesNote = 'Input dates aligned — freshness not established';
+  } else {
+    datesNote = 'Input dates incomplete';
+  }
+
+  // --- Price/board/rotation date display ---
+  const fmtDate = (d) => exactDate(d) !== null ? esc(d) : 'Unavailable';
+
+  // --- Conversion display: legacy match vs on-time ---
+  // source cannot imply on-time rate or entry proof
+  const sighted      = (conversion && Number.isSafeInteger(conversion.sighted) && conversion.sighted >= 0) ? conversion.sighted       : null;
+  const everMatched  = (conversion && Number.isSafeInteger(conversion.ever_plan_matched) && conversion.ever_plan_matched >= 0) ? conversion.ever_plan_matched : null;
+  const legacyRate   = (conversion && typeof conversion.legacy_rate === 'number' && Number.isFinite(conversion.legacy_rate) && conversion.legacy_rate >= 0 && conversion.legacy_rate <= 1) ? conversion.legacy_rate  : null;
+  const basis        = (conversion && typeof conversion.basis        === 'string') ? conversion.basis        : '';
+
+  const matchValid = basis === 'ticker_ever_plan_match' && sighted !== null && everMatched !== null && everMatched <= sighted;
+  const rateValid = matchValid && sighted > 0 && legacyRate !== null && Math.abs(legacyRate - everMatched/sighted) <= 0.000050000001;
+  let legacyNote = '';
+  if (matchValid && rateValid) {
+    legacyNote = `Historical ticker-to-plan match: ${everMatched} matched / ${sighted} sighted (${(legacyRate * 100).toFixed(1)}% rate) - Matches any historical plan; not timely opportunity conversion.`;
+  } else if (matchValid) {
+    legacyNote = `Historical ticker-to-plan match: ${everMatched} matched / ${sighted} sighted - Matches any historical plan; not timely opportunity conversion.`;
+  } else {
+    legacyNote = 'Historical ticker-to-plan match: not available';
+  }
+
+  // --- Basket table rows (ALL rows, no ranked investment ordering) ---
+  // Max 200, disclosed rather than silently truncated
+  const maxRows = 200;
+  const rows = baskets.length <= maxRows ? baskets : [];
+  const clippedNote = baskets.length > maxRows
+    ? `<div class="note muted" style="margin-top:6px">Basket component unavailable: ${baskets.length} rows exceeds ${maxRows} — disclose rather than silently truncate.</div>`
+    : '';
+
+  const basketWithheld = baskets.length > maxRows || reasons.some(r =>
+    typeof r === 'string' && (r.startsWith('basket_') || r === 'duplicate_basket_ids'));
+  const basketRows = rows.length === 0
+    ? `<tr><td colspan="5" class="sub muted">${basketWithheld ? 'Basket evidence unavailable; see flags.' : 'No baskets in audit.'}</td></tr>`
+    : rows.map(b => {
+      if (!b || typeof b !== "object" || Array.isArray(b)) return '<tr><td colspan="5">Basket row unavailable</td></tr>';
+      const bid     = (typeof b.basket_id === 'string') ? b.basket_id : '';
+      const bname   = (typeof b.name      === 'string') ? b.name      : '';
+      const basof = exactDate(b.as_of);
+      const cnts    = (typeof b.counts    === 'object' && b.counts !== null) ? b.counts : {};
+      const buy     = (typeof cnts.buy     === 'number') ? cnts.buy     : null;
+      const watch   = (typeof cnts.watch   === 'number') ? cnts.watch   : null;
+      const leaders = (typeof cnts.leaders === 'number') ? cnts.leaders : null;
+      const ran     = (typeof cnts.ran     === 'number') ? cnts.ran     : null;
+      const allCountsKnown = [buy,watch,leaders,ran].every(n => Number.isSafeInteger(n) && n >= 0);
+      const expectedVisibility = allCountsKnown ? (buy + watch > 0 ? 'setup_lane_present' : leaders + ran > 0 ? 'leader_only' : 'not_visible') : 'unknown';
+      const vis = b.visibility === expectedVisibility ? expectedVisibility : 'unknown';
+      const members = Array.isArray(b.members_on_board) ? b.members_on_board : [];
+      const membersStr = members.map(m => esc(String(m))).join(', ');
+      return `<tr>
+        <td class="mono" style="font-size:12px"><b>${esc(bid)}</b></td>
+        <td>${esc(bname)}</td>
+        <td class="sub" style="font-size:11px">${basof ? esc(basof) : '—'}</td>
+        <td class="mono" style="font-size:12px">${countsHtml(buy, watch, leaders, ran)}</td>
+        <td>${visPill(vis)}</td>
+      </tr>
+      ${membersStr ? `<tr><td colspan="5" class="sub mono muted" style="font-size:10px;padding-left:8px">Board: ${membersStr}</td></tr>` : ''}`;
+    }).join('');
+
+  // --- Source SHA detail (optional) ---
+  const srcSha = (typeof payload.source === 'object' && payload.source !== null && typeof payload.source.sha256 === 'string')
+    ? payload.source.sha256 : null;
+  const shaLine = srcSha
+    ? `<div class="note mono muted" style="margin-top:4px;overflow-wrap:anywhere">Source SHA: ${esc(srcSha)}</div>`
+    : '';
+
+  // --- Named data reasons (optional) ---
+  // Strip & and # before HTML-escaping to prevent entity-decode attacks
+  // (e.g. &lt;img onerror=... decodes back to <img with handler)
+  const reasonsLine = reasons.length
+    ? `<div class="note" style="margin-top:4px">Flags: ${reasons.map(r => esc(String(r))).join('; ')}</div>`
+    : '';
+
+  return `<div class="section">Rotation diagnostics</div>
+
+<div class="kv"><span>Universe</span><b>${popU  !== null ? popU  : '—'}</b></div>
+<div class="kv"><span>63-session runners</span><b>${pop63 !== null ? pop63 : '—'}</b></div>
+<div class="kv"><span>21-session runners</span><b>${pop21 !== null ? pop21 : '—'}</b></div>
+<div class="kv"><span>Date alignment</span><b>${esc(datesNote)}</b></div>
+<div class="kv"><span>Price through</span><b>${fmtDate(dates ? dates.prices : null)}</b></div>
+<div class="kv"><span>Board as-of</span><b>${fmtDate(dates ? dates.board : null)}</b></div>
+<div class="kv"><span>Rotation as-of</span><b>${fmtDate(dates ? dates.rotation : null)}</b></div>
+<div class="kv"><span>Basket cutoffs as-of</span><b>${fmtDate(dates ? dates.baskets : null)}</b></div>
+<div class="kv"><span>Basket board as-of</span><b>${fmtDate(dates ? dates.basket_board : null)}</b></div>
+
+<div class="section" style="margin-top:6px">${esc(legacyNote)}</div>
+<div class="kv" style="margin-top:4px"><span>On-time opportunity conversion</span><b>Not measured</b></div>
+<div class="kv"><span>Entry actionability</span><b>Not measured</b></div>
+${shaLine}
+${reasonsLine}
+
+<div class="section" style="margin-top:6px">Basket visibility</div>
+<div class="sub muted">On narrow screens, scroll the table to see counts and visibility.</div>
+<div class="tbl-scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Basket ID</th>
+      <th>Name</th>
+      <th>As-of</th>
+      <th>Buy/Watch/Leaders/Ran</th>
+      <th>Visibility</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${basketRows}
+  </tbody>
+</table>
+</div>
+${clippedNote}`;
+}
+/* ROTATION_DIAGNOSTICS_END */
+
 RENDER.prophet = async () => {
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
@@ -4613,6 +4812,7 @@ RENDER.prophet = async () => {
   /* --- Dashboard integrity strip --- */
   const integrityBlk = ps.dashboard_integrity || {};
   const intMkts = Object.keys(integrityBlk);
+  const rotationDiagnosticsHtml = prophetRotationDiagnosticsHtml(d.rotation_diagnostics);
   const integrityHtml = intMkts.length
     ? `<div class="section">Dashboard integrity</div>
        <table><thead><tr><th>Market</th><th>Freshness</th><th>Data gaps</th><th>Status</th></tr></thead><tbody>
@@ -4814,7 +5014,7 @@ RENDER.prophet = async () => {
     <div class="row"><div class="lab" style="min-width:220px">Daily token cap</div>${numInputP("deliberation_daily_token_cap", cfg.deliberation_daily_token_cap, 0, 5000000)}
       <div class="note">Daily deliberation token budget. When exhausted, lanes fall back to claude-opus-4-8. Range 0–5,000,000. <code class="muted">prophet.deliberation_daily_token_cap</code></div></div>`;
 
-  v.innerHTML = tradeMemoryHtml + mktCardsHtml + integrityHtml + suggestionsHtml + autopsiesHtml + pmHtml + llHtml + fitHtml + trHtml + spendHtml + settingsHtml;
+  v.innerHTML = tradeMemoryHtml + mktCardsHtml + integrityHtml + rotationDiagnosticsHtml + suggestionsHtml + autopsiesHtml + pmHtml + llHtml + fitHtml + trHtml + spendHtml + settingsHtml;
 
   /* Wire up settings inputs */
   const meta2 = (SUMMARY && SUMMARY.meta) || {};
