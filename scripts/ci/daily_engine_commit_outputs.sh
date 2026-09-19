@@ -101,6 +101,7 @@ git clean -fd -- \
 # untouched.
 git clean -fd -- \
   data/prophet/origination_receipts \
+  data/prophet/origination_sources \
   data/prophet/legacy_shadow
 # Re-exclude both exact-published namespaces after the broad add.
 bash scripts/ci/options_signal_nightly.sh exclude-broad

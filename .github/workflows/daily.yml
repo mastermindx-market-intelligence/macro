@@ -2651,6 +2651,7 @@ jobs:
           git clean -fd -- \
             site/prophet \
             data/prophet/origination_receipts \
+            data/prophet/origination_sources \
             data/prophet_arena \
             data/prophet_stage_shadow
           RESTORE_MISMATCH=false

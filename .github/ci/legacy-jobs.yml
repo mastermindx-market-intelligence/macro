@@ -10026,7 +10026,7 @@ jobs:
       - name: data/stocks retention fetch + per-name freshness audit
         run: python -m pytest tests/test_stock_price_retention.py tests/test_audit_stocks_freshness.py -q
       - name: stock-library freshness demotion (frozen-feed scan admission)
-        run: python -m pytest tests/test_stock_library_freshness.py -q
+        run: python -m pytest tests/test_stock_library_freshness.py tests/test_us_completed_session_panel.py -q
 
   defense-rail-laws:
     # D6-A + D6-B1 defense acquisition rails — the two commissioned law
