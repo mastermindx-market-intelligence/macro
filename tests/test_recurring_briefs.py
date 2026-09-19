@@ -673,9 +673,9 @@ def test_no_coverage_tickers_thesis_degrades_on_production_daily_artifact():
     }
     state, reason = rb.classify(sub, prod, target)
     assert state == "degraded"
-    # Named thesis with tickers that miss the artifact → kind-specific miss
-    # that names the actual tickers (MAJOR 1 fix: was hardcoded "AAPL").
-    assert "ZZZZ" in reason and "not in this week's brief yet" in reason
+    # Named thesis with tickers that miss the artifact → structured kind;
+    # compose_body names the actual tickers (MAJOR 1: was hardcoded "AAPL").
+    assert reason == rb.DEGRADED_KIND_THESIS_NAMES_MISSING
     body = rb.compose_body(target, prod, monitors=[], degraded_reason=reason)
     assert "ZZZZ" in body["market_read"][0]["sentence_en"]
     assert "ZZZZ" in body["market_read"][0]["sentence_zh"]
@@ -703,9 +703,8 @@ def test_no_coverage_watchlist_degrades_when_members_miss_artifact():
     }
     state, reason = rb.classify(sub, _briefing(), target)
     assert state == "degraded"
-    # Named watchlist with tickers → named miss template, not generic sentence.
-    assert "XXXX" in reason
-    assert "None of the names in this watchlist" not in reason
+    # Named watchlist with tickers → structured kind, not generic sentence.
+    assert reason == rb.DEGRADED_KIND_WATCHLIST_NAMES_MISSING
     body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
     hay_en = body["market_read"][0]["sentence_en"]
     hay_zh = body["market_read"][0]["sentence_zh"]
@@ -769,9 +768,12 @@ def test_untitled_thesis_composes_generic_sentence():
 
 
 def test_named_watchlist_miss_uses_ticker_names():
-    """Round 3 MAJOR 1 / MINOR 3c: a named watchlist whose tickers miss the
-    artifact must name those tickers in both EN and ZH, not use the generic
-    anonymous watchlist sentence. Uses an NVDA-only production-shape artifact."""
+    """Round 4 MAJOR 1: a named watchlist whose tickers miss the artifact
+    must render the watchlist template, not the thesis template. Dispatch
+    is on classify's structured kind, not on a phrase in degraded_reason.
+    RED at fb103261: compose_body keyed on "appeared in this week's brief yet"
+    (gone from NO_COVERAGE_WATCHLIST_FMT_EN) and emitted the thesis copy.
+    Uses an NVDA-only production-shape artifact."""
     sub = _sub(kind="watchlist")
     # NVDA-only production artifact (no AAPL, no MSFT)
     nvda_artifact = {
@@ -796,20 +798,23 @@ def test_named_watchlist_miss_uses_ticker_names():
         "tickers": ["AAPL", "MSFT"],   # AAPL+MSFT not in artifact → miss
         "unavailable": False,
     }
+    want_en = (
+        "AAPL, MSFT are not in this week's brief yet — "
+        "we can't write a watchlist brief until the names it follows appear."
+    )
     state, reason = rb.classify(sub, nvda_artifact, target)
     assert state == "degraded"
-    # classify puts the named-template reason into degraded_reason
-    assert "AAPL" in reason
-    assert "MSFT" in reason
     body = rb.compose_body(target, nvda_artifact, monitors=[], degraded_reason=reason)
     hay_en = body["market_read"][0]["sentence_en"]
     hay_zh = body["market_read"][0]["sentence_zh"]
-    # Must name the actual tickers, not generic "None of the names…"
-    assert "AAPL" in hay_en, f"EN sentence must name AAPL: {hay_en!r}"
-    assert "MSFT" in hay_en, f"EN sentence must name MSFT: {hay_en!r}"
-    assert "AAPL" in hay_zh, f"ZH sentence must name AAPL: {hay_zh!r}"
-    assert "MSFT" in hay_zh, f"ZH sentence must name MSFT: {hay_zh!r}"
-    # And must NOT be the generic watchlist sentence
+    # Exact watchlist copy (RED at fb103261: compose_body emitted the thesis copy).
+    assert hay_en == want_en, f"EN must be the watchlist copy, got: {hay_en!r}"
+    assert "观察列表" in hay_zh, f"ZH must name a watchlist, got: {hay_zh!r}"
+    assert "AAPL, MSFT" in hay_zh, f"ZH must name AAPL, MSFT, got: {hay_zh!r}"
+    assert "thesis brief" not in hay_en
+    assert "论点" not in hay_zh
+    assert reason == rb.DEGRADED_KIND_WATCHLIST_NAMES_MISSING
+    # And must NOT be the generic anonymous watchlist sentence
     assert hay_en != rb.NO_COVERAGE_WATCHLIST_EN
     assert hay_zh != rb.NO_COVERAGE_WATCHLIST_ZH
 

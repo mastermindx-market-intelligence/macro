@@ -68,6 +68,10 @@ TARGET_UNAVAILABLE_ZH = (
     "这份简报无法写成，因为它所跟踪的论点或观察列表已不可用。"
 )
 NO_COVERAGE_REASON = "no target coverage"
+# Structured kinds classify returns for named-ticker misses. compose_body
+# switches on these tokens — never on a phrase inside the user-facing copy.
+DEGRADED_KIND_THESIS_NAMES_MISSING = "thesis_names_missing"
+DEGRADED_KIND_WATCHLIST_NAMES_MISSING = "watchlist_names_missing"
 # Named targets whose names ARE known but whose tickers miss the artifact
 # get a truthful "not in this week's brief yet" copy (no 论点 when kind==watchlist).
 NO_COVERAGE_THESIS_FMT_EN = (
@@ -251,18 +255,14 @@ def classify(
             if not wanted:
                 return ("degraded", NO_COVERAGE_REASON)
             if not _target_has_artifact_coverage(target, wanted, artifact):
-                # MAJOR 1 fix: named targets whose tickers MISS the artifact
-                # get the kind-appropriate "not in this week's brief yet" copy
-                # that names their actual tickers. Anonymous/theme targets
-                # (no name) get the generic NO_COVERAGE_REASON.
+                # Named-ticker misses return a structured kind. compose_body
+                # switches on that token (round 4: stop dispatching on prose).
+                # Anonymous/theme targets (no name) keep NO_COVERAGE_REASON.
                 target_name = target.get("name", "").strip()
                 if target_name and target_name not in ("", "Untitled thesis", "Untitled watchlist"):
-                    # Format names from the target's own ticker list.
-                    verb = "is" if len(wanted) == 1 else "are"
-                    names_str = ", ".join(sorted(wanted))
                     if kind == "thesis":
-                        return ("degraded", NO_COVERAGE_THESIS_FMT_EN.format(names=names_str, verb=verb))
-                    return ("degraded", NO_COVERAGE_WATCHLIST_FMT_EN.format(names=names_str, verb=verb))
+                        return ("degraded", DEGRADED_KIND_THESIS_NAMES_MISSING)
+                    return ("degraded", DEGRADED_KIND_WATCHLIST_NAMES_MISSING)
                 return ("degraded", NO_COVERAGE_REASON)
     return ("ready", None)
 
@@ -474,6 +474,18 @@ def _target_view(target: dict | None) -> dict:
     }
 
 
+def _names_and_verb(target: dict | None) -> tuple[str, str]:
+    """Ticker phrase and English verb from the target's listed names."""
+    seen: list[str] = []
+    for raw in (target or {}).get("tickers") or []:
+        if isinstance(raw, str) and raw.strip():
+            token = raw.strip().upper()
+            if token not in seen:
+                seen.append(token)
+    verb = "is" if len(seen) == 1 else "are"
+    return ", ".join(seen), verb
+
+
 def compose_body(
     target: dict | None,
     artifact: dict | None,
@@ -502,35 +514,26 @@ def compose_body(
             market_read = [
                 _sentence_row("status", NO_COVERAGE_THESIS_EN, NO_COVERAGE_THESIS_ZH, asof)
             ]
-    elif degraded_reason and (
-        "not in this week's brief yet" in degraded_reason
-        or "appeared in this week's brief yet" in degraded_reason
-    ):
-        # Named thesis / watchlist whose tickers miss the artifact:
-        # classify returned the format-string with actual names filled in.
-        # Use the kind-appropriate bilingual sentence — both EN and ZH must
-        # name the actual tickers, not the old hardcoded "AAPL".
-        tickers_list = sorted((target or {}).get("tickers") or [])
-        verb = "is" if len(tickers_list) == 1 else "are"
-        names_str = ", ".join(tickers_list)
-        if "appeared in this week's brief yet" in degraded_reason:
-            market_read = [
-                _sentence_row(
-                    "status",
-                    NO_COVERAGE_WATCHLIST_FMT_EN.format(names=names_str, verb=verb),
-                    NO_COVERAGE_WATCHLIST_FMT_ZH.format(names=names_str, verb=verb),
-                    asof,
-                )
-            ]
-        else:
-            market_read = [
-                _sentence_row(
-                    "status",
-                    NO_COVERAGE_THESIS_FMT_EN.format(names=names_str, verb=verb),
-                    NO_COVERAGE_THESIS_FMT_ZH.format(names=names_str, verb=verb),
-                    asof,
-                )
-            ]
+    elif degraded_reason == DEGRADED_KIND_WATCHLIST_NAMES_MISSING:
+        names_str, verb = _names_and_verb(target)
+        market_read = [
+            _sentence_row(
+                "status",
+                NO_COVERAGE_WATCHLIST_FMT_EN.format(names=names_str, verb=verb),
+                NO_COVERAGE_WATCHLIST_FMT_ZH.format(names=names_str, verb=verb),
+                asof,
+            )
+        ]
+    elif degraded_reason == DEGRADED_KIND_THESIS_NAMES_MISSING:
+        names_str, verb = _names_and_verb(target)
+        market_read = [
+            _sentence_row(
+                "status",
+                NO_COVERAGE_THESIS_FMT_EN.format(names=names_str, verb=verb),
+                NO_COVERAGE_THESIS_FMT_ZH.format(names=names_str, verb=verb),
+                asof,
+            )
+        ]
     elif degraded_reason:
         market_read = [
             _sentence_row("status", CONTRACT_MISS_EN, CONTRACT_MISS_ZH, asof)
