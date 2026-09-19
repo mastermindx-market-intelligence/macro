@@ -1258,6 +1258,35 @@ def test_r4_mixed_expected_move_mode_refuses_instead_of_mixing_coordinates():
         )
 
 
+def test_r4_root_identity_mismatch_refuses_before_geometry():
+    scale = np.log1p(0.02)
+    bad = _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale))
+    states = {
+        "SPY": bad,
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+    }
+    with pytest.raises(skylit_r4.R4Refusal, match="state/root identity mismatch"):
+        skylit_r4.analyze_states(
+            states,
+            _R4_SESSION,
+            expected_moves={"SPY": 2.0, "QQQ": 2.0},
+        )
+
+
+def test_r4_missing_decision_clock_refuses_instead_of_aligning_nulls():
+    scale = np.log1p(0.02)
+    a = _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale))
+    b = _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale))
+    a["decision_eligible_not_before_session"] = None
+    b["decision_eligible_not_before_session"] = None
+    with pytest.raises(skylit_r4.R4Refusal, match="missing decision-eligible clock"):
+        skylit_r4.analyze_states(
+            {"SPY": a, "QQQ": b},
+            _R4_SESSION,
+            expected_moves={"SPY": 2.0, "QQQ": 2.0},
+        )
+
+
 def test_r4_cross_root_clock_mismatch_refuses():
     scale = 1.0
     states = {
