@@ -125,6 +125,10 @@ INTERACTION_SELECTOR_PATTERNS: dict[str, re.Pattern[str]] = {
     "hover": re.compile(r":hover\b"),
     "focus": re.compile(r":focus(?:-visible|-within)?\b"),
 }
+CSS_RULE_RE = re.compile(r"([^{}]+)\{([^{}]*)\}", re.DOTALL)
+CSS_SELECTOR_TOKEN_RE = re.compile(r"([.#][A-Za-z_][A-Za-z0-9_-]*)")
+CUSTOM_PROP_DEF_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:")
+CUSTOM_PROP_USE_RE = re.compile(r"var\(\s*(--[A-Za-z0-9_-]+)")
 # Duplicates scripts/check_runtime_style_injection.py's own PATTERNS (own copy
 # — this module owns no other file's constants, matching its self-contained
 # convention). tests/test_check_ui_visual_evidence.py pins the two in
@@ -359,6 +363,23 @@ def _is_material_css(path: str, lines: list[str]) -> bool:
     return _css_added_lines_have_substance(lines)
 
 
+def _candidate_css_text(path: str, repo_root: Path | None) -> str:
+    """CSS governed by one candidate path, without inventing an HTML parser."""
+
+    if repo_root is None or not path.startswith("templates/"):
+        return ""
+    candidate = repo_root / path
+    try:
+        source = candidate.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    if path.endswith(".css"):
+        return source
+    if path.endswith(TEMPLATE_STYLE_SUFFIXES):
+        return "\n".join(STYLE_BLOCK_RE.findall(source))
+    return ""
+
+
 def _template_inline_style_added_lines(
     path: str, lines: list[str], repo_root: Path | None
 ) -> list[str]:
@@ -370,17 +391,12 @@ def _template_inline_style_added_lines(
     additions as CSS. Exact stripped-line membership is intentionally narrow.
     """
 
-    if repo_root is None or not path.startswith("templates/") \
-            or not path.endswith(TEMPLATE_STYLE_SUFFIXES):
+    if not path.startswith("templates/") or not path.endswith(TEMPLATE_STYLE_SUFFIXES):
         return []
-    candidate = repo_root / path
-    try:
-        source = candidate.read_text(encoding="utf-8")
-    except OSError:
+    css = _candidate_css_text(path, repo_root)
+    if not css:
         return []
-    style_lines: set[str] = set()
-    for body in STYLE_BLOCK_RE.findall(source):
-        style_lines.update(line.strip() for line in body.splitlines() if line.strip())
+    style_lines = {line.strip() for line in css.splitlines() if line.strip()}
     return [line for line in lines if line.strip() and line.strip() in style_lines]
 
 
@@ -428,10 +444,63 @@ def _interaction_kinds_in_css_lines(lines: list[str]) -> set[str]:
     return {kind for kind, pattern in INTERACTION_SELECTOR_PATTERNS.items() if pattern.search(live)}
 
 
+def _interaction_dependency_kinds(
+    path: str, changed_css_lines: list[str], repo_root: Path
+) -> set[str]:
+    """Interaction states transitively affected by a changed rule or token.
+
+    The Forex incident was not a direct edit to its :hover selector. A theme
+    token changed, the hidden .tip-pop surface consumed that token, and a
+    separate :hover rule merely revealed the surface. Looking only for
+    ":hover" on the ADDED line would therefore repeat the same blind spot.
+
+    This bounded closure follows only two CSS relationships inside the same
+    governed file:
+      changed selector token -> interactive selector target
+      changed custom-property definition -> var() used by that target's rules
+    It is evidence routing, not a CSS cascade engine or a taste judgement.
+    """
+
+    css = _candidate_css_text(path, repo_root)
+    if not css or not changed_css_lines:
+        return set()
+
+    live_css = re.sub(r"/\*.*?\*/", " ", css, flags=re.DOTALL)
+    rules = CSS_RULE_RE.findall(live_css)
+    changed = "\n".join(changed_css_lines)
+    changed_selector_tokens = set(CSS_SELECTOR_TOKEN_RE.findall(changed))
+    changed_defs = set(CUSTOM_PROP_DEF_RE.findall(changed))
+    affected: set[str] = set()
+
+    for kind, pattern in INTERACTION_SELECTOR_PATTERNS.items():
+        targets: set[str] = set()
+        relevant_vars: set[str] = set()
+
+        for selector, body in rules:
+            if pattern.search(selector):
+                targets.update(CSS_SELECTOR_TOKEN_RE.findall(selector))
+                relevant_vars.update(CUSTOM_PROP_USE_RE.findall(body))
+
+        if not targets:
+            continue
+
+        # Base-state rules for an element often own the material/token values,
+        # while a separate :hover/:focus rule only changes opacity/display.
+        for selector, body in rules:
+            selector_tokens = set(CSS_SELECTOR_TOKEN_RE.findall(selector))
+            if selector_tokens & targets:
+                relevant_vars.update(CUSTOM_PROP_USE_RE.findall(body))
+
+        if changed_selector_tokens & targets or changed_defs & relevant_vars:
+            affected.add(kind)
+
+    return affected
+
+
 def interaction_requirements(
     added_lines: dict[str, list[str]], repo_root: Path
 ) -> dict[str, set[str]]:
-    """Map material paths to real interaction states their added CSS changes."""
+    """Map material paths to real interaction states their CSS changes."""
 
     out: dict[str, set[str]] = {}
     for path, lines in added_lines.items():
@@ -444,7 +513,9 @@ def interaction_requirements(
             # tag itself rather than as a body line.
             if any(STYLE_TAG_RE.search(line) for line in lines):
                 relevant = [*relevant, *lines]
+
         kinds = _interaction_kinds_in_css_lines(relevant)
+        kinds.update(_interaction_dependency_kinds(path, relevant, repo_root))
         if kinds:
             out[path] = kinds
     return out
