@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_premium_visual_checks.v1",
-  "semantic_head": "03d608f799cc1ad1a7e1dc22285819fc23d7c06f",
+  "semantic_head": "d868f0f6cfb9a152269420d151f08b2ede373a1f",
   "capture": "actual commodities page fixture; Gold panel crop; feature-free pickup overflow comparison",
   "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
@@ -19,7 +19,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "canonical",
       "currency": "USD",
@@ -27,8 +27,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-intraday-dark-en-desktop.png",
-      "sha256": "05bcea009a9f207959e76d60603bb4f77ca051a34e6932297583705361d0434e",
-      "bytes": 108836,
+      "sha256": "e20edcde988df0339c6e17cc8dcd62601d23da39458dcf1a3be8a1ce2570b99e",
+      "bytes": 111944,
       "page_errors": []
     },
     {
@@ -46,7 +46,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "canonical",
       "currency": "USD",
@@ -54,8 +54,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-intraday-light-en-desktop.png",
-      "sha256": "c81834cbf750ffdad8874e13a3db7b3a10a33329bc001e2becda1e09475ece16",
-      "bytes": 82530,
+      "sha256": "d314f9af73acecfc99acd11a8b6c03e4ee4eec16bd27ec6ae3bcc2a415bd1673",
+      "bytes": 84021,
       "page_errors": []
     },
     {
@@ -73,7 +73,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "canonical",
       "currency": "USD",
@@ -81,8 +81,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-intraday-dark-zh-desktop.png",
-      "sha256": "2babf8b3c58ea51c4321866c726d9daf55b17b1db717164d40e572cb0bf507e3",
-      "bytes": 108806,
+      "sha256": "155e5975a96cccd6a0bea18fc9a98a6d4f343572e7705d96984e70900eb96179",
+      "bytes": 113288,
       "page_errors": []
     },
     {
@@ -100,7 +100,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "canonical",
       "currency": "USD",
@@ -108,8 +108,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-intraday-light-zh-desktop.png",
-      "sha256": "09d9e27931115cdc0e1cb2de1b08b212527bd0950a6520ccb3e890e4ce3267d6",
-      "bytes": 84973,
+      "sha256": "e6f38139210413b43dcbf1c168d0e27502f3bc6a5b12ebacc48210e508cc3462",
+      "bytes": 87692,
       "page_errors": []
     },
     {
@@ -127,7 +127,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 735.546875
+        "height": 762.9375
       },
       "method": "canonical",
       "currency": "USD",
@@ -135,8 +135,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-intraday-dark-en-mobile.png",
-      "sha256": "11d4c878a53d2730d04b4e336de68833ec43a49cf8aab697aaa0bec5892c90e6",
-      "bytes": 75723,
+      "sha256": "f94c35eb363a71961fa0999c482b780e690cdf8413207b294c0ad85b403c5bd9",
+      "bytes": 78088,
       "page_errors": []
     },
     {
@@ -154,7 +154,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 735.546875
+        "height": 762.9375
       },
       "method": "canonical",
       "currency": "USD",
@@ -162,8 +162,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-intraday-light-en-mobile.png",
-      "sha256": "edc74cf103227bc12e28dcf20d819d3b960c4882bc3d52c4a7451881f40b3751",
-      "bytes": 58269,
+      "sha256": "433cfc843b0207a5c7d6667995a947e08b7ae70a1bb7395aae16aaa5df058fb4",
+      "bytes": 59657,
       "page_errors": []
     },
     {
@@ -181,7 +181,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 673.46875
+        "height": 700.859375
       },
       "method": "canonical",
       "currency": "USD",
@@ -189,8 +189,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-intraday-dark-zh-mobile.png",
-      "sha256": "cdeedf15f74894ef77e9bd04d2fb22f38e568c1f1b11ab738b9b42fec06673bf",
-      "bytes": 72455,
+      "sha256": "7a1f354e7eed0c6f076a797659112686e7b5516040ffa79833059111a49dbe6c",
+      "bytes": 75077,
       "page_errors": []
     },
     {
@@ -208,7 +208,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 673.46875
+        "height": 700.859375
       },
       "method": "canonical",
       "currency": "USD",
@@ -216,8 +216,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-intraday-light-zh-mobile.png",
-      "sha256": "2618ee5ab1a298566a71467d0951dae3ed0bbd86f5cd269f31829007ec30634a",
-      "bytes": 59171,
+      "sha256": "aeb68c19b10e6d46036add54f853be9cf753c049174374cc77f5a27c6fbab5b7",
+      "bytes": 60625,
       "page_errors": []
     },
     {
@@ -378,8 +378,8 @@
       "controls_present": false,
       "inherited_overflow": true,
       "file": "panel-unavailable-light-en-mobile.png",
-      "sha256": "2c52da202a3ec9b1e0b088694074be67b5ad2cf5fd2d2f75459ffd752da5b114",
-      "bytes": 24533,
+      "sha256": "eb6e9e9b304c645c4586b4fa8e27fa2251ee58b93c597260a16937545e75e551",
+      "bytes": 24560,
       "page_errors": []
     },
     {
@@ -567,8 +567,8 @@
       "controls_present": false,
       "inherited_overflow": true,
       "file": "panel-intraday-no-history-dark-en-mobile.png",
-      "sha256": "5aaac33f87f07b5e993641d585c237b16314c70af27dbc94a34958936ccbc03a",
-      "bytes": 60235,
+      "sha256": "4c23a546c1a4d8cac18654daa2afbbd209cd3552be80b2bb5f738029ac4c679e",
+      "bytes": 60199,
       "page_errors": []
     },
     {
@@ -594,8 +594,8 @@
       "controls_present": false,
       "inherited_overflow": true,
       "file": "panel-intraday-no-history-light-en-mobile.png",
-      "sha256": "d1d3fb558b2506c2ad5bb2576f2e1807ae21e4be969e87eb0e981c585c53508a",
-      "bytes": 47572,
+      "sha256": "b0ab576c5d4c108bf89fe2c939aa1f7f5182e5e7532206ede841ef35c2d9e100",
+      "bytes": 47562,
       "page_errors": []
     },
     {

@@ -1,6 +1,6 @@
 # China Gold Premium — visual evidence
 
-This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `03d608f799cc1ad1a7e1dc22285819fc23d7c06f`.
+This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `d868f0f6cfb9a152269420d151f08b2ede373a1f`.
 
 ## States
 
@@ -13,7 +13,7 @@ The canonical manifest contains the intraday, unavailable, and no-compatible-his
 
 The exact feature base already has a commodities-page mobile document overflow: 517px in the EN fixture at a requested 390px viewport. That defect is owned by open commodity safety R1 PR #7198 and is not rebuilt here.
 
-`panel_checks.json` compares every new-feature cell against the exact carrier-base template. Across all 16 panel crops:
+`panel_checks.json` compares every new-feature cell against the exact carrier-base template. Across all 24 panel crops:
 
 - feature worsened document overflow: **0**
 - Gold premium panel overflow: **0**

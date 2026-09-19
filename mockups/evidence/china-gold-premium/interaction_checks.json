@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_premium_interaction_checks.v1",
-  "semantic_head": "03d608f799cc1ad1a7e1dc22285819fc23d7c06f",
+  "semantic_head": "d868f0f6cfb9a152269420d151f08b2ede373a1f",
   "checks": [
     {
       "label": "proxy",
@@ -32,8 +32,8 @@
       "zero_visibility": "visible",
       "axis_top": "+131.4",
       "file": "interaction-proxy-spread-dark-en-desktop.png",
-      "sha256": "52413901ec13993f012d6c267f1dbedcebef583a3ccd90680ea84badbb67f8a1",
-      "bytes": 108658,
+      "sha256": "aa6dd53bf90b761d41bd82fe716796c99bb337c438423f41c55516cb2b2ca945",
+      "bytes": 111736,
       "page_errors": []
     },
     {
@@ -66,8 +66,8 @@
       "zero_visibility": "hidden",
       "axis_top": "¥25,741",
       "file": "interaction-proxy-price-dark-en-desktop.png",
-      "sha256": "01f66ffd724c7d72192add9577d6a13c990119c88097f5ac3703109d37df26bb",
-      "bytes": 108997,
+      "sha256": "266bf7d426b88bbf34c0e0bce67bd9fb3bd5f26c99885e9a9d5f4acfcdef6f8d",
+      "bytes": 111917,
       "page_errors": []
     },
     {
@@ -100,8 +100,8 @@
       "zero_visibility": "visible",
       "axis_top": "+131.4",
       "file": "interaction-proxy-spread-light-zh-mobile.png",
-      "sha256": "2875b42c7d0c910e554e1a749c83263e6cf38189a017446258a506d82db293b6",
-      "bytes": 61115,
+      "sha256": "665adecc1623c530d39af86d95618f948c3f631bd198741da7690230fb8ff1d7",
+      "bytes": 60172,
       "page_errors": []
     },
     {
@@ -134,8 +134,8 @@
       "zero_visibility": "hidden",
       "axis_top": "¥25,741",
       "file": "interaction-proxy-price-light-zh-mobile.png",
-      "sha256": "7710f1eb0f3b51c186b1a940a09481b9685145afcf87916c4f21e97d342efda0",
-      "bytes": 62912,
+      "sha256": "0258dbe823698d11492db215de2409af5ae6ded878a5ed0d03f510f83709b917",
+      "bytes": 62086,
       "page_errors": []
     },
     {
@@ -168,8 +168,8 @@
       "zero_visibility": "visible",
       "axis_top": "+12.7",
       "file": "interaction-intraday-spread-light-en-desktop.png",
-      "sha256": "5dff46c8321d392f68a275516f7b02c13ce6cee428d3110405e9b6207e7f3e02",
-      "bytes": 76905,
+      "sha256": "83ba49b2324c11275f6b7e0b927db85b3ea8347899309ca7984465dfeac6d8a4",
+      "bytes": 78387,
       "page_errors": []
     },
     {
@@ -202,8 +202,8 @@
       "zero_visibility": "hidden",
       "axis_top": "$4,427",
       "file": "interaction-intraday-price-light-en-desktop.png",
-      "sha256": "bd82b90bb2af52b2a02825d5a1b27bd1ae0d8ba2df7a5d3a26cb9099b4f2d3c0",
-      "bytes": 75848,
+      "sha256": "596045578879838a9535bae0085bdb0aa4d41c45c71b97a6aeab7cb7729ce2d9",
+      "bytes": 76969,
       "page_errors": []
     },
     {
@@ -236,8 +236,8 @@
       "zero_visibility": "visible",
       "axis_top": "+12.7",
       "file": "interaction-intraday-spread-dark-zh-mobile.png",
-      "sha256": "598eb4ac1bdb712c381d7f2fcdf93b364170cddeb17303c521d892680554616b",
-      "bytes": 70433,
+      "sha256": "6114010c21fcd2b6ca513fba29e291ff11b1c062b178dac016902e0ab9bd4a30",
+      "bytes": 70601,
       "page_errors": []
     },
     {
@@ -270,8 +270,8 @@
       "zero_visibility": "hidden",
       "axis_top": "$4,427",
       "file": "interaction-intraday-price-dark-zh-mobile.png",
-      "sha256": "168c16b0fb209ae97469709b77c935ba3ce5164099eb61ecc2a36a371b42f915",
-      "bytes": 71336,
+      "sha256": "01df8c9ab24dd0cd287fcede4c18f5cc5d3e266c6a3d04a614f26b6be33d7219",
+      "bytes": 71597,
       "page_errors": []
     }
   ]

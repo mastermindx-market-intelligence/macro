@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_basis_visual_checks.v1",
-  "semantic_head": "03d608f799cc1ad1a7e1dc22285819fc23d7c06f",
+  "semantic_head": "d868f0f6cfb9a152269420d151f08b2ede373a1f",
   "capture": "actual commodities page fixture; Gold panel crop; feature-free pickup overflow comparison",
   "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
@@ -19,7 +19,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "proxy",
       "currency": "CNY",
@@ -27,8 +27,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-proxy-dark-en-desktop.png",
-      "sha256": "e09783a319aac10e3ec51cc6ad9e61c0813ffa033f5ac73a3aa60ffff78b328e",
-      "bytes": 117175,
+      "sha256": "a13d0eb4ec465d2d0adabaf0be3bf664a8c2373e7a41dd889e324c71105be1f1",
+      "bytes": 120433,
       "page_errors": []
     },
     {
@@ -46,7 +46,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "proxy",
       "currency": "CNY",
@@ -54,8 +54,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-proxy-light-en-desktop.png",
-      "sha256": "98b3e5554138ffa3da70ee7fb75eb85c3739d290878d7215a7ae3173d36f0d80",
-      "bytes": 88398,
+      "sha256": "5c8977345feb24e7239638ec950d066ed6e3c770673d5fd230fce0c47b4de042",
+      "bytes": 89890,
       "page_errors": []
     },
     {
@@ -73,7 +73,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "proxy",
       "currency": "CNY",
@@ -81,8 +81,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-proxy-dark-zh-desktop.png",
-      "sha256": "b051af1b460cd54bbec0cbb80010f402b3d1e27bb981b071dbf1f37768d44dbe",
-      "bytes": 118071,
+      "sha256": "61353acf2e44555c9604323e551e338ff7f6b27111c4ec0ee21b54116dcfc38e",
+      "bytes": 122779,
       "page_errors": []
     },
     {
@@ -100,7 +100,7 @@
         "left": 150,
         "right": 1290,
         "width": 1140,
-        "height": 774.109375
+        "height": 801.5
       },
       "method": "proxy",
       "currency": "CNY",
@@ -108,8 +108,8 @@
       "controls_present": true,
       "inherited_overflow": false,
       "file": "panel-proxy-light-zh-desktop.png",
-      "sha256": "1bf6e560731fbf0f57438210ab1f249810edc38ac4646710d7dbd78d02ddece6",
-      "bytes": 92659,
+      "sha256": "d79dd114ab024227dd5df0bbe8e0bec610cc57dca5b7c6c52e22a744db407d05",
+      "bytes": 95237,
       "page_errors": []
     },
     {
@@ -127,7 +127,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 753.671875
+        "height": 781.0625
       },
       "method": "proxy",
       "currency": "CNY",
@@ -135,8 +135,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-proxy-dark-en-mobile.png",
-      "sha256": "3eef98b261841d619f8f7e1f492f04f9cc57e82173a2c0c6a4e83a8314308116",
-      "bytes": 80101,
+      "sha256": "7a9563d5cf99e0486b50569ee84362cd4bb8786cc0b5e407c620670d558b2cbc",
+      "bytes": 82486,
       "page_errors": []
     },
     {
@@ -154,7 +154,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 753.671875
+        "height": 781.0625
       },
       "method": "proxy",
       "currency": "CNY",
@@ -162,8 +162,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-proxy-light-en-mobile.png",
-      "sha256": "137f9b608e26162265b526f981ea3e5a17bdec3973f2f7eeb6b07c02c3aa5080",
-      "bytes": 60984,
+      "sha256": "f5b5c6faec5a9e67016ec07d6ea6af3c64b979e1da09c7582cce637aa1d5aa24",
+      "bytes": 62201,
       "page_errors": []
     },
     {
@@ -181,7 +181,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 715.40625
+        "height": 742.796875
       },
       "method": "proxy",
       "currency": "CNY",
@@ -189,8 +189,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-proxy-dark-zh-mobile.png",
-      "sha256": "e0fb069e621edda73a22d74993bb49f08406a9f4a608de7d89d629d43e443daf",
-      "bytes": 78738,
+      "sha256": "91bf18abe534ed2dcd10d99a25502bef60d8d76aead50bf70ed87e026f090709",
+      "bytes": 80854,
       "page_errors": []
     },
     {
@@ -208,7 +208,7 @@
         "left": 20,
         "right": 370,
         "width": 350,
-        "height": 715.40625
+        "height": 742.796875
       },
       "method": "proxy",
       "currency": "CNY",
@@ -216,8 +216,8 @@
       "controls_present": true,
       "inherited_overflow": true,
       "file": "panel-proxy-light-zh-mobile.png",
-      "sha256": "fb6360ce6870ca2ff59ec9ec077486a2090ec05c86beaacae5d51c9162456d5b",
-      "bytes": 63743,
+      "sha256": "bb2fa389cae6da25edddd13f04f45c4c41c123262ddb4e9decabd2433aa5e4b8",
+      "bytes": 65224,
       "page_errors": []
     }
   ]
