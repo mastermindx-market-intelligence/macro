@@ -4,6 +4,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 from engine import valuation_scenario as vs
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -527,6 +529,33 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
     assert 'data-vs-read="1"' not in html3, (
         "h4 lede rendered despite any_computable=False -- it must omit entirely"
     )
+
+
+@pytest.mark.parametrize(
+    ("locale", "expected"),
+    [
+        ("en", "Today's price sits near the case we could run."),
+        ("zh", "当前股价接近唯一已算出的情景。"),
+    ],
+)
+def test_h4_one_computable_near_in_each_locale(locale, expected):
+    """The one-case equality branch must emit a plain sentence in each locale."""
+    import jinja2
+
+    blob = vs.compute(_rows(), price=130.65, asof="2026-09-05", ticker="AAPL")
+    for scenario in blob["scenarios"]:
+        scenario["computable"] = scenario["key"] == "base"
+        scenario["per_share"] = 130.65 if scenario["computable"] else None
+    assert sum(s["computable"] for s in blob["scenarios"]) == 1
+
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(ROOT / "templates")))
+    env.globals["t"] = lambda en, zh: en if locale == "en" else zh
+    html = env.get_template("_valuation_scenario.html.j2").render(
+        valuation_scenario=blob, deep_ids=[],
+    )
+    lede = re.search(r'<p class="vs-lede" data-vs-read="1"[^>]*>(.*?)</p>', html, re.DOTALL)
+    assert lede is not None
+    assert lede.group(1).strip() == expected
 
 
 def test_panel_renders_and_omits():
