@@ -301,6 +301,25 @@ def _load_stockdata(ticker: str, site_root: Path) -> dict:
         return {}
 
 
+def _finite_float_cell(value: Any) -> float | None:
+    """Read a finite numeric from a scalar or canonical stockdata metric cell.
+
+    Valuation fields now use cells such as {"v": 28.0, "med": 25.0, "cheap": 40.0},
+    while older snapshots and several technical fields remain plain numeric scalars.
+    Flow Leaders consumes only the point value; peer-median/cheapness metadata remains
+    owned by the valuation surface.
+    """
+    if isinstance(value, dict):
+        value = value.get("v")
+    if value is None:
+        return None
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        return None
+    return f if np.isfinite(f) else None
+
+
 def _extract_stock_context(sd: dict, ticker: str) -> dict:
     """Pull required fields from stockdata JSON — graceful null on miss."""
     ctx: dict[str, Any] = {}
@@ -319,8 +338,7 @@ def _extract_stock_context(sd: dict, ticker: str) -> dict:
 
     # rs_1m
     rs = tech.get("rs") or {}
-    rs_1m = rs.get("rs_1m")
-    ctx["rs_1m"] = float(rs_1m) if rs_1m is not None and not pd.isna(rs_1m) else None
+    ctx["rs_1m"] = _finite_float_cell(rs.get("rs_1m"))
 
     # high52w_prox
     ctx["high52w_prox"] = _safe_float(tech, "high52w_prox")
@@ -339,8 +357,10 @@ def _extract_stock_context(sd: dict, ticker: str) -> dict:
 
     # mktcap_bn + sector (display context)
     profile = sd.get("profile") or {}
-    mktcap = profile.get("mktcap_bn") or profile.get("market_cap_bn")
-    ctx["mktcap_bn"] = float(mktcap) if mktcap is not None and not pd.isna(mktcap) else None
+    mktcap = profile.get("mktcap_bn")
+    if mktcap is None:
+        mktcap = profile.get("market_cap_bn")
+    ctx["mktcap_bn"] = _finite_float_cell(mktcap)
     sec = profile.get("sector")
     ctx["sector"] = str(sec) if sec else None
 
@@ -358,21 +378,16 @@ def _extract_stock_context(sd: dict, ticker: str) -> dict:
 
     # trailing_pe from valuation
     val = sd.get("valuation") or {}
-    pe = val.get("trailing_pe") or val.get("pe_ttm")
-    ctx["trailing_pe"] = float(pe) if pe is not None and not pd.isna(pe) else None
+    pe = val.get("trailing_pe")
+    if pe is None:
+        pe = val.get("pe_ttm")
+    ctx["trailing_pe"] = _finite_float_cell(pe)
 
     return ctx
 
 
 def _safe_float(d: dict, key: str) -> float | None:
-    v = d.get(key)
-    if v is None:
-        return None
-    try:
-        f = float(v)
-        return f if np.isfinite(f) else None
-    except (TypeError, ValueError):
-        return None
+    return _finite_float_cell(d.get(key))
 
 
 # ── Stock personality loader ──────────────────────────────────────────────────
@@ -976,12 +991,12 @@ def build(
     for name in board_names:
         sd = _load_stockdata(name, site_root)
         profile = sd.get("profile") or {}
-        cap = profile.get("mktcap_bn") or profile.get("market_cap_bn")
-        if cap is not None:
-            try:
-                mktcap_map[name] = float(cap)
-            except (TypeError, ValueError):
-                pass
+        cap = profile.get("mktcap_bn")
+        if cap is None:
+            cap = profile.get("market_cap_bn")
+        cap_float = _finite_float_cell(cap)
+        if cap_float is not None:
+            mktcap_map[name] = cap_float
 
     # ── Build membership history (for recurrence counting) ────────────────────
     board_summaries = {t: summaries[t] for t in board_names if t in summaries}
