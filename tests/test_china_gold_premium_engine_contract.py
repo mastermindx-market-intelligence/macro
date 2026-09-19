@@ -1755,3 +1755,28 @@ def test_china_gold_dataos_promoter_rejects_stale_receipt_replay(tmp_path):
 
     assert result["eligible"] is False
     assert "quality receipt is older than 24 hours" in result["blockers"]
+
+
+def test_china_gold_dataos_promoter_apply_stamps_registry_update_date(tmp_path):
+    import json
+    import yaml
+    from datetime import datetime, timezone
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    doc = _dataos_promotion_receipt(tmp_path)
+    doc["checked_at"] = "2026-09-20T01:00:00+00:00"
+    receipt.write_text(json.dumps(doc))
+    registry.write_text(_dataos_promotion_registry_text())
+
+    promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=True,
+        now=datetime(2026, 9, 20, 2, 0, tzinfo=timezone.utc),
+    )
+
+    payload = yaml.safe_load(registry.read_text())
+    assert payload["updated"] == "2026-09-20"

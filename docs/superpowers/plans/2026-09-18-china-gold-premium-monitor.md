@@ -158,8 +158,9 @@ promotion-ready, the source owner may run:
 
 `python -m scripts.promote_china_gold_dataos --apply`
 
-which changes only those two canonical registry rows from `PROPOSED` to `PRODUCED`, verifies the
-written statuses, and stops. Before writing it independently re-checks the receipt's fresh close-
+which changes only those two canonical registry rows from `PROPOSED` to `PRODUCED`, advances the
+registry's top-level `updated` date to the UTC application date, verifies the written statuses, and
+stops. Before writing it independently re-checks the receipt's fresh close-
 proxy method, render/machine agreement, 5-/30-session readiness, selected source timestamp, both
 current artifact files and hashes, current canonical registry states, and a receipt no older than
 24 hours; the single promotion-ready bit is never trusted by itself and cannot be replayed days

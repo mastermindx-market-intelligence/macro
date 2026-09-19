@@ -207,8 +207,20 @@ def assess(
     }
 
 
-def _promote_text(text: str, dataset_ids: list[str]) -> str:
-    out = text
+def _promote_text(
+    text: str,
+    dataset_ids: list[str],
+    *,
+    updated_date: str,
+) -> str:
+    out, updated_count = re.subn(
+        r'(?m)^updated:\s*"?\d{4}-\d{2}-\d{2}"?$',
+        f'updated: "{updated_date}"',
+        text,
+        count=1,
+    )
+    if updated_count != 1:
+        raise ValueError("dataset registry must contain exactly one top-level updated date")
     for dataset_id in dataset_ids:
         block_pattern = re.compile(
             rf"(?ms)^  - dataset_id: {re.escape(dataset_id)}\n"
@@ -246,6 +258,12 @@ def promote(
         config.ROOT / "config" / "dataset_registry.yml"
     )
 
+    effective_now = now or datetime.now(timezone.utc)
+    if effective_now.tzinfo is None:
+        effective_now = effective_now.replace(tzinfo=timezone.utc)
+    else:
+        effective_now = effective_now.astimezone(timezone.utc)
+
     receipt = _load_receipt(receipt_path)
     registry_text, registry_payload = _load_registry(registry_path)
     repo_root = (
@@ -257,7 +275,7 @@ def promote(
         receipt,
         registry_payload,
         repo_root=repo_root,
-        now=now,
+        now=effective_now,
     )
     result.update(
         {
@@ -269,7 +287,11 @@ def promote(
     if not apply or not result["eligible"] or not result["pending"]:
         return result
 
-    updated = _promote_text(registry_text, result["pending"])
+    updated = _promote_text(
+        registry_text,
+        result["pending"],
+        updated_date=effective_now.date().isoformat(),
+    )
     registry_path.write_text(updated)
 
     _, verified_payload = _load_registry(registry_path)
