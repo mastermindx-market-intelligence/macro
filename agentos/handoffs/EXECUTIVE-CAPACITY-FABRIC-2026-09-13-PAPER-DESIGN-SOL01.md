@@ -17,11 +17,11 @@ changed:
   - path: mastermindx-market-intelligence/Mastermind PR 585
     what: >
       Same implementation carrier advanced to exact head
-      ff14109c7e32d7605f8646f605667ce1d751aba1. Paper 0.5.11 wire compatibility,
+      5213af7fcc53bfb26b62f450d58664d9b7a3bdad. Paper 0.5.11 wire compatibility,
       exact file-ID edit binding, guarded token/page/comment tools, fail-closed write-schema
       pinning, explicit Codex/Claude enrollment instructions, tests and current evidence are
-      now source candidates. PR remains DRAFT/unmerged while exact-head CI and semantic
-      review are outstanding.
+      source candidates. Exact-head hosted CI run 35431352180 concluded success. PR remains
+      DRAFT/unmerged while independent semantic review and release acceptance are outstanding.
   - path: /Users/chriswong/Applications/Paper.app
     what: >
       Same original Mac Mini carrier upgraded from Paper 0.5.9 to signed/notarized Paper
@@ -51,6 +51,21 @@ changed:
       advertises 1M MCP calls/week. Public pricing does not establish whether MCP quota is
       team-pooled or per-editor, so quota scope remains UNKNOWN. Pending agent-email invites
       must not be accepted as fabricated user identities.
+  - path: mastermindx-market-intelligence/Mastermind PR 853
+    what: >
+      Existing Studio Direct / Secure MCP Tunnel was extended on a stacked Draft carrier rather
+      than creating another ChatGPT gateway. Exact head 1ddbf484f765f6b7b11839254103741e1f56eb64
+      adds gateway-owned paper_inspect, paper_catalog, paper_read and paper_edit tools that invoke
+      the exact SHA-pinned PR 585 adapter locally. One inert chatgpt4 gateway canary and one live
+      chatgpt3 gateway+tunnel canary were upgraded through the incumbent private-service owner.
+      chatgpt3 returned to healthy/ready with gateway 0.1.6 and a successful control-plane poll.
+  - path: /Users/chriswong/.local/share/mastermind-paper/runtime/v1
+    what: >
+      Mac Studio now has official signed/notarized Paper Desktop 0.5.11 plus a stable MCP 1.30.0
+      runtime containing current PR 585 bridge SHA
+      94329a2813e37f1081e1be48aacf371b8f1b23505ec609cc6e8d453554cf8fa0.
+      The gateway reaches the real Paper MCP path and truthfully returns DOCUMENT_UNAVAILABLE
+      because no design is open in that desktop session. No auth cookies were copied from the Mini.
 verified:
   - claim: Paper 0.5.11 distribution passed Apple signature and notarization checks.
     command: >
@@ -93,6 +108,17 @@ verified:
     result: >
       mastermindPaper is visible but Pending approval with instruction to run interactive
       claude to approve. No approval bypass was attempted.
+  - claim: Existing Studio Direct can expose Paper without a second web gateway.
+    command: >
+      Stacked PR 853 targeted Node/Python campaigns; chatgpt4 canonical private-service upgrade;
+      chatgpt3 canonical control stop/upgrade/seal/start/status; tunnel-client health
+      --port 45023 --pid 33020 --require-control-plane-poll --json.
+    result: >
+      Paper module tests 9/9; gateway Paper integration 10/10; private service 70/70 plus
+      focused legacy migration 14/14; private tunnel/control 29/29. chatgpt4 local catalog
+      exposes four paper_* tools and real inspect returns DOCUMENT_UNAVAILABLE. chatgpt3
+      gateway 0.1.6 and tunnel are healthy/ready with healthz=200, readyz=200 and a successful
+      control-plane poll. No fresh ChatGPT conversation edit is claimed yet.
   - claim: The latest source hardening stays on the existing PR rather than creating a new control plane.
     command: GitHub Mastermind PR 585 current head and protected procedure pin
     result: >
@@ -130,22 +156,25 @@ unverified:
       components/tokens -> responsive browser proof across required dark/light, EN/ZH and
       meaningful data/loading/empty/error states.
 unresolved:
-  - Mastermind PR 585 exact-head CI run 35420453982/its successor for ff14109 has not yet concluded in this record.
-  - Remote Desktop Commander reached its monthly usage cap before ff14109 could be synced to the Mac; device remains paired and must not be retried/reconnected merely to bypass that cap.
+  - Mastermind PR 585 exact-head hosted CI is green at 5213af7fcc53bfb26b62f450d58664d9b7a3bdad, but independent semantic review and source release remain outstanding.
+  - Studio Direct Paper carrier PR 853 is DRAFT/stacked on PR 840 and still requires hosted CI conclusion plus review/stack reconciliation before source release.
+  - Mac Studio Paper is reachable through the exact current adapter, but no design is open there; a legitimate sign-in/file-open UI ceremony is still required before a fresh Web edit proof.
   - Codex stored ChatGPT auth is invalid and needs the user's interactive login ceremony.
   - Claude project MCP is visible but needs the user's explicit project approval ceremony.
   - The Executive registry/supervisor has no accepted Paper-local write-capable operator profile; adding one is separate reviewed existing-control-plane work.
   - MCP quota scope on Paper Pro is not stated authoritatively as per-team versus per-editor.
 next_actions:
   - >
-    Let Mastermind PR 585 exact-head CI conclude. If red, repair only the diagnosed source
-    defect on the same PR; if green, obtain exact-head semantic review and current-base
-    compatibility before source release. Do not merge a pending or red candidate.
+    Obtain independent semantic review and release acceptance for Mastermind PR 585 exact head
+    5213af7fcc53bfb26b62f450d58664d9b7a3bdad. Its hosted CI is green; do not treat that as
+    source acceptance by itself.
   - >
-    When local access is available again, sync the accepted bridge/server bytes onto the same
-    Mac Mini install and prove write_schema.accepted_for_write=true against
-    paper-desktop/0.5.11 plus the exact observed catalog digest. Do not retry Remote Desktop
-    Commander while its monthly cap is active.
+    Let stacked Studio Direct PR 853 exact-head CI conclude and review it against parent PR 840.
+    Preserve the existing gateway/tunnel owner; do not create a second Paper web gateway.
+  - >
+    Human gate on the Mac Studio: sign into the legitimate Paper account if needed and open or
+    create one intended scratch design. Then use a fresh chatgpt3 Web session to prove
+    paper_inspect -> paper_edit -> screenshot -> JSX through the healthy 0.1.6 tunnel canary.
   - >
     Human gate: run codex logout then codex login on the Mac Mini, and separately launch
     interactive Claude in the isolated Paper workspace to approve only mastermindPaper.
@@ -165,7 +194,7 @@ do_not_redo:
   - Do not buy multiple Paper Pro editor seats merely to represent agents. If Pro is later chosen, start with one real editor seat unless real human editors require more.
   - Do not claim Paper's 1M/week Pro MCP allowance is team-pooled; public pricing does not state its quota granularity.
   - Reuse Mastermind PR 585 and this Agent OS PR; do not create another bridge, auth service, queue, retry ledger, quota database or lifecycle plane.
-  - Do not retry/reconnect Remote Desktop Commander after its explicit monthly-cap response.
+  - Do not create another ChatGPT/Paper gateway: Studio Direct PR 853 is the sole web integration carrier and PR 585 remains the shared guarded adapter.
   - Do not advance CF2-H0, CF2-P0, CF2-I or other parent-capacity gates from this adjacent Paper tool-readiness work.
   - Do not retire Figma from the real product path until the representative design-to-code/browser proof passes.
 danger_areas:
@@ -180,12 +209,13 @@ danger_areas:
 ## State - what is true now
 
 The local Paper 0.5.11 design substrate is PROVEN_LIVE on the authorized Mac Mini through
-the last installed cd34f9 bridge: a real scratch edit, screenshot and JSX round trip
+the proven native bridge journey: a real scratch edit, screenshot and JSX round trip
 succeeded with no ambiguous effects. The overall program is still PARTIAL. Mastermind
-PR 585 is DRAFT at `ff14109c7e32d7605f8646f605667ce1d751aba1` with newer schema-pin and
-client-enrollment source that is not yet accepted or synced to the live install. Executive
-worker enrollment, native client human ceremonies, fresh-web repeat and real-product browser
-proof remain open.
+PR 585 is DRAFT at `5213af7fcc53bfb26b62f450d58664d9b7a3bdad` with exact-head hosted
+CI green but independent source acceptance outstanding. Mac Studio now carries the exact current
+bridge runtime and Studio Direct PR 853 has one healthy tunneled 0.1.6 canary, but the Studio
+Paper app has no open design. Executive worker enrollment, fresh-web edit proof and real-product
+browser proof remain open.
 
 Implementation: https://github.com/mastermindx-market-intelligence/Mastermind/pull/585
 Procedure: protected Mastermind `55473bb43c3ae1908f53ddd4ccfe724643dd6c69`,
@@ -199,19 +229,20 @@ proof; Agent OS owns durable organizational continuity.
 
 ## What is left - in order
 
-Conclude PR 585 source acceptance, then re-sync exact accepted bytes to the original Mac
-carrier when the RDC cap permits. The two immediate human ceremonies are Codex re-login and
-Claude project-MCP approval. Only after the local source/runtime/client path is reconciled
-should the separate Executive profile extension prove a bounded routed worker. A fresh web
-session and one real Mastermind design-to-code/browser journey then close product acceptance.
+Conclude PR 585 source acceptance and PR 853 stacked gateway review/CI. The immediate product
+gate is now the Mac Studio Paper UI: sign into the legitimate account if needed and open one
+scratch design, then repeat inspect/edit/screenshot/JSX from a fresh chatgpt3 Web session through
+the already healthy 0.1.6 tunnel. Native Codex/Claude human ceremonies and the separate Executive
+profile extension remain downstream. One real Mastermind design-to-code/browser journey then
+closes the Figma-migration acceptance.
 
 ## What will bite the next operator
 
-Do not conflate the successful local Paper bridge with the newest PR candidate: the schema-pin
-commit came after the last live write proof. Do not use a new device/carrier to escape the RDC
-monthly cap. Do not interpret Codex HTTP 401 as Paper MCP failure, or Claude Pending approval
-as broken config. Do not accept fake Paper member accounts to represent agents. Pro bills
-editor seats; the public site does not document whether MCP quota is team-pooled.
+Do not conflate green CI, a healthy Studio Direct tunnel, or DOCUMENT_UNAVAILABLE with a completed
+fresh-Web Paper journey. The Studio result means the exact adapter can reach Paper but no design is
+open. Do not interpret Codex HTTP 401 as Paper MCP failure, or Claude Pending approval as broken
+config. Do not accept fake Paper member accounts to represent agents. Pro bills editor seats; the
+public site does not document whether MCP quota is team-pooled.
 
 ## What was decided and found
 
