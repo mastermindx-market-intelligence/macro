@@ -43,6 +43,11 @@ from engine.options_hub import (
     compute_oi_movers,
     compute_vol,
 )
+from engine.options_r5_shock import (
+    build_spot_iv_shocks,
+    fit_pit_spot_iv_distribution,
+)
+from lib import nyse_calendar
 
 
 # --------------------------------------------------------------------------- #
@@ -1109,3 +1114,278 @@ class TestGexProfileBlock:
         assert result["profile"] is None
         # and the payload still carries the key, so consumers never KeyError
         assert "profile" in result
+
+
+# --------------------------------------------------------------------------- #
+# R5 Stage 0: PIT spot / 30-DTE ATM-IV shock conditioning
+# --------------------------------------------------------------------------- #
+
+def _r5_shock_fixture(
+    returns_pct: list[float],
+    *,
+    alpha: float = 0.1,
+    beta: float = -1.5,
+    start_spot: float = 500.0,
+    start_iv_pts: float = 20.0,
+) -> tuple[pd.DataFrame, list[str]]:
+    """One owner-native ATM-IV point per NYSE session with hand-computable shocks."""
+    from datetime import date, timedelta
+
+    sessions = nyse_calendar.sessions_between(date(2025, 1, 2), date(2025, 4, 30))
+    assert len(sessions) >= len(returns_pct) + 1
+    sessions = sessions[: len(returns_pct) + 1]
+
+    spots = [start_spot]
+    ivs = [start_iv_pts]
+    for ret in returns_pct:
+        spots.append(spots[-1] * (1.0 + ret / 100.0))
+        ivs.append(ivs[-1] + alpha + beta * ret)
+
+    rows = []
+    for session, spot, iv in zip(sessions, spots, ivs):
+        rows.append({
+            "root": "SPY",
+            "date": str(session),
+            "expiration": str(session + timedelta(days=30)),
+            "strike": spot,
+            "right": "C",
+            "implied_vol": iv / 100.0,
+            "underlying_price": spot,
+        })
+    return pd.DataFrame(rows), [str(d) for d in sessions]
+
+
+class TestR5PitSpotVolStage0:
+    def test_recovers_hand_computable_linear_spot_iv_relation(self):
+        returns = [0.25, -0.50, 0.80, -1.00, 0.40, -0.20, 1.10, -0.75, 0.60, -0.30]
+        frame, sessions = _r5_shock_fixture(returns, alpha=0.1, beta=-1.5)
+
+        got = fit_pit_spot_iv_distribution(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+            lookback_observations=10,
+            min_observations=8,
+            spot_shocks_pct=[-1.0, 0.0, 1.0],
+            residual_quantiles=[0.1, 0.5, 0.9],
+        )
+
+        assert got["status"] == "ok"
+        assert got["research_authority"] == "research_only"
+        assert got["outcome_labels_opened"] is False
+        assert got["fit"]["alpha_iv_change_pts"] == pytest.approx(0.1, abs=1e-10)
+        assert got["fit"]["beta_iv_pts_per_1pct_spot"] == pytest.approx(-1.5, abs=1e-10)
+        assert got["fit"]["r2"] == pytest.approx(1.0, abs=1e-10)
+        assert got["conditioning"]["residual_distribution"] == "empirical"
+        assert got["conditioning"]["vol_regime"] == "not_conditioned_stage0"
+        assert got["conditioning"]["event_state"] == "not_conditioned_stage0"
+
+        by_shock = {row["spot_shock_pct"]: row for row in got["scenarios"]}
+        assert by_shock[-1.0]["conditional_mean_iv_change_pts"] == pytest.approx(1.6, abs=1e-10)
+        assert by_shock[0.0]["conditional_mean_iv_change_pts"] == pytest.approx(0.1, abs=1e-10)
+        assert by_shock[1.0]["conditional_mean_iv_change_pts"] == pytest.approx(-1.4, abs=1e-10)
+        for row in got["scenarios"]:
+            assert all(abs(q["iv_change_pts"] - row["conditional_mean_iv_change_pts"]) < 1e-9
+                       for q in row["iv_change_quantiles"])
+
+    def test_post_asof_rows_cannot_change_the_fit(self):
+        returns = [
+            0.2, -0.4, 0.6, -0.8, 0.3, -0.5, 0.7, -0.1,
+            0.9, -0.2, 0.4, -0.6, 0.5, -0.3, 1.0, -1.2,
+        ]
+        full, sessions = _r5_shock_fixture(returns, alpha=0.05, beta=-1.2)
+        cutoff = sessions[12]
+
+        truncated = full[pd.to_datetime(full["date"]) <= pd.Timestamp(cutoff)].copy()
+        kwargs = dict(
+            root="SPY",
+            term_support_policy="bracketed_only",
+            lookback_observations=20,
+            min_observations=8,
+            spot_shocks_pct=[-2.0, 2.0],
+            residual_quantiles=[0.25, 0.5, 0.75],
+        )
+        before = fit_pit_spot_iv_distribution(truncated, cutoff, **kwargs)
+        with_future = fit_pit_spot_iv_distribution(full, cutoff, **kwargs)
+
+        assert with_future["fit"] == before["fit"]
+        assert with_future["scenarios"] == before["scenarios"]
+        assert with_future["coverage"]["fit_last_date"] == cutoff
+        assert with_future["coverage"]["source_rows"] == len(truncated)
+
+    def test_missing_source_session_is_not_bridged_into_a_daily_shock(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        missing_session = sessions[2]
+        holey = frame[frame["date"] != missing_session].copy()
+
+        shocks, coverage = build_spot_iv_shocks(
+            holey,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+
+        # Four remaining session points yield only two adjacent-session shocks:
+        # session0->session1 and session3->session4. session1->session3 spans the
+        # omitted NYSE session and must be refused.
+        assert len(shocks) == 2
+        assert coverage["gap_pairs_refused"] == 1
+        assert all(obs.prior_date != sessions[1] or obs.date != sessions[3] for obs in shocks)
+
+    def test_insufficient_history_is_explicit_and_never_fabricates_a_fit(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6])
+        got = fit_pit_spot_iv_distribution(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+            lookback_observations=10,
+            min_observations=5,
+            spot_shocks_pct=[-1.0, 1.0],
+            residual_quantiles=[0.1, 0.5, 0.9],
+        )
+        assert got["status"] == "insufficient_history"
+        assert got["fit"] is None
+        assert got["scenarios"] == []
+        assert got["coverage"]["fit_observations"] == 3
+
+    def test_explicit_configuration_and_scenario_envelope_are_fail_closed(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        common = dict(
+            greeks_df=frame,
+            asof=sessions[-1],
+            root="SPY",
+            term_support_policy="bracketed_only",
+            lookback_observations=4,
+            min_observations=3,
+            spot_shocks_pct=[-1.0, 1.0],
+            residual_quantiles=[0.1, 0.5, 0.9],
+        )
+
+        with pytest.raises(ValueError, match="lookback_observations"):
+            fit_pit_spot_iv_distribution(**{**common, "lookback_observations": 1})
+        with pytest.raises(ValueError, match="cannot exceed"):
+            fit_pit_spot_iv_distribution(**{**common, "min_observations": 5})
+        with pytest.raises(ValueError, match=r"\+/-3%"):
+            fit_pit_spot_iv_distribution(**{**common, "spot_shocks_pct": [3.01]})
+        with pytest.raises(ValueError, match="unique and ascending"):
+            fit_pit_spot_iv_distribution(**{**common, "residual_quantiles": [0.5, 0.1]})
+        with pytest.raises(ValueError, match="strictly between"):
+            fit_pit_spot_iv_distribution(**{**common, "residual_quantiles": [0.0, 0.5]})
+
+    def test_missing_required_source_columns_fail_loudly(self):
+        with pytest.raises(ValueError, match="missing required columns"):
+            build_spot_iv_shocks(
+                pd.DataFrame({"date": ["2025-01-02"]}),
+                "2025-01-02",
+                "SPY",
+                term_support_policy="bracketed_only",
+            )
+
+
+    def test_mixed_root_source_refuses_before_fit(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        frame.loc[frame.index[-1], "root"] = "QQQ"
+        with pytest.raises(ValueError, match="exactly root SPY"):
+            build_spot_iv_shocks(
+                frame,
+                sessions[-1],
+                "SPY",
+                term_support_policy="bracketed_only",
+            )
+
+    def test_source_receipt_separates_effective_session_from_decision_eligibility(self):
+        frame, sessions = _r5_shock_fixture(
+            [0.2, -0.4, 0.6, -0.8, 0.3, -0.5, 0.7, -0.1]
+        )
+        got = fit_pit_spot_iv_distribution(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+            lookback_observations=8,
+            min_observations=6,
+            spot_shocks_pct=[-1.0, 1.0],
+            residual_quantiles=[0.1, 0.5, 0.9],
+        )
+        next_session = nyse_calendar.session_n_forward(
+            pd.Timestamp(sessions[-1]).date(), 1
+        )
+        assert next_session is not None
+        receipt = got["source_receipt"]
+        assert receipt["root"] == "SPY"
+        assert receipt["source_effective_through_session"] == sessions[-1]
+        assert receipt["decision_eligible_not_before_session"] == str(next_session)
+        assert len(receipt["source_input_sha256"]) == 64
+        assert receipt["decision_eligible_not_before_session"] != receipt[
+            "source_effective_through_session"
+        ]
+
+    def test_nearest_tenor_fallback_is_separate_from_bracketed_primary_cohort(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        day = pd.to_datetime(frame["date"])
+        frame["expiration"] = (day + pd.to_timedelta(20, unit="D")).dt.date.astype(str)
+
+        primary_shocks, primary = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        assert primary_shocks == []
+        assert primary["qualified_sessions"] == 0
+        assert primary["fallback_sessions_excluded"] == len(sessions)
+        assert primary["term_support_counts"]["nearest_short_fallback"] == len(sessions)
+
+        sensitivity_shocks, sensitivity = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="include_nearest_sensitivity",
+        )
+        assert len(sensitivity_shocks) == len(sessions) - 1
+        assert sensitivity["qualified_sessions"] == len(sessions)
+        assert sensitivity["fallback_sessions_excluded"] == 0
+        assert sensitivity["term_support_counts"]["nearest_short_fallback"] == len(sessions)
+
+    def test_effective_clock_tracks_last_qualified_term_point_not_requested_asof(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        last_mask = frame["date"] == sessions[-1]
+        last_day = pd.to_datetime(frame.loc[last_mask, "date"])
+        frame.loc[last_mask, "expiration"] = (
+            last_day + pd.to_timedelta(20, unit="D")
+        ).dt.date.astype(str).values
+
+        _, coverage = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        assert coverage["source_effective_through_session"] == sessions[-2]
+        expected_eligible = nyse_calendar.session_n_forward(
+            pd.Timestamp(sessions[-1]).date(), 1
+        )
+        assert expected_eligible is not None
+        assert coverage["decision_eligible_not_before_session"] == str(expected_eligible)
+        assert coverage["fallback_sessions_excluded"] == 1
+
+
+    def test_source_digest_changes_when_consumed_iv_is_corrected(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        _, first = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        corrected = frame.copy()
+        corrected.loc[corrected.index[0], "implied_vol"] += 0.001
+        _, second = build_spot_iv_shocks(
+            corrected,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        assert first["source_input_sha256"] != second["source_input_sha256"]
