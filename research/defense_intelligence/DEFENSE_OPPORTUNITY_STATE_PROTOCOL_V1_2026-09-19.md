@@ -120,6 +120,56 @@ The companion basket measurement observed through 2026-09-17 reports 20-session 
 
 Correct V1 interpretation: **broad sector-bid confirmation is absent**. This does not prove every Defense long thesis is wrong and does not rank the quartet. It demonstrates why the product must support “no broad confirmation / theme-specific research only” instead of manufacturing a leader whenever procurement headlines are positive.
 
+## 5A. Exploratory sector-persistence and leader qualification
+
+This section tests whether the Chairman's preferred ordering — sector strength first, then alpha leader — has enough observed structure to deserve product treatment. It is exploratory qualification only, not a promoted signal.
+
+Evidence snapshot was read from current production artifacts after #7186 merged to main at `dfcab9236060b22578ed5714ff18debd90647c28`:
+
+- `site/basketdata/pulse.json` blob `2ea459c4f4b8985cabded8ddf5ed05226db9ae2a`;
+- `site/basketdata/baskets.json` blob `48da64016f5779d2c35164713893cb8a8638df37`;
+- `site/basketdata/episodes.json` blob `9fcaa4cedeb9e2ad59ca97172092bfcc08ad8f4e`;
+- first-cohort tapes: LMT `b5d9bb554213c0a1d1726e58b85bfc744cfd736a`, RTX `44d560bcb37faad8de2898d632c3f416342ba0c1`, NOC `06c8b63cdbbf8ca20fd9246548677cb43ddaff4b`, LHX `4c7d75948421858781b41277dca68d278ef98bc4`.
+
+### Current market state
+
+The September 18 Group Reads packet remains a negative control rather than a sector-bid confirmation: 0/21 unusual-activity members, 2/21 above the 50-session trend line, 0/21 above the 200-session trend line, no active episode, and a mixed direction state.
+
+The equal-weight Defense basket showed approximately +1.14% over five sessions but -11.38% over twenty sessions and -6.73% over sixty sessions. Its SPY-relative returns were approximately +0.51%, -10.54%, and -10.68% over those same horizons. LMT was the strongest of the initial LMT/RTX/NOC/LHX cohort on the observed 5d, 20d-loss containment, and YTD comparisons, but that is **relative leadership inside a weak sector**, not the Chairman's desired sector-strength + theme + leader configuration.
+
+### Participation-episode study
+
+The retained Group Reads history contains only ten Defense participation episodes from September 2025 through July 2026. From episode **start**:
+
+- 5-session Defense return: mean +0.11%, median -1.43%, positive 4/10;
+- 5-session SPY-relative return: mean +0.36%, median -0.93%, positive 4/10;
+- 20-session Defense return: mean +0.97%, median +1.90%, positive 7/10;
+- 20-session SPY-relative return: mean +0.54%, median -0.28%, positive 5/10.
+
+Across all ordinary dates in the same observed window, the 20-session SPY-relative mean was about -1.00% and median about -2.33%. That makes participation worthy of continued research, but ten clustered episodes do not establish an edge.
+
+A stricter descriptive subset requiring at least two active sessions contained only six episodes. Their 20-session SPY-relative mean was about +2.83%, median +2.71%, with 4/6 positive. The 5-session relative mean was about +1.24%, median approximately flat, with 3/6 positive. This suggests **persistence may matter more at a multi-week horizon than at immediate entry**, but the sample is far too small and event-clustered for promotion.
+
+### Alpha-leader study
+
+Using only information through each episode-start close, the top prior-5-session performer among LMT/RTX/NOC/LHX became the subsequent 20-session winner 4/10 times overall and 3/6 times in the persistent subset. The top prior-20-session performer did so 5/10 overall and 3/6 in the persistent subset.
+
+The prior-20-session leader's subsequent 20-session return exceeded the four-stock cohort mean by about +2.46 percentage points on average across all ten episodes and +2.21 points across the six persistent episodes. Those means are concentrated: individual episodes include both a strong positive continuation and a large negative miss. No robustness, independence, survivorship, transaction-cost, or multiplicity claim is made.
+
+### V1 ruling from the study
+
+Do **not** make broad-sector participation or recent relative strength a hard gate, automatic ranker, or trade trigger.
+
+Instead:
+
+- persistent sector participation is a **candidate confluence feature** for the 20-session research horizon;
+- current sector weakness can truthfully produce `SECTOR_BID_ABSENT` while permitting narrow-theme research;
+- recent company leadership is a separate observed-recognition leg, not proof of economic asymmetry;
+- the stronger thesis is the interaction of persistent participation + reviewed theme exposure + improving issuer economics + limited recognition;
+- promotion requires a larger point-in-time episode panel, versioned historical membership, clustered-event validation, costs, and prospective frozen observations.
+
+This evidence therefore strengthens the architecture while reducing its authority: the sector-first idea is useful enough to measure, but not yet reliable enough to decide entries by itself.
+
 ## 6. Prime/supplier asymmetry rules
 
 The PAC-3 and Standard Missile research cases establish a reusable law:
@@ -163,7 +213,7 @@ Acceptance requires real owner inputs, stale/missing/contradictory states, corre
 
 ## 9. Current implementation dependencies
 
-1. Restore the candidate publisher through #7186 and prove the served signed-in generation.
+1. #7186 is merged at `dfcab9236060b22578ed5714ff18debd90647c28`; its natural production publisher run `35431106133` must complete and the served signed-in generation must be proven before DI-R0 is accepted.
 2. Release #7199 only after its acquisition→existing-publisher path is current-main compatible and naturally proven.
 3. Correct financial basis/period semantics at the existing Company/Earnings owner; do not hard-code fixes in Government Revenue.
 4. Human-admit the required munitions program/role mappings through existing D5 propose/curate law.
