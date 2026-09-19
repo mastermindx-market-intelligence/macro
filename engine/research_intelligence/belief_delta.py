@@ -166,8 +166,15 @@ def _document_ref(rio: dict[str, Any]) -> dict[str, str]:
 def compare_institutional_rio(
     previous: Any,
     current: Any,
+    *,
+    topic_key: str,
 ) -> dict[str, Any]:
-    """Return one metadata-only longitudinal delta for successive institutional RIOs."""
+    """Return a metadata-only delta for a caller-selected institutional topic pair."""
+    topic = _norm(topic_key)
+    if not topic or len(topic) > 240:
+        raise ValueError("topic_key is required and must be at most 240 normalized characters")
+    topic_sha256 = _sha256_text(topic)
+
     prior = validate_rio(previous, require_grounded_claims=True)
     now = validate_rio(current, require_grounded_claims=True)
 
@@ -257,6 +264,19 @@ def compare_institutional_rio(
         current_claim_hashes,
     )
     thesis_support_changed = prior_thesis_support != current_thesis_support
+    comparison_id = _sha256_text(
+        "\0".join(
+            (
+                SCHEMA,
+                prior_doc["id"],
+                prior_doc["content_sha256"],
+                current_doc["id"],
+                current_doc["content_sha256"],
+                topic_sha256,
+            )
+        )
+    )
+
     material_change = bool(
         direction_changed
         or conviction_changed
@@ -274,6 +294,9 @@ def compare_institutional_rio(
 
     return {
         "schema": SCHEMA,
+        "comparison_id": comparison_id,
+        "topic_key_sha256": topic_sha256,
+        "pairing_authority": "caller_asserted_topic",
         "institution": prior_doc["institution"],
         "desk_before": prior_doc["desk"],
         "desk_after": current_doc["desk"],
@@ -312,6 +335,8 @@ def summary(delta: Any) -> dict[str, Any]:
         raise ValueError("unexpected belief delta schema")
     if delta.get("text_visibility") != "metadata_only":
         raise ValueError("belief delta visibility is invalid")
+    if delta.get("pairing_authority") != "caller_asserted_topic":
+        raise ValueError("belief delta pairing authority is invalid")
     if delta.get("authority") != "descriptive_research_only":
         raise ValueError("belief delta authority is invalid")
 
@@ -344,11 +369,21 @@ def summary(delta: Any) -> dict[str, Any]:
     institution = str(delta.get("institution") or "")
     previous_id = str(previous.get("document_id") or "")
     current_id = str(current.get("document_id") or "")
-    if not institution or not previous_id or not current_id:
+    comparison_id = str(delta.get("comparison_id") or "")
+    topic_sha256 = str(delta.get("topic_key_sha256") or "")
+    if (
+        not institution
+        or not previous_id
+        or not current_id
+        or len(comparison_id) != 64
+        or len(topic_sha256) != 64
+    ):
         raise ValueError("belief delta identity is incomplete")
 
     return {
         "schema": SUMMARY_SCHEMA,
+        "comparison_id": comparison_id,
+        "topic_key_sha256": topic_sha256,
         "institution_sha256": _sha256_text(institution),
         "previous_document_id_sha256": _sha256_text(previous_id),
         "current_document_id_sha256": _sha256_text(current_id),
