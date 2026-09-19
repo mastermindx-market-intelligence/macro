@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import hashlib
+import json
 from typing import Any, Iterable
 
 from engine.qual_extraction import citation_normalize
@@ -112,9 +113,9 @@ def _category_rows(
     rio: dict[str, Any],
     field: str,
     claim_hashes: list[str],
-) -> dict[str, dict[str, Any]]:
+) -> dict[str, list[dict[str, Any]]]:
     rows = rio["analysis"].get(field) or []
-    out: dict[str, dict[str, Any]] = {}
+    out: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         statement_hash = _normalized_hash(row.get("statement"))
         if not statement_hash:
@@ -133,8 +134,20 @@ def _category_rows(
             payload["assets_sha256"] = _hashed_values(row.get("assets") or [])
             payload["direction"] = str(row.get("direction") or "unclear")
             payload["order"] = 2 if row.get("order") == 2 else 1
-        out[statement_hash] = payload
+        out.setdefault(statement_hash, []).append(payload)
+    for values in out.values():
+        values.sort(key=_row_sort_key)
     return out
+
+
+def _row_sort_key(row: dict[str, Any]) -> str:
+    return json.dumps(
+        row,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
 
 
 def _set_delta(
@@ -159,23 +172,47 @@ def _category_delta(
 ) -> dict[str, Any]:
     prior_rows = _category_rows(previous, field, previous_claim_hashes)
     current_rows = _category_rows(current, field, current_claim_hashes)
-    prior_keys = set(prior_rows)
-    current_keys = set(current_rows)
-    shared_keys = sorted(prior_keys & current_keys)
-    modified = [
-        {
-            "statement_sha256": key,
-            "before": prior_rows[key],
-            "after": current_rows[key],
-        }
-        for key in shared_keys
-        if prior_rows[key] != current_rows[key]
-    ]
+
+    added: list[dict[str, Any]] = []
+    removed: list[dict[str, Any]] = []
+    modified: list[dict[str, Any]] = []
+    shared: list[dict[str, Any]] = []
+
+    for statement_hash in sorted(set(prior_rows) | set(current_rows)):
+        prior = list(prior_rows.get(statement_hash) or [])
+        now = list(current_rows.get(statement_hash) or [])
+
+        # Consume exact payload matches first so repeated same-wording rows retain
+        # multiplicity rather than collapsing into one dictionary entry.
+        unmatched_now = list(now)
+        unmatched_prior: list[dict[str, Any]] = []
+        for prior_row in prior:
+            try:
+                index = unmatched_now.index(prior_row)
+            except ValueError:
+                unmatched_prior.append(prior_row)
+            else:
+                shared.append(unmatched_now.pop(index))
+
+        unmatched_prior.sort(key=_row_sort_key)
+        unmatched_now.sort(key=_row_sort_key)
+        paired = min(len(unmatched_prior), len(unmatched_now))
+        for index in range(paired):
+            modified.append(
+                {
+                    "statement_sha256": statement_hash,
+                    "before": unmatched_prior[index],
+                    "after": unmatched_now[index],
+                }
+            )
+        removed.extend(unmatched_prior[paired:])
+        added.extend(unmatched_now[paired:])
+
     return {
-        "added": [current_rows[key] for key in sorted(current_keys - prior_keys)],
-        "removed": [prior_rows[key] for key in sorted(prior_keys - current_keys)],
+        "added": added,
+        "removed": removed,
         "modified": modified,
-        "shared": [current_rows[key] for key in shared_keys if prior_rows[key] == current_rows[key]],
+        "shared": shared,
     }
 
 
