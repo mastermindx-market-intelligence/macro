@@ -479,3 +479,51 @@ def test_aggregate_explicitly_grants_no_model_promotion_authority():
     aggregate = aggregate_results([good])
     assert aggregate["ranking_basis"] == "private_gold_grounded_extraction_metrics"
     assert aggregate["promotion_authority"] == "none"
+
+
+def test_one_output_row_cannot_satisfy_two_gold_analysis_expectations():
+    case = json.loads(json.dumps(_case()))
+    case["expected"]["analysis_support"] = {
+        "forecasts": [[1], [2]],
+    }
+    case["expected"]["analysis_semantics"] = {
+        "forecasts": [
+            {
+                "support_claim_indices": [1],
+                "concept_groups": [["supply"], ["normalize"], ["december"]],
+            },
+            {
+                "support_claim_indices": [2],
+                "concept_groups": [["october"], ["launch"], ["catalyst"]],
+            },
+        ],
+    }
+
+    rio = _rio()
+    rio["analysis"]["forecasts"] = [
+        {
+            "statement": (
+                "Supply should normalize by December and the October launch "
+                "is the next catalyst."
+            ),
+            "horizon": "December and October",
+            "confidence": "moderate",
+            "support_claim_indices": [1, 2],
+        }
+    ]
+    rio["analysis"]["catalysts"] = []
+    rio["analysis"]["falsifiers"] = []
+
+    result = score_raw_output(
+        case,
+        BODY,
+        json.dumps(rio),
+        candidate_label="one-row-for-two-expectations",
+    )
+    assert result["state"] == "ok"
+    assert result["counts"]["expected_analysis_categories"] == 2
+    assert result["counts"]["matched_analysis_categories"] == 1
+    assert result["counts"]["expected_analysis_semantics"] == 2
+    assert result["counts"]["matched_analysis_semantics"] == 1
+    assert result["metrics"]["analysis_category_recall"] == 0.5
+    assert result["metrics"]["analysis_semantic_recall"] == 0.5
