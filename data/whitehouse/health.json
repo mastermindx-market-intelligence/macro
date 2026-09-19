@@ -1,23 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-18T19:36:16.743022+00:00",
-  "posts_seen": 20,
-  "seen_total": 207,
-  "evaluated": 2,
+  "as_of": "2026-09-19T05:55:36.237673+00:00",
+  "posts_seen": 25,
+  "seen_total": 212,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-18-president-trump-extends-most-favored-nation-pricing-to-every-medicaid-program-in",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-18-what-they-are-saying-president-trump-delivers-historic-victories-for-americas-hu",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    }
-  ]
+  "gate_scores": []
 }

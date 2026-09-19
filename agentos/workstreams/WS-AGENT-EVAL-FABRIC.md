@@ -47,15 +47,12 @@ waves:
       Reuse corpus release 856a9b0983d3289759fe63c587e7924d18c5af0e;
       sealed placeholder holdouts are not available E1 cases.
   - id: B3
-    title: "OHF1 current source release held — Mastermind #162"
-    status: in_progress
+    title: "OHF1 fresh-runner source released — Mastermind #162"
+    status: done
     depends_on: [A1]
     next_action: >
-      Retained release owner reconciles GITHUB_IDENTITY_MISMATCH from comment 5573811544.
-      Current df9a2ddab12563a3b054569a54c8e8f108269ed7 already has APPROVED review
-      5134108615. Reuse it where current compatibility permits; do not commission a
-      duplicate semantic review or paid canary merely because the old handoff is stale.
-      HOLD remains until same-carrier action-time release gates pass.
+      Consume #162 merge d6eccb0d81c9db3d009eafa7b37ea97a4dc99bc8; old identity hold is superseded.
+      Do not reopen the release.
   - id: B4
     title: "OHF2 bridge source protected — live runner acceptance remains B3"
     status: done
@@ -75,17 +72,17 @@ waves:
     status: todo
     depends_on: [B2, B3, B4, C1]
     next_action: >
-      Mastermind #337 merge 21a721427743fdae6d513eeb0f993ebd1c327a81 protects
-      preregistration only. No experiment or ranking is proven by that merge.
-      Retain B3 and existing source, configuration, cost and effect gates before a real run.
+      EXECUTION HELD: #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e.
+      Preserve the historical E1 seal unchanged and await the incumbent Fable program-owner ruling
+      on anthropic/claude-sonnet-5 versus #162 gpt-5.6-sol-only runner before any execution.
   - id: D1
     title: "OL-V1 existing implementation and mechanism proof — Mastermind #398"
     status: in_progress
     depends_on: [A2]
     next_action: >
-      Retained owner reconciles exact #398 head 293e3bb9ffd72d1c42d8f96674d23e67ba1f28b6
-      and six-path audit repair from review 5110526429 through audit close 5537720324.
-      HOLD: no seal, title PATCH, Ready, merge or real episode during source repair.
+      Preserve #398 at d79d2ec3537d8eb060055731a7c3cebee0c543eb; source review/CI are green.
+      Real OL-V1 remains held until a source-custody-lawful current-Macro workspace exists for exact
+      Executive grounding; no directive intent has been submitted and no effect has run.
   - id: F1
     title: Experience distillation candidates and read-only evidence experience
     status: todo
@@ -95,11 +92,9 @@ waves:
     status: todo
     depends_on: [C2, D1, F1]
 next_action: >
-  Retained Mastermind #162 release owner: reconcile the explicit identity HOLD
-  (5573811544), preserve current-head APPROVED review 5134108615, then perform only
-  the same-carrier release action whose current gates pass. Independently, retained
-  Mastermind #398 source owner reconciles the six-path audit repair and current effects.
-  Do not reopen Macro #6699 or rebuild protected EVAL foundations.
+  Obtain the incumbent Fable C2 ruling when that exact principal regains capacity; do not self-adopt
+  #687/#692 or mutate historical E1. In parallel unblock #398 only through a lawful current-Macro
+  grounding workspace. #841 is merged/do-not-redo.
 decisions:
   - DEC:AGENT-EVAL-FABLE-COO-DELEGATION
 artifacts:
@@ -107,36 +102,32 @@ artifacts:
   - agentos/decisions/DEC-AGENT-EVAL-FABLE-COO-DELEGATION.md
   - agentos/handoffs/AGENT-EVAL-FABRIC-2026-09-01.md
   - agentos/handoffs/AGENT-EVAL-FABRIC-2026-09-08.md
+  - agentos/handoffs/AGENT-EVAL-FABRIC-2026-09-19.md
   - research/AGENT_EVAL_CONTINUITY_PROOF_2026-09-08.md
 landmines:
-  - >
-    September 2 OHF live smoke belongs to old head 19db0d16367018c4a44fe0cc83485abd31aa6372.
-    Current df9 strict-parser source is reviewed, not released. Historical live proof,
-    current negative tests and action-time release acceptance are distinct.
-  - >
-    OL-V1 #398 has substantive authority, journal, time, correction and evidence blockers.
-    One corrected workstream cannot clear whole-store Agent OS hygiene or authorize its canary.
-  - >
-    Eval OS (WS-EVAL-OS-* and Macro #6689/#6686/#6651) is a different program.
-    Do not cross-wire its carriers, outcomes or authority.
-  - >
-    Prospective expectations precede effects. CCL-A4 consumes organizational-learning
-    contracts and never becomes a second memory, retrieval or promotion plane.
+  - "#162 is merged source, not E1 execution or current live proof."
+  - "#841 is merged OHF substrate repair, not E1 execution, provider authority, or experiment-design resolution."
+  - "E1 seals anthropic/claude-sonnet-5; #162 Fresh-Sol requires gpt-5.6-sol. Never substitute provider/model at execution."
+  - "Historical E1 still seals anthropic/claude-sonnet-5 while #162 Fresh-Sol requires gpt-5.6-sol; never substitute provider/model at execution."
+  - "OL-V1 d79 approval closes source rereview only; Agent OS prose never authorizes its real effect."
+  - "Eval OS WS-EVAL-OS-* is separate; do not cross-wire carriers or authority."
 do_not_redo:
-  - "Preserve Mastermind #162 and #398; no replacement runner, branch, PR or child assignment from this record."
+  - "Mastermind #162 is merged/do-not-redo; preserve #398 on its existing carrier with no replacement runner, branch, PR or blind effect retry."
+  - "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e; do not recreate or re-enqueue the OHF typed-failure repair."
   - "Macro #6699 and #6711 are superseded, closed-unmerged history; #6760 and #6713 are already merged."
   - "EFFECT_UNKNOWN requires original-operation reconciliation; no replay, account switch or inferred owner release."
   - "No universal worker leaderboard, aggregate authority score, second memory/lifecycle/queue/router or automatic policy promotion."
+  - "Do not mutate the original E1 preregistration digest in place or reinterpret sealed provider/model fields as placeholders; any successor experiment remains prospective and separately governed."
   - "Do not revive terminally closed historical audit/pilot children; a successor needs its own lawful assignment."
 ---
 
 # Agent Evaluation & Organizational Learning Fabric
 
-Current continuation is the September 8 handoff and its command-backed evidence, not the
-September 1 takeover snapshot. Mastermind #162 has reviewed source and an explicit release
-identity hold; Mastermind #398 has a bounded substantive source-repair gate. Neither is
-assigned, released or executed by this record. The protected corpus, core, scorer, bridge
-and preregistration are inputs to the unfinished real learning journey, not substitutes for it.
+Current continuation is the September 19 reconciliation below, built on the September 8
+handoff without replacing the program. Mastermind #162 is merged/released and B3 is done;
+Mastermind #398 remains the incumbent OL-V1 carrier under its current exact-head review/effect
+gates. The protected corpus, core, scorer, bridge and preregistration are inputs to the
+unfinished real learning journey, not substitutes for E1 execution or measured forward value.
 
 The Chairman-delegated principal remains `coo-fable`, operation
 `mastermind-agent-evaluation-fable-coo-end-to-end-20260901`, parent

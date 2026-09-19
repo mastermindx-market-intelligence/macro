@@ -17,7 +17,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "8069aaf8a31509f91d8cf1cfd15c9568f69e460567e040ea917380a13f4dff5a"
+    "sha256": "c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -288,7 +288,7 @@
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
-    "site/account.js": "521f0e4bd309a1b19d7dcee243667839d21a2903b20cc69ed14b72784bd276bd",
+    "site/account.js": "003672b7c9e0d16933a04560e30f2a8f8a59b36c2b7d82b46047c2e0d257c46b",
     "site/canada-stock-v36.js": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0",
     "site/chart_i18n.js": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315",
     "site/charts.js": "5372d2a229f4d2b16319a2d02c9fb2bfba19ad65c680d415796b12103aeff6ff",
@@ -313,7 +313,7 @@
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
-    "site/theme.css": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
+    "site/theme.css": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
     "site/theme.js": "53939d13755aefcdf31611943d795286efbef3004852a0106b2976df801e2acc"
   },
   "viewport": {
