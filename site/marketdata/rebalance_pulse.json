@@ -1,26 +1,26 @@
 {
-  "as_of": "2026-09-16",
-  "built_at": "2026-09-17T08:14:08Z",
+  "as_of": "2026-09-17",
+  "built_at": "2026-09-18T17:51:13Z",
   "latest_pulse": {
-    "date": "2026-09-16",
+    "date": "2026-09-17",
     "class": "quiet",
-    "market_vol_ratio": 1.054,
-    "up_share": null,
-    "basis": "volume_only",
+    "market_vol_ratio": 1.059,
+    "up_share": 0.687,
+    "basis": "updown",
     "n_megacap_rvol2": 0,
     "megacap_rvol": {
-      "BAC": 1.72,
-      "JPM": 1.52,
-      "BRK-B": 1.43,
-      "ORCL": 1.35,
-      "TMUS": 1.34,
-      "AMD": 1.34,
-      "V": 1.23,
-      "AMZN": 1.07
+      "TMUS": 1.74,
+      "AMD": 1.72,
+      "BRK-B": 1.58,
+      "CRM": 1.34,
+      "MRK": 1.28,
+      "BAC": 1.24,
+      "TSLA": 1.18,
+      "JPM": 1.17
     },
     "calendar": {
       "is_quarter_end": false,
-      "td_to_quarter_end": 10,
+      "td_to_quarter_end": 9,
       "in_qtr_end_window": false,
       "is_russell_recon_session": false,
       "in_recon_week": false,
@@ -41,21 +41,21 @@
       "types": [
         "sp_rebalance"
       ],
-      "td_to": 2
+      "td_to": 1
     },
     {
       "date": "2026-09-30",
       "types": [
         "quarter_end"
       ],
-      "td_to": 10
+      "td_to": 9
     },
     {
       "date": "2026-12-18",
       "types": [
         "sp_rebalance"
       ],
-      "td_to": 66
+      "td_to": 65
     }
   ],
   "recent_events": [],

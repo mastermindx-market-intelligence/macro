@@ -45,3 +45,4 @@
 {"date": "2026-09-11", "score": 34.7, "band": "low", "vix_ref": 15.8, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
 {"date": "2026-09-15", "score": 34.0, "band": "low", "vix_ref": 17.2, "n_factors": 8, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
 {"date": "2026-09-16", "score": 32.6, "band": "low", "vix_ref": 17.7, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}
+{"date": "2026-09-17", "score": 32.9, "band": "low", "vix_ref": 15.4, "n_factors": 7, "horizon_d": 10, "spy_mae_pct": null, "vix_jump_mult": null, "hit": null}

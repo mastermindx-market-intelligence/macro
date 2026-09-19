@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Enforce the public-repository trusted-CI runner-routing boundary.
 
-The planner, stable pack anchors, semantic gate, forks, fences, and merge controller
-remain hosted. Exact same-repository PR execution may call the protected-main trusted
-executor; candidate-authored jobs may not address the runner group or supply executor
-identity. Existing production self-hosted lanes are left untouched.
+The planner, stable pack anchors, semantic gate, ordinary PR packs, forks, fences,
+and merge controller default to GitHub-hosted Linux/x64. Exact same-repository PR
+execution may call the protected-main trusted executor only through the explicit
+CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runner
+group or supply executor identity. Existing production self-hosted lanes are left
+untouched.
 
 It also owns the label-DECLARATION boundary (rules R11/R12, added 2026-08-17): every
 literal ``runs-on`` label in every workflow must be declared in
@@ -82,11 +84,13 @@ SAME_REPO_PR = (
 FORK_PR = (
     "github.event.pull_request.head.repo.full_name != github.repository"
 )
+PC_ROUTE = "vars.CI_EXECUTION_ROUTE == 'pc'"
+HOSTED_ROUTE = "vars.CI_EXECUTION_ROUTE != 'pc'"
 TRUSTED_CALL_JOB = {
     "name": "trusted-ci",
     "needs": "ci-plan",
     "if": (
-        "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR
+        "needs.ci-plan.outputs.has_work == 'true' && " + SAME_REPO_PR + " && " + PC_ROUTE
     ),
     "uses": TRUSTED_EXECUTOR_CALL,
     "permissions": {"contents": "read", "pull-requests": "read"},
@@ -567,7 +571,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
     if registry.get("repository_visibility") != "public":
         findings.append(Finding("R0", "repository visibility boundary must remain public"))
     expected_scenarios = {
-        "same_repo_ordinary_pr": "pc-ci-via-main-executor",
+        "same_repo_ordinary_pr": "github-hosted",
         "fork_pr": "github-hosted",
         "trusted_dispatch_canary": "pc-ci-canary",
         "trusted_executor_dispatch": "pc-ci",
@@ -863,7 +867,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "validate and run legacy CI pack",
             "fail-safe full suite when no authoritative plan was produced",
         }
-        heavyweight_fork_only = True
+        heavyweight_hosted_default = True
         for step in pack_steps:
             if not isinstance(step, dict):
                 continue
@@ -876,10 +880,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 }
                 or step.get("name") in protected_pack_steps
             )
-            if is_heavy and FORK_PR not in str(step.get("if", "")):
-                heavyweight_fork_only = False
+            guard = str(step.get("if", ""))
+            if is_heavy and not (FORK_PR in guard and HOSTED_ROUTE in guard):
+                heavyweight_hosted_default = False
         relay_is_exact = (
-            relay_step.get("if") == SAME_REPO_PR
+            relay_step.get("if") == f"{SAME_REPO_PR} && {PC_ROUTE}"
             and relay_step.get("uses")
             == "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093"
             and relay_step.get("with") == {
@@ -889,7 +894,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         )
         parity_text = str(parity_step.get("run", ""))
         parity_is_exact = (
-            parity_step.get("if") == SAME_REPO_PR
+            parity_step.get("if") == f"{SAME_REPO_PR} && {PC_ROUTE}"
             and parity_step.get("env") == {
                 "HOSTED_PLAN_SHA": "${{ needs.ci-plan.outputs.plan_sha }}",
                 "TRUSTED_PLAN_SHA": "${{ needs.trusted-ci.outputs.plan_sha }}",
@@ -917,7 +922,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             == (
                 "always() && needs.ci-plan.result == 'success' && "
                 "needs.ci-plan.outputs.has_work == 'true' && "
-                f"({FORK_PR} || needs.trusted-ci.result == 'success')"
+                f"({FORK_PR} || {HOSTED_ROUTE} || needs.trusted-ci.result == 'success')"
             )
             and (ci_pack.get("strategy") or {}).get("matrix")
             == "${{ fromJSON(needs.ci-plan.outputs.matrix) }}"
@@ -927,12 +932,12 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             findings.append(Finding("R13", "P3B-B ci.yml lost its exact protected-main no-input executor call"))
         if not (
             ci_pack_contract_is_exact
-            and heavyweight_fork_only
+            and heavyweight_hosted_default
             and relay_is_exact
             and parity_is_exact
             and upload_is_exact
         ):
-            findings.append(Finding("R13", "P3B-B hosted anchor, fork isolation, or semantic relay drifted"))
+            findings.append(Finding("R13", "hosted-first pack execution, explicit PC fallback, or semantic relay drifted"))
 
     runner_group_name = str(runtime_group.get("name", ""))
     runner_group_consumers = {
@@ -1110,7 +1115,7 @@ def main(argv: list[str] | None = None) -> int:
     if findings:
         print(f"FAIL: {len(findings)} runner-policy finding(s)")
         return 1
-    print("OK: P3B-B routes only same-repository PR execution through the protected-main PC executor.")
+    print("OK: ordinary PR CI defaults to GitHub-hosted Linux/x64; protected-main PC execution is explicit fallback only.")
     return 0
 
 

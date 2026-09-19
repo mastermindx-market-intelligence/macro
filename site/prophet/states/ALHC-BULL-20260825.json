@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ALHC-BULL-20260825",
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 64.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -5.402,
+    "dist_to_stop_r": -5.86,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 51.1,
-    "p1": -4.2685,
-    "p2": -2.1342,
+    "horizon_pct_used": 53.3,
+    "p1": -4.574,
+    "p2": -2.2869,
     "p3": null,
-    "move_r": -6.402,
+    "move_r": -6.86,
     "mfe_r": 0.406,
-    "mae_r": -6.402
+    "mae_r": -6.86
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.3099996185302736,
-  "_mae": -4.890000190734863,
+  "_mae": -5.239999618530273,
   "_max_p1": 0.2706002256723757,
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 24,
+  "tau": 0.5333
 }

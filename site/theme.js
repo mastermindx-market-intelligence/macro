@@ -1290,12 +1290,17 @@
       window.requestAnimationFrame(function () { input.focus(); });
     }
 
-    function closeSearch() {
+    function closeSearch(restoreFocus) {
       box.classList.remove('open');
       document.body.classList.remove('nav-search-focus');
       trigger.setAttribute('aria-expanded', 'false');
       input.blur();
       selected = -1;
+      if (restoreFocus) {
+        window.requestAnimationFrame(function () {
+          try { trigger.focus({ preventScroll: true }); } catch (e) { trigger.focus(); }
+        });
+      }
     }
 
     function idleTick() {
@@ -1332,7 +1337,7 @@
     }
 
     trigger.addEventListener('click', openSearch);
-    closeButton.addEventListener('click', closeSearch);
+    closeButton.addEventListener('click', function () { closeSearch(true); });
     input.addEventListener('compositionstart', function () { isComposing = true; });
     input.addEventListener('compositionend', function () {
       isComposing = false;
@@ -1358,7 +1363,8 @@
         e.preventDefault();
         go(pageRows[selected >= 0 ? selected : 0]);
       } else if (e.key === 'Escape') {
-        closeSearch();
+        e.preventDefault();
+        closeSearch(true);
       }
     });
     dropdown.addEventListener('mousedown', function (e) {
