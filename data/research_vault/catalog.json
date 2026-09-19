@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T14:41:11.311494+00:00",
-  "count": 2435,
+  "generated_at": "2026-09-19T14:56:13.766809+00:00",
+  "count": 2436,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -347,6 +347,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-8t11p6juapv-ed80d8",
+      "title": "Why are central banks moving their gold reserves",
+      "institution": "WGC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:20:12Z",
+      "summary_points": [
+        "Strategic Storage Reallocation Beyond Repatriation: DNB’s 86t gold transfer (Sep 2023) to London (now 32.1% of reserves) signals systemic shift for liquidity/security, not repatriation; physical movement (59t sold in NY/Ottawa) reflects prioritization of custody risk over domestic storage.",
+        "Geopolitical Resilience Wave: Current central bank gold movements (France, DNB, India, Germany) form third wave prioritizing custody risk, physical accessibility, and market liquidity—diversified storage for resilience amid rising tensions, distinct from historical repatriation or national control focus.",
+        "Optimization Balance Critical for Portfolios: Moves (e.g., France to London, DNB 2014/2026 shifts) balance custody risk, deployability, and geopolitical exposure; Bank of England dominance (57% vault share) alongside rising domestic storage (9% YoY) and overseas diversification (9% vs. 2%) defines strategic reallocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
