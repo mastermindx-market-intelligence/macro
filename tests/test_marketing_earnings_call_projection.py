@@ -67,11 +67,38 @@ publish:
     assert seen["max_events"] == 8
 
 
-def test_runner_fails_job_on_committed_ledger_integrity_gap(
+
+def test_runner_refuses_missing_operator_earnings_route(
     tmp_path: Path, monkeypatch, capsys,
 ):
     (tmp_path / "config").mkdir(parents=True)
     (tmp_path / "config" / "marketing.yml").write_text("{}\n", encoding="utf-8")
+
+    def must_not_run(**_kwargs):
+        raise AssertionError("projection ran after routing config failed closed")
+
+    monkeypatch.setattr(runner.lane, "run_ledger", must_not_run)
+    result, code = runner.run(
+        root=tmp_path,
+        dry_run=False,
+        max_call_age_days=2,
+        max_events=8,
+    )
+
+    output = capsys.readouterr().out
+    assert code == 2
+    assert result["config_blocked"] is True
+    assert "::error title=earnings-call-marketing-config-invalid::" in output
+    assert "wire_routing.classes.earnings is required" in output
+
+def test_runner_fails_job_on_committed_ledger_integrity_gap(
+    tmp_path: Path, monkeypatch, capsys,
+):
+    (tmp_path / "config").mkdir(parents=True)
+    (tmp_path / "config" / "marketing.yml").write_text(
+        "wire_routing:\n  classes:\n    earnings: mastermind_news\n",
+        encoding="utf-8",
+    )
 
     blocked = _healthy()
     blocked.update(
@@ -102,7 +129,10 @@ def test_correction_is_visible_but_does_not_abort_other_safe_rows(
     tmp_path: Path, monkeypatch, capsys,
 ):
     (tmp_path / "config").mkdir(parents=True)
-    (tmp_path / "config" / "marketing.yml").write_text("{}\n", encoding="utf-8")
+    (tmp_path / "config" / "marketing.yml").write_text(
+        "wire_routing:\n  classes:\n    earnings: mastermind_news\n",
+        encoding="utf-8",
+    )
     result = _healthy()
     result["results"] = [
         {"event_id": "evt-safe", "status": "queued", "reason": "", "item": {}},
