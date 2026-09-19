@@ -1,0 +1,77 @@
+{
+  "source_sha256": {
+    "engine/signal_foundry/screen.py": "822833d70db617602eff4a6cafdc8bccadfb3d1ba07cb27d5497aecccdf6e2f1",
+    "engine/signal_foundry/spec.py": "9f2b5d1c295242e7827c8aaa86011d6983925ea18752041841b9e46d87d56fad",
+    "scripts/codex_signal_lane.py": "db08563af7f831af7b519437204a7688f825f7ab1344f093fb1def05cee9456d",
+    "scripts/run_signal_foundry_brainstorm.py": "0c3f90d4ff3c27550f5894891206855718a53d9f9417d126711f966ba34681ac"
+  },
+  "source_unchanged": true,
+  "cases": [
+    {
+      "case": "source_omitted",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "5cb8687819d0a3ae199cd35e2c7e66bd197555d1e381ffbac949e1236d796168"
+    },
+    {
+      "case": "baseline_omitted",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "63f0a623d0d7bcb447d5dfb124330e41e673d1e17fbdbc92d034a5cab553f11e"
+    },
+    {
+      "case": "complete_legacy_not_projected",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "d852fe1baa1acf53a363826fc087e7aa60055da22f07854af3bafdf022b05b32"
+    },
+    {
+      "case": "prior_history_ignored",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "b4b49d72e4ae91b2dfa0b1613a895f03816e874b190c1fd1d81bf459b34815e1"
+    },
+    {
+      "case": "corrupt_line_ignored",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "11aab968175693c94b3de60ba73437ef69073df39d271a115df57c39b9770dc8"
+    },
+    {
+      "case": "backend_hash_spoofed",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "3e182727e3960f59005d5c4c49a525bf67453f686ef4cb3bcbd02980b22605f3"
+    },
+    {
+      "case": "invalid_definition_written",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "a8a700a8abbbea5a53af31db187b849304c7ae84bbdd96bdc46fd9a5df674dce"
+    },
+    {
+      "case": "backend_version_spoofed",
+      "exit_code": 1,
+      "assertion_failures": 1,
+      "errors": 0,
+      "caught": true,
+      "log_sha256": "aaa180cf6eb938aeafeec67cc628135f0d6b7d057a0e72c49bf296abcedcd601"
+    }
+  ],
+  "all_caught": true,
+  "production_proven": false
+}

@@ -4605,6 +4605,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy
+      - name: construction identity and legacy filing contracts
+        run: python -m pytest tests/test_sf_spec_identity.py tests/test_sf_spec.py tests/test_sf_screen.py -q
       - name: causal factory + signal-foundry brainstorm suites
         run: >
           python -m pytest
