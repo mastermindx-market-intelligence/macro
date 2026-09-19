@@ -392,7 +392,24 @@ def test_rights_safe_summary_refuses_nonhash_claim_entries():
 
 
 def test_repeated_same_statement_rows_preserve_multiplicity():
-    previous, current = _pair()
+    previous = _rio(
+        doc_id="fixture-2026-08-01-repeat",
+        published_at="2026-08-01T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
+    current = _rio(
+        doc_id="fixture-2026-08-15-repeat",
+        published_at="2026-08-15T12:00:00+00:00",
+        claim=PRIOR_CLAIM,
+        direction="neutral",
+        conviction="moderate",
+        mechanism=PRIOR_MECHANISM,
+        forecast=PRIOR_FORECAST,
+    )
     previous["claims"].append(
         {
             "statement": SECOND_CLAIM,
