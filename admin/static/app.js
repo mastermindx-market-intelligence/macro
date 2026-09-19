@@ -1057,7 +1057,7 @@ function renderProgramWatch(pw) {
   }
   if (!pw.available || !Array.isArray(pw.tripwires)) {
     return wrap(pwCard("warn", "Watch file missing",
-      `No current watch artifact is available. This is not an all-clear.${pw.note ? `<details class="tech-details"><summary>Technical details</summary>${esc(pw.note)}</details>` : ""}`));
+      `No current watch data is available. This is not an all-clear.${pw.note ? `<details class="tech-details"><summary>Technical details</summary>${esc(pw.note)}</details>` : ""}`));
   }
   const c = pw.counts || {};
   const fr = pw.freshness || {};
@@ -2907,7 +2907,7 @@ RENDER.cost = async () => {
       ${card("30-day spend · all sources", `<div class="big">${fmtUSD(T.usd)}</div><div class="sub">${fmtTokens(T.tokens)} tokens · ${T.calls || 0} calls</div>`)}
       ${card("Subscription-equivalent", `<div class="big">${fmtUSD(T.subscription_usd)}</div><div class="sub">OAuth / CLI flat-fee value — not billed</div>`)}
       ${card("Metered (billed)", `<div class="big">${fmtUSD(T.metered_usd)}</div><div class="sub">API + DeepSeek pay-as-you-go</div>`)}
-      ${card("Ledger trend", `<div class="sub" style="line-height:1.8">today <b>${fmtUSD((W.today || {}).usd)}</b><br>7d <b>${fmtUSD((W.d7 || {}).usd)}</b> · 30d <b>${fmtUSD((W.d30 || {}).usd)}</b></div>`)}
+      ${card("Recorded trend", `<div class="sub" style="line-height:1.8">today <b>${fmtUSD((W.today || {}).usd)}</b><br>7d <b>${fmtUSD((W.d7 || {}).usd)}</b> · 30d <b>${fmtUSD((W.d30 || {}).usd)}</b></div>`)}
     </div>`;
 
   // ── (b) lobe leaderboard (centerpiece) ──
@@ -2958,9 +2958,9 @@ RENDER.cost = async () => {
       ${arr.map(b => `<tr><td class="mono">${esc(b.name)}</td><td class="r">${b.calls || 0}</td><td class="r">${fmtTokens(b.tokens || 0)}</td><td class="r">${fmtUSD(b.usd || 0)}</td><td class="r">${b.pct_usd != null ? b.pct_usd + "%" : "—"}</td></tr>`).join("")}
       </tbody></table>`;
   };
-  const breakdownsHtml = brkTable("By provider (ledger · 30d)", u.providers, "Provider")
-    + brkTable("By model (ledger · 30d)", u.models, "Model")
-    + brkTable("By key / env var (ledger · 30d)", u.keys, "Key");
+  const breakdownsHtml = brkTable("By provider · 30d", u.providers, "Provider")
+    + brkTable("By model · 30d", u.models, "Model")
+    + brkTable("By key · 30d", u.keys, "Key");
 
   // ── (e) codex detail ──
   let codexHtml = "";
@@ -3359,37 +3359,37 @@ function nwSectionFactorIntelligence(fi) {
 
   // State artifact freshness card
   if (fi.state_missing) {
-    html += card("State Artifact", `<div class="sub" style="color:var(--warn)">data/neuralweb/factor_intelligence_state.json not yet written — factor_panel job has not run. Panel dormant.</div>`);
+    html += card("Current state", `<div class="sub" style="color:var(--warn)">Current factor-intelligence data is not available yet. This panel will populate after the next successful run.</div>`);
   } else {
     const ageColor = fi.state_age_hours == null ? "muted" : fi.state_age_hours > 48 ? "bad" : fi.state_age_hours > 30 ? "warn" : "ok";
-    html += card("State Artifact", `
+    html += card("Current state", `
       <div class="kv"><span>As of</span><b>${esc(fi.state_as_of || "—")}</b></div>
       <div class="kv"><span>Freshness</span><b>${nwFmtAge(fi.state_age_hours)}</b></div>`);
   }
 
   // Panel health card
   const ph = fi.panel_health || {};
-  html += card("Panel Health", fi.state_missing
-    ? `<div class="sub" style="color:var(--warn)">state artifact absent</div>`
+  html += card("Coverage", fi.state_missing
+    ? `<div class="sub" style="color:var(--warn)">Current state is unavailable.</div>`
     : `<div class="kv"><span>Dates</span><b>${ph.n_dates != null ? ph.n_dates : "—"}</b></div>
        <div class="kv"><span>Latest</span><b>${esc(ph.latest_date || "—")}</b></div>
        <div class="kv"><span>Floor (≥60d)</span><b style="color:var(--${ph.floor_met ? "ok" : "warn"})">${ph.floor_met ? "✓ met" : "pending"}</b></div>`);
 
   // Pair G ledger card
   const pg = fi.pair_g || {};
-  html += card("Pair G Ledger", `
-    <div class="kv"><span>Ledger present</span><b style="color:var(--${pg.ledger_present ? "ok" : "muted"})">${pg.ledger_present ? "yes" : "not yet"}</b></div>
+  html += card("Pair G history", `
+    <div class="kv"><span>History available</span><b style="color:var(--${pg.ledger_present ? "ok" : "muted"})">${pg.ledger_present ? "yes" : "not yet"}</b></div>
     <div class="kv"><span>Today count</span><b>${pg.today_count != null ? pg.today_count : "—"}</b></div>
-    <div class="note muted" style="margin-top:4px">Severity ceiling: note (H2 gate-passed required for tension)</div>`);
+    <div class="note muted" style="margin-top:4px">Current severity stays informational until the higher-confidence review passes.</div>`);
 
   // Factor attention authority card
   const fa = fi.factor_attention || {};
   const attColor = fa.granted ? "ok" : "muted";
-  html += card("Factor Attention Authority", `
-    <div class="kv"><span>Tier</span><b>${esc(fa.tier || "—")}</b></div>
-    <div class="kv"><span>Granted</span><b style="color:var(--${attColor})">${fa.granted ? "yes" : "no"}</b></div>
-    <div class="kv"><span>Firings</span><b>${fa.n_firings != null ? fa.n_firings : "—"}</b></div>
-    <div class="kv"><span>Graded</span><b>${fa.n_graded != null ? fa.n_graded : "—"}</b></div>
+  html += card("Factor attention", `
+    <div class="kv"><span>Level</span><b>${esc(fa.tier || "—")}</b></div>
+    <div class="kv"><span>Enabled</span><b style="color:var(--${attColor})">${fa.granted ? "yes" : "no"}</b></div>
+    <div class="kv"><span>Signals</span><b>${fa.n_firings != null ? fa.n_firings : "—"}</b></div>
+    <div class="kv"><span>Reviewed</span><b>${fa.n_graded != null ? fa.n_graded : "—"}</b></div>
     <div class="note muted" style="margin-top:4px">${esc(fa.reason || "")}</div>`);
 
   // Hypotheses block card
@@ -3399,13 +3399,13 @@ function nwSectionFactorIntelligence(fi) {
     const chipCls = s === "gate-passed" ? "s-ok" : s === "accruing" ? "s-warn" : "s-mut";
     return `<div class="kv"><span>${hi.toUpperCase()}</span><b>${nwPill("BH-WITHHELD", "s-bad")} ${nwPill(s, chipCls)}</b></div>`;
   }).join("");
-  html += card("Hypotheses H1–H5", `
+  html += card("Research hypotheses", `
     ${hypEntries}
-    <div class="note muted" style="margin-top:4px">BH-WITHHELD mandatory on all 5 until family FDR sweep (est. ≥2027)</div>`);
+    <div class="note muted" style="margin-top:4px">All five remain research-only until the family-level review has enough evidence.</div>`);
 
   // §9.2 Alerts card
   const alerts = fi.alerts || [];
-  html += card("§9.2 Alerts", alerts.length === 0
+  html += card("Research alerts", alerts.length === 0
     ? `<div class="sub" style="color:var(--ok)">No alerts</div>`
     : `<ul style="margin:0;padding-left:16px">${alerts.map(a => `<li class="sub" style="color:var(--warn);margin-bottom:4px">${esc(a)}</li>`).join("")}</ul>`);
 
@@ -3514,7 +3514,7 @@ function nwHero(d) {
       ${chip("fresh", sc.fresh, "ok")}
       ${chip("stale", sc.stale, "warn")}
       ${chip("missing", sc.missing, "bad")}
-      ${sc.not_locally_verifiable ? chip("R2-only", sc.not_locally_verifiable, "") : ""}
+      ${sc.not_locally_verifiable ? chip("remote-only", sc.not_locally_verifiable, "") : ""}
       ${(sc.degraded || 0) > 0 ? chip("degraded", sc.degraded, "bad") : ""}
       ${(sc.fresh_partial || 0) > 0 ? chip("partial", sc.fresh_partial, "warn") : ""}
       ${(sc.unknown || 0) > 0 ? chip("unknown", sc.unknown, "") : ""}
@@ -3863,7 +3863,7 @@ function nwSectionDailyBrief(db) {
     <div class="sub muted" style="margin-top:6px">as of ${esc(db.as_of || db.produced_at || "—")}</div>
   </div>`;
   if (p1.length) {
-    html += `<div class="section" style="margin-top:10px">P1 — Operator attention <span class="cnt">${p1.length}</span></div>
+    html += `<div class="section" style="margin-top:10px">Needs attention <span class="cnt">${p1.length}</span></div>
       <div class="card">${p1.map(a => `<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);last-child:border-bottom:0">
         <div style="font-weight:600">${esc(a.headline || a.title || "")}</div>
         ${a.body ? `<div class="sub" style="margin-top:4px">${esc(a.body)}</div>` : ""}
@@ -5064,7 +5064,7 @@ RENDER.macro_thesis = async () => {
     risk_watch: "",
   }, null, 2);
 
-  v.innerHTML = `<div class="section">Macro Thesis Ledger <span class="cnt">${Number((d.forward && d.forward.summary && d.forward.summary.n) || 0)} forward · ${Number((d.retro && d.retro.summary && d.retro.summary.n) || 0)} retro</span></div>
+  v.innerHTML = `<div class="section">Macro theses <span class="cnt">${Number((d.forward && d.forward.summary && d.forward.summary.n) || 0)} forward · ${Number((d.retro && d.retro.summary && d.retro.summary.n) || 0)} retro</span></div>
     <div class="card">
       <h3>Record the synthesis, then grade it</h3>
       <div class="sub">Record each macro thesis at the time it is formed, then grade it at fixed horizons.</div>
@@ -5382,8 +5382,8 @@ function conPipelineRail(pl) {
     });
   } else {
     stages.push({
-      key: "marketing_publish", name: "Publisher", num: "DARK",
-      state: "arm in checklist", led: "bad", flow: "block", isWord: true,
+      key: "marketing_publish", name: "Publisher", num: "OFF",
+      state: "turn on in checklist", led: "bad", flow: "block", isWord: true,
     });
   }
 
@@ -5882,13 +5882,13 @@ function flrLedger(led) {
   }).join("");
 
   const halted = (led.halted_accounts || []).length
-    ? `<div class="note" style="margin-top:8px;color:var(--bad)">Halted desks: ${esc((led.halted_accounts || []).join(", "))}</div>`
+    ? `<div class="note" style="margin-top:8px;color:var(--bad)">Paused accounts: ${esc((led.halted_accounts || []).join(", "))}</div>`
     : "";
 
   return `<div class="card">
     <h3>Where tonight's posts went
-      <span class="cnt">last sweep ${esc(led.at || "—")} · ${esc(led.backend || "—")}</span></h3>
-    <div class="note muted" style="margin-bottom:10px">Every counter the publisher wrote on its last run. Zeroes are kept and dimmed — a zero next to “went out to X” is the whole story.</div>
+      <span class="cnt">last run ${esc(led.at || "—")} · ${esc(led.backend || "—")}</span></h3>
+    <div class="note muted" style="margin-bottom:10px">Shows the last publishing run, including zero-count outcomes.</div>
     <div class="flr-led">${rows}</div>
     ${halted}
   </div>`;
@@ -6518,7 +6518,7 @@ RENDER.marketing_channels = async () => {
            <td class="sub mono">${esc((p.published_at || "—").slice(0, 10))}</td>
          </tr>`).join("")}
          </tbody></table>`
-      : nwEmpty("No publications yet", "Publication ledger populates after first distribution."));
+      : nwEmpty("No publications yet", "Publishing history will appear after the first distribution."));
 
   v.innerHTML = heroHtml + acctHtml + pubLedgerHtml;
 };
@@ -6800,7 +6800,7 @@ RENDER.marketing_experiments = async () => {
            <td><span class="statpill ${e.status === "running" ? "s-ok" : e.status === "completed" ? "s-mut" : "s-warn"}">${esc(e.status || "—")}</span></td>
          </tr>`).join("")}
          </tbody></table>`
-      : nwEmpty("No experiments yet", "Experiment registry populates after first shadow run."));
+      : nwEmpty("No experiments yet", "Experiments will appear after the first preview run."));
 
   v.innerHTML = nsHtml + variantHtml + expHtml;
 };
@@ -8887,7 +8887,7 @@ RENDER.marketing_learning = async () => {
   const rulesBlock = `<section class="card">
       <div class="row between">
         <h3>Learned rules</h3>
-        <span class="${rules.enabled ? "tag" : "muted"}">${rules.enabled ? "armed" : "dark"}</span>
+        <span class="${rules.enabled ? "tag" : "muted"}">${rules.enabled ? "on" : "off"}</span>
       </div>
       <div class="muted small">Applying a learned rule is a promotion, so
         consumption is off by default. A rule that cannot be reverted is refused
@@ -9302,9 +9302,9 @@ function sentReasonChip(reason) {
     case "account_disabled":
       label = "Account is switched off"; cls = "sent-flag-hot"; break;
     case "stale_receipts_ledger":
-      label = "Receipts ledger stale — plan refused"; cls = "sent-flag-hot"; break;
+      label = "Publishing history is stale — plan refused"; cls = "sent-flag-hot"; break;
     case "receipts_age_unknown":
-      label = "Receipts ledger age unknown"; break;
+      label = "Publishing history age unknown"; break;
     default:
       /* Unknown head → prettify the slug, keep the machine string in the tip. */
       label = raw.replace(/_/g, " ").replace(/:/g, " · ");
@@ -9391,7 +9391,7 @@ function sentFamilyLabel(head) {
     shared_media: "Reused image",
     link_not_allowed: "Link not allowed",
     account_disabled: "Desk switched off",
-    stale_receipts_ledger: "Receipts ledger stale",
+    stale_receipts_ledger: "Publishing history stale",
     receipts_age_unknown: "Receipts age unknown",
   };
   return M[head] || String(head).replace(/_/g, " ");
@@ -9630,8 +9630,8 @@ function pubGoLive(d) {
   const armTitle = armed
     ? `<span style="color:var(--ok)">LIVE — posting at the next slot</span>`
     : (armKnown
-        ? `<span class="k">Dark — dry-run only</span>`
-        : `<span class="warn">Arm state unknown</span>`);
+        ? `<span class="k">Off — preview only</span>`
+        : `<span class="warn">Publishing status unknown</span>`);
   let armDo;
   if (!armKnown) {
     armDo = `${as.error ? esc(as.error) : "Publishing state could not be read."} <details class="tech-details"><summary>Technical details</summary>The runner follows the <code>MARKETING_PUBLISH_ENABLED</code> repository variable.</details>`;
@@ -9736,13 +9736,13 @@ async function pubArmToggle(btn, currentlyArmed) {
   const when = nextIso ? conCountdown(nextIso) : "the next slot";
   const msg = nextArmed
     ? `Arm the publisher? Real posts will go to @mastermindx001 at the next slot (⏱ ${when}). You can disarm instantly.`
-    : `Disarm the publisher? Instant kill switch — every path reverts to dry-run.`;
+    : `Turn publishing off? Sending stops immediately and previews remain available.`;
   if (!window.confirm(msg)) return;
   btn.disabled = true; const orig = btn.textContent;
   btn.textContent = nextArmed ? "arming…" : "disarming…";
   const r = await post("/api/marketing/publish/arm", { enabled: nextArmed });
   if (r && r.ok) {
-    toast(nextArmed ? "Publisher ARMED — posts at the next slot." : "Publisher DISARMED — dry-run only.");
+    toast(nextArmed ? "Publishing is on — posts go out at the next slot." : "Publishing is off — preview only.");
     RENDER.marketing_publish();   // re-fetch API truth
   } else {
     btn.disabled = false; btn.textContent = orig;
@@ -10161,7 +10161,7 @@ RENDER.marketing_publish = async () => {
   if (armed) {
     armPill = `<span class="obx-shadow-pill" style="color:var(--ok)"><span class="obx-shadow-dot" style="background:var(--ok)"></span>LIVE — posting at the next slot</span>`;
   } else if (armKnown) {
-    armPill = `<span class="obx-shadow-pill"><span class="obx-shadow-dot"></span>Dark — dry-run only</span>`;
+    armPill = `<span class="obx-shadow-pill"><span class="obx-shadow-dot"></span>Off — preview only</span>`;
   } else {
     armPill = `<span class="obx-shadow-pill" style="color:var(--warn)" title="${esc(as.error || "state unknown")}"><span class="obx-shadow-dot" style="background:var(--warn)"></span>Arm state unknown${srcNote}</span>`;
   }
@@ -10281,9 +10281,9 @@ RENDER.marketing_publish = async () => {
   /* Dry-run action + result zone. Now a disclosure: §3 answers "what goes out
      next" without the operator having to run anything. */
   const actionCard = `<details class="card">
-    <summary class="section" style="cursor:pointer">Dry-run preview <span class="cnt">exactly what a live run would do right now</span></summary>
-    <div class="note muted" style="margin:8px 0">Runs in-process: no network call, no ledger write.</div>
-    <button class="btn primary" id="pub-dryrun-btn" onclick="pubRunDryRun(this)">Run dry-run</button>
+    <summary class="section" style="cursor:pointer">Preview a run <span class="cnt">see what would happen before sending</span></summary>
+    <div class="note muted" style="margin:8px 0">Preview only. Nothing is sent or recorded.</div>
+    <button class="btn primary" id="pub-dryrun-btn" onclick="pubRunDryRun(this)">Run preview</button>
     <div id="pub-dryrun-out" style="margin-top:10px"></div>
   </details>`;
 
@@ -10292,7 +10292,7 @@ RENDER.marketing_publish = async () => {
   const actStrip = activity.length ? `<details class="card"><summary class="section" style="cursor:pointer">Recent runs <span class="cnt">last ${activity.length}</span></summary>
     <div style="margin-top:8px">${activity.map(a => `<div class="pub-act-row"><span class="muted">${esc(a.at || "")}</span>
       <span class="pub-act-lane">${esc(a.lane || "")}</span>
-      posted ${a.posted || 0} · would_post ${a.would_post || 0} · quarantined ${a.quarantined || 0}${a.auto_approved ? ` · auto ${a.auto_approved}` : ""}${pubParkedReadout(a)}</div>`).join("")}</div>
+      posted ${a.posted || 0} · would send ${a.would_post || 0} · blocked ${a.quarantined || 0}${a.auto_approved ? ` · auto-approved ${a.auto_approved}` : ""}${pubParkedReadout(a)}</div>`).join("")}</div>
   </details>` : "";
 
   const goLive = pubGoLive(d);
@@ -10334,10 +10334,10 @@ function pubParkedReadout(a) {
   const dark = a.dark_accounts;
   if (n > 0) {
     const who = Array.isArray(dark) && dark.length ? ` (${dark.map(esc).join(", ")})` : "";
-    return ` · <span class="pub-act-park" title="Parked at dispatch — addressed to a desk that is not enabled in desk_network (account_disabled). Enable the desk to let these post.">parked ${n}${who}</span>`;
+    return ` · <span class="pub-act-park" title="Held because the destination account is not enabled. Enable the account to let these post.">held ${n}${who}</span>`;
   }
   if (dark === null) {
-    return ` · <span class="pub-act-inert" title="Desk liveness could not be resolved on this run, so nothing could be parked. A park count of 0 here means the check never ran — not that every desk is live.">desk liveness unknown</span>`;
+    return ` · <span class="pub-act-inert" title="Account status could not be resolved for this run, so a zero held count does not prove every account is enabled.">account status unknown</span>`;
   }
   return "";
 }
@@ -10350,13 +10350,13 @@ function pubParkedReadout(a) {
 function pubDarkDeskNote(d) {
   const dark = d.dark_accounts;
   if (dark === null) {
-    return `<div class="pub-alert-row" style="margin-top:8px"><span class="pub-alert-tag warn">desk liveness unknown</span><span class="pub-alert-note">The publisher could not resolve which desks are enabled, so nothing can be parked — a would-park count of 0 means the check never ran, not that every desk is live.</span></div>`;
+    return `<div class="pub-alert-row" style="margin-top:8px"><span class="pub-alert-tag warn">account status unknown</span><span class="pub-alert-note">The publisher could not confirm which accounts are enabled, so a zero held count does not prove every account is ready.</span></div>`;
   }
   if (Array.isArray(dark) && dark.length) {
-    return `<div class="pub-alert-row" style="margin-top:8px"><span class="pub-alert-tag warn">dark desks</span><span class="pub-alert-note">Not enabled in desk_network: ${dark.map(x => `<code>${esc(x)}</code>`).join(" ")}. Anything addressed to these is parked, never posted.</span></div>`;
+    return `<div class="pub-alert-row" style="margin-top:8px"><span class="pub-alert-tag warn">accounts off</span><span class="pub-alert-note">Publishing is off for: ${dark.map(x => `<code>${esc(x)}</code>`).join(" ")}. Anything addressed to these accounts is held.</span></div>`;
   }
   if (Array.isArray(dark)) {
-    return `<div class="note muted" style="margin-top:8px">Desk liveness checked — every desk is enabled, so nothing would be parked.</div>`;
+    return `<div class="note muted" style="margin-top:8px">Account status checked — every account is enabled, so nothing would be held.</div>`;
   }
   return "";
 }
@@ -10409,7 +10409,7 @@ async function pubRunDryRun(btn) {
   const out = document.getElementById("pub-dryrun-out");
   if (btn) { btn.disabled = true; btn.textContent = "Running…"; }
   const d = await post("/api/marketing/publish/dryrun", {});
-  if (btn) { btn.disabled = false; btn.textContent = "Run dry-run"; }
+  if (btn) { btn.disabled = false; btn.textContent = "Run preview"; }
   if (!out) return;
   if (!d || !d.ok) { out.innerHTML = `<div class="note err">${esc((d && d.error) || "dry-run failed")}</div>`; return; }
 
@@ -10486,7 +10486,7 @@ RENDER.marketing_sentinel = async () => {
   const heroState = live === true
     ? "LIVE — publishing armed"
     : live === false
-      ? "Dark — nothing posts externally"
+      ? "Off — nothing posts externally"
       : "Publishing state unknown";
   const heroSub = live === true
     ? "The kill-switch is OFF: approved posts will go out to X. Every hold below is the last line before publication."
@@ -10599,8 +10599,8 @@ RENDER.marketing_sentinel = async () => {
      going out. It only appears when the switch was actually read as off. */
   const shadowBanner = live === false
     ? `<div class="cs-freshbar" style="border-left:3px solid var(--ok)">
-        <span class="cs-fresh-pill fresh">Publisher is dark</span>
-        <span class="cs-fresh-txt">The gate runs and reports, but <b>nothing posts externally</b> until the Publisher is armed.</span>
+        <span class="cs-fresh-pill fresh">Publishing is off</span>
+        <span class="cs-fresh-txt">Drafts can still be prepared, but <b>nothing is sent</b> until publishing is turned on.</span>
         <button class="sent-shadow-link" onclick="go('marketing_publish')" style="margin-left:auto">Open Publisher →</button>
       </div>`
     : "";
@@ -13439,7 +13439,7 @@ async function mmlLoad() {
   const surfDarkHtml = ing.dark ? "" : Object.entries(ing.last_by_surface || {}).map(([s, ts]) => {
     const days = (Date.now() - Date.parse(ts)) / 86400e3;
     if (!(days >= (ing.threshold_days || 2))) return "";
-    return `<span class="statpill s-bad" title="no ${esc(s)} responses since ${esc(String(ts).slice(0, 10))}">${esc(s)} dark ${Math.floor(days)}d</span>`;
+    return `<span class="statpill s-bad" title="no ${esc(s)} responses since ${esc(String(ts).slice(0, 10))}">${esc(s)} · no data for ${Math.floor(days)}d</span>`;
   }).join("");
   /* Contradiction verdict counts — only the labels actually present, so an
      un-classified corpus shows nothing rather than four zeroes. */
@@ -14545,7 +14545,7 @@ RENDER.long_hold = async () => {
   // ---- Thesis Funnel section ----
   let tfHtml = "";
   if (!tf.available) {
-    tfHtml = `<div class="sub muted">${esc(tf.reason || "thesis funnel manifest not available")}</div>`;
+    tfHtml = `<div class="sub muted">Thesis funnel data is not available yet.${tf.reason ? `<details class="tech-details"><summary>Technical details</summary>${esc(tf.reason)}</details>` : ""}</div>`;
   } else {
     const sc = tf.state_counts || {};
     const scRows = Object.entries(sc).map(([k, n]) =>
@@ -14561,7 +14561,7 @@ RENDER.long_hold = async () => {
   // ---- Labels section ----
   let lbHtml = "";
   if (!lb.available) {
-    lbHtml = `<div class="sub muted">${esc(lb.reason || "labels manifest not available")}</div>`;
+    lbHtml = `<div class="sub muted">Label data is not available yet.${lb.reason ? `<details class="tech-details"><summary>Technical details</summary>${esc(lb.reason)}</details>` : ""}</div>`;
   } else {
     const dist = lb.distribution || {};
     const lbRows = Object.entries(dist).sort((a, b) => b[1] - a[1]).map(([k, n]) =>
@@ -14656,7 +14656,7 @@ RENDER.context_lobe = async () => {
   let manifestHtml = "";
   const manifest = d.lobe_manifest || [];
   if (manifest.length === 0) {
-    manifestHtml = `<div class="sub muted">no manifest entries</div>`;
+    manifestHtml = `<div class="sub muted">No source metadata yet.</div>`;
   } else {
     const mRows = manifest.map(e =>
       `<tr>
@@ -14668,7 +14668,7 @@ RENDER.context_lobe = async () => {
         <td>${esc(e.asof || "—")}</td>
       </tr>`
     ).join("");
-    manifestHtml = `<table><thead><tr><th>Artifact</th><th>Path</th><th>Tier</th><th>Horizon role</th><th>Freshness</th><th>As-of</th></tr></thead>
+    manifestHtml = `<table><thead><tr><th>Source</th><th>Path</th><th>Tier</th><th>Horizon</th><th>Freshness</th><th>As of</th></tr></thead>
       <tbody>${mRows}</tbody></table>`;
   }
 
@@ -14718,8 +14718,7 @@ RENDER.context_lobe = async () => {
     ${gapHtml}
     <div class="section">Lobes</div>
     <div class="card">${lobesHtml}</div>
-    <div class="section">Lobe Manifest <span class="cnt">${manifest.length}</span></div>
-    <div class="card">${manifestHtml}</div>
+    <details class="card tech-details"><summary>Data sources <span class="cnt">${manifest.length}</span></summary><div style="margin-top:10px">${manifestHtml}</div></details>
     <div class="section">Candidate Context <span class="cnt">${d.n_candidates_total || 0}</span></div>
     <div class="card">${candidatesHtml}</div>`;
 };
