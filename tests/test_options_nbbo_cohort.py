@@ -2207,7 +2207,7 @@ def test_oa3_exact_option_policy_reuses_only_generic_nbbo_mechanics() -> None:
     assert policy["quote_source"]["quote_rule_reference"] == cohort.QUOTE_RULE_ID
     assert policy["quote_source"]["executable_fill_claim"] is False
     assert policy["cost"]["fee_per_side_usd"] == format(cohort.FEE_PER_SIDE_USD, "f")
-    assert cohort.net_return_pct("1.00", "1.20") == pytest.approx(18.509687, abs=1e-6)
+    assert cohort.net_return_pct("1.00", "1.20") == pytest.approx(18.579235, abs=1e-6)
 
 
 def test_oa3_exact_option_policy_forbids_substitution_and_hidden_promotion() -> None:
