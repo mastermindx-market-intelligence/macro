@@ -711,9 +711,14 @@ Figma frame/node identifiers in its migration packet.
 
 Paper may be used as the high-velocity agentic composition/code round-trip surface when its
 MCP is available, but Paper output is governed by the same repository vocabulary and packet
-law. No Paper document, Figma file, generated screenshot, or exported code may establish a
-parallel token root/component registry. A design-tool-only primitive is provisional until it
-is accepted into the repository system and editable projection together.
+law. The current governed Paper projection is **Mastermind Product Design System — Agentic Lab**
+(file `01M2WGNCX9475G79JRKJTCM08P`), seeded from the repository vocabulary with dark/light
+theme-prefixed palette tokens plus the shared spacing, radius, typography and breakpoint scales.
+Theme prefixes are deliberate while Paper lacks a repository-equivalent multi-mode token contract;
+they must not be mistaken for a second theme authority. No Paper document, Figma file, generated
+screenshot, or exported code may establish a parallel token root/component registry. A
+design-tool-only primitive is provisional until it is accepted into the repository system and
+editable projection together.
 
 ---
 
