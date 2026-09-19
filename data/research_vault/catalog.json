@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T21:11:58.164181+00:00",
-  "count": 2454,
+  "generated_at": "2026-09-19T21:27:03.118601+00:00",
+  "count": 2455,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1712,6 +1712,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rnec0kxuxe3-50dd91",
+      "title": "UK Weekly Kickstart The UK's Resilience Is Being Tested",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:00Z",
+      "summary_points": [
+        "UK Inflation & Energy Drivers: Headline CPI at 3.1% (Aug) driven by energy/services; energy prices surge due to Middle East disruptions, lifting Brent/WTI forecasts to $85-80/bbl for Dec2026-2027, with inflation peaking at 3.9% early 2024.",
+        "FTSE 100 Structural Resilience: Lower volatility than UK Domestic during energy shocks (Exhibit 1); heavily weighted in Banks (12.1%) and Energy (10.1%), reducing energy sensitivity for portfolios.",
+        "Critical Valuation Overextension: FTSE 350 EV/Sales at 80th percentile (1.6), significantly above historical average (68th percentile), signaling overvaluation despite 12m forward P/E (12.4) below median.",
+        "Active Fund Outflow Crisis: Global investors show net outflows into UK equities (Exhibit 33), with active fund flows negative for 3 months while passive inflows insufficient to offset, indicating structural underperformance.",
+        "Growth-Value Premium Compression: MSCI UK Growth Value premium declining from 140% to 60% (2025), signaling imminent rotation from growth to value in UK equity positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
