@@ -552,10 +552,6 @@
    "sector": "Financial",
    "members": [
     {
-     "ticker": "UMBF",
-     "name": "UMB Financial Corp"
-    },
-    {
      "ticker": "ONB",
      "name": "Old National Bancorp"
     },
@@ -714,6 +710,10 @@
     {
      "ticker": "BANC",
      "name": "Banc of California Inc"
+    },
+    {
+     "ticker": "UMBF",
+     "name": "UMB Financial Corp"
     },
     {
      "ticker": "TRMK",
@@ -1388,6 +1388,10 @@
      "name": "Virginia National Bankshares Corp"
     },
     {
+     "ticker": "BCBP",
+     "name": "BCB Bancorp Inc (NJ)"
+    },
+    {
      "ticker": "EFSI",
      "name": "Eagle Financial Services Inc"
     },
@@ -1462,10 +1466,6 @@
     {
      "ticker": "FINW",
      "name": "FinWise Bancorp"
-    },
-    {
-     "ticker": "BCBP",
-     "name": "BCB Bancorp Inc (NJ)"
     },
     {
      "ticker": "SRBK",
@@ -1610,12 +1610,12 @@
      "name": "Tango Therapeutics Inc"
     },
     {
-     "ticker": "ELVN",
-     "name": "Enliven Therapeutics Inc"
-    },
-    {
      "ticker": "TARS",
      "name": "Tarsus Pharmaceuticals Inc"
+    },
+    {
+     "ticker": "ELVN",
+     "name": "Enliven Therapeutics Inc"
     },
     {
      "ticker": "RCUS",
@@ -4696,6 +4696,10 @@
      "name": "Tandem Diabetes Care Inc"
     },
     {
+     "ticker": "BBNX",
+     "name": "Beta Bionics Inc"
+    },
+    {
      "ticker": "AORT",
      "name": "Artivion Inc"
     },
@@ -4714,10 +4718,6 @@
     {
      "ticker": "ENOV",
      "name": "Enovis Corp"
-    },
-    {
-     "ticker": "BBNX",
-     "name": "Beta Bionics Inc"
     },
     {
      "ticker": "CBLL",
@@ -5408,11 +5408,11 @@
      "name": "Marzetti Co"
     },
     {
-     "ticker": "CENTA",
+     "ticker": "CENT",
      "name": "Central Garden & Pet Co"
     },
     {
-     "ticker": "CENT",
+     "ticker": "CENTA",
      "name": "Central Garden & Pet Co"
     },
     {
@@ -7922,6 +7922,10 @@
      "name": "Tecnoglass Holdings Inc"
     },
     {
+     "ticker": "ELE",
+     "name": "Elemental Royalty Corp"
+    },
+    {
      "ticker": "IE",
      "name": "Ivanhoe Electric Inc"
     },
@@ -7936,10 +7940,6 @@
     {
      "ticker": "SLVM",
      "name": "Sylvamo Corp"
-    },
-    {
-     "ticker": "ELE",
-     "name": "Elemental Royalty Corp"
     },
     {
      "ticker": "FMC",
@@ -8654,16 +8654,16 @@
      "name": "Figs Inc"
     },
     {
-     "ticker": "UA",
-     "name": "Under Armour Inc"
-    },
-    {
      "ticker": "BKE",
      "name": "Buckle Inc"
     },
     {
      "ticker": "LCII",
      "name": "LCI Industries"
+    },
+    {
+     "ticker": "UA",
+     "name": "Under Armour Inc"
     },
     {
      "ticker": "UAA",
@@ -8970,12 +8970,12 @@
      "name": "Weyco Group Inc"
     },
     {
-     "ticker": "HVT",
-     "name": "Haverty Furniture Cos. Inc"
-    },
-    {
      "ticker": "OXM",
      "name": "Oxford Industries Inc"
+    },
+    {
+     "ticker": "HVT",
+     "name": "Haverty Furniture Cos. Inc"
     },
     {
      "ticker": "HBB",
@@ -9248,11 +9248,11 @@
      "name": "Newell Brands Inc"
     },
     {
-     "ticker": "CENTA",
+     "ticker": "CENT",
      "name": "Central Garden & Pet Co"
     },
     {
-     "ticker": "CENT",
+     "ticker": "CENTA",
      "name": "Central Garden & Pet Co"
     },
     {
@@ -9836,10 +9836,6 @@
      "name": "Hut 8 Corp"
     },
     {
-     "ticker": "UMBF",
-     "name": "UMB Financial Corp"
-    },
-    {
      "ticker": "ONB",
      "name": "Old National Bancorp"
     },
@@ -10176,6 +10172,10 @@
      "name": "SiriusPoint Ltd"
     },
     {
+     "ticker": "UMBF",
+     "name": "UMB Financial Corp"
+    },
+    {
      "ticker": "TRMK",
      "name": "Trustmark Corp"
     },
@@ -10240,12 +10240,12 @@
      "name": "Bank of N T Butterfield & Son Ltd"
     },
     {
-     "ticker": "AGM",
-     "name": "Federal Agricultural Mortgage Corp"
-    },
-    {
      "ticker": "HCI",
      "name": "HCI Group Inc"
+    },
+    {
+     "ticker": "AGM",
+     "name": "Federal Agricultural Mortgage Corp"
     },
     {
      "ticker": "NWBI",
@@ -10684,12 +10684,12 @@
      "name": "Washington Trust Bancorp Inc"
     },
     {
-     "ticker": "CWBC",
-     "name": "Community West Bancshares"
-    },
-    {
      "ticker": "DGICA",
      "name": "Donegal Group Inc"
+    },
+    {
+     "ticker": "CWBC",
+     "name": "Community West Bancshares"
     },
     {
      "ticker": "PFIS",
@@ -10756,10 +10756,6 @@
      "name": "First Business Financial Services Inc"
     },
     {
-     "ticker": "CRD-A",
-     "name": "Crawford & Co"
-    },
-    {
      "ticker": "UNTY",
      "name": "Unity Bancorp Inc"
     },
@@ -10770,6 +10766,10 @@
     {
      "ticker": "SFST",
      "name": "Southern First Bancshares Inc"
+    },
+    {
+     "ticker": "CRD-A",
+     "name": "Crawford & Co"
     },
     {
      "ticker": "BWB",
@@ -11116,6 +11116,10 @@
      "name": "Virginia National Bankshares Corp"
     },
     {
+     "ticker": "BCBP",
+     "name": "BCB Bancorp Inc (NJ)"
+    },
+    {
      "ticker": "EFSI",
      "name": "Eagle Financial Services Inc"
     },
@@ -11230,10 +11234,6 @@
     {
      "ticker": "JRVR",
      "name": "James River Group Holdings Inc"
-    },
-    {
-     "ticker": "BCBP",
-     "name": "BCB Bancorp Inc (NJ)"
     },
     {
      "ticker": "SRBK",
@@ -11498,6 +11498,10 @@
      "name": "Tango Therapeutics Inc"
     },
     {
+     "ticker": "TARS",
+     "name": "Tarsus Pharmaceuticals Inc"
+    },
+    {
      "ticker": "OPCH",
      "name": "Option Care Health Inc"
     },
@@ -11516,10 +11520,6 @@
     {
      "ticker": "NHC",
      "name": "National Healthcare Corp"
-    },
-    {
-     "ticker": "TARS",
-     "name": "Tarsus Pharmaceuticals Inc"
     },
     {
      "ticker": "RCUS",
@@ -12002,6 +12002,10 @@
      "name": "Tandem Diabetes Care Inc"
     },
     {
+     "ticker": "BBNX",
+     "name": "Beta Bionics Inc"
+    },
+    {
      "ticker": "AORT",
      "name": "Artivion Inc"
     },
@@ -12072,10 +12076,6 @@
     {
      "ticker": "ABUS",
      "name": "Arbutus Biopharma Corp"
-    },
-    {
-     "ticker": "BBNX",
-     "name": "Beta Bionics Inc"
     },
     {
      "ticker": "PCRX",
@@ -13588,12 +13588,12 @@
      "name": "Bluelinx Hldgs Inc"
     },
     {
-     "ticker": "KELYA",
-     "name": "Kelly Services Inc"
-    },
-    {
      "ticker": "CMDB",
      "name": "Costamare Bulkers Holdings Ltd"
+    },
+    {
+     "ticker": "KELYA",
+     "name": "Kelly Services Inc"
     },
     {
      "ticker": "IIIN",

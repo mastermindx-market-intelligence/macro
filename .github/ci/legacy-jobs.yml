@@ -1343,6 +1343,18 @@ jobs:
       - "tests/test_valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "tests/test_valuation_assumptions.py"
+      # W7B F06-5 (MO-PAID-020): ticker<->CIK collision census + ONE bounded renderer repair admitted and shipped (H1 — raw-token leak in Evidence & receipts panel). The pure classifiers live in engine/market_ontology/ticker_cik_census.py (no pandas import at module top); the CLI lives in scripts/ticker_cik_collision_census.py (parquet I/O here, never in the engine); the suite is RED-first with synthetic fixtures per class plus a live-data invariant test that pins only invariants (C1 (a)-(e) == 0; every current store symbol either resolves or fails with a closed-enum class) and prints dated receipt lines.
+      - "engine/market_ontology/ticker_cik_census.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "scripts/ticker_cik_collision_census.py"
+      - "tests/test_ticker_cik_collision_census.py"
+      - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "tests/test_valuation_event_bridge.py"
       # china S1 archetype test wired into conviction-profile (Meta-CEO A ruling
@@ -1827,6 +1839,18 @@ jobs:
           tests/test_valuation_assumptions.py
           tests/test_valuation_event_bridge.py
           tests/test_china_archetype_d_s1.py -q
+      # W7B F06-5 (MO-PAID-020) ticker<->CIK collision census (MO-B). The
+      # classifier is a pure function over list-of-dict records (no pandas at
+      # module top per R5); the live-data test pins invariants only and prints
+      # dated receipt lines; the C5 renderer-robustness test projects the two
+      # committed security_state goldens through build_security_state and
+      # asserts no unmapped-identity warnings + no raw-token leakage. Hermetic:
+      # tmp_path fixtures + the committed data/reference/*.parquet when
+      # present; the live-data test skips with a named reason otherwise. Own
+      # step per this job's precedent — a step is the masking unit (run_ci_pack
+      # returns on the first non-zero step).
+      - name: ticker<->CIK collision census + C5 renderer robustness (W7B F06-5)
+        run: python -m pytest tests/test_ticker_cik_collision_census.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -2504,6 +2528,7 @@ jobs:
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
+      - "site/live/quotes.json"
       - "site/darkpool_eod.json"
       - "site/data/**"
       - "site/factordata/**"
@@ -2522,6 +2547,12 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # MO-B F01-1 morning edition (am_edition.v1) 2026-09-19 (contract-delta)
+      - "templates/am_edition.html.j2"
+      - "scripts/build_am_edition.py"
+      - "scripts/capture_am_edition_evidence.py"
+      - "tests/test_am_edition_page.py"
+      - "tests/test_am_edition_producer.py"
       # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
       # source-bound help directory now also validates the public
       # glossary page against this template.
@@ -2662,6 +2693,8 @@ jobs:
         run: python -m pytest tests/test_build_options_prophet.py -q
       - name: private operator-reviewed Options Issue Desk (R6.2-A)
         run: python -m pytest tests/test_options_issue_desk.py tests/test_options_issue_desk_api.py -q
+      - name: morning edition page + producer (MO-B F01-1)
+        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py -q
 
   cycle-grading-stats:
     if: ${{ false }}
@@ -3571,6 +3604,29 @@ jobs:
           tests/test_compile_capital_structure_registration_lifecycles.py
           tests/test_covenant_terms.py
           tests/test_compile_capital_structure_covenant_terms.py -q
+
+  covenant-headroom:
+    if: ${{ false }}
+    gate: code
+    # B-F09-13 (MO-PAID-062 slice 2): zero-authority covenant headroom
+    # view-model for the one extracted issuer. Pure engine + closed-set
+    # defenses (REFUSALS, COVENANT_METRIC_MAP, _NO_EXTRAPOLATION_KEYS,
+    # _ZERO_AUTHORITY_KEYS). This legacy job is disabled by `if: ${{ false }}`;
+    # the trusted executor packs run the test on pull requests instead. Same
+    # tmp_path fixture discipline as board-shadow-substrate: no committed
+    # data/site moves.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # contract-delta 2026-09-19 (seat main update d6c4277c): lib/config.py on main imports yaml at
+        # module import (ModuleNotFoundError: No module named 'yaml' at lib/config.py:8 on ci-pack-10);
+        # pyyaml added to this job's own install line, nothing else changed.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: covenant headroom engine — closed refusal set, zero authority, no extrapolation
+        run: python -m pytest tests/test_covenant_headroom.py -q
 
   stock-seasonality:
     if: ${{ false }}
@@ -5506,6 +5562,29 @@ jobs:
       - name: append-only law mutation + negative controls
         run: python -m pytest tests/test_append_only_assertions.py -q
 
+  research-screener:
+    if: ${{ false }}
+    gate: code
+    # B-F06-4 research-priority screener. Pure compiler + Jinja producer +
+    # template. No data/ or nightly artifact required. Paths cover the three
+    # packet owners so a change to any of them selects this job; no waiver.
+    paths:
+      - engine/research_screener.py
+      - scripts/build_research_screener.py
+      - templates/research_screener.html.j2
+      - templates/research_screener.css
+      - tests/test_research_screener.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2 markupsafe
+      - name: research screener unit tests
+        run: python -m pytest tests/test_research_screener.py -q
+
   leader-radar-unit:
     if: ${{ false }}
     gate: code
@@ -7143,6 +7222,24 @@ jobs:
     #                             empty membership vs unavailable, truncation,
     #                             fail-closed network/non-2xx, hostile no-fallback
     #                             when token or user_id is missing.
+    #   test_account_actions.py — the FOUR account-panel actions (app/account_actions.py):
+    #                             POST /api/account/{password,email,signout-everywhere,delete},
+    #                             which templates/account.js had been calling with no handler
+    #                             anywhere in app/ (and cross-origin at that, so every control
+    #                             on the panel was dead). Guards: the caller's own token is the
+    #                             only credential that acts (never the service-role key, never
+    #                             /auth/v1/admin/*), the deletion route is an INTAKE that files
+    #                             one RLS-scoped row and can never report a receipt the store
+    #                             did not echo, the 409 read-back, the bounded/rate-limited
+    #                             upstream, a plain EN+ZH sentence on every non-2xx, and the
+    #                             no-dead-handler contract — every api('/api/account…') call in
+    #                             the panel resolves to a registered route and every rendered
+    #                             data-act has an onClick case. Driven through the raw ASGI
+    #                             callable, so this job's install line needs no httpx.
+    #   tests/js/account_get_token.test.mjs — Node replica of getToken() on www:
+    #                             MDXAuth.client() is a Promise (theme.js getSupabaseClient);
+    #                             getToken must await it then auth.getSession(), and a
+    #                             rejecting client must yield null rather than throw.
     #   test_shared_pref_atomics.py — the SAME user_metadata keys, from the browser side:
     #                             templates/theme.js must write the top-level `theme` /
     #                             `theme_auto` / `lang` atomics and never the nested `prefs`
@@ -7177,6 +7274,10 @@ jobs:
         run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
+      - name: account actions (app/account_actions.py)
+        run: python -m pytest tests/test_account_actions.py -v
+      - name: account getToken client identity (templates/account.js)
+        run: node --test tests/js/account_get_token.test.mjs
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
