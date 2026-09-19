@@ -367,6 +367,12 @@ def test_template_does_not_nest_i18n_twins():
     bridge = html.split('id="va-event-bridge"', 1)[1].split("</p>", 1)[0]
     assert bridge.count('class="l-en"') == 1
     assert bridge.count('class="l-zh"') == 1
+    template = (ROOT / "templates" / "_valuation_assumptions.html.j2").read_text()
+    start = template.index("{% set _va_event_bridge")
+    source = template[start:template.index("</p>", start)]
+    assert "{{ t(" in source
+    assert 'class="l-en"' not in source
+    assert 'class="l-zh"' not in source
 
 
 def test_evidence_hosts_match_final_template_sentences_and_typography():
