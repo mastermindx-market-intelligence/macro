@@ -148,6 +148,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     {
                         "state": "ok",
                         "case_id": request["case_id"],
+                        "benchmark_version": request["benchmark_version"],
+                        "benchmark_contract_sha256": request["benchmark_contract_sha256"],
                         "source_content_sha256": request["source_content_sha256"],
                         "gold_contract_sha256": request["gold_contract_sha256"],
                         "prompt_sha256": request["prompt_sha256"],
@@ -179,6 +181,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "state": result["state"],
                         "case_id": result["case_id"],
                         "candidate_label": result["candidate_label"],
+                        "benchmark_version": result["benchmark_version"],
+                        "benchmark_contract_sha256": result["benchmark_contract_sha256"],
                         "overall_score": result["overall_score"],
                         "observation_present": result.get("observation") is not None,
                         "output": str(Path(args.output).expanduser()),
@@ -197,6 +201,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 {
                     "state": "ok",
                     "candidate_count": len(aggregate["candidates"]),
+                    "benchmark_version": aggregate["benchmark_version"],
+                    "benchmark_contract_sha256": aggregate["benchmark_contract_sha256"],
                     "case_set_sha256": aggregate["case_set_sha256"],
                     "output": str(Path(args.output).expanduser()),
                 },
