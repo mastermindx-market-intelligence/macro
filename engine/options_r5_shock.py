@@ -170,7 +170,7 @@ def build_spot_iv_shocks(
     if not root_key:
         raise ValueError("R5 root must be declared")
     frame_roots = set(greeks_df["root"].astype(str).str.upper())
-    if frame_roots != {root_key}:
+    if frame_roots and frame_roots != {root_key}:
         raise ValueError(
             f"R5 source must contain exactly root {root_key}; got {sorted(frame_roots)}"
         )
