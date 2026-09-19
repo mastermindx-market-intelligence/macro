@@ -736,3 +736,192 @@ def test_theme_scoring_refuses_three_of_six_before_any_aggregate_effect(monkeypa
     assert len(fingerprint_calls) == 2
     assert len(label_calls) == 1
     assert len(reco_calls) == 1
+
+
+def test_group_flow_exposes_separate_thematic_resolution_without_repricing_primary(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    extra_idx = idx.append(pd.DatetimeIndex([idx[-1] + pd.offsets.BDay(1)]))
+    x = np.arange(len(idx))
+    base = pd.DataFrame({t: 100 * (1.001 ** x) for t in "ABCDEF"}, index=idx)
+    extras = pd.DataFrame({
+        **{t: 50 * (1.002 ** np.arange(len(extra_idx))) for t in "GHI"},
+        "A": 900 * (1.01 ** np.arange(len(extra_idx))),
+    }, index=extra_idx)
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** np.arange(len(extra_idx)))}, index=extra_idx)
+    members = {"theme": _basket("Theme", "ABCDEFGHI")}
+    monkeypatch.setattr(gf, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(gf, "_closes", lambda: base)
+    monkeypatch.setattr(gf, "_basket_extras", lambda: extras)
+    monkeypatch.setattr(gf.store, "read", lambda g, n: spy if (g, n) == ("yahoo", "SPY") else None)
+
+    setup = gf._setup("us")
+
+    assert setup["closes"].loc[idx[-1], "A"] == base.loc[idx[-1], "A"]
+    assert setup["theme_closes"].loc[idx[-1], "A"] == extras.loc[idx[-1], "A"]
+    assert setup["theme_closes"].index.equals(idx)
+    assert setup["theme_closes"].iloc[-1].notna().sum() == 9
+
+
+def test_group_flow_thematic_resolution_keeps_fresher_primary(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    base = pd.DataFrame({t: 100 * (1.001 ** x) for t in "ABC"}, index=idx)
+    extras = pd.DataFrame({"A": 900 * (1.01 ** np.arange(160))}, index=idx[:160])
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** x)}, index=idx)
+    members = {"theme": _basket("Theme", "ABC")}
+    monkeypatch.setattr(gf, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(gf, "_closes", lambda: base)
+    monkeypatch.setattr(gf, "_basket_extras", lambda: extras)
+    monkeypatch.setattr(gf.store, "read", lambda g, n: spy if (g, n) == ("yahoo", "SPY") else None)
+
+    setup = gf._setup("us")
+
+    pd.testing.assert_series_equal(setup["theme_closes"]["A"], base["A"], check_names=False)
+    assert setup["theme_price_resolution"]["price_source"]["A"] == "primary_breadth"
+    assert setup["theme_price_resolution"]["selection_reason"]["A"] == "primary_fresher"
+
+
+def test_group_flow_basket_branch_uses_thematic_matrix(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    legacy = pd.DataFrame({"A": 100 * (1.001 ** x), "B": 100 * (1.002 ** x)}, index=idx)
+    thematic = legacy.assign(C=100 * (1.003 ** x))
+    members = {"theme": _basket("Theme", "ABC")}
+    bench = pd.Series(1.0005 ** x, index=idx)
+    monkeypatch.setattr(gf, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": legacy, "rets": legacy.pct_change(fill_method=None),
+        "theme_closes": thematic, "theme_rets": thematic.pct_change(fill_method=None),
+        "theme_price_resolution": {"authority": "measurement_only"},
+        "idx": idx, "bench": bench, "region": region, "observation": {"effective_as_of": str(idx[-1].date())},
+    })
+    monkeypatch.setattr(gf, "_pit_sector_frames", lambda *args, **kwargs: {})
+    monkeypatch.setattr(gf, "_load_meta", lambda: {"verdict": "display_only", "basket_confidence_cap": 0.55})
+    monkeypatch.setattr(gf, "_vix_regime", lambda cfg: {"vix": None, "pctile": None, "elevated": False})
+    monkeypatch.setattr(gf, "_cluster_map", lambda *args, **kwargs: None)
+    monkeypatch.setattr(gf, "prep_group", lambda *args, **kwargs: {"rs": pd.Series([0.0, 0.1])})
+    monkeypatch.setattr(gf, "fingerprint_at", lambda *args, **kwargs: {
+        "flow_score": 0.7, "stage": "emerging", "breadth": 0.8,
+        "cohesion": 0.5, "cohesion_chg": 0.1,
+    })
+    monkeypatch.setattr(gf, "_leadership", lambda *args, **kwargs: {
+        "top": [], "hhi": 0.2, "n": 3, "breadth": "broad",
+    })
+
+    out = gf.compute_group_flows({"min_history_d": 1})
+
+    assert out is not None
+    assert [row["id"] for row in out["baskets"]] == ["theme"]
+    assert out["baskets"][0]["n_members"] == 3
+    assert out["price_resolution"] == {"authority": "measurement_only"}
+
+
+def test_baskets_uses_whole_supplemental_series_without_primary_backfill(monkeypatch):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    primary = pd.DataFrame({
+        "A": 100 * (1.001 ** x), "B": 100 * (1.0005 ** x), "C": 100 * (0.9998 ** x),
+    }, index=idx)
+    supplemental = pd.DataFrame({"A": 400 * (1.002 ** np.arange(60))}, index=idx[-60:])
+    spy = pd.DataFrame({"close": 400 * (1.0008 ** x)}, index=idx)
+    members = {"theme": _basket("Theme", "ABC")}
+    monkeypatch.setattr(bk, "_membership", lambda: {"baskets": members})
+    monkeypatch.setattr(bk, "_closes", lambda: primary)
+    monkeypatch.setattr(bk, "_basket_extras", lambda: supplemental)
+    monkeypatch.setattr(bk, "_names_sectors", lambda: {t: (t, "Test") for t in "ABC"})
+    monkeypatch.setattr(bk.store, "read", lambda g, n: spy if (g, n) == ("yahoo", "SPY") else None)
+    captured = []
+    real_level = bk._ew_level
+    monkeypatch.setattr(bk, "_ew_level", lambda rets, members, idx: captured.append(rets.copy()) or real_level(rets, members, idx))
+
+    out = bk.compute_baskets()
+
+    assert out is not None
+    assert captured[0]["A"].iloc[:-59].isna().all()
+    assert out["price_resolution"]["price_source"]["A"] == "baskets_extras"
+    assert out["price_resolution"]["selection_reason"]["A"] == "tie_supplemental"
+
+
+def test_theme_scoring_uses_thematic_matrix_and_projects_resolution(monkeypatch):
+    _theme_compute_fixture(monkeypatch)
+    idx = pd.bdate_range("2025-01-02", periods=260)
+    x = np.arange(len(idx))
+    thematic = pd.DataFrame({
+        "A": 100 * (1.001 ** x), "B": 100 * (1.0007 ** x), "C": 100 * (1.0003 ** x),
+    }, index=idx)
+    legacy = thematic.copy()
+    legacy.loc[idx[-1], ["B", "C"]] = np.nan
+    bench = pd.Series(1.0005 ** x, index=idx)
+    members = {"theme": _basket("Theme", "ABC")}
+    resolution = {"authority": "measurement_only", "resolved_n": 3}
+    monkeypatch.setattr(ts.group_flow, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": legacy, "rets": legacy.pct_change(fill_method=None),
+        "theme_closes": thematic, "theme_rets": thematic.pct_change(fill_method=None),
+        "theme_price_resolution": resolution,
+        "idx": idx, "bench": bench, "region": region,
+        "observation": {"effective_as_of": idx[-1].strftime("%Y-%m-%d")},
+    })
+    monkeypatch.setattr(ts, "_label", lambda *args, **kwargs: "neutral")
+    monkeypatch.setattr(ts, "_reco", lambda *args, **kwargs: "hold")
+
+    out = ts.compute_theme_intel("us")
+
+    assert out is not None
+    assert [row["id"] for row in out["themes"]] == ["theme"]
+    assert out["themes"][0]["observation"]["observed_n"] == 3
+    assert out["price_resolution"] == resolution
+
+
+def test_group_flow_refuses_basket_below_population_floor_before_fingerprint(monkeypatch, capsys):
+    idx = pd.bdate_range("2025-01-02", periods=180)
+    x = np.arange(len(idx))
+    tickers = "ABCDEFGHI"
+    thematic = pd.DataFrame({
+        t: 100 * ((1.0004 + 0.00005 * k) ** x)
+        for k, t in enumerate(tickers)
+    }, index=idx)
+    thematic.loc[idx[-1], list("DEF")] = np.nan
+    members = {
+        "insufficient": _basket("Insufficient", "ABCDEF"),
+        "complete": _basket("Complete", "GHI"),
+    }
+    legacy = thematic[["A", "B", "C", "G", "H", "I"]].copy()
+    bench = pd.Series(1.0003 ** x, index=idx)
+    monkeypatch.setattr(gf, "_setup", lambda region="us": {
+        "mem": {"baskets": members}, "closes": legacy,
+        "rets": legacy.pct_change(fill_method=None),
+        "theme_closes": thematic, "theme_rets": thematic.pct_change(fill_method=None),
+        "theme_price_resolution": {"authority": "measurement_only"},
+        "idx": idx, "bench": bench, "region": region,
+        "observation": {"effective_as_of": idx[-1].strftime("%Y-%m-%d")},
+    })
+    monkeypatch.setattr(gf, "_pit_sector_frames", lambda *args, **kwargs: {})
+    monkeypatch.setattr(gf, "_load_meta", lambda: {
+        "verdict": "display_only", "basket_confidence_cap": 0.55,
+    })
+    monkeypatch.setattr(gf, "_vix_regime", lambda cfg: {
+        "vix": None, "pctile": None, "elevated": False,
+    })
+    monkeypatch.setattr(gf, "_cluster_map", lambda *args, **kwargs: None)
+    prep_calls = []
+    monkeypatch.setattr(gf, "prep_group", lambda *args, **kwargs:
+                        prep_calls.append(args) or {"rs": pd.Series([0.0, 0.1])})
+    monkeypatch.setattr(gf, "fingerprint_at", lambda *args, **kwargs: {
+        "flow_score": 0.7, "stage": "emerging", "breadth": 0.8,
+        "cohesion": 0.5, "cohesion_chg": 0.1,
+    })
+    monkeypatch.setattr(gf, "_leadership", lambda *args, **kwargs: {
+        "top": [], "hhi": 0.2, "n": 3, "breadth": "broad",
+    })
+
+    out = gf.compute_group_flows({"min_history_d": 1})
+
+    assert out is not None
+    assert [row["id"] for row in out["baskets"]] == ["complete"]
+    assert len(prep_calls) == 1
+    assert out["observation_refusals"][0]["basket_id"] == "insufficient"
+    refusal = out["observation_refusals"][0]["observation"]
+    assert refusal["observed_n"] == 3
+    assert refusal["configured_n"] == 6
+    assert refusal["coverage"] == 0.5
+    assert refusal["aggregate_eligible"] is False
+    assert "::warning title=group-flow-observation-coverage::" in capsys.readouterr().out

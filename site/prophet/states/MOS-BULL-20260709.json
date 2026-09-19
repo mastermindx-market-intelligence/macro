@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MOS-BULL-20260709",
-  "asof": "2026-09-12",
+  "asof": "2026-09-18",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 49.0,
-  "raw_confidence": 48.0,
-  "delta_vs_base": -11.0,
+  "management_confidence": 46.8,
+  "raw_confidence": 46.0,
+  "delta_vs_base": -13.2,
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 47.7,
-    "pace": 10.0,
-    "retention": 68.2,
+    "progress": 38.6,
+    "pace": 2.0,
+    "retention": 51.4,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.935,
-    "dist_to_t1_r": 0.565,
-    "dist_to_t2_r": 2.065,
-    "horizon_pct_used": 133.3,
-    "p1": 0.6234,
-    "p2": 0.3117,
+    "dist_to_stop_r": 1.705,
+    "dist_to_t1_r": 0.795,
+    "dist_to_t2_r": 2.295,
+    "horizon_pct_used": 146.7,
+    "p1": 0.4697,
+    "p2": 0.2348,
     "p3": null,
-    "move_r": 0.935,
+    "move_r": 0.705,
     "mfe_r": 1.37,
     "mae_r": -0.38
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-28",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333
+  "days_elapsed": 66,
+  "tau": 1.4667
 }

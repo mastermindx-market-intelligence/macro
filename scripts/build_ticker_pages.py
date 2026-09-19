@@ -2584,6 +2584,16 @@ def _build_valuation(blob: dict | None) -> list | None:
     return rows or None
 
 
+def _valuation_assumptions_view(blob: dict | None) -> dict | None:
+    """Passthrough read of valuation_scenario_controls.v1 written next to V1.
+
+    Lives after _build_valuation, outside the #6905 V1 helper cluster.
+    """
+    if not blob:
+        return None
+    return (blob.get("valuation_scenario") or {}).get("controls")
+
+
 def _build_earnings(blob: dict | None) -> dict | None:
     if not blob:
         return None
@@ -5768,6 +5778,8 @@ def build_page_context(
         index_chips.append({"en": "Russell 2000", "zh": "罗素2000"})
     hero["index_chips"] = index_chips or None
 
+    valuation_assumptions = _valuation_assumptions_view(blob)
+
     return {
         "meta": meta,
         "hero": hero,
@@ -5799,6 +5811,7 @@ def build_page_context(
         # Decision Spine. None for every listing whose blob carries no
         # security_state block — those pages render exactly as before.
         "security_state": build_security_state(blob),
+        "valuation_assumptions": valuation_assumptions,
         "news": news_section,
         "placeholders": {
             "analyst_targets": True,
