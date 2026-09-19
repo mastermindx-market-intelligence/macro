@@ -193,22 +193,22 @@
         {% set vs_read_en_text = "Today's price is below all three cases." %}
         {% set vs_read_zh_text = "当前股价低于全部三档情景。" %}
       {% elif vs_computable | length == 2 %}
-        {% set vs_read_en_text = "Today's price is below both computable cases." %}
-        {% set vs_read_zh_text = "当前股价低于两档可计算的情景。" %}
+        {% set vs_read_en_text = "Today's price is below both cases we could run." %}
+        {% set vs_read_zh_text = "当前股价低于两档已算出的情景。" %}
       {% else %}
-        {% set vs_read_en_text = "Today's price is below the computable case." %}
-        {% set vs_read_zh_text = "当前股价低于唯一可计算的情景。" %}
+        {% set vs_read_en_text = "Today's price is below the case we could run." %}
+        {% set vs_read_zh_text = "当前股价低于唯一已算出的情景。" %}
       {% endif %}
     {% elif vs_pv > vs_high %}
       {% if vs_computable | length == 3 %}
         {% set vs_read_en_text = "Today's price is above all three cases." %}
         {% set vs_read_zh_text = "当前股价高于全部三档情景。" %}
       {% elif vs_computable | length == 2 %}
-        {% set vs_read_en_text = "Today's price is above both computable cases." %}
-        {% set vs_read_zh_text = "当前股价高于两档可计算的情景。" %}
+        {% set vs_read_en_text = "Today's price is above both cases we could run." %}
+        {% set vs_read_zh_text = "当前股价高于两档已算出的情景。" %}
       {% else %}
-        {% set vs_read_en_text = "Today's price is above the computable case." %}
-        {% set vs_read_zh_text = "当前股价高于唯一可计算的情景。" %}
+        {% set vs_read_en_text = "Today's price is above the case we could run." %}
+        {% set vs_read_zh_text = "当前股价高于唯一已算出的情景。" %}
       {% endif %}
     {% elif vs_computable | length == 3 %}
       {% set vs_mid = vs_computable[1].per_share %}
@@ -245,8 +245,8 @@
         {% set vs_read_zh_text = "当前股价位于保守与乐观之间。" %}
       {% endif %}
     {% else %}
-      {% set vs_read_en_text = "Today's price sits near the computable case." %}
-      {% set vs_read_zh_text = "当前股价接近唯一可计算的情景。" %}
+      {% set vs_read_en_text = "Today's price sits near the case we could run." %}
+      {% set vs_read_zh_text = "当前股价接近唯一已算出的情景。" %}
     {% endif %}
     <p class="vs-lede" data-vs-read="1">{{ t(vs_read_en_text, vs_read_zh_text) }}</p>
   {% endif %}

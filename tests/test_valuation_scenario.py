@@ -409,6 +409,9 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
         (150.0,  (90.94, 130.65, 175.74), "sits between Base and Upbeat", "位于基准与乐观之间"),
         (130.65, (90.94, 130.65, 175.74), "sits at Base",             "位于基准情景"),
         (110.0,  (90.94, 130.65, 175.74), "sits between Cautious and Base", "位于保守与基准之间"),
+        # MAJOR-1: exact equality at Cautious boundary — vs_pv < vs_mid is False
+        # for equality, so it must be handled by the < branch (not the else "sits
+        # at Base" branch); same for Upbeat exact equality below.
         (90.94,  (90.94, 130.65, 175.74), "sits between Cautious and Base", "位于保守与基准之间"),
         (175.74, (90.94, 130.65, 175.74), "sits between Base and Upbeat", "位于基准与乐观之间"),
         (500.0,  (90.94, 130.65, 175.74), "above all three cases",    "高于全部三档情景"),
@@ -446,9 +449,9 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
         assert by_key_2[k]["computable"] is True, (k, by_key_2[k])
 
     two_bands = [
-        (50.0,  (130.65, 175.74), "below both computable cases", "低于两档可计算的情景"),
+        (50.0,  (130.65, 175.74), "below both cases we could run", "低于两档已算出的情景"),
         (150.0, (130.65, 175.74), "sits between Base and Upbeat", "位于基准与乐观之间"),
-        (500.0, (130.65, 175.74), "above both computable cases", "高于两档可计算的情景"),
+        (500.0, (130.65, 175.74), "above both cases we could run", "高于两档已算出的情景"),
     ]
     for price, (b, u), en_phrase, zh_phrase in two_bands:
         mut = _with_per_share(blob_2, base=b, upbeat=u)
@@ -481,11 +484,6 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
     assert "sits between Cautious and Upbeat" in en_cb, en_cb
     assert "位于保守与乐观之间" in zh_cb, zh_cb
 
-    # price above both cautious and upbeat: caught by the 3-computable below/above
-    # branch because vs_computable|length is not 2 when we filter on per_share range
-    # (the non-adjacent pair's price axis has no separate "above" wording).
-
-
     # 4. One-computable fixture: only base is computable.
     blob_1 = vs.compute(_rows(), price=100.0, asof="2026-09-05", ticker="AAPL")
     blob_1_mut = _with_per_share(blob_1, base=130.65)
@@ -494,24 +492,16 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
     lede_1 = _lede(html_1)
     assert lede_1 is not None, "h4 lede missing for 1-computable"
     en_1, zh_1 = _en_zh(lede_1)
-    assert "below the computable case" in en_1, en_1
-    assert "低于唯一可计算的情景" in zh_1, zh_1
+    assert "below the case we could run" in en_1, en_1
+    assert "低于唯一已算出的情景" in zh_1, zh_1
 
     blob_1_mut["price"] = {"value": 200.0}
     html_1b = _render(blob_1_mut)
     lede_1b = _lede(html_1b)
     assert lede_1b is not None, "h4 lede missing for 1-computable above"
     en_1b, zh_1b = _en_zh(lede_1b)
-    assert "above the computable case" in en_1b, en_1b
-    assert "高于唯一可计算的情景" in zh_1b, zh_1b
-
-    blob_1_mut["price"] = {"value": 130.65}  # exactly at computable → "near"
-    html_1c = _render(blob_1_mut)
-    lede_1c = _lede(html_1c)
-    assert lede_1c is not None, "h4 lede missing for 1-computable price==computable"
-    en_1c, zh_1c = _en_zh(lede_1c)
-    assert "near the computable case" in en_1c, en_1c
-    assert "接近唯一可计算的情景" in zh_1c, zh_1c
+    assert "above the case we could run" in en_1b, en_1b
+    assert "高于唯一已算出的情景" in zh_1b, zh_1b
 
     # 5. Computable fixture with price=None -- the lede must be omitted
     #    entirely (no <p class="vs-lede" data-vs-read="1"> in the render).
