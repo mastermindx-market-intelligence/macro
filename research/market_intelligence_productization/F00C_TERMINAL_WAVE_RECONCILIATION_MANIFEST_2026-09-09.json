@@ -148,7 +148,7 @@
         "supabase/migrations/0012_thesis_objects.sql"
       ],
       "next_bounded_child": "Vocabulary is previous_version (do not add amended_from). Residual is live signed-in create/revise proof. #577 is a different child.",
-      "residual": "The shipped store supersedes by a previous_version link on an immutable version row; the token amended_from appears nowhere in the Terminal tree, so the acceptance sentence is not literally satisfied."
+      "residual": "Signed-in create/revise proof outstanding. The shipped store supersedes by a previous_version link on an immutable version row — that IS the accepted vocabulary (Sol: never regresses to amended_from); Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-051",
@@ -287,7 +287,7 @@
         "terminal/lib/eventImpact.ts"
       ],
       "next_bounded_child": "Proof-only: signed-in /api/event-impact + /portfolio readback. Schema/mapping/invalidation are already shipped; do not create a second event-impact object.",
-      "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable. That invalidation element was part of the ONE child MO-PAID-028 carried at the base; MO-PAID-028's sentence is met and its child is empty, so this row now owns the child that would ship it."
+      "residual": "Signed-in /api/event-impact + /portfolio readback proof outstanding. Schema, mapping and the F08 §9 invalidation element are already shipped (terminal#522 68b0d00a + terminal#576 45a0e78e per the ledger); Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     }
   ],
   "single_writer_convergence_2026_09_19": {
@@ -520,6 +520,7 @@
       "MO-DELTA-042"
     ],
     "ledger_sha_source": "origin/main after af617506",
-    "rows_note": "MO-DELTA-014 disposition NOT_SATISFIED->SATISFIED with residual (Sol ruling; ledger BUILT_NOT_PROVEN); MO-PAID-046 and MO-PAID-083 ledger real_producer cells gained the manifest producer sha in an append inside the cell (see PR body); no other ledger byte changed."
+    "rows_note": "MO-DELTA-014 disposition NOT_SATISFIED->SATISFIED with residual (Sol ruling; ledger BUILT_NOT_PROVEN); MO-PAID-046 and MO-PAID-083 ledger real_producer cells gained the manifest producer sha in an append inside the cell (see PR body); no other ledger byte changed.",
+    "round2": "2026-09-19 ~12:00Z after Grok review h_f00c_rec_rv1: MO-DELTA-042 and MO-PAID-046 residuals rewritten to the signed-in-proof form (their old text claimed an unshipped invalidation field / a not-literally-satisfied sentence, contradicting the mirrored child); five unrelated seat draft records removed from the PR."
   }
 }
