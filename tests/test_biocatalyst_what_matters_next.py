@@ -491,3 +491,105 @@ def test_wmn_detail_requires_issuer_disambiguation_only_when_event_has_multiple_
             inputs, generation_id="G", event_fact_ref=event["event_id"], issuer_id="ISS:US-XNAS-WRONG",
             evaluation_cutoff=CUTOFF, anchor_date=ANCHOR,
         )
+
+
+def test_registry_milestone_composition_preserves_owner_identity_and_refuses_sponsor_promotion() -> None:
+    from engine.biocatalyst.catalyst_events import project_trial_milestones
+    from engine.biocatalyst.what_matters_next import compose_registry_milestone_rows
+
+    projected = project_trial_milestones(
+        trials=[{
+            "nct_id": "NCT00000001",
+            "title": "Synthetic trial",
+            "brief_title": "Synthetic trial",
+            "status": "RECRUITING",
+            "study_type": "INTERVENTIONAL",
+            "phases": ["PHASE2"],
+            "sponsor": {"name": "Synthetic Sponsor"},
+            "conditions": ["Synthetic condition"],
+            "enrollment": {"count": 100, "type": "ESTIMATED"},
+            "dates": {
+                "start": None,
+                "primary_completion": {"date": "2026-09-20", "type": "ESTIMATED"},
+                "completion": None,
+            },
+            "updated_at": "2026-09-01",
+            "retrieved_at": "2026-09-06T10:00:00Z",
+        }],
+        anchor_date=date(2026, 9, 6),
+        horizon_days=None,
+        evidence_by_nct={
+            "NCT00000001": {
+                "url": "https://clinicaltrials.gov/study/NCT00000001",
+                "coverage": "current_only",
+            }
+        },
+    )
+    event = projected.events[0].as_dict()
+    event["event_revision_ref"] = "trial_snapshot_NCT00000001_revision1"
+    row = compose_registry_milestone_rows(
+        [event],
+        source_health="current",
+        evaluation_cutoff=CUTOFF,
+        anchor_date=ANCHOR,
+    )[0]
+    assert row["event_fact_ref"] == "nct:NCT00000001:primary_completion"
+    assert row["event_family"] == "registry_primary_completion"
+    assert row["event_revision_ref"] == "trial_snapshot_NCT00000001_revision1"
+    assert row["occurrence"] == "uncorroborated"
+    assert row["timing"]["source_class"] == "registry_schedule"
+    assert row["issuer"]["state"] == "unresolved"
+    assert row["issuer"]["issuer_id"] is None
+    assert row["links"]["stock_research"] == []
+    assert row["research_priority"]["lane"] == "RECONCILE"
+    assert row["research_priority"]["primary_reason"] == "IDENTITY_UNRESOLVED"
+
+
+def test_registry_family_coverage_is_derived_from_same_generation_rows() -> None:
+    from engine.biocatalyst.catalyst_events import project_trial_milestones
+
+    event = _event()
+    inputs = _wmn_inputs(event, _resolved_identity(event))
+    projected = project_trial_milestones(
+        trials=[{
+            "nct_id": "NCT00000001",
+            "title": "Synthetic trial",
+            "brief_title": "Synthetic trial",
+            "status": "RECRUITING",
+            "study_type": "INTERVENTIONAL",
+            "phases": ["PHASE2"],
+            "sponsor": None,
+            "conditions": [],
+            "enrollment": None,
+            "dates": {
+                "start": None,
+                "primary_completion": {"date": "2026-10", "type": "ESTIMATED"},
+                "completion": None,
+            },
+            "updated_at": "2026-09-01",
+            "retrieved_at": "2026-09-06T10:00:00Z",
+        }],
+        anchor_date=date(2026, 9, 6),
+        horizon_days=None,
+    )
+    registry = []
+    for item in projected.events:
+        raw = item.as_dict()
+        raw["event_revision_ref"] = "trial_snapshot_NCT00000001_revision1"
+        registry.append(raw)
+    model = build_what_matters_next(
+        inputs,
+        generation_id="gen-registry",
+        query={"view": "reconcile", "limit": 50},
+        evaluation_cutoff=CUTOFF,
+        anchor_date=ANCHOR,
+        registry_events=registry,
+    )
+    assert model["coverage"]["source_event_count"] == 2
+    assert model["coverage"]["family_states"]["registry_primary_completion"] == {
+        "declared_scope": "committed_trial_projection:current_generation",
+        "observed_count": 1,
+        "state": "supported",
+    }
+    assert model["coverage"]["family_states"]["registry_study_completion"]["observed_count"] == 0
+    assert any(row["event_family"] == "registry_primary_completion" for row in model["rows"])

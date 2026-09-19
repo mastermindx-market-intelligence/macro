@@ -217,7 +217,7 @@ def test_biocatalyst_client_uses_authenticated_source_fact_pages_and_current_dos
         "pdufa",
         "approval",
     ):
-        assert forbidden not in js.lower()
+        assert forbidden not in legacy_js.lower()
 
 
 def test_biocatalyst_assets_have_responsive_motion_and_focus_guards():
@@ -828,3 +828,22 @@ def test_biocatalyst_wmn_trial_detail_stays_generation_bound_and_reuses_trial_in
     assert "openInspector(" in bridge
     assert "showDetail(detail, null, null)" in bridge
 
+
+def test_biocatalyst_wmn_uses_frozen_research_lane_copy_not_internal_act_now_label():
+    html = _render()
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+
+    assert 'value="ACT_NOW" data-label-en="Review soon" data-label-zh="近期核查"' in html
+    assert "ACT NOW</option>" not in html
+    for token in (
+        "ACT_NOW:['Review soon','近期核查']",
+        "RECONCILE:['Needs review','需要核实']",
+        "RESEARCH_NEXT:['Research next','后续研究']",
+        "MONITOR:['Monitor','持续关注']",
+        "The scheduled window is entirely within the next 7 calendar days. Check its evidence.",
+        "Resolve the highlighted source, timing or identity gap before relying on this record.",
+        "This window overlaps the next 90 calendar days; its full timing precision remains shown.",
+        "A later schedule or resolved event history; this is not a return forecast.",
+    ):
+        assert token in js
+    assert "Act now — research" not in js

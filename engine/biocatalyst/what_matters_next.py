@@ -8,7 +8,7 @@ probability, materiality, historical-response or incorporation estimates.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 from urllib.parse import quote
 
 from engine.biocatalyst.company_event_adapter import project_company_event_input
@@ -248,6 +248,156 @@ def compose_company_event_rows(
     if set(row) != _ROW_KEYS:
         raise AssertionError("WMN row contract drift")
     return [row]
+
+
+_REGISTRY_KIND_FAMILY = {
+    "primary_completion": "registry_primary_completion",
+    "completion": "registry_study_completion",
+}
+_REGISTRY_EVENT_KEYS = {
+    "event_id", "nct_id", "kind", "trial", "milestone", "timing",
+    "trial_status", "issuer", "revision", "evidence", "event_revision_ref",
+}
+
+
+def compose_registry_milestone_rows(
+    registry_events: Sequence[Mapping[str, Any]],
+    *,
+    source_health: str,
+    evaluation_cutoff: object,
+    anchor_date: object,
+) -> list[dict[str, Any]]:
+    """Compose current-generation Trial Milestone owner rows for WMN.
+
+    The events are the existing project_trial_milestones output plus the
+    current trial_snapshot.v1 snapshot id as event_revision_ref. The owner
+    event id is retained verbatim. Registry sponsor/ticker annotations are
+    deliberately ignored here: without an admitted corporate identity
+    relation, the WMN issuer remains unresolved.
+    """
+    if isinstance(registry_events, (str, bytes)) or not isinstance(registry_events, Sequence):
+        raise ContractError("registry milestone events must be a bounded sequence")
+    if len(registry_events) > 200_000:
+        raise ContractError("registry milestone events too large")
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for raw in registry_events:
+        if not isinstance(raw, Mapping) or set(raw) != _REGISTRY_EVENT_KEYS:
+            raise ContractError("registry milestone event shape invalid")
+        event_ref = raw.get("event_id")
+        nct_id = raw.get("nct_id")
+        kind = raw.get("kind")
+        if (
+            not isinstance(event_ref, str)
+            or not isinstance(nct_id, str)
+            or kind not in _REGISTRY_KIND_FAMILY
+            or event_ref != f"nct:{nct_id}:{kind}"
+            or event_ref in seen
+        ):
+            raise ContractError("registry milestone event identity invalid")
+        seen.add(event_ref)
+        revision_ref = raw.get("event_revision_ref")
+        if not isinstance(revision_ref, str) or not revision_ref.startswith("trial_snapshot_"):
+            raise ContractError("registry milestone revision ref invalid")
+        milestone = raw.get("milestone")
+        revision = raw.get("revision")
+        evidence = raw.get("evidence")
+        if not isinstance(milestone, Mapping) or not isinstance(revision, Mapping):
+            raise ContractError("registry milestone owner blocks invalid")
+        lower = milestone.get("interval_start")
+        upper = milestone.get("interval_end")
+        if lower is not None and not isinstance(lower, str):
+            raise ContractError("registry milestone lower_date invalid")
+        if upper is not None and not isinstance(upper, str):
+            raise ContractError("registry milestone upper_date invalid")
+        latest = revision.get("latest")
+        last_material_revision_known_at = (
+            latest.get("observed_at")
+            if isinstance(latest, Mapping) and isinstance(latest.get("observed_at"), str)
+            else None
+        )
+        timing = {
+            "state": "consistent",
+            "source_class": "registry_schedule",
+            "lower_date": lower,
+            "upper_date": upper,
+            "precision": milestone.get("precision") or "unknown",
+            "source_timezone": None,
+            "source_wording": milestone.get("date"),
+            "evidence_refs": (
+                [evidence["url"]]
+                if isinstance(evidence, Mapping)
+                and isinstance(evidence.get("url"), str)
+                and evidence["url"]
+                else []
+            ),
+        }
+        priority = classify_research_priority(
+            {
+                "event_fact_ref": event_ref,
+                "exposure_ref": None,
+                "revision_is_current": True,
+                "occurrence": "uncorroborated",
+                "source_health": source_health,
+                "identity_state": "unresolved",
+                "timing_state": "consistent",
+                "lower_date": lower,
+                "upper_date": upper,
+                "last_material_revision_known_at": last_material_revision_known_at,
+            },
+            evaluation_cutoff=evaluation_cutoff,
+            anchor_date=anchor_date,
+        )
+        estimate_reasons = [
+            "PROBABILITY_OWNER_NOT_ADMITTED",
+            "MATERIALITY_OWNER_NOT_ADMITTED",
+            "HISTORICAL_RESPONSE_OWNER_NOT_ADMITTED",
+            "INCORPORATION_OWNER_NOT_ADMITTED",
+        ]
+        row = {
+            "row_key": {"event_fact_ref": event_ref, "issuer_id": None},
+            "event_fact_ref": event_ref,
+            "event_family": _REGISTRY_KIND_FAMILY[str(kind)],
+            "event_revision_ref": revision_ref,
+            "revision_is_current": True,
+            "occurrence": "uncorroborated",
+            "timing": timing,
+            "issuer": {
+                "state": "unresolved",
+                "issuer_id": None,
+                "company_id": None,
+                "relationship_role": None,
+                "identity_scope": "unavailable",
+                "identity_observed_at": None,
+                "securities": [],
+            },
+            "assets": [],
+            "relationships": [],
+            "economic_exposure_state": "unresolved",
+            "evidence": [dict(evidence)] if isinstance(evidence, Mapping) else [],
+            "revision_summary": {
+                "revision_ref": revision_ref,
+                "revision_is_current": True,
+                "last_material_revision_known_at": last_material_revision_known_at,
+            },
+            "research_priority": priority,
+            "probability": _estimate_slot("probability"),
+            "materiality": _estimate_slot("materiality"),
+            "historical_response": _estimate_slot("historical_response"),
+            "incorporation": _estimate_slot("incorporation"),
+            "missingness": {
+                "source": [] if source_health == "current" else ["SOURCE_NOT_CURRENT"],
+                "identity": ["CURRENT_ISSUER_UNRESOLVED"],
+                "asset": ["ASSET_PORT_NOT_ADMITTED"],
+                "economic": ["ECONOMIC_EXPOSURE_UNRESOLVED"],
+                "estimates": estimate_reasons,
+            },
+            "links": {"stock_research": []},
+        }
+        if set(row) != _ROW_KEYS:
+            raise AssertionError("WMN registry row contract drift")
+        rows.append(row)
+    return rows
 
 
 _WMN_VIEWS = frozenset({"upcoming", "reconcile", "history"})
@@ -641,8 +791,9 @@ def compose_rows_from_wmn_inputs(
     *,
     evaluation_cutoff: object,
     anchor_date: object,
+    registry_events: Sequence[Mapping[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Compose a complete admitted WMN row set from one immutable owner cut."""
+    """Compose a complete admitted WMN row set from one immutable generation cut."""
     inputs = validate_wmn_inputs(payload)
     _input_cut_literal, input_cut_time = _utc(
         inputs["input_cut"]["cutoff"], field="input_cut.cutoff"
@@ -659,6 +810,15 @@ def compose_rows_from_wmn_inputs(
             compose_company_event_rows(
                 event,
                 identity_projection=inputs["identity_projection"][event["event_id"]],
+                source_health=source_health,
+                evaluation_cutoff=evaluation_cutoff,
+                anchor_date=anchor_date,
+            )
+        )
+    if registry_events is not None:
+        rows.extend(
+            compose_registry_milestone_rows(
+                registry_events,
                 source_health=source_health,
                 evaluation_cutoff=evaluation_cutoff,
                 anchor_date=anchor_date,
@@ -753,8 +913,9 @@ def _wmn_global_coverage(
     rows: list[Mapping[str, Any]],
     *,
     selected_row_count: int,
+    registry_available: bool = False,
 ) -> dict[str, Any]:
-    source_events = {str(event["event_id"]) for event in inputs["events"]}
+    source_events = {str(row["event_fact_ref"]) for row in rows}
     issuer_events: set[tuple[str, str]] = set()
     securities: set[str] = set()
     unresolved_events: set[str] = set()
@@ -780,6 +941,21 @@ def _wmn_global_coverage(
             if priority.get("disposition") == "SELECTED" and lane in lane_counts:
                 lane_counts[str(lane)] += 1
     coverage = inputs["coverage"]
+    family_states = {
+        family: dict(state)
+        for family, state in coverage["family_states"].items()
+    }
+    if registry_available:
+        registry_counts = {
+            family: sum(1 for row in rows if row.get("event_family") == family)
+            for family in ("registry_primary_completion", "registry_study_completion")
+        }
+        for family, count in registry_counts.items():
+            family_states[family] = {
+                "declared_scope": "committed_trial_projection:current_generation",
+                "observed_count": count,
+                "state": "supported",
+            }
     return {
         "declared_universe_ref": coverage["declared_universe_ref"],
         "source_event_count": len(source_events),
@@ -790,7 +966,7 @@ def _wmn_global_coverage(
         "superseded_count": len(superseded),
         "lane_counts": lane_counts,
         "selected_row_count": selected_row_count,
-        "family_states": coverage["family_states"],
+        "family_states": family_states,
         "missing_owner_ports": list(coverage["missing_owner_ports"]),
     }
 
@@ -802,6 +978,7 @@ def build_what_matters_next(
     query: Mapping[str, Any],
     evaluation_cutoff: object,
     anchor_date: object,
+    registry_events: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the closed request-relative WMN read projection from one immutable cut."""
     if not isinstance(generation_id, str) or not generation_id:
@@ -812,6 +989,7 @@ def build_what_matters_next(
         inputs,
         evaluation_cutoff=evaluation_cutoff,
         anchor_date=anchor_date,
+        registry_events=registry_events,
     )
     selected = select_what_matters_next_rows(
         rows,
@@ -822,7 +1000,12 @@ def build_what_matters_next(
         lane=normalized_query["lane"],
         anchor_date=str(anchor_date),
     )
-    coverage = _wmn_global_coverage(inputs, rows, selected_row_count=len(selected))
+    coverage = _wmn_global_coverage(
+        inputs,
+        rows,
+        selected_row_count=len(selected),
+        registry_available=registry_events is not None,
+    )
     source_health = inputs["coverage"]["source_health"]
     coverage_incomplete = (
         bool(coverage["missing_owner_ports"])
@@ -879,6 +1062,8 @@ def build_what_matters_next_detail(
     issuer_id: object | None,
     evaluation_cutoff: object,
     anchor_date: object,
+    registry_events: Sequence[Mapping[str, Any]] | None = None,
+    registry_trial_details: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Resolve one WMN row and related rows strictly inside one generation.
 
@@ -899,6 +1084,7 @@ def build_what_matters_next_detail(
         inputs,
         evaluation_cutoff=evaluation_cutoff,
         anchor_date=anchor_date,
+        registry_events=registry_events,
     )
     current_rows = [
         row for row in rows
@@ -930,14 +1116,30 @@ def build_what_matters_next_detail(
             and row["issuer"].get("issuer_id") == selected_issuer
         ]
         related = list(sort_research_priority_rows(related))
+    trial = None
+    reason_codes = ["non_registry_event"]
+    if selected.get("event_family") in {
+        "registry_primary_completion", "registry_study_completion"
+    }:
+        if not isinstance(registry_trial_details, Mapping):
+            raise ContractError("registry detail lacks same-generation trial projection")
+        candidate = registry_trial_details.get(str(selected["event_fact_ref"]))
+        if not isinstance(candidate, Mapping):
+            raise ContractError("registry detail lacks same-generation trial projection")
+        parts = str(selected["event_fact_ref"]).split(":")
+        expected_nct = parts[1] if len(parts) == 3 else None
+        if candidate.get("nct_id") != expected_nct:
+            raise ContractError("registry detail trial identity mismatch")
+        trial = dict(candidate)
+        reason_codes = []
     return {
         "contract_id": "biocatalyst_wmn_detail.v1",
         "schema_version": "1.0.0",
         "generation_id": generation_id,
         "event": selected,
-        "trial": None,
+        "trial": trial,
         "related_events": related,
-        "reason_codes": ["non_registry_event"],
+        "reason_codes": reason_codes,
         "authority": {
             "classification": "research_priority_only",
             "trade_origination": False,

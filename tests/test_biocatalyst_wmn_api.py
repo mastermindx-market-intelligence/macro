@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
+from pathlib import Path
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from types import SimpleNamespace
@@ -304,3 +306,66 @@ def test_wmn_detail_invalid_request_and_auth_fail_before_generation_read(monkeyp
         )
     assert denied.status_code == 401
     _private(denied)
+
+
+def _registry_projection(inputs):
+    fixture = Path(__file__).resolve().parents[1] / "data/biocatalyst/fixtures/clinicaltrials/trial_snapshot.v1.valid.json"
+    snapshot = json.loads(fixture.read_text(encoding="utf-8"))
+    generation = SimpleNamespace(generation_id=GENERATION, schema_version="1.9.0")
+    return SimpleNamespace(
+        generation=generation,
+        what_matters_next_inputs=inputs,
+        trials=(snapshot,),
+        history_models_by_nct={},
+        change_tapes_by_nct={},
+    )
+
+
+def test_wmn_registry_milestone_is_same_generation_reconcile_row_and_detail(monkeypatch) -> None:
+    monkeypatch.setattr(api, "_wmn_now", lambda: NOW)
+    inputs = _wmn_inputs()
+    calls = 0
+
+    def read():
+        nonlocal calls
+        calls += 1
+        return _registry_projection(inputs), {}
+
+    with _app(read) as client:
+        page = client.get(
+            "/api/biocatalyst/v1/what-matters-next",
+            params={"view": "reconcile", "event_family": "registry_primary_completion"},
+        )
+        assert page.status_code == 200
+        payload = page.json()
+        registry_rows = [
+            row for row in payload["rows"]
+            if row["event_family"] == "registry_primary_completion"
+        ]
+        assert len(registry_rows) == 1
+        row = registry_rows[0]
+        assert row["event_fact_ref"] == "nct:NCT00000001:primary_completion"
+        assert row["event_revision_ref"] == "trial_snapshot_NCT00000001_after"
+        assert row["occurrence"] == "uncorroborated"
+        assert row["timing"]["source_class"] == "registry_schedule"
+        assert row["issuer"]["state"] == "unresolved"
+        assert row["links"]["stock_research"] == []
+        assert row["research_priority"]["lane"] == "RECONCILE"
+        assert payload["coverage"]["family_states"]["registry_primary_completion"]["state"] == "supported"
+
+        detail = client.get(
+            "/api/biocatalyst/v1/what-matters-next/detail",
+            params={
+                "generation_id": GENERATION,
+                "event_fact_ref": row["event_fact_ref"],
+            },
+        )
+    assert calls == 2
+    assert detail.status_code == 200
+    _private(page)
+    _private(detail)
+    dossier = detail.json()
+    assert dossier["event"]["event_fact_ref"] == row["event_fact_ref"]
+    assert dossier["trial"]["nct_id"] == "NCT00000001"
+    assert dossier["trial"]["brief_title"] == "Synthetic Phase 2 Study"
+    assert dossier["reason_codes"] == []

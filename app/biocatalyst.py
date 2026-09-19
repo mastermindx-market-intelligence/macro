@@ -4416,6 +4416,75 @@ def trial_screen_facets(
 
 
 
+def _wmn_registry_context(
+    projection: Any,
+    *,
+    anchor_date: str,
+) -> tuple[list[dict[str, Any]] | None, dict[str, dict[str, Any]]]:
+    """Project registry milestones from the same pointer-bound generation.
+
+    This performs no I/O and loads no sponsor map. Registry sponsor/ticker
+    annotations are not canonical issuer evidence for WMN; identity remains an
+    explicit unresolved gap until an admitted corporate owner supplies it.
+    """
+    snapshots = getattr(projection, "trials", None)
+    if isinstance(snapshots, (str, bytes)) or not isinstance(snapshots, Sequence):
+        return None, {}
+    try:
+        anchor = date.fromisoformat(anchor_date)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("invalid WMN registry anchor") from exc
+    _horizons, event_kinds, project_trial_milestones, _load_sponsor_map = (
+        _catalyst_radar_runtime()
+    )
+    history_by_nct = getattr(projection, "history_models_by_nct", None)
+    history_by_nct = history_by_nct if isinstance(history_by_nct, Mapping) else {}
+    change_tapes = getattr(projection, "change_tapes_by_nct", None)
+    trials: list[dict[str, Any]] = []
+    details_by_nct: dict[str, dict[str, Any]] = {}
+    revision_ref_by_nct: dict[str, str] = {}
+    evidence_by_nct: dict[str, dict[str, Any]] = {}
+    for snapshot in snapshots:
+        if not isinstance(snapshot, Mapping):
+            raise ValueError("invalid WMN registry snapshot")
+        trial = _public_trial(snapshot, detail=False)
+        nct_id = trial.get("nct_id")
+        snapshot_id = snapshot.get("snapshot_id")
+        if not isinstance(nct_id, str) or not nct_id or not isinstance(snapshot_id, str):
+            raise ValueError("invalid WMN registry snapshot identity")
+        trials.append(trial)
+        details_by_nct[nct_id] = _public_trial(
+            snapshot,
+            detail=True,
+            history_model=history_by_nct.get(nct_id),
+        )
+        revision_ref_by_nct[nct_id] = snapshot_id
+        evidence = _public_milestone_evidence(snapshot)
+        evidence_by_nct[nct_id] = {
+            "url": evidence.get("url"),
+            "coverage": evidence.get("coverage"),
+        }
+    revisions_by_nct = _catalyst_radar_revisions_by_nct(trials, change_tapes)
+    projected = project_trial_milestones(
+        trials=trials,
+        anchor_date=anchor,
+        horizon_days=None,
+        kinds=event_kinds,
+        revisions_by_nct=revisions_by_nct,
+        sponsor_document=None,
+        sponsor_as_of=None,
+        evidence_by_nct=evidence_by_nct,
+    )
+    registry_events: list[dict[str, Any]] = []
+    details_by_event: dict[str, dict[str, Any]] = {}
+    for event in projected.events:
+        item = event.as_dict()
+        item["event_revision_ref"] = revision_ref_by_nct[event.nct_id]
+        registry_events.append(item)
+        details_by_event[event.event_id] = details_by_nct[event.nct_id]
+    return registry_events, details_by_event
+
+
 def _wmn_runtime() -> tuple[Any, Any, Any, type[Exception]]:
     """Load the pure WMN composer/selector without adding a request-time owner read."""
 
@@ -4622,12 +4691,16 @@ def what_matters_next(
     if not isinstance(owner_inputs, Mapping):
         raise _wmn_http_error(503, "OWNER_INPUT_UNAVAILABLE")
     try:
+        registry_events, _registry_details = _wmn_registry_context(
+            projection, anchor_date=anchor_date
+        )
         payload = build_model(
             owner_inputs,
             generation_id=generation_id,
             query=query,
             evaluation_cutoff=evaluation_cutoff,
             anchor_date=anchor_date,
+            registry_events=registry_events,
         )
     except (contract_error, ValueError) as exc:
         log.warning("BioCatalyst WMN owner projection unavailable (%s)", type(exc).__name__)
@@ -4716,6 +4789,9 @@ def what_matters_next_detail(
     anchor_date = now.date().isoformat()
     build_detail, contract_error = _wmn_detail_runtime()
     try:
+        registry_events, registry_trial_details = _wmn_registry_context(
+            projection, anchor_date=anchor_date
+        )
         payload = build_detail(
             owner_inputs,
             generation_id=generation_id,
@@ -4723,6 +4799,8 @@ def what_matters_next_detail(
             issuer_id=issuer_id,
             evaluation_cutoff=evaluation_cutoff,
             anchor_date=anchor_date,
+            registry_events=registry_events,
+            registry_trial_details=registry_trial_details,
         )
     except LookupError:
         raise _wmn_http_error(404, "EVENT_NOT_IN_GENERATION") from None
