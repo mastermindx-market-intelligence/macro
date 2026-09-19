@@ -636,3 +636,28 @@ def test_premium_chart_keeps_raw_line_continuous_across_zero_crossings():
     assert anchor in src
     assert continuous in src
     assert src.index(anchor) < src.index(continuous) < src.index(positive) < src.index(negative)
+
+
+def test_premium_chart_legend_tracks_selected_metric_in_both_languages():
+    """Spread/price modes must not keep claiming the chart is premium + MA."""
+    html = _render_premium_partial(_available_ui_vm())
+
+    assert 'data-cgp-legend-main' in html
+    assert 'data-cgp-legend-avg' in html
+    assert 'data-cgp-legend-alt' in html
+    assert 'function updateLegend()' in html
+    assert "avg.hidden=mode!=='premium'" in html
+    assert "alt.hidden=mode!=='price'" in html
+    for text in (
+        "Premium / discount",
+        "Premium spread",
+        "Shanghai price",
+        "5-session avg",
+        "London reference",
+        "溢价 / 折价",
+        "溢价价差",
+        "上海价格",
+        "5期均值",
+        "伦敦参考价",
+    ):
+        assert text in html

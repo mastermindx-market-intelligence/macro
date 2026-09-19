@@ -117,9 +117,20 @@
       <text class="cgp-axis cgp-x-right" x="770" y="250" text-anchor="end"></text>
     </svg>
     <div class="cgp-legend">
-      <span class="cgp-leg cgp-leg-main"><i></i><span class="l-en">Premium / discount</span><span class="l-zh">溢价 / 折价</span></span>
-      <span class="cgp-leg cgp-leg-avg"><i></i><span class="l-en">5-session avg</span><span class="l-zh">5期均值</span></span>
-      <span class="cgp-leg cgp-leg-alt"><i></i><span class="l-en">{{ 'Global spot reference' if price_currency == 'CNY' else 'London reference' }}</span><span class="l-zh">{{ '全球现货参考价' if price_currency == 'CNY' else '伦敦参考价' }}</span></span>
+      <span class="cgp-leg cgp-leg-main" data-cgp-legend-main
+            data-en-premium="Premium / discount" data-zh-premium="溢价 / 折价"
+            data-en-spread="Premium spread" data-zh-spread="溢价价差"
+            data-en-price="Shanghai price" data-zh-price="上海价格">
+        <i></i><span class="l-en">Premium / discount</span><span class="l-zh">溢价 / 折价</span>
+      </span>
+      <span class="cgp-leg cgp-leg-avg" data-cgp-legend-avg>
+        <i></i><span class="l-en">5-session avg</span><span class="l-zh">5期均值</span>
+      </span>
+      <span class="cgp-leg cgp-leg-alt" data-cgp-legend-alt hidden
+            data-en-price="{{ 'Global spot reference' if price_currency == 'CNY' else 'London reference' }}"
+            data-zh-price="{{ '全球现货参考价' if price_currency == 'CNY' else '伦敦参考价' }}">
+        <i></i><span class="l-en">{{ 'Global spot reference' if price_currency == 'CNY' else 'London reference' }}</span><span class="l-zh">{{ '全球现货参考价' if price_currency == 'CNY' else '伦敦参考价' }}</span>
+      </span>
     </div>
   </div>
   {% endif %}
@@ -169,6 +180,23 @@
     var currency=root.getAttribute('data-cgp-currency')||'USD';
     var mode='premium', range='1M';
     var rangeDays={ '1W':7, '1M':31, '3M':93, '6M':186, '1Y':366, '3Y':1096 };
+    var mainLegend=root.querySelector('[data-cgp-legend-main]');
+    var avg=root.querySelector('[data-cgp-legend-avg]');
+    var alt=root.querySelector('[data-cgp-legend-alt]');
+
+    function legendLabel(el,key){
+      if(!el) return;
+      var en=el.querySelector('.l-en'), zh=el.querySelector('.l-zh');
+      if(en) en.textContent=el.getAttribute('data-en-'+key)||'';
+      if(zh) zh.textContent=el.getAttribute('data-zh-'+key)||'';
+    }
+    function updateLegend(){
+      var key=mode==='price'?'price':(mode==='spread'?'spread':'premium');
+      legendLabel(mainLegend,key);
+      avg.hidden=mode!=='premium';
+      alt.hidden=mode!=='price';
+      if(mode==='price') legendLabel(alt,'price');
+    }
 
     function rowsForRange(){
       if(range==='MAX') return series.slice();
@@ -230,6 +258,7 @@
       svg.querySelector('.cgp-y-bottom').textContent=fmt(min);
       svg.querySelector('.cgp-x-left').textContent=rows[0].date.slice(5);
       svg.querySelector('.cgp-x-right').textContent=rows[rows.length-1].date.slice(5);
+      updateLegend();
       root.setAttribute('data-cgp-mode',mode);
     }
 
