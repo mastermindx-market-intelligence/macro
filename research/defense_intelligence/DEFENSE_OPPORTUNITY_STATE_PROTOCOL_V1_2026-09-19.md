@@ -170,6 +170,51 @@ Instead:
 
 This evidence therefore strengthens the architecture while reducing its authority: the sector-first idea is useful enough to measure, but not yet reliable enough to decide entries by itself.
 
+## 5B. Existing subtheme owner, breadth probe and rights boundary
+
+Defense Intelligence must not mint a second theme taxonomy. The Dynamic Theme Graph already contains seven canonical local Defense subthemes:
+
+- Aviation — next-generation aircraft and maintenance;
+- CyberDefense — cyber defense and electronic warfare;
+- Drones — drones and anti-drone systems;
+- Manufacturing — secure defense supply chains;
+- Missiles — missile defense and long-range weapons;
+- SpaceTech — space technology and satellite services;
+- Weapons — precision weapons and ammunition resupply.
+
+The observed graph already links LMT, RTX, NOC and LHX into the Missiles local theme. Those edges are **theme-membership context**, not D5-reviewed program-role assertions, economic-share estimates, or permission to say each company has equal missile sensitivity.
+
+### Current public-emission boundary
+
+These local themes are sourced from the existing `finviz_themes` family. Current owner law in `config/theme_sources.yml` classifies that family as `rights_class: unresolved`. `engine/theme_graph/rights.py` therefore permits internal computation but refuses a new public GMI emission of the vendor-derived subtheme→member structure.
+
+The public labels themselves are not the restricted object; owner law explicitly distinguishes a public theme name from republishing the membership structure. Existing pre-GMI heatmap/rotation surfaces are grandfathered owner products. A new Defense Intelligence surface is not grandfathered.
+
+V1 ruling:
+
+- internal Defense research may consume these Theme Graph memberships;
+- Defense must not copy them into a new public basket, identity store, or curated membership file;
+- a public Defense subtheme surface must either receive the existing Theme Graph owner's explicit derived-display rights resolution, or use independently reviewed house/primary-source program relationships through the existing D5 path;
+- do not solve the rights gate by renaming copied vendor memberships as “Mastermind curated.”
+
+### First quartet theme-breadth probe
+
+Using only the existing committed LMT/RTX/NOC/LHX price tapes, an exploratory proxy treated the quartet as the initial missile cohort and counted how many had positive trailing-20-session returns at each broad Defense participation-episode start.
+
+Across the ten retained Defense episodes:
+
+- at least two of four positive beforehand: 7 episodes; subsequent 20-session quartet mean approximately +3.27%; four positive;
+- at least three of four positive beforehand: 6 episodes; subsequent mean approximately +4.64%; four positive.
+
+Restricting to the six episodes with at least two active sector-participation sessions:
+
+- at least two of four positive beforehand: 5 episodes; subsequent mean approximately +4.25%; three positive;
+- at least three of four positive beforehand: 4 episodes; subsequent mean approximately +6.55%; three positive.
+
+This is not monotonic or robust enough for authority. One persistent episode with all four names already positive subsequently produced about -11.4% for the quartet, while another persistent episode with only one positive name subsequently produced about +11.1%. The sample is tiny and conflict/event-clustered.
+
+The correct conclusion is that theme breadth may be a useful **interaction variable** with persistent sector participation, but neither breadth nor leadership should become a deterministic prerequisite. The validation target is whether the combined state adds incremental value over the sector-only and momentum-only baselines on a larger point-in-time panel.
+
 ## 6. Prime/supplier asymmetry rules
 
 The PAC-3 and Standard Missile research cases establish a reusable law:
