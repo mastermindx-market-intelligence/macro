@@ -12833,6 +12833,9 @@ jobs:
       # landed on main before this branch rebased. Nothing in the family is dark.
       - name: OIP E3 positioning persistence — oi_delta clusters, wall persistence, index-GEX rebuild routing
         run: python -m pytest tests/test_positioning_persistence.py tests/test_gex_state.py tests/test_index_gex_history.py -q
+      # MAS-260: source-readiness tests share this options-data job; stdlib + pytest only.
+      - name: Exposure Outlook source and price readiness with real CLI consumer
+        run: python -m pytest tests/test_exposure_outlook_data.py tests/test_exposure_outlook_prices.py tests/test_exposure_outlook_audit_cli.py -q
       # Unrun backfill 2026-08-03: the GEX board's per-ticker state merge and
       # the gex.js IV-rank band color law join the family this lane already
       # owns; the OIP E1 session digest and the flow desk builder are the same
