@@ -23,14 +23,18 @@ waves:
     next_action: Complete whole-architecture review and current record validation; public-research correction alone has a scoped PASS.
   - id: R0
     title: Answer legitimate supplied-assumption financial analysis
-    status: awaiting_ci
+    status: awaiting_release_proof
     pr: 7152
     next_action: >
       Keep ba9e7654190934d3f7c8b997eb2b21bd3a077094 and its release hold.
-      Run35053698483 concluded cancelled, with three successful executor packs,
-      nine cancelled packs and a failed ci-gate. Existing CI recovery owns the
-      interrupted run; do not cancel, waive or blindly redispatch shared proof.
-      Source Continuity and real financial-answer/browser proof remain separate.
+      Semantic review remains reusable and the current-main compatibility proof is
+      path-disjoint. The old REMOTE_CENSUS_INCOMPLETE sizing cause is materially
+      invalidated: protected Source Continuity now admits 400 open PRs and a fresh
+      Macro census returned370. A valid receipt still requires the original Studio
+      carrier's local-state proof, and that carrier is currently offline. Current
+      writer-gate invocation was separately tool-safety blocked before execution.
+      Do not replace either gate with a fresh checkout. Real financial answer/browser
+      proof remains post-release acceptance.
   - id: R1
     title: Investigate a material current evidence gap through a primary public source
     status: in_progress
@@ -50,14 +54,17 @@ waves:
     pr: 7217
     depends_on: [R0]
     next_action: >
-      PR7217 is the incumbent financial-calculation/Brain integration carrier at
-      95e1ff263f368d5efe41d9626edeb22303b7b2ce. Exact-head hosted fences/CI,
-      contract-delta, all12 semantic packs and ci-gate are green. Independent review
-      remains WAITING_CAPACITY; the MacBook Opus surface is not logged in and no
-      reviewer START/PASS is claimed. Preserve PR7365 ef008862... as terminal
-      evidence-only duplicate; its unique financial-thesis playbook may be adapted
-      to calculate_financial_bridge only in a later bounded consolidation after
-      clean writer/release custody.
+      PR7217 remains the sole financial-calculation/Brain carrier at
+      95e1ff263f368d5efe41d9626edeb22303b7b2ce with fully green hosted fences/CI.
+      Its unique thesis-analysis method is now consolidated separately in PR7396
+      00e8fa0769ff880e40002836c78f90095d535e4c, which references ONLY
+      calculate_financial_bridge and adds no calculator. A current-main proof combining
+      PR7285 event analysis + PR7396 passed134 doctrine/wiring tests and preserved
+      event/rates/financial lenses inside the unchanged budget; durable receipt is
+      PR7396 comment5741629539. PR7396 independent review is WAITING_CAPACITY on
+      agent-dispatch root1789818588.433179 with no PICKUP_ACK/START. Preserve PR7365
+      ef008862... as terminal duplicate evidence only. Do not add another reviewer
+      while the existing review request is unconsumed.
   - id: L0
     title: Reduce Fast tool-selection latency and make usage accounting truthful
     status: awaiting_review_ci
@@ -111,7 +118,7 @@ landmines:
   - A copied ambient Decimal context could produce Infinity for ordinary inputs; the local repair explicitly isolates every context setting.
   - PR7365 is published and held; exact repaired semantic head is ef008862f60f72f712a7d1e0a47a01313a81c123 and remains BUILT_NOT_PROVEN.
   - First exact-head review returned REQUEST_CHANGES on a465efa7; blocker repairs changed owned semantics, so only the second ef008862 review can accept the current head.
-  - Source Continuity currently refuses REMOTE_CENSUS_INCOMPLETE because the protected256-open-PR census limit is below the repository's current open-PR count; refusal is not collision proof and grants no bypass.
+  - The old Source Continuity REMOTE_CENSUS_INCOMPLETE sizing diagnosis is superseded: protected Source Continuity at Mastermind ac6180d0... supports400 open PRs and a fresh Macro search returned370. This does NOT itself mint a receipt: the original R0 Studio worktree is offline, so local dirt/equality remain unproven, and a current technical writer-gate invocation was tool-safety blocked before execution. Do not substitute a fresh worktree or alternate carrier.
   - Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search.
   - PR7403 was a later duplicate R1 prototype, closed at head 82d3d9c68ab33c40588a9d74afec2c0ae341dc05 after fresh Agent OS reconciliation. Its independent-review placement child on agent-dispatch root 1789814421.390679 received terminal SOL CLOSED / STOP before any PICKUP_ACK/START. Its corrected advisory comment 5741145446 is evidence only; #7374 retains source custody.
   - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
@@ -137,13 +144,71 @@ artifacts:
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
 next_action: >
-  Consume the next material return on the incumbent carriers: PR7217 needs one
-  independent exact-head review; PR7374 must return its provider-neutral/security
-  repair; PR7406 needs its independent profile-routing review plus current-head CI.
-  Do not revive duplicate PR7365 or closed PR7403. Shared gateway prompt/schema/
-  usage changes remain held behind #7217/#7152/#7100/#7144 custody. R0 PR7152,
-  Source Continuity and real browser/customer proof remain separate release gates.
+  Consume the existing PR7396 review placement when it receives a lawful receiver;
+  do not poll or spawn a duplicate reviewer meanwhile. PR7374 must return its
+  provider-neutral/security repair on its incumbent source carrier. PR7179 now has
+  current-main integration proof (53 dedicated +286 provider tests, byte-identical
+  reviewed semantics, current CI registration) at comment5741683155, but stays HOLD
+  because current release law's technical writer-gate is not yet proven. R0 PR7152's
+  old census-size blocker is invalidated but its original Studio local-state receipt
+  and writer-gate are still unresolved. Shared gateway prompt/schema/usage edits remain
+  held behind current source custody. Real served-model/browser proof remains mandatory.
 ---
+
+## 2026-09-19 current frontier — composition, provider guard and continuity invalidator
+
+Protected procedure pin: Mastermind `ac6180d0ca9107daae54f9eea6bd4b8aef92d630`,
+Skillpack1.0.1/bootstrap1. This section updates organizational truth only; it does not
+merge, deploy, activate a provider, assign a worker or claim customer behavior.
+
+### Financial analysis composition
+
+PR7396 exact head `00e8fa0769ff880e40002836c78f90095d535e4c` owns only
+`play_financial_thesis.md` plus doctrine tests. It consumes incumbent PR7217's
+`calculate_financial_bridge` only when offered and never revives PR7365's duplicate
+calculator. A proof-only current-main integration applied PR7285's event-analysis
+method and the exact PR7396 playbook/test semantics. The raw historical test patches
+collide only because both alter the strict module-census file; the combined semantics
+passed **134 tests**. Representative English/Chinese queries retained the relevant
+financial/event/rates lenses; largest observed assembled prompt was12,184 chars under
+the existing limit. Receipt: PR7396 comment5741629539. This is integration proof, not
+independent review or served-model proof.
+
+Independent review operation
+`mastermind-ai-financial-thesis-playbook-review-20260919-sol-001` is delivered to
+agent-dispatch root `1789818588.433179` with PREFERRED_AVENUE Terra,
+CAPACITY_SELECTABLE / WAITING_CAPACITY. Fresh read after material principal work
+showed no thread reply: no receiver, PICKUP_ACK, START, watcher or review result.
+
+### Customer-provider separation dependency
+
+Held PR7179 exact reviewed head `889174901bdaabba44a8f60f3179ff7bd32c8061`
+was composed proof-only with Macro main
+`134c041bc9c2dc11918b05e68ff7796886f7f13d`. All seven non-CI semantic paths were
+byte-identical to the independently reviewed head. Its CI manifest patch applied
+cleanly to current main without semantic reinterpretation. Proof result:
+**53/53 workload-guard tests**, **286/286 existing provider-family tests**, current
+CI manifest **216 jobs valid**, and the guard's own regression proves exactly one
+execution in the real PR code-pack loader. Local proof commit
+`d84af99acfb746ef120876ca0e89012b3d316fda`, tree
+`5833eba80c349cc46af0d48094f57e743e1532db`; it was not pushed or used as a source
+carrier. Durable receipt: PR7179 comment5741683155.
+
+This establishes current-base compatibility of the reviewed opt-in guard. It does
+not activate profiles, search credentials, providers or services, and does not grant
+release. Current protected release law separately requires technical writer-gate
+evidence; no such receipt is claimed.
+
+### R0 Source Continuity correction
+
+Protected Source Continuity now freezes a 400-open-PR /1152-call /96MiB /300-second
+remote census profile. A fresh authenticated GitHub search returned **370 open Macro
+PRs**, so R0's historical REMOTE_CENSUS_INCOMPLETE result can no longer be treated as
+a present estate-size blocker. A new official R0 receipt was NOT produced: the exact
+R0 source worktree remains on the intermittently offline Studio and local-state
+equality/dirt are part of the receipt contract. The new technical writer-gate command
+was also tool-safety blocked before execution. Preserve both gates; do not synthesize
+them from remote-only evidence or move R0 to a fresh carrier.
 
 ## 2026-09-19 source publication, adversarial review and current gates
 
