@@ -10,7 +10,7 @@ This suite is deliberately gateway-free: the analyst library ships standalone
 lands with the surface that consumes it), so nothing here imports brain_gateway.
 
 Coverage:
-  1.  Manifest shape: 9 modules, unique ids == filename stems, protocol always,
+  1.  Manifest shape: 11 modules, unique ids == filename stems, protocol always,
       valid kinds, int versions — and every .md on disk actually parses (none
       silently skipped by the frontmatter validator).
   2.  Routing EN (rates / regime / cross-asset / catalyst / forward / stress /
@@ -53,14 +53,14 @@ def _ids(modules: list[dict]) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# 1. Manifest + frontmatter validity of all 10 real files
+# 1. Manifest + frontmatter validity of all 11 real files
 # ---------------------------------------------------------------------------
 
 def test_manifest_shape():
     m = a.manifest()
     assert m["version"] == a.ANALYST_DOCTRINE_VERSION == 1
     mods = m["modules"]
-    assert len(mods) == 10, f"expected 10 analyst doctrine modules, got {len(mods)}"
+    assert len(mods) == 11, f"expected 11 analyst doctrine modules, got {len(mods)}"\n    assert "play_financial_thesis" in [x["id"] for x in mods]
 
     ids = [x["id"] for x in mods]
     assert len(ids) == len(set(ids)), "module ids must be unique"
@@ -94,7 +94,7 @@ def test_every_file_on_disk_parses():
     # is pinned second, so adding a module is a deliberate one-line edit here
     # (lens_regional.md, 2026-08-04) rather than something that slips in unseen.
     assert len(loaded) == len(on_disk), f"{len(loaded)} of {len(on_disk)} files parsed"
-    assert len(on_disk) == 10, f"expected 10 .md files, found {on_disk}"
+    assert len(on_disk) == 11, f"expected 11 .md files, found {on_disk}"
 
     for m in loaded:
         # every lens/playbook carries triggers; the always-on protocol needs none
@@ -359,7 +359,7 @@ def test_two_libraries_stay_separate():
     tech_routed = _ids(tech.route("where is support?"))
     assert "protocol" in tech_routed and "lens_sr" in tech_routed
     assert len(tech._load()) == 11
-    assert len(a._load()) == 10
+    assert len(a._load()) == 11
 
     # no id bleed except the shared 'protocol' stem, and no body bleed at all
     a_ids, t_ids = {m["id"] for m in a._load()}, {m["id"] for m in tech._load()}
@@ -392,3 +392,44 @@ def test_fail_soft_missing_dir_and_junk_input(tmp_path):
         routed = a.route(msg)
         assert isinstance(routed, list)
         assert isinstance(a.prompt_block(routed), str)
+
+
+# ---------------------------------------------------------------------------
+# 15. Financial-thesis playbook consolidation — incumbent calculator only
+# ---------------------------------------------------------------------------
+
+def test_financial_playbook_mixed_macro_route_preserves_discriminating_lenses():
+    ids = _ids(a.route("why is TLT down today and what does this mean for cash flow?"))
+    assert ids == ["protocol", "lens_catalyst", "lens_rates_curve", "play_financial_thesis"]
+
+
+@pytest.mark.parametrize("message", [
+    "营运资金和资本支出怎么理解",
+    "營運資金和資本支出怎麼理解",
+])
+def test_financial_playbook_routes_chinese_working_capital_and_capex(message):
+    assert "play_financial_thesis" in _ids(a.route(message))
+
+
+def test_financial_playbook_points_only_to_incumbent_calculator():
+    module = next(m for m in a._load() if m["id"] == "play_financial_thesis")
+    body = module["body"]
+    assert "calculate_financial_bridge" in body
+    assert "when that tool is offered" in body
+    assert "analyze_financial_scenario" not in body
+
+
+def test_financial_playbook_requires_evidence_to_thesis_sequence():
+    module = next(m for m in a._load() if m["id"] == "play_financial_thesis")
+    body = module["body"]
+    for phrase in (
+        "observation -> expectations",
+        "plausible mechanism",
+        "financial consequence",
+        "valuation and horizon",
+        "competing explanation",
+        "next useful observation",
+    ):
+        assert phrase in body
+    assert "A correct calculation on an unsupported input is still unsupported analysis." in body
+    assert "a material current-source gap must be named rather than filled from memory" in body
