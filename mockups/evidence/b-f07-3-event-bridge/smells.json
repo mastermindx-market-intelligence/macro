@@ -2,11 +2,12 @@
   "schema": "mastermind.page_evidence_smells.v1",
   "packet": "B-F07-3",
   "host_count": 3,
-  "captured_cells": 8,
+  "captured_cells": 24,
   "smells": [],
   "notes": [
-    "Hosts are static HTML; theme.js paints theme; the bridge line is server-rendered. No JS bridge path mutates the line.",
-    "Capture cropped to the #va-event-bridge element only (Tier-2 receipt).",
-    "Typed-null path is verified by tests/test_valuation_event_bridge.py::test_panel_renders_typed_null_*."
+    "No page errors; no event-line overflow in any of the 24 cells.",
+    "Event line 11px; FY footnote 11.5px; one visible bilingual sentence per cell.",
+    "Representative dark and light crops visually inspected; functional success does not claim independent design approval.",
+    "Contract-delta scope gaps remain separate from visual results."
   ]
 }

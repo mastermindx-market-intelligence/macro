@@ -1,36 +1,30 @@
-# B-F07-3 smells — 8 cells captured, 0 smells
+# B-F07-3 capture observations
 
-## What was captured
+CODE_HEAD: `32408e5e14511d2426cc8e9c83bb400598f69e92`.
 
-8 cells of the B-F07-3 event-to-assumption bridge line, populated state
-(Tender Offers → "usually lifts the multiple people pay"):
+Three hosts were regenerated from `templates/_valuation_assumptions.html.j2`
+and `templates/theme.css`. The host shell retains its existing panel geometry;
+the unnecessary full-site theme script was removed from these isolated fixtures.
+The template's own slider behavior remains active. Financial figures in the
+hosts are synthetic and are visibly labeled as such.
 
-- desktop 1440 / mobile 390
-- dark + light
-- EN + ZH
+All 24 cells were captured sequentially: Tender Offers, Restructuring and null,
+each in dark/light, EN/ZH, at desktop 1440×900 and mobile 390×844. Every crop is
+`#va-event-bridge`; `capture-metrics.json` records the exact visible sentence.
 
-The crops depict the `#va-event-bridge` element only — Tier-2 receipt,
-one plain-word line under the controls.
+- Tender Offers: “Latest filing on file (Tender Offers) usually lifts the multiple people pay.” / “最新备案（要约收购）通常推升市盈率倍数。”
+- Restructuring: “Latest filing on file (Restructuring) usually presses margin.” / “最新备案（重组）通常压缩利润率。”
+- Null: “No filing on file yet for this company.” / “该公司暂无备案。”
 
-## Hosts
+The event line is 11px, below the FY footnote's 11.5px. Both the class and
+direction use the shared muted text color. Dark has a dark material background
+and cool muted ink; light has a white material background and darker slate ink.
+The event line adds no new theme-specific material or interaction.
 
-Three hosts in `mockups/evidence/b-f07-3-event-bridge/hosts/`, regenerated from the live template at code head `3923b693d367`:
+Capture checks: 0 page errors; 0 event-line overflows; one language visible per
+cell. Representative dark and light crops were visually inspected. No visual
+smell was observed in those crops; this does not claim independent taste approval.
 
-1. `valuation-event-bridge-tender-offer.html` — bridge populated with
-   `engine/valuation_event_bridge.bridge("Tender Offers")`. EN: "Latest
-   filing on file (Tender Offers) usually lifts the multiple people pay."
-   ZH: "最新备案（要约收购）通常推升市盈率倍数。"
-2. `valuation-event-bridge-restructuring.html` — same shape with
-   `bridge("Restructuring")`. Used for non-default event-class sanity;
-   not separately screenshotted (8 cells are reserved for the
-   Tender-Offer receipt).
-3. `valuation-event-bridge-null.html` — `latest_event_bridge = None`
-   (the typed-null render path). Verified by tests, not screenshotted.
-
-The event line is 11px while the FY footnote is 11.5px. The event direction uses the production muted type, not a bold direction word.
-
-## Smells
-
-None. The host pages render without console errors and the crops depict
-the bridge line in all 8 cells. The bilingual event sentences use one
-`t()` twin per language.
+The functional suite passed. The separate CI dependency audit still reports
+additional path gaps beyond the six authorized additions; no all-green or
+production-deployment claim is made. See `heal-h4.md`.

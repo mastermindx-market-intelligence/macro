@@ -15,9 +15,25 @@
     "valuation-event-bridge-tender-offer_mobile_dark_en.png",
     "valuation-event-bridge-tender-offer_mobile_dark_zh.png",
     "valuation-event-bridge-tender-offer_mobile_light_en.png",
-    "valuation-event-bridge-tender-offer_mobile_light_zh.png"
+    "valuation-event-bridge-tender-offer_mobile_light_zh.png",
+    "valuation-event-bridge-restructuring_desktop_dark_en.png",
+    "valuation-event-bridge-restructuring_desktop_dark_zh.png",
+    "valuation-event-bridge-restructuring_desktop_light_en.png",
+    "valuation-event-bridge-restructuring_desktop_light_zh.png",
+    "valuation-event-bridge-restructuring_mobile_dark_en.png",
+    "valuation-event-bridge-restructuring_mobile_dark_zh.png",
+    "valuation-event-bridge-restructuring_mobile_light_en.png",
+    "valuation-event-bridge-restructuring_mobile_light_zh.png",
+    "valuation-event-bridge-null_desktop_dark_en.png",
+    "valuation-event-bridge-null_desktop_dark_zh.png",
+    "valuation-event-bridge-null_desktop_light_en.png",
+    "valuation-event-bridge-null_desktop_light_zh.png",
+    "valuation-event-bridge-null_mobile_dark_en.png",
+    "valuation-event-bridge-null_mobile_dark_zh.png",
+    "valuation-event-bridge-null_mobile_light_en.png",
+    "valuation-event-bridge-null_mobile_light_zh.png"
   ],
-  "matrix": "dark+light × EN+ZH × 1440/390 (desktop, mobile)",
-  "state": "populated (Tender Offers)",
-  "note": "8 cells = the populated receipt; typed-null covered by tests/test_valuation_event_bridge.py"
+  "matrix": "24 cells = tender-offer/restructuring/null × dark/light × EN/ZH × desktop 1440/mobile 390",
+  "state": "Tender Offers, Restructuring, and no classified filing",
+  "note": "All 24 crops were recaptured from regenerated hosts; see capture-metrics.json for visible text, geometry and typography."
 }

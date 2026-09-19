@@ -1,36 +1,46 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
-  - templates/_valuation_assumptions.html.j2
-  - engine/valuation_event_bridge.py
-  - tests/test_valuation_event_bridge.py
+- engine/valuation_assumptions.py
+- engine/valuation_event_bridge.py
+- templates/_valuation_assumptions.html.j2
+- tests/test_valuation_event_bridge.py
 manifest: mockups/evidence/b-f07-3-event-bridge/manifest.json
-smells:   mockups/evidence/b-f07-3-event-bridge/smells.json
+smells: mockups/evidence/b-f07-3-event-bridge/smells.json
 smells_md: mockups/evidence/b-f07-3-event-bridge/smells.md
 captured_cells:
-  - valuation-event-bridge-tender-offer_desktop_dark_en.png
-  - valuation-event-bridge-tender-offer_desktop_dark_zh.png
-  - valuation-event-bridge-tender-offer_desktop_light_en.png
-  - valuation-event-bridge-tender-offer_desktop_light_zh.png
-  - valuation-event-bridge-tender-offer_mobile_dark_en.png
-  - valuation-event-bridge-tender-offer_mobile_dark_zh.png
-  - valuation-event-bridge-tender-offer_mobile_light_en.png
-  - valuation-event-bridge-tender-offer_mobile_light_zh.png
-matrix: 8 cells = dark+light × EN+ZH × 1440/390 (desktop, mobile)
+- valuation-event-bridge-tender-offer_desktop_dark_en.png
+- valuation-event-bridge-tender-offer_desktop_dark_zh.png
+- valuation-event-bridge-tender-offer_desktop_light_en.png
+- valuation-event-bridge-tender-offer_desktop_light_zh.png
+- valuation-event-bridge-tender-offer_mobile_dark_en.png
+- valuation-event-bridge-tender-offer_mobile_dark_zh.png
+- valuation-event-bridge-tender-offer_mobile_light_en.png
+- valuation-event-bridge-tender-offer_mobile_light_zh.png
+- valuation-event-bridge-restructuring_desktop_dark_en.png
+- valuation-event-bridge-restructuring_desktop_dark_zh.png
+- valuation-event-bridge-restructuring_desktop_light_en.png
+- valuation-event-bridge-restructuring_desktop_light_zh.png
+- valuation-event-bridge-restructuring_mobile_dark_en.png
+- valuation-event-bridge-restructuring_mobile_dark_zh.png
+- valuation-event-bridge-restructuring_mobile_light_en.png
+- valuation-event-bridge-restructuring_mobile_light_zh.png
+- valuation-event-bridge-null_desktop_dark_en.png
+- valuation-event-bridge-null_desktop_dark_zh.png
+- valuation-event-bridge-null_desktop_light_en.png
+- valuation-event-bridge-null_desktop_light_zh.png
+- valuation-event-bridge-null_mobile_dark_en.png
+- valuation-event-bridge-null_mobile_dark_zh.png
+- valuation-event-bridge-null_mobile_light_en.png
+- valuation-event-bridge-null_mobile_light_zh.png
+matrix: 24 cells = tender-offer/restructuring/null × dark/light × EN/ZH × desktop
+  1440/mobile 390
 subject: B-F07-3 valuation panel event-to-assumption bridge line
-state:   populated (Tender Offers → "usually lifts the multiple people pay")
-note: |
-  The populated state is the receipt the spec names; the typed-null state is
-  covered by tests/test_valuation_event_bridge.py::test_panel_renders_typed_null_*
-  and is not separately captured (one receipt, not two — same line, two states).
-capture: |
-  Hosts carry the FROZEN valuation_assumptions template at the final head;
-  the null, restructuring, and Tender Offers states use the real
-  engine/valuation_event_bridge.py values. The eight Tender Offers crops were
-  captured sequentially from the committed host with Chromium at dark/light,
-  EN/ZH, desktop=1440x900 and mobile=390x844, with a 200ms settle after the
-  data-theme/data-lang stamp. Screenshots contain only #va-event-bridge.
-  At code head 3923b693d367, the hosts were refreshed again to the rendered
-  output of the template's single t() convention; the visible sentence,
-  typography, host states, and screenshot geometry were unchanged.
-captured_at: 2026-09-19T03:41Z
-resolved_sha_or_none: 3923b693d367e9287c7b76e2aa91becc2bebd64a
+state: Tender Offers, Restructuring, and no classified filing
+note: All three states are captured. Functional and capture checks pass; contract-delta
+  has additional scope gaps documented in heal-h4.md.
+capture: 'Hosts regenerated from the live template and shared theme.css at CODE_HEAD.
+  Chromium captured #va-event-bridge sequentially, at 1440x900 and 390x844, with a
+  200ms settle after each theme/language change. Shared stylesheet supplies both themes.
+  No full e2e suite was run.'
+captured_at: '2026-09-19T04:23:51.284182+00:00'
+resolved_sha_or_none: 32408e5e14511d2426cc8e9c83bb400598f69e92
