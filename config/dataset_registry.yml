@@ -36,7 +36,7 @@
 # conflict_policy  ∈ PRIMARY_ONLY | FALLBACK | DOMAIN_AUTHORITY | CROSS_VALIDATE | COMPOSITE
 # ─────────────────────────────────────────────────────────────────────────────
 schema: dataset_registry.v1
-updated: "2026-08-25"
+updated: "2026-09-19"
 
 datasets:
 
@@ -563,6 +563,79 @@ datasets:
       general pending-transition fence that prevents a RECURRENCE of this class (§5) is
       disclosed in _receipt.json's `pending_transition_refusals`/`listing_continuity`
       blocks, not written here — this dataset records only a REALIZED correction.
+
+  # ── China physical-gold source plane — PROPOSED until natural nightly proof ────
+  # The producer code exists, but these rows stay PROPOSED until the normal
+  # secret-bearing nightly actually lands and validates the stores.  This gives
+  # the source plane durable Data OS ids without claiming a production effect that
+  # has not happened yet.
+  - dataset_id: commodity.gold.sge_au9999.close
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/china_gold_basis.py::ChinaGoldBasisAdapter
+    storage: data/gold_china_basis/sge_au9999.parquet
+    format: parquet
+    grain: [observed_at]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: nightly
+    adjustment: none
+    vendor: tushare
+    endpoint: sge_daily
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, freshness, continuity]
+    version: "1.0.0"
+    schema:
+      rmb_per_g:
+        dtype: float64
+        unit: CNY_per_gram
+        nullable: false
+        note: >-
+          Au99.99 trade-date close, timestamped at the final 15:30 Asia/Shanghai
+          close clock for the close-aligned display proxy.
+    code_consumers: [engine/china_gold_premium.py]
+    notes: >-
+      PROPOSED pending first natural nightly acceptance. TuShare compliance is
+      Chairman-verified-private/SATISFIED under
+      DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE; private agreement
+      material is deliberately not a repository input. Promotion to PRODUCED
+      requires the real store to exist and the production quality receipt to bind
+      source -> engine -> rendered Gold panel.
+
+  - dataset_id: commodity.gold.xaucny.close_ref
+    layer: L1
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/china_gold_basis.py::ChinaGoldBasisAdapter
+    storage: data/gold_china_basis/xaucny_spot.parquet
+    format: parquet
+    grain: [observed_at]
+    temporal_profile: SNAPSHOT_SERIES
+    timezone: UTC
+    frequency: nightly
+    adjustment: none
+    vendor: massive
+    endpoint: /v2/aggs/ticker/C:XAUCNY/range/1/minute/{from}/{to}
+    conflict_policy: PRIMARY_ONLY
+    quality_checks: [uniqueness, validity, freshness, continuity]
+    version: "1.0.0"
+    schema:
+      cny_per_oz:
+        dtype: float64
+        unit: CNY_per_troy_ounce
+        nullable: false
+        note: >-
+          Global XAU/CNY minute close aligned within the configured tolerance to
+          the Shanghai 15:30 close clock.
+    code_consumers: [engine/china_gold_premium.py]
+    notes: >-
+      PROPOSED pending first natural nightly acceptance and the exact-endpoint
+      technical entitlement receipt already wired into the incumbent Massive
+      capability manifest. The operator-level licensing record remains
+      research/licenses/MASSIVE_ENTITLEMENT_RECORD.md; dataset-specific vendor
+      conditions, if any, remain authoritative. Promotion to PRODUCED requires
+      the real store plus the production source->engine->render quality receipt.
 
   # ── Existing Prophet inputs consumed by V4-B1 ─────────────────────────────
   # These stores retain their incumbent producers and owners. Registration as B1

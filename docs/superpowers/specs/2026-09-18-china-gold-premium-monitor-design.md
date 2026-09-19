@@ -106,9 +106,11 @@ The 5-session average is emitted only after five aligned observations exist, and
 range only after thirty. Until then those statistics are null/“—” rather than mislabeled
 short-history aggregates.
 
-Data OS registry promotion is intentionally post-live: once the normal nightly has actually landed
-the two `data/gold_china_basis/*.parquet` stores, closeout may register them as `PRODUCED`.
-Pre-declaring them before that effect would violate the registry's own truth rule.
+Data OS ids are declared before live acceptance only as `PROPOSED`:
+`commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. Once the normal nightly
+has actually landed and validated the two `data/gold_china_basis/*.parquet` stores, closeout
+promotes those same rows to `PRODUCED`. Promoting them before that effect would violate the
+registry's own truth rule.
 
 ## Engine boundary
 

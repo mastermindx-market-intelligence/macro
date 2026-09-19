@@ -104,7 +104,8 @@ after site-wide normalization and immediately before the broad stage, overwritin
 so production proof binds to the exact HTML tree that will be committed. This receipt is
 observability/proof only and creates no new lifecycle or scoring authority.
 
-After the first real nightly successfully lands both `data/gold_china_basis/*.parquet` files,
-closeout must add truthful Data OS registry contracts for those now-existing stores. Do **not**
-pre-mark them `PRODUCED` before that live effect: the registry's honesty law requires a produced
-store to exist on disk today.
+The two raw source datasets already have stable Data OS ids declared as `PROPOSED`:
+`commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. After the first real
+nightly successfully lands and validates both `data/gold_china_basis/*.parquet` files, closeout
+promotes those exact rows to `PRODUCED`. Do **not** promote them before that live effect: the
+registry's honesty law requires a produced store to exist on disk today.
