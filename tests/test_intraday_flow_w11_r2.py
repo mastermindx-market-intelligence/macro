@@ -202,7 +202,7 @@ def test_mixed_state_headline_names_the_true_worst_lane():
     en = " ".join(r["en"])
     zh = " ".join(r["zh"])
     assert "options flow not coming through" in en
-    assert "流数据未送达" in zh
+    assert "期权流数据未送达" in zh
     assert "tape carrying" not in en
     assert "all feeds carrying" not in en
     assert "some feeds" not in en
@@ -235,9 +235,9 @@ def test_headline_all_carrying_all_unavailable_and_each_single_degraded():
     assert "部分数据未送达" in " ".join(all_down["zh"])
 
     cases = [
-        ("unavailable", "live", "live", "prices not coming through", "报价未送达"),
-        ("live", "unavailable", "live", "trades not coming through", "成交未送达"),
-        ("live", "live", "unavailable", "options flow not coming through", "流数据未送达"),
+        ("unavailable", "live", "live", "prices not coming through", "行情数据未送达"),
+        ("live", "unavailable", "live", "trades not coming through", "资金带数据未送达"),
+        ("live", "live", "unavailable", "options flow not coming through", "期权流数据未送达"),
         ("connecting", "live", "live", "feeds still connecting", "数据连接中"),
         ("live", "connecting", "live", "feeds still connecting", "数据连接中"),
         ("live", "live", "connecting", "feeds still connecting", "数据连接中"),

@@ -928,33 +928,15 @@ def _build_leader_record(
     return rec
 
 
-def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path, as_of_arg: str | None = None, ephemeral: bool = False) -> None:
-    """Nightly mode: build site/flowtracker/base.json and render HTML.
-
-    ephemeral=True skips the repo run_status write — caller redirected either
-    --data-root or --site-root (test/fixture use), so the real data/run_status.json
-    must not be touched (MM_DATA_GUARD).
-    """
+def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path) -> None:
+    """Nightly mode: build site/flowtracker/base.json and render HTML."""
     ift_cfg = cfg.get("intraday_flow") or {}
     universe = _resolve_universe(cfg, data_root)
 
     out_dir = site_root / "flowtracker"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Lock the as_of stamp when the caller passes one (tests / conflict
-    # resolution re-renders). Without --as-of, the builder stamps the
-    # current UTC instant — fine for nightly, but breaks G3-iii byte-diff
-    # determinism across two consecutive runs.
-    if as_of_arg:
-        # Normalize: accept either bare ISO or with timezone suffix.
-        try:
-            dt = datetime.fromisoformat(str(as_of_arg).replace("Z", "+00:00"))
-            as_of = dt.isoformat()
-        except ValueError:
-            log.warning("build_intraday_flow nightly: --as-of %r not ISO 8601 — falling back to now()", as_of_arg)
-            as_of = datetime.now(timezone.utc).isoformat()
-    else:
-        as_of = datetime.now(timezone.utc).isoformat()
+    as_of = datetime.now(timezone.utc).isoformat()
 
     # Build per-ticker basket map for client-side filtering.
     tk_baskets: dict[str, list[str]] = {}
@@ -1042,33 +1024,26 @@ def _run_nightly(cfg: dict, data_root: Path, site_root: Path, tpl_root: Path, as
     _advance_ledger(leaders, data_root, site_root, as_of)
 
     # ── run_status registration (P0.7 law) ────────────────────────────────────
-    if ephemeral:
-        log.info("build_intraday_flow nightly: ephemeral run — skipping run_status write")
-    else:
+    try:
+        from lib import store as _store         # noqa: PLC0415
+        _rs = _store.read_status()
+        # Repo-relative path only: run_status.json is a committed registry — an
+        # absolute path would leak the local checkout/worktree location.
         try:
-            from lib import store as _store         # noqa: PLC0415
-            _rs = _store.read_status()
-            # Repo-relative path only: run_status.json is a committed registry — an
-            # absolute path would leak the local checkout/worktree location.
-            try:
-                _bj = str(out_path.resolve().relative_to(Path(config.ROOT).resolve()))
-            except ValueError:
-                _bj = "/".join(out_path.parts[-2:])
-            _rs.setdefault("sources", {})["intraday_flow_nightly"] = {
-                "status":     "ok",
-                "n_leaders":  len(leaders),
-                "base_json":  _bj,
-                "as_of":      as_of,
-                # Lock checked_at to the same as_of stamp under --as-of so the
-                # builder remains byte-deterministic across two consecutive runs
-                # (G3-iii). When --as-of is absent, checked_at is the current
-                # UTC instant — fine for nightly, just not for G3-iii.
-                "checked_at": as_of,
-            }
-            _store.write_status(_rs)
-            log.info("build_intraday_flow nightly: run_status updated")
-        except Exception as _rs_err:  # noqa: BLE001
-            log.debug("build_intraday_flow nightly: run_status write failed (non-fatal): %s", _rs_err)
+            _bj = str(out_path.resolve().relative_to(Path(config.ROOT).resolve()))
+        except ValueError:
+            _bj = "/".join(out_path.parts[-2:])
+        _rs.setdefault("sources", {})["intraday_flow_nightly"] = {
+            "status":     "ok",
+            "n_leaders":  len(leaders),
+            "base_json":  _bj,
+            "as_of":      as_of,
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+        }
+        _store.write_status(_rs)
+        log.info("build_intraday_flow nightly: run_status updated")
+    except Exception as _rs_err:  # noqa: BLE001
+        log.debug("build_intraday_flow nightly: run_status write failed (non-fatal): %s", _rs_err)
 
     # Render HTML if template exists (stage A2 adds the template).
     tpl_path = tpl_root / "intraday_flow.html.j2"
@@ -1241,7 +1216,7 @@ def _load_base_json_index(site_root: Path) -> dict[str, dict]:
         return {}
 
 
-def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | None = None) -> None:
+def _run_fastpath(cfg: dict, data_root: Path, site_root: Path) -> None:
     """Fastpath mode: compute live pulse from today's intraday bars.
 
     Writes site/live/flow_pulse.json + site/live/flow_pulse_lastgood.json.
@@ -1265,14 +1240,7 @@ def _run_fastpath(cfg: dict, data_root: Path, site_root: Path, as_of_arg: str | 
     # volume ≥ time-of-day baseline — design §2.2/§2.5 + engine docstring §4).
     base_index = _load_base_json_index(site_root)
 
-    if as_of_arg:
-        try:
-            now_utc = datetime.fromisoformat(str(as_of_arg).replace("Z", "+00:00"))
-        except ValueError:
-            log.warning("build_intraday_flow fastpath: --as-of %r not ISO 8601 — falling back to now()", as_of_arg)
-            now_utc = datetime.now(timezone.utc)
-    else:
-        now_utc = datetime.now(timezone.utc)
+    now_utc = datetime.now(timezone.utc)
     tickers_out: list[dict] = []
 
     for ticker in universe:
@@ -1416,15 +1384,6 @@ def main() -> int:
         default=None,
         help="Override site/ directory (for fixture generation / testing)",
     )
-    ap.add_argument(
-        "--as-of",
-        default=None,
-        help=(
-            "Override the as_of stamp (ISO 8601 UTC). When set, the builder "
-            "produces byte-deterministic output across runs (used by tests and "
-            "conflict-resolution renders to lock the stamp)."
-        ),
-    )
     args = ap.parse_args()
 
     cfg = config.load()
@@ -1449,15 +1408,11 @@ def main() -> int:
         site_root = config.ROOT / cfg["storage"]["site_dir"]
     tpl_root = config.ROOT / "templates"
 
-    # Ephemeral mode: caller redirected data_root or site_root, so the run
-    # is a fixture/test build — never touch the real data/run_status.json.
-    ephemeral = bool(args.data_root) or bool(args.site_root)
-
     try:
         if args.mode == "nightly":
-            _run_nightly(cfg, data_root, site_root, tpl_root, args.as_of, ephemeral=ephemeral)
+            _run_nightly(cfg, data_root, site_root, tpl_root)
         else:
-            _run_fastpath(cfg, data_root, site_root, args.as_of)
+            _run_fastpath(cfg, data_root, site_root)
     except Exception as e:  # noqa: BLE001 — fail-soft; never break the pipeline
         log.error("build_intraday_flow %s: unexpected error: %s", args.mode, e)
 
