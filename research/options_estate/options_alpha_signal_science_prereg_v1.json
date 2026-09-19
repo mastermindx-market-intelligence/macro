@@ -1,0 +1,150 @@
+{
+  "schema": "options.alpha_signal_science_prereg/v1",
+  "policy_id": "oa_signal_science_spy_excess_fit_free/v1",
+  "policy_version": 1,
+  "status": "preregistered_fit_free_no_model_fit",
+  "registered_on": "2026-09-19",
+  "operation": "oa-signal-science-prereg-20260919-sol-001",
+  "parent_operation": "options-alpha-product-integration-20260917-sol-001",
+  "governing_sources": {
+    "macro_commit": "abaf9377013a62727eddb60e21bec267e6c736aa",
+    "packet_b": "mastermind-terminal#599/comment-5740770584",
+    "flow_score_amendment": "research/OPTIONS_ALPHA_FLOW_SCORE_AMENDMENT.md",
+    "options_alpha_masterplan": "research/OPTIONS_ALPHA_MASTERPLAN.md",
+    "integration_amendment": "research/options_estate/OPTIONS_INTELLIGENCE_INTEGRATION_AMENDMENT_2026-09-16/OPTIONS_INTELLIGENCE_INTEGRATION_AMENDMENT.md"
+  },
+  "target_contract": {
+    "target_id": "underlying_spy_excess_positive/v1",
+    "expression": "1[spy_excess_H > 0]",
+    "benchmark": "SPY",
+    "target_kind": "binary_underlying_relative_outperformance",
+    "horizons_trading_sessions": {
+      "S-FLOWML-0_7": 5,
+      "S-FLOWML-8_90": 21,
+      "S-FLOWML-90P": 63
+    },
+    "secondary_horizons_trading_sessions": {
+      "S-FLOWML-90P": 126
+    },
+    "absolute_return": "report_alongside_only_not_target",
+    "option_side_conditioned": false,
+    "option_pnl_target": false,
+    "signed_direction_target": false,
+    "expected_value_target": false,
+    "spy_root_under_same_benchmark": "exclude_degenerate_target",
+    "target_change_requires_new_preregistration": true
+  },
+  "population_contract": {
+    "serving_sources": [
+      "tape_recon",
+      "live_feed"
+    ],
+    "source_pooling_allowed": false,
+    "artifact_population_key": [
+      "source",
+      "detector_version",
+      "dte_construction"
+    ],
+    "eod_proxy_role": "priors_or_pretraining_only_no_calibration_no_oos_verdict",
+    "cross_source_transfer": "separate_named_oos_test_only_never_implicit_pooling",
+    "mixed_detector_versions": "reject",
+    "missing_detector_version": "reject",
+    "missing_or_invalid_session": "reject",
+    "index_root_policy": {
+      "default": "exclude",
+      "prior_session_oi_reentry_min": 500,
+      "zero_dte_index": "exclude"
+    },
+    "root_generalization": {
+      "default_claim": "within_root_time_forward",
+      "heldout_root_claim_requires": "at_least_two_roots_and_explicit_heldout_root_split",
+      "single_root_fallback": "time_forward_only_no_cross_root_claim",
+      "silent_root_exclusion_drop": false
+    }
+  },
+  "temporal_contract": {
+    "calendar_basis": "canonical_nyse_trading_sessions",
+    "calendar_day_distance_allowed": false,
+    "session_atomicity": "all_rows_from_one_session_stay_in_one_split",
+    "label_window_purge": "reject_training_rows_whose_label_window_intersects_validation_or_evaluation_window",
+    "embargo": "at_least_target_horizon_in_trading_sessions",
+    "same_session_cross_split": false,
+    "fallback_on_unparseable_session": false
+  },
+  "calibration_contract": {
+    "ordering": "chronological",
+    "fit_eval_disjoint": true,
+    "fit_before_eval": true,
+    "fit_eval_gap": "at_least_target_horizon_in_trading_sessions",
+    "one_class_fit_slice": "CALIBRATION_NOT_EVALUABLE",
+    "one_class_eval_slice": "CALIBRATION_NOT_EVALUABLE",
+    "whole_calibration_fallback_allowed": false,
+    "evaluation_rows_may_train_calibrator": false,
+    "inherited_metrics": [
+      "ECE",
+      "Brier_vs_base_rate",
+      "reliability_monotonicity"
+    ],
+    "local_calibration_health_is_statistical_acceptance": false
+  },
+  "model_constraint_contract": {
+    "feature_monotonic_constraints": "none_by_default",
+    "feature_monotonic_constraint_admission": "separate_exact_feature_target_mechanism_registration_required",
+    "calibration_reliability_monotonicity": "diagnostic_gate_not_feature_constraint"
+  },
+  "readiness_acceptance_contract": {
+    "ordered_states": [
+      "ARTIFACT_HEALTHY",
+      "EVALUATION_READY",
+      "STATISTICALLY_ACCEPTED",
+      "PROMOTION_ELIGIBLE"
+    ],
+    "ARTIFACT_HEALTHY": "schema_hash_and_local_calibration_checks_only_no_alpha_claim",
+    "EVALUATION_READY": "target_population_pit_source_version_session_split_and_calibration_isolation_all_valid",
+    "STATISTICALLY_ACCEPTED": "all_registered_oos_cell_multiple_testing_fs5_and_calibration_gates_pass",
+    "PROMOTION_ELIGIBLE": "requires_separate_explicit_existing_promotion_authority_decision",
+    "deployable_boolean_ceiling": "ARTIFACT_HEALTHY",
+    "newest_era_auc_kill": "preserve_registered_kill_criterion_not_locally_waivable",
+    "bh_fdr_family": "preserve_registered_family_accounting_amend_on_add",
+    "sample_floors": "preserve_existing_registered_floors_no_new_thresholds_in_this_prereg"
+  },
+  "source_repair_contract": {
+    "allowed_after_prereg_acceptance": [
+      "make_loader_fail_closed_on_mixed_source_or_detector_version",
+      "replace_calendar_day_embargo_with_canonical_trading_session_purging",
+      "make_sessions_atomic_across_splits",
+      "remove_single_root_cross_root_fallback_claim",
+      "make_calibration_fit_eval_ordered_disjoint_and_embargoed",
+      "remove_whole_calibration_one_class_isotonic_fallback",
+      "separate_artifact_health_from_statistical_acceptance_state"
+    ],
+    "implementation_owner": "existing_FS_Evaluation_writer_only",
+    "model_fit_during_repair": false,
+    "calibrator_fit_during_repair_tests": false,
+    "market_backtest_during_repair": false,
+    "production_score_enable": false
+  },
+  "inherited_kills": [
+    "KILL-DOI-FAMILY",
+    "KILL-SKEW-DECELERATION",
+    "KILL-CHARM-NARRATIVES",
+    "suspended_tick_rule_tape_direction",
+    "generic_fused_positioning_or_composite_authority",
+    "LLM_origination",
+    "off_horizon_verdicts"
+  ],
+  "authority": {
+    "may_fit_model": false,
+    "may_fit_calibrator": false,
+    "may_score_production": false,
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_issue": false,
+    "may_trade": false,
+    "may_publish_probability": false,
+    "may_promote": false,
+    "may_change_candidate_formation": false,
+    "may_change_exact_option_ruler": false
+  }
+}
