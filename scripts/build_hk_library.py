@@ -2230,9 +2230,35 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
         import copy as _copy_disc
         _hk_disc_evidence = _copy_disc.deepcopy(_hk_disc_evidence)
 
+        # Wave 7 HK-RANK-RACE: H3 and X1(b) run as TWO independent
+        # same-population Lane-A challengers.  No fusion/weights are minted here;
+        # each rank_fn can only score the exact incumbent calls handed to it by
+        # board_shadow, and non-ACCRUING family reads stay null.
+        _hk_rank_family_rows = _hk_disc_evidence["native_families"]
+
+        def _hk_h3_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_family_calls(
+                _calls, _hk_rank_family_rows, "h3_ah_discount",
+            )
+
+        def _hk_x1_rank_fn(_calls: list[dict]) -> dict:
+            return hk_native_intelligence.rank_family_calls(
+                _calls, _hk_rank_family_rows, "x1_atwin_momentum",
+            )
+
         def _hk_discovery_fn(_asof_arg: str) -> list[dict]:
             return hk_discovery_challenger.build_candidates(_hk_disc_evidence, _asof_arg)
 
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.RANK_DEFINITIONS["h3_ah_discount"],
+            rank_fn=_hk_h3_rank_fn,
+        )
+        board_shadow.register_challenger(
+            "HK",
+            hk_native_intelligence.RANK_DEFINITIONS["x1_atwin_momentum"],
+            rank_fn=_hk_x1_rank_fn,
+        )
         board_shadow.register_challenger(
             "HK", hk_discovery_challenger.DEFINITION, discovery_fn=_hk_discovery_fn,
         )
