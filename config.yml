@@ -576,8 +576,11 @@ polygon:
   # open interest the free Cboe feed's history discards and that CANNOT be backfilled
   # (OI is point-in-time only). Snapshots the chain each day -> a raw per-strike store
   # so any dealer-gamma variant can be recomputed later from real OI. DISPLAY/RESEARCH
-  # ONLY, never scored. Key = POLYGON_API_KEY (.env locally / Actions secret); the
-  # plan is stocks+options entitled — index/futures/fx/crypto are NOT.
+  # ONLY, never scored. Key = POLYGON_API_KEY (.env locally / Actions secret).
+  # Do not infer cross-asset access from this block: the committed 2026-08-08
+  # capability manifest is endpoint-grain and records fx_prev + crypto_prev as
+  # entitled while indices_snapshot is not_entitled. Cross-asset consumers must
+  # bind their exact endpoint and the governing license/entitlement record.
   base_url: https://api.polygon.io
   api_key_env: POLYGON_API_KEY
   retries: 3
