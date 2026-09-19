@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T16:56:49.442524+00:00",
-  "count": 2442,
+  "generated_at": "2026-09-19T17:29:09.833068+00:00",
+  "count": 2444,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -990,6 +990,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-sy7irhwxfeu-0b8bf3",
+      "title": "GS Simonet US Long Only Corridor 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:39:19Z",
+      "summary_points": [
+        "Sector Concentration Risk: IT dominance in basket (largest exposure) creates heightened vulnerability to regulatory shifts and innovation cycles, critical for growth dynamics assessment.",
+        "Volatility Regime Shift: Historical IV peaked at 10.95 (2022–2023) and now at 1.37, signaling structural decline toward low volatility regimes requiring recalibrated position sizing.",
+        "Max Loss Scenario: Portfolio faces 100% loss if all 18 stocks realize zero variance, a fundamental risk unaddressed by corridor bounds (70%–120%).",
+        "Trade Structure Risk: 2.5x cap on variance and 70%–120% corridor bounds create asymmetric exposure; USD 1mm vega notional amplifies sensitivity to volatility compression."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fb7lanavjec-e169c5",
       "title": "GS Rates MarketStrats G4 govt bonds weekly supply 18 Sep 2026",
       "institution": "S&T",
@@ -1127,6 +1147,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-f2blz0acwbu-9b251b",
+      "title": "Follow The Flow The streak is over",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:32:01Z",
+      "summary_points": [
+        "Fixed Income Outflows Resume: First outflows in 24 weeks driven by rising rates, elevated volatility (rates vol >75-80bps), and stretched valuations; inverse relationship between rates volatility and credit fund flows confirmed.",
+        "HY/EM Debt Weekly Outflows: Consistent -0.6% weekly outflows in HY ETFs and Global EM Debt, signaling heightened risk aversion or yield concerns across key credit segments.",
+        "Equity vs HY ETF Flow Divergence: Equity ETFs show strong $1.2bn 4w average inflows versus HY ETFs' net outflows of -$0.1bn, indicating active rotation toward equities and away from high-yield credit.",
+        "Flow Dispersion in Credit Funds: Concentrated outflows in IG/HY funds across -50 to 0 and -10 to 0 buckets (Exhibits 2-3), amplifying volatility risk if sustained.",
+        "Euro HY Flow Dominance: European-domiciled HY funds show Euro HY flows ($351mn) outpacing Global ($179mn) and US ($187mn), reflecting strong regional demand for European high-yield products."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
