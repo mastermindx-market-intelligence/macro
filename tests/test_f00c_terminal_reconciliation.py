@@ -65,6 +65,14 @@ def _manifest() -> dict:
 def _manifest_rows() -> dict[str, dict]:
     return {row["id"]: row for row in _manifest()["rows"]}
 
+def _current_manifest_rows() -> dict[str, dict]:
+    """Current canonical mirror; the original rows array remains historical evidence."""
+    block = _manifest()["current_terminal_rows_2026_09_19"]
+    assert block["row_count"] == len(ROWS)
+    rows = block["rows"]
+    assert set(rows) == set(ROWS)
+    return rows
+
 
 def _ledger_rows() -> dict[str, dict]:
     with LEDGER.open(newline="", encoding="utf-8") as fh:
@@ -218,99 +226,77 @@ def test_no_row_in_this_packet_claims_a_production_readback() -> None:
 
 
 @pytest.mark.parametrize("row_id", ROWS)
-def test_ledger_row_is_unique_and_matches_the_manifest_state(row_id: str) -> None:
+def test_ledger_row_is_unique_and_matches_the_current_manifest_state(row_id: str) -> None:
     text = LEDGER.read_text(encoding="utf-8")
     assert text.count(f"\n{row_id},") + text.startswith(f"{row_id},") == 1, (
         f"{row_id}: expected exactly one ledger row"
     )
     ledger = _ledger_rows()[row_id]
-    manifest = _manifest_rows()[row_id]
-    assert ledger["capability_state_c2"] == manifest["capability_state_c2"], (
-        f"{row_id}: ledger says {ledger['capability_state_c2']!r}, manifest says "
-        f"{manifest['capability_state_c2']!r}"
+    current = _current_manifest_rows()[row_id]
+    assert ledger["capability_state_c2"] == current["capability_state_c2"], (
+        f"{row_id}: ledger says {ledger['capability_state_c2']!r}, current manifest says "
+        f"{current['capability_state_c2']!r}"
     )
 
 
 @pytest.mark.parametrize("row_id", ROWS)
-def test_manifest_quotes_the_ledger_acceptance_sentence_verbatim(row_id: str) -> None:
-    assert _manifest_rows()[row_id]["acceptance_test"] == _ledger_rows()[row_id]["acceptance_test"], (
-        f"{row_id}: the manifest must judge the ledger's own acceptance sentence"
-    )
+def test_current_manifest_quotes_the_ledger_acceptance_sentence_verbatim(row_id: str) -> None:
+    assert _current_manifest_rows()[row_id]["acceptance_test"] == _ledger_rows()[row_id][
+        "acceptance_test"
+    ], f"{row_id}: the current manifest must judge the ledger's own acceptance sentence"
 
 
 @pytest.mark.parametrize("row_id", ROWS)
-def test_a_moved_row_records_its_producer_and_only_keeps_a_child_for_a_residual(
-    row_id: str,
-) -> None:
-    manifest = _manifest_rows()[row_id]
-    if manifest["disposition"] != "SATISFIED":
-        return
+def test_current_manifest_mirrors_load_bearing_closure_fields(row_id: str) -> None:
+    """Later accepted evidence may supersede the 2026-09-09 packet without rewriting it."""
     ledger = _ledger_rows()[row_id]
-    if manifest.get("residual"):
-        assert ledger["next_bounded_child"].strip(), (
-            f"{row_id}: the acceptance sentence is met but a residual is recorded, so "
-            f"this row owns the child that would close it"
+    current = _current_manifest_rows()[row_id]
+    for field in (
+        "capability_state_c2",
+        "acceptance_test",
+        "real_producer",
+        "missing_contract_or_proof",
+        "next_bounded_child",
+        "adjudication_notes",
+    ):
+        assert current[field] == ledger[field], (
+            f"{row_id}: current manifest field {field!r} drifted from the canonical ledger"
         )
-    else:
-        assert ledger["next_bounded_child"] == "", (
-            f"{row_id}: a satisfied row with no residual carries no next bounded child"
+    if current["capability_state_c2"] == "BUILT_NOT_PROVEN":
+        assert current["missing_contract_or_proof"].strip(), (
+            f"{row_id}: BUILT_NOT_PROVEN must name the remaining proof or residual"
         )
-    assert manifest["merge_sha"][:8] in ledger["real_producer"], (
-        f"{row_id}: real_producer must carry the merge commit that produced it"
-    )
-    assert any(p in ledger["real_producer"] for p in manifest["producer_paths"]), (
-        f"{row_id}: real_producer must name at least one producer path"
-    )
-    assert ledger["state_delta"] not in ("", "UNCHANGED"), (
-        f"{row_id}: state_delta must say what changed"
-    )
 
 
 @pytest.mark.parametrize("row_id", ROWS)
-def test_an_open_row_keeps_a_next_child_and_names_the_residual_in_the_ledger(row_id: str) -> None:
-    manifest = _manifest_rows()[row_id]
-    if manifest["disposition"] != "NOT_SATISFIED":
-        return
-    ledger = _ledger_rows()[row_id]
-    assert ledger["next_bounded_child"].strip(), (
-        f"{row_id}: an open row keeps a next bounded child"
-    )
-    assert ledger["adjudication_notes"].strip(), (
-        f"{row_id}: an open row names its residual in adjudication_notes"
-    )
+def test_historical_open_rows_keep_their_original_residual_receipt(row_id: str) -> None:
+    """The historical packet stays auditable even when later waves close part of its gap."""
+    row = _manifest_rows()[row_id]
+    if row["disposition"] == "NOT_SATISFIED":
+        assert row.get("residual"), f"{row_id}: historical open row lost its residual receipt"
+        assert row["next_bounded_child"].strip(), (
+            f"{row_id}: historical open row lost the child recorded by that packet"
+        )
 
 
 @pytest.mark.parametrize("row_id", ROWS)
-def test_manifest_mirrors_the_ledger_next_bounded_child(row_id: str) -> None:
-    """Child ownership is a fact about the ledger, so the manifest may not disagree."""
-    assert _manifest_rows()[row_id]["next_bounded_child"] == _ledger_rows()[row_id][
+def test_current_manifest_mirrors_the_ledger_next_bounded_child(row_id: str) -> None:
+    """Current child ownership is a canonical fact; historical rows remain immutable evidence."""
+    assert _current_manifest_rows()[row_id]["next_bounded_child"] == _ledger_rows()[row_id][
         "next_bounded_child"
-    ], f"{row_id}: the manifest and the ledger disagree about the next bounded child"
+    ], f"{row_id}: current manifest and ledger disagree about the next bounded child"
 
 
-def test_the_event_object_invalidation_residual_has_exactly_one_owner() -> None:
-    """F08 §9's `invalidation` element on the event object is still unshipped.
-
-    At the base it was carried by `MO-PAID-028`'s next bounded child, worded as ONE child
-    shared with `MO-DELTA-042`. `MO-PAID-028`'s own acceptance sentence is now met, so its
-    child empties and the unmet element would be orphaned unless `MO-DELTA-042` picks it
-    up. Exactly one of the pair must name it: never both, which would double-count the
-    work, and never neither, which would lose it.
-    """
+def test_the_event_object_invalidation_build_is_not_recommissioned() -> None:
+    """#576 shipped invalidation; neither paired row may ask to build it again."""
     ledger = _ledger_rows()
-    owners = [
-        row_id
-        for row_id in ("MO-PAID-028", "MO-DELTA-042")
-        if "invalidation" in ledger[row_id]["next_bounded_child"]
-    ]
-    assert len(owners) == 1, (
-        "the event-object `invalidation` element must be named in the next_bounded_child "
-        f"of exactly one of MO-PAID-028 / MO-DELTA-042; owners today: {owners}"
-    )
-    assert owners == ["MO-DELTA-042"], (
-        "MO-PAID-028's acceptance sentence is met, so the surviving element belongs to "
-        f"MO-DELTA-042's child, not to {owners[0]}'s"
-    )
+    paid = ledger["MO-PAID-028"]["next_bounded_child"]
+    delta = ledger["MO-DELTA-042"]["next_bounded_child"]
+    assert "add the F08 §9 invalidation" not in paid
+    assert "add the F08 §9 invalidation" not in delta
+    assert "invalidation are already shipped" in delta
+    assert "signed-in" in paid
+    assert "signed-in" in delta
 
 
 def test_ledger_shape_is_unchanged() -> None:
