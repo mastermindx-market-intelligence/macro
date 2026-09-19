@@ -108,42 +108,55 @@ verified:
     result: >
       mastermindPaper is visible but Pending approval with instruction to run interactive
       claude to approve. No approval bypass was attempted.
-  - claim: Existing Studio Direct can expose Paper without a second web gateway.
+  - claim: Existing Studio Direct can expose and mutate Paper without a second web gateway.
     command: >
       Stacked PR 853 targeted Node/Python campaigns; chatgpt4 canonical private-service upgrade;
       chatgpt3 canonical control stop/upgrade/seal/start/status; tunnel-client health
-      --port 45023 --pid 33020 --require-control-plane-poll --json.
+      --port 45023 --pid 33020 --require-control-plane-poll --json; then chatgpt3 local MCP
+      paper_inspect -> paper_catalog -> paper_edit(write_html) -> paper_read(get_screenshot/get_jsx).
     result: >
-      Paper module tests 9/9; gateway Paper integration 10/10; private service 70/70 plus
-      focused legacy migration 14/14; private tunnel/control 29/29. chatgpt4 local catalog
-      exposes four paper_* tools and real inspect returns DOCUMENT_UNAVAILABLE. chatgpt3
-      gateway 0.1.6 and tunnel are healthy/ready with healthz=200, readyz=200 and a successful
-      control-plane poll. No fresh ChatGPT conversation edit is claimed yet.
+      Hosted PR 853 CI run 35433202888 succeeded on exact head
+      1ddbf484f765f6b7b11839254103741e1f56eb64. Sequential full Studio Direct Node suite passed
+      131/131; latest-base synthetic integration a57a2d6f8b1db0da35b07fc644c3e78298d26e6e
+      against protected Mastermind 880e377cfa9d3fbdc921e931a55cc8c4143dc119 passed focused
+      Paper gateway/private-service proof and diff-check. chatgpt3 gateway 0.1.6/tunnel remain
+      healthy/ready. Paper deep-link paper://file/01M2VWK62FA5S4VVF6G7SBPE5J opened the intended
+      scratch file on the Studio with no new login ceremony. Operation
+      paper-studio-direct-canary-20260919-sol-001 returned APPLIED_RESPONSE_OBSERVED, changed
+      snapshot cc51a44f... -> 58987274..., returned JPEG SHA-256
+      ae25180d8a517f8ea39d157bc150f49d56086065c0fd1ff2035f96a30dcef18d, and JSX contains
+      'Studio Direct → guarded Paper adapter → editable canvas'. This proves the real local
+      Studio Direct gateway path, not yet a fresh ChatGPT Web conversation invocation through
+      the remote tunnel/control-plane.
   - claim: The latest source hardening stays on the existing PR rather than creating a new control plane.
-    command: GitHub Mastermind PR 585 current head and protected procedure pin
+    command: GitHub Mastermind PR 585 current head, hosted CI, and latest-base synthetic integration
     result: >
-      PR 585 head ff14109c7e32d7605f8646f605667ce1d751aba1; current protected
-      Mastermind procedure pin 55473bb43c3ae1908f53ddd4ccfe724643dd6c69,
-      Skillpack 1.0.1/bootstrap 1. Candidate-owned Paper paths were absent from current
-      protected master at the compatibility check.
+      PR 585 exact head ebe89a73e603139732b34f301e66e84e86f09389; hosted CI run
+      35433484306 succeeded. The code-bearing bridge remains the byte-identical
+      94329a2813e37f1081e1be48aacf371b8f1b23505ec609cc6e8d453554cf8fa0 source from
+      5213af7fcc53bfb26b62f450d58664d9b7a3bdad; ebe89a73 adds only Studio Direct web-carrier
+      docs/Skill corrections. Latest-base synthetic integration
+      8ee600d262d48a6a1c0b2f4eb41348415ce40dd1 against protected Mastermind
+      880e377cfa9d3fbdc921e931a55cc8c4143dc119 passed 33 Paper tests, the D8 ratchet and
+      diff-check. Skillpack remains 1.0.1/bootstrap 1.
 unverified:
-  - claim: Current ff14109 source hardening is fully accepted and is the installed Mac runtime.
+  - claim: Current PR 585 source is fully accepted for protected release.
     what_would_verify: >
-      Exact-head hosted CI concludes green; independent semantic review passes; then after
-      Remote Desktop Commander quota resets or an authorized local operator applies the
-      exact source, compare installed bytes to accepted source and re-run catalog/status plus
-      one non-destructive canary. Do not infer sync from the prior cd34f9 installed hash.
+      Independent semantic review accepts exact head ebe89a73e603139732b34f301e66e84e86f09389.
+      Exact-head hosted CI and latest-base integration are already green; installed Mac Studio
+      bridge bytes already match the current code-bearing SHA-256 and the Studio gateway canary
+      has exercised them. Review acceptance, not another runtime sync, is the remaining source gate.
   - claim: Native Codex and Claude agents can each complete a Paper canary.
     what_would_verify: >
       Human completes Codex reauthentication and Claude project-MCP approval on the isolated
       workspace; each fresh native session calls paper_inspect/read on the intended file and
       one explicitly authorized scratch edit is separately observed.
-  - claim: A fresh ChatGPT Web session can repeat the design journey.
+  - claim: A fresh ChatGPT Web session can repeat the design journey through Studio Direct.
     what_would_verify: >
-      Start a fresh eligible web session with the authorized Remote Desktop Commander app,
-      bind the same Mac and repeat inspect -> guarded scratch edit -> screenshot/JSX. A
-      dedicated ChatGPT custom write app separately requires its own eligible workspace,
-      Secure MCP Tunnel ID/API key and admin publication ceremony.
+      Start a fresh chatgpt3 Web conversation after its app catalog refresh, confirm the four
+      gateway-owned paper_* tools are present, and repeat inspect -> guarded scratch edit ->
+      screenshot/JSX through the already-healthy Studio Direct Secure MCP Tunnel. The same
+      gateway/adapter path is locally proven; only the fresh remote Web invocation remains.
   - claim: A sealed Executive worker has a lawful Paper grant.
     what_would_verify: >
       Extend the EXISTING Executive capability/profile/resource/placement owners for a
@@ -156,25 +169,23 @@ unverified:
       components/tokens -> responsive browser proof across required dark/light, EN/ZH and
       meaningful data/loading/empty/error states.
 unresolved:
-  - Mastermind PR 585 exact-head hosted CI is green at 5213af7fcc53bfb26b62f450d58664d9b7a3bdad, but independent semantic review and source release remain outstanding.
-  - Studio Direct Paper carrier PR 853 is DRAFT/stacked on PR 840 and still requires hosted CI conclusion plus review/stack reconciliation before source release.
-  - Mac Studio Paper is reachable through the exact current adapter, but no design is open there; a legitimate sign-in/file-open UI ceremony is still required before a fresh Web edit proof.
+  - Mastermind PR 585 exact head ebe89a73e603139732b34f301e66e84e86f09389 has green hosted CI and latest-base proof, but independent semantic review/source release remain outstanding. Reviewer mastermindx-2 is requested.
+  - Studio Direct Paper carrier PR 853 exact head 1ddbf484f765f6b7b11839254103741e1f56eb64 has green hosted CI, latest-base focused proof and a real local gateway edit journey, but remains DRAFT/stacked on PR 840 pending independent review and stack/source release. Reviewer mastermindx-2 is requested.
+  - Mac Studio Paper now has the intended cloud scratch design open and current adapter writes are proven. A fresh chatgpt3 Web conversation is still required because this conversation's MCP catalog was established before the new paper_* tools were deployed.
   - Codex stored ChatGPT auth is invalid and needs the user's interactive login ceremony.
   - Claude project MCP is visible but needs the user's explicit project approval ceremony.
   - The Executive registry/supervisor has no accepted Paper-local write-capable operator profile; adding one is separate reviewed existing-control-plane work.
   - MCP quota scope on Paper Pro is not stated authoritatively as per-team versus per-editor.
 next_actions:
   - >
-    Obtain independent semantic review and release acceptance for Mastermind PR 585 exact head
-    5213af7fcc53bfb26b62f450d58664d9b7a3bdad. Its hosted CI is green; do not treat that as
-    source acceptance by itself.
+    Consume the requested independent mastermindx-2 reviews for PR 585 exact head
+    ebe89a73e603139732b34f301e66e84e86f09389 and stacked PR 853 exact head
+    1ddbf484f765f6b7b11839254103741e1f56eb64. Hosted CI/latest-base proof are already green;
+    do not treat green checks as source acceptance.
   - >
-    Let stacked Studio Direct PR 853 exact-head CI conclude and review it against parent PR 840.
-    Preserve the existing gateway/tunnel owner; do not create a second Paper web gateway.
-  - >
-    Human gate on the Mac Studio: sign into the legitimate Paper account if needed and open or
-    create one intended scratch design. Then use a fresh chatgpt3 Web session to prove
-    paper_inspect -> paper_edit -> screenshot -> JSX through the healthy 0.1.6 tunnel canary.
+    After PR 853 review/stack gates allow, start a fresh chatgpt3 Web conversation so its MCP
+    catalog includes paper_inspect/paper_catalog/paper_read/paper_edit, then repeat the already
+    locally proven guarded edit -> screenshot -> JSX journey through the live Secure MCP Tunnel.
   - >
     Human gate: run codex logout then codex login on the Mac Mini, and separately launch
     interactive Claude in the isolated Paper workspace to approve only mastermindPaper.
@@ -211,14 +222,15 @@ danger_areas:
 The local Paper 0.5.11 design substrate is PROVEN_LIVE on the authorized Mac Mini through
 the proven native bridge journey: a real scratch edit, screenshot and JSX round trip
 succeeded with no ambiguous effects. The overall program is still PARTIAL. Mastermind
-PR 585 is DRAFT at `5213af7fcc53bfb26b62f450d58664d9b7a3bdad` with exact-head hosted
-CI green but independent source acceptance outstanding. Mac Studio now carries the exact current
-bridge runtime and Studio Direct PR 853 has one healthy tunneled 0.1.6 canary, but the Studio
-Paper app has no open design. Executive worker enrollment, fresh-web edit proof and real-product
+PR 585 is DRAFT at `ebe89a73e603139732b34f301e66e84e86f09389` with exact-head hosted
+CI and latest-base proof green but independent source acceptance outstanding. Mac Studio carries
+the exact current bridge runtime, has the intended scratch design open, and Studio Direct PR 853
+has a healthy 0.1.6 tunnel plus a real local gateway inspect/edit/screenshot/JSX journey. Fresh
+ChatGPT-Web invocation through the remote tunnel, Executive worker enrollment and real-product
 browser proof remain open.
 
 Implementation: https://github.com/mastermindx-market-intelligence/Mastermind/pull/585
-Procedure: protected Mastermind `55473bb43c3ae1908f53ddd4ccfe724643dd6c69`,
+Procedure: protected Mastermind `880e377cfa9d3fbdc921e931a55cc8c4143dc119`,
 Skillpack 1.0.1/bootstrap 1. Read the PR's `docs/PAPER_DESIGN_INTEGRATION.md` and
 `docs/evidence/paper_desktop/20260913_native_staging.json`.
 
@@ -229,18 +241,20 @@ proof; Agent OS owns durable organizational continuity.
 
 ## What is left - in order
 
-Conclude PR 585 source acceptance and PR 853 stacked gateway review/CI. The immediate product
-gate is now the Mac Studio Paper UI: sign into the legitimate account if needed and open one
-scratch design, then repeat inspect/edit/screenshot/JSX from a fresh chatgpt3 Web session through
-the already healthy 0.1.6 tunnel. Native Codex/Claude human ceremonies and the separate Executive
+Conclude PR 585 source acceptance and PR 853 stacked gateway review/release. The Mac Studio
+Paper UI/file-open gate is now closed: the intended scratch design is open and local Studio Direct
+inspect/edit/screenshot/JSX is proven. The immediate remaining Web gate is a fresh chatgpt3
+conversation whose catalog refresh exposes the deployed paper_* tools, followed by the same journey
+through the already healthy 0.1.6 Secure MCP Tunnel. Native Codex/Claude human ceremonies and the separate Executive
 profile extension remain downstream. One real Mastermind design-to-code/browser journey then
 closes the Figma-migration acceptance.
 
 ## What will bite the next operator
 
-Do not conflate green CI, a healthy Studio Direct tunnel, or DOCUMENT_UNAVAILABLE with a completed
-fresh-Web Paper journey. The Studio result means the exact adapter can reach Paper but no design is
-open. Do not interpret Codex HTTP 401 as Paper MCP failure, or Claude Pending approval as broken
+Do not conflate green CI, a healthy Studio Direct tunnel, or the local gateway edit proof with a
+completed fresh-Web Paper journey. The Studio design is open and writable now; the remaining Web
+uncertainty is whether a newly started ChatGPT conversation receives and successfully invokes the
+new paper_* catalog through the remote tunnel. Do not interpret Codex HTTP 401 as Paper MCP failure, or Claude Pending approval as broken
 config. Do not accept fake Paper member accounts to represent agents. Pro bills editor seats; the
 public site does not document whether MCP quota is team-pooled.
 
