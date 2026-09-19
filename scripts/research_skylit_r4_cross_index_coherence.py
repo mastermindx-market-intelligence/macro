@@ -328,6 +328,18 @@ def analyze_states(
             "position_tier": normalized_states[root].get(
                 "position_tier", r2.POSITION_TIER
             ),
+            "model_input_contract_rate": normalized_states[root].get(
+                "model_input_contract_rate"
+            ),
+            "spot_input_contract_rate": normalized_states[root].get(
+                "spot_input_contract_rate"
+            ),
+            "settled_oi_contract_rate": normalized_states[root].get(
+                "settled_oi_contract_rate"
+            ),
+            "exposure_mass_coverage": normalized_states[root].get(
+                "settled_oi_exposure_mass_coverage_on_prior_known_mass"
+            ),
         }
 
     pairwise_by_bucket: dict[str, list[dict[str, Any]]] = {}
