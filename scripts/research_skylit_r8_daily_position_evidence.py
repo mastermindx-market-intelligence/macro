@@ -59,7 +59,15 @@ def _normalize_oi(frame: pd.DataFrame, root: str, *, label: str, value_name: str
             f"{label} has malformed contract identity rows for {root.upper()}: "
             f"{invalid_identity}/{len(frame)}"
         )
-    raw_oi = pd.to_numeric(frame.get("open_interest"), errors="coerce")
+    if "open_interest" not in frame.columns:
+        raise R8Refusal(f"{label} is missing open_interest")
+    boolean_oi = frame["open_interest"].map(lambda v: isinstance(v, (bool, np.bool_)))
+    if bool(boolean_oi.any()):
+        raise R8Refusal(
+            f"{label} has Boolean option contract OI for {root.upper()}: "
+            f"{int(boolean_oi.sum())}/{len(frame)}"
+        )
+    raw_oi = pd.to_numeric(frame["open_interest"], errors="coerce")
     noninteger = np.isfinite(raw_oi) & (raw_oi >= 0) & ~_integer_like(raw_oi)
     if bool(noninteger.any()):
         raise R8Refusal(
@@ -129,6 +137,12 @@ def _build_evidence_frame(
     eod = _normalize_source_identity(eod_raw, root, label="EOD")
     if "volume" not in eod.columns:
         raise R8Refusal(f"EOD board missing volume for {root} {session}")
+    boolean_volume = eod["volume"].map(lambda v: isinstance(v, (bool, np.bool_)))
+    if bool(boolean_volume.any()):
+        raise R8Refusal(
+            f"EOD board has Boolean option contract volume for {root} {session}: "
+            f"{int(boolean_volume.sum())}/{len(eod)}"
+        )
     eod["volume"] = pd.to_numeric(eod["volume"], errors="coerce")
     noninteger_volume = (
         np.isfinite(eod["volume"])
