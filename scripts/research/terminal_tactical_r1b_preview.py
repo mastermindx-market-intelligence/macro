@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import pandas as pd
 
-from engine.entry_radar.tactical_exhaustion import construct_session
+from engine.entry_radar.tactical_exhaustion import construct_session, match_controls
 from engine.session_digest import session_window_et
 from lib.nyse_calendar import session_n_back
 
@@ -40,6 +40,7 @@ def synthetic_examples() -> dict:
         'expiry': [[98.7, 98.8, 98.6, 98.7, 100]] * 3,
     }
     examples = []
+    reclaim_report = None
     for name, tail in paths.items():
         rows = common + tail
         frame = pd.DataFrame(rows, index=pd.date_range(start, periods=len(rows), freq='5min'),
@@ -48,9 +49,36 @@ def synthetic_examples() -> dict:
                  prior_session=session_n_back(day, 1), prior_close=100.0,
                  prior_atr=2.0, asof=start+timedelta(minutes=30), config_bytes=config)
         examples.append({'name': name, 'construction': report})
+        if name == 'reclaim':
+            reclaim_report = report
+    assert reclaim_report is not None
+    selected = next(e for e in reclaim_report['events']
+                    if e['selector'] == 'EXHAUSTION_RECLAIM')
+    control_dates = ['2026-07-13','2026-07-14','2026-07-15','2026-07-16','2026-07-17',
+                     '2026-07-20','2026-07-21','2026-07-22','2026-07-23','2026-07-24']
+    controls = [{
+        'anchor_id': f'AMD:{d}:synthetic-control',
+        'candidate_at': f'{d}T13:45:00+00:00',
+        'symbol': 'AMD', 'session': d, 'clock_bin': 19,
+        'displacement_bucket': 0, 'displacement_atr': 0.6,
+        'qqq_open_to_decision_sign': 1, 'future_family_labels_used': False,
+    } for d in control_dates]
+    controls += [
+        dict(controls[0], anchor_id='NVDA:2026-07-27:decoy', symbol='NVDA', session='2026-07-27', candidate_at='2026-07-27T13:45:00+00:00'),
+        dict(controls[0], anchor_id='AMD:2026-07-28:wrong-bin', session='2026-07-28', candidate_at='2026-07-28T13:45:00+00:00', clock_bin=20),
+        dict(controls[0], anchor_id='AMD:2026-07-29:wrong-market', session='2026-07-29', candidate_at='2026-07-29T13:45:00+00:00', qqq_open_to_decision_sign=-1),
+    ]
+    available = match_controls(
+        selected, selected_symbol='AMD', selected_session=day, selected_qqq_sign=1,
+        control_census=controls, config_bytes=config)
+    no_control = match_controls(
+        selected, selected_symbol='AMD', selected_session=day, selected_qqq_sign=1,
+        control_census=controls[:9], config_bytes=config)
     return {'evidence_class': 'SYNTHETIC_ONLY', 'market_data_read': False,
             'outcomes_computed': False, 'trial_registration_claimed': False,
-            'live_authority': False, 'examples': examples}
+            'live_authority': False, 'examples': examples,
+            'matching': {'selected_selector': selected['selector'],
+                         'available': available, 'no_control': no_control}}
 
 
 def markdown(payload: dict) -> str:
@@ -74,7 +102,13 @@ def markdown(payload: dict) -> str:
                   f"continuation level: {first['continuation_level']:.2f}.",
                   f"Independent control anchors: {len(r['control_census'])}. "
                   'Future family labels never select the controls.', '']
-    lines += ['## Still held', '',
+    matching = payload['matching']
+    lines += ['## Matched-control demonstration', '',
+              'The synthetic selected event is matched only on the frozen candidate-time covariates: same ticker, retrospective partition, 30-minute time bin, displacement bucket, QQQ open-to-decision sign, and confirmation-delay treatment; the selected date is excluded.', '',
+              f"Lawful synthetic pool: **{matching['available']['matched_count']}** controls => **{matching['available']['availability']}**. "
+              f"Below-floor pool: **{matching['no_control']['matched_count']}** controls => **{matching['no_control']['availability']}**; no widening fallback is used.", '',
+              'Every matched control receives the same confirmation delay and five-minute processing latency as the selected event. Future family labels never select or exclude controls.', '',
+              '## Still held', '',
               'Empirical TrialLedger registration, market-outcome runs, independent review, '
               'deployment and live alert integration remain separate gates. This report unlocks '
               'review of executable mechanics; it establishes no accuracy or profitability.', '']

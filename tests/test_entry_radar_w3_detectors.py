@@ -653,3 +653,180 @@ def test_TTIB_before_first_bar_close_is_pending_not_a_measured_no_signal():
     r = _ttib_run(minute=572)
     assert r['availability'] == 'PENDING'
     assert r['reason'] == 'no_completed_regular_bar_yet'
+
+
+# ---------------------------------------------------------------------------
+# TTI R1-B v4 matched-control selection — synthetic-only, no outcomes
+# ---------------------------------------------------------------------------
+
+def _ttib_control_row(session: str, *, symbol='AMD', candidate_at=None, clock_bin=19,
+                      displacement_bucket=0, qqq_sign=1, anchor_id=None, **extra):
+    if candidate_at is None:
+        candidate_at = f'{session}T13:45:00+00:00'
+    row = {
+        'anchor_id': anchor_id or f'{symbol}:{session}:synthetic',
+        'candidate_at': candidate_at,
+        'symbol': symbol,
+        'session': session,
+        'clock_bin': clock_bin,
+        'displacement_bucket': displacement_bucket,
+        'displacement_atr': 0.6,
+        'qqq_open_to_decision_sign': qqq_sign,
+        'future_family_labels_used': False,
+    }
+    row.update(extra)
+    return row
+
+
+def _ttib_selected_reclaim():
+    r = _ttib_run(minute=590)
+    return next(e for e in r['events'] if e['selector'] == 'EXHAUSTION_RECLAIM')
+
+
+def test_TTIB_match_controls_requires_exact_frozen_covariates_and_excludes_selected_date():
+    from engine.entry_radar.tactical_exhaustion import match_controls
+    selected = _ttib_selected_reclaim()
+    # Eleven lawful late-partition controls, one on selected date (must be excluded),
+    # plus one decoy for every frozen matching covariate.
+    dates = ['2026-07-13','2026-07-14','2026-07-15','2026-07-16','2026-07-17',
+             '2026-07-20','2026-07-21','2026-07-22','2026-07-23','2026-07-24']
+    rows = [_ttib_control_row(d) for d in dates]
+    rows += [
+        _ttib_control_row('2026-09-17', anchor_id='same-date'),
+        _ttib_control_row('2026-07-27', symbol='NVDA', anchor_id='wrong-ticker'),
+        _ttib_control_row('2026-06-30', anchor_id='wrong-partition'),
+        _ttib_control_row('2026-07-28', clock_bin=20, anchor_id='wrong-bin'),
+        _ttib_control_row('2026-07-29', displacement_bucket=1, anchor_id='wrong-displacement'),
+        _ttib_control_row('2026-07-30', qqq_sign=-1, anchor_id='wrong-market'),
+    ]
+    got = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                         selected_qqq_sign=1, control_census=rows,
+                         config_bytes=_ttib_config())
+    assert got['availability'] == 'AVAILABLE'
+    assert got['matched_count'] == 10
+    assert got['required_min_rows'] == 10
+    assert {c['session'] for c in got['matched_controls']} == set(dates)
+    assert got['selected']['clock_bin'] == 19
+    assert got['selected']['displacement_bucket'] == 0
+    assert got['selected']['partition'] == 'late'
+    assert got['selected']['qqq_open_to_decision_sign'] == 1
+    assert got['authority'] == 'research_matching_only'
+    assert got['market_outcomes_computed'] is False
+
+
+def test_TTIB_match_controls_applies_same_confirmation_delay_plus_processing_latency():
+    from datetime import datetime, timedelta
+    from engine.entry_radar.tactical_exhaustion import match_controls
+    selected = _ttib_selected_reclaim()
+    rows = [_ttib_control_row(f'2026-07-{13+i:02d}') for i in range(10)]
+    got = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                         selected_qqq_sign=1, control_census=rows,
+                         config_bytes=_ttib_config())
+    assert selected['confirmation_delay_bars'] == 1
+    assert got['selected']['processing_latency_minutes'] == 5
+    for c in got['matched_controls']:
+        candidate = datetime.fromisoformat(c['candidate_at'])
+        entry = datetime.fromisoformat(c['entry_reference_at'])
+        assert entry - candidate == timedelta(minutes=10)
+        assert c['confirmation_delay_bars'] == 1
+        assert c['processing_latency_minutes'] == 5
+        assert c['entry_reference_state'] == 'scheduled_clock_only_not_a_fill'
+
+
+def test_TTIB_match_controls_below_floor_is_no_control_without_widening_fallback():
+    from engine.entry_radar.tactical_exhaustion import match_controls
+    selected = _ttib_selected_reclaim()
+    rows = [_ttib_control_row(f'2026-07-{13+i:02d}') for i in range(9)]
+    # Many near misses must not be borrowed to rescue the floor.
+    rows += [_ttib_control_row(f'2026-08-{i:02d}', clock_bin=20, anchor_id=f'near-{i}')
+             for i in range(1, 13)]
+    got = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                         selected_qqq_sign=1, control_census=rows,
+                         config_bytes=_ttib_config())
+    assert got['availability'] == 'NO_CONTROL'
+    assert got['matched_count'] == 9
+    assert got['matched_controls'] == []
+    assert got['fallback_used'] is False
+    assert got['reason'] == 'matched_control_floor_not_met'
+
+
+def test_TTIB_match_controls_never_conditions_on_future_family_labels():
+    from engine.entry_radar.tactical_exhaustion import match_controls
+    selected = _ttib_selected_reclaim()
+    base = [_ttib_control_row(f'2026-07-{13+i:02d}') for i in range(10)]
+    labelled = [dict(row, selector='CONTINUATION_RISK', later_family='RECLAIM_ONLY',
+                     future_family_labels_used=True) for row in base]
+    a = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                       selected_qqq_sign=1, control_census=base, config_bytes=_ttib_config())
+    b = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                       selected_qqq_sign=1, control_census=labelled, config_bytes=_ttib_config())
+    assert a['matched_controls'] == b['matched_controls']
+    assert all('selector' not in c and 'later_family' not in c for c in b['matched_controls'])
+
+
+def test_TTIB_match_controls_deduplicates_identity_and_is_input_order_deterministic():
+    from engine.entry_radar.tactical_exhaustion import match_controls
+    selected = _ttib_selected_reclaim()
+    rows = [_ttib_control_row(f'2026-07-{13+i:02d}', anchor_id=f'a-{i}') for i in range(10)]
+    rows += [dict(rows[0]), dict(rows[1])]
+    a = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                       selected_qqq_sign=1, control_census=rows, config_bytes=_ttib_config())
+    b = match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                       selected_qqq_sign=1, control_census=list(reversed(rows)),
+                       config_bytes=_ttib_config())
+    assert a['matched_count'] == 10
+    assert a['matched_controls'] == b['matched_controls']
+    assert a['excluded_counts']['duplicate_identity'] == 2
+
+
+def test_TTIB_match_controls_rejects_malformed_selected_or_market_sign_and_does_not_read_outcomes():
+    from engine.entry_radar.tactical_exhaustion import match_controls
+    import inspect
+    selected = _ttib_selected_reclaim()
+    rows = [_ttib_control_row(f'2026-07-{13+i:02d}') for i in range(10)]
+    with pytest.raises(ValueError, match='selected event'):
+        match_controls({}, selected_symbol='AMD', selected_session='2026-09-17',
+                       selected_qqq_sign=1, control_census=rows, config_bytes=_ttib_config())
+    with pytest.raises(ValueError, match='QQQ sign'):
+        match_controls(selected, selected_symbol='AMD', selected_session='2026-09-17',
+                       selected_qqq_sign=2, control_census=rows, config_bytes=_ttib_config())
+    source = inspect.getsource(match_controls)
+    assert 'return' in source
+    for forbidden in ('net_beta_residual', 'mfe', 'mae', 'target_first', 'adverse_first'):
+        assert forbidden not in source.lower()
+
+
+def test_TTIB_synthetic_preview_consumes_frozen_matched_control_selector():
+    import json, subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = root/'scripts/research/terminal_tactical_r1b_preview.py'
+    p = subprocess.run([sys.executable, str(script), '--format', 'json'],
+                       cwd=root, capture_output=True, text=True, timeout=30)
+    assert p.returncode == 0, p.stderr
+    report = json.loads(p.stdout)
+    matching = report['matching']
+    assert matching['selected_selector'] == 'EXHAUSTION_RECLAIM'
+    assert matching['available']['availability'] == 'AVAILABLE'
+    assert matching['available']['matched_count'] == 10
+    assert matching['available']['fallback_used'] is False
+    assert matching['no_control']['availability'] == 'NO_CONTROL'
+    assert matching['no_control']['matched_count'] == 9
+    assert matching['no_control']['matched_controls'] == []
+    assert matching['no_control']['fallback_used'] is False
+    assert matching['available']['market_outcomes_computed'] is False
+    assert report['market_data_read'] is False and report['outcomes_computed'] is False
+
+
+def test_TTIB_synthetic_preview_markdown_explains_exact_matching_and_no_fallback():
+    import subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = root/'scripts/research/terminal_tactical_r1b_preview.py'
+    p = subprocess.run([sys.executable, str(script), '--format', 'markdown'],
+                       cwd=root, capture_output=True, text=True, timeout=30)
+    assert p.returncode == 0, p.stderr
+    assert 'Matched-control demonstration' in p.stdout
+    assert '10' in p.stdout and 'NO_CONTROL' in p.stdout
+    assert 'no widening fallback' in p.stdout.lower()
+    assert 'same ticker' in p.stdout.lower() and 'qqq' in p.stdout.lower()

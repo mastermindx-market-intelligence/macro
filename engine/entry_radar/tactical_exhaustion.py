@@ -231,3 +231,155 @@ def construct_session(
     elif report['diagnostics']:
         report.update(availability='PARTIAL', reason='input_gaps_or_unusable_observations')
     return report
+
+
+
+def _matching_partition(session: date, cfg: dict) -> str | None:
+    early_end = date.fromisoformat(str(cfg['early_partition_end']))
+    late_start = date.fromisoformat(str(cfg['late_partition_start']))
+    if session <= early_end:
+        return 'early'
+    if session >= late_start:
+        return 'late'
+    return None
+
+
+def _aware_iso(value: object, *, field: str) -> datetime:
+    if not isinstance(value, str):
+        raise ValueError(f'{field} must be an aware ISO datetime')
+    try:
+        parsed = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    except ValueError as exc:
+        raise ValueError(f'{field} must be an aware ISO datetime') from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise ValueError(f'{field} must be an aware ISO datetime')
+    return parsed
+
+
+def match_controls(
+    selected_event: dict, *, selected_symbol: str,
+    selected_session: str | date, selected_qqq_sign: int,
+    control_census, config_bytes: bytes,
+) -> dict:
+    """Select the frozen v4 matched-control pool without reading future results.
+
+    Controls are matched only on candidate-time covariates named in the v4
+    preregistration.  The selected event's confirmation delay is copied onto each
+    baseline anchor before the same processing latency is applied.  No widening
+    fallback exists when the frozen minimum pool cannot be met.
+    """
+    if hashlib.sha256(config_bytes).hexdigest() != CONFIG_SHA256:
+        raise ValueError('frozen v4 config identity mismatch')
+    cfg = json.loads(config_bytes)
+    required = ('candidate_at', 'confirmation_delay_bars', 'displacement_atr')
+    if not isinstance(selected_event, dict) or any(k not in selected_event for k in required):
+        raise ValueError('selected event missing frozen matching fields')
+    if selected_qqq_sign not in (-1, 0, 1) or isinstance(selected_qqq_sign, bool):
+        raise ValueError('selected QQQ sign must be -1, 0, or 1')
+    if not isinstance(selected_symbol, str) or not selected_symbol:
+        raise ValueError('selected symbol required')
+    try:
+        selected_day = (selected_session if isinstance(selected_session, date)
+                        else date.fromisoformat(str(selected_session)))
+    except ValueError as exc:
+        raise ValueError('selected session must be ISO date') from exc
+    partition = _matching_partition(selected_day, cfg)
+    if partition is None:
+        raise ValueError('selected session outside frozen partitions')
+    candidate_at = _aware_iso(selected_event['candidate_at'], field='selected candidate_at')
+    session_open, _session_close = session_window_et(selected_day)
+    local_candidate = candidate_at.astimezone(session_open.tzinfo)
+    if local_candidate.date() != selected_day:
+        raise ValueError('selected event candidate/session mismatch')
+    minute = local_candidate.hour * 60 + local_candidate.minute
+    clock_bin = minute // int(cfg['clock_bin_minutes'])
+    displacement = selected_event['displacement_atr']
+    if not _number(displacement):
+        raise ValueError('selected event displacement invalid')
+    displacement_bucket = bisect_right(cfg['displacement_bucket_edges_atr'], float(displacement)) - 1
+    delay = selected_event['confirmation_delay_bars']
+    if not isinstance(delay, int) or isinstance(delay, bool) or delay < 0:
+        raise ValueError('selected event confirmation delay invalid')
+    processing_minutes = int(cfg['execution_latency_minutes'])
+
+    excluded: dict[str, int] = {}
+    seen: set[str] = set()
+    matched: list[dict] = []
+
+    def reject(reason: str) -> None:
+        excluded[reason] = excluded.get(reason, 0) + 1
+
+    for raw in control_census:
+        if not isinstance(raw, dict):
+            reject('malformed')
+            continue
+        anchor_id = raw.get('anchor_id')
+        if not isinstance(anchor_id, str) or not anchor_id:
+            reject('malformed')
+            continue
+        if anchor_id in seen:
+            reject('duplicate_identity')
+            continue
+        seen.add(anchor_id)
+        try:
+            control_day = date.fromisoformat(str(raw.get('session')))
+            control_at = _aware_iso(raw.get('candidate_at'), field='control candidate_at')
+        except (TypeError, ValueError):
+            reject('malformed')
+            continue
+        if raw.get('symbol') != selected_symbol:
+            reject('ticker')
+            continue
+        if control_day == selected_day:
+            reject('same_date')
+            continue
+        if _matching_partition(control_day, cfg) != partition:
+            reject('partition')
+            continue
+        if raw.get('clock_bin') != clock_bin:
+            reject('clock_bin')
+            continue
+        if raw.get('displacement_bucket') != displacement_bucket:
+            reject('displacement_bucket')
+            continue
+        if raw.get('qqq_open_to_decision_sign') != selected_qqq_sign:
+            reject('market_sign')
+            continue
+        entry_at = control_at + timedelta(
+            minutes=delay * 5 + processing_minutes)
+        matched.append({
+            'anchor_id': anchor_id,
+            'candidate_at': _iso(control_at),
+            'session': control_day.isoformat(),
+            'symbol': selected_symbol,
+            'clock_bin': clock_bin,
+            'displacement_bucket': displacement_bucket,
+            'qqq_open_to_decision_sign': selected_qqq_sign,
+            'confirmation_delay_bars': delay,
+            'processing_latency_minutes': processing_minutes,
+            'entry_reference_at': _iso(entry_at),
+            'entry_reference_state': 'scheduled_clock_only_not_a_fill',
+        })
+
+    matched.sort(key=lambda row: (row['session'], row['candidate_at'], row['anchor_id']))
+    floor = int(cfg['matched_control_min_rows'])
+    available = len(matched) >= floor
+    return {
+        'schema': 'mastermind.tti.r1b.matched_controls.v4',
+        'study_id': cfg['study_id'], 'config_sha256': CONFIG_SHA256,
+        'authority': 'research_matching_only', 'market_outcomes_computed': False,
+        'fallback_used': False,
+        'availability': 'AVAILABLE' if available else 'NO_CONTROL',
+        'reason': None if available else 'matched_control_floor_not_met',
+        'required_min_rows': floor, 'matched_count': len(matched),
+        'selected': {
+            'symbol': selected_symbol, 'session': selected_day.isoformat(),
+            'candidate_at': _iso(candidate_at), 'partition': partition,
+            'clock_bin': clock_bin, 'displacement_bucket': displacement_bucket,
+            'qqq_open_to_decision_sign': selected_qqq_sign,
+            'confirmation_delay_bars': delay,
+            'processing_latency_minutes': processing_minutes,
+        },
+        'matched_controls': matched if available else [],
+        'excluded_counts': dict(sorted(excluded.items())),
+    }
