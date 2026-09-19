@@ -1,7 +1,8 @@
 """Pin packet W9B_REC_NS: the Supabase migration namespace note exists and carries
 nothing the records lane's own law forbids.
 
-One suite, one test, per seat ruling R2. It asserts the four named properties of
+One suite (seat ruling R2 said one test; the file now holds two functions — the original
+pin test below and the round-3 truth-pin test the seat heal added). The first asserts the four named properties of
 `research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md`:
 the note exists; it carries no Supabase personal access token, no service-role key and no
 20-letter-shaped credential token; it never uses BUILT as a standalone state word (the only
@@ -112,7 +113,9 @@ def test_the_w9_namespace_note_carries_every_anchor_and_says_nothing_forbidden()
     )
 
 
-# --- Round-3 truth pins (seat, 2026-09-19): each of these FAILS at bf526615 and 426cccc3 ---
+# --- Round-3 truth pins (seat, 2026-09-19): one test function that FAILS as a whole at bf526615 and
+# 426cccc3 (some individual pins already held there; the false-ruling / REST-read / all-three /
+# placeholder-clock / OPEN-row pins did not). Round-3b (rv3b m1) adds the present-tense pins. ---
 _RULING_EXACT = '"#579 owns 0024, #577 owns 0025, #582 owns 0026 (reserved), #581 owns 0027."'
 _FALSE_RULING = "#581 owns 0024"
 _READ_DATE_EXACT = "(committed 2026-09-14T07:06:47Z; local 2026-09-14 00:06:47 -0700)"
@@ -131,3 +134,20 @@ def test_round3_truth_pins_ruling_date_read_and_no_placeholder_clock() -> None:
     assert "all three 0024-claimers" in text and "all four 0024-claimers" not in text
     assert "07:5xZ" not in text and ":xxZ" not in text, "read timestamps are clocks, never placeholders"
     assert "| OPEN |" not in text, "the 2026-09-13 table must not present the three PRs as OPEN in the present tense"
+
+
+def test_round3b_no_present_tense_open_claims():
+    """rv3b MINOR 1: the 2026-09-13 narrative may describe the collision only as a dated read;
+    the three Terminal PRs are MERGED (2026-09-19T03:15:10Z / 04:58:44Z / 06:36:06Z)."""
+    text = NOTE.read_text(encoding="utf-8")
+    for phrase in (
+        "Three open Terminal pull requests each claim",
+        "One open Terminal pull request",
+        "Three open\nTerminal pull requests all claim",
+        "because none of the three is merged",
+        "The records stack has the leverage right now",
+    ):
+        assert phrase.replace("\\n", "\n") not in text, f"present-tense open-PR prose must not remain: {phrase!r}"
+    assert "At the 2026-09-13 read, three Terminal pull requests each claimed" in text
+    assert "which is what seat ruling h_t581 did" in text
+
