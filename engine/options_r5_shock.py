@@ -23,6 +23,7 @@ the shock panel is formed.
 """
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from datetime import date
 from typing import Sequence
@@ -46,6 +47,16 @@ class ShockObservation:
     iv_change_pts: float
 
 
+@dataclass(frozen=True)
+class SessionPoint:
+    day: date
+    spot: float
+    iv30_pts: float
+    support_mode: str
+    lower_dte: int | None
+    upper_dte: int | None
+
+
 def _parse_day(value: object) -> date | None:
     try:
         ts = pd.Timestamp(value)
@@ -56,8 +67,8 @@ def _parse_day(value: object) -> date | None:
     return ts.date()
 
 
-def _session_point(day_df: pd.DataFrame, day: date) -> tuple[float, float] | None:
-    """Return (median spot, 30-DTE ATM IV in vol points) for one source session."""
+def _session_point(day_df: pd.DataFrame, day: date) -> SessionPoint | None:
+    """Return one owner-native 30-DTE point plus the term-support receipt."""
     spot_values = pd.to_numeric(day_df["underlying_price"], errors="coerce")
     spot_values = spot_values[np.isfinite(spot_values) & (spot_values > 0)]
     if spot_values.empty:
@@ -81,12 +92,65 @@ def _session_point(day_df: pd.DataFrame, day: date) -> tuple[float, float] | Non
     iv30 = _iv30_from_term(term_rows)
     if iv30 is None or not np.isfinite(iv30) or iv30 <= 0:
         return None
-    return spot, float(iv30)
+
+    dtes = sorted({int(row["dte"]) for row in term_rows})
+    if 30 in dtes:
+        support_mode = "exact_30d"
+        lower_dte = 30
+        upper_dte = 30
+    else:
+        lower = [dte for dte in dtes if dte < 30]
+        upper = [dte for dte in dtes if dte > 30]
+        lower_dte = max(lower) if lower else None
+        upper_dte = min(upper) if upper else None
+        if lower_dte is not None and upper_dte is not None:
+            support_mode = "interpolated_bracketed"
+        elif lower_dte is not None:
+            support_mode = "nearest_short_fallback"
+        else:
+            support_mode = "nearest_long_fallback"
+
+    return SessionPoint(
+        day=day,
+        spot=spot,
+        iv30_pts=float(iv30),
+        support_mode=support_mode,
+        lower_dte=lower_dte,
+        upper_dte=upper_dte,
+    )
+
+
+def _source_digest(work: pd.DataFrame) -> str:
+    columns = [
+        "root", "date", "expiration", "strike", "right",
+        "implied_vol", "underlying_price",
+    ]
+    ordered = work.loc[:, columns].copy()
+    ordered["_date_sort"] = pd.to_datetime(ordered["date"], errors="coerce")
+    ordered["_exp_sort"] = pd.to_datetime(ordered["expiration"], errors="coerce")
+    ordered["_strike_sort"] = pd.to_numeric(ordered["strike"], errors="coerce")
+    ordered = ordered.sort_values(
+        ["_date_sort", "_exp_sort", "_strike_sort", "right"],
+        kind="mergesort",
+    )
+    lines = []
+    for row in ordered.itertuples(index=False):
+        def canon(value: object) -> str:
+            if value is None or pd.isna(value):
+                return "NA"
+            if isinstance(value, (float, int, np.floating, np.integer)):
+                return format(float(value), ".12g")
+            return str(value)
+        lines.append("\t".join(canon(getattr(row, col)) for col in columns))
+    return hashlib.sha256(("\n".join(lines) + ("\n" if lines else "")).encode()).hexdigest()
 
 
 def build_spot_iv_shocks(
     greeks_df: pd.DataFrame,
     asof: str,
+    root: str,
+    *,
+    term_support_policy: str,
 ) -> tuple[list[ShockObservation], dict]:
     """Build adjacent-NYSE-session spot/IV shocks from source rows at or before `asof`.
 
@@ -94,24 +158,49 @@ def build_spot_iv_shocks(
     contains no session between them; Monday->Wednesday is rejected when Tuesday was a
     session but is absent from the source points.
     """
-    required = {"date", "expiration", "strike", "implied_vol", "underlying_price"}
+    required = {
+        "root", "date", "expiration", "strike", "right",
+        "implied_vol", "underlying_price",
+    }
     missing = sorted(required - set(getattr(greeks_df, "columns", ())))
     if missing:
         raise ValueError(f"R5 spot/IV source is missing required columns: {missing}")
 
+    root_key = str(root).strip().upper()
+    if not root_key:
+        raise ValueError("R5 root must be declared")
+    frame_roots = set(greeks_df["root"].astype(str).str.upper())
+    if frame_roots != {root_key}:
+        raise ValueError(
+            f"R5 source must contain exactly root {root_key}; got {sorted(frame_roots)}"
+        )
+    if term_support_policy not in {"bracketed_only", "include_nearest_sensitivity"}:
+        raise ValueError(
+            "term_support_policy must be bracketed_only or include_nearest_sensitivity"
+        )
+
     asof_day = _parse_day(asof)
-    if asof_day is None:
-        raise ValueError("R5 asof must contain a valid date")
+    if asof_day is None or not nyse_calendar.is_session(asof_day):
+        raise ValueError("R5 asof must contain a valid NYSE session date")
+    decision_day = nyse_calendar.session_n_forward(asof_day, 1)
+    if decision_day is None:
+        raise ValueError("R5 calendar cannot resolve the next decision-eligible session")
 
     if greeks_df.empty:
         return [], {
+            "root": root_key,
             "source_rows": 0,
             "source_sessions": 0,
             "qualified_sessions": 0,
             "shock_observations": 0,
             "gap_pairs_refused": 0,
+            "fallback_sessions_excluded": 0,
+            "term_support_counts": {},
             "first_session": None,
             "last_session": None,
+            "source_effective_through_session": str(asof_day),
+            "decision_eligible_not_before_session": str(decision_day),
+            "source_input_sha256": hashlib.sha256(b"").hexdigest(),
         }
 
     work = greeks_df.copy()
@@ -121,21 +210,31 @@ def build_spot_iv_shocks(
     work = work[work["_r5_day"] <= asof_day]
 
     source_sessions = int(work["_r5_day"].nunique())
-    points: list[tuple[date, float, float]] = []
+    digest = _source_digest(work)
+    points: list[SessionPoint] = []
+    support_counts: dict[str, int] = {}
+    fallback_sessions_excluded = 0
     for day, grp in work.groupby("_r5_day", sort=True):
         if not isinstance(day, date) or not nyse_calendar.is_session(day):
             continue
         point = _session_point(grp, day)
         if point is None:
             continue
-        points.append((day, point[0], point[1]))
+        support_counts[point.support_mode] = support_counts.get(point.support_mode, 0) + 1
+        if (
+            term_support_policy == "bracketed_only"
+            and point.support_mode in {"nearest_short_fallback", "nearest_long_fallback"}
+        ):
+            fallback_sessions_excluded += 1
+            continue
+        points.append(point)
 
-    points.sort(key=lambda row: row[0])
+    points.sort(key=lambda row: row.day)
     shocks: list[ShockObservation] = []
     gap_pairs_refused = 0
     for prior, current in zip(points, points[1:]):
-        prior_day, prior_spot, prior_iv = prior
-        day, spot, iv = current
+        prior_day, prior_spot, prior_iv = prior.day, prior.spot, prior.iv30_pts
+        day, spot, iv = current.day, current.spot, current.iv30_pts
         if nyse_calendar.sessions_strictly_between(prior_day, day):
             gap_pairs_refused += 1
             continue
@@ -155,20 +254,28 @@ def build_spot_iv_shocks(
         )
 
     return shocks, {
+        "root": root_key,
         "source_rows": int(len(work)),
         "source_sessions": source_sessions,
         "qualified_sessions": len(points),
         "shock_observations": len(shocks),
         "gap_pairs_refused": gap_pairs_refused,
-        "first_session": str(points[0][0]) if points else None,
-        "last_session": str(points[-1][0]) if points else None,
+        "fallback_sessions_excluded": fallback_sessions_excluded,
+        "term_support_counts": support_counts,
+        "first_session": str(points[0].day) if points else None,
+        "last_session": str(points[-1].day) if points else None,
+        "source_effective_through_session": str(asof_day),
+        "decision_eligible_not_before_session": str(decision_day),
+        "source_input_sha256": digest,
     }
 
 
 def fit_pit_spot_iv_distribution(
     greeks_df: pd.DataFrame,
     asof: str,
+    root: str,
     *,
+    term_support_policy: str,
     lookback_observations: int,
     min_observations: int,
     spot_shocks_pct: Sequence[float],
@@ -202,7 +309,12 @@ def fit_pit_spot_iv_distribution(
     if quantiles != sorted(set(quantiles)):
         raise ValueError("residual_quantiles must be unique and ascending")
 
-    observations, coverage = build_spot_iv_shocks(greeks_df, asof)
+    observations, coverage = build_spot_iv_shocks(
+        greeks_df,
+        asof,
+        root,
+        term_support_policy=term_support_policy,
+    )
     selected = observations[-lookback_observations:]
 
     base = {
@@ -210,9 +322,22 @@ def fit_pit_spot_iv_distribution(
         "research_authority": "research_only",
         "outcome_labels_opened": False,
         "asof": str(_parse_day(asof)),
+        "root": str(root).strip().upper(),
         "source_method": SOURCE_METHOD,
+        "source_receipt": {
+            "root": coverage["root"],
+            "source_method": SOURCE_METHOD,
+            "source_effective_through_session": coverage[
+                "source_effective_through_session"
+            ],
+            "decision_eligible_not_before_session": coverage[
+                "decision_eligible_not_before_session"
+            ],
+            "source_input_sha256": coverage["source_input_sha256"],
+        },
         "conditioning": {
             "model": MODEL,
+            "term_support_policy": term_support_policy,
             "lookback_observations": lookback_observations,
             "min_observations": min_observations,
             "vol_regime": "not_conditioned_stage0",
