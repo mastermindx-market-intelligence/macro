@@ -18,6 +18,7 @@ Run: python -m pytest tests/test_caddy_hub_boundary.py -q
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -325,3 +326,238 @@ def test_loopback_peer_carrying_the_edge_stamped_header_is_denied() -> None:
 def test_loopback_peer_with_no_peer_header_is_authorized() -> None:
     request = _hub_request(client_host="127.0.0.1")
     assert prophet_lab_api._hub_prophet_authorized(request) is True  # noqa: SLF001
+
+# ---------------------------------------------------------------------------
+# /api/hub/prophet/perf — same private trust boundary, effective-ledger truth.
+# These cases live in this already-CI-wired suite so app/hub.py cannot gain a
+# premium Prophet projection without the Caddy/private-boundary job exercising it.
+# ---------------------------------------------------------------------------
+import app.hub as hub_api  # noqa: E402
+
+
+def _perf_row(**overrides) -> dict:
+    row = {
+        "schema": "prophet.ledger/v1",
+        "id": "AAA-BULL-20260102",
+        "asset": "AAA",
+        "direction": "BULL",
+        "signal_date": "2026-01-02",
+        "entry_date": "2026-01-02",
+        "close_date": "2026-01-10",
+        "outcome": "T1_HIT",
+        "stock_result_pct": 10.0,
+        "option_result_pct": None,
+        "days_held": 8,
+        "plan_adherence": "fixture terminal outcome",
+        "asof": "2026-01-10",
+    }
+    row.update(overrides)
+    return row
+
+
+def _write_perf_store(
+    root: Path,
+    rows: list[dict],
+    *,
+    corrections: list[dict] | None = None,
+    quarantined_ids: list[str] | None = None,
+) -> None:
+    store = root / "data" / "prophet"
+    store.mkdir(parents=True, exist_ok=True)
+    (store / "ledger.jsonl").write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+    if corrections is not None:
+        (store / "ledger_corrections.jsonl").write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in corrections),
+            encoding="utf-8",
+        )
+    if quarantined_ids is not None:
+        (store / "ledger_quarantine.json").write_text(
+            json.dumps({
+                "schema": "prophet.ledger_quarantine/v1",
+                "count": len(quarantined_ids),
+                "quarantined": [
+                    {"id": plan_id, "reason": "fixture_quarantine"}
+                    for plan_id in quarantined_ids
+                ],
+            }),
+            encoding="utf-8",
+        )
+
+
+def test_prophet_perf_route_reuses_the_exact_prophet_hub_guard(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[Request] = []
+    monkeypatch.setattr(
+        prophet_lab_api,
+        "_hub_prophet_authorized",
+        lambda request: calls.append(request) or False,
+    )
+    denied = hub_api.hub_prophet_perf(_hub_request(client_host="127.0.0.1"))
+    assert denied.status_code == 401
+    assert json.loads(denied.body) == {"error": "unauthorized"}
+    assert len(calls) == 1
+
+    monkeypatch.setattr(
+        prophet_lab_api,
+        "_hub_prophet_authorized",
+        lambda request: calls.append(request) or True,
+    )
+    monkeypatch.setattr(
+        hub_api,
+        "build_prophet_perf_projection",
+        lambda _root: {"schema": "prophet.perf_projection/v1", "plans": []},
+    )
+    allowed = hub_api.hub_prophet_perf(_hub_request(client_host="127.0.0.1"))
+    assert allowed.status_code == 200
+    assert json.loads(allowed.body)["schema"] == "prophet.perf_projection/v1"
+    assert allowed.headers["cache-control"] == "no-store"
+    assert len(calls) == 2
+
+
+def test_prophet_perf_projection_honors_correction_and_quarantine(tmp_path: Path) -> None:
+    good_id = "AAA-BULL-20260102"
+    quarantined_id = "BAD-BULL-20260102"
+    correction = {
+        "schema": "prophet.ledger_correction/v1",
+        "id": f"{good_id}:ledger:signal_date:20260111",
+        "corrects_id": good_id,
+        "field": "signal_date",
+        "old_value": "2026-01-02",
+        "new_value": "2026-01-03",
+        "basis": "fixture chronology correction",
+        "corrected_at": "2026-01-11",
+        "evidence": {"fixture": True},
+    }
+    _write_perf_store(
+        tmp_path,
+        [
+            _perf_row(id=good_id),
+            _perf_row(
+                id=quarantined_id,
+                asset="BAD",
+                stock_result_pct=99.0,
+                outcome="T2_HIT",
+            ),
+        ],
+        corrections=[correction],
+        quarantined_ids=[quarantined_id],
+    )
+
+    payload = hub_api.build_prophet_perf_projection(tmp_path)
+
+    assert payload["integrity"] == {
+        "canonical_row_count": 2,
+        "effective_row_count": 1,
+        "quarantined_excluded_count": 1,
+        "quarantined_id_count": 1,
+        "corrected_row_count": 1,
+        "correction_application_count": 1,
+    }
+    assert [row["id"] for row in payload["plans"]] == [good_id]
+    assert payload["plans"][0]["signal_date"] == "2026-01-03"
+    assert payload["summary"]["outcome_counts"]["T2_HIT"] == 0
+    assert payload["summary"]["raw_stock_return"]["mean_pct"] == 10.0
+
+
+def test_prophet_perf_projection_fails_closed_on_malformed_ledger_json(tmp_path: Path) -> None:
+    store = tmp_path / "data" / "prophet"
+    store.mkdir(parents=True)
+    (store / "ledger.jsonl").write_text("{not-json}\n", encoding="utf-8")
+
+    with pytest.raises(
+        hub_api.ProphetPerfProjectionError,
+        match="canonical effective ledger unavailable",
+    ):
+        hub_api.build_prophet_perf_projection(tmp_path)
+
+
+def test_prophet_perf_outcome_never_rewrites_original_plan_clocks(tmp_path: Path) -> None:
+    _write_perf_store(
+        tmp_path,
+        [
+            _perf_row(
+                outcome="T2_HIT",
+                signal_date="2026-01-02",
+                entry_date="2026-01-04",
+                close_date="2026-02-15",
+                days_held=42,
+                stock_result_pct=30.0,
+                asof="2026-02-15",
+            )
+        ],
+    )
+
+    payload = hub_api.build_prophet_perf_projection(tmp_path)
+    plan = payload["plans"][0]
+
+    assert plan["signal_date"] == "2026-01-02"
+    assert plan["entry_date"] == "2026-01-04"
+    assert plan["close_date"] == "2026-02-15"
+    assert plan["outcome"] == "T2_HIT"
+    assert "not ever-reached target frequencies" in payload["semantics"]["outcome_count_basis"]
+
+
+def test_prophet_perf_raw_returns_do_not_become_benchmarked_alpha(tmp_path: Path) -> None:
+    _write_perf_store(
+        tmp_path,
+        [
+            _perf_row(id="WIN-BULL-20260102", asset="WIN", stock_result_pct=10.0),
+            _perf_row(
+                id="LOSS-BULL-20260102",
+                asset="LOSS",
+                outcome="INVALIDATED",
+                stock_result_pct=-5.0,
+            ),
+            _perf_row(
+                id="NONE-BULL-20260102",
+                asset="NONE",
+                outcome="NO_ENTRY",
+                stock_result_pct=None,
+                entry_date=None,
+            ),
+        ],
+    )
+
+    payload = hub_api.build_prophet_perf_projection(tmp_path)
+    summary = payload["summary"]
+
+    assert summary["terminal_plan_count"] == 3
+    assert summary["closed_plan_count"] == 2
+    assert summary["no_entry_count"] == 1
+    assert summary["raw_stock_return"]["label"].startswith("Raw underlying return")
+    assert summary["raw_stock_return"]["mean_pct"] == 2.5
+    assert summary["raw_stock_return"]["median_pct"] == 2.5
+    assert summary["benchmarked_performance"] == {
+        "available": False,
+        "benchmark_return_pct": None,
+        "excess_return_pct": None,
+        "unavailable_reason": "canonical_effective_ledger_has_no_benchmark_return_evidence",
+    }
+    no_entry = next(row for row in payload["plans"] if row["id"].startswith("NONE-"))
+    assert no_entry["stock_result_pct"] is None
+    assert no_entry["stock_result_pct_unavailable_reason"] == "no_entry_no_position"
+    assert no_entry["option_result_pct"] is None
+    assert no_entry["option_result_pct_unavailable_reason"] == "no_entry_no_position"
+
+
+def test_prophet_perf_empty_store_is_explicitly_unavailable_not_invented(tmp_path: Path) -> None:
+    _write_perf_store(tmp_path, [])
+
+    payload = hub_api.build_prophet_perf_projection(tmp_path)
+
+    assert payload["plans"] == []
+    assert payload["summary"]["terminal_plan_count"] == 0
+    assert payload["summary"]["closed_plan_count"] == 0
+    assert payload["summary"]["raw_stock_return"]["mean_pct"] is None
+    assert (
+        payload["summary"]["raw_stock_return"]["unavailable_reason"]
+        == "no_canonical_stock_return_values"
+    )
+    assert payload["source"]["latest_asof"] is None
+    assert payload["source"]["latest_close_date"] is None
+    assert payload["source"]["freshness_unavailable_reason"] == "no_effective_terminal_rows"
+
