@@ -91,5 +91,44 @@ do both jobs.
   (prox/durability distributions vs baseline — the instrument panel for the main objective);
   Prophet plan tagging + origination from the washout lane once the promotion gate passes.
 
+## Clock contract (2026-09-18)
+
+Every date in the bottom-call lifecycle — capture (`flag_date`), maturity, grading, the
+persisted row, CLI `--as-of`, and historical replay — is a **civil calendar date**: no clock,
+no timezone. `YYYY-MM-DD` on every wire and persisted boundary; a tz-naive midnight
+`pd.Timestamp` in process. The contract and its single coercion rule live in
+`engine/ledger_clock.py`; `DEC:BOTTOM-LEDGER-CLOCK-CONTRACT-IS-CIVIL-DATE` carries the
+reasoning and the alternatives rejected.
+
+The rule: parse, and if the value carries a UTC offset take its **wall clock at its own
+offset**, then normalize. A stamped offset already names the civil day in the zone that wrote
+it, so this is the zone-agnostic reading (converting to UTC first would file an Asian
+`00:00+08:00` session a day early). It is DST-stable — both readings of an ambiguous fall-back
+wall clock name the same civil date — and it reproduces the previous
+`pd.Timestamp.utcnow().normalize()` default exactly, so the repair changed the type without
+moving any semantics. Values the contract cannot read are rejected, never guessed.
+
+This is not a style preference: it is what the stores already are. 41/41 `as_of` values in
+`data/us_board_ledger/snapshots.jsonl`, every date field across 422 `site/prophet/plans/*.json`,
+and every `data/stocks` / `data/yahoo` price index are date-only, and `grade_call` resolves the
+signal bar by calendar-date match. A US session dated 2026-09-17 is an exchange civil date, not
+the instant `2026-09-17T00:00:00Z`.
+
+**Why it matters (`DSC:BOTTOM-LEDGER-MASKED-CRASH-FROM-BIRTH`).** Phase 1 shipped with
+`as_of = pd.Timestamp.utcnow().normalize()` — tz-aware — meeting a tz-naive `flag_date` at the
+maturity pre-check. It raised `TypeError: Cannot compare tz-naive and tz-aware timestamps` on
+every run, before the first write, and `daily.yml` ran it as `|| true`: neither the rows store
+nor the display artifact ever existed while the nightly reported success for months. The
+quieter twin: a tz-mismatched price index made `grade_call` match no bar and return `None`
+*silently*, so rows would accrue forever and never mature.
+
+**Failure observability.** The nightly step stays non-fatal to the engine, but it is no longer
+silent: `site/factordata/us_bottom_ledger.json` always carries
+`advance.status` ∈ `{advanced, read_only, failed}` with the error and the counts, the governor
+raises a data gap on `failed`, and the workflow emits a line-start `::error`. A failed advance
+leaves the store untouched — no partial advance, no regrade — so the once-only frozen-grade law
+(SA-R14) holds across a failure. A corrupt store now raises instead of reading as empty, which
+would have re-accrued every row and re-graded every frozen one.
+
 Display-tier throughout until the gate passes; the word "validated" stays out of user-facing
 text; nulls printed.

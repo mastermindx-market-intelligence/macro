@@ -11621,6 +11621,7 @@ jobs:
       - "engine/ipo_lockup.py"
       - "engine/ipo_radar.py"
       - "engine/leadership_crack.py"
+      - "engine/ledger_clock.py"
       - "engine/ledger_identity.py"
       - "engine/ledger_lane.py"
       - "engine/liquidity_chip.py"
