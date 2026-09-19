@@ -575,6 +575,56 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     research_mode = r["MO-PAID-031"]
     assert research_mode["capability_state_c2"] == "SPEC_ONLY"
 
+    lifecycle_owner = r["MO-PAID-007"]
+    assert lifecycle_owner["capability_state_c2"] == "PROVEN_LIVE"
+    assert "still SPEC_ONLY" not in lifecycle_owner["next_bounded_child"]
+    assert "MO-DELTA-032" in lifecycle_owner["next_bounded_child"]
+
+    event_schema = r["MO-DELTA-042"]
+    assert event_schema["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "terminal#576" in event_schema["real_producer"]
+    assert "EventImpactPanel" in event_schema["real_consumer"]
+    assert "signed-in production" in event_schema["missing_contract_or_proof"]
+    assert "add the F08" not in event_schema["next_bounded_child"]
+
+    event_positions = r["MO-PAID-028"]
+    assert event_positions["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "EventImpactPanel" in event_positions["real_consumer"]
+    assert "signed-in production" in event_positions["missing_contract_or_proof"]
+    assert "mapping is already shipped" in event_positions["next_bounded_child"]
+
+    rms = r["MO-PAID-053"]
+    assert rms["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "ThesisWorkspace" in rms["real_consumer"]
+    assert "signed-in production" in rms["missing_contract_or_proof"]
+    assert "not-yet-built Thesis identities" not in rms["missing_contract_or_proof"]
+
+    tenancy = r["MO-PAID-051"]
+    assert tenancy["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "/api/teams" in tenancy["real_consumer"]
+    assert "signed-in production" in tenancy["missing_contract_or_proof"]
+    assert "entire multi-seat team/tenant model" not in tenancy["missing_contract_or_proof"]
+
+    roles = r["MO-PAID-082"]
+    assert roles["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "members/route.ts" in roles["real_consumer"]
+    assert "signed-in production" in roles["missing_contract_or_proof"]
+    assert "role/permission model" not in roles["missing_contract_or_proof"]
+
+    workspace_settings = r["MO-PAID-083"]
+    assert workspace_settings["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "terminal#584 merged dd7c6dec" in workspace_settings["real_producer"]
+    assert "SectionTeam" in workspace_settings["real_consumer"]
+    assert "signed-in production" in workspace_settings["missing_contract_or_proof"]
+    assert "#584 OPEN" not in (workspace_settings["missing_contract_or_proof"] + workspace_settings["next_bounded_child"] + workspace_settings["adjudication_notes"])
+
+    export = r["MO-PAID-086"]
+    assert export["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "SectionAccount" in export["real_consumer"]
+    assert "/api/account/export" in export["real_consumer"]
+    assert "signed-in production" in export["missing_contract_or_proof"]
+    assert "no /export route" not in export["missing_contract_or_proof"]
+
 
 def test_manifest_names_the_single_writer_sources_and_union():
     data = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
