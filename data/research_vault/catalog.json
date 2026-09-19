@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T13:11:02.317336+00:00",
-  "count": 2431,
+  "generated_at": "2026-09-19T13:32:03.701382+00:00",
+  "count": 2432,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1010,6 +1010,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-38o4qoivecq-db9e77",
+      "title": "India Watch Monsoon Tracker In the tail end but no signs of pickup",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:54Z",
+      "summary_points": [
+        "Monsoon deficit at 15% below normal: Cumulative rainfall (June 1–Sept 17) remains 15% below normal with no rebound signs, worsening agricultural and water security risks.",
+        "Reservoirs 21% below prior year: Critical water storage levels at 21% below last year, compounding drought risks and threatening power generation and irrigation.",
+        "IOD positive amplifying climate risk: Positive Indian Ocean Dipole aligns with El Niño-like conditions, historically correlating with weaker monsoons and intensifying deficit-driven agricultural stress.",
+        "Regional drought hotspots: Western (Maharashtra, Gujarat), Central (Madhya Pradesh), and Southern India (Karnataka, Tamil Nadu) face severe deficits, heightening supply chain vulnerabilities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
