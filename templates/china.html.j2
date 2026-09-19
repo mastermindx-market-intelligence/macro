@@ -1498,6 +1498,29 @@
     body.page-china .mx5-mkt-tile.up:hover,
     body.page-china .mx5-mkt-tile.dn:hover{transform:none!important;}
   }
+  /* Truthful live-only loading: show geometry while the quote tape catches up,
+     then convert unresolved rows to a worded unavailable state instead of a bare dash. */
+  body.page-china .mx-skel{
+    display:inline-block;border-radius:var(--r-ctl,3px);vertical-align:middle;
+    background:var(--panel2);
+    background-image:linear-gradient(90deg,
+      color-mix(in srgb,var(--text) 6%,transparent) 0%,
+      color-mix(in srgb,var(--text) 10%,transparent) 50%,
+      color-mix(in srgb,var(--text) 6%,transparent) 100%);
+    background-size:200% 100%;animation:cnxSkelSweep 1.2s ease-in-out infinite;border:none}
+  body.page-china .mx5-mkt-price.mx-skel{width:4.5ch;height:1em}
+  body.page-china .mx5-mkt-delta.mx-skel{width:3.2ch;height:1em}
+  body.page-china .mx-empty{font-size:var(--fs-sm,12.5px);color:var(--muted)}
+  body.page-china .mx-empty .empty-why{display:block;font-size:var(--fs-micro,10px);opacity:.85;margin-top:2px}
+  @keyframes cnxSkelSweep{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @media(prefers-reduced-motion:reduce){body.page-china .mx-skel{animation:none;background-image:none}}
+  [data-theme="light"] body.page-china .mx-skel{
+    background:var(--panel);border:1px solid color-mix(in srgb,var(--text) 16%,transparent);
+    background-image:linear-gradient(90deg,
+      color-mix(in srgb,var(--text) 4%,transparent) 0%,
+      color-mix(in srgb,var(--text) 7%,transparent) 50%,
+      color-mix(in srgb,var(--text) 4%,transparent) 100%);
+    background-size:200% 100%}
 
   /* ── D · Market Sentiment odometer (dial-only; lives in the cnx-rack cnx-card) ── */
   body.page-china .mx5-sentiment-dial-wrap{text-align:center;margin-bottom:4px;}
@@ -2070,21 +2093,21 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if _sse %}
           <div class="mx5-mkt-price nb-px" data-sym="000001.SS" data-mkt="cn" data-bare>{{ _sse.level }}</div>
           <div class="mx5-mkt-delta nb-chg {{ _d }}" data-sym="000001.SS" data-mkt="cn">{{ _sse.pct }}</div>
-          {% else %}<div class="mx5-mkt-price nb-px" data-sym="000001.SS" data-mkt="cn" data-bare>—</div><div class="mx5-mkt-delta nb-chg" data-sym="000001.SS" data-mkt="cn">—</div>{% endif %}
+          {% else %}<div class="mx5-mkt-price nb-px mx-skel" data-sym="000001.SS" data-mkt="cn" data-bare aria-busy="true"></div><div class="mx5-mkt-delta nb-chg mx-skel" data-sym="000001.SS" data-mkt="cn" aria-busy="true"></div>{% endif %}
         </div>
         {# CSI 300 (live-only — see the block comment above) #}
         <div class="mx5-mkt-tile" data-sym="000300.SS" data-mkt="cn">
           <div class="mx5-mkt-ticker">CSI 300</div>
           <div class="mx5-mkt-sub"><span class="l-en">Large cap</span><span class="l-zh">沪深300</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="000300.SS" data-mkt="cn" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="000300.SS" data-mkt="cn">—</div>
+          <div class="mx5-mkt-price nb-px mx-skel" data-sym="000300.SS" data-mkt="cn" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg mx-skel" data-sym="000300.SS" data-mkt="cn" aria-busy="true"></div>
         </div>
         {# ChiNext (live-only — see the block comment above) #}
         <div class="mx5-mkt-tile" data-sym="399006.SZ" data-mkt="cn">
           <div class="mx5-mkt-ticker">ChiNext</div>
           <div class="mx5-mkt-sub"><span class="l-en">Growth</span><span class="l-zh">创业板</span></div>
-          <div class="mx5-mkt-price nb-px" data-sym="399006.SZ" data-mkt="cn" data-bare>—</div>
-          <div class="mx5-mkt-delta nb-chg" data-sym="399006.SZ" data-mkt="cn">—</div>
+          <div class="mx5-mkt-price nb-px mx-skel" data-sym="399006.SZ" data-mkt="cn" data-bare aria-busy="true"></div>
+          <div class="mx5-mkt-delta nb-chg mx-skel" data-sym="399006.SZ" data-mkt="cn" aria-busy="true"></div>
         </div>
         {# Hang Seng (live) #}
         {% set _d = _tone_dir.get(hsi_tile.tone, '') if hsi_tile else '' %}
@@ -2094,7 +2117,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {% if hsi_tile %}
           <div class="mx5-mkt-price nb-px" data-sym="^HSI" data-mkt="hk" data-bare>{{ hsi_tile.level }}</div>
           <div class="mx5-mkt-delta nb-chg {{ _d }}" data-sym="^HSI" data-mkt="hk">{{ hsi_tile.pct }}</div>
-          {% else %}<div class="mx5-mkt-price nb-px" data-sym="^HSI" data-mkt="hk" data-bare>—</div><div class="mx5-mkt-delta nb-chg" data-sym="^HSI" data-mkt="hk">—</div>{% endif %}
+          {% else %}<div class="mx5-mkt-price nb-px mx-skel" data-sym="^HSI" data-mkt="hk" data-bare aria-busy="true"></div><div class="mx5-mkt-delta nb-chg mx-skel" data-sym="^HSI" data-mkt="hk" aria-busy="true"></div>{% endif %}
         </div>
       </div>
     </div>
@@ -4646,6 +4669,28 @@ window.__CHART_SWAP__ = {
   window.cnxToggleHm=cnxToggleHm;
   cnxResolveHash();
   window.addEventListener('hashchange',cnxResolveHash);
+  /* Live-only index quotes fail honest: loading geometry first, then a worded
+     unavailable state if live.js has not resolved the cells after eight seconds. */
+  function cnxSkelFallback(){
+    document.querySelectorAll('.mx5-mkt-price.mx-skel, .mx5-mkt-delta.mx-skel').forEach(function(el){
+      if(!el.classList.contains('mx-skel')) return;
+      var isPx=el.classList.contains('mx5-mkt-price');
+      el.classList.remove('mx-skel');
+      el.removeAttribute('aria-busy');
+      el.classList.add('mx-empty');
+      if(isPx){
+        el.innerHTML='<span class="l-en">No quote</span><span class="l-zh">暂无报价</span>'
+          + '<span class="empty-why"><span class="l-en">the tape is still catching up</span><span class="l-zh">行情仍在同步</span></span>';
+      }else{
+        el.textContent='';
+      }
+    });
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){setTimeout(cnxSkelFallback,8000);});
+  }else{
+    setTimeout(cnxSkelFallback,8000);
+  }
 })();
 </script>
 {# ── B · Path-chart hover enhancement (ported from dashboard.html.j2 ~7141) — pure
