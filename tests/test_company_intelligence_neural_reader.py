@@ -347,7 +347,7 @@ def test_public_evidence_request_is_closed_and_builds_deterministic_public_query
     req = _public_request(pr)
     assert req["schema"] == "brain.public_evidence_request.v1"
     assert req["evidence_need"] == "inventory_working_capital"
-    assert req["query"] == "NVIDIA Corporation NVDA inventory working capital"
+    assert req["query"] == "NVIDIA Corporation NVDA NASDAQ inventory working capital"
     serialized = json.dumps(req)
     assert "portfolio" not in serialized.lower()
     assert "private" not in serialized.lower()
@@ -553,7 +553,7 @@ def test_openai_search_payload_forces_search_and_exposes_no_credentials_or_priva
     assert payload["tools"] == [{"type": "web_search"}]
     assert payload["tool_choice"] == "required"
     assert payload["include"] == ["web_search_call.action.sources"]
-    assert "NVIDIA Corporation NVDA inventory working capital" in payload["input"]
+    assert "NVIDIA Corporation NVDA NASDAQ inventory working capital" in payload["input"]
     assert "2026-09-19" in payload["input"]
     assert "api_key" not in json.dumps(payload).lower()
     assert "portfolio" not in json.dumps(payload).lower()
@@ -595,7 +595,7 @@ def test_brave_web_search_payload_applies_date_window_without_credentials():
     req = _public_request(pr)
     payload = backends.brave_web_search_payload(req, count=10)
     assert payload == {
-        "q": "NVIDIA Corporation NVDA inventory working capital",
+        "q": "NVIDIA Corporation NVDA NASDAQ inventory working capital",
         "count": 10,
         "country": "US",
         "search_lang": "en",
@@ -751,3 +751,44 @@ def test_open_public_source_rebinds_each_public_redirect_to_its_validated_addres
         ("https://a.example/report", ("93.184.216.34",)),
         ("https://b.example/final", ("93.184.216.35",)),
     ]
+
+
+def test_public_evidence_query_carries_listing_identity():
+    from engine.neuralweb import public_research as pr
+    req = _public_request(pr)
+    assert req["query"] == "NVIDIA Corporation NVDA NASDAQ inventory working capital"
+
+
+def test_open_public_source_rejects_invalid_text_and_timeout_bounds_before_transport():
+    from engine.neuralweb import public_research as pr
+    resolver = lambda *_a, **_k: [(2, 1, 6, "", ("93.184.216.34", 443))]
+    called = []
+    def transport(*_args, **_kwargs):
+        called.append(True)
+        raise AssertionError("transport must not run for invalid bounds")
+    for value in (0, -1, True, 500_001):
+        with pytest.raises(pr.PublicResearchReadError, match="text bound"):
+            pr.open_public_source(
+                "https://issuer.example/r", transport=transport, resolver=resolver,
+                max_text_chars=value,
+            )
+    for timeout in ((0, 1), (-1, 1), (1, 0), ("x", 1), (1,), True):
+        with pytest.raises(pr.PublicResearchReadError, match="timeout"):
+            pr.open_public_source(
+                "https://issuer.example/r", transport=transport, resolver=resolver,
+                timeout=timeout,
+            )
+    assert called == []
+
+
+def test_openai_search_instruction_respects_source_preference():
+    from engine.neuralweb import public_research as pr
+    from engine.neuralweb import public_search_backends as backends
+    req = _public_request(pr)
+    primary = backends.openai_web_search_payload(req)["input"]
+    assert "Prefer primary or official sources" in primary
+    independent_req = dict(req)
+    independent_req["source_preference"] = "independent_first"
+    independent = backends.openai_web_search_payload(independent_req)["input"]
+    assert "Prefer independent reporting" in independent
+    assert "Prefer primary or official sources" not in independent

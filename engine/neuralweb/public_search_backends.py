@@ -31,10 +31,17 @@ def _require_request(request: Mapping[str, Any]) -> Mapping[str, Any]:
 def _search_instruction(request: Mapping[str, Any]) -> str:
     start = request.get("start_date") or "unbounded"
     end = request.get("end_date") or request["information_cutoff"][:10]
+    preference = {
+        "primary_first": "Prefer primary or official sources.",
+        "official_first": "Prefer official issuer, regulator, exchange, or government sources.",
+        "independent_first": "Prefer independent reporting, then verify against primary sources where available.",
+    }.get(request.get("source_preference"))
+    if preference is None:
+        raise PublicSearchBackendError("source preference is not admitted")
     return (
         f"Find public evidence for: {request['query']}. "
         f"Evidence window: {start} through {end}; information cutoff: "
-        f"{request['information_cutoff']}. Prefer primary or official sources. "
+        f"{request['information_cutoff']}. {preference} "
         "Return search evidence only; do not make an investment recommendation."
     )
 

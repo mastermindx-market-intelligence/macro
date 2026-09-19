@@ -88,8 +88,20 @@ Final local command:
 PYTHONDONTWRITEBYTECODE=1 <operation-venv>/python -m pytest \
   tests/test_company_intelligence_neural_reader.py -q -p no:cacheprovider
 ```
-Result: **41 passed**. `git diff --check` passed immediately before the prior 40-test full run;
-fresh final diff/source checks are still required before source publication.
+A principal pre-review adversarial pass then added three discriminators before any
+independent reviewer STARTed: listing identity must be present in the search query,
+`open_public_source` must reject invalid text/timeout bounds before transport, and
+the OpenAI search instruction must honor `source_preference`. All three tests failed
+on the first run and were repaired.
+
+Final frozen local command:
+```bash
+PYTHONDONTWRITEBYTECODE=1 <operation-venv>/python -m pytest \
+  tests/test_company_intelligence_neural_reader.py -q -p no:cacheprovider
+```
+Result: **44 passed**. Fresh `git diff --check` and `py_compile` for both new modules
+passed in the same verification cycle. A fresh fetch of current main showed zero
+movement on candidate-owned or declared dependency paths.
 
 ## Boundaries still owed
 

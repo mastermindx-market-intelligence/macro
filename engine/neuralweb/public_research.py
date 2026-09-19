@@ -110,7 +110,7 @@ def build_public_evidence_request(params: object) -> dict[str, Any]:
     cutoff_date = cutoff[:10]
     if (start and start > cutoff_date) or (end and end > cutoff_date):
         raise PublicResearchContractError("date window exceeds information cutoff")
-    query = f"{issuer} {ticker} {EVIDENCE_NEEDS[need]}"
+    query = f"{issuer} {ticker} {listing} {EVIDENCE_NEEDS[need]}"
     return {
         "schema": "brain.public_evidence_request.v1",
         "issuer_name": issuer,
@@ -374,6 +374,14 @@ def open_public_source(
         raise PublicResearchReadError("redirect bound is invalid")
     if type(max_bytes) is not int or not 1 <= max_bytes <= 5_000_000:
         raise PublicResearchReadError("size bound is invalid")
+    if type(max_text_chars) is not int or not 1 <= max_text_chars <= 500_000:
+        raise PublicResearchReadError("text bound is invalid")
+    if (
+        not isinstance(timeout, tuple) or len(timeout) != 2
+        or any(type(value) not in (int, float) for value in timeout)
+        or not (0 < timeout[0] <= 30 and 0 < timeout[1] <= 60)
+    ):
+        raise PublicResearchReadError("timeout bound is invalid")
     requested, resolved_addresses = _public_url_details(raw_url, resolver=resolver)
     current = requested
     redirects = 0
