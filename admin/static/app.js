@@ -776,10 +776,14 @@ function renderHeader() {
     p.style.cursor = "pointer"; p.onclick = () => go("experiments");
     el.appendChild(p);
   }
-  if (m.deployed) el.appendChild(h(`<span class="pill" title="running on the VPS behind Caddy">deployed</span>`));
-  el.appendChild(h(`<span>repo <code>${esc(m.repo || "?")}</code></span>`));
-  el.appendChild(h(`<span>GH ${m.has_token ? "✓ token" : "read-only"}</span>`));
-  if (m.site_url) el.appendChild(h(`<a href="${esc(m.site_url)}" target="_blank" rel="noopener">live site ↗</a>`));
+  const sysMeta = [
+    m.deployed ? "deployed" : "local",
+    `repo ${m.repo || "unknown"}`,
+    m.has_token ? "GitHub actions enabled" : "GitHub read-only",
+  ].join(" · ");
+  const sysPill = h(`<span class="pill" title="${esc(sysMeta)}">System</span>`);
+  sysPill.style.cursor = "pointer"; sysPill.onclick = () => go("system"); el.appendChild(sysPill);
+  if (m.site_url) el.appendChild(h(`<a href="${esc(m.site_url)}" target="_blank" rel="noopener">Open site ↗</a>`));
   if (SESSION.auth_enabled) { const lo = h(`<span class="logout">log out</span>`); lo.onclick = logout; el.appendChild(lo); }
 }
 
@@ -857,11 +861,11 @@ function renderKeyAlerts(ka) {
       <span style="min-width:86px"><b style="color:${KA_TONE(it)}">${esc(it.state || "")}</b></span>
       <span style="flex:1;min-width:0"><b>${esc(it.title || "")}</b>
         <span class="sub" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.detail || "")}${it.asof ? " · " + esc(String(it.asof).slice(0, 10)) : ""}</span></span>
-      <button class="btn" data-ka-copy="${i}" title="Copy a ready-to-paste briefing prompt for a Fable session">📋 Brief for Fable</button>
+      <button class="btn" data-ka-copy="${i}" title="Copy the full alert context">Copy brief</button>
     </div>`;
   }).join("");
   const more = ka.truncated ? `<div class="sub" style="margin-top:6px">${ka.total - ka.items.length} more below the cap — see the Alerts tab.</div>` : "";
-  return `<div class="section">Key alerts — check in with Fable</div><div class="card">${rows}${more}</div>`;
+  return `<div class="section">Needs attention</div><div class="card">${rows}${more}</div>`;
 }
 function wireKeyAlertCopies(ka) {
   if (!ka || !Array.isArray(ka.items)) return;
@@ -869,7 +873,7 @@ function wireKeyAlertCopies(ka) {
     btn.onclick = async () => {
       const it = ka.items[Number(btn.dataset.kaCopy)];
       if (!it || !it.brief_prompt) return;
-      try { await navigator.clipboard.writeText(it.brief_prompt); toast("Briefing copied — paste it into a Fable session"); }
+      try { await navigator.clipboard.writeText(it.brief_prompt); toast("Alert brief copied"); }
       catch (e) { toast("Copy failed — clipboard blocked", true); }
     };
   });
@@ -1029,17 +1033,18 @@ function renderProgramWatch(pw) {
   if (!pw) {
     /* Version skew: an older server that predates this panel sends no key. Say so —
        a panel that silently disappears is the quiet-vs-unread collapse again. */
-    return wrap(pwCard("warn", "Watch unread — the server did not send it.",
-      "/api/summary carried no program_watch key. That is an admin server older than this "
-      + "console build, not an all-clear. Restart/redeploy the admin service."));
+    return wrap(pwCard("warn", "Watch unavailable",
+      "Program-watch data was not returned. This is not an all-clear. "
+      + "<details class=\"tech-details\"><summary>Technical details</summary>"
+      + "The server may be older than this console build. Restart or redeploy the admin service if this persists.</details>"));
   }
   if (pw.error) {
-    return wrap(pwCard("warn", "Watch unread.",
-      `The console could not build this panel: ${esc(pw.error)}. That is not an all-clear.`));
+    return wrap(pwCard("warn", "Watch unavailable",
+      `The watch could not be loaded. This is not an all-clear.<details class="tech-details"><summary>Technical details</summary>${esc(pw.error)}</details>`));
   }
   if (!pw.available || !Array.isArray(pw.tripwires)) {
-    return wrap(pwCard("warn", "Watch unread — no artifact to read.",
-      esc(pw.note || "No note given.")));
+    return wrap(pwCard("warn", "Watch file missing",
+      `No current watch artifact is available. This is not an all-clear.${pw.note ? `<details class="tech-details"><summary>Technical details</summary>${esc(pw.note)}</details>` : ""}`));
   }
   const c = pw.counts || {};
   const fr = pw.freshness || {};
@@ -1048,8 +1053,8 @@ function renderProgramWatch(pw) {
   const tone = bad ? "bad" : unknown ? "warn" : "";
   const bar = (bad || unknown) && fr.note
     ? `<div style="margin:-2px 0 10px;padding:8px 10px;border-radius:6px;background:var(--${tone}-bg);color:var(--${tone})">
-        <b>${bad ? "This watch is behind." : "This watch's freshness is unknown."}</b>
-        <span class="sub" style="color:inherit">${esc(fr.note)}</span></div>`
+        <b>${bad ? "Watch may be stale." : "Watch freshness is unknown."}</b>
+        <details class="tech-details"><summary>Why</summary>${esc(fr.note)}</details></div>`
     : "";
   const ages = [
     typeof pw.stale_days === "number" ? `${pw.stale_days.toFixed(1)}d behind (market as-of)` : "age unreadable",
@@ -1081,8 +1086,8 @@ function renderProgramWatch(pw) {
     </div>`;
   }).join("");
   const empty = pw.tripwires.length ? "" :
-    `<div class="sub">The artifact carries no tripwires. That is an empty watch, not a clear one — check scripts/build_program_watch.py.</div>`;
-  const more = pw.truncated ? `<div class="sub" style="margin-top:8px">More tripwires exist than this panel shows — read data/seasonality/program_watch.json.</div>` : "";
+    `<div class="sub">No tripwires were returned. Treat this as empty data, not an all-clear.</div>`;
+  const more = pw.truncated ? `<div class="sub" style="margin-top:8px">More tripwires are available than shown here.</div>` : "";
   const foot = `<div style="margin-top:10px"><button class="btn" id="pwRecheck" title="Re-read data/seasonality/program_watch.json now, bypassing the 15s response cache">⟳ Recheck now</button></div>`;
   return wrap(`<div class="card"${tone ? ` style="border-left:3px solid var(--${tone})"` : ""}>${bar}${meta}${rows}${empty}${more}${foot}</div>`);
 }
@@ -1125,11 +1130,11 @@ RENDER.overview = async () => {
     <div class="grid">
       ${card("Pipeline", `<div class="big" style="color:${hh.healthy ? "var(--ok)" : "var(--warn)"}">${hh.healthy ? "Healthy" : "Attention"}</div>
         <div class="sub">last run ${fmtAge(hh.age_hours)} ago · ${(hh.sources || {}).ok || 0}/${(hh.sources || {}).total || 0} sources</div>`)}
-      ${card("Services", sv.available ? `<div class="big" style="color:${sv.healthy ? "var(--ok)" : "var(--bad)"}">${sv.ok_count}/${sv.total}</div><div class="sub">background services running</div>` : `<div class="big">—</div><div class="sub">server only</div>`)}
+      ${card("Background jobs", sv.available ? `<div class="big" style="color:${sv.healthy ? "var(--ok)" : "var(--bad)"}">${sv.ok_count}/${sv.total}</div><div class="sub">running normally</div>` : `<div class="big">—</div><div class="sub">status unavailable</div>`)}
       ${card("Server", sys.available ? `<div class="big">${mem.used_pct != null ? mem.used_pct + "%" : "—"}<span class="sub"> memory</span></div><div class="sub">disk ${disk.used_pct != null ? disk.used_pct + "%" : "—"} · load ${sys.cpu && sys.cpu.load1 != null ? sys.cpu.load1.toFixed(2) : "—"}</div>` : `<div class="big">—</div><div class="sub">server only</div>`)}
       ${card("Est. AI cost", `<div class="big">${fmtUSD(c.monthly_usd)}<span class="sub"> /mo</span></div><div class="sub">${fmtUSD(c.effective_daily_usd)}/day</div>`)}
-      ${card("Features on", `<div class="big">${flagsOn}</div><div class="sub">of your feature switches</div>`)}
-      ${card("Analytics", `<div class="big" style="color:var(--ok);font-size:18px">Umami live</div><div class="sub">${m.integrations && m.integrations.umami ? "API connected" : "tag on every page"}</div>`)}
+      ${card("Features", `<div class="big">${flagsOn}</div><div class="sub">enabled</div>`)}
+      ${card("Analytics", `<div class="big" style="color:var(--ok);font-size:18px">Live</div><div class="sub">${m.integrations && m.integrations.umami ? "connected" : "tracking enabled"}</div>`)}
       ${card("Experiments", `<div class="big" style="color:${(s.experiments && s.experiments.ready_count) ? "var(--ok)" : "var(--text)"}">${(s.experiments && s.experiments.ready_count) || 0}<span class="sub"> ready</span></div><div class="sub">${s.experiments && s.experiments.soonest && s.experiments.soonest.days_until > 0 ? "next in " + s.experiments.soonest.days_until + "d" : (s.experiments && s.experiments.n ? s.experiments.n + " tracked" : "—")}</div>`)}
     </div>
     ${renderKeyAlerts(s.key_alerts)}
@@ -1145,7 +1150,7 @@ RENDER.overview = async () => {
   redeploy.onclick = () => dispatch("pages.yml"); redeploy.disabled = !m.has_token; qa.appendChild(redeploy);
   const probe = h(`<button class="btn" style="margin-left:8px">◎ Check all sites are up</button>`);
   probe.onclick = () => go("system"); qa.appendChild(probe);
-  if (!m.has_token) qa.appendChild(h(`<div class="sub" style="margin-top:8px">The rebuild/deploy buttons need a GitHub access token (<code>GH_TOKEN</code>, with Actions-write permission) set on the server.</div>`));
+  if (!m.has_token) qa.appendChild(h(`<div class="sub" style="margin-top:8px">Deploy actions are unavailable. <details class="tech-details"><summary>Technical details</summary>Set <code>GH_TOKEN</code> on the server with Actions write permission.</details></div>`));
 };
 
 /* ---- RESEARCH TOOLS ----------------------------------------------------- */
@@ -1155,9 +1160,9 @@ RENDER.research_tools = () => {
     <div class="rt-page">
       <header class="rt-hero">
         <div>
-          <div class="rt-kicker">Authenticated workspace</div>
+          <div class="rt-kicker">Research workspace</div>
           <h1>Research Tools</h1>
-          <p>Internal diagnostics and proprietary methods, available only inside the admin console.</p>
+          <p>Diagnostics, calibration, and internal research methods.</p>
         </div>
         <span class="rt-count">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/></svg>
@@ -1172,21 +1177,21 @@ RENDER.research_tools = () => {
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="3"/><circle cx="6" cy="7" r="2"/><circle cx="26" cy="7" r="2"/><circle cx="6" cy="25" r="2"/><circle cx="26" cy="25" r="2"/><path d="m14 14-6-6m10 6 6-6m-10 10-6 6m10-6 6 6M8 7h16M8 25h16"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Neural Web Deep View</strong><span>Internal diagnostics for model votes and neural-system output.</span></span>
+            <span class="rt-card-copy"><strong>Neural Web Deep View</strong><span>Inspect model votes and system output.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
           <a class="rt-card rt-card-calibration" href="https://admin.mastermind-x.com/research-tools/measurement.html" target="_blank" rel="noopener">
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 25h22M8 25V9M8 21l5-7 4 3 7-10"/><circle cx="13" cy="14" r="2"/><circle cx="17" cy="17" r="2"/><circle cx="24" cy="7" r="2"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Calibration Lab</strong><span>Internal diagnostics for calibration and graded outcomes.</span></span>
+            <span class="rt-card-copy"><strong>Calibration Lab</strong><span>Review calibration and graded outcomes.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
           <a class="rt-card rt-card-crossasset" href="https://admin.mastermind-x.com/research-tools/crossasset.html" target="_blank" rel="noopener">
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 6v20h22"/><path d="M8 20c5-8 8 2 12-6 2-4 4-5 7-6"/><path d="M8 12c4 1 6 6 10 7 3 1 5 0 9 4"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Cross-Asset Diagnostics</strong><span>Proprietary cross-market, liquidity, and risk diagnostics.</span></span>
+            <span class="rt-card-copy"><strong>Cross-Asset Diagnostics</strong><span>Review cross-market, liquidity, and risk signals.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
         </div>
@@ -1199,28 +1204,28 @@ RENDER.research_tools = () => {
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 17h5l3-8 5 15 4-11 3 4h4"/><path d="M5 27h22M5 5h22"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Signal Lab</strong><span>Internal signal-quality diagnostics and method scorecards.</span></span>
+            <span class="rt-card-copy"><strong>Signal Lab</strong><span>Review signal quality and method scorecards.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
           <a class="rt-card rt-card-technical" href="https://admin.mastermind-x.com/research-tools/tech_lab.html" target="_blank" rel="noopener">
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="24" height="20" rx="3"/><path d="M8 21h4l3-8 3 11 3-6h3M12 29h8M16 25v4"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Technical Lab</strong><span>Proprietary technical methods, screeners, and test profiles.</span></span>
+            <span class="rt-card-copy"><strong>Technical Lab</strong><span>Inspect technical methods, screeners, and test profiles.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
           <a class="rt-card rt-card-macro" href="https://admin.mastermind-x.com/research-tools/macro_signals.html" target="_blank" rel="noopener">
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11"/><path d="M5 16h22M16 5c3 3 5 7 5 11s-2 8-5 11c-3-3-5-7-5-11s2-8 5-11Z"/><path d="M10 9h12M10 23h12"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Macro Signals</strong><span>Internal macro diagnostics and proprietary model inputs.</span></span>
+            <span class="rt-card-copy"><strong>Macro Signals</strong><span>Inspect macro signals and model inputs.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
           <a class="rt-card rt-card-factors" href="https://admin.mastermind-x.com/research-tools/factors.html" target="_blank" rel="noopener">
             <span class="rt-icon">
               <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 26h22M8 26V16M14 26V8M20 26V13M26 26V5"/><path d="m6 11 6-5 5 4 8-6"/></svg>
             </span>
-            <span class="rt-card-copy"><strong>Factors &amp; Seasonality</strong><span>Proprietary factor and seasonality methods for research review.</span></span>
+            <span class="rt-card-copy"><strong>Factors &amp; Seasonality</strong><span>Review factor and seasonality methods.</span></span>
             <svg class="rt-open" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 13 13 7M8 7h5v5"/></svg>
           </a>
         </div>
@@ -1228,7 +1233,7 @@ RENDER.research_tools = () => {
 
       <footer class="rt-footnote">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>
-        Hidden from public navigation and available only after admin authentication.
+        Admin-only research workspace.
       </footer>
     </div>`;
 };
