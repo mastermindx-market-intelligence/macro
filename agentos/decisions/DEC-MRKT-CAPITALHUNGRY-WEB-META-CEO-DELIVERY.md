@@ -32,14 +32,15 @@ affects:
   - research/market_intelligence_productization/mrkt_capitalhungry/
 confidence: high
 reversibility: easy
-decided_by: chairman
+decided_by: ceo-sol
 decided_at: 2026-09-19
 ---
 
 # Bounded implementation delegation
 
 Parent operation: `mrkt-capitalhungry-integration-20260919-sol-001`.
-This records the current outer Chairman instruction. It does not reassign all
+The delegation records the current outer Chairman instruction; the eight-packet
+decomposition is the integration Meta-CEO's implementing decision. It does not reassign all
 MarketOntology/F00, override another current delegation, take over an incumbent
 writer, create runtime admission, or relax a provider, source, permission or
 Pro-mode gate. No job/worker/START is inferred from a document or task registration.
