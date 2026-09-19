@@ -108,6 +108,7 @@ landmines:
   - First exact-head review returned REQUEST_CHANGES on a465efa7; blocker repairs changed owned semantics, so only the second ef008862 review can accept the current head.
   - Source Continuity currently refuses REMOTE_CENSUS_INCOMPLETE because the protected256-open-PR census limit is below the repository's current open-PR count; refusal is not collision proof and grants no bypass.
   - Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search.
+  - PR7403 was a later duplicate R1 prototype, closed at head 82d3d9c68ab33c40588a9d74afec2c0ae341dc05 after fresh Agent OS reconciliation. Its independent-review placement child on agent-dispatch root 1789814421.390679 received terminal SOL CLOSED / STOP before any PICKUP_ACK/START. Its corrected advisory comment 5741145446 is evidence only; #7374 retains source custody.
   - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
   - Current turn usage reports only the final model response instead of cumulative multi-round usage; do not compare total cost from done.usage until repaired.
   - The existing question classifier is advisory only and has ordering gaps; do not filter tool visibility from its current seeds without test-first profile fixes.
@@ -118,6 +119,7 @@ do_not_redo:
   - Do not replace the retained R0 carrier or copy its patch into the bridge candidate.
   - Do not recreate separate unregistered test suites or alter CI policy; R0 and bridge tests remain in existing registered suites.
   - Do not create another branch/PR for the bridge; PR7365 and its retained source writer are canonical. Publication is no longer blocked.
+  - Do not reopen, merge or cherry-pick closed duplicate PR7403 as an R1 implementation carrier. Its test-first findings may inform #7374 only through bounded advisory/review evidence; they grant no source custody or independent-review credit.
   - Do not rerun historical blocked browser actions or effect-unknown probes through another actor, account, device or tool.
   - Do not force-clean the failed contract-check temporary worktree; its cleanup is unverified and must be reconciled by its owner.
   - Do not treat full Fabric completion as a prerequisite for independently qualified work, or use an unqualified launcher as a shortcut.
