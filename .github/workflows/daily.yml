@@ -4063,6 +4063,16 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           THESIS_MONITOR_ENABLE: ${{ secrets.THESIS_MONITOR_ENABLE }}
         run: python -m scripts.run_thesis_condition_monitor || echo "::warning::thesis condition monitor failed (non-fatal)"
+      - name: brief deliveries producer (MO-PAID-032 — dormant unless BRIEF_DELIVERIES_ENABLE=1)
+        # MO-PAID-032 child: writes brief_deliveries rows for active subscriptions whose
+        # cadence is due (first slice = state=degraded, degraded_reason=no_artifact).
+        # Fail-soft: absent creds/tables -> READ_UNAVAILABLE, 0 writes, exit 0.
+        # Dormant unless BRIEF_DELIVERIES_ENABLE=1. No LLM, no mailer, no new number.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BRIEF_DELIVERIES_ENABLE: ${{ secrets.BRIEF_DELIVERIES_ENABLE }}
+        run: python -m scripts.produce_brief_deliveries || echo "::warning::brief deliveries producer failed (non-fatal)"
       - name: notify (telegram/discord; skips when secrets absent)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

@@ -14118,13 +14118,17 @@ jobs:
       - scripts/build_vector.py
       - scripts/build_winner_health_page.py
       - scripts/export_top_anatomy_library.py
+      - engine/brief_delivery_producer.py
       - scripts/run_thesis_condition_monitor.py
+      - scripts/produce_brief_deliveries.py
       - tests/test_alert_zh_completeness.py
       - tests/test_falsifier_tripwires.py
       - tests/test_json_strict.py
       - tests/test_massive_local_staleness.py
       - tests/test_price_pressure.py
       - tests/test_thesis_condition_monitor.py
+      - tests/test_brief_delivery_producer.py
+      - tests/test_produce_brief_deliveries.py
       - tests/test_top_anatomy.py
       - tests/test_top_anatomy_oot_receipt.py
       - tests/test_top_maturation.py
@@ -14151,6 +14155,9 @@ jobs:
       # data/cycle_ontology paths.
       - name: thesis condition monitor — plain-language projection over the tripwire latch (F11 B-F11-1)
         run: python -m pytest tests/test_thesis_condition_monitor.py -q
+      # MO-PAID-032 child (W6-B): brief deliveries producer — dormant unless BRIEF_DELIVERIES_ENABLE=1
+      - name: brief deliveries producer (MO-PAID-032 W6-B)
+        run: python -m pytest tests/test_brief_delivery_producer.py tests/test_produce_brief_deliveries.py -q
       # The zh half of every macro alert body must be fully Chinese. Six rules
       # interpolated an English-valued token straight into message_zh (#4700), and
       # the cycle-falsifier body quoted a curator-written English thesis (#4712).
