@@ -26,6 +26,7 @@ WAIT_PULLBACK = "WAIT_PULLBACK"
 RAN_DONT_CHASE = "RAN_DONT_CHASE"
 BLOCKED = "BLOCKED"
 UNAVAILABLE_DATA = "UNAVAILABLE_DATA"
+MONITOR_ONLY = "MONITOR_ONLY"
 
 _OFFICIAL_OPEN = frozenset({"buy_now", "partial"})
 _OFFICIAL_PREPARING = frozenset(
@@ -36,6 +37,12 @@ _DISCOVERY_PREPARING = frozenset(
     {ENTRY_OPEN, WAIT_CONFLUENCE, WAIT_PULLBACK}
 )
 _DISCOVERY_MONITOR = frozenset({RAN_DONT_CHASE})
+_OWNER_CONTEXT_LANES = {
+    "ripening": (PREPARING, WAIT_CONFLUENCE),
+    "ran": (MONITOR, RAN_DONT_CHASE),
+    "leaders": (MONITOR, MONITOR_ONLY),
+    "watch": (MONITOR, MONITOR_ONLY),
+}
 
 
 def _blank(*, incumbent_asof: Any, discovery_asof: Any, attention_asof: Any, reason: str) -> dict:
@@ -124,6 +131,53 @@ def _discovery_index(
     return out
 
 
+def _owner_context_index(
+    rows: Iterable[Mapping[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Index only the existing incumbent display lanes, first identity wins."""
+    out: dict[str, dict[str, Any]] = {}
+    for source in rows or ():
+        if not isinstance(source, Mapping):
+            continue
+        context_lane = str(source.get("owner_context_lane") or "")
+        if context_lane not in _OWNER_CONTEXT_LANES:
+            continue
+        ticker = _ticker(source, "ticker")
+        if not ticker or ticker in out:
+            continue
+        out[ticker] = dict(source)
+    return out
+
+
+def _owner_context_row(
+    context: Mapping[str, Any],
+    attention: Mapping[str, Any],
+) -> dict[str, Any]:
+    context_lane = str(context.get("owner_context_lane"))
+    lane, permission_status = _OWNER_CONTEXT_LANES[context_lane]
+    row = {
+        "ticker": str(context.get("ticker")),
+        "lane": lane,
+        "source_lane": f"incumbent_{context_lane}",
+        "permission_status": permission_status,
+        "permission_source": "owner_stance",
+        "permission_authority": "official_display",
+        "owner_context_lane": context_lane,
+        "attention_rank": attention.get("rank"),
+        "attention_authority": "display_only_screen",
+    }
+    for key in ("name", "name_zh", "sector", "sector_zh", "stance", "stance_zh"):
+        if context.get(key) is not None:
+            row[key] = deepcopy(context.get(key))
+    why = attention.get("why")
+    if isinstance(why, (list, tuple)):
+        row["attention_reasons"] = deepcopy(list(why))
+    features = attention.get("features")
+    if isinstance(features, Mapping):
+        row["attention_features"] = deepcopy(dict(features))
+    return row
+
+
 def _attention_row(
     discovery: Mapping[str, Any],
     attention: Mapping[str, Any],
@@ -158,6 +212,7 @@ def project_opportunities(
     incumbent_buy: Iterable[Mapping[str, Any]],
     discovery_rows: Iterable[Mapping[str, Any]],
     attention_picks: Iterable[Mapping[str, Any]],
+    owner_context_rows: Iterable[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Compose official HK permission with zero-authority discovery attention.
 
@@ -191,6 +246,8 @@ def project_opportunities(
         "attention_excluded_by_permission": 0,
         "attention_duplicate": 0,
         "attention_shadowed_by_official": 0,
+        "attention_recovered_by_owner_context": 0,
+        "attention_without_context": 0,
     }
 
     official_seen: set[str] = set()
@@ -210,6 +267,7 @@ def project_opportunities(
         )
 
     discovery = _discovery_index(discovery_rows or (), asof=asof)
+    owner_context = _owner_context_index(owner_context_rows or ())
     attention_seen: set[str] = set()
     for source in attention_picks or ():
         ticker = _ticker(source, "ticker")
@@ -226,6 +284,13 @@ def project_opportunities(
         drow = discovery.get(ticker)
         if drow is None:
             diagnostics["attention_not_in_discovery"] += 1
+            context = owner_context.get(ticker)
+            if context is None:
+                diagnostics["attention_without_context"] += 1
+                continue
+            row = _owner_context_row(context, source)
+            lanes[row["lane"]].append(row)
+            diagnostics["attention_recovered_by_owner_context"] += 1
             continue
 
         status = str(drow.get("availability_status") or "")
@@ -244,6 +309,7 @@ def project_opportunities(
     diagnostics["official_population"] = len(official_seen)
     diagnostics["discovery_population"] = len(discovery)
     diagnostics["attention_population"] = len(attention_seen)
+    diagnostics["owner_context_population"] = len(owner_context)
 
     return {
         "schema": SCHEMA,
