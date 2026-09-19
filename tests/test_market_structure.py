@@ -1149,7 +1149,6 @@ def test_tenor_buckets_preserve_absent_zero_dte_as_absent_not_zero():
     assert got["daily_view"]["same_day_expiry_present"] is False
 
 
-
 # ===========================================================================
 # Skylit R4 cross-index structural coherence Stage 0
 # ===========================================================================

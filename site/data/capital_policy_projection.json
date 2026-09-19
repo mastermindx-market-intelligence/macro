@@ -1,5 +1,5 @@
 {
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "authority": "context_only",
   "horizon_days": 45,
   "is_context_only": true,
@@ -21,7 +21,7 @@
       "rows": [
         {
           "date": "2026-10-28",
-          "days_out": 41,
+          "days_out": 40,
           "event_en": "Fed rate decision",
           "event_zh": "美联储利率决议",
           "is_context_only": true,
@@ -44,6 +44,17 @@
       "rows": [
         {
           "date": "2026-09-22",
+          "days_out": 4,
+          "event_en": "Treasury auctions 2-Year Note",
+          "event_zh": "财政部拍卖2年期中期国债",
+          "is_context_only": true,
+          "source_label_en": "TreasuryDirect",
+          "source_label_zh": "国债直销",
+          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
+          "window_id": "treasury_supply"
+        },
+        {
+          "date": "2026-09-23",
           "days_out": 5,
           "event_en": "Treasury auctions 2-Year Note",
           "event_zh": "财政部拍卖2年期中期国债",
@@ -55,18 +66,7 @@
         },
         {
           "date": "2026-09-23",
-          "days_out": 6,
-          "event_en": "Treasury auctions 2-Year Note",
-          "event_zh": "财政部拍卖2年期中期国债",
-          "is_context_only": true,
-          "source_label_en": "TreasuryDirect",
-          "source_label_zh": "国债直销",
-          "source_url": "https://www.treasurydirect.gov/auctions/upcoming/",
-          "window_id": "treasury_supply"
-        },
-        {
-          "date": "2026-09-23",
-          "days_out": 6,
+          "days_out": 5,
           "event_en": "Treasury auctions 5-Year Note",
           "event_zh": "财政部拍卖5年期中期国债",
           "is_context_only": true,
@@ -77,7 +77,7 @@
         },
         {
           "date": "2026-09-24",
-          "days_out": 7,
+          "days_out": 6,
           "event_en": "Treasury auctions 7-Year Note",
           "event_zh": "财政部拍卖7年期中期国债",
           "is_context_only": true,
@@ -121,19 +121,8 @@
       "reason_zh": "",
       "rows": [
         {
-          "date": "2026-09-17",
-          "days_out": 0,
-          "event_en": "Comment periods close on 2 Federal Register documents",
-          "event_zh": "2 份联邦公报文件的意见征询期截止",
-          "is_context_only": true,
-          "source_label_en": "Federal Register",
-          "source_label_zh": "联邦公报",
-          "source_url": "https://www.federalregister.gov/d/2026-16798",
-          "window_id": "disclosure_regulatory"
-        },
-        {
           "date": "2026-09-18",
-          "days_out": 1,
+          "days_out": 0,
           "event_en": "Comment periods close on 6 Federal Register documents",
           "event_zh": "6 份联邦公报文件的意见征询期截止",
           "is_context_only": true,
@@ -144,7 +133,7 @@
         },
         {
           "date": "2026-09-21",
-          "days_out": 4,
+          "days_out": 3,
           "event_en": "Comment periods close on 10 Federal Register documents",
           "event_zh": "10 份联邦公报文件的意见征询期截止",
           "is_context_only": true,
@@ -155,7 +144,7 @@
         },
         {
           "date": "2026-09-23",
-          "days_out": 6,
+          "days_out": 5,
           "event_en": "Comment periods close on 2 Federal Register documents",
           "event_zh": "2 份联邦公报文件的意见征询期截止",
           "is_context_only": true,
@@ -166,7 +155,7 @@
         },
         {
           "date": "2026-09-24",
-          "days_out": 7,
+          "days_out": 6,
           "event_en": "Comment periods close on 3 Federal Register documents",
           "event_zh": "3 份联邦公报文件的意见征询期截止",
           "is_context_only": true,
@@ -177,7 +166,7 @@
         },
         {
           "date": "2026-09-25",
-          "days_out": 8,
+          "days_out": 7,
           "event_en": "Comment periods close on 6 Federal Register documents",
           "event_zh": "6 份联邦公报文件的意见征询期截止",
           "is_context_only": true,
@@ -188,13 +177,24 @@
         },
         {
           "date": "2026-09-28",
-          "days_out": 11,
+          "days_out": 10,
           "event_en": "Comment periods close on 11 Federal Register documents",
           "event_zh": "11 份联邦公报文件的意见征询期截止",
           "is_context_only": true,
           "source_label_en": "Federal Register",
           "source_label_zh": "联邦公报",
           "source_url": "https://www.federalregister.gov/d/2026-15148",
+          "window_id": "disclosure_regulatory"
+        },
+        {
+          "date": "2026-09-29",
+          "days_out": 11,
+          "event_en": "Comment periods close on 2 Federal Register documents",
+          "event_zh": "2 份联邦公报文件的意见征询期截止",
+          "is_context_only": true,
+          "source_label_en": "Federal Register",
+          "source_label_zh": "联邦公报",
+          "source_url": "https://www.federalregister.gov/d/2026-15525",
           "window_id": "disclosure_regulatory"
         }
       ],

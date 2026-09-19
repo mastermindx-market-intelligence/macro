@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SNPS-BULL-20260810",
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 25.4,
-  "raw_confidence": 24.0,
+  "raw_confidence": 25.4,
   "delta_vs_base": -34.6,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 28.6,
+    "validity": 36.1,
     "progress": 0.0,
-    "pace": 1.1,
+    "pace": 0.8,
     "retention": 50.0,
     "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.395,
+    "dist_to_stop_r": 0.47,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -0.4032,
-    "p2": -0.2016,
+    "horizon_pct_used": 80.0,
+    "p1": -0.3532,
+    "p2": -0.1766,
     "p3": null,
-    "move_r": -0.605,
+    "move_r": -0.53,
     "mfe_r": 1.048,
     "mae_r": -0.871
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 35,
-  "tau": 0.7778
+  "days_elapsed": 36,
+  "tau": 0.8
 }

@@ -1,170 +1,175 @@
 {
   "schema": "stock_desk.v1",
   "as_of": "2026-09-17",
-  "generated_at": "2026-09-18T08:17:32.592695+00:00",
+  "generated_at": "2026-09-19T09:50:39.057522+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-17-BRK-B-20260918081732-1",
-      "ticker": "BRK-B",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The validated entry brake is active: entry is blocked and the cycle still argues for waiting. The uptrend remains intact, so extension alone is not a sound relative short thesis.",
-      "evidence": [
-        "Verdict: Extended \u2014 wait for a pullback",
-        "Entry blocked; entry z -1.15",
-        "Cycle blocked",
-        "Board direction up; 1.8% below high"
-      ],
-      "dissent": "Positive revisions and an intact calm-tape uptrend could keep momentum going without a pullback.",
-      "falsifier": {
-        "text": "BRK-B establishes a fresh high and sustains improving relative strength versus the S&P 500 for 10 trading days.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Extended \u2014 wait for a pullback"
-    },
-    {
-      "id": "2026-09-17-EBAY-20260918081732-2",
-      "ticker": "EBAY",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The unblocked entry and turn signal are constructive, but the deterministic verdict finds no clear edge and the sector basket is below its long-term trend. With selection near the middle of the board, the evidence does not support a directional relative call.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry unblocked; entry percentile 64",
-        "Board state: TURN SIGNALED",
-        "Consumer Discretionary equal-weight basket below long-term trend"
-      ],
-      "dissent": "The turn signal, positive momentum context and 7.7% distance from the high could develop into sustained relative upside.",
-      "falsifier": {
-        "text": "EBAY sustains improving relative strength versus the S&P 500 for 10 trading days while the turn signal remains active.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Neutral \u2014 no clear edge"
-    },
-    {
-      "id": "2026-09-17-ENSG-20260918081732-3",
-      "ticker": "ENSG",
+      "id": "2026-09-17-EGBN-20260919095039-1",
+      "ticker": "EGBN",
       "name": null,
       "lean": "constructive",
       "conviction": "low",
-      "horizon_d": 30,
-      "thesis": "The constructive base-building verdict is supported by an unblocked entry, an upward turn signal and the board's residual-alpha selection ordering. Conviction stays low because historical constructive calls have had only 30.9% directional accuracy and accounting quality remains on watch.",
+      "horizon_d": 21,
+      "thesis": "Building a base with SUE positive (validated leg) and momentum present; entry axis unblocked with off-high and RSI supportive. The constructive lean rests on the risk reshapes: entry is not extended and cycle is not blocked, not on cross-sectional rank.",
       "evidence": [
-        "Verdict: Constructive \u2014 building a base",
-        "Selection percentile 61",
-        "Entry unblocked; entry percentile 60",
-        "Board direction up; TURN SIGNALED",
-        "Accounting flag: watch"
+        "SUE z 0.96, fresh 42 days",
+        "Momentum z 1.15",
+        "Entry z 0.91, off-high -3.2%, state TURN SIGNALED",
+        "Cycle not blocked; calm regime"
       ],
-      "dissent": "Negative momentum context and the accounting watch flag could mean the apparent base is only a temporary rebound.",
+      "dissent": "Accounting quality flagged 'watch' and overall quality z negative, suggesting underlying fundamentals may be weaker than the surface momentum.",
       "falsifier": {
-        "text": "ENSG loses the turn signal and its relative trend versus the S&P 500 rolls over during the next 30 trading days.",
+        "text": "Price breaks back below its recent base and closes lower on the cycle ladder, or SUE freshness decays past 60 days with no new positive surprise.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "ENSG",
+          "subject_ticker": "EGBN",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
-          "horizon_d": 30
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-10-29",
+      "check_by": "2026-10-16",
       "engine_verdict": "Constructive \u2014 building a base"
     },
     {
-      "id": "2026-09-17-TMO-20260918081732-4",
-      "ticker": "TMO",
+      "id": "2026-09-17-SONO-20260919095039-2",
+      "ticker": "SONO",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "medium",
+      "horizon_d": 21,
+      "thesis": "Strongest confluence on the list: validated insider buying and positive SUE, clean accounting, and building a base with FRESH BUY state. Entry not blocked; risk legs are the support. Bar is honest: a constructive lean here is a relative call, not an alpha claim.",
+      "evidence": [
+        "Insider z 1.5 (validated leg)",
+        "SUE z 0.57, fresh 22 days",
+        "Quality z 1.935, accounting clean",
+        "FRESH BUY, off-high -16.1%"
+      ],
+      "dissent": "Off-high -16.1% means this has already dropped meaningfully; if insider buying stalls or the base fails, the 'building base' read becomes just a breakdown pattern.",
+      "falsifier": {
+        "text": "Price makes a lower low below the recent base, or a new filing shows insiders selling instead of buying.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "SONO",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-16",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-17-WAT-20260919095039-3",
+      "ticker": "WAT",
       "name": null,
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "TMO is at its high with an intact uptrend, so the extension brake argues against chasing but not against the stock. The neutral verdict, deteriorating health-care basket and below-median quality leave no clear relative direction.",
+      "horizon_d": 21,
+      "thesis": "No clear edge: SUE sharply negative and momentum flat, with the engine's own verdict neutral. Extended (off-high 0.0%) with a deteriorating Health Care basket caution. No bearish strong enough to short, no constructive leg to stand on.",
       "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Board direction up; HOLD \u2014 EXTENDED",
-        "Off high: 0.0%",
-        "Health Care equal-weight basket deteriorating",
-        "Quality percentile 42"
+        "SUE z -2.81",
+        "Selection z -0.26, drivers empty",
+        "Cautions: Health Care basket deteriorating",
+        "HOLD \u2014 EXTENDED, off-high 0.0%"
       ],
-      "dissent": "An intact trend at the high in a calm tape can continue outperforming despite weak sector breadth.",
+      "dissent": "Momentum z is only 0.01 and off-high 0.0% shows the price held its highs; a resilient leader could grind higher despite weak SUE.",
       "falsifier": {
-        "text": "TMO sustains new highs and improving relative strength versus the S&P 500 for 10 trading days.",
+        "text": "SUE stabilizes or turns positive and momentum z breaks above 0.3 with price making a new high on volume.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-10-16",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-USPH-20260918081732-5",
+      "id": "2026-09-17-PLUS-20260919095039-4",
+      "ticker": "PLUS",
+      "name": null,
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Verdict is neutral despite a FRESH BUY entry: negative SUE and negative momentum offset the positive revisions. Accounting flagged watch. The fresh-buy entry supports not shorting, but there is no validated bull leg to lean constructive.",
+      "evidence": [
+        "SUE z -1.52",
+        "Momentum z -0.34",
+        "Entry z 0.91, FRESH BUY",
+        "Accounting quality watch"
+      ],
+      "dissent": "Positive revisions (z 0.94) and a tailwind profile could mean the negative SUE is already known and the price has reset to an attractive entry.",
+      "falsifier": {
+        "text": "Price holds the FRESH BUY level and SUE turns positive on the next earnings print.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-10-16",
+      "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-09-17-GATX-20260919095039-5",
+      "ticker": "GATX",
+      "name": null,
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Building a base with a positive SUE (validated leg) and constructive band from the engine. Entry is not blocked and off-high -10.2% leaves room. Accounting watch is the only caution and keeps conviction low.",
+      "evidence": [
+        "SUE z 0.66, fresh 19 days",
+        "Entry z 0.91, TURN SIGNALED",
+        "Constructive verdict, cycle not blocked",
+        "Accounting quality watch"
+      ],
+      "dissent": "Accounting quality flagged watch with negative quality z, and momentum is essentially flat (0.03), so the 'base' may not actually hold.",
+      "falsifier": {
+        "text": "Price slices below the base and closes at a new relative low, or the next filing shows deteriorating receivables/inventory turns.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "GATX",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-16",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-09-17-USPH-20260919095039-6",
       "ticker": "USPH",
       "name": null,
       "lean": "cautious",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "This is a genuine relative-weakness case rather than an extension-only short: the lagging verdict aligns with weak residual selection and negative momentum context. The entry is not blocked and price direction is up, so the bearish relative lean remains low conviction.",
+      "conviction": "medium",
+      "horizon_d": 21,
+      "thesis": "Engine verdict is 'Lagging \u2014 relative weakness'; bare signal is genuine (SUE negative, momentum negative, revisions negative). The extension leg supports staying out, but the actual bearish signal justifies a cautious directional lean. Track record shows cautious leans on weak names hit ~76%.",
       "evidence": [
+        "SUE z -1.28",
+        "Momentum z -0.8",
+        "Revisions z -0.5",
         "Verdict: Lagging \u2014 relative weakness",
-        "Selection percentile 39",
-        "Momentum context z -0.80",
-        "Revisions z -0.51",
-        "Accounting flag: watch"
+        "Accounting quality watch"
       ],
-      "dissent": "The upward price direction and unblocked entry could mark an early recovery that reverses the lagging signal.",
+      "dissent": "Entry is not blocked and off-high is only -9.1%, so the decline may be shallow; a mean-reversion in revisions would remove the bearish edge quickly.",
       "falsifier": {
-        "text": "USPH shifts out of the lagging state and sustains improving relative strength versus the S&P 500 for 10 trading days.",
+        "text": "Price reclaims its 50-day and SUE/revisions flip positive on the next earnings, or a high-volume strong up-day breaks the lagging pattern.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "USPH",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
-          "horizon_d": 20
+          "horizon_d": 21
         }
       },
-      "check_by": "2026-10-15",
+      "check_by": "2026-10-16",
       "engine_verdict": "Lagging \u2014 relative weakness"
-    },
-    {
-      "id": "2026-09-17-REXR-20260918081732-6",
-      "ticker": "REXR",
-      "name": null,
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The turn signal and favorable entry are offset by below-median residual selection, weak momentum context and below-median quality. With no active cycle block or additional risk caution, the provided state does not justify either a long or a relative short.",
-      "evidence": [
-        "Verdict: Neutral \u2014 no clear edge",
-        "Entry unblocked; entry percentile 62",
-        "Board state: TURN SIGNALED",
-        "Selection percentile 45",
-        "Quality percentile 44"
-      ],
-      "dissent": "Positive revisions and the current turn signal could overcome the weak selection context and produce relative upside.",
-      "falsifier": {
-        "text": "REXR sustains improving relative strength versus the S&P 500 for 10 trading days while the turn signal remains active.",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-10-15",
-      "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

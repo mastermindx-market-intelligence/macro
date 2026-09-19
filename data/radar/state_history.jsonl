@@ -2978,3 +2978,7 @@
 {"date": "2026-09-18", "basket": "us_sector_industrials", "state": "QUIET"}
 {"date": "2026-09-18", "basket": "us_sector_tech", "state": "QUIET"}
 {"date": "2026-09-18", "basket": "obesity_glp1", "state": "QUIET"}
+{"date": "2026-09-18", "basket": "semicap_equipment", "state": "POSITIVE_DIVERGENCE"}
+{"date": "2026-09-18", "basket": "data_center_power", "state": "POSITIVE_DIVERGENCE"}
+{"date": "2026-09-18", "basket": "industrial_distribution", "state": "POSITIVE_DIVERGENCE"}
+{"date": "2026-09-18", "basket": "regional_banks", "state": "QUIET"}

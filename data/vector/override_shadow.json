@@ -2,7 +2,7 @@
   "schema": "override_shadow.v1",
   "stub": false,
   "stub_note": "v1: W1 measured overlay merged onto the W3 panel payload (weekly gated-vs-raw series, prior-cycle same-point context, cum gap). Per-cycle attribution + breakeven fan live in data/vector/gate_attribution.json.",
-  "generated_at": "2026-09-18 07:10 UTC",
+  "generated_at": "2026-09-18 18:17 UTC",
   "audience": "owner-only",
   "override": {
     "id": "midterm_blackout",
@@ -33,7 +33,7 @@
     "dampening_path_pct": [
       -84.0,
       -77.0,
-      -39.0
+      -37.0
     ],
     "dampening_note": "Amplitude is dampening cycle-over-cycle (institutionalisation) \u2014 the last leg is the CURRENT drawdown, still open, never banked.",
     "pivot_fit_mae_days": 7.2,
@@ -43,15 +43,15 @@
     "asof": "2026-09-18",
     "gated_pct": {
       "conservative": 0.0,
-      "moderate": 40.5,
-      "aggressive": 77.4,
-      "optimal": 40.5
+      "moderate": 43.1,
+      "aggressive": 83.4,
+      "optimal": 43.1
     },
     "raw_pct": {
       "conservative": 0.0,
-      "moderate": 40.5,
-      "aggressive": 77.4,
-      "optimal": 40.5
+      "moderate": 43.1,
+      "aggressive": 83.4,
+      "optimal": 43.1
     },
     "raw_source": "signals.parquet alloc_*_raw (W0 dual series)",
     "parity_ok": true,
@@ -64,7 +64,7 @@
       {
         "key": "dampening",
         "level": "ok",
-        "text": "Drawdown -39% so far vs ~-80% prior-bear avg (bear still developing).",
+        "text": "Drawdown -37% so far vs ~-80% prior-bear avg (bear still developing).",
         "evaluability": "in_window",
         "evaluable": true,
         "why": "Fires only once the projected bottom window opens (2026-10-01) \u2014 a fair-comparison guard, and that date is inside the gate window."
@@ -107,11 +107,11 @@
   "as_of": "2026-09-18",
   "gate_engaged": "2026-01-01",
   "days_since_gate": 260,
-  "current_ungated_alloc": 0.4049,
-  "current_gated_alloc": 0.4049,
+  "current_ungated_alloc": 0.431,
+  "current_gated_alloc": 0.431,
   "cum_gap_pct": 0.0,
-  "gated_equity_final": 0.921173,
-  "raw_equity_final": 0.921173,
+  "gated_equity_final": 0.928874,
+  "raw_equity_final": 0.928874,
   "weekly_series": [
     {
       "date": "2026-01-04",
@@ -300,8 +300,8 @@
     },
     {
       "date": "2026-09-20",
-      "gated_equity": 0.921173,
-      "raw_equity": 0.921173
+      "gated_equity": 0.928874,
+      "raw_equity": 0.928874
     }
   ],
   "prior_cycles": {
