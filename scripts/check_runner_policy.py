@@ -1115,7 +1115,7 @@ def main(argv: list[str] | None = None) -> int:
     if findings:
         print(f"FAIL: {len(findings)} runner-policy finding(s)")
         return 1
-    print("OK: P3B-B routes only same-repository PR execution through the protected-main PC executor.")
+    print("OK: ordinary PR CI defaults to GitHub-hosted Linux/x64; protected-main PC execution is explicit fallback only.")
     return 0
 
 
