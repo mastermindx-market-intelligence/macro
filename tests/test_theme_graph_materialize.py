@@ -927,6 +927,49 @@ def test_d2c_run_swallowed_ths_producer_error_returns_failure_without_writes(tre
     assert _file_hashes(root) == before
 
 
+def test_d2c_run_corrupt_existing_ths_history_fails_closed_without_writes(
+        tree, monkeypatch):
+    """Unreadable owner history is a hard refusal, never an empty-history claim."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    history_path = root / "baskets_china_ths" / "membership_history.parquet"
+    history_path.write_bytes(b"not a parquet file")
+    before = _file_hashes(root)
+
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_d2c_run_swallowed_ths_association_plane_error_returns_failure_without_writes(
+        tree, monkeypatch):
+    """The load-bearing THS association plane may not degrade to an empty canonical join."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert store.write_edges([_legacy_ths_edge()], lane="nightly") == 1
+    before = _file_hashes(root)
+
+    def broken_plane(_self):
+        raise ValueError("controlled THS association failure")
+
+    monkeypatch.setattr(materialize._Builder, "build_ths_plane", broken_plane)
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
+
+
+def test_crosswalk_discloses_known_ths_code_without_canonical_basket_join(tree):
+    """Known vocabulary is not the same as a successfully materialized basket join."""
+    root, _xwalk = tree
+    membership_path = root / "baskets_china_ths" / "membership.json"
+    membership = json.loads(membership_path.read_text(encoding="utf-8"))
+    del membership["baskets"][f"thsc{KNOWN_CODE}"]["ths_concept"]
+    _write(membership_path, membership)
+
+    view = _build(tree)
+    receipt = view.per_suite["crosswalk"]
+    assert receipt["ths_codes_mapped"] == 1
+    assert receipt["ths_codes_with_canonical_basket_join"] == 0
+    assert receipt["ths_codes_without_canonical_basket_join"] == 1
+
+
 def test_d2c_run_empty_pit_never_retracts_or_auto_waives(tree, monkeypatch):
     bake, root = _d2c_run_fixture(tree, monkeypatch)
     legacy = _legacy_ths_edge()
@@ -966,6 +1009,67 @@ def test_d2c_run_identical_second_night_appends_no_edge_belief(tree, monkeypatch
     assert bake.run(backfill=False, force_backfill=False) == 0
     pd.testing.assert_frame_equal(store.read_edges(latest_belief=False), first)
     assert store.read_meta()["rows_appended"]["edges"] == 0
+
+
+def test_d2c_run_snapshot_version_advance_keeps_one_live_canonical_expression(
+        tree, monkeypatch):
+    """A later receipt may re-key the join, but must supersede the prior live edge."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+
+    src = f"basket:baskets_china_ths:thsc{KNOWN_CODE}"
+    dst = "theme:solar"
+    first_latest = store.read_edges()
+    first = first_latest[(first_latest["type"] == "EXPRESSES")
+                         & (first_latest["src"] == src)
+                         & (first_latest["dst"] == dst)
+                         & first_latest["valid_to"].isna()]
+    assert len(first) == 1
+    first_edge_id = str(first.iloc[0]["edge_id"])
+
+    membership_path = root / "baskets_china_ths" / "membership.json"
+    membership = json.loads(membership_path.read_text(encoding="utf-8"))
+    membership["version"] = "2026-07-20"
+    _write(membership_path, membership)
+    monkeypatch.setattr(materialize, "utc_today", lambda: "2026-08-13")
+    monkeypatch.setattr(materialize, "utc_now_stamp", lambda: "2026-08-13T01:00:00Z")
+
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    latest = store.read_edges()
+    active = latest[(latest["type"] == "EXPRESSES")
+                    & (latest["src"] == src)
+                    & (latest["dst"] == dst)
+                    & latest["valid_to"].isna()]
+    assert len(active) == 1, (
+        "a re-receipted basket→canonical mapping must close the superseded edge "
+        "instead of accumulating one live path per collection")
+    replacement = active.iloc[0]
+    assert str(replacement["edge_id"]) != first_edge_id
+    assert replacement["valid_from"] == replacement["evidence_time"] == "2026-07-20"
+
+    superseded = latest[latest["edge_id"] == first_edge_id]
+    assert len(superseded) == 1
+    assert superseded.iloc[0]["valid_from"] == XWALK_DATE
+    assert superseded.iloc[0]["valid_to"] == "2026-07-20"
+    beliefs = store.read_edges(latest_belief=False)
+    old_beliefs = beliefs[beliefs["edge_id"] == first_edge_id]
+    assert len(old_beliefs) == 2, "opening and later closing beliefs must both survive"
+    assert old_beliefs["valid_to"].isna().sum() == 1
+    assert (old_beliefs["valid_to"] == "2026-07-20").sum() == 1
+
+
+def test_d2c_run_same_day_canonical_rekey_refuses_without_writes(tree, monkeypatch):
+    """Daily belief keys cannot represent open-and-close for one edge on one date."""
+    bake, root = _d2c_run_fixture(tree, monkeypatch)
+    assert bake.run(backfill=False, force_backfill=False) == 0
+    membership_path = root / "baskets_china_ths" / "membership.json"
+    membership = json.loads(membership_path.read_text(encoding="utf-8"))
+    membership["version"] = "2026-07-20"
+    _write(membership_path, membership)
+    before = _file_hashes(root)
+
+    assert bake.run(backfill=False, force_backfill=False) == 1
+    assert _file_hashes(root) == before
 
 
 def test_d2c_run_ths_cutover_never_waives_another_family_shrink(tree, monkeypatch):

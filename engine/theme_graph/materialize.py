@@ -1031,6 +1031,7 @@ class _Builder:
                 ths_code_by_node[node_id] = ext["ths_code"]
 
         mapped_codes: set[str] = set()
+        joined_codes: set[str] = set()
         unknown: set[str] = set()
         n_expresses = 0
         n_ltheme_expresses = 0
@@ -1076,7 +1077,8 @@ class _Builder:
             for b_node, code in ths_code_by_node.items():
                 if code not in wanted:
                     continue
-                association_date = getattr(self, "_ths_basket_concept_dates", {}).get(b_node)
+                association_date = getattr(
+                    self, "_ths_basket_concept_dates", {}).get(b_node)
                 if not association_date:
                     # No dated basket→concept receipt means the canonical join is
                     # unavailable; never infer it from the current node alone.
@@ -1091,6 +1093,7 @@ class _Builder:
                            valid_from=mapping_date, valid_to=None,
                            evidence_time=mapping_date, source_class="curated",
                            date_provenance="crosswalk", evidence_refs=refs)
+                joined_codes.add(code)
                 n_expresses += 1
 
             # VOCABULARY RESOLUTION, not a second expression path (§9.12). The canonical
@@ -1125,6 +1128,8 @@ class _Builder:
             "local_theme_expresses_edges": n_ltheme_expresses,
             "published_at": xwalk_date,
             "ths_codes_mapped": len(mapped_codes),
+            "ths_codes_with_canonical_basket_join": len(joined_codes),
+            "ths_codes_without_canonical_basket_join": len(mapped_codes - joined_codes),
             "ths_codes_unknown": len(unknown),
         }
 
@@ -1145,14 +1150,17 @@ class _Builder:
         # planes resolve against (a Finviz ticker already present must resolve to the
         # existing node, never to a twin), and the THS plane mints the concept nodes the
         # crosswalk's vocabulary-resolution edges point at.
-        for build_plane in (self.build_ths_membership_history,
-                            self.build_finviz_plane, self.build_ths_plane):
+        planes = (
+            ("build_ths_membership_history", self.build_ths_membership_history),
+            ("build_finviz_plane", self.build_finviz_plane),
+            ("build_ths_plane", self.build_ths_plane),
+        )
+        for plane_name, build_plane in planes:
             try:
                 build_plane()
-            except Exception as exc:  # noqa: BLE001 — a local plane is additive
-                log.warning("theme_graph: local plane %s failed (%s)",
-                            build_plane.__name__, exc)
-                self.out.local_plane[build_plane.__name__] = {"error": str(exc)}
+            except Exception as exc:  # noqa: BLE001 — orchestrator decides fatality
+                log.warning("theme_graph: local plane %s failed (%s)", plane_name, exc)
+                self.out.local_plane[plane_name] = {"error": str(exc)}
         self.build_crosswalk()
         self.out.nodes = [self._nodes[k] for k in sorted(self._nodes)]
         self.out.edges = [self._edges[k] for k in sorted(self._edges)]
@@ -1469,6 +1477,91 @@ def supersede_ths_membership_doc_edges(
                 closed[f] = None
         out.append(closed)
     out.sort(key=lambda r: r["edge_id"])
+    return out
+
+
+def supersede_ths_canonical_expression_edges(
+    stored: pd.DataFrame,
+    computed: list[dict],
+    *,
+    belief_time: str,
+    era: str,
+    computed_at: str,
+) -> list[dict]:
+    """Close older live THS basket→canonical-theme receipts replaced this run.
+
+    Canonical ``EXPRESSES`` edge ids include ``valid_from``.  A later THS or
+    crosswalk receipt therefore mints a new edge id even when the logical
+    basket→theme pair is unchanged.  This helper preserves that truthful clock
+    movement while appending a closing belief for every older live edge of the
+    same pair, preventing consumers from walking duplicate live provenance paths.
+    """
+    if stored is None or getattr(stored, "empty", True):
+        return []
+
+    def is_canonical_ths(row: dict) -> bool:
+        return (
+            str(row.get("type") or "") == "EXPRESSES"
+            and str(row.get("src") or "").startswith(f"basket:{THS_SUITE}:")
+            and str(row.get("dst") or "").startswith("theme:")
+            and str(row.get("source_class") or "") == "curated"
+            and str(row.get("date_provenance") or "") == "crosswalk"
+        )
+
+    replacement_by_pair: dict[tuple[str, str], dict] = {}
+    for row in computed:
+        if not is_canonical_ths(row) or not _null(row.get("valid_to")):
+            continue
+        pair = (str(row["src"]), str(row["dst"]))
+        prior = replacement_by_pair.get(pair)
+        if prior is not None and str(prior["edge_id"]) != str(row["edge_id"]):
+            raise ValueError(f"multiple live THS canonical replacements for {pair!r}")
+        replacement_by_pair[pair] = row
+
+    out: list[dict] = []
+    for row in stored.to_dict("records"):
+        if not is_canonical_ths(row) or not _null(row.get("valid_to")):
+            continue
+        pair = (str(row["src"]), str(row["dst"]))
+        replacement = replacement_by_pair.get(pair)
+        if replacement is None or str(replacement["edge_id"]) == str(row["edge_id"]):
+            continue
+        old_from = _text(row.get("valid_from"))
+        new_from = _text(replacement.get("valid_from"))
+        if not _is_date(old_from) or not _is_date(new_from) or new_from <= old_from:
+            raise ValueError(
+                f"non-forward THS canonical replacement for {pair!r}: "
+                f"stored={old_from!r}, computed={new_from!r}")
+        old_belief = _text(row.get("belief_time"))
+        if not _is_date(old_belief) or not _is_date(belief_time) or belief_time <= old_belief:
+            raise ValueError(
+                f"non-advancing THS canonical belief for {pair!r}: "
+                f"stored={old_belief!r}, computed={belief_time!r}; the daily "
+                "(edge_id, belief_time) ledger key cannot represent that closure")
+        closed = {col: row.get(col) for col in RESERVED_EDGE_FIELDS}
+        refs = sorted(set(_normalize_evidence_refs(row.get("evidence_refs"))
+                          + _normalize_evidence_refs(replacement.get("evidence_refs"))))
+        closed.update({
+            "edge_id": str(row["edge_id"]),
+            "type": "EXPRESSES",
+            "src": pair[0],
+            "dst": pair[1],
+            "valid_from": old_from,
+            "valid_to": new_from,
+            "evidence_time": str(replacement.get("evidence_time") or new_from),
+            "belief_time": belief_time,
+            "era": era,
+            "source_class": str(row.get("source_class") or "curated"),
+            "date_provenance": str(row.get("date_provenance") or "crosswalk"),
+            "evidence_refs": refs,
+            "confidence_basis": str(row.get("confidence_basis") or CONFIDENCE_BASIS),
+            "computed_at": computed_at,
+            "engine_version": str(row.get("engine_version") or ENGINE_VERSION),
+        })
+        for field in RESERVED_EDGE_FIELDS:
+            closed.setdefault(field, None)
+        out.append(closed)
+    out.sort(key=lambda row: str(row["edge_id"]))
     return out
 
 

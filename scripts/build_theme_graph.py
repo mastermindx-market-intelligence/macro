@@ -114,10 +114,22 @@ def run(*, backfill: bool, force_backfill: bool,
                   "--force-backfill only if that is genuinely what you want.", len(stored))
         return 1
 
-    ths_history = basket_membership_pit.read_history(basket_membership_pit.SUITE_THS)
+    try:
+        ths_history = basket_membership_pit.read_history(
+            basket_membership_pit.SUITE_THS, strict=True)
+    except Exception as exc:  # noqa: BLE001 — corrupt owner state must fail closed
+        log.error("theme graph: THS PIT history is present but unreadable (%s) — "
+                  "refusing to publish an empty-history interpretation", exc)
+        return 1
     view = materialize.build(era=era, raw_snapshot=_newest_raw_snapshot(),
                              ths_history=ths_history,
                              retired_node_ids=_retired_node_ids())
+    ths_plane = view.local_plane.get("build_ths_plane")
+    if isinstance(ths_plane, dict) and ths_plane.get("error"):
+        log.error("theme graph: THS association plane failed (%s) — refusing to "
+                  "publish a graph with silently missing canonical joins",
+                  ths_plane["error"])
+        return 1
     # BLOCKER 3: build_ths_membership_history is now the SOLE producer of THS
     # MEMBER_OF edges (build_family(THS_SUITE) is deliberately skipped). A build
     # that failed to produce that plane must not silently look identical to one
@@ -143,16 +155,28 @@ def run(*, backfill: bool, force_backfill: bool,
         if str(e.get("type")) == "MEMBER_OF"
         and str(e.get("confidence_basis")) == "membership_pit.ths.v1"
     }
-    closings: list[dict] = []
+    run_computed_at = (view.edges[0]["computed_at"]
+                       if view.edges else materialize.utc_now_stamp())
+    membership_closings: list[dict] = []
     if pit_birth and not stored.empty:
-        closings = materialize.supersede_ths_membership_doc_edges(
+        membership_closings = materialize.supersede_ths_membership_doc_edges(
             stored, valid_to=pit_birth, belief_time=belief_time, era=era,
-            computed_at=view.edges[0]["computed_at"] if view.edges else materialize.utc_now_stamp(),
-            pit_pairs=pit_pairs)
-        if closings:
+            computed_at=run_computed_at, pit_pairs=pit_pairs)
+        if membership_closings:
             log.info("THS membership_doc→pit cutover: retracting %d open membership_doc.v1 "
                      "MEMBER_OF edges covered by PIT history (valid_from=valid_to=%s)",
-                     len(closings), pit_birth)
+                     len(membership_closings), pit_birth)
+    try:
+        expression_closings = materialize.supersede_ths_canonical_expression_edges(
+            stored, view.edges, belief_time=belief_time, era=era,
+            computed_at=run_computed_at)
+    except ValueError as exc:
+        log.error("theme graph: THS canonical expression supersession refused (%s)", exc)
+        return 1
+    if expression_closings:
+        log.info("THS canonical expression refresh: closing %d superseded live edge(s)",
+                 len(expression_closings))
+    closings = membership_closings + expression_closings
     computed = list(view.edges) + closings
     edges = computed if backfill else materialize.changed_edges(computed, stored)
 
@@ -165,7 +189,7 @@ def run(*, backfill: bool, force_backfill: bool,
     # produced replacement edges THIS run (BLOCKER 3): a swallowed-exception night with
     # zero PIT edges must hit the wall like any other mass-closure, not sail through it.
     allow = set(allow_source_shrink)
-    if closings and pit_member_edges > 0:
+    if membership_closings and pit_member_edges > 0:
         allow.add(materialize.THS_FAMILY)
     refusals = materialize.source_shrink_refusals(edges, stored, allow=allow)
     if refusals:
