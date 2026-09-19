@@ -55,35 +55,41 @@ _EVENT_CLASS_ZH: dict[str, str] = {
     "SPACs":               "特殊目的收购公司",
     "Management Changes":   "管理层变更",
     "Other":               "其他",
-    # SEC event-spine subtypes (EN verbatim in ZH — no ZH translation exists)
-    "registration_statement":           "registration_statement",
-    "automatic_shelf_registration":     "automatic_shelf_registration",
-    "registration_amendment":          "registration_amendment",
-    "post_effective_amendment":        "post_effective_amendment",
-    "automatic_shelf_withdrawal":      "automatic_shelf_withdrawal",
-    "withdrawal_request":              "withdrawal_request",
-    "effectiveness_notice":            "effectiveness_notice",
-    "prospectus_event":                "prospectus_event",
-    "charter_amendment_candidate":     "charter_amendment_candidate",
-    "shareholder_vote_candidate":       "shareholder_vote_candidate",
-    "unregistered_equity_sale_candidate": "unregistered_equity_sale_candidate",
-    "financing_agreement_candidate":   "financing_agreement_candidate",
-    "current_report_candidate":         "current_report_candidate",
-    "authorization_or_vote_candidate":  "authorization_or_vote_candidate",
-    "offering_statement":              "offering_statement",
-    "offering_statement_amendment":    "offering_statement_amendment",
-    "reg_a_event_candidate":           "reg_a_event_candidate",
-    "periodic_reconciliation_source":  "periodic_reconciliation_source",
-    "ownership_context_source":        "ownership_context_source",
-    "unsupported_form":                "unsupported_form",
-    # Federal Register reg_stages (EN verbatim in ZH)
-    "executive_order":     "executive_order",
-    "interim_final_rule":  "interim_final_rule",
-    "final_rule":          "final_rule",
-    "proposed_rule":       "proposed_rule",
-    "rfi":                 "rfi",
-    "funding_notice":      "funding_notice",
-    "notice":              "notice",
+    # SEC event-spine subtypes — ZH is the official display name; EN verbatim only
+    # where no ZH translation has been established by the desk.
+    "registration_statement":           "登记说明书",
+    "automatic_shelf_registration":     "自动架上登记",
+    "registration_amendment":           "登记修正案",
+    "post_effective_amendment":        "生效后修正",
+    "automatic_shelf_withdrawal":       "自动撤回登记",
+    "withdrawal_request":              "撤回申请",
+    "effectiveness_notice":            "生效通知",
+    "prospectus_event":                "招股说明书事件",
+    "charter_amendment_candidate":     "章程修正候选",
+    "shareholder_vote_candidate":       "股东表决候选",
+    "unregistered_equity_sale_candidate": "未登记股票发行候选",
+    "financing_agreement_candidate":   "融资协议候选",
+    "current_report_candidate":         "当前报告候选",
+    "authorization_or_vote_candidate":  "授权或表决候选",
+    "offering_statement":             "发行说明书",
+    "offering_statement_amendment":    "发行说明书修正",
+    "reg_a_event_candidate":           "Reg A 事件候选",
+    "periodic_reconciliation_source":  "定期对账来源",
+    "ownership_context_source":        "所有权上下文来源",
+    "unsupported_form":                "不支持的表格",
+    # Federal Register reg_stages — ZH is the official display name.
+    "executive_order":     "行政命令",
+    "interim_final_rule":  "临时最终规则",
+    "final_rule":          "最终规则",
+    "proposed_rule":       "拟议规则",
+    "rfi":                 "信息征集",
+    "funding_notice":      "资助公告",
+    "notice":              "公告",
+    # Federal Register entity-list themes (engine/policy_calendar._ENTITY_LIST_THEMES).
+    "ai_semiconductors":        "AI芯片",
+    "semicap_equipment":       "半导体设备",
+    "rare_earth_critical_min": "稀土关键矿产",
+    "memory_storage":          "存储",
 }
 
 # Direction-word verbs in EN and ZH. Plain language, no magnitude /
@@ -161,9 +167,12 @@ SPECIAL_SITUATIONS_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     # multiple — takeout premium / exit / dilutive
     "Tender Offers":      (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
     "Going-Private":      (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
-    "Delistings":        (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    # Delistings: Form 25 delistings are regulatory exits, not takeout premia.
+    # Honest read = no clear directional read → typed null.
+    "Delistings":        None,
     "Issuer Tenders":    (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
-    "Rights Offerings":  (MULTIPLE, *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    MULTIPLE)),
+    # Rights Offerings: dilutive — new shares at a discount press per-share value.
+    "Rights Offerings":  (MULTIPLE, *_direction_words(_EN_PRESSES,  _ZH_PRESSES,  MULTIPLE)),
     # Capital Returns (buybacks): per-share lift via lower share count → GROWTH.
     # The lift is a per-share re-rating, not a margin press.
     "Capital Returns":   (GROWTH,   *_direction_words(_EN_LIFTS,    _ZH_LIFTS,    GROWTH)),
@@ -205,7 +214,7 @@ EVENT_SPINE_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
 }
 
 # ---------------------------------------------------------------------------
-# Source 3: collectors.federal_register — Federal Register reg_stages.
+# Source 3a: collectors.federal_register — Federal Register reg_stages.
 # Keys are the canonical reg_stage strings from _STAGE_WEIGHTS (lines 60-70).
 # Domain standards — directional reads are owned here as plain words.
 # None = no actionable directional read for valuation.
@@ -228,12 +237,27 @@ POLICY_CALENDAR_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
 }
 
 # ---------------------------------------------------------------------------
+# Source 3b: engine/policy_calendar — Federal Register entity-list themes.
+# Keys are the canonical theme strings from _ENTITY_LIST_THEMES.
+# All four themes are macro-sector reg events — press margin.
+# ---------------------------------------------------------------------------
+_ENTITY_LIST_THEMES_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
+    # ai_semiconductors, semicap_equipment, rare_earth_critical_min, memory_storage
+    # — macro-sector compliance/permitting events → press margin.
+    "ai_semiconductors":        (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    "semicap_equipment":        (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    "rare_earth_critical_min":  (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+    "memory_storage":           (MARGIN,  *_direction_words(_EN_PRESSES, _ZH_PRESSES, MARGIN)),
+}
+
+# ---------------------------------------------------------------------------
 # Closed (exhaustive) union — every event class the repo already produces.
 # ---------------------------------------------------------------------------
 EVENT_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     **SPECIAL_SITUATIONS_TO_ASSUMPTION,
     **EVENT_SPINE_TO_ASSUMPTION,
     **POLICY_CALENDAR_TO_ASSUMPTION,
+    **_ENTITY_LIST_THEMES_TO_ASSUMPTION,
 }
 
 

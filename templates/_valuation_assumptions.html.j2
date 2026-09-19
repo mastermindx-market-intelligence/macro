@@ -49,7 +49,7 @@
    the controls. Smaller than the FY footnote; same hairline color as
    the notes so the line is read as receipt, not as instruction. */
 .va-event-bridge{margin:6px 0 0;font-size:11.5px;line-height:1.5;color:var(--muted);}
-.va-event-bridge .va-event-target{font-weight:650;color:var(--muted);}
+.va-event-bridge .va-event-target{color:var(--muted);}
 .va-event-bridge .va-event-null{font-style:normal;}
 @media(max-width:390px){
   .va-ctl{grid-template-columns:1fr;gap:4px;}
@@ -120,9 +120,9 @@
   {% set _va_event_bridge = va.latest_event_bridge if va and va.latest_event_bridge else None %}
   <p class="va-event-bridge" id="va-event-bridge" data-valuation-event-bridge="v1">
     {% if _va_event_bridge %}
-    <span class="l-en" lang="en">Latest classified event on file ({{ _va_event_bridge.event_class }}) <span class="va-event-target">{{ _va_event_bridge.direction_word }}</span>.</span><span class="l-zh" lang="zh-CN">最新分类事件备案（{{ _va_event_bridge.event_class_zh }}）<span class="va-event-target">{{ _va_event_bridge.direction_word_zh }}</span>。</span>
+    <span class="l-en" lang="en">{{ t('Latest filing on file', '最新备案') }} ({{ _va_event_bridge.event_class }}) <span class="va-event-target">{{ _va_event_bridge.direction_word }}</span>.</span><span class="l-zh" lang="zh-CN">{{ t('Latest filing on file', '最新备案') }}（{{ _va_event_bridge.event_class_zh }}）<span class="va-event-target">{{ _va_event_bridge.direction_word_zh }}</span>。</span>
     {% else %}
-    <span class="l-en" lang="en">No classified event on file for this issuer.</span><span class="l-zh" lang="zh-CN">暂无分类事件备案。</span>
+    <span class="l-en" lang="en">{{ t('No filing on file yet for this company.', '该公司暂无备案。') }}</span><span class="l-zh" lang="zh-CN">{{ t('No filing on file yet for this company.', '该公司暂无备案。') }}</span>
     {% endif %}
   </p>
   <script>

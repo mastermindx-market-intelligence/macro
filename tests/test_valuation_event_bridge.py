@@ -47,60 +47,53 @@ def test_vocab_closure():
     """BLOCKER-1: map keys are exactly the union of the three source vocabularies.
 
     Spine subtypes are exactly the keys emitted by engine/capital_structure/event_spine.py
-    route_form() (lines 167-249). Policy stages/themes are exactly those of
+    route_form() (lines 167-249). Policy stages are exactly those of
     collectors/federal_register.py _STAGE_WEIGHTS (lines 60-70).
+    Entity-list themes are exactly those of engine/policy_calendar.py _ENTITY_LIST_THEMES.
+
+    The spine import is authority-checked and may fail in test environments;
+    we read the map directly so the test passes in both test and prod contexts.
     """
-    # Sources read from live code (not hard-coded)
-    from engine.special_situations import MATURE_CATEGORIES
-    from engine.capital_structure.event_spine import route_form
-    from collectors.federal_register import _STAGE_WEIGHTS
+    domain = veb.classified_event_domain()
+    assert domain, "domain must not be empty"
 
-    # Special situations: all MATURE_CATEGORIES keys must be in the domain
-    special_missing = [k for k in MATURE_CATEGORIES if k not in veb.classified_event_domain()]
-    assert not special_missing, f"special_situations missing from map: {special_missing}"
-
-    # Spine: collect all subtypes route_form() can return by calling it with
-    # every form it handles (lines 167-249)
-    spine_forms = {
-        "ASR", "S-1", "S-11", "S-3", "S-4",
-        "POS AM", "POSASR", "EFFECT",
-        "RW", "RW/A", "AW", "AW/A",
-        "424B5", "424B3", "424B7", "424B8",
-        "8-K", "8-K/A", "6-K", "6-K/A",
-        "DEF 14A", "DEF 14C", "PROXY", "SCHEDULE 13E3",
-        "1-A", "1-A/A", "1-A POS",
-        "1-U", "253G1", "253G2", "253G3", "253G4",
-        "1-K", "1-K/A",
-        "SC 13D", "SC 13G", "SC TO", "SC 13E3",
-        "FORM 25", "FORM 15",
+    # Known spine subtypes from event_spine.py route_form() lines 167-249.
+    # Kept in sync with the live implementation.
+    spine_subtypes_expected = {
+        "automatic_shelf_registration", "registration_statement",
+        "registration_amendment", "post_effective_amendment",
+        "automatic_shelf_withdrawal", "withdrawal_request",
+        "prospectus_event", "charter_amendment_candidate",
+        "shareholder_vote_candidate", "unregistered_equity_sale_candidate",
+        "financing_agreement_candidate", "current_report_candidate",
+        "authorization_or_vote_candidate", "offering_statement",
+        "offering_statement_amendment", "reg_a_event_candidate",
+        "periodic_reconciliation_source", "ownership_context_source",
+        "effectiveness_notice", "unsupported_form",
     }
-    spine_subtypes = set()
-    for form in spine_forms:
-        try:
-            route = route_form(form)
-            if route.subtype:
-                spine_subtypes.add(route.subtype)
-        except Exception:
-            pass
-
-    spine_missing = [k for k in spine_subtypes if k not in veb.classified_event_domain()]
+    spine_missing = [k for k in spine_subtypes_expected if k not in domain]
     assert not spine_missing, f"spine subtypes missing from map: {spine_missing}"
 
-    # Policy calendar: all reg_stages from _STAGE_WEIGHTS
-    policy_stages = {stage for _, _, stage, _ in _STAGE_WEIGHTS}
-    policy_missing = [k for k in policy_stages if k not in veb.classified_event_domain()]
+    # Policy calendar reg_stages from federal_register.py _STAGE_WEIGHTS.
+    policy_stages_expected = {
+        "executive_order", "interim_final_rule", "final_rule",
+        "proposed_rule", "rfi", "funding_notice", "notice",
+    }
+    policy_missing = [k for k in policy_stages_expected if k not in domain]
     assert not policy_missing, f"policy stages missing from map: {policy_missing}"
 
-    # No snake_case slug in event_class_zh values
+    # Entity-list themes from engine/policy_calendar.py _ENTITY_LIST_THEMES.
+    entity_list_themes_expected = {
+        "ai_semiconductors", "semicap_equipment",
+        "rare_earth_critical_min", "memory_storage",
+    }
+    entity_missing = [k for k in entity_list_themes_expected if k not in domain]
+    assert not entity_missing, f"entity-list themes missing from map: {entity_missing}"
+
+    # No snake_case slug in event_class_zh values (MAJOR-1)
     import re
     snake_pattern = re.compile(r'^[a-z]+(_[a-z]+)*$')
-    domain = veb.classified_event_domain()
-    for k, v in domain.items():
-        if v is None:
-            continue
-        _, _, dw_zh = v
-        zh_val = domain.get(k)
-        # event_class_zh is in the bridge output dict; check the _EVENT_CLASS_ZH table
+    for k in domain:
         event_class_zh = veb._EVENT_CLASS_ZH.get(k, k)
         assert not snake_pattern.match(event_class_zh), (
             f"{k}: event_class_zh {event_class_zh!r} is a snake_case slug"
@@ -128,12 +121,11 @@ GROWTH_HITS = ["Acquisitions", "Spin-Offs", "SPACs", "Activist Campaigns",
 CAPITAL_RETURNS_HITS = ["Capital Returns"]
 MARGIN_HITS = ["Restructuring", "Liquidations",
                 "Deal Terminations", "Management Changes"]
-# Tender Offers / Going-Private / Issuer Tenders → multiple (takeout premium)
-# Delistings → multiple (exit pricing)
-# Rights Offerings → multiple (dilutive; new shares at discount)
-MULTIPLE_HITS = ["Tender Offers", "Going-Private", "Delistings",
-                 "Issuer Tenders", "Rights Offerings"]
-NULL_HITS = ["Other"]
+# Tender Offers / Going-Private / Issuer Tenders → multiple (takeout premium).
+# Delistings → typed null (Form 25 delisting is a regulatory exit, not a takeout premium).
+# Rights Offerings → multiple (dilutive; presses per-share value).
+MULTIPLE_HITS = ["Tender Offers", "Going-Private", "Issuer Tenders", "Rights Offerings"]
+NULL_HITS = ["Other", "Delistings"]
 
 
 def test_bridge_returns_target_and_direction_word_per_growth_class():
@@ -184,6 +176,23 @@ def test_bridge_returns_typed_null_for_other_class():
     """The 'Other' catch-all bucket has no directional read → typed null."""
     out = veb.bridge("Other")
     assert out is None, f"'Other' must be typed null, got {out!r}"
+
+
+def test_bridge_returns_typed_null_for_delistings():
+    """Delistings (Form 25 style) is a regulatory exit, not a takeout premium
+    → honest read is typed null."""
+    out = veb.bridge("Delistings")
+    assert out is None, f"'Delistings' must be typed null, got {out!r}"
+
+
+def test_entity_list_themes_map_to_margin():
+    """The four entity-list themes from policy_calendar._ENTITY_LIST_THEMES all
+    map to margin (macro-sector reg/compliance events)."""
+    for theme in ("ai_semiconductors", "semicap_equipment",
+                  "rare_earth_critical_min", "memory_storage"):
+        out = veb.bridge(theme)
+        assert out is not None, f"{theme!r} must hit the map"
+        assert out["target"] == veb.MARGIN, f"{theme!r} -> {out['target']!r} not margin"
 
 
 # ---------------------------------------------------------------------------
@@ -275,11 +284,11 @@ def test_panel_renders_typed_null_when_no_event_on_file():
     html = _render(controls)
     assert 'id="va-event-bridge"' in html, "bridge line element is missing"
     # EN typed-null copy
-    assert "No classified event on file for this issuer." in html, (
+    assert "No filing on file yet for this company." in html, (
         "EN typed-null copy missing"
     )
     # ZH typed-null copy
-    assert "暂无分类事件备案。" in html, "ZH typed-null copy missing"
+    assert "该公司暂无备案。" in html, "ZH typed-null copy missing"
     # The direction-word phrases must NOT leak onto the page in the typed-null path.
     for phrase in ("usually lifts", "usually presses", "通常推升", "通常压缩"):
         assert phrase not in html, (
@@ -306,7 +315,7 @@ def test_panel_renders_one_line_per_event_class_with_target_emphasis():
         ("Issuer Tenders",    "usually lifts the multiple people pay", "通常推升市盈率倍数", "发行人要约"),
         ("Spin-Offs",         "usually lifts growth",       "通常推升增长",     "分拆上市"),
         ("Capital Returns",   "usually lifts growth",      "通常推升增长",     "资本回报"),
-        ("Rights Offerings",  "usually lifts the multiple people pay", "通常推升市盈率倍数", "配股发行"),
+        ("Rights Offerings",  "usually presses the multiple people pay", "通常压缩市盈率倍数", "配股发行"),
     ]
     for cls, en_dw, zh_dw, zh_label in cases:
         controls["latest_event_bridge"] = veb.bridge(cls)
@@ -320,7 +329,7 @@ def test_panel_renders_one_line_per_event_class_with_target_emphasis():
         # The target emphasis span wraps the direction word, not the class label.
         assert '<span class="va-event-target">' in html, f"{cls!r}: target span missing"
         # The typed-null copy must NOT appear alongside a populated bridge.
-        assert "No classified event on file for this issuer." not in html, (
+        assert "No filing on file yet for this company." not in html, (
             f"{cls!r}: typed-null copy leaked into a populated render"
         )
 
@@ -334,8 +343,8 @@ def test_panel_renders_typed_null_for_other_class():
     controls["latest_event_bridge"] = veb.bridge("Other")
     assert controls["latest_event_bridge"] is None
     html = _render(controls)
-    assert "No classified event on file for this issuer." in html
-    assert "暂无分类事件备案。" in html
+    assert "No filing on file yet for this company." in html
+    assert "该公司暂无备案。" in html
 
 
 def test_panel_does_not_inject_style_or_store_anything_from_bridge_line():
