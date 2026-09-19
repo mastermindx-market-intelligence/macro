@@ -135,6 +135,9 @@ def test_validate_passes_when_leg_leads():
     finally:
         BT.radar.fire_series = orig
     assert v["ok"] and v["legs"]["d2"]["status"] == "leading"
+    assert "schema" not in v and "rule_version" not in v
+    assert v["label"] == "fwd(3d) +-5%"
+    assert v["legs"]["d2"]["dir"] == "down"
     assert v["legs"]["d2"]["lift_holdout"] >= 1.5
     assert v["legs"]["d2"]["perm_p"] <= 0.05
 
@@ -225,9 +228,25 @@ def test_radar_auto_demotes_on_gate():
     """The radar zeroes an act leg's points when the gate marks it demoted."""
     import engine.btc_impulse_radar_backtest as bt
     orig = bt.load_gate
-    bt.load_gate = lambda: {"legs": {"d2": {"status": "demoted"},
-                                     "d3": {"status": "leading"},
-                                     "u1": {"status": "leading"}}}
+    gate = {
+        "ok": True, "asof": str(R.store.read("vector", "signals").index[-1].date()),
+        "all_pass": False, "holdout_start": "2024-01-01",
+        "label": "fwd(3d) +-5%",
+        "legs": {
+            "d2": {"status": "demoted", "pass": False, "dir": "down",
+                   "label": "Vol-of-vol jolt (DVOL range)", "floor": 1.5,
+                   "min_holdout_n": 30},
+            "d3": {"status": "leading", "pass": True, "dir": "down",
+                   "label": "SOPR profit-take spike", "floor": 1.3,
+                   "min_holdout_n": 30, "lift_holdout": 1.5,
+                   "perm_p": 0.01, "n_fires_holdout": 40},
+            "u1": {"status": "leading", "pass": True, "dir": "up",
+                   "label": "SOPR capitulation (wash-out)", "floor": 1.3,
+                   "min_holdout_n": 30, "lift_holdout": 1.5,
+                   "perm_p": 0.01, "n_fires_holdout": 40},
+        },
+    }
+    bt.load_gate = lambda: gate
     try:
         out = R.compute()              # real data
     finally:
@@ -236,7 +255,7 @@ def test_radar_auto_demotes_on_gate():
         return                          # stores absent -> skip
     d2 = next(l for l in out["down"]["legs"] if l["key"] == "d2_dvol")
     assert d2["demoted"] is True and d2["points"] == 0.0
-    assert "DEMOTED" in d2["honesty"]
+    assert "EVIDENCE: DEMOTED" in d2["honesty"]
 
 
 def test_ledger_stamp_and_grade_roundtrip():
@@ -294,3 +313,22 @@ if __name__ == "__main__":
     for fn in fns:
         fn(); print(f"  ok  {fn.__name__}")
     print(f"\n{len(fns)} tests passed")
+
+
+
+def test_validate_is_invariant_to_the_gate_it_produces(monkeypatch):
+    """The evaluator consumes raw causal fires; today's gate can never erase the
+    history used to produce tomorrow's gate."""
+    sig = _sig_with_drops()
+    close = sig["close"]
+    down, _ = BT._labels(close)
+    fires = pd.DataFrame({"d2": down.fillna(False)}, index=sig.index)
+    monkeypatch.setattr(BT.radar, "fire_series", lambda frame=None: fires)
+
+    first = BT.validate(sig)
+    monkeypatch.setattr(BT, "load_gate", lambda: {"legs": {"d2": {"status": "demoted"}}})
+    second = BT.validate(sig)
+
+    assert first["legs"]["d2"]["n_fires_full"] > 0
+    for key in ("n_fires_full", "n_fires_holdout", "lift_full", "lift_holdout", "perm_p", "status"):
+        assert second["legs"]["d2"][key] == first["legs"]["d2"][key]

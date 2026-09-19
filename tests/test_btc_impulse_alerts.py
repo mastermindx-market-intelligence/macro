@@ -18,8 +18,30 @@ import pandas as pd  # noqa: E402
 
 from engine import btc_alerts as A  # noqa: E402
 from engine import btc_impulse_radar  # noqa: E402
+from engine import signal_evidence as E  # noqa: E402
 
 
+
+
+def _gate(*, d2="leading", d3="leading", u1="leading", asof="2025-01-12"):
+    specs = {
+        "d2": ("down", 1.5, "Vol-of-vol jolt (DVOL range)"),
+        "d3": ("down", 1.3, "SOPR profit-take spike"),
+        "u1": ("up", 1.3, "SOPR capitulation (wash-out)"),
+    }
+    statuses = {"d2": d2, "d3": d3, "u1": u1}
+    return {
+        "ok": True, "asof": asof, "all_pass": False,
+        "holdout_start": "2024-01-01", "label": "fwd(3d) +-5%",
+        "legs": {
+            key: {
+                "status": status, "pass": status == "leading", "dir": specs[key][0],
+                "label": specs[key][2], "floor": specs[key][1], "min_holdout_n": 30,
+                "lift_holdout": 2.0, "perm_p": 0.01, "n_fires_holdout": 40,
+            }
+            for key, status in statuses.items()
+        },
+    }
 def _with_fire_series(fires, fn):
     orig = btc_impulse_radar.fire_series
     btc_impulse_radar.fire_series = lambda s=None: fires
@@ -31,12 +53,14 @@ def _with_fire_series(fires, fn):
 
 def test_act_warnings_trigger_and_up_and_dedup():
     idx = pd.date_range("2025-01-01", periods=12, freq="D")
-    d2 = pd.Series(False, index=idx); d2.iloc[5] = True            # D2 cross
-    d3 = pd.Series(False, index=idx); d3.iloc[5] = True            # D3 cross same day -> trigger
-    u1 = pd.Series(False, index=idx); u1.iloc[8] = True            # U1 wash-out
+    d2 = pd.Series(False, index=idx); d2.iloc[-1] = True           # D2 cross
+    d3 = pd.Series(False, index=idx); d3.iloc[-1] = True           # D3 cross same day -> trigger
+    u1 = pd.Series(False, index=idx); u1.iloc[-1] = True           # U1 wash-out
     fires = pd.DataFrame({"d2": d2, "d3": d3, "u1": u1})
     sig = pd.DataFrame({"close": pd.Series(60000.0, index=idx)})
-    evs = _with_fire_series(fires, lambda: A.impulse_radar_events(sig))
+    evs = _with_fire_series(
+        fires, lambda: A.impulse_radar_events(sig, gate=_gate(), board_date=idx[-1].date())
+    )
 
     by_type = {}
     for e in evs:
@@ -49,6 +73,8 @@ def test_act_warnings_trigger_and_up_and_dedup():
     assert by_type["impulse_warn_up"][0]["severity"] == "medium"
     # each carries an honest edge string + zh
     assert all(e["edge"] and e["headline_zh"] for e in evs)
+    assert all(e["evidence"]["claim_eligible"] for e in evs)
+    assert {e["direction"] for e in evs} == {"down", "up"}
     # ids are unique (idempotent dedupe key)
     ids = [e["id"] for e in evs]
     assert len(ids) == len(set(ids))
@@ -102,3 +128,29 @@ if __name__ == "__main__":
     for fn in fns:
         fn(); print(f"  ok  {fn.__name__}")
     print(f"\n{len(fns)} tests passed")
+
+
+def test_demoted_fire_keeps_id_but_loses_action_authority():
+    idx = pd.date_range("2025-01-01", periods=12, freq="D")
+    fires = pd.DataFrame({
+        "d2": pd.Series([False] * 11 + [True], index=idx),
+        "d3": pd.Series(False, index=idx),
+        "u1": pd.Series(False, index=idx),
+    })
+    sig = pd.DataFrame({"close": pd.Series(60000.0, index=idx)})
+    evs = _with_fire_series(
+        fires,
+        lambda: A.impulse_radar_events(
+            sig, gate=_gate(d2="demoted"), board_date=idx[-1].date()
+        ),
+    )
+    assert len(evs) == 1
+    e = evs[0]
+    assert e["id"] == "impulse_warn_down:2025-01-12T00:00:d2"
+    assert e["context"]["leg"] == "d2"
+    assert e["signal_id"] == "btc_impulse.d2"
+    assert e["tier"] == "context"
+    assert e["observed_tier"] == "act"
+    assert e["evidence"]["status"] == "demoted"
+    assert e["evidence"]["claim_eligible"] is False
+    assert "verified leading" not in e["edge"].lower()
