@@ -451,7 +451,14 @@
       "MO-PAID-032": "PARTIAL intake/inbox shipped; cadence producer absent",
       "MO-PAID-020": "PROVEN_LIVE second issuer security_state",
       "MO-PAID-021": "PROVEN_LIVE second-issuer B1B cockpit",
-      "MO-PAID-007": "PROVEN_LIVE policy lifecycle"
+      "MO-PAID-007": "PROVEN_LIVE policy lifecycle",
+      "MO-DELTA-042": "BUILT_NOT_PROVEN event->positions object plus invalidation shipped; signed-in proof owed",
+      "MO-PAID-028": "BUILT_NOT_PROVEN routed EventImpactPanel shipped; signed-in proof owed",
+      "MO-PAID-053": "BUILT_NOT_PROVEN seven RMS lenses over Thesis objects shipped; signed-in proof owed",
+      "MO-PAID-051": "BUILT_NOT_PROVEN tenancy routes shipped; signed-in create/read proof owed",
+      "MO-PAID-082": "BUILT_NOT_PROVEN role enforcement shipped; signed-in role-contrast proof owed",
+      "MO-PAID-083": "BUILT_NOT_PROVEN workspace settings route/UI merged in #584; signed-in persistence proof owed",
+      "MO-PAID-086": "BUILT_NOT_PROVEN export route/UI shipped; signed-in download proof owed"
     },
     "absorbed_sibling_prs": [
       7011,
@@ -469,6 +476,33 @@
       "Do not add amended_from as a second thesis lineage column.",
       "Do not require a Europe UI for MO-PAID-034; its acceptance is the qbus machine join surface.",
       "Do not create a second support destination for MO-PAID-058."
-    ]
+    ],
+    "initial_union_csv_commit": "e6ea08107305a95b4eda41782c304206b1cb8439",
+    "latest_records_truth_commit": "9990a43619581d3cadd6dd3c3f8c1c9ee2a38ca6",
+    "initial_widened_test_commit": "6bdd406959fb2873906ccaea0341fba93415e9f7",
+    "latest_regression_commit": "3c91e8899874838b56e153d574f7aa79c71bb2de",
+    "terminal_truth_refresh_2026_09_19": {
+      "terminal_master_sha": "dd7c6dec712a5b7f40d371e3b83827c694dd8f90",
+      "merged_prs": {
+        "514": "cff58ee8d4a25143b72d45191aa405b1ac88d697",
+        "520": "8255f48246c47bd92f52e8705aa52161bf39b1a8",
+        "522": "68b0d00a8ffe4145786c0e2aa9775e44a279ad80",
+        "527": "68bbe8ea6dce9dbffa868572eba0ade903c7c357",
+        "529": "6b983e1e26f4b424681d7762439d244d9884d8e0",
+        "576": "45a0e78e01377502399761626899458f9d08ffd9",
+        "584": "dd7c6dec712a5b7f40d371e3b83827c694dd8f90",
+        "585": "4abadddd2200af86a6fe20081295de110a48568b"
+      },
+      "reconciled_rows": {
+        "MO-PAID-007": "removed stale claim that MO-DELTA-032 is SPEC_ONLY; both point to the same live lifecycle owner",
+        "MO-DELTA-042": "BUILT_NOT_PROVEN; #522 event object + #576 invalidation; signed-in routed proof owed",
+        "MO-PAID-028": "BUILT_NOT_PROVEN; EventImpactPanel/API consumer shipped; signed-in event->positions proof owed",
+        "MO-PAID-053": "BUILT_NOT_PROVEN; RMS lens rail over Thesis objects shipped; signed-in proof owed",
+        "MO-PAID-051": "BUILT_NOT_PROVEN; team/member routes shipped; signed-in create/read proof owed",
+        "MO-PAID-082": "BUILT_NOT_PROVEN; role enforcement shipped; signed-in role-contrast proof owed",
+        "MO-PAID-083": "BUILT_NOT_PROVEN; #584 settings route/SectionTeam merged; signed-in workspace-vs-personal persistence proof owed",
+        "MO-PAID-086": "BUILT_NOT_PROVEN; export route/lib/SectionAccount consumer shipped; signed-in export download proof owed"
+      }
+    }
   }
 }
