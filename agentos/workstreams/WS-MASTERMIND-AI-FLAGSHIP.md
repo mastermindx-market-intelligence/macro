@@ -58,6 +58,17 @@ waves:
       evidence-only duplicate; its unique financial-thesis playbook may be adapted
       to calculate_financial_bridge only in a later bounded consolidation after
       clean writer/release custody.
+  - id: L0
+    title: Reduce Fast tool-selection latency and make usage accounting truthful
+    status: in_progress
+    next_action: >
+      Consume FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md. Read-only
+      diagnosis is complete: current Macro Fast discloses54 tools/~34.9k schema
+      chars, while qualified profiles can reduce schema bytes82-90%; production
+      NVDA spent ~64.6s in two model rounds versus <250ms in tools. First source
+      implementation is progressive tool visibility + cumulative usage accounting,
+      not deterministic prefetch. Shared ask_brain/brain_gateway source remains
+      held until #7217/#7152/#7100/#7144 writer/collision reconciliation.
   - id: R3
     title: Save and update a research case through real monitoring
     status: todo
@@ -86,6 +97,8 @@ landmines:
   - Source Continuity currently refuses REMOTE_CENSUS_INCOMPLETE because the protected256-open-PR census limit is below the repository's current open-PR count; refusal is not collision proof and grants no bypass.
   - Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search.
   - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
+  - Current turn usage reports only the final model response instead of cumulative multi-round usage; do not compare total cost from done.usage until repaired.
+  - The existing question classifier is advisory only and has ordering gaps; do not filter tool visibility from its current seeds without test-first profile fixes.
   - Synthetic conformance, graph plumbing, model agreement and green tests are not live intelligence or trading authority.
 do_not_redo:
   - Do not create another Brain, identity, source, queue, memory, transcript, auth, retry, publication or control plane.
@@ -98,6 +111,7 @@ do_not_redo:
   - Preserve published-only Research and private-data egress limits; active research must not silently change a bounded corpus contract.
   - Wave order is prioritization, not universal serial gates; owned-data analysis does not require public-search credentials.
 artifacts:
+  - research/mastermind_ai_flagship/FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md
   - research/mastermind_ai_flagship/PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
