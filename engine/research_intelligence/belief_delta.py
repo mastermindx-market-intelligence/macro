@@ -402,10 +402,27 @@ def summary(delta: Any) -> dict[str, Any]:
     change_dimensions = [
         dimension for dimension in _CHANGE_DIMENSIONS if dimension in dimensions
     ]
+    expected_changed_categories = [
+        field
+        for field in _CATEGORY_FIELDS
+        if f"category_{field}" in change_dimensions
+    ]
+    if changed_categories != expected_changed_categories:
+        raise ValueError("belief delta category dimensions disagree")
+    if bool(thesis.get("direction_changed")) != (before != after):
+        raise ValueError("belief delta direction change flag disagrees")
+    if type(delta.get("change_detected")) is not bool:
+        raise ValueError("belief delta change_detected must be boolean")
+    if delta["change_detected"] != bool(change_dimensions):
+        raise ValueError("belief delta change_detected disagrees with dimensions")
 
     added = claims.get("added_sha256")
     removed = claims.get("removed_sha256")
-    if not isinstance(added, list) or not isinstance(removed, list):
+    if (
+        not isinstance(added, list)
+        or not isinstance(removed, list)
+        or any(not _is_sha256(value) for value in added + removed)
+    ):
         raise ValueError("belief delta claim counts are invalid")
 
     institution = str(delta.get("institution") or "")
