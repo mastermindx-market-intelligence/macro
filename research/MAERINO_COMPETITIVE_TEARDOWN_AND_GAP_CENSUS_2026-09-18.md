@@ -41,6 +41,13 @@ contains the brand animation, market-like canvas, email form, and `POST /api/wai
 No public research dashboard, screener, company workspace, portfolio engine, signal
 engine, or execution surface was present in the inspected bundle.
 
+Freshness recheck on 2026-09-18 followed the production redirect to `https://maerino.com/`
+and still received the same `/assets/index-DigExZkl.js` application asset observed in
+the earlier teardown. The current bundle contained one `/api/waitlist` reference and
+zero string occurrences for `login`, `dashboard`, `portfolio` or `screener`.
+This supports the current boundary: the automated public data/social surface is ahead
+of the publicly exposed application.
+
 Domain RDAP observed:
 - registration: 2025-12-07
 - registrar: Cloudflare
