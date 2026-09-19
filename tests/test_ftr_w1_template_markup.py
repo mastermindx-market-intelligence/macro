@@ -102,14 +102,14 @@ class TestFtrStaticSource:
         """
         src = _src("allocation.html.j2")
         assert "FT-R11 horizon label" in src
-        # the horizon, and that it is slow by construction
-        assert "A slow book" in src
+        # the horizon stays explicit while the Tier-1 wording remains plain.
+        assert "Slow-moving view" in src
         assert "3–12 month trends" in src
-        assert "most recent month deliberately excluded" in src
-        # the consequence the label exists to state: it is not an intraday read
-        assert "reacts over months, not days" in src
-        # Law 5 — honesty survives translation (the ZH twin carries the same claim)
-        assert "慢速账本" in src
+        assert "deliberately ignores the most recent month" in src
+        # Law 5 — honesty survives translation (the ZH twin carries the same claim).
+        assert "慢速视角" in src
+        assert "3–12个月趋势" in src
+        assert "刻意忽略最近一个月" in src
 
     def test_basket_detail_nb_chg_spans(self):
         """basket_detail must emit nb-chg spans for member live-price wiring."""
