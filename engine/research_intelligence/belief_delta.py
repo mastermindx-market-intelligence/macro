@@ -291,25 +291,57 @@ def compare_institutional_rio(
 
 
 def summary(delta: Any) -> dict[str, Any]:
-    """Project a compact rights-safe change summary without source or synthesis text."""
+    """Project fixed-vocabulary metadata only, even for hostile external JSON."""
     if not isinstance(delta, dict) or delta.get("schema") != SCHEMA:
         raise ValueError("unexpected belief delta schema")
+    if delta.get("text_visibility") != "metadata_only":
+        raise ValueError("belief delta visibility is invalid")
+    if delta.get("authority") != "descriptive_research_only":
+        raise ValueError("belief delta authority is invalid")
+
     thesis = delta.get("thesis")
     claims = delta.get("claims")
-    categories = delta.get("categories")
-    if not isinstance(thesis, dict) or not isinstance(claims, dict) or not isinstance(categories, dict):
+    previous = delta.get("previous")
+    current = delta.get("current")
+    if not all(isinstance(value, dict) for value in (thesis, claims, previous, current)):
         raise ValueError("belief delta is malformed")
+
+    allowed_directions = {"bullish", "bearish", "mixed", "neutral", "unclear"}
+    before = thesis.get("direction_before")
+    after = thesis.get("direction_after")
+    if before not in allowed_directions or after not in allowed_directions:
+        raise ValueError("belief delta direction is invalid")
+
+    changed = delta.get("changed_categories")
+    if not isinstance(changed, list) or any(
+        not isinstance(field, str) or field not in _CATEGORY_FIELDS
+        for field in changed
+    ):
+        raise ValueError("belief delta changed_categories is invalid")
+    changed_categories = [field for field in _CATEGORY_FIELDS if field in changed]
+
+    added = claims.get("added_sha256")
+    removed = claims.get("removed_sha256")
+    if not isinstance(added, list) or not isinstance(removed, list):
+        raise ValueError("belief delta claim counts are invalid")
+
+    institution = str(delta.get("institution") or "")
+    previous_id = str(previous.get("document_id") or "")
+    current_id = str(current.get("document_id") or "")
+    if not institution or not previous_id or not current_id:
+        raise ValueError("belief delta identity is incomplete")
+
     return {
         "schema": SUMMARY_SCHEMA,
-        "institution": str(delta.get("institution") or ""),
-        "previous_document_id": str((delta.get("previous") or {}).get("document_id") or ""),
-        "current_document_id": str((delta.get("current") or {}).get("document_id") or ""),
-        "direction_before": thesis.get("direction_before"),
-        "direction_after": thesis.get("direction_after"),
+        "institution_sha256": _sha256_text(institution),
+        "previous_document_id_sha256": _sha256_text(previous_id),
+        "current_document_id_sha256": _sha256_text(current_id),
+        "direction_before": before,
+        "direction_after": after,
         "direction_changed": bool(thesis.get("direction_changed")),
-        "added_claims": len(claims.get("added_sha256") or []),
-        "removed_claims": len(claims.get("removed_sha256") or []),
-        "changed_categories": list(delta.get("changed_categories") or []),
+        "added_claims": len(added),
+        "removed_claims": len(removed),
+        "changed_categories": changed_categories,
         "material_change": bool(delta.get("material_change")),
         "text_visibility": "metadata_only",
         "authority": "descriptive_research_only",
