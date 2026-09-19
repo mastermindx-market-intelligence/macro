@@ -50,6 +50,8 @@
     "stop_A_survival",
     "MFE_42",
     "two_R_before_stop",
+    "fwd21",
+    "fwd42_descriptive",
     "entry_vs_low",
     "td_to_trough"
   ],
@@ -94,5 +96,35 @@
     "minimum_unique_decision_dates_per_arm_overall": 30,
     "minimum_unique_decision_dates_per_arm_each_half": 10
   },
-  "primary_outcome_definition": "existing Early Admission false_bounce: post-trigger low within +15 sessions breaches P_low by >2%"
+  "primary_outcome_definition": "existing Early Admission false_bounce: post-trigger low within +15 sessions breaches P_low by >2%",
+  "episode_schema": {
+    "source_rows_reported": 39877,
+    "decision_session_field": "date",
+    "construction_field": "construction",
+    "primary_outcome_field": "false_bounce",
+    "required_fields": [
+      "ticker",
+      "date",
+      "construction",
+      "false_bounce",
+      "f_above200",
+      "f_rs63",
+      "survive_a",
+      "mfe_42",
+      "reached_2r",
+      "fwd21"
+    ],
+    "reported_construction_rows": {
+      "C2r": 3630,
+      "C4": 11111
+    },
+    "primary_outcome_null_policy": "OUTCOME_TRUNCATED; exclude and count; never coerce to false",
+    "leader_missing_policy": "LEADER_STATE_UNAVAILABLE; exclude from leader/nonleader analysis and count",
+    "source_rule": "false_bounce requires full +15 sessions and equals min forward low < 0.98*P_low"
+  },
+  "primary_eligibility": [
+    "false_bounce_non_null",
+    "leader_fields_available_for_stratum",
+    "primary_rate_endpoints_observed_by_T_minus_1"
+  ]
 }
