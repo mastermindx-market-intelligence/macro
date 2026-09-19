@@ -12,19 +12,15 @@ No LLM, no new number, no mailer. No imports from engine.capital_structure.
 """
 from __future__ import annotations
 
-import hashlib
 import json
+import os
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
-from datetime import date, datetime, time, timezone
-from typing import Any, Literal
+from datetime import date, datetime, timezone
+from typing import Any
 
 from lib.nyse_calendar import ET, _CLOSE_PLUS_SETTLE, is_session
-
-# Env names only — no hardcoded project host.
-SUPABASE_URL: str | None = None
-SUPABASE_SERVICE_ROLE_KEY: str | None = None
 
 # ---------------------------------------------------------------------------
 # Public result type
@@ -69,7 +65,8 @@ def compute_slot(cadence: str, now_et: datetime) -> date | None:
     """Return the slot date for `cadence` given the current ET wall-clock time.
 
     Daily: today must be a NYSE session AND close (17:00 ET) must have passed.
-    Weekly (Saturday): today must be a Saturday session AND close has passed.
+    Weekly (Saturday): today must be a Saturday AND close (17:00 ET) must have passed.
+    The weekly cutoff is safe because daily.yml fires at 18:30 ET, after 17:00 ET.
     Returns None when the slot is not due.
     """
     today = now_et.date()
@@ -82,9 +79,8 @@ def compute_slot(cadence: str, now_et: datetime) -> date | None:
         return today
 
     if cadence == "weekly_saturday":
-        # Weekly slot fires on Saturday (not a session day per se, but the weekly
-        # cadence owner — daily.yml runs on Saturdays per its cron schedule).
-        # The slot date is today, and close must have passed.
+        # Weekly slot fires on Saturday. daily.yml runs at 18:30 ET (after the 17:00 ET
+        # cutoff), so the weekly slot is always safe when the daily step fires on Saturday.
         if today.weekday() != 5:  # Saturday == 5
             return None
         if now_et.time() < _CLOSE_PLUS_SETTLE:
@@ -99,25 +95,37 @@ def compute_slot(cadence: str, now_et: datetime) -> date | None:
 # ---------------------------------------------------------------------------
 
 
+def _env(name: str) -> str:
+    """Load one env var at call time (matching sibling pattern — no module-level reads)."""
+    return (os.environ.get(name) or "").strip()
+
+
 def _pg(method: str, path: str, body: Any = None, prefer: str | None = None, timeout: int = 6):
     """Thin PostgREST seam. Raises urllib.error on network failure."""
-    url = f"{SUPABASE_URL}/rest/v1/{path}"
-    data = json.dumps(body).encode("utf-8") if body is not None else None
+    url_base = _env("SUPABASE_URL").rstrip("/")
+    key = _env("SUPABASE_SERVICE_ROLE_KEY")
+    if not key or not url_base:
+        return None  # typed_get / insert_delivery handle the None
     headers = {
-        "apikey": SUPABASE_SERVICE_ROLE_KEY,
-        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
     }
     if prefer:
         headers["Prefer"] = prefer
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    req = urllib.request.Request(
+        f"{url_base}/rest/v1/{path}",
+        data=json.dumps(body).encode("utf-8") if body is not None else None,
+        headers=headers,
+        method=method,
+    )
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         raw = resp.read()
         return json.loads(raw) if raw else None
 
 
 def typed_get(path: str) -> TypedRead:
-    if not SUPABASE_SERVICE_ROLE_KEY:
+    if not _env("SUPABASE_SERVICE_ROLE_KEY") or not _env("SUPABASE_URL"):
         return TypedRead(READ_UNAVAILABLE, None, "no_credentials")
     try:
         rows = _pg("GET", path)
@@ -258,8 +266,11 @@ def run(
     subscriptions = sub_result.rows or []
 
     # Compute slots and build candidate rows
+    # Guard state=="active" here too (not only in the query string) — MAJOR 1.
     candidates: list[tuple[dict, date]] = []  # (sub_row, slot_date)
     for sub in subscriptions:
+        if sub.get("state") != "active":
+            continue
         cadence = sub.get("cadence")
         if not cadence:
             continue
@@ -283,6 +294,9 @@ def run(
     pair_keys = [(sub["id"], slot) for sub, slot in candidates]
     existing = _chunked_existing_check(pair_keys)
 
+    # Count pre-SELECT duplicates (MAJOR 2 — mirror thesis_condition_monitor.py:756)
+    pre_existing_n = len(pair_keys) - len([p for p in pair_keys if p not in existing])
+
     # Build planned rows (first slice = degraded)
     planned: list[dict] = []
     for sub, slot in candidates:
@@ -301,17 +315,31 @@ def run(
 
     # Write (or plan)
     written_n = 0
-    duplicate_n = 0
+    duplicate_n = pre_existing_n
+    failed_n = 0
     for row in planned:
         written, is_dup = insert_delivery(row, dry_run=dry_run)
         if written:
             written_n += 1
         elif is_dup:
             duplicate_n += 1
-        # else: other HTTP error — row not written, not counted as dup
+        else:
+            # Non-409 HTTP error — row not written, counted as failed (m4)
+            failed_n += 1
+
+    # Outcome is "ok" only when all planned rows either wrote or were dup;
+    # "partial" when some failed; "error" when none wrote and all failed.
+    if failed_n == 0 and written_n == 0 and duplicate_n == 0:
+        outcome = "ok"
+    elif written_n > 0 and failed_n == 0:
+        outcome = "ok"
+    elif written_n == 0 and failed_n > 0:
+        outcome = "error"
+    else:
+        outcome = "partial"
 
     return ProducerResult(
-        outcome="ok",
+        outcome=outcome,
         read_state=sub_result.state,
         error_class=None,
         planned_n=len(planned),

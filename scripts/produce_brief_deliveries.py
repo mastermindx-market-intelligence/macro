@@ -38,7 +38,9 @@ def main(argv: list[str] | None = None) -> int:
 
     result = producer.run(now_utc=args.now, dry_run=dry_run, limit=500)
 
-    if result.read_state == producer.READ_UNAVAILABLE:
+    # BLOCKER 2: emit warning only when ARMED (BRIEF_DELIVERIES_ENABLE=1) AND creds missing.
+    # Dormant mode must exit 0 silently — no ::warning when the job is not enabled.
+    if result.read_state == producer.READ_UNAVAILABLE and enabled:
         print(
             "::warning title=brief-deliveries-read-unavailable::"
             "%s (%s) — %d written so far, run incomplete"

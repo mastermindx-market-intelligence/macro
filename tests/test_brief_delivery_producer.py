@@ -6,6 +6,8 @@ Does not import engine.capital_structure.
 """
 from __future__ import annotations
 
+import urllib.error
+
 import pytest
 
 from engine import brief_delivery_producer as prod
@@ -80,33 +82,37 @@ def test_weekly_slot_returns_saturday_when_after_close(monkeypatch):
 
 # ---------------------------------------------------------------------------
 # Test 4 — Skip paused: one active + one paused sub → exactly one planned insert
+# MAJOR 1: run() guards state=="active" itself; suite feeds both active+paused
 # ---------------------------------------------------------------------------
 
 def test_skips_paused_subscriptions(monkeypatch):
-    """Active sub gets a plan; paused sub is filtered out by the GET query (state=eq.active)."""
-    active_sub = {"id": "sub-active-001", "cadence": "daily_after_us_close", "user_id": "u1"}
-    existing_store = []
+    """Active sub gets a plan; paused sub filtered by run()'s own state guard (MAJOR 1)."""
+    active_sub = {"id": "sub-active-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
+    paused_sub = {"id": "sub-paused-001", "state": "paused", "cadence": "daily_after_us_close", "user_id": "u2"}
+    written_ids = []
 
     def fake_read_active_subscriptions(limit=500):
-        return prod.TypedRead(prod.READ_OK, [active_sub])
+        # GET returns both active and paused — run() must filter by state itself
+        return prod.TypedRead(prod.READ_OK, [active_sub, paused_sub])
 
     def fake_read_existing_deliveries(pairs):
         return prod.TypedRead(prod.READ_OK_ZERO, [])
 
     def fake_insert_delivery(row, *, dry_run):
         if not dry_run:
-            existing_store.append(row)
+            written_ids.append(row["subscription_id"])
         return (not dry_run, False)
 
     monkeypatch.setattr(prod, "read_active_subscriptions", fake_read_active_subscriptions)
     monkeypatch.setattr(prod, "read_existing_deliveries", fake_read_existing_deliveries)
     monkeypatch.setattr(prod, "insert_delivery", fake_insert_delivery)
 
-    # Pass now_utc so run() uses the crafted Wednesday 18:30 ET time
     now_utc = _utc_now_for_et(_et(2026, 9, 16, 18, 30))
     result = prod.run(now_utc=now_utc, dry_run=False, limit=500)
     assert result.planned_n == 1
     assert result.written_n == 1
+    # Only the active sub was planned/written
+    assert written_ids == ["sub-active-001"]
 
 
 # ---------------------------------------------------------------------------
@@ -134,7 +140,7 @@ def test_no_active_subscriptions_produces_zero_writes(monkeypatch):
 def test_degraded_first_slice_fields(monkeypatch):
     """Planned row: state=='degraded', degraded_reason=='no_artifact',
     artifact_asof is None, body=={}."""
-    active_sub = {"id": "sub-001", "cadence": "daily_after_us_close", "user_id": "u1"}
+    active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
     planned_rows = []
 
     def fake_read_active_subscriptions(limit=500):
@@ -162,22 +168,14 @@ def test_degraded_first_slice_fields(monkeypatch):
 
 
 # ---------------------------------------------------------------------------
-# Test 7 — Idempotent: two run() calls → first writes 1, second writes 0, store len=1
+# Test 7 — Idempotent: two run() calls → first writes 1, second writes 0, dup=1
+# MAJOR 2: pre-SELECT skip increments duplicate_n
 # ---------------------------------------------------------------------------
 
 def test_idempotent_second_run_reports_duplicate(monkeypatch):
-    """First run writes 1; second run sees existing row and reports duplicate; store len==1.
-
-    The spec says 'a second call for the same (subscription_id, slot_asof)
-    inserting nothing'.  Since the pre-SELECT skips planning that pair, we count
-    it as duplicate_n=1 (pre-filtered duplicate), matching the semantics without
-    needing a 409 from the fake (the real DB would 409 on the re-INSERT).
-    The stateful fake seeds existing_state from prior fake_insert calls so the
-    pre-SELECT finds the pair on the second run.
-    """
-    active_sub = {"id": "sub-001", "cadence": "daily_after_us_close", "user_id": "u1"}
-    # Tracks what fake_insert actually wrote — seeds read_existing_deliveries
-    # so the second run's pre-SELECT finds the pair.
+    """First run writes 1; second run pre-SELECT finds the pair and counts duplicate_n=1
+    (MAJOR 2 — mirrors thesis_condition_monitor.py:756)."""
+    active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
     _written_pairs: set = set()
     store: list = []
 
@@ -211,10 +209,9 @@ def test_idempotent_second_run_reports_duplicate(monkeypatch):
 
     r2 = prod.run(now_utc=now_utc, dry_run=False)
     assert r2.written_n == 0
-    # duplicate_n==0 here because the pre-SELECT correctly filters the pair
-    # before it reaches the insert loop — idempotency is proven by written_n==0.
-    assert r2.planned_n == 0   # pre-filtered: pair found in existing check
-    assert len(store) == 1  # still exactly 1
+    assert r2.planned_n == 0       # pre-SELECT filtered the pair
+    assert r2.duplicate_n == 1     # MAJOR 2: pre-SELECT skip increments duplicate_n
+    assert len(store) == 1         # still exactly 1 row in DB
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +220,7 @@ def test_idempotent_second_run_reports_duplicate(monkeypatch):
 
 def test_dry_run_produces_zero_posts(monkeypatch):
     """dry_run=True: 0 POSTs."""
-    active_sub = {"id": "sub-001", "cadence": "daily_after_us_close", "user_id": "u1"}
+    active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
     post_count = []
 
     def fake_read_active_subscriptions(limit=500):
@@ -253,7 +250,7 @@ def test_dry_run_produces_zero_posts(monkeypatch):
 
 def test_no_secrets_in_output(monkeypatch, capsys):
     """run() output must not contain the monkeypatched key value."""
-    active_sub = {"id": "sub-001", "cadence": "daily_after_us_close", "user_id": "u1"}
+    active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
 
     def fake_read_active_subscriptions(limit=500):
         return prod.TypedRead(prod.READ_OK, [active_sub])
@@ -265,8 +262,8 @@ def test_no_secrets_in_output(monkeypatch, capsys):
         return (True, False) if not dry_run else (False, False)
 
     fake_key = "test-secret-key-xyz-123"
-    monkeypatch.setattr(prod, "SUPABASE_SERVICE_ROLE_KEY", fake_key)
-    monkeypatch.setattr(prod, "SUPABASE_URL", "https://example.supabase.co")
+    # Monkeypatch _env directly since creds are now loaded per-call
+    monkeypatch.setattr(prod, "_env", lambda name: fake_key if name == "SUPABASE_SERVICE_ROLE_KEY" else "https://example.supabase.co")
     monkeypatch.setattr(prod, "read_active_subscriptions", fake_read_active_subscriptions)
     monkeypatch.setattr(prod, "read_existing_deliveries", fake_read_existing_deliveries)
     monkeypatch.setattr(prod, "insert_delivery", fake_insert_delivery)
@@ -293,3 +290,85 @@ def test_read_unavailable_returns_result_object(monkeypatch):
     assert result.error_class == "no_credentials"
     assert result.written_n == 0
     assert isinstance(result, prod.ProducerResult)
+
+
+# ---------------------------------------------------------------------------
+# Test 11 — MAJOR 2: fake 409 / 23505 drives insert_delivery's real branch
+# -> written=False, duplicate=True, duplicate_n incremented
+# ---------------------------------------------------------------------------
+
+def test_fake_409_counts_as_duplicate(monkeypatch):
+    """HTTP 409 / 23505 from insert_delivery: written=False, duplicate=True, duplicate_n++.
+    Mirrors thesis_condition_monitor.py:656-658. This drives the real branch in
+    insert_delivery (:185-186) through a fake transport."""
+    active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
+
+    def fake_read_active_subscriptions(limit=500):
+        return prod.TypedRead(prod.READ_OK, [active_sub])
+
+    def fake_read_existing_deliveries(pairs):
+        return prod.TypedRead(prod.READ_OK_ZERO, [])
+
+    # Fake a 409 response from the POST — drives insert_delivery's real branch
+    class FakeHTTPError(urllib.error.HTTPError):
+        def __init__(self):
+            pass
+        @property
+        def code(self):
+            return 409
+        def read(self):
+            return b"23505 duplicate key"
+
+    original_pg = prod._pg
+
+    def fake_pg(method, path, body=None, prefer=None, timeout=6):
+        if method == "POST" and "brief_deliveries" in path:
+            raise FakeHTTPError()
+        return original_pg(method, path, body, prefer, timeout)
+
+    monkeypatch.setattr(prod, "read_active_subscriptions", fake_read_active_subscriptions)
+    monkeypatch.setattr(prod, "read_existing_deliveries", fake_read_existing_deliveries)
+    monkeypatch.setattr(prod, "_pg", fake_pg)
+
+    result = prod.run(now_utc=_utc_now_for_et(_et(2026, 9, 16, 18, 30)), dry_run=False)
+    assert result.written_n == 0
+    assert result.duplicate_n == 1
+    assert result.planned_n == 1
+
+
+# ---------------------------------------------------------------------------
+# Test 12 — MINOR m4: non-409 POST failure -> outcome="partial" or "error", failed_n counted
+# ---------------------------------------------------------------------------
+
+def test_non_409_post_failure_reports_partial_outcome(monkeypatch):
+    """Non-409 HTTP error: outcome is 'partial' (not 'ok'), row not written."""
+    active_sub = {"id": "sub-001", "state": "active", "cadence": "daily_after_us_close", "user_id": "u1"}
+
+    def fake_read_active_subscriptions(limit=500):
+        return prod.TypedRead(prod.READ_OK, [active_sub])
+
+    def fake_read_existing_deliveries(pairs):
+        return prod.TypedRead(prod.READ_OK_ZERO, [])
+
+    class FakeHTTPError(urllib.error.HTTPError):
+        def __init__(self):
+            pass
+        @property
+        def code(self):
+            return 500
+
+    original_pg = prod._pg
+
+    def fake_pg(method, path, body=None, prefer=None, timeout=6):
+        if method == "POST" and "brief_deliveries" in path:
+            raise FakeHTTPError()
+        return original_pg(method, path, body, prefer, timeout)
+
+    monkeypatch.setattr(prod, "read_active_subscriptions", fake_read_active_subscriptions)
+    monkeypatch.setattr(prod, "read_existing_deliveries", fake_read_existing_deliveries)
+    monkeypatch.setattr(prod, "_pg", fake_pg)
+
+    result = prod.run(now_utc=_utc_now_for_et(_et(2026, 9, 16, 18, 30)), dry_run=False)
+    assert result.written_n == 0
+    assert result.planned_n == 1
+    assert result.outcome in ("partial", "error")  # m4: not "ok"
