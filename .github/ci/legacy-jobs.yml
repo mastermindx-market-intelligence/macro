@@ -1357,6 +1357,11 @@ jobs:
       - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "tests/test_valuation_event_bridge.py"
+      # china S1 archetype test wired into conviction-profile (Meta-CEO A ruling
+      # W7A_7054_A_CURE round 1, C2) — same china partial as
+      # test_china_special_situations_gate, gate:code HTML structure/copy pin.
+      - "tests/test_china_archetype_d_s1.py"
+
       # --- contract-delta widening for conviction-profile (CURE round 1 widen-paths fix) ---
       - "site/basketdata/fear_greed.json"
       - "site/btc_strategy.html"
@@ -1832,7 +1837,8 @@ jobs:
           python -m pytest
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py
-          tests/test_valuation_event_bridge.py -q
+          tests/test_valuation_event_bridge.py
+          tests/test_china_archetype_d_s1.py -q
       # W7B F06-5 (MO-PAID-020) ticker<->CIK collision census (MO-B). The
       # classifier is a pure function over list-of-dict records (no pandas at
       # module top per R5); the live-data test pins invariants only and prints
