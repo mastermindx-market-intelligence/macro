@@ -598,12 +598,15 @@ def test_latest_projection_retains_completed_observation_after_rollover():
         "n_observations": 2,
         "n_fired": 1,
         "n_no_fire": 1,
+        "n_source_unavailable": 0,
         "n_pending": 1,
         "n_matured": 1,
         "n_unavailable": 0,
         "n_corrected": 0,
         "n_matured_fired": 1,
         "n_target_hits": 1,
+        "first_entry_asof": rows[0]["asof"],
+        "latest_entry_asof": rows[1]["asof"],
         "research_only": True,
         "trading_authority": False,
     }
@@ -642,9 +645,12 @@ def test_recent_history_is_bounded_to_prospective_rows_and_keeps_corruption_visi
     assert projected["prospective_summary"]["n_observations"] == 10
     assert projected["prospective_summary"]["n_fired"] == 4
     assert projected["prospective_summary"]["n_no_fire"] == 5
+    assert projected["prospective_summary"]["n_source_unavailable"] == 1
     assert projected["prospective_summary"]["n_pending"] == 9
     assert projected["prospective_summary"]["n_unavailable"] == 1
     assert projected["prospective_summary"]["n_matured"] == 0
+    assert projected["prospective_summary"]["first_entry_asof"] == expected_entries[0]
+    assert projected["prospective_summary"]["latest_entry_asof"] == expected_entries[-1]
     assert [item["entry_asof"] for item in projected["recent_history"][:2]] == [
         expected_entries[-2], expected_entries[-3],
     ]

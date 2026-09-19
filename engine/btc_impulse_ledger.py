@@ -275,10 +275,19 @@ def _d2_prospective_summary(projections: list[dict]) -> dict:
         projection for projection in projections
         if projection["status"] == "matured" and projection.get("fired") is True
     ]
+    dated = [
+        str(projection["entry_asof"])
+        for projection in projections
+        if projection.get("entry_asof")
+    ]
     return {
         "n_observations": len(projections),
         "n_fired": sum(projection.get("fired") is True for projection in projections),
         "n_no_fire": sum(projection.get("fired") is False for projection in projections),
+        "n_source_unavailable": sum(
+            projection.get("fired") is not True and projection.get("fired") is not False
+            for projection in projections
+        ),
         "n_pending": sum(projection["status"] == "pending" for projection in projections),
         "n_matured": sum(projection["status"] == "matured" for projection in projections),
         "n_unavailable": sum(projection["status"] == "unavailable" for projection in projections),
@@ -288,6 +297,8 @@ def _d2_prospective_summary(projections: list[dict]) -> dict:
             bool((projection.get("outcome") or {}).get("down_hit"))
             for projection in matured_fired
         ),
+        "first_entry_asof": dated[-1] if dated else None,
+        "latest_entry_asof": dated[0] if dated else None,
         "research_only": True,
         "trading_authority": False,
     }

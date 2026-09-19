@@ -108,9 +108,16 @@
 {% if r.research_journey.prospective_summary %}
 <details class="extra d2-study-accrual">
   <summary>{{ t('Prospective study accrual', '前瞻研究积累') }} · {{ r.research_journey.prospective_summary.n_observations }}</summary>
-  <div>{{ t('Fired: ', '已触发：') }}{{ r.research_journey.prospective_summary.n_fired }} · {{ t('No fire: ', '未触发：') }}{{ r.research_journey.prospective_summary.n_no_fire }} · {{ t('Unavailable: ', '不可用：') }}{{ r.research_journey.prospective_summary.n_unavailable }}</div>
-  <div>{{ t('Matured: ', '已成熟：') }}{{ r.research_journey.prospective_summary.n_matured }} · {{ t('Pending: ', '待评估：') }}{{ r.research_journey.prospective_summary.n_pending }} · {{ t('Restated: ', '已修订：') }}{{ r.research_journey.prospective_summary.n_corrected }}</div>
-  <div>{{ t('Matured fired observations meeting the frozen down target: ', '已成熟且触发的观察中达到冻结下行目标：') }}{{ r.research_journey.prospective_summary.n_target_hits }} / {{ r.research_journey.prospective_summary.n_matured_fired }}</div>
+  {% if r.research_journey.prospective_summary.first_entry_asof %}
+    <div>{{ t('Observed span: ', '观察区间：') }}{{ r.research_journey.prospective_summary.first_entry_asof }} → {{ r.research_journey.prospective_summary.latest_entry_asof }}</div>
+  {% endif %}
+  <div>{{ t('Raw source fire: ', '原始来源触发：') }}{{ r.research_journey.prospective_summary.n_fired }} · {{ t('Raw source no-fire: ', '原始来源未触发：') }}{{ r.research_journey.prospective_summary.n_no_fire }} · {{ t('Source unavailable: ', '来源不可用：') }}{{ r.research_journey.prospective_summary.n_source_unavailable }}</div>
+  <div>{{ t('Matured: ', '已成熟：') }}{{ r.research_journey.prospective_summary.n_matured }} · {{ t('Pending: ', '待评估：') }}{{ r.research_journey.prospective_summary.n_pending }} · {{ t('Lifecycle unavailable: ', '生命周期不可用：') }}{{ r.research_journey.prospective_summary.n_unavailable }} · {{ t('Restated observations: ', '已修订观察：') }}{{ r.research_journey.prospective_summary.n_corrected }}</div>
+  {% if r.research_journey.prospective_summary.n_matured_fired %}
+    <div>{{ t('Matured fired observations meeting the frozen down target: ', '已成熟且触发的观察中达到冻结下行目标：') }}{{ r.research_journey.prospective_summary.n_target_hits }} / {{ r.research_journey.prospective_summary.n_matured_fired }}</div>
+  {% else %}
+    <div>{{ t('No fired observation has matured yet.', '尚无已成熟的触发观察。') }}</div>
+  {% endif %}
   <div>{{ t('Research accrual only — this does not change the current validation gate or alert permission.', '仅为研究积累 — 不改变当前验证门槛或告警权限。') }}</div>
 </details>
 {% endif %}
