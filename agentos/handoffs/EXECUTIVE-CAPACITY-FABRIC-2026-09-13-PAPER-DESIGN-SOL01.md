@@ -135,12 +135,13 @@ verified:
   - claim: The latest source hardening stays on the existing PR rather than creating a new control plane.
     command: GitHub Mastermind PR 585 current head, hosted CI, and latest-base synthetic integration
     result: >
-      PR 585 exact head ebe89a73e603139732b34f301e66e84e86f09389; hosted CI run
-      35433484306 succeeded. The code-bearing bridge remains the byte-identical
+      PR 585 exact head 67bfaab41f1c5fa61cbfb8d205e4220c31e90af4; prior docs/Skill head
+      ebe89a73e603139732b34f301e66e84e86f09389 hosted CI run 35433484306 succeeded and
+      current exact-head run 35435966648 is active. The code-bearing bridge remains the byte-identical
       94329a2813e37f1081e1be48aacf371b8f1b23505ec609cc6e8d453554cf8fa0 source from
       5213af7fcc53bfb26b62f450d58664d9b7a3bdad; ebe89a73 adds only Studio Direct web-carrier
       docs/Skill corrections. Latest-base synthetic integration
-      8ee600d262d48a6a1c0b2f4eb41348415ce40dd1 against protected Mastermind
+      c08c8384fb034afa0391f3af29a0222e7d4aaa56 against protected Mastermind
       880e377cfa9d3fbdc921e931a55cc8c4143dc119 passed 33 Paper tests, the D8 ratchet and
       diff-check. Skillpack remains 1.0.1/bootstrap 1.
 unverified:
@@ -154,7 +155,11 @@ unverified:
     what_would_verify: >
       Human completes Codex reauthentication and Claude project-MCP approval on the isolated
       workspace; each fresh native session calls paper_inspect/read on the intended file and
-      one explicitly authorized scratch edit is separately observed.
+      one explicitly authorized scratch edit is separately observed. On 2026-09-19, codex login status
+      misleadingly printed "Logged in using ChatGPT" but a real ephemeral read-only codex exec
+      immediately received repeated HTTP 401 invalid_refresh_token / unauthorized_unknown;
+      the exact gate is still interactive codex logout then codex login. Claude still reports
+      mastermindPaper Pending approval.
   - claim: A fresh ChatGPT Web session can repeat the design journey through Studio Direct.
     what_would_verify: >
       Start a fresh chatgpt3 Web conversation after its app catalog refresh, confirm the four
@@ -173,7 +178,7 @@ unverified:
       components/tokens -> responsive browser proof across required dark/light, EN/ZH and
       meaningful data/loading/empty/error states.
 unresolved:
-  - Mastermind PR 585 exact head ebe89a73e603139732b34f301e66e84e86f09389 has green hosted CI and latest-base proof, but independent semantic review/source release remain outstanding. Reviewer mastermindx-2 is requested.
+  - Mastermind PR 585 exact head 67bfaab41f1c5fa61cbfb8d205e4220c31e90af4 keeps the bridge bytes unchanged and adds only final sole-Web-carrier wording in the native MCP server/doc. Prior ebe89a73 hosted CI is green; current hosted run 35435966648 is active. Latest-base synthetic integration c08c8384fb034afa0391f3af29a0222e7d4aaa56 against protected 880e377... passes 33 Paper tests, the D8 ratchet and diff-check. Independent semantic review/source release remain outstanding; reviewer mastermindx-2 is requested.
   - Studio Direct Paper carrier PR 853 exact head d99b1ff601f2e937c66711875d483f0b5398a10d is DRAFT/stacked on PR 840. Current source preserves the pre-dispatch effect-truth hardening and additionally marks paper_edit openWorld=true while clarifying that standalone node-delete tools are blocked even though bounded replacement operations remain allowed. Exact-head proof passed the full Studio Direct Node suite 132/132 and Python lifecycle/control 100/100. Latest-base synthetic integration 480e80dca16f867e805ddaa17318f89236d06d61 against protected 880e377... passed focused Paper/private-service proof and diff-check. Hosted exact-head run 35435731033 is active; independent reviewer mastermindx-2 remains requested.
   - Mac Studio Paper now has the intended cloud scratch design open and current adapter writes are proven. A fresh chatgpt3 Web conversation is still required because this conversation's MCP catalog was established before the new paper_* tools were deployed.
   - Codex stored ChatGPT auth is invalid and needs the user's interactive login ceremony.
@@ -183,7 +188,7 @@ unresolved:
 next_actions:
   - >
     Consume the requested independent mastermindx-2 reviews for PR 585 exact head
-    ebe89a73e603139732b34f301e66e84e86f09389 and stacked PR 853 exact head
+    67bfaab41f1c5fa61cbfb8d205e4220c31e90af4 and stacked PR 853 exact head
     d99b1ff601f2e937c66711875d483f0b5398a10d. PR 585 hosted/latest-base proof is green;
     PR 853 local/latest-base proof is green and exact-head hosted CI remains active. Do not
     treat checks as source acceptance.
