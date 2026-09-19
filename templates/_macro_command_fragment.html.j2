@@ -1,0 +1,31 @@
+{# Inner HTML of `[data-mc-figure]` only (P3 §D.3). JS assigns
+   figure.innerHTML = text; the string `data-mc-fragment` is the fetch
+   authenticity marker already required by macro_command.js. #}
+{% import "_macro_command_figures.html.j2" as fig %}
+{%- macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{%- if s.subtabs %}
+{%- for tab in s.subtabs %}
+<div class="mc-figure-tabbody" data-mc-tabbody="{{ tab.id }}" id="{{ tab.id }}"
+     role="tabpanel" aria-labelledby="{{ tab.id }}-t" data-mc-fragment>
+  {%- if tab.empty %}{{ fig.empty(tab.empty) }}
+  {%- elif tab.figure %}{{ fig.movement(tab.figure) }}
+  {%- else %}
+  <p class="mc-figure-offer" data-mc-offer>
+    <a class="mc-deep" href="{{ tab.deep_href }}">{{ t('The full chart for this section lives on its workspace page →',
+                                                        '本板块的完整图表位于其工作区页面 →') }}</a>
+  </p>
+  {%- endif %}
+</div>
+{%- endfor %}
+{%- elif s.empty %}
+{{ fig.empty(s.empty) }}
+{%- elif s.figure %}
+{{ fig.movement(s.figure) }}
+{%- else %}
+<p class="mc-figure-offer" data-mc-offer data-mc-fragment>
+  <a class="mc-deep" href="{{ s.deep_href }}">{{ t('The full chart for this section lives on its workspace page →',
+                                                    '本板块的完整图表位于其工作区页面 →') }}</a>
+</p>
+{%- endif %}
