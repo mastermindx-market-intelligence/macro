@@ -1345,6 +1345,24 @@ def test_r4_cli_receipt_parser_rejects_duplicates_and_bare_float():
         skylit_r4._parse_expected_move_receipts(["SPY=2"])
 
 
+def test_r4_programmatic_receipt_root_keys_normalize_and_case_collisions_refuse():
+    scale = np.log1p(0.02)
+    states = {
+        "SPY": _r4_state("SPY", _r4_frame("SPY", spot=100, scale=scale)),
+        "QQQ": _r4_state("QQQ", _r4_frame("QQQ", spot=200, scale=scale)),
+    }
+    receipts = _r4_em_receipts(states, {"SPY": 2.0, "QQQ": 2.0})
+    lower = {root.lower(): receipt for root, receipt in receipts.items()}
+    got = _r4_analyze(states, receipts=lower)
+    assert got["coordinate_mode"] == "expected_move_normalized"
+    assert set(got["expected_move_receipts"]) == {"SPY", "QQQ"}
+
+    collided = dict(receipts)
+    collided["spy"] = dict(receipts["SPY"])
+    with pytest.raises(skylit_r4.R4Refusal, match="after normalization"):
+        _r4_analyze(states, receipts=collided)
+
+
 def test_r4_common_support_removes_window_artifact_but_retained_mass_gate_is_visible():
     # Same true shape on [-1,0,1], but SPY also publishes small tails at +/-2.
     # Primary common-support geometry should recover equality; full-board W1 should
