@@ -1,6 +1,6 @@
 # China Gold Premium — visual evidence
 
-This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `24047f922dc846546404c0b4ade29fc35a833a8f`.
+This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `8b2507985be5da9437abaee21591911746d49a17`.
 
 ## States
 
