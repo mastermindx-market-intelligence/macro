@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 from scripts import refresh_company_intelligence as refresh
 
@@ -51,6 +52,129 @@ def test_fetch_transcript_index_refuses_invalid_marker_without_writing(tmp_path:
     assert not target.exists()
 
 
+
+def _write_score_rows(root: Path, rows: list[dict]) -> None:
+    target = root / "earnings_calls" / "scores.parquet"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(target, index=False)
+
+
+def _score_row(
+    *,
+    call_date: str,
+    source_record_id: str = "defeatbeta:NVDA:2026Q1",
+    degraded_reason: str = "",
+    source: str = "transcript",
+) -> dict:
+    return {
+        "call_date": call_date,
+        "source": source,
+        "source_record_id": source_record_id,
+        "sentiment": 0.2,
+        "performance": 7.0,
+        "confidence": 0.9,
+        "degraded_reason": degraded_reason,
+        "is_context_only": True,
+    }
+
+
+def _terminal_index(dates: dict[str, str], *, generated_at: str = "2026-09-19T09:21:30Z") -> dict:
+    symbols: dict[str, list[str]] = {}
+    for pair in dates:
+        ticker, tx_id = pair.split("/", 1)
+        symbols.setdefault(ticker, []).append(tx_id)
+    return {
+        "schema": "mastermind.tx-index/v1",
+        "symbols": symbols,
+        "revisions": {},
+        "dates": dates,
+        "body_count": len(dates),
+        "symbol_count": len(symbols),
+        "generated_at": generated_at,
+    }
+
+
+def test_score_freshness_accepts_bounded_weekend_lag(tmp_path: Path) -> None:
+    _write_score_rows(tmp_path, [_score_row(call_date="2026-09-17")])
+    report = refresh.assert_earnings_score_freshness(
+        tmp_path,
+        _terminal_index({"NVDA/2026Q1": "2026-09-19"}),
+        as_of="2026-09-20",
+    )
+    assert report["state"] == "fresh"
+    assert report["lag_days"] == 2
+
+
+def test_score_freshness_rejects_dead_worker_even_if_degraded_row_is_recent(
+    tmp_path: Path,
+) -> None:
+    _write_score_rows(
+        tmp_path,
+        [
+            _score_row(call_date="2026-08-28"),
+            _score_row(
+                call_date="2026-09-17",
+                source_record_id="defeatbeta:AMD:2026Q3",
+                degraded_reason="provider_unavailable",
+            ),
+        ],
+    )
+    with pytest.raises(refresh.RefreshError, match="lags newest causal Terminal call"):
+        refresh.assert_earnings_score_freshness(
+            tmp_path,
+            _terminal_index(
+                {
+                    "NVDA/2026Q1": "2026-08-28",
+                    "AMD/2026Q3": "2026-09-17",
+                }
+            ),
+            as_of="2026-09-19",
+        )
+
+
+def test_score_freshness_ignores_future_labelled_terminal_rows(tmp_path: Path) -> None:
+    _write_score_rows(tmp_path, [_score_row(call_date="2026-09-16")])
+    report = refresh.assert_earnings_score_freshness(
+        tmp_path,
+        _terminal_index(
+            {
+                "NVDA/2026Q1": "2026-09-17",
+                "HCM/2026Q2": "2026-09-25",
+            }
+        ),
+        as_of="2026-09-19",
+    )
+    assert report["terminal_latest_call_date"] == "2026-09-17"
+    assert report["lag_days"] == 1
+
+
+def test_score_freshness_uses_terminal_linked_transcripts_not_newer_8k_rows(
+    tmp_path: Path,
+) -> None:
+    _write_score_rows(
+        tmp_path,
+        [
+            _score_row(call_date="2026-08-28"),
+            _score_row(
+                call_date="2026-09-17",
+                source_record_id="sec:AMD:2026Q3",
+                source="8k",
+            ),
+        ],
+    )
+    with pytest.raises(refresh.RefreshError, match="lags newest causal Terminal call"):
+        refresh.assert_earnings_score_freshness(
+            tmp_path,
+            _terminal_index(
+                {
+                    "NVDA/2026Q1": "2026-08-28",
+                    "AMD/2026Q3": "2026-09-17",
+                }
+            ),
+            as_of="2026-09-19",
+        )
+
+
 def test_refresh_fails_closed_when_fail_soft_earnings_fetch_materializes_nothing(tmp_path: Path) -> None:
     # fetch_earnings_scores intentionally returns zero for an absent source so
     # the render can preserve its prior state. The publisher must not mistake
@@ -66,7 +190,18 @@ def test_refresh_can_preserve_a_validated_output_tree_for_a_post_ci_sidecar(
     output = tmp_path / "persistent-output"
     seen: dict[str, Path] = {}
     monkeypatch.setattr(refresh, "ensure_earnings_inputs", lambda _source: {})
-    monkeypatch.setattr(refresh, "fetch_transcript_index", lambda _url, destination: destination.write_text("{}"))
+    monkeypatch.setattr(
+        refresh,
+        "fetch_transcript_index",
+        lambda _url, destination: (
+            destination.write_text("{}", encoding="utf-8") or {}
+        ),
+    )
+    monkeypatch.setattr(
+        refresh,
+        "assert_earnings_score_freshness",
+        lambda *_args, **_kwargs: {"state": "fresh"},
+    )
 
     def build(argv: list[str]) -> int:
         target = Path(argv[argv.index("--out-dir") + 1])
