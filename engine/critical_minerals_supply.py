@@ -44,6 +44,37 @@ import yaml
 log = logging.getLogger(__name__)
 
 _REPO = Path(__file__).resolve().parent.parent
+
+# Country-name translation map for ZH reads.
+# Covers every distinct country value in USGS MCS Fig3 + T7 leading producers.
+COUNTRY_ZH = {
+    "Australia": "澳大利亚",
+    "Argentina": "阿根廷",
+    "Canada": "加拿大",
+    "Chile": "智利",
+    "China": "中国",
+    "Congo (Kinshasa)": "刚果（金）",
+    "Estonia": "爱沙尼亚",
+    "Finland": "芬兰",
+    "Germany": "德国",
+    "Indonesia": "印度尼西亚",
+    "Japan": "日本",
+    "Malaysia": "马来西亚",
+    "Norway": "挪威",
+    "Russia": "俄罗斯",
+    "South Korea": "韩国",
+    "Thailand": "泰国",
+    "United Kingdom": "英国",
+    "Vietnam": "越南",
+}
+
+
+def _country_zh(name: str) -> str:
+    """Return ZH name for a USGS English country name; log and return EN if unmapped."""
+    if name in COUNTRY_ZH:
+        return COUNTRY_ZH[name]
+    log.warning("critical_minerals_supply: no ZH mapping for country %r — keeping English", name)
+    return name
 _CONFIG_PATH = _REPO / "config" / "usgs_mcs_sources.yml"
 _DEFAULT_STORE = _REPO / "data" / "usgs_mcs"
 _NW_OUT = _REPO / "data" / "neuralweb" / "critical_minerals_supply.json"
@@ -124,7 +155,7 @@ def _nir_text(value: Optional[float], qualifier: str, lang: str) -> str:
     if qualifier == ">":
         word = "more than" if lang == "en" else "超过"
     elif qualifier == "<":
-        word = "less than" if lang == "en" else "低于"
+        word = "less than" if lang == "en" else "少于"
     else:
         word = None
     if word:
@@ -153,7 +184,7 @@ def _read_sentences(payload: dict, world_metric: str = "mine production") -> tup
         bits_en.append(
             f"{country} {verb_en} about {share:.0f}% of the world's {label_en.lower()} in {period}"
         )
-        bits_zh.append(f"{country}在{period}年{verb_zh}全球约{share:.0f}%的{label_zh}")
+        bits_zh.append(f"{_country_zh(country)}在{period}年{verb_zh}全球约{share:.0f}%的{label_zh}")
     elif china_share is not None and period:
         bits_en.append(
             f"China mined about {china_share:.0f}% of the world's {label_en.lower()} in {period}"
@@ -182,6 +213,8 @@ def _read_sentences(payload: dict, world_metric: str = "mine production") -> tup
     first = bits_en[0]
     second = bits_en[1]
     if second.startswith("and "):
+        # Second already starts with "and " (e.g. "and the US imported…");
+        # joining with ", " preserves the existing "and the US" intact.
         en = first + ", " + second
     else:
         # No "and " prefix — insert ", and " and preserve the capitalised start.

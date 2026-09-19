@@ -500,7 +500,7 @@ class TestProjection:
             "and the US imported about 79 percent of what it used."
         ), c["read_en"]
         assert c["read_zh"] == (
-            "Congo (Kinshasa)在2025年开采了全球约74%的钴，美国进口了其用量的约79%。"
+            "刚果（金）在2025年开采了全球约74%的钴，美国进口了其用量的约79%。"
         ), c["read_zh"]
         lp = c["leading_producer"]
         assert lp["country"] == "Congo (Kinshasa)", lp
@@ -517,7 +517,7 @@ class TestProjection:
             "and the US imported more than 50 percent of what it used."
         ), c["read_en"]
         assert c["read_zh"] == (
-            "Australia在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。"
+            "澳大利亚在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。"
         ), c["read_zh"]
         lp = c["leading_producer"]
         assert lp["country"] == "Australia", lp
@@ -546,6 +546,22 @@ class TestProjection:
             f"sources={c['import_sources_2021_24']}"
         )
 
+    def test_rare_earths_top3_named_country_order(self, tmp_path):
+        """MINOR 3: assert rare-earths top-3 named-country tuple, not just the sum."""
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        c = art["commodities"]["rare_earths"]
+        sources = c["import_sources_2021_24"]
+        named = [(s["country"], s["pct"]) for s in sources
+                 if s.get("country", "").lower() not in ("other", "其他")]
+        ranked = sorted(named, key=lambda s: (-s[1], s[0]))
+        top3 = ranked[:3]
+        # China 71, Malaysia 13, Estonia 5 (tie at 5 with Japan; "Estonia" < "Japan" alphabetically)
+        assert top3 == [("China", 71.0), ("Malaysia", 13.0), ("Estonia", 5.0)], (
+            f"Expected [('China', 71), ('Japan', 13), ('Estonia', 5)], got {top3}; "
+            f"all named={named}"
+        )
+
     def test_no_angle_bracket_tokens_in_customer_text(self, tmp_path):
         """MAJOR fix: no < or > tokens in customer-facing read_en/read_zh."""
         import re
@@ -557,6 +573,20 @@ class TestProjection:
                 if re.search(r"[<>]", text):
                     failures.append(f"{key}/{lang}: {text}")
         assert not failures, "Raw < or > tokens found in customer text:\n" + "\n".join(failures)
+
+    def test_zh_reads_contain_no_latin_country_names(self, tmp_path):
+        """MAJOR fix: ZH reads must use Chinese country names, not Latin names."""
+        import re
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        failures = []
+        for key, c in art["commodities"].items():
+            zh = c["read_zh"]
+            # A Latin country name is any run of 3+ ASCII letters.
+            # Allow % and digits (NIR values) and 'NIR' if it appears.
+            if re.search(r"[A-Za-z]{3,}", zh):
+                failures.append(f"{key}: {zh}")
+        assert not failures, "Latin country names found in ZH reads:\n" + "\n".join(failures)
 
 
 # ---------------------------------------------------------------------------
