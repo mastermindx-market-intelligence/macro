@@ -1294,6 +1294,14 @@ jobs:
       - "engine/capital_structure/source_identity.py"
       - "contracts/capital_structure_document_term_observation.schema.json"
       - "contracts/capital_structure_projection.schema.json"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "contracts/capital_structure_event.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/_text_scrub.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "templates/_valuation_scenario.html.j2"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
@@ -7428,6 +7436,8 @@ jobs:
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Enumerated, not globbed — the checker
@@ -8040,6 +8050,8 @@ jobs:
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
       - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
