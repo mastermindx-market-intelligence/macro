@@ -9598,6 +9598,7 @@ jobs:
       - "site/leaderradar/**"
       - "site/neuralwebdata/**"
       - "site/options.html"
+      - "site/market_structure.html"
       - "site/options_intel_brief.json"
       - "site/prophet/index.json"
       - "templates/market_structure.html.j2"
