@@ -60,7 +60,8 @@ def test_manifest_shape():
     m = a.manifest()
     assert m["version"] == a.ANALYST_DOCTRINE_VERSION == 1
     mods = m["modules"]
-    assert len(mods) == 11, f"expected 11 analyst doctrine modules, got {len(mods)}"\n    assert "play_financial_thesis" in [x["id"] for x in mods]
+    assert len(mods) == 11, f"expected 11 analyst doctrine modules, got {len(mods)}"
+    assert "play_financial_thesis" in [x["id"] for x in mods]
 
     ids = [x["id"] for x in mods]
     assert len(ids) == len(set(ids)), "module ids must be unique"
