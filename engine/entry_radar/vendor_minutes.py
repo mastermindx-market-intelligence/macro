@@ -67,6 +67,7 @@ transport.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import tempfile
@@ -142,6 +143,25 @@ def _aware_receipt_clock(value: datetime) -> datetime:
     return value
 
 
+def _response_content_sha256(rows: Sequence[Mapping[str, Any]]) -> str | None:
+    """Canonical identity of the exact ordered raw vendor response.
+
+    Mapping key order is intentionally ignored; row order, duplicates, values,
+    unparsed rows, and vendor fields unused by SessionTape remain load-bearing.
+    Unsupported/non-finite JSON evidence yields ``None`` rather than an invented
+    identity or a fetch failure.  This is a content-consistency receipt, not a
+    vendor signature or historical-availability proof.
+    """
+    try:
+        canonical = json.dumps(
+            list(rows), sort_keys=True, separators=(",", ":"),
+            ensure_ascii=False, allow_nan=False,
+        )
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 @dataclass(frozen=True, slots=True)
 class MinuteFetchReceipt:
     """One client-observed fetch receipt; never historical availability proof.
@@ -171,6 +191,7 @@ class MinuteFetchReceipt:
     expected_latest_completed_start: datetime | None
     latest_observed_age_seconds: float | None
     tail_observation_gap_minutes: int | None
+    response_content_sha256: str | None
     empty_response: bool
     schema: str = field(default=_MINUTE_FETCH_RECEIPT_SCHEMA, init=False)
     fetch_clock_observed: bool = field(default=True, init=False)
@@ -204,6 +225,7 @@ class MinuteFetchReceipt:
             "expected_latest_completed_start": _utc_iso(self.expected_latest_completed_start),
             "latest_observed_age_seconds": self.latest_observed_age_seconds,
             "tail_observation_gap_minutes": self.tail_observation_gap_minutes,
+            "response_content_sha256": self.response_content_sha256,
             "empty_response": self.empty_response,
             "fetch_clock_observed": self.fetch_clock_observed,
             "historical_availability_proven": self.historical_availability_proven,
@@ -228,7 +250,7 @@ def _expected_latest_completed_start(session: date, request_started_at: datetime
 
 
 def _build_fetch_receipt(
-    *, ticker: str, tape: ch.SessionTape, raw_row_count: int,
+    *, ticker: str, tape: ch.SessionTape, raw_rows: Sequence[Mapping[str, Any]],
     request_started_at: datetime, response_received_at: datetime,
 ) -> MinuteFetchReceipt:
     session_open, session_close = session_window_et(tape.session)
@@ -255,6 +277,8 @@ def _build_fetch_receipt(
     if latest is not None and expected is not None:
         gap_seconds = (expected - latest.start).total_seconds()
         gap = max(0, int(gap_seconds // 60))
+    raw_row_count = len(raw_rows)
+    response_content_sha256 = _response_content_sha256(raw_rows)
     return MinuteFetchReceipt(
         ticker=str(ticker).upper(), session=tape.session,
         request_started_at=request_started_at, response_received_at=response_received_at,
@@ -269,6 +293,7 @@ def _build_fetch_receipt(
         latest_observed_completed_known_at=(None if latest is None else latest.knowable_at),
         expected_latest_completed_start=expected,
         latest_observed_age_seconds=lag, tail_observation_gap_minutes=gap,
+        response_content_sha256=response_content_sha256,
         empty_response=(raw_row_count == 0),
     )
 
@@ -348,7 +373,7 @@ class VendorMinuteReader:
         assert requested is not None and received is not None
         tape = self._tape_from_rows(session, rows)
         self._latest_fetch_receipt = _build_fetch_receipt(
-            ticker=ticker, tape=tape, raw_row_count=len(rows),
+            ticker=ticker, tape=tape, raw_rows=rows,
             request_started_at=requested, response_received_at=received)
         return tape
 
@@ -368,7 +393,7 @@ class VendorMinuteReader:
         assert requested is not None and received is not None
         tape = self._tape_from_rows(session, rows)
         receipt = _build_fetch_receipt(
-            ticker=ticker, tape=tape, raw_row_count=len(rows),
+            ticker=ticker, tape=tape, raw_rows=rows,
             request_started_at=requested, response_received_at=received,
         )
         self._latest_fetch_receipt = receipt

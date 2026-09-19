@@ -1537,3 +1537,100 @@ def test_TTID1_refusal_health_has_explicit_null_source_arrival(tmp_path):
     _payload, health = le.failure_payload(now=now, pack=None, state_dir=tmp_path,
                                           error="synthetic refusal")
     assert health["inputs"]["c3_reader"]["source_arrival"] is None
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 response identity — bind arrival timing to exact returned evidence
+# ---------------------------------------------------------------------------
+
+def _receipt_for_rows(tmp_path, rows: list[dict], *, ticker: str = "WASH"):
+    session = NEXT_SESSION
+    open_dt, _close = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    reader = vm.VendorMinuteReader(
+        transport=lambda _path, _params: list(rows),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+    _tape, receipt = reader.read_with_receipt(
+        ticker, session, now_fn=_ReceiptClock(request, response))
+    return receipt
+
+
+def test_TTID1_response_content_identity_is_key_order_invariant(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 3)
+    reordered = [{k: row[k] for k in reversed(tuple(row))} for row in rows]
+    left = _receipt_for_rows(tmp_path / "left", rows)
+    right = _receipt_for_rows(tmp_path / "right", reordered)
+    assert left.response_content_sha256 == right.response_content_sha256
+    assert len(left.response_content_sha256) == 64
+
+
+def test_TTID1_response_content_identity_changes_with_value_order_or_duplicate(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 3)
+    changed = [dict(row) for row in rows]
+    changed[1]["c"] += 0.25
+    reordered = list(reversed([dict(row) for row in rows]))
+    duplicated = [*map(dict, rows), dict(rows[-1])]
+    baseline = _receipt_for_rows(tmp_path / "base", rows).response_content_sha256
+    assert _receipt_for_rows(tmp_path / "value", changed).response_content_sha256 != baseline
+    assert _receipt_for_rows(tmp_path / "order", reordered).response_content_sha256 != baseline
+    assert _receipt_for_rows(tmp_path / "duplicate", duplicated).response_content_sha256 != baseline
+
+
+def test_TTID1_response_content_identity_includes_vendor_fields_not_kept_in_tape(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    enriched = [dict(row) for row in rows]
+    enriched[0]["vw"] = 100.1234
+    enriched[0]["n"] = 17
+    changed = [dict(row) for row in enriched]
+    changed[0]["vw"] = 100.5678
+    changed[0]["n"] = 18
+    a = _receipt_for_rows(tmp_path / "a", enriched)
+    b = _receipt_for_rows(tmp_path / "b", changed)
+    assert a.response_content_sha256 != b.response_content_sha256
+    assert a.parsed_rows == b.parsed_rows == 2
+
+
+def test_TTID1_response_content_identity_includes_unparsed_timestampless_rows(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    extra = {"t": None, "o": 1.0, "h": 1.0, "l": 1.0, "c": 1.0, "v": 1.0,
+             "vw": 1.0, "n": 1}
+    baseline = _receipt_for_rows(tmp_path / "base", rows)
+    with_unparsed = _receipt_for_rows(tmp_path / "extra", [*rows, extra])
+    assert with_unparsed.returned_rows == 3
+    assert with_unparsed.parsed_rows == 2
+    assert with_unparsed.unparsed_rows == 1
+    assert with_unparsed.response_content_sha256 != baseline.response_content_sha256
+
+
+def test_TTID1_empty_response_has_stable_content_identity(tmp_path):
+    import hashlib
+    receipt = _receipt_for_rows(tmp_path, [], ticker="GHOST")
+    assert receipt.empty_response is True
+    assert receipt.response_content_sha256 == hashlib.sha256(b"[]").hexdigest()
+
+
+def test_TTID1_unsupported_response_content_does_not_invent_identity(tmp_path):
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    rows[0]["unsupported_metadata"] = {"not", "json"}
+    receipt = _receipt_for_rows(tmp_path, rows)
+    assert receipt.returned_rows == 2
+    assert receipt.parsed_rows == 2
+    assert receipt.response_content_sha256 is None
+
+
+def test_TTID1_live_health_projects_hash_not_raw_response(tmp_path):
+    pack = late_wash_pack()
+    open_dt, _close = session_window_et(NEXT_SESSION)
+    pass_now = (open_dt + timedelta(minutes=32)).astimezone(timezone.utc)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(), state_dir=tmp_path, sleep_seconds=0.0,
+        receipt_clock=lambda: pass_now)
+    result = run_live_pass(pack, tmp_path, reader=reader)
+    arrival = result.health["inputs"]["c3_reader"]["source_arrival"]
+    assert arrival is not None
+    assert isinstance(arrival["response_content_sha256"], str)
+    assert len(arrival["response_content_sha256"]) == 64
+    assert "raw_rows" not in arrival
+    assert "response_rows" not in arrival
