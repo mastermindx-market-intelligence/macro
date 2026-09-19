@@ -1290,6 +1290,11 @@ jobs:
       # W7A_7054_A_CURE round 1, C2) — same china partial as
       # test_china_special_situations_gate, gate:code HTML structure/copy pin.
       - "tests/test_china_archetype_d_s1.py"
+      # China family-parity rollback guard also reads these governance sources;
+      # contract-delta requires the owning job's trigger closure to name them.
+      - "config/product_experience/page_registry_overrides.yml"
+      - "research/DESIGN_MIGRATION_FACTORY_V1.md"
+      - "research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md"
 
       # --- contract-delta widening for conviction-profile (CURE round 1 widen-paths fix) ---
       - "site/basketdata/fear_greed.json"
