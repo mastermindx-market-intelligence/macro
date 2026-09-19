@@ -89,8 +89,8 @@ spec_compliance:
 # manifest_sha + manifest.json:manifest_sha to the same value, or this packet
 # is FIX_REQUIRED (manifest naming a parent or an uncommitted tree).
 final_head_capture_command: "git rev-parse HEAD"
-final_head_sha: efc6c1ccdf814a03a73d3fdec466880e4c87eeaa
-final_head_tree_sha: 9d994b86924df813f3f1f85282d884d02c21cdf1
+final_head_sha: 6e26b1f092eebcd590374445c8ae68c01c770098
+final_head_tree_sha: e96e04057aa6fcbb695527b4371454f3a03db09d
 
 notes:
   - "16 PNG cells captured via Playwright/Chromium from rendered-html/{null,computed}.html at dark/light × EN/ZH × 1440/390 — 8 null + 8 computed, all unique content-addressed."
