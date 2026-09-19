@@ -11,7 +11,7 @@ import hashlib
 import json
 import math
 from statistics import mean
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from engine.qual_extraction import citation_normalize, quote_span_verified
 
@@ -473,6 +473,31 @@ def _supported_gold_indices(
     return {output_to_gold[index] for index in support if index in output_to_gold}
 
 
+def _maximum_bipartite_matches(
+    left_count: int,
+    right_count: int,
+    can_match: Callable[[int, int], bool],
+) -> int:
+    """Maximum one-to-one matches; one output row cannot satisfy multiple gold rows."""
+    right_to_left: dict[int, int] = {}
+
+    def augment(left: int, seen: set[int]) -> bool:
+        for right in range(right_count):
+            if right in seen or not can_match(left, right):
+                continue
+            seen.add(right)
+            owner = right_to_left.get(right)
+            if owner is None or augment(owner, seen):
+                right_to_left[right] = left
+                return True
+        return False
+
+    matched = 0
+    for left in range(left_count):
+        matched += int(augment(left, set()))
+    return matched
+
+
 def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, Any]:
     gold_claims = checked["expected"]["claims"]
     gold_by_quote = {_norm(row["quote_span"]): index for index, row in enumerate(gold_claims)}
@@ -510,9 +535,14 @@ def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, A
             _supported_gold_indices(row["support_claim_indices"], output_to_gold)
             for row in obj["analysis"][field]
         ]
-        for expectation in expectations:
-            target = set(expectation)
-            category_hits += int(any(target <= observed for observed in observed_sets))
+        category_hits += _maximum_bipartite_matches(
+            len(expectations),
+            len(observed_sets),
+            lambda expected_index, observed_index: set(
+                expectations[expected_index]
+            )
+            <= observed_sets[observed_index],
+        )
 
     thesis_semantic_correct = 0
     thesis_concepts = checked["expected"]["thesis_concepts"]
@@ -528,23 +558,22 @@ def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, A
     semantic_hits = 0
     for field, expectations in checked["expected"]["analysis_semantics"].items():
         observed = obj["analysis"][field]
-        for expectation in expectations:
-            target_support = set(expectation["support_claim_indices"])
-            matched = False
-            for row in observed:
-                support = _supported_gold_indices(
-                    row["support_claim_indices"],
-                    output_to_gold,
+        observed_support = [
+            _supported_gold_indices(row["support_claim_indices"], output_to_gold)
+            for row in observed
+        ]
+        semantic_hits += _maximum_bipartite_matches(
+            len(expectations),
+            len(observed),
+            lambda expected_index, observed_index: (
+                set(expectations[expected_index]["support_claim_indices"])
+                <= observed_support[observed_index]
+                and _concepts_match(
+                    _analysis_row_text(field, observed[observed_index]),
+                    expectations[expected_index]["concept_groups"],
                 )
-                if not target_support <= support:
-                    continue
-                if _concepts_match(
-                    _analysis_row_text(field, row),
-                    expectation["concept_groups"],
-                ):
-                    matched = True
-                    break
-            semantic_hits += int(matched)
+            ),
+        )
 
     expected_direction = checked["expected"]["thesis_direction"]
     direction_correct = int(
