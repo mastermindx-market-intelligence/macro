@@ -2025,10 +2025,16 @@ def outbox(root=None) -> dict:
                 eff = e["_effective"]
                 if eff in acct_counts:
                     acct_counts[eff] += 1
-            # Build item dicts (drop internal keys)
+            # The review rail needs live/retryable items, not the entire
+            # terminal archive.  Posted/quarantined/recalled rows already ship in
+            # the bounded 50-row history window below, while the full counts stay
+            # in acct_counts + summary.  Keeping 2,000+ closed items here duplicated
+            # megabytes of old copy/media/provenance on every Outbox open and made
+            # the browser parse data it never rendered.
             items_out = [
                 {k: v for k, v in e.items() if not k.startswith("_")}
                 for e in acct_items
+                if e["status"] not in {"posted", "quarantined", "recalled"}
             ]
             accounts_out.append({
                 "id": acct_id,
