@@ -198,7 +198,7 @@ def build_spot_iv_shocks(
             "term_support_counts": {},
             "first_session": None,
             "last_session": None,
-            "source_effective_through_session": str(asof_day),
+            "source_effective_through_session": None,
             "decision_eligible_not_before_session": str(decision_day),
             "source_input_sha256": hashlib.sha256(b"").hexdigest(),
         }
@@ -264,7 +264,7 @@ def build_spot_iv_shocks(
         "term_support_counts": support_counts,
         "first_session": str(points[0].day) if points else None,
         "last_session": str(points[-1].day) if points else None,
-        "source_effective_through_session": str(asof_day),
+        "source_effective_through_session": str(points[-1].day) if points else None,
         "decision_eligible_not_before_session": str(decision_day),
         "source_input_sha256": digest,
     }
