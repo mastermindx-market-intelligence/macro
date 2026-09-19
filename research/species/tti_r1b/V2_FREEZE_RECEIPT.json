@@ -1,0 +1,15 @@
+{
+  "authority": "preregistration_freeze_only_no_rank_alert_size_trade_or_event_authority",
+  "config_sha256": "bb7952eef6f3714c6bae473708889a5a82ac257f2ef53f8f6d1d4a684c035382",
+  "freeze_commit": "1348a238c8fbcb79b617478311f2ce0e1e37d4c0",
+  "future_label_control_conditioning_forbidden": true,
+  "grid_cells": 60,
+  "outcomes_opened": false,
+  "prereg_sha256": "23c6d69f40e63e6fca29b25e347a39ddf31c986e85f2e617a7682327a90590b4",
+  "registered": false,
+  "schema": "mastermind.terminal_tactical_r1b_freeze_receipt.v2",
+  "study_id": "tti-r1b-exhaustion-reclaim-v2",
+  "supersedes_unregistered_v1_commit": "0c54e10e20c43827802d3d829505f74f57f8eb5f",
+  "trial_family": "entry_radar",
+  "trial_ledger_modified_by_freeze": false
+}
