@@ -95,6 +95,8 @@ def rank_vault_head(
         root=root,
         cfg=cfg,
     )
+    if result.get("reconciled") is not True:
+        raise ValueError("research triage did not reconcile the input denominator")
     return select_ranked_head(materialized, result, limit=limit), result
 
 
@@ -130,7 +132,14 @@ def read_full_vault_body(
     if type(pdf) is not bytes or not pdf:
         return {"state": "pdf_invalid", "report_id": rid}
 
-    body = extractor(pdf)
+    try:
+        body = extractor(pdf)
+    except Exception as exc:
+        return {
+            "state": "extractor_failed",
+            "report_id": rid,
+            "error_class": type(exc).__name__[:120],
+        }
     if body is None:
         return {"state": "extractor_unavailable", "report_id": rid}
     if not isinstance(body, str):
