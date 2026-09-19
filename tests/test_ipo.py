@@ -1099,48 +1099,103 @@ def test_cw_state_and_clause_keys_do_not_leak_engine_token():
 # exists and works as designed.
 # --------------------------------------------------------------------------- #
 def test_cw_force_hook_fallback_nodes_and_css_are_emitted():
-    """Assert the .cw-rail-fb / .cw-scale-fb fallback nodes and the
-    [data-credit="null"] CSS rule are present in the template. Fails on the
-    round-1 head (6c444f6f35f8) where neither the nodes nor the CSS rule exist."""
+    """Render templates/ipo.html.j2 with a not-evaluable credit window segment and
+    assert the .cw-rail-fb / .cw-scale-fb fallback nodes and the [data-credit="null"]
+    CSS rule are present in the rendered output. Fails on the round-1 head
+    (6c444f6f35f8) where neither the nodes nor the CSS rule exist.
+
+    The ruling (MAJOR-3) requires a RED-first test that actually renders the
+    template — source-only assertions do not exercise the Jinja macros or prove the
+    fallback nodes are emitted in output."""
+    import jinja2
+    from scripts.build_vector import C
+
     tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
-    src = tpl_path.read_text()
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(tpl_path.parent)),
+                             autoescape=False, keep_trailing_newline=True)
+    tpl = env.get_template(tpl_path.name)
 
-    # 1. The always-present fallback rail and scale nodes (hidden by default)
-    assert ".cw-rail-fb" in src, (
-        ".cw-rail-fb fallback node must be present in templates/ipo.html.j2 — "
-        "it renders the null rail and is toggled by [data-credit='null']"
+    # Stub for the triad section (lines ~388-437) — not under test but must exist.
+    # Properties referenced: window.band, window.constructive, window.hostile,
+    # window.n_legs, window.n_expected, window.legs, window.stance_en, window.stance_zh,
+    # window.low_confidence; aftermarket.verdict, aftermarket.ipo_5y, etc.;
+    # pipeline.available, pipeline.pace, pipeline.spac_pct_90d, etc.
+    window_stub = type("WindowStub", (), {
+        "band": "NEUTRAL", "constructive": 3, "hostile": 2, "n_legs": 6,
+        "n_expected": 6, "legs": [], "stance_en": "Watch — don't chase",
+        "stance_zh": "观望，别追", "low_confidence": False,
+    })()
+    aftermarket_stub = type("AftermarketStub", (), {
+        "verdict": "tracks", "verdict_zh": "持平", "ipo_5y": "—",
+        "spy_5y": "—", "gap_5y": None, "stance_en": "Don't chase the basket",
+        "stance_zh": "别追新股篮子", "rows": [],
+    })()
+    pipeline_stub = type("PipelineStub", (), {
+        "available": True, "pace": "normal", "pace_zh": "正常",
+        "spac_pct_90d": 0, "froth_flags": [], "stance_en": "Normal issuance",
+        "stance_zh": "发行正常", "priced_90d": "",
+    })()
+
+    # Minimal credit_window context that hits the not-evaluable (rail=None) branch:
+    # state=not_evaluable so the is-null nodes render, and rail=None so the
+    # fallback nodes also render.
+    ctx = {
+        "C": C,
+        "window": window_stub,
+        "aftermarket": aftermarket_stub,
+        "pipeline": pipeline_stub,
+        "credit_window": {
+            "segments": [{
+                "label_en": "High-yield borrowers",
+                "label_zh": "高收益发行人",
+                "tip_en": "",
+                "tip_zh": "",
+                "state_en": "No read",
+                "state_zh": "暂无读数",
+                "clause_en": "We can't read this now.",
+                "clause_zh": "目前无法读取。",
+                "rail": None,          # triggers {% else %} — both is-null and fallback render
+                "inputs": [],
+            }],
+        },
+    }
+
+    rendered = tpl.render(**ctx)
+
+    # 1. The always-present fallback rail and scale nodes are in the rendered output
+    assert "cw-rail-fb" in rendered, (
+        ".cw-rail-fb fallback node must appear in rendered ipo.html — "
+        "it is the null rail and is toggled by [data-credit='null']"
     )
-    assert ".cw-scale-fb" in src, (
-        ".cw-scale-fb fallback node must be present in templates/ipo.html.j2 — "
-        "it renders the null scale label and is toggled by [data-credit='null']"
+    assert "cw-scale-fb" in rendered, (
+        ".cw-scale-fb fallback node must appear in rendered ipo.html — "
+        "it is the null scale label and is toggled by [data-credit='null']"
     )
 
-    # 2. The [data-credit="null"] CSS rule that hides data nodes + shows fallback
-    assert '[data-credit="null"] .cw-rail-data' in src, (
+    # 2. The [data-credit="null"] CSS rule is in the <style> block
+    assert '[data-credit="null"] .cw-rail-data' in rendered, (
         '[data-credit="null"] CSS rule must hide .cw-rail-data when the '
         'capture attribute is set on <body>'
     )
-    assert '[data-credit="null"] .cw-scale-data' in src, (
+    assert '[data-credit="null"] .cw-scale-data' in rendered, (
         '[data-credit="null"] CSS rule must hide .cw-scale-data when the '
         'capture attribute is set on <body>'
     )
-    assert '[data-credit="null"] .cw-rail-fb{display:block}' in src, (
+    assert '[data-credit="null"] .cw-rail-fb{display:block}' in rendered, (
         '[data-credit="null"] must show .cw-rail-fb (display:block)'
     )
-    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in src, (
+    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in rendered, (
         '[data-credit="null"] must show .cw-scale-fb (display:flex)'
     )
 
-    # 3. The null-state copy: "range can't be read yet" / "区间暂无读数"
-    #    appears in BOTH the existing is-null node (~458) and the fallback (~464)
-    #    — the ruling requires both the data state and the fallback state to carry
-    #    the corrected plain copy.
-    assert "range can" in src and "t be read yet" in src, (
+    # 3. The null-state copy: "range can't be read yet" / "区间暂无读数" appears in
+    #    BOTH the is-null node and the fallback node — the ruling requires both.
+    assert "range can" in rendered and "t be read yet" in rendered, (
         'Null rail/scale copy "range can\'t be read yet" must appear in the '
-        'template — the is-null node AND the fallback node both carry it.'
+        'rendered output — the is-null node AND the fallback node both carry it.'
     )
-    assert "区间暂无读数" in src, (
-        'Null rail/scale copy "区间暂无读数" must appear in the template — '
+    assert "区间暂无读数" in rendered, (
+        'Null rail/scale copy "区间暂无读数" must appear in the rendered output — '
         'the is-null node AND the fallback node both carry it.'
     )
 

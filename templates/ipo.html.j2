@@ -462,8 +462,9 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       {% endif %}
       {# Capture-time force-state hook for the not_evaluable variant: an always-present
          hidden null rail + null scale, shown only when the capture script toggles
-         `[data-credit="null"]` on <html>. Real data is rendered untouched when the
-         attribute is absent; the hook is opt-in and never fires in production. #}
+         `[data-credit="null"]` on <body> (set by scripts/capture_page_evidence.py ~line 1343).
+         Real data is rendered untouched when the attribute is absent; the hook is
+         opt-in and never fires in production. No production path sets the attribute. #}
       <div class="cw-rail is-null cw-rail-fb" aria-hidden="true"></div>
       <div class="cw-scale cw-scale-fb"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
 
