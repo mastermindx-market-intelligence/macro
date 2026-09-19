@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_premium_visual_checks.v1",
-  "semantic_head": "8b2507985be5da9437abaee21591911746d49a17",
+  "semantic_head": "fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8",
   "capture": "actual commodities page fixture; Gold panel crop; feature-free pickup overflow comparison",
   "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
@@ -27,8 +27,8 @@
       "premium": "0.167365",
       "inherited_overflow": false,
       "file": "panel-intraday-dark-en-desktop.png",
-      "sha256": "b9a1377d29e942d8dc6bfcad9301bb994c5f768993159b1d218c56ad7ce15431",
-      "bytes": 109025,
+      "sha256": "e1135852533f9b772e2536b3bc2f7a731818b86ac72baf6793a7158a589f8c06",
+      "bytes": 109847,
       "page_errors": []
     },
     {
@@ -54,8 +54,8 @@
       "premium": "0.167365",
       "inherited_overflow": false,
       "file": "panel-intraday-light-en-desktop.png",
-      "sha256": "c3bdb3c2033cd5c3bddaf97cfad11c491bceb56eaee55fa2ab3778d13f4f3e94",
-      "bytes": 82375,
+      "sha256": "b17aa79d844046f90b97e1d167242f557258cf4414d980ec0fb1c483ba28604b",
+      "bytes": 83306,
       "page_errors": []
     },
     {
@@ -81,8 +81,8 @@
       "premium": "0.167365",
       "inherited_overflow": false,
       "file": "panel-intraday-dark-zh-desktop.png",
-      "sha256": "1e62f673b7c10de170ed68316ba7ad02cb067dd4529acf242250c4e955e4ab14",
-      "bytes": 109448,
+      "sha256": "d2ee2b9836738b28f33580ff9eae4b11aa76f061a311a6b0c6591050fed00228",
+      "bytes": 110239,
       "page_errors": []
     },
     {
@@ -108,8 +108,8 @@
       "premium": "0.167365",
       "inherited_overflow": false,
       "file": "panel-intraday-light-zh-desktop.png",
-      "sha256": "26336b94051c66f844e08dde9bf286612eefb65829fb9b446bdabd0db85e283c",
-      "bytes": 85293,
+      "sha256": "d036483f407ec0610bcd99c21a4ca411ed36aa6a4d25541864e25fcf12ebd363",
+      "bytes": 86364,
       "page_errors": []
     },
     {
@@ -135,8 +135,8 @@
       "premium": "0.167365",
       "inherited_overflow": true,
       "file": "panel-intraday-dark-en-mobile.png",
-      "sha256": "5f19471a5673a47cf5a65af254803f4657cfebe700efdf9ef9e47b0a03752230",
-      "bytes": 77864,
+      "sha256": "0802d8aaee80e49e4eb1818d24465096e30fdb5ea65928ed1433a833dad717ab",
+      "bytes": 77913,
       "page_errors": []
     },
     {
@@ -162,8 +162,8 @@
       "premium": "0.167365",
       "inherited_overflow": true,
       "file": "panel-intraday-light-en-mobile.png",
-      "sha256": "80e7841e6b320768f438bb25093b97a4ba12955ea5c7a49837b7a035011f1ca7",
-      "bytes": 59450,
+      "sha256": "daa2452e92933ca0f9d03358fd85b53f9f3f057df125da580c30d7ee1e34b75f",
+      "bytes": 59609,
       "page_errors": []
     },
     {
@@ -189,8 +189,8 @@
       "premium": "0.167365",
       "inherited_overflow": true,
       "file": "panel-intraday-dark-zh-mobile.png",
-      "sha256": "833bd65d27b7dcaa3b4721c5e3b5028439a448f118c1eed114e9a42fe36dc2a3",
-      "bytes": 73741,
+      "sha256": "dea41569ba00573f3d111483d58a09de56f04d8cf045eeec44b20e2deb3b5d27",
+      "bytes": 73782,
       "page_errors": []
     },
     {
@@ -216,8 +216,8 @@
       "premium": "0.167365",
       "inherited_overflow": true,
       "file": "panel-intraday-light-zh-mobile.png",
-      "sha256": "84e4dbae73aa89ec0f4119aa44825bac10ec417cc5279fc1f44b92af695574c2",
-      "bytes": 60217,
+      "sha256": "9332e3990301f274c2997fd29d93bdef113ab466864734ab33aa0ab8fa03d7dc",
+      "bytes": 60420,
       "page_errors": []
     },
     {

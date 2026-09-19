@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.china_gold_basis_visual_checks.v1",
-  "semantic_head": "8b2507985be5da9437abaee21591911746d49a17",
+  "semantic_head": "fc41f7f32a509e51b4a03a83ddd1abb4af76e9a8",
   "capture": "actual commodities page fixture; Gold panel crop; feature-free pickup overflow comparison",
   "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
@@ -27,8 +27,8 @@
       "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-dark-en-desktop.png",
-      "sha256": "8c710ffd7867c8c203b9ae6e9fcd6c06286ada1d74e8b3c28a2e87d17193f454",
-      "bytes": 117823,
+      "sha256": "b81435d73fae11a056c76f5899aff08d8ace00bc5c7f335e445508c3220b06c3",
+      "bytes": 118718,
       "page_errors": []
     },
     {
@@ -54,8 +54,8 @@
       "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-light-en-desktop.png",
-      "sha256": "da7175b3235c3fa80b66d2a8c3827f431584d4ef0676e0d0a5a3e031a9a86aee",
-      "bytes": 89347,
+      "sha256": "7eb4a2232993fdae19662c74bab4d9305bc56b751fbe5fe4bbc6f595a9d7ac6f",
+      "bytes": 89603,
       "page_errors": []
     },
     {
@@ -81,8 +81,8 @@
       "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-dark-zh-desktop.png",
-      "sha256": "c1aa262a3d40865010ff66f3de53a862f4a6601b4ac880d3e56e445cd184ede4",
-      "bytes": 119016,
+      "sha256": "9fb1f35a8d10a5abf634140221592b46368901163a624e142effc373fc07f02c",
+      "bytes": 119891,
       "page_errors": []
     },
     {
@@ -108,8 +108,8 @@
       "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-light-zh-desktop.png",
-      "sha256": "72b629bd2ced275bc47aa3e6dadcc74e518279bccaab231c56851499646c7edf",
-      "bytes": 94019,
+      "sha256": "142be91aa43ea5eafd0ddf1e4d3cae2e66b67d377151e5e7aee235a570c9ddd5",
+      "bytes": 94324,
       "page_errors": []
     },
     {
@@ -135,8 +135,8 @@
       "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-en-mobile.png",
-      "sha256": "5c2eac84145b029909f93e5587711037d358ab751a8e810ab3e0602cb33f79d7",
-      "bytes": 82834,
+      "sha256": "67793b237f713bdb8944e1f4d13665eb10f4083e2aec1f2d7c0d8c820057b0b3",
+      "bytes": 82891,
       "page_errors": []
     },
     {
@@ -162,8 +162,8 @@
       "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-light-en-mobile.png",
-      "sha256": "c53655d72d4ab5229985f098bfb3fc040da4f5e6d22493b48ad71865c6b06d1c",
-      "bytes": 62629,
+      "sha256": "1d0a2b96e8860f6354de3b49235563e9886dff9c97da1db69c625cd131cf8dcf",
+      "bytes": 62799,
       "page_errors": []
     },
     {
@@ -189,8 +189,8 @@
       "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-zh-mobile.png",
-      "sha256": "82fb493a98f35b726db7a91b565f7c6855bd6c8fb6f10aac7c2013188d814bf5",
-      "bytes": 80278,
+      "sha256": "72c5895a8d3df333f5cc99ccbe484799102775b3808273bb665ef90955bb05e1",
+      "bytes": 80422,
       "page_errors": []
     },
     {
@@ -216,8 +216,8 @@
       "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-light-zh-mobile.png",
-      "sha256": "65122e3ba6bde4e6b880604539f4abf26b92e566ad71854222578940e0406c85",
-      "bytes": 65071,
+      "sha256": "db0e2a2cdc672927a7c802722454e02532eb7d040fbb5e8a15c1de875a83362c",
+      "bytes": 65263,
       "page_errors": []
     }
   ]
