@@ -448,6 +448,8 @@ def validate_revision_index(
             raise WorkspaceError("revision index event rows must be a nonempty list")
         self_count = 0
         prior_clock: str | None = None
+        prior_source_sha256: str | None = None
+        prior_source_seen = False
         for position, raw_row in enumerate(raw_rows):
             row = _require_mapping(raw_row, name=f"revision index row {event_id}")
             _require_exact_keys(row, REVISION_INDEX_ROW_KEYS, name="revision index row")
@@ -456,6 +458,12 @@ def validate_revision_index(
             source_sha256 = row.get("source_sha256")
             if source_sha256 is not None:
                 _validated_sha256(source_sha256, name="revision index source")
+            if prior_source_seen and source_sha256 == prior_source_sha256:
+                raise WorkspaceError(
+                    "revision index consecutive source revisions must be deduped"
+                )
+            prior_source_sha256 = source_sha256
+            prior_source_seen = True
             form = row.get("form")
             if form is not None and (not isinstance(form, str) or not form.strip()):
                 raise WorkspaceError("revision index form invalid")

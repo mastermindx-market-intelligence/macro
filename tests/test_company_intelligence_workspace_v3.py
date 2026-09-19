@@ -770,7 +770,10 @@ def test_v3_reader_recomputes_generation_identity_and_refuses_dropped_middle_row
         ),
     )
 
-    with pytest.raises(reader.WorkspaceChainIntegrityError, match="generation identity"):
+    with pytest.raises(
+        reader.WorkspaceChainIntegrityError,
+        match="generation identity|consecutive source",
+    ):
         reader.audit_v3_generation_identity(forged_manifest, base_url=BASE)
 
 
@@ -1105,3 +1108,15 @@ def test_v3_reader_carries_migration_clock_without_rewriting_legacy_workspace(
     assert rows[2]["generated_at_basis"] == "ENCLOSING_MANIFEST"
     assert rows[2]["generated_at"] == mint
     assert rows[2]["workspace"]["generated_at"] == mint
+
+
+def test_revision_index_rejects_consecutive_duplicate_source_revision(
+    tmp_path: Path,
+) -> None:
+    _first_dir, second_dir = _two_revision_v3_chain(tmp_path)
+    manifest, revision_index = _read_generation(second_dir)
+    duplicate = json.loads(json.dumps(revision_index["events"][EVENT_ID][0]))
+    revision_index["events"][EVENT_ID].insert(1, duplicate)
+
+    with pytest.raises(WorkspaceError, match="consecutive"):
+        validate_revision_index(revision_index, manifest=manifest)
