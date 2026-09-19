@@ -1024,6 +1024,24 @@ def test_committed_computed_payload_renders_every_term_semantics():
     assert "1.2" in html
 
 
+def test_committed_computed_payload_renders_zh_term_semantics():
+    """The committed payload keeps every Chinese glance sentence selectable."""
+    from pathlib import Path
+    import json
+
+    root = Path(__file__).resolve().parents[1]
+    payload = json.loads(
+        (
+            root
+            / "mockups/evidence/b-f09-13-covenant-headroom/payloads/computed.json"
+        ).read_text(encoding="utf-8")
+    )
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
+
+    assert "信贷协议要求收益与利息之比至少为" in html
+    assert "信贷协议允许最高" in html
+
+
 def test_committed_computed_payload_below_floor_copy_has_no_room_claim():
     """An over-limit ceiling reads as over the limit, never as room left.
 
@@ -1062,6 +1080,7 @@ def test_committed_computed_payload_below_floor_copy_has_no_room_claim():
     assert "falls below the floor by" in html
     assert "0.625" in html
     assert "of room" not in html
+    assert "低于下限" in html
 
 
 def test_committed_computed_payload_over_limit_copy_has_no_room_claim():
@@ -1103,6 +1122,7 @@ def test_committed_computed_payload_over_limit_copy_has_no_room_claim():
     assert "exceeds the limit by" in html
     assert "0.625" in html
     assert "of room" not in html
+    assert "超出限额" in html
 
 
 # ────────────────────────────────────────────────────────────────────────────
