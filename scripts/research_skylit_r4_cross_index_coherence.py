@@ -67,7 +67,13 @@ def _normalise_expected_move_receipts(
         return {}
 
     expected_roots = set(roots)
-    got_roots = {str(root).upper() for root in receipts}
+    raw_by_root: dict[str, dict[str, Any]] = {}
+    for key, value in receipts.items():
+        root_key = str(key).upper()
+        if root_key in raw_by_root:
+            raise R4Refusal(f"duplicate expected-move receipt root after normalization: {root_key}")
+        raw_by_root[root_key] = value
+    got_roots = set(raw_by_root)
     if got_roots != expected_roots:
         missing = sorted(expected_roots - got_roots)
         extra = sorted(got_roots - expected_roots)
@@ -80,7 +86,7 @@ def _normalise_expected_move_receipts(
     horizons: set[str] = set()
     r4_session = _canonical_day(session, label="R4 session")
     for root in roots:
-        raw = receipts[root]
+        raw = raw_by_root[root]
         required = {
             "pct", "horizon", "method",
             "source_effective_session", "decision_eligible_not_before_session",
