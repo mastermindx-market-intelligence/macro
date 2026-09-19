@@ -30,4 +30,4 @@ capture: |
   EN/ZH, desktop=1440x900 and mobile=390x844, with a 200ms settle after the
   data-theme/data-lang stamp. Screenshots contain only #va-event-bridge.
 captured_at: 2026-09-19T02:05Z
-resolved_sha_or_none: FINAL_HEAD
+resolved_sha_or_none: 315d8da9e036314937a344a819bbf26dcff79c44
