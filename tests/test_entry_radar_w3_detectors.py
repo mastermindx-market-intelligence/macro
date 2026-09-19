@@ -830,3 +830,168 @@ def test_TTIB_synthetic_preview_markdown_explains_exact_matching_and_no_fallback
     assert '10' in p.stdout and 'NO_CONTROL' in p.stdout
     assert 'no widening fallback' in p.stdout.lower()
     assert 'same ticker' in p.stdout.lower() and 'qqq' in p.stdout.lower()
+
+
+# ---------------------------------------------------------------------------
+# TTI R1-B v4 prior-only normalization — synthetic daily inputs only
+# ---------------------------------------------------------------------------
+
+def _ttib_daily_frames(session, *, beta_multiple=2.0, n_prior=70, add_current=False):
+    import pandas as pd
+    from lib.nyse_calendar import session_n_back
+    days = [session_n_back(session, n) for n in range(n_prior, 0, -1)]
+    q = 100.0
+    s = 80.0
+    q_closes, s_closes = [], []
+    for i, _day in enumerate(days):
+        r = (0.001 + (i % 7) * 0.0004) * (1 if i % 2 == 0 else -1)
+        q *= 1.0 + r
+        s *= 1.0 + beta_multiple * r
+        q_closes.append(q)
+        s_closes.append(s)
+    stock = pd.DataFrame({
+        'high': [x + 1.0 for x in s_closes],
+        'low': [x - 1.0 for x in s_closes],
+        'close': s_closes,
+    }, index=pd.DatetimeIndex(days))
+    qqq = pd.DataFrame({'close': q_closes}, index=pd.DatetimeIndex(days))
+    if add_current:
+        stock.loc[pd.Timestamp(session)] = [9999.0, 0.01, 7777.0]
+        qqq.loc[pd.Timestamp(session)] = [0.02]
+    return stock.sort_index(), qqq.sort_index()
+
+
+def test_TTIB_prior_normalization_uses_only_complete_prior_sessions_and_excludes_current_day():
+    from datetime import date
+    import pandas as pd
+    from engine.entry_radar.tactical_exhaustion import build_prior_normalization
+    day = date(2026, 9, 17)
+    stock, qqq = _ttib_daily_frames(day, add_current=True)
+    with_current = build_prior_normalization(stock, qqq, session=day,
+                                              config_bytes=_ttib_config())
+    without_current = build_prior_normalization(stock.drop(pd.Timestamp(day)),
+                                                 qqq.drop(pd.Timestamp(day)), session=day,
+                                                 config_bytes=_ttib_config())
+    assert with_current == without_current
+    assert with_current['availability'] == 'AVAILABLE'
+    assert with_current['prior_session'] == '2026-09-16'
+    assert with_current['atr_sessions'] == 20
+    assert with_current['beta_pairs'] == 60
+    assert with_current['beta_available'] is True
+    assert with_current['historical_availability_proven'] is False
+    assert with_current['market_outcomes_computed'] is False
+    assert with_current['authority'] == 'research_normalization_only'
+
+
+def test_TTIB_prior_normalization_beta_matches_known_synthetic_relationship_and_clip():
+    from datetime import date
+    from engine.entry_radar.tactical_exhaustion import build_prior_normalization
+    day = date(2026, 9, 17)
+    stock2, qqq = _ttib_daily_frames(day, beta_multiple=2.0)
+    got2 = build_prior_normalization(stock2, qqq, session=day, config_bytes=_ttib_config())
+    assert got2['beta'] == pytest.approx(2.0, rel=2e-3)
+    stock4, qqq4 = _ttib_daily_frames(day, beta_multiple=4.0)
+    got4 = build_prior_normalization(stock4, qqq4, session=day, config_bytes=_ttib_config())
+    assert got4['beta_raw'] > 3.0
+    assert got4['beta'] == 3.0
+
+
+def test_TTIB_prior_normalization_requires_all_twenty_atr_sessions_but_beta_can_use_valid_pairs():
+    from datetime import date
+    import pandas as pd
+    from engine.entry_radar.tactical_exhaustion import build_prior_normalization
+    from lib.nyse_calendar import session_n_back
+    day = date(2026, 9, 17)
+    stock, qqq = _ttib_daily_frames(day)
+    missing_atr = session_n_back(day, 7)
+    got = build_prior_normalization(stock.drop(pd.Timestamp(missing_atr)), qqq,
+                                    session=day, config_bytes=_ttib_config())
+    assert got['availability'] == 'UNAVAILABLE'
+    assert got['reason'] == 'incomplete_prior_atr_window'
+    assert got['beta_available'] is True
+    assert got['beta_pairs'] >= 40
+
+
+def test_TTIB_prior_normalization_beta_below_minimum_is_explicit_not_fabricated():
+    from datetime import date
+    from engine.entry_radar.tactical_exhaustion import build_prior_normalization
+    day = date(2026, 9, 17)
+    stock, qqq = _ttib_daily_frames(day)
+    # Keep enough recent stock history for ATR, but too few benchmark observations for beta.
+    qqq = qqq.iloc[-35:]
+    got = build_prior_normalization(stock, qqq, session=day, config_bytes=_ttib_config())
+    assert got['availability'] == 'AVAILABLE'
+    assert got['prior_atr'] > 0
+    assert got['beta_available'] is False
+    assert got['beta'] is None
+    assert got['beta_reason'] == 'insufficient_prior_beta_pairs'
+    assert got['beta_pairs'] < 40
+
+
+def test_TTIB_prior_normalization_refuses_duplicate_or_unordered_daily_identity():
+    from datetime import date
+    import pandas as pd
+    from engine.entry_radar.tactical_exhaustion import build_prior_normalization
+    day = date(2026, 9, 17)
+    stock, qqq = _ttib_daily_frames(day)
+    dup = pd.concat([stock, stock.iloc[-1:]])
+    with pytest.raises(ValueError, match='duplicate'):
+        build_prior_normalization(dup, qqq, session=day, config_bytes=_ttib_config())
+    unordered = stock.iloc[::-1]
+    with pytest.raises(ValueError, match='ordered'):
+        build_prior_normalization(unordered, qqq, session=day, config_bytes=_ttib_config())
+
+
+def test_TTIB_prior_normalization_rejects_wrong_basis_and_config_retargeting():
+    from datetime import date
+    import json
+    from engine.entry_radar.tactical_exhaustion import build_prior_normalization
+    day = date(2026, 9, 17)
+    stock, qqq = _ttib_daily_frames(day)
+    got = build_prior_normalization(stock, qqq, session=day, config_bytes=_ttib_config(),
+                                    price_basis='raw')
+    assert got['availability'] == 'UNAVAILABLE'
+    assert got['reason'] == 'price_basis_mismatch'
+    cfg = json.loads(_ttib_config()); cfg['atr_lookback_sessions'] = 5
+    with pytest.raises(ValueError, match='config identity'):
+        build_prior_normalization(stock, qqq, session=day,
+                                  config_bytes=json.dumps(cfg).encode())
+
+
+def test_TTIB_synthetic_preview_derives_prior_normalization_and_feeds_constructor():
+    import json, subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = root/'scripts/research/terminal_tactical_r1b_preview.py'
+    p = subprocess.run([sys.executable, str(script), '--format', 'json'],
+                       cwd=root, capture_output=True, text=True, timeout=30)
+    assert p.returncode == 0, p.stderr
+    report = json.loads(p.stdout)
+    norm = report['normalization']
+    assert norm['availability'] == 'AVAILABLE'
+    assert norm['atr_sessions'] == 20
+    assert norm['prior_atr'] == pytest.approx(2.0, rel=1e-6)
+    assert norm['beta_available'] is True
+    assert norm['beta'] == pytest.approx(2.0, rel=2e-3)
+    assert norm['market_outcomes_computed'] is False
+    for example in report['examples']:
+        events = example['construction']['events']
+        assert events
+        assert all(e['prior_atr'] == pytest.approx(norm['prior_atr']) for e in events)
+        assert all(e['previous_regular_close'] == pytest.approx(norm['prior_close']) for e in events)
+    assert report['market_data_read'] is False and report['outcomes_computed'] is False
+
+
+def test_TTIB_synthetic_preview_markdown_discloses_prior_only_atr_and_beta():
+    import subprocess, sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    script = root/'scripts/research/terminal_tactical_r1b_preview.py'
+    p = subprocess.run([sys.executable, str(script), '--format', 'markdown'],
+                       cwd=root, capture_output=True, text=True, timeout=30)
+    assert p.returncode == 0, p.stderr
+    lower = p.stdout.lower()
+    assert 'prior-only normalization' in lower
+    assert 'atr20' in lower
+    assert 'beta' in lower
+    assert 'synthetic only' in lower

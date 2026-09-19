@@ -16,7 +16,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import pandas as pd
 
-from engine.entry_radar.tactical_exhaustion import construct_session, match_controls
+from engine.entry_radar.tactical_exhaustion import (
+    build_prior_normalization, construct_session, match_controls,
+)
 from engine.session_digest import session_window_et
 from lib.nyse_calendar import session_n_back
 
@@ -27,6 +29,24 @@ def synthetic_examples() -> dict:
     day = date(2026, 9, 17)
     start, _ = session_window_et(day)
     config = (ROOT/'research/species/tti_r1b/config_v4.json').read_bytes()
+    prior_days = [session_n_back(day, n) for n in range(70, 0, -1)]
+    q, stock = 100.0, 100.0
+    q_closes, stock_closes = [], []
+    for i, _prior_day in enumerate(prior_days):
+        r = (0.0004 + (i % 7) * 0.0001) * (1 if i % 2 == 0 else -1)
+        q *= 1.0 + r
+        stock *= 1.0 + 2.0 * r
+        q_closes.append(q)
+        stock_closes.append(stock)
+    stock_daily = pd.DataFrame({
+        'high': [x + 1.0 for x in stock_closes],
+        'low': [x - 1.0 for x in stock_closes],
+        'close': stock_closes,
+    }, index=pd.DatetimeIndex(prior_days))
+    qqq_daily = pd.DataFrame({'close': q_closes}, index=pd.DatetimeIndex(prior_days))
+    normalization = build_prior_normalization(
+        stock_daily, qqq_daily, session=day, config_bytes=config)
+    assert normalization['availability'] == 'AVAILABLE'
     common = [[100, 100.2, 99, 99.4, 100],
               [99.4, 99.5, 98.8, 99, 100],
               [99, 99.1, 98.6, 98.98, 100]]
@@ -46,8 +66,9 @@ def synthetic_examples() -> dict:
         frame = pd.DataFrame(rows, index=pd.date_range(start, periods=len(rows), freq='5min'),
                              columns=['open', 'high', 'low', 'close', 'volume'])
         report = construct_session(frame, symbol='AMD', session=day,
-                 prior_session=session_n_back(day, 1), prior_close=100.0,
-                 prior_atr=2.0, asof=start+timedelta(minutes=30), config_bytes=config)
+                 prior_session=date.fromisoformat(normalization['prior_session']),
+                 prior_close=normalization['prior_close'], prior_atr=normalization['prior_atr'],
+                 asof=start+timedelta(minutes=30), config_bytes=config)
         examples.append({'name': name, 'construction': report})
         if name == 'reclaim':
             reclaim_report = report
@@ -76,6 +97,7 @@ def synthetic_examples() -> dict:
         control_census=controls[:9], config_bytes=config)
     return {'evidence_class': 'SYNTHETIC_ONLY', 'market_data_read': False,
             'outcomes_computed': False, 'trial_registration_claimed': False,
+            'normalization': normalization,
             'live_authority': False, 'examples': examples,
             'matching': {'selected_selector': selected['selector'],
                          'available': available, 'no_control': no_control}}
@@ -86,7 +108,11 @@ def markdown(payload: dict) -> str:
              '**SYNTHETIC ONLY — not market data, trading results, or live signals.**', '',
              'No edge or probability is estimated. Values are fabricated test inputs.',
              'An earliest entry is a scheduled reference time, not an available quote or fill.',
-             'Times below are UTC; all session calculations use the existing exchange calendar.', '']
+             'Times below are UTC; all session calculations use the existing exchange calendar.', '',
+             '## Prior-only normalization', '',
+             f"Synthetic ATR20: **{payload['normalization']['prior_atr']:.4f}** across {payload['normalization']['atr_sessions']} prior sessions. "
+             f"Prior-only beta: **{payload['normalization']['beta']:.4f}** from {payload['normalization']['beta_pairs']} paired prior returns.",
+             'Current-session daily values are excluded; these are synthetic engineering inputs, not market outcomes.', '']
     for example in payload['examples']:
         r = example['construction']
         lines += [f"## {example['name'].title()}", '',

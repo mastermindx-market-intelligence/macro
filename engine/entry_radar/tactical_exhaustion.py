@@ -42,6 +42,113 @@ def _row_values(row: pd.Series) -> tuple[float, ...] | None:
     return o, h, low, c, v
 
 
+def _daily_by_session(frame: pd.DataFrame, *, columns: tuple[str, ...], name: str) -> dict[date, dict[str, float]]:
+    if not isinstance(frame, pd.DataFrame) or any(c not in frame.columns for c in columns):
+        raise ValueError(f'{name} daily frame missing required columns')
+    if not isinstance(frame.index, pd.DatetimeIndex) or frame.index.hasnans:
+        raise ValueError(f'{name} daily frame requires DatetimeIndex')
+    days = [ts.date() for ts in frame.index]
+    if len(days) != len(set(days)):
+        raise ValueError(f'{name} daily frame has duplicate session')
+    if any(a >= b for a, b in zip(days, days[1:])):
+        raise ValueError(f'{name} daily frame must be ordered')
+    out: dict[date, dict[str, float]] = {}
+    for day, (_, row) in zip(days, frame.iterrows()):
+        values: dict[str, float] = {}
+        for col in columns:
+            value = row[col]
+            if not _number(value) or float(value) <= 0:
+                continue
+            values[col] = float(value)
+        if len(values) == len(columns):
+            if {'high', 'low', 'close'} <= values.keys():
+                if not values['low'] <= values['close'] <= values['high']:
+                    continue
+            out[day] = values
+    return out
+
+
+def build_prior_normalization(
+    stock_daily: pd.DataFrame, benchmark_daily: pd.DataFrame, *, session: date,
+    config_bytes: bytes, price_basis: str = 'adjusted',
+) -> dict:
+    """Build frozen v4 prior-only ATR20/beta inputs; never current-session data."""
+    if hashlib.sha256(config_bytes).hexdigest() != CONFIG_SHA256:
+        raise ValueError('frozen v4 config identity mismatch')
+    cfg = json.loads(config_bytes)
+    stock = _daily_by_session(stock_daily, columns=('high', 'low', 'close'), name='stock')
+    benchmark = _daily_by_session(benchmark_daily, columns=('close',), name='benchmark')
+    report = {
+        'schema': 'mastermind.tti.r1b.prior_normalization.v4',
+        'study_id': cfg['study_id'], 'config_sha256': CONFIG_SHA256,
+        'session': session.isoformat(), 'authority': 'research_normalization_only',
+        'historical_availability_proven': False, 'market_outcomes_computed': False,
+        'source_evidence_class': 'availability_time_unproven',
+        'availability': 'AVAILABLE', 'reason': None,
+        'prior_session': None, 'prior_close': None, 'prior_atr': None,
+        'atr_sessions': 0, 'beta_available': False, 'beta': None,
+        'beta_raw': None, 'beta_pairs': 0, 'beta_reason': None,
+    }
+    if price_basis != 'adjusted':
+        report.update(availability='UNAVAILABLE', reason='price_basis_mismatch')
+        return report
+    if not is_session(session):
+        report.update(availability='UNAVAILABLE', reason='not_trading_session')
+        return report
+    prior = session_n_back(session, 1)
+    report['prior_session'] = None if prior is None else prior.isoformat()
+
+    # Beta uses only adjacent scheduled prior-session close pairs; missing rows
+    # skip that pair rather than bridging across a data gap.
+    beta_lookback = int(cfg['beta_lookback_sessions'])
+    beta_days = [session_n_back(session, n) for n in range(beta_lookback + 1, 0, -1)]
+    beta_days = [d for d in beta_days if d is not None]
+    stock_r: list[float] = []
+    bench_r: list[float] = []
+    for left, right in zip(beta_days, beta_days[1:]):
+        sl, sr = stock.get(left), stock.get(right)
+        ql, qr = benchmark.get(left), benchmark.get(right)
+        if not all(x is not None for x in (sl, sr, ql, qr)):
+            continue
+        stock_r.append(sr['close'] / sl['close'] - 1.0)
+        bench_r.append(qr['close'] / ql['close'] - 1.0)
+    report['beta_pairs'] = len(stock_r)
+    beta_min = int(cfg['beta_minimum_sessions'])
+    if len(stock_r) >= beta_min:
+        mx = sum(stock_r) / len(stock_r)
+        mq = sum(bench_r) / len(bench_r)
+        denom = sum((q - mq) ** 2 for q in bench_r)
+        if denom > 0:
+            raw = sum((sret - mx) * (q - mq) for sret, q in zip(stock_r, bench_r)) / denom
+            lo, hi = map(float, cfg['beta_clip'])
+            report.update(beta_available=True, beta_raw=raw, beta=max(lo, min(hi, raw)))
+        else:
+            report['beta_reason'] = 'zero_benchmark_variance'
+    else:
+        report['beta_reason'] = 'insufficient_prior_beta_pairs'
+
+    atr_n = int(cfg['atr_lookback_sessions'])
+    atr_days = [session_n_back(session, n) for n in range(atr_n + 1, 0, -1)]
+    if any(d is None for d in atr_days) or any(d not in stock for d in atr_days):
+        report.update(availability='UNAVAILABLE', reason='incomplete_prior_atr_window')
+        return report
+    assert prior is not None
+    report['prior_close'] = stock[prior]['close']
+    true_ranges: list[float] = []
+    for left, right in zip(atr_days, atr_days[1:]):
+        previous_close = stock[left]['close']
+        row = stock[right]
+        true_ranges.append(max(row['high'] - row['low'],
+                               abs(row['high'] - previous_close),
+                               abs(row['low'] - previous_close)))
+    if len(true_ranges) != atr_n or any((not math.isfinite(x) or x <= 0) for x in true_ranges):
+        report.update(availability='UNAVAILABLE', reason='invalid_prior_atr_window')
+        return report
+    report['atr_sessions'] = atr_n
+    report['prior_atr'] = sum(true_ranges) / atr_n
+    return report
+
+
 def construct_session(
     frame: pd.DataFrame, *, symbol: str, session: date, prior_session: date | None,
     prior_close: float, prior_atr: float, asof: datetime, config_bytes: bytes,
