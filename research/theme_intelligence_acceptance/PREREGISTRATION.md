@@ -1,11 +1,11 @@
 # Theme Intelligence Lane F — Independent Acceptance Preregistration
 
-**Operation:** `theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001`  
-**Lane:** F — Evaluation and Independent Acceptance  
-**Integration lead:** Lane A  
-**Frozen source subject:** Macro `68f80a8edf78966a3a89e1294038654944e9c217`  
-**Procedure pin:** Mastermind `9e796168b467c17d9853f139c4e4a6ccdf3a3a87`  
-**Registration state:** `PREREGISTERED_SOURCE_ACCEPTANCE`  
+**Operation:** `theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001`
+**Lane:** F — Evaluation and Independent Acceptance
+**Integration lead:** Lane A
+**Frozen source subject:** Macro `68f80a8edf78966a3a89e1294038654944e9c217`
+**Procedure pin:** Mastermind `9e796168b467c17d9853f139c4e4a6ccdf3a3a87`
+**Registration state:** `PREREGISTERED_SOURCE_ACCEPTANCE`
 **Parameter fits / searched configurations:** `0 / 0`
 
 ## 1. Observable outcome
