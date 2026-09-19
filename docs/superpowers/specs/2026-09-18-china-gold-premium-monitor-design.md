@@ -91,6 +91,27 @@ the canonical method and stays unavailable until its own entitled mapping exists
 stale proxy sources fail closed; futures, ETFs, Yahoo, or unofficial web quotes remain forbidden
 substitutes.
 
+### Official canonical activation gate
+
+The official canonical method is intentionally darker than the close proxy until both benchmark
+legs have commercial-use entitlement. Public visibility is not entitlement:
+
+- Shanghai Gold Exchange states that its real-time, delayed, and historical trading information
+  is operated through its licensed market-data regime and may not be disseminated, operated, or
+  used without permission of SGE or its Information Company
+  (`https://en.sge.com.cn/data_Licensed`).
+- LBMA states that the LBMA Gold Price is administered by ICE Benchmark Administration and that
+  commercial valuation/pricing, transaction/reference, and redistribution uses can require an
+  IBA usage licence; benchmark data is distributed directly by IBA or licensed redistributors
+  (`https://www.lbma.org.uk/prices-and-data/lbma-gold-price`,
+  `https://developer.ice.com/fixed-income-data-services/catalog/lbma-gold-price`).
+
+Therefore neither the SGE public delayed page nor the LBMA next-day/delayed page may be promoted
+into the canonical product feed merely because it is web-accessible. Canonical activation requires
+an accepted SGE benchmark-data entitlement, an accepted IBA/LBMA usage/data entitlement, and
+provider refs wired into the existing store contract. Until then the canonical method remains
+honestly unavailable while the separately labelled close proxy may operate.
+
 ### Production-path proof receipt
 
 Every normal nightly commodity build is followed, in the existing builder band, by a read-only
@@ -117,9 +138,11 @@ Post-merge acceptance uses the same checker with an explicit completion gate:
 This mode exits nonzero unless the Shanghai-close proxy is the selected fresh method, the rendered
 panel and incumbent machine projection both match the engine, both the 5-session average and
 30-session range are ready, and both close-proxy raw artifacts are bound to their canonical Data
-OS ids with non-zero rows, SHA-256s, and the same selected-source timestamp. The scheduled nightly
-keeps honest unavailability nonfatal; only the explicit acceptance invocation requires full live
-readiness.
+OS ids with non-zero rows and SHA-256s, and both raw artifacts must contain the exact
+selected-source timestamp. A global raw file may have later unmatched observations during a
+China-only closure; promotion is bound to the selected aligned row rather than falsely requiring
+both files' latest rows to be identical. The scheduled nightly keeps honest unavailability
+nonfatal; only the explicit acceptance invocation requires full live readiness.
 
 The 5-session average is emitted only after five aligned observations exist, and the 30-session
 range only after thirty. Until then those statistics are null/“—” rather than mislabeled
@@ -134,10 +157,10 @@ registry's own truth rule.
 
 Promotion evidence is artifact-bound, not inferred from a green UI alone. The production quality
 receipt includes one SGE and one global-source artifact record with stable dataset id,
-repo-relative path, row count, SHA-256, and latest observation timestamp. The promotion-ready bit
-remains false unless both artifacts are present and non-empty, their hashes are bound, and their
-latest timestamp matches the close-proxy headline that was also proven through the page and
-machine projection.
+repo-relative path, row count, SHA-256, latest observation timestamp, and a boolean proving the selected
+headline timestamp exists in that artifact. The promotion-ready bit remains false unless both
+artifacts are present and non-empty, their hashes are bound, and both contain the close-proxy
+headline observation that was also proven through the page and machine projection.
 
 ## Engine boundary
 

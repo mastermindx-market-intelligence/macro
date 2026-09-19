@@ -89,7 +89,11 @@ def _iso_utc(value) -> str | None:
     return ts.isoformat()
 
 
-def _close_proxy_source_artifacts(premium_cfg: dict) -> list[dict]:
+def _close_proxy_source_artifacts(
+    premium_cfg: dict,
+    *,
+    selected_asof: str | None = None,
+) -> list[dict]:
     """Bind the configured close-proxy raw stores to the production receipt."""
     close_cfg = (
         premium_cfg.get("close_proxy")
@@ -139,6 +143,22 @@ def _close_proxy_source_artifacts(premium_cfg: dict) -> list[dict]:
             if frame is not None and not frame.empty
             else None
         )
+        selected_asof_present = None
+        if selected_asof is not None:
+            selected_asof_present = False
+            if frame is not None and not frame.empty:
+                try:
+                    target = pd.Timestamp(selected_asof)
+                    if target.tzinfo is None:
+                        target = target.tz_localize("UTC")
+                    else:
+                        target = target.tz_convert("UTC")
+                    observed = pd.DatetimeIndex(
+                        pd.to_datetime(frame.index, errors="coerce", utc=True)
+                    )
+                    selected_asof_present = bool(target in observed)
+                except (TypeError, ValueError, OverflowError):
+                    selected_asof_present = False
         digest = None
         if exists and path is not None:
             try:
@@ -159,6 +179,7 @@ def _close_proxy_source_artifacts(premium_cfg: dict) -> list[dict]:
                 "rows": rows,
                 "sha256": digest,
                 "asof": asof,
+                "selected_asof_present": selected_asof_present,
             }
         )
     return artifacts
@@ -422,11 +443,10 @@ def live_ready_violations(
                     ch not in "0123456789abcdef" for ch in digest.lower()
                 ):
                     blockers.append(f"source artifact {role} sha256 is not bound")
-                artifact_asof = str(item.get("asof") or "")
-                if artifact_asof != source_asof:
+                if item.get("selected_asof_present") is not True:
                     blockers.append(
-                        f"source artifact {role} asof {artifact_asof or 'none'} "
-                        f"does not match headline {source_asof or 'none'}"
+                        f"source artifact {role} does not contain headline "
+                        f"asof {source_asof or 'none'}"
                     )
     if required_method is not None:
         method = str(doc.get("headline_method") or "none")
@@ -475,7 +495,10 @@ def run(
         vm,
         html,
         machine_projection=machine_projection,
-        source_artifacts=_close_proxy_source_artifacts(premium_cfg),
+        source_artifacts=_close_proxy_source_artifacts(
+            premium_cfg,
+            selected_asof=(vm.get("close_proxy") or {}).get("asof"),
+        ),
     )
 
     if doc["status"] == "render_mismatch":

@@ -991,6 +991,7 @@ def _promotion_source_artifacts_for_audit():
             "rows": 30,
             "sha256": "a" * 64,
             "asof": "2026-09-18T07:30:00+00:00",
+            "selected_asof_present": True,
         },
         {
             "role": "global",
@@ -1000,6 +1001,7 @@ def _promotion_source_artifacts_for_audit():
             "rows": 30,
             "sha256": "b" * 64,
             "asof": "2026-09-18T07:30:00+00:00",
+            "selected_asof_present": True,
         },
     ]
 
@@ -1397,3 +1399,46 @@ def test_gold_premium_live_ready_close_proxy_requires_bound_source_artifacts(
     )
 
     assert rc == 3
+
+
+def test_dataos_promotion_allows_newer_unmatched_global_rows_when_headline_row_is_bound():
+    from scripts import audit_china_gold_premium as audit
+
+    headline = "2026-09-18T07:30:00+00:00"
+    doc = {
+        "status": "available_fresh",
+        "render_consistent": True,
+        "machine_projection_consistent": True,
+        "stats_5_ready": True,
+        "stats_30_ready": True,
+        "headline_method": "close_proxy",
+        "source_asof": headline,
+        "source_artifacts": [
+            {
+                "role": "sge",
+                "dataset_id": "commodity.gold.sge_au9999.close",
+                "exists": True,
+                "rows": 30,
+                "sha256": "a" * 64,
+                "asof": headline,
+                "selected_asof_present": True,
+            },
+            {
+                "role": "global",
+                "dataset_id": "commodity.gold.xaucny.close_ref",
+                "exists": True,
+                "rows": 31,
+                "sha256": "b" * 64,
+                # Global gold/CNY may have a newer raw bar on a China-only holiday.
+                "asof": "2026-09-21T07:30:00+00:00",
+                "selected_asof_present": True,
+            },
+        ],
+    }
+
+    assert audit.live_ready_violations(
+        doc,
+        required_method="close_proxy",
+        require_machine_projection=True,
+        require_source_artifacts=True,
+    ) == []

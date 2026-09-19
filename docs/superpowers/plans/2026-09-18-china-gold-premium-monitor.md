@@ -87,6 +87,10 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
   370-day full-history horizon; explicit full-history runs remain available for deeper backfill;
 - leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its
   own entitled mapping exists;
+- treats public delayed SGE/LBMA pages as reference evidence only, never as a commercial feed:
+  SGE requires permission/licensed market-data distribution for use/dissemination, and LBMA/IBA
+  requires the applicable benchmark usage/data licence for commercial use; canonical activation
+  therefore waits for accepted SGE + IBA entitlements and reuses the existing store plane;
 - remains display/context-only and cannot rank, size, gate, allocate, or originate trades.
 
 Production proof for this slice is the normal post-merge nightly source accrual followed by
@@ -123,9 +127,11 @@ The exact post-merge acceptance command is:
 That command exits nonzero unless the Shanghai-close proxy is the selected fresh method, the
 rendered panel and machine projection both match the engine, both the 5-session average and
 30-session range are honestly available, and the two raw source artifacts are present with bound
-Data OS ids, non-zero rows, valid SHA-256s, and timestamps matching the selected close-proxy
-headline. The normal nightly continues to accept an honest unavailable receipt; only the explicit
-acceptance invocation turns source/history/artifact readiness into a completion gate.
+Data OS ids, non-zero rows, valid SHA-256s, and proof that each artifact contains the exact
+observation timestamp selected by the close-proxy headline. A raw global artifact may legitimately
+contain newer unmatched rows during a China-only market closure; that does not invalidate the
+selected aligned observation. The normal nightly continues to accept an honest unavailable receipt;
+only the explicit acceptance invocation turns source/history/artifact readiness into a completion gate.
 
 The two raw source datasets already have stable Data OS ids declared as `PROPOSED`:
 `commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. After the first real
@@ -135,9 +141,9 @@ consistent too. Do **not** promote them before that live effect: the registry's 
 requires a produced store to exist on disk today and its accepted consumer projections to agree.
 
 The quality receipt binds that promotion proof to both raw artifacts. For each source role it
-records the stable Data OS id, repo-relative parquet path, row count, SHA-256, and latest
-observation timestamp. `close_proxy_dataos_promotion_ready=true` is impossible unless both SGE
-and global artifacts exist, contain rows, carry valid SHA-256 bindings, match the headline source
-timestamp, the machine projection is consistent, the close proxy is fresh, and 5-/30-session
-statistics are ready. Fixture-only proof therefore remains promotion-blocked unless it supplies
+records the stable Data OS id, repo-relative parquet path, row count, SHA-256, latest
+observation timestamp, and whether the selected headline observation exists in that artifact.
+`close_proxy_dataos_promotion_ready=true` is impossible unless both SGE and global artifacts
+exist, contain rows, carry valid SHA-256 bindings, contain the selected headline timestamp, the
+machine projection is consistent, the close proxy is fresh, and 5-/30-session statistics are ready. Fixture-only proof therefore remains promotion-blocked unless it supplies
 explicit artifact bindings.
