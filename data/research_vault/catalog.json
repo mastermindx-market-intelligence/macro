@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T03:25:56.756745+00:00",
-  "count": 2403,
+  "generated_at": "2026-09-19T04:55:30.222913+00:00",
+  "count": 2407,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -90,6 +90,26 @@
   ],
   "items": [
     {
+      "id": "marketdesk-btrg0bo0pyj-b0a692",
+      "title": "GS Coppola US Rates The Week That Was The Week That Will Be 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:53:29Z",
+      "summary_points": [
+        "Fed Rate Hike & Data Pressure: Fed hiked 25bp to 3.75–4.00%, with strong retail sales vs. soft housing; Treasury yields pressured by tightening expectations.",
+        "Next week’s PMIs, claims, and Treasury auctions critical for growth/rate outlook.",
+        "Geopolitical & Policy Curve Dynamics: Middle East tensions and Fed hawkishness (higher neutral rate, buyback program) anchor 15-20y sector, flattening curve; persistent inflation and borrowing costs key risks.",
+        "Hyperscaler Debt Crowding: $420B 2027 IG debt issuance (65-75% USD), 35% of hyperscalers’ CapEx debt-funded, creating structural long-end market crowding and reduced warehouse willingness."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fdbolpd0jhx-1b9510",
       "title": "Macro & Markets forecast edition",
       "institution": "Nordea",
@@ -153,6 +173,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-tuiqgam6dcw-77acdf",
+      "title": "Advisory Solutions Monthly Update Non Model September 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-19T01:25:08Z",
+      "summary_points": [
+        "Small-Cap Momentum: Russell 2000 +34.18% 1-year return outpaces MSCI ACWI IMI (+22.27%), signaling strong small-cap structural momentum and potential rotation opportunity.",
+        "U.S.",
+        "Value/Growth Shift: U.S.",
+        "value outperforms growth on rolling 5-year basis (rare since 2017), driven by software-led global equities (+2.79% Aug) and emerging markets (MSCI EM IMI +4.08%).",
+        "Fixed Income Yield Divergence: U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-elleqgdqjed-13383a",
       "title": "FSA FI Daily Commentary 18 September 2026",
       "institution": "Safra",
@@ -184,6 +225,25 @@
         "Global equity growth drivers: S&P 500 earnings up 25% YOY, Eurozone 15% YOY; AI investment as structural catalyst beyond tech giants, with cash inadequacy vs. inflation/taxes/longevity costs.",
         "AI-Driven Growth & Sector Exposure: Global AI capex to reach $900bn (2026) and $1.2tr (2027), extending to semiconductors, infrastructure, renewables, and healthcare innovation (oncology, cardiometabolic).",
         "Strategic Positioning: Prioritize Eurozone, Asia ex-Japan, and emerging markets for relative gains; avoid over-concentration, retaining single-stock positions only for targeted innovation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wqqqu8shu3u-cd8796",
+      "title": "Position for a commodity upcycle",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:52Z",
+      "summary_points": [
+        "Structural Demand Shifts: AI infrastructure, electrification, and energy transition drive sustained long-term demand for industrial metals (e.g., copper), with constrained supply and projected deficits supporting positive outlook despite near-term tariff volatility.",
+        "Energy Market Hedge Utility: Energy exposure effectively hedges supply uncertainty (Middle East risks, shipping normalization) and inflation spillovers, with robust demand underpinning medium-term gains amid Chinese import strength.",
+        "Active Catalyst Positioning: Portfolio managers should dynamically allocate across precious metals, energy, industrial metals, and agriculture to capture near-term catalysts (El Niño, AI-linked demand) while navigating geopolitical volatility."
       ],
       "tags": [],
       "tickers": [],
@@ -230,6 +290,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rzmjzsnwg59-8ce4ef",
+      "title": "Daily US",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:48Z",
+      "summary_points": [
+        "Cash Return Fundamentals: Long-run pretax real cash return estimated at 0.7%—insufficient to offset inflation/taxation, challenging cash allocation strategies amid sustained high rates.",
+        "Geopolitical & Energy Risks: Middle East conflict (7th month), Brent crude >$100, and energy supply crunch pose near-term volatility; historical data confirms long-term investing resilience outweighs temporary drawdown costs.",
+        "Central Bank Policy Shifts: BoJ hiked rates to 1.25% (highest since 1995) amid 2.1% underlying inflation; BoE signaled 25bps hike despite current hold, reflecting global tightening cycle.",
+        "Risk Asset Valuation & Technicals: S&P 500 forward P/E at 19.1x (vs trailing 22.6x) signals robust earnings growth; steepening Treasury curve (2Y +1.0% vs 10Y flat) favors risk assets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
