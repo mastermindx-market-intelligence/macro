@@ -591,19 +591,38 @@ function tickLoopElapsed() {
 
 function renderSidebar() {
   const nav = $("#sidenav"); if (!nav) return; nav.innerHTML = "";
+  const finder = h(`<label class="nav-finder"><input type="search" id="navSearch" placeholder="Find an admin page…" autocomplete="off" aria-label="Find an admin page"></label>`);
+  const empty = h(`<div class="nav-empty" id="navEmpty">No matching pages</div>`);
+  nav.appendChild(finder);
   NAV_GROUPS.forEach(g => {
-    const grp = h(`<div class="nav-group"></div>`);
+    const grp = h(`<div class="nav-group" data-nav-group></div>`);
     if (g.label) grp.appendChild(h(`<div class="eyebrow">${esc(g.label)}</div>`));
     g.items.forEach(([id, label]) => {
-      const it = h(`<div class="nav-item" data-tab="${id}">${ICONS[id] || ""}<span>${esc(label)}</span></div>`);
+      const it = h(`<div class="nav-item" data-tab="${id}" data-nav-label="${esc(label.toLowerCase())}" tabindex="0" role="button">${ICONS[id] || ""}<span>${esc(label)}</span></div>`);
       if (id === CURRENT) it.classList.add("active");
       it.addEventListener("pointerenter", () => scheduleTabPrefetch(id), { passive: true });
       it.addEventListener("pointerleave", cancelTabPrefetch, { passive: true });
       it.addEventListener("focusin", () => prefetchTab(id));
       it.onclick = () => go(id);
+      it.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(id); } };
       grp.appendChild(it);
     });
     nav.appendChild(grp);
+  });
+  nav.appendChild(empty);
+  const input = $("#navSearch");
+  if (input) input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase(); let visible = 0;
+    nav.querySelectorAll("[data-nav-group]").forEach(grp => {
+      let n = 0;
+      grp.querySelectorAll(".nav-item").forEach(item => {
+        const match = !q || (item.dataset.navLabel || "").includes(q);
+        item.style.display = match ? "" : "none";
+        if (match) { visible++; n++; }
+      });
+      grp.style.display = n ? "" : "none";
+    });
+    empty.style.display = visible ? "none" : "block";
   });
 }
 function setActiveNav(id) {
@@ -650,6 +669,23 @@ async function refreshSupportNavDot() {
 }
 function setTopbarTitle(t) { const el = $("#topbar-title"); if (el) el.textContent = t; }
 
+function setSidebarOpen(open) {
+  const sidebar = $("#sidebar"), scrim = $("#sidebarScrim"), toggle = $("#sidebarToggle");
+  if (!sidebar || !scrim || !toggle) return;
+  const next = !!open;
+  sidebar.classList.toggle("open", next); scrim.classList.toggle("show", next);
+  document.body.classList.toggle("nav-open", next);
+  toggle.setAttribute("aria-expanded", next ? "true" : "false");
+  toggle.setAttribute("aria-label", next ? "Close navigation" : "Open navigation");
+}
+function wireSidebarDrawer() {
+  const toggle = $("#sidebarToggle"), scrim = $("#sidebarScrim");
+  if (toggle) toggle.onclick = () => setSidebarOpen(!$("#sidebar").classList.contains("open"));
+  if (scrim) scrim.onclick = () => setSidebarOpen(false);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") setSidebarOpen(false); });
+  window.matchMedia("(min-width: 901px)").addEventListener("change", e => { if (e.matches) setSidebarOpen(false); });
+}
+
 function go(id) {
   if (currentLobeId() || currentEngineId() || currentMktDept() || currentAnalyticsDetail() || currentTicketId()) history.replaceState(null, "", location.pathname + location.search);
   CURRENT = id;
@@ -659,6 +695,7 @@ function go(id) {
   hideLobeTip();
   setActiveNav(id);
   setTopbarTitle(TAB_LABELS[id] || id);
+  if (window.matchMedia("(max-width: 900px)").matches) setSidebarOpen(false);
   RENDER[id]();
 }
 
@@ -15905,6 +15942,7 @@ function startTableObserver() {
 
 async function boot() {
   renderSidebar();
+  wireSidebarDrawer();
   startTableObserver();
   await refresh();
   route();
