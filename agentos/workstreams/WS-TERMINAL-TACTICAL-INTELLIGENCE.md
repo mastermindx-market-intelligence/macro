@@ -29,6 +29,7 @@ decisions:
 - DEC:TERMINAL-TACTICAL-R1A-DISPOSITION
 - DEC:TERMINAL-TACTICAL-TOP-SIDE-BOUNDARY
 - DEC:TERMINAL-TACTICAL-MINUTE-EVIDENCE-CLASS
+- DEC:TERMINAL-TACTICAL-SYNTHETIC-CONSTRUCTION-CONTINUE
 discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 - DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
@@ -53,7 +54,7 @@ waves:
   status: in_progress
   depends_on:
   - D0
-  next_action: 'Macro #7270 current head b73f1c7bf13aa386fb11c4fdce762b999e91eae7 fixes the one R1-A-owned hosted red: the research CLI now uses the repository-required unconditional sys.path[0] pin. Local proof: targeted pin+tactical slice 43 passed; full script-import-pinning suite 11 passed; compile/diff clean. The previous current-main reconciliation proved the R1-A engine/tests/spec and 84-cell identity intact; hosted packs 7 and 11 were independently traced to unrelated Market Ontology and stock-dashboard receipt failures and are lane-external. Fresh current-head CI and requested independent review from MastermindX1 remain gates. R1-B v4 is the only runnable prereg on #7274: freeze commit 4db8d0edc63997f7f7944c3b35ac04709461b810, 60 cells, registered=false, outcomes_opened=false. V1-v3 are DO_NOT_RUN; v4 preserves every market threshold/latency/control while removing contradictory event-uniqueness and LOD-anchor machine fields. Registration still waits on the R1-A shared-source/review gate; no R1-A threshold rescue.'
+  next_action: "R1-B v4 now has executable synthetic construction on #7274 at f6738dffff1516216b552d426f956f8f6551248d: strict fresh-low/forming candidates, chronological reclaim/continuation/expiry, independent selectors, separate candidate/episode lows and entry clocks with five-minute latency, plus a synthetic JSON/Markdown consumer. Forty new tests; detector suite 192 passed; full Radar 1520 passed/3 skipped; import-pinning 11 passed. Frozen v4 hashes unchanged; R1-B registered cells 0, market reads/outcomes 0, TrialLedger unchanged. DEC:TERMINAL-TACTICAL-SYNTHETIC-CONSTRUCTION-CONTINUE narrows the former all-code hold to empirical/shared-source and release gates. #7270 head b73f1c7bf13aa386fb11c4fdce762b999e91eae7 and independent review remain unresolved; receive review then register all 60 cells before market outcomes. Do not rebuild this constructor or retune R1-A."
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
@@ -101,6 +102,7 @@ do_not_redo:
 - 'R1-A registration, implementation and corrected-history result are already on Macro #7270. Do not rerun the unchanged 84-cell grid or relax its thresholds after seeing outcomes; consume TTI_R1A_REPORT.md and DEC:TERMINAL-TACTICAL-R1A-DISPOSITION.'
 - 'A bounded minute ambiguity resolver already exists on Macro #7275. Do not build another minute resolver, minute store or fetch plane; qualify and consume the existing Radar-owned seam if the PR is accepted.'
 - 'MinuteBar.knowable_at is a mathematical bar-close clock, not source arrival. Never promote current VendorMinuteReader history to as-observed evidence without an actual archived availability receipt; see DEC:TERMINAL-TACTICAL-MINUTE-EVIDENCE-CLASS.'
+- "R1-B v4 synthetic constructor, 40-case causal test expansion and synthetic explanation consumer are already on #7274 at f6738dffff1516216b552d426f956f8f6551248d. Consume their evidence; do not rewrite them, modify frozen v4 thresholds or claim synthetic counts as trading accuracy."
 artifacts:
 - terminal:docs/research/TERMINAL_TACTICAL_D0_EVIDENCE_2026-09-17.md
 - terminal:docs/research/TERMINAL_TACTICAL_D0_CONTRACT.md
@@ -111,7 +113,7 @@ artifacts:
 - research/species/TTI_R1A_REPORT.md
 - research/species/tti_r1/RESULT.json
 - research/species/tti_r1/REGISTRATION_RECEIPT.json
-next_action: 'Consume #7270 head b73f1c7bf13aa386fb11c4fdce762b999e91eae7 fresh hosted checks and requested independent review; the owned pack-10 defect is repaired locally, while packs 7/11 are unrelated shared reds. Keep #7274 v4 unregistered until that shared-source/review gate clears, then append its frozen 60-cell grid before any outcome read and implement test-first against the exact v4 hashes; never execute v1-v3. D1 #7275 is now wired for natural current-RTH client-arrival proof through the existing Radar health path; wait for a real RTH receipt rather than manufacturing one. Consume #595/#601 when their incumbent owners move. Intraday top/HOD remains a later separate preregistration. No Executive prerequisite, live scan, or validated edge is claimed.'
+next_action: "Review #7274 construction head f6738dffff1516216b552d426f956f8f6551248d and reconcile #7270 shared-source/review gates. Once lawful, append the unchanged v4 60-cell budget to the existing TrialLedger before market-outcome execution, then build the empirical qualified-input/outcome/matching consumer. Synthetic constructor and replay explanation are already built; no matching estimates, return/LOD labels or probabilities are yet computed. #7275 arrival receipt/health projection is already built and still owes natural live-source proof. #595 retains refresh custody, #601 release review remains separate. No new approval, Executive reconnection, repeated census or duplicate detector/store."
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
