@@ -483,6 +483,22 @@ main {
 .sub  { color: var(--muted); font-size: 12px; }
 .muted { color: var(--muted); }
 
+.tech-details {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.tech-details summary {
+  display: inline-block;
+  cursor: pointer;
+  color: var(--faint);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+.tech-details[open] summary { margin-bottom: 4px; }
+
 .section {
   margin: 24px 0 10px;
   font-size: 15px;
