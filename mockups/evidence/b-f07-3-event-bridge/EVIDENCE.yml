@@ -29,8 +29,8 @@ capture: |
   captured sequentially from the committed host with Chromium at dark/light,
   EN/ZH, desktop=1440x900 and mobile=390x844, with a 200ms settle after the
   data-theme/data-lang stamp. Screenshots contain only #va-event-bridge.
-  At code head bd25f0f801c5, the hosts were refreshed again to the rendered
+  At code head 3923b693d367, the hosts were refreshed again to the rendered
   output of the template's single t() convention; the visible sentence,
   typography, host states, and screenshot geometry were unchanged.
-captured_at: 2026-09-19T03:22Z
-resolved_sha_or_none: bd25f0f801c50f90bbfadb45487b9bafe0b124f5
+captured_at: 2026-09-19T03:41Z
+resolved_sha_or_none: 3923b693d367e9287c7b76e2aa91becc2bebd64a
