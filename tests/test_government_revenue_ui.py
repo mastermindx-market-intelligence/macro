@@ -503,7 +503,7 @@ def test_company_ticker_filmstrip_stays_honest_and_routes_to_the_right_dossier()
         'data-filmstrip-ticker',
         'type="button" class="company-ticker',
         'aria-label="',  # buttons receive a full ticker, state, and destination label at render.
-        'Evidence linked',
+        'Company link found',
         'Issuer path verified',
         'Link pending',
         'Company file',
