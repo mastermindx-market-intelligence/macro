@@ -3390,14 +3390,15 @@ function nwSectionFactorIntelligence(fi) {
     <div class="kv"><span>Enabled</span><b style="color:var(--${attColor})">${fa.granted ? "yes" : "no"}</b></div>
     <div class="kv"><span>Signals</span><b>${fa.n_firings != null ? fa.n_firings : "—"}</b></div>
     <div class="kv"><span>Reviewed</span><b>${fa.n_graded != null ? fa.n_graded : "—"}</b></div>
-    <div class="note muted" style="margin-top:4px">${esc(fa.reason || "")}</div>`);
+    ${fa.reason ? `<details class="tech-details"><summary>Why</summary>${esc(fa.reason)}</details>` : ""}`);
 
   // Hypotheses block card
   const hyp = fi.hypotheses || {};
   const hypEntries = ["h1","h2","h3","h4","h5"].map(hi => {
     const s = (hyp[hi] || {}).status || "not-visible-in-tree";
     const chipCls = s === "gate-passed" ? "s-ok" : s === "accruing" ? "s-warn" : "s-mut";
-    return `<div class="kv"><span>${hi.toUpperCase()}</span><b>${nwPill("BH-WITHHELD", "s-bad")} ${nwPill(s, chipCls)}</b></div>`;
+    const statusWord = s === "gate-passed" ? "ready for review" : s === "accruing" ? "collecting evidence" : "research only";
+    return `<div class="kv"><span>${hi.toUpperCase()}</span><b>${nwPill(statusWord, chipCls)}</b></div>`;
   }).join("");
   html += card("Research hypotheses", `
     ${hypEntries}
@@ -3442,23 +3443,23 @@ function nwIndependenceCard(indep) {
   // same >=2 measurable floor as the committee chip: a 1-engine PR is trivially 1.0
   const eilStr = (eil != null && measurable != null && measurable >= 2) ? Number(eil).toFixed(1) : "—";
   const coverageStr = (measurable != null && total != null)
-    ? `${measurable} / ${total} engines measurable${measurable < 2 ? " — accruing" : ""}`
-    : (available ? "accruing" : "spine not yet written");
-  const pctileStr = (pctile != null) ? ` · ${(pctile * 100).toFixed(0)}th pctile vs null` : "";
+    ? `${measurable} / ${total} engines measurable${measurable < 2 ? " — collecting history" : ""}`
+    : (available ? "collecting history" : "not available yet");
+  const pctileStr = (pctile != null) ? ` · ${(pctile * 100).toFixed(0)}th percentile vs baseline` : "";
   const sameBetHtml = (indep.same_bet_warning)
     ? `<div class="note" style="color:var(--warn);margin-top:4px">Same-bet warning: ${esc(indep.same_bet_warning.text || indep.same_bet_warning.message || "active")}</div>` : "";
-  const caveat = `<span class="sub" style="font-style:italic">Descriptive only — not gauntleted (F-ORTH-1)</span>`;
+  const caveat = `<span class="sub" style="font-style:italic">Descriptive only · not used for live authority</span>`;
   return `<div class="card" style="margin-bottom:10px;padding:10px 14px">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <div>
-        <div class="eyebrow">Independent witnesses (R-ORTH)</div>
+        <div class="eyebrow">Independent evidence</div>
         <div style="font-size:22px;font-weight:700;letter-spacing:-.02em">${esc(eilStr)}</div>
         <div class="sub">${esc(coverageStr)}${esc(pctileStr)}</div>
       </div>
       <div style="flex:1;min-width:200px;font-size:12px;line-height:1.5;color:var(--fg2)">
-        Estimates how many of the ${total != null ? total : "?"} active engines fire on unrelated information.
-        Based on participation-ratio of the engine co-firing correlation matrix (≥30 active-weeks floor).
+        Estimates how many active engines are contributing meaningfully different evidence.
         ${caveat}
+        <details class="tech-details"><summary>Method</summary>Participation-ratio of the engine co-firing correlation matrix · minimum 30 active weeks.</details>
       </div>
     </div>
     ${sameBetHtml}
