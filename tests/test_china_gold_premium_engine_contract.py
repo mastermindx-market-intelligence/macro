@@ -478,23 +478,17 @@ def test_gold_premium_quality_audit_reads_real_store_vm_and_page(tmp_path, monke
         f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
     )
 
-    # Freeze the audit clock only through the engine's source freshness inputs:
-    # the stored rows are 2026 fixtures, so call write_receipt through a direct VM
-    # after proving run()'s exact store/page seams above.
-    doc = audit.write_receipt(
-        vm,
-        site_root.joinpath("commodities.html").read_text(),
-        out_path=data_root / "quality" / "china_gold_premium.json",
-        checked_at="2026-09-18T12:00:00+00:00",
-    )
+    rc = audit.run(strict_render=True)
 
     persisted = json.loads(
         (data_root / "quality" / "china_gold_premium.json").read_text()
     )
-    assert doc["status"] == "available_fresh"
+    assert rc == 0
+    assert persisted["status"] == "available_fresh"
     assert persisted["headline_method"] == "close_proxy"
     assert persisted["render_consistent"] is True
     assert persisted["source_asof"] == "2026-09-18T07:30:00+00:00"
+    assert persisted["official_canonical_available"] is False
 
 
 def test_gold_premium_quality_receipt_detects_stale_rendered_asof_or_value(tmp_path):
@@ -552,7 +546,13 @@ def test_gold_premium_quality_receipt_preserves_method_separation(tmp_path):
         "current_method": "close_proxy",
         "premium_pct": 0.1674,
         "price_currency": "CNY",
-        "chart": {"display_source": "proxy"},
+        "stats": {"avg_5": 0.12, "range_30": [-0.4, 0.5]},
+        "chart": {
+            "display_source": "proxy",
+            "proxy": [{"date": f"2026-08-{i:02d}"} for i in range(1, 31)],
+            "canonical": [],
+            "intraday": None,
+        },
         "canonical": {
             "available": False,
             "fresh": False,
@@ -599,3 +599,6 @@ def test_gold_premium_quality_receipt_preserves_method_separation(tmp_path):
         "asof": "2026-09-18T07:30:00+00:00",
     }
     assert doc["official_canonical_available"] is False
+    assert doc["history_points"] == 30
+    assert doc["stats_5_ready"] is True
+    assert doc["stats_30_ready"] is True

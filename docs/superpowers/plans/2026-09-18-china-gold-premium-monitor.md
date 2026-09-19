@@ -79,8 +79,10 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
 - runs in the existing authoritative nightly collector lane (no new scheduler);
 - fetches SGE Au99.99 trade-date close and close-aligned global XAU/CNY only;
 - cold-starts with 90 calendar days (enough depth for honest 30-session statistics in normal
-  trading calendars), then refreshes a bounded 14-day overlap nightly; explicit full-history
-  runs remain available for deeper backfill;
+  trading calendars), then refreshes a bounded 14-day overlap nightly; if either raw leg falls
+  outside that overlap the next run automatically expands to cover the whole observed gap plus
+  overlap, bounded by the 370-day full-history horizon; explicit full-history runs remain
+  available for deeper backfill;
 - leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its
   own entitled mapping exists;
 - remains display/context-only and cannot rank, size, gate, allocate, or originate trades.
@@ -97,5 +99,12 @@ attributes on the actual rendered Gold panel, and writes
 also preserves availability/freshness separately for canonical, intraday, and close-proxy
 methods so a live proxy can never be mistaken for official-benchmark coverage. Source
 unavailability is an honest green receipt; a source→VM→render mismatch is a visible builder
-failure receipt. This receipt is observability/proof only and creates no new lifecycle or
-scoring authority.
+failure receipt. The same audit runs again in the existing engine-output commit script
+after site-wide normalization and immediately before the broad stage, overwriting the same receipt
+so production proof binds to the exact HTML tree that will be committed. This receipt is
+observability/proof only and creates no new lifecycle or scoring authority.
+
+After the first real nightly successfully lands both `data/gold_china_basis/*.parquet` files,
+closeout must add truthful Data OS registry contracts for those now-existing stores. Do **not**
+pre-mark them `PRODUCED` before that live effect: the registry's honesty law requires a produced
+store to exist on disk today.

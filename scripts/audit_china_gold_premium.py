@@ -141,6 +141,15 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
             "asof": method.get("asof"),
         }
 
+    chart = vm.get("chart") or {}
+    if expected_source == "proxy":
+        history_points = len(chart.get("proxy") or [])
+    elif expected_source == "canonical":
+        history_points = len(chart.get("canonical") or [])
+    else:
+        history_points = 1 if chart.get("intraday") else 0
+    stats = vm.get("stats") or {}
+
     return {
         "schema": SCHEMA,
         "checked_at": checked_at,
@@ -163,6 +172,9 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
         "reason_code": vm.get("reason_code"),
         "official_canonical_available": methods["canonical"]["available"],
         "methods": methods,
+        "history_points": history_points,
+        "stats_5_ready": stats.get("avg_5") is not None,
+        "stats_30_ready": stats.get("range_30") is not None,
         "violations": violations,
     }
 

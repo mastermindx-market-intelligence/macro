@@ -1336,13 +1336,128 @@ def test_gold_basis_cold_start_seeds_enough_history_for_30_session_stats(monkeyp
     monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
     adapter = cgb.ChinaGoldBasisAdapter()
 
-    monkeypatch.setattr(adapter, "stored_series", lambda: [])
-    assert adapter._fetch_window_days(full_history=False) >= 90
+    from datetime import date
+
+    monkeypatch.setattr(cgb.store, "last_date", lambda group, name: None)
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) >= 90
 
     monkeypatch.setattr(
-        adapter,
-        "stored_series",
-        lambda: ["sge_au9999", "xaucny_spot"],
+        cgb.store,
+        "last_date",
+        lambda group, name: date(2026, 9, 18),
     )
-    assert adapter._fetch_window_days(full_history=False) == cgb._REFRESH_DAYS
-    assert adapter._fetch_window_days(full_history=True) == 370
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) == cgb._REFRESH_DAYS
+    assert adapter._fetch_window_days(
+        full_history=True,
+        today=date(2026, 9, 18),
+    ) == 370
+
+
+def test_gold_basis_refresh_recovers_a_long_store_gap(monkeypatch):
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: date(2026, 7, 1),
+    )
+
+    days = adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    )
+
+    assert days >= 90
+    assert days >= (date(2026, 9, 18) - date(2026, 7, 1)).days + 14
+
+
+def test_gold_basis_refresh_stays_bounded_when_store_is_current(monkeypatch):
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    latest = {
+        "sge_au9999": date(2026, 9, 17),
+        "xaucny_spot": date(2026, 9, 18),
+    }
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: latest[name],
+    )
+
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) == cgb._REFRESH_DAYS
+
+
+def test_gold_premium_quality_audit_rechecks_post_normalization_tree_before_stage():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / "scripts" / "ci" / "daily_engine_commit_outputs.sh").read_text()
+
+    optimize = 'python -m scripts.optimize_assets'
+    audit = 'python -m scripts.audit_china_gold_premium --strict-render'
+    stage = 'git add data/ site/ reports/'
+
+    assert optimize in text
+    assert audit in text
+    assert stage in text
+    strip = 'strip_conflict_markers.sh'
+    assert text.index(optimize) < text.index(strip) < text.index(audit) < text.index(stage)
+    assert 'China gold premium final render audit' in text
+
+
+def test_gold_basis_exact_massive_endpoint_probe_is_code_gated():
+    from scripts import massive_entitlement_probe as mep
+
+    class Resp:
+        status_code = 200
+
+        def json(self):
+            return {
+                "resultsCount": 1,
+                "results": [{"t": 1, "c": 30000.0}],
+            }
+
+    class Session:
+        def __init__(self):
+            self.headers = {}
+            self.calls = []
+
+        def get(self, url, params=None, timeout=None):
+            self.calls.append({"url": url, "params": params, "timeout": timeout})
+            return Resp()
+
+    session = Session()
+    prober = mep.RestProber(
+        "fixture-key",
+        base_url="https://api.massive.example",
+        session=session,
+    )
+    results = mep.run_rest_battery(prober, probe_day="2026-09-18")
+
+    exact = results["fx_gold_cny_minute"]
+    assert exact["verdict"] == "entitled"
+    calls = [
+        call for call in session.calls
+        if "C:XAUCNY/range/1/minute/2026-09-18/2026-09-18" in call["url"]
+    ]
+    assert len(calls) == 1
+    assert calls[0]["params"]["limit"] == 5

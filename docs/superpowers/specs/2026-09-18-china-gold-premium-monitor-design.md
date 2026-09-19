@@ -76,7 +76,10 @@ The indicative close-aligned source contract is:
   tolerance; the committed capability manifest records the FX probe as entitled;
 - raw legs persist under `gold_china_basis/` and are consumed only by this display engine;
 - a cold store seeds 90 calendar days before switching to the bounded nightly overlap, so a
-  rendered "30-session range" is not synthesized from a handful of observations.
+  rendered "30-session range" is not synthesized from a handful of observations;
+- if either persisted leg falls outside the normal overlap, the next run expands to cover the
+  observed gap plus overlap, capped at the full-history horizon, rather than leaving a hidden
+  discontinuity in the last-30-observation window.
 
 This amendment does not convert the proxy into the official benchmark. SHAUPM/LBMA-AM remains
 the canonical method and stays unavailable until its own entitled mapping exists. Missing or
@@ -94,12 +97,18 @@ plane and staged by the existing engine-output commit.
 The receipt distinguishes a valid unavailable state from an actual render-contract break:
 source absence/staleness does not fail the build, while disagreement in method, state, currency,
 source-asof, or headline premium between the engine and rendered panel is a strict audit
-violation. It records canonical/intraday/close-proxy availability separately. The receipt has
-no signal, ranking, lifecycle, retry, or publication authority.
+violation. It records canonical/intraday/close-proxy availability separately. A second audit pass
+runs in the existing engine-output commit script after site-wide normalization and immediately
+before staging, overwriting the same receipt so the final proof binds to the exact committed HTML
+tree. The receipt has no signal, ranking, lifecycle, retry, or publication authority.
 
 The 5-session average is emitted only after five aligned observations exist, and the 30-session
 range only after thirty. Until then those statistics are null/“—” rather than mislabeled
 short-history aggregates.
+
+Data OS registry promotion is intentionally post-live: once the normal nightly has actually landed
+the two `data/gold_china_basis/*.parquet` stores, closeout may register them as `PRODUCED`.
+Pre-declaring them before that effect would violate the registry's own truth rule.
 
 ## Engine boundary
 

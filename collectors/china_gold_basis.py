@@ -6,9 +6,10 @@ This adapter reuses two already-governed provider surfaces:
 * Massive/Polygon Currencies -> C:XAUCNY minute aggregates.
 
 It does not compute the premium. The product engine owns that calculation. The
-only timestamp synthesis here is explicit: the SGE daily close is stamped at
-15:30 Asia/Shanghai (=07:30 UTC) because the vendor's daily row is trade-date
-only while its documentation defines the day session through 15:30.
+only timestamp synthesis here is explicit: Tushare defines an SGE trade-date
+daily row across the prior-night 20:00-02:30 session plus the current
+09:00-15:30 session, so its final trade-date close is stamped at 15:30
+Asia/Shanghai (=07:30 UTC) for the like-clock global comparison.
 
 Massive data rights are governed by research/licenses/MASSIVE_ENTITLEMENT_RECORD.md.
 Tushare compliance is governed by
@@ -17,14 +18,14 @@ checks technical credential/access state only and does not recreate license gate
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 import numpy as np
 import pandas as pd
 
 from collectors import tushare_client
 from collectors.base import Adapter
-from lib import config
+from lib import config, store
 
 
 _SGE_CODE = "Au99.99"
@@ -162,15 +163,34 @@ class ChinaGoldBasisAdapter(Adapter):
             raise ValueError(f"{self.name}/{name}: all-NaN after cleaning")
         return out
 
-    def _fetch_window_days(self, *, full_history: bool) -> int:
-        """Bound first-run depth without paying the backfill cost every night."""
+    def _fetch_window_days(
+        self,
+        *,
+        full_history: bool,
+        today: date | None = None,
+    ) -> int:
+        """Bound normal refreshes while automatically healing a long source gap."""
         if full_history:
             return 370
-        required = {"sge_au9999", "xaucny_spot"}
-        return (
-            _REFRESH_DAYS
-            if required.issubset(set(self.stored_series()))
-            else _COLD_START_DAYS
+
+        today = today or datetime.now(timezone.utc).date()
+        latest = [
+            store.last_date(self.group, name)
+            for name in ("sge_au9999", "xaucny_spot")
+        ]
+        if any(value is None for value in latest):
+            return _COLD_START_DAYS
+
+        oldest = min(value for value in latest if value is not None)
+        gap_days = max(0, (today - oldest).days)
+        if gap_days <= _REFRESH_DAYS:
+            return _REFRESH_DAYS
+
+        # Re-cover the whole outage plus overlap, while keeping an accidental
+        # multi-year gap bounded to the explicit full-history horizon.
+        return min(
+            370,
+            max(_COLD_START_DAYS, gap_days + 14),
         )
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
@@ -180,7 +200,10 @@ class ChinaGoldBasisAdapter(Adapter):
             )
 
         now = datetime.now(timezone.utc)
-        days = self._fetch_window_days(full_history=full_history)
+        days = self._fetch_window_days(
+            full_history=full_history,
+            today=now.date(),
+        )
         start = (now - timedelta(days=days)).date()
         end = now.date()
 
