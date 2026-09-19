@@ -16146,7 +16146,7 @@ html[data-theme="light"] :is(
            way to REACH the typed Candidates-unavailable state (B5) — gating
            the toggle on `_su` would bake that state and then make it
            permanently unreachable. -#}
-        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between tonight's candidate screen and the plan book" data-tip-zh="在今晚的候选筛选与计划簿之间切换">
+        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between the candidate screen and the plan book" data-tip-zh="在候选筛选与计划簿之间切换">
           <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _su else 'false' }}" data-src="candidates"><span class="l-en">Candidates</span><span class="l-zh">候选</span></button>
           <button id="us-src-btn-plan" type="button" aria-selected="{{ 'false' if _su else 'true' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
         </span>
@@ -16565,8 +16565,8 @@ html[data-theme="light"] :is(
       {%- set _life_visible_locked = (life_gate_visible_locked if (life_gate_visible_locked is defined and life_gate_visible_locked is not none) else life_gate.locked) -%}
       <div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">{{ _life_visible_locked }} more plan rows on tonight's board</span>
-          <span class="l-zh">今晚榜单还有 {{ _life_visible_locked }} 条计划</span>
+          <span class="l-en">{{ _life_visible_locked }} more plan rows in the plan book</span>
+          <span class="l-zh">计划簿中另有 {{ _life_visible_locked }} 条计划</span>
         </div>
         <div class="us-tw-p">
           <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
@@ -16638,14 +16638,16 @@ html[data-theme="light"] :is(
              render as visible `<b>55</b>` text instead of bold. Either way,
              the rule is the same: never pass HTML into t()/td(); compose the
              bilingual twin explicitly instead, as below. -#}
-          <span class="mx-sec-total"><span class="l-en"><b>{{ _cand_total }}</b> screened tonight</span><span class="l-zh">本次筛出 <b>{{ _cand_total }}</b> 只</span></span>
+          {# The board's source date is not the page build date. A cached screen must never promise "tonight". #}
+          {% set _cand_asof = _su.get('as_of') %}
+          <span class="mx-sec-total"><span class="l-en"><b>{{ _cand_total }}</b> screened · {% if _cand_asof %}as of <time datetime="{{ _cand_asof }}">{{ _cand_asof }}</time>{% else %}date unavailable{% endif %}</span><span class="l-zh">筛出 <b>{{ _cand_total }}</b> 只 · {% if _cand_asof %}截至 <time datetime="{{ _cand_asof }}">{{ _cand_asof }}</time>{% else %}筛选日期不可用{% endif %}</span></span>
           <a class="mx-sec-link" href="discovery.html">{{ t('Open the screener', '打开筛选器') }}</a>
         </div>
         {#- P0 #6185 (C5): "the board above"/"上方看板" described the pre-#6076
            layout where the candidate grid sat directly under the Setups
            board. In Candidates mode there is no board above — reword to the
            Plans view this population feeds. -#}
-        <p class="mx-sec-note">{{ t('Names tonight’s screen surfaced. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.', '本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。') }}</p>
+        <p class="mx-sec-note">{{ t('Names surfaced by this dated screen. A candidate is not a setup: it becomes one only when a plan is written for it, which is what the Plans view counts.', '本次筛选出的股票。候选不等于计划：只有为它建立计划后，才会计入计划视图。') }}</p>
         {%- if gate %}
         {#- Repair round, finding B3: restores the honest-preview disclosure the
            old (retired) stage-filter bar carried as #us-gate-note — this
@@ -16654,7 +16656,7 @@ html[data-theme="light"] :is(
         <div class="us-gate-note" id="us-gate-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           <span class="l-en">You're seeing the first {{ gate.preview }} of {{ gate.total }} screened candidates. Sign in to see the full list.</span>
-          <span class="l-zh">当前显示今晚筛出的 {{ gate.total }} 只候选中的前 {{ gate.preview }} 只。登录后可查看完整名单。</span>
+          <span class="l-zh">当前显示本次筛出的 {{ gate.total }} 只候选中的前 {{ gate.preview }} 只。登录后可查看完整名单。</span>
         </div>
         {%- endif %}
         {%- if _sg.any %}
@@ -16689,8 +16691,8 @@ html[data-theme="light"] :is(
         {% if gate %}
         <div class="us-tier-wall" id="us-tier-wall">
           <div class="us-tw-h">
-            <span class="l-en">{{ gate.locked }} more names on tonight's board</span>
-            <span class="l-zh">今晚榜单还有 {{ gate.locked }} 只股票</span>
+            <span class="l-en">{{ gate.locked }} more names in this screen</span>
+            <span class="l-zh">本次筛选还有 {{ gate.locked }} 只股票</span>
           </div>
           <div class="us-tw-p">
             <span class="l-en">You're seeing the first {{ gate.preview }} of {{ gate.total }} names. Sign in to see the full ranked board, every entry stage, and the table view.</span>

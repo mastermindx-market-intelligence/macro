@@ -1992,8 +1992,9 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs subsectorohlc,subsectorohlc_nasdaq,subsectorohlc_russell || echo "::warning::subsectorohlc R2 restore failed (non-fatal — index_leadership skips loudly and keeps the last committed board)"
-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the
-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).
+      # Historical Aug-06 repair removed prefix restores from five breadth caches.
+      # Sep-16 completes Git authority: tracked US panels are not cache-restored
+      # by readers at all; the separate Russell and HK handoffs remain below.
       #
       # A prefix restore-key matches the newest cache under that prefix from ANY prior run,
       # so this job laid a stale parquet on top of the fresh one `collect` had committed
@@ -2024,21 +2025,10 @@ jobs:
       # key that collect saved. Keep that producer/consumer key byte-identical; the old
       # `russell-closes-engine-*` key was a guaranteed cold-runner miss and cut ~1,220 names
       # from the keep-FIRST name-score stamp (2026-08-10..14 incident).
-      - name: restore breadth close cache (stock search library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-engine-${{ github.run_id }}
-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-engine-${{ github.run_id }}
-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-engine-${{ github.run_id }}
+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads
+      # their checkout bytes and must never overlay them from Actions cache. Only
+      # daily.collect may seed them because it refreshes and commits the canonical
+      # files. The gitignored Russell same-run handoff remains cache-backed.
       - name: restore Russell 2000 breadth close cache (stock library needs constituent closes)
         uses: actions/cache/restore@v4
         with:
@@ -4783,27 +4773,11 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # build_factor_series._closes() reads these breadth close caches (broad =
-      # breadth+smallcap+midcap, narrow = breadth). Restore-only — the collect job
-      # produces/saves them.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-fseries-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-fseries-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-fseries-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # build_factor_series._closes() reads the Git-tracked S&P 500/600/400
+      # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from
+      # checkout. This reader must never overlay them from Actions cache. Only
+      # daily.collect may seed those panels because it refreshes and commits the
+      # canonical files.
       - name: factor return series (build_factor_series)
         run: python -m scripts.build_factor_series || echo "factor series skipped (additive)"
       - name: commit factor series
@@ -4872,12 +4846,9 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-fseries-${{ github.run_id }}
-          restore-keys: breadth-closes-
+      # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from
+      # checkout. It must never overlay them from Actions cache; only daily.collect
+      # may seed those panels because it refreshes and commits the canonical files.
       # FIX-8 (RULING-C nightly bounds): pin to 10 trading days back so a cold
       # runner never silently rebuilds a year. The one-shot deep backfill
       # (--start 2020-01-01, ~25 min) MUST be run once manually before the panel
@@ -5833,27 +5804,23 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # the per-stock technical-signal leg reads constituent closes; restore-only.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-briefs-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-briefs-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-briefs-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # Catalyst-stock context is R2-only (site/stockdata is gitignored), so a
+      # clean stock_briefs checkout has no deterministic ladder record to brief.
+      # Restore the EXISTING store before the model leaf runs. Fail this additive
+      # job on a missing/incomplete restore instead of publishing a green batch of
+      # no_context records; publish does not depend on stock_briefs.
+      - name: restore stockdata context for AI stock briefs
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs stockdata
+      # The per-stock technical-signal leg reads the Git-tracked S&P 500/600/400
+      # panels directly from checkout. This reader must never overlay them from
+      # Actions cache; only daily.collect may seed, refresh and commit those files.
       - name: precompute AI stock briefs (build_stock_briefs)
-        run: python -m scripts.build_stock_briefs || echo "stock briefs skipped (additive)"
+        run: python -m scripts.build_stock_briefs
       - name: commit stock briefs
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
