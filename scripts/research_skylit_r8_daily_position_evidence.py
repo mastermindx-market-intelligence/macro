@@ -44,6 +44,11 @@ def _normalize_source_identity(frame: pd.DataFrame, root: str, *, label: str) ->
         raise R8Refusal(f"{label}: {exc}") from exc
 
 
+def _integer_like(values: pd.Series, *, tol: float = 1e-9) -> pd.Series:
+    numeric = pd.to_numeric(values, errors="coerce")
+    return np.isfinite(numeric) & (np.abs(numeric - np.round(numeric)) <= tol)
+
+
 def _normalize_oi(frame: pd.DataFrame, root: str, *, label: str, value_name: str) -> pd.DataFrame:
     if frame is None or frame.empty:
         return pd.DataFrame(columns=KEY + [value_name])
@@ -53,6 +58,13 @@ def _normalize_oi(frame: pd.DataFrame, root: str, *, label: str, value_name: str
         raise R8Refusal(
             f"{label} has malformed contract identity rows for {root.upper()}: "
             f"{invalid_identity}/{len(frame)}"
+        )
+    raw_oi = pd.to_numeric(frame.get("open_interest"), errors="coerce")
+    noninteger = np.isfinite(raw_oi) & (raw_oi >= 0) & ~_integer_like(raw_oi)
+    if bool(noninteger.any()):
+        raise R8Refusal(
+            f"{label} has non-integer option contract OI for {root.upper()}: "
+            f"{int(noninteger.sum())}/{len(frame)}"
         )
     try:
         out = r2._normalize_identity(frame, root, require_oi=True)
@@ -118,6 +130,16 @@ def _build_evidence_frame(
     if "volume" not in eod.columns:
         raise R8Refusal(f"EOD board missing volume for {root} {session}")
     eod["volume"] = pd.to_numeric(eod["volume"], errors="coerce")
+    noninteger_volume = (
+        np.isfinite(eod["volume"])
+        & (eod["volume"] >= 0)
+        & ~_integer_like(eod["volume"])
+    )
+    if bool(noninteger_volume.any()):
+        raise R8Refusal(
+            f"EOD board has non-integer option contract volume for {root} {session}: "
+            f"{int(noninteger_volume.sum())}/{len(eod)}"
+        )
 
     prior_raw = store_api.oi_for_date(session, root, store=store)
     later_raw = store_api.oi_for_date(settled_publication_session, root, store=store)
@@ -181,12 +203,17 @@ def _build_evidence_frame(
     board["max_mixed_open_close_volume"] = np.nan
     board.loc[consistent, "min_open_open_volume"] = np.maximum(delta.loc[consistent], 0.0)
     board.loc[consistent, "min_close_close_volume"] = np.maximum(-delta.loc[consistent], 0.0)
-    board.loc[consistent, "max_open_open_volume"] = (
-        volume.loc[consistent] + delta.loc[consistent]
-    ) / 2.0
-    board.loc[consistent, "max_close_close_volume"] = (
-        volume.loc[consistent] - delta.loc[consistent]
-    ) / 2.0
+    # V, OI and deltaOI are whole-contract counts.  The continuous algebraic
+    # upper bounds (V +/- delta)/2 can be half-integral (e.g. V=1, delta=0),
+    # but a half contract is not a feasible transaction count.  Floor the
+    # maxima to the exact integer feasible set; the lower bounds are already
+    # integral because deltaOI is integral.
+    board.loc[consistent, "max_open_open_volume"] = np.floor(
+        (volume.loc[consistent] + delta.loc[consistent]) / 2.0
+    )
+    board.loc[consistent, "max_close_close_volume"] = np.floor(
+        (volume.loc[consistent] - delta.loc[consistent]) / 2.0
+    )
     board.loc[consistent, "max_mixed_open_close_volume"] = (
         volume.loc[consistent] - np.abs(delta.loc[consistent])
     )
@@ -293,6 +320,7 @@ def analyze_session(
                 "or other non-trade OI change"
             ),
             "trade_conservation_compatible_contracts_only": True,
+            "whole_contract_integer_bounds": True,
             "total_volume": total_consistent_volume,
             "min_open_open_volume": min_open,
             "max_open_open_volume": max_open,
@@ -313,8 +341,9 @@ def analyze_session(
                 "not that every observed trade opened"
             ),
             "open_close_bounds": (
-                "conditional trade-only bounds under V=OO+CC+M and deltaOI=OO-CC; "
-                "not identified when non-trade OI changes may have occurred"
+                "conditional whole-contract trade-only bounds under "
+                "V=OO+CC+M and deltaOI=OO-CC; not identified when non-trade "
+                "OI changes may have occurred"
             ),
             "institution_identity": "unknown_without_participant_type_source",
             "dealer_side": "unknown_from_daily_volume_and_oi_alone",
