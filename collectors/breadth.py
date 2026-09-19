@@ -1312,7 +1312,7 @@ class BreadthAdapter(Adapter):
         failed_names = sorted(set(str(name) for name in failures) & expected_members)
         source_evidence = dict(result.attrs.get("member_evidence") or {})
         receipt_fields = (
-            "requested_ticker", "response_ticker", "request_id", "response_status",
+            "requested_ticker", "response_ticker", "response_status",
             "response_count", "requested_start", "requested_end", "missing_sessions",
             "invalid_sessions", "accepted_values_id", "basis", "adjusted",
             "state", "unavailable", "reason",

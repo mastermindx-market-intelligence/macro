@@ -846,7 +846,7 @@ def test_public_projection_missing_package_is_honest_not_a_crash(tmp_path):
     assert "url" not in out  # only ready/stale pointers may expose a fetch target
 
 
-def test_package_binds_invocation_clock_member_names_and_response_receipts(monkeypatch, tmp_path):
+def test_package_binds_invocation_clock_member_names_and_economic_response_receipts(monkeypatch, tmp_path):
     members = pd.DataFrame({
         "symbol": [f"T{i}" for i in range(5)],
         "name": [f"Company {i}" for i in range(5)],
@@ -881,7 +881,10 @@ def test_package_binds_invocation_clock_member_names_and_response_receipts(monke
     second_result = _adapter().compute_sector_participation_20(changed, members)
     second_result.attrs["latest_expected_session"] = days[-1].isoformat()
     second = _adapter().build_sector_participation_20_package(second_result, {}, members)
-    assert second["source"]["response_set_id"] != first["source"]["response_set_id"]
+    # Provider request IDs are transport-instance diagnostics, not economic content.
+    # A no-change reacquisition therefore retains response/observation identity.
+    assert second["source"]["response_set_id"] == first["source"]["response_set_id"]
+    assert second["observation_id"] == first["observation_id"]
     assert second["generation_id"] != first["generation_id"]
 
 
@@ -1000,6 +1003,43 @@ def test_w1_observation_and_generation_identities_follow_frozen_clock_semantics(
     reacquired["source"]["acquired_at"] = "2026-09-19T00:02:00+00:00"
     assert w1_contract.observation_id(reacquired) == package["observation_id"]
     assert w1_contract.generation_id(reacquired) != package["generation_id"]
+
+
+def test_no_change_reacquisition_ignores_transport_request_id_but_changes_generation_clock():
+    import copy
+    days = _sessions(25)
+    syms = [f"T{i}" for i in range(5)]
+    members = _members(syms)
+    closes = _wide(syms, days, lambda ticker, i: 100.0 + i + syms.index(ticker) / 100.0)
+
+    def evidence(acquired_at, prefix):
+        return {
+            symbol: {
+                "acquired_at": acquired_at,
+                "requested_ticker": symbol, "response_ticker": symbol,
+                "request_id": f"{prefix}-{symbol}", "response_status": "OK",
+                "response_count": len(days), "requested_start": days[0].isoformat(),
+                "requested_end": days[-1].isoformat(), "basis": "split_adjusted",
+                "adjusted": True,
+            }
+            for symbol in syms
+        }
+
+    first_closes = closes.copy()
+    first_closes.attrs["member_evidence"] = evidence("2026-09-18T22:00:00+00:00", "request-one")
+    first_result = _adapter().compute_sector_participation_20(first_closes, members)
+    first_result.attrs["latest_expected_session"] = days[-1].isoformat()
+    first = _adapter().build_sector_participation_20_package(first_result, {}, members)
+
+    second_closes = closes.copy()
+    second_closes.attrs["member_evidence"] = evidence("2026-09-19T00:02:00+00:00", "request-two")
+    second_result = _adapter().compute_sector_participation_20(second_closes, members)
+    second_result.attrs["latest_expected_session"] = days[-1].isoformat()
+    second = _adapter().build_sector_participation_20_package(second_result, {}, members)
+
+    assert first["source"]["response_set_id"] == second["source"]["response_set_id"]
+    assert first["observation_id"] == second["observation_id"]
+    assert first["generation_id"] != second["generation_id"]
 
 
 def test_price_correction_changes_response_observation_and_generation_identities():
