@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T01:24:23.439957+00:00",
-  "count": 2397,
+  "generated_at": "2026-09-19T01:40:33.464844+00:00",
+  "count": 2398,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-elleqgdqjed-13383a",
+      "title": "FSA FI Daily Commentary 18 September 2026",
+      "institution": "Safra",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:15:40Z",
+      "summary_points": [
+        "Global Rate Cut Sentiment: US/UK/Germany/Australia/China 10Y yields decline (0.030–0.091 bps), signaling broad central bank easing expectations amid cooling labor data (jobless claims 196k vs 208k expected).",
+        "Commodity-Driven Risk On: WTI Oil +63.54% 1Y, Gold +19.71%, Silver +57.49% vs EM Sovereign Bonds -3.28% YTD, highlighting strong risk appetite and inflationary pressures.",
+        "ReNew Energy Global Upgrade: Moody’s positive outlook (upgraded from negative) driven by 25% renewable capacity growth (12.8 GW), 2.3x YoY profit growth, and strategic capital recycling (US$375M), with India’s renewable expansion as key catalyst.",
+        "Rabobank Impairment Surge: H1 2026 impairments jump to €562m (vs €136m), signaling sector-wide credit risk despite stable net profit (€2.69bn) and strong CET1 (14.5%).",
+        "Braskem Restructuring Tensions: Creditors demand explicit haircuts on financial debt, shifting balance to unsecured creditors as Petrobras avoids unconditional commitments, escalating loss risk for bondholders."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vvwnvaw5kjn-04f64f",
       "title": "Position for market upside",
