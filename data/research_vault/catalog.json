@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T00:09:30.151329+00:00",
-  "count": 2393,
+  "generated_at": "2026-09-19T00:24:29.422600+00:00",
+  "count": 2394,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -208,6 +208,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ivvezphkmzm-509faf",
+      "title": "Americas Real Estate REITs Rates move, REITs do what A look across performance and correlations, refreshing into an elevat...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T20:11:10Z",
+      "summary_points": [
+        "REIT Rate Sensitivity Divergence: REITs underperform S&P 500 by 6.7% median when 10Y yield rises ≥40bps (vs 1.6% outperformance on yield falls); net lease/office most rate-sensitive, while hotels/storage outperform during hikes (flexible leases), and storage consistently outperforms in both rate environments.",
+        "Subsector Performance Gap: Healthcare/industrial REITs outperformed by >15% TTM vs office/gaming down >15% due to property fundamentals; healthcare/industrial show 19.4% multiple expansion vs gaming’s -23.6% amid consensus revisions.",
+        "Cap Rate-Yield Gap Narrowing: 10Y Treasury yield and cap rates gap at 2.0% (7th percentile vs historical 3.7%), with transaction volumes showing weak negative correlation (-28%) to yields, signaling active market with supply constraints.",
+        "High-Conviction REIT Targets: Ventas (VTR) at $112 (24.5x FFO), LINE at $53 (19.7x AFFO), BRX at $38 (19.7x AFFO) with targets exceeding closing prices (e.g., BRX $38 vs $31.50, NHP 47% upside), reflecting bullish sentiment.",
+        "Storage Subsector Resilience: Storage REITs outperform REIT index 80% of the time in rising rates (vs 20% outperformance in declines) due to flexible leases and demand drivers (e.g., college moves), contrasting hotels’ 8/10 underperformance in declining rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
