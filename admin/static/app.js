@@ -8920,12 +8920,17 @@ async function mlRollback(versionId, btn) {
 RENDER.marketing_outbox = async () => {
   const v = $("#view");
   v.innerHTML = `<div class="spin">loading…</div>`;
-  const d = await api("/api/marketing/outbox");
+  /* These three reads are independent.  The rejection ledger used to wait for the
+     full Outbox fold, then Sentinel waited for that — making page-open latency the
+     SUM of three I/O paths.  Start one wave and keep the two auxiliaries fail-soft. */
+  const [d, rejectionData, sentinelData] = await Promise.all([
+    api("/api/marketing/outbox").catch(e => ({ ok: false, error: e && e.message })),
+    api("/api/marketing/rejections").catch(() => null),
+    api("/api/marketing/sentinel").catch(() => null),
+  ]);
   if (!d || !d.ok) { v.innerHTML = nwEmpty("Outbox unavailable", (d && d.error) || "panel error"); return; }
   OBX_LAST = d;
-  /* Fail-soft: the rejection box must never take the Outbox down with it. */
-  OBX_REJ = null;
-  try { OBX_REJ = await api("/api/marketing/rejections"); } catch (e) { OBX_REJ = null; }
+  OBX_REJ = rejectionData;
 
   const cap = d.cap != null ? d.cap : "—";
   const asOf = d.as_of || null;
@@ -8935,18 +8940,15 @@ RENDER.marketing_outbox = async () => {
 
   /* Cross-link to Sentinel — surface any policy holds so a reviewer here knows
      the gate caught something worth reading before they approve. Fail-soft:
-     the outbox never blocks on the sentinel fetch. Computed once on mount (the
-     header is static across in-place refreshes). */
+     Sentinel is advisory and cannot take the Outbox down. */
   let sentinelChip = "";
-  try {
-    const sd = await api("/api/marketing/sentinel");
-    const held = sd && sd.ok ? (sd.policy_quarantined || []).length : 0;
-    if (held > 0) {
-      sentinelChip = `<span class="obx-sentinel-link" onclick="go('marketing_sentinel')" role="button" tabindex="0"
-        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('marketing_sentinel')}"
-        >&#9940; ${held} held by Sentinel</span>`;
-    }
-  } catch (_e) { /* sentinel optional — ignore */ }
+  const held = sentinelData && sentinelData.ok
+    ? (sentinelData.policy_quarantined || []).length : 0;
+  if (held > 0) {
+    sentinelChip = `<span class="obx-sentinel-link" onclick="go('marketing_sentinel')" role="button" tabindex="0"
+      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('marketing_sentinel')}"
+      >&#9940; ${held} held by Sentinel</span>`;
+  }
 
   /* Header. THE PILL USED TO BE A STRING LITERAL reading "Review only — nothing
      posts externally", with the lede underneath promising "in this shadow phase
@@ -15969,21 +15971,13 @@ function startTableObserver() {
   _tableObserver.observe(view, { childList: true, subtree: true });
 }
 
-function schedulePostBootWarmup() {
-  /* Nothing below is needed for first paint.  Let the requested page become usable,
-     then fill advisory nav dots and start the measured slow-panel caches in the
-     background.  If the operator opens Intelligence OS while it is warming, api()'s
-     in-flight coalescing joins this exact request rather than launching a second walk. */
-  const run = () => {
-    refreshOutboxNavDot();
-    refreshSupportNavDot();
-    [
-      "/api/intelligence_os",
-      "/api/metabolism",
-      "/api/neural_web/lobes",
-      "/api/orchestrator",
-    ].forEach(path => api(path).catch(() => {}));
-  };
+function schedulePostBootAdvisories() {
+  /* First interaction wins over speculative work.  requestIdleCallback means the
+     browser main thread is idle, NOT that the operator is done clicking; warming
+     multi-second server folds here made the next tab compete with background work.
+     Keep only the tiny support badge off the critical paint path.  Expensive panels
+     still prefetch on pointer intent via TAB_PREFETCH_PATHS above. */
+  const run = () => refreshSupportNavDot();
   if ("requestIdleCallback" in window) window.requestIdleCallback(run, { timeout: 1500 });
   else setTimeout(run, 150);
 }
@@ -15994,7 +15988,7 @@ async function boot() {
   startTableObserver();
   await refresh();
   route();
-  schedulePostBootWarmup();
+  schedulePostBootAdvisories();
 }
 (async function init() {
   /* The landing snapshot is the one fetch the first paint genuinely blocks on (every

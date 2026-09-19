@@ -210,23 +210,39 @@ def test_spa_reuses_recent_reads_and_prefetches_nav_targets():
     assert 'it.addEventListener("pointerenter", () => scheduleTabPrefetch(id)' in source
     assert 'it.addEventListener("pointerleave", cancelTabPrefetch' in source
     assert 'neural_web: ["/api/neural_web/lobes"]' in source
-    # First paint must not wait for advisory badges or the 5-minute Intelligence
-    # OS estate walk; the latter is warmed only once the requested page is usable.
-    assert "function schedulePostBootWarmup()" in source
-    assert '.forEach(path => api(path).catch(() => {}))' in source
+    # First paint and the next click must not compete with speculative multi-second
+    # server folds.  Only the tiny Support badge is deferred after paint; expensive
+    # panel prefetch remains intent-driven on the nav items above.
+    assert "function schedulePostBootAdvisories()" in source
+    advisory_body = source.split("function schedulePostBootAdvisories()", 1)[1].split(
+        "async function boot()", 1
+    )[0]
+    assert "refreshSupportNavDot()" in advisory_body
+    assert "refreshOutboxNavDot()" not in advisory_body
     for path in (
         "/api/intelligence_os",
         "/api/metabolism",
         "/api/neural_web/lobes",
         "/api/orchestrator",
     ):
-        assert f'"{path}"' in source
+        assert f'api("{path}")' not in advisory_body
     boot_body = source.split("async function boot()", 1)[1].split(
         "(async function init()", 1
     )[0]
-    assert "schedulePostBootWarmup();" in boot_body
+    assert "schedulePostBootAdvisories();" in boot_body
     assert "refreshOutboxNavDot();" not in boot_body
     assert "refreshSupportNavDot();" not in boot_body
+
+    outbox_body = source.split("RENDER.marketing_outbox = async () => {", 1)[1].split(
+        "function obxRenderLive", 1
+    )[0]
+    assert "Promise.all([" in outbox_body
+    for path in (
+        "/api/marketing/outbox",
+        "/api/marketing/rejections",
+        "/api/marketing/sentinel",
+    ):
+        assert f'api("{path}")' in outbox_body
 
 
 def _post(port, path, body, headers=None, host=None):
