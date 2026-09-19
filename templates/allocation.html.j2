@@ -276,7 +276,7 @@ fetch('policy_lever.json',{cache:'no-cache'})
     {%- if d.headline -%}
     <div class="hkrv-pop-row">
       <span class="hkrv-pop-lbl"><span class="l-en">The book below</span><span class="l-zh">下方组合</span></span>
-      <span class="l-en">Still holds {{ d.headline.name }} — the book's trend gate is deliberately slow (3–12m); this banner is the fast read.</span>
+      <span class="l-en">Still holds {{ d.headline.name }} — the allocation rule is deliberately slow (3–12m); this banner is the fast read.</span>
       <span class="l-zh">仍持{{ d.headline.name_zh }} — 组合的趋势门有意放慢（3–12个月）；此横幅是快节奏读数。</span>
     </div>
     {%- endif -%}
@@ -325,26 +325,28 @@ fetch('policy_lever.json',{cache:'no-cache'})
 {% if H %}
 <section class="hero" style="margin-top:14px">
   <div class="big">
-    <div class="lead">{{ t('Prevailing narrative — current best place to allocate', '主导叙事 — 当前最佳配置去向') }}</div>
-    <!-- FT-R11 horizon label: honest framing of the strategic construction (SKIP_D=21, 63/126/252d ensemble) -->
+    <div class="lead">{{ t('Current theme leader', '当前主题领跑') }}</div>
+    <!-- FT-R11 horizon label: strategic horizon stays explicit in plain words. -->
     <div style="font-size:11px;color:var(--muted);margin:2px 0 4px;font-style:italic">{{ t(
-      'A slow book — ranked on 3–12 month trends with the most recent month deliberately excluded. It reacts over months, not days; scores refresh nightly.',
-      '慢速账本 — 基于3–12个月趋势排名（刻意剔除最近一个月）。它以月为单位反应，而非以日；评分每晚更新。') }}</div>
+      'Slow-moving view: it uses 3–12 month trends and deliberately ignores the most recent month.',
+      '慢速视角：使用3–12个月趋势，并刻意忽略最近一个月。') }}</div>
     <div class="name">{{ t(H.name, H.name_zh) }}</div>
     <div class="wt">{{ t('Suggested weight', '建议权重') }} <b>{{ (H.weight*100)|round|int }}%</b>
       · {{ t('cash', '现金') }} {{ (H.cash*100)|round|int }}%</div>
     <div class="chips">
-      {% if H.durability_bar is not none %}<span class="chip {{ 'ok' if H.durability_bar>=0.66 else '' }}">{{ t('durability', '持续性') }} {{ (H.durability_bar*100)|round|int }}/100</span>{% endif %}
-      {% if H.hurst_tag %}<span class="chip">{{ t('trend regime', '趋势状态') }}: {{ t(H.hurst_tag, {'trend':'趋势','mean-revert':'均值回归','mixed':'混合'}.get(H.hurst_tag, H.hurst_tag)) }}</span>{% endif %}
-      {% if H.crowded %}<span class="chip hot">{{ t('crowded → sized down', '拥挤 → 已降仓') }}</span>{% endif %}
-      {% if H.one_narrative %}<span class="chip" style="background:rgba(124,92,255,.12);border-color:rgba(124,92,255,.4)">{{ t('one narrative dominates', '单一叙事主导') }}</span>{% endif %}
+      {% if H.durability_bar is not none %}<span class="chip {{ 'ok' if H.durability_bar>=0.66 else '' }}">{{ t('staying power', '持续力') }} {{ (H.durability_bar*100)|round|int }}/100</span>{% endif %}
+      {% if H.hurst_tag %}<span class="chip">{{ t('behavior', '走势特征') }}: {{ t({'trend':'persistent','mean-revert':'mean-reverting','mixed':'mixed'}.get(H.hurst_tag,'unclear'), {'trend':'趋势持续','mean-revert':'均值回归','mixed':'混合'}.get(H.hurst_tag,'不明确')) }}</span>{% endif %}
+      {% if H.crowded %}<span class="chip hot">{{ t('crowded · weight capped', '拥挤 · 仓位封顶') }}</span>{% endif %}
+      {% if H.one_narrative %}<span class="chip" style="background:rgba(124,92,255,.12);border-color:rgba(124,92,255,.4)">{{ t('leadership concentrated', '领涨集中') }}</span>{% endif %}
     </div>
-    <p class="tagline" style="margin-top:10px">{{ t('Read', '解读') }}: <span class="l-en">{{ d.narration.en|safe }}</span><span class="l-zh">{{ d.narration.zh|safe }}</span></p>
+    <p class="tagline" style="margin-top:10px"><b>{{ t(H.name, H.name_zh) }}</b> {{ t('leads now.', '目前领跑。') }}
+      {{ d.rotation.breadth_of_rotation.eligible }}/{{ d.rotation.breadth_of_rotation.total }} {{ t('themes are in uptrends.', '个主题处于上行趋势。') }}
+      {% if H.crowded %}{{ t('It is crowded, so treat the suggested weight as a cap rather than a reason to chase.', '当前较拥挤，因此把建议权重视为上限，而不是追高理由。') }}{% endif %}</p>
   </div>
   <div class="gauge">
     <div class="gz"><div class="k">{{ t('Themes in uptrend', '上行趋势主题') }}</div><div class="v">{{ d.rotation.breadth_of_rotation.eligible }}/{{ d.rotation.breadth_of_rotation.total }}</div></div>
     <div class="gz"><div class="k">{{ t('Suggested cash', '建议现金') }}</div><div class="v">{{ (d.allocation.cash*100)|round|int }}%</div></div>
-    <div class="gz"><div class="k">{{ t('One-narrative gauge', '单一叙事度') }}</div><div class="v">{{ (d.rotation.absorption*100)|round|int if d.rotation.absorption is not none else '—' }}%</div></div>
+    <div class="gz"><div class="k">{{ t('Leadership shape', '领涨结构') }}</div><div class="v" style="font-size:15px">{{ t('Concentrated', '集中') if d.rotation.one_narrative else t('Broad', '广泛') }}</div></div>
   </div>
 </section>
 {% endif %}
@@ -571,189 +573,86 @@ fetch('{{ {"us":"basketdata","china":"chinabasketdata","hk":"hkbasketdata","cana
 {% set vo = d.allocation.vol_overlay %}
 {% set ddci = vo.measured.dd_reduction_pp_ci or [None, None, None] %}
 <!-- ============ 01a DE-RISK OVERLAY (calibrated vol-target) ============ -->
-<h2>{{ t('Optional de-risk overlay', '可选降风险叠加') }}
-  <span class="chip">{{ t('backtested · offered, not forced', '已回测 · 可选而非强制') if not vo.applied else t('backtested · applied', '已回测 · 已应用') }}</span></h2>
+<h2>{{ t('Lower-risk option', '降低风险选项') }}
+  <span class="chip">{{ t('long-history test · applied', '长期历史测试 · 已应用') if vo.applied else t('optional · long-history test', '可选 · 长期历史测试') }}</span></h2>
 <div class="panel">
   <div class="gauge" style="margin-bottom:8px">
-    <div class="gz"><div class="k">{{ t('Book vol now', '当前组合波动') }}</div><div class="v">{{ (vo.book_vol_ann*100)|round|int }}%</div></div>
-    <div class="gz"><div class="k">{{ t('Suggested scale', '建议缩放') }}</div><div class="v">{{ (vo.scalar*100)|round|int }}%</div></div>
-    <div class="gz"><div class="k">{{ t('Gross after', '叠加后净敞口') }}</div><div class="v">{{ (vo.gross_after*100)|round|int }}%</div></div>
-    <div class="gz"><div class="k">{{ t('→ cash', '→ 现金') }}</div><div class="v">{{ (vo.cash_after*100)|round|int }}%</div></div>
+    <div class="gz"><div class="k">{{ t('Current volatility', '当前波动率') }}</div><div class="v">{{ (vo.book_vol_ann*100)|round|int }}%</div></div>
+    <div class="gz"><div class="k">{{ t('Keep invested', '保留投资') }}</div><div class="v">{{ (vo.gross_after*100)|round|int }}%</div></div>
+    <div class="gz"><div class="k">{{ t('Hold in cash', '持有现金') }}</div><div class="v">{{ (vo.cash_after*100)|round|int }}%</div></div>
   </div>
-	  <p class="tagline"><span class="l-en">{{ vo.note_en|truncate(150, true, '...') }}</span><span class="l-zh">{{ vo.note_zh|truncate(90, true, '...') }}</span></p>
-	  <p class="tagline" style="margin-top:6px;opacity:.8">🔬 {{ t('Measured on the 27y US clean-sector proxy', '基于27年美国干净行业代理实测') }}:
-    {{ t('max-drawdown reduction', '最大回撤降低') }} {{ ddci[1] if ddci[1] is not none else '—' }}pp
-    {{ t('CI', '区间') }} [{{ ddci[0] if ddci[0] is not none else '—' }}, {{ ddci[2] if ddci[2] is not none else '—' }}],
-    {{ t('beats a trend-only brake', '优于纯趋势刹车') }}: {{ '✓' if vo.measured.beats_trend_brake else '—' }},
-    DSR {{ vo.measured.dsr }} ({{ vo.measured.n_trials }} {{ t('configs', '配置') }}).
-    {{ t('Grade', '评级') }}: <b>{{ vo.measured.verdict }}</b> —
-    {{ t('it cuts drawdown but does not raise Sharpe enough to clear the multiple-testing bar, so it stays a suggestion.',
-         '降低回撤但夏普提升不足以通过多重检验门槛，故仅作为建议。') }}</p>
+  <p class="tagline">{% if vo.applied %}{{ t('The lower-risk setting is active.', '降低风险设置已启用。') }}{% else %}{{ t('If you want a smoother ride, this setting would reduce exposure and hold more cash.', '如果更看重平稳，这一设置会降低敞口并持有更多现金。') }}{% endif %}
+    {% if ddci[1] is not none %}{{ t('In the long sector history, a similar brake reduced the worst drawdown by about', '在长期行业历史中，类似的风险刹车使最大回撤降低约') }} <b>{{ ddci[1]|round(1) }} {{ t('percentage points', '个百分点') }}</b>.{% endif %}
+    {{ t('It did not improve return per unit of risk enough to make it the default.', '但每单位风险的回报提升不足，因此不设为默认。') }}</p>
+  <details class="study-details">
+    <summary>{{ t('Technical receipt', '技术明细') }}</summary>
+    <p class="tagline"><span class="l-en">{{ vo.note_en }}</span><span class="l-zh">{{ vo.note_zh }}</span></p>
+    <p class="tagline">{{ t('Drawdown-reduction interval', '回撤改善区间') }}: [{{ ddci[0] if ddci[0] is not none else '—' }}, {{ ddci[2] if ddci[2] is not none else '—' }}] pp · DSR {{ vo.measured.dsr }} · {{ vo.measured.n_trials }} {{ t('configurations tested', '组配置测试') }}.</p>
+  </details>
 </div>
 {% endif %}
 
 <!-- ============ 01b PLAYBOOK: BUY & SELL ENTRIES ============ -->
-<h2>{{ t('Buy & sell entries — the playbook', '买卖入场 — 操作手册') }}
-  <span class="chip">{{ t('discipline, not advice', '纪律，非建议') }}</span></h2>
+<h2>{{ t('What to add or trim', '该加什么、减什么') }}
+  <span class="chip">{{ t('guidance, not advice', '参考，不是建议') }}</span></h2>
 <p class="sub">{{ t(
-	  'What to add, reduce or avoid. Click a theme for its stocks.',
-	  '该加什么、减什么、避开什么。点击主题查看个股。') }}</p>
+	  'Current add/hold and reduce/avoid lanes. Click a theme to see the stocks behind it.',
+	  '当前加仓/持有与减仓/回避分组。点击主题查看背后的个股。') }}</p>
 <div id="playbook-entries" class="rotwrap2"></div>
 
 <!-- ============ 01c RISK OVER TIME ============ -->
-<h2>{{ t('Risk over time', '风险随时间') }}
-  <span class="chip">{{ t('cash dial & de-risk events', '现金刻度与去风险事件') }}</span></h2>
+<h2>{{ t('Cash & risk over time', '现金与风险变化') }}</h2>
 <p class="sub">{{ t(
 	  'Suggested cash over time. Higher cash means more defensive.',
 	  '随时间显示建议现金。现金越高越防守。') }}</p>
 <div id="risk-time" class="panel"></div>
 
 <!-- ============ 01d ROTATION ALERTS ============ -->
-<h2>{{ t('Rotation alerts', '轮动警报') }}
-  <span class="chip">{{ t('book & leadership changes', '组合与领涨变化') }}</span></h2>
+<h2>{{ t('Recent allocation changes', '近期配置变化') }}</h2>
 <p class="sub">{{ t(
 	  'Book changes, leadership rotation, trend flips and risk-dial swings.',
 	  '组合变化、领涨轮换、趋势翻转与风险刻度变化。') }}</p>
 <div id="rot-alerts" class="panel"></div>
 
 <!-- ============ 02 NARRATIVE LIFECYCLE BOARD ============ -->
-<h2><span class="idx">02</span>{{ t('Narrative lifecycle board', '叙事生命周期看板') }}
-  <span class="chip">{{ t('rank = focus lens, not a forecast', '排名=关注透镜，非预测') }}</span></h2>
-<p class="sub">{{ t(
-	  'Themes ranked by momentum, trend gate, durability and crowding.',
-	  '主题按动量、趋势门、持续性与拥挤度排序。') }}
-  {{ t('The rank is deliberately slow — “Past 2 weeks” shows what each theme just did.',
-	  '排名有意放慢 — 「近两周」显示各主题最近的实际表现。') }}
-  <span class="muted">{{ t('Click a theme name to open its constituents on the Thematic Baskets page.', '点击主题名称可在主题篮子页面查看其成分。') }}</span></p>
+<h2><span class="idx">02</span>{{ t('Theme leadership', '主题领涨') }}</h2>
+<p class="sub">{{ t('Where leadership is strongest now. The rank favors durable trends and treats crowding as a sizing caution.', '当前领涨最强的主题。排名偏向更持久的趋势，并把拥挤度仅作为仓位提示。') }} <span class="muted">{{ t('Click a theme to see its stocks.', '点击主题查看其个股。') }}</span></p>
 {% set BASKETS_PAGE = {'us':'baskets.html','china':'baskets_china.html','hk':'baskets_hk.html','canada':'baskets_canada.html'}.get(d.region, 'baskets.html') %}
-<div class="panel"><div class="ts">
-<table>
-  <thead><tr>
-    <th>{{ t('Theme', '主题') }}</th>
-    <th class="num">{{ t('Score', '评分') }}</th>
-    <th class="num" data-tip-en="Equal-weight basket return over the last 10 trading days — the recent stretch the strategic rank deliberately excludes (skip-month construction). Context only: it never changes rank, score or suggested weights." data-tip-zh="等权篮子最近10个交易日回报 — 正是战略排名按构建刻意跳过的最近区间。仅供参考：不改变排名、评分或建议权重。">{{ t('Past 2 weeks', '近两周') }}</th>
-    <th>{{ t('Trend', '趋势') }}</th>
-    <th class="num" title="durability bar">{{ t('Durability', '持续性') }}</th>
-    <th class="num" title="own-history regime">{{ t('Hurst', '赫斯特') }}</th>
-    <th class="num" title="% members above 50d MA">{{ t('Breadth', '广度') }}</th>
-    <th class="num">{{ t('Crowding', '拥挤度') }}</th>
-  </tr></thead>
-  <tbody>
-  {% for r in d.ranks %}
-  {% set du = r.durability %}{% set cr = r.crowding %}
-  <tr class="{{ '' if r.eligible else 'inelig' }}">
-    <td><b><a class="tlink" href="{% if d.region == 'us' %}basket/{{ r.id }}.html{% else %}{{ BASKETS_PAGE }}#b-{{ r.id }}{% endif %}">{{ t(r.name, r.name_zh) }}<span class="jump" title="Open theme detail">↗</span></a></b>
-      {% if r.rank==1 %}<span class="stage lead">{{ t('LEADER', '领跑') }}</span>{% endif %}
-      {% if r.val_upgrade %}<span class="stage" style="color:var(--ink-up, var(--up))" title="real-activity radar: activity ahead of price">🛰️ {{ t('activity ⬆', '活动领先⬆') }}</span>
-      {% elif r.val_state == 'fading' %}<span class="stage" style="color:var(--ink-warn, var(--warn))" title="real-activity radar: activity behind price">🛰️ {{ t('fading', '退潮') }}</span>{% endif %}
-      <div class="legrow">{{ r.category }} · {{ r.n_live }} {{ t('names', '只') }}</div></td>
-    <td class="num"><b>{{ '%.2f'|format(r.score) if r.score is not none else '—' }}</b></td>
-    {% set r10 = r.get('r10') %}
-    <td class="num">{% if r10 is not none %}<span class="{{ 'pos' if r10 >= 0 else 'neg' }}">{{ '%+.1f'|format(r10*100) }}%</span>{% else %}<span class="muted">—</span>{% endif %}</td>
-    <td>{% if r.eligible %}<span class="stage" style="color:var(--ink-up, var(--up))">▲ {{ t('in trend', '趋势内') }}</span>{% else %}<span class="stage" style="color:var(--muted)">▽ {{ t('off trend', '趋势外') }}</span>{% endif %}</td>
-    <td class="num">{% if du.bar is not none %}<span class="dbar"><i style="width:{{ (du.bar*100)|round|int }}%"></i></span> {{ (du.bar*100)|round|int }}{% else %}—{% endif %}</td>
-    <td class="num">{{ du.hurst if du.hurst is not none else '—' }}{% if du.hurst_tag %}<span class="muted sm"> {{ {'trend':'↗','mean-revert':'↺','mixed':'~'}.get(du.hurst_tag,'') }}</span>{% endif %}</td>
-    <td class="num">{{ (du.breadth*100)|round|int if du.breadth is not none else '—' }}{% if du.breadth is not none %}%{% endif %}</td>
-    <td class="num">{% if cr.crowding_z is not none %}<span class="{{ 'neg' if cr.crowded else 'muted' }}">{{ zfmt(cr.crowding_z) }}</span>{% if cr.crowded %} <span class="chip hot" style="margin:0">{{ t('hot', '热') }}</span>{% endif %}{% else %}—{% endif %}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
-</div></div>
+<div class="panel"><div class="ts"><table>
+<thead><tr><th>{{ t('Theme','主题') }}</th><th class="num" data-tip-en="Equal-weight basket return over the last 10 trading days. Context only: it never changes rank or suggested weights." data-tip-zh="等权篮子最近10个交易日回报。仅供参考：不改变排名或建议权重。">{{ t('Past 2 weeks','近两周') }}</th><th>{{ t('Trend','趋势') }}</th><th class="num" data-tip-en="0–100 staying-power read from persistence, breadth and cohesion." data-tip-zh="基于持续性、广度与共振度的0–100持续力读数。">{{ t('Staying power','持续力') }}</th><th class="num" data-tip-en="Share of members above their medium-term trend." data-tip-zh="处于中期趋势上方的成分占比。">{{ t('Breadth','广度') }}</th><th class="num">{{ t('Crowding','拥挤度') }}</th></tr></thead>
+<tbody>{% for r in d.ranks %}{% set du=r.durability %}{% set cr=r.crowding %}<tr class="{{ '' if r.eligible else 'inelig' }}"><td><b><a class="tlink" href="{% if d.region == 'us' %}basket/{{ r.id }}.html{% else %}{{ BASKETS_PAGE }}#b-{{ r.id }}{% endif %}">{{ t(r.name,r.name_zh) }}<span class="jump" title="Open theme detail">↗</span></a></b>{% if r.rank==1 %}<span class="stage lead">{{ t('Leader','领跑') }}</span>{% endif %}{% if r.val_upgrade %}<span class="stage" style="color:var(--ink-up,var(--up))" data-tip-en="Independent real activity is running ahead of price." data-tip-zh="独立真实活动领先价格。">{{ icon('signals','bic') }} {{ t('activity ahead','活动领先') }}</span>{% elif r.val_state=='fading' %}<span class="stage" style="color:var(--ink-warn,var(--warn))">{{ icon('signals','bic') }} {{ t('activity cooling','活动降温') }}</span>{% endif %}<div class="legrow">{{ r.n_live }} {{ t('names','只') }}</div></td>{% set r10=r.get('r10') %}<td class="num">{% if r10 is not none %}<span class="{{ 'pos' if r10>=0 else 'neg' }}">{{ '%+.1f'|format(r10*100) }}%</span>{% else %}<span class="muted">—</span>{% endif %}</td><td>{% if r.eligible %}<span class="stage" style="color:var(--ink-up,var(--up))">▲ {{ t('in trend','趋势内') }}</span>{% else %}<span class="stage" style="color:var(--muted)">▽ {{ t('off trend','趋势外') }}</span>{% endif %}</td><td class="num">{% if du.bar is not none %}<span class="dbar"><i style="width:{{ (du.bar*100)|round|int }}%"></i></span> {{ (du.bar*100)|round|int }}/100{% else %}—{% endif %}</td><td class="num">{{ (du.breadth*100)|round|int if du.breadth is not none else '—' }}{% if du.breadth is not none %}%{% endif %}</td><td class="num">{% if cr.crowding_z is not none %}<span class="{{ 'neg' if cr.crowded else 'muted' }}" data-tip-en="Technical receipt: crowding z {{ zfmt(cr.crowding_z) }}; used only as a sizing caution." data-tip-zh="技术明细：拥挤度 z {{ zfmt(cr.crowding_z) }}；仅用于仓位提示。">{{ t('Crowded','拥挤') if cr.crowded else t('Normal','正常') }}</span>{% else %}—{% endif %}</td></tr>{% endfor %}</tbody></table></div></div>
 
 <!-- ============ 03 ROTATION RADAR ============ -->
-{% set R = d.rotation %}
-<h2><span class="idx">03</span>{{ t('Rotation radar', '轮动雷达') }} <span class="chip">{{ t('display-only', '仅展示') }}</span></h2>
-<p class="sub">{{ t(
-	  'Current leader, challenger and breadth. Handoffs are flagged only after confirmation.',
-	  '当前领跑、挑战者与广度。只有确认后才提示交接。') }}</p>
-<div class="panel">
-  <div class="kpis">
-    <div><div class="k">{{ t('Leader', '领跑') }}</div><div class="v">{{ t(R.leader.name, R.leader.name_zh) if R.leader.name else '—' }}</div></div>
-    <div><div class="k">{{ t('Challenger', '挑战者') }}</div><div class="v" style="font-size:15px;color:var(--muted)">{{ t(R.challenger.name, R.challenger.name_zh) if R.challenger.name else '—' }}</div></div>
-    <div><div class="k">{{ t('Lead margin', '领先优势') }}</div><div class="v">{{ R.margin if R.margin is not none else '—' }}</div></div>
-    <div><div class="k">{{ t('Breadth of rotation', '轮动广度') }}</div><div class="v">{{ R.breadth_of_rotation.eligible }}/{{ R.breadth_of_rotation.total }}
-      <span class="chip" style="vertical-align:middle">{{ t(R.breadth_of_rotation.view, {'broad':'广泛','narrowing':'收窄','narrow':'狭窄'}.get(R.breadth_of_rotation.view, R.breadth_of_rotation.view)) }}</span></div></div>
-  </div>
-  <p class="tagline">{{ t(
-	    'Broad leadership is healthier. Narrow leadership raises the cash dial.',
-	    '领跑越广越健康；领跑越窄，现金刻度越高。') }}</p>
-</div>
+{% set R=d.rotation %}
+<h2><span class="idx">03</span>{{ t('Leadership handoff','领涨交接') }}</h2>
+<p class="sub">{{ t('Current leader, closest challenger and market participation. A leadership change is only called after it confirms.','当前领跑、最接近的挑战者与市场参与度。只有确认后才判定领涨交接。') }}</p>
+<div class="panel"><div class="kpis"><div><div class="k">{{ t('Leader','领跑') }}</div><div class="v">{{ t(R.leader.name,R.leader.name_zh) if R.leader.name else '—' }}</div></div><div><div class="k">{{ t('Challenger','挑战者') }}</div><div class="v" style="font-size:15px;color:var(--muted)">{{ t(R.challenger.name,R.challenger.name_zh) if R.challenger.name else '—' }}</div></div><div><div class="k">{{ t('Themes in trend','趋势内主题') }}</div><div class="v">{{ R.breadth_of_rotation.eligible }}/{{ R.breadth_of_rotation.total }} <span class="chip">{{ t(R.breadth_of_rotation.view, {'broad':'广泛','narrowing':'收窄','narrow':'狭窄'}.get(R.breadth_of_rotation.view,R.breadth_of_rotation.view)) }}</span></div></div></div><p class="tagline">{{ t('Broad participation makes leadership more durable. Narrow participation raises the suggested cash level.','参与面越广，领涨越稳健；参与面收窄时，建议现金水平会提高。') }}</p></div>
 
 <!-- ============ 04 THE WORKHORSE BACKTEST (honest) ============ -->
-{% set B = d.backtest %}
+{% set B=d.backtest %}
 {% if B.sectors %}
-<h2><span class="idx">04</span>{{ t('What is actually validated — sector backtest', '真正验证过的 — 行业回测') }}</h2>
-<p class="sub">{{ t(
-	  'Theme baskets are short. The algorithm is tested on long sector history below.',
-	  '主题篮子历史较短。算法在下方长期行业历史上检验。') }}
-  <span class="muted">({{ B.sectors.span[0] }} → {{ B.sectors.span[1] }})</span></p>
-
-{% if B.gate_helps == False %}
-<div class="banner crash">{{ icon('alert', 'bic') }} <b>{{ t('Experimental in this market', '本市场属实验性') }}</b> — {{ t(
-	  'local history did not prove the trend gate. Treat this allocation as experimental.',
-	  '本地历史未证明趋势门有效。请将此配置视为实验性。') }}</div>
-{% endif %}
-{% if B.borrowed_from %}
-<div class="banner dom">ℹ {{ t(
-	  d.market_en + ' local history is thin, so the table uses proxy history (' + B.borrowed_from + '). Read as a prior, not local proof.',
-	  d.market_zh + '本地历史较薄，所以下表使用代理历史（' + B.borrowed_from + '）。这是先验，不是本地证明。') }}</div>
-{% endif %}
-<div class="panel">
-  <div class="ts"><table>
-    <thead><tr><th>{{ t('Strategy', '策略') }}</th><th class="num">CAGR</th><th class="num">Sharpe</th><th class="num">{{ t('Max DD', '最大回撤') }}</th><th class="num" title="avg return in the worst-decile down months">{{ t('Crash months', '崩盘月') }}</th><th class="num" title="deflated Sharpe — survives multiple testing if >=0.90">DSR</th></tr></thead>
-    <tbody>
-    {% for key, lab, labzh in [('dual','Dual-momentum book (this engine)','双动量组合（本引擎）'),('rel','Relative-momentum only','仅相对动量'),('buyhold','Equal-weight buy & hold','等权买入持有')] %}
-    {% set s = B.sectors[key] %}{% if s %}
-    <tr{% if key=='dual' %} style="background:rgba(90,167,255,.07)"{% endif %}>
-      <td>{% if key=='dual' %}<b>{{ t(lab, labzh) }}</b>{% else %}{{ t(lab, labzh) }}{% endif %}</td>
-      <td class="num">{{ (s.cagr*100)|round(1) }}%</td>
-      <td class="num">{{ s.sharpe }}</td>
-      <td class="num neg">{{ (s.max_dd*100)|round(1) }}%</td>
-      <td class="num neg">{{ (s.worst_decile_ret*100)|round(1) if s.worst_decile_ret is not none else '—' }}%</td>
-      <td class="num">{% if s.dsr is not none %}<b class="{{ 'pos' if s.dsr>=0.9 else 'muted' }}">{{ s.dsr }}</b>{% else %}—{% endif %}</td>
-    </tr>
-    {% endif %}{% endfor %}
-    </tbody>
-  </table></div>
-  {% if B.sectors.tsmom %}
-  <p class="tagline" style="margin-top:10px"><b>{{ t('The validated edge is risk control, not alpha.', '验证过的优势是风险控制，而非阿尔法。') }}</b>
-    {{ t('Above vs below the trend gate, forward return is statistically identical, but Sharpe is', '在趋势门上方 vs 下方，前瞻收益在统计上一致，但夏普为') }}
-    <b>{{ B.sectors.tsmom.above_trend.sharpe }}</b> {{ t('vs', '对') }} <b>{{ B.sectors.tsmom.below_trend.sharpe }}</b>
-    {{ t('and the bad-month tail is', '且坏月尾部为') }} <b>{{ (B.sectors.tsmom.above_trend.p05*100)|round(1) }}%</b> {{ t('vs', '对') }} <b>{{ (B.sectors.tsmom.below_trend.p05*100)|round(1) }}%</b>.
-	    {{ t('Rank shows where to look; trend decides whether to be in.', '排名说明看哪里；趋势决定是否在场。') }}</p>
-  {% endif %}
-  {% if B.verdict %}
-  <div class="verdict">
-    {% for k, lab, labzh in [('relative_momentum','Momentum rank','动量排名'),('absolute_trend_gate','Trend gate','趋势门'),('basket_extension','Basket crowding','篮子拥挤'),('rotation_timing','Rotation timing','轮动择时')] %}
-    {% if B.verdict[k] %}<div class="vcard"><b>{{ t(lab, labzh) }}</b><br><span class="muted">{{ B.verdict[k] }}</span></div>{% endif %}
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
+<h2><span class="idx">04</span>{{ t('Long-history check','长期历史检验') }}</h2>
+<p class="sub">{{ t('Theme histories are short, so the same rules are checked against longer sector history.','主题历史较短，因此用更长的行业历史检验同一套规则。') }} <span class="muted">({{ B.sectors.span[0] }} → {{ B.sectors.span[1] }})</span></p>
+{% if B.gate_helps == False %}<div class="banner crash">{{ icon('alert','bic') }} <b>{{ t('Experimental in this market','本市场属实验性') }}</b> — {{ t('local history did not support the trend filter. Treat this allocation as experimental.','本地历史未支持趋势过滤。请将此配置视为实验性。') }}</div>{% endif %}
+{% if B.borrowed_from %}<div class="banner dom">{{ t(d.market_en+' local history is thin, so the evidence below uses proxy history ('+B.borrowed_from+').',d.market_zh+'本地历史较薄，因此下方证据使用代理历史（'+B.borrowed_from+'）。') }}</div>{% endif %}
+<div class="panel">{% if B.gate_helps != False %}<p class="tagline" style="margin-top:0"><b>{{ t('What held up:','历史上较稳健：') }}</b> {{ t('the trend filter reduced drawdown severity.','趋势过滤降低了回撤严重度。') }} <b>{{ t('What did not:','未成立：') }}</b> {{ t('ranking alone did not reliably predict higher returns.','仅靠排名并不能可靠预测更高收益。') }}</p>{% endif %}
+<details class="study-details"><summary>{{ t('See long-history evidence','查看长期历史证据') }}</summary>
+<div class="ts"><table><thead><tr><th>{{ t('Strategy','策略') }}</th><th class="num">{{ t('Annual return','年化收益') }}</th><th class="num">{{ t('Return / risk','收益 / 风险') }}</th><th class="num">{{ t('Worst drawdown','最大回撤') }}</th><th class="num">{{ t('Worst months','最差月份') }}</th><th class="num">{{ t('Test strength','检验强度') }}</th></tr></thead><tbody>{% for key,lab,labzh in [('dual','Rank + trend filter','排名 + 趋势过滤'),('rel','Ranking only','仅排名'),('buyhold','Equal-weight hold','等权持有')] %}{% set bs=B.sectors[key] %}{% if bs %}<tr{% if key=='dual' %} style="background:rgba(90,167,255,.07)"{% endif %}><td>{% if key=='dual' %}<b>{{ t(lab,labzh) }}</b>{% else %}{{ t(lab,labzh) }}{% endif %}</td><td class="num">{{ (bs.cagr*100)|round(1) }}%</td><td class="num">{{ bs.sharpe }}</td><td class="num neg">{{ (bs.max_dd*100)|round(1) }}%</td><td class="num neg">{{ (bs.worst_decile_ret*100)|round(1) if bs.worst_decile_ret is not none else '—' }}%</td><td class="num">{% if bs.dsr is not none %}<span data-tip-en="Technical receipt: DSR {{ bs.dsr }}; 0.90 is the multiple-testing threshold." data-tip-zh="技术明细：DSR {{ bs.dsr }}；0.90 为多重检验阈值。"><b class="{{ 'pos' if bs.dsr>=0.9 else 'muted' }}">{{ t('Strong','较强') if bs.dsr>=0.9 else t('Weak','偏弱') }}</b></span>{% else %}—{% endif %}</td></tr>{% endif %}{% endfor %}</tbody></table></div>
+{% if B.sectors.tsmom %}<p class="tagline"><b>{{ t('Technical receipt:','技术明细：') }}</b> Sharpe {{ B.sectors.tsmom.above_trend.sharpe }} {{ t('above trend vs','趋势上方 vs') }} {{ B.sectors.tsmom.below_trend.sharpe }} {{ t('below trend','趋势下方') }} · {{ t('bad-month tail','坏月尾部') }} {{ (B.sectors.tsmom.above_trend.p05*100)|round(1) }}% vs {{ (B.sectors.tsmom.below_trend.p05*100)|round(1) }}%.</p>{% endif %}
+{% if B.verdict %}{% set VPLAIN={'relative_momentum':('Useful for focus, not a return forecast.','用于确定关注重点，不是收益预测。'),'absolute_trend_gate':('Main historical benefit: lower volatility and shallower drawdowns.','主要历史作用：降低波动并减轻回撤。'),'basket_extension':('Crowding is context, not a sell signal.','拥挤度是背景信息，不是卖出信号。'),'rotation_timing':('Wait for confirmed leadership changes; do not predict the next theme.','等待领涨变化确认，不预测下一个主题。')} %}<div class="verdict">{% for k,lab,labzh in [('relative_momentum','Momentum rank','动量排名'),('absolute_trend_gate','Trend filter','趋势过滤'),('basket_extension','Basket crowding','篮子拥挤'),('rotation_timing','Leadership timing','领涨时机')] %}{% if B.verdict.get(k) %}<div class="vcard"><b>{{ t(lab,labzh) }}</b><br><span class="muted">{{ t(VPLAIN[k][0],VPLAIN[k][1]) }}</span></div>{% endif %}{% endfor %}</div>{% endif %}
+</details></div>
 {% endif %}
 
 <!-- ============ 05 AI DESK HANDOFF ============ -->
-{% set A = d.ai_handoff %}
-  <h2><span class="idx">05</span>{{ t('AI desk guardrails', 'AI 桌约束') }}</h2>
-<p class="sub">{{ t(
-	  'The AI may explain the setup, but it may not invent edge beyond the tested rules.',
-	  'AI 可以解释设置，但不能在已测试规则之外编造优势。') }}</p>
-<div class="panel">
-  <p style="font-size:13px;margin:0 0 6px"><b>{{ t('Verdict', '结论') }}:</b> {{ A.overall_verdict }}</p>
-  <p class="tagline" style="margin-top:0">{{ A.reader_contract|truncate(180, true, '...') }}</p>
-  <div style="margin-top:8px;font-size:12.5px"><b>{{ t('The AI is FORBIDDEN to conclude', 'AI 被禁止得出的结论') }}:</b>
-  <ul class="dnc">{% for x in A.do_not_conclude %}<li>{{ x }}</li>{% endfor %}</ul></div>
-  <p class="tagline" style="margin-top:8px"><b>{{ t('Directive', '指令') }}:</b> {{ A.ai_directive|truncate(180, true, '...') }}</p>
-</div>
+<details class="panel study-details ai-use"><summary><span class="idx">05</span> {{ t('How Mastermind AI uses this page','Mastermind AI 如何使用本页') }}</summary><p class="tagline">{{ t('The AI may explain current leadership and risk, but it may not turn these rankings into a return forecast or invent the next leader.','AI 可以解释当前领涨与风险，但不能把这些排名变成收益预测，也不能凭空预测下一个领涨主题。') }}</p><ul class="dnc"><li>{{ t('Use it to explain current leaders, staying power and sizing cautions.','可用于解释当前领跑、持续力与仓位提示。') }}</li><li>{{ t('Do not turn rankings or crowding into automatic buy or sell calls.','不要把排名或拥挤度变成自动买卖信号。') }}</li><li>{{ t('Do not call the next theme before a leadership handoff confirms.','领涨交接确认前，不预测下一个主题。') }}</li></ul></details>
 
 <!-- live desk: checkable per-theme leans (fetched client-side; degrades to the contract above) -->
 <div id="thematic-desk" data-region="{{ d.region }}" style="margin-top:12px">
-  <div class="story" style="margin:6px 0 2px">{{ t('Desk read — checkable hypotheses, graded over time', '桌面解读 — 可检验假设，长期被打分') }}
-    <span class="chip">{{ t('display-only', '仅展示') }}</span><span id="td-track" class="chip" style="display:none"></span></div>
+  <div class="story" style="margin:6px 0 2px">{{ t('Research desk','研究桌') }}
+    <span class="chip">{{ t('dated & tracked','带日期 · 持续跟踪') }}</span><span id="td-track" class="chip" style="display:none"></span></div>
   <p class="tagline" style="margin-top:0">{{ t(
-	    "Desk leans are dated hypotheses, not a buy list or sizing rule.",
-	    '桌面倾向是带日期的假设，不是买入清单或仓位规则。') }}</p>
+	    "Dated research views are tracked after their check-by date; they do not change the allocation rules above.",
+	    '带日期的研究观点会在检验日期后持续跟踪；它们不会改变上方配置规则。') }}</p>
   <p id="td-backdrop" class="tagline" style="display:none;margin-top:2px"></p>
   <p id="td-regime" class="story" style="display:none;font-size:13.5px"></p>
   <div id="td-cards" class="cards-td"></div>
@@ -763,17 +662,17 @@ fetch('{{ {"us":"basketdata","china":"chinabasketdata","hk":"hkbasketdata","cana
     <div id="td-panel"></div>
   </details>
   <p id="td-empty" class="tagline" style="display:none">{{ t(
-	    'Live desk note is not generated yet. The guardrails above still apply.',
-	    '实时桌面简报尚未生成。上方约束仍然适用。') }}</p>
+	    'No current research note. The allocation rules above still apply.',
+	    '当前没有研究简报。上方配置规则仍然适用。') }}</p>
 </div>
 
 {% if d.region == 'us' %}
 <!-- theme-discovery radar (US): coherent NEW name-groups not yet in a basket — for review -->
-<h2><span class="idx">06</span>{{ t('Candidate themes — discovery radar', '候选主题 — 发现雷达') }}
-  <span class="chip">{{ t('display-only · for human review', '仅展示 · 供人工审阅') }}</span></h2>
+<h2><span class="idx">06</span>{{ t('Emerging themes','新兴主题') }}
+  <span class="chip">{{ t('for review','待审阅') }}</span></h2>
 <p class="sub">{{ t(
-	  'New clusters for human review. Watchlist context only, never a buy list.',
-	  '供人工审阅的新聚类。仅作观察背景，绝非买入清单。') }}</p>
+	  'New clusters worth watching. They do not enter the allocation until reviewed and added to a basket.',
+	  '值得关注的新聚类。只有经过审阅并加入主题篮子后，才会进入配置。') }}</p>
 <div class="panel"><div id="td-candidates" class="muted sm">{{ t('Loading…', '加载中…') }}</div></div>
 {% endif %}
 
@@ -809,52 +708,53 @@ function renderEntries(){
   const held=new Set((alloc.weights||[]).map(w=>w.id));
   // BUY/HOLD: the de-overlapped trending book + (US) clean-entry buys not already held
   let buy=(alloc.weights||[]).map(w=>`<a class="prow" href="${bkHref(w.id)}">
-    <span class="pverb" style="color:var(--ink-up, var(--up));border-color:var(--up)">${L('HOLD / ADD','持有/加仓')}</span>
+    <span class="pverb" style="color:var(--ink-up, var(--up));border-color:var(--up)">${L('Hold / add','持有/加仓')}</span>
     <span class="pn">#${w.rank} ${L(esc(w.name),esc(w.name_zh))}${sbBadge(w.id)}</span><span class="pw">${Math.round((w.weight||0)*100)}%</span></a>`);
   if(an && an.buy){ an.buy.filter(x=>!held.has(x.id)).forEach(x=>{
-    const v=x.action==='enter'?['ENTER','建仓']:['ACCUMULATE','加仓'];
+    const v=x.action==='enter'?['Start','建仓']:['Add','加仓'];
     buy.push(`<a class="prow" href="${bkHref(x.id)}"><span class="pverb" style="color:${buyColor()};border-color:${buyColor()}">${L(v[0],v[1])}</span>
-      <span class="pn">${L(esc(x.name),esc(x.name_zh))}${sbBadge(x.id)}</span><span class="pw">${x.score}</span></a>`); }); }
+      <span class="pn">${L(esc(x.name),esc(x.name_zh))}${sbBadge(x.id)}</span></a>`); }); }
   // in-favour themes WITHOUT a clean entry (the honest act_now split) — shown, never hidden,
   // with a muted "wait for a pullback" verb. Descriptive presentation, not a signal.
   if(an && an.add_on_pullback){ an.add_on_pullback.filter(x=>!held.has(x.id)).forEach(x=>{
-    buy.push(`<a class="prow" href="${bkHref(x.id)}" title="${esc(x.reason_en||'in favour, but no clean-entry setup right now')}"><span class="pverb" style="color:var(--ink-warn, var(--warn));border-color:var(--warn)">${L('WAIT — PULLBACK','等待回调')}</span>
-      <span class="pn">${L(esc(x.name),esc(x.name_zh))}${sbBadge(x.id)}</span><span class="pw">${x.score}</span></a>`); }); }
+    buy.push(`<a class="prow" href="${bkHref(x.id)}" title="${esc(x.reason_en||'in favour, but no clean-entry setup right now')}"><span class="pverb" style="color:var(--ink-warn, var(--warn));border-color:var(--warn)">${L('Wait for pullback','等待回调')}</span>
+      <span class="pn">${L(esc(x.name),esc(x.name_zh))}${sbBadge(x.id)}</span></a>`); }); }
   // REDUCE/AVOID: (US) act_now reduce + crowded held + de-overlapped displaced (context)
   let sell=[];
-  if(an && an.reduce){ an.reduce.forEach(x=>{ const v=x.action==='avoid'?['AVOID','回避','#ef4444']:['TRIM','减仓','#f97316'];const vc=sellColor(v[2]);
+  if(an && an.reduce){ an.reduce.forEach(x=>{ const v=x.action==='avoid'?['Avoid','回避','#ef4444']:['Trim','减仓','#f97316'];const vc=sellColor(v[2]);
     sell.push(`<a class="prow" href="${bkHref(x.id)}"><span class="pverb" style="color:${vc};border-color:${vc}">${L(v[0],v[1])}</span>
-      <span class="pn">${L(esc(x.name),esc(x.name_zh))}</span><span class="pw">${x.score}</span></a>`); }); }
-  (alloc.weights||[]).filter(w=>w.crowded).forEach(w=>sell.push(`<div class="prow"><span class="pverb" style="color:var(--ink-warn, var(--warn));border-color:var(--warn)">${L('SIZE DOWN','降仓')}</span><span class="pn">${L(esc(w.name),esc(w.name_zh))}</span><span class="pw">${L('crowded','拥挤')}</span></div>`));
+      <span class="pn">${L(esc(x.name),esc(x.name_zh))}</span></a>`); }); }
+  (alloc.weights||[]).filter(w=>w.crowded).forEach(w=>sell.push(`<div class="prow"><span class="pverb" style="color:var(--ink-warn, var(--warn));border-color:var(--warn)">${L('Size down','降仓')}</span><span class="pn">${L(esc(w.name),esc(w.name_zh))}</span><span class="pw">${L('crowded','拥挤')}</span></div>`));
   if(!sell.length) sell.push(`<div class="muted" style="padding:10px 2px;font-size:12px">${L('Nothing flagged to reduce right now.','当前无需减仓的标的。')}</div>`);
   const moreBtn=n=>n>5?`<button class="lst-more" type="button" aria-expanded="false"><span class="lm-show">${L('Show more','显示更多')} ▾</span><span class="lm-hide">${L('Show less','收起')} ▴</span></button>`:'';
   const pCol=(cls,head,arr,empty)=>`<div class="pcol lst-wrap"><h4 class="${cls}">${head} <span class="muted" style="font-size:11px">(${arr.length})</span></h4>${arr.length?`<div class="plist lst-collapse is-collapsed">${arr.join('')}</div>${moreBtn(arr.length)}`:empty}</div>`;
-  el.innerHTML=pCol('buy',`✅ ${L('Add / hold now','现在加仓 / 持有')}`,buy,'<div class="muted" style="padding:10px 2px;font-size:12px">'+L('No themes above trend — sit in cash.','无主题处于趋势上方 — 持有现金。')+'</div>')
-    +pCol('sell',`🔻 ${L('Reduce / avoid','减仓 / 回避')}`,sell,'');
+  el.innerHTML=pCol('buy',`${L('Add / hold','加仓 / 持有')}`,buy,'<div class="muted" style="padding:10px 2px;font-size:12px">'+L('No themes above trend — sit in cash.','无主题处于趋势上方 — 持有现金。')+'</div>')
+    +pCol('sell',`${L('Reduce / avoid','减仓 / 回避')}`,sell,'');
 }
 
 function renderRiskTime(){
   const el=document.getElementById('risk-time'); if(!el) return;
   const alloc=ALLOC.allocation||{}, cash=alloc.cash, crash=(alloc.crash_overlay||{}).active;
   const pts=(RISK_HIST||[]).map(h=>h.cash).filter(v=>v!=null);
-  let spark=`<span class="muted" style="font-size:12px">${L('history accruing','历史累积中')}</span>`;
+  let spark=`<span class="muted" style="font-size:12px">${L('history building','历史积累中')}</span>`;
   if(pts.length>=2){ const w=320,hh=46,mn=Math.min(...pts),mx=Math.max(...pts),sp=(mx-mn)||1;
     const d=pts.map((v,i)=>`${i?'L':'M'}${(i/(pts.length-1)*w).toFixed(1)} ${(hh-3-(v-mn)/sp*(hh-7)).toFixed(1)}`).join(' ');
     spark=`<svg width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}"><path d="${d}" fill="none" stroke="${cssv('--muted')}" stroke-width="1.6"/></svg>`; }
-  const posture = cash==null?['—','—',cssv('--muted')] : crash?['DE-RISKED','已去风险',cssv('--ink-down')||cssv('--down')] : cash>=0.5?['DEFENSIVE','防守',cssv('--ink-warn')||cssv('--warn')] : cash>=0.25?['BALANCED','均衡',cssv('--text')] : ['RISK-ON','进攻',cssv('--ink-up')||cssv('--up')];
+  const posture = cash==null?['—','—',cssv('--muted')] : crash?['High caution','高度防守',cssv('--ink-down')||cssv('--down')] : cash>=0.5?['Defensive','防守',cssv('--ink-warn')||cssv('--warn')] : cash>=0.25?['Balanced','均衡',cssv('--text')] : ['Risk-friendly','偏进攻',cssv('--ink-up')||cssv('--up')];
   el.innerHTML=`<div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
     <div><div class="riskbig" style="color:${posture[2]}">${cash==null?'—':Math.round(cash*100)+'%'}</div><div class="muted" style="font-size:11px">${L('suggested cash','建议现金')}</div></div>
-    <div><div style="font-size:16px;font-weight:700;color:${posture[2]}">${L(posture[0],posture[1])}</div><div class="muted" style="font-size:11px">${L('risk posture now','当前风险姿态')}</div></div>
-    <div style="margin-left:auto">${spark}<div class="muted" style="font-size:10.5px">${L('cash % over time','现金% 历时')}</div></div>
-  </div>${crash?`<div class="muted" style="font-size:12px;margin-top:8px;color:var(--ink-down, var(--down))">🛑 ${L('Momentum-crash de-risk active — book halved to cash.','动量崩盘去风险激活 — 组合减半至现金。')}</div>`:''}`;
+    <div><div style="font-size:16px;font-weight:700;color:${posture[2]}">${L(posture[0],posture[1])}</div><div class="muted" style="font-size:11px">${L('risk stance','风险状态')}</div></div>
+    <div style="margin-left:auto">${spark}<div class="muted" style="font-size:10.5px">${L('cash over time','现金变化')}</div></div>
+  </div>${crash?`<div class="muted" style="font-size:12px;margin-top:8px;color:var(--ink-down, var(--down))">${L('Fast risk brake is active — half the book is held in cash.','快速风险刹车已启用 — 一半组合持有现金。')}</div>`:''}`;
 }
 
+function plainAlert(s){ return String(s||'').replace(/^[^\p{L}\p{N}]+/u,'').replace(/suggested book/gi,'allocation').replace(/the book/gi,'the allocation').replace(/trend gate/gi,'trend').replace(/rotation leader/gi,'theme leader'); }
 function renderRotAlerts(){
   const el=document.getElementById('rot-alerts'); if(!el) return;
   const evs=(ROT_ALERTS||[]).slice(0,14);
   if(!evs.length){ el.innerHTML=`<div class="muted" style="font-size:12px">${L('No playbook changes recorded yet — the book is steady. Changes accrue here run over run.','尚无手册变化记录 — 组合稳定。变化将逐次累积于此。')}</div>`; return; }
   el.innerHTML=`<div style="display:flex;justify-content:flex-end"><a href="alerts.html" class="muted" style="font-size:11px;text-decoration:underline">${L('Alert Center →','警报中心 →')}</a></div>`+
-    evs.map(e=>`<div class="palert"><span class="pdt">${esc((e.ts||'').slice(0,10))}</span><span class="sev-${esc(e.severity)}">${L(esc(e.headline),esc(e.headline_zh||e.headline))}</span></div>`).join('');
+    evs.map(e=>`<div class="palert"><span class="pdt">${esc((e.ts||'').slice(0,10))}</span><span class="sev-${esc(e.severity)}">${L(esc(plainAlert(e.headline)),esc(plainAlert(e.headline_zh||e.headline)))}</span></div>`).join('');
 }
 // MLC-W2b: inject mixed-reads / split-view chips on allocation position rows.
 // Fetches stance_matrix.json once; appends a bilingual chip warn to rows whose id matches
