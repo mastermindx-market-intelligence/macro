@@ -33,10 +33,12 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -59,6 +61,67 @@ DEFAULT_ATTEMPTS = 3
 # family). Re-using it keeps the commit graph attributable to one actor.
 BOT_NAME = "dashboard-bot"
 BOT_EMAIL = "actions@users.noreply.github.com"
+
+
+# ---------------------------------------------------------------------------
+# Result types — mirror the rejection classes tests/test_push_retry.py
+# already uses (GH013, Permission denied, hook rejection → push_error).
+# A non-fast-forward is retryable; everything else is a hard refusal.
+# ---------------------------------------------------------------------------
+@dataclass(frozen=True)
+class PushResult:
+    """Union type for push outcomes. ``ok`` is retryable-gone-good;
+    ``non_fast_forward`` is retryable; ``push_error`` is a hard refusal."""
+
+    kind: str  # "ok" | "non_fast_forward" | "push_error"
+    detail: str = ""  # first stderr line for push_error
+
+
+_OK = PushResult(kind="ok")
+_NON_FF = PushResult(kind="non_fast_forward")
+_NON_FF_RE = re.compile(
+    r"rejected.*non-fast-forward|"
+    r"! \[rejected\].*main -> main \(non-fast-forward\)|"
+    r"fetch first",
+    re.IGNORECASE,
+)
+_HOOK_RE = re.compile(
+    r"hook declined|"
+    r"GH006.*hook|"
+    r"remote: error.*hook",
+    re.IGNORECASE,
+)
+_AUTH_RE = re.compile(
+    r"Permission denied|"
+    r"fatal: unable to access|"
+    r"authentication failed",
+    re.IGNORECASE,
+)
+_REF_LOCK_RE = re.compile(
+    r"cannot lock ref|"
+    r"is at .* but expected|"
+    r"stale info|"
+    r"fetch first",
+    re.IGNORECASE,
+)
+
+
+def _classify_push_failure(stderr: str) -> PushResult:
+    """Classify a failed push by its error output.
+
+    MAJOR-1: every git outcome is classified. ``non_fast_forward`` and
+    ``ref_lock`` (a lost-race, not a conflict) are retryable;
+    ``push_error`` (GH013, hook, auth) is a hard refusal — no retry."""
+    first_line = stderr.strip().split("\n", 1)[0] if stderr.strip() else ""
+    if _NON_FF_RE.search(stderr):
+        return PushResult(kind="non_fast_forward")
+    if _HOOK_RE.search(stderr) or _AUTH_RE.search(stderr):
+        return PushResult(kind="push_error", detail=first_line)
+    if _REF_LOCK_RE.search(stderr):
+        # A lost-race ref lock is structurally identical to a non-ff:
+        # the remote moved while we were preparing. Retry it.
+        return PushResult(kind="non_fast_forward")
+    return PushResult(kind="push_error", detail=first_line)
 
 
 def _run(args: list[str], *, cwd: Path, check: bool = False) -> subprocess.CompletedProcess:
@@ -199,25 +262,41 @@ def _pushed_sha(cwd: Path, base: str, remote: str) -> str | None:
     return proc.stdout.strip() or None
 
 
-def _attempt_push(cwd: Path, base: str, remote: str) -> bool:
-    """Single attempt: ``git push <remote> HEAD:refs/heads/<base>``. Never a
-    force-push, never a history rewrite, never a stash apply — the helper
-    is a no-history-rewrite re-checkout cycle, never a force-push path."""
+def _attempt_push(cwd: Path, base: str, remote: str) -> PushResult:
+    """Single attempt: ``git push <remote> HEAD:refs/heads/<base>``.
+    Classifies the failure (MAJOR-1) so the retry loop can distinguish
+    retryable non-fast-forward from a hard push_error. Never a force-push,
+    never a history rewrite, never a stash apply."""
     proc = _run(
         ["git", "push", remote, f"HEAD:refs/heads/{base}"],
         cwd=cwd,
         check=False,
     )
-    return proc.returncode == 0
+    if proc.returncode == 0:
+        return _OK
+    stderr = (proc.stdout or "") + (proc.stderr or "")
+    return _classify_push_failure(stderr)
 
 
 def _resync_to_remote(cwd: Path, base: str, remote: str) -> dict[str, str]:
-    """Snapshot -> fetch -> reset hard -> restore. Returns the snapshot
-    mapping so the caller can restore it after the reset and re-stage."""
+    """Snapshot -> fetch -> reset hard -> restore.
+    MAJOR-1: a failed ``git fetch --depth 1`` ABORTS the resync — we never
+    ``git reset --hard FETCH_HEAD`` onto a stale tip."""
     with tempfile.TemporaryDirectory(prefix="dm-drip-") as tmp:
         tmp_root = Path(tmp)
         snapshot = _copy_allowed_paths_to(cwd, tmp_root)
-        _run(["git", "fetch", "-q", "--depth", "1", remote, base], cwd=cwd)
+        fetch_proc = _run(
+            ["git", "fetch", "-q", "--depth", "1", remote, base],
+            cwd=cwd,
+            check=False,
+        )
+        if fetch_proc.returncode != 0:
+            # A fetch failure means we cannot establish a clean remote tip.
+            # Abort rather than reset onto a stale local ref.
+            raise RuntimeError(
+                f"git fetch failed (exit {fetch_proc.returncode}); "
+                "aborting resync rather than resetting to stale FETCH_HEAD"
+            )
         _run(["git", "reset", "-q", "--hard", "FETCH_HEAD"], cwd=cwd)
         _restore_allowed_paths(cwd, tmp_root, snapshot)
         return snapshot
@@ -299,18 +378,36 @@ def main(argv: list[str] | None = None) -> int:
         _warning("debt-maturity-drip", "commit refused; nothing pushed")
         return 0
 
+    # Count staged files BEFORE the push so the success notice reports the real
+    # count (the index may change between the push and the next _staged_files call).
+    staged = len(_staged_files(cwd))
+
     # PUSH — origin/main moves every few minutes under [skip ci] data commits,
     # so a single-shot push regularly sees a non-fast-forward; retry the
     # snapshot-fetch-reset-restore cycle up to --attempts times.
+    #
+    # MAJOR-1: classify every outcome.  push_error (auth / hook / GH013) is a
+    # hard refusal — exit immediately without retry.  non_fast_forward and
+    # ref_lock (a lost race, not a conflict) are retryable up to --attempts.
+    last_result: PushResult | None = None
     for attempt in range(1, max(args.attempts, 0) + 1):
-        if _attempt_push(cwd, args.base, args.remote):
+        result = _attempt_push(cwd, args.base, args.remote)
+        last_result = result
+        if result.kind == "ok":
             sha = _pushed_sha(cwd, args.base, args.remote) or "<unknown>"
-            staged = len(_staged_files(cwd))
             _notice(
                 "debt-maturity-drip",
                 f"pushed {sha} to {args.base}: {staged} files, {staged_mib:.1f} MiB",
             )
             return 0
+        if result.kind == "push_error":
+            # Hard refusal — no retry.  Name the class in the terminal warning.
+            _warning(
+                "debt-maturity-drip",
+                f"push_error: {result.detail}; {args.base} refused (cache goes stale, not wrong)",
+            )
+            return 0
+        # non_fast_forward or ref_lock — retryable.
         if attempt >= max(args.attempts, 0):
             break
         # Re-checkout cycle, then the loop re-runs EMPTY/CEILING/COMMIT/PUSH
@@ -341,9 +438,11 @@ def main(argv: list[str] | None = None) -> int:
             _warning("debt-maturity-drip", f"commit refused on attempt {attempt + 1}; nothing pushed")
             return 0
 
+    # MAJOR-1: terminal warning names the class instead of always saying "moved under N attempts".
+    final_kind = last_result.kind if last_result else "unknown"
     _warning(
         "debt-maturity-drip",
-        f"refused: {args.base} moved under {args.attempts} attempts; nothing pushed (cache goes stale, not wrong)",
+        f"{final_kind}: {args.base} refused after {args.attempts} attempts (cache goes stale, not wrong)",
     )
     return 0
 

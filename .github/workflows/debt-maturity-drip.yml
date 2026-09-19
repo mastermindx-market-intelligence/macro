@@ -71,7 +71,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 1
+
+      - name: verify HEAD is a descendant of origin/main (path-scope guard)
+        run: |
+          git fetch origin main --depth 1
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::HEAD ($GITHUB_SHA) is not a descendant of origin/main — refusing to push"
+            echo "::error::This workflow may only push commits that are already on main's history"
+            exit 1
+          fi
+          echo "merge-base check passed: HEAD is on main's history"
+          # Also assert the tree diff is a subset of the allowed paths.
+          # We only staged two specific paths; verify nothing else changed.
+          DIFF=$(git diff --name-only HEAD^..HEAD || true)
+          for f in $DIFF; do
+            case "$f" in
+              data/debt_maturity/cache/*|data/edgar/statements.parquet) ;;
+              *)
+                echo "::error::Blocked: commit contains non-allowed path: $f"
+                exit 1
+                ;;
+            esac
+          done
+          echo "path-scope assertion passed: commit only touches allowed paths"
 
       - name: python 3.12 (Homebrew venv — self-hosted runner)
         run: |

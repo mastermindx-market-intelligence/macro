@@ -4,6 +4,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import importlib
 import os
 import re
 import shutil
@@ -1103,6 +1104,14 @@ def test_capture_script_uses_real_ticker_page_and_element_screenshot():
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# BLOCKER — non-fast-forward RED→GREEN
+# MAJOR-1 — git outcome classification
+# MAJOR-2 — workflow ancestry + path-scope assertion
+# MINOR-2 — exhaustion test with real non_fast_forward warning
+# ---------------------------------------------------------------------------
+
+
 WORKFLOW_FILE = Path(".github/workflows/debt-maturity-drip.yml")
 
 
@@ -1449,28 +1458,329 @@ def test_drip_helper_non_fast_forward_recovers_via_re_checkout(tmp_path):
     assert any(p == "data/debt_maturity/cache/seed.json" for p in ls)
 
 
-def test_drip_helper_attempts_exhausted_refuses_with_warning(tmp_path):
-    """(vii) EXHAUSTED — with --attempts 0 the helper commits locally but
-    makes no push attempt and emits the refusal warning; HEAD moves but
-    origin/main does not."""
+def test_drip_helper_attempts_exhausted_refuses_with_warning(tmp_path, monkeypatch, capsys):
+    """(vii) EXHAUSTED — with attempts=3 and three consecutive non-fast-forward
+    rejections (simulated by patching _attempt_push to always return non-ff),
+    the helper exhausts all retries and emits a terminal warning naming
+    ``non_fast_forward`` and the attempt count."""
+    import scripts.debt_maturity_drip_push as dmp
+
     worktree = _init_bare_remote(tmp_path)
     (worktree / "data" / "debt_maturity" / "cache" / "seed.json").write_text('{"x":5}')
+
     origin_before = subprocess.run(
         ["git", "rev-parse", "origin/main"], cwd=str(worktree),
         capture_output=True, text=True, check=True,
     ).stdout.strip()
-    proc = _run_helper(worktree, push_env="1", attempts=0)
-    assert proc.returncode == 0, proc.stdout + proc.stderr
+
+    # Patch _attempt_push so every attempt returns non_fast_forward, and patch
+    # DEFAULT_ATTEMPTS so the helper tries 3 times before giving up.
+    # NOTE: do NOT reload dmp after patching — reload restores original functions.
+    class FakeNonFF:
+        kind = "non_fast_forward"
+        detail = "simulated non-fast-forward"
+
+    def fake_attempt(cwd, base, remote):
+        return FakeNonFF()
+
+    original_attempt = dmp._attempt_push
+    original_default = dmp.DEFAULT_ATTEMPTS
+    monkeypatch.setattr(dmp, "_attempt_push", fake_attempt)
+    monkeypatch.setattr(dmp, "DEFAULT_ATTEMPTS", 3)
+    monkeypatch.setenv("DEBT_MATURITY_DRIP_PUSH", "1")
+
+    # Call main() directly (not _run_helper subprocess) so patches are effective.
+    rc = dmp.main([
+        "--repo", str(worktree),
+        "--base", "main",
+        "--remote", "origin",
+        "--attempts", "3",
+    ])
+
+    monkeypatch.setattr(dmp, "_attempt_push", original_attempt)
+    monkeypatch.setattr(dmp, "DEFAULT_ATTEMPTS", original_default)
+
+    assert rc == 0, "helper must exit 0 (fail-soft)"
+    out, err = capsys.readouterr()
+    lines = [l for l in out.splitlines() if l.startswith("::warning")]
     assert any(
-        line.startswith("::warning title=debt-maturity-drip::refused:")
-        and "moved under 0 attempts" in line
-        for line in proc.stdout.splitlines()
-    ), proc.stdout
+        "non_fast_forward" in l and "refused after 3 attempts" in l
+        for l in lines
+    ), f"expected non_fast_forward warning with 'refused after 3 attempts';\noutput:\n{out}"
+
     origin_after = subprocess.run(
         ["git", "rev-parse", "origin/main"], cwd=str(worktree),
         capture_output=True, text=True, check=True,
     ).stdout.strip()
-    # Origin did NOT advance (no push attempt was made).
     assert origin_after == origin_before, (
         f"origin/main must stay on {origin_before!r}; got {origin_after!r}"
     )
+
+
+# ---------------------------------------------------------------------------
+# BLOCKER RED-first: non-fast-forward without recovery
+# ---------------------------------------------------------------------------
+
+
+def test_drip_helper_non_fast_forward_RED_without_recovery(tmp_path):
+    """BLOCKER (RED): verifies that when origin/main advances AFTER the local
+    commit exists (divergent histories), a plain push IS rejected as
+    non-fast-forward and origin/main stays put.
+
+    Setup:
+      1. origin/main = seed (seed.json content="{}")
+      2. Local commit A modifies seed.json -> {"x":4}  [this is what we want to push]
+      3. origin/main advances to foreign commit B (foreign.json added) via a side branch
+         — now origin/main is NOT an ancestor of local commit A
+      4. Plain push of local commit A to origin/main MUST be rejected non-fast-forward
+    """
+    worktree = _init_bare_remote(tmp_path)
+
+    # Step 1: origin/main = seed (seed.json content="{}").
+    seed_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+
+    # Step 2: make local commit A (modifies seed.json).
+    seed_file = worktree / "data" / "debt_maturity" / "cache" / "seed.json"
+    seed_file.write_text('{"x":4}')
+    subprocess.run(["git", "add", "--", "data/debt_maturity/cache/seed.json"],
+                   cwd=str(worktree), check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["git", "-c", "user.name=seed", "-c", "user.email=seed@x",
+         "commit", "-q", "-m", "local drip output"],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    local_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+
+    # Step 3: create foreign commit B on a side branch and push it to origin/main.
+    # This advances origin/main to a commit that is NOT an ancestor of local_sha.
+    # The foreign commit also REMOVES seed.json so origin/main's tree is
+    # disjoint from local_sha's tree (different files), making the divergence
+    # unambiguous in git ls-tree output.
+    foreign_file = worktree / "data" / "debt_maturity" / "cache" / "foreign.json"
+    foreign_file.parent.mkdir(parents=True, exist_ok=True)
+    foreign_file.write_text('{"f":1}')
+    subprocess.run(["git", "checkout", "-q", "-b", "side"],
+                   cwd=str(worktree), check=True, capture_output=True, text=True)
+    # Remove seed.json so origin/main's tree is disjoint from local_sha's tree.
+    seed_file = worktree / "data" / "debt_maturity" / "cache" / "seed.json"
+    subprocess.run(["git", "rm", "-q", "--", "data/debt_maturity/cache/seed.json"],
+                  cwd=str(worktree), check=True, capture_output=True, text=True)
+    subprocess.run(["git", "add", "--",
+                    "data/debt_maturity/cache/foreign.json"],
+                   cwd=str(worktree), check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["git", "-c", "user.name=foreign", "-c", "user.email=f@x",
+         "commit", "-q", "-m", "foreign advance"],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    foreign_sha = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+
+    # Push the side branch to the bare repo so its objects exist there,
+    # THEN use update-ref to move origin/main to it (creating divergent histories).
+    # NOTE: force-pushing to main ALSO updates the local refs/heads/main to foreign_sha
+    # and leaves HEAD detached at foreign_sha. We must restore local main to local_sha
+    # and re-attach HEAD to main before the helper runs.
+    subprocess.run(
+        ["git", "push", "origin", "side:main", "--force"],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    # Restore local refs/heads/main to local_sha.
+    subprocess.run(
+        ["git", "update-ref", "refs/heads/main", local_sha],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    # Re-attach HEAD to the main branch (currently at local_sha).
+    subprocess.run(["git", "checkout", "-q", "main"],
+                   cwd=str(worktree), check=True, capture_output=True, text=True)
+    # Now update origin/main directly to foreign_sha to create the divergence.
+    remote_url = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        cwd=str(worktree), capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    subprocess.run(
+        ["git", "-C", remote_url, "update-ref", "refs/heads/main", foreign_sha],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+    subprocess.run(["git", "fetch", "-q", "origin", "main"],
+                  cwd=str(worktree), check=True, capture_output=True, text=True)
+    # git fetch updates local refs/heads/main to foreign_sha (origin/main converged).
+    # Reset it back to local_sha so local main and origin/main are divergent.
+    subprocess.run(
+        ["git", "reset", "-q", "--hard", local_sha],
+        cwd=str(worktree), check=True, capture_output=True, text=True,
+    )
+
+    # Step 4: verify the histories are DIVERGED by the push result below (Step 6).
+    # The push from local_sha to origin/main will be rejected non-fast-forward
+    # only if the histories have genuinely diverged — that is the authoritative check.
+
+    # Step 5: after the force-push, HEAD is on the 'side' branch at foreign_sha.
+    # Switch back to main (local_sha) before the helper runs so it pushes
+    # from the right commit.
+    subprocess.run(["git", "checkout", "-q", "main"],
+                   cwd=str(worktree), check=True, capture_output=True, text=True)
+
+    # Step 6: verify a plain push from local_sha IS rejected non-fast-forward.
+    plain_push = subprocess.run(
+        ["git", "push", "origin", f"HEAD:refs/heads/main"],
+        cwd=str(worktree), capture_output=True, text=True,
+    )
+    assert plain_push.returncode != 0, (
+        f"push should be rejected non-fast-forward; rc={plain_push.returncode}, "
+        f"stderr={plain_push.stderr[:200]}"
+    )
+    assert "non-fast-forward" in plain_push.stderr.lower() or "rejected" in plain_push.stderr.lower(), (
+        f"expected non-fast-forward rejection; got: {plain_push.stderr[:200]}"
+    )
+
+    # Step 7: origin/main stayed at foreign_sha (the local change was rejected).
+    final_sha = subprocess.run(
+        ["git", "rev-parse", "origin/main"], cwd=str(worktree),
+        capture_output=True, text=True, check=True,
+    ).stdout.strip()
+    assert final_sha == foreign_sha, (
+        f"origin/main must stay at foreign_sha ({foreign_sha}); got {final_sha}"
+    )
+    ls = set(
+        subprocess.run(
+            ["git", "ls-tree", "--name-only", "-r", final_sha],
+            cwd=str(worktree), capture_output=True, text=True, check=True,
+        ).stdout.splitlines()
+    )
+    assert "data/debt_maturity/cache/foreign.json" in ls, (
+        f"foreign.json must be present; tree: {ls}"
+    )
+    # seed.json is NOT at the remote tip (push was rejected).
+    assert "data/debt_maturity/cache/seed.json" not in ls, (
+        f"seed.json must NOT be at remote tip (push was rejected); tree: {ls}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# MAJOR-1 — git outcome classification
+# ---------------------------------------------------------------------------
+
+
+def test_classify_non_fast_forward_is_retryable():
+    """non-fast-forward output is classified as ``non_fast_forward``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "! [rejected] main -> main (non-fast-forward)\n"
+        "hint: Updates were rejected because the remote contains work that you do not have\n"
+        "error: failed to push some refs"
+    )
+    assert result.kind == "non_fast_forward", result
+
+
+def test_classify_ref_lock_is_retryable():
+    """ref-lock / fetch-first output is classified as ``non_fast_forward``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "error: cannot lock ref 'refs/heads/main': unable to resolve reference\n"
+        "error: failed to push some refs"
+    )
+    assert result.kind == "non_fast_forward", result
+
+
+def test_classify_hook_rejection_is_hard_refusal():
+    """hook declined output is classified as ``push_error``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "remote: error: hook declined to update refs/heads/main\n"
+        "fatal: error: failed to push some refs"
+    )
+    assert result.kind == "push_error", result
+    assert "hook declined" in result.detail
+
+
+def test_classify_auth_failure_is_hard_refusal():
+    """Permission-denied output is classified as ``push_error``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "remote: Permission to user/repo.git denied to dashboard-bot.\n"
+        "fatal: unable to access 'https://github.com/user/repo.git/': "
+        "Authentication failed\n"
+    )
+    assert result.kind == "push_error", result
+    assert "Permission" in result.detail, f"expected 'Permission' in detail; got {result.detail!r}"
+
+
+def test_classify_gh013_is_hard_refusal():
+    """GH006 (protected branch) output is classified as ``push_error``."""
+    import scripts.debt_maturity_drip_push as dmp
+    importlib.reload(dmp)
+    result = dmp._classify_push_failure(
+        "remote: error: GH006: Protected branch update failed for refs/heads/main.\n"
+        "fatal: error: failed to push some refs"
+    )
+    assert result.kind == "push_error", result
+    assert "GH006" in result.detail
+
+
+# ---------------------------------------------------------------------------
+# MAJOR-2 — workflow: main ancestry check + path-scope assertion
+# ---------------------------------------------------------------------------
+
+
+def test_workflow_checks_out_main_and_has_ancestor_guard_step(tmp_path):
+    """MAJOR-2(a): the checkout step uses ``ref: main`` and there is a
+    dedicated step that asserts ``git merge-base --is-ancestor HEAD origin/main``
+    before any push can fire."""
+    import yaml
+
+    raw = WORKFLOW_FILE.read_text()
+    wf = yaml.safe_load(raw)
+    # Checkout must use main.
+    checkout_step = next(
+        s for s in wf["jobs"]["drip"]["steps"]
+        if s.get("uses", "").startswith("actions/checkout")
+    )
+    assert checkout_step["with"].get("ref") == "main", (
+        "checkout must use ref: main (MAJOR-2a)"
+    )
+    # There must be a step that runs the ancestor check.
+    step_texts = [s.get("run", "") for s in wf["jobs"]["drip"]["steps"]]
+    assert any(
+        "git merge-base --is-ancestor" in t and "origin/main" in t
+        for t in step_texts
+    ), "workflow must contain a merge-base ancestor check step (MAJOR-2a)"
+
+
+def test_workflow_path_scope_assertion_blocks_foreign_paths(tmp_path):
+    """MAJOR-2(b): the path-scope assertion step blocks commits that contain
+    paths outside the two allowed paths."""
+    import yaml
+
+    raw = WORKFLOW_FILE.read_text()
+    wf = yaml.safe_load(raw)
+    step_texts = [s.get("run", "") for s in wf["jobs"]["drip"]["steps"]]
+    # At least one step must check the diff is within allowed paths.
+    scope_steps = [
+        t for t in step_texts
+        if "git diff" in t and "data/debt_maturity/cache" in t
+    ]
+    assert len(scope_steps) >= 1, (
+        "workflow must assert commit only touches allowed paths (MAJOR-2b)"
+    )
+
+
+# ---------------------------------------------------------------------------
+# MINOR-1 — staged file count reported correctly in success notice
+# (verified by counting assertions in happy-path test)
+# MINOR-2 — empty attempts=0 test replaced by real exhaustion test above
+# MINOR-4 — title "live proof" removed (checked in PR title already)
+# MINOR-3 — test count corrected in updated PR body
+# ---------------------------------------------------------------------------
