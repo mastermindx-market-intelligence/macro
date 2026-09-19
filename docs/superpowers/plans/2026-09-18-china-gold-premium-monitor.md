@@ -18,7 +18,9 @@ Spec: docs/superpowers/specs/2026-09-18-china-gold-premium-monitor-design.md
 - Canonical and intraday methodologies never splice.
 - Display-only context: no score, rank, gate, size, Prophet, portfolio, or conviction input.
 - No new token root, runtime stylesheet injection, or Plotly dependency.
-- Dark/light and EN/ZH parity; 390px document must not overflow.
+- Dark/light and EN/ZH parity. The Gold feature itself must fit 390px and add zero
+  horizontal document-width regression versus its exact parent; any independently owned
+  pre-existing whole-page overflow remains with its incumbent repair lane.
 - Existing commodity numeric policy remains unchanged.
 
 ## Task 1 — Pure premium engine

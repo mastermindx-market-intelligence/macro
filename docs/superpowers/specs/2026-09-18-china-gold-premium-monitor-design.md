@@ -34,6 +34,20 @@ Intraday observations must be timestamped and fall within the configured maximum
 intraday proxy is never spliced into the canonical benchmark history and is always labelled
 indicative.
 
+### Close-aligned indicative basis
+
+The approved source-integration continuation adds a distinct daily-close proxy that compares
+the SGE Au99.99 trade-date close directly with global XAU/CNY at the same Shanghai close clock:
+
+SGE_CNY_OZ = AU9999_RMB_PER_GRAM * 31.1034768
+
+SPREAD_CNY_OZ = SGE_CNY_OZ - GLOBAL_XAUCNY_CNY_OZ
+
+PREMIUM_PCT = (SGE_CNY_OZ / GLOBAL_XAUCNY_CNY_OZ - 1) * 100
+
+This series has its own history and CNY price/spread presentation. It is never promoted into or
+spliced with SHAUPM/LBMA canonical history and remains explicitly indicative.
+
 ## Source and rights contract
 
 ### Initial UI/engine slice
@@ -109,7 +123,10 @@ Use existing light-theme state inks and reduced tint.
 ### Responsive and bilingual
 
 Desktop may use two metric columns; mobile recomposes to one. Control strips may scroll within
-themselves but the document cannot overflow. EN/ZH text is complete at rest and in disclosure.
+themselves. The Gold panel must fit at 390px and must add zero horizontal document-width
+regression versus its exact parent. A separately owned pre-existing whole-page overflow is
+recorded as adjacent debt rather than silently reassigned to this feature. EN/ZH text is complete
+at rest and in disclosure.
 
 ## Null and correction behavior
 
@@ -123,11 +140,12 @@ store; this engine is read-only and recomputes from current stored truth.
 Not done unless:
 1. pure math tests prove conversion and premium math;
 2. invalid, non-finite, non-positive, unentitled, and mismatched inputs fail closed;
-3. intraday skew is enforced and canonical/intraday histories stay separate;
+3. intraday skew is enforced and canonical/intraday/close-proxy histories stay separate;
 4. Gold gets the view-model and silver/copper/oil do not;
 5. commodity conviction/allocation outputs remain unchanged;
 6. dark/light × EN/ZH × 1440/390 evidence exists for available and unavailable states;
-7. no horizontal document overflow at 390px;
+7. the Gold panel fits at 390px and adds zero horizontal document-width regression versus
+   its exact parent; pre-existing whole-page overflow remains with its incumbent owner;
 8. design-system, visual-evidence, and runtime-style guards pass;
 9. applicable CI concludes;
 10. the merged source is rendered normally and the served Gold panel is browser-verified. With no
