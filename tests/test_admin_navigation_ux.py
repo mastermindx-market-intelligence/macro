@@ -51,3 +51,15 @@ def test_research_tools_do_not_repeat_internal_proprietary_disclaimers_on_every_
     assert 'Internal diagnostics for model votes and neural-system output.' not in APP
     assert 'Proprietary cross-market, liquidity, and risk diagnostics.' not in APP
     assert 'Admin-only research workspace.' in APP
+
+
+def test_experiments_table_hides_secondary_details_until_needed():
+    assert 'Long-running tests and data collections, with the next review date and action.' in APP
+    assert '<summary>Source</summary>' in APP
+    assert '<details class="row-actions">' in APP
+    assert '<summary class="btn">Actions</summary>' in APP
+    assert '>Mark acted</button>' in APP
+    assert '>Snooze</button>' in APP
+    assert '>Dismiss</button>' in APP
+    assert '>Override</button>' in APP
+    assert '.row-actions-menu' in CSS
