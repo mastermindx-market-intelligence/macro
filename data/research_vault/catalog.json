@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T22:27:11.871062+00:00",
-  "count": 2458,
+  "generated_at": "2026-09-19T22:57:13.109025+00:00",
+  "count": 2459,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1816,6 +1816,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-atcvcozdq78-f7854f",
+      "title": "Global Strategy Views Competition for Capital",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:44Z",
+      "summary_points": [
+        "Capital Cost Surge: AI infrastructure spending and rising rates (e.g., 30-yr yields near 0% in Germany/Japan) elevate capital costs, squeezing private/public cash flow amid geopolitical uncertainty.",
+        "Equity-Bond Regime Shift: Near-record equity outperformance vs. bonds preceded rising yields, signaling a fundamental capital allocation shift as bond yields surge.",
+        "ERP Vulnerability: Equity risk premia (ERP) at late 1990s lows heighten equities' sensitivity to rising bond yields, with US/Japan ERPs rebounding from recent lows.",
+        "Earnings Dominance: Since 2025, 12-month forward EPS growth drives global equity returns (MSCI EM, AP ex Japan), overriding PE multiples as primary return driver despite falling valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
