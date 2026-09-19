@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T19:26:45.595647+00:00",
-  "count": 2449,
+  "generated_at": "2026-09-19T22:12:06.548066+00:00",
+  "count": 2457,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1578,6 +1578,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-jotuhqbtf8r-606bd4",
+      "title": "Japan Economic Flash Continue to Expect Next Rate Hike in January Next Year",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:27Z",
+      "summary_points": [
+        "Policy Phase Change & Hike Timing: BOJ raised policy rate to 1.25% (25bp) via 7-2 vote, signaling shift to anchor prices at 2% target; next hike expected Jan 2027 (avoiding Dec 2026 due to fiscal calendar), but accelerated if yen depreciation risks materialize.",
+        "Key Acceleration Trigger: BOJ will not hike earlier unless inflation exceeds target (citing 2022-23 US/Europe as reference), with rapid yen depreciation posing the primary near-term risk to delay.",
+        "Critical Monitoring Risks: BOJ prioritizes tracking Middle East geopolitics, AI-driven economic shifts, exchange rate volatility, wage trends (Shunto negotiations), and financial conditions (rates, lending, asset prices) as rates rise."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-1mcvjodwepo-f5d5df",
       "title": "USA Industrial Production Below Expectations but GDP Relevant Details Stronger on Net",
       "institution": "Goldman Sachs",
@@ -1594,6 +1613,67 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fahtefnuiw2-fae005",
+      "title": "Mexico Solid Broad Based Expansion of Real GDP During 2Q26",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:19Z",
+      "summary_points": [
+        "Mexico Q2 2026 GDP Growth: 1.42% qoq sa driven by household consumption (0.9% qoq sa), gross fixed investment (4.3% qoq sa), and net exports (+2.8pt); statistical carry-over of 1.4% implies flat H2 2026 growth.",
+        "Q3 Risks & Outlook: Soft business confidence, peaking credit cycle, and USMCA review threaten momentum; offset by minimum wage hikes, resilient labor market, and public works.",
+        "2026 GDP Trajectory: YoY NSA Real GDP projected at 1.42%, fueled by domestic demand (investment +0.9, consumption +0.7) and net exports (+1.9), offsetting inventory adjustments (-0.1).",
+        "Supply-Side Expansion: Manufacturing (+1.1% qoq sa), construction (+4.0% qoq sa), and mining (+0.8% qoq sa) recovery signals sectoral strength amid broad-based growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-djmqpfka1hy-0daca9",
+      "title": "LATAM Today September 18, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:17Z",
+      "summary_points": [
+        "Argentina Q2 GDP & Trade Surge: Real GDP rose 2.0% yoy (beat consensus), driven by exports (+13.7% yoy) and primary sectors (mining +16.4%, fishing +44.7%); trade surplus forecast $1.7bn Aug, energy balance $10.6bn boosted by Middle East conflict.",
+        "Mexico Q2 Growth & Q3 Risk: Q2 GDP expanded 1.42% qoq sa on domestic demand (consumption +0.9%, investment +4.3%); Q3 outlook weakened by soft business confidence, credit cycle peak, and USMCA trade policy uncertainty.",
+        "Inflation & Policy Rate Shift: LA-IT5 inflation eased to 4.9% (Dec-26) from 10.2% (Jun-22); policy rate declined sharply from 11.45% (Apr-23) to 8.25% (Dec-26), signaling easing monetary policy critical for duration positioning.",
+        "Consensus Rate Expectation: Goldman Sachs aligns with 8.25% policy rate by Dec-26, confirming market expectation of sustained rate decline for yield curve and duration strategy adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jz95y0xfsml-4505cc",
+      "title": "Japan Focus of the Week September 21 25",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:15Z",
+      "summary_points": [
+        "BOJ Policy Shift & Rate Hike: BOJ raised policy rate to 1.25% (25bp), signaling phase change to anchor 2% inflation with next hike expected Jan 2024; maintains \"accommodative conditions\" but cites upside inflation risks above target.",
+        "Fiscal Deficit & JGB Dynamics: FY2027 budget up ¥21tn (¥143tn total), primary deficit forecast at c.1.5% GDP due to ¥3.5tn interest payments + ¥5tn spending; JGB issuance to rise c.¥13tn, impacting supply-demand balance.",
+        "Trade Deficit Expansion: Trade deficit widened to -¥1.1tn (vs -¥294.1bn YoY), driven by 28% yoy import surge and 52.3% semiconductor export growth, signaling sectoral imbalances.",
+        "Energy Price Volatility Risk: Crude oil import prices risk rising amid Middle East disruption; natural gas prices surged 38% yoy (US$2,425/mmbtu), with US crude imports up 603.5% YoY.",
+        "US-Japan Trade Surge: US exports to Japan surged 146.3% YoY (1,016,000 tons), critical for supply chain flows and sector exposure in portfolio positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -1615,6 +1695,86 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e8axdwi33ua-25f1d3",
+      "title": "China Weekly Kickstart Markets flat",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:07Z",
+      "summary_points": [
+        "GDP Forecast Downgrade: China’s mixed August data → lower Q3 GDP forecast; Goldman Sachs forecasts China’s real GDP YoY growth to decline from 5.4% (2023) to 4.5% (2026) - ERP Elevated: China A shares ERP remains at 9.2% (0.4 s.d.), indicating higher risk premium and valuation pressure - H Shares Outperformance: Proprietary model predicts H shares to outperform A shares in next 3 months (Exhibit 16) - Policy Tension Barometer: GSSRUSCN at 48 reflects heightened geopolitical (77) and trade (34) risks - Sector Divergence: Tech Hardware (+11.2% YTD) and Semiconductors (+23.0% YTD) surge vs Consumer Services (-27.3% YTD) and Retailing (-24.1% YTD) - Southbound Flows: Southbound flows US$5.3bn ytd (strong capital inflow trend) - Real Estate Drag: Real Estate exhibits steep decline vs CSI300 (from ~130 to ~30), signaling structural weakness"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rnec0kxuxe3-50dd91",
+      "title": "UK Weekly Kickstart The UK's Resilience Is Being Tested",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:00Z",
+      "summary_points": [
+        "UK Inflation & Energy Drivers: Headline CPI at 3.1% (Aug) driven by energy/services; energy prices surge due to Middle East disruptions, lifting Brent/WTI forecasts to $85-80/bbl for Dec2026-2027, with inflation peaking at 3.9% early 2024.",
+        "FTSE 100 Structural Resilience: Lower volatility than UK Domestic during energy shocks (Exhibit 1); heavily weighted in Banks (12.1%) and Energy (10.1%), reducing energy sensitivity for portfolios.",
+        "Critical Valuation Overextension: FTSE 350 EV/Sales at 80th percentile (1.6), significantly above historical average (68th percentile), signaling overvaluation despite 12m forward P/E (12.4) below median.",
+        "Active Fund Outflow Crisis: Global investors show net outflows into UK equities (Exhibit 33), with active fund flows negative for 3 months while passive inflows insufficient to offset, indicating structural underperformance.",
+        "Growth-Value Premium Compression: MSCI UK Growth Value premium declining from 140% to 60% (2025), signaling imminent rotation from growth to value in UK equity positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-lju5atqas9u-5d3189",
+      "title": "Sichuan Teway Food Group (603317)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:57Z",
+      "summary_points": [
+        "Revenue Miss vs Gross Profit Beat: Q2 2026 revenue (Rmb807mn) 8% below estimate, but gross profit (Rmb548mn) beat by 5%, indicating pricing power or cost control offsetting near-term revenue pressure.",
+        "Sustained Margin Expansion: Gross profit margin held at 41.7% (Q2 2026), projected to rise to 42.0% by 2028, with net profit margin improving to 18.7% by 2028, reflecting operational efficiency.",
+        "Sell Rating & Downside Risk: Sell-rated with 12-month target price Rmb12.40 (current price Rmb12.80, 3.1% downside), signaling near-term price pressure despite margin expansion.",
+        "Target Price Bearish Trend: Goldman Sachs' target price declined sequentially from Rmb16.07 (Oct 2023) to Rmb9.60 (Mar 2026), with closing prices consistently above targets, highlighting analyst pessimism.",
+        "Market Pessimism vs Analyst Outlook: Market pricing exceeds analyst targets across all dates, indicating portfolio managers face heightened risk from market overpricing downside relative to analyst views."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ad8lokmrgxn-f627f5",
+      "title": "Nexans (NEXS.PA) Takeaways from roadshow post 2Q26 results",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:54Z",
+      "summary_points": [
+        "US M&A Pipeline & Tender Dynamics: Republic Wire acquisition secures Canadian ops post-tariffs; active tender pipeline (RTE, Amprion, National Grid) and interconnection projects (Morocco/France, Egypt/Greece) drive 2027/28 awards despite flat 2026 transmission volumes.",
+        "Valuation & Efficiency Metrics: Revenue growth accelerates to 12.9% (12/27E), EBIT surges 35.0% (12/26E), ROIC rises to 27.5% (12/28E), while EV/EBITDA declines to 5.3 (12/28E), signaling strong operational efficiency and undervaluation.",
+        "Cash Flow & Dividend Sustainability: Operating cash flow (€1,017.3m 12/28E) exceeds net income (€547.4m), with FCF covering dividends at 3.3x (12/28E) and 3.4% yield, ensuring robust payout capacity.",
+        "Connect Segment Catalysts: Structural datacenter/superconductivity exposure drives organic growth; target 30% sales mix for high-margin advanced offers (Connect margin >12% long-term) by 2028.",
+        "Critical Risk Shift: Rating downgraded from 'A' to 'B' (Aug 19), indicating fundamental deterioration, compounded by project timing risks (2026 flat, 2027 limited growth) and financing clarity beyond 2030."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },

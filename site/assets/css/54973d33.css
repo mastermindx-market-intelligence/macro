@@ -162,6 +162,15 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .cw-rail.is-null{background:var(--card);box-shadow:inset 0 0 0 1px var(--grid);opacity:.55}
 .cw-scale{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;
   letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+/* Capture-time force-state hook for the not_evaluable rail variant. The capture
+   script sets [data-credit="null"] on <body>; the rules below swap only the rail
+   and scale. They do not change .tc-state or any data-derived text. The hidden
+   fallback nodes are capture-only until a product caller sets data-credit;
+   no production caller currently sets it. */
+.cw-rail-fb,.cw-scale-fb{display:none}
+[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}
+[data-credit="null"] .cw-rail-fb{display:block}
+[data-credit="null"] .cw-scale-fb{display:flex}
 
 .cw-inputs{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
 .cw-in{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:12.5px;

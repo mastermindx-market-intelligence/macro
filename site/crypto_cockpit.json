@@ -2,18 +2,18 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-09-18",
-  "generated_at": "2026-09-18T18:17:47+00:00",
+  "as_of": "2026-09-19",
+  "generated_at": "2026-09-19T21:46:48+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 78070.98,
-    "change_24h_pct": 2.26,
+    "price": 81238.39,
+    "change_24h_pct": 0.45,
     "stance_en": "RISK-ON",
     "stance_zh": "偏多",
-    "summary_en": "The big picture reads risk-on. Support comes from fundamentals and momentum; the drag comes from ETF flows and behaviour versus stocks. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏多。支撑来自基本面与动量；拖累来自ETF 资金流与与美股的联动。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": 12,
-    "exposure_pct": 43,
+    "summary_en": "The big picture reads risk-on. Support comes from momentum and fundamentals; the drag comes from futures positioning and behaviour versus stocks. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏多。支撑来自动量与基本面；拖累来自期货持仓与与美股的联动。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": 31,
+    "exposure_pct": 100,
     "gate_active": false
   },
   "axes": [
@@ -109,13 +109,13 @@
       "label_zh": "流动性与资金流",
       "primary": {
         "key": "etf",
-        "label_en": "ETF flows",
-        "label_zh": "ETF 资金流",
+        "label_en": "Etf",
+        "label_zh": "etf",
         "source": "master.board.etf",
-        "state_en": "Distribution",
-        "state_zh": "派发",
-        "tone": "bear",
-        "grade": "DIRECTIONAL"
+        "state_en": "Unavailable",
+        "state_zh": "暂无",
+        "tone": "neutral",
+        "grade": null
       },
       "spark_source": "signals.etf_flow_z",
       "receipt_members": [
@@ -134,9 +134,9 @@
           "label_en": "Coinbase premium",
           "label_zh": "Coinbase 溢价",
           "source": "master.board.premium",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Healthy demand",
+          "state_zh": "健康需求",
+          "tone": "bull",
           "grade": "EXTREMES"
         }
       ]
@@ -153,7 +153,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-09-18"
+        "as_of": "2026-09-19"
       },
       "spark_source": "signals.oi_mcap_ratio",
       "receipt_members": [
@@ -210,9 +210,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Distribution",
-          "state_zh": "派发",
-          "tone": "bear",
+          "state_en": "Accumulation",
+          "state_zh": "累积",
+          "tone": "bull",
           "grade": "NEW"
         },
         {
