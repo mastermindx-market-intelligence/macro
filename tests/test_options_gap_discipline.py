@@ -863,6 +863,44 @@ def test_position_only_change_is_attributed_to_position():
     assert got["max_contract_closure_error_abs"] < 1e-10
 
 
+def test_raw_absolute_map_change_survives_cross_contract_net_cancellation():
+    def two_sided_state(call_position, put_position):
+        return pd.DataFrame([
+            {
+                "root": "SPY",
+                "expiration": "2026-10-16",
+                "strike": 100.0,
+                "right": "C",
+                "position": float(call_position),
+                "spot": 100.0,
+                "vol": 0.20,
+                "time_years": 30 / 365,
+                "exposure_gex": 0.0,
+            },
+            {
+                "root": "SPY",
+                "expiration": "2026-10-16",
+                "strike": 100.0,
+                "right": "P",
+                "position": float(put_position),
+                "spot": 100.0,
+                "vol": 0.20,
+                "time_years": 30 / 365,
+                "exposure_gex": 0.0,
+            },
+        ])
+
+    got = r2.decompose_survivors(
+        two_sided_state(100, 100),
+        two_sided_state(120, 120),
+        greeks_fn=fake_greeks,
+    )
+    assert got["raw_survivor_change_net"] == pytest.approx(0.0, abs=1e-12)
+    assert got["raw_survivor_change_abs_mass"] > 0
+    assert got["component_abs_share"]["position"] == pytest.approx(1.0)
+    assert got["max_contract_closure_error_abs"] < 1e-10
+
+
 def test_mixed_change_shapley_closes_exactly():
     got = r2.decompose_survivors(
         _state(100, spot=100, vol=0.20, time_years=40 / 365),
