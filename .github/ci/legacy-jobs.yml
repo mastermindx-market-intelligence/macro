@@ -2405,9 +2405,9 @@ jobs:
       - "scripts/build_options_screener.py"
       # Skylit R2 Stage 0 research analyzer (tests in options gap discipline).
       - "scripts/research_skylit_r2_exposure_decomposition.py"
-      # Skylit R6 Stage 0 topology analyzer (tests in market structure).
+      # Skylit R6 topology is imported by tests/test_market_structure.py.
       - "scripts/research_skylit_r6_cross_expiry_topology.py"
-      # Skylit R4 Stage 0 coherence analyzer (tests in market structure).
+      # Skylit R4 coherence is imported by tests/test_market_structure.py.
       - "scripts/research_skylit_r4_cross_index_coherence.py"
       - "scripts/build_options_signal_campaign.py"
       - "scripts/build_options_signal_episode.py"
@@ -9407,6 +9407,9 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # Skylit R2 Stage 0 is imported by tests/test_options_gap_discipline.py.
+      # Keep the exclusive options owner closed over the research analyzer.
+      - "scripts/research_skylit_r2_exposure_decomposition.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
