@@ -219,10 +219,10 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
   font-size: 50px; font-weight: 800; letter-spacing: -.025em;
   line-height: .95; margin: 4px 0 10px;
 }
-.big-stance.t-watch    { color: var(--ink-warn, var(--amb)); text-shadow: 0 0 36px rgba(242,178,77,.35); }
+.big-stance.t-watch, .big-stance.t-selective, .big-stance.t-getready { color: var(--ink-warn, var(--amb)); text-shadow: 0 0 36px color-mix(in srgb, var(--amb) 35%, transparent); }
 .big-stance.t-protect  { color: var(--ink-down, var(--dn));  text-shadow: 0 0 36px rgba(255,106,106,.35); }
-.big-stance.t-getready { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px rgba(55,208,127,.35); }
-.big-stance.t-act, .big-stance.t-selective { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px color-mix(in srgb, var(--up) 35%, transparent); }
+
+.big-stance.t-act { color: var(--ink-up, var(--up));  text-shadow: 0 0 36px color-mix(in srgb, var(--up) 35%, transparent); }
 .big-stance.t-standaside { color: var(--mut); text-shadow: none; }
 @media(max-width:560px){ .big-stance { font-size: 36px; } }
 
@@ -352,6 +352,16 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .meter.t i { background: linear-gradient(90deg, var(--amb), var(--dn)); }
 .meter.b i { background: linear-gradient(90deg, var(--blue), var(--up)); }
 .brow .sc { width: 28px; text-align: right; font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
+
+/* Keep every warning and its score visible on narrow screens. */
+@media(max-width:640px) {
+  .brow { display: grid; grid-template-columns: minmax(0,1fr) 80px 28px; }
+  .brow .nm { grid-column: 1; grid-row: 1; width: auto; min-width: 0; }
+  .brow .st { grid-column: 1 / -1; grid-row: 2; min-width: 0; overflow-wrap: anywhere; }
+  .brow .meter { grid-column: 2; grid-row: 1; align-self: center; }
+  .brow .sc { grid-column: 3; grid-row: 1; }
+}
+
 .badge { font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
          letter-spacing: .02em; display: inline-block; margin-top: 2px; }
 .badge.top  { background: rgba(242,178,77,.14); color: var(--ink-warn, var(--amb)); }
@@ -628,7 +638,7 @@ html[data-theme="light"] :is(
 <div class="hero">
   <!-- stance hero (left) -->
   <div class="panel">
-    <p class="kick">{{ t('Where commodities stand today', '大宗商品今日处境') }}</p>
+    <p class="kick">{{ t('Commodity conditions — not a sector trade call', '商品条件——非板块交易指令') }}</p>
     <div class="big-stance t-{{ st.tone }}">{{ t(st.word_en, st.word_zh) }}</div>
     <div class="stance-sub">
       <span class="stance-sub-copy">{{ t(st.sub_en, st.sub_zh) }}</span>
@@ -640,35 +650,20 @@ html[data-theme="light"] :is(
       {% endif %}
     </div>
     <div class="stance-tag">
-      <span class="faint">{{ t('Macro backdrop', '宏观背景') }}</span> ·
+      <span class="faint">{{ t('Price-derived context', '价格衍生背景') }}</span> ·
       {{ t('dollar', '美元') }} <b>{{ td(complex.dollar_dir) }}</b> ·
-      {{ t('growth', '增长') }} <b>{{ td(complex.growth_dir) }}</b>
-      {# Plain-word quadrant tips per quadrant (spec item D / plain-language) #}
-      {% set _qtip_en = {
-        'Reflation':      'Dollar softening while growth picks up — tends to lift most commodities.',
-        'Stagflation':    'Growth slowing but inflation sticky — gold and silver usually hold up; oil mixed.',
-        'Goldilocks':     'Growth improving while the dollar stays calm — usually a mild tailwind for metals.',
-        'Deflation-scare':'Growth falling and dollar rising — most commodities face headwinds.',
-        'Neutral':        'No clear macro signal — wait for one axis to break.'
-      } %}
-      {% set _qtip_zh = {
-        'Reflation':      '美元走软同时增长回升——通常提振多数商品。',
-        'Stagflation':    '增长放缓但通胀黏性——黄金白银通常能守住；原油走势分化。',
-        'Goldilocks':     '增长改善且美元平稳——通常对金属温和有利。',
-        'Deflation-scare':'增长下行且美元走强——多数商品面临逆风。',
-        'Neutral':        '暂无明确宏观信号——等待某一轴线突破。'
-      } %}
+      {{ t('copper/gold ratio', '铜金比') }} <b>{{ td(complex.growth_dir) }}</b>
       <span class="faint"
-        data-tip-en="{{ _qtip_en.get(complex.regime, complex.regime ~ ' quadrant') }}"
-        data-tip-zh="{{ _qtip_zh.get(complex.regime, complex.regime) }}">
-        · {{ td(complex.regime) }} ⓘ
+        data-tip-en="Dollar and copper/gold price changes are proxies, not a measured inflation or real-rate assessment."
+        data-tip-zh="美元与铜金比的价格变化仅为代理指标，不是对通胀或实际利率的实测判断。">
+        · {{ t('Price proxy only', '仅价格代理') }} ⓘ
       </span>
     </div>
     <div class="asof" style="margin-top:10px;font-size:11px">{{ t('as of','截至') }} {{ as_of }}</div>
   </div>
   <!-- breadth panel (right) -->
   <div class="panel">
-    <p class="kick">{{ t('How many agree', '多少品种共振') }}</p>
+    <p class="kick">{{ t('Breadth by measure', '分项广度') }}</p>
     <div class="dotwrap">
       <div class="dotrow">
         <span class="lbl">{{ t('12-month trend up', '12个月趋势向上') }}</span>
@@ -740,14 +735,17 @@ html[data-theme="light"] :is(
   {# 4 — shock state #}
   <div class="kpi-tile">
     <div class="kpi-lbl">{{ t('Shock', '冲击') }}</div>
-    {% if ix.shock_state and ix.shock_state != 'normal' %}
+    {% if ix.shock_state in ('blowoff', 'washout', 'exogenous_bid', 'exogenous_pressure') %}
     <div class="kpi-val amb" style="font-size:15px">
       <span class="l-en">{{ ix.shock_en }}</span><span class="l-zh">{{ ix.shock_zh }}</span>
     </div>
     <div class="kpi-sub">{{ t('Index-level shock', '指数层面冲击') }}</div>
-    {% else %}
+    {% elif ix.shock_state == 'normal' %}
     <div class="kpi-val up" style="font-size:15px">{{ t('Calm', '平稳') }}</div>
     <div class="kpi-sub">{{ t('No shock at the index level', '指数层面无冲击') }}</div>
+    {% else %}
+    <div class="kpi-val mut">{{ t('Unavailable', '暂无数据') }}</div>
+    <div class="kpi-sub">{{ t('Index shock data unavailable', '指数冲击数据缺失') }}</div>
     {% endif %}
   </div>
 </div>
@@ -824,7 +822,7 @@ html[data-theme="light"] :is(
         </b>
       </span>
       {% endif %}
-      {% if ix.shock_state and ix.shock_state != 'normal' %}
+      {% if ix.shock_state in ('blowoff', 'washout', 'exogenous_bid', 'exogenous_pressure') %}
       <span class="chip">{{ t('Shock', '冲击') }} <b>{{ t(ix.shock_en, ix.shock_zh) }}</b></span>
       {% endif %}
       {% if ix.velocity_20 is not none %}
