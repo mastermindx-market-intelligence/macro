@@ -858,6 +858,9 @@ lanes:
         cluster:
           cl_markets:
             - scripts.build_commodities
+            # China physical-premium source→VM→render receipt; runs immediately
+            # after the commodity page and writes only the existing quality plane.
+            - scripts.audit_china_gold_premium --strict-render
             - scripts.build_spr
             - scripts.build_forex
             - scripts.build_bonds

@@ -1459,6 +1459,38 @@ def complex_vm(results: dict, calib: dict) -> dict:
     }
 
 
+def _attach_china_gold_premium(
+    vm: dict,
+    cfg_com: dict | None,
+    *,
+    reader=None,
+    now=None,
+) -> dict:
+    """Attach display-only China physical-premium context to Gold, and Gold only."""
+    if not isinstance(vm, dict):
+        return vm
+    detail = vm.get("detail")
+    if not isinstance(detail, list):
+        return vm
+
+    from engine import china_gold_premium
+
+    try:
+        premium_vm = china_gold_premium.build_view_model(
+            (cfg_com or {}).get("china_gold_premium", {}),
+            reader=reader,
+            now=now,
+        )
+    except Exception as exc:  # noqa: BLE001 — additive context must never drop the commodity VM
+        log.warning("china gold premium context failed (%s); showing unavailable state", exc)
+        premium_vm = china_gold_premium.unavailable_view_model("source_data_unavailable")
+    for row in detail:
+        if isinstance(row, dict) and row.get("name") == "gold":
+            row["china_gold_premium"] = premium_vm
+            break
+    return vm
+
+
 # --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
@@ -1612,6 +1644,7 @@ def main() -> int:
     try:
         cfg_com = config.load()["commodities"]
         vm = build_sector_vm(index_snap, conf, _cycle_positions, member_results, assets, cfg_com)
+        vm = _attach_china_gold_premium(vm, cfg_com)
     except Exception as _ve:  # noqa: BLE001 — additive, never break the page
         log.warning("build_sector_vm failed (%s)", _ve)
         vm = {}

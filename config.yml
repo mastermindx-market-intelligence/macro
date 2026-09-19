@@ -576,8 +576,11 @@ polygon:
   # open interest the free Cboe feed's history discards and that CANNOT be backfilled
   # (OI is point-in-time only). Snapshots the chain each day -> a raw per-strike store
   # so any dealer-gamma variant can be recomputed later from real OI. DISPLAY/RESEARCH
-  # ONLY, never scored. Key = POLYGON_API_KEY (.env locally / Actions secret); the
-  # plan is stocks+options entitled — index/futures/fx/crypto are NOT.
+  # ONLY, never scored. Key = POLYGON_API_KEY (.env locally / Actions secret).
+  # Do not infer cross-asset access from this block: the committed 2026-08-08
+  # capability manifest is endpoint-grain and records fx_prev + crypto_prev as
+  # entitled while indices_snapshot is not_entitled. Cross-asset consumers must
+  # bind their exact endpoint and the governing license/entitlement record.
   base_url: https://api.polygon.io
   api_key_env: POLYGON_API_KEY
   retries: 3
@@ -4236,6 +4239,29 @@ commodities:
     silver: ["SI=F", cot_silver, precious]
     copper: ["HG=F", cot_copper, industrial]
     oil:    ["CL=F", cot_oil,    energy]
+
+  # Gold-only China physical-premium monitor. Provider-neutral refs are filled
+  # ONLY after the applicable Shanghai/London/FX source rights are accepted.
+  # Empty legs deliberately render an honest unavailable state; never substitute
+  # the Yahoo futures price spine, an ETF, or another unofficial quote.
+  china_gold_premium:
+    canonical: {}                  # SHAUPM + LBMA Gold Price AM + USDCNY
+    intraday: {}                   # optional true intraday method; kept separate
+    close_proxy:                   # indicative, close-aligned; never spliced into canonical history
+      sge:
+        group: gold_china_basis
+        name: sge_au9999
+        column: rmb_per_g
+        source_label: Shanghai Gold Exchange Au99.99
+        entitled: true
+      global:
+        group: gold_china_basis
+        name: xaucny_spot
+        column: cny_per_oz
+        source_label: Global XAU/CNY spot
+        entitled: true
+      max_skew_minutes: 2
+      max_age_days: 4
 
   # Broad commodity roster for the SECTOR INDEX + breadth/trend-diversity engine
   # (engine/commodity_index.py). DISPLAY-TIER: these members get the generic price

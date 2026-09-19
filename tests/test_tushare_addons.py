@@ -1023,3 +1023,570 @@ def test_reverted_manual_pilot_infrastructure_stays_retired() -> None:
     assert not lock_path.exists()
     assert "tushare-addons-pilot.yml" not in dag_text
     assert "scripts.collect_tushare_addons" not in dag_text
+
+
+# China physical-gold close-basis source seam (stacked source slice).
+
+class _GoldBasisResp:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def json(self):
+        return self._payload
+
+
+def _gold_basis_ms(ts: str) -> int:
+    return int(pd.Timestamp(ts).timestamp() * 1000)
+
+
+def test_sge_au9999_frame_filters_contract_and_stamps_shanghai_close():
+    from collectors import china_gold_basis as cgb
+
+    raw = pd.DataFrame(
+        [
+            {"ts_code": "Au99.95", "trade_date": "20260917", "close": 816.0},
+            {"ts_code": "Au99.99", "trade_date": "20260917", "close": 817.25},
+            {"ts_code": "Au99.99", "trade_date": "20260918", "close": 820.50},
+        ]
+    )
+
+    out = cgb._sge_au9999_frame(raw)
+
+    assert list(out.columns) == ["rmb_per_g"]
+    assert list(out["rmb_per_g"]) == [817.25, 820.50]
+    assert list(out.index) == [
+        pd.Timestamp("2026-09-17T07:30:00"),
+        pd.Timestamp("2026-09-18T07:30:00"),
+    ]
+
+
+def test_massive_xaucny_frame_selects_nearest_bar_to_shanghai_close():
+    from collectors import china_gold_basis as cgb
+
+    payload = {
+        "results": [
+            {"t": _gold_basis_ms("2026-09-18T07:27:00Z"), "c": 30900.0},
+            {"t": _gold_basis_ms("2026-09-18T07:29:00Z"), "c": 30950.0},
+            {"t": _gold_basis_ms("2026-09-18T07:30:00Z"), "c": 30960.0},
+            {"t": _gold_basis_ms("2026-09-18T07:31:00Z"), "c": 30970.0},
+        ]
+    }
+
+    out = cgb._massive_xaucny_frame(payload, tolerance_minutes=2)
+
+    assert list(out.columns) == ["cny_per_oz"]
+    assert len(out) == 1
+    assert out.index[0] == pd.Timestamp("2026-09-18T07:30:00")
+    assert out.iloc[0]["cny_per_oz"] == pytest.approx(30960.0)
+
+
+def test_massive_xaucny_frame_drops_days_without_close_aligned_bar():
+    from collectors import china_gold_basis as cgb
+
+    payload = {
+        "results": [
+            {"t": _gold_basis_ms("2026-09-18T07:20:00Z"), "c": 30900.0},
+            {"t": _gold_basis_ms("2026-09-18T07:40:00Z"), "c": 31000.0},
+        ]
+    }
+
+    out = cgb._massive_xaucny_frame(payload, tolerance_minutes=2)
+
+    assert out.empty
+
+
+def test_adapter_fetch_uses_existing_tushare_client_and_massive_currency_key(monkeypatch):
+    from collectors import china_gold_basis as cgb
+
+    raw_sge = pd.DataFrame(
+        [
+            {"ts_code": "Au99.99", "trade_date": "20260917", "close": 817.25},
+            {"ts_code": "Au99.99", "trade_date": "20260918", "close": 820.50},
+        ]
+    )
+    calls = []
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(
+        cgb.tushare_client,
+        "query",
+        lambda api_name, **kwargs: raw_sge.copy()
+        if api_name == "sge_daily"
+        else (_ for _ in ()).throw(AssertionError(api_name)),
+    )
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "massive-key" if name in {"POLYGON_API_KEY", "MASSIVE_API_KEY"} else None)
+
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    def fake_get(url, **kwargs):
+        calls.append((url, kwargs))
+        return _GoldBasisResp(
+            {
+                "results": [
+                    {"t": _gold_basis_ms("2026-09-17T07:30:00Z"), "c": 30750.0},
+                    {"t": _gold_basis_ms("2026-09-18T07:30:00Z"), "c": 30960.0},
+                ]
+            }
+        )
+
+    monkeypatch.setattr(adapter, "http_get", fake_get)
+
+    frames = adapter.fetch(full_history=False)
+
+    assert set(frames) == {"sge_au9999", "xaucny_spot"}
+    assert list(frames["sge_au9999"]["rmb_per_g"]) == [817.25, 820.50]
+    assert list(frames["xaucny_spot"]["cny_per_oz"]) == [30750.0, 30960.0]
+    assert calls
+    url, kwargs = calls[0]
+    assert "C:XAUUSD" not in url
+    assert "C:XAUCNY" in url
+    assert kwargs["headers"]["Authorization"] == "Bearer massive-key"
+    assert "apiKey" not in kwargs.get("params", {})
+
+
+def test_adapter_without_either_credential_is_known_blocked(monkeypatch):
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: False)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: None)
+
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    assert adapter.expected_failure
+    with pytest.raises(RuntimeError, match="credentials"):
+        adapter.fetch()
+
+
+def test_production_config_wires_close_proxy_to_source_store_without_vendor_branding():
+    from lib import config
+
+    cfg = config.load()["commodities"]["china_gold_premium"]
+    proxy = cfg["close_proxy"]
+
+    assert proxy["sge"] == {
+        "group": "gold_china_basis",
+        "name": "sge_au9999",
+        "column": "rmb_per_g",
+        "source_label": "Shanghai Gold Exchange Au99.99",
+        "entitled": True,
+    }
+    assert proxy["global"] == {
+        "group": "gold_china_basis",
+        "name": "xaucny_spot",
+        "column": "cny_per_oz",
+        "source_label": "Global XAU/CNY spot",
+        "entitled": True,
+    }
+    assert proxy["max_skew_minutes"] == 2
+    assert proxy["max_age_days"] == 4
+    public_labels = " ".join((proxy["sge"]["source_label"], proxy["global"]["source_label"]))
+    assert "Tushare" not in public_labels
+    assert "Massive" not in public_labels
+    assert "Polygon" not in public_labels
+
+
+def test_collector_registry_places_gold_basis_on_existing_us_nightly_shard():
+    from scripts import collect
+
+    registry = collect.all_adapters()
+
+    assert "gold_china_basis" in registry
+    assert registry["gold_china_basis"].__name__ == "ChinaGoldBasisAdapter"
+    assert "gold_china_basis" in collect.group_members("us", registry)
+    assert "gold_china_basis" not in collect.group_members("asia", registry)
+
+
+def test_daily_nightly_already_supplies_both_gold_basis_credentials():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / ".github" / "workflows" / "daily.yml").read_text()
+
+    assert "TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}" in text
+    assert "POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}" in text
+    assert "MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}" in text
+    assert "python -m scripts.collect --exclude-group asia" in text
+
+
+def test_massive_history_chunks_never_exceed_fourteen_calendar_days():
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    chunks = list(cgb._date_chunks(date(2026, 7, 1), date(2026, 8, 9), max_days=14))
+
+    assert chunks[0] == (date(2026, 7, 1), date(2026, 7, 14))
+    assert chunks[-1][1] == date(2026, 8, 9)
+    for start, end in chunks:
+        assert (end - start).days <= 13
+    for left, right in zip(chunks, chunks[1:]):
+        assert right[0] == left[1] + pd.Timedelta(days=1)
+
+
+def test_adapter_filters_tushare_request_to_au9999(monkeypatch):
+    from collectors import china_gold_basis as cgb
+
+    seen = {}
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "massive-key")
+    raw_sge = pd.DataFrame(
+        [{"ts_code": "Au99.99", "trade_date": "20260918", "close": 820.5}]
+    )
+
+    def fake_query(api_name, **kwargs):
+        seen.update(kwargs)
+        return raw_sge
+
+    monkeypatch.setattr(cgb.tushare_client, "query", fake_query)
+    adapter = cgb.ChinaGoldBasisAdapter()
+    monkeypatch.setattr(
+        adapter,
+        "http_get",
+        lambda *args, **kwargs: _GoldBasisResp(
+            {"results": [{"t": _gold_basis_ms("2026-09-18T07:30:00Z"), "c": 30960.0}]}
+        ),
+    )
+
+    adapter.fetch()
+
+    assert seen["ts_code"] == "Au99.99"
+
+
+def test_collector_store_is_consumed_by_engine_and_audited_render_without_translation(tmp_path, monkeypatch):
+    import copy
+    import json
+
+    from collectors import china_gold_basis as cgb
+    from collectors.base import run_adapter
+    from engine import china_gold_premium as cgp
+    from lib import config, store
+    from scripts import audit_china_gold_premium as audit
+
+    cfg = copy.deepcopy(config.load())
+    cfg["storage"]["site_dir"] = "site"
+    data_root = tmp_path / "data"
+    site_root = tmp_path / "site"
+    site_root.mkdir(parents=True)
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "data_dir", lambda: data_root)
+    monkeypatch.setattr(config, "load", lambda: cfg)
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    now = pd.Timestamp.now(tz="UTC")
+    latest = (now.normalize() - pd.Timedelta(days=1) + pd.Timedelta(hours=7, minutes=30)).tz_convert(None)
+    idx = pd.DatetimeIndex([latest - pd.Timedelta(days=1), latest])
+    frames = {
+        "sge_au9999": pd.DataFrame({"rmb_per_g": [817.0, 820.5]}, index=idx),
+        "xaucny_spot": pd.DataFrame({"cny_per_oz": [25380.0, 25490.0]}, index=idx),
+    }
+    monkeypatch.setattr(
+        adapter,
+        "fetch",
+        lambda full_history=False: {name: frame.copy() for name, frame in frames.items()},
+    )
+
+    result = run_adapter(adapter)
+
+    assert result.status == "ok"
+    stored_sge = store.read("gold_china_basis", "sge_au9999")
+    assert stored_sge is not None
+    assert stored_sge.index[-1] == latest
+
+    vm = cgp.build_view_model(
+        cfg["commodities"]["china_gold_premium"],
+        now=now,
+    )
+    assert vm["available"] is True
+    assert vm["current_method"] == "close_proxy"
+    expected_asof = latest.tz_localize("UTC").isoformat()
+    assert vm["close_proxy"]["asof"] == expected_asof
+
+    site_root.joinpath("commodities.html").write_text(
+        '<section id="gold-china-premium" '
+        f'data-cgp-state="{vm["state"]}" '
+        f'data-cgp-display-source="{vm["chart"]["display_source"]}" '
+        f'data-cgp-currency="{vm["price_currency"]}" '
+        f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
+        f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
+    )
+
+    rc = audit.run(strict_render=True)
+    persisted = json.loads(
+        (data_root / "quality" / "china_gold_premium.json").read_text()
+    )
+    assert rc == 0
+    assert persisted["status"] == "available_fresh"
+    assert persisted["headline_method"] == "close_proxy"
+    assert persisted["render_consistent"] is True
+    assert persisted["source_asof"] == expected_asof
+    assert persisted["official_canonical_available"] is False
+
+
+def test_gold_premium_quality_audit_runs_immediately_after_commodity_builder():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / "scripts" / "ci" / "daily_engine_regional_desk_builders.sh").read_text()
+
+    build = 'brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities'
+    audit = 'brun commodities_gold_premium_audit "audit China gold premium live path" scripts.audit_china_gold_premium --strict-render'
+    assert build in text
+    assert audit in text
+    assert text.index(build) < text.index(audit) < text.index('brun spr')
+
+    order_line = next(
+        line for line in text.splitlines() if line.startswith('ORDER="')
+    )
+    order = order_line.split('"', 2)[1].split()
+    assert order.index("commodities") < order.index("commodities_gold_premium_audit") < order.index("spr")
+
+
+def test_gold_basis_store_namespace_survives_us_nightly_china_reset():
+    from fnmatch import fnmatch
+    from collectors.china_gold_basis import ChinaGoldBasisAdapter
+    from lib import config
+
+    adapter = ChinaGoldBasisAdapter()
+    assert adapter.name == "gold_china_basis"
+    assert adapter.group == "gold_china_basis"
+
+    proxy = config.load()["commodities"]["china_gold_premium"]["close_proxy"]
+    assert proxy["sge"]["group"] == "gold_china_basis"
+    assert proxy["global"]["group"] == "gold_china_basis"
+
+    # daily.yml's US-nightly commit deliberately unstages data/china_* because
+    # that namespace belongs to asia-close. This source is US-nightly-owned, so
+    # its store namespace must never match that reset pattern.
+    assert not fnmatch(f"data/{adapter.group}", "data/china_*")
+
+
+def test_gold_basis_cold_start_seeds_enough_history_for_30_session_stats(monkeypatch):
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    from datetime import date
+
+    monkeypatch.setattr(cgb.store, "last_date", lambda group, name: None)
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) >= 90
+
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: date(2026, 9, 18),
+    )
+    deep_idx = pd.date_range("2026-08-01 07:30:00", periods=35, freq="D")
+    monkeypatch.setattr(
+        cgb.store,
+        "read",
+        lambda group, name: pd.DataFrame({"v": range(35)}, index=deep_idx),
+    )
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) == cgb._REFRESH_DAYS
+    assert adapter._fetch_window_days(
+        full_history=True,
+        today=date(2026, 9, 18),
+    ) == 370
+
+
+def test_gold_basis_refresh_recovers_a_long_store_gap(monkeypatch):
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: date(2026, 7, 1),
+    )
+
+    days = adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    )
+
+    assert days >= 90
+    assert days >= (date(2026, 9, 18) - date(2026, 7, 1)).days + 14
+
+
+def test_gold_basis_refresh_stays_bounded_when_store_is_current(monkeypatch):
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    latest = {
+        "sge_au9999": date(2026, 9, 17),
+        "xaucny_spot": date(2026, 9, 18),
+    }
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: latest[name],
+    )
+    deep_idx = pd.date_range("2026-08-01 07:30:00", periods=35, freq="D")
+    monkeypatch.setattr(
+        cgb.store,
+        "read",
+        lambda group, name: pd.DataFrame({"v": range(35)}, index=deep_idx),
+    )
+
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) == cgb._REFRESH_DAYS
+
+
+def test_gold_premium_quality_audit_rechecks_post_normalization_tree_before_stage():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / "scripts" / "ci" / "daily_engine_commit_outputs.sh").read_text()
+
+    optimize = 'python -m scripts.optimize_assets'
+    audit = 'python -m scripts.audit_china_gold_premium --strict-render'
+    stage = 'git add data/ site/ reports/'
+
+    assert optimize in text
+    assert audit in text
+    assert stage in text
+    strip = 'strip_conflict_markers.sh'
+    assert text.index(optimize) < text.index(strip) < text.index(audit) < text.index(stage)
+    assert 'China gold premium final render audit' in text
+
+
+def test_gold_basis_exact_massive_endpoint_probe_is_code_gated():
+    from scripts import massive_entitlement_probe as mep
+
+    class Resp:
+        status_code = 200
+
+        def json(self):
+            return {
+                "resultsCount": 1,
+                "results": [{"t": 1, "c": 30000.0}],
+            }
+
+    class Session:
+        def __init__(self):
+            self.headers = {}
+            self.calls = []
+
+        def get(self, url, params=None, timeout=None):
+            self.calls.append({"url": url, "params": params, "timeout": timeout})
+            return Resp()
+
+    session = Session()
+    prober = mep.RestProber(
+        "fixture-key",
+        base_url="https://api.massive.example",
+        session=session,
+    )
+    results = mep.run_rest_battery(prober, probe_day="2026-09-18")
+
+    exact = results["fx_gold_cny_minute"]
+    assert exact["verdict"] == "entitled"
+    calls = [
+        call for call in session.calls
+        if "C:XAUCNY/range/1/minute/2026-09-18/2026-09-18" in call["url"]
+    ]
+    assert len(calls) == 1
+    assert calls[0]["params"]["limit"] == 5
+
+
+def test_gold_basis_cold_start_prioritizes_current_chunk_and_keeps_recent_data_when_old_history_fails(monkeypatch):
+    from datetime import datetime, timezone
+    from collectors import china_gold_basis as cgb
+
+    class FixedDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(2026, 9, 18, 12, 0, tzinfo=timezone.utc)
+            return value if tz is None else value.astimezone(tz)
+
+    raw_sge = pd.DataFrame(
+        [
+            {"ts_code": "Au99.99", "trade_date": "20260917", "close": 817.25},
+            {"ts_code": "Au99.99", "trade_date": "20260918", "close": 820.50},
+        ]
+    )
+
+    monkeypatch.setattr(cgb, "datetime", FixedDateTime)
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    monkeypatch.setattr(cgb.store, "last_date", lambda group, name: None)
+    monkeypatch.setattr(cgb.tushare_client, "query", lambda api_name, **kwargs: raw_sge.copy())
+
+    adapter = cgb.ChinaGoldBasisAdapter()
+    calls = []
+
+    def fake_get(url, **kwargs):
+        calls.append(url)
+        # The newest chunk must be attempted first. It succeeds with current data;
+        # older-history entitlement/network failures may reduce depth but must not
+        # black out the current product reading.
+        if url.endswith("/2026-09-05/2026-09-18"):
+            return _GoldBasisResp(
+                {
+                    "results": [
+                        {"t": _gold_basis_ms("2026-09-17T07:30:00Z"), "c": 30750.0},
+                        {"t": _gold_basis_ms("2026-09-18T07:30:00Z"), "c": 30960.0},
+                    ]
+                }
+            )
+        raise RuntimeError("older minute history unavailable")
+
+    monkeypatch.setattr(adapter, "http_get", fake_get)
+
+    frames = adapter.fetch(full_history=False)
+
+    assert calls[0].endswith("/2026-09-05/2026-09-18")
+    assert list(frames["xaucny_spot"].index) == [
+        pd.Timestamp("2026-09-17T07:30:00"),
+        pd.Timestamp("2026-09-18T07:30:00"),
+    ]
+    assert list(frames["sge_au9999"]["rmb_per_g"]) == [817.25, 820.50]
+
+
+def test_gold_basis_refresh_keeps_backfilling_until_thirty_aligned_sessions(monkeypatch):
+    from datetime import date
+    from collectors import china_gold_basis as cgb
+
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    adapter = cgb.ChinaGoldBasisAdapter()
+
+    idx = pd.date_range("2026-09-08 07:30:00", periods=10, freq="D")
+    frames = {
+        "sge_au9999": pd.DataFrame({"rmb_per_g": range(10)}, index=idx),
+        "xaucny_spot": pd.DataFrame({"cny_per_oz": range(10)}, index=idx),
+    }
+    monkeypatch.setattr(
+        cgb.store,
+        "read",
+        lambda group, name: frames[name].copy(),
+    )
+    monkeypatch.setattr(
+        cgb.store,
+        "last_date",
+        lambda group, name: date(2026, 9, 17),
+    )
+
+    assert adapter._fetch_window_days(
+        full_history=False,
+        today=date(2026, 9, 18),
+    ) >= cgb._COLD_START_DAYS
