@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T23:12:18.802493+00:00",
-  "count": 2460,
+  "generated_at": "2026-09-19T23:27:44.273224+00:00",
+  "count": 2461,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -2370,6 +2370,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rbj4kvemfy7-1b4117",
+      "title": "Energy, Utilities & Mining Pulse Investors Asking What Are Takeaways from the Road or Recent Management Meetings",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:10Z",
+      "summary_points": [
+        "Chevron Growth & Geopolitical Risks: Venezuela production to double to ~600kbd by 2031, Argentina output to triple to ~240kbd by 2035; geopolitical risk discount debate ongoing amid cash flow from Venezuela, Iraq, Argentina, West Africa, Eastern Mediterranean.",
+        "E&P Valuation Pressure: 4-week rolling avg.",
+        "implied discount rate for E&Ps exceeds 11% (based on five-year futures), indicating elevated cost of capital and potential underpricing risks.",
+        "Oil Valuation Gap: E&P stock valuations imply WTI oil prices slightly below five-year strip (current implied ~$68/bbl), signaling market expectations of near-term oil price pressure vs. longer-term strip."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
