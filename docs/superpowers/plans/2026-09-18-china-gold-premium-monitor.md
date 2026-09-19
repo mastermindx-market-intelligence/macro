@@ -95,7 +95,7 @@ evidence proves rendering and fail-closed behavior but is not a live vendor-call
 
 The same builder also projects a compact display-tier
 `gold_context.china_physical_premium` object into the incumbent
-`data/commodities/latest.json` machine feed. It carries only current method/state/value,
+`data/commodity/latest.json` machine feed. It carries only current method/state/value,
 freshness/as-of and the 5/30-session context statistics plus an explicit
 `context_only: true`; it omits source-vendor detail and all conviction/action/ranking fields.
 This is a machine projection of the same accepted context, not a new signal or authority plane.

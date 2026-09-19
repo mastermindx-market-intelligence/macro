@@ -139,7 +139,7 @@ mutates a store and never feeds a score.
 scripts/build_commodities.py asks the engine for one china_gold_premium view-model and attaches
 it only to Gold's detail row. No other asset is changed. Failure is additive and non-fatal.
 
-The incumbent `data/commodities/latest.json` feed also receives one compact
+The incumbent `data/commodity/latest.json` feed also receives one compact
 `gold_context.china_physical_premium` projection derived from that same view-model. The machine
 object is explicitly `context_only`, excludes vendor/source internals and excludes every
 conviction/action/ranking field; it cannot become a hidden trade signal.
