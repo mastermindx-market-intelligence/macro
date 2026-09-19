@@ -34,6 +34,14 @@ def _sha256_text(value: Any) -> str:
     return hashlib.sha256(str(value or "").encode("utf-8")).hexdigest()
 
 
+def _is_sha256(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+    )
+
+
 def _norm(value: Any) -> str:
     return " ".join(citation_normalize(str(value or "")).split())
 
@@ -375,8 +383,8 @@ def summary(delta: Any) -> dict[str, Any]:
         not institution
         or not previous_id
         or not current_id
-        or len(comparison_id) != 64
-        or len(topic_sha256) != 64
+        or not _is_sha256(comparison_id)
+        or not _is_sha256(topic_sha256)
     ):
         raise ValueError("belief delta identity is incomplete")
 
