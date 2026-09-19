@@ -4249,13 +4249,13 @@ commodities:
     intraday: {}                   # optional true intraday method; kept separate
     close_proxy:                   # indicative, close-aligned; never spliced into canonical history
       sge:
-        group: china_gold_basis
+        group: gold_china_basis
         name: sge_au9999
         column: rmb_per_g
         source_label: Shanghai Gold Exchange Au99.99
         entitled: true
       global:
-        group: china_gold_basis
+        group: gold_china_basis
         name: xaucny_spot
         column: cny_per_oz
         source_label: Global XAU/CNY spot

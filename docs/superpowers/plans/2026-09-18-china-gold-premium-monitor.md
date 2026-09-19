@@ -75,7 +75,7 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
 
 - reuses the existing Tushare client/credential and the existing Massive/Polygon credential;
 - writes raw source legs into the existing `lib.store` time-series plane under
-  `china_gold_basis/` (no second store or publication plane);
+  `gold_china_basis/` (no second store or publication plane);
 - runs in the existing authoritative nightly collector lane (no new scheduler);
 - fetches SGE Au99.99 trade-date close and close-aligned global XAU/CNY only;
 - leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its
@@ -85,3 +85,11 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
 Production proof for this slice is the normal post-merge nightly source accrual followed by
 the existing daily commodity builder and served-page browser verification. Pre-merge fixture
 evidence proves rendering and fail-closed behavior but is not a live vendor-call receipt.
+
+The existing nightly builder band also runs `scripts.audit_china_gold_premium` immediately
+after `build_commodities`. The audit independently re-reads the current source stores and
+engine view-model, compares them with the actual rendered Gold panel, and writes
+`data/quality/china_gold_premium.json` through the existing quality/commit plane. Source
+unavailability is an honest green receipt; a source→VM→render mismatch is a red builder
+substep. This receipt is observability/proof only and creates no new lifecycle or scoring
+authority.

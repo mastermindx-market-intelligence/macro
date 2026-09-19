@@ -74,12 +74,25 @@ The indicative close-aligned source contract is:
   trade-date close at 15:30 Asia/Shanghai;
 - Massive Currencies `C:XAUCNY` minute aggregates, aligned within the configured close
   tolerance; the committed capability manifest records the FX probe as entitled;
-- raw legs persist under `china_gold_basis/` and are consumed only by this display engine.
+- raw legs persist under `gold_china_basis/` and are consumed only by this display engine.
 
 This amendment does not convert the proxy into the official benchmark. SHAUPM/LBMA-AM remains
 the canonical method and stays unavailable until its own entitled mapping exists. Missing or
 stale proxy sources fail closed; futures, ETFs, Yahoo, or unofficial web quotes remain forbidden
 substitutes.
+
+### Production-path proof receipt
+
+Every normal nightly commodity build is followed, in the existing builder band, by a read-only
+`scripts.audit_china_gold_premium` check. It independently reads the configured source stores and
+premium engine, then compares that truth with the written `site/commodities.html` Gold panel.
+The result is persisted to the existing `data/quality/china_gold_premium.json` observability
+plane and staged by the existing engine-output commit.
+
+The receipt distinguishes a valid unavailable state from an actual render-contract break:
+source absence/staleness does not fail the build, while disagreement between engine state and
+rendered panel is a strict audit failure. The receipt has no signal, ranking, lifecycle, retry,
+or publication authority.
 
 ## Engine boundary
 

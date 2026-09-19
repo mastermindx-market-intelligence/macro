@@ -133,7 +133,7 @@ class ChinaGoldBasisAdapter(Adapter):
     """Accrue the two raw legs needed for the close-aligned indicative basis."""
 
     name = "gold_china_basis"
-    group = "china_gold_basis"
+    group = "gold_china_basis"
     stale_after_days = 4
     normalize_index = False
 

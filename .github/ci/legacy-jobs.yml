@@ -1644,8 +1644,10 @@ jobs:
       - "engine/commodity_inputs.py"
       - "engine/commodity_signals.py"
       - "engine/commodity_strategies.py"
-      # China physical-gold premium core is independently merge-gated here.
+      # China physical-gold premium core + production-path quality receipt
+      # are independently merge-gated here.
       - "engine/china_gold_premium.py"
+      - "scripts/audit_china_gold_premium.py"
       - "tests/test_china_gold_premium_engine_contract.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"

@@ -1164,14 +1164,14 @@ def test_production_config_wires_close_proxy_to_source_store_without_vendor_bran
     proxy = cfg["close_proxy"]
 
     assert proxy["sge"] == {
-        "group": "china_gold_basis",
+        "group": "gold_china_basis",
         "name": "sge_au9999",
         "column": "rmb_per_g",
         "source_label": "Shanghai Gold Exchange Au99.99",
         "entitled": True,
     }
     assert proxy["global"] == {
-        "group": "china_gold_basis",
+        "group": "gold_china_basis",
         "name": "xaucny_spot",
         "column": "cny_per_oz",
         "source_label": "Global XAU/CNY spot",
@@ -1278,7 +1278,7 @@ def test_collector_store_is_consumed_by_product_engine_without_translation(tmp_p
     result = run_adapter(adapter)
 
     assert result.status == "ok"
-    stored_sge = store.read("china_gold_basis", "sge_au9999")
+    stored_sge = store.read("gold_china_basis", "sge_au9999")
     assert stored_sge is not None
     assert stored_sge.index[-1] == pd.Timestamp("2026-09-18T07:30:00")
 
@@ -1289,3 +1289,41 @@ def test_collector_store_is_consumed_by_product_engine_without_translation(tmp_p
     assert vm["available"] is True
     assert vm["current_method"] == "close_proxy"
     assert vm["close_proxy"]["asof"] == "2026-09-18T07:30:00+00:00"
+
+
+def test_gold_premium_quality_audit_runs_immediately_after_commodity_builder():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / "scripts" / "ci" / "daily_engine_regional_desk_builders.sh").read_text()
+
+    build = 'brun commodities  "build commodity vector (build_commodities)"         scripts.build_commodities'
+    audit = 'brun commodities_gold_premium_audit "audit China gold premium live path" scripts.audit_china_gold_premium --strict-render'
+    assert build in text
+    assert audit in text
+    assert text.index(build) < text.index(audit) < text.index('brun spr')
+
+    order_line = next(
+        line for line in text.splitlines() if line.startswith('ORDER="')
+    )
+    order = order_line.split('"', 2)[1].split()
+    assert order.index("commodities") < order.index("commodities_gold_premium_audit") < order.index("spr")
+
+
+def test_gold_basis_store_namespace_survives_us_nightly_china_reset():
+    from fnmatch import fnmatch
+    from collectors.china_gold_basis import ChinaGoldBasisAdapter
+    from lib import config
+
+    adapter = ChinaGoldBasisAdapter()
+    assert adapter.name == "gold_china_basis"
+    assert adapter.group == "gold_china_basis"
+
+    proxy = config.load()["commodities"]["china_gold_premium"]["close_proxy"]
+    assert proxy["sge"]["group"] == "gold_china_basis"
+    assert proxy["global"]["group"] == "gold_china_basis"
+
+    # daily.yml's US-nightly commit deliberately unstages data/china_* because
+    # that namespace belongs to asia-close. This source is US-nightly-owned, so
+    # its store namespace must never match that reset pattern.
+    assert not fnmatch(f"data/{adapter.group}", "data/china_*")
