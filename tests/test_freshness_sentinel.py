@@ -150,6 +150,25 @@ CN_PATH = "/live/cn_prophet_live.json"
 #: NOW is Saturday 2026-08-08 05:00Z = 13:00 CST; last completed mainland
 #: session is Friday 2026-08-07, same date as the NYSE fixture.
 CN_CURRENT_SESSION = "2026-08-07"
+CHINA_HEATMAP_PATH = "/marketdata/china_heatmap.json"
+
+
+def _china_heatmap(asof: str | None = CN_CURRENT_SESSION, *,
+                   observed_at: datetime = NOW,
+                   mtime_age_hours: float = 0.1) -> fs.FetchResult:
+    """One public China heatmap payload, shaped like the live JSON."""
+    doc: dict = {
+        "market": "china",
+        "source": "daily-close",
+        "n_tiles": 1706,
+    }
+    if asof is not None:
+        doc["asof"] = asof
+    return fs.FetchResult(
+        status=200,
+        last_modified=observed_at - timedelta(hours=mtime_age_hours),
+        body=json.dumps(doc),
+    )
 
 
 def _cn_board(session: str | None = CN_CURRENT_SESSION, *,
@@ -246,18 +265,22 @@ ARMED_PATH = "/live_flow/prophet_live_armed.json"
 
 
 def _http_body(url: str, want_body: bool, page_body: str = HEALTHY_BODY,
-               armed_as_of: str | None = PROPHET_CURRENT_ASOF) -> str | None:
+               armed_as_of: str | None = PROPHET_CURRENT_ASOF,
+               china_heatmap_asof: str | None = CN_CURRENT_SESSION) -> str | None:
     """The body an HTTP surface answers with, BY URL — for run()-level fetchers.
 
-    Path-aware for exactly the reason ``_served`` is. One fetcher now answers two
-    body-bearing shapes: an HTML page carrying the delayed-board marker, and the
-    armed pack's JSON. A stub that handed the page body to the pack would read
-    "body is not JSON" on every run-level test and drag a surface the case under
-    test is not about into the blindness set — a failure with nothing to teach.
+    Path-aware for exactly the reason ``_served`` is. One fetcher now answers
+    HTML pages plus two JSON payloads with independent market clocks: the NYSE
+    armed pack and the mainland China heatmap. Reusing one body/session across
+    them would manufacture a breach unrelated to the case under test.
     """
     if not want_body:
         return None
-    return _armed(armed_as_of).body if url.endswith(ARMED_PATH) else page_body
+    if url.endswith(ARMED_PATH):
+        return _armed(armed_as_of).body
+    if url.endswith(CHINA_HEATMAP_PATH):
+        return _china_heatmap(china_heatmap_asof).body
+    return page_body
 
 
 #: The path the READER's browser polls. The dashboard never fetches
@@ -394,6 +417,7 @@ def _fresh_results() -> dict[str, fs.FetchResult]:
     return {
         "us_stocks": _page(14.0),
         "china": _page(7.0),
+        "china_heatmap": _china_heatmap(),
         "hub": _page(14.0),
         "r2_massive_stock_day": _r2(10.0),
         "prophet_us": _prophet(),
@@ -435,6 +459,7 @@ def test_dead_nightly_for_a_day_breaches_every_bake_surface():
     results = {
         "us_stocks": _page(30.0),
         "china": _page(30.0),
+        "china_heatmap": _china_heatmap(),
         "hub": _page(30.0),
         "r2_massive_stock_day": _r2(30.0),
         # prophet_us, us_board_provisional and entry_radar_live are judged on
@@ -533,6 +558,7 @@ def _stale_report(now: datetime = NOW) -> dict:
             "china": fs.FetchResult(
                 status=200, last_modified=now - timedelta(hours=30), body=HEALTHY_BODY
             ),
+            "china_heatmap": _china_heatmap(observed_at=now),
             "hub": fs.FetchResult(
                 status=200, last_modified=now - timedelta(hours=30), body=HEALTHY_BODY
             ),
@@ -775,8 +801,8 @@ def test_served_state_reads_not_ok_once_blind_past_threshold(tmp_path, monkeypat
     # exempt — it is written once a night and stays, so a read that stops
     # answering is the sentinel losing sight of it.
     assert served["blind_surfaces"] == [
-        "china", "hub", "prophet_live_armed", "prophet_us", "r2_massive_stock_day",
-        "us_standouts", "us_stocks",
+        "china", "china_heatmap", "hub", "prophet_live_armed", "prophet_us",
+        "r2_massive_stock_day", "us_standouts", "us_stocks",
     ]
     assert served["stale_surfaces"] == []  # blind, not provably stale — honest split
 
@@ -1535,6 +1561,56 @@ def _china_surface() -> dict:
     return next(s for s in fs.SURFACES if s["id"] == "china")
 
 
+def _china_heatmap_surface() -> dict:
+    return next(s for s in fs.SURFACES if s["id"] == "china_heatmap")
+
+
+CHINA_HEATMAP_INCIDENT_NOW = datetime(2026, 9, 18, 9, 30, tzinfo=timezone.utc)
+
+
+def test_china_heatmap_public_payload_is_armed_on_mainland_sessions():
+    surface = _china_heatmap_surface()
+    assert surface["kind"] == "public_json"
+    assert surface["path"] == CHINA_HEATMAP_PATH
+    assert surface["calendar"] == "cn"
+    assert surface["asof_field"] == "asof"
+    assert surface["asof_max_sessions_behind"] == 1
+    assert surface["bake_budget_hours"] is None
+    assert surface["delay_budget_days"] is None
+
+
+def test_china_heatmap_one_session_lag_is_absorbed():
+    c = fs.check_surface(
+        _china_heatmap_surface(),
+        _china_heatmap("2026-09-17", observed_at=CHINA_HEATMAP_INCIDENT_NOW),
+        CHINA_HEATMAP_INCIDENT_NOW,
+    )
+    assert c["status"] == "ok"
+    assert c["asof_sessions_behind"] == 1
+
+
+def test_sep18_source_sep16_heatmap_incident_is_a_sentinel_breach():
+    c = fs.check_surface(
+        _china_heatmap_surface(),
+        _china_heatmap("2026-09-16", observed_at=CHINA_HEATMAP_INCIDENT_NOW),
+        CHINA_HEATMAP_INCIDENT_NOW,
+    )
+    assert c["status"] == "stale"
+    assert c["asof_sessions_behind"] == 2
+    assert "completed mainland session(s) behind the calendar" in c["detail"]
+    assert "file is being re-published, the store is not" in c["detail"]
+
+
+def test_china_heatmap_payload_without_asof_fails_closed():
+    c = fs.check_surface(
+        _china_heatmap_surface(),
+        _china_heatmap(None, observed_at=CHINA_HEATMAP_INCIDENT_NOW),
+        CHINA_HEATMAP_INCIDENT_NOW,
+    )
+    assert c["status"] == "stale"
+    assert "cannot vouch for its own date" in c["detail"]
+
+
 def test_china_is_armed_on_the_board_marker():
     """china carries a board-lag budget — it is no longer bake-only.
 
@@ -2226,6 +2302,7 @@ def _results_at(now: datetime, board: fs.FetchResult) -> dict[str, fs.FetchResul
     return {
         "us_stocks": fs.FetchResult(status=200, last_modified=fresh, body=HEALTHY_BODY),
         "china": fs.FetchResult(status=200, last_modified=fresh, body=HEALTHY_BODY),
+        "china_heatmap": _china_heatmap(FRI_SESSION, observed_at=now),
         "hub": fs.FetchResult(status=200, last_modified=fresh, body=HEALTHY_BODY),
         "r2_massive_stock_day": fs.FetchResult(status=200, last_modified=fresh),
         "prophet_us": _prophet(FRI_SESSION),
@@ -2399,7 +2476,11 @@ def test_the_private_facts_never_ride_the_publicly_served_staleness_file(
            public_dir=tmp_path / "public", state_dir=tmp_path / "state",
            fetcher=lambda url, *, want_body: fs.FetchResult(
                status=200, last_modified=FRI_VISIBLE - timedelta(hours=6),
-               body=_http_body(url, want_body, armed_as_of=FRI_SESSION)),
+               body=_http_body(
+                   url, want_body,
+                   armed_as_of=FRI_SESSION,
+                   china_heatmap_asof=FRI_SESSION,
+               )),
            served_reader=_served(_prophet(FRI_SESSION), live=board,
                                  strip=_live_strip(FRI_SESSION,
                                                    observed_at=FRI_VISIBLE),
@@ -2620,6 +2701,7 @@ def test_the_armed_pack_is_fetched_with_a_body_and_the_manifest_still_is_not():
            public_dir=Path("/nonexistent"), state_dir=Path("/nonexistent"),
            dry_run=True, fetcher=spy, served_reader=_served(_prophet()))
     assert wanted["prophet_live_armed.json"] is True
+    assert wanted["china_heatmap.json"] is True
     assert wanted["_manifest.json"] is False
     assert wanted["us_stocks.html"] is True
 

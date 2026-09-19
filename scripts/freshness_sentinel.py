@@ -32,6 +32,11 @@ What it checks (the user-visible truth, not the pipeline's own claims):
     THIS surface silent during the very freeze it announces. Its budget is 12
     days rather than 4 — see the SURFACES comment; mainland Golden Week and
     Spring Festival are legitimately ~10 sessionless calendar days.
+  * the public China heatmap payload semantic date — ``asof`` in
+    ``/marketdata/china_heatmap.json`` measured against the mainland session
+    calendar. This closes the Sep-18 source/publication split: the canonical
+    close panel had advanced to Sep-18 while the public heatmap stayed Sep-16.
+    A fresh HTTP/mtime stamp cannot hide that because only content is budgeted.
   * R2 publish time — ``Last-Modified`` of ``massive_stock_day/_manifest.json``
     on the public R2 base, the same anchor scripts/audit_r2.py + daily.yml
     already budget at 26h (the manifest is put unconditionally on every
@@ -377,6 +382,26 @@ SURFACES: list[dict] = [
         "path": "/china.html",
         "bake_budget_hours": BAKE_BUDGET_HOURS,
         "delay_budget_days": 12,
+    },
+    # China heatmap recurrence net (2026-09-18 natural incident): the canonical
+    # A-share close panel advanced to Sep-18 while the public heatmap JSON/SSR
+    # remained Sep-16. Page bake timestamps and china.html board-delay marker
+    # cannot see that split because the heatmap is its own publication artifact.
+    #
+    # Judge the PUBLIC JSON semantic asof against the mainland calendar.
+    # One missed completed session is absorbed (the same breach-by-day-2 shape
+    # as the other once-daily content surfaces); the second missed session pages.
+    # No bake/mtime budget: a freshly re-published stale JSON is exactly the
+    # failure this surface exists to catch.
+    {
+        "id": "china_heatmap",
+        "kind": "public_json",
+        "path": "/marketdata/china_heatmap.json",
+        "bake_budget_hours": None,
+        "delay_budget_days": None,
+        "asof_field": "asof",
+        "asof_max_sessions_behind": 1,
+        "calendar": "cn",
     },
     {
         "id": "hub",
