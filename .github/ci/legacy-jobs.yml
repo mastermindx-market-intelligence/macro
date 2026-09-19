@@ -7039,6 +7039,15 @@ jobs:
     #                             client-sent user id is ignored), validation, the
     #                             user_metadata MERGE, the email_prefs lang mirror, and the
     #                             honest partial/total failure statuses.
+    #   test_alert_prefs.py     — B-F08-1a alert delivery preferences (email opt-in,
+    #                             category subset, IANA tz, quiet hours): storage-shape
+    #                             validation via lib.user_prefs.normalize_value, the
+    #                             quiet_hours wire sentinel "off" reaching the writer as
+    #                             None (never the literal string), GET /api/account/prefs
+    #                             readback with unset/categories_available, no site/data
+    #                             filesystem writes, and the account.js JS-source
+    #                             contract for the new alert-prefs group (same
+    #                             no-browser-harness idiom as test_shared_pref_atomics.py).
     #   test_account_team_fields.py — GET /api/account teams field: RLS-scoped
     #                             PostgREST read (caller token on Authorization,
     #                             never the service-role key), own-row filter,
@@ -7076,7 +7085,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: shared preference atomics contract (templates/theme.js)
@@ -8863,7 +8872,7 @@ jobs:
         #   wire_story — D1 one event, one post; its docstring already names this lane
         #   wire_volume — a dark desk PARKS; no account takes an unbounded firehose
         # Verified in a clean pytest+pyyaml+jinja2 venv: 1006 passed, 0 skipped.
-        run: python -m pytest tests/test_marketing_ad_central.py tests/test_marketing_allies.py tests/test_marketing_anchor_law.py tests/test_marketing_attribution.py tests/test_marketing_breaking_card.py tests/test_marketing_card_ticker_agreement.py tests/test_marketing_cold_read.py tests/test_marketing_copy_review.py tests/test_marketing_earnings_call_lane.py tests/test_marketing_emitted_kind_ownership.py tests/test_marketing_lane_rerun.py tests/test_marketing_links.py tests/test_marketing_macro_print_tier.py tests/test_marketing_mover_stance.py tests/test_marketing_next_review.py tests/test_marketing_rejections.py tests/test_marketing_relay_hygiene.py tests/test_marketing_reply_elements.py tests/test_marketing_reply_pacing.py tests/test_marketing_reply_register.py tests/test_marketing_reply_shape.py tests/test_marketing_reply_targets.py tests/test_marketing_rewrite.py tests/test_marketing_source_authority.py tests/test_marketing_tape_reaction_basket.py tests/test_marketing_telemetry.py tests/test_marketing_wire_dehandle.py tests/test_marketing_wire_single_statement.py tests/test_marketing_wire_story.py tests/test_marketing_wire_volume.py -q
+        run: python -m pytest tests/test_marketing_ad_central.py tests/test_marketing_allies.py tests/test_marketing_anchor_law.py tests/test_marketing_attribution.py tests/test_marketing_breaking_card.py tests/test_marketing_card_ticker_agreement.py tests/test_marketing_cold_read.py tests/test_marketing_copy_review.py tests/test_marketing_earnings_call_lane.py tests/test_marketing_earnings_call_projection.py tests/test_marketing_emitted_kind_ownership.py tests/test_marketing_lane_rerun.py tests/test_marketing_links.py tests/test_marketing_macro_print_tier.py tests/test_marketing_mover_stance.py tests/test_marketing_next_review.py tests/test_marketing_rejections.py tests/test_marketing_relay_hygiene.py tests/test_marketing_reply_elements.py tests/test_marketing_reply_pacing.py tests/test_marketing_reply_register.py tests/test_marketing_reply_shape.py tests/test_marketing_reply_targets.py tests/test_marketing_rewrite.py tests/test_marketing_source_authority.py tests/test_marketing_tape_reaction_basket.py tests/test_marketing_telemetry.py tests/test_marketing_wire_dehandle.py tests/test_marketing_wire_single_statement.py tests/test_marketing_wire_story.py tests/test_marketing_wire_volume.py -q
       - name: reply-target register validates (config/reply_targets.yml)
         # The register is operator-curated, so a bad handle or an unknown tier is
         # an editing mistake, not a code change. Runs as its own step so a

@@ -17,14 +17,14 @@
     "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.258,
+    "dist_to_stop_r": -0.271,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 140.0,
-    "p1": -0.8387,
-    "p2": -0.4194,
+    "p1": -0.8473,
+    "p2": -0.4237,
     "p3": null,
-    "move_r": -1.258,
+    "move_r": -1.271,
     "mfe_r": 0.832,
     "mae_r": -1.613
   },
