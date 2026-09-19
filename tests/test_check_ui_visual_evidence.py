@@ -210,6 +210,46 @@ def test_inline_focus_within_is_classified_as_focus_interaction(tmp_path):
     assert requirements["templates/some_page.html.j2"] == {"focus"}
 
 
+def test_forex_shape_theme_token_change_infers_hidden_hover_dependency(tmp_path):
+    """A token change must not escape just because :hover itself was untouched."""
+
+    path = "templates/some_page.html.j2"
+    changed = 'html[data-theme="dark"]{--ink:#e8edf4}'
+    candidate = tmp_path / path
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    candidate.write_text(
+        "<style>\n"
+        ":root{--ink:#0B1733}\n"
+        f"{changed}\n"
+        ".tip-pop{background:var(--ink);color:#fff;opacity:0}\n"
+        "[data-tip-en]:hover .tip-pop{opacity:1}\n"
+        "</style>\n",
+        encoding="utf-8",
+    )
+
+    added = guard.parse_added_lines(_inline_style_diff(changed, path))
+    requirements = guard.interaction_requirements(added, tmp_path)
+    assert requirements[path] == {"hover"}
+
+
+def test_unrelated_theme_token_change_does_not_invent_hover_dependency(tmp_path):
+    path = "templates/some_page.html.j2"
+    changed = 'html[data-theme="dark"]{--unrelated:#e8edf4}'
+    candidate = tmp_path / path
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    candidate.write_text(
+        "<style>\n"
+        f"{changed}\n"
+        ".tip-pop{background:var(--ink);color:#fff;opacity:0}\n"
+        "[data-tip-en]:hover .tip-pop{opacity:1}\n"
+        "</style>\n",
+        encoding="utf-8",
+    )
+
+    added = guard.parse_added_lines(_inline_style_diff(changed, path))
+    assert guard.interaction_requirements(added, tmp_path) == {}
+
+
 def test_inline_hover_change_requires_real_hover_capture_in_both_themes(tmp_path, capsys):
     path = "templates/some_page.html.j2"
     rule = ".factor-cell:hover .tip-pop{opacity:1}"
