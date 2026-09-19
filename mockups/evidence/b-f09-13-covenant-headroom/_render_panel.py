@@ -1,13 +1,11 @@
 """Render the B-F09-13 covenant-headroom panel to HTML in two states for evidence.
 
-This is the fixture renderer the spec (R9) names. It is invoked by
-``scripts/capture_page_evidence.py`` if a real browser were available,
-and is invoked here by hand because this evidence packet was produced in
-a sparse worktree without playwright/chromium. The HTML output is the
-single source of truth for what the panel renders in each state — every
-PNG the spec asks for is a screenshot of one of these HTML files, and a
-browser that can render ``rendered-html/<state>.html`` will reproduce
-the cells deterministically.
+This is the fixture renderer the spec (R9) names. The HTML output is the
+source of truth for what the panel renders in each state, and the 16 PNG
+cells are captured from those HTML files with one serial Chromium session
+through the installed Playwright CLI. The page's own theme and language
+routines set the presentation state, and decorative page furniture is
+hidden only for panel capture.
 
 Inputs (per spec R7(a)):
   observations         — built from the merged producer
@@ -30,20 +28,22 @@ Outputs:
     null.json        — raw payload the template rendered
     computed.json    — raw payload the template rendered
 
-Both HTML files share the same Chrome-rendered body classes, no hidden
-decorative layers, settled animations, opacity 1 (no motion in the
-panel itself). The render is the SAME template the production
+Both HTML files share the same Chrome-rendered body classes. Capture hides
+only the decorative `.cs-orbit` and `#mmb-launch` page furniture so it cannot
+occlude the panel; no panel content is hidden. Animations are settled and the
+panel has opacity 1. The render is the SAME template the production
 page uses — no test-only fixtures or shims.
 """
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
 import pandas as pd
-from playwright.sync_api import sync_playwright
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
@@ -195,52 +195,96 @@ def _computable_observation() -> dict:
 
 
 def _capture_cells(states: dict[str, Path]) -> None:
-    """Capture the receipt's 16 presentation cells in one browser run."""
+    """Capture the receipt's 16 presentation cells through Playwright."""
     shot_dir = EVIDENCE / "shots"
     shot_dir.mkdir(parents=True, exist_ok=True)
-    with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 1440, "height": 900})
+    environment = os.environ.copy()
+    environment["PLAYWRIGHT_MCP_ALLOW_UNRESTRICTED_FILE_ACCESS"] = "true"
+    subprocess.run(
+        ["playwright", "cli", "open", "--browser=chromium"],
+        check=True,
+        env=environment,
+    )
+    try:
         for state, site_root in states.items():
-            page.goto((site_root / f"{state}.html").resolve().as_uri())
-            page.wait_for_load_state("domcontentloaded")
-            page.add_style_tag(
-                content=".cs-orbit, #mmb-launch { display: none !important; }"
+            subprocess.run(
+                ["playwright", "cli", "goto", (site_root / f"{state}.html").resolve().as_uri()],
+                check=True,
+                env=environment,
             )
             for theme in ("dark", "light"):
                 for language in ("en", "zh"):
                     for width, height in ((1440, 900), (390, 844)):
-                        page.set_viewport_size({"width": width, "height": height})
-                        page.evaluate(
-                            "([theme, language]) => {"
-                            "window.setTheme(theme);"
-                            "window.setLang(language);"
-                            "}"
-                            ,
-                            [theme, language],
+                        subprocess.run(
+                            ["playwright", "cli", "resize", str(width), str(height)],
+                            check=True,
+                            env=environment,
                         )
-                        actual_theme = page.get_attribute("html", "data-theme")
-                        actual_language = page.get_attribute("html", "data-lang")
+                        eval_result = subprocess.run(
+                            [
+                                "playwright", "cli", "eval",
+                                "(async () => {"
+                                f"window.setTheme({theme!r});"
+                                f"window.setLang({language!r});"
+                                "await new Promise(requestAnimationFrame);"
+                                "return [document.documentElement.dataset.theme,"
+                                " document.documentElement.dataset.lang];"
+                                "})",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            env=environment,
+                        )
+                        result_section = eval_result.stdout.split("### Result", 1)[1]
+                        result_block = result_section.split("### Ran Playwright code", 1)[0]
+                        actual_theme, actual_language = json.loads(result_block)
                         if (actual_theme, actual_language) != (theme, language):
                             raise RuntimeError(
                                 f"presentation state was not applied: "
                                 f"{actual_theme!r}, {actual_language!r}"
                             )
-                        page.add_style_tag(
-                            content=(
-                                ".cs-orbit, #mmb-launch { display: none !important; }"
-                            )
+                        subprocess.run(
+                            [
+                                "playwright", "cli", "eval",
+                                "() => {"
+                                "const style = document.createElement('style');"
+                                "style.textContent = "
+                                "'.cs-orbit, #mmb-launch "
+                                "{ display: none !important; }';"
+                                "document.head.appendChild(style);"
+                                "}",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            env=environment,
                         )
-                        page.wait_for_selector("#cs-covenant-room", state="visible")
-                        page.wait_for_timeout(150)
-                        locator = page.locator("#cs-covenant-room")
-                        locator.screenshot(
-                            path=str(
-                                shot_dir
-                                / f"{state}.{theme}.{language}.{width}.png"
-                            )
+                        subprocess.run(
+                            [
+                                "playwright", "cli", "eval",
+                                "() => new Promise(resolve => {"
+                                "document.querySelector('#cs-covenant-room')?.scrollIntoView();"
+                                "requestAnimationFrame(() => requestAnimationFrame(resolve));"
+                                "})",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            env=environment,
                         )
-        browser.close()
+                        subprocess.run(
+                            [
+                                "playwright", "cli", "screenshot",
+                                "--filename",
+                                str(shot_dir / f"{state}.{theme}.{language}.{width}.png"),
+                                "#cs-covenant-room",
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            env=environment,
+                        )
+    finally:
+        subprocess.run(["playwright", "cli", "close"], capture_output=True)
 
 
 def main() -> int:
