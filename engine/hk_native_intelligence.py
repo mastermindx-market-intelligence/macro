@@ -31,6 +31,57 @@ FAMILY_FIELDS = tuple(
     for field in (f"{family}_status", f"{family}_value")
 )
 
+# Wave 7: two SEPARATE same-population rank races. These names identify
+# zero-authority Lane-A challengers; they are not production board definitions
+# and must never be fused into an ungoverned HK master score.
+RANK_DEFINITIONS = {
+    "h3_ah_discount": "hk_h3_ah_discount_rank_v1",
+    "x1_atwin_momentum": "hk_x1_atwin_momentum_rank_v1",
+}
+
+
+def rank_family_calls(
+    calls: Iterable[Mapping[str, Any]],
+    family_rows: Mapping[str, Mapping[str, Any]] | None,
+    family: str,
+) -> dict[str, dict[str, float | None]]:
+    """Score one preregistered HK family over exactly the incumbent population.
+
+    Lane A owns population identity. This adapter iterates only calls and never
+    emits an off-list name merely because family_rows contains one. Only
+    ACCRUING family values are rankable: stale, partial, unavailable and
+    not-applicable reads stay null rather than becoming zero.
+    score_conservative is deliberately null because neither H3 nor X1(b) has
+    a frozen conservative haircut for this same-population race.
+    """
+    if family not in FAMILIES:
+        raise ValueError(f"unregistered HK native family: {family!r}")
+    rows = family_rows or {}
+    status_key = f"{family}_status"
+    value_key = f"{family}_value"
+    out: dict[str, dict[str, float | None]] = {}
+    for call in calls:
+        raw_ticker = call.get("ticker") if isinstance(call, Mapping) else None
+        if raw_ticker in (None, ""):
+            continue
+        ticker = str(raw_ticker)
+        if ticker in out:
+            continue
+        evidence = rows.get(ticker) or {}
+        score: float | None = None
+        if evidence.get(status_key) == ACCRUING:
+            try:
+                candidate = float(evidence.get(value_key))
+            except (TypeError, ValueError):
+                candidate = float("nan")
+            if np.isfinite(candidate):
+                score = candidate
+        out[ticker] = {
+            "score_raw": score,
+            "score_conservative": None,
+        }
+    return out
+
 def _pair_map(
     pair_rows: Iterable[Mapping[str, Any]] | Mapping[str, str] | None,
 ) -> dict[str, str] | None:
