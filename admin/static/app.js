@@ -838,9 +838,8 @@ function renderControlRoom() {
 RENDER.control_room = renderControlRoom;
 
 /* ---- KEY ALERTS (landing rail) ------------------------------------------ */
-/* The "needs your eyes" rail: cascades not dormant, FIRED tripwires, high-priority
-   triage rows — each with a one-click "Brief for Fable" copy button so checking in
-   with a Claude session starts from the alert's full context instead of a blank page. */
+/* The "needs your eyes" rail: active cascades, fired tripwires, and high-priority
+   triage rows. Each alert can copy its full context for follow-up. */
 const KA_KIND = { cascade: ["⛓", "Cascade"], tripwire: ["⚡", "Tripwire"], triage: ["🚨", "Alert"] };
 const KA_TONE = (it) => {
   const s = String(it.state || "").toLowerCase();
