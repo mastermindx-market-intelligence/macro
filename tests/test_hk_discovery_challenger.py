@@ -769,7 +769,7 @@ def test_k_ni6_unavailable_stale_and_zero_are_not_collapsed():
     assert stale["x1_atwin_momentum_status"] == hki.STALE
     assert stale["h3_ah_discount_value"] is not None
     assert stale["x1_atwin_momentum_value"] is not None
-    assert tuple(bs.FAMILY_REGISTRY) == tuple(hki.FAMILIES)
+    assert tuple(bs.FAMILY_REGISTRY) == tuple(hki.DISCOVERY_FAMILIES)
 
 
 def test_k_ni7_x1_reads_the_preregistered_per_name_a_share_plane():
@@ -1037,3 +1037,88 @@ def test_w7b_builder_reuses_existing_bnrs_after_publication_before_shadow_write(
     # The shadow race reuses the already-computed screen map; it must not mint
     # another beta-neutral calculation after publication.
     assert "beta_neutral_rs(" not in source[persist:shadow]
+
+
+def test_w7b_bnrs_discovery_family_is_registered_typed_and_null_safe():
+    assert hki.BNRS_FAMILY == "beta_neutral_rs"
+    assert hki.BNRS_FAMILY in hki.DISCOVERY_FAMILIES
+    assert hki.BNRS_FAMILY in bs.FAMILY_REGISTRY
+    rows = hki.with_bnrs_evidence(
+        {
+            "LEADER.HK": {
+                "h3_ah_discount_status": hki.NOT_APPLICABLE,
+                "h3_ah_discount_value": None,
+                "x1_atwin_momentum_status": hki.NOT_APPLICABLE,
+                "x1_atwin_momentum_value": None,
+            },
+            "MISS.HK": {
+                "h3_ah_discount_status": hki.NOT_APPLICABLE,
+                "h3_ah_discount_value": None,
+                "x1_atwin_momentum_status": hki.NOT_APPLICABLE,
+                "x1_atwin_momentum_value": None,
+            },
+        },
+        ["LEADER.HK", "MISS.HK"],
+        {"LEADER.HK": 1.75},
+    )
+    assert rows["LEADER.HK"]["beta_neutral_rs_status"] == hki.BNRS_STATUS
+    assert rows["LEADER.HK"]["beta_neutral_rs_value"] == pytest.approx(1.75)
+    assert rows["MISS.HK"]["beta_neutral_rs_status"] == hki.UNAVAILABLE
+    assert rows["MISS.HK"]["beta_neutral_rs_value"] is None
+    assert "beta_neutral_rs_status" in hki.FAMILY_FIELDS
+    assert "beta_neutral_rs_value" in hki.FAMILY_FIELDS
+
+
+def test_w7b_discovery_candidate_carries_bnrs_without_changing_candidate_reason():
+    evidence = {
+        "washout_2w": {"LEADER.HK": True},
+        "sig_verdict": {"LEADER.HK": {"eligible": False}},
+        "native_families": {
+            "LEADER.HK": {
+                "beta_neutral_rs_status": hki.BNRS_STATUS,
+                "beta_neutral_rs_value": 1.25,
+            }
+        },
+    }
+    row = hkdc.build_candidates(evidence, ASOF)[0]
+    assert row["candidate_origin"] == "washout_reclaim"
+    assert row["availability_status"] == hkdc.WAIT_CONFLUENCE
+    assert row["beta_neutral_rs_status"] == hki.BNRS_STATUS
+    assert row["beta_neutral_rs_value"] == pytest.approx(1.25)
+
+
+def test_w7b_lane_b_persists_bnrs_family_in_existing_store(tmp_path, monkeypatch):
+    _hk_on(monkeypatch)
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(bs, "_read_incumbent_positions", lambda *_a, **_k: {})
+    bs.CHALLENGER_REGISTRY.clear()
+    raw = [{
+        "session_date": ASOF,
+        "security_ref_raw": "LEADER.HK",
+        "candidate_origin": "ripening",
+        "availability_status": hkdc.WAIT_CONFLUENCE,
+        "availability_source": "hk_signal_gate",
+        "beta_neutral_rs_status": hki.BNRS_STATUS,
+        "beta_neutral_rs_value": 1.4,
+    }]
+    try:
+        bs.register_challenger("HK", "bnrs_discovery_test", discovery_fn=lambda _asof: raw)
+        receipt = bs.write_shadow([], market="HK", asof=ASOF)
+        assert receipt["written"] == 1
+        stored = pd.read_parquet(bs._lane_b_path("HK"))
+        assert stored["beta_neutral_rs_status"].iloc[0] == hki.BNRS_STATUS
+        assert pd.api.types.is_numeric_dtype(stored["beta_neutral_rs_value"])
+        assert float(stored["beta_neutral_rs_value"].iloc[0]) == pytest.approx(1.4)
+        assert bool(stored["visible_to_user"].iloc[0]) is False
+        assert bool(stored["published_authority"].iloc[0]) is False
+    finally:
+        bs.CHALLENGER_REGISTRY.clear()
+
+
+def test_w7b_builder_attaches_bnrs_to_native_family_bundle_before_discovery():
+    source = (ROOT / "scripts" / "build_hk_library.py").read_text()
+    h3 = source.index("hk_native_intelligence.build_family_evidence")
+    attach = source.index("hk_native_intelligence.with_bnrs_evidence", h3)
+    bundle = source.index('"native_families": _hk_native_family_rows', attach)
+    register = source.index("hk_native_intelligence.BNRS_DEFINITION", bundle)
+    assert h3 < attach < bundle < register

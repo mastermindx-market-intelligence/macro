@@ -26,8 +26,10 @@ STALE = "STALE"
 PARTIAL = "PARTIAL"
 
 FAMILIES = ("h3_ah_discount", "x1_atwin_momentum")
+BNRS_FAMILY = "beta_neutral_rs"
+DISCOVERY_FAMILIES = (*FAMILIES, BNRS_FAMILY)
 FAMILY_FIELDS = tuple(
-    field for family in FAMILIES
+    field for family in DISCOVERY_FAMILIES
     for field in (f"{family}_status", f"{family}_value")
 )
 
@@ -46,6 +48,39 @@ RANK_DEFINITIONS = {
 BNRS_STATUS = "SCREEN"
 BNRS_AUTHORITY = "candidate_intelligence_screen"
 BNRS_DEFINITION = "hk_beta_neutral_rs_screen_rank_v1"
+
+
+def with_bnrs_evidence(
+    family_rows: Mapping[str, Mapping[str, Any]] | None,
+    tickers: Iterable[str],
+    screen_values: Mapping[str, Any] | None,
+) -> dict[str, dict[str, Any]]:
+    """Add the broad beta-neutral RS screen to existing native-family rows.
+
+    Every requested ticker receives an explicit status. A finite screen read is
+    SCREEN; absent/non-finite input is UNAVAILABLE with a null value. Existing
+    H3/X1 evidence is copied, never mutated in place.
+    """
+    source = family_rows or {}
+    values = screen_values or {}
+    out: dict[str, dict[str, Any]] = {}
+    for raw_ticker in tickers:
+        ticker = str(raw_ticker)
+        row = dict(source.get(ticker) or {})
+        value: float | None = None
+        try:
+            candidate = float(values.get(ticker))
+        except (TypeError, ValueError):
+            candidate = float("nan")
+        if np.isfinite(candidate):
+            value = candidate
+            status = BNRS_STATUS
+        else:
+            status = UNAVAILABLE
+        row[f"{BNRS_FAMILY}_status"] = status
+        row[f"{BNRS_FAMILY}_value"] = value
+        out[ticker] = row
+    return out
 
 
 def rank_bnrs_calls(

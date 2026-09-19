@@ -2188,6 +2188,15 @@ def compute_hk_standouts(scoreboard: dict | None, n_buy: int = 60, n_lag: int = 
                 _native_tickers
             )
 
+        # Add the already-computed broad beta-neutral RS screen to the same
+        # zero-authority family rows. This is evidence only: it does not
+        # originate candidates or alter availability/publication.
+        _hk_native_family_rows = hk_native_intelligence.with_bnrs_evidence(
+            _hk_native_family_rows,
+            _native_tickers,
+            bnrs,
+        )
+
         # R5/F5: ripening_tickers enters the bundle as a SORTED list, never
         # the raw set above — set iteration order is not stable across
         # process runs (hash randomisation), and build_candidates()
