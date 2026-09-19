@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T10:25:40.988441+00:00",
-  "count": 2423,
+  "generated_at": "2026-09-19T10:55:49.591103+00:00",
+  "count": 2424,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -947,6 +947,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-659kjlmdg1f-e6d921",
+      "title": "Another ECB hike is no more likely than not",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:27:59Z",
+      "summary_points": [
+        "ECB Rate Hike Forecast: December 25bp hike to 2.75% driven by energy inflation; ECB maintains tightening balance until energy-driven inflation abates, with no further hikes beyond December.",
+        "Geopolitical Energy Risk: Houthi attacks on Saudi pipeline disrupt Strait of Hormuz, embedding persistent risk premium; pushes inflation peak to 4.4% (vs. 9% prior) and elevates core inflation by 0.1pp.",
+        "Two-Sided Policy Risks: Upside risk from energy shocks/supply chain disruptions could force higher 2027 policy rates if inflation doesn’t ease; downside risk from falling energy prices/growth faltering may derail December hike, with year-end wage demands posing key inflation pressure (peak ~4.5%).",
+        "Inflation & Growth Revisions: Revised inflation forecasts to 3.1% (2026) and 3.5% (2027); ECB may need one additional rate hike (December) to anchor expectations, but no further tightening beyond that."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
