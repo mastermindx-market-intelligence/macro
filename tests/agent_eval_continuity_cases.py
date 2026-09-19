@@ -21,8 +21,8 @@ REPO = Path(__file__).resolve().parents[1]
 STORE = REPO / "agentos"
 KEY = "AGENT-EVAL-FABRIC"
 WS = Path("workstreams") / f"WS-{KEY}.md"
-OLD = Path("handoffs") / f"{KEY}-2026-09-01.md"
-NEW = Path("handoffs") / f"{KEY}-2026-09-08.md"
+OLD = Path("handoffs") / f"{KEY}-2026-09-08.md"
+NEW = Path("handoffs") / f"{KEY}-2026-09-19.md"
 DEC = Path("decisions/DEC-AGENT-EVAL-FABLE-COO-DELEGATION.md")
 
 
@@ -42,19 +42,29 @@ def test_dated_handoff_does_not_repeat_superseded_release() -> None:
     historical = record(STORE / NEW)
     assert "Merge A2 (#6699" not in " ".join(historical["next_actions"])
     assert "Do not reopen #6699/#6711" in " ".join(historical["do_not_redo"])
+    text = json.dumps(historical, sort_keys=True)
+    actions = " ".join(historical["next_actions"])
+    do_not_redo = " ".join(historical["do_not_redo"])
+    verified = json.dumps(historical["verified"], sort_keys=True)
+    assert "Release Mastermind #841" not in actions
+    assert "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e" in do_not_redo
+    assert "OHF typed request failures are repaired and protected." in verified
+    assert "96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e" in verified
+    assert "eb00ed9745f055d3413f483b985fe4f9d8a1f11d" in verified
+    assert "not protected until review/CI/release complete" not in text
 
 
 def test_historical_handoff_names_both_live_source_gates_without_permission() -> None:
     assert (STORE / NEW).is_file(), "The latest recoverable handoff is still September 1"
     handoff = record(STORE / NEW)
     actions = " ".join(handoff["next_actions"])
-    assert "Mastermind #162" in actions and "Mastermind #398" in actions
-    assert "HOLD" in actions and "EFFECT_UNKNOWN" in " ".join(handoff["do_not_redo"])
+    assert "Mastermind #162 is merged/do-not-redo" in " ".join(handoff["do_not_redo"])
+    assert "Mastermind #398" in actions and "d79d2ec3537d8eb060055731a7c3cebee0c543eb" in actions
+    assert "91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8" in actions
+    assert "EFFECT_UNKNOWN" in " ".join(handoff["do_not_redo"])
     assert "6760" in json.dumps(handoff["verified"])
     assert handoff["unverified"], "Pending proof must not disappear during records repair"
-    assert "scripts/agentos.py" in {row["path"] for row in handoff["changed"]}, (
-        "The historical repair handoff must disclose its compiler change"
-    )
+    assert "agentos/workstreams/WS-AGENT-EVAL-FABRIC.md" in {row["path"] for row in handoff["changed"]}
 
 
 def case_store(tmp_path: Path) -> Path:
@@ -80,7 +90,7 @@ def compile_case(root: Path, *, mentioned: bool = False, budget: int = 8000,
                MACRO_MASTERMIND_REPO=str(root / "absent-mastermind"),
                MACRO_TERMINAL_REPO=str(root / "absent-terminal"))
     args = [sys.executable, str(REPO / "scripts/agentos.py"), "compile-context",
-            *target, "--root", str(root), "--now", "2026-09-08T23:59:00Z",
+            *target, "--root", str(root), "--now", "2026-09-19T03:00:00Z",
             "--budget", str(budget)]
     result = subprocess.run(args, cwd=REPO, env=env, text=True,
                             capture_output=True, timeout=45)
@@ -100,9 +110,10 @@ def test_real_compiler_recovers_new_handoff_and_excludes_old(tmp_path, mentioned
     bundle = compile_case(root, mentioned=mentioned, budget=budget)
     items = section(bundle, "handoff")["items"]
     assert len(items) == 1 and items[0]["path"].endswith(str(NEW))
-    assert "Mastermind #162" in items[0]["excerpt"]
+    assert "C2 is execution-held" in items[0]["excerpt"]
     assert "Mastermind #398" in items[0]["excerpt"]
-    assert "HOLD" in items[0]["excerpt"]
+    assert "d79d2ec3537d8eb060055731a7c3cebee0c543eb" in items[0]["excerpt"]
+    assert "91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8" in items[0]["excerpt"]
     assert any(x["path"].endswith(str(OLD)) and "older_handoff" in x["reason"]
                for x in bundle["excluded"])
     assert "not for permission" in section(bundle, "workstream")["title"]
