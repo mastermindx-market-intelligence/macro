@@ -1,15 +1,15 @@
 {
   "changed_files": {
     "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
-      "after_sha256": "da9ba71f1d54b56bac807794dc91d80c9dbe5bfd354738a51e7eeacc83cfbc39",
+      "after_sha256": "c1973d74dac1a53db2c336df4a1eaf4007fd51c940ae6bae703510e36725697e",
       "before_sha256": "9f817b71e113b239fd589acc4555ef73bc2865ff68936f79f0dd5095518a0e70"
     },
     "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
-      "after_sha256": "6838445437886d1d781b713f7ba3050a0b1c1e71f7614f23f5f97e501b86e80a",
+      "after_sha256": "cfd39334ab6370f8dd55b421244f65cd8b5515ba962a683c5a81615895363403",
       "before_sha256": "759f9d51e3e412fbaa3c2519c49c6ac2baf4ef9aaa67874203ec51ecaac145f7"
     },
     "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
-      "after_sha256": "a24b448bc8ab88550b62b476932f45c82027c44c2df56d67a6326ddb0b056244",
+      "after_sha256": "983c611348f21968f53a84ac70cdea8a99ed36731bbccd90028671060968f160",
       "before_sha256": "96b2cc78fc1940a3ebb1dee7eee93bf7cb5e8f50d5c8be1cb688de27974d3e52"
     },
     "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": {
@@ -86,5 +86,58 @@
         "result": "1 failed: repair-extension browser receipt hashes retained predecessor browser-receipt bytes"
       }
     ]
+  },
+  "followup_current_main_asset_rebind": {
+    "observed_main": "f13975296a4eacd9a7f83c45ac18b0c6fb0571ff",
+    "invalidator_commit": "715acf5f3ce568c30b2533d44cedd477b653441a",
+    "rendered_fixture_sha256": "c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5",
+    "rendered_output_bytes_unchanged": true,
+    "browser": {
+      "engine": "chromium",
+      "version": "153.0.8010.12",
+      "hk": {
+        "pass": true,
+        "states": 7,
+        "expansion_reachability": true,
+        "fragment_navigation": true,
+        "desktop": true,
+        "owner_projection_matrix": true
+      },
+      "ca": {
+        "pass": true,
+        "states": 7,
+        "expansion_reachability": true,
+        "fragment_navigation": true,
+        "desktop": true,
+        "owner_projection_matrix": true
+      }
+    },
+    "loaded_assets": {
+      "site/account.js": {
+        "before_sha256": "521f0e4bd309a1b19d7dcee243667839d21a2903b20cc69ed14b72784bd276bd",
+        "after_sha256": "003672b7c9e0d16933a04560e30f2a8f8a59b36c2b7d82b46047c2e0d257c46b"
+      },
+      "site/theme.css": {
+        "before_sha256": "63df1679c57976ef2130022690fd31bbb23bf41982658b87a6117457fb02bdab",
+        "after_sha256": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0"
+      }
+    },
+    "historical_evidence_changed": false,
+    "product_runtime_changed": false,
+    "observed_at": "2026-09-19T03:04:23.322890+00:00",
+    "synthetic_integration": {
+      "tree": "48a6af18b580dbd1d714d621a6f9e405acced8d0",
+      "commit": "56ebe7729e03d2054a0c84c4bf2c2dd9a361c1c3",
+      "parents": [
+        "f13975296a4eacd9a7f83c45ac18b0c6fb0571ff",
+        "db088894ba2b77a028981630f9b1165f23fa79ce"
+      ]
+    },
+    "verification": {
+      "deterministic_fixture": "generated receipt byte-identical; sha256 c595efa671394146600421f8d08a68011eb87dec12fdc164f9ab6588b53b9ab5",
+      "browser_hk": "PASS; exact Chromium 153.0.8010.12; 7 states + expansion + fragment + desktop + owner projection all pass",
+      "browser_ca": "PASS; exact Chromium 153.0.8010.12; 7 states + expansion + fragment + desktop + owner projection all pass",
+      "owner_suite": "114 passed in 55.29s on current-main synthetic integration after narrow receipt repair"
+    }
   }
 }
