@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CELH-BULL-20260525",
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 29.0,
@@ -10,21 +10,21 @@
   "recommended_action": "trim",
   "human_state": "Deep Giveback \u2014 Reassess",
   "components": {
-    "validity": 45.9,
+    "validity": 50.5,
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 67.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.562,
+    "dist_to_stop_r": 0.603,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 106.7,
-    "p1": -0.2922,
-    "p2": -0.1461,
+    "horizon_pct_used": 108.9,
+    "p1": -0.2648,
+    "p2": -0.1324,
     "p3": null,
-    "move_r": -0.438,
+    "move_r": -0.397,
     "mfe_r": 2.799,
     "mae_r": -1.178
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-17",
   "_first_t1_ts": "2026-08-20",
   "_first_t2_ts": null,
-  "days_elapsed": 48,
-  "tau": 1.0667
+  "days_elapsed": 49,
+  "tau": 1.0889
 }

@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "OKLO-BULL-20260805",
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 22.0,
+  "management_confidence": 23.6,
   "raw_confidence": 24.0,
-  "delta_vs_base": -38.0,
+  "delta_vs_base": -36.4,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 16.7,
+    "validity": 16.2,
     "progress": 0.0,
-    "pace": 0.2,
+    "pace": 0.1,
     "retention": 50.0,
-    "overlay": 59.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.266,
+    "dist_to_stop_r": 0.259,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -0.4893,
-    "p2": -0.2447,
+    "horizon_pct_used": 86.7,
+    "p1": -0.4939,
+    "p2": -0.247,
     "p3": null,
-    "move_r": -0.734,
+    "move_r": -0.741,
     "mfe_r": 0.224,
     "mae_r": -1.013
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: invalidated \u2192 triggered_pre_t1",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-10",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 38,
-  "tau": 0.8444
+  "days_elapsed": 39,
+  "tau": 0.8667
 }

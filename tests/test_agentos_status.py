@@ -1067,6 +1067,174 @@ def _load_cli():
     return module
 
 
+# -------------------------------------------------- bounded uncommitted visibility
+
+
+def test_status_worktree_scan_checks_small_sets_without_degradation(monkeypatch):
+    """A one-worktree nightly must not publish an avoidable 'scan skipped' gap."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+    calls = []
+
+    def dirty(path, *, timeout=None):
+        calls.append((path, timeout))
+        return ["engine/manual_fix.py"]
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", dirty)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == [{"branch": "main", "source_files": 1}]
+    assert degraded.items == []
+    assert calls == [("/tmp/wt-main", agentos.UNCOMMITTED_STATUS_TIMEOUT_SECONDS)]
+
+
+def test_status_worktree_auto_scan_stays_bounded_on_large_hosts(monkeypatch):
+    """The 276-worktree host failure mode stays opt-in rather than slowing every brief."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    count = agentos.STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT + 1
+    branches = {f"branch-{i}": f"/tmp/wt-{i}" for i in range(count)}
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: branches)
+
+    def must_not_run(*_args, **_kwargs):
+        raise AssertionError("large default scan must not call git status")
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", must_not_run)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == []
+    assert any(f"skipped over {count} worktrees" in item for item in degraded.items)
+
+
+def test_brief_style_default_does_not_auto_scan_even_one_worktree(monkeypatch):
+    """Executive/CEO brief keeps its cheap default and frozen read budget."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+
+    def must_not_run(*_args, **_kwargs):
+        raise AssertionError("brief-style default must not call git status")
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", must_not_run)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded)
+
+    assert result["uncommitted"] == []
+    assert any("skipped over 1 worktrees" in item for item in degraded.items)
+
+
+def test_scan_uncommitted_force_flag_still_scans_large_hosts(monkeypatch):
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    count = agentos.STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT + 1
+    branches = {f"branch-{i}": f"/tmp/wt-{i}" for i in range(count)}
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: branches)
+    calls = []
+
+    def clean(path, *, timeout=None):
+        calls.append((path, timeout))
+        return []
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", clean)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, deep=True)
+
+    assert result["uncommitted"] == []
+    assert len(calls) == count
+    assert {timeout for _path, timeout in calls} == {agentos.UNCOMMITTED_STATUS_TIMEOUT_SECONDS}
+    assert degraded.items == []
+
+
+def test_worktree_scan_failure_is_degraded_not_silently_clean(monkeypatch):
+    """A failed git status cannot be indistinguishable from a clean worktree."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+
+    def timeout(_path, *, timeout=None):
+        raise subprocess.TimeoutExpired(["git", "status"], timeout or 0)
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", timeout)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == []
+    assert any(
+        "uncommitted-work scan failed for 'main'" in item and "TimeoutExpired" in item
+        for item in degraded.items
+    )
+
+
+def test_stranded_work_dirty_status_accepts_a_caller_timeout(monkeypatch):
+    """Agent OS may bound git status without changing the standalone audit defaults."""
+    from scripts import audit_stranded_work as stranded
+
+    calls = []
+
+    def fake_git(*args, cwd=stranded.REPO, timeout=None):
+        calls.append((args, str(cwd), timeout))
+        return subprocess.CompletedProcess(["git", *args], 0, stdout=" M engine/fix.py\n", stderr="")
+
+    monkeypatch.setattr(stranded, "git", fake_git)
+    assert stranded.dirty_source_paths("/tmp/wt-main", timeout=2.5) == ["engine/fix.py"]
+    assert calls == [(('status', '--porcelain'), '/tmp/wt-main', 2.5)]
+
+
+def test_stranded_work_dirty_status_rejects_nonzero_git(monkeypatch):
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 128, stdout="", stderr="fatal: status unavailable"
+        ),
+    )
+    with pytest.raises(RuntimeError, match="git status failed"):
+        stranded.dirty_source_paths("/tmp/wt-main")
+
+
+def test_stranded_work_worktree_list_rejects_nonzero_git(monkeypatch):
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 128, stdout="", stderr="fatal: worktree list unavailable"
+        ),
+    )
+    with pytest.raises(RuntimeError, match="git worktree list failed"):
+        stranded.worktree_branches()
+
+
+def test_stranded_work_filters_generated_governance_views(monkeypatch):
+    """Nightly-generated advisory docs must not report themselves as stranded hand-work."""
+    from scripts import audit_stranded_work as stranded
+
+    status = """ M docs/ACTIVE_BUILD_MAP.md
+ M docs/AGENT_OS_STATE.md
+ M docs/PROJECT_ACTIVE_BUILD_MAP.md
+ M engine/manual_fix.py
+"""
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 0, stdout=status, stderr=""
+        ),
+    )
+    assert stranded.dirty_source_paths("/tmp/wt-main") == ["engine/manual_fix.py"]
+
+
 def test_recommendation_never_marks_an_option_it_rejects() -> None:
     """The arrow is what the CEO acts on, so a wrong arrow is worse than none.
 

@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VCYT-BULL-20260821",
-  "asof": "2026-09-17",
+  "asof": "2026-09-18",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 11.8,
+  "management_confidence": 11.2,
   "raw_confidence": 8.0,
-  "delta_vs_base": -48.2,
+  "delta_vs_base": -48.9,
   "recommended_action": "invalidated",
   "human_state": "Invalidated",
   "components": {
@@ -14,23 +14,23 @@
     "progress": 32.8,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 59.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.479,
+    "dist_to_stop_r": -0.543,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 60.0,
-    "p1": -0.9857,
-    "p2": -0.4928,
+    "horizon_pct_used": 62.2,
+    "p1": -1.0286,
+    "p2": -0.5143,
     "p3": null,
-    "move_r": -1.479,
+    "move_r": -1.543,
     "mfe_r": 1.804,
     "mae_r": -2.337
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Phase: between_t1_t2 \u2192 invalidated",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-27",
   "_first_t2_ts": null,
-  "days_elapsed": 27,
-  "tau": 0.6
+  "days_elapsed": 28,
+  "tau": 0.6222
 }

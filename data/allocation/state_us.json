@@ -18,9 +18,11 @@
     "memory_storage",
     "non_ai_tech",
     "obesity_glp1",
+    "quantum_computing",
     "regional_banks",
     "reshoring",
     "robotics_automation",
+    "semicap_equipment",
     "silver_miners",
     "us_sector_energy",
     "us_sector_financials",
@@ -31,9 +33,9 @@
   ],
   "held": [
     "cybersecurity",
-    "us_sector_energy",
-    "energy_complex",
-    "ai_infra"
+    "silver_miners",
+    "ai_infra",
+    "memory_storage"
   ],
   "leader": "cybersecurity",
   "names": {

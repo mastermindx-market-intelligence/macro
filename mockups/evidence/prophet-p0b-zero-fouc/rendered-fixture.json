@@ -62,7 +62,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+          "sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
@@ -401,7 +401,7 @@
         {
           "path": "engine/i18n.py",
           "role": "jinja_globals",
-          "sha256": "486116b2c2640bf164724a03d9a8871efef7977fb3b5bd7e8d5956e8d3675b44"
+          "sha256": "d2a0f87229eae3b22168ae870c63bf6e9af568dd993ac207e80513cc5b60b9b2"
         },
         {
           "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
