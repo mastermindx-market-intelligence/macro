@@ -431,66 +431,6 @@ def test_gold_premium_quality_receipt_detects_render_contract_mismatch(tmp_path)
     assert "currency: expected CNY, rendered USD" in doc["violations"]
 
 
-def test_gold_premium_quality_audit_reads_real_store_vm_and_page(tmp_path, monkeypatch):
-    import copy
-    import json
-    import pandas as pd
-
-    from engine import china_gold_premium as cgp
-    from lib import config, store
-    from scripts import audit_china_gold_premium as audit
-
-    cfg = copy.deepcopy(config.load())
-    cfg["storage"]["site_dir"] = "site"
-    data_root = tmp_path / "data"
-    site_root = tmp_path / "site"
-    site_root.mkdir(parents=True)
-
-    monkeypatch.setattr(config, "ROOT", tmp_path)
-    monkeypatch.setattr(config, "data_dir", lambda: data_root)
-    monkeypatch.setattr(config, "load", lambda: cfg)
-
-    idx = pd.to_datetime(["2026-09-17T07:30:00", "2026-09-18T07:30:00"])
-    store.upsert(
-        "gold_china_basis",
-        "sge_au9999",
-        pd.DataFrame({"rmb_per_g": [817.0, 820.5]}, index=idx),
-        normalize_index=False,
-    )
-    store.upsert(
-        "gold_china_basis",
-        "xaucny_spot",
-        pd.DataFrame({"cny_per_oz": [25380.0, 25490.0]}, index=idx),
-        normalize_index=False,
-    )
-
-    vm = cgp.build_view_model(
-        cfg["commodities"]["china_gold_premium"],
-        now=pd.Timestamp("2026-09-18T12:00:00Z"),
-    )
-    assert vm["current_method"] == "close_proxy"
-    site_root.joinpath("commodities.html").write_text(
-        '<section id="gold-china-premium" '
-        f'data-cgp-state="{vm["state"]}" '
-        f'data-cgp-display-source="{vm["chart"]["display_source"]}" '
-        f'data-cgp-currency="{vm["price_currency"]}" '
-        f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
-        f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
-    )
-
-    rc = audit.run(strict_render=True)
-
-    persisted = json.loads(
-        (data_root / "quality" / "china_gold_premium.json").read_text()
-    )
-    assert rc == 0
-    assert persisted["status"] == "available_fresh"
-    assert persisted["headline_method"] == "close_proxy"
-    assert persisted["render_consistent"] is True
-    assert persisted["source_asof"] == "2026-09-18T07:30:00+00:00"
-    assert persisted["official_canonical_available"] is False
-
-
 def test_gold_premium_quality_receipt_detects_stale_rendered_asof_or_value(tmp_path):
     from scripts import audit_china_gold_premium as audit
 

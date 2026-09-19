@@ -1251,20 +1251,32 @@ def test_adapter_filters_tushare_request_to_au9999(monkeypatch):
     assert seen["ts_code"] == "Au99.99"
 
 
-def test_collector_store_is_consumed_by_product_engine_without_translation(tmp_path, monkeypatch):
+def test_collector_store_is_consumed_by_engine_and_audited_render_without_translation(tmp_path, monkeypatch):
+    import copy
+    import json
+
     from collectors import china_gold_basis as cgb
     from collectors.base import run_adapter
     from engine import china_gold_premium as cgp
     from lib import config, store
+    from scripts import audit_china_gold_premium as audit
 
-    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    cfg = copy.deepcopy(config.load())
+    cfg["storage"]["site_dir"] = "site"
+    data_root = tmp_path / "data"
+    site_root = tmp_path / "site"
+    site_root.mkdir(parents=True)
+
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setattr(config, "data_dir", lambda: data_root)
+    monkeypatch.setattr(config, "load", lambda: cfg)
     monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
     monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
     adapter = cgb.ChinaGoldBasisAdapter()
 
-    idx = pd.to_datetime(
-        ["2026-09-17T07:30:00", "2026-09-18T07:30:00"]
-    )
+    now = pd.Timestamp.now(tz="UTC")
+    latest = (now.normalize() - pd.Timedelta(days=1) + pd.Timedelta(hours=7, minutes=30)).tz_convert(None)
+    idx = pd.DatetimeIndex([latest - pd.Timedelta(days=1), latest])
     frames = {
         "sge_au9999": pd.DataFrame({"rmb_per_g": [817.0, 820.5]}, index=idx),
         "xaucny_spot": pd.DataFrame({"cny_per_oz": [25380.0, 25490.0]}, index=idx),
@@ -1280,15 +1292,36 @@ def test_collector_store_is_consumed_by_product_engine_without_translation(tmp_p
     assert result.status == "ok"
     stored_sge = store.read("gold_china_basis", "sge_au9999")
     assert stored_sge is not None
-    assert stored_sge.index[-1] == pd.Timestamp("2026-09-18T07:30:00")
+    assert stored_sge.index[-1] == latest
 
     vm = cgp.build_view_model(
-        config.load()["commodities"]["china_gold_premium"],
-        now=pd.Timestamp("2026-09-18T12:00:00Z"),
+        cfg["commodities"]["china_gold_premium"],
+        now=now,
     )
     assert vm["available"] is True
     assert vm["current_method"] == "close_proxy"
-    assert vm["close_proxy"]["asof"] == "2026-09-18T07:30:00+00:00"
+    expected_asof = latest.tz_localize("UTC").isoformat()
+    assert vm["close_proxy"]["asof"] == expected_asof
+
+    site_root.joinpath("commodities.html").write_text(
+        '<section id="gold-china-premium" '
+        f'data-cgp-state="{vm["state"]}" '
+        f'data-cgp-display-source="{vm["chart"]["display_source"]}" '
+        f'data-cgp-currency="{vm["price_currency"]}" '
+        f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
+        f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
+    )
+
+    rc = audit.run(strict_render=True)
+    persisted = json.loads(
+        (data_root / "quality" / "china_gold_premium.json").read_text()
+    )
+    assert rc == 0
+    assert persisted["status"] == "available_fresh"
+    assert persisted["headline_method"] == "close_proxy"
+    assert persisted["render_consistent"] is True
+    assert persisted["source_asof"] == expected_asof
+    assert persisted["official_canonical_available"] is False
 
 
 def test_gold_premium_quality_audit_runs_immediately_after_commodity_builder():

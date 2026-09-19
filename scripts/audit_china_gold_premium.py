@@ -19,12 +19,16 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 
-from engine import china_gold_premium
-from lib import config
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+
+from engine import china_gold_premium  # noqa: E402
+from lib import config  # noqa: E402
 
 
 log = logging.getLogger("china_gold_premium_audit")

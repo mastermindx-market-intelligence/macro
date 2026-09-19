@@ -14491,6 +14491,10 @@ jobs:
       - config/issuer_group_allowlist.yml
       - lib/__init__.py
       - lib/config.py
+      # Dataset-registry proof for the China-gold source IDs imports the display
+      # engine and its canonical store reader. Keep this exclusive scope honest.
+      - lib/store.py
+      - engine/china_gold_premium.py
       - lib/delisted_symbols.py
       - lib/ticker_aliases.py
       - scripts/build_security_master.py
