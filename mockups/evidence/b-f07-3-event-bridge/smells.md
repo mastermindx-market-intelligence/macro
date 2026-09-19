@@ -1,12 +1,11 @@
 # B-F07-3 capture observations
 
-CODE_HEAD: `8dc43cbf5bd393506a481f566881320fb72b3891`.
+CODE_HEAD: `2f42d7d155a385d14082468b300251b5a1ea3542`.
 
 Three hosts were regenerated from `templates/_valuation_assumptions.html.j2`
-and `templates/theme.css`. The host shell retains its existing panel geometry;
-the unnecessary full-site theme script was removed from these isolated fixtures.
-The template's own slider behavior remains active. Financial figures in the
-hosts are synthetic and are visibly labeled as such.
+and `templates/theme.css` at this CODE_HEAD. Hosts and the 24 crops were
+byte-identical to the previous capture; they were recaptured anyway so the
+receipt names this CODE_HEAD.
 
 All 24 cells were captured sequentially: Tender Offers, Restructuring and null,
 each in dark/light, EN/ZH, at desktop 1440×900 and mobile 390×844. Every crop is
@@ -25,7 +24,7 @@ Capture checks: 0 page errors; 0 event-line overflows; one language visible per
 cell. Representative dark and light crops were visually inspected. No visual
 smell was observed in those crops; this does not claim independent taste approval.
 
-The functional suite passed. The separate CI dependency audit still reports
-62 introduced path entries across eight jobs at the prior head (hosted run
-35421325082, job 105839492389). This round preserves the same engine and CI
-bytes; no all-green or production-deployment claim is made. See `r2/heal-r2.md`.
+The functional suite is 28 passed on Python 3.12.10. Hosted contract-delta at
+CODE_HEAD concluded SUCCESS with `0 introduced, 0 inherited (base f986ecb2d6f9)`
+(run 35426829901, job 105856382629). Live generated pages remain AAPL-only by
+the MO-PAID-020 census gate. See `r3/`.
