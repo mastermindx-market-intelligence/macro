@@ -2451,3 +2451,178 @@ def test_leak_screen_empty_answer_untouched():
     from engine.neuralweb import ask_brain as ab
     out, flagged = ab._leak_screen_ask("", "anything")
     assert (out, flagged) == ("", False)
+
+
+# ---------------------------------------------------------------------------
+# Fast progressive-disclosure task profiles — qualification only, not gateway enforcement
+# ---------------------------------------------------------------------------
+
+def test_task_profile_is_additive_and_does_not_change_legacy_classifier_contract():
+    before = ab._classify_question("Why did NVDA move today?", None)
+    profile = ab._task_profile("Why did NVDA move today?", None)
+    after = ab._classify_question("Why did NVDA move today?", None)
+    assert before == after
+    assert isinstance(before, tuple) and len(before) == 2
+    assert profile["schema"] == "brain.task_profile.v1"
+
+
+@pytest.mark.parametrize(("question", "context_ticker", "expected", "grounding"), [
+    (
+        "Assume EPS rises from 5 to 6 and the multiple falls from 20x to 15x. What happens to price?",
+        None, "self_contained", "none",
+    ),
+    ("Why did NVDA move today?", None, "single_name_current", "single_name_current"),
+    ("Why are yields rising and TLT falling after CPI?", None, "macro_rates", "market_current"),
+    (
+        "What's the options setup for NVDA and what do skew and gamma say?",
+        None, "options_single_name", "single_name_current",
+    ),
+    ("What changed in my portfolio exposure today?", None, "portfolio", "portfolio_current"),
+    (
+        "What is the AI infrastructure thematic state and who benefits?",
+        None, "theme", "market_current",
+    ),
+    (
+        "Explain whether liquidity, earnings, options, and positioning matter more for this opportunity",
+        None, "ambiguous", "ambiguous",
+    ),
+])
+def test_task_profile_frozen_english_cases(question, context_ticker, expected, grounding):
+    row = ab._task_profile(question, context_ticker)
+    assert row["profile"] == expected
+    assert row["grounding_scope"] == grounding
+
+
+def test_options_profile_wins_over_legacy_context_ticker_shortcut():
+    # Legacy _classify_question intentionally remains unchanged: context_ticker
+    # still takes its historical why-fired branch. The progressive profile fixes
+    # this independently so a future visibility consumer does not hide options tools.
+    legacy_budget, legacy_seeds = ab._classify_question(
+        "What's the options setup and skew?", "NVDA"
+    )
+    assert legacy_seeds[:3] == ["query_spine", "read_world_state", "read_kernel"]
+    row = ab._task_profile("What's the options setup and skew?", "NVDA")
+    assert row["profile"] == "options_single_name"
+    assert "read_options_entry_state" in row["tool_names"]
+    assert "explain_options_context" in row["tool_names"]
+
+
+@pytest.mark.parametrize(("question", "expected"), [
+    ("为什么 NVDA 今天上涨？", "single_name_current"),
+    ("CPI后收益率上升，TLT下跌说明什么？", "macro_rates"),
+    ("NVDA 期权偏斜和 gamma 怎么看？", "options_single_name"),
+    ("我的投资组合今天风险敞口有什么变化？", "portfolio"),
+    ("AI基础设施主题现在处于什么阶段？", "theme"),
+])
+def test_task_profile_frozen_chinese_cases(question, expected):
+    assert ab._task_profile(question, None)["profile"] == expected
+
+
+def test_profile_tool_families_are_closed_unique_and_do_not_claim_authority():
+    profiles = ab._TASK_PROFILE_TOOL_NAMES
+    assert set(profiles) == {
+        "self_contained", "single_name_current", "macro_rates",
+        "options_single_name", "portfolio", "theme",
+    }
+    for name, tools in profiles.items():
+        assert isinstance(tools, tuple)
+        assert len(tools) == len(set(tools)), name
+        assert all(isinstance(tool, str) and tool for tool in tools)
+    assert profiles["self_contained"] == ()
+    forbidden = {"set_chart_symbol", "emit_chart_command", "set_chat_preference"}
+    assert not any(forbidden.intersection(tools) for tools in profiles.values())
+
+
+def test_ambiguous_profile_preserves_full_authorized_visibility():
+    row = ab._task_profile("Tell me what matters here.", None)
+    assert row == {
+        "schema": "brain.task_profile.v1",
+        "profile": "ambiguous",
+        "grounding_scope": "ambiguous",
+        "visibility": "full_authorized",
+        "tool_names": None,
+    }
+
+
+def test_fast_task_profile_probe_measures_real_current_schema_without_model_calls(tmp_path):
+    import scripts.probe_brain_task_profiles as probe
+
+    report = probe.build_report(__import__("pathlib").Path(__file__).resolve().parents[1])
+    assert report["schema"] == "brain.task_profile_qualification.v1"
+    assert report["authority"] == "qualification_only"
+    assert report["gateway_enforcement"] is False
+    assert report["full"]["tool_count"] >= 54
+    assert report["full"]["schema_chars"] > 30000
+
+    by_profile = {row["profile"]: row for row in report["profiles"]}
+    for profile in (
+        "self_contained", "single_name_current", "macro_rates",
+        "options_single_name", "portfolio", "theme",
+    ):
+        row = by_profile[profile]
+        assert row["missing_tools"] == []
+        assert row["tool_count"] == len(ab._TASK_PROFILE_TOOL_NAMES[profile])
+        assert row["schema_chars"] < report["full"]["schema_chars"]
+        assert row["reduction_pct"] >= 70.0
+
+    ambiguous = by_profile["ambiguous"]
+    assert ambiguous["tool_count"] == report["full"]["tool_count"]
+    assert ambiguous["schema_chars"] == report["full"]["schema_chars"]
+    assert ambiguous["byte_equivalent_full"] is True
+
+
+def test_fast_task_profile_probe_strict_cli_is_machine_readable_and_green(capsys):
+    import scripts.probe_brain_task_profiles as probe
+
+    assert probe.main(["--root", str(__import__("pathlib").Path(__file__).resolve().parents[1]), "--strict"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["strict_passed"] is True
+    assert payload["gateway_enforcement"] is False
+
+
+@pytest.mark.parametrize("question", [
+    "What does the street research say about NVDA?",
+    "What do insiders and Congress trades say about NVDA?",
+    "Show me historical analogues for NVDA",
+    "Backtest NVDA and show similar stage peers",
+    "Chart NVDA and draw support",
+    "What is the factor DNA of AAPL?",
+    "What special-situations M&A context exists for NVDA?",
+    "What stage analysis applies to PLTR?",
+])
+def test_task_profile_specialist_single_name_questions_fail_open_to_ambiguous(question):
+    row = ab._task_profile(question, None)
+    assert row["profile"] == "ambiguous"
+    assert row["tool_names"] is None
+    assert row["visibility"] == "full_authorized"
+
+
+def test_task_profile_portfolio_plus_options_is_ambiguous_until_multi_family_profile_is_qualified():
+    row = ab._task_profile("How are options skew affecting my portfolio exposure?", None)
+    assert row["profile"] == "ambiguous"
+    assert row["tool_names"] is None
+
+
+def test_task_profile_single_name_plus_macro_is_ambiguous_not_wrongly_narrowed():
+    row = ab._task_profile("Why did NVDA move after CPI and the rate selloff?", None)
+    assert row["profile"] == "ambiguous"
+    assert row["tool_names"] is None
+
+
+def test_macro_profile_includes_dedicated_inflation_and_liquidity_reads():
+    inflation = ab._task_profile("What will the next CPI print be?", None)
+    plumbing = ab._task_profile("What does liquidity plumbing say about funding stress?", None)
+    assert inflation["profile"] == "macro_rates"
+    assert plumbing["profile"] == "macro_rates"
+    assert "read_inflation_intelligence" in inflation["tool_names"]
+    assert "read_liquidity_plumbing" in plumbing["tool_names"]
+
+
+def test_fast_task_profile_probe_direct_script_pins_repo_before_engine_import():
+    src = (
+        __import__("pathlib").Path(__file__).resolve().parents[1]
+        / "scripts" / "probe_brain_task_profiles.py"
+    ).read_text(encoding="utf-8")
+    assert src.index("sys.path.insert") < src.index("from engine.neuralweb import ask_brain")
+    assert "build_providers(" not in src
+    assert "messages.create(" not in src

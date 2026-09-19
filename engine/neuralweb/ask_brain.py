@@ -476,6 +476,201 @@ def _detect_ticker(question: str) -> str | None:
 # Question classifier → tool budget
 # ---------------------------------------------------------------------------
 
+# Progressive-disclosure qualification profiles. These are candidate MODEL-VISIBILITY
+# families only; dispatcher authorization / entitlement / page gates remain separate.
+# Ambiguous questions deliberately retain the current full authorized schema.
+_TASK_PROFILE_TOOL_NAMES: dict[str, tuple[str, ...]] = {
+    "self_contained": (),
+    "single_name_current": (
+        "get_market_events",
+        "get_symbol_context",
+        "get_quote",
+        "get_symbol_intel",
+        "read_company_intelligence",
+        "get_fundamentals",
+        "get_earnings",
+        "get_house_view",
+        "query_spine",
+        "read_contradictions",
+    ),
+    "macro_rates": (
+        "read_world_state",
+        "get_curve_detail",
+        "read_mechanism_pathways",
+        "read_inflation_intelligence",
+        "read_contradictions",
+        "get_market_events",
+        "read_liquidity_plumbing",
+    ),
+    "options_single_name": (
+        "get_quote",
+        "get_symbol_context",
+        "get_market_events",
+        "read_options_entry_state",
+        "explain_options_context",
+        "query_options_confluence",
+        "list_options_contradictions",
+    ),
+    "portfolio": (
+        "get_portfolio_brief",
+        "get_watchlist",
+        "read_world_state",
+        "read_factor_state",
+        "list_factor_contradictions",
+        "get_market_events",
+        "read_contradictions",
+    ),
+    "theme": (
+        "read_theme_state",
+        "read_theme_thesis",
+        "read_theme_pathways",
+        "read_theme_asymmetry",
+        "read_theme_options_witness",
+        "read_theme_clinical",
+        "read_theme_trade_flows",
+        "get_market_events",
+        "read_world_state",
+    ),
+}
+
+_TASK_PROFILE_GROUNDING = {
+    "self_contained": "none",
+    "single_name_current": "single_name_current",
+    "macro_rates": "market_current",
+    "options_single_name": "single_name_current",
+    "portfolio": "portfolio_current",
+    "theme": "market_current",
+}
+
+_TASK_PROFILE_PORTFOLIO = re.compile(
+    r"\b(my\s+portfolio|portfolio|positions?|holdings?|watchlist|exposure)\b|"
+    r"投资组合|投資組合|持仓|持倉|仓位|倉位|风险敞口|風險敞口",
+    re.I,
+)
+_TASK_PROFILE_MACRO_RATES = re.compile(
+    r"\b(yields?|yield\s+curve|rates?|treasur\w*|bonds?|tlt|ief|shy|"
+    r"fomc|fed|cpi|pce|ppi|payrolls?|dollar|dxy|credit\s+spreads?)\b|"
+    r"收益率|利率|国债|國債|美联储|美聯儲|通胀|通脹|非农|非農|美元",
+    re.I,
+)
+_TASK_PROFILE_CURRENT = re.compile(
+    r"\b(why\s+did|move[sd]?|moving|today|current|right\s+now|news|"
+    r"catalyst|earnings|fundamentals?|valuation|house\s+view|what\s+happened)\b|"
+    r"今天|上涨|上漲|下跌|异动|異動|为什么|為什麼|催化|财报|財報|估值",
+    re.I,
+)
+_TASK_PROFILE_SELF_FINANCIAL = re.compile(
+    r"\b(eps|revenue|sales|gross\s+margin|operating\s+margin|multiple|"
+    r"cash\s+flow|working\s+capital|capex|capital\s+expenditure|earnings)\b|"
+    r"每股收益|收入|营收|營收|毛利率|现金流|現金流|营运资金|營運資金|资本支出|資本支出",
+    re.I,
+)
+_TASK_PROFILE_ASSUMPTION = re.compile(
+    r"\b(assume|assuming|suppose|given|if)\b|\bfrom\s+[-+]?\d|"
+    r"假设|假設|如果",
+    re.I,
+)
+_TASK_PROFILE_THEME = re.compile(
+    r"\b(theme|thematic|beneficiar\w*|ai\s+infrastructure)\b|"
+    r"主题|主題|受益者|受益股",
+    re.I,
+)
+_TASK_PROFILE_SPECIALIST = re.compile(
+    r"\b(street|sell[- ]side|buy[- ]side|analysts?|institutional|research\s+report|"
+    r"insiders?|congress(?:ional)?\s+trades?|smart\s+money|historical\s+analog(?:ue)?s?|"
+    r"backtest|stage\s+peers?|chart|draw|support|resistance|special[- ]situations?|"
+    r"m&a|merger|acquisition|stage\s+analysis)\b|"
+    r"机构|機構|研报|研報|内部人|內部人|国会交易|國會交易|历史类比|歷史類比|"
+    r"回测|回測|图表|圖表|支撑|支撐|阻力|并购|併購",
+    re.I,
+)
+_MACRO_INSTRUMENT_TICKERS = frozenset({"TLT", "IEF", "SHY", "UUP", "DXY"})
+
+
+def _profile_row(profile: str) -> dict[str, Any]:
+    tools = _TASK_PROFILE_TOOL_NAMES.get(profile)
+    if tools is None:
+        return {
+            "schema": "brain.task_profile.v1",
+            "profile": "ambiguous",
+            "grounding_scope": "ambiguous",
+            "visibility": "full_authorized",
+            "tool_names": None,
+        }
+    return {
+        "schema": "brain.task_profile.v1",
+        "profile": profile,
+        "grounding_scope": _TASK_PROFILE_GROUNDING[profile],
+        "visibility": "filtered_candidate",
+        "tool_names": tools,
+    }
+
+
+def _looks_self_contained_financial(question: str) -> bool:
+    if not _TASK_PROFILE_SELF_FINANCIAL.search(question):
+        return False
+    if not _TASK_PROFILE_ASSUMPTION.search(question):
+        return False
+    return len(re.findall(r"(?<!\w)[+-]?\d+(?:\.\d+)?(?:x|%)?", question, re.I)) >= 2
+
+
+def _task_profile(question: object, context_ticker: str | None = None) -> dict[str, Any]:
+    '''Return a conservative Fast progressive-disclosure qualification profile.
+
+    This is additive to the legacy question classifier and intentionally has no
+    gateway enforcement effect in this wave. A future gateway consumer must first
+    build the full entitled/page-gated schema, then intersect model visibility with
+    tool_names. Ambiguous means byte-identical full authorized visibility.
+
+    Cross-domain cases fail open to full visibility rather than guessing a narrow
+    family. Nothing here changes tool authorization, provider routing, grounding,
+    budgets, signal authority, or the legacy classifier contract.
+    '''
+    q = question if isinstance(question, str) else ""
+    ticker = (
+        str(context_ticker).strip().upper()
+        if isinstance(context_ticker, str) and context_ticker.strip()
+        else (_detect_ticker(q) or "")
+    )
+    has_options = bool(_OPTIONS_TRIGGER_TERMS.search(q))
+    has_portfolio = bool(_TASK_PROFILE_PORTFOLIO.search(q))
+    has_macro = bool(
+        _TASK_PROFILE_MACRO_RATES.search(q)
+        or _LIQUIDITY_PLUMBING_TRIGGER_TERMS.search(q)
+        or _INFLATION_INTELLIGENCE_TRIGGER_TERMS.search(q)
+    )
+    has_theme = bool(_THEME_TRIGGER_TERMS.search(q) or _TASK_PROFILE_THEME.search(q))
+    has_specialist = bool(
+        _TASK_PROFILE_SPECIALIST.search(q)
+        or _FACTOR_TRIGGER_TERMS.search(q)
+        or _CHINA_TRIGGER_TERMS.search(q)
+    )
+
+    if _looks_self_contained_financial(q):
+        return _profile_row("self_contained")
+    if has_specialist:
+        return _profile_row("ambiguous")
+    if has_portfolio:
+        if has_options or has_theme:
+            return _profile_row("ambiguous")
+        return _profile_row("portfolio")
+    if has_options:
+        if ticker:
+            return _profile_row("options_single_name")
+        return _profile_row("ambiguous")
+    if has_theme:
+        if ticker and _TASK_PROFILE_CURRENT.search(q):
+            return _profile_row("ambiguous")
+        return _profile_row("theme")
+    if has_macro:
+        if ticker and ticker not in _MACRO_INSTRUMENT_TICKERS:
+            return _profile_row("ambiguous")
+        return _profile_row("macro_rates")
+    if ticker:
+        return _profile_row("single_name_current")
+    return _profile_row("ambiguous")
+
+
 def _classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
     """Return (budget, seed_tool_names) for the question.
 
