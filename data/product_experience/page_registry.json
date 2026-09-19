@@ -622,6 +622,51 @@
       "notes": []
     },
     {
+      "page_id": "macro:am_edition",
+      "repo": "macro",
+      "route": "/am_edition.html",
+      "route_kind": "page",
+      "source_template": "templates/am_edition.html.j2",
+      "builder": [
+        "scripts/build_am_edition.py"
+      ],
+      "data_sources": [],
+      "access_shell": "anonymous",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "public_nav.public",
+      "archetype": "editorial",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": true,
+      "bilingual": true,
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "site_access.v1:default_insider"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "config/site_access.yml:1",
+        "scripts/build_am_edition.py:841",
+        "templates/_public_nav.html.j2",
+        "templates/am_edition.html.j2"
+      ],
+      "notes": [
+        "written by a builder but not committed under site/"
+      ]
+    },
+    {
       "page_id": "macro:anticipation",
       "repo": "macro",
       "route": "/anticipation.html",

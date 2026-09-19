@@ -841,6 +841,10 @@ pages:
     archetype: "editorial"
     why: "a daily BRIEF is a reading artifact, even though the AI desk generates it"
 
+  macro:am_edition:
+    archetype: "editorial"
+    why: "a distinct before-the-US-open reading surface — tape, clock, regime, calendar — plain words, no scores"
+
   macro:blog_family:
     archetype: "editorial"
 
