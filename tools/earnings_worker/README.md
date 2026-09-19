@@ -224,8 +224,10 @@ fallback is a separate, TCC-safe appliance outside `~/Documents`:
 The bootstrap creates a sparse, clean, fast-forward-only clone at
 `/Users/chriswong/earnings-ops-wt`, a dedicated virtual environment at
 `/Users/chriswong/earnings-venv`, and installs
-`com.mastermind.earnings-worker`. It reuses the existing environment file only
-through `run_with_env.sh`; no secret values are copied into the plist or repo.
+`com.mastermind.earnings-worker`. It binds an **explicit operator-selected environment file** through
+`EARNINGS_ENV_FILE=/absolute/approved/path/.env` and `run_with_env.sh`; no
+secret values are copied into the plist or repo. There is deliberately no
+cross-worktree default credential file.
 Append-only AI cost and provider quota telemetry is redirected to
 `/Users/chriswong/earnings-runtime` (override with `EARNINGS_RUNTIME_ROOT`), so
 model calls cannot dirty or wedge the fast-forward-only code appliance.
@@ -241,8 +243,17 @@ allowed only before a cursor exists:
 ./ops/bootstrap_earnings_worker.sh --bootstrap-since YYYY-MM-DD
 ```
 
-Use `./ops/bootstrap_earnings_worker.sh --check` for a read-only appliance,
-dependency, plist, and environment-name audit.
+Install/refresh only with an explicit approved credential source:
+
+```bash
+EARNINGS_ENV_FILE=/absolute/approved/path/.env ./ops/bootstrap_earnings_worker.sh
+```
+
+Use the same binding with
+`EARNINGS_ENV_FILE=/absolute/approved/path/.env ./ops/bootstrap_earnings_worker.sh --check`
+for a read-only appliance, dependency, rendered-plist, and environment-name audit.
+The source plist contains only an env-path placeholder; bootstrap renders the
+selected path into the installed LaunchAgent.
 
 ---
 
