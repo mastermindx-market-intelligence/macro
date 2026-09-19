@@ -48,8 +48,12 @@ _COUNT_KEYS = (
     "matched_numbers",
     "expected_entities",
     "matched_entities",
+    "expected_thesis_support",
+    "matched_thesis_support",
     "expected_analysis_categories",
     "matched_analysis_categories",
+    "direction_expected",
+    "direction_correct",
 )
 
 
@@ -258,7 +262,9 @@ def _score_counts(
     claim_hits: int = 0,
     number_hits: int = 0,
     entity_hits: int = 0,
+    thesis_hits: int = 0,
     category_hits: int = 0,
+    direction_correct: int = 0,
 ) -> dict[str, int]:
     counts = _expected_counts(checked)
     return {
@@ -268,22 +274,65 @@ def _score_counts(
         "matched_numbers": number_hits,
         "expected_entities": counts["entities"],
         "matched_entities": entity_hits,
+        "expected_thesis_support": counts["thesis_support"],
+        "matched_thesis_support": thesis_hits,
         "expected_analysis_categories": counts["analysis_categories"],
         "matched_analysis_categories": category_hits,
+        "direction_expected": counts["direction"],
+        "direction_correct": direction_correct,
+    }
+
+
+def _metrics_from_counts(
+    state: str,
+    counts: dict[str, int],
+) -> dict[str, float | None]:
+    if state not in {"ok", "invalid_output"}:
+        raise ValueError("unsupported benchmark result state")
+    valid = state == "ok"
+    return {
+        "validity": 1.0 if valid else 0.0,
+        "claim_recall": (
+            _ratio(counts["matched_claims"], counts["expected_claims"])
+            if valid
+            else (0.0 if counts["expected_claims"] else None)
+        ),
+        "number_recall": (
+            _ratio(counts["matched_numbers"], counts["expected_numbers"])
+            if valid
+            else (0.0 if counts["expected_numbers"] else None)
+        ),
+        "entity_recall": (
+            _ratio(counts["matched_entities"], counts["expected_entities"])
+            if valid
+            else (0.0 if counts["expected_entities"] else None)
+        ),
+        "thesis_support_recall": (
+            _ratio(
+                counts["matched_thesis_support"],
+                counts["expected_thesis_support"],
+            )
+            if valid
+            else (0.0 if counts["expected_thesis_support"] else None)
+        ),
+        "analysis_category_recall": (
+            _ratio(
+                counts["matched_analysis_categories"],
+                counts["expected_analysis_categories"],
+            )
+            if valid
+            else (0.0 if counts["expected_analysis_categories"] else None)
+        ),
+        "direction_accuracy": (
+            float(counts["direction_correct"])
+            if valid and counts["direction_expected"]
+            else (0.0 if counts["direction_expected"] else None)
+        ),
     }
 
 
 def _zero_metrics(checked: dict[str, Any]) -> dict[str, float | None]:
-    counts = _expected_counts(checked)
-    return {
-        "validity": 0.0,
-        "claim_recall": 0.0 if counts["claims"] else None,
-        "number_recall": 0.0 if counts["numbers"] else None,
-        "entity_recall": 0.0 if counts["entities"] else None,
-        "thesis_support_recall": 0.0 if counts["thesis_support"] else None,
-        "analysis_category_recall": 0.0 if counts["analysis_categories"] else None,
-        "direction_accuracy": 0.0 if counts["direction"] else None,
-    }
+    return _metrics_from_counts("invalid_output", _score_counts(checked))
 
 
 def _supported_gold_indices(
@@ -334,33 +383,26 @@ def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, A
             target = set(expectation)
             category_hits += int(any(target <= observed for observed in observed_sets))
 
-    counts = _expected_counts(checked)
     expected_direction = checked["expected"]["thesis_direction"]
-    metrics: dict[str, float | None] = {
-        "validity": 1.0,
-        "claim_recall": _ratio(claim_hits, counts["claims"]),
-        "number_recall": _ratio(number_hits, counts["numbers"]),
-        "entity_recall": _ratio(entity_hits, counts["entities"]),
-        "thesis_support_recall": _ratio(thesis_hits, counts["thesis_support"]),
-        "analysis_category_recall": _ratio(
-            category_hits, counts["analysis_categories"]
-        ),
-        "direction_accuracy": (
-            float(thesis["direction"] == expected_direction) if expected_direction else None
-        ),
-    }
+    direction_correct = int(
+        bool(expected_direction) and thesis["direction"] == expected_direction
+    )
+    score_counts = _score_counts(
+        checked,
+        claim_hits=claim_hits,
+        number_hits=number_hits,
+        entity_hits=entity_hits,
+        thesis_hits=thesis_hits,
+        category_hits=category_hits,
+        direction_correct=direction_correct,
+    )
+    metrics = _metrics_from_counts("ok", score_counts)
     return {
         "case_id": checked["case_id"],
         "source_content_sha256": checked["source_content_sha256"],
         "metrics": metrics,
         "overall_score": _mean_available(metrics.values()),
-        "counts": _score_counts(
-            checked,
-            claim_hits=claim_hits,
-            number_hits=number_hits,
-            entity_hits=entity_hits,
-            category_hits=category_hits,
-        ),
+        "counts": score_counts,
     }
 
 
@@ -415,14 +457,15 @@ def score_raw_output(
         )
         scored = _score_grounded(checked, rio)
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
-        metrics = _zero_metrics(checked)
+        score_counts = _score_counts(checked)
+        metrics = _metrics_from_counts("invalid_output", score_counts)
         return {
             **base,
             "state": "invalid_output",
             "error_class": type(exc).__name__[:120],
             "metrics": metrics,
             "overall_score": _mean_available(metrics.values()),
-            "counts": _score_counts(checked),
+            "counts": score_counts,
         }
     return {
         **base,
@@ -452,6 +495,42 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         if not _is_sha256(raw.get(field)):
             raise ValueError(f"benchmark result {field} is invalid")
 
+    counts = raw.get("counts")
+    if not isinstance(counts, dict) or set(counts) != set(_COUNT_KEYS):
+        raise ValueError("benchmark result counts are malformed")
+    checked_counts: dict[str, int] = {}
+    for key in _COUNT_KEYS:
+        value = counts[key]
+        if type(value) is not int or value < 0:
+            raise ValueError("benchmark result count is invalid")
+        checked_counts[key] = value
+    for expected_key, matched_key in (
+        ("expected_claims", "matched_claims"),
+        ("expected_numbers", "matched_numbers"),
+        ("expected_entities", "matched_entities"),
+        ("expected_thesis_support", "matched_thesis_support"),
+        ("expected_analysis_categories", "matched_analysis_categories"),
+        ("direction_expected", "direction_correct"),
+    ):
+        if checked_counts[matched_key] > checked_counts[expected_key]:
+            raise ValueError("benchmark matched count exceeds expected count")
+    if checked_counts["direction_expected"] not in {0, 1}:
+        raise ValueError("benchmark direction_expected must be 0 or 1")
+    if checked_counts["direction_correct"] not in {0, 1}:
+        raise ValueError("benchmark direction_correct must be 0 or 1")
+    if state == "invalid_output" and any(
+        checked_counts[key]
+        for key in (
+            "matched_claims",
+            "matched_numbers",
+            "matched_entities",
+            "matched_thesis_support",
+            "matched_analysis_categories",
+            "direction_correct",
+        )
+    ):
+        raise ValueError("invalid benchmark output cannot retain matched credit")
+
     metrics = raw.get("metrics")
     if not isinstance(metrics, dict) or set(metrics) != set(_METRIC_KEYS):
         raise ValueError("benchmark result metrics are malformed")
@@ -467,52 +546,44 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         if not math.isfinite(number) or number < 0.0 or number > 1.0:
             raise ValueError("benchmark metric is outside [0,1]")
         checked_metrics[key] = number
-    expected_validity = 1.0 if state == "ok" else 0.0
-    if checked_metrics["validity"] != expected_validity:
-        raise ValueError("benchmark result validity disagrees with state")
+
+    recomputed_metrics = _metrics_from_counts(state, checked_counts)
+    for key in _METRIC_KEYS:
+        supplied = checked_metrics[key]
+        expected = recomputed_metrics[key]
+        if supplied is None or expected is None:
+            if supplied is not expected:
+                raise ValueError("benchmark metrics disagree with counts/state")
+            continue
+        if abs(supplied - expected) > 0.000001:
+            raise ValueError("benchmark metrics disagree with counts/state")
 
     overall = raw.get("overall_score")
     if isinstance(overall, bool) or not isinstance(overall, (int, float)):
         raise ValueError("benchmark overall_score is invalid")
     overall_number = float(overall)
-    recomputed = _mean_available(checked_metrics.values())
-    if not math.isfinite(overall_number) or abs(overall_number - recomputed) > 0.000001:
-        raise ValueError("benchmark overall_score disagrees with metrics")
-
-    counts = raw.get("counts")
-    if not isinstance(counts, dict) or set(counts) != set(_COUNT_KEYS):
-        raise ValueError("benchmark result counts are malformed")
-    checked_counts: dict[str, int] = {}
-    for key in _COUNT_KEYS:
-        value = counts[key]
-        if type(value) is not int or value < 0:
-            raise ValueError("benchmark result count is invalid")
-        checked_counts[key] = value
-    for expected_key, matched_key in (
-        ("expected_claims", "matched_claims"),
-        ("expected_numbers", "matched_numbers"),
-        ("expected_entities", "matched_entities"),
-        ("expected_analysis_categories", "matched_analysis_categories"),
+    recomputed_overall = _mean_available(recomputed_metrics.values())
+    if (
+        not math.isfinite(overall_number)
+        or abs(overall_number - recomputed_overall) > 0.000001
     ):
-        if checked_counts[matched_key] > checked_counts[expected_key]:
-            raise ValueError("benchmark matched count exceeds expected count")
+        raise ValueError("benchmark overall_score disagrees with metrics")
 
     return {
         **raw,
         "candidate_label": label,
         "case_id": case_id,
-        "metrics": checked_metrics,
-        "overall_score": recomputed,
+        "metrics": recomputed_metrics,
+        "overall_score": recomputed_overall,
         "counts": checked_counts,
     }
-
 
 def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     """Aggregate only directly comparable, text-free case receipts by candidate."""
     groups: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     bindings: dict[str, tuple[str, str, str]] = {}
     metric_shapes: dict[str, tuple[bool, ...]] = {}
-    expected_shapes: dict[str, tuple[int, int, int, int]] = {}
+    expected_shapes: dict[str, tuple[int, int, int, int, int, int]] = {}
 
     for raw in results:
         item = _validated_result(raw)
@@ -543,7 +614,9 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
             counts["expected_claims"],
             counts["expected_numbers"],
             counts["expected_entities"],
+            counts["expected_thesis_support"],
             counts["expected_analysis_categories"],
+            counts["direction_expected"],
         )
         prior_expected = expected_shapes.setdefault(case_id, expected_shape)
         if prior_expected != expected_shape:
