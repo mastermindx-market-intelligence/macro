@@ -14890,3 +14890,102 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  gdelt-news-leaves:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # The GDELT leaf family: the shared HTTP/cache client plus both consumers
+    # that build OR-queries against it. Wired 2026-09-18 as the follow-up to
+    # #7309. All three suites were rows in config/unrun_test_baseline.json —
+    # named by NO `run:` step in any workflow — so every contract below has been
+    # unenforced since the hour it landed.
+    #
+    # WHAT THAT COST. engine/macro_news.py shipped ONE 400-char OR-query that
+    # GDELT structurally rejects ("Your query was too short or too long."),
+    # answered as HTTP 200 + text/html so no status check sees it, on every
+    # nightly build for ~2 months. engine/news_vector.py had already fixed the
+    # IDENTICAL class in 2026-07 by splitting its terms into bounded sub-queries,
+    # and shipped tests/test_news_vector.py as the guard — a guard no job named.
+    # The fix did not travel to the sibling leaf because nothing made it travel:
+    # the _MAX_QUERY_LEN bound, the structural-vs-transient classification and
+    # the never-cache-a-failure rule were all dark. news_vector's own 230-char
+    # bound has held only because nobody has edited its term list since.
+    #
+    # WHY ITS OWN JOB rather than a step in an existing one. No enabled
+    # `gate: code` job owns these modules as its SUBJECT. `biocatalyst-serving`
+    # is the only one carrying engine/macro_news.py in `paths:` and it reaches it
+    # through its import closure, not through ownership; `unrun-macro-panels`
+    # runs the news-adjacent suites but is `gate: data`, and gate:data jobs are
+    # off the merge gate. Lodging a family's contracts in a job that owns
+    # something else is how ownership stops being readable, which is the state
+    # this file exists to end.
+    #
+    # config.yml is in scope on purpose and is the highest-value entry here: the
+    # term lists these queries are assembled from live there (#7309 edited it),
+    # and a term-list edit is precisely what walks a query over the server-side
+    # length bound. tests/test_news_vector.py reads it for real via `nv._cfg()`.
+    # engine/qbus.py and engine/qkernel.py are direct imports of
+    # tests/test_macro_news.py — depth-1 closure, the depth
+    # scripts/check_ci_trigger_closure.py gates at and for the reason it states.
+    #
+    # `scope: exclusive` because inference smears. Left to infer its own scope
+    # this job picked up whole-tree roots — templates/**, site/**, scripts/**,
+    # engine/** — through opaque constructs deep in macro_news's closure, and
+    # began selecting on every probe in
+    # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+    # (measured 2026-09-18: the ratchet reds, exactly as it is built to when a
+    # new job is handed the fallback tier). Curated away at the source, the way
+    # `options-estate-guards` was in wave 3, rather than paid for in the bound.
+    # Exclusivity means these paths are the WHOLE scope, so the second-level
+    # modules the three suites really read are declared here rather than lost
+    # with the smear: engine/macro_news.py imports news_common, news_events,
+    # event_calendar and qkernel, and all three leaves read lib/config.py.
+    # Everything inference added BEYOND this list (collectors/**, codex_*,
+    # neuralweb/key_pool, news_translate, macro_surprise, lib/store.py,
+    # lib/ai_costs.py) is reached through those imports, not by these suites.
+    scope: exclusive
+    paths:
+      - "config.yml"
+      - "engine/event_calendar.py"
+      - "engine/gdelt_client.py"
+      - "engine/macro_news.py"
+      - "engine/news_common.py"
+      - "engine/news_events.py"
+      - "engine/news_vector.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "lib/config.py"
+      - "tests/test_gdelt_client.py"
+      - "tests/test_macro_news.py"
+      - "tests/test_news_vector.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Measured one package at a time in a clean 3.12 venv (2026-09-18), the
+      # method the install-line note on `workflow-yaml` documents: pytest+pyyaml
+      # alone leaves 40 of 92 failing; +pandas+numpy leaves 31; +requests leaves
+      # 5; +pyarrow+beautifulsoup4 runs all 92 green. pyarrow is the parquet
+      # engine test_news_vector.py's freshness tests round-trip through.
+      # beautifulsoup4 is load-bearing in the quietest way there is: macro_news
+      # imports it INSIDE a try/except, so without it _fetch_official_pages
+      # returns an empty list and the two official-pages tests fail on missing
+      # ITEMS rather than on a missing MODULE — a thin runner would read as a
+      # code regression. numpy is transitive via pandas and named for the record,
+      # as causal-factory and global-liquidity-transmission do.
+      # No importorskip and no skipif anywhere in the three suites (verified), so
+      # they cannot skip their way to a green on a thin runner — the class
+      # scripts/check_skip_only_suites.py exists to catch.
+      - name: install GDELT leaf test dependencies
+        run: pip install pytest pyyaml pandas numpy pyarrow requests beautifulsoup4
+      # One step, all three suites: the install-line note on `workflow-yaml`
+      # records that consecutive per-suite steps hide each other (the first
+      # failure ends the job and four later steps never report). `gate: code` is
+      # provable here rather than asserted — the family runs green in a SPARSE
+      # checkout with no data/ tree on disk at all (92 passed, 2026-09-18), so no
+      # nightly or wire data commit can move this verdict.
+      - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
+        run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
