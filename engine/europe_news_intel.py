@@ -647,3 +647,38 @@ def read_events(asof: date | None = None):
     except Exception as e:  # noqa: BLE001
         log.error("europe_news_intel.read_events failed (%s)", e)
         return None
+
+
+# --------------------------------------------------------------------------- #
+# panel (render-time display packet, read-only over existing desk artifact)
+# --------------------------------------------------------------------------- #
+def panel(asof: date | None = None):
+    """Europe official-press panel over the existing qbus join surface.
+
+    Returns None (never raises) when the parquet is missing or unreadable.
+    is_context_only=True signals that scores/ranks are not available.
+
+    Items carry title / url / source / seendate / jurisdiction only.
+    importance_raw, event_key, item_id, and theme slugs are absent from
+    the output — no scores, no ranking, no LLM signals in the panel.
+    """
+    try:
+        df = read_events(asof)
+        if df is None or len(df) == 0:
+            return None
+        items = []
+        for _, row in df.iterrows():
+            items.append({
+                "title": str(row.get("title", "")),
+                "url": str(row.get("url", "")),
+                "source": str(row.get("source", "")),
+                "seendate": str(row.get("seendate", "")),
+                "jurisdiction": str(row.get("jurisdiction", "")),
+            })
+        return {
+            "schema": SCHEMA,
+            "is_context_only": True,
+            "items": items,
+        }
+    except Exception:  # noqa: BLE001
+        return None
