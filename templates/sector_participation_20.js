@@ -13,13 +13,25 @@ function w1Stable(value){
     return JSON.stringify(key)+':'+w1Stable(value[key]);
   }).join(',')+'}';
 }
-function w1GenerationMaterial(value){
+function w1ObservationMaterial(value){
   var material=JSON.parse(JSON.stringify(value));
   delete material.generation_id;
+  delete material.observation_id;
   delete material.computed_at;
   delete material.published_at;
   if(material.source) delete material.source.acquired_at;
   return material;
+}
+function w1GenerationMaterial(value){
+  var source=value&&value.source||{},reference=value&&value.reference||{};
+  return {
+    schema:'sector_participation_20.generation.v1',
+    observation_id:value&&value.observation_id,
+    roster_id:reference.roster_id,
+    response_set_id:source.response_set_id,
+    source_acquired_at:source.acquired_at,
+    computed_at:value&&value.computed_at
+  };
 }
 async function w1Sha256(text){
   if(!window.crypto||!window.crypto.subtle||!window.TextEncoder){
@@ -32,6 +44,7 @@ async function w1Sha256(text){
   }).join('');
 }
 function w1Array(value,length){ return Array.isArray(value)&&value.length===length; }
+function w1States(value,length){ return typeof value==='string'&&value.length===length; }
 function w1Text(value){ return typeof value==='string'&&Boolean(value.trim()); }
 function w1CodePointCompare(left,right){
   var a=Array.from(left),b=Array.from(right),limit=Math.min(a.length,b.length);
@@ -50,8 +63,15 @@ function w1IsoDate(value){
 function w1UtcClock(value){
   return typeof value==='string'&&/(?:Z|[+-]00:00)$/.test(value)&&Number.isFinite(Date.parse(value));
 }
-async function validatePackageCore(value,expectedGeneration){
+async function validatePackageCore(value,expectedGeneration,expectedObservation){
   if(!value||value.schema!=='sector_participation_20.v1') throw new Error('schema');
+  if(!w1ShaId(value.observation_id)||
+     (expectedObservation&&expectedObservation!==value.observation_id)){
+    throw new Error('pointer observation');
+  }
+  if(await w1Sha256(w1Stable(w1ObservationMaterial(value)))!==value.observation_id){
+    throw new Error('observation digest');
+  }
   if(!expectedGeneration||expectedGeneration!==value.generation_id) throw new Error('pointer generation');
   if(await w1Sha256(w1Stable(w1GenerationMaterial(value)))!==value.generation_id){
     throw new Error('generation digest');
@@ -89,17 +109,17 @@ async function validatePackageCore(value,expectedGeneration){
     var member=value.members[symbol];
     if(!member||typeof member!=='object'||typeof member.name!=='string'||!member.name.trim()||
        !Object.prototype.hasOwnProperty.call(value.sectors,member.sector)||
-       !w1Array(member.states,n)||!w1Array(member.distance_bps,n)||
+       !w1States(member.states,n)||!w1Array(member.distance_bps,n)||
        member.href!=='stock.html#'+encodeURIComponent(symbol)){ throw new Error('member alignment'); }
-    member.states.forEach(function(code,index){
+    Array.from(member.states).forEach(function(code,index){
       if(!W1_STATE_SET[code]) throw new Error('member state');
       var distance=member.distance_bps[index];
       if(code==='A'||code==='B'){
         if(typeof distance!=='number'||!Number.isFinite(distance)) throw new Error('member distance');
       }else if(distance!==null){ throw new Error('excluded member distance'); }
     });
-    if(member.states.every(function(code){ return code==='I'; })||
-       member.states.every(function(code){ return code==='U'; })) sourceFailureMembers+=1;
+    if(Array.from(member.states).every(function(code){ return code==='I'; })||
+       Array.from(member.states).every(function(code){ return code==='U'; })) sourceFailureMembers+=1;
     rosterPairs.push([symbol,member.name,member.sector]); bySector[member.sector].push(member);
   });
   rosterPairs.sort(function(a,b){
@@ -158,13 +178,12 @@ async function validatePackageCore(value,expectedGeneration){
     throw new Error('source identity');
   }
   if(!w1IsoDate(source.requested_start)||!w1IsoDate(source.requested_end)||
-     !w1IsoDate(source.latest_expected_session)||source.requested_start!==value.sessions[0]||
+     !w1IsoDate(source.latest_expected_session)||source.requested_start>value.sessions[0]||
      source.requested_end!==value.sessions[value.sessions.length-1]||
      source.latest_expected_session!==source.requested_end){ throw new Error('source range'); }
   if(source.source_session!==null&&source.source_session!==undefined){
-    if(!w1IsoDate(source.source_session)||value.sessions.indexOf(source.source_session)<0){
-      throw new Error('source session');
-    }
+    if(!w1IsoDate(source.source_session)||source.source_session<source.requested_start||
+       source.source_session>source.requested_end){ throw new Error('source session'); }
   }
   var requested=source.requested_member_count;
   var accepted=source.accepted_member_count;
@@ -248,7 +267,7 @@ function unavailable(kind){
 }
 
 async function validatePackage(value){
-  return validatePackageCore(value,pointer.generation_id);
+  return validatePackageCore(value,pointer.generation_id,pointer.observation_id);
 }
 
 function readQueryState(){
@@ -426,7 +445,7 @@ window.addEventListener('popstate',function(){ if(pkg){ readQueryState(); render
 document.addEventListener('langchange',function(){ if(pkg) render(); else if(unavailableKind) unavailable(unavailableKind); });
 
 readQueryState();
-if(!pointer.url||!pointer.generation_id){ unavailable(pointer.status); return; }
+if(!pointer.url||!pointer.generation_id||!pointer.observation_id){ unavailable(pointer.status); return; }
 setStatus(tx('Loading sector participation…','正在加载板块参与度…'));
 read.textContent=tx('Loading the dated participation generation…','正在加载带日期的参与度数据…');
 window.__sectorParticipation20Promise=window.__sectorParticipation20Promise||

@@ -93,6 +93,7 @@ def _w1_request_ceiling_seconds(provider_cfg: dict) -> float:
 
 
 _w1_canonicalize = w1_contract.canonicalize
+_w1_observation_id = w1_contract.observation_id
 _w1_generation_material = w1_contract.generation_material
 _w1_generation_id = w1_contract.generation_id
 _w1_json_bytes = w1_contract.json_bytes
@@ -969,6 +970,16 @@ class BreadthAdapter(Adapter):
                 if stamp in invalid.index:
                     invalid.at[stamp, symbol] = True
                     clean.at[stamp, symbol] = np.nan
+            accepted_pairs = [
+                [stamp.date().isoformat(), float(value)]
+                for stamp, value in clean[symbol].items() if pd.notna(value)
+            ]
+            evidence["accepted_values_id"] = "sha256:" + hashlib.sha256(
+                json.dumps(accepted_pairs, separators=(",", ":"), allow_nan=False).encode("utf-8")
+            ).hexdigest()
+            evidence.setdefault("basis", W1_LICENSED_BASIS)
+            evidence.setdefault("adjusted", True)
+            source_evidence[str(symbol)] = evidence
 
         ma20 = clean.rolling(20, min_periods=20).mean()
         roll_max = clean.rolling(20, min_periods=20).max()
@@ -1171,6 +1182,8 @@ class BreadthAdapter(Adapter):
                                 "response_status": attrs.get("response_status"),
                                 "response_count": attrs.get("response_count"),
                                 "request_id": attrs.get("request_id"),
+                                "basis": attrs.get("basis"),
+                                "adjusted": attrs.get("adjusted"),
                             }
                         except LicensedSourceError as exc:
                             mark_failure(symbol, str(exc), exc.member_state)
@@ -1214,7 +1227,7 @@ class BreadthAdapter(Adapter):
         result = self.compute_sector_participation_20(frame, members)
         if result is not None:
             result.attrs["latest_expected_session"] = end.isoformat()
-            result.attrs["display_sessions"] = int(display_sessions)
+            result.attrs["display_sessions"] = min(int(display_sessions), len(sessions))
         return result, failures
 
     def build_sector_participation_20_package(
@@ -1223,10 +1236,23 @@ class BreadthAdapter(Adapter):
         """Build the one public/private W1 generation from typed member evidence."""
         if result is None or result.empty:
             raise ValueError("no W1 result is available for publication")
-        sessions = list(result.attrs.get("sessions") or [])
+        source_sessions = list(result.attrs.get("sessions") or [])
         member_payload = copy.deepcopy(result.attrs.get("members") or {})
-        if not sessions or not member_payload:
+        if not source_sessions or not member_payload:
             raise ValueError("W1 result is missing same-generation member evidence")
+        display_sessions = int(result.attrs.get("display_sessions") or len(source_sessions))
+        if display_sessions < 1 or display_sessions > len(source_sessions):
+            raise ValueError("W1 display session count is outside the qualified source range")
+        public_offset = len(source_sessions) - display_sessions
+        sessions = source_sessions[public_offset:]
+        for symbol, evidence in member_payload.items():
+            states = evidence.get("states")
+            distances = evidence.get("distance_bps")
+            if (not isinstance(states, list) or len(states) != len(source_sessions)
+                    or not isinstance(distances, list) or len(distances) != len(source_sessions)):
+                raise ValueError(f"W1 member {symbol} is not aligned to the qualified source range")
+            evidence["states"] = "".join(states[public_offset:])
+            evidence["distance_bps"] = distances[public_offset:]
 
         roster_columns = ["symbol", "sector"] + (["name"] if "name" in members.columns else [])
         roster = members.loc[:, roster_columns].dropna(subset=["symbol", "sector"]).copy()
@@ -1288,7 +1314,8 @@ class BreadthAdapter(Adapter):
         receipt_fields = (
             "requested_ticker", "response_ticker", "request_id", "response_status",
             "response_count", "requested_start", "requested_end", "missing_sessions",
-            "invalid_sessions", "state", "unavailable", "reason",
+            "invalid_sessions", "accepted_values_id", "basis", "adjusted",
+            "state", "unavailable", "reason",
         )
         source_receipts: dict[str, dict] = {}
         for name in sorted(member_payload):
@@ -1298,17 +1325,10 @@ class BreadthAdapter(Adapter):
                 for field in receipt_fields if evidence.get(field) is not None
             }
         response_material = {
-            "sessions": sessions,
-            "members": {
-                name: {
-                    "name": member_payload[name]["name"],
-                    "sector": member_payload[name]["sector"],
-                    "states": member_payload[name]["states"],
-                    "distance_bps": member_payload[name]["distance_bps"],
-                    "source_receipt": source_receipts[name],
-                }
-                for name in sorted(member_payload)
-            },
+            "basis": W1_LICENSED_BASIS,
+            "requested_start": result.attrs.get("requested_start") or source_sessions[0],
+            "requested_end": result.attrs.get("requested_end") or source_sessions[-1],
+            "members": {name: source_receipts[name] for name in sorted(member_payload)},
             "unavailable_members": failed_names,
         }
         response_set_id = "sha256:" + hashlib.sha256(json.dumps(
@@ -1361,8 +1381,8 @@ class BreadthAdapter(Adapter):
             "source": {
                 "provider": "licensed_vendor",
                 "basis": W1_LICENSED_BASIS,
-                "requested_start": result.attrs.get("requested_start") or sessions[0],
-                "requested_end": result.attrs.get("requested_end") or sessions[-1],
+                "requested_start": result.attrs.get("requested_start") or source_sessions[0],
+                "requested_end": result.attrs.get("requested_end") or source_sessions[-1],
                 "source_session": source_session,
                 "latest_expected_session": latest_expected,
                 "acquired_at": result.attrs.get("acquired_at"),
@@ -1383,6 +1403,7 @@ class BreadthAdapter(Adapter):
             "sectors": sectors,
             "members": member_payload,
         }
+        package["observation_id"] = _w1_observation_id(package)
         package["generation_id"] = _w1_generation_id(package)
         _validate_w1_package(package)
         return package

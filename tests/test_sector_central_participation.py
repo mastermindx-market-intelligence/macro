@@ -942,6 +942,177 @@ def test_publish_writes_one_valid_same_generation_package(monkeypatch, tmp_path)
     assert package["members"]["TE0"]["href"] == "stock.html#TE0"
 
 
+def test_w1_package_trims_acquisition_warmup_but_preserves_source_range():
+    days = _sessions(271, 2026, 9, 18)
+    syms = [f"T{i}" for i in range(5)]
+    members = _members(syms)
+    closes = _wide(syms, days, lambda ticker, i: 100.0 + i + syms.index(ticker) / 100.0)
+    closes.attrs["member_evidence"] = {
+        symbol: {
+            "acquired_at": "2026-09-18T22:00:00+00:00",
+            "requested_ticker": symbol, "response_ticker": symbol,
+            "request_id": f"receipt-{symbol}", "response_status": "OK",
+            "response_count": len(days), "requested_start": days[0].isoformat(),
+            "requested_end": days[-1].isoformat(),
+        }
+        for symbol in syms
+    }
+    result = _adapter().compute_sector_participation_20(closes, members)
+    result.attrs["display_sessions"] = 252
+    result.attrs["latest_expected_session"] = days[-1].isoformat()
+    package = _adapter().build_sector_participation_20_package(result, {}, members)
+
+    assert len(package["sessions"]) == 252
+    assert package["sessions"][0] == days[-252].isoformat()
+    assert package["sessions"][-1] == days[-1].isoformat()
+    assert package["source"]["requested_start"] == days[0].isoformat()
+    assert package["source"]["requested_end"] == days[-1].isoformat()
+    assert package["source"]["requested_start"] < package["sessions"][0]
+    assert all(len(row[key]) == 252 for row in package["sectors"].values()
+               for key in ("above", "eligible", "expected", "pct"))
+    assert all(len(values) == 252 for row in package["sectors"].values()
+               for values in row["excluded"].values())
+    assert all(isinstance(member["states"], str) and len(member["states"]) == 252
+               for member in package["members"].values())
+    assert all(len(member["distance_bps"]) == 252 for member in package["members"].values())
+    w1_contract.validate_package(package)
+
+
+def test_w1_observation_and_generation_identities_follow_frozen_clock_semantics(monkeypatch, tmp_path):
+    import copy
+    path, _, _ = _publish_fixture(monkeypatch, tmp_path)
+    package = __import__("json").loads(path.read_text())
+
+    assert package["observation_id"] == w1_contract.observation_id(package)
+    assert package["generation_id"] == w1_contract.generation_id(package)
+
+    published = copy.deepcopy(package)
+    published["published_at"] = "2026-09-19T00:00:00+00:00"
+    assert w1_contract.observation_id(published) == package["observation_id"]
+    assert w1_contract.generation_id(published) == package["generation_id"]
+
+    recomputed = copy.deepcopy(package)
+    recomputed["computed_at"] = "2026-09-19T00:01:00+00:00"
+    assert w1_contract.observation_id(recomputed) == package["observation_id"]
+    assert w1_contract.generation_id(recomputed) != package["generation_id"]
+
+    reacquired = copy.deepcopy(package)
+    reacquired["source"]["acquired_at"] = "2026-09-19T00:02:00+00:00"
+    assert w1_contract.observation_id(reacquired) == package["observation_id"]
+    assert w1_contract.generation_id(reacquired) != package["generation_id"]
+
+
+def test_price_correction_changes_response_observation_and_generation_identities():
+    days = _sessions(25)
+    syms = [f"T{i}" for i in range(5)]
+    members = _members(syms)
+    closes = _wide(syms, days, lambda ticker, i: 100.0 + i + syms.index(ticker) / 100.0)
+    common_evidence = {
+        symbol: {
+            "acquired_at": "2026-09-18T22:00:00+00:00",
+            "requested_ticker": symbol, "response_ticker": symbol,
+            "request_id": f"receipt-{symbol}", "response_status": "OK",
+            "response_count": len(days), "requested_start": days[0].isoformat(),
+            "requested_end": days[-1].isoformat(),
+        }
+        for symbol in syms
+    }
+    closes.attrs["member_evidence"] = common_evidence
+    first_result = _adapter().compute_sector_participation_20(closes, members)
+    first_result.attrs["latest_expected_session"] = days[-1].isoformat()
+    first = _adapter().build_sector_participation_20_package(first_result, {}, members)
+
+    corrected = closes.copy()
+    corrected.iloc[-1, 0] += 0.125
+    corrected.attrs["member_evidence"] = common_evidence
+    second_result = _adapter().compute_sector_participation_20(corrected, members)
+    second_result.attrs["latest_expected_session"] = days[-1].isoformat()
+    second = _adapter().build_sector_participation_20_package(second_result, {}, members)
+
+    assert first["source"]["response_set_id"] != second["source"]["response_set_id"]
+    assert first["observation_id"] != second["observation_id"]
+    assert first["generation_id"] != second["generation_id"]
+
+
+def test_reordering_json_object_keys_changes_no_w1_content_identity(monkeypatch, tmp_path):
+    import json
+    source, _, _ = _publish_fixture(monkeypatch, tmp_path)
+    package = json.loads(source.read_text())
+    reordered = json.loads(json.dumps(package, ensure_ascii=False, sort_keys=True))
+    assert w1_contract.observation_id(reordered) == package["observation_id"]
+    assert w1_contract.generation_id(reordered) == package["generation_id"]
+
+
+def test_public_pointer_carries_both_observation_and_generation_ids(monkeypatch, tmp_path):
+    source, _, _ = _publish_fixture(monkeypatch, tmp_path)
+    package = __import__("json").loads(source.read_text())
+    pointer = _read_public(source, site=tmp_path / "site")
+    assert pointer["observation_id"] == package["observation_id"]
+    assert pointer["generation_id"] == package["generation_id"]
+
+
+def test_full_year_503_member_package_stays_inside_frozen_transfer_budget():
+    import gzip
+    sector_counts = [
+        ("Communication Services", 24), ("Consumer Discretionary", 47),
+        ("Consumer Staples", 34), ("Energy", 21), ("Financials", 76),
+        ("Health Care", 59), ("Industrials", 83),
+        ("Information Technology", 73), ("Materials", 25),
+        ("Real Estate", 30), ("Utilities", 31),
+    ]
+    assert sum(count for _, count in sector_counts) == 503
+    days = _sessions(252, 2026, 9, 18)
+    symbols = []
+    rows = []
+    member_payload = {}
+    for sector_index, (sector, count) in enumerate(sector_counts):
+        for member_index in range(count):
+            symbol = f"S{sector_index:02d}{member_index:03d}"
+            symbols.append(symbol)
+            rows.append({"symbol": symbol, "name": f"{sector} {member_index}", "sector": sector})
+            states = ["ABHMIU"[(member_index + position) % 6] for position in range(len(days))]
+            distances = [
+                round((((member_index * 13 + position * 7) % 2000) / 7.0) - 100.0, 4)
+                if state in {"A", "B"} else None
+                for position, state in enumerate(states)
+            ]
+            member_payload[symbol] = {
+                "name": f"{sector} {member_index}", "sector": sector,
+                "states": states, "distance_bps": distances,
+                "href": "stock.html#" + symbol,
+            }
+    members = pd.DataFrame(rows)
+    result = pd.DataFrame({"proof": [1.0] * len(days)},
+                          index=pd.DatetimeIndex(pd.Timestamp(day) for day in days))
+    result.attrs.update({
+        "sessions": [day.isoformat() for day in days],
+        "members": member_payload,
+        "member_evidence": {
+            symbol: {
+                "acquired_at": "2026-09-18T22:00:00+00:00",
+                "requested_ticker": symbol, "response_ticker": symbol,
+                "request_id": f"receipt-{symbol}", "response_status": "OK",
+                "response_count": len(days), "requested_start": days[0].isoformat(),
+                "requested_end": days[-1].isoformat(),
+            }
+            for symbol in symbols
+        },
+        "requested_start": days[0].isoformat(), "requested_end": days[-1].isoformat(),
+        "observed_max_session": days[-1].isoformat(),
+        "latest_expected_session": days[-1].isoformat(),
+        "acquired_at": "2026-09-18T22:00:00+00:00",
+        "computed_at": "2026-09-18T22:01:00+00:00",
+        "display_sessions": 252,
+    })
+    package = _adapter().build_sector_participation_20_package(result, {}, members)
+    blob = w1_contract.json_bytes(package)
+    assert len(package["sessions"]) == 252
+    assert len(package["members"]) == 503
+    assert len(blob) <= 1_500_000
+    assert len(gzip.compress(blob, compresslevel=6)) <= 600_000
+    w1_contract.validate_package(package)
+
+
 def test_package_sector_counts_are_derived_from_same_generation_member_states(monkeypatch, tmp_path):
     import json
     path, _, _ = _publish_fixture(monkeypatch, tmp_path)
@@ -1440,7 +1611,9 @@ def test_w1_client_refuses_generation_mismatch_and_never_recomputes_prices():
     client = (Path(__file__).resolve().parents[1] / "templates" / "sector_participation_20.js").read_text()
     assert "fetch(pointer.url" in client
     assert "pointer.generation_id" in client
+    assert "pointer.observation_id" in client
     assert "value.generation_id" in client
+    assert "value.observation_id" in client
     assert "crypto.subtle.digest" in client
     assert "sector_participation_20.v1" in client
     assert "distance_bps" in client
@@ -1449,6 +1622,7 @@ def test_w1_client_refuses_generation_mismatch_and_never_recomputes_prices():
     assert "source.basis" in client
     assert "pointer.current_expected_session" in client
     assert "pkg.generation_id" in client
+    assert "observation digest" in client
     assert "reconstruction_zh" in client
     assert "stock\\.html#" in client
     for forbidden in ("rolling(", "movingAverage", "price /", "localStorage", "setInterval"):
@@ -1507,7 +1681,7 @@ const context={window,crypto:webcrypto,TextEncoder,document:{getElementById:()=>
 vm.createContext(context); vm.runInContext(code,context);
 const api=context.window.SectorParticipation20;
 if(!api||typeof api.validatePackage!=='function') process.exit(3);
-api.validatePackage(pkg,pkg.generation_id).then(value=>{
+api.validatePackage(pkg,pkg.generation_id,pkg.observation_id).then(value=>{
   if(value.generation_id!==pkg.generation_id) process.exit(4);
   process.exit(0);
 }).catch(error=>{console.error(error);process.exit(5);});
@@ -1562,7 +1736,7 @@ if(!locale.startsWith('da')) process.exit(6);
 const window={crypto:webcrypto,TextEncoder};
 const context={window,crypto:webcrypto,TextEncoder,document:{getElementById:()=>null},console};
 vm.createContext(context); vm.runInContext(code,context);
-context.window.SectorParticipation20.validatePackage(pkg,pkg.generation_id)
+context.window.SectorParticipation20.validatePackage(pkg,pkg.generation_id,pkg.observation_id)
   .then(()=>process.exit(0))
   .catch(error=>{console.error(error.message);process.exit(5);});
 """

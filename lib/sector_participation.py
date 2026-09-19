@@ -19,6 +19,7 @@ from typing import Any
 from urllib.parse import quote
 
 PACKAGE_SCHEMA = "sector_participation_20.v1"
+GENERATION_SCHEMA = "sector_participation_20.generation.v1"
 MEMBER_STATES = frozenset({"A", "B", "H", "M", "I", "U"})
 PRICE_BASIS = "split_adjusted"
 PUBLIC_URL = "sectordata/sector_participation_20.json"
@@ -69,15 +70,39 @@ def canonicalize(value: Any) -> Any:
     return value
 
 
-def generation_material(package: dict) -> dict:
+def observation_material(package: dict) -> dict:
+    """Canonical economic/analytical evidence, excluding generation clocks."""
     material = copy.deepcopy(package)
     material.pop("generation_id", None)
+    material.pop("observation_id", None)
     material.pop("computed_at", None)
     material.pop("published_at", None)
     source = material.get("source")
     if isinstance(source, dict):
         source.pop("acquired_at", None)
     return canonicalize(material)
+
+
+def observation_id(package: dict) -> str:
+    encoded = json.dumps(
+        observation_material(package), sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False, allow_nan=False,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def generation_material(package: dict) -> dict:
+    """Canonical receipt for one qualification/computation of an observation."""
+    reference = package.get("reference") if isinstance(package, dict) else None
+    source = package.get("source") if isinstance(package, dict) else None
+    return canonicalize({
+        "schema": GENERATION_SCHEMA,
+        "observation_id": package.get("observation_id") if isinstance(package, dict) else None,
+        "roster_id": reference.get("roster_id") if isinstance(reference, dict) else None,
+        "response_set_id": source.get("response_set_id") if isinstance(source, dict) else None,
+        "source_acquired_at": source.get("acquired_at") if isinstance(source, dict) else None,
+        "computed_at": package.get("computed_at") if isinstance(package, dict) else None,
+    })
 
 
 def generation_id(package: dict) -> str:
@@ -97,6 +122,8 @@ def validate_package(package: dict) -> None:
     """Fail closed on malformed or cross-generation W1 evidence."""
     if not isinstance(package, dict) or package.get("schema") != PACKAGE_SCHEMA:
         raise ValueError("invalid W1 package schema")
+    if package.get("observation_id") != observation_id(package):
+        raise ValueError("W1 observation digest mismatch")
     if package.get("generation_id") != generation_id(package):
         raise ValueError("W1 generation digest mismatch")
 
@@ -155,7 +182,7 @@ def validate_package(package: dict) -> None:
             raise ValueError(f"W1 member {symbol} lacks a display identity")
         if sector not in sectors:
             raise ValueError(f"W1 member {symbol} points at an unknown sector")
-        if (not isinstance(states, list) or len(states) != n_sessions
+        if (not isinstance(states, str) or len(states) != n_sessions
                 or any(state not in MEMBER_STATES for state in states)):
             raise ValueError(f"W1 member {symbol} has invalid state alignment")
         if len(set(states)) == 1 and states[0] in {"I", "U"}:
@@ -265,15 +292,15 @@ def validate_package(package: dict) -> None:
     requested_end = _iso_date(source.get("requested_end"), "requested end")
     latest_expected = _iso_date(
         source.get("latest_expected_session"), "latest expected session")
-    if requested_start != parsed_sessions[0] or requested_end != parsed_sessions[-1]:
-        raise ValueError("W1 requested range disagrees with package sessions")
+    if requested_start > parsed_sessions[0] or requested_end != parsed_sessions[-1]:
+        raise ValueError("W1 requested range does not contain the public evidence sessions")
     if latest_expected != requested_end:
         raise ValueError("W1 latest expected session disagrees with requested end")
     source_session_value = source.get("source_session")
     if source_session_value is not None:
         source_session = _iso_date(source_session_value, "source session")
-        if source_session not in parsed_sessions:
-            raise ValueError("W1 source session is outside the package session range")
+        if source_session < requested_start or source_session > requested_end:
+            raise ValueError("W1 source session is outside the qualified source range")
 
     requested_count = source.get("requested_member_count")
     accepted_count = source.get("accepted_member_count")
@@ -355,6 +382,7 @@ def read_public_pointer(
             "status": status,
             "available": available,
             "generation_id": package["generation_id"],
+            "observation_id": package["observation_id"],
             "source_session": source_session,
             "latest_expected_session": latest_expected,
             "current_expected_session": current_expected_session,
