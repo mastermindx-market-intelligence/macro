@@ -72,16 +72,17 @@ waves:
     status: todo
     depends_on: [B2, B3, B4, C1]
     next_action: >
-      EXECUTION HELD: release #841, then prospectively resolve sealed E1
-      anthropic/claude-sonnet-5 versus #162 gpt-5.6-sol-only runner. Provider/model are not
-      placeholders; do not mutate the seal or run any of the 12 executions.
+      EXECUTION HELD: #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e.
+      Preserve the historical E1 seal unchanged and await the incumbent Fable program-owner ruling
+      on anthropic/claude-sonnet-5 versus #162 gpt-5.6-sol-only runner before any execution.
   - id: D1
     title: "OL-V1 existing implementation and mechanism proof — Mastermind #398"
     status: in_progress
     depends_on: [A2]
     next_action: >
-      Preserve #398 at d79d2ec3537d8eb060055731a7c3cebee0c543eb; exact-head review is APPROVE.
-      Hosted/current-base proof and canonical Executive intent/effect gates still hold the real episode.
+      Preserve #398 at d79d2ec3537d8eb060055731a7c3cebee0c543eb; source review/CI are green.
+      Real OL-V1 remains held until a source-custody-lawful current-Macro workspace exists for exact
+      Executive grounding; no directive intent has been submitted and no effect has run.
   - id: F1
     title: Experience distillation candidates and read-only evidence experience
     status: todo
@@ -91,8 +92,9 @@ waves:
     status: todo
     depends_on: [C2, D1, F1]
 next_action: >
-  Release #841, then obtain the prospective C2 provider/runner ruling without changing the original
-  E1 seal. In parallel consume #398 d79 hosted/current-base proof; real OL-V1 effect remains Executive-gated.
+  Obtain the incumbent Fable C2 ruling when that exact principal regains capacity; do not self-adopt
+  #687/#692 or mutate historical E1. In parallel unblock #398 only through a lawful current-Macro
+  grounding workspace. #841 is merged/do-not-redo.
 decisions:
   - DEC:AGENT-EVAL-FABLE-COO-DELEGATION
 artifacts:
@@ -104,12 +106,14 @@ artifacts:
   - research/AGENT_EVAL_CONTINUITY_PROOF_2026-09-08.md
 landmines:
   - "#162 is merged source, not E1 execution or current live proof."
+  - "#841 is merged OHF substrate repair, not E1 execution, provider authority, or experiment-design resolution."
   - "E1 seals anthropic/claude-sonnet-5; #162 Fresh-Sol requires gpt-5.6-sol. Never substitute provider/model at execution."
-  - "Protected OHF AppServerClient masks typed pre-response failures; #841 is a repair candidate, not a protected release yet."
+  - "Historical E1 still seals anthropic/claude-sonnet-5 while #162 Fresh-Sol requires gpt-5.6-sol; never substitute provider/model at execution."
   - "OL-V1 d79 approval closes source rereview only; Agent OS prose never authorizes its real effect."
   - "Eval OS WS-EVAL-OS-* is separate; do not cross-wire carriers or authority."
 do_not_redo:
   - "Mastermind #162 is merged/do-not-redo; preserve #398 on its existing carrier with no replacement runner, branch, PR or blind effect retry."
+  - "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e; do not recreate or re-enqueue the OHF typed-failure repair."
   - "Macro #6699 and #6711 are superseded, closed-unmerged history; #6760 and #6713 are already merged."
   - "EFFECT_UNKNOWN requires original-operation reconciliation; no replay, account switch or inferred owner release."
   - "No universal worker leaderboard, aggregate authority score, second memory/lifecycle/queue/router or automatic policy promotion."

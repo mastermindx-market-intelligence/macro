@@ -42,6 +42,10 @@ def test_dated_handoff_does_not_repeat_superseded_release() -> None:
     historical = record(STORE / NEW)
     assert "Merge A2 (#6699" not in " ".join(historical["next_actions"])
     assert "Do not reopen #6699/#6711" in " ".join(historical["do_not_redo"])
+    text = json.dumps(historical, sort_keys=True)
+    assert "#841" in text and "merged/do-not-redo" in text
+    assert "release Mastermind #841" not in " ".join(historical["next_actions"])
+    assert "not protected until review/CI/release complete" not in text
 
 
 def test_historical_handoff_names_both_live_source_gates_without_permission() -> None:

@@ -7,28 +7,27 @@ mission: Preserve the canonical Agent Evaluation program while advancing C2 and 
 state_before: Agent OS still projected merged #162 as a release hold and #398 at an obsolete repair head; C2's sealed provider/runner incompatibility and current OHF failure-path defect were not recorded.
 next_actions:
   - >
-    C2 is execution-held. Release Mastermind #841's bounded AppServerClient typed-failure repair,
-    then obtain a prospective program-owner ruling for sealed preregistration
-    sha256:91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8:
-    all six configurations bind anthropic/claude-sonnet-5 while the sole named #162 Fresh-Sol
-    runner requires gpt-5.6-sol, and provider/model are not disclosed placeholders. Do not run
-    the 12 executions or mutate the original seal until that mismatch is prospectively resolved.
+    C2 is execution-held after #841 merged. Preserve preregistration
+    sha256:91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8 unchanged:
+    it seals anthropic/claude-sonnet-5 while #162 Fresh-Sol requires gpt-5.6-sol. Await the incumbent
+    Fable program-owner ruling when that exact principal regains capacity; do not run the 12 executions,
+    mutate the seal, or self-adopt draft #687/#692.
   - >
     D1 remains on Mastermind #398 at d79d2ec3537d8eb060055731a7c3cebee0c543eb.
-    Exact-head independent review APPROVE is durable on PR comment 5738872266; consume current-head
-    hosted CI/current-base proof, but keep the real OL-V1 episode behind canonical Executive
-    intent/effect gates and preserve DRAFT/HOLD until those real-path obligations are satisfied.
+    Exact-head review and hosted source gates are green. Resume only after a current source-custody-lawful
+    Macro workspace exists for exact Executive grounding; no directive intent, seal, or canary effect exists.
 do_not_redo:
   - "Mastermind #162 is merged/do-not-redo at d6eccb0d81c9db3d009eafa7b37ea97a4dc99bc8; do not recreate the runner release or its old identity hold."
+  - "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e; do not recreate the OHF typed-failure repair or re-enqueue it."
   - "Do not reopen #6699/#6711 or rebuild protected R0/C0/S1/OHF2/E1-preregistration foundations."
   - "Do not mutate the original E1 preregistration digest in place or reinterpret sealed provider/model fields as execution placeholders."
   - "Do not rerun OL-V1's real effect, E1 provider executions, or any EFFECT_UNKNOWN operation through a replacement carrier."
 danger_areas:
   - "The E1 seal is prospective evidence, not an executable license after its provider/model no longer matches the sole named runner."
-  - "Current OHF scripts/ohf/laboratory.py masks pre-response typed failures on protected master; #841 repairs this but is not protected until review/CI/release complete."
+  - "The OHF typed-failure substrate defect is closed by merged #841; that release does not make historical E1 executable or grant provider authority."
   - "OL-V1 n=1 and E1 paired-pilot evidence remain descriptive and grant no routing, trading, sizing, gating, policy, or execution authority."
 unresolved:
-  - "Mastermind #841 independent review/hosted CI/release; C2 prospective provider/runner decision and fresh live authorization; #398 current-head hosted/current-base release evidence and Executive intent access; real E1, OL-V1 episode, F1, G1, and forward accepted value remain unproven."
+  - "C2 incumbent-Fable ruling/capacity and fresh future experiment authorization; #398 lawful current-Macro grounding workspace plus Executive intent/effect gates; real E1, OL-V1 episode, F1, G1, and forward accepted value remain unproven."
 changed:
   - path: agentos/workstreams/WS-AGENT-EVAL-FABRIC.md
     what: Reconciles #162 as merged, records #398 d79, and makes C2's sealed provider/runner mismatch plus OHF substrate defect explicit.
@@ -46,9 +45,9 @@ verified:
   - claim: "C2 sealed provider/model cannot be supplied as one of its disclosed placeholders."
     command: "Read protected experiments/agent_eval/e1/preregistration.json and scripts/ohf/fresh_sol_eval.py."
     result: "Digest sha256:91cb16860ee9e140d28052e5981b7c8f94aac4ecd42e788d3c7a75e3415e5cf8 binds provider=anthropic and model_requested=claude-sonnet-5 in all six configurations; disclosed placeholders are instruction bundle, sandbox digest, environment digest; Fresh-Sol REQUIRED_MODEL is gpt-5.6-sol."
-  - claim: "Current OHF typed failure-path defect is reproduced and bounded repair published."
-    command: "RED-first host tests on protected 55473bb4; PR #841."
-    result: "Send failure and response timeout were masked by UnboundLocalError; head 738454fa1716bae74d0e78216c4bce937b2913cf initializes payload sentinel and passes AppServerClient/Fresh-Sol direct suites; Draft/HOLD review and hosted CI remain gates."
+  - claim: "OHF typed request failures are repaired and protected."
+    command: "Mastermind #841 exact-head review/CI/merge-queue release and protected-master readback."
+    result: "Head 738454fa1716bae74d0e78216c4bce937b2913cf merged as 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e on 2026-09-19; protected master eb00ed9745f055d3413f483b985fe4f9d8a1f11d descends from it and retains both repaired blobs byte-identically."
   - claim: "Mastermind #398 source-rereview gate is approved at d79."
     command: "Independent Codex review operation olv1-pr398-date-fixture-independent-review-20260919-codex-004."
     result: "APPROVE; one test-line temporal correction only, host proof receipt sha256 e06f092c15b0fa1b7430e711a60fd90a5c0ddbbd39bd9e699c3296e649db2187; review return PR comment 5738872266."
@@ -73,9 +72,11 @@ Anthropic/Claude Sonnet 5 while its sole named Fresh-Sol runner requires GPT-5.6
 Provider/model are not placeholders. Preserve the original digest as prospective historical
 evidence and resolve the mismatch prospectively.
 
-A separate current OHF regression masks typed send/timeout failures before a response payload exists.
-Draft PR #841 carries the bounded two-path fix and remains HOLD pending independent review and hosted CI.
+The OHF typed-failure regression is closed: Mastermind #841 merged through the required merge queue
+as `96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e`; protected master
+`eb00ed9745f055d3413f483b985fe4f9d8a1f11d` retains the repaired blobs byte-identically.
 
 D1 remains independent on existing PR #398 at `d79d2ec3537d8eb060055731a7c3cebee0c543eb`.
-Its exact-head source review is approved; the real OL-V1 effect remains gated by current hosted/current-base
-evidence and canonical Executive intent access. No policy/promotion authority follows from either lane.
+Its source-review/CI gates are green; the real OL-V1 effect remains held by the lack of a lawful
+current-Macro grounding workspace for canonical Executive intent admission. No policy/promotion
+authority follows from either lane.
