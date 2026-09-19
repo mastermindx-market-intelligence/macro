@@ -22,6 +22,7 @@ CASE_SCHEMA = "mastermind.research_intelligence.benchmark_case.v1"
 RESULT_SCHEMA = "mastermind.research_intelligence.benchmark_result.v1"
 AGGREGATE_SCHEMA = "mastermind.research_intelligence.benchmark_aggregate.v1"
 REQUEST_SCHEMA = "mastermind.research_intelligence.benchmark_request.v1"
+OBSERVATION_SCHEMA = "mastermind.research_intelligence.benchmark_observation.v1"
 
 _DIRECTIONS = {"bullish", "bearish", "mixed", "neutral", "unclear"}
 _ANALYSIS_FIELDS = (
@@ -94,6 +95,93 @@ def _is_sha256(value: Any) -> bool:
         and len(value) == 64
         and all(char in "0123456789abcdef" for char in value)
     )
+
+
+_LATENCY_SOURCES = {"operator_wall_clock", "provider_reported", "unavailable"}
+_TOKEN_SOURCES = {"provider_reported", "operator_measured", "unavailable"}
+_COST_BASES = {"marginal_api", "amortized_subscription", "unavailable"}
+
+
+def _bounded_optional_int(
+    value: Any,
+    *,
+    label: str,
+    maximum: int,
+) -> int | None:
+    if value is None:
+        return None
+    if type(value) is not int or value < 0 or value > maximum:
+        raise ValueError(f"{label} is outside its integer boundary")
+    return value
+
+
+def normalize_observation(value: Any) -> dict[str, Any] | None:
+    """Normalize operator-supplied run economics; never grants serving provenance."""
+    if value is None:
+        return None
+    if not isinstance(value, dict) or value.get("schema") != OBSERVATION_SCHEMA:
+        raise ValueError("unexpected benchmark observation schema")
+    expected_keys = {
+        "schema",
+        "latency_ms",
+        "latency_source",
+        "input_tokens",
+        "output_tokens",
+        "token_source",
+        "effective_cost_microusd",
+        "cost_basis",
+    }
+    if set(value) != expected_keys:
+        raise ValueError("benchmark observation fields are invalid")
+
+    latency_ms = _bounded_optional_int(
+        value.get("latency_ms"),
+        label="latency_ms",
+        maximum=3_600_000,
+    )
+    input_tokens = _bounded_optional_int(
+        value.get("input_tokens"),
+        label="input_tokens",
+        maximum=100_000_000,
+    )
+    output_tokens = _bounded_optional_int(
+        value.get("output_tokens"),
+        label="output_tokens",
+        maximum=10_000_000,
+    )
+    effective_cost = _bounded_optional_int(
+        value.get("effective_cost_microusd"),
+        label="effective_cost_microusd",
+        maximum=10_000_000_000,
+    )
+    latency_source = value.get("latency_source")
+    token_source = value.get("token_source")
+    cost_basis = value.get("cost_basis")
+    if latency_source not in _LATENCY_SOURCES:
+        raise ValueError("unsupported latency_source")
+    if token_source not in _TOKEN_SOURCES:
+        raise ValueError("unsupported token_source")
+    if cost_basis not in _COST_BASES:
+        raise ValueError("unsupported cost_basis")
+    if (latency_ms is None) != (latency_source == "unavailable"):
+        raise ValueError("latency value/source disagree")
+    if (
+        (input_tokens is None and output_tokens is None)
+        != (token_source == "unavailable")
+    ):
+        raise ValueError("token values/source disagree")
+    if (effective_cost is None) != (cost_basis == "unavailable"):
+        raise ValueError("cost value/basis disagree")
+    return {
+        "schema": OBSERVATION_SCHEMA,
+        "latency_ms": latency_ms,
+        "latency_source": latency_source,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "token_source": token_source,
+        "effective_cost_microusd": effective_cost,
+        "cost_basis": cost_basis,
+    }
 
 
 def _norm(value: Any) -> str:
@@ -708,6 +796,7 @@ def score_raw_output(
     raw_output: str,
     *,
     candidate_label: str,
+    observation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Re-ground raw model text through W1, then emit a text-free benchmark receipt."""
     checked = validate_case(case, source_body)
@@ -715,6 +804,7 @@ def score_raw_output(
     if not label or len(label) > 240:
         raise ValueError("candidate_label is required")
     system, user = build_prompt(checked["document"], source_body)
+    checked_observation = normalize_observation(observation)
     base = {
         "schema": RESULT_SCHEMA,
         "case_id": checked["case_id"],
@@ -724,6 +814,7 @@ def score_raw_output(
         "gold_contract_sha256": _sha256_json(checked["expected"]),
         "prompt_sha256": _sha256_text(system + "\n" + user),
         "output_sha256": _sha256_text(str(raw_output or "")),
+        "observation": checked_observation,
     }
     try:
         raw_obj = _parse_json(str(raw_output or ""))
@@ -770,6 +861,7 @@ def _validated_result(raw: Any) -> dict[str, Any]:
     label = str(raw.get("candidate_label") or "").strip()
     case_id = str(raw.get("case_id") or "").strip()
     state = raw.get("state")
+    observation = normalize_observation(raw.get("observation"))
     if not label or not case_id or state not in {"ok", "invalid_output"}:
         raise ValueError("benchmark result identity/state is malformed")
     if raw.get("provenance_state") != "operator_label_only":
@@ -880,7 +972,59 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         "metrics": recomputed_metrics,
         "overall_score": recomputed_overall,
         "counts": checked_counts,
+        "observation": observation,
     }
+
+
+def _mean_optional_int(values: Iterable[int | None]) -> float | None:
+    present = [int(value) for value in values if value is not None]
+    return round(mean(present), 3) if present else None
+
+
+def _aggregate_observations(items: list[dict[str, Any]]) -> dict[str, Any]:
+    observations = [item.get("observation") for item in items]
+    present = [value for value in observations if isinstance(value, dict)]
+    latency_sources = sorted(
+        {
+            value["latency_source"]
+            for value in present
+            if value["latency_source"] != "unavailable"
+        }
+    )
+    token_sources = sorted(
+        {
+            value["token_source"]
+            for value in present
+            if value["token_source"] != "unavailable"
+        }
+    )
+    cost_bases = sorted(
+        {
+            value["cost_basis"]
+            for value in present
+            if value["cost_basis"] != "unavailable"
+        }
+    )
+    return {
+        "provenance_state": "operator_supplied_observation",
+        "observed_case_count": len(present),
+        "mean_latency_ms": _mean_optional_int(
+            value["latency_ms"] for value in present
+        ),
+        "mean_input_tokens": _mean_optional_int(
+            value["input_tokens"] for value in present
+        ),
+        "mean_output_tokens": _mean_optional_int(
+            value["output_tokens"] for value in present
+        ),
+        "mean_effective_cost_microusd": _mean_optional_int(
+            value["effective_cost_microusd"] for value in present
+        ),
+        "latency_sources": latency_sources,
+        "token_sources": token_sources,
+        "cost_bases": cost_bases,
+    }
+
 
 def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     """Aggregate only directly comparable, text-free case receipts by candidate."""
@@ -972,6 +1116,7 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
                     mean(float(item["overall_score"]) for item in items), 6
                 ),
                 "metrics": metric_means,
+                "run_observations": _aggregate_observations(items),
             }
         )
     rows.sort(key=lambda row: (-row["mean_overall_score"], row["candidate_label"]))
