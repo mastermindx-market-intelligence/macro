@@ -8,6 +8,7 @@ invariant + a non-fallback fixture per event class + the typed-null paths.
 from __future__ import annotations
 
 import json
+import ast
 from pathlib import Path
 import re
 import pandas as pd
@@ -56,21 +57,29 @@ def test_vocab_closure():
     """
     from engine.special_situations import MATURE_CATEGORIES
 
-    source_form_sets = (
-        event_spine._REGISTRATION_LIFECYCLE_FORMS,
-        event_spine._PROSPECTUS_FORMS,
-        frozenset({"EFFECT", "RW", "RW/A", "AW", "AW/A", "8-K", "8-K/A", "6-K", "6-K/A"}),
-        event_spine._PROXY_FORMS,
-        frozenset({"1-A", "1-A/A", "1-U", "253G1", "253G2", "253G3", "253G4", "1-K", "1-K/A"}),
-        event_spine._PERIODIC_FORMS,
-        event_spine._OWNERSHIP_FORMS,
+    form_sets = (
+        value
+        for name, value in vars(event_spine).items()
+        if name.endswith("_FORMS") and isinstance(value, frozenset)
     )
-    spine_forms = set().union(*source_form_sets)
-    spine_forms.add("UNKNOWN-FORM")
+    route_source = ast.get_source_segment(
+        Path(event_spine.__file__).read_text(),
+        next(
+            node
+            for node in ast.parse(Path(event_spine.__file__).read_text()).body
+            if isinstance(node, ast.FunctionDef) and node.name == "route_form"
+        ),
+    )
+    route_tokens = {
+        node.value
+        for node in ast.walk(ast.parse(route_source))
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    }
+    spine_forms = set().union(*form_sets, route_tokens)
     spine_subtypes = {
         event_spine.route_form(form, items).subtype
         for form in spine_forms
-        for items in (None, "5.03", "5.07", "3.02", "1.01")
+        for items in (None, *sorted(route_tokens))
     }
     expected = set(MATURE_CATEGORIES) | spine_subtypes
     assert set(veb.classified_event_domain()) == expected
