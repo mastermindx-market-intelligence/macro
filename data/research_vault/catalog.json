@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T05:14:42.401944+00:00",
-  "count": 2408,
+  "generated_at": "2026-09-19T05:40:53.849752+00:00",
+  "count": 2409,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-jnothg7v4v1-7e5d74",
+      "title": "GS Miller Global Reflections AI trade recouped Monday losses 18 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:53:32Z",
+      "summary_points": [
+        "GSPUARTI Technical Risk: 46.06% decline from peak signals severe stress in AI beneficiary positioning (last price 126.35), critical technical risk for AI-focused portfolios.",
+        "Germany-France Fiscal Hedge: Germany’s €140bn 2027 defense spending (+€31.4bn vs 2026) drives outperformance in GSXULOWD; tactical short hedge on French Domestic basket (GSXEFDRD) ahead of 2024 elections.",
+        "French Bond Divergence: OATBUND G decline to -0.9719 signals fiscal stress vs. positive GS German/French exposure index (0.69), indicating diverging Eurozone debt sentiment.",
+        "AI Momentum & UK Data: AI trade recouped losses with breakout momentum; UK Consumer Confidence surveys signal negative trend for GSXEUKCO, creating fundamental/data-driven alpha opportunity."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-btrg0bo0pyj-b0a692",
       "title": "GS Coppola US Rates The Week That Was The Week That Will Be 18 Sep 2026",
