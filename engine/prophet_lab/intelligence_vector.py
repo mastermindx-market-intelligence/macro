@@ -1433,7 +1433,12 @@ def build_earnings_intelligence_vector(
     corrected_item = (
         max(
             visible_later,
-            key=lambda item: item["parsed"]["generated_at"],
+            key=lambda item: (
+                item["parsed"]["generated_at"],
+                item["parsed"]["source_available_at"],
+                item["parsed"]["observed_at"],
+                str(item["revision"].get("generation_id") or ""),
+            ),
         )
         if visible_later else None
     )
