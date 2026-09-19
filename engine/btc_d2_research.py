@@ -23,9 +23,12 @@ LABEL_H = 3
 LABEL_THR = 0.05
 DVOL_WINDOW = 60
 SOURCE_ROWS_REQUIRED = DVOL_WINDOW + 2
-SOURCE_EVALUATOR_VERSION = "btc_d2_source.v2"
+SOURCE_EVALUATOR_VERSION = "btc_d2_source.v3"
 OUTCOME_EVALUATOR_VERSION = "btc_d2_outcome.v1"
 COLLECTOR_VERSION = "btc_impulse_radar._d2_cond.v1"
+TRIGGER_REPLAY_DEFINITION = "causal_trailing_sample_z_excludes_current.v1"
+D2_FIRE_THRESHOLD = 2.0
+D2_CONFIRM_THRESHOLD = 1.5
 
 
 class GenerationConflict(ValueError):
@@ -162,6 +165,11 @@ def _spec(*, dvol_w: int) -> dict:
         "source_columns": ["dvol_high", "dvol_low", "dvol_close"],
         "input_transform": "(dvol_high-dvol_low)/dvol_close",
         "dvol_z_window": int(dvol_w),
+        "zscore_definition": TRIGGER_REPLAY_DEFINITION,
+        "zscore_std_ddof": 1,
+        "fire_threshold": D2_FIRE_THRESHOLD,
+        "confirmation_threshold": D2_CONFIRM_THRESHOLD,
+        "confirmation_lag_bars": 1,
         "fire_rule": "z>=2.0 OR (z>=1.5 AND lag1(z)>=1.5)",
         "entry_clock": "next_complete_btc_daily_close_after_source_observation",
         "horizon_bars": LABEL_H,
@@ -503,56 +511,108 @@ def mature_outcome(
 
 
 def _project_trigger_evidence(source_semantic: dict) -> dict | None:
-    """Explain the frozen D2 fire from frozen rows without changing identity."""
+    """Replay frozen D2 trigger math without importing the mutable live evaluator."""
     inputs = source_semantic.get("inputs") or {}
     rows = inputs.get("source_rows")
     evaluation_dates = inputs.get("evaluation_dates")
     spec = source_semantic.get("spec") or {}
     try:
-        window = int(spec.get("dvol_z_window", DVOL_WINDOW))
+        window = int(spec.get("dvol_z_window"))
+        fire_threshold = float(spec.get("fire_threshold"))
+        confirmation_threshold = float(spec.get("confirmation_threshold"))
+        confirmation_lag = int(spec.get("confirmation_lag_bars"))
         if (
-            not isinstance(rows, list)
+            spec.get("identity") != "d2"
+            or spec.get("input_transform") != "(dvol_high-dvol_low)/dvol_close"
+            or spec.get("zscore_definition") != TRIGGER_REPLAY_DEFINITION
+            or int(spec.get("zscore_std_ddof")) != 1
+            or not math.isclose(fire_threshold, D2_FIRE_THRESHOLD, abs_tol=0.0)
+            or not math.isclose(
+                confirmation_threshold, D2_CONFIRM_THRESHOLD, abs_tol=0.0,
+            )
+            or confirmation_lag != 1
+            or spec.get("fire_rule") != "z>=2.0 OR (z>=1.5 AND lag1(z)>=1.5)"
+            or spec.get("trading_authority") is not False
+            or not isinstance(rows, list)
             or len(rows) < window + 2
             or not isinstance(evaluation_dates, list)
-            or not evaluation_dates
+            or len(evaluation_dates) != 2
+            or inputs.get("source_digest") != _digest(rows)
         ):
             return None
+
         ranges: list[float] = []
         dates: list[pd.Timestamp] = []
         for row in rows:
-            if not isinstance(row, dict) or not _finite(row.get("range")):
+            if not isinstance(row, dict):
+                return None
+            if not all(
+                _finite(row.get(key))
+                for key in ("dvol_high", "dvol_low", "dvol_close", "range")
+            ):
+                return None
+            close = float(row["dvol_close"])
+            if close <= 0:
+                return None
+            recomputed_range = (
+                float(row["dvol_high"]) - float(row["dvol_low"])
+            ) / close
+            if not math.isclose(
+                float(row["range"]), recomputed_range, rel_tol=1e-12, abs_tol=1e-12,
+            ):
                 return None
             asof = _date(row.get("asof"))
             if asof is None:
                 return None
             dates.append(pd.Timestamp(asof))
-            ranges.append(float(row["range"]))
+            ranges.append(recomputed_range)
 
-        from engine import btc_impulse_radar
-
-        series = pd.Series(ranges, index=pd.DatetimeIndex(dates), dtype=float)
-        evaluation_index = pd.to_datetime(evaluation_dates)
-        z = btc_impulse_radar._causal_z(series, window).reindex(evaluation_index)
-        if z.empty or pd.isna(z.iloc[-1]):
+        if dates != sorted(dates) or len(set(dates)) != len(dates):
             return None
-        current_z = float(z.iloc[-1])
-        previous_z = (
-            float(z.iloc[-2])
-            if len(z) >= 2 and not pd.isna(z.iloc[-2])
-            else None
-        )
-        if current_z >= 2.0:
+        position_by_date = {date: index for index, date in enumerate(dates)}
+        z_values: list[float] = []
+        for raw_date in evaluation_dates:
+            evaluation = _date(raw_date)
+            if evaluation is None:
+                return None
+            evaluation = pd.Timestamp(evaluation)
+            position = position_by_date.get(evaluation)
+            if position is None:
+                return None
+            prior = ranges[position - window:position] if position >= window else []
+            if len(prior) != window or window < 2:
+                return None
+            mean = sum(prior) / window
+            variance = sum((value - mean) ** 2 for value in prior) / (window - 1)
+            if not math.isfinite(variance) or variance <= 0:
+                return None
+            z_value = (ranges[position] - mean) / math.sqrt(variance)
+            if not math.isfinite(z_value):
+                return None
+            z_values.append(z_value)
+
+        previous_z, current_z = z_values
+        if current_z >= fire_threshold:
             mode = "single_z_ge_2"
-        elif current_z >= 1.5 and previous_z is not None and previous_z >= 1.5:
+        elif (
+            current_z >= confirmation_threshold
+            and previous_z >= confirmation_threshold
+        ):
             mode = "confirmed_z_ge_1_5"
         else:
             mode = "threshold_not_met"
         return {
             "current_z": round(current_z, 2),
-            "previous_z": round(previous_z, 2) if previous_z is not None else None,
+            "previous_z": round(previous_z, 2),
             "mode": mode,
             "recomputed_fired": mode != "threshold_not_met",
-            "rule": "z>=2.0 or second consecutive z>=1.5",
+            "rule": (
+                f"z>={fire_threshold:g} or second consecutive "
+                f"z>={confirmation_threshold:g}"
+            ),
+            "definition": TRIGGER_REPLAY_DEFINITION,
+            "window": window,
+            "std_ddof": 1,
         }
     except (TypeError, ValueError, OverflowError):
         return None

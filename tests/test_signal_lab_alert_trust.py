@@ -122,7 +122,10 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
             "previous_z": 1.12,
             "mode": "single_z_ge_2",
             "recomputed_fired": True,
-            "rule": "z>=2.0 or second consecutive z>=1.5",
+            "rule": "z>=2 or second consecutive z>=1.5",
+            "definition": "causal_trailing_sample_z_excludes_current.v1",
+            "window": 60,
+            "std_ddof": 1,
         },
         "trading_authority": False,
         "source_generation_id": "sha256:source",
@@ -165,6 +168,8 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert "Trigger path: current z ≥ 2.0" in html
     assert "触发路径：当前 z ≥ 2.0" in html
     assert "Rule: z ≥ 2.0, or two consecutive z ≥ 1.5" in html
+    assert "Frozen replay: trailing 60 prior DVOL ranges" in html
+    assert "冻结重放：此前 60 个 DVOL 振幅" in html
     assert "Matured · down target hit" in html
     assert "已成熟 · 下行目标命中" in html
     assert "Frozen outcome close path" in html

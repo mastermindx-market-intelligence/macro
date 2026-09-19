@@ -51,6 +51,7 @@
       {{ t('Trigger path: threshold not met', '触发路径：未达到阈值') }}
     {% endif %}<br>
     {{ t('Rule: z ≥ 2.0, or two consecutive z ≥ 1.5', '规则：z ≥ 2.0，或连续两次 z ≥ 1.5') }}<br>
+    {{ t('Frozen replay: trailing ' ~ journey.trigger_evidence.window ~ ' prior DVOL ranges · sample σ · current excluded', '冻结重放：此前 ' ~ journey.trigger_evidence.window ~ ' 个 DVOL 振幅 · 样本 σ · 不含当前值') }}<br>
   {% endif %}
   {% if journey.status == 'matured' and journey.outcome %}
     {% if journey.fired is not sameas true %}

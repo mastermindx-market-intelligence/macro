@@ -114,6 +114,9 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert projection["trigger_evidence"]["previous_z"] < 1.5
     assert projection["trigger_evidence"]["mode"] == "single_z_ge_2"
     assert projection["trigger_evidence"]["recomputed_fired"] is True
+    assert projection["trigger_evidence"]["definition"] == d2.TRIGGER_REPLAY_DEFINITION
+    assert projection["trigger_evidence"]["window"] == 60
+    assert projection["trigger_evidence"]["std_ddof"] == 1
     assert projection["trading_authority"] is False
     assert projection["outcome"] is None
 
@@ -123,9 +126,60 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert semantic["spec"]["identity"] == "d2"
     assert semantic["spec"]["horizon_bars"] == 3
     assert semantic["spec"]["threshold_pct"] == -5.0
+    assert semantic["spec"]["zscore_definition"] == d2.TRIGGER_REPLAY_DEFINITION
+    assert semantic["spec"]["zscore_std_ddof"] == 1
+    assert semantic["spec"]["fire_threshold"] == 2.0
+    assert semantic["spec"]["confirmation_threshold"] == 1.5
+    assert semantic["spec"]["confirmation_lag_bars"] == 1
+    assert semantic["evaluator"]["version"] == "btc_d2_source.v3"
     assert semantic["evaluator"]["collector"] == "btc_impulse_radar._d2_cond.v1"
     assert len(semantic["inputs"]["source_rows"]) == 62
     assert semantic["inputs"]["source_rows"][-1]["asof"] == projection["source_asof"]
+
+
+def test_projection_replay_is_independent_of_the_mutable_runtime_z_helper(monkeypatch):
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
+    from engine import btc_impulse_radar
+
+    def _must_not_run(*_args, **_kwargs):
+        raise AssertionError("projection must not call mutable btc_impulse_radar._causal_z")
+
+    monkeypatch.setattr(btc_impulse_radar, "_causal_z", _must_not_run)
+    projection = d2.project(journey)
+    assert projection["status"] == "pending"
+    assert projection["fired"] is True
+    assert projection["trigger_evidence"]["recomputed_fired"] is True
+
+
+def test_projection_fails_closed_when_rehashed_range_conflicts_with_frozen_raw_dvol():
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
+    semantic = copy.deepcopy(journey["generations"][0]["semantic"])
+    semantic["inputs"]["source_rows"][-1]["range"] += 0.1
+    semantic["inputs"]["source_digest"] = d2._digest(semantic["inputs"]["source_rows"])
+    inconsistent = d2.new_journey()
+    assert d2.append_generation(
+        inconsistent,
+        d2.make_generation("source", semantic, recorded_at="2026-09-17T05:00:00Z"),
+    )
+    projection = d2.project(inconsistent)
+    assert projection["status"] == "unavailable"
+    assert projection["reason"] == "source_trigger_evidence_unavailable"
+    assert projection["fired"] is None
+
+
+def test_projection_fails_closed_on_unknown_frozen_trigger_definition():
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
+    semantic = copy.deepcopy(journey["generations"][0]["semantic"])
+    semantic["spec"]["zscore_definition"] = "future-unknown-z.v99"
+    inconsistent = d2.new_journey()
+    assert d2.append_generation(
+        inconsistent,
+        d2.make_generation("source", semantic, recorded_at="2026-09-17T05:00:00Z"),
+    )
+    projection = d2.project(inconsistent)
+    assert projection["status"] == "unavailable"
+    assert projection["reason"] == "source_trigger_evidence_unavailable"
+    assert projection["fired"] is None
 
 
 def test_projection_explains_a_non_fire_without_changing_generation_identity():
