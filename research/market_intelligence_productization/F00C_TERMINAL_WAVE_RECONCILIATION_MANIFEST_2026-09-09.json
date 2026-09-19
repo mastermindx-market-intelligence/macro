@@ -504,5 +504,25 @@
         "MO-PAID-086": "BUILT_NOT_PROVEN; export route/lib/SectionAccount consumer shipped; signed-in export download proof owed"
       }
     }
-  }
+  },
+  "post_merge_corrections_2026_09_19": [
+    {
+      "operation": "marketontology-f00c-postmerge-mo-paid-039-20260919-sol-001",
+      "baseline_main_sha": "af617506e59c258c5786bab926a34b35b9ab2deb",
+      "source_pr": 7353,
+      "source_head_sha": "d1b4005ddf994d5636f5bed033db3ce2b553eda0",
+      "row_id": "MO-PAID-039",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "ruling": "measurement.html is intentionally internal/admin-only and is rendered nightly; the live defect is the public Intelligence Hub link to the blocked public route, not a missing measurement builder",
+      "verified_source": [
+        "app/deploy/Caddyfile @never_site contains /measurement.html",
+        "tests/test_admin_research_tools.py pins admin-only /research-tools boundary",
+        ".github/workflows/daily.yml invokes scripts/ci/daily_engine_regional_desk_builders.sh",
+        "scripts/ci/daily_engine_regional_desk_builders.sh runs brun measurement -> scripts.build_measurement",
+        "templates/intelligence_hub.html.j2 links to measurement.html#ric-section"
+      ],
+      "production_observation": "public GET https://www.mastermind-x.com/measurement.html returned 404 on 2026-09-19, consistent with @never_site",
+      "residual": "authenticated admin Calibration Lab implication-card proof plus F10 owner repair of the public link; no second builder"
+    }
+  ]
 }
