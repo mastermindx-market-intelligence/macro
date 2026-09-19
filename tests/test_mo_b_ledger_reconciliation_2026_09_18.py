@@ -10,11 +10,13 @@ Acceptance gate:
 """
 
 import csv
-import subprocess
 import os
 import pytest
 
-CSV_PATH = "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv"
+CSV_PATH = os.environ.get(
+    "CSV_PATH",
+    "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv",
+)
 ORIGIN_MAIN_SHA = "0dbc87292d2728e891c4a72288ff5f58f02149fe"
 
 
@@ -42,7 +44,8 @@ def test_mo_paid_035_BLOCKED_RIGHTS():
         f"expected BLOCKED_RIGHTS, got {r['granular_disposition']}"
     )
     assert r["capability_state_c2"] == "NOT_BUILT"
-    assert "#7014" in r["adjudication_notes"]
+    assert "BLOCKED_RIGHTS on a verified negative" in r["adjudication_notes"]
+    assert "macro#6905" in r["adjudication_notes"]
 
 
 def test_mo_paid_037_BLOCKED_RIGHTS():
@@ -51,7 +54,7 @@ def test_mo_paid_037_BLOCKED_RIGHTS():
     r = _row_by_id(rows, "MO-PAID-037")
     assert r["granular_disposition"] == "BLOCKED_RIGHTS"
     assert r["capability_state_c2"] == "NOT_BUILT"
-    assert "#7014" in r["adjudication_notes"]
+    assert "inherits MO-PAID-035 BLOCKED_RIGHTS" in r["adjudication_notes"]
 
 
 def test_mo_delta_040_text_unchanged():
@@ -139,12 +142,13 @@ def test_mo_paid_027_refreshed_6906_merged():
     assert "6906" in r["state_delta"] or "MERGED" in r["state_delta"]
 
 
-def test_mo_paid_085_PARTIAL_with_715acf5f():
-    """MO-PAID-085 granular_disposition -> PARTIAL; co-text cites #6907 MERGED + 715acf5f."""
+def test_mo_paid_085_capability_partial_with_715acf5f():
+    """MO-PAID-085 capability moves to PARTIAL; co-text cites #6907 and 715acf5f."""
     rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-PAID-085")
-    assert r["granular_disposition"] == "PARTIAL", (
-        f"expected PARTIAL, got {r['granular_disposition']}"
+    assert r["granular_disposition"] == "UPGRADE_EXISTING_OWNER"
+    assert r["capability_state_c2"] == "PARTIAL", (
+        f"expected PARTIAL, got {r['capability_state_c2']}"
     )
     assert "715acf5f" in r["state_delta"], (
         "expected commit 715acf5f in state_delta"
@@ -258,30 +262,3 @@ def test_blocked_rights_not_in_capability():
         if r["capability_state_c2"] == "BLOCKED_RIGHTS"
     ]
     assert not bad, f"Rows with BLOCKED_RIGHTS as capability: {bad}"
-
-
-# ---------------------------------------------------------------------------
-# RED proof: run against origin/main
-# ---------------------------------------------------------------------------
-
-def test_red_proof_main_csv():
-    """
-    This test proves the pin goes RED on origin/main.
-    It reads the CSV from the path given by CSV_PATH and expects the OLD state.
-    If this test fails, the pin is GREEN on that CSV (which would be wrong).
-    Run with CSV_PATH=<git show origin/main:...> to prove RED on origin/main.
-    """
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-035")
-    # MO-PAID-035 on origin/main should be NEW_BOUNDED_BUILD (not BLOCKED_RIGHTS)
-    assert r["granular_disposition"] != "BLOCKED_RIGHTS", (
-        f"Pin test: CSV at {CSV_PATH} already shows BLOCKED_RIGHTS — pin is not RED"
-    )
-    r2 = _row_by_id(rows, "MO-PAID-020")
-    assert r2["capability_state_c2"] != "BUILT_NOT_PROVEN", (
-        f"Pin test: CSV at {CSV_PATH} already shows BUILT_NOT_PROVEN for MO-PAID-020"
-    )
-    r3 = _row_by_id(rows, "MO-DELTA-003")
-    assert r3["capability_state_c2"] != "PARTIAL", (
-        f"Pin test: CSV at {CSV_PATH} already shows PARTIAL for MO-DELTA-003"
-    )

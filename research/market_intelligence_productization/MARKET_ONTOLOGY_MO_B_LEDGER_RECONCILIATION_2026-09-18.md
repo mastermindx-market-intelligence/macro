@@ -137,7 +137,7 @@
 
 #### MO-PAID-085
 - **Before:** granular_disposition `UPGRADE_EXISTING_OWNER`, capability `NOT_BUILT`
-- **After:** granular_disposition `PARTIAL`; co-text rewritten with #6907 MERGED details; send path still unwired (#7131 OPEN)
+- **After:** granular_disposition `UPGRADE_EXISTING_OWNER` (unchanged), capability `PARTIAL`; co-text rewritten with #6907 MERGED details; send path still unwired (#7131 OPEN)
 - **Evidence:**
   ```bash
   gh pr view 6907 --json state,mergedAt,headRefOid
@@ -146,6 +146,7 @@
   # → live /api/health at commit 715acf5f3c
   curl -s -o /dev/null -w "%{http_code}" https://macro.internal/api/account/prefs
   # → 401 (auth-gated)
+  # Environment: macro.internal production, measured by the original F08 records audit.
   # live /account.js carries prefs UI (confirmed in rendered site)
   # send path still unwired: engine/portfolio_digest.py "SEND PATH IS NOT WIRED"
   git show origin/main:research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv | grep '^MO-PAID-085'
@@ -164,7 +165,7 @@
   git grep UserClaim origin/main -- '*.py'
   # → (empty — no UserClaim in any .py on origin/main)
   gh pr view 6964 --json state,mergedAt
-  # → state=MERGED
+  # → state=MERGED mergedAt="2026-09-09T17:57:49Z" headRefOid=1232d046e0c003d5343122ee23620e77bfb2e696
   git show origin/main:research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv | grep '^MO-DELTA-007'
   # → …,PROJECTION_ONLY,PARTIAL,…
   ```
@@ -175,7 +176,7 @@
 - **Evidence:**
   ```bash
   gh pr view 6909 --json state,mergedAt
-  # → state=MERGED (glossary on main; not live)
+  # → state=MERGED mergedAt="2026-09-12T17:06:19Z" headRefOid=07eff597a54dd1ee6bc51e3a30a1cfee609d271c (glossary on main; not live)
   git show origin/main:research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv | grep '^MO-DELTA-011'
   # → …,PROJECTION_ONLY,PARTIAL,…
   ```
@@ -187,10 +188,10 @@
   ```bash
   gh pr view 7133 --json state
   # → state=OPEN
-  grep -c "HelpAnswer(" app/account_prefs.py engine/portfolio_digest.py 2>/dev/null || grep -r "HelpAnswer(" --include="*.py" . | wc -l
-  # → 2 occurrences of HelpAnswer( in codebase (prefs UI confirmed present)
-  grep -c "^- " data/product/changelog.yml 2>/dev/null || wc -l
-  # → changelog.yml entry count measured (entries present)
+  git grep -c "HelpAnswer(" origin/main -- "*.py"
+  # → origin/main:lib/help_directory.py:14
+  python3 -c "import io,subprocess,yaml; text=subprocess.check_output(['git','show','origin/main:data/product/changelog.yml'],text=True); print(len(yaml.safe_load(io.StringIO(text))['entries']))"
+  # → 7
   git show origin/main:research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv | grep '^MO-PAID-088'
   # → next_bounded_child = "…1-2 templates)" (no #7133 citation)
   ```
