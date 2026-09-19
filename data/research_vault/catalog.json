@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T19:41:45.748898+00:00",
-  "count": 2450,
+  "generated_at": "2026-09-19T20:11:50.189332+00:00",
+  "count": 2451,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1613,6 +1613,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-fahtefnuiw2-fae005",
+      "title": "Mexico Solid Broad Based Expansion of Real GDP During 2Q26",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:19Z",
+      "summary_points": [
+        "Mexico Q2 2026 GDP Growth: 1.42% qoq sa driven by household consumption (0.9% qoq sa), gross fixed investment (4.3% qoq sa), and net exports (+2.8pt); statistical carry-over of 1.4% implies flat H2 2026 growth.",
+        "Q3 Risks & Outlook: Soft business confidence, peaking credit cycle, and USMCA review threaten momentum; offset by minimum wage hikes, resilient labor market, and public works.",
+        "2026 GDP Trajectory: YoY NSA Real GDP projected at 1.42%, fueled by domestic demand (investment +0.9, consumption +0.7) and net exports (+1.9), offsetting inventory adjustments (-0.1).",
+        "Supply-Side Expansion: Manufacturing (+1.1% qoq sa), construction (+4.0% qoq sa), and mining (+0.8% qoq sa) recovery signals sectoral strength amid broad-based growth."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
