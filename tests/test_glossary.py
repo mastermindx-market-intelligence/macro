@@ -215,7 +215,10 @@ def test_why_zh_shares_vocabulary_with_its_own_answer_zh():
     score was 0.0 and swapping why_zh across rows never failed. The two ZH
     strings of one glossary row must share CJK character-bigram vocabulary;
     replacing why_zh with the next row's why_zh must fall to or below the
-    threshold.
+    threshold. At this head, real_min is 0.0556 and swap_max is 0.0476;
+    consensus-board, persistence-streak, and pullback-risk-radar stay inside
+    0.05 of the 0.05 floor because a faithful why_zh cannot borrow more of
+    those rows' answer_zh.
     """
     n = len(GLOSSARY_TERMS)
     for i, term in enumerate(GLOSSARY_TERMS):
