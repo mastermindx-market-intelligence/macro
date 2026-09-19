@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T19:11:42.059860+00:00",
-  "count": 2448,
+  "generated_at": "2026-09-19T19:26:45.595647+00:00",
+  "count": 2449,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1553,6 +1553,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4m8jvtxmfdl-374dbb",
+      "title": "China Economic Activity and Policy Tracker Sep 18",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:33Z",
+      "summary_points": [
+        "China Property Market Structural Weakness: NBS 70-city secondary home prices declining across multiple indices (Centaline, Zhuge, Beike), with data suspensions by Beike (Oct 2023), Zhuge (Dec 2023), and Beike 100-city (Dec 2025), signaling severe structural housing market distress and elevated risk for real estate-linked assets.",
+        "Industrial Demand Collapse: China steel demand down 4.6% YoY (Sep 18) and production down 7.2% YoY (Sep 18), coupled with coastal coal consumption dropping 6.2% YoY (Sep 15), indicating sharp deceleration in manufacturing and construction activity.",
+        "Policy-Driven Inflation Pressure: China’s fuel price hikes (Sep 11) of RMB260/tonne (diesel) and RMB250/tonne (gasoline) signal direct inflationary impact on transportation/industrial costs amid energy price shocks.",
+        "Fiscal Policy Execution: RMB 3.14tn local special bonds (70.9% of annual quota) and RMB 8.41tn government bonds (71% of quota) issued year-to-date, below prior-year levels but aligned with March \"Two Sessions\" budget targets, reflecting fiscal policy continuity.",
+        "Geopolitical Supply Chain Impact: Visible landed crude inventories declined amid Iran war tensions (Exhibit 19), reducing days of demand and signaling supply-side pressure in energy markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 17,
       "language": "en",
       "needs_metadata": false
     },
