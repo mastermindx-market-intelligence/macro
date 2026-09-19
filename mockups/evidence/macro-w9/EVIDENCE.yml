@@ -1,0 +1,9 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/dashboard.html.j2
+  - tests/test_macro_w9_r1.py
+  - scripts/capture_macro_w9_evidence.py
+manifest: mockups/evidence/macro-w9/manifest.json
+resolved_sha: 795fda103318def45393e147c638892c6765a096
+totals: 74/74
+overlay: clean

@@ -453,6 +453,29 @@ def test_macro_synthesis_top_channels_carry_bilingual_labels():
     assert en == "some new channel" and zh == "some new channel"
 
 
+def test_channel_label_has_zh_twins_for_all_21():
+    assert len(mn.CHANNEL_LABEL) == 21
+    for slug, (en, zh) in mn.CHANNEL_LABEL.items():
+        assert en and "_" not in en, f"{slug} EN leaked underscore: {en!r}"
+        assert any("\u4e00" <= c <= "\u9fff" for c in zh), f"{slug} ZH is not Chinese: {zh!r}"
+    empty_en, empty_zh = mn._slug_label("", mn.CHANNEL_LABEL)
+    assert empty_en == "" and empty_zh == ""
+
+
+def test_load_upcoming_catalysts_failed_fetch_is_none(monkeypatch):
+    def _boom(**_kw):
+        raise OSError("calendar feed down")
+    monkeypatch.setattr(mn, "upcoming_catalysts", _boom)
+    assert mn.load_upcoming_catalysts(horizon_days=14) is None
+
+
+def test_load_upcoming_catalysts_empty_is_list(monkeypatch):
+    monkeypatch.setattr(mn, "upcoming_catalysts", lambda **_kw: [])
+    got = mn.load_upcoming_catalysts(horizon_days=14)
+    assert got == []
+    assert got is not None
+
+
 # --------------------------------------------------------------------------- #
 # W2 qbus read-back — echo must actually attach to macro headlines
 # (audit W2-PARTIAL: the item_id join never matched because macro headlines
