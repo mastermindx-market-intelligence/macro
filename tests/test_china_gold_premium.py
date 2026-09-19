@@ -621,3 +621,18 @@ def test_gold_premium_copy_describes_relative_pricing_without_claiming_demand_ca
     assert "需求、进口约束、供应或市场结构" in html
     assert "firmer local physical demand" not in html
     assert "本地实物需求更强" not in html
+
+
+def test_premium_chart_keeps_raw_line_continuous_across_zero_crossings():
+    """Sign coloring must not create visible gaps where the basis crosses zero."""
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parents[1] / "templates" / "_china_gold_premium.html.j2").read_text()
+    anchor = "var key=mode==='spread'?'spread_price_oz':'premium_pct';"
+    continuous = "main.setAttribute('d',path(rows,key,min,max,null));"
+    positive = "pos.setAttribute('d',path(rows,key,min,max,1));"
+    negative = "neg.setAttribute('d',path(rows,key,min,max,-1));"
+
+    assert anchor in src
+    assert continuous in src
+    assert src.index(anchor) < src.index(continuous) < src.index(positive) < src.index(negative)

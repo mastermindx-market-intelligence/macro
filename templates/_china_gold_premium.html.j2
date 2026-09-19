@@ -215,6 +215,9 @@
         zero.setAttribute('visibility','hidden');
       } else {
         var key=mode==='spread'?'spread_price_oz':'premium_pct';
+        // A full underlay keeps the series continuous at zero crossings; the
+        // sign-specific strokes above it provide the semantic color.
+        main.setAttribute('d',path(rows,key,min,max,null));
         pos.setAttribute('d',path(rows,key,min,max,1));
         neg.setAttribute('d',path(rows,key,min,max,-1));
         if(mode==='premium') avg.setAttribute('d',path(rows,'ma5_pct',min,max,null));
