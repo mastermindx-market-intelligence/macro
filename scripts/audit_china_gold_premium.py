@@ -193,6 +193,12 @@ def write_receipt(
     checked_at: str | None = None,
 ) -> dict:
     doc = evaluate(vm, html, checked_at=checked_at)
+    promotion_blockers = live_ready_violations(
+        doc,
+        required_method="close_proxy",
+    )
+    doc["close_proxy_dataos_promotion_ready"] = not promotion_blockers
+    doc["close_proxy_dataos_promotion_blockers"] = promotion_blockers
     path = Path(out_path) if out_path is not None else (
         config.data_dir() / "quality" / "china_gold_premium.json"
     )

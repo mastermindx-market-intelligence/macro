@@ -633,3 +633,80 @@ def test_gold_premium_main_forwards_required_method(monkeypatch):
         "require_live_ready": True,
         "required_method": "close_proxy",
     }
+
+
+def test_gold_premium_receipt_exposes_close_proxy_dataos_promotion_readiness(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = {
+        "available": True,
+        "status": "available",
+        "state": "premium",
+        "current_method": "close_proxy",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "stats": {"avg_5": 0.12, "range_30": [-0.4, 0.5]},
+        "chart": {
+            "display_source": "proxy",
+            "proxy": [{"date": f"2026-08-{i:02d}"} for i in range(1, 31)],
+            "canonical": [],
+            "intraday": None,
+        },
+        "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "close_proxy": {
+            "available": True,
+            "fresh": True,
+            "asof": "2026-09-18T07:30:00+00:00",
+            "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+        },
+    }
+    html = (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" '
+        'data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" '
+        'data-cgp-source-asof="2026-09-18T07:30:00+00:00" '
+        'data-cgp-premium="0.167400"></section>'
+    )
+
+    doc = audit.write_receipt(
+        vm,
+        html,
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["close_proxy_dataos_promotion_ready"] is True
+    assert doc["close_proxy_dataos_promotion_blockers"] == []
+
+
+def test_gold_premium_receipt_blocks_dataos_promotion_for_honest_unavailable(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = {
+        "available": False,
+        "status": "unavailable",
+        "state": "unavailable",
+        "reason_code": "source_data_unavailable",
+        "current_method": None,
+        "premium_pct": None,
+        "price_currency": None,
+        "stats": {"avg_5": None, "range_30": None},
+        "chart": {"canonical": [], "proxy": [], "intraday": None, "display_source": None},
+        "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "close_proxy": {"available": False, "fresh": False, "asof": None, "sources": []},
+    }
+    html = '<section id="gold-china-premium" data-cgp-state="unavailable" data-cgp-display-source="canonical" data-cgp-currency="USD"></section>'
+
+    doc = audit.write_receipt(
+        vm,
+        html,
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["close_proxy_dataos_promotion_ready"] is False
+    assert "status is honest_unavailable, not available_fresh" in doc["close_proxy_dataos_promotion_blockers"]
+    assert "headline method is none, required close_proxy" in doc["close_proxy_dataos_promotion_blockers"]
