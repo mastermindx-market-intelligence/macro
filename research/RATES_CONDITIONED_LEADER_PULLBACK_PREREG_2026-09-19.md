@@ -125,7 +125,7 @@ Therefore:
 - inference clusters at **decision date**;
 - every table prints unique decision dates as well as episodes/names;
 - no p-value/CI may use episode count as if rate treatment varied across names;
-- the **primary estimator gives every eligible date equal weight**: first compute that date's false-start fraction, then average across dates in the rate arm;
+- the **primary estimator gives every eligible date equal weight**: first compute that date's false-bounce fraction, then average across dates in the rate arm;
 - an episode-weighted estimate may print only as a descriptive sensitivity and cannot determine the verdict;
 - temporal sign-stability uses the already-established house boundary **2020-07-01** (pre = before; post = on/after), not a median split chosen from these outcomes;
 - a result with fewer than **30 unique dates** in either compared rate arm overall, or fewer than **10 unique dates per arm in either temporal half**, is `UNINFORMATIVE`, regardless of episode count;
@@ -160,7 +160,7 @@ Report:
 
 For dates with both leader-like and nonleader-like C2r episodes:
 
-`gap_d = false_start_rate(leader_like,d) - false_start_rate(nonleader_like,d)`
+`gap_d = false_bounce_rate(leader_like,d) - false_bounce_rate(nonleader_like,d)`
 
 Compare `gap_d` on easing vs non-easing pressure dates.
 
@@ -231,10 +231,10 @@ The seven registered inferential looks are closed:
 
 1. A1 — C2r leader-like, EASING_AFTER_PRESSURE vs eligible non-easing pressure dates, false-bounce pp difference (**primary**).
 2. A2 — C2r leader-minus-nonleader interaction across easing vs non-easing pressure dates (**primary falsifier**).
-3. A3 — C2r POLICY_CONFIRMED_RELIEF sensitivity, same leader-like false-start metric.
+3. A3 — C2r POLICY_CONFIRMED_RELIEF sensitivity, same leader-like false-bounce metric.
 4. A4 — C2r fixed 5bp magnitude sensitivity, same metric.
 5. A5 — C2r REACCELERATION adverse-state falsifier.
-6. A6 — C4 EASING_AFTER_PRESSURE robustness, leader-like false-start metric.
+6. A6 — C4 EASING_AFTER_PRESSURE robustness, leader-like false-bounce metric.
 7. A7 — C4 leader-minus-nonleader interaction robustness.
 
 Benjamini-Hochberg is computed across all seven p-values with **q ≤ 0.10**. A1 cannot be `SUPPORTIVE_DIAGNOSTIC` unless its own interval/effect/sign/date hurdles pass **and** its BH-adjusted q ≤ 0.10. No secondary outcome can rescue A1.
