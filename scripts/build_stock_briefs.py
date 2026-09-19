@@ -57,7 +57,13 @@ def main() -> int:
         ok = sum(1 for b in briefs if not b.get("degraded_reason"))
         log.info("precomputed %d AI stock brief(s) (%d usable, %d degraded)",
                  len(briefs), ok, len(briefs) - ok)
-        if briefs and ok == 0 and all(
+        if not briefs:
+            log.error(
+                "stock-brief capability dark: zero briefs emitted for %d target(s)",
+                len(targets),
+            )
+            brief_rc = 1
+        elif ok == 0 and all(
             brief.get("degraded_reason") == "no_context" for brief in briefs
         ):
             log.error(
