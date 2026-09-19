@@ -503,6 +503,14 @@ def test_h4_plain_word_read_renders_for_computable_and_omits_for_null():
     assert "above the case we could run" in en_1b, en_1b
     assert "高于唯一已算出的情景" in zh_1b, zh_1b
 
+    blob_1_mut["price"] = {"value": 130.65}
+    html_1c = _render(blob_1_mut)
+    lede_1c = _lede(html_1c)
+    assert lede_1c is not None, "h4 lede missing for 1-computable price==computable"
+    en_1c, zh_1c = _en_zh(lede_1c)
+    assert "sits near the case we could run" in en_1c, en_1c
+    assert "接近唯一已算出的情景" in zh_1c, zh_1c
+
     # 5. Computable fixture with price=None -- the lede must be omitted
     #    entirely (no <p class="vs-lede" data-vs-read="1"> in the render).
     blob2 = vs.compute(_rows(), price=None, asof="2026-09-05", ticker="AAPL")
