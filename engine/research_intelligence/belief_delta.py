@@ -28,6 +28,22 @@ _CATEGORY_FIELDS = (
     "implications",
     "uncertainties",
 )
+_CHANGE_DIMENSIONS = (
+    "thesis_direction",
+    "thesis_conviction",
+    "thesis_support",
+    "mechanisms",
+    "claims",
+    "numbers",
+    "entities",
+    "category_assumptions",
+    "category_forecasts",
+    "category_catalysts",
+    "category_falsifiers",
+    "category_counterarguments",
+    "category_implications",
+    "category_uncertainties",
+)
 
 
 def _sha256_text(value: Any) -> str:
@@ -285,20 +301,27 @@ def compare_institutional_rio(
         )
     )
 
-    material_change = bool(
-        direction_changed
-        or conviction_changed
-        or thesis_support_changed
-        or claims["added_sha256"]
-        or claims["removed_sha256"]
-        or mechanisms["added_sha256"]
-        or mechanisms["removed_sha256"]
-        or numbers["added_sha256"]
-        or numbers["removed_sha256"]
-        or entities["added"]
-        or entities["removed"]
-        or changed_categories
-    )
+    change_dimensions: list[str] = []
+    if direction_changed:
+        change_dimensions.append("thesis_direction")
+    if conviction_changed:
+        change_dimensions.append("thesis_conviction")
+    if thesis_support_changed:
+        change_dimensions.append("thesis_support")
+    if mechanisms["added_sha256"] or mechanisms["removed_sha256"]:
+        change_dimensions.append("mechanisms")
+    if claims["added_sha256"] or claims["removed_sha256"]:
+        change_dimensions.append("claims")
+    if numbers["added_sha256"] or numbers["removed_sha256"]:
+        change_dimensions.append("numbers")
+    if entities["added"] or entities["removed"]:
+        change_dimensions.append("entities")
+    change_dimensions.extend(f"category_{field}" for field in changed_categories)
+    change_dimensions = [
+        dimension for dimension in _CHANGE_DIMENSIONS
+        if dimension in change_dimensions
+    ]
+    change_detected = bool(change_dimensions)
 
     return {
         "schema": SCHEMA,
@@ -331,7 +354,8 @@ def compare_institutional_rio(
         "entities": entities,
         "categories": categories,
         "changed_categories": changed_categories,
-        "material_change": material_change,
+        "change_dimensions": change_dimensions,
+        "change_detected": change_detected,
         "text_visibility": "metadata_only",
         "authority": "descriptive_research_only",
     }
@@ -369,6 +393,16 @@ def summary(delta: Any) -> dict[str, Any]:
         raise ValueError("belief delta changed_categories is invalid")
     changed_categories = [field for field in _CATEGORY_FIELDS if field in changed]
 
+    dimensions = delta.get("change_dimensions")
+    if not isinstance(dimensions, list) or any(
+        not isinstance(dimension, str) or dimension not in _CHANGE_DIMENSIONS
+        for dimension in dimensions
+    ):
+        raise ValueError("belief delta change_dimensions is invalid")
+    change_dimensions = [
+        dimension for dimension in _CHANGE_DIMENSIONS if dimension in dimensions
+    ]
+
     added = claims.get("added_sha256")
     removed = claims.get("removed_sha256")
     if not isinstance(added, list) or not isinstance(removed, list):
@@ -401,7 +435,8 @@ def summary(delta: Any) -> dict[str, Any]:
         "added_claims": len(added),
         "removed_claims": len(removed),
         "changed_categories": changed_categories,
-        "material_change": bool(delta.get("material_change")),
+        "change_dimensions": change_dimensions,
+        "change_detected": bool(delta.get("change_detected")),
         "text_visibility": "metadata_only",
         "authority": "descriptive_research_only",
     }
