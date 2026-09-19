@@ -1,61 +1,73 @@
 {
-  "ts": "2026-09-18T07:44:07+00:00",
-  "main_sha": "d2c2b085c46f0745f9996e7de3d1eb9b1a379984",
+  "ts": "2026-09-19T07:39:40+00:00",
+  "main_sha": "c0d3cce36109c19f1c6a50cfa4c5e0d433f557b4",
   "red_required": [
-    {
-      "name": "ci-pack-4",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35319086126/job/105517468664"
-    },
     {
       "name": "ci-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308905176/job/105492129592"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421767069/job/105844301593"
     },
     {
-      "name": "health",
-      "conclusion": "failure",
+      "name": "publish",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308639298/job/105485884121"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35422319681/job/105842137505"
     },
     {
-      "name": "free-content-estate",
-      "conclusion": "failure",
+      "name": "sweep",
+      "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308305896/job/105484939530"
-    },
-    {
-      "name": "tier-gate",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308305896/job/105484939509"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308305896/job/105484939478"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35422012792/job/105841318828"
     },
     {
       "name": "font-ui-defined",
       "conclusion": "cancelled",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308305896/job/105484939469"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421936664/job/105841117670"
+    },
+    {
+      "name": "template-site-sync",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421936664/job/105841117652"
     },
     {
       "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35308305896/job/105484939401"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421936664/job/105841117639"
+    },
+    {
+      "name": "free-content-estate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421936664/job/105841117629"
+    },
+    {
+      "name": "tier-gate",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421936664/job/105841117598"
+    },
+    {
+      "name": "ci-pack-9",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421767069/job/105840755993"
+    },
+    {
+      "name": "health",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35421599722/job/105840217465"
     }
   ],
   "green": false,
-  "consecutive_failures": 150,
+  "consecutive_failures": 154,
   "sensed_shas": [
-    "d2c2b085c46f0745f9996e7de3d1eb9b1a379984",
-    "b6ceafec4bbd038bb34ede95e49e68d9a7056734"
+    "c0d3cce36109c19f1c6a50cfa4c5e0d433f557b4",
+    "936e1b65a1b2a9e5de9039162219ebe419d37d1e"
   ],
   "heartbeat_degraded": false
 }
