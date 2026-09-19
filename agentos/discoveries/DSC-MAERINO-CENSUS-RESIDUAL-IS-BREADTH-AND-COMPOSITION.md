@@ -2,28 +2,33 @@
 key: MAERINO-CENSUS-RESIDUAL-IS-BREADTH-AND-COMPOSITION
 claim: >
   The 2026-09-18 Maerino competitive census found no evidence that Mastermind
-  lacks the core provenance, release parsing, transcript evidence, filing-forensics
-  or general research-factory substrates needed for Maerino-like intelligence.
-  The measured residual is narrower: event_workspace production admission is
-  exactly five issuers (AAPL/DHI/PHM/KBH/TOL), FIF-7 broad earnings/non-GAAP/KPI/
-  guidance convergence remains todo, and no direct event_workspace/qa_exchange
-  intake bridge into the existing Research Factory was found. Public Earnings
-  Wire breadth is already 5,581 call records.
+  lacks the core provenance, release parsing, transcript evidence or filing-forensics
+  substrates needed for Maerino-like intelligence. The measured residual is narrower:
+  event_workspace production admission is exactly five issuers
+  (AAPL/DHI/PHM/KBH/TOL), FIF-7 broad earnings/non-GAAP/KPI/guidance convergence
+  remains todo, and no current production path was found that autonomously turns a
+  receipt-bound company-event question into a bounded company/peer filing investigation
+  and returns a reviewed receipted finding to the originating event context. Public
+  Earnings Wire breadth is already 5,581 call records.
 falsifier: >
-  Refute or revise this claim by demonstrating on current main and the real
-  production path either (a) a broad disjoint issuer cohort already publishing
-  receipt-bound post-print issuer/sector KPI digests through event_workspace,
-  (b) FIF-7 accepted complete with broad KPI/guidance convergence, or (c) a
-  current production event_workspace/qa_exchange -> Research Factory -> returned
-  receipted finding loop. A source-only design, fixture, or transcript-only Wire
-  record does not falsify the claim.
+  Refute or revise this claim by demonstrating on current main and the real production
+  path either (a) a broad disjoint issuer cohort already publishing receipt-bound
+  post-print issuer/sector KPI digests through event_workspace, (b) FIF-7 accepted
+  complete with broad KPI/guidance convergence, or (c) a production event-triggered
+  forensic loop that performs bounded company/peer evidence acquisition and returns
+  a reviewed receipted finding to the original company-event context. A source-only
+  design, fixture, transcript-only Wire record, or interactive one-shot chat answer
+  does not falsify the autonomous-loop claim.
 so_what: >
   Do not create a Maerino-parity workstream, second research engine, second metric
-  registry, queue or store. Preserve existing ownership: E3-C for cross-issuer
-  event/Q&A admission, FIF-7 (behind FIF-3) for KPI/guidance convergence, the
-  existing Research Factory for research lifecycle, and Alpha K3-D for later
-  cross-company economic read-through. Product pressure from Maerino should be
-  applied to breadth and fast evidence-backed composition over those owners.
+  registry, queue or store. Preserve E3-C for cross-issuer event/Q&A admission and
+  FIF-7 (behind FIF-3) for KPI/guidance convergence. Company Intelligence / Research
+  OS plus Ask Mastermind/Brain is the existing interactive cited-research surface;
+  Fundamental Forensics/FIF owns filing and financial-fact evidence. Do not force
+  generic document investigations into engine/research_factory: its canonical
+  candidate/state model is experimental/trial-oriented. The autonomous forensic
+  composition owner remains to be adjudicated over existing execution surfaces.
+  Alpha K3-D separately owns later cross-company economic read-through.
 kind: data
 verified_at: 2026-09-18
 verified_by: >
@@ -31,8 +36,11 @@ verified_by: >
   real-path GET /stocks/earnings/ showed 5,581 records;
   GET /api/event-workspace/{AAPL,DHI,PHM,KBH,TOL} returned live public glances
   while KR returned 404; production_registry source and tests pin len==5;
-  WS:FINANCIAL-INTELLIGENCE-FABRIC records FIF-7 todo; current-main search found
-  Research Factory implementation but no event_workspace/qa_exchange intake join.
+  WS:FINANCIAL-INTELLIGENCE-FABRIC records FIF-7 todo;
+  COMPANY_EVENT_INTELLIGENCE_SPINE assigns bounded cited event questions to existing
+  Brain/Research OS; engine/research_factory/schema.py shows trial/experimental
+  candidate types, trial accounting and screening/challenge/review states rather than
+  a generic document-investigation lifecycle.
 scope:
   - macro
   - WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER
@@ -48,4 +56,5 @@ This discovery does not claim Maerino lacks private capabilities that are not pu
 observable, and it does not rank the companies overall. It records only the demonstrated
 jobs relevant to Mastermind's current source and production surfaces. The current macro
 fast-publication degradation remains separately owned by PR #7241 and must not be
-re-homed here.
+re-homed here. The autonomous forensic-follow-up composition boundary is intentionally
+left unresolved rather than assigned to an incompatible existing queue.
