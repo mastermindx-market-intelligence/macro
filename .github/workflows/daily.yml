@@ -4063,6 +4063,18 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           THESIS_MONITOR_ENABLE: ${{ secrets.THESIS_MONITOR_ENABLE }}
         run: python -m scripts.run_thesis_condition_monitor || echo "::warning::thesis condition monitor failed (non-fatal)"
+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        # AFTER 'brain briefing tunnel (build_briefing)' and AFTER the thesis
+        # condition monitor (the step whose comment names public.alert_outbox).
+        # Slot = site/intelligence/briefing.json field as_of. Writes
+        # public.brief_deliveries only (insert on conflict do nothing).
+        # Fail-soft: absent creds/tables -> typed miss, 0 rows, exit 0.
+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
+        run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: notify (telegram/discord; skips when secrets absent)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

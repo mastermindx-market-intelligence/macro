@@ -5,26 +5,26 @@
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 38.0,
-  "raw_confidence": 36.5,
+  "raw_confidence": 37.9,
   "delta_vs_base": -22.0,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 81.5,
+    "validity": 86.5,
     "progress": 0.0,
     "pace": 3.7,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 64.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.86,
+    "dist_to_stop_r": 0.898,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
     "horizon_pct_used": 66.7,
-    "p1": -0.0935,
-    "p2": -0.0467,
+    "p1": -0.0678,
+    "p2": -0.0339,
     "p3": null,
-    "move_r": -0.14,
+    "move_r": -0.102,
     "mfe_r": 0.256,
     "mae_r": -0.317
   },
