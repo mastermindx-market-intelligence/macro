@@ -68,7 +68,7 @@
   td.num,th.num { text-align:right; font-variant-numeric:tabular-nums; }
   .ts { overflow-x:auto; }
   .tk { font-weight:680; } .tk:hover { color:var(--ink-link, var(--link)); }
-  .cv { font-weight:700; border-radius:6px; padding:1px 7px; font-size:12px; }
+  .cv { font-weight:700; border-radius:var(--r-ctl,8px); padding:1px 7px; font-size:12px; }
   /* confluence cascade tier badge (T1 master -> T4 earliest), ported from subsectors_china */
   .tier { display:inline-block; font-weight:800; font-size:10px; padding:1px 5px; border-radius:5px; letter-spacing:.02em; color:#fff; vertical-align:middle; }
   /* White text on the fill, so the FILL carries the text grade — the --ink-* rung
@@ -157,7 +157,7 @@
   :root { --gr:#8f8ae0; }
   html[data-theme="light"] { --gr:#5a51bd; }
   .gpr-band { position:relative; background:var(--panel); border:1px solid var(--line);
-    border-radius:12px; margin-top:10px; overflow:hidden; }
+    border-radius:var(--r-card,12px); margin-top:10px; overflow:hidden; }
   .gpr-band::before { content:""; position:absolute; inset:0 0 auto; height:2px;
     background:linear-gradient(90deg,var(--gr),color-mix(in srgb,var(--gr) 15%,transparent)); }
   html[data-theme="light"] .gpr-band { box-shadow:0 1px 2px rgba(28,36,48,.05),0 10px 26px -14px rgba(28,36,48,.18); }
@@ -225,6 +225,51 @@
   .gpr-key .sw { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; vertical-align:middle; }
   .gpr-ep th, .gpr-ep td { white-space:nowrap; }
   .gpr-ep .win { font-variant-numeric:tabular-nums; }
+  /* P1 complete-member evidence: a context-only inspection surface, not a scorer. */
+  .mo-band { border:1px solid var(--line); border-radius:var(--r-card,12px); margin-top:10px;
+    background:var(--panel); overflow:hidden; }
+  .mo-band::before { content:""; display:block; height:2px;
+    background:linear-gradient(90deg,var(--info),color-mix(in srgb,var(--info) 15%,transparent)); }
+  /* Light is a paper workspace: neutral hairline and white data tiles, not the
+     dark surface's luminous accent edge. The method tile remains recessive. */
+  html[data-theme="light"] .mo-band { box-shadow:var(--card-shadow); }
+  html[data-theme="light"] .mo-band::before { height:1px; background:var(--line); }
+  html[data-theme="light"] .mo-stat { background:var(--panel); }
+  html[data-theme="light"] .mo-stat.note { background:var(--panel2); }
+  .mo-hd { display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px 18px; padding:13px 16px 0; }
+  .mo-hd-main { flex:1; min-width:240px; }
+  .mo-eyebrow { font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--info); }
+  .mo-title { font-size:17px; font-weight:680; margin-top:3px; }
+  .mo-sub { color:var(--muted); font-size:11.5px; max-width:76ch; margin-top:3px; }
+  .mo-meta { color:var(--muted); font-size:11px; text-align:right; font-variant-numeric:tabular-nums; }
+  .mo-controls { display:grid; grid-template-columns:minmax(210px,1.2fr) minmax(170px,1fr) minmax(145px,.7fr);
+    gap:9px; padding:13px 16px 0; }
+  .mo-field { display:grid; gap:4px; min-width:0; }
+  .mo-field label { color:var(--muted); font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .mo-field select,.mo-field input { width:100%; min-height:36px; border:1px solid var(--line); border-radius:var(--r-ctl,8px);
+    background:var(--panel2); color:var(--text); padding:7px 9px; font:inherit; }
+  .mo-field select:focus,.mo-field input:focus { outline:2px solid color-mix(in srgb,var(--info) 55%,transparent); outline-offset:1px; }
+  .mo-summary { display:grid; grid-template-columns:minmax(120px,.7fr) repeat(3,minmax(105px,.55fr)) minmax(210px,1.4fr);
+    gap:8px; padding:11px 16px 0; }
+  .mo-stat { background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-ctl,8px); padding:8px 10px; min-width:0; }
+  .mo-stat .k { color:var(--muted); font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+  .mo-stat .v { margin-top:3px; font-size:14px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .mo-stat.note .v { font-size:11.5px; font-weight:500; line-height:1.45; }
+  .mo-table-wrap { overflow:auto; max-height:430px; margin:11px 16px 0; border:1px solid var(--line); border-radius:var(--r-ctl,8px); }
+  .mo-table { min-width:720px; width:100%; }
+  .mo-mobile-label { display:none; }
+  .mo-table caption { text-align:left; padding:8px 10px; color:var(--muted); font-size:11px; background:var(--panel2); }
+  .mo-table thead th { position:sticky; top:0; z-index:1; background:var(--panel2); cursor:default; }
+  .mo-table td:first-child { font-weight:690; }
+  .mo-state { display:inline-flex; align-items:center; gap:5px; border-radius:var(--r-ctl,8px); padding:1px 7px; font-size:10.5px; font-weight:700; }
+  .mo-state.obs { color:var(--ink-info,var(--info)); background:color-mix(in srgb,var(--info) 10%,transparent);
+    border:1px solid color-mix(in srgb,var(--info) 30%,var(--line)); }
+  .mo-state.miss { color:var(--muted); background:var(--panel2); border:1px solid var(--line); }
+  .mo-method { margin:11px 16px 0; border-top:1px solid var(--line); padding:9px 0 12px; color:var(--muted); font-size:11px; }
+  .mo-method summary { cursor:pointer; color:var(--text); font-weight:650; }
+  .mo-method-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 18px; margin-top:7px; }
+  .mo-method code { color:var(--text); overflow-wrap:anywhere; white-space:normal; }
+  .mo-empty { padding:16px; color:var(--muted); text-align:center; }
   @media (max-width:720px){
     .gpr-hd,.gpr-stance,.gpr-backdrop,.gpr-tiles { padding-left:11px; padding-right:11px; }
     .gpr-watch,.gpr-null { padding-left:11px; padding-right:11px; }
@@ -234,6 +279,32 @@
     .gpr-wcols { grid-template-columns:1fr; }
     .gpr-stop .lbl { font-size:8.5px; }
     .gpr-asof { margin-left:0; flex-basis:100%; }
+    .mo-hd,.mo-controls,.mo-summary { padding-left:11px; padding-right:11px; }
+    .mo-meta { text-align:left; width:100%; }
+    .mo-controls { grid-template-columns:1fr; }
+    .mo-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .mo-stat.note { grid-column:1/-1; }
+    .mo-table-wrap { margin-left:11px; margin-right:11px; max-height:390px; overflow-x:hidden; }
+    /* One roster, stacked at phone width. Keep explicit table roles/headers so
+       visual layout never removes the relationship between a result and its why. */
+    .mo-table { display:block; min-width:0; }
+    .mo-table caption { display:block; white-space:normal; }
+    .mo-table thead { position:absolute; width:1px; height:1px; padding:0;
+      overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+    .mo-table tbody { display:block; }
+    .mo-table tbody tr { display:grid; grid-template-columns:minmax(0,1fr) auto;
+      border-bottom:1px solid var(--line); padding:var(--sp-2,8px) var(--sp-3,12px); }
+    .mo-table tbody tr:last-child { border-bottom:0; }
+    .mo-table tbody td { display:block; min-width:0; border:0; padding:3px 0;
+      white-space:normal; text-align:left; overflow-wrap:anywhere; }
+    .mo-table tbody td:nth-child(2) { text-align:right; padding-left:var(--sp-2,8px); }
+    .mo-table tbody td:nth-child(3),.mo-table tbody td.why,
+    .mo-table tbody td[colspan] { grid-column:1/-1; }
+    .mo-table tbody td.why { line-height:1.5; }
+    .mo-mobile-label { display:inline; color:var(--muted); font-size:var(--fs-micro,10px);
+      font-weight:600; margin-right:var(--sp-2,8px); }
+    .mo-method { margin-left:11px; margin-right:11px; }
+    .mo-method-grid { grid-template-columns:1fr; }
   }
   @media (max-width:720px){
     html, body { overflow-x:hidden; }
@@ -272,7 +343,8 @@
   }
 </style>
 </head>
-<body>
+<body data-member-observations-digest="{{ member_observation_digest|default('', true)|e }}"
+      data-member-observations-pulse-sha256="{{ member_observation_pulse_sha256|default('', true)|e }}">
 {% set nav_context_links = [
   {'href': back_href | default('../baskets.html'), 'icon': '🧺', 'en': 'All themes', 'zh': '全部主题'},
 ] %}
@@ -1067,6 +1139,175 @@ function stkGR(sym){
 }
 /* ── GR1:READ:END ── */
 
+/* P1:MEMBER-EVIDENCE:BEGIN — verified complete-member context, zero action authority. */
+const MO_ORDER=['legacy_activity','legacy_trend_50','legacy_trend_200',
+  'strict_trend_50','strict_trend_200','raw_daily_change','benchmark_relative_daily_change'];
+const MO_LABELS={
+  legacy_activity:['Unusual activity participation','异动参与度'],
+  legacy_trend_50:['Legacy 50-day breadth','原口径50日广度'],
+  legacy_trend_200:['Legacy 200-day breadth','原口径200日广度'],
+  strict_trend_50:['Strict 50-session breadth','严格50日广度'],
+  strict_trend_200:['Strict 200-session breadth','严格200日广度'],
+  raw_daily_change:['Member daily change','成分股日涨跌'],
+  benchmark_relative_daily_change:['Member daily change minus benchmark (pp)','成分股日涨跌减基准（百分点）'],
+};
+let _moState={metric:'legacy_activity',filter:'all',query:''};
+const moLocal=(en,zh)=>_isZh()?zh:en;
+const moLabel=id=>MO_LABELS[id]||[id,id];
+function moReason(cell){
+  const r=String((cell&&cell.estimability_reason)||'');
+  const map={
+    missing_effective_observation:['No observation for this date','该日期无观测'],
+    insufficient_lookback:['Not enough history for this recipe','历史不足，无法计算该口径'],
+    excluded_from_legacy_activity_cohort:['Outside the legacy activity cohort','不在原口径异动样本中'],
+    benchmark_unavailable:['Benchmark unavailable; relative result withheld','基准不可用；相对结果暂不显示'],
+    unavailable_in_owner_projection:['Unavailable in the owner projection','原始计算未提供该读数'],
+  };
+  const p=map[r]||['Unavailable','不可用'];
+  return L(esc(p[0]),esc(p[1]));
+}
+function moCellValue(metricId,cell){
+  if(!cell||cell.value==null) return `<span class="mo-state miss">${L('Unavailable','不可用')}</span>`;
+  if(typeof cell.value==='boolean'){
+    if(metricId==='legacy_activity') return cell.value
+      ? `<span class="mo-state obs">${L('Active','异动')}</span>`
+      : `<span class="mo-state obs">${L('Quiet','平静')}</span>`;
+    return cell.value
+      ? `<span class="mo-state obs">${L('Above','线上')}</span>`
+      : `<span class="mo-state obs">${L('Below','线下')}</span>`;
+  }
+  const text=metricId==='benchmark_relative_daily_change'
+    ? `${cell.value>=0?'+':''}${(cell.value*100).toFixed(1)} ${L('pp','个百分点')}`
+    : fmtPct(cell.value);
+  return `<span class="${cls(cell.value)}" style="font-weight:700">${text}</span>`;
+}
+function moRowRecords(obs,metricId){
+  const group=(obs&&obs.group)||{}, members=group.members||{};
+  return (group.member_keys||[]).map(function(key){
+    const member=members[key]||{}, cell=(member.metrics||{})[metricId]||null;
+    return {key:key, symbol:member.source_symbol||key, identity:member.identity_ref||null,
+      cell:cell, observed:!!(cell&&cell.value!=null)};
+  });
+}
+function moRowsHtml(obs,metricId){
+  const group=obs.group||{}, metric=(group.metrics||{})[metricId]||{};
+  const q=String(_moState.query||'').trim().toUpperCase();
+  const rows=moRowRecords(obs,metricId).filter(function(row){
+    if(_moState.filter==='observed'&&!row.observed) return false;
+    if(_moState.filter==='unavailable'&&row.observed) return false;
+    return !q||String(row.symbol).toUpperCase().includes(q)||String(row.key).toUpperCase().includes(q);
+  });
+  const html=rows.length?rows.map(function(row){
+    const cell=row.cell||{}, avail=cell.observations_available, req=cell.observations_required;
+    const coverage=(avail==null||req==null)?'—':`${avail} / ${req}`;
+    const why=row.observed
+      ? (metric.aggregation==='none'
+          ? L('Observed at member level; no group aggregate authorized.','仅成分股层面有观测；未授权组级汇总。')
+          : L('Included in this measurement denominator.','计入本项读数的分母。'))
+      : moReason(cell);
+    const ident=row.identity?`<div class="muted sm" title="${esc(row.identity)}">${L('identity receipted','身份已留据')}</div>`:'';
+    return `<tr role="row" data-state="${row.observed?'observed':'unavailable'}">
+      <td role="cell" headers="mo-col-member">${stkGR(row.symbol)}${ident}</td>
+      <td role="cell" headers="mo-col-result">${moCellValue(metricId,cell)}</td>
+      <td role="cell" headers="mo-col-history" class="num"><span class="mo-mobile-label">${L('Available / minimum','可用 / 最低要求')}</span>${coverage}</td>
+      <td role="cell" headers="mo-col-reason" class="why"><span class="mo-mobile-label">${L('Why','说明')}</span>${why}</td>
+    </tr>`;
+  }).join(''):`<tr role="row"><td role="cell" colspan="4" class="mo-empty">${L('No members match this display filter.','没有成分股符合当前显示筛选。')}</td></tr>`;
+  return {html:html,visible:rows.length,total:(group.member_keys||[]).length};
+}
+function moMetricNote(metricId){
+  if(metricId==='benchmark_relative_daily_change') return L(
+    'Member daily return minus the benchmark daily return, in percentage points; not a relative-price return. No group average is created.',
+    '成分股日收益率减去基准日收益率，以百分点表示；不是相对价格收益率，也不计算组级均值。');
+  if(metricId.startsWith('legacy_trend_')) return L(
+    'Compatibility view: the existing Group Pulse activity cohort and partial warm-up rules are preserved.',
+    '兼容视图：保留现有 Group Pulse 的异动样本与部分预热规则。');
+  if(metricId.startsWith('strict_trend_')) return L(
+    'Price-only strict window: every member needs the full stated history; activity coverage does not gate it.',
+    '纯价格严格窗口：每只成分股都需完整历史；异动覆盖不构成门槛。');
+  if(metricId==='legacy_activity') return L(
+    'Existing unusual-activity definition, reproduced without changing the legacy pulse.',
+    '沿用现有异动定义，不改变原 Group Pulse 读数。');
+  return L('Member-level observation only; the visualization does not mint a group average.',
+           '仅展示成分股观测；可视化层不会新造组级均值。');
+}
+function moSummaryHtml(obs,metricId){
+  const group=obs.group||{}, metric=(group.metrics||{})[metricId]||{};
+  const total=(group.member_keys||[]).length, observed=metric.denominator||0;
+  const unavailable=Math.max(0,total-observed);
+  const aggregate=metric.aggregation==='share_true'
+    ? (metric.value==null?'—':(metric.value*100).toFixed(1)+'%')
+    : L('Member-level only','仅成分股层面');
+  return `<div class="mo-stat"><div class="k">${L('Reading','读数')}</div><div class="v">${aggregate}</div></div>
+    <div class="mo-stat"><div class="k">${L('Observed','有观测')}</div><div class="v">${observed} / ${total}</div></div>
+    <div class="mo-stat"><div class="k">${L('Unavailable','不可用')}</div><div class="v">${unavailable}</div></div>
+    <div class="mo-stat"><div class="k">${L('Visible','当前显示')}</div><div class="v"><span id="mo-visible">—</span> / ${total}</div></div>
+    <div class="mo-stat note"><div class="k">${L('Definition','定义')}</div><div class="v">${moMetricNote(metricId)}</div></div>`;
+}
+function memberObservationSection(obs){
+  if(!obs||obs.authority!=='context_only'||!obs.group) return '';
+  const group=obs.group, metrics=group.metrics||{};
+  const ids=MO_ORDER.filter(id=>metrics[id]);
+  if(!ids.length) return '';
+  if(!metrics[_moState.metric]) _moState.metric=ids[0];
+  const metricId=_moState.metric, metric=metrics[metricId], rows=moRowsHtml(obs,metricId);
+  const options=ids.map(function(id){
+    const label=moLabel(id);
+    return `<option value="${esc(id)}"${id===metricId?' selected':''}>${esc(moLocal(label[0],label[1]))}</option>`;
+  }).join('');
+  const filters=[['all','All members','全部成分股'],['observed','Observed','有观测'],
+    ['unavailable','Unavailable','不可用']].map(function(x){
+      return `<option value="${x[0]}"${_moState.filter===x[0]?' selected':''}>${esc(moLocal(x[1],x[2]))}</option>`;
+    }).join('');
+  const label=moLabel(metricId);
+  return `<section class="mo-band" aria-labelledby="mo-heading">
+    <div class="mo-hd"><div class="mo-hd-main">
+      <div class="mo-eyebrow">${L('Complete member evidence','完整成分股证据')}</div>
+      <div class="mo-title" id="mo-heading">${L('What supports this read?','哪些成分股支持这项读数？')}</div>
+      <div class="mo-sub">${L('Every catalogue member stays visible. Missing evidence is shown, never converted to zero or divided away.','保留全部目录成分股；缺失证据明确显示，不会被当作零或从分母中抹去。')}</div>
+    </div><div class="mo-meta">${L('as of','截至')} <b>${esc(obs.as_of||'—')}</b><br>${group.member_count||0} ${L('catalogue members','目录成分股')}</div></div>
+    <div class="mo-controls">
+      <div class="mo-field"><label for="mo-metric">${L('Measurement','衡量口径')}</label><select id="mo-metric">${options}</select></div>
+      <div class="mo-field"><label for="mo-search">${L('Find a member','查找成分股')}</label><input id="mo-search" type="search" autocomplete="off" value="${esc(_moState.query)}" placeholder="${esc(moLocal('Ticker or member key','代码或成分键'))}"></div>
+      <div class="mo-field"><label for="mo-filter">${L('Display filter','显示筛选')}</label><select id="mo-filter">${filters}</select></div>
+    </div>
+    <div class="mo-summary">${moSummaryHtml(obs,metricId)}</div>
+    <div class="mo-table-wrap"><table class="mo-table" role="table">
+      <caption><span id="mo-caption-label">${L(esc(label[0]),esc(label[1]))}</span> · <span id="mo-caption-count">${rows.visible}</span> ${L('shown','当前显示')}</caption>
+      <thead role="rowgroup"><tr role="row"><th id="mo-col-member" scope="col" role="columnheader">${L('Member','成分股')}</th><th id="mo-col-result" scope="col" role="columnheader">${L('Result','结果')}</th><th id="mo-col-history" scope="col" role="columnheader" class="num">${L('Available / minimum','可用 / 最低要求')}</th><th id="mo-col-reason" scope="col" role="columnheader">${L('Why','说明')}</th></tr></thead>
+      <tbody id="mo-rows" role="rowgroup">${rows.html}</tbody>
+    </table></div>
+    <details class="mo-method"><summary>${L('Method &amp; source receipts','方法与来源留据')}</summary>
+      <div class="mo-method-grid">
+        <div>${L('Recipe','口径')}: <code>${esc(metric.recipe_id||'—')}</code></div>
+        <div>${L('Basis','基础')}: <code>${esc(metric.basis||'—')}</code></div>
+        <div>${L('Membership','成员版本')}: <code>${esc(group.source_membership_digest||'—')}</code></div>
+        <div>${L('Observed cohort','观测样本')}: <code>${esc(metric.cohort_digest||'—')}</code></div>
+        <div>${L('Legacy pulse bytes','原始读数字节')}: <code>${esc(obs.legacy_pulse_sha256||'—')}</code></div>
+        <div>${L('Projection','投影版本')}: <code>${esc(obs.projection_digest||'—')}</code></div>
+      </div></details>
+    <div class="gpr-foot" style="padding:0 16px 13px">${L('Context only — does not rank, score, gate, or change action inputs.','仅作背景 — 不排序、不评分、不设门槛，也不改变操作输入。')}</div>
+  </section>`;
+}
+function moPaintRows(){
+  const obs=DETAIL.member_observations;
+  if(!obs||!obs.group) return;
+  const rows=moRowsHtml(obs,_moState.metric);
+  const body=document.getElementById('mo-rows'); if(body) body.innerHTML=rows.html;
+  const count=document.getElementById('mo-caption-count'); if(count) count.textContent=String(rows.visible);
+  const visible=document.getElementById('mo-visible'); if(visible) visible.textContent=String(rows.visible);
+}
+function bindMemberObservationControls(){
+  const metric=document.getElementById('mo-metric');
+  if(metric) metric.onchange=function(){_moState.metric=this.value;render();};
+  const filter=document.getElementById('mo-filter');
+  if(filter) filter.onchange=function(){_moState.filter=this.value;moPaintRows();};
+  const search=document.getElementById('mo-search');
+  if(search) search.oninput=function(){_moState.query=this.value;moPaintRows();};
+  moPaintRows();
+}
+/* P1:MEMBER-EVIDENCE:END */
+
 function render(){
   const d=DETAIL, b=d.basket||{}, th=d.theme||{}, tx=th.textures||{};
   const SB=d.stock_base||'';   // per-stock link base ('' for markets with no per-stock page → plain ticker)
@@ -1106,6 +1347,7 @@ function render(){
 
   // ---- GR1 group read: what the members are actually doing, in plain words ----
   h+=grBand(b.id);
+  h+=memberObservationSection(d.member_observations);
 
   // ---- cross-market narrative cross-reference (same theme in other markets) ----
   h+=xmktHtml();
@@ -1340,6 +1582,7 @@ function render(){
   <div class="panel"><div>${warns.join(' ')}</div><div class="timeline" style="margin-top:6px">${clog||('<span class="muted sm">'+L('—','—')+'</span>')}</div></div>`;
 
   document.getElementById('app').innerHTML=h;
+  bindMemberObservationControls();
   // sortable holdings
   document.querySelectorAll('#hold th[data-s]').forEach(th2=>th2.onclick=()=>sortHold(th2.dataset.s));
 }
