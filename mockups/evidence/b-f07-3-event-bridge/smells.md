@@ -1,6 +1,6 @@
 # B-F07-3 capture observations
 
-CODE_HEAD: `2f42d7d155a385d14082468b300251b5a1ea3542`.
+CODE_HEAD: `f374431cdb9f5368745311f69edbe23c19c491da`.
 
 Three hosts were regenerated from `templates/_valuation_assumptions.html.j2`
 and `templates/theme.css` at this CODE_HEAD. Hosts and the 24 crops were

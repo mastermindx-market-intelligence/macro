@@ -42,5 +42,5 @@ capture: 'Hosts regenerated from the live template and shared theme.css at CODE_
   Chromium captured #va-event-bridge sequentially, at 1440x900 and 390x844, with a
   200ms settle after each theme/language change. Shared stylesheet supplies both themes.
   No full e2e suite was run.'
-captured_at: '2026-09-19T06:56:45.282153+00:00'
-resolved_sha_or_none: 2f42d7d155a385d14082468b300251b5a1ea3542
+captured_at: '2026-09-19T06:59:13.817145+00:00'
+resolved_sha_or_none: f374431cdb9f5368745311f69edbe23c19c491da
