@@ -886,15 +886,17 @@ def test_run_surfaces_write_errors_via_result(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 14),
     )
     assert result.error_n == 1
     assert result.planned_n == 1
 
 
 def test_cli_dry_run_prints_what_it_would_write(monkeypatch, capsys):
-    """H7 / MAJOR 3: ``--dry-run`` prints planned/duplicate counts and one
-    summary line per row. The R6 line and ``::notice`` stay.
+    """H7 / MAJOR 3 (Round 6 contract): ``--dry-run`` prints aggregate-only
+    counts (planned + duplicate) and the R6 line + ``::notice``. The
+    per-row summary that used to surface target/body text is GONE — the
+    Round 6 contract is aggregate-only (Sol #7106 blocker 1 mitigation).
     """
     client = FakeClient()
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
@@ -905,16 +907,21 @@ def test_cli_dry_run_prints_what_it_would_write(monkeypatch, capsys):
             "daily_after_us_close",
             "--dry-run",
             "--run-date",
-            "2026-09-13",
+            "2026-09-14",
         ]
     )
     assert rc == 0
     assert client.deliveries == []
     out = capsys.readouterr().out
     assert "1 ready" in out
-    # Frozen-spec item (2): prints what it would write.
+    # Frozen-spec item (2): prints aggregate counts of what it would write.
     assert "(dry-run): 1 planned" in out or "1 planned" in out
-    assert "-- subscription" in out
+    # Round 6 aggregate-only contract: NO per-row summary line (was the
+    # _row_summary that leaked user-authored target/body text into logs).
+    assert "-- subscription" not in out, (
+        "per-row summary line removed (Round 6 aggregate-only contract); "
+        "_row_summary emitted user-authored target/body text (Sol #7106)"
+    )
 
 
 def test_cli_surfaces_write_failure_as_warning(monkeypatch, capsys):
@@ -927,7 +934,7 @@ def test_cli_surfaces_write_failure_as_warning(monkeypatch, capsys):
         lambda row, dry_run=False: "error" if not dry_run else "dry",
     )
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-14"]
     )
     assert rc == 0
     out = capsys.readouterr().out
@@ -999,8 +1006,13 @@ def test_user_facing_strings_reject_translation_pending_for_weekly():
 
 def _patch_run(monkeypatch, *, artifact, target, client, subscriptions=None):
     monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: artifact)
+    rows = subscriptions if subscriptions is not None else [_sub()]
+    # Round 6 (h_7106_r6, Sol #7106 blocker 3): read_subscriptions now
+    # returns a typed ReadResult. Wrap the test rows in an ok-state
+    # ReadResult so the existing run()-shaped tests keep their shape.
     monkeypatch.setattr(
-        rb, "read_subscriptions", lambda cadence: subscriptions or [_sub()]
+        rb, "read_subscriptions",
+        lambda cadence: rb.ReadResult(state=rb.READ_STATE_OK, rows=tuple(rows)),
     )
     monkeypatch.setattr(rb, "read_target", lambda sub: target)
     monkeypatch.setattr(
@@ -1016,16 +1028,16 @@ def test_run_writes_one_ready_row(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 14),
     )
     assert result.subscription_n == 1
     assert result.ready_n == 1
     assert result.degraded_n == 0
-    assert result.slot == date(2026, 9, 13)
+    assert result.slot == date(2026, 9, 14)
     assert len(client.deliveries) == 1
     row = client.deliveries[0]
     assert row["state"] == "ready"
-    assert row["slot_asof"] == "2026-09-13"
+    assert row["slot_asof"] == "2026-09-14"
     assert row["subscription_id"] == SUB_ID
     assert row["degraded_reason"] is None
 
@@ -1033,8 +1045,8 @@ def test_run_writes_one_ready_row(monkeypatch):
 def test_idempotent_second_run_writes_nothing(monkeypatch):
     client = FakeClient()
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
-    r1 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 13))
-    r2 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 13))
+    r1 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 14))
+    r2 = rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 14))
     assert r1.ready_n == 1
     assert len(client.deliveries) == 1
     assert client.insert_calls == 2
@@ -1074,11 +1086,11 @@ def test_missing_artifact_writes_degraded_for_todays_slot_not_a_skip(monkeypatch
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 14),
     )
     assert result.degraded_n == 1
     assert len(client.deliveries) == 1
-    assert client.deliveries[0]["slot_asof"] == "2026-09-13"
+    assert client.deliveries[0]["slot_asof"] == "2026-09-14"
 
 
 def test_unavailable_target_writes_degraded_target_unavailable(monkeypatch):
@@ -1087,7 +1099,7 @@ def test_unavailable_target_writes_degraded_target_unavailable(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 14),
     )
     assert result.degraded_n == 1
     assert client.deliveries[0]["degraded_reason"] == "target unavailable"
@@ -1099,7 +1111,7 @@ def test_dry_run_writes_nothing(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=True,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 14),
     )
     assert result.ready_n == 1
     assert result.planned_n == 1
@@ -1121,7 +1133,7 @@ def test_paused_subscription_is_not_written(monkeypatch):
     result = rb.run(
         cadence="daily_after_us_close",
         dry_run=False,
-        run_date=date(2026, 9, 13),
+        run_date=date(2026, 9, 14),
     )
     assert result.subscription_n == 0
     assert client.deliveries == []
@@ -1131,10 +1143,10 @@ def test_run_does_not_backfill_yesterday(monkeypatch):
     client = FakeClient()
     _patch_run(monkeypatch, artifact=_briefing(as_of="2026-09-13"),
                target=_thesis_target(), client=client)
-    rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 13))
+    rb.run(cadence="daily_after_us_close", dry_run=False, run_date=date(2026, 9, 14))
     slots = {r["slot_asof"] for r in client.deliveries}
-    assert slots == {"2026-09-13"}
-    assert "2026-09-12" not in slots
+    assert slots == {"2026-09-14"}
+    assert "2026-09-13" not in slots
 
 
 def test_write_delivery_uses_on_conflict_do_nothing():
@@ -1162,7 +1174,7 @@ def test_cli_prints_r6_line_and_notice_at_line_start(monkeypatch, capsys):
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
     monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-14"]
     )
     assert rc == 0
     out = capsys.readouterr().out
@@ -1175,7 +1187,7 @@ def test_cli_prints_r6_line_and_notice_at_line_start(monkeypatch, capsys):
     assert "1 subscriptions" in summary[0]
     assert "1 ready" in summary[0]
     assert "0 degraded" in summary[0]
-    assert "slot 2026-09-13" in summary[0]
+    assert "slot 2026-09-14" in summary[0]
     notices = [ln for ln in lines if ln.startswith("::notice")]
     assert notices, "expected a ::notice line at the start of some output line"
     assert "recurring briefs:" in notices[0]
@@ -1186,7 +1198,7 @@ def test_cli_dormant_without_enable_flag_writes_nothing(monkeypatch, capsys):
     _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client)
     monkeypatch.delenv("RECURRING_BRIEFS_ENABLE", raising=False)
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-14"]
     )
     assert rc == 0
     assert client.deliveries == []
@@ -1205,7 +1217,7 @@ def test_cli_dry_run_flag_writes_nothing_even_when_enabled(monkeypatch, capsys):
             "daily_after_us_close",
             "--dry-run",
             "--run-date",
-            "2026-09-13",
+            "2026-09-14",
         ]
     )
     assert rc == 0
@@ -1218,7 +1230,7 @@ def test_cli_always_exits_zero_without_credentials(monkeypatch, capsys):
     monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "")
     monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
     rc = entry.main(
-        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-13"]
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-14"]
     )
     assert rc == 0
     out = capsys.readouterr().out
@@ -1320,3 +1332,463 @@ def test_cli_dormant_reads_nothing_and_prints_no_user_text(monkeypatch, capsys):
     assert "no subscription read" in out
     assert private not in out
     assert "planned" not in out
+
+
+# ---------------------------------------------------------------- Round 6 (h_7106_r6)
+# Objective 1 (aggregate-only diagnostics): _row_summary emitted the
+# subscription's user-authored target name and market_read[0].sentence_en
+# into stdout/stderr. Sol #7106 review (2026-09-19, REQUEST_CHANGES blocker
+# 1): workflow logs must never carry user target/body text. The CLI now
+# prints aggregate counts only (subscriptions, ready, degraded, planned,
+# duplicate, error + slot). NO per-row summary line.
+
+
+PRIVATE_TARGET_NAME = "PRIVATE THESIS: acquisition target 7f3a9c"
+PRIVATE_BODY_SENTENCE = "PRIVATE BODY: do not log this — thesis 7f3a9c"
+
+
+def test_row_summary_function_is_gone():
+    """Objective 1 (RED-first): the per-row _row_summary printer no longer
+    exists — it leaked the subscription's user-authored target name and the
+    first market_read sentence into stdout/stderr.
+    """
+    src = Path(entry.__file__).read_text(encoding="utf-8")
+    assert "def _row_summary" not in src, (
+        "_row_summary must be removed: it printed user-authored target name "
+        "and market_read[0] head into workflow logs (Sol #7106 blocker 1)"
+    )
+
+
+def test_cli_dry_run_emits_no_user_text(monkeypatch, capsys):
+    """Objective 1 RED-first: subscription with PRIVATE target/body strings,
+    run through the enabled dry-run CLI — neither string appears in
+    captured stdout OR stderr.
+    """
+    private_target = dict(_thesis_target(name=PRIVATE_TARGET_NAME))
+    # Inject a body.market_read[0].sentence_en = PRIVATE so a per-row
+    # printer would leak it. The artifact's prose also carries the body
+    # through compose_body -> planned_rows. We monkeypatch the body itself
+    # so the printed body field would carry the private string if any
+    # printer surfaced it.
+    client = FakeClient()
+    _patch_run(monkeypatch, artifact=_briefing(), target=private_target, client=client)
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    rc = entry.main(
+        [
+            "--cadence",
+            "daily_after_us_close",
+            "--dry-run",
+            "--run-date",
+            "2026-09-13",
+        ]
+    )
+    assert rc == 0
+    captured = capsys.readouterr()
+    combined = (captured.out or "") + "\n" + (captured.err or "")
+    assert PRIVATE_TARGET_NAME not in combined, (
+        f"private target name leaked into CLI output: {combined!r}"
+    )
+    assert PRIVATE_BODY_SENTENCE not in combined, (
+        f"private body sentence leaked into CLI output: {combined!r}"
+    )
+
+
+def test_engine_run_planned_rows_body_still_carries_user_text(monkeypatch):
+    """Objective 1 negative control: the engine still composes a body that
+    contains the private target name (that's how the brief is delivered to
+    the user's inbox). The fix is in the CLI's DRY-RUN PRINTER, not in the
+    body itself. This test pins the body field's content so we never
+    accidentally regress the body.
+    """
+    private_target = dict(_thesis_target(name=PRIVATE_TARGET_NAME))
+    client = FakeClient()
+    _patch_run(monkeypatch, artifact=_briefing(), target=private_target, client=client)
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=True,
+        run_date=date(2026, 9, 14),
+    )
+    assert result.planned_n == 1
+    assert len(result.planned_rows) == 1
+    row = result.planned_rows[0]
+    # The body field legitimately carries the user-authored name (that's
+    # how the brief delivery row identifies its target). Only the CLI's
+    # stdout/stderr must avoid it.
+    assert row["body"]["target"]["name"] == PRIVATE_TARGET_NAME
+
+
+# ---------------------------------------------------------------- Round 6 (h_7106_r6)
+# Objective 2 (NYSE-session gate): run() used to call read_subscriptions for
+# every daily workflow run regardless of run_date. The owner workflow runs
+# seven days a week, so daily_after_us_close created Saturday / Sunday /
+# NYSE-holiday slots that had no US close — and the workflow then read
+# subscriptions and tried to write a degraded row for a "session" the
+# exchange never held. The gate short-circuits read_subscriptions and the
+# subscription loop entirely when is_session(run_date) is False for the
+# daily cadence. weekly_saturday's behaviour is unchanged.
+
+
+NON_SESSION_DAILY_DATES = [
+    date(2026, 9, 19),  # Saturday
+    date(2026, 9, 20),  # Sunday
+    date(2026, 9, 7),   # Labor Day (NYSE holiday)
+]
+SESSION_DAILY_DATES = [
+    date(2026, 9, 18),  # Friday — normal session
+]
+
+
+@pytest.mark.parametrize("non_session_date", NON_SESSION_DAILY_DATES)
+def test_daily_run_on_non_session_date_skips_reads(monkeypatch, non_session_date):
+    """Objective 2 RED-first: daily_after_us_close on a Saturday, Sunday,
+    or NYSE-holiday run_date MUST NOT call read_subscriptions and MUST NOT
+    plan/write any rows. is_session(run_date) is the gate.
+    """
+    from lib import nyse_calendar
+
+    assert not nyse_calendar.is_session(non_session_date), (
+        f"test fixture broken: {non_session_date} is unexpectedly a session"
+    )
+
+    def _must_not_read(*a, **k):
+        raise AssertionError(
+            f"daily_after_us_close on non-session {non_session_date} must "
+            "NOT call read_subscriptions — gate it with is_session(run_date)"
+        )
+
+    def _must_not_write_target(*a, **k):
+        raise AssertionError(
+            f"daily_after_us_close on non-session {non_session_date} must "
+            "NOT call read_target — gate it with is_session(run_date)"
+        )
+
+    monkeypatch.setattr(rb, "read_subscriptions", _must_not_read)
+    monkeypatch.setattr(rb, "read_target", _must_not_write_target)
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: None)
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=non_session_date,
+    )
+    assert result.subscription_n == 0
+    assert result.ready_n == 0
+    assert result.degraded_n == 0
+    assert result.planned_n == 0
+    assert result.duplicate_n == 0
+    assert result.error_n == 0
+    assert result.slot == non_session_date
+    assert len(result.planned_rows) == 0
+    # The typed non-session marker (read by callers; the CLI summary line
+    # surfaces the 0 counts which is the visible "no-op" signal).
+    assert getattr(result, "non_session", False) is True
+
+
+@pytest.mark.parametrize("session_date", SESSION_DAILY_DATES)
+def test_daily_run_on_normal_session_still_reads(monkeypatch, session_date):
+    """Objective 2 control: a normal-session Friday still reads, plans,
+    and writes one row. This is the non-regression pin.
+    """
+    from lib import nyse_calendar
+
+    assert nyse_calendar.is_session(session_date), (
+        f"test fixture broken: {session_date} is unexpectedly a non-session"
+    )
+
+    client = FakeClient()
+    _patch_run(
+        monkeypatch,
+        artifact=_briefing(as_of=session_date.isoformat()),
+        target=_thesis_target(),
+        client=client,
+    )
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=session_date,
+    )
+    assert result.subscription_n == 1
+    assert result.ready_n == 1
+    assert result.planned_n == 1
+    assert len(client.deliveries) == 1
+    assert getattr(result, "non_session", False) is False
+
+
+def test_daily_run_on_non_session_does_not_call_read_subscriptions(monkeypatch):
+    """Objective 2 RED-first (call counter): read_subscriptions MUST be
+    called ZERO times when run_date is non-session. Pinned with a counter
+    so a partial fix (read_subscriptions called but result discarded)
+    still fails.
+    """
+    calls = {"n": 0}
+
+    def _counter(cadence):
+        calls["n"] += 1
+        return []
+
+    monkeypatch.setattr(rb, "read_subscriptions", _counter)
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: None)
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    for non_session_date in NON_SESSION_DAILY_DATES:
+        calls["n"] = 0
+        rb.run(
+            cadence="daily_after_us_close",
+            dry_run=False,
+            run_date=non_session_date,
+        )
+        assert calls["n"] == 0, (
+            f"read_subscriptions called {calls['n']} time(s) on non-session "
+            f"{non_session_date}; expected 0"
+        )
+
+
+def test_weekly_saturday_ignores_nyse_session_gate(monkeypatch):
+    """Objective 2 pin: weekly_saturday behaviour is UNCHANGED — the
+    Saturday cadence has its own slot semantics and the NYSE-session gate
+    is a daily_after_us_close-only rule. A Saturday run with a fresh
+    weekly artifact still reads, plans, writes.
+    """
+    client = FakeClient()
+    sat = date(2026, 9, 19)  # a Saturday
+    artifact = {
+        "schema": "master_brief.v2",
+        "generated_at": "2026-09-19T14:10:00+00:00",
+        "state_asof": "2026-09-18",
+        "tldr": ["Weekly read."],
+    }
+    weekly_sub = _sub(cadence="weekly_saturday", run_date=sat.isoformat())
+    _patch_run(
+        monkeypatch,
+        artifact=artifact,
+        target=_watchlist_target(),
+        client=client,
+        subscriptions=[weekly_sub],
+    )
+    result = rb.run(
+        cadence="weekly_saturday",
+        dry_run=False,
+        run_date=sat,
+    )
+    assert result.subscription_n == 1
+    assert result.ready_n == 1
+    assert result.planned_n == 1
+    assert len(client.deliveries) == 1
+    assert getattr(result, "non_session", False) is False
+
+
+# ---------------------------------------------------------------- Round 6 (h_7106_r6)
+# Objective 3 (typed read state): read_subscriptions used to return `[]`
+# for ANY failure (missing SUPABASE_SERVICE_ROLE_KEY, HTTP error, any
+# other exception), so run() reported a calm zero — same shape as a
+# legitimate empty list. The Sol #7106 review (2026-09-19, REQUEST_CHANGES
+# blocker 3) requires a typed read result: rows + a state token
+# (ok / missing_credentials / http_error / error). run() on a non-ok state
+# reads zero target objects, writes nothing, and surfaces a non-calm
+# outcome. The CLI mirrors H8 with a ::warning line.
+# Healthy empty (state="ok" + rows=[]) stays a quiet zero with NO warning.
+
+
+def _ok_read_result(rows=()):
+    """Build an ok-state ReadResult for fixture wiring."""
+    return rb.ReadResult(state=rb.READ_STATE_OK, rows=tuple(rows))
+
+
+def test_read_subscriptions_returns_read_result_with_state_ok_when_credentials_present(monkeypatch):
+    """Objective 3 RED-first: read_subscriptions now returns a typed
+    ReadResult — state="ok" + rows when credentials are present and the
+    service responds.
+    """
+    class _FakeResp:
+        def __init__(self, body):
+            self._body = body
+
+        def read(self):
+            return json.dumps(self._body).encode("utf-8")
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    monkeypatch.setattr(rb, "_pg", lambda method, path, **k: [_sub()])
+    out = rb.read_subscriptions("daily_after_us_close")
+    assert isinstance(out, rb.ReadResult), (
+        f"read_subscriptions must return ReadResult; got {type(out).__name__}"
+    )
+    assert out.state == rb.READ_STATE_OK
+    assert len(out.rows) == 1
+
+
+def test_read_subscriptions_missing_credentials_returns_missing_credentials_state(monkeypatch):
+    """Objective 3: missing SUPABASE_SERVICE_ROLE_KEY returns a typed
+    `missing_credentials` state — NOT a silent [].
+    """
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "")
+    out = rb.read_subscriptions("daily_after_us_close")
+    assert isinstance(out, rb.ReadResult)
+    assert out.state == rb.READ_STATE_MISSING_CREDENTIALS
+    assert out.rows == ()
+
+
+def test_read_subscriptions_http_error_returns_http_error_state(monkeypatch):
+    """Objective 3: an HTTPError from the Supabase GET returns a typed
+    `http_error` state — NOT a silent [].
+    """
+    import urllib.error
+
+    def _http_error(*a, **k):
+        raise urllib.error.HTTPError(url="x", code=500, msg="Server Error", hdrs={}, fp=None)
+
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    monkeypatch.setattr(rb, "_pg", _http_error)
+    out = rb.read_subscriptions("daily_after_us_close")
+    assert isinstance(out, rb.ReadResult)
+    assert out.state == rb.READ_STATE_HTTP_ERROR
+    assert out.rows == ()
+
+
+def test_read_subscriptions_unexpected_exception_returns_error_state(monkeypatch):
+    """Objective 3: an unexpected exception returns a typed `error` state —
+    NOT a silent [].
+    """
+    def _boom(*a, **k):
+        raise RuntimeError("kaboom")
+
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+    monkeypatch.setattr(rb, "_pg", _boom)
+    out = rb.read_subscriptions("daily_after_us_close")
+    assert isinstance(out, rb.ReadResult)
+    assert out.state == rb.READ_STATE_ERROR
+    assert out.rows == ()
+
+
+def test_run_on_read_unavailable_writes_nothing_and_marks_non_calm(monkeypatch):
+    """Objective 3 RED-first: run() on a non-ok read state reads zero
+    target objects, plans zero rows, writes zero rows, and exposes the
+    typed state on the result so the CLI can emit the ::warning.
+    """
+    def _must_not_target(*a, **k):
+        raise AssertionError(
+            "run() must NOT call read_target when read state is non-ok — "
+            "the typed ReadResult tells the caller the read failed"
+        )
+
+    monkeypatch.setattr(rb, "read_target", _must_not_target)
+    monkeypatch.setattr(
+        rb, "read_subscriptions",
+        lambda cadence: rb.ReadResult(
+            state=rb.READ_STATE_MISSING_CREDENTIALS, rows=(),
+        ),
+    )
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: _briefing())
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "")
+    monkeypatch.setattr(rb, "write_delivery", lambda row, dry_run=False: "inserted")
+
+    client = FakeClient()
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 14),
+    )
+    assert result.read_state == rb.READ_STATE_MISSING_CREDENTIALS
+    assert result.subscription_n == 0
+    assert result.ready_n == 0
+    assert result.degraded_n == 0
+    assert result.planned_n == 0
+    assert result.duplicate_n == 0
+    assert result.error_n == 0
+    assert len(result.planned_rows) == 0
+    assert client.deliveries == []
+    assert client.insert_calls == 0
+    # Non-calm pin: callers can branch on read_state != READ_STATE_OK.
+    assert getattr(result, "non_calm", False) is True
+
+
+def test_run_on_http_error_read_does_not_target_or_write(monkeypatch):
+    """Objective 3 control: same guarantee for HTTP-error reads."""
+    monkeypatch.setattr(rb, "read_target", lambda sub: (_ for _ in ()).throw(
+        AssertionError("read_target must not be called on http_error read")
+    ))
+    monkeypatch.setattr(
+        rb, "read_subscriptions",
+        lambda cadence: rb.ReadResult(state=rb.READ_STATE_HTTP_ERROR, rows=()),
+    )
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: _briefing())
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 14),
+    )
+    assert result.read_state == rb.READ_STATE_HTTP_ERROR
+    assert result.subscription_n == 0
+    assert result.planned_n == 0
+    assert getattr(result, "non_calm", False) is True
+
+
+def test_run_on_empty_ok_read_stays_calm_quiet(monkeypatch):
+    """Objective 3 control: state="ok" + rows=() is the LEGITIMATE healthy
+    empty case — must stay a quiet zero with NO warning. This is the
+    pre-existing behavior and the regression pin.
+    """
+    client = FakeClient()
+    _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(), client=client,
+               subscriptions=[])
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 14),
+    )
+    assert result.read_state == rb.READ_STATE_OK
+    assert result.subscription_n == 0
+    assert result.ready_n == 0
+    assert result.degraded_n == 0
+    assert result.planned_n == 0
+    assert client.deliveries == []
+    assert getattr(result, "non_calm", False) is False
+
+
+def test_cli_emits_read_unavailable_warning_on_non_ok_state(monkeypatch, capsys):
+    """Objective 3: CLI mirrors H8 — a non-ok read state emits a
+    `::warning title=recurring-briefs-read-unavailable::` line so the
+    workflow's `|| echo "::warning::…"` can fire. Healthy empty stays
+    quiet (no warning).
+    """
+    monkeypatch.setattr(
+        rb, "read_subscriptions",
+        lambda cadence: rb.ReadResult(
+            state=rb.READ_STATE_MISSING_CREDENTIALS, rows=(),
+        ),
+    )
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: None)
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "")
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    rc = entry.main(
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-14"]
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "::warning title=recurring-briefs-read-unavailable::" in out
+    assert "missing_credentials" in out or "read state" in out
+
+
+def test_cli_does_not_warn_on_healthy_empty_ok_read(monkeypatch, capsys):
+    """Objective 3 control: state="ok" + rows=() is the LEGITIMATE empty
+    case — no ::warning, the summary line is a quiet zero.
+    """
+    _patch_run(monkeypatch, artifact=_briefing(), target=_thesis_target(),
+               client=FakeClient(), subscriptions=[])
+    monkeypatch.setenv("RECURRING_BRIEFS_ENABLE", "1")
+    rc = entry.main(
+        ["--cadence", "daily_after_us_close", "--run-date", "2026-09-14"]
+    )
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "::warning title=recurring-briefs-read-unavailable::" not in out
+    assert "0 subscriptions" in out
+    assert "0 ready" in out
