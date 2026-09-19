@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T18:11:42.463068+00:00",
-  "count": 2445,
+  "generated_at": "2026-09-19T19:02:03.557534+00:00",
+  "count": 2448,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1297,6 +1297,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-kycwj2s3va2-5e7d97",
+      "title": "The Flow Show Peaks and shovels",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:07Z",
+      "summary_points": [
+        "Fed's communication shift: FOMC statement word count peaks at 130 words (2026), signaling \"terse\" Fed tone since 2007; Bull & Bear Indicator at 9.5 (peak) implies market top risk.",
+        "Critical flow crises: $75.9bn cash outflow (biggest 9 weeks) offsets equity inflows; IG bond flows hit first outflow since Apr'26 ($1.0bn), signaling fixed income stress.",
+        "BofA contrarian signals: Bull & Bear Indicator at 9.5 (sell signal, 1-3 months duration); FMS Cash Indicator at 3.9% (sell signal), indicating overvaluation and risk-off sentiment.",
+        "Private client rotation: 66.1% equity allocation (down from 66% in Oct'21), selling staples/healthcare/energy ETFs; buying IG bonds, munis, TIPS amid defensive shift."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-copfcklgtjg-fa8301",
       "title": "US Economic Weekly Kevin Warsh and the parable of the Chinese farmer",
       "institution": "Bank of America",
@@ -1474,6 +1494,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rl6jlrqnyrb-6a6f44",
+      "title": "Euro Area Data Update Softer Italian Construction and Services Data in July",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:47Z",
+      "summary_points": [
+        "Italy's GDP Tracking Downgraded: Construction production -1.4% mom and services trade balance -6.2% mom (travel exports) reduced Q3 GDP tracking to 0.11% qoq (vs 0.19% previously), signaling weakening domestic investment.",
+        "Inflation Expectations Rising: ECB 1-year ahead inflation expectations at 3.0% (vs 2.5% in Feb), trending toward 3.5% by May 2026, heightening near-term policy tightening concerns.",
+        "Structural Trade Deficit Vulnerability: Persistent negative Italian services trade balance (Exhibit 2) indicates structural deficits and heightened exposure to external shocks.",
+        "Italy Construction Lagging Euro Area: Italy's construction production now lags Euro Area (Exhibit 2), contrasting with Euro Area real GDP growth tracking at +0.20% qq, signaling domestic economic divergence."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-obzj8i3dxbd-74f437",
+      "title": "China Continued augmented fiscal deficit narrowing in August suggests fiscal tightening has yet to reverse",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:43Z",
+      "summary_points": [
+        "Fiscal Tightening Continues: Augmented fiscal deficit narrowed to -6.9% of GDP (3mma) in August (vs -7.4% July), with on-budget revenue growth slowing to +4.7% yoy (from +11.7% July) and expenditure growth easing to -0.1% yoy (from +0.5% July), confirming persistent fiscal tightening.",
+        "Property Sector Downturn Accelerates: Land sales revenue forecast to fall 30% yoy amid policy shifts (e.g., completed-home sales model), straining developer cash flows and prolonging sector downturn beyond market expectations.",
+        "GDP Growth Revised Downward: Q3 real GDP growth forecast reduced to 4.4% (from 4.6%), with year-to-date growth slowing to ~4.5%, driven by fiscal drag and cautious policy magnitude despite high-tech sector focus.",
+        "Fiscal Drag Risk to 2026 AFD: Downside risk to 2026 augmented fiscal deficit forecast (11.5% of GDP) due to fiscal drag, consumption vs. high-tech policy bias, and accelerating government bond issuance (RMB800bn)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
