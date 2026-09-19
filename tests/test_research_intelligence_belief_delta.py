@@ -223,6 +223,12 @@ def test_rights_safe_summary_contains_counts_not_private_text():
     assert projected["removed_claims"] == 1
     assert projected["changed_categories"] == ["forecasts"]
     assert projected["text_visibility"] == "metadata_only"
+    assert len(projected["institution_sha256"]) == 64
+    assert len(projected["previous_document_id_sha256"]) == 64
+    assert len(projected["current_document_id_sha256"]) == 64
+    assert "Fixture Research" not in serialized
+    assert previous["document"]["id"] not in serialized
+    assert current["document"]["id"] not in serialized
     assert PRIOR_CLAIM not in serialized
     assert CURRENT_CLAIM not in serialized
 
@@ -236,3 +242,15 @@ def test_private_delta_writer_forces_owner_only_permissions(tmp_path):
     assert stat.S_IMODE(target.stat().st_mode) == 0o600
     loaded = json.loads(target.read_text(encoding="utf-8"))
     assert loaded["schema"] == SCHEMA
+
+
+def test_rights_safe_summary_refuses_forged_text_channel():
+    previous, current = _pair()
+    delta = compare_institutional_rio(previous, current)
+    delta["changed_categories"] = [PRIOR_CLAIM]
+    try:
+        summary(delta)
+    except ValueError as exc:
+        assert "changed_categories" in str(exc)
+    else:
+        raise AssertionError("summary must reject caller-controlled text channels")
