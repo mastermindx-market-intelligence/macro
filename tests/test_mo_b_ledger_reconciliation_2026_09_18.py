@@ -1,264 +1,588 @@
-"""
-test_mo_b_ledger_reconciliation_2026_09_18
+"""Single-writer regression for MarketOntology F00C convergence (2026-09-19).
 
-Pin test: RED against origin/main CSV, GREEN after this PR.
-Run against HEAD (workspace CSV) to verify post-state.
-Run against git show origin/main:<csv> to confirm RED on main.
-
-Acceptance gate:
-  python3 -m pytest tests/test_mo_b_ledger_reconciliation_2026_09_18.py -q -p no:cacheprovider
+This is the existing #7335 records test widened to cover the one canonical
+80-row integration.  It intentionally does not create a second ledger/control
+plane: the CSV remains the source of truth and this file only pins its accepted
+state/closure boundaries.
 """
 
 import csv
-import os
-import pytest
+import hashlib
+import json
+from pathlib import Path
 
-CSV_PATH = os.environ.get(
-    "CSV_PATH",
-    "research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv",
-)
-ORIGIN_MAIN_SHA = "0dbc87292d2728e891c4a72288ff5f58f02149fe"
+CSV_PATH = Path("research/market_intelligence_productization/MARKET_ONTOLOGY_F00C_GRANULAR_CLOSURE_LEDGER_2026-09-02.csv")
+MANIFEST_PATH = Path("research/market_intelligence_productization/F00C_TERMINAL_WAVE_RECONCILIATION_MANIFEST_2026-09-09.json")
+INTEGRATION_BASE_SHA = "a3c8e9a29d77e5d92600522a78c3b3b4a23d0d04"
+OUTSIDE_UNION_SHA256 = "b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d"
+CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
+
+UNION_ROWS = set([
+  "MO-DELTA-001",
+  "MO-DELTA-002",
+  "MO-DELTA-003",
+  "MO-DELTA-004",
+  "MO-DELTA-005",
+  "MO-DELTA-006",
+  "MO-DELTA-007",
+  "MO-DELTA-008",
+  "MO-DELTA-009",
+  "MO-DELTA-010",
+  "MO-DELTA-011",
+  "MO-DELTA-012",
+  "MO-DELTA-014",
+  "MO-DELTA-015",
+  "MO-DELTA-016",
+  "MO-DELTA-017",
+  "MO-DELTA-019",
+  "MO-DELTA-021",
+  "MO-DELTA-023",
+  "MO-DELTA-026",
+  "MO-DELTA-029",
+  "MO-DELTA-031",
+  "MO-DELTA-032",
+  "MO-DELTA-033",
+  "MO-DELTA-034",
+  "MO-DELTA-035",
+  "MO-DELTA-040",
+  "MO-DELTA-042",
+  "MO-PAID-001",
+  "MO-PAID-002",
+  "MO-PAID-003",
+  "MO-PAID-004",
+  "MO-PAID-005",
+  "MO-PAID-006",
+  "MO-PAID-007",
+  "MO-PAID-008",
+  "MO-PAID-010",
+  "MO-PAID-012",
+  "MO-PAID-013",
+  "MO-PAID-014",
+  "MO-PAID-015",
+  "MO-PAID-016",
+  "MO-PAID-017",
+  "MO-PAID-019",
+  "MO-PAID-020",
+  "MO-PAID-021",
+  "MO-PAID-023",
+  "MO-PAID-025",
+  "MO-PAID-027",
+  "MO-PAID-028",
+  "MO-PAID-032",
+  "MO-PAID-034",
+  "MO-PAID-035",
+  "MO-PAID-036",
+  "MO-PAID-037",
+  "MO-PAID-039",
+  "MO-PAID-046",
+  "MO-PAID-047",
+  "MO-PAID-051",
+  "MO-PAID-053",
+  "MO-PAID-054",
+  "MO-PAID-057",
+  "MO-PAID-058",
+  "MO-PAID-059",
+  "MO-PAID-060",
+  "MO-PAID-064",
+  "MO-PAID-067",
+  "MO-PAID-069",
+  "MO-PAID-070",
+  "MO-PAID-073",
+  "MO-PAID-074",
+  "MO-PAID-075",
+  "MO-PAID-076",
+  "MO-PAID-077",
+  "MO-PAID-078",
+  "MO-PAID-082",
+  "MO-PAID-083",
+  "MO-PAID-085",
+  "MO-PAID-086",
+  "MO-PAID-088"
+])
+EXPECTED = {
+  "MO-DELTA-008": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-DELTA-010": [
+    "EXACT_EQUIVALENT",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-012": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-001": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-002": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-003": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-004": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-005": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-025": [
+    "NEW_BOUNDED_BUILD",
+    "NOT_BUILT"
+  ],
+  "MO-DELTA-031": [
+    "NEW_BOUNDED_BUILD",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-032": [
+    "NEW_BOUNDED_BUILD",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-006": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-007": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-008": [
+    "NEW_BOUNDED_BUILD",
+    "PARTIAL"
+  ],
+  "MO-PAID-023": [
+    "UPGRADE_EXISTING_OWNER",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-034": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-033": [
+    "NEW_BOUNDED_BUILD",
+    "SPEC_ONLY"
+  ],
+  "MO-DELTA-034": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-DELTA-035": [
+    "UPGRADE_EXISTING_OWNER",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-010": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-012": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-013": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-014": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-015": [
+    "UPGRADE_EXISTING_OWNER",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-070": [
+    "NEW_BOUNDED_BUILD",
+    "SPEC_ONLY"
+  ],
+  "MO-PAID-073": [
+    "EXACT_EQUIVALENT",
+    "PARTIAL"
+  ],
+  "MO-PAID-074": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-075": [
+    "UPGRADE_EXISTING_OWNER",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-076": [
+    "NEW_BOUNDED_BUILD",
+    "NOT_BUILT"
+  ],
+  "MO-PAID-077": [
+    "NEW_BOUNDED_BUILD",
+    "PARTIAL"
+  ],
+  "MO-DELTA-004": [
+    "PROJECTION_ONLY",
+    "PARTIAL"
+  ],
+  "MO-DELTA-005": [
+    "CONTEXT_ONLY",
+    "SPEC_ONLY"
+  ],
+  "MO-DELTA-006": [
+    "PROJECTION_ONLY",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-009": [
+    "PROJECTION_ONLY",
+    "PARTIAL"
+  ],
+  "MO-PAID-016": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-DELTA-001": [
+    "PROJECTION_ONLY",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-017": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-DELTA-002": [
+    "NEW_BOUNDED_BUILD",
+    "NOT_BUILT"
+  ],
+  "MO-PAID-020": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-021": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-017": [
+    "NEW_BOUNDED_BUILD",
+    "NOT_BUILT"
+  ],
+  "MO-PAID-035": [
+    "BLOCKED_RIGHTS",
+    "NOT_BUILT"
+  ],
+  "MO-PAID-037": [
+    "BLOCKED_RIGHTS",
+    "NOT_BUILT"
+  ],
+  "MO-DELTA-003": [
+    "CONTEXT_ONLY",
+    "PARTIAL"
+  ],
+  "MO-DELTA-014": [
+    "PROJECTION_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-DELTA-042": [
+    "PROJECTION_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-027": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-028": [
+    "PROJECTION_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-036": [
+    "PROJECTION_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-085": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-DELTA-019": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-021": [
+    "NEW_BOUNDED_BUILD",
+    "PARTIAL"
+  ],
+  "MO-DELTA-023": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-DELTA-026": [
+    "PROJECTION_ONLY",
+    "NOT_BUILT"
+  ],
+  "MO-DELTA-029": [
+    "NEW_BOUNDED_BUILD",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-019": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-059": [
+    "NEW_BOUNDED_BUILD",
+    "PARTIAL"
+  ],
+  "MO-PAID-060": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-064": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-067": [
+    "PROJECTION_ONLY",
+    "PROVEN_LIVE"
+  ],
+  "MO-PAID-069": [
+    "PROJECTION_ONLY",
+    "NOT_BUILT"
+  ],
+  "MO-DELTA-015": [
+    "CONTEXT_ONLY",
+    "PARTIAL"
+  ],
+  "MO-DELTA-016": [
+    "CONTEXT_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-039": [
+    "CONTEXT_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-032": [
+    "NEW_BOUNDED_BUILD",
+    "PARTIAL"
+  ],
+  "MO-PAID-046": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-047": [
+    "PROJECTION_ONLY",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-053": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-054": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-051": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-078": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-082": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-083": [
+    "NEW_BOUNDED_BUILD",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-086": [
+    "UPGRADE_EXISTING_OWNER",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-DELTA-007": [
+    "PROJECTION_ONLY",
+    "PARTIAL"
+  ],
+  "MO-DELTA-011": [
+    "PROJECTION_ONLY",
+    "PROVEN_LIVE"
+  ],
+  "MO-DELTA-040": [
+    "REJECTED_BY_DESIGN",
+    "NOT_BUILT"
+  ],
+  "MO-PAID-057": [
+    "UPGRADE_EXISTING_OWNER",
+    "PARTIAL"
+  ],
+  "MO-PAID-058": [
+    "UPGRADE_EXISTING_OWNER",
+    "BUILT_NOT_PROVEN"
+  ],
+  "MO-PAID-088": [
+    "UPGRADE_EXISTING_OWNER",
+    "PROVEN_LIVE"
+  ]
+}
+SOURCE_HEADS = {
+  "7011": "89a1be5fc111f703472820d47973ba6840b9ddea",
+  "7014": "9c2950d2bcd16dc790b47d655d43842e5ef69d92",
+  "7335": "074670d9789fc41b399f18ad5c35199afee12cc9",
+  "7340": "89eea5595fc7fd1e96a8bf052f041437585d83fe",
+  "7343": "a7b9f945e34c1de460874c47282370edefcfff37",
+  "7348": "d26cfaa41f15d81679b05fa9faa624c045d6f298",
+  "7349": "879ccef3c85f537955d177cb2ea1917437d1a7d8",
+  "7353": "4b7f7aa2ccd993bd71ccc4a4815ab34a94f46c6b"
+}
 
 
-def _read_csv(path):
-    with open(path, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+def _rows():
+    with CSV_PATH.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    return {r["id"]: r for r in rows}
 
 
-def _row_by_id(rows, id_):
-    for r in rows:
-        if r["id"] == id_:
-            return r
-    raise KeyError(id_)
+def _outside_digest():
+    raw = CSV_PATH.read_bytes().decode("utf-8").splitlines()
+    kept = []
+    for line in raw[1:]:
+        if not line:
+            continue
+        row_id = line.split(",", 1)[0]
+        if row_id not in UNION_ROWS:
+            kept.append(line)
+    return hashlib.sha256("\n".join(kept).encode("utf-8")).hexdigest()
 
 
-# ---------------------------------------------------------------------------
-# F07 — #7014
-# ---------------------------------------------------------------------------
-
-def test_mo_paid_035_BLOCKED_RIGHTS():
-    """MO-PAID-035 granular_disposition -> BLOCKED_RIGHTS per #7014."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-035")
-    assert r["granular_disposition"] == "BLOCKED_RIGHTS", (
-        f"expected BLOCKED_RIGHTS, got {r['granular_disposition']}"
-    )
-    assert r["capability_state_c2"] == "NOT_BUILT"
-    assert "BLOCKED_RIGHTS on a verified negative" in r["adjudication_notes"]
-    assert "macro#6905" in r["adjudication_notes"]
+def test_row_shape_vocabulary_and_union_size():
+    rows = _rows()
+    assert len(rows) == 130
+    assert len(UNION_ROWS) == 80
+    assert set(rows) >= UNION_ROWS
+    assert all(r["capability_state_c2"] in CAPABILITY_STATES for r in rows.values())
+    assert all(r["capability_state_c2"] != "DONE" for r in rows.values())
+    assert all(r["capability_state_c2"] != "BLOCKED_RIGHTS" for r in rows.values())
 
 
-def test_mo_paid_037_BLOCKED_RIGHTS():
-    """MO-PAID-037 granular_disposition -> BLOCKED_RIGHTS per #7014."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-037")
-    assert r["granular_disposition"] == "BLOCKED_RIGHTS"
-    assert r["capability_state_c2"] == "NOT_BUILT"
-    assert "inherits MO-PAID-035 BLOCKED_RIGHTS" in r["adjudication_notes"]
+def test_all_80_integration_rows_pin_disposition_and_capability():
+    rows = _rows()
+    assert set(EXPECTED) == UNION_ROWS
+    for row_id, (disp, cap) in EXPECTED.items():
+        r = rows[row_id]
+        assert r["granular_disposition"] == disp, (row_id, r["granular_disposition"], disp)
+        assert r["capability_state_c2"] == cap, (row_id, r["capability_state_c2"], cap)
 
 
-def test_mo_delta_040_text_unchanged():
-    """MO-DELTA-040: disposition/capability unchanged REJECTED_BY_DESIGN/NOT_BUILT per #7014; next_bounded_child has measured state."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-DELTA-040")
-    assert r["granular_disposition"] == "REJECTED_BY_DESIGN"
-    assert r["capability_state_c2"] == "NOT_BUILT"
-    # next_bounded_child must contain measured #6905/#6925 states per #7014 correction
-    nbc = r["next_bounded_child"]
-    assert "#6905 MERGED" in nbc, f"expected #6905 MERGED in next_bounded_child, got: {nbc[:80]}"
-    assert "#6925 CLOSED" in nbc, f"expected #6925 CLOSED in next_bounded_child, got: {nbc[:80]}"
+def test_other_50_rows_are_byte_identical_to_integration_baseline():
+    assert _outside_digest() == OUTSIDE_UNION_SHA256
 
 
-def test_mo_paid_057_next_bounded_child():
-    """MO-PAID-057: next_bounded_child updated with #6905/#6925 measured states per #7014 correction."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-057")
-    # disposition and capability unchanged
-    assert r["granular_disposition"] == "UPGRADE_EXISTING_OWNER"
-    assert r["capability_state_c2"] == "PARTIAL"
-    # next_bounded_child must contain measured #6905/#6925 states per #7014 correction
-    nbc = r["next_bounded_child"]
-    assert "#6905 MERGED" in nbc, f"expected #6905 MERGED in next_bounded_child, got: {nbc[:80]}"
-    assert "#6925 CLOSED" in nbc, f"expected #6925 CLOSED in next_bounded_child, got: {nbc[:80]}"
+def test_sol_adjudicated_closure_fields_are_not_stale():
+    r = _rows()
+
+    uk = r["MO-PAID-023"]
+    assert uk["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "gate_off" in (uk["state_delta"] + uk["missing_contract_or_proof"])
+    assert "#7351" in uk["missing_contract_or_proof"]
+
+    eu = r["MO-PAID-034"]
+    assert eu["capability_state_c2"] == "PROVEN_LIVE"
+    assert "qbus/items.parquet" in eu["real_consumer"]
+    assert "second event bus" in eu["next_bounded_child"]
+
+    matrix = r["MO-DELTA-029"]
+    assert matrix["capability_state_c2"] == "PROVEN_LIVE"
+    assert "matrix acceptance" in matrix["missing_contract_or_proof"]
+    assert "per-family" in matrix["next_bounded_child"]
+
+    support = r["MO-PAID-058"]
+    assert support["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "signed-in PRO" in support["missing_contract_or_proof"]
+    assert "second support" in support["next_bounded_child"]
+
+    glossary = r["MO-DELTA-011"]
+    assert glossary["capability_state_c2"] == "PROVEN_LIVE"
+    assert "NOT_BUILT" not in glossary["state_delta"]
+    assert glossary["missing_contract_or_proof"].startswith("none")
+
+    risk = r["MO-DELTA-014"]
+    assert risk["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "#578" in (risk["state_delta"] + risk["real_producer"])
+    assert "computed nowhere" not in risk["state_delta"]
+    assert "liquidity belongs to MO-PAID-036" in risk["next_bounded_child"]
+
+    thesis = r["MO-PAID-046"]
+    assert "previous_version" in thesis["acceptance_test"]
+    assert "amended_from" not in thesis["acceptance_test"]
+    assert "Do not add or restore amended_from" in thesis["adjudication_notes"]
+
+    alias = r["MO-DELTA-001"]
+    assert alias["capability_state_c2"] == "PROVEN_LIVE"
+    assert "out of sparse scope" not in alias["state_delta"]
+    assert "NOT_SERVED" in alias["state_delta"]
+
+    catalog = r["MO-DELTA-010"]
+    assert catalog["capability_state_c2"] == "PROVEN_LIVE"
+    assert "glossary" in catalog["real_consumer"].lower()
+    assert catalog["missing_contract_or_proof"].startswith("none")
+    assert "second indicators-catalog" in catalog["next_bounded_child"]
+
+    sanctions = r["MO-DELTA-031"]
+    assert sanctions["capability_state_c2"] == "PROVEN_LIVE"
+    assert sanctions["missing_contract_or_proof"].startswith("none for the accepted")
+    assert "NEW_BOUNDED_BUILD scoped to base map" not in sanctions["next_bounded_child"]
+
+    lifecycle = r["MO-DELTA-032"]
+    assert lifecycle["capability_state_c2"] == "PROVEN_LIVE"
+    joined = " ".join(lifecycle[k] for k in ("state_delta", "missing_contract_or_proof", "next_bounded_child"))
+    assert "SPEC_ONLY stands" not in joined
+    assert "still unexecuted" not in joined
+    assert "second tracker/store" in lifecycle["next_bounded_child"]
+
+    liquidity = r["MO-PAID-036"]
+    assert liquidity["capability_state_c2"] == "BUILT_NOT_PROVEN"
+    assert "wider metric suite named by MO-DELTA-014 is not shipped" not in liquidity["adjudication_notes"]
+    assert "liquidity thickness" in liquidity["missing_contract_or_proof"]
+
+    projection = r["MO-PAID-067"]
+    assert projection["capability_state_c2"] == "PROVEN_LIVE"
+    assert "capital_policy_projection.py" in projection["real_producer"]
+    assert "foresight_cascade not used" in projection["real_producer"]
+
+    help_row = r["MO-PAID-088"]
+    assert help_row["capability_state_c2"] == "PROVEN_LIVE"
+    assert help_row["missing_contract_or_proof"].startswith("none")
+
+    for row_id in ("MO-DELTA-019", "MO-PAID-060"):
+        assert r[row_id]["capability_state_c2"] == "PROVEN_LIVE"
+        assert "credit_window.py" in r[row_id]["real_producer"]
+
+    briefs = r["MO-PAID-032"]
+    assert briefs["capability_state_c2"] == "PARTIAL"
+    assert "subscription intake only" in briefs["real_producer"]
+    assert "cadence producer" in briefs["missing_contract_or_proof"]
+
+    f07 = r["MO-DELTA-017"]
+    assert f07["capability_state_c2"] == "NOT_BUILT"
+    assert "consensus half" in f07["state_delta"]
+    assert "BLOCKED_RIGHTS" in f07["state_delta"]
+    assert "FIF half" in f07["state_delta"]
+
+    for row_id in ("MO-PAID-007", "MO-PAID-020", "MO-PAID-021"):
+        assert r[row_id]["capability_state_c2"] == "PROVEN_LIVE"
+
+    theme_map = r["MO-DELTA-004"]
+    assert theme_map["capability_state_c2"] == "PARTIAL"
+    assert "no product surface" in theme_map["missing_contract_or_proof"].lower()
+
+    research_mode = r["MO-PAID-031"]
+    assert research_mode["capability_state_c2"] == "SPEC_ONLY"
 
 
-# ---------------------------------------------------------------------------
-# F06 — #7137
-# ---------------------------------------------------------------------------
-
-def test_mo_paid_020_BUILT_NOT_PROVEN():
-    """MO-PAID-020 capability -> BUILT_NOT_PROVEN per #7137; cites #7122 (OPEN/draft)."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-020")
-    assert r["capability_state_c2"] == "BUILT_NOT_PROVEN", (
-        f"expected BUILT_NOT_PROVEN, got {r['capability_state_c2']}"
-    )
-    assert "9c5445b9" in r["next_bounded_child"], "expected #7122 head in next_bounded_child"
-
-
-def test_mo_paid_021_BUILT_NOT_PROVEN():
-    """MO-PAID-021 capability -> BUILT_NOT_PROVEN per #7137."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-021")
-    assert r["capability_state_c2"] == "BUILT_NOT_PROVEN"
-
-
-def test_mo_delta_002_cites_7122():
-    """MO-DELTA-002 cites #7122 (OPEN/draft) in state_delta per #7137."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-DELTA-002")
-    assert "9c5445b9" in r["state_delta"], "expected #7122 head citation in state_delta"
-    assert r["capability_state_c2"] == "NOT_BUILT"
-
-
-# ---------------------------------------------------------------------------
-# F08 — #7138
-# ---------------------------------------------------------------------------
-
-def test_mo_delta_003_PARTIAL():
-    """MO-DELTA-003 capability_state_c2 -> PARTIAL per #7138 §LEDGER_MOVES #7 (role half absent)."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-DELTA-003")
-    assert r["capability_state_c2"] == "PARTIAL", (
-        f"expected PARTIAL, got {r['capability_state_c2']}"
-    )
-    assert r["granular_disposition"] == "CONTEXT_ONLY"
-
-
-def test_mo_delta_042_retains_invalidation_token():
-    """MO-DELTA-042 next_bounded_child retains literal token 'invalidation' per #7138."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-DELTA-042")
-    assert "invalidation" in r["next_bounded_child"], (
-        "literal token 'invalidation' must be retained in next_bounded_child"
-    )
-
-
-def test_mo_paid_027_refreshed_6906_merged():
-    """MO-PAID-027 state_delta notes #6906 MERGED; stays PARTIAL per #7138."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-027")
-    assert r["capability_state_c2"] == "PARTIAL", "MO-PAID-027 must stay PARTIAL"
-    assert "6906" in r["state_delta"] or "MERGED" in r["state_delta"]
-
-
-def test_mo_paid_085_capability_partial_with_715acf5f():
-    """MO-PAID-085 capability moves to PARTIAL; co-text cites #6907 and 715acf5f."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-085")
-    assert r["granular_disposition"] == "UPGRADE_EXISTING_OWNER"
-    assert r["capability_state_c2"] == "PARTIAL", (
-        f"expected PARTIAL, got {r['capability_state_c2']}"
-    )
-    assert "715acf5f" in r["state_delta"], (
-        "expected commit 715acf5f in state_delta"
-    )
-    assert "6907" in r["state_delta"] or "MERGED" in r["state_delta"]
-
-
-# ---------------------------------------------------------------------------
-# F13 — #7147
-# ---------------------------------------------------------------------------
-
-def test_mo_delta_007_SPEC_ONLY():
-    """MO-DELTA-007 capability_state_c2 -> SPEC_ONLY per #7147 §LEDGER_MOVES #32 (spec present; UserClaim absent)."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-DELTA-007")
-    assert r["capability_state_c2"] == "SPEC_ONLY", (
-        f"expected SPEC_ONLY, got {r['capability_state_c2']}"
-    )
-    assert r["granular_disposition"] == "PROJECTION_ONLY"
-
-
-def test_mo_delta_011_BUILT_NOT_PROVEN():
-    """MO-DELTA-011 capability_state_c2 -> BUILT_NOT_PROVEN per #7147 §LEDGER_MOVES #33 (glossary on main, not live)."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-DELTA-011")
-    assert r["capability_state_c2"] == "BUILT_NOT_PROVEN", (
-        f"expected BUILT_NOT_PROVEN, got {r['capability_state_c2']}"
-    )
-    assert r["granular_disposition"] == "PROJECTION_ONLY"
-
-
-def test_mo_paid_088_cites_7133():
-    """MO-PAID-088 next_bounded_child cites #7133 OPEN per #7147 §LEDGER_MOVES #35."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, "MO-PAID-088")
-    assert "7133" in r["next_bounded_child"], (
-        "expected #7133 citation in next_bounded_child"
-    )
-
-
-# ---------------------------------------------------------------------------
-# HOLD rows — pre-state preserved (verified against origin/main)
-# ---------------------------------------------------------------------------
-
-HOLD_ROWS = [
-    # origin/main values confirmed via git show origin/main:<csv>
-    ("MO-DELTA-017", "NEW_BOUNDED_BUILD", "NOT_BUILT"),
-    ("MO-DELTA-029", "NEW_BOUNDED_BUILD", "PARTIAL"),
-    ("MO-PAID-067", "PROJECTION_ONLY", "PARTIAL"),
-    ("MO-PAID-022", "NEW_BOUNDED_BUILD", "NOT_BUILT"),
-    ("MO-PAID-026", "NEW_BOUNDED_BUILD", "NOT_BUILT"),
-    ("MO-PAID-058", "UPGRADE_EXISTING_OWNER", "PARTIAL"),
-    ("MO-PAID-031", "NEW_BOUNDED_BUILD", "SPEC_ONLY"),
-    ("MO-PAID-032", "NEW_BOUNDED_BUILD", "SPEC_ONLY"),
-    ("MO-PAID-047", "PROJECTION_ONLY", "PARTIAL"),
-    ("MO-PAID-053", "NEW_BOUNDED_BUILD", "BUILT_NOT_PROVEN"),
-    ("MO-PAID-054", "UPGRADE_EXISTING_OWNER", "PARTIAL"),
-]
-
-
-@pytest.mark.parametrize("row_id,expected_disp,expected_cap", HOLD_ROWS)
-def test_hold_rows_preserved(row_id, expected_disp, expected_cap):
-    """HOLD rows must retain their pre-state (disposition + capability)."""
-    rows = _read_csv(CSV_PATH)
-    r = _row_by_id(rows, row_id)
-    assert r["granular_disposition"] == expected_disp, (
-        f"{row_id}: expected disp {expected_disp}, got {r['granular_disposition']}"
-    )
-    assert r["capability_state_c2"] == expected_cap, (
-        f"{row_id}: expected cap {expected_cap}, got {r['capability_state_c2']}"
-    )
-
-
-# ---------------------------------------------------------------------------
-# Row count unchanged
-# ---------------------------------------------------------------------------
-
-def test_row_count_130():
-    """Ledger must have exactly 130 data rows (header excluded)."""
-    rows = _read_csv(CSV_PATH)
-    assert len(rows) == 130, f"expected 130 rows, got {len(rows)}"
-
-
-# ---------------------------------------------------------------------------
-# No changed row promoted to DONE or PROVEN_LIVE
-# (origin/main already has PROVEN_LIVE in unchanged rows — check transitions)
-# ---------------------------------------------------------------------------
-
-def test_no_changed_row_to_done_or_proven_live():
-    """No row modified by THIS PR may have capability_state_c2 = DONE or PROVEN_LIVE."""
-    # Rows actually changed by this PR (from git diff origin/main HEAD -- <csv>)
-    changed_ids = {
-        "MO-PAID-035", "MO-PAID-037", "MO-DELTA-040", "MO-PAID-057",
-        "MO-PAID-020", "MO-PAID-021", "MO-DELTA-002",
-        "MO-DELTA-003", "MO-DELTA-042", "MO-PAID-027", "MO-PAID-085",
-        "MO-DELTA-007", "MO-DELTA-011", "MO-PAID-088",
-    }
-    rows = _read_csv(CSV_PATH)
-    bad = [
-        r["id"] for r in rows
-        if r["id"] in changed_ids and r["capability_state_c2"] in ("DONE", "PROVEN_LIVE")
-    ]
-    assert not bad, f"Changed rows promoted to DONE/PROVEN_LIVE: {bad}"
-
-
-def test_blocked_rights_not_in_capability():
-    """BLOCKED_RIGHTS is a granular_disposition value only; never a capability_state_c2."""
-    rows = _read_csv(CSV_PATH)
-    bad = [
-        r["id"] for r in rows
-        if r["capability_state_c2"] == "BLOCKED_RIGHTS"
-    ]
-    assert not bad, f"Rows with BLOCKED_RIGHTS as capability: {bad}"
+def test_manifest_names_the_single_writer_sources_and_union():
+    data = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    receipt = data["single_writer_convergence_2026_09_19"]
+    assert receipt["operation"] == "marketontology-f00c-single-writer-convergence-20260919-sol-001"
+    assert receipt["integration_base_sha"] == INTEGRATION_BASE_SHA
+    assert receipt["union_row_count"] == 80
+    assert set(receipt["union_row_ids"]) == UNION_ROWS
+    assert receipt["source_pr_heads"] == SOURCE_HEADS
+    assert receipt["outside_union_sha256"] == OUTSIDE_UNION_SHA256
+    assert receipt["csv_commit"] == "e6ea08107305a95b4eda41782c304206b1cb8439"
