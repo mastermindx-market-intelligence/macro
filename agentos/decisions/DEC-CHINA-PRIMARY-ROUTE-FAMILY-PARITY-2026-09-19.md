@@ -22,6 +22,10 @@ rationale: >
   rejected. The defect is release sequencing/family coherence, not the existence of the D
   archetype itself. Restoring the last accepted China template is the smallest reversible
   repair; retaining the archetype target avoids creating a rival product architecture.
+  The rollback is composition-scoped rather than byte-for-byte: orthogonal #7054 truth and
+  accessibility fixes (CNH/CGB Jinja namespace retention, USD/CNH quote-orientation copy,
+  D/W/M cell semantics, keyboard focus rings, robust light-mode aurora gating, and locale-safe
+  CNY/sentiment copy) remain carried forward so family parity does not reintroduce known defects.
 alternatives:
   - option: "Keep #7054 live and wait for HK/Canada/US to catch up"
     why_not: "Directly contradicts the Chairman's production correction and leaves the normal China route divergent in the meantime."
