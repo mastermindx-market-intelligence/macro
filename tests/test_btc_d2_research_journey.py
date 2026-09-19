@@ -236,6 +236,11 @@ def test_outcome_and_later_data_restatement_are_append_only_generations():
     assert projection["status"] == "matured"
     assert projection["outcome"]["down_hit"] is True
     assert projection["outcome"]["fwd_min_pct"] == -7.0
+    assert projection["outcome_evidence"]["result_consistent"] is True
+    assert projection["outcome_evidence"]["threshold_pct"] == -5.0
+    assert [row["close"] for row in projection["outcome_evidence"]["close_rows"]] == [
+        100.0, 98.0, 94.0, 93.0,
+    ]
 
     restated = matured.copy()
     restated.loc[entry + pd.Timedelta(days=1):, "close"] = [101.0, 102.0, 103.0]
@@ -293,6 +298,62 @@ def test_impulse_ledger_persists_and_grades_the_d2_journey_in_its_existing_row()
         assert LED.latest_d2_journey()["outcome_generation_id"] == projection["outcome_generation_id"]
     finally:
         LED._path = original_path
+
+
+def test_projection_fails_closed_when_hashed_outcome_conflicts_with_close_path():
+    d2, journey, entry, sig, _dvol = _capture_available(fired=True)
+    full = pd.concat([
+        sig,
+        pd.DataFrame(
+            {"close": [98.0, 94.0, 93.0]},
+            index=[entry + pd.Timedelta(days=i) for i in (1, 2, 3)],
+        ),
+    ])
+    assert d2.mature_outcome(journey, full, recorded_at="2026-09-21T05:00:00Z")
+    source = copy.deepcopy(journey["generations"][0])
+    semantic = copy.deepcopy(journey["generations"][1]["semantic"])
+    semantic["result"]["fwd_min_pct"] = -1.0
+    inconsistent = d2.new_journey()
+    assert d2.append_generation(inconsistent, source)
+    assert d2.append_generation(
+        inconsistent,
+        d2.make_generation("outcome", semantic, recorded_at="2026-09-21T05:00:00Z"),
+    )
+    projection = d2.project(inconsistent)
+    assert projection["status"] == "unavailable"
+    assert projection["outcome"] is None
+    assert projection["reason"] == "outcome_evaluator_mismatch"
+    assert projection["outcome_evidence"]["result_consistent"] is False
+    assert projection["fired"] is True
+    assert projection["trading_authority"] is False
+
+
+def test_projection_fails_closed_when_hashed_outcome_close_path_cannot_be_replayed():
+    d2, journey, entry, sig, _dvol = _capture_available(fired=True)
+    full = pd.concat([
+        sig,
+        pd.DataFrame(
+            {"close": [98.0, 94.0, 93.0]},
+            index=[entry + pd.Timedelta(days=i) for i in (1, 2, 3)],
+        ),
+    ])
+    assert d2.mature_outcome(journey, full, recorded_at="2026-09-21T05:00:00Z")
+    source = copy.deepcopy(journey["generations"][0])
+    semantic = copy.deepcopy(journey["generations"][1]["semantic"])
+    semantic["inputs"]["close_rows"] = semantic["inputs"]["close_rows"][:-1]
+    unreplayable = d2.new_journey()
+    assert d2.append_generation(unreplayable, source)
+    assert d2.append_generation(
+        unreplayable,
+        d2.make_generation("outcome", semantic, recorded_at="2026-09-21T05:00:00Z"),
+    )
+    projection = d2.project(unreplayable)
+    assert projection["status"] == "unavailable"
+    assert projection["outcome"] is None
+    assert projection["reason"] == "outcome_evidence_unavailable"
+    assert projection["outcome_evidence"] is None
+    assert projection["fired"] is True
+    assert projection["trading_authority"] is False
 
 
 def test_projection_fails_closed_on_tampered_persisted_generation():

@@ -130,6 +130,17 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
         "generation_count": 2,
         "outcome": {"matured": True, "fwd_min_pct": -7.0, "fwd_max_pct": 1.0,
                     "down_hit": True},
+        "outcome_evidence": {
+            "threshold_pct": -5.0,
+            "target_window": "(t,t+3 daily closes]",
+            "close_rows": [
+                {"asof": "2026-09-17", "close": 100.0},
+                {"asof": "2026-09-18", "close": 98.0},
+                {"asof": "2026-09-19", "close": 94.0},
+                {"asof": "2026-09-20", "close": 93.0},
+            ],
+            "result_consistent": True,
+        },
         "reason": None,
     }
     payload = signal_lab.build_scorecard(
@@ -156,6 +167,10 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert "Rule: z ≥ 2.0, or two consecutive z ≥ 1.5" in html
     assert "Matured · down target hit" in html
     assert "已成熟 · 下行目标命中" in html
+    assert "Frozen outcome close path" in html
+    assert "冻结结果收盘路径" in html
+    assert "Down target: ≤ -5.00%" in html
+    assert "2026-09-20 · BTC 93.00" in html
     assert "Research only — no trading authority" in html
     assert "仅供研究 — 无交易权限" in html
     assert "Observed: 2026-09-16" in html

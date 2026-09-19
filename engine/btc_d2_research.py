@@ -558,6 +558,73 @@ def _project_trigger_evidence(source_semantic: dict) -> dict | None:
         return None
 
 
+def _project_outcome_evidence(
+    outcome_semantic: dict, *, source_fired: bool,
+) -> dict | None:
+    """Replay one frozen D2 outcome from its exact close path."""
+    inputs = outcome_semantic.get("inputs") or {}
+    rows = inputs.get("close_rows")
+    spec = outcome_semantic.get("spec") or {}
+    result = outcome_semantic.get("result") or {}
+    try:
+        entry = _date(outcome_semantic.get("entry_asof"))
+        if entry is None or not isinstance(rows, list) or len(rows) != LABEL_H + 1:
+            return None
+        normalized_rows: list[dict] = []
+        closes: list[float] = []
+        dates: list[pd.Timestamp] = []
+        for row in rows:
+            if not isinstance(row, dict) or not _finite(row.get("close")):
+                return None
+            asof = _date(row.get("asof"))
+            close = float(row["close"])
+            if asof is None or close <= 0:
+                return None
+            dates.append(asof)
+            closes.append(close)
+            normalized_rows.append({"asof": str(asof.date()), "close": close})
+
+        expected_dates = [entry + timedelta(days=offset) for offset in range(LABEL_H + 1)]
+        if dates != expected_dates:
+            return None
+
+        base_close = closes[0]
+        forward_pct = [(close / base_close - 1.0) * 100.0 for close in closes[1:]]
+        fwd_min_pct = round(min(forward_pct), 2)
+        fwd_max_pct = round(max(forward_pct), 2)
+        threshold_pct = float(spec.get("threshold_pct"))
+        if not _finite(threshold_pct):
+            return None
+        down_hit = bool(source_fired and min(forward_pct) <= threshold_pct)
+        recomputed = {
+            "matured": True,
+            "fwd_min_pct": fwd_min_pct,
+            "fwd_max_pct": fwd_max_pct,
+            "down_hit": down_hit,
+        }
+        consistent = (
+            result.get("matured") is True
+            and _finite(result.get("fwd_min_pct"))
+            and _finite(result.get("fwd_max_pct"))
+            and math.isclose(
+                float(result["fwd_min_pct"]), fwd_min_pct, rel_tol=0.0, abs_tol=1e-9,
+            )
+            and math.isclose(
+                float(result["fwd_max_pct"]), fwd_max_pct, rel_tol=0.0, abs_tol=1e-9,
+            )
+            and result.get("down_hit") is down_hit
+        )
+        return {
+            "close_rows": normalized_rows,
+            "threshold_pct": threshold_pct,
+            "target_window": spec.get("target_window"),
+            "recomputed_result": recomputed,
+            "result_consistent": consistent,
+        }
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
 def project(journey: dict | None) -> dict:
     base = {
         "schema": SCHEMA,
@@ -573,6 +640,7 @@ def project(journey: dict | None) -> dict:
         "outcome_generation_id": None,
         "generation_count": 0,
         "outcome": None,
+        "outcome_evidence": None,
         "reason": "no_source_generation",
         "corrected": False,
         "corrections": [],
@@ -636,10 +704,30 @@ def project(journey: dict | None) -> dict:
     )
     if outcome_generation is None or not isinstance(outcome_semantic, dict):
         return base
+    outcome_evidence = _project_outcome_evidence(
+        outcome_semantic, source_fired=stored_fired,
+    )
     base.update({
-        "status": "matured",
         "outcome_generation_id": outcome_generation.get("generation_id"),
         "outcome_recorded_at": outcome_generation["lifecycle"]["recorded_at"],
+        "outcome_evidence": outcome_evidence,
+    })
+    if outcome_evidence is None:
+        base.update({
+            "status": "unavailable",
+            "outcome": None,
+            "reason": "outcome_evidence_unavailable",
+        })
+        return base
+    if not outcome_evidence["result_consistent"]:
+        base.update({
+            "status": "unavailable",
+            "outcome": None,
+            "reason": "outcome_evaluator_mismatch",
+        })
+        return base
+    base.update({
+        "status": "matured",
         "outcome": copy.deepcopy(outcome_semantic.get("result")),
         "reason": None,
     })
