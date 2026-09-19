@@ -68,12 +68,20 @@ TARGET_UNAVAILABLE_ZH = (
     "这份简报无法写成，因为它所跟踪的论点或观察列表已不可用。"
 )
 NO_COVERAGE_REASON = "no target coverage"
-NO_COVERAGE_EN = (
-    "No tracked names for this thesis yet — we can't write a brief until it "
-    "carries one."
+# Named targets whose names ARE known but whose tickers miss the artifact
+# get a truthful "not in this week's brief yet" copy (no 论点 when kind==watchlist).
+NO_COVERAGE_THESIS_EN = (
+    "AAPL is not in this week's brief yet — we can't write a thesis brief "
+    "until the names it follows appear."
 )
-NO_COVERAGE_ZH = (
-    "此论点暂未关联任何个股名称——在它对应到具体股票之前，我们无法撰写简报。"
+NO_COVERAGE_THESIS_ZH = (
+    "AAPL 尚未出现在本周简报中——在我们关联的股票名称出现之前，无法撰写简报。"
+)
+NO_COVERAGE_WATCHLIST_EN = (
+    "None of the names in this watchlist appeared in this week's brief yet."
+)
+NO_COVERAGE_WATCHLIST_ZH = (
+    "本周简报中尚未出现此观察列表中的任何名称。"
 )
 TRANSLATION_PENDING_ZH = "（翻译待补）"
 
@@ -227,6 +235,16 @@ def classify(
             if not wanted:
                 return ("degraded", NO_COVERAGE_REASON)
             if not _target_has_artifact_coverage(target, wanted, artifact):
+                # MAJOR 1 fix: named targets whose tickers MISS the artifact
+                # get the kind-appropriate "not in this week's brief yet" copy.
+                # Only use the generic NO_COVERAGE_REASON for anonymous/theme
+                # targets (where we have no name to report).
+                target_name = target.get("name", "").strip()
+                if target_name and target_name not in ("", "Untitled thesis", "Untitled watchlist"):
+                    names_str = target_name
+                    if kind == "thesis":
+                        return ("degraded", NO_COVERAGE_THESIS_EN)
+                    return ("degraded", NO_COVERAGE_WATCHLIST_EN)
                 return ("degraded", NO_COVERAGE_REASON)
     return ("ready", None)
 
@@ -254,7 +272,9 @@ def _ticker_set(tickers: Any) -> set[str]:
     return out
 
 
-def _item_tickers(item: dict) -> set[str]:
+def _item_tickers(item: dict | str | Any) -> set[str]:
+    if not isinstance(item, dict):
+        return set()
     found = set()
     for key in ("ticker", "symbol", "root"):
         val = item.get(key)
@@ -442,9 +462,27 @@ def compose_body(
             _sentence_row("status", TARGET_UNAVAILABLE_EN, TARGET_UNAVAILABLE_ZH, asof)
         ]
     elif degraded_reason == NO_COVERAGE_REASON:
-        market_read = [
-            _sentence_row("status", NO_COVERAGE_EN, NO_COVERAGE_ZH, asof)
-        ]
+        # MAJOR 1 fix: use kind-appropriate copy for named targets.
+        target_kind = (target or {}).get("kind")
+        if target_kind == "watchlist":
+            market_read = [
+                _sentence_row("status", NO_COVERAGE_WATCHLIST_EN, NO_COVERAGE_WATCHLIST_ZH, asof)
+            ]
+        else:
+            market_read = [
+                _sentence_row("status", NO_COVERAGE_THESIS_EN, NO_COVERAGE_THESIS_ZH, asof)
+            ]
+    elif degraded_reason in (NO_COVERAGE_THESIS_EN, NO_COVERAGE_WATCHLIST_EN):
+        # Named target whose tickers miss the artifact — classify passed the
+        # kind-appropriate text as the reason; compose_body uses it directly.
+        if degraded_reason == NO_COVERAGE_WATCHLIST_EN:
+            market_read = [
+                _sentence_row("status", NO_COVERAGE_WATCHLIST_EN, NO_COVERAGE_WATCHLIST_ZH, asof)
+            ]
+        else:
+            market_read = [
+                _sentence_row("status", NO_COVERAGE_THESIS_EN, NO_COVERAGE_THESIS_ZH, asof)
+            ]
     elif degraded_reason:
         market_read = [
             _sentence_row("status", CONTRACT_MISS_EN, CONTRACT_MISS_ZH, asof)

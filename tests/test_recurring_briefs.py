@@ -159,7 +159,15 @@ def _weekly_brief(*, state_asof="2026-09-13", include_zh_block=False):
 
 
 def _production_weekly(*, run_date_str="2026-09-12"):
-    """Production measurement: weekly_saturday, generated Saturday with Friday state."""
+    """Production measurement: weekly_saturday, generated Saturday with Friday state.
+
+    Uses {ticker, note} dict form for watch_items to exercise the ticker-
+    matching path in _target_has_artifact_coverage. The real master_brief.v2
+    uses string watch_items (handled by the _item_tickers crash fix); this
+    fixture preserves AAPL ticker coverage so that the weekly slot integration
+    test (test_weekly_artifact_production_shape_is_ready) stays GREEN without
+    depending on the real artifact. The zh block mirrors real HEAD content.
+    """
     return {
         "schema": "master_brief.v2",
         "state_asof": "2026-09-11",  # Friday
@@ -171,6 +179,7 @@ def _production_weekly(*, run_date_str="2026-09-12"):
         "summary": "Higher yields are testing narrow US leadership, while healthy credit keeps the broader stress picture calm.",
         "regime_read": "The US is still in Stagflation on the map, but it is moving toward Reflation.",
         "confidence": "medium",
+        # Dict form: exercises _item_tickers correctly and provides AAPL coverage.
         "watch_items": [
             {"ticker": "AAPL", "note": "Apple stayed inside its range all week."},
         ],
@@ -583,10 +592,11 @@ def test_daily_body_uses_only_situation_not_evidence():
 def test_no_coverage_thesis_degrades_with_typed_line():
     """H6 / MAJOR 2: a thesis with no ticker coverage (e.g. a theme thesis
     whose ``_thesis_tickers`` returns ``[]``) must NOT classify 'ready'
-    while emitting only the global backdrop.
+    while emitting only the global backdrop. Named thesis gets the
+    kind-appropriate "not in this week's brief yet" copy (MAJOR 1 fix).
     """
     sub = _sub()
-    # Theme-style target: no tickers.
+    # Theme-style target: no tickers but has a name → kind-appropriate miss.
     target = {
         "kind": "thesis",
         "id": THESIS_ID,
@@ -599,8 +609,9 @@ def test_no_coverage_thesis_degrades_with_typed_line():
     assert state == "degraded"
     assert reason == rb.NO_COVERAGE_REASON
     body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
-    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_EN
-    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_ZH
+    # Named thesis gets the thesis-specific "not in this week's brief yet" copy.
+    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_THESIS_EN
+    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_THESIS_ZH
 
 
 def test_no_coverage_tickers_thesis_degrades_on_production_daily_artifact():
@@ -611,13 +622,25 @@ def test_no_coverage_tickers_thesis_degrades_on_production_daily_artifact():
     Reproduced at the live ``site/intelligence/briefing.json``:
     ``['ZZZZ']`` classified 'ready' and ``compose_body`` emitted exactly the
     macro backdrop row.
-    """
-    import json
 
+    MAJOR 2 fix: reads the committed artifact via subprocess so it runs in a
+    sparse tree where the path is unmaterialised.
+    """
+    import json, subprocess
+
+    # Read committed file — works whether or not the path is materialised.
     prod_path = ROOT / "site/intelligence/briefing.json"
-    if not prod_path.exists():
-        pytest.skip("site/intelligence/briefing.json not materialised in this checkout")
-    prod = json.loads(prod_path.read_text(encoding="utf-8"))
+    if prod_path.exists():
+        prod = json.loads(prod_path.read_text(encoding="utf-8"))
+    else:
+        try:
+            raw = subprocess.check_output(
+                ["git", "show", f"HEAD:site/intelligence/briefing.json"],
+                stderr=subprocess.STDOUT, text=True
+            )
+            prod = json.loads(raw)
+        except subprocess.CalledProcessError:
+            pytest.fail("Could not read HEAD:site/intelligence/briefing.json — artifact may not exist on this branch")
     sub = _sub()
     target = {
         "kind": "thesis",
@@ -629,10 +652,11 @@ def test_no_coverage_tickers_thesis_degrades_on_production_daily_artifact():
     }
     state, reason = rb.classify(sub, prod, target)
     assert state == "degraded"
-    assert reason == rb.NO_COVERAGE_REASON
+    # Named thesis with tickers that miss the artifact → kind-specific miss.
+    assert reason == rb.NO_COVERAGE_THESIS_EN
     body = rb.compose_body(target, prod, monitors=[], degraded_reason=reason)
-    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_EN
-    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_ZH
+    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_THESIS_EN
+    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_THESIS_ZH
     # And no silent backdrop row was published: the only market_read row is
     # the typed honest-miss line, not the global macro_context posture.
     assert len(body["market_read"]) == 1
@@ -643,6 +667,7 @@ def test_no_coverage_watchlist_degrades_when_members_miss_artifact():
     """H6 / MAJOR 2 (watchlist branch): a watchlist whose members do not
     appear in any priority_queue / divergences / watch_items row of the
     artifact must degrade, not silently emit only the backdrop.
+    Named watchlist gets the kind-appropriate "not in this week's brief yet" copy.
     """
     sub = _sub(kind="watchlist")
     target = {
@@ -655,7 +680,10 @@ def test_no_coverage_watchlist_degrades_when_members_miss_artifact():
     }
     state, reason = rb.classify(sub, _briefing(), target)
     assert state == "degraded"
-    assert reason == rb.NO_COVERAGE_REASON
+    assert reason == rb.NO_COVERAGE_WATCHLIST_EN
+    body = rb.compose_body(target, _briefing(), monitors=[], degraded_reason=reason)
+    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_WATCHLIST_EN
+    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_WATCHLIST_ZH
 
 
 def test_no_target_user_id_returns_target_unavailable(monkeypatch):
