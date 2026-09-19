@@ -1437,6 +1437,13 @@ def test_pc_windows_boot_recovery_preserves_existing_runner_authority() -> None:
     assert "-ExecutionTimeLimit (New-TimeSpan -Seconds 0)" in installer
     assert "-MultipleInstances IgnoreNew" in installer
     assert "-LogonType S4U" in installer
+    assert "-RestartCount 999" in installer
+    assert "while ($true)" in recovery
+    assert "$failureCount++" in recovery
+    assert "$MaxRetrySeconds" in recovery
+    assert "failed attempts=" not in recovery
+    assert "[int]$Attempts" not in recovery
+    assert "exit 1" not in recovery
     for forbidden in ("pc-ci-4", "ci-linux", "config.sh", "Runner.Listener"):
         assert forbidden not in recovery
         assert forbidden not in installer

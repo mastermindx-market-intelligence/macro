@@ -19,8 +19,8 @@ changed:
     what: >
       Verifies the exact per-user WSL distribution and holds one inert foreground
       keepalive so the distro remains resident. Microsoft documents that systemd
-      services do not keep WSL alive; if the keepalive exits, the wrapper retries
-      boundedly and writes status-only recovery logging. It does not register,
+      services do not keep WSL alive; if the keepalive exits, the wrapper retries indefinitely with a bounded delay
+      and writes status-only recovery logging. It does not register,
       relabel, supervise or dispatch a GitHub runner.
   - path: ops/runner-host/pc/windows/Install-MastermindWslBootRecovery.ps1
     what: >
@@ -139,3 +139,20 @@ DeepSeek when no local endpoint is configured, but its current launch environmen
 1 because the required R2 variable names and DEEPSEEK_API_KEY are absent. Therefore Qwen
 must not be removed until an external-compute producer is made live and proves R2
 publication plus output-quality/parity.
+
+## 2026-09-19 incident confirmation — finite retry budget is unsafe
+
+The production discriminator is now exact. Windows itself did not reboot at the outage boundary:
+LastBootUpTime remained 2026-09-16, while the installed S4U recovery task kept WSL resident for
+roughly 39 hours and then observed the foreground keepalive exit at 2026-09-18T23:40Z. The wrapper
+retried through attempt 12, repeatedly received failed WSL launches, logged its terminal
+failed-attempts=12 edge, and exited. WSL stayed down until the Chairman manually started the
+distribution on 2026-09-19.
+
+This falsifies the bounded-retry assumption without changing ownership: Task Scheduler still owns
+only WSL residency, Linux systemd still owns runner lifecycle, and GitHub still owns scheduling.
+The same carrier therefore removes the finite attempt budget, retries indefinitely with bounded
+backoff, makes status logging fail-soft, revalidates WSL/distro visibility on every attempt, and
+raises Task Scheduler's process-crash restart budget as defense in depth. Production acceptance
+still requires installation of the exact merged bytes plus a real failure/restart or controlled
+reboot witness; source tests alone do not prove self-healing live.

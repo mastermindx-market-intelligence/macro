@@ -124,7 +124,7 @@ $logonTrigger = New-ScheduledTaskTrigger -AtLogOn -User $identity.Name
 # earliest startup edge. IgnoreNew prevents that trigger from spawning a duplicate
 # keepalive when the startup instance is already healthy.
 $taskPrincipal = New-ScheduledTaskPrincipal -UserId $identity.Name -LogonType S4U -RunLevel Highest
-$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -RestartCount 6 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -ExecutionTimeLimit (New-TimeSpan -Seconds 0) -MultipleInstances IgnoreNew -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 
 $task = New-ScheduledTask -Action $action -Trigger @($startupTrigger, $logonTrigger) -Principal $taskPrincipal -Settings $settings -Description 'Keeps the existing Mastermind WSL distro resident after Windows boot/logon. Linux systemd remains runner lifecycle authority.'
 
