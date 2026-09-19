@@ -34,40 +34,56 @@ waves:
     depends_on: [OA-0]
     pr: 6585
     next_action: >
-      BUILT_NOT_PROVEN — natural-RTH production proof OWED. Implementation MERGED
-      2026-08-30 as dbd654edb0fb47449b969b7dcb4fbafc2e0fe3ef (squash of carrier head
-      77f400630d8a47402f0fd71a8c23eec3d6822356, 8 files +1284/-2, patch-identity proven
-      byte-identical against the pre-merge blobs), under Sol conditional-adoption ruling
-      #6585 comment 5459823114 after C3 gates A6 PASS / A2 SAFE_UNDER_FREEZE / A3 green
-      + MERGEABLE / A4 scripts/** authority acknowledged. Status is NOT done: the capability
-      moves BUILT_NOT_PROVEN -> PROVEN_LIVE only on a natural RTH session emitting a real
-      measured event. Do NOT manufacture that proof — historical `--once --date` is
-      explicitly forbidden as a proof path by the live-flow runbook. Consumer census is
-      CLOSED, not owed: no current live_flow.event_stage/v1 consumer hard-enumerates nested
-      event keys, so no v2 adjudication is required (both episode schemas carry zero
-      additionalProperties:false; the poller/episode consumers read via .get() and their
-      "strict" JSON loaders reject duplicate keys only). FS-4 remains frozen with
-      scoring.enabled=false and the FS-5 kill switch intact; this wave armed no scoring,
-      ranking or sizing authority. Two disclosed non-blocking defects carried forward for a
-      separate bounded child, NOT repaired here: _coerce_int is not Infinity-safe on
-      source_print_count/nbbo_valid_print_count (uncaught OverflowError can abort a harvest
-      run), and vol_gt_oi_ratio is the one published measurement with no finite/rounding
-      gate at the producer.
+      BUILT_NOT_PROVEN — implementation MERGED 2026-08-30 as
+      dbd654edb0fb47449b969b7dcb4fbafc2e0fe3ef and natural untouched 2026-09-17
+      RTH measured evidence now exists on the canonical source/event-stage/Flow path.
+      Natural evidence is DO_NOT_REDO: do not commission another event-hunt child and do
+      not manufacture proof with historical `--once --date`, replay, synthetic events,
+      lowered floors, hand-edited clocks or later-data reconstruction. The remaining
+      acceptance gate is durable publication/integrity, not measurement existence. The
+      normal nightly episode builder consumed the Sep-17 stage and generated the next
+      episode/outcome generation, but narrow publication was rejected when the monolithic
+      session-outcome blob exceeded GitHub's 100 MB limit; campaign-v2 runtime and
+      source-receipt integrity remain nonterminal. Preserve the existing recovery owners:
+      #7265 for bounded session-outcome durability, #7263 for shared publisher recovery,
+      #7193 for broad-writer exclusion, and the existing campaign owner for historical
+      mixed-generation reconciliation. Then require one normal scheduled nightly plus
+      protected-main readback with the measured Flow cohort present, owned
+      episode/campaign/outcome receipts valid, and scoring.enabled=false before moving
+      OA-1T-MACRO -> PROVEN_LIVE. Consumer census remains CLOSED; this wave grants no
+      scoring, ranking or sizing authority. The previously disclosed finite-value
+      hardening defects (_coerce_int Infinity handling and vol_gt_oi_ratio
+      finite/rounding validation) remain separate unless one becomes directly causal on
+      this acceptance path.
   - id: OA-1T-TERMINAL
     title: Render measured microstructure and separate Attention from probability
     status: todo
     depends_on: [OA-1T-MACRO]
     next_action: >
-      CLOSED. At action time reconcile all open PRs touching the shared Flow resolver/stream,
-      including Terminal PR #422 while open. Do not ship a second score semantics.
+      CLOSED until OA-1T-MACRO is accepted and the current live-flow repair is released
+      and naturally proven. Historical Terminal Flow-stream collision #422 is MERGED/CLOSED.
+      The first post-gate Terminal vertical is already bounded on Terminal #599: reuse the
+      existing /api/flow feed and flowClientCache; strictly parse the additive
+      options.trade_nbbo_microstructure/v1 block plus event/observed/decision/available
+      clocks; render a display-only Measured Tape section inside the current Options Alpha
+      mount. Missing or partial measured evidence stays unavailable/covered-by-N%; never
+      substitute Chain Heat synthetic ask-share. Any existing fixed-weight flowScore remains
+      Attention/Salience only, never probability, candidate score or directional authority.
+      Reconcile shared bilingual-string ownership (#650 while open) before implementation.
   - id: OA-1C-MACRO
     title: Derived options.alpha_candidate_feed/v1 research-candidate composer
     status: todo
     depends_on: [OA-1T-MACRO]
     next_action: >
-      CLOSED. Requires the OA-1T measured evidence path, a preregistered candidate-formation
-      policy, and production-accepted AD-1T2 EOD consumer/availability evidence before settled
-      EOD context can participate in candidate formation.
+      CLOSED. Candidate-formation law is now isolated on Macro #7290
+      (options.alpha_candidate_formation_policy/v1) and still awaits protected acceptance.
+      OA-1C may not start until OA-1T is accepted, #7290 is protected, AD-1T2
+      consumer/availability is production-accepted, campaign publication/runtime/integrity is
+      accepted, and current source-collision review is clear. The Sep-03 bad campaign-outcome
+      suffix is governed by inactive correction prereg #7398: preserve raw incident bytes,
+      quarantine their effective authority, and never restamp/backfill historical keys.
+      Settled EOD remains supplemental context after AD-1T2; it is not a v1 formation
+      predicate. No new candidate DB, campaign identity, event ledger or score plane.
   - id: OA-1C-TERMINAL
     title: Live Options Alpha candidate stream, detail, abstention and degraded workflow
     status: todo
@@ -80,11 +96,14 @@ waves:
     status: todo
     depends_on: [OA-1T-MACRO]
     next_action: >
-      CLOSED. Preserve the existing unsigned target and exact preregistered population;
-      do not add new OI/GEX/positioning fusion features under this wave. Correctly populated
-      event-time features are an entrance requirement and code existence is not promotion
-      evidence. Any product-probability promotion must be separately reviewed against current
-      DNR:KILL-FUSED-COMPOSITE scope; ambiguity requires explicit DNR adjudication, not inference.
+      CLOSED. Fit-free signal-science law is now isolated on Macro #7395 and awaits
+      protected acceptance before any trainer/evaluation repair or model/calibrator fit.
+      Preserve target Y_H=1[spy_excess_H>0] at the registered horizons, one
+      (source, detector_version, DTE construction) population per cell, canonical NYSE
+      trading-session purge/embargo, session-atomic splits and chronological disjoint
+      calibrator-fit/eval. Local artifact health/deployable status is not statistical
+      acceptance or promotion. Preserve existing newest-era discrimination, BH-FDR, N-floor,
+      FS-5 and DNR gates. Do not add OI/GEX/positioning fusion or resurrect killed families.
   - id: OA-3
     title: Exact-option NBBO lifecycle and outcome contract under existing owners
     status: todo
@@ -135,12 +154,21 @@ landmines:
     Current DNR law remains binding: KILL-LLM-ORIGINATION, KILL-FUSED-COMPOSITE,
     KILL-POSITIONING-FUSION, HOLD-THETA-TAPE, KILL-DOI-FAMILY, KILL-SKEW-DECELERATION,
     KILL-CHARM-NARRATIVES and KILL-OFFHORIZON-VERDICTS. OA-0 created no implicit exception.
+  - >
+    Terminal Options Workbench #603 is a complementary structural/replay/conditional-scenario
+    workspace, not an Alpha or Tactical authority plane. #608 observed replay and #640/#661
+    modeled conditional scenarios may later supply typed supplemental context only under their
+    own clocks/provenance. They cannot originate an Alpha candidate, Tactical event, probability
+    or fused confidence score, and #603 is not an entrance dependency for #599/#598.
 do_not_redo:
   - "Another options collector, ThetaData Terminal instance, live-flow store, event identity, campaign ledger, outcome ledger, Issue Desk, rank/gate/sizing control plane, or generic Options super-score."
   - "Re-running stale MomoEdge research as activity; use the frozen benchmark and current product/source evidence."
   - "Reopening AD-1T1; it is PROVEN_LIVE and the next AD product wave is AD-1T2."
   - "Promoting FS-4 merely because trainer/scorer code exists or because missing features can be NaN-filled."
   - "Backfilling later-settled OI/NBBO into an earlier live decision as though it was knowable then."
+  - "Re-hunting natural OA-1T evidence; the Sep-17 measured source/event-stage/Flow cohort exists and is DO_NOT_REDO."
+  - "Deleting, truncating, restamping or regenerating the Sep-03 campaign-outcome incident as clean history; #7398 freezes quarantine-not-rewrite semantics."
+  - "Collapsing Workbench scenario context, Alpha research candidates and Tactical setup timing into one Options confidence/super-score."
 artifacts:
   - docs/superpowers/specs/2026-08-27-options-alpha-intelligence-recovery-design.md
   - docs/superpowers/plans/2026-08-27-oa1t-macro-measured-options-microstructure.md
@@ -149,12 +177,24 @@ artifacts:
   - research/OPTIONS_ALPHA_FLOW_SCORE_AMENDMENT.md
   - data/flow_signals/gate.json
   - data/options_signal_campaign/checkpoint.json
+  - "PENDING #7290: research/options_estate/OPTIONS_ALPHA_CANDIDATE_FORMATION_PREREG_V1.md + machine policy"
+  - "PENDING #7395: research/options_estate/OPTIONS_ALPHA_SIGNAL_SCIENCE_PREREG_V1.md + machine policy"
+  - "PENDING #7398: research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_OUTCOME_CORRECTION_PREREG_V1.md + machine policy"
 next_action: >
-  Review/land the OA-1T-Macro implementation-plan carrier, then choose one execution mode for
-  that bounded wave. Recommended: subagent-driven/operator execution with one worker carrier,
-  explicit pickup ACK before work, and a separate START receipt if a gate delays execution.
-  OA-1T-Macro remains NOT STARTED until that commission is actually acknowledged; later OA waves
-  remain closed.
+  OA-1T-MACRO remains BUILT_NOT_PROVEN; natural Sep-17 measured evidence is
+  DO_NOT_REDO. The critical release chain is the existing live-flow/publisher/history
+  owners: accept #7279 source clocks and natural collection quality, #7265 bounded
+  session durability plus campaign-runtime repair, #7263 shared publisher recovery and
+  #7193 broad-writer exclusion under their own release gates; then activate the
+  reviewed quarantine law only after #7398 and its prerequisites are accepted. Require
+  one normal scheduled nightly plus protected-main readback proving canonical measured
+  Flow, valid effective episode/campaign/outcome receipts, raw/effective quarantine
+  accounting and scoring.enabled=false before OA-1T-MACRO -> PROVEN_LIVE. In parallel,
+  land records-only #7290 candidate-formation law and #7395 fit-free signal-science law.
+  AD-1T2 remains owned by WS:ADVANCED-DATA-OPTIONS and is still required before OA-1C.
+  OA-1T-TERMINAL implementation starts only after OA-1T acceptance; its first vertical
+  is the already-bounded display-only Measured Tape over the existing feed, not a second
+  score or candidate feed.
 ---
 
 ## Context
