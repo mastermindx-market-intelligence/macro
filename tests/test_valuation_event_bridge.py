@@ -15,6 +15,7 @@ import pandas as pd
 import jinja2
 
 from engine import valuation_event_bridge as veb
+from engine.capital_structure import event_spine
 from engine import valuation_assumptions as va
 from engine import valuation_scenario as vs
 from engine import i18n as i18n
@@ -54,32 +55,20 @@ def test_vocab_closure():
     filings and are excluded from the issuer map.
     """
     from engine.special_situations import MATURE_CATEGORIES
-    import importlib.util
-    import sys
 
-    spec = importlib.util.spec_from_file_location(
-        "valuation_test_event_spine", ROOT / "engine" / "capital_structure" / "event_spine.py"
+    source_form_sets = (
+        event_spine._REGISTRATION_LIFECYCLE_FORMS,
+        event_spine._PROSPECTUS_FORMS,
+        frozenset({"EFFECT", "RW", "RW/A", "AW", "AW/A", "8-K", "8-K/A", "6-K", "6-K/A"}),
+        event_spine._PROXY_FORMS,
+        frozenset({"1-A", "1-A/A", "1-U", "253G1", "253G2", "253G3", "253G4", "1-K", "1-K/A"}),
+        event_spine._PERIODIC_FORMS,
+        event_spine._OWNERSHIP_FORMS,
     )
-    event_spine = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = event_spine
-    assert spec.loader is not None
-    spec.loader.exec_module(event_spine)
-    route_form = event_spine.route_form
-
-    spine_forms = (
-        "S-1", "F-1", "S-3", "S-3ASR", "F-3", "F-3ASR", "F-10",
-        "S-1/A", "F-1/A", "S-3/A", "F-3/A", "F-10/A", "POS AM", "POSASR",
-        "1-A POS", "EFFECT", "RW", "RW/A", "AW", "AW/A", "424B1", "424B2",
-        "424B3", "424B4", "424B5", "424B7", "424B8", "8-K", "8-K/A", "6-K",
-        "6-K/A", "PRE 14A", "DEF 14A", "PRE 14C", "DEF 14C", "PREC14A",
-        "DEFC14A", "PREM14A", "DEFM14A", "DEFA14A", "1-A", "1-A/A", "1-U",
-        "253G1", "253G2", "253G3", "253G4", "1-K", "1-K/A", "10-K", "10-K/A",
-        "10-Q", "10-Q/A", "20-F", "20-F/A", "40-F", "40-F/A", "3", "3/A",
-        "4", "4/A", "5", "5/A", "SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A",
-        "13F-HR", "13F-HR/A", "UNKNOWN-FORM", "8-K", "6-K",
-    )
+    spine_forms = set().union(*source_form_sets)
+    spine_forms.add("UNKNOWN-FORM")
     spine_subtypes = {
-        route_form(form, items).subtype
+        event_spine.route_form(form, items).subtype
         for form in spine_forms
         for items in (None, "5.03", "5.07", "3.02", "1.01")
     }
@@ -357,6 +346,51 @@ def test_panel_renders_typed_null_for_other_class():
     html = _render(controls)
     assert "No filing on file yet for this company." in html
     assert "该公司暂无备案。" in html
+
+
+def test_template_does_not_nest_i18n_twins():
+    """The event line owns one language span per language."""
+    v1 = vs.compute(_rows(), ticker="AAPL")
+    controls = va.controls_blob(v1)
+    assert controls is not None
+    controls["latest_event_bridge"] = veb.bridge("Tender Offers")
+    html = _render(controls)
+    bridge = html.split('id="va-event-bridge"', 1)[1].split("</p>", 1)[0]
+    assert bridge.count('class="l-en"') == 1
+    assert bridge.count('class="l-zh"') == 1
+
+
+def test_evidence_hosts_match_final_template_sentences_and_typography():
+    """Static evidence hosts carry the production event line, not a stale copy."""
+    event_pattern = re.compile(
+        r'<p[^>]*id="va-event-bridge"[^>]*>(.*?)</p>', re.DOTALL
+    )
+
+    def event_html(html):
+        match = event_pattern.search(html)
+        assert match is not None
+        return " ".join(match.group(1).split())
+
+    v1 = vs.compute(_rows(), ticker="AAPL")
+    controls = va.controls_blob(v1)
+    assert controls is not None
+    cases = {
+        "tender-offer": veb.bridge("Tender Offers"),
+        "restructuring": veb.bridge("Restructuring"),
+        "null": None,
+    }
+    for host_name, bridge_value in cases.items():
+        host_path = (
+            ROOT
+            / "mockups"
+            / "evidence"
+            / "b-f07-3-event-bridge"
+            / "hosts"
+            / f"valuation-event-bridge-{host_name}.html"
+        )
+        controls["latest_event_bridge"] = bridge_value
+        assert event_html(host_path.read_text()) == event_html(_render(controls))
+        assert ".va-event-bridge .va-event-target{color:var(--muted);}" in host_path.read_text()
 
 
 def test_panel_does_not_inject_style_or_store_anything_from_bridge_line():

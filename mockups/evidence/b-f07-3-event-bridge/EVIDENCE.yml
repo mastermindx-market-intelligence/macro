@@ -23,11 +23,11 @@ note: |
   covered by tests/test_valuation_event_bridge.py::test_panel_renders_typed_null_*
   and is not separately captured (one receipt, not two — same line, two states).
 capture: |
-  Hosts rendered by _render_bridge.py from the FROZEN valuation_assumptions
-  template + engine/valuation_event_bridge.py::bridge("Tender Offers").
-  Capture run by _capture_bridge.py against the committed hosts with
-  --theme dark/light, --locale en/zh, --viewport desktop=1440x900 / mobile=390x844
-  and a 200ms settle post-data-theme/data-lang stamp. Screenshots cropped to
-  the #va-event-bridge element only (Tier-2 receipt, not the full panel).
-captured_at: 2026-09-19T01:27Z
-resolved_sha_or_none: 0ee59a25f49d
+  Hosts carry the FROZEN valuation_assumptions template at the final head;
+  the null, restructuring, and Tender Offers states use the real
+  engine/valuation_event_bridge.py values. The eight Tender Offers crops were
+  captured sequentially from the committed host with Chromium at dark/light,
+  EN/ZH, desktop=1440x900 and mobile=390x844, with a 200ms settle after the
+  data-theme/data-lang stamp. Screenshots contain only #va-event-bridge.
+captured_at: 2026-09-19T02:05Z
+resolved_sha_or_none: FINAL_HEAD
