@@ -1,0 +1,522 @@
+[
+  {
+    "number": 6873,
+    "title": "[F01][R1] Macro & Monetary hub + decision-first Liquidity pattern-setter",
+    "mergedAt": "2026-09-08T02:29:31Z",
+    "files": [
+      "site/macro_business_activity.html",
+      "site/macro_capital_structure.html",
+      "site/macro_consumer_payments.html",
+      "site/macro_financial_conditions.html",
+      "site/macro_growth_real_economy.html",
+      "site/macro_housing_real_estate.html",
+      "site/macro_inflation_system.html",
+      "site/macro_labor_markets.html",
+      "site/macro_liquidity_central_banks.html",
+      "site/macro_liquidity_regime.html",
+      "site/macro_monetary.html",
+      "site/macro_monetary_policy.html",
+      "site/macro_national_debt_liabilities.html",
+      "site/macro_rates_curves.html",
+      "site/macro_suite.css",
+      "site/macro_trade_flows.html",
+      "templates/_macro_suite_nav.html.j2",
+      "templates/_macro_suite_shell.html.j2",
+      "templates/macro_monetary.html.j2",
+      "templates/macro_suite.css"
+    ]
+  },
+  {
+    "number": 6932,
+    "title": "A-F03-W2-2: AD-1 consumer proof — glance-tier lede",
+    "mergedAt": "2026-09-08T15:15:05Z",
+    "files": [
+      "templates/options.html.j2"
+    ]
+  },
+  {
+    "number": 6926,
+    "title": "[MO-BB3] B-F09-6: commodity coverage matrix + capital-markets policy chip",
+    "mergedAt": "2026-09-08T19:35:47Z",
+    "files": [
+      "site/capital_structure.css",
+      "templates/capital_structure.css",
+      "templates/capital_structure.html.j2",
+      "templates/commodities.html.j2"
+    ]
+  },
+  {
+    "number": 6900,
+    "title": "[MO-AA1] A-F02-2: Deterministic policy lifecycle state machine",
+    "mergedAt": "2026-09-08T19:36:08Z",
+    "files": [
+      "templates/policy_watch.html.j2"
+    ]
+  },
+  {
+    "number": 6928,
+    "title": "[MO-A3] A-F02-W2-3: Second-country political desk under the whitehouse_brain contract, rendered on Policy Watch",
+    "mergedAt": "2026-09-09T00:19:58Z",
+    "files": [
+      "templates/policy_watch.html.j2"
+    ]
+  },
+  {
+    "number": 6899,
+    "title": "[MO-AA1] A-F02-1: Base map + OFAC sanctions overlay",
+    "mergedAt": "2026-09-09T16:48:20Z",
+    "files": [
+      "site/chat.html",
+      "site/sanctions_map.html",
+      "templates/_navlinks.html.j2",
+      "templates/_worldmap_base.html.j2",
+      "templates/chat.html",
+      "templates/sanctions_map.html.j2"
+    ]
+  },
+  {
+    "number": 6987,
+    "title": "theme: freshness/provenance chips never inherit the ZH up/down swap (Opus re-review of #6933)",
+    "mergedAt": "2026-09-09T18:08:21Z",
+    "files": [
+      "site/theme.css",
+      "templates/_ignition_radar_card.css.j2",
+      "templates/_risk_radar_card.css.j2",
+      "templates/china_news.html.j2",
+      "templates/committee.html.j2",
+      "templates/dashboard.html.j2",
+      "templates/foresight.html.j2",
+      "templates/hk.html.j2",
+      "templates/impulse.html.j2",
+      "templates/international_macro.html.j2",
+      "templates/macro_context.html.j2",
+      "templates/sector_central_china.html.j2",
+      "templates/stage_analysis.html.j2",
+      "templates/theme.css"
+    ]
+  },
+  {
+    "number": 6959,
+    "title": "[MO-BB3b] B-F13-3: Help that answers questions plus a dated product changelog, and support tickets that route by plan",
+    "mergedAt": "2026-09-09T20:00:44Z",
+    "files": [
+      "data/product/changelog.yml",
+      "templates/help.html.j2"
+    ]
+  },
+  {
+    "number": 6921,
+    "title": "[MO-BB2] B-F09-3: Issuer debt-maturity ladder from SEC XBRL companyfacts (bounded producer + plain-language panel)",
+    "mergedAt": "2026-09-09T20:24:18Z",
+    "files": [
+      "site/theme.css",
+      "templates/_debt_maturity.html.j2",
+      "templates/theme.css",
+      "templates/ticker.html.j2"
+    ]
+  },
+  {
+    "number": 7002,
+    "title": "[MO-B PLAT-13] govrev: trim template whitespace and ratchet the raw-byte fence to 304 KiB (render.yml red on main since 2026-09-08)",
+    "mergedAt": "2026-09-09T22:59:16Z",
+    "files": [
+      "templates/government_revenue.html.j2"
+    ]
+  },
+  {
+    "number": 6927,
+    "title": "[MO-BB3] B-F09-4: M&A premium math from EDGAR tender filings",
+    "mergedAt": "2026-09-10T04:07:11Z",
+    "files": [
+      "templates/capital_structure.html.j2"
+    ]
+  },
+  {
+    "number": 6904,
+    "title": "[MO-BB1] B-F09-2: Is the window open for new bond deals? HY/IG credit issuance window gate parallel to the IPO leg",
+    "mergedAt": "2026-09-10T04:10:16Z",
+    "files": [
+      "templates/ipo.html.j2"
+    ]
+  },
+  {
+    "number": 6896,
+    "title": "[MO-AA1] A-F05-1: Event-to-asset impact upgrade",
+    "mergedAt": "2026-09-10T15:18:56Z",
+    "files": [
+      "templates/news.html.j2"
+    ]
+  },
+  {
+    "number": 6830,
+    "title": "[F10-X1] Research implication cards",
+    "mergedAt": "2026-09-10T15:34:02Z",
+    "files": [
+      "site/measurementdata/research_implication_cards.json",
+      "templates/measurement.html.j2"
+    ]
+  },
+  {
+    "number": 7016,
+    "title": "fix(policy): resolve overdue calls without false scoring",
+    "mergedAt": "2026-09-11T03:57:30Z",
+    "files": [
+      "templates/policy_watch.html.j2"
+    ]
+  },
+  {
+    "number": 7068,
+    "title": "HOTFIX: remove misleading China Risk Radar recovery panel",
+    "mergedAt": "2026-09-11T05:16:25Z",
+    "files": [
+      "site/china.html"
+    ]
+  },
+  {
+    "number": 7008,
+    "title": "[MO-A-W4] A-F01-W4-1: Treasury curve-shape hero on the rates_curves route — today vs prior close vs prior month, context only (MO-DELTA-012)",
+    "mergedAt": "2026-09-11T18:01:55Z",
+    "files": [
+      "templates/_curve_panel.html.j2",
+      "templates/_macro_suite_shell.html.j2"
+    ]
+  },
+  {
+    "number": 6920,
+    "title": "[MO-BB2b] B-F06-1: Second issuer end to end: owner-routed ListingAlias->ListingKey resolution + issuer_cik reader exposure, MSFT security_state.v1 + page",
+    "mergedAt": "2026-09-11T18:11:14Z",
+    "files": [
+      "templates/ticker.html.j2"
+    ]
+  },
+  {
+    "number": 7046,
+    "title": "[MO-A] fix: alerts EN truncation amputated sentences + deleted risk caveat (heal W3)",
+    "mergedAt": "2026-09-11T21:23:55Z",
+    "files": [
+      "templates/alerts.html.j2"
+    ]
+  },
+  {
+    "number": 7007,
+    "title": "[MO-BB2b] B-F06-3: Second-issuer cockpit per the F06 scope freeze — eight panels over the shipped security-state view model, personal-impact card refolded (stacked on #6920)",
+    "mergedAt": "2026-09-12T10:50:21Z",
+    "files": [
+      "templates/ticker.html.j2"
+    ]
+  },
+  {
+    "number": 6909,
+    "title": "[MO-BB1] B-F13-1: Public glossary over the existing vocabulary, in plain language",
+    "mergedAt": "2026-09-12T17:06:19Z",
+    "files": [
+      "site/glossary.html",
+      "templates/_public_nav.html.j2",
+      "templates/glossary.html.j2"
+    ]
+  },
+  {
+    "number": 6905,
+    "title": "[MO-BB1] B-F07-1: Valuation under different assumptions (V1): one issuer, reported SEC fundamentals, plain language",
+    "mergedAt": "2026-09-12T17:07:09Z",
+    "files": [
+      "templates/_valuation_scenario.html.j2",
+      "templates/ticker.html.j2"
+    ]
+  },
+  {
+    "number": 7010,
+    "title": "[MO-A-W4] A-F04-W4-1: Theme Tracker reading-order section — uncalibrated research-priority ordering from recorded evidence dates (MO-DELTA-006, research_priority_only)",
+    "mergedAt": "2026-09-12T18:24:41Z",
+    "files": [
+      "templates/state_of_themes.html.j2"
+    ]
+  },
+  {
+    "number": 7017,
+    "title": "Policy Watch R1: official updates and calendar recovery (release verification)",
+    "mergedAt": "2026-09-12T19:47:55Z",
+    "files": [
+      "templates/_policy_watch_current.html.j2",
+      "templates/policy_watch.html.j2"
+    ]
+  },
+  {
+    "number": 7083,
+    "title": "[MO-B F06-ZH-CARD-1] Change card state tokens in house Chinese",
+    "mergedAt": "2026-09-12T20:12:01Z",
+    "files": [
+      "templates/ticker.html.j2"
+    ]
+  },
+  {
+    "number": 7006,
+    "title": "[MO-BB3c] B-F09-6b: Capital-markets policy calendar section — dated policy events projected onto six frozen capital-markets windows, context only, beside the merged Policy watch chip",
+    "mergedAt": "2026-09-12T23:34:18Z",
+    "files": [
+      "site/capital_structure.css",
+      "site/data/capital_policy_projection.json",
+      "templates/capital_structure.css",
+      "templates/capital_structure.html.j2"
+    ]
+  },
+  {
+    "number": 6526,
+    "title": "fix(market-os): refresh Portfolio badge after authoritative A1B reread",
+    "mergedAt": "2026-09-13T02:06:59Z",
+    "files": [
+      "site/portfolio.js",
+      "site/watchlist.js",
+      "templates/portfolio.js",
+      "templates/watchlist.js"
+    ]
+  },
+  {
+    "number": 7004,
+    "title": "[MO-BB1] B-F07-2: Valuation under YOUR assumptions — adjustable growth, margin and multiple over V1's reported-fundamentals model, recomputed in the page (stacked on #6905)",
+    "mergedAt": "2026-09-13T11:33:24Z",
+    "files": [
+      "templates/_valuation_assumptions.html.j2",
+      "templates/ticker.html.j2"
+    ]
+  },
+  {
+    "number": 7109,
+    "title": "Policy Watch: date current analysis snapshot",
+    "mergedAt": "2026-09-13T22:55:05Z",
+    "files": [
+      "templates/policy_watch.html.j2"
+    ]
+  },
+  {
+    "number": 7061,
+    "title": "[MO-A W8] cycle: P0 truth blockers + staleness arithmetic (round 1)",
+    "mergedAt": "2026-09-15T15:56:21Z",
+    "files": [
+      "site/cycle.html",
+      "site/cycle_app.js",
+      "templates/cycle.html.j2"
+    ]
+  },
+  {
+    "number": 7166,
+    "title": "fix(earnings-wire): restore current incremental publication",
+    "mergedAt": "2026-09-15T20:30:09Z",
+    "files": [
+      "site/assets/js/company-intelligence-dossier.js",
+      "site/stocks/A.html",
+      "site/stocks/AA.html",
+      "site/stocks/AAL.html",
+      "site/stocks/AAMI.html",
+      "site/stocks/AAON.html",
+      "site/stocks/AAP.html",
+      "site/stocks/AAPL.html",
+      "site/stocks/AAT.html",
+      "site/stocks/ABBV.html",
+      "site/stocks/ABCB.html",
+      "site/stocks/ABG.html",
+      "site/stocks/ABM.html",
+      "site/stocks/ABNB.html",
+      "site/stocks/ABOS.html",
+      "site/stocks/ABR.html",
+      "site/stocks/ABSI.html",
+      "site/stocks/ABT.html",
+      "site/stocks/ABUS.html",
+      "site/stocks/ABX.html",
+      "site/stocks/ACA.html",
+      "site/stocks/ACAD.html",
+      "site/stocks/ACGL.html",
+      "site/stocks/ACHC.html",
+      "site/stocks/ACHR.html",
+      "site/stocks/ACI.html",
+      "site/stocks/ACIW.html",
+      "site/stocks/ACLS.html",
+      "site/stocks/ACM.html",
+      "site/stocks/ACMR.html",
+      "site/stocks/ACN.html",
+      "site/stocks/ACRS.html",
+      "site/stocks/ACT.html",
+      "site/stocks/ACTG.html",
+      "site/stocks/ACVA.html",
+      "site/stocks/ADAM.html",
+      "site/stocks/ADBE.html",
+      "site/stocks/ADC.html",
+      "site/stocks/ADEA.html",
+      "site/stocks/ADI.html",
+      "site/stocks/ADM.html",
+      "site/stocks/ADMA.html",
+      "site/stocks/ADNT.html",
+      "site/stocks/ADP.html",
+      "site/stocks/ADPT.html",
+      "site/stocks/ADSK.html",
+      "site/stocks/ADT.html",
+      "site/stocks/ADTN.html",
+      "site/stocks/ADUS.html",
+      "site/stocks/AEE.html",
+      "site/stocks/AEHR.html",
+      "site/stocks/AEIS.html",
+      "site/stocks/AEO.html",
+      "site/stocks/AEP.html",
+      "site/stocks/AES.html",
+      "site/stocks/AESI.html",
+      "site/stocks/AEVA.html",
+      "site/stocks/AFG.html",
+      "site/stocks/AFL.html",
+      "site/stocks/AGCO.html",
+      "site/stocks/AGL.html",
+      "site/stocks/AGNT.html",
+      "site/stocks/AGO.html",
+      "site/stocks/AGX.html",
+      "site/stocks/AGYS.html",
+      "site/stocks/AHCO.html",
+      "site/stocks/AHR.html",
+      "site/stocks/AI.html",
+      "site/stocks/AIG.html",
+      "site/stocks/AII.html",
+      "site/stocks/AIN.html",
+      "site/stocks/AIR.html",
+      "site/stocks/AIRJ.html",
+      "site/stocks/AIRS.html",
+      "site/stocks/AIT.html",
+      "site/stocks/AIZ.html",
+      "site/stocks/AJG.html",
+      "site/stocks/AKAM.html",
+      "site/stocks/AKR.html",
+      "site/stocks/ALB.html",
+      "site/stocks/ALEC.html",
+      "site/stocks/ALG.html",
+      "site/stocks/ALGM.html",
+      "site/stocks/ALGN.html",
+      "site/stocks/ALGT.html",
+      "site/stocks/ALHC.html",
+      "site/stocks/ALK.html",
+      "site/stocks/ALKS.html",
+      "site/stocks/ALKT.html",
+      "site/stocks/ALL.html",
+      "site/stocks/ALLE.html",
+      "site/stocks/ALLO.html",
+      "site/stocks/ALLY.html",
+      "site/stocks/ALMS.html",
+      "site/stocks/ALNT.html",
+      "site/stocks/ALOY.html",
+      "site/stocks/ALRM.html"
+    ]
+  },
+  {
+    "number": 7184,
+    "title": "fix: keep Market State path synced with settled score",
+    "mergedAt": "2026-09-16T03:42:22Z",
+    "files": [
+      "templates/dashboard.html.j2"
+    ]
+  },
+  {
+    "number": 7045,
+    "title": "[MO-A] fix: research_vault side is desk type, not a rating; summary + facet hygiene (heal W2)",
+    "mergedAt": "2026-09-16T09:53:06Z",
+    "files": [
+      "site/research_vault_app.js",
+      "templates/research_report.html.j2",
+      "templates/research_vault.html.j2"
+    ]
+  },
+  {
+    "number": 7052,
+    "title": "[MO-A H3] confluence_screener: LENS tip layer + line-590 honesty repair",
+    "mergedAt": "2026-09-16T22:39:22Z",
+    "files": [
+      "templates/confluence_screener.html.j2"
+    ]
+  },
+  {
+    "number": 7228,
+    "title": "fix(macro): color theme rank momentum by direction",
+    "mergedAt": "2026-09-16T22:58:23Z",
+    "files": [
+      "templates/dashboard.html.j2"
+    ]
+  },
+  {
+    "number": 7037,
+    "title": "[MO-A] i18n: retire 135 ASCII .l-zh labels on macro_context/macro_signals (frozen-spec PR-A)",
+    "mergedAt": "2026-09-17T17:49:34Z",
+    "files": [
+      "templates/macro_context.html.j2",
+      "templates/macro_signals.html.j2"
+    ]
+  },
+  {
+    "number": 6898,
+    "title": "[MO-AA1] A-F10-1: prereg chip + hub entry (stacked on #6830)",
+    "mergedAt": "2026-09-17T21:15:07Z",
+    "files": [
+      "templates/intelligence_hub.html.j2",
+      "templates/measurement.html.j2"
+    ]
+  },
+  {
+    "number": 7042,
+    "title": "[MO-A] fix: forex hero stance follows dollar_dir (was inverted) + horizon labels",
+    "mergedAt": "2026-09-18T01:46:42Z",
+    "files": [
+      "templates/forex.html.j2"
+    ]
+  },
+  {
+    "number": 7049,
+    "title": "[MO-A] copy: plans.html entitlement truth — Essential Deep Opus 10/mo everywhere; bilingual headers (H4)",
+    "mergedAt": "2026-09-18T21:26:52Z",
+    "files": [
+      "templates/plans.html.j2"
+    ]
+  },
+  {
+    "number": 7051,
+    "title": "[MO-A] copy: MASTERMIND AI category headers get ZH on landing + onboarding (H5)",
+    "mergedAt": "2026-09-18T21:26:58Z",
+    "files": [
+      "site/index.html",
+      "site/onboard.js",
+      "templates/index.html",
+      "templates/onboard.js"
+    ]
+  },
+  {
+    "number": 6907,
+    "title": "[MO-BB1] B-F08-1a: Alert delivery preferences: email opt-in, category, timezone, quiet hours (API + signed-in account surface)",
+    "mergedAt": "2026-09-18T22:49:38Z",
+    "files": [
+      "site/account.js",
+      "site/theme.css",
+      "templates/account.js",
+      "templates/theme.css"
+    ]
+  },
+  {
+    "number": 7342,
+    "title": "feat(commodities): wire Shanghai-close China gold basis proxy",
+    "mergedAt": "2026-09-19T02:35:28Z",
+    "files": [
+      "templates/_china_gold_premium.html.j2"
+    ]
+  },
+  {
+    "number": 7360,
+    "title": "fix(nav): tighten keyboard and press interactions",
+    "mergedAt": "2026-09-19T06:08:32Z",
+    "files": [
+      "site/navigation-refresh.css",
+      "site/theme.js",
+      "templates/navigation-refresh.css",
+      "templates/theme.js"
+    ]
+  },
+  {
+    "number": 7128,
+    "title": "[MO-B HEAL-AUDIT] [MO-BB1] B-F09-2: Is the window open for new bond deals? HY/IG credit issuance window gate parallel to the IPO leg (audit heal of m#6904)",
+    "mergedAt": "2026-09-19T07:35:57Z",
+    "files": [
+      "templates/ipo.html.j2"
+    ]
+  }
+]
