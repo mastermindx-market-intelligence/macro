@@ -1,7 +1,7 @@
 """Deterministic quality benchmark for grounded Research Intelligence outputs.
 
-This is an evaluation harness, not a model router or source store.  Real source
-bodies and gold annotations stay in private operator inputs.  Results retain only
+This is an evaluation harness, not a model router or source store. Real source
+bodies and gold annotations stay in private operator inputs. Results retain only
 hashes, counts, and scores so licensed text is not copied into benchmark receipts.
 """
 from __future__ import annotations
@@ -9,13 +9,13 @@ from __future__ import annotations
 from collections import defaultdict
 import hashlib
 import json
+import math
 from statistics import mean
 from typing import Any, Iterable
 
 from engine.qual_extraction import citation_normalize, quote_span_verified
 
 from .extractor import _identity, build_prompt, parse_model_output
-from .schema import validate_rio
 
 CASE_SCHEMA = "mastermind.research_intelligence.benchmark_case.v1"
 RESULT_SCHEMA = "mastermind.research_intelligence.benchmark_result.v1"
@@ -41,10 +41,28 @@ _METRIC_KEYS = (
     "analysis_category_recall",
     "direction_accuracy",
 )
+_COUNT_KEYS = (
+    "expected_claims",
+    "matched_claims",
+    "expected_numbers",
+    "matched_numbers",
+    "expected_entities",
+    "matched_entities",
+    "expected_analysis_categories",
+    "matched_analysis_categories",
+)
 
 
 def _sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _is_sha256(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(char in "0123456789abcdef" for char in value)
+    )
 
 
 def _norm(value: Any) -> str:
@@ -71,6 +89,20 @@ def _indices(value: Any, claim_count: int, *, label: str) -> list[int]:
     for raw in value:
         if type(raw) is not int or raw < 0 or raw >= claim_count:
             raise ValueError(f"{label} contains an invalid claim index")
+        if raw not in out:
+            out.append(raw)
+    return out
+
+
+def _strings(value: Any, *, label: str) -> list[str]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a list")
+    out: list[str] = []
+    for raw in value:
+        if not isinstance(raw, str) or raw != raw.strip() or not raw:
+            raise ValueError(f"{label} contains invalid text")
         if raw not in out:
             out.append(raw)
     return out
@@ -103,14 +135,21 @@ def validate_case(case: Any, source_body: str) -> dict[str, Any]:
         raise ValueError("benchmark case requires expected claims")
 
     claims: list[dict[str, Any]] = []
-    for raw in raw_claims:
+    seen_quotes: set[str] = set()
+    for claim_index, raw in enumerate(raw_claims):
         if not isinstance(raw, dict):
             raise ValueError("expected claim must be an object")
-        quote = str(raw.get("quote_span") or "")
+        quote = raw.get("quote_span")
+        if not isinstance(quote, str) or quote != quote.strip() or not quote:
+            raise ValueError("expected claim quote must be exact non-empty text")
         if not quote_span_verified(source_body, quote, require_complete_clause=True):
             raise ValueError("expected claim quote is not grounded in source body")
-        numbers = [str(x) for x in raw.get("numbers", []) if str(x)]
-        entities = [str(x) for x in raw.get("entities", []) if str(x)]
+        normalized_quote = _norm(quote)
+        if normalized_quote in seen_quotes:
+            raise ValueError("benchmark case contains duplicate expected claim quotes")
+        seen_quotes.add(normalized_quote)
+        numbers = _strings(raw.get("numbers"), label=f"claims[{claim_index}].numbers")
+        entities = _strings(raw.get("entities"), label=f"claims[{claim_index}].entities")
         for number in numbers:
             if not quote_span_verified(quote, number, minimum_chars=1):
                 raise ValueError("expected number is not grounded in its claim quote")
@@ -120,8 +159,8 @@ def validate_case(case: Any, source_body: str) -> dict[str, Any]:
         claims.append(
             {
                 "quote_span": quote,
-                "numbers": list(dict.fromkeys(numbers)),
-                "entities": list(dict.fromkeys(entities)),
+                "numbers": numbers,
+                "entities": entities,
             }
         )
 
@@ -201,6 +240,27 @@ def _expected_counts(checked: dict[str, Any]) -> dict[str, int]:
     }
 
 
+def _score_counts(
+    checked: dict[str, Any],
+    *,
+    claim_hits: int = 0,
+    number_hits: int = 0,
+    entity_hits: int = 0,
+    category_hits: int = 0,
+) -> dict[str, int]:
+    counts = _expected_counts(checked)
+    return {
+        "expected_claims": counts["claims"],
+        "matched_claims": claim_hits,
+        "expected_numbers": counts["numbers"],
+        "matched_numbers": number_hits,
+        "expected_entities": counts["entities"],
+        "matched_entities": entity_hits,
+        "expected_analysis_categories": counts["analysis_categories"],
+        "matched_analysis_categories": category_hits,
+    }
+
+
 def _zero_metrics(checked: dict[str, Any]) -> dict[str, float | None]:
     counts = _expected_counts(checked)
     return {
@@ -221,14 +281,7 @@ def _supported_gold_indices(
     return {output_to_gold[index] for index in support if index in output_to_gold}
 
 
-def score_rio(case: Any, source_body: str, rio: Any) -> dict[str, Any]:
-    """Score one already-grounded RIO against exact private gold annotations."""
-    checked = validate_case(case, source_body)
-    obj = validate_rio(
-        rio,
-        expected_document_id=checked["document"]["id"],
-        expected_document=checked["document"],
-    )
+def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, Any]:
     gold_claims = checked["expected"]["claims"]
     gold_by_quote = {_norm(row["quote_span"]): index for index, row in enumerate(gold_claims)}
 
@@ -242,19 +295,17 @@ def score_rio(case: Any, source_body: str, rio: Any) -> dict[str, Any]:
 
     claim_hits = len(output_by_gold)
     number_hits = 0
-    number_total = 0
     entity_hits = 0
-    entity_total = 0
     for gold_index, gold in enumerate(gold_claims):
         candidate = output_by_gold.get(gold_index)
         candidate_numbers = set(candidate["numbers"]) if candidate else set()
-        candidate_entities = {str(x).casefold() for x in candidate["entities"]} if candidate else set()
-        for number in gold["numbers"]:
-            number_total += 1
-            number_hits += int(number in candidate_numbers)
-        for entity in gold["entities"]:
-            entity_total += 1
-            entity_hits += int(entity.casefold() in candidate_entities)
+        candidate_entities = (
+            {str(x).casefold() for x in candidate["entities"]} if candidate else set()
+        )
+        number_hits += sum(number in candidate_numbers for number in gold["numbers"])
+        entity_hits += sum(
+            entity.casefold() in candidate_entities for entity in gold["entities"]
+        )
 
     thesis = obj["analysis"]["thesis"]
     thesis_gold = _supported_gold_indices(thesis["support_claim_indices"], output_to_gold)
@@ -262,25 +313,26 @@ def score_rio(case: Any, source_body: str, rio: Any) -> dict[str, Any]:
     thesis_hits = len(expected_thesis & thesis_gold)
 
     category_hits = 0
-    category_total = 0
     for field, expectations in checked["expected"]["analysis_support"].items():
         observed_sets = [
             _supported_gold_indices(row["support_claim_indices"], output_to_gold)
             for row in obj["analysis"][field]
         ]
         for expectation in expectations:
-            category_total += 1
             target = set(expectation)
             category_hits += int(any(target <= observed for observed in observed_sets))
 
+    counts = _expected_counts(checked)
     expected_direction = checked["expected"]["thesis_direction"]
     metrics: dict[str, float | None] = {
         "validity": 1.0,
-        "claim_recall": _ratio(claim_hits, len(gold_claims)),
-        "number_recall": _ratio(number_hits, number_total),
-        "entity_recall": _ratio(entity_hits, entity_total),
-        "thesis_support_recall": _ratio(thesis_hits, len(expected_thesis)),
-        "analysis_category_recall": _ratio(category_hits, category_total),
+        "claim_recall": _ratio(claim_hits, counts["claims"]),
+        "number_recall": _ratio(number_hits, counts["numbers"]),
+        "entity_recall": _ratio(entity_hits, counts["entities"]),
+        "thesis_support_recall": _ratio(thesis_hits, counts["thesis_support"]),
+        "analysis_category_recall": _ratio(
+            category_hits, counts["analysis_categories"]
+        ),
         "direction_accuracy": (
             float(thesis["direction"] == expected_direction) if expected_direction else None
         ),
@@ -290,17 +342,33 @@ def score_rio(case: Any, source_body: str, rio: Any) -> dict[str, Any]:
         "source_content_sha256": checked["source_content_sha256"],
         "metrics": metrics,
         "overall_score": _mean_available(metrics.values()),
-        "counts": {
-            "expected_claims": len(gold_claims),
-            "matched_claims": claim_hits,
-            "expected_numbers": number_total,
-            "matched_numbers": number_hits,
-            "expected_entities": entity_total,
-            "matched_entities": entity_hits,
-            "expected_analysis_categories": category_total,
-            "matched_analysis_categories": category_hits,
-        },
+        "counts": _score_counts(
+            checked,
+            claim_hits=claim_hits,
+            number_hits=number_hits,
+            entity_hits=entity_hits,
+            category_hits=category_hits,
+        ),
     }
+
+
+def score_rio(case: Any, source_body: str, rio: Any) -> dict[str, Any]:
+    """Re-ground and score one RIO against exact private gold annotations."""
+    checked = validate_case(case, source_body)
+    raw = json.dumps(
+        rio,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    )
+    obj = parse_model_output(
+        raw,
+        expected_document_id=checked["document"]["id"],
+        expected_document=checked["document"],
+        source_body=source_body,
+    )
+    return _score_grounded(checked, obj)
 
 
 def score_raw_output(
@@ -332,7 +400,7 @@ def score_raw_output(
             expected_document=checked["document"],
             source_body=source_body,
         )
-        scored = score_rio(checked, source_body, rio)
+        scored = _score_grounded(checked, rio)
     except (TypeError, ValueError, json.JSONDecodeError) as exc:
         metrics = _zero_metrics(checked)
         return {
@@ -341,7 +409,7 @@ def score_raw_output(
             "error_class": type(exc).__name__[:120],
             "metrics": metrics,
             "overall_score": _mean_available(metrics.values()),
-            "counts": _expected_counts(checked),
+            "counts": _score_counts(checked),
         }
     return {
         **base,
@@ -352,22 +420,137 @@ def score_raw_output(
     }
 
 
+def _validated_result(raw: Any) -> dict[str, Any]:
+    if not isinstance(raw, dict) or raw.get("schema") != RESULT_SCHEMA:
+        raise ValueError("unexpected benchmark result schema")
+    label = str(raw.get("candidate_label") or "").strip()
+    case_id = str(raw.get("case_id") or "").strip()
+    state = raw.get("state")
+    if not label or not case_id or state not in {"ok", "invalid_output"}:
+        raise ValueError("benchmark result identity/state is malformed")
+    if raw.get("provenance_state") != "operator_label_only":
+        raise ValueError("benchmark result provenance state is invalid")
+    for field in ("source_content_sha256", "prompt_sha256", "output_sha256"):
+        if not _is_sha256(raw.get(field)):
+            raise ValueError(f"benchmark result {field} is invalid")
+
+    metrics = raw.get("metrics")
+    if not isinstance(metrics, dict) or set(metrics) != set(_METRIC_KEYS):
+        raise ValueError("benchmark result metrics are malformed")
+    checked_metrics: dict[str, float | None] = {}
+    for key in _METRIC_KEYS:
+        value = metrics[key]
+        if value is None:
+            checked_metrics[key] = None
+            continue
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            raise ValueError("benchmark metric must be numeric or null")
+        number = float(value)
+        if not math.isfinite(number) or number < 0.0 or number > 1.0:
+            raise ValueError("benchmark metric is outside [0,1]")
+        checked_metrics[key] = number
+    expected_validity = 1.0 if state == "ok" else 0.0
+    if checked_metrics["validity"] != expected_validity:
+        raise ValueError("benchmark result validity disagrees with state")
+
+    overall = raw.get("overall_score")
+    if isinstance(overall, bool) or not isinstance(overall, (int, float)):
+        raise ValueError("benchmark overall_score is invalid")
+    overall_number = float(overall)
+    recomputed = _mean_available(checked_metrics.values())
+    if not math.isfinite(overall_number) or abs(overall_number - recomputed) > 0.000001:
+        raise ValueError("benchmark overall_score disagrees with metrics")
+
+    counts = raw.get("counts")
+    if not isinstance(counts, dict) or set(counts) != set(_COUNT_KEYS):
+        raise ValueError("benchmark result counts are malformed")
+    checked_counts: dict[str, int] = {}
+    for key in _COUNT_KEYS:
+        value = counts[key]
+        if type(value) is not int or value < 0:
+            raise ValueError("benchmark result count is invalid")
+        checked_counts[key] = value
+    for expected_key, matched_key in (
+        ("expected_claims", "matched_claims"),
+        ("expected_numbers", "matched_numbers"),
+        ("expected_entities", "matched_entities"),
+        ("expected_analysis_categories", "matched_analysis_categories"),
+    ):
+        if checked_counts[matched_key] > checked_counts[expected_key]:
+            raise ValueError("benchmark matched count exceeds expected count")
+
+    return {
+        **raw,
+        "candidate_label": label,
+        "case_id": case_id,
+        "metrics": checked_metrics,
+        "overall_score": recomputed,
+        "counts": checked_counts,
+    }
+
+
 def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
-    """Aggregate text-free case receipts by operator-provided candidate label."""
-    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    """Aggregate only directly comparable, text-free case receipts by candidate."""
+    groups: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    bindings: dict[str, tuple[str, str]] = {}
+    metric_shapes: dict[str, tuple[bool, ...]] = {}
+    expected_shapes: dict[str, tuple[int, int, int, int]] = {}
+
     for raw in results:
-        if not isinstance(raw, dict) or raw.get("schema") != RESULT_SCHEMA:
-            raise ValueError("unexpected benchmark result schema")
-        label = str(raw.get("candidate_label") or "").strip()
-        metrics = raw.get("metrics")
-        if not label or not isinstance(metrics, dict):
-            raise ValueError("benchmark result is malformed")
-        groups[label].append(raw)
+        item = _validated_result(raw)
+        label = item["candidate_label"]
+        case_id = item["case_id"]
+        if case_id in groups[label]:
+            raise ValueError("duplicate benchmark case for candidate")
+        groups[label][case_id] = item
+
+        binding = (item["source_content_sha256"], item["prompt_sha256"])
+        prior_binding = bindings.setdefault(case_id, binding)
+        if prior_binding != binding:
+            raise ValueError("benchmark case binding differs across candidates")
+
+        shape = tuple(item["metrics"][key] is None for key in _METRIC_KEYS)
+        prior_shape = metric_shapes.setdefault(case_id, shape)
+        if prior_shape != shape:
+            raise ValueError("benchmark metric applicability differs across candidates")
+
+        counts = item["counts"]
+        expected_shape = (
+            counts["expected_claims"],
+            counts["expected_numbers"],
+            counts["expected_entities"],
+            counts["expected_analysis_categories"],
+        )
+        prior_expected = expected_shapes.setdefault(case_id, expected_shape)
+        if prior_expected != expected_shape:
+            raise ValueError("benchmark gold counts differ across candidates")
+
+    if not groups:
+        return {
+            "schema": AGGREGATE_SCHEMA,
+            "ranking_basis": "private_gold_deterministic_metrics",
+            "case_set_sha256": _sha256_text("[]"),
+            "candidates": [],
+        }
+
+    case_sets = {frozenset(items) for items in groups.values()}
+    if len(case_sets) != 1:
+        raise ValueError("candidate case coverage differs")
+    case_ids = sorted(next(iter(case_sets)))
+    binding_payload = [
+        [case_id, bindings[case_id][0], bindings[case_id][1]]
+        for case_id in case_ids
+    ]
+    case_set_sha256 = _sha256_text(
+        json.dumps(binding_payload, separators=(",", ":"), ensure_ascii=False)
+    )
+
     rows: list[dict[str, Any]] = []
-    for label, items in groups.items():
+    for label, by_case in groups.items():
+        items = [by_case[case_id] for case_id in case_ids]
         metric_means: dict[str, float | None] = {}
         for key in _METRIC_KEYS:
-            values = [item["metrics"].get(key) for item in items]
+            values = [item["metrics"][key] for item in items]
             present = [float(value) for value in values if value is not None]
             metric_means[key] = round(mean(present), 6) if present else None
         rows.append(
@@ -375,9 +558,9 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
                 "candidate_label": label,
                 "provenance_state": "operator_label_only",
                 "case_count": len(items),
-                "valid_case_count": sum(item.get("state") == "ok" for item in items),
+                "valid_case_count": sum(item["state"] == "ok" for item in items),
                 "mean_overall_score": round(
-                    mean(float(item.get("overall_score") or 0.0) for item in items), 6
+                    mean(float(item["overall_score"]) for item in items), 6
                 ),
                 "metrics": metric_means,
             }
@@ -386,5 +569,6 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     return {
         "schema": AGGREGATE_SCHEMA,
         "ranking_basis": "private_gold_deterministic_metrics",
+        "case_set_sha256": case_set_sha256,
         "candidates": rows,
     }
