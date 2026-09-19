@@ -24,7 +24,7 @@
   ],
   "properties": {
     "schema": {"const": "options.alpha_candidate_formation_policy/v1"},
-    "policy_id": {"const": "oa_repeated_measured_campaign/v1"},
+    "policy_id": {"const": "oa_member_persistent_measured_campaign/v1"},
     "policy_version": {"const": 1},
     "status": {"const": "preregistered_inactive_until_activation"},
     "registered_on": {"type": "string", "format": "date"},
@@ -92,7 +92,7 @@
       "additionalProperties": false,
       "required": [
         "campaign_phase",
-        "minimum_repeated_count",
+        "minimum_member_count",
         "require_final_member_measured_microstructure",
         "minimum_source_print_count",
         "minimum_nbbo_valid_print_count",
@@ -108,7 +108,7 @@
       ],
       "properties": {
         "campaign_phase": {"const": "prospective_after_rule_freeze"},
-        "minimum_repeated_count": {"const": 1},
+        "minimum_member_count": {"const": 2},
         "require_final_member_measured_microstructure": {"const": true},
         "minimum_source_print_count": {"const": 1},
         "minimum_nbbo_valid_print_count": {"const": 1},
@@ -144,7 +144,7 @@
               "BEFORE_ACTIVATION_BOUNDARY",
               "CAMPAIGN_RECEIPT_INVALID",
               "CAMPAIGN_NOT_PROSPECTIVE",
-              "NO_REPEAT_PERSISTENCE",
+              "INSUFFICIENT_CAMPAIGN_MEMBERS",
               "FINAL_MEMBER_MICROSTRUCTURE_MISSING",
               "NO_VALID_NBBO_MEASUREMENT",
               "EVIDENCE_CLOCK_INVALID",
