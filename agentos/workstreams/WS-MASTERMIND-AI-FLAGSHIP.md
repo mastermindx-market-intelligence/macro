@@ -69,6 +69,18 @@ waves:
       implementation is progressive tool visibility + cumulative usage accounting,
       not deterministic prefetch. Shared ask_brain/brain_gateway source remains
       held until #7217/#7152/#7100/#7144 writer/collision reconciliation.
+  - id: A0
+    title: Make evidence discipline and rival-hypothesis analysis the default
+    status: in_progress
+    next_action: >
+      Consume ANALYTICAL_REASONING_CONTRACT_2026-09-19.md. Production paired
+      NVDA runs show the natural question can collapse an ambiguous move into one
+      confident causal story even though the always-on Analyst Protocol requires two
+      candidates; the coached version preserves rivals and missing discriminators.
+      Repair the top-level prompt by removing the higher-priority conflict: unresolved
+      evidence is valid, no-hedging means no padding, and STANCE/direct trade calls
+      are task-conditioned rather than universal. Shared gateway source implementation
+      waits for current writer/collision reconciliation; do not add another long directive.
   - id: R3
     title: Save and update a research case through real monitoring
     status: todo
@@ -99,6 +111,7 @@ landmines:
   - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
   - Current turn usage reports only the final model response instead of cumulative multi-round usage; do not compare total cost from done.usage until repaired.
   - The existing question classifier is advisory only and has ordering gaps; do not filter tool visibility from its current seeds without test-first profile fixes.
+  - Higher-priority prompt rules currently force no-hedging/universal STANCE/direct calls while lower Analyst Protocol requires two competing explanations; do not add more doctrine text before removing this precedence conflict.
   - Synthetic conformance, graph plumbing, model agreement and green tests are not live intelligence or trading authority.
 do_not_redo:
   - Do not create another Brain, identity, source, queue, memory, transcript, auth, retry, publication or control plane.
@@ -111,6 +124,7 @@ do_not_redo:
   - Preserve published-only Research and private-data egress limits; active research must not silently change a bounded corpus contract.
   - Wave order is prioritization, not universal serial gates; owned-data analysis does not require public-search credentials.
 artifacts:
+  - research/mastermind_ai_flagship/ANALYTICAL_REASONING_CONTRACT_2026-09-19.md
   - research/mastermind_ai_flagship/FAST_HARNESS_LATENCY_AND_TOOL_VISIBILITY_2026-09-19.md
   - research/mastermind_ai_flagship/PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
