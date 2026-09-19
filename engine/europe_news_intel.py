@@ -103,9 +103,8 @@ def enabled() -> bool:
 
 
 def _events_path() -> Path:
-    p = config.data_dir() / "europe_news_vector" / "events.parquet"
-    p.parent.mkdir(parents=True, exist_ok=True)
-    return p
+    """Desk parquet path. Does not create the directory — writers mkdir."""
+    return config.data_dir() / "europe_news_vector" / "events.parquet"
 
 
 def _coverage_path() -> Path:
@@ -115,8 +114,9 @@ def _coverage_path() -> Path:
 
 
 def _events_path_no_mkdir() -> Path:
-    """Events path WITHOUT creating the directory — read-only callers use this."""
-    return config.data_dir() / "europe_news_vector" / "events.parquet"
+    """Read-only alias of `_events_path()` so monkeypatches of the writer path
+    still redirect readers. Never creates the directory."""
+    return _events_path()
 
 
 # --------------------------------------------------------------------------- #
@@ -602,6 +602,7 @@ def ingest(asof: date, crawled_at: str | None = None) -> dict | None:
             log.warning("europe_news_intel: item_id recovery failed (%s)", e)
 
         path = _events_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
         existing = pd.read_parquet(path) if path.exists() else None
         before = 0 if existing is None else len(existing)
         merged = accrue(existing, records)
@@ -642,12 +643,13 @@ def read_events(asof: date | None = None):
     """The accrued desk artifact as a DataFrame, or None. Never raises."""
     try:
         import pandas as pd
-        path = _events_path()
+        path = _events_path_no_mkdir()
         if not path.exists():
             return None
         df = pd.read_parquet(path)
         if asof is not None:
-            df = df[df["asof"] <= asof.isoformat()]
+            bound = asof.isoformat() if hasattr(asof, "isoformat") else str(asof)
+            df = df[df["asof"] <= bound]
         return df
     except Exception as e:  # noqa: BLE001
         log.error("europe_news_intel.read_events failed (%s)", e)
@@ -657,19 +659,6 @@ def read_events(asof: date | None = None):
 # --------------------------------------------------------------------------- #
 # source / jurisdiction label helpers (pure, no network, no clock)
 # --------------------------------------------------------------------------- #
-_SOURCE_PUBLISHER_MAP: dict[str, str] | None = None
-
-
-def _source_publisher_map() -> dict[str, str]:
-    """Lazy-load key → publisher name from config."""
-    global _SOURCE_PUBLISHER_MAP  # noqa: PLW0603
-    if _SOURCE_PUBLISHER_MAP is None:
-        _SOURCE_PUBLISHER_MAP = {
-            s["key"]: s.get("publisher", "") for s in sources()
-        }
-    return _SOURCE_PUBLISHER_MAP
-
-
 _JURISDICTION_LABELS: dict[str, tuple[str, str]] = {
     "EU":      ("European Union",        "欧盟"),
     "EA":      ("Euro Area",             "欧元区"),
@@ -681,10 +670,48 @@ _JURISDICTION_LABELS: dict[str, tuple[str, str]] = {
 
 def _jurisdiction_label(jurisdiction: str) -> tuple[str, str]:
     """Return (en_label, zh_label) for a jurisdiction string."""
-    return _JURISDICTION_LABELS.get(
-        jurisdiction,
-        (jurisdiction, jurisdiction),  # fallback: raw key in both languages
-    )
+    return _JURISDICTION_LABELS.get(jurisdiction, ("Europe", "欧洲"))
+
+
+def _source_labels(source_key: str) -> tuple[str, str]:
+    """Human publisher names for a desk source key.
+
+    English: config `publisher`, else "Official source".
+    Chinese: config `publisher_zh` when present, else "官方来源".
+    """
+    en, zh = "Official source", "官方来源"
+    for spec in (_cfg().get("sources") or []):
+        if str(spec.get("key") or "") != source_key:
+            continue
+        pub = str(spec.get("publisher") or "").strip()
+        if pub:
+            en = pub
+        pub_zh = str(spec.get("publisher_zh") or "").strip()
+        if pub_zh:
+            zh = pub_zh
+        break
+    return en, zh
+
+
+def _panel_origin_ts(asof, seendate):
+    """Window origin for the 14-day recency filter. Never reads the wall clock.
+
+    Prefer the caller's `asof`; if it is missing, use the latest event seendate
+    already in the store (the page's as-of is unknown).
+    """
+    import pandas as pd
+
+    if asof is not None:
+        ts = pd.Timestamp(asof)
+        if ts.tzinfo is None:
+            ts = ts.tz_localize("UTC")
+        else:
+            ts = ts.tz_convert("UTC")
+        return ts
+    latest = seendate.max()
+    if pd.isna(latest):
+        return None
+    return latest
 
 
 # --------------------------------------------------------------------------- #
@@ -693,49 +720,52 @@ def _jurisdiction_label(jurisdiction: str) -> tuple[str, str]:
 def panel(asof: date | None = None):
     """Europe official-press panel over the existing qbus join surface.
 
-    Returns None (never raises) when the parquet is missing or unreadable.
+    Consumes `read_events(asof)` only. Returns None (never raises) when the
+    parquet is missing, unreadable, or the recency window is empty.
     is_context_only=True signals that scores/ranks are not available.
 
-    Items carry title / url / source_label / seendate / jurisdiction_label only.
-    importance_raw, event_key, item_id, and theme slugs are absent from
-    the output — no scores, no ranking, no LLM signals in the panel.
+    Items carry title / url / source / source_zh / seendate /
+    jurisdiction_en / jurisdiction_zh only. importance_raw, event_key,
+    item_id, and theme slugs are absent — no scores, no ranking, no LLM
+    signals in the panel.
 
-    Recency window: last 14 days, newest first, capped at 12 rows.
+    Recency window: last 14 days relative to `asof` (or the latest event
+    timestamp when `asof` is omitted), newest first, capped at 12 rows.
     """
     try:
-        import pandas as pd  # noqa: F401 — used inside try block
-        path = _events_path_no_mkdir()
-        if not path.exists():
-            return None
-        df = pd.read_parquet(path)
+        import pandas as pd
+
+        df = read_events(asof)
         if df is None or len(df) == 0:
             return None
-        if asof is not None:
-            df = df[df["asof"] <= asof.isoformat()]
-        # recency window: last 14 days, newest first, cap 12 rows
-        cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=14)
-        df = df[df["seendate"] >= cutoff.isoformat()]
-        df = df.sort_values("seendate", ascending=False).head(12)
-        pub_map = _source_publisher_map()
+        seendate = pd.to_datetime(df["seendate"], utc=True, errors="coerce")
+        origin = _panel_origin_ts(asof, seendate)
+        if origin is None:
+            return None
+        cutoff = origin - pd.Timedelta(days=14)
+        in_window = seendate.notna() & (seendate >= cutoff)
+        df = df.loc[in_window].assign(_sort=seendate.loc[in_window])
+        df = df.sort_values("_sort", ascending=False).head(12)
         items = []
         for _, row in df.iterrows():
-            source_key = str(row.get("source", ""))
-            pub = pub_map.get(source_key, "")
-            jurisdiction = str(row.get("jurisdiction", ""))
-            j_en, j_zh = _jurisdiction_label(jurisdiction)
+            source_en, source_zh = _source_labels(str(row.get("source", "")))
+            j_en, j_zh = _jurisdiction_label(str(row.get("jurisdiction", "")))
             items.append({
                 "title": str(row.get("title", "")),
                 "url": str(row.get("url", "")),
-                "source": pub if pub else "Official source",
-                "source_zh": pub if pub else "官方来源",
+                "source": source_en,
+                "source_zh": source_zh,
                 "seendate": str(row.get("seendate", "")),
                 "jurisdiction_en": j_en,
                 "jurisdiction_zh": j_zh,
             })
+        if not items:
+            return None
         return {
             "schema": SCHEMA,
             "is_context_only": True,
             "items": items,
         }
-    except Exception:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
+        log.warning("europe_news_intel.panel failed (%s)", e)
         return None
