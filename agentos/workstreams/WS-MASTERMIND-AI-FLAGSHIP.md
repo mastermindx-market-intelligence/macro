@@ -33,12 +33,15 @@ waves:
       Source Continuity and real financial-answer/browser proof remain separate.
   - id: R1
     title: Investigate a material current evidence gap through a primary public source
-    status: todo
+    status: in_progress
     depends_on: [R0]
     next_action: >
-      Qualify actual search and source opening through existing function tools and
-      workload owners. Read PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md,
-      not the superseded native-search assumption. Preparation is independent of R0.
+      R1 backend contract is frozen in PUBLIC_RESEARCH_PROVIDER_QUALIFICATION_2026-09-16.md:
+      provider-neutral search_public_sources + open_public_source; OpenAI Responses
+      web search is the first smart-discovery candidate, Brave the independent
+      lower-cost baseline, and opened source content remains the evidence authority.
+      Build/qualify the smallest company-evidence vertical slice after current
+      provider/workload credential admission; never reuse ChatGPT/Codex credentials.
   - id: R2
     title: Deliver an earnings-to-financial-bridge thesis investigation
     status: awaiting_ci
@@ -139,6 +142,34 @@ limit. No CHECKPOINT_VERIFIED receipt or candidate collision conclusion is claim
 PR7365 is BUILT_NOT_PROVEN. No live model/customer/browser acceptance, automatic
 earnings-evidence binding, public-web retrieval, saved-case monitoring, signal
 promotion or investment-outperformance claim is established.
+
+## 2026-09-19 R1 backend ruling
+
+Procedure re-pin: Mastermind protected `733389933e605e508517732fb6c69b6c18b7fef6`,
+Skillpack1.0.1/bootstrap1. Macro current-main census pin:
+`b97426d21914127cec1cf747c1bfc806a5c0e384`.
+
+A current-main code census found no existing customer-facing Firecrawl, Tavily,
+Brave, Serper/SerpAPI or OpenAI Responses web-search adapter. The attached Codex
+provider explicitly disables web search and remains a subscription provider path,
+not the customer-research seam. The estate does contain hardened public-network
+read primitives in the existing Company Intelligence reader; R1 should factor/reuse
+those safety laws without weakening immutable-object semantics or copying another
+SSRF implementation.
+
+R1 now separates search discovery from source authority. The first qualification
+bake-off is OpenAI Responses web_search (Luna/Terra) versus Brave Search, both
+feeding the same application-owned safe source opener. The Brain-facing contract is
+provider-neutral `search_public_sources` + `open_public_source`. Search snippets,
+provider answers, source URLs and HTTP200 never count as opened evidence. The
+server emits an auditable external-research obligation and sends only a minimal
+public evidence request; private portfolio/notes/full conversation remain outside
+the search provider. Full contract, current pricing evidence, safety negatives and
+vertical-slice proof are appended to the qualification artifact.
+
+This is a design/qualification delta only. No API credential, customer search,
+provider request, Brain tool, deployment, signal authority or external worker was
+activated by this ruling.
 
 ## Current continuation — arithmetic integrity and streaming proof
 
