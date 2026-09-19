@@ -2,7 +2,7 @@
   "schema": "mastermind.page_evidence_receipt.v1",
   "packet_slug": "b-f09-13-covenant-headroom",
   "manifest_sha": "05080c9e608b58003366c846bd6b261625daa39c",
-  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = 3bd6070bd9129cd5704972a0ed1ee0e7a576abf4 for this packet's tree state. The packet is committed as the last evidence commit on branch claude/mo-b-f09-13-covenant-headroom.",
+  "manifest_sha_note": "git commit SHA at the time of capture; HEAD^{tree} = ddadd09132b349acd91e0ffb3cc15b38d909aa60 for this packet's tree state. The packet is committed as the last evidence commit on branch claude/mo-b-f09-13-covenant-headroom.",
   "captured_at": "2026-09-19T01:31:58Z",
   "captured_by": "HEAL-h3-7127",
   "render_method": "fixture_render_via_evidence_recipe_script",
