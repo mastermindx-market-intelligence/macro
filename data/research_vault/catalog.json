@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T15:11:16.749068+00:00",
-  "count": 2437,
+  "generated_at": "2026-09-19T15:56:42.320446+00:00",
+  "count": 2439,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -688,6 +688,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-uqtyyxldx86-bdd514",
+      "title": "Global Economics Wrap Up September 18, 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:44:40Z",
+      "summary_points": [
+        "Central Bank Policy Divergence: FOMC hiked rates 25bp to 3.75-4% with hawkish projections (16-2 majority for further hikes); BoE signaled November hike if energy pressures persist; BoJ raised rates, reflecting stark tightening divergence.",
+        "US GDP Data Strength: Q3 GDP tracking boosted to +3.3% driven by core retail sales (+1.4% MoM), housing starts (+7.6% MoM), and utilities production (+1.8% MoM), countering sentiment weakness.",
+        "China/India Growth Outperformance: Goldman Sachs forecasts 2027 GDP growth 0.2-0.9pp above consensus for China/India vs.",
+        "Brazil’s 0.5pp below, highlighting critical allocation differentials.",
+        "UK Inflation & Labor Mismatch: CPI headline inflation rose to 3.1% (above BoE forecast) despite unemployment holding at 4.9%, with weak payroll growth (-26k August flash), signaling persistent pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-rfook46u8uf-d3a298",
       "title": "Global Rates Trader Hiking More or Less",
       "institution": "Goldman Sachs",
@@ -705,6 +726,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 21,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-k5ahgcecha0-400b13",
+      "title": "Global FX Trader Dollar Drift",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:44:32Z",
+      "summary_points": [
+        "USD: Policy Divergence Risk: Hawkish Fed communication (vs. expected tightening) and China’s currency management limit USD moves despite US economic strength, creating near-term volatility risk.",
+        "JPY: Technical & Policy Pressure: BoJ rate hike speculation (despite dissent) and Fed hikes reinforce tactical USD/JPY shorts; Goldman Sachs maintains long JPY bias due to reduced BoJ urgency and downside asymmetry.",
+        "CNY: Summit-Driven Appreciation: USD/CNY fix weakened ahead of Trump-Xi summit; trade surplus ($120bn) and FX inflows support gradual appreciation despite weak domestic demand.",
+        "HUF: Energy Sensitivity as Critical Risk: HUF highly sensitive to oil/gas prices (beta near historical highs); MNB’s inflation target reduction and rate pause positive, but energy volatility dominates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
