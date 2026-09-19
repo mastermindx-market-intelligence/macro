@@ -7471,6 +7471,8 @@ jobs:
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
       - name: research vault serving-API security tests
         run: python -m pytest tests/test_research_api.py -q
+      - name: source-bound report evidence — corpus selector
+        run: python -m pytest tests/test_research_evidence_passages.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
@@ -12546,6 +12548,8 @@ jobs:
           tests/test_intelligence_workspace_cli.py
           tests/test_intelligence_workspace_performance.py
           tests/test_intelligence_workspace_workspace_layout.py -q
+      - name: source-bound report evidence — Brain projection + CI owner law
+        run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
 
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
