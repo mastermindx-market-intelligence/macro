@@ -125,7 +125,11 @@ Therefore:
 - inference clusters at **decision date**;
 - every table prints unique decision dates as well as episodes/names;
 - no p-value/CI may use episode count as if rate treatment varied across names;
-- a result with fewer than **30 unique dates** in either compared rate arm is `UNINFORMATIVE`, regardless of episode count.
+- the **primary estimator gives every eligible date equal weight**: first compute that date's false-start fraction, then average across dates in the rate arm;
+- an episode-weighted estimate may print only as a descriptive sensitivity and cannot determine the verdict;
+- temporal sign-stability uses the already-established house boundary **2020-07-01** (pre = before; post = on/after), not a median split chosen from these outcomes;
+- a result with fewer than **30 unique dates** in either compared rate arm overall, or fewer than **10 unique dates per arm in either temporal half**, is `UNINFORMATIVE`, regardless of episode count;
+- uncertainty uses a deterministic **calendar-month block bootstrap** over date-level observations, 10,000 resamples, seed `20260919`.
 
 This date-level law is mandatory.
 
@@ -206,7 +210,7 @@ This retrospective diagnostic cannot promote a signal.
 
 For the primary false-start difference:
 
-- **SUPPORTIVE_DIAGNOSTIC:** easing reduces false starts by **≥10 pp**, interval excludes zero in the favorable direction, sign is favorable in both temporal halves, and each arm has ≥30 decision dates.
+- **SUPPORTIVE_DIAGNOSTIC:** easing reduces false starts by **≥10 pp**, interval excludes zero in the favorable direction, BH-adjusted **q ≤ 0.10**, sign is favorable on both sides of the fixed 2020-07-01 split, and the overall/half date floors are met.
 - **SUGGESTIVE:** reduction ≥5 pp, same sign in both temporal halves, but the stronger hurdle is not met.
 - **NULL:** smaller/inconsistent.
 - **ADVERSE:** easing cohort is materially worse.
@@ -220,12 +224,22 @@ The policy-confirmed sensitivity must agree in sign to strengthen the mechanism;
 
 ## 8. Anti-overfit / multiplicity
 
-Closed primary family:
+**Existing TrialLedger family:** `rates_conditioned_leader_pullback_v1`.  
+**Declared budget floor: 7**. Registration must occur through the existing `engine.trial_ledger` owner **before the first rate×episode statistic is computed**. No side ledger.
 
-1. C2r leader-like primary false-start difference.
-2. C2r leader-vs-nonleader interaction falsifier.
+The seven registered inferential looks are closed:
 
-Everything else is secondary/descriptive.
+1. A1 — C2r leader-like, EASING_AFTER_PRESSURE vs eligible non-easing pressure dates, false-start pp difference (**primary**).
+2. A2 — C2r leader-minus-nonleader interaction across easing vs non-easing pressure dates (**primary falsifier**).
+3. A3 — C2r POLICY_CONFIRMED_RELIEF sensitivity, same leader-like false-start metric.
+4. A4 — C2r fixed 5bp magnitude sensitivity, same metric.
+5. A5 — C2r REACCELERATION adverse-state falsifier.
+6. A6 — C4 EASING_AFTER_PRESSURE robustness, leader-like false-start metric.
+7. A7 — C4 leader-minus-nonleader interaction robustness.
+
+Benjamini-Hochberg is computed across all seven p-values with **q ≤ 0.10**. A1 cannot be `SUPPORTIVE_DIAGNOSTIC` unless its own interval/effect/sign/date hurdles pass **and** its BH-adjusted q ≤ 0.10. No secondary outcome can rescue A1.
+
+Breakeven decomposition and the listed secondary economic/geometry outcomes are descriptive under this family; turning one into a new inferential/promotional claim requires a new registered budget.
 
 No best tenor, best lookback, best oscillator, best leader threshold, best detector, or best rate magnitude search. C4 is a declared robustness family, not a substitute winner if C2r fails.
 
