@@ -1950,7 +1950,7 @@ lanes:
       - id: persona_memory
         module: engine.marketing.persona_memory
         note: >
-          XG-W3 persona-memory consolidator. Folds the host/VPS runtime spool
+          XG-W3 persona-memory consolidator. Folds this host's runtime spool
           (emission-time phrase-fatigue, relationship-touch and open-promise
           counters, which make ZERO tracked-repo writes intraday — the same
           posture as the outbox's items-host.jsonl) into the tracked ledgers
@@ -1958,9 +1958,28 @@ lanes:
           ledgers (charter §2 amendment 13), so this is their only writer.
           Idempotent: records dedup on a stable key, because a retried nightly
           that double-counted would silently TIGHTEN every per-quirk frequency
-          cap those counters bound. A host with no spool is a no-op that exits 0
-          and prints a ::notice — most runners never emit anything. Never-raise
-          (set +e, exit 0); a non-zero rc only prints a ::warning.
+          cap those counters bound.
+          CROSS-HOST RECONCILIATION (closes the XG-W3 review's F11). The spool is
+          host-local and publication is not: the publisher runs on
+          macstudio-light, this step on macstudio, the reply desk on the VPS, and
+          data/marketing/personas_host/ is gitignored, so a post shipped by one
+          host never reached the ledger advanced by another — silently, because an
+          absent spool and an idle host leave identical evidence. The step now
+          also JOINS the two ledgers that already cross hosts by git commit-back —
+          data/marketing/publications.jsonl (what shipped) and
+          data/marketing/outbox/items.jsonl (its copy) — and admits a recovered
+          record only when sha256(text) matches the receipt's own
+          effective_copy_hash. No new transport, ledger or queue: both inputs are
+          read-only here, and the account set is the UNION of spool-bearing and
+          publication-bearing accounts (deriving it from the spool alone is what
+          made the consolidator blind by construction). A lookback, not a
+          watermark, so a missed night self-heals; anything unresolvable is
+          reported in the summary's `reconciliation` block and announced as a
+          ::warning rather than read as "no publication". phrases is what a
+          per-post receipt can reach — promises and relations are named as
+          unreconciled in that same block. A host with nothing to do is a no-op
+          that exits 0 and prints a ::notice. Never-raise (set +e, exit 0); a
+          non-zero rc only prints a ::warning.
       - id: marketing_learning
         module: scripts.marketing_learning_nightly
         note: >
