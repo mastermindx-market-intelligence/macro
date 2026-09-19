@@ -1,5 +1,0 @@
-# recapture: NEEDED
-packet: W7-1 (MO-PAID-034)
-page: euro_area.html
-code_head: see git log -1 --format=%H HEAD -- . ":(exclude)mockups/evidence/euro_area"
-captured: none — no PNG in this PR; recapture at the merged CODE_HEAD is a follow-on lane
