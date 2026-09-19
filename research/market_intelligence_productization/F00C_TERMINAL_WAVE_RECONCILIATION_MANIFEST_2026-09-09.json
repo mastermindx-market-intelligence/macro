@@ -114,8 +114,8 @@
         "terminal/app/api/event-impact/route.ts",
         "terminal/components/EventImpactPanel.tsx"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in event-impact journey. Event->position mapping is already shipped; do not build a second mapping path.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-036",
@@ -147,8 +147,8 @@
         "terminal/components/workspaces/ThesisWorkspace.tsx",
         "supabase/migrations/0012_thesis_objects.sql"
       ],
-      "next_bounded_child": "ONE child: reconcile the revision vocabulary — either carry an amended_from reference on the version row, or amend this acceptance sentence to name the shipped previous_version link. Nothing else about this row is open.",
-      "residual": "The shipped store supersedes by a previous_version link on an immutable version row; the token amended_from appears nowhere in the Terminal tree, so the acceptance sentence is not literally satisfied."
+      "next_bounded_child": "Vocabulary is previous_version (do not add amended_from). Residual is live signed-in create/revise proof. #577 is a different child.",
+      "residual": "Signed-in create/revise proof outstanding. The shipped store supersedes by a previous_version link on an immutable version row — that IS the accepted vocabulary (Sol: never regresses to amended_from); Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-051",
@@ -164,8 +164,8 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0014_tenancy_foundation.sql"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in owner/member create+read journey. Tenancy schema/routes are shipped (#514 plus audit heal #585); do not create a second team model.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-053",
@@ -180,8 +180,8 @@
         "terminal/components/workspaces/ThesisWorkspace.tsx",
         "terminal/app/api/theses/route.ts"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in RMS lens journey. The seven views and Thesis object store are already shipped; do not create a second research-management store.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-081",
@@ -212,8 +212,8 @@
         "terminal/app/api/teams/[id]/members/route.ts",
         "terminal/lib/tenantScope.ts"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in role-contrast journey. Role model and route enforcement are already shipped; no second permission model.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-083",
@@ -227,8 +227,8 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0015_team_roles_invitations.sql"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in workspace-vs-personal persistence journey. #584 is merged; do not duplicate the settings table or route.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger. Producer note: the ledger names terminal#584 (dd7c6dec, workspace-settings persistence, merged 2026-09-18) on top of this packet's #514 tenancy foundation; the manifest keeps its 2026-09-09 producer pin (Terminal master db69d072) and the ledger cell carries both."
     },
     {
       "id": "MO-PAID-086",
@@ -242,8 +242,8 @@
         "terminal/app/api/account/export/route.ts",
         "terminal/lib/accountExport.ts"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in export download. Route, serializer and account-settings UI are already shipped; do not create a second export plane.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-087",
@@ -265,15 +265,15 @@
       "id": "MO-DELTA-014",
       "family": "F08-PORTFOLIO-ALERTS",
       "acceptance_test": "per-user Sharpe/Sortino/beta/concentration over A1A/A1B holdings",
-      "disposition": "NOT_SATISFIED",
-      "capability_state_c2": "PARTIAL",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
       "terminal_pr": 524,
       "merge_sha": "efcd98aaf4f432692ea1841655bf24c0045bbd02",
       "producer_paths": [
         "terminal/lib/portfolioRisk.ts"
       ],
-      "next_bounded_child": "HOLD liquidity on a macro ticker-keyed thickness field in stockdata/<TICKER>.json (producer-owned); no Terminal-side invention",
-      "residual": "Concentration, industry weight, company-size weight and the Sharpe, Sortino and beta risk history are built, but the liquidity-thickness field remains the macro artifact producer's to supply."
+      "next_bounded_child": "Proof-only: signed-in risk-history journey. Sharpe/Sortino/beta and concentration are already shipped; liquidity belongs to MO-PAID-036, not this row.",
+      "residual": "Signed-in risk-history proof remaining (Sol F00C convergence 2026-09-19, #7335 comment 5739279644: '014 -> BUILT_NOT_PROVEN with only signed-in risk-history proof remaining; liquidity stays on 036'). Built by terminal#524 (efcd98aa) + terminal#578 (598b1a04); this manifest mirrors the ledger."
     },
     {
       "id": "MO-DELTA-042",
@@ -286,8 +286,8 @@
       "producer_paths": [
         "terminal/lib/eventImpact.ts"
       ],
-      "next_bounded_child": "ONE child: add the F08 §9 invalidation element to the shipped event-object schema, so an event states the condition that would void it alongside direction, mechanism and timeframe — carried on this row because MO-PAID-028's own sentence is now met and its child is empty. | #7138 §LEDGER_MOVES #8: token \"invalidation\" retained in next_bounded_child per spec.",
-      "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable. That invalidation element was part of the ONE child MO-PAID-028 carried at the base; MO-PAID-028's sentence is met and its child is empty, so this row now owns the child that would ship it."
+      "next_bounded_child": "Proof-only: signed-in /api/event-impact + /portfolio readback. Schema/mapping/invalidation are already shipped; do not create a second event-impact object.",
+      "residual": "Signed-in /api/event-impact + /portfolio readback proof outstanding. Schema, mapping and the F08 §9 invalidation element are already shipped (terminal#522 68b0d00a + terminal#576 45a0e78e per the ledger); Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     }
   ],
   "single_writer_convergence_2026_09_19": {
@@ -504,5 +504,44 @@
         "MO-PAID-086": "BUILT_NOT_PROVEN; export route/lib/SectionAccount consumer shipped; signed-in export download proof owed"
       }
     }
+  },
+  "seat_records_pass_2026_09_19": {
+    "by": "Meta-CEO B seat 026851bd",
+    "why": "#7335 (Sol single-writer F00C integration, merged af617506) rewrote ledger children/states; tests/test_f00c_terminal_reconciliation.py requires the manifest to mirror the ledger (child ownership is a ledger fact). Manifest fields next_bounded_child / capability_state_c2 / acceptance_test mirrored from the ledger; residual set where a SATISFIED row now carries a proof-only child.",
+    "rows": [
+      "MO-PAID-028",
+      "MO-PAID-046",
+      "MO-PAID-051",
+      "MO-PAID-053",
+      "MO-PAID-082",
+      "MO-PAID-083",
+      "MO-PAID-086",
+      "MO-DELTA-014",
+      "MO-DELTA-042"
+    ],
+    "ledger_sha_source": "origin/main after af617506",
+    "rows_note": "MO-DELTA-014 disposition NOT_SATISFIED->SATISFIED with residual (Sol ruling; ledger BUILT_NOT_PROVEN); MO-PAID-046 and MO-PAID-083 ledger real_producer cells gained the manifest producer sha in an append inside the cell (see PR body); no other ledger byte changed.",
+    "round2": "2026-09-19 ~12:00Z after Grok review h_f00c_rec_rv1: MO-DELTA-042 and MO-PAID-046 residuals rewritten to the signed-in-proof form (their old text claimed an unshipped invalidation field / a not-literally-satisfied sentence, contradicting the mirrored child); five unrelated seat draft records removed from the PR."
   }
+,
+  "post_merge_corrections_2026_09_19": [
+    {
+      "operation": "marketontology-f00c-postmerge-mo-paid-039-20260919-sol-001",
+      "baseline_main_sha": "af617506e59c258c5786bab926a34b35b9ab2deb",
+      "source_pr": 7353,
+      "source_head_sha": "d1b4005ddf994d5636f5bed033db3ce2b553eda0",
+      "row_id": "MO-PAID-039",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "ruling": "measurement.html is intentionally internal/admin-only and is rendered nightly; the live defect is the public Intelligence Hub link to the blocked public route, not a missing measurement builder",
+      "verified_source": [
+        "app/deploy/Caddyfile @never_site contains /measurement.html",
+        "tests/test_admin_research_tools.py pins admin-only /research-tools boundary",
+        ".github/workflows/daily.yml invokes scripts/ci/daily_engine_regional_desk_builders.sh",
+        "scripts/ci/daily_engine_regional_desk_builders.sh runs brun measurement -> scripts.build_measurement",
+        "templates/intelligence_hub.html.j2 links to measurement.html#ric-section"
+      ],
+      "production_observation": "public GET https://www.mastermind-x.com/measurement.html returned 404 on 2026-09-19, consistent with @never_site",
+      "residual": "authenticated admin Calibration Lab implication-card proof plus F10 owner repair of the public link; no second builder"
+    }
+  ]
 }

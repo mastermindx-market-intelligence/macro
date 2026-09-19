@@ -949,20 +949,31 @@ def status() -> dict:
 
 
 # ---- auth: secretless — verify the access token against Supabase ------------
-def require_user(authorization: str | None = Header(default=None)) -> dict:
+def require_user(authorization: str | None = Header(default=None),
+                 request: Request = None) -> dict:
     """Verify a Supabase access token without any server-side secret.
 
-    Identity is the existing paywall token cache (``app.paywall._fresh_identity``
-    / ``_AUTH_CACHE``): ``sha256(token)`` key, TTL clamped 1–60s. A cached valid
-    record is served through a vendor blip for that TTL only. Invalid or expired
-    tokens are cached as rejected and never become a bypass. Concurrent upstream
-    calls are semaphore-bounded so a slow vendor sheds instead of pinning the
-    thread pool (and ``/api/health`` with it). No second auth cache is minted
-    here — two divergent identity paths was the MMX-004 finding.
+    Accepts EITHER a ``Bearer <token>`` header OR the shared Supabase session cookie
+    (``sb-<ref>-auth-token``) via ``_mm_supabase_access_token`` — the same reader
+    ``paywall`` and ``regwall`` and ``collect`` already use for the beacon. No second
+    auth cache is minted here — two divergent identity paths was the MMX-004 finding.
     """
-    if not authorization or not authorization.startswith("Bearer "):
+    # Try Bearer header first.
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ", 1)[1]
+    elif request is not None:
+        # No Bearer: try the session cookie (same reader paywall/regwall/collect use).
+        token = _mm_supabase_access_token(request)
+        if token:
+            authorization = f"Bearer {token}"
+        else:
+            token = None
+    else:
+        token = None
+
+    if not token:
         raise HTTPException(401, "missing bearer token")
-    token = authorization.split(" ", 1)[1]
+
     from app.paywall import _resolve_identity  # noqa: PLC0415 — shared cache, not a second one
 
     ident = _resolve_identity(token)
@@ -976,7 +987,10 @@ def require_user(authorization: str | None = Header(default=None)) -> dict:
         raise HTTPException(502, "auth check failed, please try again") from None
     if not ident.uid or not isinstance(ident.record, dict):
         raise HTTPException(401, "invalid token")
-    return dict(ident.record)
+    record = dict(ident.record)
+    # Inject the raw token so callers (account_actions) know what was used.
+    record["_access_token"] = token
+    return record
 
 
 def require_site_full_user(user: dict = Depends(require_user)) -> dict:
@@ -1061,8 +1075,13 @@ def account(user: dict = Depends(require_user),
         # convention as `from app import billing` four lines up.
         from lib import team_membership  # noqa: PLC0415
         from app.account_prefs import _supabase  # noqa: PLC0415 — reuse, do not duplicate
+        # Use the resolved token from require_user (which handles both Bearer and cookie).
+        # authorization Header may be absent when only the session cookie was present.
+        # Fall back to extracting from the header when callers bypass require_user (direct
+        # route-level tests; production path always passes through require_user).
+        caller_token = user.get("_access_token") or team_membership.extract_bearer(authorization)
         teams = team_membership.fetch_caller_teams(
-            team_membership.extract_bearer(authorization),
+            caller_token,
             str(user.get("id") or ""),
             _supabase(),
         )
@@ -2408,6 +2427,25 @@ try:
 except Exception as _prefs_exc:  # noqa: BLE001
     import logging as _logging  # noqa: PLC0415
     _logging.getLogger("macro.api").warning("account prefs router not mounted: %r", _prefs_exc)
+
+# ---------------------------------------------------------------------------
+# Account actions (MO-B F12-13 — app/account_actions.py): POST
+# /api/account/{password,email,signout-everywhere,delete}. The other four calls
+# templates/account.js has been making since the account card shipped, none of
+# which had a handler here — so every control on the panel was dead. Bearer-authed
+# through require_user and mounted right after account_prefs, for the same reason:
+# both must sit AFTER that definition so the router can lazily reuse the canonical
+# Supabase bearer verifier without an import cycle.
+# ---------------------------------------------------------------------------
+try:
+    from app.account_actions import router as account_actions_router  # noqa: E402
+    app.include_router(account_actions_router)
+except Exception as _account_actions_exc:  # noqa: BLE001
+    import logging as _logging  # noqa: PLC0415
+    _logging.getLogger("macro.api").warning(
+        "account actions router not mounted (account panel controls unavailable): %r",
+        _account_actions_exc,
+    )
 
 # ---------------------------------------------------------------------------
 # Private Options Issue Desk (R6.2-A): bearer-authenticated operator review only.
