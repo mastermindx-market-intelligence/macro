@@ -167,9 +167,10 @@ Collision rulings:
 - Draft/HOLD PRs #7064 and #7095 remain research-only; no held persistence or sector-control model was copied or activated.
 - PR #7000 remains an incident-record carrier; its active consumer repair ownership was not taken.
 - Open draft #7023 overlaps only incumbent `tests/test_subsector_rotation.py`; Lane C used dedicated path-disjoint tests.
-- The latest main advance to `ca7533a67670e0393728fda4b1633b56720aa1e0` touched only an unrelated PC-recovery handoff.
+- The implementation was rebased onto `ca7533a67670e0393728fda4b1633b56720aa1e0`. A final census found current main `c16823ddc3b99c5764509735df6a96f4e09848fe`; its subsequent changes are confined to the research-vault catalog and earnings route catalog, with no Lane C path overlap.
 
 No independent reviewer has approved this result yet. Draft PR #7455 is the current review pickup surface.
+
 ## Remaining gates and exact next action
 
 Open gates:
