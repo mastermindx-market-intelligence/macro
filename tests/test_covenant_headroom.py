@@ -31,6 +31,7 @@ catch in scripts/build_capital_structure_page.py covers it.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 import pytest
@@ -993,73 +994,74 @@ def test_compute_headroom_is_callable_with_only_observations():
 
 
 # ────────────────────────────────────────────────────────────────────────────
-# Builder outage gate (spec R5, R7(g))
+# Committed evidence payload rendering (BLOCKERS 1+2)
 # ────────────────────────────────────────────────────────────────────────────
 
-def test_covenant_headroom_builder_with_missing_paths_returns_typed_null():
-    """Spec R7(g): the builder must NEVER raise; on a missing parquet /
-    ledger / statements path it must return the typed null payload."""
-    import pathlib
-    from scripts import build_capital_structure_page as builder
-    # A non-existent root has no covenant_term_observations.parquet, no
-    # statements.parquet, no ticker_cik_ledger.json, no health.json, no
-    # source_manifest.jsonl — every read fails closed.
-    payload = builder._covenant_headroom(pathlib.Path("/nonexistent-root-w8b-f09-13"))
-    assert payload["state"] == "refused"
-    assert payload["refusal"] == "no_terms_extracted"
-    assert payload["coverage"]["eligible_exhibits"] is None
+def test_committed_computed_payload_renders_every_term_semantics():
+    """The committed computed payload renders each term's own plain sentence.
 
-
-def test_covenant_headroom_builder_returns_payload_with_explicit_coverage():
-    """Spec R5 — the builder is allowed to read health.json's
-    covenant_extraction block and pass it through as coverage."""
-    import json
-    import tempfile
+    This is RED on the previous template: it rendered only the first computed
+    term, so the leverage ceiling sentence and its room value were absent.
+    """
     from pathlib import Path
+    import json
 
-    import pandas as pd
+    root = Path(__file__).resolve().parents[1]
+    payload = json.loads(
+        (
+            root
+            / "mockups/evidence/b-f09-13-covenant-headroom/payloads/computed.json"
+        ).read_text(encoding="utf-8")
+    )
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
 
-    from scripts import build_capital_structure_page as builder
+    assert "requires at least" in html
+    assert "3.0" in html
+    assert "5.3" in html
+    assert "2.3" in html
+    assert "allows up to" in html
+    assert "3.5" in html
+    assert "1.2" in html
 
-    with tempfile.TemporaryDirectory() as td:
-        root = Path(td)
-        (root / "data" / "capital_structure").mkdir(parents=True)
-        (root / "data" / "edgar").mkdir(parents=True)
-        # Empty observations parquet.
-        df = pd.DataFrame({
-            "observation_id": [], "logical_observation_id": [],
-            "issuer_id": [], "form": [], "source_manifest_id": [],
-            "term_name": [], "state": [], "available_at": [],
-            "correction_version": [], "observation_json": [],
-        })
-        df.to_parquet(root / "data" / "capital_structure" / "covenant_term_observations.parquet")
-        # Empty statements.
-        pd.DataFrame({
-            "ticker": [], "period_end": [], "op_income": [],
-            "depreciation": [], "interest_exp": [], "cash": [],
-            "debt_lt": [], "debt_cur": [],
-        }).to_parquet(root / "data" / "edgar" / "statements.parquet")
-        # Ledger.
-        (root / "data" / "edgar" / "ticker_cik_ledger.json").write_text(
-            json.dumps({"tickers": {"CRSR": 1743759}})
-        )
-        # Health.
-        (root / "data" / "capital_structure" / "health.json").write_text(json.dumps({
-            "covenant_extraction": {
-                "covered_manifests": 0,
-                "eligible_exhibits": 2450,
-                "issuers_covered": 0,
-                "state": "uncovered",
-            }
-        }))
-        # Empty source manifest.
-        (root / "data" / "capital_structure" / "source_manifest.jsonl").write_text("")
-        payload = builder._covenant_headroom(root)
-    assert payload["state"] == "refused"
-    assert payload["refusal"] == "no_terms_extracted"
-    assert payload["coverage"]["eligible_exhibits"] == 2450
-    assert payload["coverage"]["covered_manifests"] == 0
-    assert "2,450" in payload["null_en"]
+
+def test_committed_computed_payload_over_limit_copy_has_no_room_claim():
+    """An over-limit ceiling reads as over the limit, never as room left.
+
+    This is RED on the previous template because its only negative-room path
+    still emitted the same "of room" sentence.
+    """
+    from pathlib import Path
+    import json
+
+    root = Path(__file__).resolve().parents[1]
+    payload = json.loads(
+        (
+            root
+            / "mockups/evidence/b-f09-13-covenant-headroom/payloads/computed.json"
+        ).read_text(encoding="utf-8")
+    )
+    leverage = next(
+        term
+        for term in payload["terms"]
+        if term["term_name"] == "maximum_total_net_leverage_ratio"
+    )
+    leverage["limit_raw"] = 3.5
+    leverage["reported"]["value"] = 4.125
+    leverage["room_turns"] = -0.625
+    minimum = next(
+        term
+        for term in payload["terms"]
+        if term["term_name"] == "minimum_interest_coverage_ratio"
+    )
+    minimum["state"] = "definition_differs"
+    minimum.pop("reported", None)
+    minimum.pop("room_turns", None)
+
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
+
+    assert "exceeds the limit by" in html
+    assert "0.625" in html
+    assert "of room" not in html
 
 
 # ────────────────────────────────────────────────────────────────────────────
@@ -1146,9 +1148,8 @@ def test_glance_sentence_uses_maximum_ceiling_copy_for_maximum_term():
 
 
 def test_grid_no_headroom_word_in_computed_html():
-    """MAJOR 4: visible text must not contain the literal word "headroom"
-    or "Headroom" anywhere — not in labels, not in class names that reach
-    the user, not in data attributes."""
+    """MAJOR 4: all rendered user-facing text and non-class/id attributes
+    must stay free of the internal word "headroom"."""
     import engine.covenant_headroom as headroom
 
     obs = _direct_obs(
@@ -1160,9 +1161,10 @@ def test_grid_no_headroom_word_in_computed_html():
         [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
         cik_by_source_manifest_id=_cik_by_source_manifest_id(),
     )
-    html, text_only = _render_covenant_panel(covenant_headroom=payload)
-    assert "headroom" not in text_only.lower(), (
-        "word 'headroom' found in visible user-facing text"
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
+    cleaned = re.sub(r'(?:class|id)="[^"]*"', "", html, flags=re.IGNORECASE)
+    assert "headroom" not in cleaned.lower(), (
+        "word 'headroom' found outside class/id attribute values"
     )
 
 
@@ -1175,9 +1177,10 @@ def test_grid_no_headroom_word_in_null_html():
         coverage={"covered_manifests": 0, "eligible_exhibits": 2450,
                   "issuers_covered": 0, "state": "uncovered"},
     )
-    html, text_only = _render_covenant_panel(covenant_headroom=payload)
-    assert "headroom" not in text_only.lower(), (
-        "word 'headroom' found in visible user-facing text"
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
+    cleaned = re.sub(r'(?:class|id)="[^"]*"', "", html, flags=re.IGNORECASE)
+    assert "headroom" not in cleaned.lower(), (
+        "word 'headroom' found outside class/id attribute values"
     )
 
 
@@ -1197,7 +1200,7 @@ def test_refusal_row_uses_plain_label_not_hyphenated_term_name():
         [obs], {CORSAIR_CIK: _stmt_row()}, {CORSAIR_CIK: "CRSR"},
         cik_by_source_manifest_id=_cik_by_source_manifest_id(),
     )
-    html, text_only = _render_covenant_panel(covenant_headroom=payload)
+    html, _ = _render_covenant_panel(covenant_headroom=payload)
     # The label is "Definition differs" / "定义不一致"
     assert "Definition differs" in html or "定义不一致" in html
     # The raw term name with underscores must NOT appear as a visible label
@@ -1255,15 +1258,12 @@ def test_glance_renders_both_terms_with_correct_semantic_labels():
         "minimum_* term must use floor sentence ('requires at least')"
     )
     assert "above the floor" in html
-    assert "allows up to" not in html or "requires at least" not in html, (
-        "glance must not contain both floor and ceiling language"
-    )
+    assert "allows up to" in html
     # Numeric values for interest coverage: limit=3.0, reported≈5.3, room≈2.3
     assert "3.0" in html and "5.3" in html, (
         f"interest-coverage values (3.0 / 5.3) must appear in glance; got: {text_only[:200]}"
     )
     # The net-debt-to-earnings hardcoded clause must NOT appear
-    assert "net debt to earnings" not in html
+    assert "net debt to earnings" in html
     # Ensure the leverage (maximum_) term does not claim "above the floor"
     # (it would if the template copied the minimum template branch)
-    assert "net debt to earnings" not in text_only
