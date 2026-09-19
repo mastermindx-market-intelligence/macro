@@ -3130,12 +3130,22 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
       - "scripts/prophet_lab_baseline.py"
+      # K4-G: these incumbent source owners must select the same PR code gate
+      # that executes the v3 chain/index regressions below.
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/refresh_event_workspaces.py"
       - "tests/test_prophet_lab.py"
       - "tests/test_prophet_lab_api.py"
       # D5 A7's manifest-authenticated N/N+1 correction chain is hermetic and
       # load-bearing for the Prophet Lab adapter, so its PR owner must be this
       # gate:code job rather than only neural-web-core's nightly data lane.
+      - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_company_intelligence_workspace_chain.py"
+      - "tests/test_company_intelligence_workspace_v3.py"
+      - "tests/test_refresh_event_workspaces.py"
+      - "tests/test_publish_company_intelligence_r2.py"
       - "tests/test_prophet_lab_timeparse.py"
       - "tests/test_prophet_lab_commissioning.py"
       - "tests/fixtures/prophet_lab/**"
@@ -3169,7 +3179,11 @@ jobs:
           python -m pytest
           tests/test_prophet_lab.py
           tests/test_prophet_lab_api.py
+          tests/test_company_intelligence_event_workspace.py
           tests/test_company_intelligence_workspace_chain.py
+          tests/test_company_intelligence_workspace_v3.py
+          tests/test_refresh_event_workspaces.py
+          tests/test_publish_company_intelligence_r2.py
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q

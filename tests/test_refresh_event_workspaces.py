@@ -4,6 +4,7 @@ from __future__ import annotations
 import gzip
 import io
 import json
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 
@@ -18,8 +19,10 @@ from engine.company_intelligence.event_workspace import (
     LIVE_NARRATIVE_ALIAS,
     LIVE_PUBLIC_SLUG,
     apple_registry,
+    build_revision_index,
     flagship_fiscal_period,
     write_workspace_generation,
+    write_workspace_generation_v3,
 )
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.earnings_transcript_intake import TranscriptRef, canonical_body_sha256
@@ -198,6 +201,9 @@ def _tx_fetchers():
 
 def _refresh(tmp_path: Path, fake: _FakeR2, **kwargs):
     fetch_index, fetch_body, _tx_sha = _tx_fetchers()
+    extra = {}
+    if "legacy_revision_loader" in kwargs:
+        extra["legacy_revision_loader"] = kwargs["legacy_revision_loader"]
     return refresh(
         tmp_path,
         out_dir=tmp_path,
@@ -227,8 +233,16 @@ def _refresh(tmp_path: Path, fake: _FakeR2, **kwargs):
         # law — see the homebuilder loaders above) — default to "no
         # predecessor, no additional discovered revisions" unless a test
         # explicitly wants to exercise the chain/discovery machinery.
-        current_marker_loader=kwargs.get("current_marker_loader", lambda: None),
+        current_marker_loader=kwargs.get(
+            "current_marker_loader", lambda: _local_workspace_marker(tmp_path)
+        ),
+        current_revision_index_loader=kwargs.get(
+            "current_revision_index_loader",
+            lambda manifest: _local_revision_index(tmp_path, manifest),
+        ),
         homebuilder_discovery=kwargs.get("homebuilder_discovery", lambda ticker, **_kw: []),
+        operation_time=kwargs.get("operation_time"),
+        **extra,
     )
 
 
@@ -257,8 +271,19 @@ def test_same_source_revisions_are_semantic_noop(tmp_path: Path) -> None:
     assert _refresh(tmp_path, fake, prior_workspace=first_aapl_prior) == 0
     second = _marker(tmp_path)
     assert first["generation_id"] == second["generation_id"]
-    assert first["generated_at"] == ACCEPTANCE
-    assert second["generated_at"] == ACCEPTANCE
+    assert first["generated_at"] != ACCEPTANCE
+    assert second["generated_at"] == first["generated_at"]
+    second_workspace = json.loads(
+        (
+            tmp_path
+            / "event_workspaces"
+            / "generations"
+            / second["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert second_workspace["lifecycle"]["source_available_at"] == ACCEPTANCE
     assert [key for key, _ in fake.puts[len(first_puts):]] == []
 
 
@@ -1387,19 +1412,24 @@ def test_refresh_chains_onto_the_marker_raw_bytes_hash_not_a_reserialization(tmp
         "generation_id": "f" * 24,
         "generated_at": "2026-07-01T00:00:00Z",
         "authority": "context_only", "status": "ready", "event_count": 0, "files": {},
+        "aliases": {}, "warnings": [],
         "previous_generation_id": None, "previous_manifest_sha256": None,
     }
     non_canonical_raw_bytes = (
         b'{\n  "generation_id": "' + b"f" * 24 + b'",\n  "schema": "' + MANIFEST_SCHEMA_V2.encode() + b'",\n'
         b'  "generated_at": "2026-07-01T00:00:00Z", "authority": "context_only", "status": "ready",\n'
-        b'  "event_count": 0, "files": {}, "previous_generation_id": null, "previous_manifest_sha256": null\n}\n'
+        b'  "event_count": 0, "files": {}, "aliases": {}, "warnings": [], "previous_generation_id": null, "previous_manifest_sha256": null\n}\n'
     )
     canonical_bytes_of_parsed = canonical_json_bytes(parsed_marker)
     assert non_canonical_raw_bytes != canonical_bytes_of_parsed, "fixture must actually diverge from the canonical form"
 
     assert _refresh(
-        tmp_path, fake,
+        tmp_path,
+        fake,
         current_marker_loader=lambda: (non_canonical_raw_bytes, parsed_marker),
+        legacy_revision_loader=lambda event_ids, current_generation_id: {
+            event_id: [] for event_id in event_ids
+        },
     ) == 0
     marker = _marker(tmp_path)
     minted_manifest = json.loads(
@@ -1538,3 +1568,264 @@ def test_semantic_noop_is_deterministic_by_injected_clock_not_same_second_luck()
     def _content(payload: dict) -> dict:
         return {k: v for k, v in payload.items() if k not in ("generation_id", "generated_at")}
     assert _content(first) == _content(second)
+
+
+def _v3_publish_tree(tmp_path: Path) -> tuple[Path, Path]:
+    legacy_root = tmp_path / "legacy"
+    assert _refresh(legacy_root, _FakeR2()) == 0
+    legacy_manifest = _marker(legacy_root)
+    workspace = json.loads(
+        (
+            legacy_root
+            / "event_workspaces"
+            / "generations"
+            / legacy_manifest["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+    v3_root = tmp_path / "v3"
+    revision_index = build_revision_index({FLAGSHIP_EVENT_ID: workspace})
+    generation_dir = write_workspace_generation_v3(
+        v3_root,
+        {FLAGSHIP_EVENT_ID: workspace},
+        revision_index=revision_index,
+        generated_at="2026-09-18T20:57:00Z",
+    )
+    return v3_root, generation_dir
+
+
+def test_v3_workspace_publisher_uploads_index_before_manifest_and_marker(tmp_path: Path) -> None:
+    v3_root, generation_dir = _v3_publish_tree(tmp_path)
+    fake = _FakeR2()
+    assert publish_event_workspaces(v3_root, s3=fake, bucket="bucket") == 0
+
+    keys = [key for key, _kwargs in fake.puts]
+    prefix = (
+        "company_intelligence/event_workspaces/generations/"
+        f"{generation_dir.name}"
+    )
+    assert keys == [
+        f"{prefix}/workspaces/{FLAGSHIP_EVENT_ID}.json",
+        f"{prefix}/revision_index.json",
+        f"{prefix}/manifest.json",
+        WS_MARKER,
+    ]
+
+
+def test_v3_workspace_publisher_refuses_corrupt_local_index_before_marker(tmp_path: Path) -> None:
+    v3_root, generation_dir = _v3_publish_tree(tmp_path)
+    (generation_dir / "revision_index.json").write_bytes(b'{"schema":"corrupt"}\n')
+    fake = _FakeR2()
+
+    assert publish_event_workspaces(v3_root, s3=fake, bucket="bucket") == 1
+    keys = [key for key, _kwargs in fake.puts]
+    assert WS_MARKER not in keys
+    assert not any(key.endswith("/manifest.json") for key in keys)
+
+
+def _local_workspace_marker(root: Path):
+    path = root / "event_workspaces" / "manifest.json"
+    if not path.exists():
+        return None
+    body = path.read_bytes()
+    return body, json.loads(body)
+
+
+def _local_revision_index(root: Path, manifest: dict):
+    if manifest.get("schema") != "event_workspace_manifest.v3":
+        return None
+    path = (
+        root
+        / "event_workspaces"
+        / "generations"
+        / manifest["generation_id"]
+        / manifest["revision_index"]["path"]
+    )
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _refresh_v3(
+    root: Path,
+    fake: _FakeR2,
+    *,
+    operation_time: datetime,
+    prior_workspace=None,
+    http_get=None,
+):
+    fetch_index, fetch_body, _tx_sha = _tx_fetchers()
+    return refresh(
+        root,
+        out_dir=root,
+        http_get=http_get or _http_get_factory(),
+        fetch_index=fetch_index,
+        fetch_body_fn=fetch_body,
+        prior_workspace=prior_workspace,
+        homebuilder_carry_forward_loader=lambda _ticker: None,
+        publish_generation=lambda out_dir, dry_run=False: publish_event_workspaces(
+            out_dir,
+            dry_run=dry_run,
+            s3=fake,
+            bucket="bucket",
+        ),
+        dry_run=False,
+        current_marker_loader=lambda: _local_workspace_marker(root),
+        current_revision_index_loader=lambda manifest: _local_revision_index(root, manifest),
+        homebuilder_discovery=lambda _ticker, **_kwargs: [],
+        operation_time=operation_time,
+    )
+
+
+def _workspace_for_marker(root: Path, manifest: dict) -> dict:
+    return json.loads(
+        (
+            root
+            / "event_workspaces"
+            / "generations"
+            / manifest["generation_id"]
+            / "workspaces"
+            / f"{FLAGSHIP_EVENT_ID}.json"
+        ).read_text(encoding="utf-8")
+    )
+
+
+def test_v3_later_clock_semantic_noop_reuses_incumbent_generation(tmp_path: Path) -> None:
+    fake = _FakeR2()
+    first_time = datetime(2026, 9, 18, 20, 57, 0, tzinfo=timezone.utc)
+    later_time = datetime(2026, 9, 19, 8, 15, 0, tzinfo=timezone.utc)
+
+    assert _refresh_v3(tmp_path, fake, operation_time=first_time) == 0
+    first = _marker(tmp_path)
+    prior = _workspace_for_marker(tmp_path, first)
+    puts_after_first = list(fake.puts)
+
+    assert first["schema"] == "event_workspace_manifest.v3"
+    assert first["generated_at"] == "2026-09-18T20:57:00Z"
+    assert _refresh_v3(
+        tmp_path,
+        fake,
+        operation_time=later_time,
+        prior_workspace=prior,
+    ) == 0
+    second = _marker(tmp_path)
+
+    assert second["generation_id"] == first["generation_id"]
+    assert second["generated_at"] == first["generated_at"]
+    assert fake.puts == puts_after_first
+
+
+def test_v3_correction_uses_truthful_mint_clock_and_preserves_source_clock(tmp_path: Path) -> None:
+    fake = _FakeR2()
+    first_time = datetime(2026, 9, 18, 20, 57, 0, tzinfo=timezone.utc)
+    correction_time = datetime(2026, 9, 19, 8, 15, 0, tzinfo=timezone.utc)
+    assert _refresh_v3(tmp_path, fake, operation_time=first_time) == 0
+    first = _marker(tmp_path)
+    prior = _workspace_for_marker(tmp_path, first)
+    mutated = EXHIBIT.read_text(encoding="utf-8") + "\n<!-- source correction -->\n"
+
+    assert _refresh_v3(
+        tmp_path,
+        fake,
+        operation_time=correction_time,
+        prior_workspace=prior,
+        http_get=_http_get_factory(mutated),
+    ) == 0
+    second = _marker(tmp_path)
+    workspace = _workspace_for_marker(tmp_path, second)
+    index = _local_revision_index(tmp_path, second)
+
+    assert second["generation_id"] != first["generation_id"]
+    assert second["generated_at"] == "2026-09-19T08:15:00Z"
+    assert workspace["generated_at"] == second["generated_at"]
+    assert workspace["lifecycle"]["source_available_at"] == ACCEPTANCE
+    assert workspace["lifecycle"]["state"] == "corrected"
+    rows = index["events"][FLAGSHIP_EVENT_ID]
+    assert len(rows) == 2
+    assert rows[0]["workspace_generation_ref"] == first["generation_id"]
+    assert rows[-1]["workspace_generation_ref"] == "self"
+
+
+def test_first_v3_migration_mint_clock_advances_past_legacy_predecessor(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+    from engine.company_intelligence.event_workspace import MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3
+
+    fake = _FakeR2()
+    predecessor_clock = "2026-10-01T00:00:00Z"
+    parsed_marker = {
+        "schema": MANIFEST_SCHEMA_V2,
+        "generation_id": "e" * 24,
+        "generated_at": predecessor_clock,
+        "authority": "context_only",
+        "status": "ready",
+        "event_count": 0,
+        "files": {},
+        "aliases": {},
+        "warnings": [],
+        "previous_generation_id": None,
+        "previous_manifest_sha256": None,
+    }
+    marker_bytes = canonical_json_bytes(parsed_marker)
+
+    assert _refresh(
+        tmp_path,
+        fake,
+        current_marker_loader=lambda: (marker_bytes, parsed_marker),
+        legacy_revision_loader=lambda event_ids, current_generation_id: {},
+        operation_time=datetime(2026, 9, 1, tzinfo=timezone.utc),
+    ) == 0
+
+    marker = _marker(tmp_path)
+    assert marker["schema"] == MANIFEST_SCHEMA_V3
+    assert marker["generated_at"] == "2026-10-01T00:00:01Z"
+    assert marker["previous_generation_id"] == "e" * 24
+
+
+def test_refresh_refuses_marker_mapping_not_derived_from_raw_bytes(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+    from engine.company_intelligence.event_workspace import MANIFEST_SCHEMA_V2
+
+    parsed_marker = {
+        "schema": MANIFEST_SCHEMA_V2,
+        "generation_id": "f" * 24,
+        "generated_at": "2026-07-01T00:00:00Z",
+        "authority": "context_only",
+        "status": "ready",
+        "event_count": 0,
+        "files": {},
+        "aliases": {},
+        "warnings": [],
+        "previous_generation_id": None,
+        "previous_manifest_sha256": None,
+    }
+    different_payload = dict(parsed_marker)
+    different_payload["status"] = "degraded"
+    raw_bytes = canonical_json_bytes(different_payload)
+
+    with pytest.raises(RefreshError, match="raw bytes"):
+        _refresh(
+            tmp_path,
+            _FakeR2(),
+            current_marker_loader=lambda: (raw_bytes, parsed_marker),
+            legacy_revision_loader=lambda event_ids, current_generation_id: {},
+        )
+
+
+def test_v3_workspace_publisher_refuses_marker_immutable_manifest_mismatch(tmp_path: Path) -> None:
+    from engine.company_intelligence.contracts import canonical_json_bytes
+
+    assert _refresh(tmp_path, _FakeR2()) == 0
+    manifest = _marker(tmp_path)
+    immutable_path = (
+        tmp_path
+        / "event_workspaces"
+        / "generations"
+        / manifest["generation_id"]
+        / "manifest.json"
+    )
+    divergent = json.loads(immutable_path.read_text(encoding="utf-8"))
+    divergent["status"] = "degraded"
+    immutable_path.write_bytes(canonical_json_bytes(divergent))
+
+    target = _FakeR2()
+    assert publish_event_workspaces(tmp_path, s3=target, bucket="bucket") == 1
+    assert target.puts == []
