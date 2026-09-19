@@ -570,7 +570,10 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
 
     theme_map = r["MO-DELTA-004"]
     assert theme_map["capability_state_c2"] == "PARTIAL"
-    assert "no product surface" in theme_map["missing_contract_or_proof"].lower()
+    missing = theme_map["missing_contract_or_proof"].lower()
+    assert "consumer surface" in missing
+    assert "shock->theme->company" in missing
+    assert "no product surface" in theme_map["real_consumer"].lower()
 
     research_mode = r["MO-PAID-031"]
     assert research_mode["capability_state_c2"] == "SPEC_ONLY"
