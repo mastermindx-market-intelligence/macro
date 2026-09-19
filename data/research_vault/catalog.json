@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T13:56:07.211207+00:00",
-  "count": 2433,
+  "generated_at": "2026-09-19T14:11:09.642929+00:00",
+  "count": 2434,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -248,6 +248,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cf6wrfut0rz-082567",
+      "title": "weekly headings",
+      "institution": "Raymond James",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:42:13Z",
+      "summary_points": [
+        "Fed Hike as Mid-Cycle Adjustment: Fed’s 25bp hike (3.75%-4.00%) is temporary amid resilient growth/inflation, not structural tightening; tariff/energy pressures short-term, disinflation trend reduces need for further hikes.",
+        "Fixed Income Yield Opportunity: Treasury yields (4.25%-4.50%) offer compelling entry vs. 6% terminal rate; geopolitical tensions and limited Fed tightening support sustained yields.",
+        "Middle East Oil Supply Shock: Houthi attacks on Saudi pipeline (4M bpd loss) drive WTI to $106, refined product prices up 103%/138%, threatening energy markets and inflation.",
+        "Yield Curve Flattening Risk: 10Y-2Y spread narrows to lowest since March 2025, signaling heightened economic slowdown risk amid hawkish Fed policy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
