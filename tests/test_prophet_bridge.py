@@ -187,6 +187,132 @@ def _make_buy(
 # 1–5. Geometry tests
 # ---------------------------------------------------------------------------
 
+# T2 fires independently of the later section-7 formation/ID marker.
+def _independent_clock_buy(ticker="EBAY"):
+    row = _make_buy(ticker, score=80, spot=110.0, anchor="2026-09-14")
+    row["hold"].update(anchor_src="take", provisional=False)
+    row["signal"].update(
+        tier_cascade="T2", tier_event_date="2026-09-11",
+        tier_observed_date="2026-09-16", tier_observation_provisional=False,
+        last={"type": "buy", "date": "2026-09-14", "signal_date": "2026-09-16",
+              "confirmed_date": None},
+    )
+    return row
+
+
+def _originate_independent_clock(tmp_path, row):
+    doc = _make_standouts(buys=[row])
+    doc["as_of"] = doc["staleness"]["price_through"] = "2026-09-16"
+    path = tmp_path / "current-board.json"
+    path.write_text(json.dumps(doc), encoding="utf-8")
+    stats = {}
+    plans = originate_plans(path, "2026-09-16", set(), None, intake_stats=stats)
+    return plans, stats
+
+
+@pytest.mark.parametrize("ticker", ["EBAY", "PG", "CPRI"])
+def test_independent_clock_preserves_real_event_and_immutable_id(tmp_path, ticker):
+    from copy import deepcopy
+    row = _independent_clock_buy(ticker)
+    old = deepcopy(row)
+    plans, stats = _originate_independent_clock(tmp_path, row)
+    assert len(plans) == 1
+    plan = plans[0]
+    assert plan["id"] == f"{ticker}-BULL-20260914"
+    assert plan["formation_date"] == plan["source_marker_date"] == "2026-09-14"
+    assert plan["signal_date"] == "2026-09-11"
+    assert plan["observed_date"] == plan["entry_date"] == plan["price_basis_date"] == "2026-09-16"
+    assert plan["recorded_at"] == "2026-09-16" and plan["confirmed_date"] is None
+    evidence = plan["temporal_lineage"]
+    assert evidence["schema"] == "prophet.t2_section7_lineage/v1"
+    assert evidence["hold_anchor"] == "2026-09-14"
+    assert evidence["marker_known_date"] == "2026-09-16"
+    assert evidence["tier_event_date"] == "2026-09-11"
+    assert row == old and stats["lossless"] is True and stats["unaccounted"] == 0
+
+
+@pytest.mark.parametrize("case", [
+    "t1", "projected", "unknown_hold", "missing_hold_provisional", "provisional_hold",
+    "missing_tier_provisional", "string_false", "future_event", "future_observation",
+    "missing_marker_known", "future_marker_known", "marker_before_formation",
+    "marker_anchor_mismatch", "sell_marker", "future_formation", "boolean_date",
+])
+def test_independent_clock_cannot_waive_malformed_or_other_event_family(tmp_path, case):
+    row = _independent_clock_buy()
+    signal, hold = row["signal"], row["hold"]
+    if case == "t1": signal["tier_cascade"] = "T1"
+    elif case == "projected": signal.update(tier_cascade="T3", tier_observation_provisional=True)
+    elif case == "unknown_hold": hold["anchor_src"] = "cross"
+    elif case == "missing_hold_provisional": hold.pop("provisional")
+    elif case == "provisional_hold": hold["provisional"] = True
+    elif case == "missing_tier_provisional": signal.pop("tier_observation_provisional")
+    elif case == "string_false": signal["tier_observation_provisional"] = "false"
+    elif case == "future_event": signal["tier_event_date"] = "2026-09-17"
+    elif case == "future_observation": signal["tier_observed_date"] = "2026-09-17"
+    elif case == "missing_marker_known": signal["last"].pop("signal_date")
+    elif case == "future_marker_known": signal["last"]["signal_date"] = "2026-09-17"
+    elif case == "marker_before_formation": signal["last"]["signal_date"] = "2026-09-11"
+    elif case == "marker_anchor_mismatch": signal["last"]["date"] = "2026-09-15"
+    elif case == "sell_marker": signal["last"]["type"] = "sell"
+    elif case == "future_formation": hold["anchor"] = signal["last"]["date"] = "2026-09-17"
+    else: signal["last"]["signal_date"] = True
+    row["temporal_lineage"] = {"schema": "prophet.t2_section7_lineage/v1", "trusted": True}
+    plans, stats = _originate_independent_clock(tmp_path, row)
+    assert plans == []
+    assert stats["validation_failed"] == 1 and stats["unaccounted"] == 0
+    assert stats["validation_failures"][0]["stage"] == "clock_provenance"
+
+
+def test_independent_clock_does_not_change_already_ordered_output(tmp_path):
+    row = _independent_clock_buy()
+    row["signal"]["tier_event_date"] = "2026-09-14"
+    plans, _ = _originate_independent_clock(tmp_path, row)
+    assert len(plans) == 1 and "temporal_lineage" not in plans[0]
+
+
+def test_independent_clock_ledger_retains_evidence_and_old_bytes(tmp_path, monkeypatch):
+    from copy import deepcopy
+    import scripts.build_prophet as bp
+    from engine.prophet_integrity import apply_ledger_corrections
+    plans, _ = _originate_independent_clock(tmp_path, _independent_clock_buy())
+    assert len(plans) == 1
+    plan = plans[0]; original = deepcopy(plan)
+    ledger = tmp_path / "ledger.jsonl"; prior = b'# historical bytes stay intact\n'
+    ledger.write_bytes(prior)
+    monkeypatch.setattr(bp, "LEDGER_PATH", ledger)
+    monkeypatch.setattr(bp, "_load_closed_ids", lambda: set())
+    ph = pd.DataFrame({"close": [110.0, 140.0]}, index=pd.to_datetime(["2026-09-16", "2026-09-17"]))
+    monkeypatch.setattr(bp, "_load_price_history_for_management", lambda _: ph)
+    monkeypatch.setattr(bp, "_determine_outcome", lambda *a: ("T1_HIT", 1.5, None, 1))
+    [row] = bp.advance_ledger({plan["id"]: plan}, "2026-09-17")
+    assert row["temporal_lineage"] == plan["temporal_lineage"]
+    assert ledger.read_bytes().startswith(prior) and plan == original
+    correction = {
+        "schema": "prophet.ledger_correction/v1", "id": "private:reason", "corrects_id": plan["id"],
+        "field": "integrity_reason", "old_value": None, "new_value": "Fixture annotation",
+        "basis": "Fixture correction only", "corrected_at": "2026-09-17", "evidence": {"fixture": True},
+    }
+    assert apply_ledger_corrections([row], [correction]).rows[0]["signal_date"] == "2026-09-11"
+
+
+def test_independent_clock_degraded_index_retains_the_evidence(tmp_path):
+    import scripts.build_prophet as bp
+    [plan], _ = _originate_independent_clock(tmp_path, _independent_clock_buy())
+    entry = bp._degraded_index_entry(plan["id"], plan, asof="2026-09-17",
+                                    reason="fixture missing history", closed=False, outcome=None)
+    assert entry["temporal_lineage"] == plan["temporal_lineage"]
+    assert entry["signal_date"] == "2026-09-11"
+    assert entry["formation_date"] == "2026-09-14"
+
+
+def test_independent_clock_ignores_a_forged_input_envelope(tmp_path):
+    row = _independent_clock_buy()
+    row["temporal_lineage"] = {"schema": "fake", "marker_known_date": "2099-01-01"}
+    [plan], _ = _originate_independent_clock(tmp_path, row)
+    assert plan["temporal_lineage"]["marker_known_date"] == "2026-09-16"
+    assert plan["temporal_lineage"]["schema"] == "prophet.t2_section7_lineage/v1"
+
+
 def test_geometry_bull_with_hold_invalidation():
     """BULL: invalidation from hold.invalidation → T1 = entry + 1.5R, T2 = entry + 3R."""
     entry = 100.0
