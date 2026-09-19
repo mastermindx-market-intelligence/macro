@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T13:43:23.188652+00:00",
-  "count": 2432,
+  "generated_at": "2026-09-19T13:56:07.211207+00:00",
+  "count": 2433,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1030,6 +1030,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-6jqdf0nilwj-f42a00",
+      "title": "S&P 500 Relative Value Cheat Sheet Capex takers vs. spenders thesis played out. Raising Comm Svcs to marketweight",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:47Z",
+      "summary_points": [
+        "S&P 500 Target & Earnings: Target raised to 7400 (from 7100) with 3% year-end downside; forecasts 33% EPS growth in 2026 and 12% in 2027 driven by earnings strength.",
+        "Comm Svcs Valuation Upside: Communication Services upgraded to marketweight due to near-cheapest relative forward P/E since 1986, AI monetization (Google/Meta = 78% sector weight), and productivity gains.",
+        "AI Monetization Risk: Key risk is narrowing gap between hyperscaler capex growth and cloud revenue growth; cloud revenue forecast to outpace capex in 2027, signaling delayed monetization.",
+        "Sector Rate Sensitivity: Communication Services show positive beta to 3-month Treasury yields (benefit from higher rates), while IT shows negative beta (hurt), indicating divergent rate exposure.",
+        "Off-Balance Sheet Leverage Surge: Hyperscalers’ off-balance sheet commitments surged 50%+ QoQ (NVDA/hyperscalers-driven), signaling heightened leverage risk vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
       "language": "en",
       "needs_metadata": false
     },
