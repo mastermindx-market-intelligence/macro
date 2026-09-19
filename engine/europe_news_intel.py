@@ -114,6 +114,11 @@ def _coverage_path() -> Path:
     return p
 
 
+def _events_path_no_mkdir() -> Path:
+    """Events path WITHOUT creating the directory — read-only callers use this."""
+    return config.data_dir() / "europe_news_vector" / "events.parquet"
+
+
 # --------------------------------------------------------------------------- #
 # pure helpers (NO network, NO clock)
 # --------------------------------------------------------------------------- #
@@ -650,6 +655,39 @@ def read_events(asof: date | None = None):
 
 
 # --------------------------------------------------------------------------- #
+# source / jurisdiction label helpers (pure, no network, no clock)
+# --------------------------------------------------------------------------- #
+_SOURCE_PUBLISHER_MAP: dict[str, str] | None = None
+
+
+def _source_publisher_map() -> dict[str, str]:
+    """Lazy-load key → publisher name from config."""
+    global _SOURCE_PUBLISHER_MAP  # noqa: PLW0603
+    if _SOURCE_PUBLISHER_MAP is None:
+        _SOURCE_PUBLISHER_MAP = {
+            s["key"]: s.get("publisher", "") for s in sources()
+        }
+    return _SOURCE_PUBLISHER_MAP
+
+
+_JURISDICTION_LABELS: dict[str, tuple[str, str]] = {
+    "EU":      ("European Union",        "欧盟"),
+    "EA":      ("Euro Area",             "欧元区"),
+    "UK":      ("United Kingdom",       "英国"),
+    "EFTA":    ("EFTA",                 "欧洲自由贸易联盟"),
+    "AMBIGUOUS_JURISDICTION": ("Europe (unassigned)", "欧洲（未归属）"),
+}
+
+
+def _jurisdiction_label(jurisdiction: str) -> tuple[str, str]:
+    """Return (en_label, zh_label) for a jurisdiction string."""
+    return _JURISDICTION_LABELS.get(
+        jurisdiction,
+        (jurisdiction, jurisdiction),  # fallback: raw key in both languages
+    )
+
+
+# --------------------------------------------------------------------------- #
 # panel (render-time display packet, read-only over existing desk artifact)
 # --------------------------------------------------------------------------- #
 def panel(asof: date | None = None):
@@ -658,22 +696,41 @@ def panel(asof: date | None = None):
     Returns None (never raises) when the parquet is missing or unreadable.
     is_context_only=True signals that scores/ranks are not available.
 
-    Items carry title / url / source / seendate / jurisdiction only.
+    Items carry title / url / source_label / seendate / jurisdiction_label only.
     importance_raw, event_key, item_id, and theme slugs are absent from
     the output — no scores, no ranking, no LLM signals in the panel.
+
+    Recency window: last 14 days, newest first, capped at 12 rows.
     """
     try:
-        df = read_events(asof)
+        import pandas as pd  # noqa: F401 — used inside try block
+        path = _events_path_no_mkdir()
+        if not path.exists():
+            return None
+        df = pd.read_parquet(path)
         if df is None or len(df) == 0:
             return None
+        if asof is not None:
+            df = df[df["asof"] <= asof.isoformat()]
+        # recency window: last 14 days, newest first, cap 12 rows
+        cutoff = pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=14)
+        df = df[df["seendate"] >= cutoff.isoformat()]
+        df = df.sort_values("seendate", ascending=False).head(12)
+        pub_map = _source_publisher_map()
         items = []
         for _, row in df.iterrows():
+            source_key = str(row.get("source", ""))
+            pub = pub_map.get(source_key, "")
+            jurisdiction = str(row.get("jurisdiction", ""))
+            j_en, j_zh = _jurisdiction_label(jurisdiction)
             items.append({
                 "title": str(row.get("title", "")),
                 "url": str(row.get("url", "")),
-                "source": str(row.get("source", "")),
+                "source": pub if pub else "Official source",
+                "source_zh": pub if pub else "官方来源",
                 "seendate": str(row.get("seendate", "")),
-                "jurisdiction": str(row.get("jurisdiction", "")),
+                "jurisdiction_en": j_en,
+                "jurisdiction_zh": j_zh,
             })
         return {
             "schema": SCHEMA,

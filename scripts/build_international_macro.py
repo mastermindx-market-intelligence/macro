@@ -24,7 +24,6 @@ from engine.international_macro_dashboard import (
     load_history,
     validate_view,
 )
-from engine import europe_news_intel as eni
 from lib import config, site_assets
 from lib.pages import write_page
 
@@ -112,13 +111,7 @@ def build_all(latest: dict | None = None) -> list[Path]:
         # RADAR is a render-time display variable, deliberately outside the
         # international_macro_dashboard.v1 payload written above: it is a re-shaping of
         # data/intl/latest.json for one card, not a new term of the data contract.
-        # europe_news is likewise a render-time display packet over the existing qbus join
-        # surface; absent for all countries except EZ (where the Europe press panel renders).
-        europe_news = eni.panel() if cc == "EZ" else None
-        europe_news_items = europe_news["items"] if europe_news else None
-        write_page(page, template.render(D=view, RADAR=_radar_display(records[cc]),
-                                        europe_news=europe_news,
-                                        europe_news_items=europe_news_items))
+        write_page(page, template.render(D=view, RADAR=_radar_display(records[cc])))
         outputs.append(page)
         log.info("wrote %s (%s, score=%s)", page.name, cc, view["decision"]["score"])
 
