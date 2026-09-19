@@ -128,12 +128,13 @@ def _nir_text(value: Optional[float], qualifier: str, lang: str) -> str:
     else:
         word = None
     if word:
+        # Qualifier words carry their own "aboutness" — no extra "about"/"约".
         shown = f"{word} {int(value)} percent" if lang == "en" else f"{word}{int(value)}%"
     else:
-        shown = f"{int(value)}%" if lang == "en" else f"{int(value)}%"
+        shown = f"about {int(value)} percent" if lang == "en" else f"约{int(value)}%"
     if lang == "en":
-        return f"The United States imported about {shown} of what it used."
-    return f"美国进口了其用量的约{shown}。"
+        return f"The United States imported {shown} of what it used."
+    return f"美国进口了其用量的{shown}。"
 
 
 def _read_sentences(payload: dict, world_metric: str = "mine production") -> tuple[str, str]:
@@ -147,7 +148,7 @@ def _read_sentences(payload: dict, world_metric: str = "mine production") -> tup
     share = lead.get("share_pct")
     country = lead.get("country")
     verb_en = "produced" if "primary" in world_metric.lower() else "mined"
-    verb_zh = "开采了"
+    verb_zh = "生产了" if verb_en == "produced" else "开采了"
     if country and share is not None and period:
         bits_en.append(
             f"{country} {verb_en} about {share:.0f}% of the world's {label_en.lower()} in {period}"
@@ -183,7 +184,8 @@ def _read_sentences(payload: dict, world_metric: str = "mine production") -> tup
     if second.startswith("and "):
         en = first + ", " + second
     else:
-        en = first + ", and " + second[0].lower() + second[1:]
+        # No "and " prefix — insert ", and " and preserve the capitalised start.
+        en = first + ", and " + second
     if not en.endswith("."):
         en = en + "."
     zh = "，".join(bits_zh) if bits_zh else ""
@@ -407,7 +409,8 @@ def compute_critical_minerals_supply(
             "USGS Mineral Commodity Summaries via ScienceBase NMIC. "
             "Public-domain US Government work. Display-only context. "
             "Leading-producer share uses T7 Leading_source_precent_world; "
-            "top-3 import share sums the first three Fig3 Percent rows; "
+            "top-3 import share sums the three largest named-country shares, "
+            "excluding Other/其他 rows, sorted by (-pct, name) for ties; "
             "China share of world production is China divided by World total "
             "from Commodities_Data for the same period."
         ),

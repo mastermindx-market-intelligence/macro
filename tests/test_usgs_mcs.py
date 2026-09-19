@@ -490,26 +490,35 @@ class TestProjection:
             assert "no_edition_ingested" in art["commodities"][key]["nulls"]
 
     def test_cobalt_read_leads_with_leading_producer(self, tmp_path):
-        """BLOCKER fix: cobalt reads must name Congo (Kinshasa) as the leading producer."""
+        """BLOCKER fix: cobalt reads must name Congo (Kinshasa) as the leading producer with verbatim sentence."""
         _, engine, store = self._ingest(tmp_path)
         art = engine.compute_critical_minerals_supply(store=store, write=False)
         c = art["commodities"]["cobalt"]
-        assert "Congo (Kinshasa)" in c["read_en"], c["read_en"]
-        assert "Congo (Kinshasa)" in c["read_zh"], c["read_zh"]
-        assert "74%" in c["read_en"], c["read_en"]
-        assert "74%" in c["read_zh"], c["read_zh"]
+        # Verbatim EN and ZH as the ruling required.
+        assert c["read_en"] == (
+            "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025, "
+            "and the US imported about 79 percent of what it used."
+        ), c["read_en"]
+        assert c["read_zh"] == (
+            "Congo (Kinshasa)在2025年开采了全球约74%的钴，美国进口了其用量的约79%。"
+        ), c["read_zh"]
         lp = c["leading_producer"]
         assert lp["country"] == "Congo (Kinshasa)", lp
         assert lp["share_pct"] == 74.0, lp
 
     def test_lithium_read_leads_with_leading_producer(self, tmp_path):
-        """BLOCKER fix: lithium reads must name Australia as the leading producer."""
+        """BLOCKER fix: lithium reads must name Australia as the leading producer with verbatim sentence."""
         _, engine, store = self._ingest(tmp_path)
         art = engine.compute_critical_minerals_supply(store=store, write=False)
         c = art["commodities"]["lithium"]
-        assert "Australia" in c["read_en"], c["read_en"]
-        assert "Australia" in c["read_zh"], c["read_zh"]
-        assert "32%" in c["read_en"], c["read_en"]
+        # Verbatim EN and ZH as the ruling required.
+        assert c["read_en"] == (
+            "Australia mined about 32% of the world's lithium in 2025, "
+            "and the US imported more than 50 percent of what it used."
+        ), c["read_en"]
+        assert c["read_zh"] == (
+            "Australia在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。"
+        ), c["read_zh"]
         lp = c["leading_producer"]
         assert lp["country"] == "Australia", lp
         assert lp["share_pct"] == 32.0, lp
@@ -522,6 +531,17 @@ class TestProjection:
         # Norway=26, Finland=16, Canada=14 → top 3 named sum = 56.
         assert c["top3_import_share_pct"] == 56, (
             f"Expected cobalt top3=56 (Norway 26 + Finland 16 + Canada 14), "
+            f"got {c['top3_import_share_pct']}; "
+            f"sources={c['import_sources_2021_24']}"
+        )
+
+    def test_top3_import_share_pct_lithium_97(self, tmp_path):
+        """MAJOR fix: lithium top3 = 97 (Chile 54 + Argentina 43); fails at 19600278 where it was 100.0."""
+        _, engine, store = self._ingest(tmp_path)
+        art = engine.compute_critical_minerals_supply(store=store, write=False)
+        c = art["commodities"]["lithium"]
+        assert c["top3_import_share_pct"] == 97, (
+            f"Expected lithium top3=97 (Chile 54 + Argentina 43), "
             f"got {c['top3_import_share_pct']}; "
             f"sources={c['import_sources_2021_24']}"
         )

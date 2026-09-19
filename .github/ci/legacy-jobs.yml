@@ -14292,8 +14292,8 @@ jobs:
     gate: code
     # MO-B F09-10 (MO-DELTA-029 child): USGS Mineral Commodity Summaries
     # collector + critical-minerals supply-concentration projection.
-    # Hermetic fixtures; must stay on gate: code so a PR actually runs it
-    # (a gate: data suite never runs on pull_request).
+    # Records-only / disabled (if: false). Kept so the pack registration
+    # records the job; the if: false is the suite contract for disabled jobs.
     paths:
       - "config/usgs_mcs_sources.yml"
       - "collectors/usgs_mcs.py"

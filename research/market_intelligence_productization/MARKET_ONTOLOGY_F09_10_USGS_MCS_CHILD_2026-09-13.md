@@ -60,7 +60,7 @@ This packet does not edit the F00C ledger CSV.
 
 ## Heal h_7110 (2026-09-18)
 
-Head `196002786fb2561597068021137d579a83179ac3` → heal head `[NEW SHA]`.
+Head `196002786fb2561597068021137d579a83179ac3` → heal head `4db6b1e5bd717f817660f839deb621df0dc6c0a4`.
 BLOCKER: `_read_sentences` now leads with the T7 leading producer (Congo
 74% cobalt, Australia 32% lithium) and uses China-share clause only as
 fallback when no leading-producer is present (or when China IS the leader,
@@ -72,24 +72,28 @@ MAJOR: NIR qualifier `>` renders "more than" / "超过", `<` renders
 MINOR: gallium production verb now uses "produced" (matches
 `world_metric: "Primary production"`); stitch keeps leading "US" capitalised.
 
-Corrected reads at heal head:
+Corrected reads at heal head `4db6b1e5bd` (round 2 heal):
 
 - cobalt: "Congo (Kinshasa) mined about 74% of the world's cobalt in 2025,
-  and the US imported about 79% of what it used."
-  ZH: "Congo (Kinshasa)在2025年开采了全球约74%的钴，美国进口了其用量的约79%。"
+  and the US imported 79% of what it used."
+  ZH: "Congo (Kinshasa)在2025年开采了全球约74%的钴，美国进口了其用量的79%。"
   top3_import_share_pct = 56
 - lithium: "Australia mined about 32% of the world's lithium in 2025,
-  and the US imported about more than 50 percent of what it used."
-  ZH: "Australia在2025年开采了全球约32%的锂，美国进口了其用量的约超过50%。"
+  and the US imported more than 50 percent of what it used."
+  ZH: "Australia在2025年开采了全球约32%的锂，美国进口了其用量的超过50%。"
   top3_import_share_pct = 97
 - gallium: "China produced about 100% of the world's gallium in 2025,
-  and the US imported about 100% of what it used."
-  ZH: "China在2025年开采了全球约100%的镓，美国进口了其用量的约100%。"
+  and the US imported 100% of what it used."
+  ZH: "China在2025年生产了全球约100%的镓，美国进口了其用量的100%。"
   top3_import_share_pct = 68
 - rare earths: "China mined about 69% of the world's rare earths in 2025,
-  and the US imported about 67% of what it used."
-  ZH: "中国在2025年开采了全球约69%的稀土，美国进口了其用量的约67%。"
+  and the US imported 67% of what it used."
+  ZH: "中国在2025年开采了全球约69%的稀土，美国进口了其用量的67%。"
   top3_import_share_pct = 89
 
-RED-first on f1aac58fedd1: 18 passed (producer landed green).
-HEAL_RESULT: tests 22 passed (18 original + 4 new).
+RED-first on f1aac58fedd1: at that commit the files `collectors/usgs_mcs.py`,
+`engine/critical_minerals_supply.py`, and `config/usgs_mcs_sources.yml` were
+absent (`git cat-file -t` fatal); isolated replay with empty PYTHONPATH gave
+16 failed, 2 passed. The body claim of "18 passed on f1aac58fedd1" was wrong.
+HEAL_RESULT: tests 22 passed (18 original + 4 new: cobalt/lithium verbatim
+read pins, cobalt top3=56, lithium top3=97, no-angle-bracket assertion).
