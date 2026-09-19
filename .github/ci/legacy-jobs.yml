@@ -3588,7 +3588,10 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: install test deps
-        run: pip install pytest pandas numpy pyarrow jinja2
+        # contract-delta 2026-09-19 (seat main update d6c4277c): lib/config.py on main imports yaml at
+        # module import (ModuleNotFoundError: No module named 'yaml' at lib/config.py:8 on ci-pack-10);
+        # pyyaml added to this job's own install line, nothing else changed.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: covenant headroom engine — closed refusal set, zero authority, no extrapolation
         run: python -m pytest tests/test_covenant_headroom.py -q
 
