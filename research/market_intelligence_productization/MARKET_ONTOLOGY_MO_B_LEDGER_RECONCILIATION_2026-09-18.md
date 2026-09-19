@@ -71,6 +71,29 @@ Company-wide `DARK_OR_DISCONNECTED` remains a valid capability-state concept, bu
 - **MO-DELTA-004 stays PARTIAL:** the exposure-map composer exists but still has no production consumer.
 - **MO-PAID-031 stays SPEC_ONLY:** grounded research mode remains on open/draft #7100, not merged.
 
+### Final adversarial sweep — built-but-proof-gated rows
+
+After the 80-row fold, Sol re-scanned every `PROVEN_LIVE` and `BUILT_NOT_PROVEN` row for stale pre-build fields.
+
+Additional records-only truth repair:
+
+- **MO-PAID-007** no longer says MO-DELTA-032 is SPEC_ONLY; both rows now point to the same live deterministic lifecycle owner.
+- **MO-DELTA-042** keeps `BUILT_NOT_PROVEN`: Terminal #522 ships event→positions; #576 (merge `45a0e78e...`) ships the invalidation element on the same object. The remaining gate is signed-in routed production proof.
+- **MO-PAID-028** keeps `BUILT_NOT_PROVEN`: `/api/event-impact` + `EventImpactPanel` are shipped; signed-in event→actual-position proof remains.
+- **MO-PAID-053** keeps `BUILT_NOT_PROVEN`: the seven RMS lenses over the same Thesis objects are shipped in #520; signed-in lens proof remains.
+- **MO-PAID-051** keeps `BUILT_NOT_PROVEN`: team/member schema and routes are shipped (#514, audit heal #585); signed-in create/read proof remains.
+- **MO-PAID-082** keeps `BUILT_NOT_PROVEN`: role enforcement is shipped on the members route; signed-in role-contrast proof remains.
+- **MO-PAID-083** keeps `BUILT_NOT_PROVEN`: the old “#584 OPEN / no route/UI” text is superseded. Terminal #584 is **merged** at `dd7c6dec...`; `SectionTeam` and `GET/PATCH /api/teams/[id]/settings` exist on current Terminal master. Signed-in workspace-vs-personal persistence/role proof remains.
+- **MO-PAID-086** keeps `BUILT_NOT_PROVEN`: #527 owns the export route/lib and current Terminal master includes the `SectionAccount` download control. A signed-in JSON/CSV export download remains the proof gate.
+
+Exact receipts:
+- records truth repair commit: `9990a43619581d3cadd6dd3c3f8c1c9ee2a38ca6`;
+- regression extension commit: `3c91e8899874838b56e153d574f7aa79c71bb2de`;
+- Terminal truth manifest refresh: `a70b19e8c633a459e636ecb38b658e3f01550465`;
+- Terminal protected master read for this sweep: `dd7c6dec712a5b7f40d371e3b83827c694dd8f90`.
+
+No capability state changed in this sweep. It only replaced stale “missing producer/consumer/build” prose with the shipped path and the actual remaining production-proof gate.
+
 ### Current-base compatibility receipt
 
 Protected `main` later advanced to `dfcab9236060b22578ed5714ff18debd90647c28`, but the F00C blob remained **byte-identical** to the integration baseline (`8bbb8d78...`).
