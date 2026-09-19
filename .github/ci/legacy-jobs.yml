@@ -11083,7 +11083,7 @@ jobs:
       - name: china_intel_hub institutional-visit dossier block (P1)
         run: python -m pytest tests/test_china_intel_hub_visits.py tests/test_china_intel_visits_render.py -q
       - name: Intelligence Hub PIT scope + W0 measurement heals + ticker-shape gate
-        run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_ticker_shape.py -q
+        run: python -m pytest tests/test_intel_hub_universe_scope.py tests/test_intel_hub_w0_heals.py tests/test_intelligence_hub_glance_copy.py tests/test_ticker_shape.py -q
       # R1A-M (2026-09-02): exact market pulse roster/markup (needs the same
       # jinja2 + pandas closure scripts.build_intel_hub already pulls in this
       # job) plus the route-scoped controller's node-executed contract.
