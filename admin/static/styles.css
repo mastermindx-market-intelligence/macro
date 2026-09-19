@@ -550,7 +550,25 @@ table { width: 100%; border-collapse: collapse; font-size: 13px; }
 /* only long free-text/mono columns may break anywhere so they don't overflow */
 .exp-table td:nth-child(1), .exp-table td:nth-child(6) { overflow-wrap: anywhere; }
 .exp-table .mono { overflow-wrap: anywhere; }
-.exp-table .exp-act-btn { padding: 4px 8px; margin: 0 5px 5px 0; font-size: 12px; }
+.exp-table .exp-act-btn { padding: 5px 8px; margin: 0; font-size: 12px; }
+.row-actions { position: relative; display: inline-block; }
+.row-actions > summary { list-style: none; cursor: pointer; white-space: nowrap; }
+.row-actions > summary::-webkit-details-marker { display: none; }
+.row-actions-menu {
+  position: absolute;
+  z-index: 8;
+  right: 0;
+  top: calc(100% + 6px);
+  min-width: 132px;
+  padding: 6px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+}
+.row-actions-menu .btn { width: 100%; text-align: left; }
 
 th, td {
   text-align: left;
