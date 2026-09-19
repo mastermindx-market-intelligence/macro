@@ -710,3 +710,220 @@ def test_gold_premium_receipt_blocks_dataos_promotion_for_honest_unavailable(tmp
     assert doc["close_proxy_dataos_promotion_ready"] is False
     assert "status is honest_unavailable, not available_fresh" in doc["close_proxy_dataos_promotion_blockers"]
     assert "headline method is none, required close_proxy" in doc["close_proxy_dataos_promotion_blockers"]
+
+
+def test_gold_premium_audit_checks_machine_projection_consistency():
+    from scripts import audit_china_gold_premium as audit
+
+    vm = {
+        "available": True,
+        "state": "premium",
+        "current_method": "close_proxy",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "stats": {"avg_5": 0.12, "range_30": [-0.4, 0.5]},
+        "chart": {"display_source": "proxy", "proxy": [{"date": "2026-09-18"}]},
+        "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "close_proxy": {
+            "available": True,
+            "fresh": True,
+            "asof": "2026-09-18T07:30:00+00:00",
+            "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+        },
+    }
+    html = (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" data-cgp-source-asof="2026-09-18T07:30:00+00:00" '
+        'data-cgp-premium="0.167400"></section>'
+    )
+    machine = {
+        "available": True,
+        "method": "close_proxy",
+        "state": "premium",
+        "premium_pct": 0.1674,
+        "source_asof": "2026-09-18T07:30:00+00:00",
+        "source_fresh": True,
+        "official_canonical_available": False,
+        "context_only": True,
+    }
+
+    doc = audit.evaluate(
+        vm,
+        html,
+        machine_projection=machine,
+        checked_at="2026-09-18T12:00:00+00:00",
+    )
+
+    assert doc["machine_projection_consistent"] is True
+    assert doc["violations"] == []
+
+
+def test_gold_premium_audit_rejects_drifted_machine_projection():
+    from scripts import audit_china_gold_premium as audit
+
+    vm = {
+        "available": True,
+        "state": "premium",
+        "current_method": "close_proxy",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "stats": {"avg_5": 0.12, "range_30": [-0.4, 0.5]},
+        "chart": {"display_source": "proxy", "proxy": [{"date": "2026-09-18"}]},
+        "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "close_proxy": {
+            "available": True,
+            "fresh": True,
+            "asof": "2026-09-18T07:30:00+00:00",
+            "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+        },
+    }
+    html = (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" data-cgp-source-asof="2026-09-18T07:30:00+00:00" '
+        'data-cgp-premium="0.167400"></section>'
+    )
+    machine = {
+        "available": True,
+        "method": "canonical",
+        "state": "premium",
+        "premium_pct": 0.10,
+        "source_asof": "2026-09-17",
+        "source_fresh": True,
+        "official_canonical_available": False,
+        "context_only": True,
+    }
+
+    doc = audit.evaluate(
+        vm,
+        html,
+        machine_projection=machine,
+        checked_at="2026-09-18T12:00:00+00:00",
+    )
+
+    assert doc["machine_projection_consistent"] is False
+    assert doc["status"] == "render_mismatch"
+    assert "machine.method: expected close_proxy, rendered canonical" in doc["violations"]
+    assert "machine.premium_pct: expected 0.1674, rendered 0.1" in doc["violations"]
+
+
+def _live_proxy_vm_for_audit():
+    return {
+        "available": True,
+        "status": "available",
+        "state": "premium",
+        "current_method": "close_proxy",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "stats": {"avg_5": 0.12, "range_30": [-0.4, 0.5]},
+        "chart": {"display_source": "proxy", "proxy": [{"date": "2026-09-18"}]},
+        "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "close_proxy": {
+            "available": True,
+            "fresh": True,
+            "asof": "2026-09-18T07:30:00+00:00",
+            "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+        },
+    }
+
+
+def _live_proxy_html_for_audit():
+    return (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" data-cgp-source-asof="2026-09-18T07:30:00+00:00" '
+        'data-cgp-premium="0.167400"></section>'
+    )
+
+
+def test_gold_premium_run_checks_incumbent_machine_projection(tmp_path, monkeypatch):
+    import json
+    from scripts import audit_china_gold_premium as audit
+
+    data_root = tmp_path / "data"
+    site_root = tmp_path / "site"
+    commodity = data_root / "commodity"
+    site_root.mkdir(parents=True)
+    commodity.mkdir(parents=True)
+    site_root.joinpath("commodities.html").write_text(_live_proxy_html_for_audit())
+
+    machine = {
+        "available": True,
+        "method": "close_proxy",
+        "state": "premium",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "source_asof": "2026-09-18T07:30:00+00:00",
+        "source_fresh": True,
+        "avg_5_pct": 0.12,
+        "range_30_pct": [-0.4, 0.5],
+        "official_canonical_available": False,
+        "context_only": True,
+    }
+    commodity.joinpath("latest.json").write_text(json.dumps({
+        "gold_context": {"china_physical_premium": machine}
+    }))
+
+    monkeypatch.setattr(audit.config, "ROOT", tmp_path)
+    monkeypatch.setattr(audit.config, "data_dir", lambda: data_root)
+    monkeypatch.setattr(
+        audit.config,
+        "load",
+        lambda: {
+            "storage": {"site_dir": "site"},
+            "commodities": {"china_gold_premium": {}},
+        },
+    )
+    monkeypatch.setattr(
+        audit.china_gold_premium,
+        "build_view_model",
+        lambda cfg: _live_proxy_vm_for_audit(),
+    )
+
+    rc = audit.run(strict_render=True)
+    receipt = json.loads(
+        data_root.joinpath("quality", "china_gold_premium.json").read_text()
+    )
+
+    assert rc == 0
+    assert receipt["machine_projection_consistent"] is True
+    assert receipt["violations"] == []
+
+
+def test_gold_premium_run_fails_closed_when_machine_projection_is_missing(tmp_path, monkeypatch):
+    import json
+    from scripts import audit_china_gold_premium as audit
+
+    data_root = tmp_path / "data"
+    site_root = tmp_path / "site"
+    site_root.mkdir(parents=True)
+    site_root.joinpath("commodities.html").write_text(_live_proxy_html_for_audit())
+
+    monkeypatch.setattr(audit.config, "ROOT", tmp_path)
+    monkeypatch.setattr(audit.config, "data_dir", lambda: data_root)
+    monkeypatch.setattr(
+        audit.config,
+        "load",
+        lambda: {
+            "storage": {"site_dir": "site"},
+            "commodities": {"china_gold_premium": {}},
+        },
+    )
+    monkeypatch.setattr(
+        audit.china_gold_premium,
+        "build_view_model",
+        lambda cfg: _live_proxy_vm_for_audit(),
+    )
+
+    rc = audit.run(strict_render=True)
+    receipt = json.loads(
+        data_root.joinpath("quality", "china_gold_premium.json").read_text()
+    )
+
+    assert rc == 2
+    assert receipt["machine_projection_consistent"] is False
+    assert "machine.method: expected close_proxy, rendered None" in receipt["violations"]

@@ -103,7 +103,10 @@ This is a machine projection of the same accepted context, not a new signal or a
 The existing nightly builder band also runs `scripts.audit_china_gold_premium` immediately
 after `build_commodities`. The audit independently re-reads the current source stores and
 engine view-model, compares method/state/currency/source-asof/premium with machine-readable
-attributes on the actual rendered Gold panel, and writes
+attributes on the actual rendered Gold panel, and independently checks the sibling
+`data/commodity/latest.json -> gold_context.china_physical_premium` projection against that
+same engine truth. A missing or drifted machine projection fails the strict production-path
+audit rather than silently degrading proof to page-only. The audit writes
 `data/quality/china_gold_premium.json` through the existing quality/commit plane. The receipt
 also preserves availability/freshness separately for canonical, intraday, and close-proxy
 methods so a live proxy can never be mistaken for official-benchmark coverage. Source

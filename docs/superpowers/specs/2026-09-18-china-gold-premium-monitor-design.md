@@ -95,9 +95,12 @@ substitutes.
 
 Every normal nightly commodity build is followed, in the existing builder band, by a read-only
 `scripts.audit_china_gold_premium` check. It independently reads the configured source stores and
-premium engine, then compares that truth with the written `site/commodities.html` Gold panel.
-The result is persisted to the existing `data/quality/china_gold_premium.json` observability
-plane and staged by the existing engine-output commit.
+premium engine, then compares that truth with both the written `site/commodities.html` Gold panel
+and the sibling `data/commodity/latest.json -> gold_context.china_physical_premium` machine
+projection. A missing/drifted machine projection is a strict projection mismatch; it cannot leave
+page proof green while machine consumers see different context. The result is persisted to the
+existing `data/quality/china_gold_premium.json` observability plane and staged by the existing
+engine-output commit.
 
 The receipt distinguishes a valid unavailable state from an actual render-contract break:
 source absence/staleness does not fail the build, while disagreement in method, state, currency,

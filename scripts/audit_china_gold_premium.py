@@ -1,7 +1,8 @@
 """Audit the production China-gold premium source -> VM -> rendered-page path.
 
-The checker is READ-ONLY over market/source stores and the rendered site.  It writes
-one observability receipt under the existing data/quality plane:
+The checker is READ-ONLY over market/source stores, the rendered site, and the
+incumbent commodity machine projection. It writes one observability receipt under the
+existing data/quality plane:
 
     data/quality/china_gold_premium.json
 
@@ -68,7 +69,13 @@ def _method_meta(vm: dict) -> dict:
     return {}
 
 
-def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
+def evaluate(
+    vm: dict,
+    html: str,
+    *,
+    machine_projection: dict | None = None,
+    checked_at: str | None = None,
+) -> dict:
     checked_at = checked_at or datetime.now(timezone.utc).isoformat(timespec="seconds")
     attrs = _panel_attrs(html)
     available = bool(vm.get("available"))
@@ -128,6 +135,51 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
     else:
         rendered_premium = None
 
+    render_violations = list(violations)
+    machine_violations: list[str] = []
+    if machine_projection is not None:
+        expected_machine = {
+            "available": available,
+            "method": vm.get("current_method"),
+            "state": vm.get("state"),
+            "source_asof": meta.get("asof"),
+            "source_fresh": bool(meta.get("fresh")) if available else False,
+            "official_canonical_available": bool(
+                (vm.get("canonical") or {}).get("available")
+            ),
+            "context_only": True,
+        }
+        for key, expected in expected_machine.items():
+            actual = machine_projection.get(key)
+            if actual != expected:
+                machine_violations.append(
+                    f"machine.{key}: expected {expected}, rendered {actual}"
+                )
+
+        expected_machine_premium = vm.get("premium_pct")
+        actual_machine_premium = machine_projection.get("premium_pct")
+        try:
+            premium_matches = (
+                expected_machine_premium is None
+                and actual_machine_premium is None
+            ) or (
+                expected_machine_premium is not None
+                and actual_machine_premium is not None
+                and abs(
+                    float(expected_machine_premium)
+                    - float(actual_machine_premium)
+                )
+                <= 5e-7
+            )
+        except (TypeError, ValueError):
+            premium_matches = False
+        if not premium_matches:
+            machine_violations.append(
+                "machine.premium_pct: expected "
+                f"{expected_machine_premium}, rendered {actual_machine_premium}"
+            )
+        violations.extend(machine_violations)
+
     source_fresh = bool(meta.get("fresh")) if available else False
     if violations:
         status = "render_mismatch"
@@ -160,7 +212,10 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
         "schema": SCHEMA,
         "checked_at": checked_at,
         "status": status,
-        "render_consistent": not violations,
+        "render_consistent": not render_violations,
+        "machine_projection_consistent": (
+            None if machine_projection is None else not machine_violations
+        ),
         "available": available,
         "headline_method": vm.get("current_method"),
         "headline_state": vm.get("state"),
@@ -189,10 +244,16 @@ def write_receipt(
     vm: dict,
     html: str,
     *,
+    machine_projection: dict | None = None,
     out_path: Path | str | None = None,
     checked_at: str | None = None,
 ) -> dict:
-    doc = evaluate(vm, html, checked_at=checked_at)
+    doc = evaluate(
+        vm,
+        html,
+        machine_projection=machine_projection,
+        checked_at=checked_at,
+    )
     promotion_blockers = live_ready_violations(
         doc,
         required_method="close_proxy",
@@ -248,7 +309,29 @@ def run(
     except OSError:
         html = ""
 
-    doc = write_receipt(vm, html)
+    # The page and the incumbent machine feed are sibling projections of the
+    # same display-tier VM. Treat a missing/corrupt machine projection as an
+    # empty object so the strict audit fails closed rather than silently
+    # downgrading to a page-only proof.
+    machine_projection: dict = {}
+    machine_path = config.data_dir() / "commodity" / "latest.json"
+    try:
+        payload = json.loads(machine_path.read_text())
+        candidate = (
+            (payload.get("gold_context") or {}).get("china_physical_premium")
+            if isinstance(payload, dict)
+            else None
+        )
+        if isinstance(candidate, dict):
+            machine_projection = candidate
+    except (OSError, ValueError, TypeError):
+        pass
+
+    doc = write_receipt(
+        vm,
+        html,
+        machine_projection=machine_projection,
+    )
 
     if doc["status"] == "render_mismatch":
         detail = "; ".join(doc["violations"]) or "unknown render mismatch"

@@ -1260,6 +1260,7 @@ def test_collector_store_is_consumed_by_engine_and_audited_render_without_transl
     from engine import china_gold_premium as cgp
     from lib import config, store
     from scripts import audit_china_gold_premium as audit
+    from scripts import build_commodities
 
     cfg = copy.deepcopy(config.load())
     cfg["storage"]["site_dir"] = "site"
@@ -1311,6 +1312,14 @@ def test_collector_store_is_consumed_by_engine_and_audited_render_without_transl
         f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
         f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
     )
+    machine = build_commodities._china_gold_premium_machine_view(
+        {"detail": [{"name": "gold", "china_gold_premium": vm}]}
+    )
+    commodity_dir = data_root / "commodity"
+    commodity_dir.mkdir(parents=True)
+    commodity_dir.joinpath("latest.json").write_text(
+        json.dumps({"gold_context": {"china_physical_premium": machine}})
+    )
 
     rc = audit.run(strict_render=True)
     persisted = json.loads(
@@ -1320,6 +1329,7 @@ def test_collector_store_is_consumed_by_engine_and_audited_render_without_transl
     assert persisted["status"] == "available_fresh"
     assert persisted["headline_method"] == "close_proxy"
     assert persisted["render_consistent"] is True
+    assert persisted["machine_projection_consistent"] is True
     assert persisted["source_asof"] == expected_asof
     assert persisted["official_canonical_available"] is False
 
