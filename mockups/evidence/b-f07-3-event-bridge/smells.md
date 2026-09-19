@@ -1,6 +1,6 @@
 # B-F07-3 capture observations
 
-CODE_HEAD: `32408e5e14511d2426cc8e9c83bb400598f69e92`.
+CODE_HEAD: `8dc43cbf5bd393506a481f566881320fb72b3891`.
 
 Three hosts were regenerated from `templates/_valuation_assumptions.html.j2`
 and `templates/theme.css`. The host shell retains its existing panel geometry;
@@ -26,5 +26,6 @@ cell. Representative dark and light crops were visually inspected. No visual
 smell was observed in those crops; this does not claim independent taste approval.
 
 The functional suite passed. The separate CI dependency audit still reports
-additional path gaps beyond the six authorized additions; no all-green or
-production-deployment claim is made. See `heal-h4.md`.
+62 introduced path entries across eight jobs at the prior head (hosted run
+35421325082, job 105839492389). This round preserves the same engine and CI
+bytes; no all-green or production-deployment claim is made. See `r2/heal-r2.md`.
