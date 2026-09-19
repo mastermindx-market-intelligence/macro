@@ -6,6 +6,7 @@ import stat
 
 from engine.research_intelligence.benchmark import (
     CASE_SCHEMA,
+    OBSERVATION_SCHEMA,
     aggregate_results,
     build_benchmark_request,
     score_raw_output,
@@ -560,3 +561,89 @@ def test_grounding_precision_penalizes_salvaged_hallucinated_material():
     assert result["counts"]["grounded_numbers"] == 1
     assert result["counts"]["emitted_entities"] == 4
     assert result["counts"]["evidence_grounded_entities"] == 2
+
+
+def _observation(
+    *,
+    latency_ms=1200,
+    input_tokens=12000,
+    output_tokens=1800,
+    effective_cost_microusd=42000,
+    cost_basis="marginal_api",
+):
+    return {
+        "schema": OBSERVATION_SCHEMA,
+        "latency_ms": latency_ms,
+        "latency_source": "operator_wall_clock",
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "token_source": "provider_reported",
+        "effective_cost_microusd": effective_cost_microusd,
+        "cost_basis": cost_basis,
+    }
+
+
+def test_run_economics_are_aggregated_but_do_not_change_quality_score():
+    baseline = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-a",
+    )
+    observed = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="model-b",
+        observation=_observation(),
+    )
+    assert baseline["overall_score"] == observed["overall_score"] == 1.0
+
+    aggregate = aggregate_results([baseline, observed])
+    by_label = {
+        row["candidate_label"]: row
+        for row in aggregate["candidates"]
+    }
+    assert by_label["model-a"]["run_observations"]["observed_case_count"] == 0
+    economics = by_label["model-b"]["run_observations"]
+    assert economics["observed_case_count"] == 1
+    assert economics["mean_latency_ms"] == 1200
+    assert economics["mean_input_tokens"] == 12000
+    assert economics["mean_output_tokens"] == 1800
+    assert economics["mean_effective_cost_microusd"] == 42000
+    assert economics["cost_bases"] == ["marginal_api"]
+    assert aggregate["promotion_authority"] == "none"
+
+
+def test_run_observation_rejects_cost_value_without_cost_basis():
+    observation = _observation()
+    observation["cost_basis"] = "unavailable"
+    try:
+        score_raw_output(
+            _case(),
+            BODY,
+            json.dumps(_rio()),
+            candidate_label="model-a",
+            observation=observation,
+        )
+    except ValueError as exc:
+        assert "cost value/basis disagree" in str(exc)
+    else:
+        raise AssertionError("benchmark must not accept ambiguous cost semantics")
+
+
+def test_subscription_cost_basis_is_kept_distinct_from_marginal_api_cost():
+    result = score_raw_output(
+        _case(),
+        BODY,
+        json.dumps(_rio()),
+        candidate_label="subscription-model",
+        observation=_observation(
+            effective_cost_microusd=9000,
+            cost_basis="amortized_subscription",
+        ),
+    )
+    aggregate = aggregate_results([result])
+    economics = aggregate["candidates"][0]["run_observations"]
+    assert economics["cost_bases"] == ["amortized_subscription"]
+    assert economics["provenance_state"] == "operator_supplied_observation"
