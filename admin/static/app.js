@@ -1271,10 +1271,10 @@ RENDER.experiments = async () => {
   }
   const exps = d.experiments || [];
   const ready = exps.filter(e => e.ready);
-  let html = `<div class="sub" style="margin-bottom:10px">Ongoing experiments and long-running data collections. Each one shows the exact date to come back and take the next step. This list is refreshed automatically every night.</div>
+  let html = `<div class="sub" style="margin-bottom:10px">Long-running tests and data collections, with the next review date and action.</div>
     <div class="grid">
       ${card("Tracked", `<div class="big">${d.n}</div><div class="sub">experiments running</div>`)}
-      ${card("Results ready", `<div class="big" style="color:${d.ready_count ? "var(--ok)" : "var(--text)"}">${d.ready_count}</div><div class="sub">come back for the next step</div>`)}
+      ${card("Ready to review", `<div class="big" style="color:${d.ready_count ? "var(--ok)" : "var(--text)"}">${d.ready_count}</div><div class="sub">need a decision</div>`)}
       ${card("Last updated", `<div class="big" style="font-size:18px" class="mono">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
     </div>`;
   if (ready.length) {
@@ -1290,17 +1290,22 @@ RENDER.experiments = async () => {
   html += `<div class="section">All experiments <span class="cnt">${exps.length}</span></div>
     <table class="exp-table"><thead><tr><th>Experiment</th><th>Type</th><th>Status</th><th>How often</th><th class="r">Come back</th><th>Next step</th><th>Your action</th></tr></thead><tbody>
     ${exps.map(e => `<tr${e.ready ? ' class="hl"' : ""}>
-      <td><b>${esc(e.name)}</b><div class="sub">${esc(e.what || "")}</div><div class="note mono muted">${esc(e.source || "")}</div></td>
+      <td><b>${esc(e.name)}</b><div class="sub">${esc(e.what || "")}</div>${e.source ? `<details class="tech-details"><summary>Source</summary><span class="mono">${esc(e.source)}</span></details>` : ""}</td>
       <td class="sub">${esc(e.kind || "")}</td>
       <td>${EXP_STATUS_PILL(e.status)}</td>
       <td class="sub">${esc(e.cadence || "")}</td>
       <td class="r">${EXP_DUE(e)}</td>
       <td class="sub" style="max-width:340px">${esc(e.next_step || "")}${EXP_STATE(e)}</td>
       <td class="exp-actions">
-        <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="acted">Acted</button>
-        <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="dismissed">Dismiss</button>
-        <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="snoozed">Snooze</button>
-        <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="overrode">Override</button>
+        <details class="row-actions">
+          <summary class="btn">Actions</summary>
+          <div class="row-actions-menu">
+            <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="acted">Mark acted</button>
+            <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="snoozed">Snooze</button>
+            <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="dismissed">Dismiss</button>
+            <button class="btn exp-act-btn" data-exp-id="${esc(e.id || "")}" data-action="overrode">Override</button>
+          </div>
+        </details>
       </td></tr>`).join("")}
     </tbody></table>
     ${d.note ? `<div class="sub" style="margin-top:10px">${esc(d.note)}</div>` : ""}`;
