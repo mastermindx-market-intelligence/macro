@@ -88,3 +88,19 @@ The Linear document was created and its full content read back. The attempted MA
 The Executive read returned HTTP 429. Current Job mapping is therefore **UNVERIFIED**, not absent. Do not create retrospective or duplicate Jobs to make the dashboard look complete.
 
 A full current 130-row production-acceptance recensus, automated synchronization and A/B consumption of the organizer are **not established by document publication**. The companion handoff records the actual completed effects and remaining source-publication and reconciliation work.
+## 2026-09-19 convergence amendment
+
+The organization decision above still governs. The operational frontier has materially advanced and is now source-pinned as follows:
+
+- The existing Linear document **MarketOntology - Program Control** was updated and read back on 2026-09-19; it remains the selected human entry point and still creates no lifecycle or second ledger.
+- Macro **#7335** is the sole F00C integration carrier for the previously colliding CSV writers #7011, #7014, #7340, #7343, #7348, #7349 and #7353. Exact reviewed semantic head: `7746af769e43e7cd049cd65727502e56f266ac01`.
+- The candidate recensus is **130 rows = 21 PROVEN_LIVE, 23 BUILT_NOT_PROVEN, 37 PARTIAL, 7 SPEC_ONLY, 42 NOT_BUILT**. This is a state census, not a completion percentage.
+- The #7335 fold changes exactly **80** intended rows and proves the other **50** byte-equivalent to current protected F00C baseline content. Absorbed sibling CSV carriers must not merge independently before #7335 canonical readback.
+- Macro **#7351** at `a1c07e93bd6b713b7483b06ba12b4d77a71f54b7` is the bounded UK-policy activation carrier. Its semantic review is PASS, but MO-PAID-023 remains BUILT_NOT_PROVEN until merge plus a canonical sentinel cycle and non-`gate_off` production readback.
+- Current Terminal truth used for proof-gated F08/F11/F12 row repair was read from protected Terminal master `dd7c6dec712a5b7f40d371e3b83827c694dd8f90`. Shipped routes/UI are recorded without promoting rows that still owe signed-in production proof.
+- Protected Sol procedure for this amendment was loaded from `mastermindx-market-intelligence/Mastermind@733389933e605e508517732fb6c69b6c18b7fef6` (Skillpack 1.0.1 / bootstrap major 1).
+
+This amendment does **not** strengthen the parent program to PROVEN_LIVE. #7335 is reviewed but still release-gated by binding exact-head CI; #7351 is still CI/release-gated and then production-proof-gated. Existing signed-in Terminal journeys, current Executive linkage and automatic Agent OS → Linear refresh remain separate unresolved proof obligations.
+
+The September 12 prohibition on replaying the blocked MAS-141 mutation remains unchanged.
+
