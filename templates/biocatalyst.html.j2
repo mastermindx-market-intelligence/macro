@@ -7,9 +7,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
-<title>BioCatalyst Intelligence — Trial Intelligence Workspace — MastermindX</title>
-{% set seo_title = "BioCatalyst Intelligence — Trial Intelligence Workspace — MastermindX" %}
-{% set seo_desc = "A focused trial-intelligence workspace for registry-recorded milestones and exact registry field updates alongside the current ClinicalTrials.gov record." %}
+<title>BioCatalyst Intelligence — Biotech Decision Intelligence — MastermindX</title>
+{% set seo_title = "BioCatalyst Intelligence — Biotech Decision Intelligence — MastermindX" %}
+{% set seo_desc = "Biotechnology decision intelligence for what matters next, with transparent research priority, explicit uncertainty, and source-grounded Trial Intelligence drill-down." %}
 {% set seo_path = "biocatalyst.html" %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -24,8 +24,8 @@
   <header class="bci-hero">
     <div class="bci-hero-copy">
       <p class="bci-eyebrow"><span class="bci-pulse" aria-hidden="true"></span>{{ t('BioCatalyst Intelligence', 'BioCatalyst Intelligence') }}</p>
-      <h1>{{ t('Trial Intelligence Workspace', '试验智能工作台') }}</h1>
-      <p class="bci-deck">{{ t('Screen the register, compare the trials you choose, and read exactly what changed — with the source record one click away.', '筛选登记库、对照你选定的试验、查看究竟改了什么——来源记录一键可达。') }}</p>
+      <h1>{{ t('Biotech Decision Intelligence', '生物科技决策智能') }}</h1>
+      <p class="bci-deck">{{ t('See what matters next in biotechnology, which companies are exposed, what is known, and what still needs research — with every conclusion one step from its evidence.', '查看生物科技领域下一步最重要的事件、哪些公司受到影响、哪些事实已知、哪些仍需研究——每个结论都可追溯到证据。') }}</p>
     </div>
     <div class="bci-run-status" aria-live="polite">
       <span class="bci-status-dot" aria-hidden="true"></span>
@@ -40,6 +40,73 @@
     </div>
   </header>
 
+  <section class="bci-wmn" id="bci-wmn" data-state="loading" aria-labelledby="bci-wmn-title">
+    <header class="bci-wmn-head">
+      <div>
+        <p class="bci-kicker">{{ t('What Matters Next', '下一步看什么') }}</p>
+        <h2 id="bci-wmn-title">{{ t('Biotechnology research priorities', '生物科技研究优先级') }}</h2>
+        <p class="bci-wmn-deck">{{ t('Source-grounded events ordered for research attention. Timing, identity gaps and unavailable estimates stay visible instead of being filled with a score.', '按研究关注度排列有来源依据的事件。时间、身份缺口和不可估计项都会明确显示，不会被一个总分掩盖。') }}</p>
+      </div>
+      <a class="bci-wmn-trial-link" href="#bci-trial-intelligence">
+        <span class="l-en">Open Trial Intelligence</span><span class="l-zh">打开试验智能</span><span aria-hidden="true">↓</span>
+      </a>
+    </header>
+    <div class="bci-wmn-toolbar" aria-label="What Matters Next controls">
+      <label class="bci-wmn-search" for="bci-wmn-search">
+        <span class="bci-control-label">{{ t('Find stock or event', '查找股票或事件') }}</span>
+        <input id="bci-wmn-search" type="search" autocomplete="off" spellcheck="false" placeholder="Ticker, company or event" data-placeholder-en="Ticker, company or event" data-placeholder-zh="股票代码、公司或事件">
+      </label>
+      <fieldset class="bci-wmn-horizon">
+        <legend class="bci-control-label">{{ t('Research horizon', '研究窗口') }}</legend>
+        <div class="bci-wmn-horizon-options">
+          <button type="button" data-horizon="30">30D</button>
+          <button type="button" class="is-active" data-horizon="90">90D</button>
+          <button type="button" data-horizon="180">180D</button>
+          <button type="button" data-horizon="365">1Y</button>
+        </div>
+      </fieldset>
+      <label class="bci-wmn-view-label" for="bci-wmn-view">
+        <span class="bci-control-label">{{ t('Queue', '队列') }}</span>
+        <select id="bci-wmn-view">
+          <option value="upcoming">{{ t('Upcoming', '即将发生') }}</option>
+          <option value="reconcile">{{ t('Needs reconciliation', '需要核对') }}</option>
+          <option value="history">{{ t('Resolved history', '已解决历史') }}</option>
+        </select>
+      </label>
+      <label class="bci-wmn-lane-label" for="bci-wmn-lane">
+        <span class="bci-control-label">{{ t('Research lane', '研究通道') }}</span>
+        <select id="bci-wmn-lane">
+          <option value="">{{ t('All lanes', '全部通道') }}</option>
+          <option value="ACT_NOW">ACT NOW</option>
+          <option value="RESEARCH_NEXT">RESEARCH NEXT</option>
+          <option value="MONITOR">MONITOR</option>
+        </select>
+      </label>
+      <button class="bci-wmn-refresh" id="bci-wmn-refresh" type="button">{{ t('Refresh', '刷新') }}</button>
+    </div>
+    <div class="bci-wmn-summary" aria-live="polite">
+      <div><strong id="bci-wmn-status">{{ t('Loading decision-intelligence cut…', '正在加载决策智能数据…') }}</strong><span id="bci-wmn-asof"></span></div>
+      <div class="bci-wmn-coverage" id="bci-wmn-coverage"></div>
+    </div>
+    <div class="bci-wmn-grid">
+      <div class="bci-wmn-list">
+        <div class="bci-wmn-queue" id="bci-wmn-queue" role="listbox" aria-label="What Matters Next" aria-busy="true">
+          <div class="bci-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="bci-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="bci-skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+        </div>
+        <button class="bci-wmn-load-more" id="bci-wmn-load-more" type="button" hidden>{{ t('Load more', '加载更多') }}</button>
+      </div>
+      <aside class="bci-wmn-detail" id="bci-wmn-detail" aria-labelledby="bci-wmn-detail-title" tabindex="-1">
+        <p class="bci-kicker">{{ t('Selected research event', '已选研究事件') }}</p>
+        <h3 id="bci-wmn-detail-title">{{ t('Choose an event', '选择一个事件') }}</h3>
+        <p class="bci-wmn-detail-empty">{{ t('Open a row to inspect timing, issuer exposure, research priority, missing intelligence and the exact authority ceiling.', '打开一行，查看时间、发行人敞口、研究优先级、缺失智能以及明确的权限上限。') }}</p>
+      </aside>
+    </div>
+    <footer class="bci-wmn-foot">{{ t('Research triage only — not a trade signal. Probability, materiality, historical response and incorporation remain NOT_ESTIMABLE until their owners and methods are separately qualified.', '仅用于研究分流——不是交易信号。在相关数据所有者和方法被单独验证前，概率、重要性、历史反应和市场计入程度均保持“不可估计”。') }}</footer>
+  </section>
+
+  <span class="bci-anchor-target" id="bci-trial-intelligence" aria-hidden="true"></span>
   <section class="bci-information" aria-label="Clinical trial workspace">
     <aside class="bci-filter-pane" aria-labelledby="bci-filter-title">
       <div class="bci-pane-head">

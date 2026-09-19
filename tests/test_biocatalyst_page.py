@@ -743,3 +743,59 @@ def test_biocatalyst_runtime_is_valid_javascript():
         check=False,
     )
     assert result.returncode == 0, result.stderr
+
+def test_biocatalyst_what_matters_next_is_primary_decision_surface():
+    """V3 lands as a real user-facing consumer without weakening Trial truth law."""
+
+    html = _render()
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    css = (TEMPLATES / "biocatalyst.css").read_text(encoding="utf-8")
+
+    assert 'id="bci-wmn"' in html
+    assert html.index('id="bci-wmn"') < html.index('class="bci-information"')
+    assert 'id="bci-wmn-queue"' in html
+    assert 'id="bci-wmn-detail"' in html
+    assert 'href="#bci-trial-intelligence"' in html
+    assert "What Matters Next" in html
+    assert "下一步看什么" in html
+    assert "Biotech Decision Intelligence" in html
+    assert "生物科技决策智能" in html
+
+    for token in (
+        "var WMN_API = '/api/biocatalyst/v1/what-matters-next';",
+        "var WMN_DETAIL_API = '/api/biocatalyst/v1/what-matters-next/detail';",
+        "biocatalyst_what_matters_next.v1",
+        "biocatalyst_wmn_detail.v1",
+        "research_priority_only",
+        "trade_origination === false",
+        "changes_availability === false",
+        "position_sizing === false",
+        "prophet_admission === false",
+        "NOT_ESTIMABLE",
+        "function makeWmnRow(",
+        "function showWmnDetail(",
+        "function selectWmnEvent(",
+        "generation_id",
+        "event_fact_ref",
+        "Research triage only",
+    ):
+        assert token in js
+
+    assert "Catalyst Score" not in html
+    assert "Catalyst Score" not in js
+    assert "generic catalyst score" not in js.lower()
+    for token in (
+        ".bci-wmn",
+        ".bci-wmn-card",
+        ".bci-wmn-lane",
+        ".bci-wmn-estimate",
+        ".bci-wmn-missing",
+        ".bci-wmn-detail",
+    ):
+        assert token in css
+
+    for legacy_mode in ("milestones", "screen", "peers", "changes", "prospective"):
+        assert f'data-mode="{legacy_mode}"' in html
+    assert "Trial Screen" in html
+    assert "First-seen Tape" in html
+
