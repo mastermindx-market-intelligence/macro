@@ -737,6 +737,27 @@ def test_malformed_source_identity_refuses_instead_of_shrinking_board():
         )
 
 
+def test_sparse_underlying_price_cannot_anchor_an_entire_qualified_board():
+    chain = _chain()
+    chain.loc[1, "underlying_price"] = np.nan
+    api = SimpleNamespace(
+        resolve_thetadata_store=lambda **kwargs: "/store",
+        chain=lambda s, root, store=None: chain,
+        oi_for_date=lambda s, root, store=None: _oi(s),
+    )
+    state = r2.build_settled_state(
+        "2026-09-14",
+        "SPY",
+        store_api=api,
+        calendar_api=Calendar,
+        greeks_fn=fake_greeks,
+    )
+    assert state["spot_input_contract_rate"] == pytest.approx(0.5)
+    assert state["model_input_contract_rate"] == pytest.approx(1.0)
+    assert state["settled_oi_contract_rate"] == pytest.approx(1.0)
+    assert state["target_gate_pass"] is False
+
+
 def test_missing_iv_cannot_disappear_from_the_coverage_denominator():
     broken = _chain()
     broken.loc[1, "implied_vol"] = np.nan

@@ -233,17 +233,16 @@ def build_settled_state(
     expiry = pd.to_datetime(merged["expiration"])
     merged["time_years"] = (expiry.dt.date - session_day).map(lambda x: x.days / 365.0)
 
-    spots = merged.loc[
-        np.isfinite(merged["underlying_price"]) & (merged["underlying_price"] > 0),
-        "underlying_price",
-    ]
+    eligible_n = int(len(merged))
+    spot_mask = np.isfinite(merged["underlying_price"]) & (merged["underlying_price"] > 0)
+    spot_input_rate = float(spot_mask.mean()) if eligible_n else 0.0
+    spots = merged.loc[spot_mask, "underlying_price"]
     if spots.empty:
         raise R2Refusal(f"no qualified underlying_price for {root.upper()} {session}")
     spot = float(spots.median())
     spot_range_bps = float((spots.max() - spots.min()) / spot * 10000.0) if spot else float("nan")
     merged["spot"] = spot
 
-    eligible_n = int(len(merged))
     iv_mask = np.isfinite(merged["implied_vol"]) & (merged["implied_vol"] > 0)
     model_input_rate = float(iv_mask.mean()) if eligible_n else 0.0
     settled_mask = np.isfinite(merged["settled_open_interest"])
@@ -278,6 +277,7 @@ def build_settled_state(
 
     qualified = bool(
         model_input_rate >= MODEL_INPUT_MATCH_TARGET
+        and spot_input_rate >= MODEL_INPUT_MATCH_TARGET
         and settled_rate >= CONTRACT_MATCH_TARGET
         and prior_rate >= CONTRACT_MATCH_TARGET
         and exposure_mass_coverage is not None
@@ -309,6 +309,7 @@ def build_settled_state(
         "source_availability_precision": "session_only_from_current_store_reader",
         "spot": spot,
         "spot_cross_contract_range_bps": spot_range_bps,
+        "spot_input_contract_rate": spot_input_rate,
         "unexpired_identity_contracts": int(len(unexpired)),
         "model_input_contract_rate": model_input_rate,
         "iv_contract_rate": model_input_rate,
