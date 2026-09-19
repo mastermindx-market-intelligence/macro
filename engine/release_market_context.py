@@ -642,6 +642,19 @@ def get_reaction_sensitivity(
                 fields[field_prefix] = mean_value
 
                 meta = outcome_metadata[outcome_key]
+                cell_limitations = [
+                    "descriptive_historical_context_only_no_forecast_or_trade_authority",
+                    "effective_n_sample_span_and_cell_specific_exclusions_unknown",
+                ]
+                if release_family == "cpi":
+                    cell_limitations.append(
+                        "cpi_surprise_basis_is_legacy_index_point_difference_not_official_mom_percentage"
+                    )
+                if cell_regime is not None:
+                    cell_limitations.append(
+                        "regime_label_is_latest_revised_not_as_observed"
+                    )
+
                 detail: dict = {
                     "release": release_family,
                     "outcome": outcome_key,
@@ -667,6 +680,7 @@ def get_reaction_sensitivity(
                         ),
                     },
                     "source": dict(source),
+                    "limitations": cell_limitations,
                     "unknowns": [
                         "effective_n",
                         "sample_span",
