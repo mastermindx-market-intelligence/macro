@@ -35,7 +35,7 @@
 <title>Quantum Computing — Theme detail</title>
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="../theme.css?v=63df1679">
-<link rel="stylesheet" href="../assets/css/ff321a97.css?v=ff321a97">
+<link rel="stylesheet" href="../assets/css/f6a4b6f7.css?v=f6a4b6f7">
 <link rel="preload" as="style" href="../product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="../navigation-refresh.css?v=c299c324">
 </head>
@@ -335,7 +335,7 @@ fetch('../policy_lever.json',{cache:'no-cache'})
 <div id="app"></div>
 
 <footer>
-  <span class="l-en">Read-only analytics, not investment advice. Theme scores organize what to study; they are descriptive, not a validated buy list. Member ratings reuse the stock dashboard Conviction Profile and trust tier. Treat them as a focus list, never an order.</span><span class="l-zh">只读分析，非投资建议。主题评分用于整理研究重点；它是描述性读数，不是已验证买入清单。成分股评分复用股票看板的信念档案与信任层级。请把它当作关注清单，绝非下单指令。</span>
+  <span class="l-en">Research dashboard, not investment advice. Theme and member scores help prioritize what to study; they are not a buy list or an order.</span><span class="l-zh">研究看板，非投资建议。主题与成分股评分用于安排研究优先级，不是买入清单或下单指令。</span>
   <span class="l-en">Generated</span><span class="l-zh">生成于</span> <span>2026-09-18 17:34 UTC</span>.
 </footer>
 
@@ -356,6 +356,19 @@ const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n)
 const fmtPct = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'%';
 const fmtPP = x => x==null ? '—' : (x>=0?'+':'')+(x*100).toFixed(1)+'pp';
 const cls = x => x==null?'muted':(x>=0?'pos':'neg');
+const TIER_LABELS={
+  T1:['confirmed setup','已确认机会'],
+  T2:['early setup','早期机会'],
+  T3:['forming','形成中'],
+  T4:['first sign','初现迹象']
+};
+function tierBadgeHtml(tier,provisional){
+  if(!tier) return '';
+  const lab=TIER_LABELS[tier]||['entry setup','入场机会'];
+  const tipEn={T1:'The entry read is active. Check the wider setup and your risk plan before acting.',T2:'An early, higher-conviction entry window. It is not a promise.',T3:'An early entry read that is not confirmed yet. It may change.',T4:'The earliest and least-certain entry read. Treat it as a watch.'}[tier]||'Entry timing context.';
+  const tipZh={T1:'入场判断已生效。操作前请结合整体布局和自己的风险计划。',T2:'较早、信心较高的入场窗口。它不是承诺。',T3:'较早的入场判断，尚未确认，仍可能变化。',T4:'最早、也最不确定的入场判断。先放进观察列表。'}[tier]||'入场时机背景。';
+  return `<span class="tier ${esc(tier)}" data-tip-en="Technical tier ${esc(tier)}: ${esc(tipEn)}${provisional?' Provisional — may change.':''}" data-tip-zh="技术层级 ${esc(tier)}：${esc(tipZh)}${provisional?' 暂定，仍可能变化。':''}">${L(lab[0],lab[1])}</span>`;
+}
 const LABEL_COLOR = {dominant:['rgba(250,204,21,.16)','rgba(250,204,21,.55)','#eab308'],emerging:['rgba(74,222,128,.15)','rgba(74,222,128,.5)','#22c55e'],fading:['rgba(251,146,60,.15)','rgba(251,146,60,.5)','#f97316'],deteriorating:['rgba(248,113,113,.15)','rgba(248,113,113,.5)','#ef4444'],neutral:['var(--panel2)','var(--line)','var(--muted)']};
 const RECO_COLOR = {enter:['rgba(34,197,94,.20)','rgba(34,197,94,.65)','#16a34a'],accumulate:['rgba(74,222,128,.14)','rgba(74,222,128,.5)','#22c55e'],hold:['var(--panel2)','var(--line)','var(--muted)'],trim:['rgba(251,146,60,.15)','rgba(251,146,60,.55)','#f97316'],avoid:['rgba(248,113,113,.16)','rgba(248,113,113,.6)','#ef4444']};
 const COMP_COLOR = {trend:'#5aa7ff',breadth:'#4ade80',impulse:'#a78bfa',macro:'#2dd4bf',mtf:'#f0abfc',volhole:'#fbbf24',crowding:'#fb7185'};
@@ -560,7 +573,7 @@ function xmktHtml(){
       <span class="xm-ar ${o.accel>0?'pos':o.accel<0?'neg':'muted'}">${arrow(o)}</span>${cav}</a>`;};
   const hot=link.hotter_elsewhere||[];
   const hotline=hot.length?`<div class="xm-hot">🔥 ${L('Heating up abroad','海外升温')}: ${hot.map(r=>(RM[r]||{}).flag+' '+L((RM[r]||{}).en,(RM[r]||{}).zh)).join(' · ')} — ${L('the same narrative is already dominant or emerging there','同一叙事在那里已主导或新兴')}</div>`:'';
-  return `<h2><span class="idx">◈</span>${L('Same narrative elsewhere','其他市场的同一叙事')} <span class="chip" title="${esc(dz.en||'')}">${L('display-only','仅展示')} ⓘ</span></h2>
+  return `<h2><span class="idx">◈</span>${L('Same narrative elsewhere','其他市场的同一叙事')}</h2>
     <div class="panel">
       <div class="muted sm" style="margin-bottom:9px">${L('The analog '+esc(link.canon_en)+' theme in other markets, with its live desk score — a cross-market read to spot a narrative early. Never a signal.','其他市场对应的'+esc(link.canon_zh)+'主题及其实时台面评分 — 用于尽早发现叙事的跨市场参考。绝非信号。')}</div>
       ${hotline}
@@ -579,7 +592,7 @@ function timingStripHtml(th){
     ${cell(L('acceleration z','加速度 z'),tm.accel_z==null?'—':(tm.accel_z>=0?'+':'')+Number(tm.accel_z).toFixed(2),cls(tm.accel_z))}
     ${cell(L('fast state','快速状态'),L(esc((tm.state||'steady').replace('_',' ')),esc(tm.state_zh||tm.state||'平稳')),tone)}
   </div>
-  <div class="muted sm" style="margin-top:5px">${L('Fast tape is display-only; 5/20/60d trend, breadth and the slow-cycle gate still govern the recommendation.','快速行情仅供展示；5/20/60日趋势、广度与慢周期门槛仍决定建议。')}</div>`;
+  <div class="muted sm" style="margin-top:5px">${L('Fast moves are context; the slower trend, breadth and cycle still drive the recommendation.','快速波动只作背景；较慢的趋势、广度和周期仍决定建议。')}</div>`;
 }
 /* ── GR1:READ:BEGIN — Group read (group_pulse.v1 / group_earnings_pulse.v1) ─────
    Assembles the three nightly artifacts into ONE plain-word read: a stance line, four
@@ -1143,13 +1156,13 @@ function render(){
   if(fastWatch.length){
     h+=`<div class="fast-watch">
       <div class="fast-watch-title">${L('Fast-turn watch — not a buy','快速转折观察 — 不是买入')}</div>
-      <div class="muted sm" style="margin-bottom:7px">${L('A fresh T1/T2 signal shows up here instead of being quietly dropped. The blocker column says why it is still not a buy.','新出现的 T1/T2 信号会显示在这里，不会被悄悄丢掉。“阻断原因”一列说明它为什么还算不上买点。')}</div>
+      <div class="muted sm" style="margin-bottom:7px">${L('A fresh early-turn sign appears here instead of being hidden. The blocker column explains why it is still not a buy.','新的早期转折迹象会显示在这里，而不是被隐藏。“阻断原因”一列说明它为什么还算不上买点。')}</div>
       <div class="ts"><table class="watch-table"><thead><tr>
         <th>${L('Stock','个股')}</th><th>${L('Turn','转折')}</th><th class="num">${L('Potential','潜力')}</th>
         <th class="watch-blocker">${L('Why blocked','阻断原因')}</th><th class="num">${L('5d','5日')}</th><th class="num watch-20d">${L('20d','20日')}</th>
       </tr></thead><tbody>${fastWatch.map(x=>`<tr>
         <td>${stk(x.symbol)} <span class="hold-company">${esc(x.name||'')}</span></td>
-        <td><span class="tier ${esc(x.tier)}">${esc(x.tier)}${x.provisional?'<span class="prov">*</span>':''}</span></td>
+        <td>${tierBadgeHtml(x.tier,!!x.provisional)}</td>
         <td class="num">${convCell({score:x.score})}</td>
         <td class="watch-blocker">${L(esc(x.blocker_en||'not confirmed'),esc(x.blocker_zh||x.blocker_en||'尚未确认'))}</td>
         <td class="num ${cls(x.ret_5d)}">${fmtPct(x.ret_5d)}</td>
@@ -1171,7 +1184,7 @@ function render(){
   // ---- advanced textures ----
   const ba=tx.bull_age||{}, ob=tx.overbought||{}, ce=tx.clean_entry||{}, rr=tx.rollover_risk||{};
   const txcard=(c,k,kz,vhtml,d,dz)=>`<div class="tx" style="--c:${c}"><div class="k">${L(k,kz)}</div><div class="v">${vhtml}</div><div class="d">${L(d,dz)}</div></div>`;
-  h+=`<h2><span class="idx">01</span>${L('Timing &amp; risk textures','择时与风险纹理')} <span class="chip">${L('display-only','仅展示')}</span></h2>
+  h+=`<h2><span class="idx">01</span>${L('Timing &amp; risk','择时与风险')}</h2>
   <div class="cards">
     ${txcard(ba.in_bull?cssv('--up'):cssv('--down'),'Bull-market age','牛市时长', ba.days!=null?(ba.approx_months+'mo'):'—', (ba.in_bull?('in uptrend '+ba.days+'d · '+(ba.stage||'')):'in a downtrend')+' · '+(ba.drawdown_from_peak!=null?(Math.round(ba.drawdown_from_peak*1000)/10+'% from peak'):''), '')}
     ${txcard(ob.value>=0.6?cssv('--down'):ob.value>=0.35?cssv('--warn'):cssv('--muted'),'Overbought','超买度', (ob.band||'—'), 'RSI '+(ob.rsi!=null?ob.rsi:'—')+' · RS '+(ob.rs_pctile!=null?Math.round(ob.rs_pctile*100)+'%ile':'—'), '')}
@@ -1237,17 +1250,7 @@ function render(){
   // confluence cascade tier weights (operator re-ranked 2026-07-06: T2 above T1 for entry quality).
   const TIER_W={T1:0.9,T2:1.0,T3:0.6,T4:0.4};
   const tierW=(c)=>{const s=c&&c.signal; return (s&&s.tier&&TIER_W[s.tier])||0;};
-  const tierBadge=(c)=>{const s=c&&c.signal; if(!s||!s.tier) return '';
-    // stage-name vocabulary v2 (W8-R4 #2099); wording mirrors _sig_badge.html.j2, popover via theme.js.
-    const tipEn={T1:'T1 CONFIRMED: the entry read is active. Check the wider setup and your risk plan before acting.',
-      T2:'T2 PRIME: an early, higher-conviction entry window. It is not a promise.',
-      T3:'T3 APPROACHING: an early entry read that is not confirmed yet. It may change.',
-      T4:'T4 FIRST SPARK: the earliest and least-certain entry read. Treat it as a watch.'}[s.tier]||'';
-    const tipZh={T1:'T1 CONFIRMED（已确认）：入场判断已生效。操作前请结合整体布局和自己的风险计划。',
-      T2:'T2 PRIME（最佳入场）：较早、信心较高的入场窗口。它不是承诺。',
-      T3:'T3 APPROACHING（临近）：较早的入场判断，尚未确认，仍可能变化。',
-      T4:'T4 FIRST SPARK（初现）：最早、也最不确定的入场判断。先放进观察列表。'}[s.tier]||'';
-    return ` <span class="tier ${s.tier}" data-tip-en="${tipEn}" data-tip-zh="${tipZh}">${s.tier}${s.provisional?'<span class="prov">*</span>':''}</span>`;};
+  const tierBadge=(c)=>{const sg=c&&c.signal; if(!sg||!sg.tier) return ''; return ' '+tierBadgeHtml(sg.tier,!!sg.provisional);};
   const sortMembers=(items)=>{
     // default 'recommend' order: fresh-confluence names first (T1>T2>T3>T4), then the
     // conviction blend; other columns keep the plain numeric sort. Mirrors subsectors_china
@@ -1333,9 +1336,9 @@ function render(){
   h+=`<h2><span class="idx">04</span>${L('Holdings — own-it conviction + entry timing','成分股 — 持有信念 + 入场择时')} <span class="chip">${mem.length} ${L('names','只')}</span>${nBoard?` <span class="chip sb-chip" title="Members currently on the US Prophet buy board">★ ${nBoard} ${L('on Prophet board','在 Prophet 榜')}</span>`:''}</h2>
   <div class="panel"><div class="ts"><table id="hold">
     <colgroup><col class="hold-stock"><col class="hold-potential"><col class="hold-verdict"><col class="hold-entry"><col class="hold-20d"></colgroup>
-    <thead><tr><th>${L('Stock','个股')}</th><th class="num hold-potential" data-s="recommend" title="Potential is buy-readiness, not signal speed: slow-cycle state, room to run, survivability and entry timing. A fresh T1/T2 can coexist with a low score.">${L('Potential','潜力')}</th><th>${L('Verdict','结论')}</th><th class="hold-entry">${L('Entry now','入场时机')}</th><th class="num hold-20d" data-s="r20">20d</th></tr></thead>
+    <thead><tr><th>${L('Stock','个股')}</th><th class="num hold-potential" data-s="recommend" title="Potential combines cycle state, room to run, survivability and entry timing. A fast setup can appear before the slow cycle confirms.">${L('Potential','潜力')}</th><th>${L('Verdict','结论')}</th><th class="hold-entry">${L('Entry now','入场时机')}</th><th class="num hold-20d" data-s="r20">20d</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
-    <div class="disc">${L('Potential ranks buy readiness, not the speed of a turn: it blends slow-cycle state, room to run, survivability and entry timing. A fresh T1/T2 can therefore coexist with a low Potential when the slow cycle has not confirmed. The default order surfaces fresh T1–T4 confluence first, then blends verdict quality, Potential and entry timing while pushing cycle-blocked names down (T3* is provisional and may repaint). ⚠ means the cycle blocks a buy.','潜力衡量买入就绪度，而不是转折速度：它综合慢周期状态、上涨空间、生存质量与入场时机。因此，当慢周期尚未确认时，新的 T1/T2 可以与低潜力分并存。默认排序先显示新的 T1–T4 共振，再综合结论质量、潜力与入场时机，并把周期阻断的个股下调（T3* 为暂定、可能重绘）。⚠ 表示周期阻止买入。')}</div>
+    <div class="disc">${L('Potential combines cycle state, room to run, survivability and entry timing. The default order puts fresh entry setups first, then weighs verdict quality and Potential; cycle-blocked names move down. ⚠ means the cycle blocks a buy.','潜力综合周期状态、上涨空间、生存质量和入场时机。默认排序优先显示新的入场机会，再结合结论质量与潜力；被周期阻断的个股会下调。⚠ 表示周期阻止买入。')}</div>
     <div class="disc" style="margin-top:4px">${L('Conviction score = earnings/flow edge, not trend leadership — a rotation leader can score low here.','信念评分＝盈利/资金面优势，非趋势领涨度 — 轮动领涨股在此可能低分。')}</div>
   </div>`;
 
@@ -1426,7 +1429,7 @@ function anatomyPanelHtml(th){
 
   var html='<div class="ftr-anatomy-card">'
     +'<div class="ftr-anatomy-hd">'
-    +'<div><div style="font-size:13px;font-weight:700">'+L('Score Anatomy','评分解剖')+'</div>'
+    +'<div><div style="font-size:13px;font-weight:700">'+L('Score details','评分详情')+'</div>'
     +'<div class="ftr-ah-why">'+why+'</div></div>'
     +'<div style="text-align:center"><div class="ftr-ah-score" style="color:'+(score>=66?'var(--up)':score>=40?'var(--link)':'var(--down)')+'">'+score+'</div>'
     +'<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:3px">'+L('score','评分')+'</div></div>'
@@ -1465,7 +1468,7 @@ function anatomyPanelHtml(th){
   var ftNotes=[];
   if(crowdPenActive) ftNotes.push('<span class="ftr-crowd-note">'+L('Crowding penalty: rs_pctile '+(rsPct!=null?rsPct.toFixed(3):'—')+' ≥ 0.85 — blocks ACCUMULATE','拥挤惩罚：rs_pctile '+(rsPct!=null?rsPct.toFixed(3):'—')+' ≥ 0.85 — 阻止增仓')+'</span>');
   var nAvailLegs = Object.keys(comp).filter(function(k){return k!=='crowding'&&comp[k]!=null;}).length;
-  if(macroAbsent) ftNotes.push('<span style="font-size:11px;color:var(--muted)">'+L('Macro absent: score renormalises over '+nAvailLegs+' available legs. Adding a macro prior changes the calibrated score — requires W8b pre-registration (FT-R7).','宏观缺失：评分在现有腿上重新归一化。添加宏观先验会改变校准评分 — 需W8b预注册（FT-R7）。')+'</span>');
+  if(macroAbsent) ftNotes.push('<span style="font-size:11px;color:var(--muted)">'+L('Macro context is absent, so the score is rebalanced across '+nAvailLegs+' available inputs. Adding macro context would change the calibrated score, so it stays excluded until separately validated.','宏观背景缺失，因此评分会在现有 '+nAvailLegs+' 个输入之间重新平衡。加入宏观背景会改变校准评分，因此在单独验证前保持排除。')+'</span>');
   if(ftNotes.length) html+='<div class="ftr-anatomy-ft">'+ftNotes.join('')+'</div>';
   html+='</div>';
   return html;
@@ -1644,7 +1647,7 @@ function injectFtrWidgets(pulse, turnWatch){
     var th2=(DETAIL.theme||{});
     var anatEl=document.createElement('div');
     anatEl.className='ftr-w8-anatomy-section';
-    anatEl.innerHTML='<h2><span class="idx">W8</span>'+L('Score Anatomy','评分解剖')+' <span class="chip" style="font-size:10px;padding:1px 6px">'+L('display-only','仅展示')+'</span></h2>'+anatomyPanelHtml(th2);
+    anatEl.innerHTML='<details class="ftr-anatomy-disclosure"><summary>'+L('How this score is built','评分如何构成')+'</summary>'+anatomyPanelHtml(th2)+'</details>';
     app.insertBefore(anatEl, scoreH2);
   }
 }
