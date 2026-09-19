@@ -1,0 +1,69 @@
+{
+  "captured_at": "2026-09-11T07:02:12Z",
+  "rig": "S1 overlay-column (Playwright, overlay hide, reduced-motion)",
+  "overlays_hidden": [
+    ".ift-aurora",
+    ".mx5-aurora",
+    ".sky-fx",
+    "#mmb-root",
+    "#mmb-boot"
+  ],
+  "cells": {
+    "stamp-tip-dark-en": {
+      "file": "cells/stamp-tip-dark-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-stamp",
+        ".lens-pop.open"
+      ],
+      "bytes": 43181
+    },
+    "stamp-tip-light-en": {
+      "file": "cells/stamp-tip-light-en.png",
+      "theme": "light",
+      "locale": "en",
+      "clip": [
+        "#cell-stamp",
+        ".lens-pop.open"
+      ],
+      "bytes": 40698
+    },
+    "control-dark-en": {
+      "file": "cells/control-dark-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-control"
+      ],
+      "bytes": 17170
+    },
+    "control-light-en": {
+      "file": "cells/control-light-en.png",
+      "theme": "light",
+      "locale": "en",
+      "clip": [
+        "#cell-control"
+      ],
+      "bytes": 16167
+    },
+    "tip-row-zh": {
+      "file": "cells/tip-row-zh.png",
+      "theme": "dark",
+      "locale": "zh",
+      "clip": [
+        ".lens-pop.open"
+      ],
+      "bytes": 20998
+    },
+    "outage-stance-en": {
+      "file": "cells/outage-stance-en.png",
+      "theme": "dark",
+      "locale": "en",
+      "clip": [
+        "#cell-outage"
+      ],
+      "bytes": 15912
+    }
+  }
+}

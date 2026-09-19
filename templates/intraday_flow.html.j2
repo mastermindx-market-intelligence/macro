@@ -187,6 +187,8 @@
   .basket-scroll { display:flex; gap:6px; flex-wrap:wrap; }
 
   .leaders-wrap { overflow-x:auto; }
+  .ift-see-all { appearance:none; -webkit-appearance:none; background:none; border:0; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-decoration:underline; text-underline-offset:2px; letter-spacing:inherit; }
+  .ift-see-all:hover, .ift-see-all:focus-visible { color:var(--text); }
   table.leaders { width:100%; border-collapse:collapse; font-size:13px; }
   table.leaders th { padding:9px 11px; text-align:left; font-size:var(--fs-micro); font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); border-bottom:1px solid var(--hair-strong); cursor:pointer; white-space:nowrap; user-select:none; }
   table.leaders th:hover { color:var(--text); }
@@ -221,6 +223,8 @@
   .chip-row { display:flex; flex-wrap:wrap; gap:3px; margin-top:3px; }
   .badge { display:inline-block; font-size:9.5px; font-weight:600; padding:2px 6px; border-radius:5px; border:1px solid; white-space:nowrap; }
   .badge-blue { color:var(--ink-info, var(--info,#5b9bf0)); border-color:color-mix(in srgb,var(--info) 45%,transparent); background:color-mix(in srgb,var(--info) 10%,transparent); }
+  /* Degraded row: auxiliary cells recede so the No-read stance leads. Copy unchanged. */
+  body.page-intraday-flow td.ift-aux-muted { opacity:.58; color:var(--muted); }
 
   .dealer-cell { min-width:150px; font-size:11.5px; }
   .dealer-line { line-height:1.42; }
@@ -257,6 +261,23 @@
   .foot-note { font-size:var(--fs-micro); color:var(--muted); margin-top:12px; line-height:1.55; }
 
   .loading-row td { color:var(--muted); font-style:italic; text-align:center; padding:26px; }
+  /* loading skeletons — true geometry, wordless; .skel is the design-system shimmer */
+  .ift-skel-thesis { height:1.15em; width:min(28ch, 92%); margin:13px 0 0; }
+  .ift-skel-sub { height:0.9em; width:min(48ch, 86%); margin:10px 0 0; }
+  .ift-skel-inline { display:inline-block; height:0.85em; width:12ch; vertical-align:middle; margin-left:8px; }
+  .spot-skel { pointer-events:none; }
+  .spot-skel .ift-skel-spot-hd { height:22px; width:42%; }
+  .spot-skel .ift-skel-spot-reason { height:0.9em; width:88%; margin-top:12px; }
+  .spot-skel .ift-skel-spot-reason.short { width:64%; margin-top:7px; }
+  .spot-skel .ift-skel-spot-metric { height:28px; width:100%; margin-top:8px; }
+  .ift-skel-row td { padding:11px; vertical-align:middle; }
+  .ift-skel-row .ift-skel-cell { height:12px; width:72%; }
+  .ift-skel-row .ift-skel-cell.narrow { width:44%; }
+  .ift-skel-host { position:relative; }
+  body.page-intraday-flow .sr-only {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
 
   /* ══ entrance / kinetic animations (reduced-motion gated) ══════ */
   @keyframes iftPulse { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.4; transform:scale(.82);} }
@@ -292,6 +313,62 @@
 html[data-theme="light"] :is(
   .hs-num
 ) { text-shadow:none; }
+
+/* post-stack: consolidate */
+/* Light is a research workspace: hairline, ink, shadow — not the command-center glow. */
+html[data-theme="light"] body.page-intraday-flow .ift-see-all {
+  color:var(--ink-link, var(--link));
+  text-decoration-color:color-mix(in srgb, var(--ink-link, var(--link)) 40%, transparent);
+}
+html[data-theme="light"] body.page-intraday-flow .ift-see-all:hover,
+html[data-theme="light"] body.page-intraday-flow .ift-see-all:focus-visible {
+  color:var(--text);
+  text-decoration-thickness:2px;
+}
+html[data-theme="light"] body.page-intraday-flow .ctx-stamp {
+  color:color-mix(in srgb, var(--text) 62%, var(--muted));
+}
+html[data-theme="light"] body.page-intraday-flow .ctx-stamp .lens-q {
+  background:var(--panel);
+  border-color:color-mix(in srgb, var(--text) 18%, transparent);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--text) 6%, transparent);
+}
+html[data-theme="light"] body.page-intraday-flow .skel {
+  background:linear-gradient(90deg, color-mix(in srgb, var(--text) 6%, var(--panel)) 25%, color-mix(in srgb, var(--text) 11%, var(--panel)) 45%, color-mix(in srgb, var(--text) 6%, var(--panel)) 65%);
+  background-size:200% 100%;
+  box-shadow:none;
+}
+html[data-theme="light"] body.page-intraday-flow .spot-skel {
+  background:var(--panel);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--text) 8%, transparent);
+  border-color:var(--line);
+}
+html[data-theme="light"] body.page-intraday-flow .ift-skel-row td {
+  border-bottom-color:var(--line);
+}
+/* Tape chips ghost/hairline in light — recessive by design. Dark stays filled. */
+html[data-theme="light"] body.page-intraday-flow .badge-blue {
+  background:transparent;
+  color:color-mix(in srgb, var(--text) 52%, var(--muted));
+  border-color:color-mix(in srgb, var(--text) 20%, transparent);
+  font-weight:500;
+}
+/* Lens card is body-appended; this page needs an opaque instrument surface so
+   the feed-status tip does not wash through the desk (theme.js owns open/close). */
+body.page-intraday-flow .lens-pop {
+  background:var(--panel);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  box-shadow:var(--popover-shadow);
+}
+html[data-theme="light"] body.page-intraday-flow .lens-pop {
+  border-color:var(--line);
+  box-shadow:0 10px 28px -12px color-mix(in srgb, var(--text) 22%, transparent);
+}
+/* Feed-status tip: three block rows, one per lane. The in-row delimiter is
+   ' · '; rows themselves are block elements, never joined by that same mark. */
+body.page-intraday-flow .lens-pop .ift-feed-row { display:block; }
+body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4em; }
 </style>
 </head>
 <body class="page-intraday-flow tape-quiet">
@@ -309,8 +386,11 @@ html[data-theme="light"] :is(
         'A fixed watchlist of institutional leaders — Mag 7, AI infrastructure/software/semis, semicap, reshoring, defense and power grid. It looks for one thing: a leader that sold off, absorbed the selling, and is being bought back on real volume. Every read is a deterministic rule — no score, no black box. Options-tape direction is approximate (~soft): it leans, it does not confirm. Nothing here is trade advice.',
         '一份固定的机构领涨股观察名单——Mag 7、AI基础设施/软件/半导体、半导体设备、回流制造、国防与电网。它只找一件事：某只领涨股下跌、消化卖压、如今正被放量重新买入。每个判断均为确定性规则——无评分、无黑箱。期权带方向为近似（~软性）：只作倾向，不作确认。所有内容均不构成交易建议。') }}
     </div>
-    <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="l-en">Reading the tape…</span><span class="l-zh">正在读取资金带…</span></h1>
-    <p class="hero-sub" id="hero-sub"><span class="l-en">Sorting {{ ift.n_leaders if ift.n_leaders else 0 }} leaders into plain-word calls…</span><span class="l-zh">正在将 {{ ift.n_leaders if ift.n_leaders else 0 }} 只领涨股归类为通俗结论……</span></p>
+    <div class="ift-skel-host" id="ift-hero-copy" aria-busy="true">
+      <span class="sr-only">{{ t('Loading','加载中') }}</span>
+      <h1 class="hero-thesis thesis-slate" id="hero-thesis"><span class="skel ift-skel-thesis" aria-hidden="true"></span></h1>
+      <p class="hero-sub" id="hero-sub"><span class="skel ift-skel-sub" aria-hidden="true"></span></p>
+    </div>
 
     <div class="hero-grid">
       <div class="hero-score">
@@ -327,7 +407,11 @@ html[data-theme="light"] :is(
       <div class="hero-ctx">
         <div class="ctx-row"><span class="ctx-ic">⚡</span><span id="ctx-strong">{{ t('Waiting for the tape…','等待资金带……') }}</span></div>
         <div class="ctx-row muted"><span class="ctx-ic">🧭</span><span id="ctx-watch">{{ t('The board below carries every name and the reasoning behind each call.','下方看板列出每只标的及其结论依据。') }}</span></div>
-        <div class="ctx-stamp" id="ift-stamp">{{ t('Base:', '基础：') }} {{ ift.as_of if ift.as_of else '—' }} · <span class="l-en">tape loading…</span><span class="l-zh">资金带加载中…</span></div>
+        {% if ift.as_of_display and ift.as_of_display.en %}
+        <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en, '看板构建于' ~ ift.as_of_display.zh) }}<span class="skel ift-skel-inline" aria-hidden="true"></span></div>
+        {% else %}
+        <div class="ctx-stamp" id="ift-stamp"><span class="skel ift-skel-inline" aria-hidden="true"></span></div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -337,8 +421,8 @@ html[data-theme="light"] :is(
 <section class="panel glass reveal reveal-1">
   <h2 class="sect-h">{{ t("What's set up now", '当前布局一览') }}
     <span class="sect-note">{{ t('click a lane to filter the board','点击类别以筛选看板') }}</span>
-    {{ help('Each leader is sorted into one plain-word call from deterministic rules — no score, no black box. Click a card to show only those names on the board. Counts update live as the tape moves.',
-            '每只领涨股按确定性规则归入一个通俗结论——无评分、无黑箱。点击卡片仅在看板显示该类标的。计数随资金带实时更新。') }}
+    {{ help('Each leader is sorted into one plain-word call from deterministic rules — no score, no black box. Click a card to show only those names on the board. Counts update as the tape refreshes.',
+            '每只领涨股按确定性规则归入一个通俗结论——无评分、无黑箱。点击卡片仅在看板显示该类标的。计数随资金带刷新而更新。') }}
   </h2>
   <div class="stance-strip" id="stance-strip">
     <div class="stance-card lane-act" data-stance="act">
@@ -379,8 +463,11 @@ html[data-theme="light"] :is(
   <h2 class="sect-h">{{ t('Look here first', '优先关注') }}
     <span class="sect-note" id="spot-note">{{ t('the strongest setups on the tape right now','当前资金带上最强的布局') }}</span>
   </h2>
-  <div class="spot-grid" id="spot-grid">
-    <div class="spot-empty">{{ t('Reading the tape…','正在读取资金带……') }}</div>
+  <div class="spot-grid ift-skel-host" id="spot-grid" aria-busy="true">
+    <span class="sr-only">{{ t('Loading','加载中') }}</span>
+    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
+    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
+    <article class="spot-card spot-skel lane-aside" aria-hidden="true"><div class="skel ift-skel-spot-hd"></div><div class="skel ift-skel-spot-reason"></div><div class="skel ift-skel-spot-reason short"></div><div class="spot-metrics"><div class="skel ift-skel-spot-metric"></div><div class="skel ift-skel-spot-metric"></div></div></article>
   </div>
 </section>
 
@@ -406,21 +493,29 @@ html[data-theme="light"] :is(
       </div>
     </div>
   </h2>
-  <div class="leaders-wrap">
+  <div class="leaders-wrap ift-skel-host" id="ift-board-skel" aria-busy="true">
+    <span class="sr-only">{{ t('Loading','加载中') }}</span>
     <table class="leaders" id="leaders-table">
       <thead>
         <tr>
           <th data-col="ticker" class="col-ticker">{{ t('Name', '代码') }}<span class="sort-ic"></span></th>
           <th data-col="stance" class="col-stance">{{ t('The call', '结论') }}<span class="sort-ic"></span></th>
           <th data-col="last" class="col-last hide-narrow">{{ t('Price', '价格') }}<span class="sort-ic"></span></th>
-          <th data-col="rvol" class="sort-desc col-rvol">{{ t('Volume', '成交量') }}{{ help('Today\'s volume vs a normal day at this exact time. “2.4× normal” means 2.4 times the usual pace. “Holding” = buyers keep closing bars in the upper half on above-normal volume.', '今日成交量与该时段正常水平之比。“2.4×正常”即为通常速度的2.4倍。“持稳”=买盘持续将K线收在上半段且量高于正常。') }}<span class="sort-ic"></span></th>
+          <th data-col="rvol" class="sort-desc col-rvol">{{ t('Volume', '成交量') }}{{ help('This session\'s volume vs a normal day at this exact time. “2.4× normal” means 2.4 times the usual pace. “Holding” = buyers keep closing bars in the upper half on above-normal volume.', '本时段成交量与同一时段正常水平之比。“2.4×正常”即为通常速度的2.4倍。“持稳”=买盘持续将K线收在上半段且量高于正常。') }}<span class="sort-ic"></span></th>
           <th data-col="tape" class="col-tape hide-narrow">{{ t('Tape', '盘口') }}{{ help('Where price sits vs the session’s average price (VWAP) and whether the options tape is leaning call-heavy or put-heavy. The options lean is approximate (~soft) — a lean, not a confirmation.', '价格相对当日均价（VWAP）的位置，以及期权带偏看涨还是看跌。期权倾向为近似（~软性）——只作倾向，不作确认。') }}</th>
           <th data-col="dealer" class="col-dealer hide-narrow">{{ t('Dealer map', '做市商地图') }}{{ help('From daily options chains: the nearby ceiling/floor levels dealers defend, the day’s expected move, and whether price is being pinned. A levels-and-timing map for stops — never a direction call, and single-name gamma is a near-constant product trait, not a signal.', '来自每日期权链：做市商防守的上方天花板/下方地板价位、当日预期波动幅度、以及价格是否被钉住。仅为止损用的价位与择时地图——非方向判断；单只标的gamma为近乎恒定的产品属性，非信号。') }}</th>
           <th data-col="expand" class="col-expand"></th>
         </tr>
       </thead>
       <tbody id="leaders-body">
-        <tr class="loading-row"><td colspan="7"><span class="l-en">Loading leaders…</span><span class="l-zh">加载中…</span></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
+        <tr class="ift-skel-row" aria-hidden="true"><td><div class="skel ift-skel-cell"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell narrow"></div></td><td><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td class="hide-narrow"><div class="skel ift-skel-cell"></div></td><td></td></tr>
       </tbody>
     </table>
   </div>
@@ -527,6 +622,8 @@ var quotesStatus = 'connecting', pulseStatus = 'connecting', flowStatus = 'conne
 var sortCol = 'rvol', sortDir = -1;
 var activeBasket = 'all', activeStance = 'all', searchQ = '', groupByStance = true;
 var openRows = {};     // ticker -> true when detail expanded
+var BOARD_CAP = 8;
+var boardExpanded = false;
 
 // ── Stance lane metadata (labels localized; keys deterministic) ────────────
 var STANCE_META = {
@@ -535,7 +632,8 @@ var STANCE_META = {
   in_favour:   { dot:'🏃', lane:'lane-fav',    en:'In favour',          zh:'走势占优', order:2 },
   take_profits:{ dot:'🟠', lane:'lane-profit', en:'Take profits',       zh:'获利了结', order:3 },
   watch:       { dot:'👀', lane:'lane-watch',  en:"Watch — don't chase",zh:'观望——勿追', order:4 },
-  stand_aside: { dot:'⚪', lane:'lane-aside',  en:'Stand aside',        zh:'暂时观望', order:5 }
+  stand_aside: { dot:'⚪', lane:'lane-aside',  en:'Stand aside',        zh:'暂时观望', order:5 },
+  degraded:    { dot:'·',  lane:'lane-aside',  en:'No read',            zh:'暂无判断', order:6 }
 };
 
 // ── URL helpers ────────────────────────────────────────────────────────────
@@ -666,13 +764,38 @@ function boardPulseCoverage() {
   }
   return resolved / leaders.length;
 }
-function feedWord(status, zh) {
-  if (zh) {
-    if (status === 'live') return '已接入';
-    if (status === 'unavailable') return '不可用';
-    return '连接中';
+function feedWord(status, lane) {
+  // Bare status phrase, lane-aware, never containing the lane noun.
+  // Same mechanism both languages: quotes=prices/报价, tape=trades/成交, options=flow/流数据.
+  if (status === 'connecting') return { en:'still connecting', zh:'连接中' };
+  if (status === 'live') {
+    if (lane === 'tape') return { en:'carrying trades', zh:'成交已送达' };
+    if (lane === 'options') return { en:'carrying flow', zh:'流数据已送达' };
+    return { en:'carrying prices', zh:'报价已送达' };
   }
-  return status === 'live' ? 'live' : (status === 'unavailable' ? 'unavailable' : 'connecting');
+  if (lane === 'tape') return { en:'trades not coming through', zh:'成交未送达' };
+  if (lane === 'options') return { en:'flow not coming through', zh:'流数据未送达' };
+  return { en:'prices not coming through', zh:'报价未送达' };
+}
+function feedTipRow(status, lane) {
+  var lab = { quotes:['quotes','行情'], tape:['tape','资金带'], options:['options','期权流'] }[lane] || ['quotes','行情'];
+  var w = feedWord(status, lane);
+  return { en: lab[0]+' · '+w.en, zh: lab[1]+' · '+w.zh };
+}
+function feedHeadline(q, t, o) {
+  var rank = { live:0, connecting:1, unavailable:2 };
+  function rk(s){ var r = rank[s]; return r == null ? 1 : r; }
+  var lanes = [{id:'quotes', s:q},{id:'tape', s:t},{id:'options', s:o}];
+  if (q==='live' && t==='live' && o==='live') return { en:'all feeds carrying', zh:'各路数据已送达' };
+  var worst = Math.max(rk(q), rk(t), rk(o));
+  var at = lanes.filter(function(l){ return rk(l.s)===worst; });
+  // Connecting (one lane or a tie) never prints "not coming through".
+  if (worst === 1) return { en:'feeds still connecting', zh:'数据连接中' };
+  if (at.length >= 2) return { en:'some feeds not coming through', zh:'部分数据未送达' };
+  var lane = at[0].id;
+  if (lane==='quotes') return { en:'prices not coming through', zh:'行情数据未送达' };
+  if (lane==='tape') return { en:'trades not coming through', zh:'资金带数据未送达' };
+  return { en:'options flow not coming through', zh:'期权流数据未送达' };
 }
 
 // ── Stance (mirror engine/intraday_flow.stance — deterministic precedence) ─
@@ -683,9 +806,13 @@ function computeStance(leader, quote, pulse, flow, conf) {
   var d = dealerOf(leader);
   var livePresent = isMarketHours() || !!(pulse && pulse.bars_today > 0);
 
+  if (isMarketHours() && quotesStatus !== 'connecting' && quotePx(quote) == null) {
+    return { key:'degraded', reason_en:"Prices aren't coming through — no read on this name right now", reason_zh:'行情未送达——该标的暂无判断', muted:true };
+  }
+
   if (!livePresent) {
     if (L1 === true && (L6 === true || squeeze)) return { key:'get_ready', reason_en:'Base in place — waiting for the open.', reason_zh:'底部已成——等待开盘。', muted:true };
-    return { key:'stand_aside', reason_en:'Waiting for the open — live tape not flowing yet.', reason_zh:'等待开盘——实时资金带尚未流动。', muted:true };
+    return { key:'stand_aside', reason_en:'Waiting for the open — tape not flowing yet.', reason_zh:'等待开盘——资金带尚未流动。', muted:true };
   }
 
   var vwapDelta = computeVwapDelta(quote, pulse);
@@ -861,7 +988,7 @@ function fetchFlow() {
         Object.keys(enrich.tickers).forEach(function(root){
           var te = enrich.tickers[root] || {}, badges = [];
           var bc = te.badge_counts || {};
-          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (bc[b]>0) badges.push(b+'×'+bc[b]); });
+          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (bc[b]>0) badges.push(tapeChip(b, bc[b])); });
           var ex = flowState[root] || {}; ex.badges = badges; ex.session_tier = te.session_tier || ex.session_tier; flowState[root] = ex;
         });
       } else {
@@ -875,7 +1002,7 @@ function fetchFlow() {
         });
         Object.keys(byRoot).forEach(function(root){
           var r = byRoot[root], badges = [];
-          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (r.counts[b]>0) badges.push(b+'×'+r.counts[b]); });
+          ['WHALE','FRESH','Z_OUTLIER','SIZE_VS_OI','REPEAT_HITTER'].forEach(function(b){ if (r.counts[b]>0) badges.push(tapeChip(b, r.counts[b])); });
           var ex = flowState[root] || {}; ex.badges = badges; ex.session_tier = r.tier || ex.session_tier; flowState[root] = ex;
         });
       }
@@ -942,18 +1069,27 @@ function fetchRootFlow(root) {
 function updateFlowStamp(asof, meta) {
   var stamp = document.getElementById('ift-stamp');
   if (!stamp) return;
-  var base = '{{ ift.as_of if ift.as_of else "—" }}';
-  var rth = isMarketHours();
-  var tapeEn = rth
-    ? (asof ? 'tape source as of '+asof : 'tape source time unavailable')
-    : (asof ? 'tape off-hours · last-session source as of '+asof : 'tape off-hours · source time unavailable');
-  var tapeZh = rth
-    ? (asof ? '资金带 来源截至 '+asof : '资金带 来源时间不可用')
-    : (asof ? '资金带 非交易时段 · 上一交易时段来源截至 '+asof : '资金带 非交易时段 · 来源时间不可用');
-  var baseReady = leaders.length > 0 && base && base !== '—';
-  var srcEn = (baseReady ? 'BASE ready' : 'BASE unavailable')+' · quotes '+feedWord(quotesStatus,false)+' · tape '+feedWord(pulseStatus,false)+' · options '+feedWord(flowStatus,false);
-  var srcZh = (baseReady ? 'BASE就绪' : 'BASE不可用')+' · 行情 '+feedWord(quotesStatus,true)+' · 实时带 '+feedWord(pulseStatus,true)+' · 期权流 '+feedWord(flowStatus,true);
-  stamp.innerHTML = lz('Base: '+base+' · '+tapeEn+' · '+srcEn, '基础：'+base+' · '+tapeZh+' · '+srcZh);
+  var disp = (BASE_DATA && BASE_DATA.as_of_display) || {};
+  var asOfEn = disp.en || '';
+  var asOfZh = disp.zh || '';
+  if (!leaders.length || !asOfEn) {
+    stamp.innerHTML = lz(
+      "Board can't load right now — the plain-word calls below are from the last build",
+      "看板暂时无法加载——下方结论来自上一次构建"
+    );
+    return;
+  }
+  var tipQ = feedTipRow(quotesStatus,'quotes');
+  var tipT = feedTipRow(pulseStatus,'tape');
+  var tipO = feedTipRow(flowStatus,'options');
+  var head = feedHeadline(quotesStatus, pulseStatus, flowStatus);
+  function tipRowHtml(r){
+    return '<div class="ift-feed-row">'+lz(esc(r.en), esc(r.zh))+'</div>';
+  }
+  var tipHtml = '<div class="lens-body">'+tipRowHtml(tipQ)+tipRowHtml(tipT)+tipRowHtml(tipO)+'</div>';
+  stamp.innerHTML = lz('Board built '+asOfEn+' · '+head.en, '看板构建于'+asOfZh+' · '+head.zh)
+    + '<button type="button" class="lens-q" aria-label="Feed status">'
+    + '?<span class="lens-src" data-lens-kind="define" hidden>'+tipHtml+'</span></button>';
 }
 
 // ══ compute-once pipeline (shared by hero, spotlight, board) ═══════════════
@@ -1043,6 +1179,7 @@ function buildHero(rows, counts) {
   var thEl = document.getElementById('hero-thesis');
   if (thEl) { thEl.className = 'hero-thesis '+tint; thEl.innerHTML = thesis; }
   var subEl = document.getElementById('hero-sub'); if (subEl) subEl.innerHTML = sub;
+  if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-hero-copy'));
   // toggle only the tape-* tint class — never clobber classes theme.js owns on <body>
   document.body.classList.remove('tape-green','tape-blue','tape-amber','tape-quiet');
   document.body.classList.add(tape);
@@ -1063,7 +1200,7 @@ function buildHero(rows, counts) {
     var v = counts[k]||0; if (v<=0) return;
     var meta = STANCE_META[k], cls = 'lane-'+laneSuffix(k);
     seg += '<div class="comp-seg '+cls+'" style="flex:'+v+' '+v+' 0%"></div>';
-    leg += '<span class="cl-item"><span class="cl-dot '+cls+'"></span>'+lz(meta.en,meta.zh)+' '+v+'</span>';
+    leg += '<span class="cl-item"><span class="cl-dot '+cls+'"></span>'+lz(meta.en,meta.zh)+'</span>';
   });
   var comp = document.getElementById('comp-bar'); if (comp) comp.innerHTML = seg || '<div class="comp-seg" style="flex:1;background:var(--muted);opacity:.3"></div>';
   var legEl = document.getElementById('comp-legend'); if (legEl) legEl.innerHTML = leg;
@@ -1091,6 +1228,12 @@ function buildHero(rows, counts) {
   }
 }
 function laneSuffix(k){ return { act:'act',get_ready:'ready',in_favour:'fav',take_profits:'profit',watch:'watch',stand_aside:'aside' }[k]||'aside'; }
+function iftSkelDone(el) {
+  if (!el) return;
+  el.setAttribute('aria-busy', 'false');
+  var sr = el.querySelectorAll ? el.querySelectorAll(':scope > .sr-only') : [];
+  for (var i = 0; i < sr.length; i++) sr[i].parentNode.removeChild(sr[i]);
+}
 
 // ══ SPOTLIGHT — Look here first ════════════════════════════════════════════
 // The grid is rebuilt from a string on every render, so the DOM node for a card is a new
@@ -1101,6 +1244,7 @@ var _spotHtml = '', _spotSeen = {};
 function buildSpotlight(rows, counts) {
   var grid = document.getElementById('spot-grid'), note = document.getElementById('spot-note');
   if (!grid) return;
+  if (typeof iftSkelDone === 'function') iftSkelDone(grid);
   var live = sessionPhase() === 'live';
   var pick = [];
   // priority: act (rvol desc) → get_ready (K desc) → live: take_profits (protect, 1)
@@ -1145,7 +1289,7 @@ function spotCard(r, i) {
   var vwapDelta = r.vwapDelta;
   var vwapV = vwapDelta!=null ? '<span class="'+(vwapDelta>=0?'pos':'neg')+'">'+fmtPct(vwapDelta)+'</span>' : '<span class="muted">—</span>';
   var leanV;
-  if (f && f.ncp != null) leanV = lz((f.ncp>0?'~call buying':'~call selling'), (f.ncp>0?'~买入看涨':'~卖出看涨'))+'<span class="soft-tag">~soft</span>';
+  if (f && f.ncp != null) leanV = lz((f.ncp>0?'~call buying':'~call selling'), (f.ncp>0?'~买入看涨':'~卖出看涨'));
   else if (f && f.net_all != null) leanV = '<span class="muted">'+lz('side unknown','方向未知')+'</span>';
   else leanV = '<span class="muted">'+lz('quiet','平静')+'</span>';
   var entry = l.entry_signal || {};
@@ -1154,7 +1298,7 @@ function spotCard(r, i) {
   var bk = (l.baskets||[]).slice(0,1).map(prettyBasket).join('');
   return '<article class="spot-card '+meta.lane+breathe+'">'
     + '<div class="spot-hd">'
-    +   '<div><a class="spot-tk" href="stock.html#'+l.ticker+'">'+esc(l.ticker)+'</a>'+(bk?'<div class="spot-tk-sub">'+esc(bk)+'</div>':'')+'</div>'
+    +   '<div><a class="spot-tk" href="stock.html#'+l.ticker+'">'+esc(l.ticker)+'</a>'+(bk?'<div class="spot-tk-sub">'+bk+'</div>':'')+'</div>'
     +   '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>'+lz(meta.en,meta.zh)+'</span>'
     + '</div>'
     + '<p class="spot-reason">'+lz(st.reason_en, st.reason_zh)+'</p>'
@@ -1175,23 +1319,24 @@ function buildRow(row) {
 
   var bk = (leader.baskets || []).slice(0,1).map(function(b){ return prettyBasket(b); }).join('');
   var nameCell = '<td><a class="tk-link" href="stock.html#'+tk+'">'+tk+'</a>'
-    + (bk ? '<div class="tk-baskets">'+esc(bk)+'</div>' : '') + '</td>';
+    + (bk ? '<div class="tk-baskets">'+bk+'</div>' : '') + '</td>';
 
   var pill = '<span class="stance-pill '+meta.lane+'"><span class="sp-dot"></span>' + lz(meta.en, meta.zh) + '</span>';
   var reason = '<div class="stance-reason '+(stance.muted?'muted':'')+'">'+lz(stance.reason_en, stance.reason_zh)+'</div>';
   var stanceCell = '<td class="stance-cell '+meta.lane+'">'+pill+reason+'</td>';
+  var aux = stance.key === 'degraded' ? ' ift-aux-muted' : '';
 
   var px = quote && quote.price != null ? fmtDollar(quote.price) : '—';
   var chg = quote && quote.changePct != null ? fmtPct(quote.changePct) : '';
   var chgCls = quote && quote.changePct != null ? (quote.changePct>=0?'pos':'neg') : '';
   var rw = rangeWords(rangePos);
-  var priceCell = '<td class="price-cell hide-narrow"><span class="nb-px" data-sym="'+tk+'" data-mkt="us">'+px+'</span>'
+  var priceCell = '<td class="price-cell hide-narrow'+aux+'"><span class="nb-px" data-sym="'+tk+'" data-mkt="us">'+px+'</span>'
     + '<span class="pct-chg '+chgCls+'">'+chg+'</span>'
     + (rw ? '<div class="metric-sub">'+rw+'</div>' : '') + '</td>';
 
   var volDur = pulse ? pulse.vol_durability : null;
   var vw = volumeWords(rvol, volDur);
-  var volCell = '<td>'
+  var volCell = '<td class="vol-cell'+aux+'">'
     + '<div class="gauge-wrap"><div class="gauge-bar"><div class="gauge-fill '+vw.cls+'" style="width:'+vw.pct.toFixed(0)+'%"></div></div>'
     + '<span class="metric-lead">'+lz(vw.en, vw.zh)+'</span></div>'
     + (pulse && pulse.higher_lows != null && pulse.higher_lows > 0 ? '<div class="metric-sub">'+lz('higher lows ×'+pulse.higher_lows, '更高低点 ×'+pulse.higher_lows)+'</div>' : '')
@@ -1202,7 +1347,7 @@ function buildRow(row) {
   var lean = '';
   if (flow && flow.ncp != null) {
     var lp = flow.ncp > 0;
-    lean = '<div class="metric-sub">'+lz((lp?'~call buying':'~call selling'), (lp?'~买入看涨':'~卖出看涨'))+'<span class="soft-tag">~soft</span></div>';
+    lean = '<div class="metric-sub">'+lz((lp?'~call buying':'~call selling'), (lp?'~买入看涨':'~卖出看涨'))+'</div>';
   } else if (flow && flow.net_all != null) {
     // Premium moved, but only the net total is in — no side to state yet.
     lean = '<div class="metric-sub muted">'+lz('side unknown','方向未知')+'</div>';
@@ -1212,10 +1357,10 @@ function buildRow(row) {
     lean = '<div class="metric-sub muted">'+lz('off-hours','非交易时段')+'</div>';
   }
   var badges = flow && flow.badges ? flow.badges : [];
-  var badgeHtml = badges.length ? '<div class="chip-row">'+badges.slice(0,3).map(function(b){ return '<span class="badge badge-blue">'+esc(b)+'</span>'; }).join('')+'</div>' : '';
-  var tapeCell = '<td class="hide-narrow"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
+  var badgeHtml = badges.length ? '<div class="chip-row">'+badges.slice(0,3).map(function(b){ return '<span class="badge badge-blue">'+b+'</span>'; }).join('')+'</div>' : '';
+  var tapeCell = '<td class="hide-narrow'+aux+'"><span class="metric-lead '+vwapCls+'">'+vwapWord+'</span>'+lean+badgeHtml+'</td>';
 
-  var dealerCell = '<td class="dealer-cell hide-narrow">'+dealerCompact(d, quote)+'</td>';
+  var dealerCell = '<td class="dealer-cell hide-narrow'+aux+'">'+dealerCompact(d, quote)+'</td>';
   var expCell = '<td class="col-expand"><span class="expander" data-exp="'+tk+'">'+(openRows[tk]?'▾':'▸')+'</span></td>';
 
   var tr = '<tr class="lead-row" data-ticker="'+tk+'" data-stance="'+stance.key+'"'
@@ -1230,9 +1375,31 @@ function buildRow(row) {
 }
 
 function prettyBasket(b) {
-  var m = { mag7:'Mag7', ai_infra:'AI Infra', ai_software:'AI Software', ai_semiconductors:'AI Semis',
-    semicap_equipment:'Semicap', reshoring:'Reshoring', defense:'Defense', power_grid:'Power Grid' };
-  return m[b] || b;
+  var m = {
+    mag7: ['Mag7', 'Mag7'],
+    ai_infra: ['AI Infra', 'AI基础'],
+    ai_software: ['AI Software', 'AI软件'],
+    ai_semiconductors: ['AI Semis', 'AI芯片'],
+    semicap_equipment: ['Semicap', '设备'],
+    reshoring: ['Reshoring', '回流'],
+    defense: ['Defense', '国防'],
+    power_grid: ['Power Grid', '电网']
+  };
+  var pair = m[b];
+  if (!pair) { var s = esc(b); return lz(s, s); }
+  return lz(pair[0], pair[1]);
+}
+var TAPE_CHIPS = {
+  WHALE: ['big block', '大单'],
+  FRESH: ['new position', '新建仓'],
+  SIZE_VS_OI: ['size vs open interest', '规模对比未平仓'],
+  Z_OUTLIER: ['unusual size', '异常规模'],
+  REPEAT_HITTER: ['repeat buyer', '重复买入']
+};
+function tapeChip(kind, n) {
+  var pair = TAPE_CHIPS[kind];
+  if (!pair) { var s = esc(kind); pair = [s, s]; }
+  return lz(pair[0]+'×'+n, pair[1]+'×'+n);
 }
 
 // ── Dealer compact (ceiling / floor / move / hole) ─────────────────────────
@@ -1247,7 +1414,7 @@ function dealerCompact(d, quote) {
     out.push('<div class="dealer-line">'+lz('ceiling','天花板')+' ~$'+fmtNum(d.call_wall,0)+hard+'</div>');
   }
   if (d.put_wall != null) out.push('<div class="dealer-line">'+lz('floor','地板')+' ~$'+fmtNum(d.put_wall,0)+'</div>');
-  if (d.expected_move_daily_pct != null) out.push('<div class="dealer-line muted">'+lz('~'+fmtNum(d.expected_move_daily_pct,1)+'% move today','~今日约'+fmtNum(d.expected_move_daily_pct,1)+'%波动')+'</div>');
+  if (d.expected_move_daily_pct != null) out.push('<div class="dealer-line muted">'+lz('~'+fmtNum(d.expected_move_daily_pct,1)+'% expected move','~预期波动约'+fmtNum(d.expected_move_daily_pct,1)+'%')+'</div>');
   if (d.vol_hole_state && d.vol_hole_state !== 'NONE') {
     var vh = { IN_HOLE: lz('pinned between walls','被夹在墙位间'), COILED_UP: lz('coiled — upward','蓄势向上'),
       COILED_DOWN: lz('coiled — downward','蓄势向下'), EXPANSION: lz('breaking out','正在扩张') }[d.vol_hole_state];
@@ -1364,15 +1531,26 @@ function applyView() {
   var detailByTk = {};
   [].slice.call(tbody.querySelectorAll('tr.detail-row')).forEach(function(d){ detailByTk[d.getAttribute('data-detail')] = d; });
   sortRows(leadRows);
-  var visible = 0, curGroup = null, frag = document.createDocumentFragment();
+  var matching = [], curGroup = null, frag = document.createDocumentFragment();
   leadRows.forEach(function(r){
-    var tk = r.getAttribute('data-ticker'), k = Number(r.getAttribute('data-k')||0);
+    var tk = r.getAttribute('data-ticker');
     var st = r.getAttribute('data-stance'), baskets = r.getAttribute('data-baskets')||'all';
     var show = true;
     if (activeBasket !== 'all' && baskets.indexOf(activeBasket) < 0 && baskets !== 'all') show = false;
     if (activeStance !== 'all' && st !== activeStance) show = false;
     if (searchQ && tk.indexOf(searchQ.toUpperCase()) < 0) show = false;
     if (!show) { r.style.display='none'; if (detailByTk[tk]) detailByTk[tk].style.display='none'; return; }
+    matching.push(r);
+  });
+  var total = matching.length;
+  var showN = (boardExpanded || total <= BOARD_CAP) ? total : BOARD_CAP;
+  matching.forEach(function(r, i){
+    var tk = r.getAttribute('data-ticker'), st = r.getAttribute('data-stance');
+    if (i >= showN) {
+      r.style.display='none';
+      if (detailByTk[tk]) detailByTk[tk].style.display='none';
+      return;
+    }
     if (groupByStance && st !== curGroup) {
       curGroup = st;
       var meta = STANCE_META[st] || STANCE_META.stand_aside;
@@ -1382,11 +1560,25 @@ function applyView() {
     }
     r.style.display=''; frag.appendChild(r);
     if (detailByTk[tk]) { detailByTk[tk].style.display=''; frag.appendChild(detailByTk[tk]); }
-    visible++;
   });
   tbody.appendChild(frag);
   var lbl = document.getElementById('count-label');
-  if (lbl) lbl.innerHTML = lz(visible+' of '+leadRows.length+' leaders shown', '显示 '+visible+' / '+leadRows.length+' 只');
+  if (lbl) {
+    if (total > BOARD_CAP && !boardExpanded) {
+      lbl.innerHTML = lz('Showing '+showN+' of '+total+' leaders · ', '显示 '+showN+' / '+total+' 只 · ')
+        + '<button type="button" class="ift-see-all" id="ift-see-all">'
+        + lz('See all '+total, '查看全部 '+total+' 只')
+        + '</button>';
+    } else if (total > BOARD_CAP && boardExpanded) {
+      lbl.innerHTML = lz('Showing '+total+' of '+total+' leaders · ', '显示 '+total+' / '+total+' 只 · ')
+        + '<button type="button" class="ift-see-all" id="ift-see-all" data-ift-collapse="1">'
+        + lz('Show top '+BOARD_CAP, '只看前 '+BOARD_CAP+' 只')
+        + '</button>';
+    } else {
+      var enCount = total === 1 ? '1 leader' : (total+' leaders');
+      lbl.innerHTML = lz(enCount, '共 '+total+' 只');
+    }
+  }
   var ths = document.querySelectorAll('table.leaders th[data-col]');
   ths.forEach(function(th){ th.classList.remove('sort-asc','sort-desc'); if (!groupByStance && th.getAttribute('data-col')===sortCol) th.classList.add(sortDir<0?'sort-desc':'sort-asc'); });
 }
@@ -1427,6 +1619,7 @@ function render() {
     html += buildRow(row);
   });
   tbody.innerHTML = html || '<tr class="loading-row"><td colspan="7">'+lz('No data yet','暂无数据')+'</td></tr>';
+  if (typeof iftSkelDone === 'function') iftSkelDone(document.getElementById('ift-board-skel'));
   applyView();
   if (window.__mmLang) window.__mmLang();
   _rendering = false;
@@ -1442,6 +1635,7 @@ document.querySelectorAll('table.leaders th[data-col]').forEach(function(th){
     if (col === 'expand' || col === 'tape' || col === 'dealer') return;
     if (groupByStance) { groupByStance = false; setGroupToggle(false); }
     if (col === sortCol) sortDir = -sortDir; else { sortCol = col; sortDir = -1; }
+    boardExpanded = false;
     applyView();
     var sl = document.getElementById('sort-label'); if (sl) sl.textContent = '';
   });
@@ -1449,7 +1643,7 @@ document.querySelectorAll('table.leaders th[data-col]').forEach(function(th){
 document.querySelectorAll('.chip[data-basket]').forEach(function(chip){
   chip.addEventListener('click', function(){
     document.querySelectorAll('.chip[data-basket]').forEach(function(c){ c.classList.remove('active'); });
-    chip.classList.add('active'); activeBasket = chip.getAttribute('data-basket'); applyView();
+    chip.classList.add('active'); activeBasket = chip.getAttribute('data-basket'); boardExpanded = false; applyView();
   });
 });
 document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
@@ -1459,12 +1653,13 @@ document.querySelectorAll('.stance-card[data-stance]').forEach(function(card){
     else { document.querySelectorAll('.stance-card').forEach(function(c){ c.classList.remove('active'); }); activeStance = s; card.classList.add('active'); }
     // scroll the board into view when a lane is picked
     if (activeStance !== 'all') { var bd = document.getElementById('leaders-table'); if (bd && bd.scrollIntoView) bd.scrollIntoView({behavior: REDUCED_MOTION?'auto':'smooth', block:'start'}); }
+    boardExpanded = false;
     applyView();
   });
 });
 var groupToggle = document.getElementById('group-toggle');
 function setGroupToggle(on){ groupByStance = on; if (groupToggle) groupToggle.classList.toggle('active', on); }
-if (groupToggle) groupToggle.addEventListener('click', function(){ setGroupToggle(!groupByStance); applyView(); });
+if (groupToggle) groupToggle.addEventListener('click', function(){ setGroupToggle(!groupByStance); boardExpanded = false; applyView(); });
 var _lb = document.getElementById('leaders-body');
 if (_lb) _lb.addEventListener('click', function(e){
   var exp = e.target.closest ? e.target.closest('.expander') : null;
@@ -1475,9 +1670,16 @@ if (_lb) _lb.addEventListener('click', function(e){
   var dr = document.querySelector('tr.detail-row[data-detail="'+tk+'"]');
   if (dr) dr.classList.toggle('open', openRows[tk]);
 });
+var countLabel = document.getElementById('count-label');
+if (countLabel) countLabel.addEventListener('click', function(e){
+  var btn = e.target && e.target.closest ? e.target.closest('.ift-see-all') : null;
+  if (!btn) return;
+  boardExpanded = btn.getAttribute('data-ift-collapse') !== '1';
+  applyView();
+});
 var searchEl = document.getElementById('ift-search');
 if (searchEl) {
-  searchEl.addEventListener('input', function(){ searchQ = searchEl.value.trim(); applyView(); });
+  searchEl.addEventListener('input', function(){ searchQ = searchEl.value.trim(); boardExpanded = false; applyView(); });
   (function(){ var en=searchEl.placeholder, zh=searchEl.getAttribute('data-ph-zh')||en;
     function setPh(){ searchEl.placeholder = document.documentElement.getAttribute('data-lang')==='zh'?zh:en; }
     setPh(); document.addEventListener('langchange', setPh); })();
