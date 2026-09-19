@@ -338,3 +338,109 @@ def test_packet_is_bounded_and_deterministic():
     )
     assert a == b
     assert len(json.dumps(a, sort_keys=True)) < 12000
+
+
+def test_probe_cli_uses_readiness_owner_and_emits_one_bounded_json_line(monkeypatch, capsys):
+    from scripts import probe_financial_evidence_readiness as probe
+    calls = []
+    def fake(params):
+        calls.append(dict(params))
+        return {
+            "schema": "brain.financial_evidence_readiness.v1",
+            "status": "partial",
+            "authority": "context_only",
+            "ticker": "AAPL",
+            "event": {},
+            "exact_facts": [],
+            "context_metrics": [],
+            "financial_bridge_readiness": {
+                "authority": "admission_only",
+                "ready": False,
+                "calculator_payload": None,
+                "blockers": ["current_revenue_period_duration_unavailable"],
+                "next_evidence_needed": [],
+            },
+            "limits": [],
+        }
+    monkeypatch.setattr(probe, "read_financial_evidence_readiness", fake)
+    assert probe.main(["AAPL"]) == 0
+    assert calls == [{"ticker": "AAPL"}]
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert len(captured.out.splitlines()) == 1
+    result = json.loads(captured.out)
+    assert result["ticker"] == "AAPL"
+    assert result["financial_bridge_readiness"]["calculator_payload"] is None
+
+
+@pytest.mark.parametrize(("status", "expected"), [
+    ("partial", 0),
+    ("context_only", 0),
+    ("unavailable", 3),
+    ("invalid_request", 2),
+])
+def test_probe_cli_exit_status_is_machine_distinct(monkeypatch, capsys, status, expected):
+    from scripts import probe_financial_evidence_readiness as probe
+    monkeypatch.setattr(
+        probe,
+        "read_financial_evidence_readiness",
+        lambda _params: {
+            "schema": "brain.financial_evidence_readiness.v1",
+            "status": status,
+            "authority": "context_only",
+            "ticker": None,
+            "event": {},
+            "exact_facts": [],
+            "context_metrics": [],
+            "financial_bridge_readiness": {
+                "authority": "admission_only",
+                "ready": False,
+                "calculator_payload": None,
+                "blockers": [],
+                "next_evidence_needed": [],
+            },
+            "limits": [],
+        },
+    )
+    assert probe.main(["AAPL"]) == expected
+    assert capsys.readouterr().err == ""
+
+
+def test_probe_cli_rejects_extra_arguments_without_echo(monkeypatch, capsys):
+    from scripts import probe_financial_evidence_readiness as probe
+    calls = []
+    def fake(params):
+        calls.append(dict(params))
+        return {
+            "schema": "brain.financial_evidence_readiness.v1",
+            "status": "invalid_request",
+            "authority": "context_only",
+            "ticker": None,
+            "event": {},
+            "exact_facts": [],
+            "context_metrics": [],
+            "financial_bridge_readiness": {
+                "authority": "admission_only",
+                "ready": False,
+                "calculator_payload": None,
+                "blockers": ["current_exact_revenue_unavailable"],
+                "next_evidence_needed": [],
+            },
+            "limits": ["Request refused before Company Intelligence reader access."],
+        }
+    monkeypatch.setattr(probe, "read_financial_evidence_readiness", fake)
+    assert probe.main(["AAPL", "PRIVATE_CUSTOMER_MARKER"]) == 2
+    assert calls == [{}]
+    captured = capsys.readouterr()
+    assert "PRIVATE_CUSTOMER_MARKER" not in captured.out
+    assert captured.err == ""
+
+
+def test_probe_script_carries_repo_root_pin_before_repo_import():
+    from pathlib import Path
+    source = (Path(__file__).resolve().parents[1] / "scripts" / "probe_financial_evidence_readiness.py").read_text()
+    assert "_ROOT = Path(__file__).resolve().parent.parent" in source
+    assert "sys.path.insert(0, str(_ROOT))" in source
+    assert source.index("sys.path.insert(0, str(_ROOT))") < source.index(
+        "from engine.neuralweb.financial_evidence_readiness import"
+    )
