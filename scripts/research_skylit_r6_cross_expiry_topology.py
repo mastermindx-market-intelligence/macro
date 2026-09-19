@@ -281,6 +281,7 @@ def analyze_state(
             "settled_oi_input_sha256": settled_state.get("settled_oi_input_sha256"),
             "unexpired_identity_contracts": settled_state.get("unexpired_identity_contracts"),
             "model_input_contract_rate": settled_state.get("model_input_contract_rate"),
+            "spot_input_contract_rate": settled_state.get("spot_input_contract_rate"),
             "settled_oi_contract_rate": settled_state.get("settled_oi_contract_rate"),
             "exposure_mass_coverage": settled_state.get(
                 "settled_oi_exposure_mass_coverage_on_prior_known_mass"
