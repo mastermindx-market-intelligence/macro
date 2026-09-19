@@ -1426,6 +1426,15 @@ def test_w1_template_exposes_calendar_detail_and_constituent_contract():
         assert needle in template
 
 
+def test_w1_bilingual_accessible_names_are_plain_text_not_html_inside_aria_attributes():
+    from pathlib import Path
+    template = (Path(__file__).resolve().parents[1] / "templates" / "sector_central.html.j2").read_text()
+    assert 'aria-label="Participation calendar window / 参与度日历区间"' in template
+    assert 'aria-label="Historical sector participation calendar / 历史板块参与度日历"' in template
+    w1 = template.split('id="sector-participation"', 1)[1].split('{% if flows_html %}', 1)[0]
+    assert 'aria-label="{{ t(' not in w1
+
+
 def test_w1_client_refuses_generation_mismatch_and_never_recomputes_prices():
     from pathlib import Path
     client = (Path(__file__).resolve().parents[1] / "templates" / "sector_participation_20.js").read_text()
@@ -1468,8 +1477,8 @@ def test_w1_unavailable_state_relocalizes_without_refetch():
     assert "var unavailableKind=null;" in client
     assert "unavailableKind=kind;" in client
     assert "else if(unavailableKind) unavailable(unavailableKind);" in client
-    assert "Participation calendar window', '参与度日历区间" in template
-    assert "Historical sector participation calendar', '历史板块参与度日历" in template
+    assert "Participation calendar window / 参与度日历区间" in template
+    assert "Historical sector participation calendar / 历史板块参与度日历" in template
 
 
 def test_w1_client_asset_projection_is_shared_and_byte_exact(tmp_path):
