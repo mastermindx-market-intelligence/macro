@@ -131,7 +131,17 @@ def test_delta_tracks_direction_claim_and_category_change_without_private_text()
     assert len(delta["categories"]["forecasts"]["added"]) == 1
     assert len(delta["categories"]["forecasts"]["removed"]) == 1
     assert delta["entities"]["added"] == ["cloud"]
-    assert delta["material_change"] is True
+    assert delta["change_detected"] is True
+    assert delta["change_dimensions"] == [
+        "thesis_direction",
+        "thesis_conviction",
+        "thesis_support",
+        "mechanisms",
+        "claims",
+        "numbers",
+        "entities",
+        "category_forecasts",
+    ]
     assert delta["text_visibility"] == "metadata_only"
 
     for private_text in (
@@ -177,7 +187,8 @@ def test_same_belief_with_new_document_is_not_material_change():
         forecast=PRIOR_FORECAST,
     )
     delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
-    assert delta["material_change"] is False
+    assert delta["change_detected"] is False
+    assert delta["change_dimensions"] == []
     assert delta["changed_categories"] == []
     assert delta["claims"]["added_sha256"] == []
     assert delta["claims"]["removed_sha256"] == []
@@ -227,6 +238,8 @@ def test_rights_safe_summary_contains_counts_not_private_text():
     assert projected["added_claims"] == 1
     assert projected["removed_claims"] == 1
     assert projected["changed_categories"] == ["forecasts"]
+    assert "category_forecasts" in projected["change_dimensions"]
+    assert projected["change_detected"] is True
     assert projected["text_visibility"] == "metadata_only"
     assert len(projected["comparison_id"]) == 64
     assert len(projected["topic_key_sha256"]) == 64
@@ -281,7 +294,8 @@ def test_same_forecast_statement_with_changed_horizon_is_modified_not_shared():
     assert len(delta["categories"]["forecasts"]["modified"]) == 1
     assert delta["categories"]["forecasts"]["shared"] == []
     assert delta["changed_categories"] == ["forecasts"]
-    assert delta["material_change"] is True
+    assert delta["change_detected"] is True
+    assert delta["change_dimensions"] == ["category_forecasts"]
 
 
 def test_thesis_support_shift_is_material_even_when_belief_text_is_stable():
@@ -322,7 +336,8 @@ def test_thesis_support_shift_is_material_even_when_belief_text_is_stable():
     assert delta["thesis"]["direction_changed"] is False
     assert delta["thesis"]["support_changed"] is True
     assert delta["thesis"]["support_before_claim_sha256"] != delta["thesis"]["support_after_claim_sha256"]
-    assert delta["material_change"] is True
+    assert delta["change_detected"] is True
+    assert delta["change_dimensions"] == ["thesis_support"]
 
 
 def test_missing_topic_context_fails_closed():
