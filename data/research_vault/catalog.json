@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T17:41:38.840483+00:00",
-  "count": 2444,
+  "generated_at": "2026-09-19T18:11:42.463068+00:00",
+  "count": 2445,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1272,6 +1272,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7cqjaytqple-28c1b5",
+      "title": "The Oil Gusher Even ‘hotter’ winter ahead in European gas",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:25Z",
+      "summary_points": [
+        "Qatar LNG Delays & TTF Price Surge: Qatar export delays and low European storage (10-year lows) drive 25% TTF price rise this winter; BoFA upgrades EQNR/HBR to Buy on 178% YTD TTF upside ($150/boe) with 143% consensus FCF upgrade.",
+        "Geopolitical Supply Chain Risk: Strait of Hormuz transit safety post-Iran war requires 1+ month restart and 3-5 years for LNG train repairs, creating severe supply disruption and price volatility.",
+        "European Gas Storage Crisis: Storage at historic lows (UK ~31% fill, lowest since 2021), below 5-year range, signaling acute supply constraints and potential price spikes to 2022 highs.",
+        "Equinor FCF Sensitivity: Equinor’s FCF yield highly sensitive to European gas prices (+4%/-5% per $5/mmbtu move), making it critical for valuation; 17% organic CFFO lift (2026E) from gas macro deck.",
+        "Macro Deck Lifts Oil Estimates: Gas price-driven macro deck raises big oil estimates (EQNR: +17% organic CFFO 2026E, +40% 2027E), with E&P sector FCF/EBITDA revised up 18%/41% for 2026-27."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 44,
       "language": "en",
       "needs_metadata": false
     },
