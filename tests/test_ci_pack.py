@@ -3435,10 +3435,10 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
     # scripts/check_contract_delta.py's module docstring). Adding it here is
     # the same class of change as ci-plan/ci-gate joining originally; it does
     # not reopen the 86-VM fan-out this test exists to prevent.
-    # `trusted-ci` (P3B-B) is one protected-main reusable call, not another
-    # planner, pack fan-out or scheduler. Its PC jobs are defined only by the
-    # called main workflow; the caller's ci-pack matrix remains the stable hosted
-    # anchor set and retains the full implementation only for forks.
+    # `trusted-ci` (P3B-B) remains one protected-main reusable fallback, not
+    # another scheduler. Ordinary same-repository PRs and forks execute through
+    # the stable hosted ci-pack matrix by default; CI_EXECUTION_ROUTE=pc opts a
+    # same-repository PR into the main-owned three-slot executor and relay path.
     assert set(workflow["jobs"]) <= {
         "ci-plan",
         "trusted-ci",
@@ -3504,6 +3504,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "always() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
     run_text = "\n".join(
