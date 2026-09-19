@@ -1144,6 +1144,7 @@ def _r5_shock_fixture(
     rows = []
     for session, spot, iv in zip(sessions, spots, ivs):
         rows.append({
+            "root": "SPY",
             "date": str(session),
             "expiration": str(session + timedelta(days=30)),
             "strike": spot,
@@ -1162,6 +1163,8 @@ class TestR5PitSpotVolStage0:
         got = fit_pit_spot_iv_distribution(
             frame,
             sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
             lookback_observations=10,
             min_observations=8,
             spot_shocks_pct=[-1.0, 0.0, 1.0],
@@ -1196,6 +1199,8 @@ class TestR5PitSpotVolStage0:
 
         truncated = full[pd.to_datetime(full["date"]) <= pd.Timestamp(cutoff)].copy()
         kwargs = dict(
+            root="SPY",
+            term_support_policy="bracketed_only",
             lookback_observations=20,
             min_observations=8,
             spot_shocks_pct=[-2.0, 2.0],
@@ -1214,7 +1219,12 @@ class TestR5PitSpotVolStage0:
         missing_session = sessions[2]
         holey = frame[frame["date"] != missing_session].copy()
 
-        shocks, coverage = build_spot_iv_shocks(holey, sessions[-1])
+        shocks, coverage = build_spot_iv_shocks(
+            holey,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
 
         # Four remaining session points yield only two adjacent-session shocks:
         # session0->session1 and session3->session4. session1->session3 spans the
@@ -1228,6 +1238,8 @@ class TestR5PitSpotVolStage0:
         got = fit_pit_spot_iv_distribution(
             frame,
             sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
             lookback_observations=10,
             min_observations=5,
             spot_shocks_pct=[-1.0, 1.0],
@@ -1243,6 +1255,8 @@ class TestR5PitSpotVolStage0:
         common = dict(
             greeks_df=frame,
             asof=sessions[-1],
+            root="SPY",
+            term_support_policy="bracketed_only",
             lookback_observations=4,
             min_observations=3,
             spot_shocks_pct=[-1.0, 1.0],
@@ -1262,4 +1276,93 @@ class TestR5PitSpotVolStage0:
 
     def test_missing_required_source_columns_fail_loudly(self):
         with pytest.raises(ValueError, match="missing required columns"):
-            build_spot_iv_shocks(pd.DataFrame({"date": ["2025-01-02"]}), "2025-01-02")
+            build_spot_iv_shocks(
+                pd.DataFrame({"date": ["2025-01-02"]}),
+                "2025-01-02",
+                "SPY",
+                term_support_policy="bracketed_only",
+            )
+
+
+    def test_mixed_root_source_refuses_before_fit(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        frame.loc[frame.index[-1], "root"] = "QQQ"
+        with pytest.raises(ValueError, match="exactly root SPY"):
+            build_spot_iv_shocks(
+                frame,
+                sessions[-1],
+                "SPY",
+                term_support_policy="bracketed_only",
+            )
+
+    def test_source_receipt_separates_effective_session_from_decision_eligibility(self):
+        frame, sessions = _r5_shock_fixture(
+            [0.2, -0.4, 0.6, -0.8, 0.3, -0.5, 0.7, -0.1]
+        )
+        got = fit_pit_spot_iv_distribution(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+            lookback_observations=8,
+            min_observations=6,
+            spot_shocks_pct=[-1.0, 1.0],
+            residual_quantiles=[0.1, 0.5, 0.9],
+        )
+        next_session = nyse_calendar.session_n_forward(
+            pd.Timestamp(sessions[-1]).date(), 1
+        )
+        assert next_session is not None
+        receipt = got["source_receipt"]
+        assert receipt["root"] == "SPY"
+        assert receipt["source_effective_through_session"] == sessions[-1]
+        assert receipt["decision_eligible_not_before_session"] == str(next_session)
+        assert len(receipt["source_input_sha256"]) == 64
+        assert receipt["decision_eligible_not_before_session"] != receipt[
+            "source_effective_through_session"
+        ]
+
+    def test_nearest_tenor_fallback_is_separate_from_bracketed_primary_cohort(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        day = pd.to_datetime(frame["date"])
+        frame["expiration"] = (day + pd.to_timedelta(20, unit="D")).dt.date.astype(str)
+
+        primary_shocks, primary = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        assert primary_shocks == []
+        assert primary["qualified_sessions"] == 0
+        assert primary["fallback_sessions_excluded"] == len(sessions)
+        assert primary["term_support_counts"]["nearest_short_fallback"] == len(sessions)
+
+        sensitivity_shocks, sensitivity = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="include_nearest_sensitivity",
+        )
+        assert len(sensitivity_shocks) == len(sessions) - 1
+        assert sensitivity["qualified_sessions"] == len(sessions)
+        assert sensitivity["fallback_sessions_excluded"] == 0
+        assert sensitivity["term_support_counts"]["nearest_short_fallback"] == len(sessions)
+
+    def test_source_digest_changes_when_consumed_iv_is_corrected(self):
+        frame, sessions = _r5_shock_fixture([0.2, -0.4, 0.6, -0.8])
+        _, first = build_spot_iv_shocks(
+            frame,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        corrected = frame.copy()
+        corrected.loc[corrected.index[0], "implied_vol"] += 0.001
+        _, second = build_spot_iv_shocks(
+            corrected,
+            sessions[-1],
+            "SPY",
+            term_support_policy="bracketed_only",
+        )
+        assert first["source_input_sha256"] != second["source_input_sha256"]
