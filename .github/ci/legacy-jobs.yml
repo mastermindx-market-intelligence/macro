@@ -10994,6 +10994,9 @@ jobs:
         run: python -m pytest tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py -q
       - name: leader-pullback organ (§6.9 R4 — RS-leader reset detection, self-containment + no-authority pins)
         run: python -m pytest tests/test_us_leader_pullback.py -q
+      - name: Protective plan geometry and honest refusal (PR-time source contract)
+        run: >-
+          python -m pytest tests/test_prophet_bridge.py tests/test_prophet_anticipation_intake.py tests/test_prophet_whynot_receipts.py -q -k "protective_geometry or TestWaitResetAcceptance or unbuilt_plan_receipt_does_not_claim_all_plan_checks_passed"
       - name: leader-pullback coverage publisher (§6.9 R4 — the artifact the EARLY-TURN intake reads)
         # Rides the organ's own lane because it is the organ's publisher: it supplies the
         # PIT cross-section the organ refuses to reach for, and #5007's organ + #5105's

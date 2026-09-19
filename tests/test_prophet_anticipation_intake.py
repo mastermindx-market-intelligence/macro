@@ -437,6 +437,9 @@ class TestWaitResetAcceptance:
         rows = [_buy("NVDA", status="buy_now", spot=spot,
                      zone_low=spot * 0.99, zone_high=spot,
                      chase_above=spot * 1.02)]
+        # This test concerns extension/zone semantics. Give it protection below
+        # the reset band rather than the old default stop inside that band.
+        rows[0]["hold"]["invalidation"] = float(prices["close"].min()) * .9
         stats: dict = {}
         plans = _originate(tmp_path, _standouts(rows), stats=stats)
 
@@ -470,8 +473,9 @@ class TestWaitResetAcceptance:
         prices = _stretched_series()
         monkeypatch.setattr(pb, "_load_price_history", lambda t: prices)
         spot = float(prices["close"].iloc[-1])
-        plans = _originate(tmp_path, _standouts(
-            [_buy("NVDA", status="buy_now", spot=spot)]))
+        candidate = _buy("NVDA", status="buy_now", spot=spot)
+        candidate["hold"]["invalidation"] = float(prices["close"].min()) * .9
+        plans = _originate(tmp_path, _standouts([candidate]))
         assert plans[0]["entry"] == round(spot, 4)
         assert plans[0]["entry_zone"]["high"] < plans[0]["entry"]
         assert plans[0]["price_basis_date"] == ASOF
@@ -1269,3 +1273,19 @@ class TestCommittedArtifactDisposition:
         admitted = pb.select_candidates(board, n=None)
         keys = [pb._selection_sort_key(row) for row in admitted]
         assert keys == sorted(keys)
+
+
+def test_protective_geometry_stretched_reset_requires_protection_below_its_band(
+        tmp_path, monkeypatch):
+    """The old reset fixture's 90%-of-spot stop was above its actual waiting band."""
+    prices = _stretched_series()
+    assert et.extension_state(prices, ASOF)["both_extended"] is True
+    monkeypatch.setattr(pb, "_load_price_history", lambda _ticker: prices)
+    spot = float(prices["close"].iloc[-1])
+    candidate = _buy("NVDA", status="buy_now", spot=spot,
+                     zone_low=spot * .99, zone_high=spot, chase_above=spot * 1.02)
+    stats = {}
+    assert _originate(tmp_path, _standouts([candidate]), stats=stats) == []
+    assert stats["eligible_after_skips"] == 1 and stats["validation_failed"] == 1
+    assert stats["validation_failures"][0]["stage"] == "geometry"
+    assert stats["unaccounted"] == 0 and stats["lossless"] is True

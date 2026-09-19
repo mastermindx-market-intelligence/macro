@@ -949,7 +949,8 @@ def test_geometry_pit_uses_only_asof_or_earlier():
     """compute_geometry only uses prices on or before asof for swing_low."""
     # Build history where future day has a very low value that would skew the result
     dates = pd.date_range("2026-06-01", periods=25, freq="B")
-    closes = [100.0] * 25
+    closes = [98.0] * 25
+    closes[-1] = 1.0  # future-only low; the valid current stop remains 98
     ph = pd.DataFrame({"close": closes}, index=dates)
 
     # asof is 2026-06-20; price history extends beyond but swing_low uses ≤ asof
@@ -973,6 +974,8 @@ def test_geometry_pit_uses_only_asof_or_earlier():
     assert geo_with_future["invalidation"] == pytest.approx(
         geo_without_future["invalidation"], abs=1e-4
     )
+
+    assert geo_with_future["invalidation"] == 98.0
 
 
 # ---------------------------------------------------------------------------
@@ -1230,7 +1233,7 @@ def test_originated_plan_without_history_stays_discoverable(tmp_path, monkeypatc
     standouts_path = tmp_path / "us_standouts.json"
     standouts_path.write_text(json.dumps(_make_standouts(
         gate_go=False,
-        buys=[_make_buy("NODATA", score=75, act_level=3, spot=42.0)],
+        buys=[_make_buy("NODATA", score=75, act_level=3, spot=42.0, hold_invalidation=38.0)],
     )), encoding="utf-8")
     site_prophet = tmp_path / "site" / "prophet"
     ledger_dir = tmp_path / "data" / "prophet"
@@ -2147,3 +2150,147 @@ class TestPriceFrameFreshness:
         fr = self._frame("2026-02-16", 11)
         out = price_frame_freshness(fr, "2026-03-06")
         assert out["max_lag"] == STALE_BASIS_MAX_SESSIONS == 3
+
+
+# Recovery contract: a new plan must not start with its own protection breached.
+@pytest.mark.parametrize("direction, entry, stop", [
+    ("BULL", 207.70, 208.82),  # real HON failure
+    ("BULL", 84.29, 91.32),    # real RBA failure
+    ("BULL", 28.33, 28.35),    # real TRN failure
+    ("BULL", 100.0, 100.0),
+    ("BEAR", 100.0, 95.0),
+    ("BEAR", 100.0, 100.0),
+])
+def test_protective_geometry_rejects_wrong_loss_side(direction, entry, stop):
+    with pytest.raises(ValueError, match="geometry"):
+        compute_geometry(entry, direction, None, stop, None, "2026-09-16")
+
+
+@pytest.mark.parametrize("field,bad", [
+    ("entry", True), ("entry", False), ("entry", float("nan")),
+    ("entry", float("inf")), ("entry", 0), ("entry", -1),
+    ("stop", True), ("stop", False), ("stop", float("nan")),
+    ("stop", float("inf")), ("stop", 0), ("stop", -1),
+    ("atr", True), ("atr", float("nan")), ("atr", float("inf")), ("atr", -1),
+])
+def test_protective_geometry_rejects_invalid_consumed_numbers(field, bad):
+    kwargs = dict(entry=100.0, direction="BULL", atr_pct=None,
+                  hold_invalidation=90.0, price_history=None, asof="2026-09-16")
+    kwargs[{"entry": "entry", "stop": "hold_invalidation", "atr": "atr_pct"}[field]] = bad
+    if field == "atr":
+        kwargs["hold_invalidation"] = None
+    with pytest.raises(ValueError, match="geometry"):
+        compute_geometry(**kwargs)
+
+
+@pytest.mark.parametrize("field", ("entry", "hold_invalidation", "atr_pct"))
+def test_protective_geometry_rejects_numpy_boolean(field):
+    import numpy as np
+    kwargs = dict(entry=100.0, direction="BULL", atr_pct=None,
+                  hold_invalidation=90.0, price_history=None, asof="2026-09-16")
+    kwargs[field] = np.bool_(True)
+    if field == "atr_pct":
+        kwargs["hold_invalidation"] = None
+    with pytest.raises(ValueError, match="geometry"):
+        compute_geometry(**kwargs)
+
+
+@pytest.mark.parametrize("direction,entry,stop", [
+    ("BULL", 100.0, 99.999999), ("BEAR", 100.0, 100.000001),
+    ("BULL", 100.00004, 99.99998), ("BEAR", 99.99998, 100.00004),
+    ("BULL", 0.0001, 0.000049), ("BEAR", 1.0, 2.0),
+    ("BULL", 1e308, 1.0),
+])
+def test_protective_geometry_rejects_rounded_or_nonfinite_levels(direction, entry, stop):
+    with pytest.raises(ValueError, match="geometry"):
+        compute_geometry(entry, direction, None, stop, None, "2026-09-16")
+
+
+@pytest.mark.parametrize("entry,stop,direction", [(1, .9, "BULL"), (1.0, 1.1, "BEAR"), (2.0, 1, "BULL")])
+def test_protective_geometry_numeric_price_one_is_valid(entry, stop, direction):
+    geo = compute_geometry(entry, direction, None, stop, None, "2026-09-16")
+    assert geo["invalidation"] == stop
+    assert geo["r_unit"] > 0
+
+
+def test_protective_geometry_wrong_hold_never_switches_to_a_different_stop():
+    history = pd.DataFrame({"close": [89., 95., 100.]},
+                           index=pd.to_datetime(["2026-09-14", "2026-09-15", "2026-09-16"]))
+    with pytest.raises(ValueError, match="geometry"):
+        compute_geometry(100.0, "BULL", 2.0, 101.0, history, "2026-09-16")
+
+
+@pytest.mark.parametrize("stop", (90.0, 93.0, 95.0))
+def test_protective_geometry_waiting_band_cannot_be_below_stop(tmp_path, stop):
+    candidate = _make_buy("ZONE", spot=100, hold_invalidation=stop, status="wait_pullback")
+    candidate["entry_signal"]["buy_zone"] = {"low": 90.0, "high": 95.0}
+    path = tmp_path / "board.json"
+    path.write_text(json.dumps(_make_standouts(buys=[candidate])))
+    stats = {}
+    plans = originate_plans(path, "2026-07-02", set(), None, intake_stats=stats)
+    assert plans == [], "a valid spot stop is not protection for a lower future fill"
+    assert stats["eligible_after_skips"] == stats["validation_failed"] == 1
+    assert stats["validation_failures"][0]["stage"] == "geometry"
+    assert stats["unaccounted"] == 0 and stats["lossless"] is True
+
+
+def test_protective_geometry_refuses_bad_candidates_without_losing_good_one(tmp_path):
+    bad = [_make_buy("HON", spot=207.7, hold_invalidation=208.82),
+           _make_buy("RBA", spot=84.29, hold_invalidation=91.32),
+           _make_buy("TRN", spot=28.33, hold_invalidation=28.35)]
+    good = _make_buy("GOOD", spot=100, hold_invalidation=90)
+    path = tmp_path / "board.json"
+    path.write_text(json.dumps(_make_standouts(buys=bad + [good])))
+    before = path.read_bytes()
+    stats = {}
+    plans = originate_plans(path, "2026-07-02", set(), None, intake_stats=stats)
+    assert [p["asset"] for p in plans] == ["GOOD"]
+    assert stats["eligible_after_skips"] == 4 and stats["validation_failed"] == 3
+    assert {f["ticker"] for f in stats["validation_failures"]} == {"HON", "RBA", "TRN"}
+    assert all(f["stage"] == "geometry" for f in stats["validation_failures"])
+    assert stats["originated"] == 1 and stats["unaccounted"] == 0 and stats["lossless"]
+    assert path.read_bytes() == before
+
+
+def test_protective_geometry_boolean_spot_cannot_be_coerced_before_validation(tmp_path):
+    candidate = _make_buy("BOOL", spot=True, hold_invalidation=.9)
+    path = tmp_path / "board.json"
+    path.write_text(json.dumps(_make_standouts(buys=[candidate])))
+    stats = {}
+    assert originate_plans(path, "2026-07-02", set(), None, intake_stats=stats) == []
+    assert stats["validation_failed"] == 1 and stats["unaccounted"] == 0
+
+
+@pytest.mark.parametrize("direction,stop,low,high", [
+    ("BULL", 91., 90., 95.), ("BULL", 90., 90., 95.),
+    ("BEAR", 119., 110., 120.), ("BEAR", 120., 110., 120.),
+    ("BULL", 80., 95., 90.), ("BEAR", 130., 120., 110.),
+])
+def test_protective_geometry_waiting_zone_symmetric_contract(direction, stop, low, high):
+    from engine.prophet_bridge import _validate_waiting_zone_protection
+    with pytest.raises(ValueError, match="geometry"):
+        _validate_waiting_zone_protection({"stance": "wait", "low": low, "high": high},
+                                          direction, stop)
+
+
+@pytest.mark.parametrize("bound", (True, float("nan"), float("inf"), 0, -1))
+def test_protective_geometry_present_waiting_bounds_must_be_valid(bound):
+    from engine.prophet_bridge import _validate_waiting_zone_protection
+    with pytest.raises(ValueError, match="geometry"):
+        _validate_waiting_zone_protection({"stance": "wait", "low": bound, "high": 95.},
+                                          "BULL", 80.)
+
+
+@pytest.mark.parametrize("direction,stop,zone", [
+    ("BULL", 80., {"stance": "wait", "low": 90., "high": 95.}),
+    ("BEAR", 130., {"stance": "wait", "low": 110., "high": 120.}),
+    ("BULL", 90., {"stance": "wait", "low": None, "high": None}),
+    ("BULL", None, {"stance": "wait", "low": 90., "high": 95.}),
+    ("BULL", 90., None),
+])
+def test_protective_geometry_valid_and_unknown_zones_remain_readable(direction, stop, zone):
+    from copy import deepcopy
+    from engine.prophet_bridge import _validate_waiting_zone_protection
+    before = deepcopy(zone)
+    _validate_waiting_zone_protection(zone, direction, stop)
+    assert zone == before

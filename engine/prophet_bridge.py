@@ -49,7 +49,7 @@ GEOMETRY RULES (OURS — display-only, pre-registered)
                  else max-protective of (20d swing low, entry − 2×ATR14)
                     for BULL: max(swing_low, entry − 2×ATR14)  [closest to entry]
                     for BEAR: min(swing_high, entry + 2×ATR14) [closest to entry]
-  R = |entry − invalidation|  (risk unit)
+  R = signed distance to the protective loss side; non-positive risk is refused
   T1 = entry + 1.5 × R  (BULL)  or  entry − 1.5 × R  (BEAR)
   T2 = entry + 3.0 × R  (BULL)  or  entry − 3.0 × R  (BEAR)
   horizon_days = 45 default
@@ -406,7 +406,7 @@ _KNOWN_REFUSED_STATUSES = frozenset({
 # ``why`` list and is disclosed on the chip's Tier-2 hover.  Do not "repair" this into
 # gate order — that is the defect, not the design.
 REFUSAL_ORDER = (
-    "plan_not_built",   # cleared every gate; only the plan build itself failed
+    "plan_not_built",   # admitted, but no plan; validation may have refused it
     "already_open",     # cleared every gate; the name already has a live plan
     "not_ready",        # the patience statuses that are ALMOST admitted
     "ran_too_far",      # the anti-chase refusal — must outrank the band it co-occurs with
@@ -446,8 +446,8 @@ REFUSAL_STATUS_MAP = {
 #: tier name, a gate name — appears in any string here: the reader is told what is true
 #: about the stock, never which branch of our code said so.
 REFUSAL_COPY = {
-    "plan_not_built": ("Cleared every check — no entry plan came together tonight",
-                       "各项检查都通过 — 但今晚没能形成完整计划"),
+    "plan_not_built": ("No entry plan is available — stand aside",
+                       "暂无入场计划 — 暂时观望"),
     "already_open":   ("Already has a plan running",
                        "已有在跑的计划"),
     "not_ready":      ("Setting up, but the entry hasn't come",
@@ -675,6 +675,19 @@ def _swing_high_20d(price_history: pd.DataFrame, asof: str) -> float | None:
         return None
 
 
+def _geometry_number(value: Any, field: str, *, allow_zero: bool = False) -> float:
+    """Validate an actually consumed price/risk input before numeric coercion."""
+    if pd.api.types.is_bool(value):
+        raise ValueError(f"geometry: {field} must not be Boolean")
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(f"geometry: {field} is not a finite number") from exc
+    if not math.isfinite(number) or number < 0 or (number == 0 and not allow_zero):
+        raise ValueError(f"geometry: {field} must be positive and finite")
+    return number
+
+
 def compute_geometry(
     entry: float,
     direction: str,  # "BULL" or "BEAR"
@@ -683,51 +696,73 @@ def compute_geometry(
     price_history: pd.DataFrame | None,
     asof: str,
 ) -> dict[str, float | None]:
-    """
-    OURS: Compute invalidation, T1, T2 from the pre-registered geometry rules.
+    """Compute the incumbent levels, refusing contradictory protective geometry.
 
-    Returns a dict with keys: invalidation, t1, t2, r_unit.
-    All values are floats or None.
+    Unknown protection still returns null levels. A supplied, already-breached
+    stop is a validation refusal, never permission to invent a replacement stop.
     """
-    atr_abs = (entry * atr_pct / 100.0) if atr_pct else None
-
-    # --- Compute protective invalidation ---
+    entry = _geometry_number(entry, "entry")
+    if direction not in ("BULL", "BEAR"):
+        raise ValueError("geometry: direction must be BULL or BEAR")
     if hold_invalidation is not None:
-        # Use swing-structure hard invalidation from hold field (preferred)
-        invalidation = float(hold_invalidation)
+        invalidation = _geometry_number(hold_invalidation, "invalidation")
     else:
-        # Fallback: max-protective of (20d swing level, entry ± 2×ATR14)
+        atr = (_geometry_number(atr_pct, "ATR percentage", allow_zero=True)
+               if atr_pct is not None else None)
+        atr_abs = entry * atr / 100.0 if atr else None
         if direction == "BULL":
             swing = _swing_low_20d(price_history, asof) if price_history is not None else None
-            atr_stop = (entry - ATR_MULTIPLIER * atr_abs) if atr_abs else None
-            candidates = [c for c in [swing, atr_stop] if c is not None]
-            # Most protective = highest (closest to entry from below)
+            atr_stop = entry - ATR_MULTIPLIER * atr_abs if atr_abs else None
+            candidates = [c for c in (swing, atr_stop) if c is not None]
             invalidation = max(candidates) if candidates else None
-        else:  # BEAR
+        else:
             swing = _swing_high_20d(price_history, asof) if price_history is not None else None
-            atr_stop = (entry + ATR_MULTIPLIER * atr_abs) if atr_abs else None
-            candidates = [c for c in [swing, atr_stop] if c is not None]
-            # Most protective = lowest (closest to entry from above)
+            atr_stop = entry + ATR_MULTIPLIER * atr_abs if atr_abs else None
+            candidates = [c for c in (swing, atr_stop) if c is not None]
             invalidation = min(candidates) if candidates else None
 
     if invalidation is None:
         return {"invalidation": None, "t1": None, "t2": None, "r_unit": None}
+    invalidation = _geometry_number(invalidation, "invalidation")
+    sign = 1.0 if direction == "BULL" else -1.0
+    r_unit = sign * (entry - invalidation)
+    if not math.isfinite(r_unit) or r_unit <= 0:
+        raise ValueError("geometry: invalidation must be strictly on the entry's loss side")
 
-    r_unit = abs(entry - invalidation)
-
-    if direction == "BULL":
-        t1 = entry + T1_MULTIPLIER * r_unit
-        t2 = entry + T2_MULTIPLIER * r_unit
-    else:
-        t1 = entry - T1_MULTIPLIER * r_unit
-        t2 = entry - T2_MULTIPLIER * r_unit
-
-    return {
+    result = {
         "invalidation": round(invalidation, 4),
-        "t1": round(t1, 4),
-        "t2": round(t2, 4),
+        "t1": round(entry + sign * T1_MULTIPLIER * r_unit, 4),
+        "t2": round(entry + sign * T2_MULTIPLIER * r_unit, 4),
         "r_unit": round(r_unit, 4),
     }
+    # Validate the levels that will actually be serialized, not just hidden
+    # precision that could round a stop/target back onto entry.
+    published_entry = round(entry, 4)
+    if (published_entry <= 0 or
+            any(not math.isfinite(v) or v <= 0 for v in result.values()) or
+            sign * (published_entry - result["invalidation"]) <= 0 or
+            sign * (result["t1"] - published_entry) <= 0 or
+            sign * (result["t2"] - result["t1"]) <= 0):
+        raise ValueError("geometry: rounded protective levels must remain finite and ordered")
+    return result
+
+
+def _validate_waiting_zone_protection(
+    zone: Mapping[str, Any] | None, direction: str, invalidation: float | None,
+) -> None:
+    """A lower/higher waiting fill must not start beyond the selected stop."""
+    if not isinstance(zone, Mapping) or zone.get("stance") != "wait" or invalidation is None:
+        return
+    bounds = {key: _geometry_number(zone[key], f"entry zone {key}")
+              for key in ("low", "high") if zone.get(key) is not None}
+    if len(bounds) == 2 and bounds["low"] > bounds["high"]:
+        raise ValueError("geometry: waiting entry-zone bounds are reversed")
+    if not bounds:  # genuinely unknown zone; no invented fill or stop
+        return
+    boundary = min(bounds.values()) if direction == "BULL" else max(bounds.values())
+    signed = boundary - invalidation if direction == "BULL" else invalidation - boundary
+    if signed <= 0:
+        raise ValueError("geometry: invalidation must protect the whole waiting entry zone")
 
 
 # ---------------------------------------------------------------------------
@@ -4331,8 +4366,8 @@ def originate_plans(
             )
             continue
         try:
-            entry = float(spot)
-        except (TypeError, ValueError):
+            entry = float("nan") if pd.api.types.is_bool(spot) else float(spot)
+        except (TypeError, ValueError, OverflowError):
             entry = float("nan")
         if not math.isfinite(entry) or entry <= 0.0:
             _record_failure(
@@ -4529,11 +4564,12 @@ def originate_plans(
             geo = compute_geometry(
                 entry=entry,
                 direction=direction,
-                atr_pct=float(atr_pct) if atr_pct else None,
+                atr_pct=atr_pct,
                 hold_invalidation=hold.get("invalidation"),
                 price_history=ph,
                 asof=price_basis_date,
             )
+            _validate_waiting_zone_protection(entry_zone, direction, geo["invalidation"])
         except (TypeError, ValueError) as exc:
             _record_failure(
                 ticker=ticker,
