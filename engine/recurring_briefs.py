@@ -69,6 +69,17 @@ TARGET_UNAVAILABLE_EN = (
 TARGET_UNAVAILABLE_ZH = (
     "这份简报无法写成，因为它所跟踪的论点或观察列表已不可用。"
 )
+TARGET_READ_UNAVAILABLE_REASON = "target read unavailable"
+TARGET_READ_UNAVAILABLE_EN = (
+    "This brief couldn't be written because its thesis or watchlist couldn't be checked. "
+    "Nothing was inferred from missing data."
+)
+TARGET_READ_UNAVAILABLE_ZH = (
+    "这份简报无法写成，因为暂时无法检查它所跟踪的论点或观察列表。"
+    "没有根据缺失数据作出推断。"
+)
+MONITOR_READ_UNAVAILABLE_EN = "We couldn't check the conditions we watch."
+MONITOR_READ_UNAVAILABLE_ZH = "暂时无法检查我们关注的条件。"
 NO_COVERAGE_REASON = "no target coverage"
 # Structured kinds classify returns for named-ticker misses. compose_body
 # switches on these tokens — never on a phrase inside the user-facing copy.
@@ -112,6 +123,13 @@ TRANSLATION_PENDING_ZH = "（翻译待补）"
 class SubscriptionReadResult:
     rows: tuple[dict, ...] = ()
     state: str = "ok"  # ok | unavailable
+    error_class: str | None = None
+
+
+@dataclass(frozen=True)
+class TargetReadResult:
+    target: dict | None = None
+    state: str = "found"  # found | missing | unavailable
     error_class: str | None = None
 
 
@@ -524,6 +542,15 @@ def compose_body(
         market_read = [
             _sentence_row("status", TARGET_UNAVAILABLE_EN, TARGET_UNAVAILABLE_ZH, asof)
         ]
+    elif degraded_reason == TARGET_READ_UNAVAILABLE_REASON:
+        market_read = [
+            _sentence_row(
+                "status",
+                TARGET_READ_UNAVAILABLE_EN,
+                TARGET_READ_UNAVAILABLE_ZH,
+                asof,
+            )
+        ]
     elif degraded_reason == NO_COVERAGE_REASON:
         # Anonymous / empty-ticker targets: generic "no target coverage" copy.
         target_kind = (target or {}).get("kind")
@@ -684,14 +711,15 @@ def _thesis_tickers(subject_ref: dict | None, content: dict | None) -> list[str]
     return tickers
 
 
-def read_target(subscription: dict) -> dict | None:
+def read_target(subscription: dict) -> TargetReadResult:
+    """Read one owner-scoped target without treating transport failure as deletion."""
     if not SUPABASE_SERVICE_ROLE_KEY:
-        return None
+        return TargetReadResult(state="unavailable", error_class="no_credentials")
     kind = subscription.get("target_kind")
     target_id = subscription.get("target_id")
     sub_user_id = subscription.get("user_id")
     if not kind or not target_id:
-        return None
+        return TargetReadResult(state="missing")
     # H5: owner-scope the target read. brief_subscriptions is RLS owner-only
     # on ``user_id default auth.uid()``; without the equivalent filter on this
     # read, any authenticated user could subscribe to a target UUID and have
@@ -712,13 +740,13 @@ def read_target(subscription: dict) -> dict | None:
             path += "&select=id,user_id,current_version,subject_ref,lifecycle_state"
             rows = _pg("GET", path)
             if not rows:
-                return None
+                return TargetReadResult(state="missing")
             head = rows[0]
             # Belt-and-braces: even after the URL filter, ignore rows whose
             # ``user_id`` does not match the subscription — defence in depth
             # against any future RLS / PostgREST reorganisation.
             if sub_user_id and head.get("user_id") != sub_user_id:
-                return None
+                return TargetReadResult(state="missing")
             version = head.get("current_version")
             content = {}
             if version is not None:
@@ -729,14 +757,16 @@ def read_target(subscription: dict) -> dict | None:
                 if vrows:
                     content = (vrows[0] or {}).get("content") or {}
             title = content.get("title") if isinstance(content, dict) else None
-            return {
-                "kind": "thesis",
-                "id": head.get("id") or target_id,
-                "name": title or "Untitled thesis",
-                "version_or_asof": str(version) if version is not None else None,
-                "tickers": _thesis_tickers(head.get("subject_ref"), content),
-                "unavailable": False,
-            }
+            return TargetReadResult(
+                target={
+                    "kind": "thesis",
+                    "id": head.get("id") or target_id,
+                    "name": title or "Untitled thesis",
+                    "version_or_asof": str(version) if version is not None else None,
+                    "tickers": _thesis_tickers(head.get("subject_ref"), content),
+                    "unavailable": False,
+                }
+            )
         if kind == "watchlist":
             wl_path = (
                 f"watchlists?id=eq.{target_id}"
@@ -746,10 +776,10 @@ def read_target(subscription: dict) -> dict | None:
             wl_path += "&select=id,user_id,name,watchlist_symbols(symbol)"
             rows = _pg("GET", wl_path)
             if not rows:
-                return None
+                return TargetReadResult(state="missing")
             row = rows[0]
             if sub_user_id and row.get("user_id") != sub_user_id:
-                return None
+                return TargetReadResult(state="missing")
             members = []
             seen: set[str] = set()
             for entry in row.get("watchlist_symbols") or []:
@@ -759,19 +789,25 @@ def read_target(subscription: dict) -> dict | None:
                 if sym and sym not in seen:
                     seen.add(sym)
                     members.append(sym)
-            return {
-                "kind": "watchlist",
-                "id": row.get("id") or target_id,
-                "name": row.get("name") or "Untitled watchlist",
-                "version_or_asof": None,
-                "tickers": members,
-                "unavailable": False,
-            }
-    except urllib.error.HTTPError:
-        return None
+            return TargetReadResult(
+                target={
+                    "kind": "watchlist",
+                    "id": row.get("id") or target_id,
+                    "name": row.get("name") or "Untitled watchlist",
+                    "version_or_asof": None,
+                    "tickers": members,
+                    "unavailable": False,
+                }
+            )
+    except urllib.error.HTTPError as exc:
+        code = getattr(exc, "code", None)
+        return TargetReadResult(
+            state="unavailable",
+            error_class=f"http_{code}" if code else "http_error",
+        )
     except Exception:
-        return None
-    return None
+        return TargetReadResult(state="unavailable", error_class="request_failed")
+    return TargetReadResult(state="missing")
 
 
 def write_delivery(row: dict, *, dry_run: bool = False) -> str:
@@ -804,18 +840,25 @@ def write_delivery(row: dict, *, dry_run: bool = False) -> str:
 
 
 def load_monitors_for_target(target: dict | None) -> list[dict]:
-    """Current monitor states from the existing thesis-monitor projection."""
+    """Current monitor states; read failures are explicit rather than false-calm."""
     tickers = list((target or {}).get("tickers") or [])
-    windows: list[dict] = []
     try:
         from engine import thesis_condition_monitor as tcm
 
         entries, latch_state, error_class = tcm.load_tripwire_view()
-        if error_class is None:
-            for window in tcm.fired_windows(entries, latch_state):
-                windows.append(window)
+        if error_class is not None:
+            return [{
+                "name": "Conditions we watch",
+                "state_en": MONITOR_READ_UNAVAILABLE_EN,
+                "state_zh": MONITOR_READ_UNAVAILABLE_ZH,
+            }]
+        windows = list(tcm.fired_windows(entries, latch_state))
     except Exception:
-        windows = []
+        return [{
+            "name": "Conditions we watch",
+            "state_en": MONITOR_READ_UNAVAILABLE_EN,
+            "state_zh": MONITOR_READ_UNAVAILABLE_ZH,
+        }]
     return project_monitors(tickers, windows)
 
 
@@ -904,23 +947,32 @@ def run(
         considered += 1
         work = dict(sub)
         work["run_date"] = run_date.isoformat()
-        target = read_target(work)
-        state, reason = classify(work, artifact, target)
+        target_read = read_target(work)
+        target = target_read.target
+
+        if target_read.state == "unavailable":
+            state, reason = ("degraded", TARGET_READ_UNAVAILABLE_REASON)
+            read_unavailable += 1
+        else:
+            state, reason = classify(work, artifact, target)
+
         if state == "degraded":
             degraded_n += 1
-            if reason == TARGET_UNAVAILABLE_REASON:
-                read_unavailable += 1
-            elif reason == CONTRACT_MISS_EN:
+            if reason == CONTRACT_MISS_EN:
                 read_missing += 1
             body = compose_body(
                 target
                 or {
                     "kind": work.get("target_kind"),
                     "id": work.get("target_id"),
-                    "name": "This thesis or watchlist is no longer available",
+                    "name": (
+                        "This thesis or watchlist could not be checked"
+                        if reason == TARGET_READ_UNAVAILABLE_REASON
+                        else "This thesis or watchlist is no longer available"
+                    ),
                     "version_or_asof": None,
                     "tickers": [],
-                    "unavailable": True,
+                    "unavailable": reason == TARGET_UNAVAILABLE_REASON,
                 },
                 artifact,
                 [],

@@ -841,7 +841,8 @@ def test_no_target_user_id_returns_target_unavailable(monkeypatch):
     monkeypatch.setattr(rb, "_pg", fake_pg)
     monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
     result = rb.read_target(sub)
-    assert result is None
+    assert result.state == "missing"
+    assert result.target is None
     assert captured.get("calls"), "read_target must issue at least one Supabase GET"
     assert any("user_id=eq." in c for c in captured["calls"]), (
         f"read_target URL must owner-scope on subscription.user_id, got {captured['calls']}"
@@ -1125,6 +1126,67 @@ def test_dry_run_never_logs_private_target_or_body_content(monkeypatch, capsys):
     assert "-- planned row slot 2026-09-11 state ready" in out
 
 
+def test_target_http_failure_writes_honest_miss_not_deleted_target_copy(monkeypatch):
+    client = FakeClient()
+    monkeypatch.setattr(rb, "load_published_artifact", lambda cadence, root=None: _briefing(as_of="2026-09-18"))
+    monkeypatch.setattr(
+        rb,
+        "read_subscriptions",
+        lambda cadence: rb.SubscriptionReadResult(rows=(_sub(run_date="2026-09-18"),)),
+    )
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda sub: rb.TargetReadResult(state="unavailable", error_class="http_503"),
+    )
+    monkeypatch.setattr(
+        rb,
+        "write_delivery",
+        lambda row, dry_run=False: client.write(row, dry_run=dry_run),
+    )
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    result = rb.run(
+        cadence="daily_after_us_close",
+        dry_run=False,
+        run_date=date(2026, 9, 18),
+    )
+    assert result.degraded_n == 1
+    assert result.read_unavailable == 1
+    assert len(client.deliveries) == 1
+    row = client.deliveries[0]
+    assert row["degraded_reason"] == rb.TARGET_READ_UNAVAILABLE_REASON
+    sentence = row["body"]["market_read"][0]["sentence_en"]
+    assert sentence == rb.TARGET_READ_UNAVAILABLE_EN
+    assert "no longer available" not in sentence.lower()
+
+
+def test_read_target_http_failure_is_typed_unavailable(monkeypatch):
+    monkeypatch.setattr(rb, "SUPABASE_SERVICE_ROLE_KEY", "test-key")
+
+    def fail_pg(*args, **kwargs):
+        raise urllib.error.HTTPError("https://example.invalid", 503, "down", {}, None)
+
+    monkeypatch.setattr(rb, "_pg", fail_pg)
+    result = rb.read_target(_sub(run_date="2026-09-18"))
+    assert result.state == "unavailable"
+    assert result.target is None
+    assert result.error_class == "http_503"
+
+
+def test_monitor_read_failure_is_explicit_not_false_calm(monkeypatch):
+    from engine import thesis_condition_monitor as tcm
+
+    monkeypatch.setattr(tcm, "load_tripwire_view", lambda: ([], {}, "read_unavailable"))
+    rows = rb.load_monitors_for_target(_thesis_target())
+    assert rows == [{
+        "name": "Conditions we watch",
+        "state_en": rb.MONITOR_READ_UNAVAILABLE_EN,
+        "state_zh": rb.MONITOR_READ_UNAVAILABLE_ZH,
+    }]
+    assert rows[0]["state_en"] != "No change in the conditions we watch."
+
+
 # ---------------------------------------------------------------------------
 # run() with FakeClient — idempotency, dry-run, degraded
 # ---------------------------------------------------------------------------
@@ -1137,7 +1199,15 @@ def _patch_run(monkeypatch, *, artifact, target, client, subscriptions=None):
         "read_subscriptions",
         lambda cadence: rb.SubscriptionReadResult(rows=tuple(rows)),
     )
-    monkeypatch.setattr(rb, "read_target", lambda sub: target)
+    monkeypatch.setattr(
+        rb,
+        "read_target",
+        lambda sub: (
+            rb.TargetReadResult(target=target)
+            if target is not None
+            else rb.TargetReadResult(state="missing")
+        ),
+    )
     monkeypatch.setattr(
         rb, "write_delivery", lambda row, dry_run=False: client.write(row, dry_run=dry_run)
     )
