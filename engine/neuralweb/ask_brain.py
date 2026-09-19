@@ -33,6 +33,7 @@ import logging
 import os
 import re
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Generator
@@ -166,7 +167,8 @@ _OPTIONS_TRIGGER_TERMS = re.compile(
     r"pin\s+risk|pinning|options?\s+flow|options|call\s+wall|put\s+wall|"
     r"dealer\s+positioning|open\s+interest|put[/-]call|vanna|charm|straddle|"
     r"iv\s+rank|iv\s+percentile|term\s+structure)\b"
-    r"|\b\d{1,2}dte\b|\bodte\b",
+    r"|\b\d{1,2}dte\b|\bodte\b"
+    r"|(?:期权|期權|隐含波动率|隱含波動率|偏度|伽马|伽瑪|未平仓|未平倉)",
 )
 
 # Liquidity plumbing trigger terms — checked after factor/China, before options/generic.
@@ -473,10 +475,64 @@ def _detect_ticker(question: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Question classifier → tool budget
+# Question classifier → task profile + legacy tuple
 # ---------------------------------------------------------------------------
 
-def _classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
+@dataclass(frozen=True)
+class _QuestionProfile:
+    """Deterministic task profile owned by the existing question classifier.
+
+    seed_tools are advisory model-visible names. Some are Brain-gateway tools
+    rather than Ask Brain's narrower read-only registry; the Ask Brain loop uses
+    only the budget today, while Brain already consumes the seed tuple.
+    """
+
+    name: str
+    budget: int
+    seed_tools: tuple[str, ...]
+    grounding_scope: str
+
+
+_SELF_CONTAINED_ASSUMPTION_TERMS = re.compile(
+    r"(?i)\b(supplied\s+assumptions?|given\s+assumptions?|hypothetical|"
+    r"illustrative|scenario|assume(?:d|s|ing)?|using\s+only\s+(?:these|the)\s+"
+    r"(?:numbers|assumptions))\b"
+    r"|(?:给定|給定|假设|假設|情景|场景|場景|仅用|僅用)",
+)
+_SELF_CONTAINED_FINANCE_TERMS = re.compile(
+    r"(?i)\b(eps|p/?e|multiple|revenue|gross\s+margin|operating\s+profit|"
+    r"working\s+capital|capex|capital\s+expenditure|cash\s+flow|valuation|margin)\b"
+    r"|(?:收入|营收|營收|毛利|利润|利潤|现金流|現金流|估值|市盈率|营运资金|營運資金|"
+    r"资本开支|資本開支)",
+)
+_PORTFOLIO_TRIGGER_TERMS = re.compile(
+    r"(?i)\b(my\s+)?(portfolio|holdings?|positions?|watchlist|book)\b|"
+    r"\b(exposure|concentration)\b.*\b(portfolio|holdings?|positions?|book)\b"
+    r"|(?:我的)?(?:组合|組合|持仓|持倉|仓位|倉位|自选|自選).*(?:风险|風險|因子|暴露|集中)",
+)
+_CURRENT_SINGLE_NAME_MOVE_TERMS = re.compile(
+    r"(?i)\bwhy\s+(?:did|is|has)\b.{0,80}\b(move(?:d)?|up|down|rall(?:y|ied)|"
+    r"drop(?:ped)?|fall|fell|rise|rose|sell[ -]?off|sold\s+off)\b|"
+    r"\bwhat\s+happened\s+to\b|\bcatalyst\b|"
+    r"(?:为什么|為什麼).{0,30}(?:涨|漲|跌|大涨|大漲|大跌)|(?:催化|异动|異動)",
+)
+_RATES_DETAIL_PROFILE_TERMS = re.compile(
+    r"(?i)\b(yield\s+curve|curve|steepener|steepening|flattener|inversion|"
+    r"2s10s|duration|term\s+premium|breakeven|real\s+yield|real\s+rates?)\b"
+    r"|(?:收益率曲线|收益率曲線|期限溢价|期限溢價|实际利率|實際利率)",
+)
+
+
+def _merge_seed_tools(*groups: list[str] | tuple[str, ...]) -> tuple[str, ...]:
+    out: list[str] = []
+    for group in groups:
+        for name in group:
+            if name and name not in out:
+                out.append(name)
+    return tuple(out)
+
+
+def _legacy_classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
     """Return (budget, seed_tool_names) for the question.
 
     The seed list is a hint for which tools to call first; the model decides
@@ -572,6 +628,100 @@ def _classify_question(question: str, context_ticker: str | None) -> tuple[int, 
         return _BUDGET_REGIME, ["read_world_state"]
     # default
     return _BUDGET_GENERAL, ["read_world_state"]
+
+
+def _question_profile(question: str, context_ticker: str | None) -> _QuestionProfile:
+    """Return the deterministic task profile without narrowing ambiguous questions."""
+    q = question.lower()
+    subject_ticker = _detect_ticker(question) or (
+        str(context_ticker).strip().upper() if context_ticker else None
+    )
+
+    if (
+        _SELF_CONTAINED_ASSUMPTION_TERMS.search(question)
+        and _SELF_CONTAINED_FINANCE_TERMS.search(question)
+    ):
+        return _QuestionProfile(
+            "self_contained_financial", _BUDGET_GENERAL, (), "self_contained"
+        )
+
+    if _PORTFOLIO_TRIGGER_TERMS.search(question):
+        return _QuestionProfile(
+            "portfolio_current",
+            _BUDGET_GENERAL,
+            ("get_portfolio_brief", "read_world_state", "read_factor_state"),
+            "portfolio_current",
+        )
+
+    # Options must precede generic "setup for" / context-ticker handling, but
+    # retain the established higher-specificity factor/China/liquidity/theme ordering.
+    if (
+        _OPTIONS_TRIGGER_TERMS.search(question)
+        and not _FACTOR_TRIGGER_TERMS.search(q)
+        and not _CHINA_TRIGGER_TERMS.search(question)
+        and not _LIQUIDITY_PLUMBING_TRIGGER_TERMS.search(q)
+        and not _THEME_TRIGGER_TERMS.search(question)
+    ):
+        seeds: list[str] = ["read_options_entry_state"]
+        if subject_ticker:
+            seeds.append("explain_options_context")
+        if re.search(r"\b(contradict\w*|conflict\w*|tension\w*|borrowed\s+strength)\b", q):
+            seeds.append("list_options_contradictions")
+        if re.search(r"\b(confluence|confirm\w*|align\w*|agree\w*)\b", q):
+            seeds.append("query_options_confluence")
+        return _QuestionProfile(
+            "options_single_name",
+            _BUDGET_OPTIONS,
+            tuple(seeds),
+            "single_name_current" if subject_ticker else "market_current",
+        )
+
+    if subject_ticker and _CURRENT_SINGLE_NAME_MOVE_TERMS.search(question):
+        return _QuestionProfile(
+            "single_name_current",
+            _BUDGET_WHY_FIRED,
+            ("get_market_events", "get_symbol_context", "get_quote"),
+            "single_name_current",
+        )
+
+    budget, seeds = _legacy_classify_question(question, context_ticker)
+    seed_tuple = tuple(seeds)
+
+    if seed_tuple and seed_tuple[0] == "query_spine":
+        return _QuestionProfile(
+            "signal_explanation",
+            budget,
+            seed_tuple,
+            "single_name_current" if subject_ticker else "market_current",
+        )
+    if "read_factor_state" in seed_tuple:
+        return _QuestionProfile(
+            "factor_current", budget, seed_tuple,
+            "single_name_current" if subject_ticker else "market_current",
+        )
+    if "read_china_decision_packet" in seed_tuple:
+        return _QuestionProfile("china_current", budget, seed_tuple, "market_current")
+    if "read_theme_state" in seed_tuple:
+        return _QuestionProfile("theme_current", budget, seed_tuple, "market_current")
+    if (
+        "read_liquidity_plumbing" in seed_tuple
+        or "read_inflation_intelligence" in seed_tuple
+        or _RATES_DETAIL_PROFILE_TERMS.search(question)
+    ):
+        macro_seeds = seed_tuple
+        if _RATES_DETAIL_PROFILE_TERMS.search(question):
+            macro_seeds = _merge_seed_tools(
+                seed_tuple, ("get_curve_detail", "read_mechanism_pathways")
+            )
+        return _QuestionProfile("macro_rates", budget, macro_seeds, "market_current")
+
+    return _QuestionProfile("ambiguous", budget, seed_tuple, "ambiguous")
+
+
+def _classify_question(question: str, context_ticker: str | None) -> tuple[int, list[str]]:
+    """Backward-compatible (budget, seeds) view of the richer task profile."""
+    profile = _question_profile(question, context_ticker)
+    return profile.budget, list(profile.seed_tools)
 
 
 # ---------------------------------------------------------------------------
