@@ -499,7 +499,7 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
 
     glossary = r["MO-DELTA-011"]
     assert glossary["capability_state_c2"] == "PROVEN_LIVE"
-    assert "NOT_BUILT" not in glossary["state_delta"]
+    assert "superseded by 2026-09-19 live proof" in glossary["state_delta"]
     assert glossary["missing_contract_or_proof"].startswith("none")
 
     risk = r["MO-DELTA-014"]
