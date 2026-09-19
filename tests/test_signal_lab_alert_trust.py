@@ -215,6 +215,12 @@ def test_signal_lab_renders_bounded_recent_prospective_history_without_legacy_re
         "source_recorded_at": "2026-09-22T05:00:00Z",
         "outcome_recorded_at": None,
         "last_matured": None,
+        "prospective_summary": {
+            "n_observations": 3, "n_fired": 1, "n_no_fire": 1,
+            "n_pending": 1, "n_matured": 1, "n_unavailable": 1,
+            "n_corrected": 1, "n_matured_fired": 1, "n_target_hits": 1,
+            "research_only": True, "trading_authority": False,
+        },
         "recent_history": [
             {
                 "entry_asof": "2026-09-20", "entry_close": 100.0,
@@ -256,6 +262,10 @@ def test_signal_lab_renders_bounded_recent_prospective_history_without_legacy_re
         gate=_gate(), evaluation_date=date(2026, 9, 21), d2_research=research,
     )
     html = _render_d2_scorecard(payload)
+    assert "Prospective study accrual" in html
+    assert "前瞻研究积累" in html
+    assert "Matured fired observations meeting the frozen down target: 1 / 1" in html
+    assert "Research accrual only — this does not change the current validation gate or alert permission." in html
     assert "Recent prospective observations (2)" in html
     assert "近期前瞻观察（2）" in html
     assert "2026-09-20" in html

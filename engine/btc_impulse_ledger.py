@@ -269,6 +269,30 @@ def grade(
         return {"ok": False, "reason": f"{type(exc).__name__}: {exc}"}
 
 
+def _d2_prospective_summary(projections: list[dict]) -> dict:
+    """Raw accrual counts for prospectively enrolled D2 research only."""
+    matured_fired = [
+        projection for projection in projections
+        if projection["status"] == "matured" and projection.get("fired") is True
+    ]
+    return {
+        "n_observations": len(projections),
+        "n_fired": sum(projection.get("fired") is True for projection in projections),
+        "n_no_fire": sum(projection.get("fired") is False for projection in projections),
+        "n_pending": sum(projection["status"] == "pending" for projection in projections),
+        "n_matured": sum(projection["status"] == "matured" for projection in projections),
+        "n_unavailable": sum(projection["status"] == "unavailable" for projection in projections),
+        "n_corrected": sum(bool(projection.get("corrected")) for projection in projections),
+        "n_matured_fired": len(matured_fired),
+        "n_target_hits": sum(
+            bool((projection.get("outcome") or {}).get("down_hit"))
+            for projection in matured_fired
+        ),
+        "research_only": True,
+        "trading_authority": False,
+    }
+
+
 def latest_d2_journey(rows: list[dict] | None = None) -> dict:
     """Current observation plus bounded prior prospective research history.
 
@@ -291,6 +315,7 @@ def latest_d2_journey(rows: list[dict] | None = None) -> dict:
         current = btc_d2_research.project(None)
         current["last_matured"] = None
         current["recent_history"] = []
+        current["prospective_summary"] = _d2_prospective_summary([])
         return current
 
     current = projections[0]
@@ -305,6 +330,7 @@ def latest_d2_journey(rows: list[dict] | None = None) -> dict:
 
     current["last_matured"] = last_matured
     current["recent_history"] = recent_history
+    current["prospective_summary"] = _d2_prospective_summary(projections)
     return current
 
 

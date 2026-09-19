@@ -105,6 +105,15 @@
 </div>
 {% endmacro %}
 {{ observation(r.research_journey, 'Prospective research journey', '前瞻研究轨迹') }}
+{% if r.research_journey.prospective_summary %}
+<details class="extra d2-study-accrual">
+  <summary>{{ t('Prospective study accrual', '前瞻研究积累') }} · {{ r.research_journey.prospective_summary.n_observations }}</summary>
+  <div>{{ t('Fired: ', '已触发：') }}{{ r.research_journey.prospective_summary.n_fired }} · {{ t('No fire: ', '未触发：') }}{{ r.research_journey.prospective_summary.n_no_fire }} · {{ t('Unavailable: ', '不可用：') }}{{ r.research_journey.prospective_summary.n_unavailable }}</div>
+  <div>{{ t('Matured: ', '已成熟：') }}{{ r.research_journey.prospective_summary.n_matured }} · {{ t('Pending: ', '待评估：') }}{{ r.research_journey.prospective_summary.n_pending }} · {{ t('Restated: ', '已修订：') }}{{ r.research_journey.prospective_summary.n_corrected }}</div>
+  <div>{{ t('Matured fired observations meeting the frozen down target: ', '已成熟且触发的观察中达到冻结下行目标：') }}{{ r.research_journey.prospective_summary.n_target_hits }} / {{ r.research_journey.prospective_summary.n_matured_fired }}</div>
+  <div>{{ t('Research accrual only — this does not change the current validation gate or alert permission.', '仅为研究积累 — 不改变当前验证门槛或告警权限。') }}</div>
+</details>
+{% endif %}
 {% if r.research_journey.last_matured %}
 <details class="extra d2-history">
   <summary>{{ t('Most recent completed observation', '最近完成的观察') }}</summary>

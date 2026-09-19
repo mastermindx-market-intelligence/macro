@@ -594,6 +594,19 @@ def test_latest_projection_retains_completed_observation_after_rollover():
     assert projected["status"] == "pending"
     assert projected["last_matured"] == _d2().project(rows[0]["research_d2"])
     assert projected["recent_history"] == []
+    assert projected["prospective_summary"] == {
+        "n_observations": 2,
+        "n_fired": 1,
+        "n_no_fire": 1,
+        "n_pending": 1,
+        "n_matured": 1,
+        "n_unavailable": 0,
+        "n_corrected": 0,
+        "n_matured_fired": 1,
+        "n_target_hits": 1,
+        "research_only": True,
+        "trading_authority": False,
+    }
     projected["last_matured"]["outcome"]["down_hit"] = False
     assert rows == before
 
@@ -626,6 +639,12 @@ def test_recent_history_is_bounded_to_prospective_rows_and_keeps_corruption_visi
     assert projected["entry_asof"] == expected_entries[-1]
     assert projected["last_matured"] is None
     assert len(projected["recent_history"]) == LED.D2_RECENT_HISTORY_LIMIT
+    assert projected["prospective_summary"]["n_observations"] == 10
+    assert projected["prospective_summary"]["n_fired"] == 4
+    assert projected["prospective_summary"]["n_no_fire"] == 5
+    assert projected["prospective_summary"]["n_pending"] == 9
+    assert projected["prospective_summary"]["n_unavailable"] == 1
+    assert projected["prospective_summary"]["n_matured"] == 0
     assert [item["entry_asof"] for item in projected["recent_history"][:2]] == [
         expected_entries[-2], expected_entries[-3],
     ]
