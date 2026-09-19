@@ -193,6 +193,31 @@ class InsidersAdapter(QuiverAdapter):
     endpoint = "/beta/live/insiders"
     key_cols = ("Ticker", "Date", "Name", "TransactionCode", "Shares", "fileDate")
 
+    _date_page_size = 250
+    _date_page_cap = 20
+
+    def _get_date_rows(self, date_key: str) -> list[dict]:
+        """Fetch one filing date completely, with a hard pagination ceiling."""
+        rows: list[dict] = []
+        last_n = 0
+        for page in range(1, self._date_page_cap + 1):
+            batch = self._get(
+                self.endpoint,
+                {"date": date_key, "page_size": self._date_page_size, "page": page},
+            )
+            last_n = len(batch)
+            if not batch:
+                break
+            rows.extend(batch)
+            if last_n < self._date_page_size:
+                break
+        if last_n >= self._date_page_size and page == self._date_page_cap:
+            log.warning(
+                "quiver/insiders catch-up %s hit page cap %d (%d rows)",
+                date_key, self._date_page_cap, len(rows),
+            )
+        return rows
+
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         """Fetch the live tape plus a bounded filing-date overlap.
 
@@ -215,12 +240,14 @@ class InsidersAdapter(QuiverAdapter):
         except Exception as e:  # noqa: BLE001 -- overlap may still recover the tape
             log.warning("quiver/insiders latest fetch failed: %s", e)
         today = datetime.now(timezone.utc).date()
-        for n in range(1, overlap + 1):
-            key = (today - timedelta(days=n)).strftime("%Y%m%d")
+        # Date-scoped endpoint is paginated. Include today because the generic live
+        # response itself can be truncated; append-only merge removes the overlap.
+        for n in range(0, overlap + 1):
+            date_key = (today - timedelta(days=n)).strftime("%Y%m%d")
             try:
-                rows.extend(self._get(self.endpoint, {"date": key, "page_size": 1000}))
+                rows.extend(self._get_date_rows(date_key))
             except Exception as e:  # noqa: BLE001 -- one bad day must not kill the run
-                log.debug("quiver/insiders catch-up %s failed: %s", key, e)
+                log.debug("quiver/insiders catch-up %s failed: %s", date_key, e)
         if not rows:
             raise RuntimeError("quiver/insiders: empty live + catch-up response")
         df = pd.DataFrame(rows)

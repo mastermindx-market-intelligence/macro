@@ -11,6 +11,27 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from engine import altdata, altdata_signals, intel_discovery, intelligence
 from scripts.build_portfolio_ctx import build_ctx
 from engine.portfolio_brief import compose_brief
+from collectors.quiver import InsidersAdapter
+
+
+def test_insider_catchup_paginates_a_busy_filing_date(monkeypatch):
+    adapter = object.__new__(InsidersAdapter)
+    calls = []
+
+    def fake_get(endpoint, params=None):
+        calls.append(dict(params or {}))
+        page = int((params or {}).get("page", 1))
+        if page in (1, 2):
+            return [{"Ticker": "T", "row": i + (page - 1) * 250} for i in range(250)]
+        if page == 3:
+            return [{"Ticker": "T", "row": 500}]
+        return []
+
+    monkeypatch.setattr(adapter, "_get", fake_get)
+    rows = adapter._get_date_rows("20260814")
+    assert len(rows) == 501
+    assert [c["page"] for c in calls] == [1, 2, 3]
+    assert all(c["date"] == "20260814" and c["page_size"] == 250 for c in calls)
 
 
 def test_mixed_quiver_timestamp_shapes_do_not_drop_recovered_form4():
