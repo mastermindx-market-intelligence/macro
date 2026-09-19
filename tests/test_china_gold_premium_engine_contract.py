@@ -670,13 +670,25 @@ def test_gold_premium_receipt_exposes_close_proxy_dataos_promotion_readiness(tmp
         'data-cgp-premium="0.167400"></section>'
     )
 
+    machine = {
+        "available": True,
+        "method": "close_proxy",
+        "state": "premium",
+        "premium_pct": 0.1674,
+        "source_asof": "2026-09-18T07:30:00+00:00",
+        "source_fresh": True,
+        "official_canonical_available": False,
+        "context_only": True,
+    }
     doc = audit.write_receipt(
         vm,
         html,
+        machine_projection=machine,
         out_path=tmp_path / "china_gold_premium.json",
         checked_at="2026-09-18T23:00:00+00:00",
     )
 
+    assert doc["machine_projection_consistent"] is True
     assert doc["close_proxy_dataos_promotion_ready"] is True
     assert doc["close_proxy_dataos_promotion_blockers"] == []
 
@@ -927,3 +939,27 @@ def test_gold_premium_run_fails_closed_when_machine_projection_is_missing(tmp_pa
     assert rc == 2
     assert receipt["machine_projection_consistent"] is False
     assert "machine.method: expected close_proxy, rendered None" in receipt["violations"]
+
+
+def test_gold_premium_dataos_promotion_requires_machine_projection_proof(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = _live_proxy_vm_for_audit()
+    vm["chart"]["proxy"] = [
+        {"date": f"2026-08-{i:02d}"} for i in range(1, 31)
+    ]
+    html = _live_proxy_html_for_audit()
+
+    doc = audit.write_receipt(
+        vm,
+        html,
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["machine_projection_consistent"] is None
+    assert doc["close_proxy_dataos_promotion_ready"] is False
+    assert (
+        "machine projection was not proven consistent"
+        in doc["close_proxy_dataos_promotion_blockers"]
+    )

@@ -257,6 +257,7 @@ def write_receipt(
     promotion_blockers = live_ready_violations(
         doc,
         required_method="close_proxy",
+        require_machine_projection=True,
     )
     doc["close_proxy_dataos_promotion_ready"] = not promotion_blockers
     doc["close_proxy_dataos_promotion_blockers"] = promotion_blockers
@@ -272,6 +273,7 @@ def live_ready_violations(
     doc: dict,
     *,
     required_method: str | None = None,
+    require_machine_projection: bool = False,
 ) -> list[str]:
     """Return blockers for the post-merge live-product acceptance gate."""
     blockers: list[str] = []
@@ -284,6 +286,11 @@ def live_ready_violations(
         blockers.append("5-session average is not ready")
     if not doc.get("stats_30_ready"):
         blockers.append("30-session range is not ready")
+    if (
+        require_machine_projection
+        and doc.get("machine_projection_consistent") is not True
+    ):
+        blockers.append("machine projection was not proven consistent")
     if required_method is not None:
         method = str(doc.get("headline_method") or "none")
         if method != required_method:
@@ -345,6 +352,7 @@ def run(
         blockers = live_ready_violations(
             doc,
             required_method=required_method,
+            require_machine_projection=True,
         )
         if blockers:
             print(

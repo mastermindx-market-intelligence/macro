@@ -121,13 +121,14 @@ The exact post-merge acceptance command is:
 `python -m scripts.audit_china_gold_premium --strict-render --require-live-ready --require-method close_proxy`
 
 That command exits nonzero unless the Shanghai-close proxy is the selected fresh method, the
-rendered panel matches the engine, and both the 5-session average and 30-session range are
-honestly available. The normal nightly
-continues to accept an honest unavailable receipt; only the explicit acceptance invocation turns
-source/history readiness into a completion gate.
+rendered panel and machine projection both match the engine, and both the 5-session average and
+30-session range are honestly available. The normal nightly continues to accept an honest
+unavailable receipt; only the explicit acceptance invocation turns source/history readiness into
+a completion gate.
 
 The two raw source datasets already have stable Data OS ids declared as `PROPOSED`:
 `commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. After the first real
 nightly successfully lands and validates both `data/gold_china_basis/*.parquet` files, closeout
-promotes those exact rows to `PRODUCED`. Do **not** promote them before that live effect: the
-registry's honesty law requires a produced store to exist on disk today.
+promotes those exact rows to `PRODUCED` only when the same receipt proves the machine projection
+consistent too. Do **not** promote them before that live effect: the registry's honesty law
+requires a produced store to exist on disk today and its accepted consumer projections to agree.

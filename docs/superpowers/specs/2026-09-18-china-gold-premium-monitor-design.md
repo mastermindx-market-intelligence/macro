@@ -115,9 +115,9 @@ Post-merge acceptance uses the same checker with an explicit completion gate:
 `python -m scripts.audit_china_gold_premium --strict-render --require-live-ready --require-method close_proxy`
 
 This mode exits nonzero unless the Shanghai-close proxy is the selected fresh method, the rendered
-panel matches the engine, and both the 5-session average and 30-session range are ready. The
-scheduled nightly keeps
-honest unavailability nonfatal; only the explicit acceptance invocation requires live readiness.
+panel and incumbent machine projection both match the engine, and both the 5-session average and
+30-session range are ready. The scheduled nightly keeps honest unavailability nonfatal; only the
+explicit acceptance invocation requires live readiness.
 
 The 5-session average is emitted only after five aligned observations exist, and the 30-session
 range only after thirty. Until then those statistics are null/“—” rather than mislabeled
@@ -126,7 +126,8 @@ short-history aggregates.
 Data OS ids are declared before live acceptance only as `PROPOSED`:
 `commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. Once the normal nightly
 has actually landed and validated the two `data/gold_china_basis/*.parquet` stores, closeout
-promotes those same rows to `PRODUCED`. Promoting them before that effect would violate the
+promotes those same rows to `PRODUCED` only when the same receipt proves the machine projection
+consistent. Promoting them before that effect, or from page-only proof, would violate the
 registry's own truth rule.
 
 ## Engine boundary
