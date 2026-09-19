@@ -1,41 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-18T22:36:11.275962+00:00",
+  "as_of": "2026-09-19T11:05:55.535245+00:00",
   "posts_seen": 25,
   "seen_total": 212,
-  "evaluated": 5,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-18-fact-sheet-president-donald-j-trump-further-enhances-program-integrity-and-inter",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-18-enhancing-program-integrity-and-integrity-and-interagency-coordination-in-the-ad",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-18-congressional-bill-h-r-5334-signed-into-law",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-18-restriction-on-entry-of-certain-nonimmigrant-workers-faad",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    },
-    {
-      "id": "wh-2026-09-18-fact-sheet-president-donald-j-trump-announces-lower-drug-prices-for-all-50-state",
-      "importance": 0,
-      "activated": false,
-      "degraded_reason": null
-    }
-  ]
+  "gate_scores": []
 }

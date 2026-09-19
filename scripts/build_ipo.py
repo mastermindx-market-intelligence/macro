@@ -64,7 +64,7 @@ VERDICT_ZH_EN = {"trails": "trailing", "tracks": "tracking", "beats": "beating"}
 # language-neutral (engine.credit_window), the build localises. ----
 CW_SEG = {"hy": ("High-yield borrowers", "高收益发行人"), "ig": ("Investment-grade borrowers", "投资级发行人")}
 CW_STATE = {"open": ("Open", "开着"), "neutral": ("Half open", "半开"),
-            "shut": ("Shut", "关着"), "not_evaluable": ("Not evaluable", "无法评估")}
+            "shut": ("Shut", "关着"), "not_evaluable": ("No read", "暂无读数")}
 CW_CLAUSE = {
     "open": ("Borrowers can place new bonds; spreads sit at the tight end of the past year.",
               "发行人能顺利卖出新债；利差处于近一年偏窄的位置。"),
@@ -80,9 +80,9 @@ CW_INPUT = {
     "rates_vol": ("Rates volatility (both lanes)", "利率波动（两条线共用）"),
 }
 CW_READ = {
-    ("spread_range", "open"): ("tighter than four in five days of the past year", "比近一年五分之四的交易日更窄"),
+    ("spread_range", "open"): ("tighter than two in three days of the past year", "比近一年三分之二的交易日更窄"),
     ("spread_range", "neutral"): ("in the middle of the past year's range", "处于近一年区间的中段"),
-    ("spread_range", "shut"): ("wider than four in five days of the past year", "比近一年五分之四的交易日更宽"),
+    ("spread_range", "shut"): ("wider than two in three days of the past year", "比近一年三分之二的交易日更宽"),
     ("spread_range", "unknown"): ("not available", "暂无数据"),
     ("spread_drift", "open"): ("tightening over the past month", "过去一个月持续收窄"),
     ("spread_drift", "neutral"): ("roughly flat over the past month", "过去一个月基本持平"),
