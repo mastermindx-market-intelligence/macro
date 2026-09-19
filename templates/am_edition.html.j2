@@ -1,8 +1,8 @@
-{% macro help(en, zh='') -%}
-<span class="help">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
-{%- endmacro %}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% macro help(en, zh='') -%}
+<span class="help">?<span class="tip">{{ t(en, zh) }}</span></span>
 {%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
@@ -267,10 +267,6 @@
 
 {# ── Today's calendar ──────────────────────────────────────────────────────── #}
 {% if block.key == 'todays_calendar' %}
-{% set calendar_title_zh = {
-  'CPI 总体（消费者物价）': '总体消费者物价指数',
-  'CPI 核心（消费者物价）': '核心消费者物价指数',
-} %}
 <div class="panel">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <h2 style="margin:0">{{ t("Today's calendar", '今日日历') }}</h2>
@@ -284,8 +280,7 @@
     {% for row in block.rows %}
     <li style="display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)">
       <span class="muted" style="font-size:12px;white-space:nowrap">{{ row.release_date }}</span>
-      <span>{{ t(row.title_en or '',
-                   calendar_title_zh.get(row.title_zh, row.title_zh or row.title_en or '')) }}</span>
+      <span>{{ t(row.title_en or '', row.title_zh or row.title_en or '') }}</span>
     </li>
     {% endfor %}
   </ul>

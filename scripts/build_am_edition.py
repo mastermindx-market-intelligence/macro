@@ -68,9 +68,9 @@ _NY_TZ = ZoneInfo("America/New_York")
 # data/release_forecast/latest.json `release` / `release_type`. Unknown
 # codes never surface the raw slug; they get a generic plain-word pair.
 _RELEASE_TITLES = {
-    "cpi": ("CPI (consumer prices)", "消费者物价指数（CPI）"),
-    "cpi_headline": ("Headline CPI (consumer prices)", "CPI 总体（消费者物价）"),
-    "cpi_core": ("Core CPI (consumer prices)", "CPI 核心（消费者物价）"),
+    "cpi": ("CPI (consumer prices)", "消费者物价指数"),
+    "cpi_headline": ("Headline CPI (consumer prices)", "总体消费者物价指数"),
+    "cpi_core": ("Core CPI (consumer prices)", "核心消费者物价指数"),
     "ppi": ("PPI (producer prices)", "生产者物价指数（PPI）"),
     "ppi_finaldemand": ("PPI (producer prices)", "生产者物价指数（PPI）"),
     "nfp": ("Jobs report (nonfarm payrolls)", "非农就业报告"),

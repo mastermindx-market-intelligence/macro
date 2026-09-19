@@ -116,7 +116,9 @@ def _render_fixture_site(scratch: Path) -> None:
 
 
 def _git_head() -> str | None:
-    return "a5d883349dd3c14813114c7be798d0c3826a1638"
+    from scripts.capture_page_evidence import _git_head_sha
+
+    return _git_head_sha(_ROOT).sha
 
 
 def _record(png: bytes, alias: str, state: dict) -> dict:

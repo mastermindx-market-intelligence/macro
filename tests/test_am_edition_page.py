@@ -9,15 +9,10 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
-
-# Re-use the FORBIDDEN_KEYS ceiling from the producer tests.
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from test_am_edition_producer import FORBIDDEN_KEYS  # noqa: E402
 
 from lib import nyse_calendar
 from scripts.build_am_edition import (
@@ -27,6 +22,13 @@ from scripts.build_am_edition import (
     _is_session_open_now,
     _session_phase,
 )
+
+FORBIDDEN_KEYS = {
+    "score", "rank", "signal", "gate", "size", "sizing", "ENTRY_OPEN",
+    "prophet", "conviction", "buy", "sell", "target",
+    "projection", "confidence", "surprise_skew", "surprise_distribution",
+    "reaction_sensitivity", "market_implied", "inputs_hash", "model_epoch",
+}
 
 
 def _write(p: Path, obj) -> None:
@@ -139,37 +141,65 @@ def test_page_renders_with_heading_and_bilingual(tmp_path):
 
 def test_page_contains_no_english_only_payload_values_in_zh_mode(tmp_path):
     """Payload values must render as paired EN/ZH spans, not ZH-only fallbacks."""
-    from bs4 import BeautifulSoup
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
     env = Environment(
         loader=FileSystemLoader("templates"),
         autoescape=select_autoescape(["html", "xml"]),
     )
-    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
-    site, data = _fresh_tree(
-        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08"
-    )
-    payload = build_payload(site, data, now=now)
-    payload["morning_source_feasibility"] = "DEGRADED"
-    payload["morning_source_feasibility_cause_en"] = "Morning source is degraded."
-    payload["morning_source_feasibility_cause_zh"] = "晨间数据源已降级。"
-    html = env.get_template("am_edition.html.j2").render(
-        payload=payload, as_of="2026-09-08T15:00Z"
-    )
-
-    soup = BeautifulSoup(html, "html.parser")
-    for element in soup.find_all("script"):
-        element.decompose()
-    for element in soup.find_all("nav"):
-        element.decompose()
-    for element in soup.find_all(class_="l-en"):
-        element.decompose()
-    visible_text = " ".join(soup.get_text(" ").split())
-    for token in ("Risk-on", "Constructive", "Risk-off", "CPI"):
-        assert token not in visible_text, (
-            f"English-only payload token {token!r} leaks in ZH mode; the shared nav is excluded"
+    def render_without_english_spans(payload: dict) -> str:
+        html = env.get_template("am_edition.html.j2").render(
+            payload=payload, as_of="2026-09-08T15:00Z"
         )
+        for pattern in (
+            r"<script\b.*?</script>",
+            r"<title\b.*?</title>",
+            r"<nav\b.*?</nav>",
+            r'<span\b[^>]*\bclass="[^"]*\bl-en\b[^"]*"[^>]*>.*?</span>.*?</span>?',
+        ):
+            html = re.sub(pattern, " ", html, flags=re.DOTALL | re.I)
+        return " ".join(re.sub(r"<[^>]+>", " ", html).split())
+
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    for drop_zh_fields in (False, True):
+        site, data = _fresh_tree(
+            tmp_path / ("with-zh" if drop_zh_fields is False else "without-zh"),
+            tape_asof="2026-09-08T13:00:00Z",
+            session_date="2026-09-08",
+        )
+        if drop_zh_fields:
+            market_state = json.loads(
+                (data / "market_state" / "latest.json").read_text(encoding="utf-8")
+            )
+            market_state.update({
+                "label_zh": None,
+                "posture_zh": None,
+                "headline_zh": None,
+            })
+            (data / "market_state" / "latest.json").write_text(
+                json.dumps(market_state), encoding="utf-8"
+            )
+            market_plane = json.loads(
+                (data / "neuralweb" / "market_plane.json").read_text(encoding="utf-8")
+            )
+            market_plane["verdict"].update({
+                "label_en": "Risk-off",
+                "label_zh": None,
+            })
+            (data / "neuralweb" / "market_plane.json").write_text(
+                json.dumps(market_plane), encoding="utf-8"
+            )
+
+        payload = build_payload(site, data, now=now)
+        payload["morning_source_feasibility"] = "DEGRADED"
+        payload["morning_source_feasibility_cause_en"] = "Morning source is degraded."
+        payload["morning_source_feasibility_cause_zh"] = "晨间数据源已降级。"
+        visible_text = render_without_english_spans(payload)
+        for token in ("Risk-on", "Constructive", "Risk-off", "CPI"):
+            assert token not in visible_text, (
+                f"English-only payload token {token!r} leaks in ZH mode "
+                f"(fixture with Zh fields: {not drop_zh_fields})"
+            )
 
 
 def test_page_contains_aibrief_link(tmp_path):
