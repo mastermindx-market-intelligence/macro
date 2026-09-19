@@ -33,25 +33,20 @@ rationale: >
   that any profitable edge exists or that a promoted model is bad. Current gate.json remains
   scored=false with no model versions, so the correction is prospective and does not rewrite an
   accepted live model.
-supersedes:
-  - >
-    research/OPTIONS_ALPHA_FLOW_SCORE_AMENDMENT.md prose that can be read as absolute "move of
-    this size" probability. For the existing FS label family, the exact machine target is
-    Y_H = 1[spy_excess_H > 0].
-  - >
-    Any implementation interpretation that allows tape_recon and live_feed to be concatenated
-    into one fitted/calibrated artifact despite the registered cohort-key law.
-  - >
-    Any implementation fallback that weakens registered trading-time, root-disjoint, calibration
-    isolation or full FS-5 acceptance because a local artifact can be written.
-preserves:
-  - "Flow -> Package -> Positioning -> Candidate -> Outcome -> Calibration -> Decision Support."
-  - "Attention/Salience != calibrated probability != promoted authority."
-  - "FS family remains unsigned with respect to option right."
-  - "Existing DTE horizons and 36-cell BH-FDR family remain registered; unfillable/ineligible cells stay unfilled rather than being deleted post-hoc."
-  - "eod_proxy remains priors/pre-training only and never a calibration/OOS verdict cohort."
-  - "scoring.enabled=false until separately accepted FS-5 and DNR promotion."
-  - "No positioning/OI/GEX fusion, LLM origination, exact-option return or trade authority is created."
+alternatives:
+  - option: Preserve the current trainer/evaluation implementation unchanged and rely on FS-5 to catch defects later.
+    why_not: >
+      That permits known cohort/time/calibration contract mismatches to contaminate the evidence
+      entering FS-5 and can create a locally ready artifact whose scientific population is invalid.
+  - option: Change the target now to absolute movement or a right-conditioned call/put outcome.
+    why_not: >
+      Those are different statistical families and targets. Substituting them now would violate
+      the existing OA-2 scope and prospective registration law rather than repair the current family.
+  - option: Fit constrained and unconstrained variants and select whichever performs better.
+    why_not: >
+      That creates an unregistered selection branch after the issue is known. The current monotone
+      assumptions do not justify SPY-outperformance monotonicity, so the amended construction freezes
+      the unconstrained form before fitting.
 evidence:
   - "Parent carrier mastermind-terminal#599; Packet B durable return comment 5740770584."
   - "Mastermind protected source pin 880e377cfa9d3fbdc921e931a55cc8c4143dc119; Skillpack 1.0.1/bootstrap1."
@@ -79,6 +74,26 @@ authority: >
   forward. This decision stays inside the existing ceo-sol Options Alpha/statistical-method
   authority and grants no model fit, promotion, merge, deployment or trading authority.
 ---
+
+## Narrow supersession / preservation scope
+
+This decision narrows ambiguous prose and implementation interpretations; it does not replace the
+existing OA architecture or the registered FS family wholesale.
+
+It clarifies that the existing family's machine target is exactly `Y_H = 1[spy_excess_H > 0]`,
+rather than an absolute "move of this size" probability; that registered source/detector populations
+cannot be pooled merely because the trainer can concatenate them; and that implementation fallbacks
+cannot weaken trading-time, root-disjoint, calibration-isolation or FS-5 acceptance requirements.
+
+It preserves:
+
+- `Flow -> Package -> Positioning -> Candidate -> Outcome -> Calibration -> Decision Support`;
+- Attention/Salience != calibrated probability != promoted authority;
+- the FS family's unsigned-with-respect-to-option-right boundary;
+- the existing DTE horizons and 36-cell BH-FDR family, with ineligible/unfilled cells remaining visible;
+- `eod_proxy` as priors/pre-training only, never a calibration/OOS verdict cohort;
+- `scoring.enabled=false` until separately accepted FS-5 and DNR promotion;
+- the standing bans on new positioning/OI/GEX fusion, LLM origination, exact-option-return inference and trade authority.
 
 Detailed frozen method and implementation acceptance live in
 `research/options_estate/OPTIONS_ALPHA_FLOW_SCORE_EVALUATION_AMENDMENT_2026-09-19.md`.
