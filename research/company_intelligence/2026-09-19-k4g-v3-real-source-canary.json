@@ -88,6 +88,17 @@
     "law": "consecutive equal issuer-release source_sha256 rows are invalid; A-B-A remains legal",
     "red": "1 failed: validator previously accepted a duplicated adjacent semantic row"
   },
+  "current_base_integration": {
+    "conflict_free": true,
+    "failures": 0,
+    "log_sha256": "d2cb678061a1e9cf19eadc87c29a90f2197d7b7dd0c429bfadd923972c7bb322",
+    "main": "03f297b6301e7728651baf399acf53d3938ff0cf",
+    "merge_tree": "f61eeaaff13365653705cb8a36ce055b5243566d",
+    "semantic_head": "c177408379f39200b75b7dd0569e7c274abc4c14",
+    "synthetic_commit": "017d2c4b6d7e8bbfce323a5bed35ddf176b9abff",
+    "tests": 596,
+    "warnings": 10
+  },
   "current_source_verification": {
     "authority": {
       "can_change_entry_open": false,
@@ -129,6 +140,18 @@
     "receipt.json": "3028b0835cd498b8be0edc009037724a07eb04abf61cbbbc0d0af58085691ef3",
     "v3-trace.json": "ed35a5f640319702e6f849a84a28410d9b2b42e03b3affa4e4ab51be1f4caf19"
   },
+  "final_verification": {
+    "agentos_errors": 0,
+    "agentos_log_sha256": "39f943c12c6d90529b4d57cf9d2051e607eb9d73afe691a925a5b51c724b32f6",
+    "agentos_records": 1139,
+    "agentos_warnings": 88,
+    "diff_check": "PASS",
+    "failures": 0,
+    "log_sha256": "4197480aa68e56bd70ea4e163ea23dd868d8be60ea4ee96cc01fd72be9acff71",
+    "owning_and_adjacent_tests": 596,
+    "python_compile": "PASS",
+    "warnings": 10
+  },
   "legacy_source": {
     "current_events": [
       "evt_cik0000320193_2026q3_results",
@@ -153,6 +176,7 @@
   "production_authenticated": false,
   "production_source_mutated": false,
   "schema": "company_intelligence.k4g_v3_real_source_proof/v1",
+  "semantic_source_head": "c177408379f39200b75b7dd0569e7c274abc4c14",
   "v3_canary": {
     "events": 5,
     "generation_id": "9c164cba55347e5f561c1e65",

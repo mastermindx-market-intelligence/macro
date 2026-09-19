@@ -30,6 +30,12 @@ verified:
   - claim: Corrupt adjacent duplicate semantic rows fail closed.
     command: pytest discriminator then complete tests/test_company_intelligence_workspace_v3.py.
     result: RED before validator; GREEN after; 25 passed.
+  - claim: The final source and current-main integrated candidate preserve the owning capability.
+    command: 11-suite native owner/Prophet battery on source and conflict-free merge tree against main 03f297b6301e7728651baf399acf53d3938ff0cf.
+    result: 596 passed, zero failures, 10 existing warnings on each tree; merge tree f61eeaaff13365653705cb8a36ce055b5243566d.
+  - claim: Durable records are structurally valid.
+    command: python3 scripts/agentos.py validate; Python compile; git diff --check.
+    result: 1139 records, zero errors, 88 existing warnings; compile and whitespace pass.
 unverified:
   - claim: The incumbent R2 publisher can promote v3 on the real publication path.
     what_would_verify: Normal owner-controlled publication after merge plus marker/index/workspace readback.
@@ -42,10 +48,10 @@ unresolved:
   - The first real v3 publication and paid-user proof are still separate gates.
   - Quality Earnings +1y identity/B-17/rights and 21-session evaluation remain separate.
 next_actions:
-  - Run the full owning source/Prophet suite and Agent OS validation on the final source.
-  - Commit and push the bounded canary/validator extension on PR 7426.
-  - Consume independent exact-head review; do not wait on the unrelated CI pack traffic jam.
-  - After accepted review, prove incumbent publication, then return to #6797 paid-user proof.
+  - Consume independent exact-head review on PR 7426; repair only a demonstrated source regression.
+  - Preserve DRAFT / HOLD-FOR-SOL until review and source-owner publication gates clear.
+  - After accepted review and ordinary merge, prove incumbent R2 v3 publication/readback.
+  - Then return to #6797 for real entitled covered and typed-unavailable browser proof.
 do_not_redo:
   - Do not repeat the 178-generation real-source census unless source generation changes materially.
   - Do not rebuild v3 schema, B1, D5, auth, candidate population or the +1y compiler.
