@@ -77,17 +77,21 @@ def gamma_profile(c: pd.DataFrame, S: float, cfg: dict):
 
 def _gamma_flip(c: pd.DataFrame, S: float, cfg: dict):
     """Zero-gamma spot via a ±25% spot grid reevaluation (clone of
-    collectors/deribit._gamma_flip, with the equity multiplier + r/q). ABOVE flip =
-    net long gamma (dealers dampen / pin); BELOW = net short (dealers amplify).
+    collectors/deribit._gamma_flip, with the equity multiplier + r/q). Regime is
+    the modeled curve sign at spot: a descending crossing or multiple crossings
+    makes an above/below shortcut incorrect. This is not observed dealer inventory.
     Returns (flip, signed dist-to-flip %, regime). Thin wrapper over
     ``gamma_profile`` — one grid evaluation, one definition."""
     grid, net, flips = gamma_profile(c, S, cfg)
     if grid is None:
         return None, None, None
+    # The existing grid includes S exactly. Read that same profile, rather than
+    # introducing a second pricing formula or assuming a crossing orientation.
+    regime = "long" if float(np.interp(S, grid, net)) >= 0 else "short"
     if not flips:
-        return None, None, ("long" if net[len(grid) // 2] >= 0 else "short")
+        return None, None, regime
     flip = min(flips, key=lambda f: abs(f - S))
-    return float(flip), round(100.0 * (S - flip) / S, 2), ("long" if S >= flip else "short")
+    return float(flip), round(100.0 * (S - flip) / S, 2), regime
 
 
 def _max_pain(c: pd.DataFrame):
