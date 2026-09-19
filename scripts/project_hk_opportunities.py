@@ -149,6 +149,13 @@ def build_projection() -> dict:
             },
         )
 
+    owner_context_rows = []
+    for context_lane in ("ripening", "ran", "leaders", "watch"):
+        for source in incumbent.get(context_lane) or []:
+            row = dict(source)
+            row["owner_context_lane"] = context_lane
+            owner_context_rows.append(row)
+
     projection = project_opportunities(
         incumbent_asof=incumbent_asof or None,
         discovery_asof=discovery_asof,
@@ -156,6 +163,7 @@ def build_projection() -> dict:
         incumbent_buy=incumbent.get("buy") or [],
         discovery_rows=discovery_rows,
         attention_picks=result.get("picks") or [],
+        owner_context_rows=owner_context_rows,
     )
     projection["diagnostics"]["attention_engine"] = ATTENTION_ENGINE
     projection["diagnostics"]["attention_engine_authority"] = "display_only"
