@@ -491,3 +491,19 @@ def test_absent_guidance_never_becomes_an_active_numeric_outlook(language):
     assert metric['display_value']==('Guidance not supplied' if language=='en' else '未提供指引')
     assert metric['value']=={'low':9.0,'high':11.0}
     assert '9 – 11%' not in view_module().render_earnings_fragment(payload,language=language)
+
+
+def test_stale_research_generation_pin_refuses_before_d5_source_build(client, monkeypatch):
+    c, _ = client
+    build_calls = []
+
+    def forbidden_build(**kwargs):
+        build_calls.append(kwargs)
+        raise AssertionError("stale generation entered D5 source build")
+
+    monkeypatch.setattr(api, "build_earnings_intelligence_vector", forbidden_build)
+    response = c.get(url(), params={"expected_generation": "peg:" + "b" * 64})
+    assert response.status_code == 409
+    private(response)
+    assert response.json()["error"] == "prophet_episode_generation_changed"
+    assert build_calls == []
