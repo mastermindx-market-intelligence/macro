@@ -15014,6 +15014,29 @@ jobs:
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
 
+  market-ontology-f09-usgs-mcs:
+    if: ${{ false }}
+    gate: code
+    # MO-B F09-10 (MO-DELTA-029 child): USGS Mineral Commodity Summaries
+    # collector + critical-minerals supply-concentration projection.
+    # Records-only / disabled (if: false). Kept so the pack registration
+    # records the job; the if: false is the suite contract for disabled jobs.
+    paths:
+      - "config/usgs_mcs_sources.yml"
+      - "collectors/usgs_mcs.py"
+      - "engine/critical_minerals_supply.py"
+      - "tests/test_usgs_mcs.py"
+      - "tests/fixtures/usgs_mcs/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: USGS MCS collector + critical-minerals supply projection
+        run: python -m pytest tests/test_usgs_mcs.py -q
+
   recurring-briefs:
     # F11 packet B-F11-7b (MO-PAID-032): one nightly/weekly step writes each
     # subscription its brief or an honest miss. Pure functions + CLI; tests
