@@ -16,18 +16,21 @@ Mastermind source pin for this census:
 
 ## Executive finding
 
-Maerino is a useful benchmark for two narrow jobs:
+Maerino is a useful benchmark for three narrow product jobs:
 
-1. fast, company-specific post-print earnings flashes; and
+1. fast, company-specific post-print earnings flashes;
 2. a prototype agentic forensic loop that decides what to investigate next and then
-   executes those follow-up filing comparisons.
+   executes those follow-up filing comparisons; and
+3. concise public packaging of third-party/public telemetry, now including AI-model
+   usage/adoption data as well as macro releases.
 
 It is not evidence that Mastermind lacks the underlying research, provenance, macro,
-SEC, transcript, or correction substrate. In several of those areas Mastermind is
-already materially stronger. The residual is mostly **breadth + composition**:
-admit more issuers into the canonical earnings workspace, converge richer KPI/guidance
-truth through FIF, and connect event evidence to the existing Research Factory without
-creating a second research engine.
+SEC, transcript, correction, or developer/model-adoption substrate. In several of
+those areas Mastermind is already materially stronger. The residual is mostly
+**breadth + composition + distribution**: admit more issuers into the canonical
+earnings workspace, converge richer KPI/guidance truth through FIF, adjudicate a
+lawful autonomous forensic-follow-up composition boundary, and prove governed public
+event distribution through existing owners.
 
 ## External Maerino evidence
 
@@ -77,6 +80,24 @@ seasonally adjusted. The displayed two-month NFP revision of +66K did not reconc
 to the BLS June +11K plus July +44K = +55K revision accounting under the inspected
 release. Treat this as a likely vintage/definition/calculation defect unless Maerino
 publishes a definition that reconciles it.
+
+### AI / model-usage telemetry — freshness delta
+
+A current indexed Maerino Data post from 2026-08-31 adds a third public content family:
+AI-infrastructure / model-usage telemetry. It states that open-weight models exceeded
+70% of tokens through Vercel AI Gateway while remaining roughly 10-20% of spend, and
+attributes the shift to DeepSeek V4 Flash, MiniMax M3 and GLM 5.3 Flash.
+
+This should not be treated as proof of a proprietary Maerino feed. Vercel itself
+publishes an AI Gateway Production Index from real gateway traffic and model/provider
+pages, and its July index already reported open-weight models at 29% of tokens in June
+on under 4% of spend with DeepSeek at 22.6% of token volume. The observed Maerino job is
+therefore best classified as **source discovery + normalization + investable packaging
+of platform telemetry**, not demonstrated exclusive data ownership.
+
+This broadens the Maerino output taxonomy from equity + macro into technology/adoption
+telemetry and reinforces that its public social feed is functioning as a lightweight
+data product/acquisition surface.
 
 ## Public prototype architecture evidence
 
@@ -309,6 +330,31 @@ Marketing owns distribution. Any future activation must reuse the current outbox
 approval/value/copy gates, correction semantics and persona/cadence controls, and must
 prove a natural real event reaches the intended channel without historical flood.
 
+### 11. AI / developer adoption telemetry
+
+**Classification: PROVEN_LIVE adjacent Mastermind family; exact Vercel-Gateway usage
+source not found in current source.**
+
+Mastermind already operates a public Alternative Data desk with:
+- Hugging Face model-download velocity / WoW adoption;
+- GitHub developer-adoption momentum;
+- issuer-level joins that combine app demand, developer activity, model downloads,
+  patents and other contextual evidence;
+- an accountable outcome scorecard rather than assuming the telemetry is predictive.
+
+Real-path check on 2026-09-18 showed the live Alternative Data page publishing an
+"AI model adoption" table (Hugging Face downloads + WoW) and a "Developer adoption"
+table (GitHub stars + WoW), with the source legend explicitly naming Hugging Face and
+GitHub. Current source also contains the Hugging Face collector and
+`hf_model_momentum` family, while the Signal Lab research estate has already examined
+NPM, PyPI and Hugging Face adoption families.
+
+No current Vercel AI Gateway model-share collector was found. That is a **source-specific
+coverage delta**, not evidence that Mastermind needs another telemetry plane. If a
+future source census shows incremental economic information, rights and stable clocks,
+route it through the existing Alternative Data / Signal Lab ownership one source at a
+time. Do not create a Maerino AI-usage parity program.
+
 ## Disagreement / boundary ledger
 
 | Claim | Evidence | Ruling |
@@ -321,6 +367,7 @@ prove a natural real event reaches the intended channel without historical flood
 | "Current macro publication is healthy" | latest FOMC/claims degraded on public feed | False at current edge; #7241 owns repair |
 | "Economic read-through is ready" | K3-D current state says not built | False |
 | "Mastermind already auto-publishes CEI earnings intelligence to X" | `engine/marketing/earnings_call_lane.py` says no runtime caller exists | False; guarded projection is built but unwired |
+| "Maerino has a unique AI-adoption telemetry plane Mastermind lacks" | Maerino packages Vercel AI Gateway usage; Mastermind live Alt Data already publishes Hugging Face model downloads + GitHub adoption | Not demonstrated; exact source coverage differs |
 
 ## Residual capability docket — existing owners only
 
@@ -443,6 +490,9 @@ No new Maerino program should be created.
 5. Let **#7241** finish the current macro recovery on its existing carrier.
 6. Treat CEI -> X as an **existing-lane activation/proof** problem under X Growth /
    Marketing, not a new distribution system; do not arm it from this census.
+7. Treat Vercel AI Gateway usage as a **source-expansion candidate** inside existing
+   Alternative Data / Signal Lab ownership only if it survives rights, clock,
+   incremental-information and consumer-value review; no parity lane is created.
 
 ## 10/10 end-state
 
@@ -477,6 +527,8 @@ External:
 - https://github.com/miketravis/paestelAnalyst
 - https://github.com/miketravis/paestelanalyst-frontend
 - X status 2051415342879023319 (older MaerinoResearch identity resolves to MaerinoData)
+- Vercel AI Gateway Production Index — July 2026
+- Vercel AI Gateway model pages for DeepSeek V4 Flash, MiniMax M3 and GLM 5.3 Flash
 
 Mastermind:
 - `agentos/workstreams/WS-EARNINGS-EVENT-INTELLIGENCE-COMPILER.md`
@@ -489,6 +541,10 @@ Mastermind:
 - `engine/company_intelligence/issuer_profiles.py`
 - `engine/company_intelligence/event_workspace_build.py`
 - `engine/marketing/earnings_call_lane.py`
+- `engine/altdata.py`
+- `engine/altdata_models.py`
+- `collectors/huggingface.py`
+- `templates/alt_data.html.j2`
 - `research/earnings_intelligence/E0_E1_E2_CONTRACT_FREEZE.md`
 - `research/economic_propagation/D0_THREE_GRAPH_SEPARATION_MAP.md`
 - `research/COMPANY_EVENT_INTELLIGENCE_SPINE_AND_PREMIUM_IR_SUITE_BUILD_DOCKET_2026-08-01.md`
