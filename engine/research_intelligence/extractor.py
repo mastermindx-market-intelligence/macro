@@ -216,6 +216,7 @@ def analyze_document(
     expected_identity = _identity(document, body)
     fn = call or _default_call
     receipt = {
+        "document": expected_identity,
         "requested_model": requested_model,
         "prompt_version": PROMPT_VERSION,
         "prompt_contract_sha256": _sha(PROMPT_VERSION + "\n" + SYSTEM_PROMPT),

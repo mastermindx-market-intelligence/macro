@@ -1,17 +1,17 @@
 {
-"applied": "2026-09-12T17:33:57.270725+00:00",
-"rows_flagged": 1078,
+"applied": "2026-09-19T19:59:13.503566+00:00",
+"rows_flagged": 1079,
 "tickers_flagged": 658,
 "by_flag": {
 "placeholder": 79,
-"pre_public": 840,
+"pre_public": 841,
 "pre_public_tiny": 56,
 "unit_extreme": 27,
 "unit_level": 12,
 "unit_scale": 64
 },
 "repaired": 128,
-"nulled": 950,
+"nulled": 951,
 "rows": [
 {
 "ticker": "AAP",
@@ -7188,6 +7188,14 @@
 "shares_raw": 141590000.0,
 "repair": null,
 "note": "period_end<2023-05-02"
+},
+{
+"ticker": "SWMR",
+"fy": 2024,
+"flag": "pre_public",
+"shares_raw": 558511.0,
+"repair": null,
+"note": "period_end<2026-01-30"
 },
 {
 "ticker": "SWMR",

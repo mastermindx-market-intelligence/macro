@@ -1347,3 +1347,50 @@ def test_state_seed_source_is_a_terminated_statement_safe_to_concatenate():
         probe = composed + "\nif (globalThis.__wrapped !== 1) throw new Error('wrapper IIFE never ran');"
         run = subprocess.run([node, "-e", probe], capture_output=True, text=True, timeout=30)
         assert run.returncode == 0, run.stderr
+
+
+# ---------------------------------------------------------------------------
+# sky-fx transient flourish wait
+# ---------------------------------------------------------------------------
+
+class _FxGoneTracker:
+    """Records how wait_for_function was called."""
+
+    def __init__(self, raise_exc: bool = False):
+        self.calls: list[dict] = []
+        self._raise_exc = raise_exc
+
+    def wait_for_function(self, fn, *, arg=None, timeout=None):
+        self.calls.append({"fn": fn, "arg": arg, "timeout": timeout})
+        if self._raise_exc:
+            raise Exception("simulated timeout")
+
+
+def test_wait_transient_fx_gone_calls_wait_for_function_and_returns_True():
+    """Helper calls page.wait_for_function with querySelector + .sky-fx and returns True."""
+    tracker = _FxGoneTracker()
+    # The helper exists and returns True when wait_for_function succeeds
+    result = cpe._wait_transient_fx_gone(tracker, selector=".sky-fx", timeout_ms=3000)
+    assert result is True
+    assert len(tracker.calls) == 1
+    call = tracker.calls[0]
+    # The expression contains querySelector and the arg is the selector
+    assert "querySelector" in call["fn"]
+    assert call["arg"] == ".sky-fx"
+    assert call["timeout"] == 3000
+
+
+def test_wait_transient_fx_gone_raises_False_on_exception():
+    """Stub whose wait_for_function raises → helper returns False, never raises."""
+    tracker = _FxGoneTracker(raise_exc=True)
+    result = cpe._wait_transient_fx_gone(tracker, selector=".sky-fx", timeout_ms=3000)
+    assert result is False
+
+
+def test_wait_transient_fx_gone_false_no_wait_for_function():
+    """Stub without wait_for_function → False, no raise."""
+    class NoWff:
+        pass
+
+    result = cpe._wait_transient_fx_gone(NoWff(), selector=".sky-fx", timeout_ms=3000)
+    assert result is False

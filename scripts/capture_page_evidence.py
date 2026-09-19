@@ -1332,6 +1332,24 @@ _APPLY_STATE_SCRIPT = """
 }
 """
 
+# Waits for theme.js's skyToggleFx flourish (.sky-fx sun|moon) to be removed from
+# the document before the screenshot fires, so the captured cell shows the settled
+# page.  A no-op when the element never appears (reduced-motion, no theme.js, etc.)
+# and gives up quietly after timeout_ms with a False return — never raises.
+def _wait_transient_fx_gone(
+    page, *, selector: str = ".sky-fx", timeout_ms: int = 3000
+) -> bool:
+    try:
+        page.wait_for_function(
+            f"(sel) => !document.querySelector(sel)",
+            arg=selector,
+            timeout=timeout_ms,
+        )
+        return True
+    except Exception:
+        return False
+
+
 # Applied AFTER theme/locale and immediately before the observer and the shot. The
 # forcing is deliberately the smallest thing that works — one class added, or one
 # attribute set, on <body> — because anything cleverer (deleting nodes, faking a
@@ -1575,6 +1593,7 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
                 return _failed(f"HTTP {response.status}")
             page.wait_for_timeout(self._settle_ms)
             applied = page.evaluate(_APPLY_STATE_SCRIPT.strip(), state) or {}
+            _wait_transient_fx_gone(page)
             page.wait_for_timeout(self._settle_ms)
             applied_force: str | None = None
             if cell.force_state is not None:
@@ -1582,6 +1601,7 @@ class _PlaywrightDriver:  # pragma: no cover - needs a browser
                 applied_force = forced.get("applied")
                 # The state's own transition has to finish before the shot, or the
                 # screenshot catches the page mid-fade.
+                _wait_transient_fx_gone(page)
                 page.wait_for_timeout(self._settle_ms)
             observed = page.evaluate(_OBSERVER_SCRIPT.strip(), dict(self._observer_config)) or {}
             screenshot = page.screenshot(full_page=True)
