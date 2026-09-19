@@ -77,8 +77,9 @@ def make_full_states() -> list[dict]:
 
 
 def make_manifest(*, page_id: str = "macro:canada_stocks", route: str = "/canada_stocks.html",
-                   states: list[dict] | None = None, schema: str = MANIFEST_SCHEMA) -> dict:
-    return {
+                   states: list[dict] | None = None, schema: str = MANIFEST_SCHEMA,
+                   force_defs: list[dict] | None = None) -> dict:
+    manifest = {
         "schema": schema,
         "pages": [{
             "page_id": page_id,
@@ -87,6 +88,9 @@ def make_manifest(*, page_id: str = "macro:canada_stocks", route: str = "/canada
             "gaps": [],
         }],
     }
+    if force_defs is not None:
+        manifest["axes"] = {"force_states": force_defs}
+    return manifest
 
 
 def write_manifest(root: Path, rel_path: str, manifest: dict, *, write_pngs: bool = True) -> Path:
@@ -172,6 +176,146 @@ def test_material_paths_detects_inline_style_tag_in_template():
     added = guard.parse_added_lines(diff)
     material = guard.material_paths(added)
     assert "templates/some_page.html.j2" in material
+
+
+def _inline_style_diff(rule: str, path: str = "templates/some_page.html.j2") -> str:
+    return (
+        f"diff --git a/{path} b/{path}\n"
+        f"--- a/{path}\n"
+        f"+++ b/{path}\n"
+        "@@ -10,0 +11,1 @@\n"
+        f"+{rule}\n"
+    )
+
+
+def _write_inline_style_candidate(root: Path, rule: str,
+                                  path: str = "templates/some_page.html.j2") -> None:
+    candidate = root / path
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    candidate.write_text(f"<style>\n{rule}\n</style>\n<div>page</div>\n", encoding="utf-8")
+
+
+def test_material_paths_detects_rule_added_inside_existing_inline_style(tmp_path):
+    rule = ".factor-cell:hover .tip-pop{opacity:1}"
+    _write_inline_style_candidate(tmp_path, rule)
+    added = guard.parse_added_lines(_inline_style_diff(rule))
+    assert "templates/some_page.html.j2" in guard.material_paths(added, tmp_path)
+
+
+def test_inline_focus_within_is_classified_as_focus_interaction(tmp_path):
+    rule = ".search-wrap:focus-within .results{display:block}"
+    _write_inline_style_candidate(tmp_path, rule)
+    added = guard.parse_added_lines(_inline_style_diff(rule))
+    requirements = guard.interaction_requirements(added, tmp_path)
+    assert requirements["templates/some_page.html.j2"] == {"focus"}
+
+
+def test_forex_shape_theme_token_change_infers_hidden_hover_dependency(tmp_path):
+    """A token change must not escape just because :hover itself was untouched."""
+
+    path = "templates/some_page.html.j2"
+    changed = 'html[data-theme="dark"]{--ink:#e8edf4}'
+    candidate = tmp_path / path
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    candidate.write_text(
+        "<style>\n"
+        ":root{--ink:#0B1733}\n"
+        f"{changed}\n"
+        ".tip-pop{background:var(--ink);color:#fff;opacity:0}\n"
+        "[data-tip-en]:hover .tip-pop{opacity:1}\n"
+        "</style>\n",
+        encoding="utf-8",
+    )
+
+    added = guard.parse_added_lines(_inline_style_diff(changed, path))
+    requirements = guard.interaction_requirements(added, tmp_path)
+    assert requirements[path] == {"hover"}
+
+
+def test_unrelated_theme_token_change_does_not_invent_hover_dependency(tmp_path):
+    path = "templates/some_page.html.j2"
+    changed = 'html[data-theme="dark"]{--unrelated:#e8edf4}'
+    candidate = tmp_path / path
+    candidate.parent.mkdir(parents=True, exist_ok=True)
+    candidate.write_text(
+        "<style>\n"
+        f"{changed}\n"
+        ".tip-pop{background:var(--ink);color:#fff;opacity:0}\n"
+        "[data-tip-en]:hover .tip-pop{opacity:1}\n"
+        "</style>\n",
+        encoding="utf-8",
+    )
+
+    added = guard.parse_added_lines(_inline_style_diff(changed, path))
+    assert guard.interaction_requirements(added, tmp_path) == {}
+
+
+def test_inline_hover_change_requires_real_hover_capture_in_both_themes(tmp_path, capsys):
+    path = "templates/some_page.html.j2"
+    rule = ".factor-cell:hover .tip-pop{opacity:1}"
+    _write_inline_style_candidate(tmp_path, rule, path)
+
+    write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", make_manifest())
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=[path], manifest="mockups/evidence/tp1/manifest.json",
+    )
+
+    rc = guard.main(
+        ["--diff-file", "-", "--repo-root", str(tmp_path)],
+        stdin_text=_inline_style_diff(rule, path),
+    )
+    assert rc == 1
+    out = capsys.readouterr().out
+    assert "material hover CSS changed" in out
+    assert "hover(.selector)" in out
+
+
+def test_inline_hover_change_passes_with_applied_dark_and_light_interaction_evidence(
+    tmp_path, capsys
+):
+    path = "templates/some_page.html.j2"
+    rule = ".factor-cell:hover .tip-pop{opacity:1}"
+    _write_inline_style_candidate(tmp_path, rule, path)
+
+    dark_bytes = b"\x89PNG\r\n\x1a\nhover-dark"
+    light_bytes = b"\x89PNG\r\n\x1a\nhover-light"
+    dark = make_force_state_cell(
+        force_state="pair_hover", file="hover-dark.png", png_bytes=dark_bytes
+    )
+    dark["theme"] = "dark"
+    dark["applied_theme"] = "dark"
+    dark["applied_force_state"] = "pair_hover"
+    light = make_force_state_cell(
+        force_state="pair_hover", file="hover-light.png", png_bytes=light_bytes
+    )
+    light["theme"] = "light"
+    light["applied_theme"] = "light"
+    light["applied_force_state"] = "pair_hover"
+
+    manifest = make_manifest(
+        states=make_full_states() + [dark, light],
+        force_defs=[{
+            "name": "pair_hover",
+            "kind": "hover",
+            "value": ".factor-cell",
+            "attribute": None,
+            "spec": "pair_hover:hover(.factor-cell)",
+        }],
+    )
+    manifest_path = write_manifest(tmp_path, "mockups/evidence/tp1/manifest.json", manifest)
+    (manifest_path.parent / "hover-dark.png").write_bytes(dark_bytes)
+    (manifest_path.parent / "hover-light.png").write_bytes(light_bytes)
+    write_receipt(
+        tmp_path, "mockups/evidence/tp1/EVIDENCE.yml",
+        changed_paths=[path], manifest="mockups/evidence/tp1/manifest.json",
+    )
+
+    rc = guard.main(
+        ["--diff-file", "-", "--repo-root", str(tmp_path)],
+        stdin_text=_inline_style_diff(rule, path),
+    )
+    assert rc == 0, capsys.readouterr().out
 
 
 def test_material_paths_detects_runtime_style_injection_in_js():
