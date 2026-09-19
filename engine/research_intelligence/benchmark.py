@@ -44,6 +44,7 @@ _METRIC_KEYS = (
     "thesis_semantic_accuracy",
     "analysis_category_recall",
     "analysis_semantic_recall",
+    "analysis_semantic_precision",
     "direction_accuracy",
 )
 _COUNT_KEYS = (
@@ -69,6 +70,7 @@ _COUNT_KEYS = (
     "matched_analysis_categories",
     "expected_analysis_semantics",
     "matched_analysis_semantics",
+    "observed_analysis_semantic_rows",
     "direction_expected",
     "direction_correct",
 )
@@ -528,6 +530,7 @@ def _score_counts(
     thesis_semantic_correct: int = 0,
     category_hits: int = 0,
     semantic_hits: int = 0,
+    semantic_observed_rows: int = 0,
     direction_correct: int = 0,
     grounding_counts: dict[str, int] | None = None,
 ) -> dict[str, int]:
@@ -558,6 +561,7 @@ def _score_counts(
         "matched_analysis_categories": category_hits,
         "expected_analysis_semantics": counts["analysis_semantics"],
         "matched_analysis_semantics": semantic_hits,
+        "observed_analysis_semantic_rows": semantic_observed_rows,
         "direction_expected": counts["direction"],
         "direction_correct": direction_correct,
     }
@@ -618,6 +622,18 @@ def _metrics_from_counts(
             )
             if valid
             else (0.0 if counts["expected_analysis_semantics"] else None)
+        ),
+        "analysis_semantic_precision": (
+            (
+                _ratio(
+                    counts["matched_analysis_semantics"],
+                    counts["observed_analysis_semantic_rows"],
+                )
+                if counts["observed_analysis_semantic_rows"]
+                else 0.0
+            )
+            if valid and counts["expected_analysis_semantics"]
+            else (0.0 if (not valid and counts["expected_analysis_semantics"]) else None)
         ),
         "direction_accuracy": (
             float(counts["direction_correct"])
@@ -726,8 +742,11 @@ def _score_grounded(
         thesis_semantic_correct = int(_concepts_match(thesis_text, thesis_concepts))
 
     semantic_hits = 0
+    semantic_observed_rows = 0
     for field, expectations in checked["expected"]["analysis_semantics"].items():
         observed = obj["analysis"][field]
+        if expectations:
+            semantic_observed_rows += len(observed)
         observed_support = [
             _supported_gold_indices(row["support_claim_indices"], output_to_gold)
             for row in observed
@@ -758,6 +777,7 @@ def _score_grounded(
         thesis_semantic_correct=thesis_semantic_correct,
         category_hits=category_hits,
         semantic_hits=semantic_hits,
+        semantic_observed_rows=semantic_observed_rows,
         direction_correct=direction_correct,
         grounding_counts=grounding_counts,
     )
@@ -896,6 +916,7 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         ("thesis_semantic_expected", "thesis_semantic_correct"),
         ("expected_analysis_categories", "matched_analysis_categories"),
         ("expected_analysis_semantics", "matched_analysis_semantics"),
+        ("observed_analysis_semantic_rows", "matched_analysis_semantics"),
         ("direction_expected", "direction_correct"),
     ):
         if checked_counts[matched_key] > checked_counts[expected_key]:
