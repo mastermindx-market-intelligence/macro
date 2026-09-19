@@ -387,6 +387,36 @@ def episode_research_view_v1(
     if (format not in {"json", "html"} or language not in {"en", "zh"}
             or not valid_generation_pin(expected_generation)):
         return _response({"error": "prophet_research_view_options_invalid"}, status_code=400)
+    if _kill_switch_active():
+        return _response(
+            {
+                "error": "prophet_lab_disabled",
+                "detail": f"the Prophet Operator Lab is stood down ({KILL_SWITCH_ENV}=1)",
+            },
+            status_code=503,
+        )
+    if expected_generation is not None:
+        try:
+            episode_store_root = _env_path(
+                "PROPHET_LAB_EPISODE_STORE_ROOT", _CANDIDATE_EPISODE_STORE_ROOT,
+            )
+            if episode_store_root is None:
+                raise IntelligenceVectorContractError("B1 read root unavailable")
+            snapshot = load_candidate_episode_store_snapshot(episode_store_root)
+        except Exception as exc:
+            log.warning(
+                "prophet_lab research view generation preflight failed (%s)",
+                type(exc).__name__,
+            )
+            return _response(
+                {
+                    "error": "prophet_episode_intelligence_unavailable",
+                    "detail": "Episode intelligence temporarily unavailable",
+                },
+                status_code=503,
+            )
+        if snapshot.generation_id != expected_generation:
+            return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
     source = episode_intelligence_v1(episode_id, _user=_user)
     if source.status_code != 200:
         return source
