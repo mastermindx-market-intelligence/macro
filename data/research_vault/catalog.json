@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T20:26:52.127794+00:00",
-  "count": 2452,
+  "generated_at": "2026-09-19T20:42:06.119815+00:00",
+  "count": 2453,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1653,6 +1653,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jz95y0xfsml-4505cc",
+      "title": "Japan Focus of the Week September 21 25",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:15Z",
+      "summary_points": [
+        "BOJ Policy Shift & Rate Hike: BOJ raised policy rate to 1.25% (25bp), signaling phase change to anchor 2% inflation with next hike expected Jan 2024; maintains \"accommodative conditions\" but cites upside inflation risks above target.",
+        "Fiscal Deficit & JGB Dynamics: FY2027 budget up ¥21tn (¥143tn total), primary deficit forecast at c.1.5% GDP due to ¥3.5tn interest payments + ¥5tn spending; JGB issuance to rise c.¥13tn, impacting supply-demand balance.",
+        "Trade Deficit Expansion: Trade deficit widened to -¥1.1tn (vs -¥294.1bn YoY), driven by 28% yoy import surge and 52.3% semiconductor export growth, signaling sectoral imbalances.",
+        "Energy Price Volatility Risk: Crude oil import prices risk rising amid Middle East disruption; natural gas prices surged 38% yoy (US$2,425/mmbtu), with US crude imports up 603.5% YoY.",
+        "US-Japan Trade Surge: US exports to Japan surged 146.3% YoY (1,016,000 tons), critical for supply chain flows and sector exposure in portfolio positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
