@@ -4562,10 +4562,13 @@ macro_news:
   enabled: true                   # MASTER SWITCH for the GDELT fetch + LLM brief
   lang: eng
   window_days: 4                  # fetch the last N days of macro news
-  max_records: 200                # candidates pulled from GDELT before filtering
+  max_records: 200                # candidates pulled PER GDELT sub-query before filtering
+                                  # (the term set goes out as several bounded
+                                  #  sub-queries — see engine/macro_news._queries)
   max_show: 36                    # headlines shown after filtering (accordion handles any length)
   min_importance_score: 34        # drops official/wire plumbing that is not macro-relevant
-  min_request_interval_s: 6       # GDELT pacing
+  min_request_interval_s: 6       # UNUSED — GDELT pacing is ONE shared floor for every
+                                  # caller: set gdelt.min_request_interval_s instead
   gdelt_attempts: 2
   gdelt_timeout_s: 15
   use_official_feeds: true        # BEA/BLS/Census/Fed/TreasuryDirect/SEC RSS bundle
