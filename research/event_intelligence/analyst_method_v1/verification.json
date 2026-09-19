@@ -1,0 +1,28 @@
+{
+  "operation": "event-intelligence-analyst-method-20260918-sol-001",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "read_base": "3c39f71bfd526ac35e5af67a497dd28f4c9a889d",
+  "publication_base": "9115e690ca5cdbc0cf465fb8ea43b3c051311ec2",
+  "skillpack_pin": "320f586126b7c82c843ef17612f12d40d20a42e0",
+  "test_command": "python -m pytest tests/test_brain_analyst_doctrine.py -q -k \"not two_libraries_stay_separate\"",
+  "test_result": {"passed": 76, "failed": 0, "deselected": 1, "new_cases": 43},
+  "unexecuted": "Unchanged technician-library independence case: its 11 method files were not materialized in the isolated sandbox. Full repository and gateway suites remain required. No committed skip or weakened existing test.",
+  "original_test_functions_unchanged": true,
+  "baseline_sources": "All ten analyst modules and both unmodified loader modules were copied from native GitHub reads and verified against Git blob hashes before edits. All five edited paths were re-read at publication base and matched original source blobs.",
+  "source_blobs": {
+    "engine/neuralweb/analyst/lens_catalyst.md": {"git_blob": "cd175ceba968a5be2aefa8a40a9253adace79536", "sha256": "151df7deafd1463e33018a8b601e6762c7fb0bf356c868b935b6f91cfa4847db", "bytes": 3730},
+    "engine/neuralweb/analyst/protocol.md": {"git_blob": "c738afccaf82676f9f6ea08b9b43fa579ff10abd", "sha256": "67a68a0b4c7ce9275d5e7d40776b0c9a16b8336538b8c0b71c29e7fe95097e88", "bytes": 4167},
+    "engine/neuralweb/analyst/lens_rates_curve.md": {"git_blob": "80a8a9cda783c406a00a58feecd6457d2a1b947d", "sha256": "62bc0e0295f7d9d3636fdca117fea162fd6ea0e9fce6b122adb61b41dc9227ca", "bytes": 3146},
+    "engine/neuralweb/analyst/play_tape_reading.md": {"git_blob": "4c079b3715be5b1de6965c645fcdba03ef4190db", "sha256": "0983031790e0610fc92f34ee1cb96b139ce142a611e83b41c369d459ad9695fe", "bytes": 2452},
+    "tests/test_brain_analyst_doctrine.py": {"git_blob": "65d0b1ed4e4b19741d9f67b280021d0ce63e25fe", "sha256": "2aeff3c4ffb1e8ad0336c760f487ff8fb205795f2a24b38dbc290deae0441473", "bytes": 21557}
+  },
+  "mutations": [
+    {"variant": "original_four_modules", "exit_code": 1, "summary": "39 failed, 37 passed, 1 deselected in 0.25s"},
+    {"variant": "event_method_removed", "exit_code": 1, "summary": "31 failed, 45 passed, 1 deselected in 0.48s"},
+    {"variant": "always_protocol_reverted", "exit_code": 1, "summary": "4 failed, 72 passed, 1 deselected in 0.57s"},
+    {"variant": "duration_examples_reverted", "exit_code": 1, "summary": "2 failed, 74 passed, 1 deselected in 0.56s"}
+  ],
+  "compound_prompt_body_chars": [11878, 11878, 10706],
+  "budget": {"body_chars": 12000, "max_routed": 3, "changed": false},
+  "proof_ceiling": "Real source parser/router/prompt assembly and deterministic source-contract tests; no live model answer, grounded event-data join, independent review, full-app browser, merge, deployment or production result is claimed."
+}
