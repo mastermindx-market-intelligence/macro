@@ -130,7 +130,7 @@
   .ftr-crowd-note { background:rgba(251,146,60,.10); border:1px solid rgba(251,146,60,.30); color:var(--ink-warn, var(--amber,#fb923c)); padding:3px 9px; border-radius:6px; font-size:11px; font-weight:700; }
 
 .ftr-anatomy-disclosure { margin:8px 0 2px; }
-.ftr-anatomy-disclosure > summary { cursor:pointer; list-style:none; width:max-content; max-width:100%; color:var(--link); font-size:12px; font-weight:700; padding:5px 8px; border-radius:7px; }
+.ftr-anatomy-disclosure > summary { cursor:pointer; list-style:none; width:max-content; max-width:100%; color:var(--link); font-size:12px; font-weight:700; padding:5px 8px; border-radius:var(--r-sm); }
 .ftr-anatomy-disclosure > summary::-webkit-details-marker { display:none; }
 .ftr-anatomy-disclosure > summary::after { content:'  ›'; color:var(--muted); }
 .ftr-anatomy-disclosure[open] > summary::after { content:'  ⌄'; }
