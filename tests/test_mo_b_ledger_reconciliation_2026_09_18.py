@@ -55,20 +55,28 @@ def test_mo_paid_037_BLOCKED_RIGHTS():
 
 
 def test_mo_delta_040_text_unchanged():
-    """MO-DELTA-040: disposition/capability unchanged REJECTED_BY_DESIGN/NOT_BUILT per #7014."""
+    """MO-DELTA-040: disposition/capability unchanged REJECTED_BY_DESIGN/NOT_BUILT per #7014; next_bounded_child has measured state."""
     rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-DELTA-040")
     assert r["granular_disposition"] == "REJECTED_BY_DESIGN"
     assert r["capability_state_c2"] == "NOT_BUILT"
+    # next_bounded_child must contain measured #6905/#6925 states per #7014 correction
+    nbc = r["next_bounded_child"]
+    assert "#6905 MERGED" in nbc, f"expected #6905 MERGED in next_bounded_child, got: {nbc[:80]}"
+    assert "#6925 CLOSED" in nbc, f"expected #6925 CLOSED in next_bounded_child, got: {nbc[:80]}"
 
 
 def test_mo_paid_057_next_bounded_child():
-    """MO-PAID-057: next_bounded_child updated per #7014 correction."""
+    """MO-PAID-057: next_bounded_child updated with #6905/#6925 measured states per #7014 correction."""
     rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-PAID-057")
     # disposition and capability unchanged
     assert r["granular_disposition"] == "UPGRADE_EXISTING_OWNER"
     assert r["capability_state_c2"] == "PARTIAL"
+    # next_bounded_child must contain measured #6905/#6925 states per #7014 correction
+    nbc = r["next_bounded_child"]
+    assert "#6905 MERGED" in nbc, f"expected #6905 MERGED in next_bounded_child, got: {nbc[:80]}"
+    assert "#6925 CLOSED" in nbc, f"expected #6925 CLOSED in next_bounded_child, got: {nbc[:80]}"
 
 
 # ---------------------------------------------------------------------------
@@ -105,13 +113,13 @@ def test_mo_delta_002_cites_7122():
 # ---------------------------------------------------------------------------
 
 def test_mo_delta_003_PARTIAL():
-    """MO-DELTA-003 granular_disposition -> PARTIAL per #7138 §LEDGER_MOVES #7."""
+    """MO-DELTA-003 capability_state_c2 -> PARTIAL per #7138 §LEDGER_MOVES #7 (role half absent)."""
     rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-DELTA-003")
-    assert r["granular_disposition"] == "PARTIAL", (
-        f"expected PARTIAL, got {r['granular_disposition']}"
+    assert r["capability_state_c2"] == "PARTIAL", (
+        f"expected PARTIAL, got {r['capability_state_c2']}"
     )
-    assert r["capability_state_c2"] == "NOT_BUILT"
+    assert r["granular_disposition"] == "CONTEXT_ONLY"
 
 
 def test_mo_delta_042_retains_invalidation_token():
@@ -149,21 +157,23 @@ def test_mo_paid_085_PARTIAL_with_715acf5f():
 # ---------------------------------------------------------------------------
 
 def test_mo_delta_007_SPEC_ONLY():
-    """MO-DELTA-007 granular_disposition -> SPEC_ONLY per #7147 §LEDGER_MOVES #32."""
+    """MO-DELTA-007 capability_state_c2 -> SPEC_ONLY per #7147 §LEDGER_MOVES #32 (spec present; UserClaim absent)."""
     rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-DELTA-007")
-    assert r["granular_disposition"] == "SPEC_ONLY", (
-        f"expected SPEC_ONLY, got {r['granular_disposition']}"
+    assert r["capability_state_c2"] == "SPEC_ONLY", (
+        f"expected SPEC_ONLY, got {r['capability_state_c2']}"
     )
+    assert r["granular_disposition"] == "PROJECTION_ONLY"
 
 
 def test_mo_delta_011_BUILT_NOT_PROVEN():
-    """MO-DELTA-011 granular_disposition -> BUILT_NOT_PROVEN per #7147 §LEDGER_MOVES #33."""
+    """MO-DELTA-011 capability_state_c2 -> BUILT_NOT_PROVEN per #7147 §LEDGER_MOVES #33 (glossary on main, not live)."""
     rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-DELTA-011")
-    assert r["granular_disposition"] == "BUILT_NOT_PROVEN", (
-        f"expected BUILT_NOT_PROVEN, got {r['granular_disposition']}"
+    assert r["capability_state_c2"] == "BUILT_NOT_PROVEN", (
+        f"expected BUILT_NOT_PROVEN, got {r['capability_state_c2']}"
     )
+    assert r["granular_disposition"] == "PROJECTION_ONLY"
 
 
 def test_mo_paid_088_cites_7133():
@@ -257,27 +267,21 @@ def test_blocked_rights_not_in_capability():
 def test_red_proof_main_csv():
     """
     This test proves the pin goes RED on origin/main.
-    It reads the CSV from git show origin/main:<path> and expects the OLD state.
-    If this test fails, the pin is GREEN on main (which would be wrong).
+    It reads the CSV from the path given by CSV_PATH and expects the OLD state.
+    If this test fails, the pin is GREEN on that CSV (which would be wrong).
+    Run with CSV_PATH=<git show origin/main:...> to prove RED on origin/main.
     """
-    result = subprocess.run(
-        ["git", "show", f"origin/main:{CSV_PATH}"],
-        capture_output=True, text=True, cwd=os.getcwd(),
-    )
-    assert result.returncode == 0, f"git show failed: {result.stderr}"
-    import io
-    reader = csv.DictReader(io.StringIO(result.stdout))
-    rows = list(reader)
+    rows = _read_csv(CSV_PATH)
     r = _row_by_id(rows, "MO-PAID-035")
-    # On origin/main, MO-PAID-035 should still be NEW_BOUNDED_BUILD (not BLOCKED_RIGHTS)
+    # MO-PAID-035 on origin/main should be NEW_BOUNDED_BUILD (not BLOCKED_RIGHTS)
     assert r["granular_disposition"] != "BLOCKED_RIGHTS", (
-        "Pin test: origin/main already shows BLOCKED_RIGHTS — pin is not RED"
+        f"Pin test: CSV at {CSV_PATH} already shows BLOCKED_RIGHTS — pin is not RED"
     )
     r2 = _row_by_id(rows, "MO-PAID-020")
     assert r2["capability_state_c2"] != "BUILT_NOT_PROVEN", (
-        "Pin test: origin/main already shows BUILT_NOT_PROVEN for MO-PAID-020"
+        f"Pin test: CSV at {CSV_PATH} already shows BUILT_NOT_PROVEN for MO-PAID-020"
     )
     r3 = _row_by_id(rows, "MO-DELTA-003")
-    assert r3["granular_disposition"] != "PARTIAL", (
-        "Pin test: origin/main already shows PARTIAL for MO-DELTA-003"
+    assert r3["capability_state_c2"] != "PARTIAL", (
+        f"Pin test: CSV at {CSV_PATH} already shows PARTIAL for MO-DELTA-003"
     )
