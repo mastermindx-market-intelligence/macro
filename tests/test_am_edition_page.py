@@ -171,8 +171,9 @@ def test_page_contains_no_forbidden_authority_fields(tmp_path):
     html = template.render(payload=payload, as_of="2026-09-08T15:00Z")
 
     # Strip HTML tags and inline CSS (box-sizing etc.) to get only visible copy.
-    # Also strip the shared site nav since it contains third-party labels
-    # (e.g. "signal lab") that are not AM-edition copy.
+    # Also strip the shared site nav AND its embedded <style> block since the nav
+    # contains third-party labels (e.g. "signal lab", "Prophet") that are not
+    # AM-edition copy.
     text_only = re.sub(r'<style[^>]*>.*?</style>', ' ', html, flags=re.DOTALL)
     text_only = re.sub(r'<nav[^>]*>.*?</nav>', ' ', text_only, flags=re.DOTALL)
     text_only = re.sub(r'<[^>]+>', ' ', text_only)

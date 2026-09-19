@@ -11,8 +11,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <title>{{ t('Morning Edition', '早间版') }} — {{ as_of }}</title>
-{% set seo_title = t('Morning Edition — Mastermind', '早间版 — Mastermind') %}
-{% set seo_desc = t('Before the US open: the tape, the session clock, the regime, and the prior-close brief — in plain words.', '美股开盘前：盘面、时钟、周期状态与昨日简报 — 用平实语言呈现。') %}
+{% set seo_title = "Morning Edition — Mastermind" %}
+{% set seo_desc = "Before the US open: the tape, the session clock, the regime, and the prior-close brief — in plain words." %}
 {% set seo_path = "am_edition.html" %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -56,7 +56,7 @@
   .brief-link:hover { opacity:0.8; }
   .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
                  border-radius:999px; padding:3px 10px; font-size:12px; font-weight:600; }
-  .state-open   { border-color:#22c55e; color:#22c55e; }
+  .state-open   { border-color:var(--up); color:var(--up); }
   .state-closed { border-color:var(--muted); color:var(--muted); }
   .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
   .feasibility-note { font-size:12px; color:var(--muted); margin-top:4px; }
@@ -116,7 +116,7 @@
   </div>
   <div class="ctx-strip">
     {% if block.state == 'CURRENT' %}
-      <span class="ctx-chip" style="border-color:#22c55e;color:#22c55e">
+      <span class="ctx-chip" style="border-color:var(--up);color:var(--up)">
         {{ t('Open', '交易中') }}
         {% if block.rows %}
           {% for row in block.rows %}
@@ -142,7 +142,9 @@
       </span>
     {% endif %}
 
-    {% if block.state_reason_en %}
+    {% if block.state_reason_zh %}
+    <span class="muted sm">{{ block.state_reason_zh }}</span>
+    {% elif block.state_reason_en %}
     <span class="muted sm">{{ block.state_reason_en }}</span>
     {% endif %}
   </div>
@@ -150,9 +152,8 @@
   {% if block.rows and (block.state == 'CURRENT' or block.state == 'STALE_WITH_LAST_KNOWN') %}
   <div style="margin-top:8px;font-size:13px;color:var(--muted)">
     {% for row in block.rows %}
-      {% if row.phase_en %}{{ row.phase_en }}{% endif %}
-      {% if row.phase_zh %} / {{ row.phase_zh }}{% endif %}
-      {% if row.next_event_en %} — {{ row.next_event_en }}{% endif %}
+      {% if row.phase_zh %}{{ row.phase_zh }}{% elif row.phase_en %}{{ row.phase_en }}{% endif %}
+      {% if row.next_event_en or row.next_event_zh %} — {{ row.next_event_zh or row.next_event_en }}{% endif %}
     {% endfor %}
   </div>
   {% endif %}
@@ -178,7 +179,7 @@
   {% else %}
   <div class="ctx-strip">
     {% for row in block.rows %}
-    <span class="ctx-chip" style="{{ 'border-color:#22c55e;color:#22c55e' if row.change_pct and row.change_pct > 0 else ('border-color:#ef4444;color:#ef4444' if row.change_pct and row.change_pct < 0 else '') }}">
+    <span class="ctx-chip" style="{{ 'border-color:var(--up);color:var(--up)' if row.change_pct and row.change_pct > 0 else ('border-color:var(--down);color:var(--down)' if row.change_pct and row.change_pct < 0 else '') }}">
       {{ row.symbol }}
       {% if row.change_pct is not none %}
         {{ '+' if row.change_pct > 0 else '' }}{{ "%.2f"|format(row.change_pct) }}%
@@ -206,12 +207,18 @@
   {% if block.state == 'CURRENT' and block.rows %}
     {% for row in block.rows %}
     <div class="ctx-strip">
-      <span class="ctx-chip regime">{{ row.label_en or row.label_zh or block.state }}</span>
-      {% if row.posture_en %}
+      <span class="ctx-chip regime">
+        {{ row.label_zh or row.label_en or t('Regime unavailable', '周期状态不可用') }}
+      </span>
+      {% if row.posture_zh %}
+      <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span> {{ row.posture_zh }}</span>
+      {% elif row.posture_en %}
       <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span> {{ row.posture_en }}</span>
       {% endif %}
     </div>
-    {% if row.headline_en %}
+    {% if row.headline_zh %}
+    <p class="muted sm" style="margin-top:6px">{{ row.headline_zh }}</p>
+    {% elif row.headline_en %}
     <p class="muted sm" style="margin-top:6px">{{ row.headline_en }}</p>
     {% endif %}
     {% endfor %}
@@ -234,12 +241,18 @@
   {% if block.state == 'CURRENT' and block.rows %}
     {% for row in block.rows %}
     <div class="ctx-strip" style="margin-bottom:6px">
-      <span class="ctx-chip regime">{{ row.verdict.label_en or row.verdict.label_zh or '' }}</span>
+      <span class="ctx-chip regime">
+        {{ row.verdict.label_zh or row.verdict.label_en or t('Cross-asset view unavailable', '跨资产视角不可用') }}
+      </span>
     </div>
-    {% if row.contradictions_en %}
+    {% if row.contradictions_zh %}
+    <p class="muted sm">{{ row.contradictions_zh }}</p>
+    {% elif row.contradictions_en %}
     <p class="muted sm">{{ row.contradictions_en }}</p>
     {% endif %}
-    {% if row.freshness_en %}
+    {% if row.freshness_zh %}
+    <p class="muted sm">{{ row.freshness_zh }}</p>
+    {% elif row.freshness_en %}
     <p class="muted sm">{{ row.freshness_en }}</p>
     {% endif %}
     {% endfor %}
@@ -268,8 +281,12 @@
     </li>
     {% endfor %}
   </ul>
+  {% elif block.state_reason_zh %}
+  <p class="muted sm">{{ block.state_reason_zh }}</p>
+  {% elif block.state_reason_en %}
+  <p class="muted sm">{{ block.state_reason_en }}</p>
   {% else %}
-  <p class="muted sm">{{ block.state_reason_en or t('No scheduled US releases today.', '今日无美国经济数据发布。') }}</p>
+  <p class="muted sm">{{ t('No scheduled US releases today.', '今日无美国经济数据发布。') }}</p>
   {% endif %}
 </div>
 {% endif %}
@@ -295,9 +312,10 @@
 {% if payload.null_count and payload.null_count > 0 %}
 <p class="muted sm" style="text-align:center;margin-top:8px">
   {{ t('Some readings are unavailable —', '部分数据暂时不可用 —') }}
-  {{ null_count }} {{ t('item(s) could not be loaded.', '项无法加载。') }}
+  {{ payload.null_count }} {{ t('item(s) could not be loaded.', '项无法加载。') }}
 </p>
 {% endif %}
 
+<script src="theme.js"></script>
 </body>
 </html>

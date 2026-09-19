@@ -164,14 +164,3 @@ tests/test_market_ontology_half_b_rights_docket.py: >-
   `python -m pytest tests/test_market_ontology_half_b_rights_docket.py -q` in CI
   triage / local verification. Owner: Meta-CEO B wave, lane F09. Delete this row
   if a market-ontology-records CI step is ever commissioned.
-
-tests/test_am_edition_page.py: >-
-  Packet MO-B F01-1 (Morning Edition page): RED-first contract suite for the new
-  am_edition.html page and its producer extension in scripts/build_am_edition.py.
-  This suite is the acceptance gate for the page — it verifies template existence,
-  bilingual EN/ZH rendering, the aibrief.html link, no forbidden authority copy,
-  and that main() writes both .json and .html via write_page. No engine or
-  signal-contract path owns this subject; listing it in
-  .github/ci/legacy-jobs.yml would be a global CI invalidator (full-suite,
-  ci-authority hit) for a display-only page suite. Owner: Meta-CEO B, lane
-  F01. Delete this row and wire into a future am-edition CI step when one exists.
