@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T09:55:58.238104+00:00",
-  "count": 2421,
+  "generated_at": "2026-09-19T10:25:40.988441+00:00",
+  "count": 2423,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -674,6 +674,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-db4l77uwehm-8be5a3",
+      "title": "Next (NXT.L) 1H27 results demonstrate ongoing strong earnings momentum, underpinned by the hyper growth, immature Internatio...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T20:10:52Z",
+      "summary_points": [
+        "1H27 Performance & FY27 Guidance: Strong PBT beat (£569m, +10.5% yoy), international sales growth (+23.9% yoy), FY27 PBT guidance raised to £1,255m (+6.7% sales growth); Buy-rated with PT 17,000p - International Growth Momentum: Robust international sales growth (+23.9% yoy), EU app MAU triple-digit YoY growth (Shop Fashion & Homeware), and Middle East/US MAU acceleration signaling scalable market penetration - Cash Flow & Profitability Resilience: Free cash flow expanding (£852.9m → £942.0m), net cash flow from operations rebounding (797 → 1,299), gross margins sustained above 54%, EBIT margins stable at 36-38% - Key Risk Factors: UK consumer deterioration threatening domestic growth, sterling weakness vs USD (impacting gross margins), and weaker international brand traction (slower aggregator scaling, lower marketing ROI) - EU Market Upside: EU app MAU triple-digit growth (vs UK MAU moderation) and 9% UK market share in fragmented apparel market (highest in UK) highlight structural EU-driven growth potential - Flow & Valuation Signals: Persistent target price premiums (e.g., 17,300p vs closing 15,660p) indicate institutional bullish sentiment; revised PT 17,000p (19.7x 2028E P/E) reflects updated 4.3% discount rate"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-a2ztmprcglg-517d2c",
       "title": "Europe Retail Retail Matters On leads a bifurcated sportswear market",
       "institution": "Goldman Sachs",
@@ -1049,6 +1066,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4mognkqozbf-46e7ee",
+      "title": "India Weekly Kickstart NIFTY closed the week flat as oil stabilized",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:13Z",
+      "summary_points": [
+        "AI Enablers Surge 60% YTD: Cohort of 42 AI infrastructure stocks (power, data centers, semiconductors) surged 60% YTD driven by earnings accumulation, outperforming Nifty (12% decline) with 39% forward earnings growth vs.",
+        "MSCI India Small Mid’s 22%.",
+        "Monsoon Deficit & Agricultural Risk: 15% below-normal monsoon (Jun-Sep 2026), with South Peninsula (-28%) and North-East (-25%) severely impacted, signaling acute water scarcity, crop yield threats, and supply chain vulnerabilities.",
+        "NIFTY Target Anchored by Macro Fundamentals: Goldman Sachs forecasts NIFTY to reach 26,500 by June 2027, supported by robust GDP growth (7.4-7.7% CY24-CY27), moderate CPI (5.0-5.3%), and improving fiscal balance (-4.7% to -4.2% of GDP).",
+        "Pharma vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
       "language": "en",
       "needs_metadata": false
     },
