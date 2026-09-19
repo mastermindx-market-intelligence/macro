@@ -1185,3 +1185,159 @@ def test_prereg_constants_are_the_ones_the_modules_consume():
         episodes.G0, episodes.C1, episodes.C2, episodes.C3, episodes.C5}
     assert episodes.INCUMBENT not in prereg.EXPECTED_SPEC_HASHES, (
         "the incumbent gauge is a Q5 COMPARATOR, never an arena detector")
+
+# --------------------------------------------------------------------------- #
+# Rates-aware opportunity context — pure research join, no outcome authority
+# --------------------------------------------------------------------------- #
+def _rates_row(*, as_of="2026-09-02", level=4.50, prev_as_of="2026-09-01",
+               prev_level=4.60, available_at=None, historical=False):
+    return {
+        "source_column": "us10y", "source_id": "DGS10", "status": "available",
+        "as_of": as_of, "available_at": available_at, "level": level,
+        "historical_availability_qualified": historical,
+        "last_observed": {
+            "basis": "latest_two_captured_source_rows_on_retained_grid",
+            "as_of": as_of, "level": level, "previous_as_of": prev_as_of,
+            "previous_level": prev_level, "change_bp": round((level-prev_level)*100, 1),
+            "elapsed_calendar_days": 1, "elapsed_grid_intervals": 1,
+            "age_calendar_days": 0, "age_grid_intervals": 0,
+            "is_current_grid_row": True,
+            "historical_availability_qualified": historical,
+        },
+    }
+
+
+def _rates_artifact(row):
+    return {"schema": "yield_momentum.v1", "display_only": True,
+            "authority": False, "series": {"10y": row}}
+
+def test_rates_context_uses_prior_dated_observation_without_claiming_replay():
+    from engine.entry_radar.replay import rates_context
+    out = rates_context.project(_rates_artifact(_rates_row()),
+                                decision_session=date(2026, 9, 3))
+    row = out["tenors"]["10y"]
+    assert row["usable_for_corrected_history"] is True
+    assert row["observation_date"] == "2026-09-02"
+    assert row["last_change_bp"] == -10.0
+    assert row["age_calendar_days"] == 1
+    assert out["as_observed_replay_certified"] is False
+    assert all(v is False for v in out["authority"].values())
+
+
+def test_rates_context_refuses_unreceipted_same_session_observation():
+    from engine.entry_radar.replay import rates_context
+    out = rates_context.project(
+        _rates_artifact(_rates_row(as_of="2026-09-03")),
+        decision_session=date(2026, 9, 3))
+    row = out["tenors"]["10y"]
+    assert row["usable_for_corrected_history"] is False
+    assert "same_session_without_intraday_receipt" in row["issues"]
+
+
+def test_rates_context_refuses_future_observation():
+    from engine.entry_radar.replay import rates_context
+    out = rates_context.project(
+        _rates_artifact(_rates_row(as_of="2026-09-04")),
+        decision_session=date(2026, 9, 3))
+    assert out["tenors"]["10y"]["usable_for_corrected_history"] is False
+    assert "observation_after_decision_session" in out["tenors"]["10y"]["issues"]
+
+def test_rates_context_allows_same_session_only_with_qualified_prior_instant():
+    from engine.entry_radar.replay import rates_context
+    row = _rates_row(as_of="2026-09-03",
+                     available_at="2026-09-03T14:00:00-04:00",
+                     historical=True)
+    out = rates_context.project(
+        _rates_artifact(row), decision_session=date(2026, 9, 3),
+        decision_at="2026-09-03T15:00:00-04:00")
+    got = out["tenors"]["10y"]
+    assert got["usable_for_corrected_history"] is True
+    assert got["availability_used"] == "2026-09-03T18:00:00+00:00"
+    assert out["as_observed_replay_certified"] is True
+
+
+def test_rates_context_does_not_invent_change_from_one_observation():
+    from engine.entry_radar.replay import rates_context
+    row = _rates_row()
+    row["last_observed"]["previous_as_of"] = None
+    row["last_observed"]["previous_level"] = None
+    row["last_observed"]["change_bp"] = None
+    out = rates_context.project(_rates_artifact(row),
+                                decision_session=date(2026, 9, 3))
+    assert out["tenors"]["10y"]["last_change_bp"] is None
+
+
+def test_rates_context_unknown_schema_is_explicit_unavailable():
+    from engine.entry_radar.replay import rates_context
+    out = rates_context.project({"schema": "wrong"},
+                                decision_session=date(2026, 9, 3))
+    assert out["status"] == "unavailable"
+    assert out["issues"] == ["unsupported_source_schema"]
+
+def test_rates_context_attach_preserves_existing_episode_and_leader_cohort():
+    from engine.entry_radar.replay import rates_context
+    record = {"name": "AMD", "session": pd.Timestamp("2026-09-03"),
+              "cohort": "leader_reset", "excess_net": 0.04}
+    before = dict(record)
+    out = rates_context.attach(record, _rates_artifact(_rates_row()))
+    assert record == before
+    assert out["name"] == "AMD" and out["cohort"] == "leader_reset"
+    assert out["excess_net"] == 0.04
+    assert out["rates_context"]["tenors"]["10y"]["last_change_bp"] == -10.0
+
+
+def test_rates_context_counts_directions_without_fusing_a_score():
+    from engine.entry_radar.replay import rates_context
+    ten = _rates_row(level=4.50, prev_level=4.60)
+    two = _rates_row(level=4.20, prev_level=4.10)
+    two["source_column"] = "us2y"
+    artifact = {"schema": "yield_momentum.v1", "display_only": True,
+                "authority": False, "series": {"2y": two, "10y": ten}}
+    out = rates_context.project(artifact, decision_session=date(2026, 9, 3))
+    assert out["coverage"] == {"usable_tenors": 2, "easing_tenors": 1,
+                                "rising_tenors": 1, "flat_tenors": 0}
+    assert "score" not in out and "signal" not in out
+
+def test_rates_context_preserves_source_horizons_without_promoting_them():
+    from engine.entry_radar.replay import rates_context
+    row = _rates_row()
+    row.update({"velocity_bp": {"5d": -12.0, "22d": 18.0, "63d": 44.0},
+                "acceleration_bp": -7.0, "turn_watch": "rolldown_forming",
+                "path_qualified": True})
+    out = rates_context.project(_rates_artifact(row),
+                                decision_session=date(2026, 9, 3))
+    got = out["tenors"]["10y"]
+    assert got["velocity_bp"] == {"5d": -12.0, "22d": 18.0, "63d": 44.0}
+    assert got["acceleration_bp"] == -7.0
+    assert got["source_turn_watch"] == "rolldown_forming"
+    assert got["path_qualified"] is True
+    assert all(v is False for v in out["authority"].values())
+
+
+def test_rates_context_front_long_state_is_descriptive_not_a_score():
+    from engine.entry_radar.replay import rates_context
+    ten = _rates_row(level=4.50, prev_level=4.60)
+    two = _rates_row(level=4.10, prev_level=4.20)
+    two["source_column"] = "us2y"
+    artifact = {"schema": "yield_momentum.v1", "display_only": True,
+                "authority": False, "series": {"2y": two, "10y": ten}}
+    out = rates_context.project(artifact, decision_session=date(2026, 9, 3))
+    assert out["front_long_state"] == "both_easing"
+    assert "score" not in out
+
+def test_rates_context_prereg_machine_contract_is_frozen_before_outcomes():
+    import json
+    path = ROOT / "research" / "rates_aware_opportunity" / \
+        "leader_reset_rates_context_v1.json"
+    cfg = json.loads(path.read_text())
+    assert cfg["schema"] == "rates_aware_opportunity.leader_reset_context_prereg/v1"
+    assert cfg["population"]["cohort"] == "leader_reset"
+    assert cfg["population"]["candidate_selection_changes"] is False
+    assert cfg["primary"]["horizon_sessions"] == 10
+    assert cfg["primary"]["contrast"] == ["both_easing", "both_rising"]
+    assert cfg["rates"]["decision_join"] == "prior_dated_or_receipted_same_session"
+    assert cfg["rates"]["historical_availability_required_for_promotion"] is True
+    assert cfg["authority"] == {"rank": False, "score": False, "gate": False,
+                                "size": False, "trade": False}
+    assert cfg["outcomes_opened"] is False
+    assert cfg["registered_in_trial_ledger"] is False
