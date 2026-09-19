@@ -581,7 +581,7 @@
       b = e.target.closest("[data-hk-an-lane]"); if (b) { e.preventDefault(); return setAnLane(b.getAttribute("data-hk-an-lane")); }
       b = e.target.closest("[data-hk-lead-id]"); if (b) return activate(b.getAttribute("data-hk-lead-id"));
       if (e.target.closest("#hk-v37-filter")) { state.filter = null; return applyFilter(); }
-      if (e.target.closest("#hk-v37-expand")) return openModal();
+      b = e.target.closest("#hk-v37-expand, [data-hk-expand]"); if (b) { e.preventDefault(); return openModal(); }
       if (e.target.closest(".hk-v37-empty-switch")) return setSource("all");
     });
     root.addEventListener("keydown", function (e) {

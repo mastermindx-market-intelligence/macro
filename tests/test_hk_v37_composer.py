@@ -513,6 +513,31 @@ def _build_shell_markup(_text: str = "") -> str:
     return template[start:end]
 
 
+def test_sector_ranking_links_reuse_existing_leadership_modal():
+    """Sector ranking is an HK modal capability, never a standalone route.
+
+    Both shell links must open the already-owned Leadership & Rotation modal
+    and retain a no-JS fallback to the canonical Expand control.
+    """
+    template = HK_TEMPLATE.read_text(encoding="utf-8")
+    assert "sector_ranking.html" not in template
+    assert template.count('href="#hk-v37-expand" data-hk-expand') == 2
+    assert 'id="hk-v37-expand"' in template
+    assert 'id="hk-v37-modal"' in template
+
+
+def test_sector_ranking_modal_trigger_is_wired_to_controller():
+    """Delegated HK clicks must open the existing modal, not follow the hash."""
+    text = _composer_text()
+    match = re.search(r"function bind\b.*?(?=\n  function buildShell)", text, re.S)
+    assert match, "could not locate bind() function body"
+    body = match.group(0)
+    assert (
+        'b = e.target.closest("#hk-v37-expand, [data-hk-expand]"); '
+        'if (b) { e.preventDefault(); return openModal(); }'
+    ) in body
+
+
 def test_act_now_renders_at_rest_above_prophet_never_modal_only():
     """V3.8 §13.1: without opening any modal, the user sees the owner-native
     action lanes — group action must not be recoverable only through Expand

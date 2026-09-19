@@ -1332,6 +1332,53 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+
+# Accepted P0B is historical evidence, not a mutable current-source receipt.
+_FROZEN_P0B_DIGESTS = {
+    "rendered-fixture.json": "3d088a5705be46da3ce9770ddd353efd33ddfcaafcf5231afdda115f34eb8bad",
+    "mobile-layout.json": "86bef4a16fd15f2f2200cb66023e61893ee1a8f500d58460bf06a75db795e24c",
+    "mobile-layout-canada.json": "0c3a9cb1e23306ef320e3d85bd2e30b2814c161caefad5478a54b970d3452a38",
+    "hk-js-disabled-dark-390.png": "0c5c56d9783b8d4b4358b117124120a732bf5c7770ead9d9c1b7c370715440bb",
+    "hk-composer-failed-light-390.png": "17f9d95a4765f569cc01c074a8a9cd60facdcadbb4fbcf223d345d8e47fdbee4",
+}
+
+
+def _current_evidence_paths(market: str, *, root: Path = ROOT) -> tuple[Path, Path]:
+    """Resolve the explicit HK successor; never excuse a changed source hash."""
+    assert market in {"hk", "ca"}
+    baseline = root / "mockups/evidence/prophet-p0b-zero-fouc"
+    browser_name = "mobile-layout.json" if market == "hk" else "mobile-layout-canada.json"
+    pointer = baseline / "supersessions.json"
+    if not pointer.exists():
+        return baseline / "rendered-fixture.json", baseline / browser_name
+    doc = json.loads(pointer.read_text(encoding="utf-8"))
+    assert doc["schema"] == "mastermind.stock_dashboard_evidence_supersession.v1"
+    assert set(doc["markets"]) == {"hk"}, "this successor cannot supersede Canada"
+    row = doc["markets"]["hk"]
+    assert row["change"] == "sector_ranking_same_page_modal"
+    assert row["production"] == "none"
+    assert row["baseline"] == _FROZEN_P0B_DIGESTS
+    for name, digest in _FROZEN_P0B_DIGESTS.items():
+        assert _sha256(baseline / name) == digest, f"accepted P0B changed: {name}"
+    assert set(row["inputs"]) == {"templates/hk.html.j2", "site/hk-stock-v36.js"}
+    for relative, digest in row["inputs"].items():
+        assert _sha256(root / relative) == digest, f"successor source drift: {relative}"
+    assert set(row["successor"]) == {"fixture", "browser", "modal"}
+    resolved = {}
+    for kind, binding in row["successor"].items():
+        assert set(binding) == {"path", "sha256"}
+        relative = Path(binding["path"])
+        assert not relative.is_absolute() and ".." not in relative.parts
+        file = (root / relative).resolve()
+        assert file.is_relative_to((root / "mockups/evidence").resolve())
+        assert not file.is_relative_to(baseline.resolve()), "do not rewrite accepted evidence"
+        assert _sha256(file) == binding["sha256"], f"successor bytes drift: {kind}"
+        resolved[kind] = file
+    if market == "ca":
+        return baseline / "rendered-fixture.json", baseline / browser_name
+    return resolved["fixture"], resolved["browser"]
+
+
 def test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic(
     tmp_path: Path,
 ) -> None:
@@ -1363,7 +1410,12 @@ def test_rendered_fixture_recipe_is_committed_self_binding_and_deterministic(
 
     assert receipts[0] == receipts[1]
     receipt = receipts[0]
-    assert receipt == json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    expected_receipt = json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    expected_receipt["markets"] = {
+        market: json.loads(_read(_current_evidence_paths(market)[0]))["markets"][market]
+        for market in ("hk", "ca")
+    }
+    assert receipt == expected_receipt
     assert receipt["schema"] == "mastermind.stock_dashboard_rendered_fixture.v1"
     assert receipt["proof_class"] == "rendered_fixture"
     assert receipt["transform"] == (
@@ -1498,10 +1550,10 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
     market: str, receipt_name: str, composer: str
 ) -> None:
     """Each checked-in browser claim binds bytes, assets, tool, and lineage."""
-    fixture = json.loads(
-        _read(EVIDENCE_DIR / "rendered-fixture.json")
-    )
-    browser = json.loads(_read(EVIDENCE_DIR / receipt_name))
+    fixture_path, browser_path = _current_evidence_paths(market)
+    fixture = json.loads(_read(fixture_path))
+    browser = json.loads(_read(browser_path))
+    historical_browser = json.loads(_read(EVIDENCE_DIR / receipt_name))
     assert browser["proof_class"] == "browser_fixture_proof_reproducible"
     assert browser["claims"] == {
         "source_contract": "browser_fixture",
@@ -1514,7 +1566,7 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
         "hk": "71427ce354ff3f40e2cc7a9e298c840453465fc3a7fcf285ea32b2a486c89a3a",
         "ca": "caffaacaae9d50b4a31be2ee0b6e61fa1cb0463a7c797e8154886f69e7a03fbc",
     }
-    historical = browser["historical_baseline"]
+    historical = historical_browser["historical_baseline"]
     assert historical["schema"] == (
         "mastermind.stock_dashboard_browser_historical_baseline.v1"
     )
@@ -1574,9 +1626,7 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
         "path": "scripts/verify_stock_dashboard_mobile_layout.cjs",
         "sha256": _sha256(BROWSER_RECEIPT),
     }
-    assert browser["fixture_receipt"]["sha256"] == _sha256(
-        EVIDENCE_DIR / "rendered-fixture.json"
-    )
+    assert browser["fixture_receipt"]["sha256"] == _sha256(fixture_path)
     assert browser["fixture_assets_root"] == (
         "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data"
     )
@@ -1733,8 +1783,12 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
             f"{row['theme']}-{row['viewport']['width']}.png"
         )
         assert screenshot["filename"] == expected_name
-        assert screenshot["path"] == (
-            "mockups/evidence/prophet-p0b-zero-fouc/" + expected_name
+        screenshot_root = (
+            EVIDENCE_DIR if browser_path.parent == EVIDENCE_DIR
+            else browser_path.parent / "screenshots"
+        )
+        assert screenshot["path"] == str(
+            screenshot_root.relative_to(ROOT) / expected_name
         )
         assert screenshot["width"] == row["viewport"]["width"]
         assert _sha256(ROOT / screenshot["path"]) == screenshot["sha256"]
@@ -2193,3 +2247,84 @@ def test_zero_cards_do_not_abort_static_shell_enhancement(market: str) -> None:
     start = re.search(r"function start\b.*?(?=\n  if \(document\.readyState)", text, re.S)
     assert start
     assert "if (!state.cards.length) return" not in start.group(0)
+
+
+def test_hk_successor_binds_real_modal_and_no_js_proof_without_rewriting_p0b() -> None:
+    fixture, browser = _current_evidence_paths("hk")
+    assert fixture.parent != EVIDENCE_DIR
+    assert browser.parent == fixture.parent
+    assert _current_evidence_paths("ca") == (
+        EVIDENCE_DIR / "rendered-fixture.json", EVIDENCE_DIR / "mobile-layout-canada.json"
+    )
+    pointer = json.loads(_read(EVIDENCE_DIR / "supersessions.json"))["markets"]["hk"]
+    modal = json.loads(_read(ROOT / pointer["successor"]["modal"]["path"]))
+    assert modal["schema"] == "mastermind.hk_sector_modal_fixture.v1"
+    assert modal["proof_class"] == "browser_fixture" and modal["production"] == "none"
+    assert modal["pass"] is True
+    assert modal["inputs"] == pointer["inputs"]
+    assert modal["fixture_receipt"]["sha256"] == _sha256(fixture)
+    assert modal["verifier"] == {
+        "path": "scripts/verify_hk_sector_modal.cjs",
+        "sha256": _sha256(ROOT / "scripts/verify_hk_sector_modal.cjs"),
+    }
+    cases = modal["modal_cases"]
+    assert len(cases) == 8
+    assert {(r["locale"], r["theme"], r["control_index"]) for r in cases} == {
+        (locale, theme, index)
+        for locale in ("en", "zh") for theme in ("dark", "light") for index in (0, 1)
+    }
+    for row in cases:
+        assert row["pass"] is True
+        assert row["href"] == "#hk-v37-expand"
+        assert row["modal_open"] is True and row["url_unchanged"] is True
+        assert row["owner_nodes_unchanged"] is True and row["owner_preview_count"] > 0
+        assert row["dead_route_requests"] == 0
+    assert len(modal["no_js_cases"]) == 2
+    assert {r["control_index"] for r in modal["no_js_cases"]} == {0, 1}
+    for row in modal["no_js_cases"]:
+        assert row["pass"] is True and row["same_page"] is True
+        assert row["fragment"] == "#hk-v37-expand" and row["target_present"] is True
+    assert len(modal["screenshots"]) == 2
+    for screenshot in modal["screenshots"]:
+        assert _sha256(ROOT / screenshot["path"]) == screenshot["sha256"]
+
+
+@pytest.mark.parametrize("mutation", (
+    "baseline_changed", "template_changed", "receipt_changed", "receipt_missing",
+    "path_traversal", "canada_superseded", "schema_changed",
+))
+def test_hk_evidence_supersession_refuses_drift_and_cross_market_widening(
+    tmp_path: Path, mutation: str,
+) -> None:
+    pointer_relative = Path("mockups/evidence/prophet-p0b-zero-fouc/supersessions.json")
+    doc = json.loads(_read(ROOT / pointer_relative))
+    row = doc["markets"]["hk"]
+    required = {pointer_relative}
+    required.update(pointer_relative.parent / name for name in _FROZEN_P0B_DIGESTS)
+    required.update(Path(p) for p in row["inputs"])
+    required.update(Path(v["path"]) for v in row["successor"].values())
+    for relative in required:
+        target = tmp_path / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / relative, target)
+    _current_evidence_paths("hk", root=tmp_path)
+    if mutation == "baseline_changed":
+        target = tmp_path / pointer_relative.parent / "rendered-fixture.json"
+        target.write_bytes(target.read_bytes() + b" ")
+    elif mutation == "template_changed":
+        target = tmp_path / "templates/hk.html.j2"
+        target.write_bytes(target.read_bytes() + b" ")
+    elif mutation == "receipt_changed":
+        target = tmp_path / row["successor"]["browser"]["path"]
+        target.write_bytes(target.read_bytes() + b" ")
+    elif mutation == "receipt_missing":
+        (tmp_path / row["successor"]["browser"]["path"]).unlink()
+    elif mutation == "path_traversal":
+        row["successor"]["browser"]["path"] = "../" + row["successor"]["browser"]["path"]
+    elif mutation == "canada_superseded":
+        doc["markets"]["ca"] = dict(row)
+    else:
+        doc["schema"] = "unrecognized"
+    (tmp_path / pointer_relative).write_text(json.dumps(doc), encoding="utf-8")
+    with pytest.raises((AssertionError, FileNotFoundError)):
+        _current_evidence_paths("hk", root=tmp_path)
