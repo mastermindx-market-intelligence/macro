@@ -45,6 +45,10 @@
     migration may claim reference conformance as final acceptance. Gate §0.1's "reviewer
     compares against the reference" is therefore conditional on the reference having earned
     canonical status — conformance to an unapproved reference proves nothing.
+13. **Editable-source trace (2026-09-19):** the packet names an editable design source and
+    exact identifiers for material visual work, plus the component/token delta and responsive/
+    theme/language state matrix. A chat-rendered image or generated implementation with no
+    editable source may support exploration, but cannot satisfy final reference conformance.
 
 ---
 
@@ -61,6 +65,16 @@ A builder that believes the packet is wrong stops and escalates to the design au
 packet is amended (or a dissent recorded) — the builder never improvises. This is the
 spawn-handoff law applied to migration: quality travels in the packet, not by pointer.
 
+**Editable-reference law (2026-09-19).** A static screenshot, generated HTML render, chat image,
+or prose description is evidence/reference material, not by itself an editable design source.
+Every material migration must name the editable source used to compose it (Figma, Paper, or a
+later approved equivalent), the exact file/document plus frame/node/artboard identifiers, and
+the canonical components/tokens it consumes. The editable tool is a **projection of repository
+design law**, never a competing token root or component registry. Exported/generated code is an
+implementation input only; it does not silently promote new visual vocabulary. If the required
+primitive does not exist, the builder returns the gap to design authority rather than drawing a
+page-local substitute.
+
 ## §2 The migration packet (template — every field mandatory)
 
 ```markdown
@@ -71,6 +85,17 @@ spawn-handoff law applied to migration: quality travels in the packet, not by po
                          a `RIG-RECEIPT: <reference-id>` line naming its approved
                          Reference Integrity artifact (RIG V1 §12; checker-enforced —
                          a packet citing an unapproved reference cannot merge)
+3A EDITABLE SOURCE       tool + exact file/document identifier + frame/node/artboard ids;
+                         name the design-system library/file consumed and record whether this
+                         is a fresh composition, an approved reference projection, or a
+                         no-visual-change migration. A screenshot/chat render alone is invalid.
+3B COMPONENT DELTA       every component/token used comes from the canonical vocabulary;
+                         missing primitive → DESIGN-SYSTEM GAP + owning design lane. Builders
+                         may not mint page-local substitutes. Any approved new primitive must
+                         land in the repository system and editable library in the same wave.
+3C STATE MATRIX          Dark + Light × EN + ZH × desktop + mobile, plus loading / empty /
+                         stale / partial / denied / error / corrected / success as applicable;
+                         identify the editable frames that prove each materially distinct case.
 4  PRIMARY QUESTION      one sentence (registry `primary_user_question`)
 5  PRIMITIVES TO REUSE   the §11 components this page composes (explicit list)
 6  MODULE DISPOSITIONS   table: current module → RETAIN / COMPRESS / MERGE-INTO <x> /
