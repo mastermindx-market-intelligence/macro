@@ -88,7 +88,6 @@ html[data-theme="light"] .help-card:hover,html[data-theme="light"] .help-card:fo
 .help-log li::before{content:"";position:absolute;left:-26px;top:6px;width:7px;height:7px;background:var(--panel2);box-shadow:0 0 0 1px var(--line)}
 .help-log li:first-child::before{background:var(--link);box-shadow:0 0 0 1px var(--link)}
 .help-log time{display:block;margin:0 0 4px;color:var(--muted);font:600 var(--fs-label)/1 var(--font-mono);letter-spacing:.09em;font-variant-numeric:tabular-nums}
-.help-log .help-pr{margin-left:8px;color:var(--muted);font:600 var(--fs-micro)/1 var(--font-mono);letter-spacing:.06em}
 .help-log p{margin:0;font-size:14.5px;line-height:1.5}
 
 .help-plans{display:grid;gap:0;margin:0 0 22px;padding:0;list-style:none}
