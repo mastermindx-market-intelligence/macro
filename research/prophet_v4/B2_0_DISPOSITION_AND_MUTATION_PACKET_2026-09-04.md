@@ -15,10 +15,14 @@ product surface, and a tree-scan test pins that boundary
 Code of record: `engine/prophet_b2_disposition.py` (pure stdlib, no file writes, no
 imports of `prophet_bridge`/`us_early_turn`, mirroring the discipline of
 `engine/us_candidate_episode.py:1-6`). Suite: `tests/test_prophet_b2_disposition.py`
-(16 tests in the original return; 26 after the bounded 2026-09-12 repair). CI: a new
-additive step in the `prophet-anticipation-intake` job
-(`.github/ci/legacy-jobs.yml`), beside the union-admission step whose pins the matrix
-cites.
+(16 tests in the original return; 26 after the bounded 2026-09-12 repair). Merge-binding
+CI: the exact B2-0 suite is an additive step in the existing `gate: code`
+`washout-turn-organ` job in `.github/ci/legacy-jobs.yml`; the trusted executor selected
+that job on exact head `de48a5a74280da85da96b3014340dc7cf7ab78fe`, and hosted run
+`35437468471` / pack 5 / job `105882562105` executed the B2 step with 26 passing tests.
+The historical union-admission runs cited below remain evidence at `fdaf4091…`; they
+are not the current B2 suite's CI placement and are not a sibling/on-every-push
+merge-binding relationship.
 
 ## The baked-v1 two-pin citation law
 
@@ -90,10 +94,12 @@ All five records: `owner = WS:PROPHET-US-V4-RECOVERY.b2`, `known_at = recorded_a
   appended as a superseding record (`seq 2, supersedes 1`). Until then §8.1 claim 1
   stays SUSPENDED and no product copy may quote the naked-union numbers as the deck's.
 * **B-15/B-18/B-19 demotion path**: these closures are proven on the committed
-  STLD/NEM fixtures in a local run (py3.14.7, macOS, pytest 9.1.1). If the CI
-  re-proof (the union-admission step this packet's new step sits beside) ever goes red
-  at a descendant of `fdaf4091`, the correct move is a superseding record demoting the
-  row — never an edit of this one.
+  STLD/NEM fixtures in a local run (py3.14.7, macOS, pytest 9.1.1). Their historical
+  union-admission discriminators remain evidence at `fdaf4091`; the current B2-0
+  semantic battery is separately merge-bound through code-gated `washout-turn-organ`.
+  If a later owner-valid re-proof of either the historical invariants or the current
+  B2-0 semantic contract contradicts one of these rows, the correct move is a
+  superseding record demoting the row — never an edit of this one.
 * **B-16 gate-sensitivity note** (recorded, not a leg): `check_contract_drift.py`
   samples only the FIRST wildcard file, and `site/signals/AAPL.json` now carries
   `early_signal_dates` — so a planted pre-heal manifest (field REQUIRED) no longer
