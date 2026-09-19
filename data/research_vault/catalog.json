@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T05:40:53.849752+00:00",
-  "count": 2409,
+  "generated_at": "2026-09-19T09:10:35.776434+00:00",
+  "count": 2419,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -192,6 +192,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-487gtdyd3g2-510744",
+      "title": "Inflection Points September 2026 US Final",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-19T01:28:16Z",
+      "summary_points": [
+        "Tech-S&P 500 Volatility Correlation Surge: Tech volatility correlation with S&P 500 jumped to 0.9 (vs. 7 in 2023-2024), driven by AI monetization concerns and tech’s role as primary earnings growth driver, amplifying portfolio volatility.",
+        "Correlation-Dispersion Decoupling: Mag 7 ex-Tesla shows falling pairwise correlations and rising target dispersion (2026), signaling independent stock movements and heightened risk of individual stock divergence for portfolio construction.",
+        "SOX Mispricing Opportunity: SOX index priced for S&P 500-level long-term growth (7% vs.",
+        "S&P’s 12%), but SOX stocks forecast faster near-term growth; potential tactical upside if AI/cloud software companies beat revised expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-onqmfi9hmxu-fbddd3",
       "title": "Ii macro brief AI in europe part two comparing capex and strategy",
       "institution": "Other",
@@ -313,6 +333,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-oq6xctrd633-ec2fd7",
+      "title": "Silver",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:41Z",
+      "summary_points": [
+        "Correlation Anchor: Silver price anchored to gold's multi-year correlation amid fiscal/USD risks, with structural demand from electrification (EVs, grid, AI/data centers) countering solar substitution pressures.",
+        "Structural Demand Shift: Electrification-driven demand (EVs, grid, AI/data centers) provides fundamental support, offsetting solar panel substitution risks in silver usage.",
+        "Price Forecast: Spot silver at 66.5 USD/oz, targeting 80 USD/oz by September 27, reflecting medium-term upside.",
+        "Risk Balance: Near-term headwinds (hawkish Fed, global growth decline, industrial demand drop) but medium-term outlook remains bullish for silver prices."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-v5cobzfubog-fa4c72",
       "title": "UBS Equity Preference List Singapore 2026 09 18",
       "institution": "UBS",
@@ -330,6 +370,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ao7xgvlrtqg-89fe4a",
+      "title": "Bond markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:10Z",
+      "summary_points": [
+        "Yield Outlook & Entry Levels: Average yields (5.3% USD/GBP, 4% EUR, 1.2% CHF) offer attractive entry points for \"quality income\" bonds, with year-to-date positive returns driven by carry despite recent 0-0.6% negative 4-week returns from rising yields.",
+        "Central Bank Policy & Inflation: Market pricing expects ECB (3.4%), Fed (4.7%), SNB (0.6%) hikes over 12 months; Middle East tensions + El Niño prolong inflation, delaying rate cuts and increasing recession risk from aggressive hikes.",
+        "Quality Bonds as Recession Hedge: \"Quality income\" bonds (USD 5.3%, EUR 4.0%, GBP 5.3%, CHF 1.2%) provide carry yield and recession protection; yield changes critically impact returns (e.g., 150bp rise → zero return).",
+        "Credit Risk Thresholds: Critical default risk assessment via non-payment probability tiers: Very Low (<2%), Medium (2–20%), High (≥20% cumulative), directly guiding portfolio risk allocation.",
+        "Relative Value & Recommendations: \"Attractive\" ratings dominate (>50% of issuers like DNB BANK, RBC), with \"Preferred\" valuation tier guiding portfolio construction; sell triggers when risk exceeds valuation (e.g., negative returns, imminent call)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vyghmdvjevz-c3c7ac",
+      "title": "Br euro hy beyondtheyield",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:52Z",
+      "summary_points": [
+        "Structural Quality: EUR HY has lower default rates (4.58% vs US HY) due to higher BB/B ratings (70.47% of portfolio), reduced CCC exposure, and lower interest rate volatility sensitivity.",
+        "Sector Diversification: EUR HY features lower energy exposure, higher telecom/non-cyclical allocation (Telecom 15.3%, Automotive 10.3%), and balanced sector mix versus private credit’s concentrated software/Al focus.",
+        "Liquidity Edge: Superior liquidity and transparency vs private credit (41% IT exposure), driven by BB-heavy structure, enabling tactical allocation and reducing sector-specific downturn risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -368,6 +448,45 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uqewgudczqq-f6f8e6",
+      "title": "Daily EMEA",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:43Z",
+      "summary_points": [
+        "Fed's rate hike & market expectations: Fed hikes to 3.75-4% (25bps), median 2026 rate projection 4.1%, but market pricing excessive with upside risks; disinflation and base effects temper long-hike case.",
+        "BOE Rate Hike Signals & UK Allocation: BOE signals 25bps hikes in Nov/Feb 2027 amid energy-driven inflation; favor short-to-medium UK high-grade bonds (attractive carry), avoid longest maturities due to fiscal sustainability and AI debt risks.",
+        "USDJPY Technicals & BoJ Risk: USDJPY at 156 (-0.5%), forecast 155-160; highly sensitive to Fed/ECB tightening, which risks further yen weakening (157) despite BoJ's 1.25% rate hike."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rmr6otor5t1-6a4076",
+      "title": "Chinese government bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:15Z",
+      "summary_points": [
+        "CGB Yield Trajectory: 10-year yield projected to decline to 1.65% by Dec 2026 (1.69% as of 14 Sep), driven by weak domestic demand, soft credit growth, and PBoC liquidity support; near-term upside capped by accelerating bond issuance.",
+        "Fiscal Acceleration & Supply Pressure: Cumulative CGB issuance at 63% of full-year quota (vs 81% in 2021) signals heightened supply, pressuring yields upward despite accommodative PBoC policy.",
+        "Credit Risk Framework: UBS categorizes CGBs into Very Low (<2% non-payment), Medium (2-20%), and High (≥20%) risk flags, directly reflecting default probability for fundamental risk evaluation.",
+        "BBB- Threshold Significance: BBB- marks the critical boundary between Investment Grade (AAA-BBB-) and Non-Investment Grade (BB+ to C), directly influencing portfolio risk allocation and stress testing for Chinese bonds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
@@ -532,6 +651,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 30,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a2ztmprcglg-517d2c",
+      "title": "Europe Retail Retail Matters On leads a bifurcated sportswear market",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T20:10:41Z",
+      "summary_points": [
+        "Portfolio Action: Buy Inditex, Next, On, Zalando; Sell ABF, H&M - On's China & Digital Dominance: Leads China Tmall growth YoY and global web traffic, outperforming peers in regional and digital channels - Zalando MAU Acceleration: App MAUs accelerated in Europe/Germany (Aug), signaling strong user engagement and digital strategy traction - Markdown Divergence: Adidas UK markdowns exceed 2025 targets (margin risk), while Zara maintains disciplined markdowns globally (US/Germany/Spain) - Vinted's Structural Shift: European app MAU dominance outperforming Chinese aggregators, exceeding H&M/Inditex in web traffic (fundamental secondhand platform shift) - German E-commerce Reversal: Negative YoY online retail sales in July (Exhibit 46), signaling potential demand deterioration in key market - Inditex vs H&M Fundamentals: Inditex US ATV growth positive (Aug), H&M US sales declined sequentially; Inditex outperforms H&M in observed sales YoY"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
@@ -869,6 +1005,64 @@
         "MYR/THB Outperformance: Malaysia’s tech exports (3rd in Asia), data center growth, and gas price benefits drive MYR strength vs THB’s energy import drag; trade entry 8.14, target 8.60, stop-loss 7.80.",
         "KRW 2Y IRS Carry Opportunity: BoK’s dovish hike (3.0% in Aug) and curve steepness (3M-2Y) offer 5bp carry/roll-down; recommend receiving at 3.97% (target 3.60%, stop-loss 4.30%) as hiking cycle nears end.",
         "INR/IDR Long Position: RBI’s FCNR(B) inflows ($128bn) and improved balance of payments support INR outperformance; recommend long entry 187, target 200, stop-loss 178 amid net FDI/equity inflows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1mcvjodwepo-f5d5df",
+      "title": "USA Industrial Production Below Expectations but GDP Relevant Details Stronger on Net",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:26Z",
+      "summary_points": [
+        "GDP Tracking Upgrade: Goldman Sachs raised Q3 GDP tracking estimate by 0.1pp to +3.3% qoq annualized, reflecting revised growth outlook.",
+        "Industrial Production Weakness: Manufacturing output fell 0.3% (vs.",
+        "+0.4% forecast), contributing to flat industrial production.",
+        "Utilities Boost: Utilities component strength offset manufacturing weakness, supporting elevated Q3 GDP tracking."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ejmaw49cqar-88ed99",
+      "title": "GS Utilities Daily PPC Major DC deal announcement with Amazon, a positive",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:46Z",
+      "summary_points": [
+        "PPC Amazon Deal: Binding MoU for 300 MW datacenter (2028), 15-yr PPA validates business model, opens growth beyond 300 MW, incremental €4/share upside.",
+        "RWE Oracle VPPA: 433 MW Virtual PPA with Oracle + $1.5bn green bond (5/10-yr tranches) strengthens renewable revenue streams and strategic positioning.",
+        "Germany Wind Tender: 2.523 GW awarded (oversubscribed 5.25 GW bids), prices declined to 4.79 ct/kWh, critical for renewable project economics and market sentiment.",
+        "AI Energy Demand: +25% datacenter demand from AI queries supports \"Earnings Super-Cycle\" with 2025-30 EPS CAGR of +9%, driving utility valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2heepa5dotr-c4573f",
+      "title": "Genting Singapore Ltd. (GENS.SI) Improving inbound travel trend in 3Q26td. Updating estimates",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:38Z",
+      "summary_points": [
+        "Revised EBITDA Estimates: FY26-28E EBITDA up +11-15% driven by GGR market share recovery (36% vs. 24% Q2 2026) and margin expansion (35.4% vs. 5% Q2 2026), accelerating EBITDA growth to 6.2% (12/27E) from 1.2% (12/26E).",
+        "Inbound Travel Recovery: Q3 2026 inbound visitors +3% YoY (vs. 7% Q2), led by China (+4%), Australia (+2%), Japan (+2%); key demand drivers for tourism revenue with strong China growth (28% YoY 1/2026)."
       ],
       "tags": [],
       "tickers": [],

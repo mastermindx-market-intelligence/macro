@@ -2549,6 +2549,8 @@ on:
       - "tests/test_marketing_card_ticker_agreement.py"
       - "tests/test_marketing_cold_read.py"
       - "tests/test_marketing_earnings_call_lane.py"
+      - "tests/test_marketing_earnings_call_projection.py"
+      - "scripts/marketing_earnings_call_projection.py"
       - "tests/test_marketing_emitted_kind_ownership.py"
       - "tests/test_marketing_lane_rerun.py"
       - "tests/test_marketing_links.py"
