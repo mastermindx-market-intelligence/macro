@@ -803,6 +803,15 @@ def _onClick_cases(src: str) -> set[str]:
     return set(re.findall(r"case '([^']+)':", src[start:end]))
 
 
+def _onChange_acts(src: str) -> set[str]:
+    """data-acts dispatched from the `change` listener (selects / time inputs persist on change,
+    not on click — #6907 alert prefs). A control handled here is handled; dispatching it from
+    onClick as well would fire the persist on the click that merely opens the select."""
+    start = src.index("function onChange(e)")
+    end = src.index("\n  function ", start)
+    return set(re.findall(r"act === '([^']+)'", src[start:end]))
+
+
 def _registered_routes(routes=None, seen=None) -> set[tuple[str, str]]:
     """Every (path, method) the mounted app answers, walked through nested routers.
 
@@ -845,11 +854,22 @@ def test_t6_every_panel_api_call_has_a_registered_route():
 def test_t6_every_rendered_data_act_has_an_onclick_case():
     src = ACCOUNT_JS.read_text(encoding="utf-8")
     rendered = set(_ACT_RE.findall(src))
-    handled = _onClick_cases(src)
+    clicked = _onClick_cases(src)
+    changed = _onChange_acts(src)
+    handled = clicked | changed
     assert rendered, "found no data-act attributes — did account.js change shape?"
-    assert handled, "found no onClick cases — did account.js change shape?"
+    assert clicked, "found no onClick cases — did account.js change shape?"
     assert not sorted(rendered - handled), \
         f"rendered controls with no handler: {sorted(rendered - handled)}"
+
+
+def test_t6b_no_control_is_dispatched_from_both_click_and_change():
+    """Round-6 regression (Grok h_7132_rv5 B1): a select/time control that persists on `change`
+    must not ALSO be routed from `onClick`, or the click that opens the select fires the persist
+    with the unchanged value. RED at 2f94539c (alert-tz / alert-qh in both), GREEN after."""
+    src = ACCOUNT_JS.read_text(encoding="utf-8")
+    both = sorted(_onClick_cases(src) & _onChange_acts(src))
+    assert not both, f"controls dispatched from both onClick and onChange: {both}"
 
 
 def test_t6_no_error_branch_falls_back_to_a_body_the_server_never_sends():
