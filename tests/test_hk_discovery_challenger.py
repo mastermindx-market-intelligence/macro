@@ -792,3 +792,167 @@ def test_k_ni7_x1_reads_the_preregistered_per_name_a_share_plane():
     native_block = source[marker:registration]
     assert "load_a_twin_closes" in native_block
     assert 'store.read("china_search", "closes")' not in native_block
+
+# ---------------------------------------------------------------------------
+# Wave 7 — same-population HK-native rank races (H3 / X1), zero authority
+# ---------------------------------------------------------------------------
+def _native_family_rows_for_rank_race():
+    return {
+        "AAA.HK": {
+            "h3_ah_discount_status": hki.ACCRUING,
+            "h3_ah_discount_value": 0.90,
+            "x1_atwin_momentum_status": hki.ACCRUING,
+            "x1_atwin_momentum_value": 1.40,
+        },
+        "BBB.HK": {
+            "h3_ah_discount_status": hki.ACCRUING,
+            "h3_ah_discount_value": 0.55,
+            "x1_atwin_momentum_status": hki.ACCRUING,
+            "x1_atwin_momentum_value": 0.20,
+        },
+        "STALE.HK": {
+            "h3_ah_discount_status": hki.STALE,
+            "h3_ah_discount_value": 0.99,
+            "x1_atwin_momentum_status": hki.STALE,
+            "x1_atwin_momentum_value": 3.0,
+        },
+        "PARTIAL.HK": {
+            "h3_ah_discount_status": hki.PARTIAL,
+            "h3_ah_discount_value": None,
+            "x1_atwin_momentum_status": hki.PARTIAL,
+            "x1_atwin_momentum_value": None,
+        },
+        "UNAVAILABLE.HK": {
+            "h3_ah_discount_status": hki.UNAVAILABLE,
+            "h3_ah_discount_value": None,
+            "x1_atwin_momentum_status": hki.UNAVAILABLE,
+            "x1_atwin_momentum_value": None,
+        },
+        "NA.HK": {
+            "h3_ah_discount_status": hki.NOT_APPLICABLE,
+            "h3_ah_discount_value": None,
+            "x1_atwin_momentum_status": hki.NOT_APPLICABLE,
+            "x1_atwin_momentum_value": None,
+        },
+        "OFFLIST.HK": {
+            "h3_ah_discount_status": hki.ACCRUING,
+            "h3_ah_discount_value": 1.0,
+            "x1_atwin_momentum_status": hki.ACCRUING,
+            "x1_atwin_momentum_value": 9.0,
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    ("family", "definition"),
+    (
+        ("h3_ah_discount", "hk_h3_ah_discount_rank_v1"),
+        ("x1_atwin_momentum", "hk_x1_atwin_momentum_rank_v1"),
+    ),
+)
+def test_w7_family_ranker_scores_only_accruing_incumbent_names(family, definition):
+    calls = [
+        {"ticker": t}
+        for t in (
+            "AAA.HK", "BBB.HK", "STALE.HK", "PARTIAL.HK",
+            "UNAVAILABLE.HK", "NA.HK",
+        )
+    ]
+    rows = _native_family_rows_for_rank_race()
+    out = hki.rank_family_calls(calls, rows, family)
+
+    assert hki.RANK_DEFINITIONS[family] == definition
+    assert set(out) == {str(c["ticker"]) for c in calls}
+    assert "OFFLIST.HK" not in out
+    assert out["AAA.HK"]["score_raw"] > out["BBB.HK"]["score_raw"]
+    assert out["AAA.HK"]["score_conservative"] is None
+    assert out["BBB.HK"]["score_conservative"] is None
+    for ticker in ("STALE.HK", "PARTIAL.HK", "UNAVAILABLE.HK", "NA.HK"):
+        assert out[ticker] == {
+            "score_raw": None,
+            "score_conservative": None,
+        }
+
+
+def test_w7_family_ranker_rejects_unregistered_family():
+    with pytest.raises(ValueError):
+        hki.rank_family_calls(
+            [{"ticker": "AAA.HK"}],
+            _native_family_rows_for_rank_race(),
+            "made_up_family",
+        )
+
+
+def test_w7_lane_a_persists_two_separate_same_population_rank_races(
+    tmp_path, monkeypatch,
+):
+    _hk_on(monkeypatch)
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(
+        bs,
+        "_read_incumbent_positions",
+        lambda _market, _asof: {
+            "AAA.HK": 1, "BBB.HK": 2, "STALE.HK": 3,
+        },
+    )
+    calls = [
+        {
+            "ticker": "AAA.HK",
+            "group": "buy",
+            "board_definition": "hk_prophet_v2",
+        },
+        {
+            "ticker": "BBB.HK",
+            "group": "buy",
+            "board_definition": "hk_prophet_v2",
+        },
+        {
+            "ticker": "STALE.HK",
+            "group": "watch",
+            "board_definition": "hk_prophet_v2",
+        },
+    ]
+    families = _native_family_rows_for_rank_race()
+    for family, definition in hki.RANK_DEFINITIONS.items():
+        bs.register_challenger(
+            "HK",
+            definition,
+            rank_fn=lambda incoming, fam=family: hki.rank_family_calls(
+                incoming, families, fam,
+            ),
+        )
+
+    receipt = bs.write_shadow(calls, market="HK", asof=ASOF)
+    assert receipt["written"] == 6  # 3 incumbent names x 2 separate rank races
+
+    stored = pd.read_parquet(bs._lane_a_path("HK"))
+    assert set(stored["challenger_definition"]) == set(
+        hki.RANK_DEFINITIONS.values()
+    )
+    for definition in hki.RANK_DEFINITIONS.values():
+        sub = stored[stored["challenger_definition"] == definition]
+        assert set(sub["ticker"]) == {"AAA.HK", "BBB.HK", "STALE.HK"}
+        assert set(sub["population_n"]) == {3}
+        assert set(sub["challenger_offlist_n"]) == {0}
+        assert set(sub["challenger_coverage"]) == {pytest.approx(2 / 3)}
+        ranked = sub.set_index("ticker")
+        assert int(ranked.loc["AAA.HK", "challenger_rank"]) == 1
+        assert int(ranked.loc["BBB.HK", "challenger_rank"]) == 2
+        assert pd.isna(ranked.loc["STALE.HK", "challenger_rank"])
+        assert pd.isna(ranked.loc["STALE.HK", "challenger_score_raw"])
+        assert sub["challenger_score_conservative"].isna().all()
+
+
+def test_w7_builder_registers_rank_races_only_after_publication_before_shadow_write():
+    source = (ROOT / "scripts" / "build_hk_library.py").read_text()
+    persist = source.index('(fdir / "hk_standouts.json").write_text(')
+    h3 = source.index('hki.RANK_DEFINITIONS["h3_ah_discount"]') if False else source.index(
+        'hk_native_intelligence.RANK_DEFINITIONS["h3_ah_discount"]'
+    )
+    x1 = source.index(
+        'hk_native_intelligence.RANK_DEFINITIONS["x1_atwin_momentum"]'
+    )
+    shadow = source.index('board_shadow.write_shadow(calls, market="HK"')
+    assert persist < h3 < shadow
+    assert persist < x1 < shadow
+
