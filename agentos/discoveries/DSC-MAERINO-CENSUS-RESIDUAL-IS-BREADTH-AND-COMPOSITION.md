@@ -9,7 +9,9 @@ claim: >
   remains todo, and no current production path was found that autonomously turns a
   receipt-bound company-event question into a bounded company/peer filing investigation
   and returns a reviewed receipted finding to the originating event context. Public
-  Earnings Wire breadth is already 5,581 call records.
+  Earnings Wire breadth is already 5,581 call records, while the existing deterministic
+  earnings-call X derivative is built but current source states it is not wired to any
+  runtime caller.
 falsifier: >
   Re-run the current-source and real-path probes recorded in #7347 and refute or revise
   this claim by demonstrating either (a) a broad disjoint issuer cohort already
@@ -17,8 +19,10 @@ falsifier: >
   event_workspace, (b) FIF-7 accepted complete with broad KPI/guidance convergence,
   or (c) a production event-triggered forensic loop that performs bounded company/peer
   evidence acquisition and returns a reviewed receipted finding to the original
-  company-event context. A source-only design, fixture, transcript-only Wire record,
-  or interactive one-shot chat answer does not falsify the autonomous-loop claim.
+  company-event context, or (d) production proof that canonical CEI event/story truth
+  reaches the existing governed X outbox/publisher on a natural new event. A source-only
+  design, fixture, transcript-only Wire record, green X-lane test, or interactive
+  one-shot chat answer does not falsify the relevant production claim.
 so_what: >
   Do not create a Maerino-parity workstream, second research engine, second metric
   registry, queue or store. Preserve E3-C for cross-issuer event/Q&A admission and
@@ -28,7 +32,10 @@ so_what: >
   generic document investigations into engine/research_factory: its canonical
   candidate/state model is experimental/trial-oriented. The autonomous forensic
   composition owner remains to be adjudicated over existing execution surfaces.
-  Alpha K3-D separately owns later cross-company economic read-through.
+  Alpha K3-D separately owns later cross-company economic read-through. Existing
+  X Growth / Marketing owns public distribution; the current earnings-call derivative
+  must be activated/proven through that existing outbox/publisher rather than by
+  creating another scheduler or publisher.
 kind: data
 verified_at: 2026-09-18
 verified_by: >
@@ -40,7 +47,8 @@ verified_by: >
   COMPANY_EVENT_INTELLIGENCE_SPINE assigns bounded cited event questions to existing
   Brain/Research OS; engine/research_factory/schema.py shows trial/experimental
   candidate types, trial accounting and screening/challenge/review states rather than
-  a generic document-investigation lifecycle.
+  a generic document-investigation lifecycle; engine/marketing/earnings_call_lane.py
+  states that no runtime caller currently wires its enqueue/run entry points.
 scope:
   - macro
   - WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER
