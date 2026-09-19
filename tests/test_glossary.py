@@ -68,7 +68,20 @@ def _so_what(section: dict) -> str:
     return ""
 
 
+_CJK_RE = re.compile(r"[一-鿿]")
+
+
 def _content_words(text: str) -> set[str]:
+    """EN: 4+ alphanumeric tokens after stopword removal.
+    CJK: overlapping character bigrams (each pair of adjacent CJK codepoints).
+    """
+    if _CJK_RE.search(text):
+        # Overlapping CJK bigrams over runs of CJK characters.
+        chars: list[str] = []
+        for ch in text:
+            if "一" <= ch <= "鿿":
+                chars.append(ch)
+        return {text[i : i + 2] for i in range(len(chars) - 1)}
     return {
         word
         for word in re.findall(r"[a-z0-9]+", text.lower())
@@ -297,9 +310,43 @@ def test_stage_labels_zh_uses_the_chip_text_the_page_renders():
     term = next(t for t in GLOSSARY_TERMS if t.id == "stage-labels-cn")
     assert "信号已过" in (term.answer_zh or ""), term.answer_zh
     assert "信号已过" in (term.why_zh or ""), term.why_zh
-    # The dead chip text must not appear in any glossary field.
+    # MINOR-2c: the dead chip text must not appear in any glossary field.
     for entry in GLOSSARY_TERMS:
-        assert "已迟" not in (entry.why_zh or ""), entry.id
+        for field in ("answer_zh", "why_zh", "answer_en", "why_en"):
+            assert "已迟" not in (getattr(entry, field) or ""), f"{entry.id}.{field}"
+
+
+def test_stage_labels_coupling_test():
+    """h_7125 MAJOR-2: templates/stocktable.js:~1173 renders
+    ``bi('RAN / LATE', '信号已过')`` for the RAN/LATE stage chip.
+    The glossary stage-labels-cn entry must use exactly those strings
+    (EN answer, ZH answer, ZH why) so the row matches what the page shows.
+
+    RED on 89ec6f2c: the row carried 'Ran Late' / '已迟' — neither matches
+    the JS. GREEN at HEAD: all three fields carry the exact bi() strings."""
+    import subprocess
+
+    js_text = subprocess.check_output(
+        ["git", "show", f"HEAD:templates/stocktable.js"], text=True, encoding="utf-8"
+    )
+    m = re.search(
+        r"bi\s*\(\s*['\"]\s*(RAN\s*/\s*LATE)\s*['\"]\s*,\s*['\"]\s*(信号已过)\s*['\"]\s*\)",
+        js_text,
+    )
+    assert m, "bi('RAN / LATE', '信号已过') pattern not found in stocktable.js"
+    chip_en = m.group(1)
+    chip_zh = m.group(2)
+
+    term = next(t for t in GLOSSARY_TERMS if t.id == "stage-labels-cn")
+    assert chip_en in (term.answer_en or ""), (
+        f"RAN/LATE chip EN {chip_en!r} not in stage-labels-cn answer_en: {term.answer_en!r}"
+    )
+    assert chip_zh in (term.answer_zh or ""), (
+        f"RAN/LATE chip ZH {chip_zh!r} not in stage-labels-cn answer_zh: {term.answer_zh!r}"
+    )
+    assert chip_zh in (term.why_zh or ""), (
+        f"RAN/LATE chip ZH {chip_zh!r} not in stage-labels-cn why_zh: {term.why_zh!r}"
+    )
 
 
 def test_consensus_board_why_uses_the_boards_own_words():
