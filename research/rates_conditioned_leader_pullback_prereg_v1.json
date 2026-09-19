@@ -36,18 +36,18 @@
     "REACCELERATION": "d10_22>0 && d10_5>0 && dr10_5>=0",
     "magnitude_sensitivity": "abs(d10_5)>=5"
   },
-  "primary_metric": "date_clustered_false_start_rate_difference_pp",
+  "primary_metric": "date_clustered_false_bounce_rate_difference_pp",
   "minimum_unique_decision_dates_per_arm": 30,
   "supportive_diagnostic": {
-    "minimum_false_start_reduction_pp": 10,
     "interval_must_exclude_zero": true,
     "temporal_halves_same_sign": true,
-    "bh_q_max": 0.1
+    "bh_q_max": 0.1,
+    "minimum_false_bounce_reduction_pp": 10
   },
   "suggestive_minimum_reduction_pp": 5,
   "secondary_outcomes": [
+    "composite_false_start_42d",
     "stop_A_survival",
-    "false_bounce",
     "MFE_42",
     "two_R_before_stop",
     "entry_vs_low",
@@ -74,12 +74,12 @@
     "owner": "engine.trial_ledger",
     "bh_q_max": 0.1,
     "inferential_looks": [
-      "A1_C2r_leader_easing_vs_non_easing_false_start",
+      "A1_C2r_leader_easing_vs_non_easing_false_bounce",
       "A2_C2r_leader_minus_nonleader_interaction",
       "A3_C2r_policy_confirmed_relief",
       "A4_C2r_5bp_magnitude_sensitivity",
       "A5_C2r_reacceleration_falsifier",
-      "A6_C4_leader_easing_vs_non_easing_false_start",
+      "A6_C4_leader_easing_vs_non_easing_false_bounce",
       "A7_C4_leader_minus_nonleader_interaction"
     ]
   },
@@ -93,5 +93,6 @@
     "temporal_split": "2020-07-01",
     "minimum_unique_decision_dates_per_arm_overall": 30,
     "minimum_unique_decision_dates_per_arm_each_half": 10
-  }
+  },
+  "primary_outcome_definition": "existing Early Admission false_bounce: post-trigger low within +15 sessions breaches P_low by >2%"
 }
