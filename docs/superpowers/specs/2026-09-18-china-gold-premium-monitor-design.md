@@ -36,13 +36,36 @@ indicative.
 
 ## Source and rights contract
 
-This feature does not scrape SGE, LBMA/IBA, Yahoo, Tushare, or another website. It reads only
-provider-neutral store references explicitly configured under commodities.china_gold_premium.
+### Initial UI/engine slice
 
-Each leg config requires group, name, column, source_label, and entitled: true. A leg with
-entitled != true, missing config, absent data, or bad values is unavailable. This keeps the
-user-facing surface safe to ship before an entitled feed is installed and avoids a second
-collector, store, queue, or publication plane.
+The first slice did not scrape or add a provider collector. It read only provider-neutral
+store references explicitly configured under `commodities.china_gold_premium`.
+
+Each leg config requires `group`, `name`, `column`, `source_label`, and
+`entitled: true`. A leg with `entitled != true`, missing config, absent data, or bad
+values is unavailable.
+
+### Approved source-integration amendment
+
+The Chairman-approved continuation supersedes only the initial-slice "no new provider
+collector" constraint so the product can reach a real data path. It adds one bounded
+`gold_china_basis` collector that reuses existing governed Tushare and Massive/Polygon
+credential surfaces, the existing `lib.store` time-series plane, and the existing nightly
+scheduler. It creates no new store authority, queue, credential plane, or publication plane.
+
+The indicative close-aligned source contract is:
+
+- SGE Au99.99 from Tushare `sge_daily`, whose trade-date row comprises the prior-night
+  session plus the current 09:00-15:30 Shanghai session; the comparison timestamp is the
+  trade-date close at 15:30 Asia/Shanghai;
+- Massive Currencies `C:XAUCNY` minute aggregates, aligned within the configured close
+  tolerance; the committed capability manifest records the FX probe as entitled;
+- raw legs persist under `china_gold_basis/` and are consumed only by this display engine.
+
+This amendment does not convert the proxy into the official benchmark. SHAUPM/LBMA-AM remains
+the canonical method and stays unavailable until its own entitled mapping exists. Missing or
+stale proxy sources fail closed; futures, ETFs, Yahoo, or unofficial web quotes remain forbidden
+substitutes.
 
 ## Engine boundary
 

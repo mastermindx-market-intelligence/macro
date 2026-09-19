@@ -12,7 +12,8 @@ Spec: docs/superpowers/specs/2026-09-18-china-gold-premium-monitor-design.md
 
 ## Global constraints
 
-- No scraping or new provider collector in this slice.
+- **Initial UI/engine slice only:** no scraping or new provider collector. This clause is
+  superseded for the approved source-integration continuation by the amendment below.
 - Every configured source leg must explicitly set entitled: true.
 - Canonical and intraday methodologies never splice.
 - Display-only context: no score, rank, gate, size, Prophet, portfolio, or conviction input.
@@ -57,3 +58,28 @@ and extend tests/test_china_gold_premium.py.
 - Capture dark/light × EN/ZH × desktop/mobile.
 - Run design-system, visual-evidence, runtime-style and relevant pytest gates.
 - Commit/push/open PR, own CI through conclusion, merge when lawful, then verify the served Gold panel.
+
+## Approved source-integration continuation — Slice B
+
+After the initial provider-neutral UI/engine slice was proven, the Chairman-approved
+continuation extended the same product outcome through the real source path rather than
+leaving the monitor permanently dark.
+
+This amendment supersedes only the initial-slice prohibition on adding a provider collector.
+It does **not** supersede the one-store/one-scheduler law, source-rights gate, display-only
+authority, or canonical/indicative separation.
+
+Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
+
+- reuses the existing Tushare client/credential and the existing Massive/Polygon credential;
+- writes raw source legs into the existing `lib.store` time-series plane under
+  `china_gold_basis/` (no second store or publication plane);
+- runs in the existing authoritative nightly collector lane (no new scheduler);
+- fetches SGE Au99.99 trade-date close and close-aligned global XAU/CNY only;
+- leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its
+  own entitled mapping exists;
+- remains display/context-only and cannot rank, size, gate, allocate, or originate trades.
+
+Production proof for this slice is the normal post-merge nightly source accrual followed by
+the existing daily commodity builder and served-page browser verification. Pre-merge fixture
+evidence proves rendering and fail-closed behavior but is not a live vendor-call receipt.
