@@ -1,11 +1,11 @@
 # China Gold Premium — visual evidence
 
-This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `47bc4b192b68b504804e99e9cb894335639edf8e`.
+This corpus captures the actual `commodities.html.j2` with the new Gold-only China physical-premium partial at semantic head `24047f922dc846546404c0b4ade29fc35a833a8f`.
 
 ## States
 
-- **available** — deterministic, entitled fixture inputs are passed through the production `engine.china_gold_premium` math. The final intraday fixture reproduces the screenshot arithmetic: Shanghai USD-eq 4398.94 versus London 4391.59 = +0.1674%.
-- **unavailable** — no entitled source is configured. The panel remains visible and explicitly refuses to substitute futures, an ETF, or an unofficial web quote.
+- **available** — deterministic, fixture-only entitled inputs are passed through the production `engine.china_gold_premium` math. The final intraday fixture reproduces the screenshot arithmetic: Shanghai USD-eq 4398.94 versus London 4391.59 = +0.1674%.
+- **unavailable** — required live source rows are absent. The panel remains visible and explicitly refuses to substitute futures, an ETF, or an unofficial web quote.
 
 The canonical manifest contains both routes across dark/light × EN/ZH × desktop 1440/mobile 390: **16/16 captured**. The friendly `panel-*.png` files are supplemental element crops of the Gold panel itself.
 
@@ -20,8 +20,8 @@ The exact feature base already has a commodities-page mobile document overflow: 
 - page errors: **0**
 - requested theme/language mismatch: **0**
 
-The final production acceptance gate remains: after the incumbent R1/mobile fix is integrated, the complete page must fit the 390px document width. This corpus proves the new panel itself is contained; it does not relabel the inherited page defect as fixed.
+The inherited whole-page overflow remains owned by R1 #7198. This feature acceptance is bounded to its own panel plus zero document-width regression versus the feature-free base; this corpus proves both without relabelling adjacent debt as fixed.
 
 ## Source honesty
 
-No live SGE/LBMA provider data is claimed here. Available-state inputs are fixtures used only to prove UI behavior and calculation wiring. Production remains honestly unavailable until entitled source references are configured.
+No live SGE/LBMA benchmark data is claimed here. Available-state inputs are fixtures used only to prove UI behavior and calculation wiring. The official SHAUPM/LBMA-AM method remains unavailable until its own entitled mapping exists; the separate close-proxy source path has been wired but still awaits its first natural secret-bearing nightly effect.

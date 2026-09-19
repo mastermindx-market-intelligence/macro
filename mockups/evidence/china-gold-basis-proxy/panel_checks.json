@@ -1,10 +1,11 @@
 {
-  "schema": "mastermind.china_gold_basis_visual_checks.v1",
-  "semantic_head": "84172b5f4b9f2c556b9d5bf4a46c01f113f304a3",
-  "capture": "actual commodities page proxy fixture; Gold panel crop; stacked-base overflow comparison",
-  "stacked_base": "bd51c2b286827956d54c1afc0af78df4ffc797a2",
+  "schema": "mastermind.china_gold_basis_visual_checks.v2",
+  "semantic_head": "24047f922dc846546404c0b4ade29fc35a833a8f",
+  "capture": "actual commodities fixture; panel crop; feature-free pickup overflow + proof-attribute check",
+  "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
     {
+      "state": "proxy",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -20,15 +21,18 @@
         "width": 1140,
         "height": 753.96875
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-dark-en-desktop.png",
-      "sha256": "b7fbc2b29c519f40ae19d99739b7f8473c791264f163f57c6d5e3f370f3c6c78",
-      "bytes": 109902,
+      "sha256": "5db1f2ddbaf4d4637c136d1e52129a928d30a5fca788ccdd5221e1692c691022",
+      "bytes": 104920,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -44,15 +48,18 @@
         "width": 1140,
         "height": 753.96875
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-light-en-desktop.png",
-      "sha256": "b9b781fef6de7588e5eb65971d661b435632b097d5494351ced4e8a1a7b9b589",
-      "bytes": 83864,
+      "sha256": "6d56fd3dd29f0aaa60a34ac59c7fa9789e09a61529cb60f3b50c1634bdf822bf",
+      "bytes": 79340,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -68,15 +75,18 @@
         "width": 1140,
         "height": 753.96875
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-dark-zh-desktop.png",
-      "sha256": "f6cb1afa709f238b7d7c2306d409d42a5c6d2dd6e7ad844fc5ea27d14b344465",
-      "bytes": 111420,
+      "sha256": "02e6c89e85e29e645db4be7fb2fa223904546e4cff64fa9733b7e4a5c6962f1c",
+      "bytes": 106259,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -92,15 +102,18 @@
         "width": 1140,
         "height": 753.96875
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": false,
       "file": "panel-proxy-light-zh-desktop.png",
-      "sha256": "a36fd5c59439ab1b028b1ad0ba806f4f41a1e5963d9a559647b28c8e5d848608",
-      "bytes": 87657,
+      "sha256": "5b21a8e52b7b5ba2f3ea66db8689b57bd37937eab3c862f089ce42a6af5d8056",
+      "bytes": 83042,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -116,15 +129,18 @@
         "width": 350,
         "height": 745.328125
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-en-mobile.png",
-      "sha256": "90625320e158a4b55dc09bbd6e19124e5d33e9ee2e922f2f5b716669dcb1d807",
-      "bytes": 74299,
+      "sha256": "a2bfe1e7954b8fe2aa210199dfb46dc11f63f69acf1c7987176e4fb73ef62ef8",
+      "bytes": 73714,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -140,15 +156,18 @@
         "width": 350,
         "height": 745.328125
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-light-en-mobile.png",
-      "sha256": "e9e1c1142079db78cbac0416ab718a2e1d2785ab728c7803907f885ec617a485",
-      "bytes": 57505,
+      "sha256": "daa9c7ddbbb941d2881a4048efe2dec9cab97233336e7a383bbfdf0002e7a601",
+      "bytes": 56992,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -164,15 +183,18 @@
         "width": 350,
         "height": 695.265625
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-dark-zh-mobile.png",
-      "sha256": "04cc2f77653dbb3b9e94145dc92c019ef53f17c3736615ec52fcb156cd2587d4",
-      "bytes": 73126,
+      "sha256": "d02289081903733d5f0484413e3b419525c78344acbde0c837f32633ca972e24",
+      "bytes": 72106,
       "page_errors": []
     },
     {
+      "state": "proxy",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -188,12 +210,14 @@
         "width": 350,
         "height": 695.265625
       },
-      "method": "proxy",
+      "display_source": "proxy",
       "currency": "CNY",
+      "source_asof": "2026-09-18T07:30:00+00:00",
+      "premium": "0.167400",
       "inherited_overflow": true,
       "file": "panel-proxy-light-zh-mobile.png",
-      "sha256": "51ec1087b561d9aba90e4c1e3e06ea5d8dd19b54e7fa8e0e7697a26f1bb32949",
-      "bytes": 59472,
+      "sha256": "1074fb62f3050ed8a6ec78bfbb7c69d3da7856963527cda5384f993b51faf13c",
+      "bytes": 58512,
       "page_errors": []
     }
   ]

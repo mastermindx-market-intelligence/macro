@@ -1,11 +1,11 @@
 {
-  "schema": "mastermind.china_gold_premium_visual_checks.v1",
-  "semantic_head": "47bc4b192b68b504804e99e9cb894335639edf8e",
-  "capture": "actual commodities.html.j2 fixture; panel crop; pickup-base overflow comparison",
-  "known_dependency": "Macro #7198 owns inherited commodity-page mobile overflow; this feature may not worsen it.",
+  "schema": "mastermind.china_gold_premium_visual_checks.v2",
+  "semantic_head": "24047f922dc846546404c0b4ade29fc35a833a8f",
+  "capture": "actual commodities fixture; panel crop; feature-free pickup overflow + proof-attribute check",
+  "feature_free_base": "4b420718773b57df57f5fe779bb990a0b7e7704d",
   "checks": [
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -18,16 +18,21 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 753.96875
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": false,
-      "file": "panel-available-dark-en-desktop.png",
-      "sha256": "d49a64be4bd4ad3c9fdae715ba055f3833461acbc8e76004cd6716e7e347eb3f",
-      "bytes": 101186,
+      "file": "panel-intraday-dark-en-desktop.png",
+      "sha256": "a70af87971cac8f28d38b5f74eefa71745f39e89e008a4a7c6df4e9a952d3829",
+      "bytes": 101422,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -40,16 +45,21 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 753.96875
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": false,
-      "file": "panel-available-light-en-desktop.png",
-      "sha256": "dd3ff5d3b0b7022d60603e038405051daf38cbb13ed81ba18511a818d578538c",
-      "bytes": 77235,
+      "file": "panel-intraday-light-en-desktop.png",
+      "sha256": "b613dd9c3712f33dab254a63272967e9eb0fcdff88965a3106094223ca46367c",
+      "bytes": 77116,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -62,16 +72,21 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 753.96875
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": false,
-      "file": "panel-available-dark-zh-desktop.png",
-      "sha256": "dff55d7b0eb169403daa8e8ab0904effb3763b8c6c1b200c29d31818ee1d32da",
-      "bytes": 101690,
+      "file": "panel-intraday-dark-zh-desktop.png",
+      "sha256": "e421160f29e376ee6e990ac847f3e5f4d9dd622a6927fdaa37ae76d02849bec0",
+      "bytes": 101926,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
@@ -84,16 +99,21 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 753.96875
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": false,
-      "file": "panel-available-light-zh-desktop.png",
-      "sha256": "2fc709bfd2cc8294a74fc3312b216a8eee7f679cb19c3a21cd72e0ce7ff273c9",
-      "bytes": 79019,
+      "file": "panel-intraday-light-zh-desktop.png",
+      "sha256": "a95a5256d747bdd716e13b0e09b9e110ebbfb04069f5700734f94e378146caf6",
+      "bytes": 78978,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -106,16 +126,21 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 727.203125
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": true,
-      "file": "panel-available-dark-en-mobile.png",
-      "sha256": "a9a238e88e9db89e6cf0142234c9b7d680bf45a6f2ef1ae934cb88052ebd5873",
-      "bytes": 69503,
+      "file": "panel-intraday-dark-en-mobile.png",
+      "sha256": "9e46aeef3e71d2247d258772050ead54a9ade349568439ab8e0b5e7fc3da39b9",
+      "bytes": 69569,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -128,16 +153,21 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 727.203125
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": true,
-      "file": "panel-available-light-en-mobile.png",
-      "sha256": "9306f8fe65ed0cd881226899a340ae96498a1b0d33d6b4d5ad2f79025c1a1642",
-      "bytes": 53901,
+      "file": "panel-intraday-light-en-mobile.png",
+      "sha256": "763f1229456d617a77df4160e3a43255beedb6d90914981b798446ddae904506",
+      "bytes": 53876,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -150,16 +180,21 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 653.328125
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": true,
-      "file": "panel-available-dark-zh-mobile.png",
-      "sha256": "afed2d56267c40efa2919a214e0f2fd4cdc440089e62bbcd3f22214ef5f8a41a",
-      "bytes": 66779,
+      "file": "panel-intraday-dark-zh-mobile.png",
+      "sha256": "f7f79d49c0e0e761aab79569a796013f583616914ffb1a0e4519c31284a41f1c",
+      "bytes": 66863,
       "page_errors": []
     },
     {
-      "state": "available",
+      "state": "intraday",
       "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
@@ -172,12 +207,17 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 653.328125
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "2026-09-18T02:03:00+00:00",
+      "premium": "0.167365",
       "inherited_overflow": true,
-      "file": "panel-available-light-zh-mobile.png",
-      "sha256": "34ae28f30cb5cc58bb15b416706be95fd296fb18f344db6574fd21763f82adbd",
-      "bytes": 54597,
+      "file": "panel-intraday-light-zh-mobile.png",
+      "sha256": "39721d58e2b93ea91bc2cd0bfd0b197ea240c135dd90c12d44738bd173299a5e",
+      "bytes": 54594,
       "page_errors": []
     },
     {
@@ -194,12 +234,17 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 211.609375
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": false,
       "file": "panel-unavailable-dark-en-desktop.png",
-      "sha256": "050f3178f06137f5166581cb37b467c6f465320d8af6e164e7c2ede4b566ad83",
-      "bytes": 29548,
+      "sha256": "6ce2de35c129cab384ca494c2dc2cdb0f6fe8511389615be6a8504e297e0226d",
+      "bytes": 28313,
       "page_errors": []
     },
     {
@@ -216,12 +261,17 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 211.609375
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": false,
       "file": "panel-unavailable-light-en-desktop.png",
-      "sha256": "8195e6046956e027f8d506f379706d82f5bdf124ba543aad2a25db7cf33b1202",
-      "bytes": 27065,
+      "sha256": "edc585dfc0eef9c1fdf5f41ff40c7f29468153c473bbe16eea1328ed07c13d3f",
+      "bytes": 25795,
       "page_errors": []
     },
     {
@@ -238,12 +288,17 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 211.609375
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": false,
       "file": "panel-unavailable-dark-zh-desktop.png",
-      "sha256": "3793da6656b6bd2cfc5aad6583d0acad41c406b74b96cf5399b28484a5a2c62f",
-      "bytes": 30763,
+      "sha256": "387b8e1c2052ddd4e3cc4b7526264da741b75bf515fa88f497edd1248e1b5946",
+      "bytes": 29398,
       "page_errors": []
     },
     {
@@ -260,12 +315,17 @@
       "panel_bounds": {
         "left": 150,
         "right": 1290,
-        "width": 1140
+        "width": 1140,
+        "height": 211.609375
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": false,
       "file": "panel-unavailable-light-zh-desktop.png",
-      "sha256": "3a40ddc82d5405cf9c5afbfc0576b5f3961c6b7ca51cf836d55b6c1f22e62150",
-      "bytes": 28420,
+      "sha256": "a9f7b70fdc1e5d1e5f855d4aed7e31fdc565d82eb5fdb3ac9b2f504e7244e24f",
+      "bytes": 27046,
       "page_errors": []
     },
     {
@@ -282,12 +342,17 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 285.046875
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": true,
       "file": "panel-unavailable-dark-en-mobile.png",
-      "sha256": "b14333dbd9e5894bc2d9fc1568bd920908d2fda00a964432619e992e110bdd51",
-      "bytes": 28145,
+      "sha256": "5c959652b985b0150079b3f092b7f0028b5b38af1f50e04cfae86de4d1f34b21",
+      "bytes": 26921,
       "page_errors": []
     },
     {
@@ -304,12 +369,17 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 285.046875
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": true,
       "file": "panel-unavailable-light-en-mobile.png",
-      "sha256": "0c968ff5c912837dd803e9274f8040427c4c74dddf2098eb7fd6a72a1f26d8d6",
-      "bytes": 25785,
+      "sha256": "2c52da202a3ec9b1e0b088694074be67b5ad2cf5fd2d2f75459ffd752da5b114",
+      "bytes": 24533,
       "page_errors": []
     },
     {
@@ -326,12 +396,17 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 205.609375
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": true,
       "file": "panel-unavailable-dark-zh-mobile.png",
-      "sha256": "39d7c7c2432a97d1d87d72d25ed2bcb64993246460c3b53c1b913d23d49eee31",
-      "bytes": 27328,
+      "sha256": "841d6eac55ad4e7f1131ea04634542f9e3edcb3cf82ea2c1accce4b935c1f8ce",
+      "bytes": 26142,
       "page_errors": []
     },
     {
@@ -348,12 +423,17 @@
       "panel_bounds": {
         "left": 20,
         "right": 370,
-        "width": 350
+        "width": 350,
+        "height": 205.609375
       },
+      "display_source": "canonical",
+      "currency": "USD",
+      "source_asof": "",
+      "premium": "",
       "inherited_overflow": true,
       "file": "panel-unavailable-light-zh-mobile.png",
-      "sha256": "f84295ea63888700b17911a0731e68c88148a79f5138dcb44175e1fb94f04488",
-      "bytes": 25996,
+      "sha256": "a885c900f16a631ac8bb98f21f4fcd3582a6ac431f835355bfdb50d379a46a24",
+      "bytes": 24765,
       "page_errors": []
     }
   ]

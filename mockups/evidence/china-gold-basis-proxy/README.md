@@ -1,8 +1,8 @@
 # China Gold Basis Proxy — visual evidence
 
-This corpus captures the actual Commodity Vector Gold panel at semantic head
-`84172b5f4b9f2c556b9d5bf4a46c01f113f304a3`, stacked on parent PR #7325 head
-`bd51c2b286827956d54c1afc0af78df4ffc797a2`.
+This corpus captures the actual Commodity Vector Gold panel at exact integrated PR #7325 head
+`24047f922dc846546404c0b4ade29fc35a833a8f`. The geometry comparison uses feature-free pickup base
+`4b420718773b57df57f5fe779bb990a0b7e7704d`.
 
 ## What is proven
 
@@ -22,17 +22,17 @@ The canonical page-evidence manifest contains **8/8 captured states**. Supplemen
 
 ## Geometry / runtime proof
 
-`panel_checks.json` binds the panel to the exact semantic head and compares the child
-page with the exact stacked parent page:
+`panel_checks.json` binds the panel to the exact semantic head and compares the feature page
+with the feature-free pickup page:
 
 - feature worsened document overflow: **0**
 - Gold panel overflow: **0**
 - browser page errors: **0**
 - wrong display method/currency metadata: **0**
 
-The parent commodities page already carries a 390px whole-document overflow owned by
-commodity safety R1 #7198. This child does not worsen it; final whole-page mobile proof
-remains dependent on the incumbent R1 integration.
+The feature-free commodities page already carries a 390px whole-document overflow owned by
+commodity safety R1 #7198. This Gold panel fits at 390px and adds zero document-width regression;
+the inherited whole-page defect remains lane-local to R1 rather than being silently reassigned here.
 
 ## Source honesty
 
@@ -40,8 +40,8 @@ The visual **available** state uses deterministic source fixtures. It is not a c
 the live SGE/Tushare and Massive Currencies calls have already run in production.
 
 The implementation wires those governed sources into the existing US-nightly collector
-lane, whose 18:30 ET authoritative run occurs after the Shanghai close and already carries
-both technical credentials. Production source proof still requires that normal secret-bearing
+lane, whose authoritative run occurs after the Shanghai close and already carries the required
+repository secret bindings. Production source proof still requires that normal secret-bearing
 nightly run after lawful merge. If either technical source is unavailable, the product engine
 fails closed rather than substituting futures, an ETF, or an unofficial quote.
 
