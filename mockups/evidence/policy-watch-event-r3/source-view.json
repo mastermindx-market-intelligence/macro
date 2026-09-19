@@ -1,0 +1,81 @@
+{
+  "schema": "policy_watch_event_feed.v1",
+  "state": "current",
+  "fresh": true,
+  "coverage_checked_at": "2026-09-13T15:35:34.928980Z",
+  "sources": [
+    {
+      "source_key": "boe_news",
+      "publisher": "Bank of England",
+      "jurisdiction": "UK",
+      "coverage_state": "COVERED",
+      "checked_at": "2026-09-13T15:35:34.928980Z"
+    },
+    {
+      "source_key": "ec_presscorner",
+      "publisher": "European Commission",
+      "jurisdiction": "EU",
+      "coverage_state": "COVERED",
+      "checked_at": "2026-09-13T15:35:34.928980Z"
+    }
+  ],
+  "items": [
+    {
+      "event_id": "1bc1ada70c241776",
+      "title": "Commission presents landmark India trade deal to Council for signature",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1842",
+      "publisher": "European Commission",
+      "source_key": "ec_presscorner",
+      "jurisdiction": "EU",
+      "theme": "trade_policy",
+      "published_at": "2026-09-10T22:00:00Z",
+      "source_date": "2026-09-10",
+      "known_at": "2026-09-11T11:53:40.388312Z",
+      "source_tier": 1
+    },
+    {
+      "event_id": "990a0a7dd970097a",
+      "title": "Commission proposes simpler and more strategic Public Procurement rules",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1817",
+      "publisher": "European Commission",
+      "source_key": "ec_presscorner",
+      "jurisdiction": "EU",
+      "theme": "regulatory",
+      "published_at": "2026-09-08T22:00:00Z",
+      "source_date": "2026-09-08",
+      "known_at": "2026-09-09T12:01:19.747490Z",
+      "source_tier": 1
+    },
+    {
+      "event_id": "57c6e953080b9fdc",
+      "title": "Commission approves €400 million German State aid to enhance insulin supply resilience",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1798",
+      "publisher": "European Commission",
+      "source_key": "ec_presscorner",
+      "jurisdiction": "EU",
+      "theme": "competition_antitrust",
+      "published_at": "2026-09-07T22:00:00Z",
+      "source_date": "2026-09-07",
+      "known_at": "2026-09-09T03:11:30.809199Z",
+      "source_tier": 1
+    },
+    {
+      "event_id": "9048053b6465897f",
+      "title": "Keynote Speech by Executive Vice-President Teresa Ribera at the OECD Conference ‘Modernising merger control for an evolving world'",
+      "url": "https://ec.europa.eu/commission/presscorner/detail/en/speech_26_1807",
+      "publisher": "European Commission",
+      "source_key": "ec_presscorner",
+      "jurisdiction": "EU",
+      "theme": "competition_antitrust",
+      "published_at": "2026-09-07T12:06:34Z",
+      "source_date": "2026-09-07",
+      "known_at": "2026-09-09T03:11:30.809199Z",
+      "source_tier": 1
+    }
+  ],
+  "is_context_only": true,
+  "can_rank": false,
+  "can_gate": false,
+  "can_size": false,
+  "can_trade": false
+}

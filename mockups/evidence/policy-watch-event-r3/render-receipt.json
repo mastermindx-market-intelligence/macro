@@ -1,0 +1,53 @@
+{
+  "schema": "mastermind.policy_watch.event_r3.render_receipt.v1",
+  "code_head": "8b94d19648ab74ee99fb4e5c6e97c97eb855ae8a",
+  "code_tree": "32229dac08a0ff59e768e5ee2692af6556d0527c",
+  "source_hashes": {
+    "engine/policy_watch_current.py": "6ea0e9949dbbe9100b20ec66c2c898d41ffae5f07b7cfdd5888005203efc1362",
+    "scripts/build_policy_watch.py": "ccf907a59c6b5fd0e8ea909d5dcc3ab23c7fc88c8e6d513ad255382a00401549",
+    "templates/policy_watch.html.j2": "e63a0f0d7c5f11a95c1b4606b08c15298cc1d67e6f5f1bd26a388628789b8b97",
+    "tests/test_policy_watch_ui.py": "59cceecf53058f64a74f2b1b45ee1a54f41186db641ed3f0278da3d4c149f522",
+    "docs/plans/2026-09-14-policy-watch-official-events-r3.md": "74ce30b2f5630d963e10cf464c854ccde03a4254c4aadc602183f7a97924f470"
+  },
+  "source_view_state": "current",
+  "source_view_fresh": true,
+  "coverage_checked_at": "2026-09-13T15:35:34.928980Z",
+  "source_states": {
+    "boe_news": "COVERED",
+    "ec_presscorner": "COVERED"
+  },
+  "event_ids": [
+    "1bc1ada70c241776",
+    "990a0a7dd970097a",
+    "57c6e953080b9fdc",
+    "9048053b6465897f"
+  ],
+  "page_sha256": "24700f5ae337816f9f7e197d1e7c39223b4bd27981a49314f931d780c694c2e7",
+  "event_feed_count": 1,
+  "rendered_event_count": 4,
+  "section_count": 7,
+  "current_panel_count": 1,
+  "uk_desk_count": 1,
+  "call_count": 44,
+  "authority_copy": true,
+  "current_copy_count": 1,
+  "publisher_zh": {
+    "boe": true,
+    "ec": true
+  },
+  "original_title_label": true,
+  "latest_source_check_label": true,
+  "degraded_copy_contract": {
+    "evidence_basis": "template source plus RED-first render regressions; these states are intentionally not visible in the current-state render",
+    "partial_en": true,
+    "partial_zh": true,
+    "outage_conditional_en": true,
+    "outage_conditional_zh": true
+  },
+  "machine_token_leaks": {
+    "trade_policy": false,
+    "DELAYED_SOURCE": false,
+    "SOURCE_OUTAGE": false,
+    "STALE": false
+  }
+}
