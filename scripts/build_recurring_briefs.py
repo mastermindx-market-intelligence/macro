@@ -76,11 +76,21 @@ def main(argv: list[str] | None = None) -> int:
     enabled = os.environ.get("RECURRING_BRIEFS_ENABLE") == "1"
     dry_run = args.dry_run or not enabled
     if not enabled:
+        # Sol #7106 review (2026-09-19, REQUEST_CHANGES): a dormant run must not
+        # read subscriptions and must not print user-authored target/body text
+        # into workflow logs. Until the privacy/session/read-state repair lands,
+        # DORMANT means zero reads, zero decisions, zero writes, zero user text.
         print(
             "recurring briefs: DORMANT (RECURRING_BRIEFS_ENABLE unset) — "
-            "decisions only, no writes",
+            "no subscription read, no decisions, no writes",
             flush=True,
         )
+        print(
+            "::notice title=recurring-briefs::DORMANT (RECURRING_BRIEFS_ENABLE unset)"
+            " — 0 reads, 0 writes",
+            flush=True,
+        )
+        return 0
 
     run_date = _parse_run_date(args.run_date)
     result = rb.run(
