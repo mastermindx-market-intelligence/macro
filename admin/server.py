@@ -112,6 +112,14 @@ _API_CACHE_TTL_S = 15.0
 # (/fp/realtime, the "N active" pill) is on _API_CACHE_BYPASS_PATHS below and is not
 # cached at all, so nothing being watched for freshness is affected by this.
 _API_CACHE_TTL_OVERRIDES: tuple[tuple[str, float], ...] = (
+    # Match Intelligence OS's own five-minute derived-estate cache.  Re-sending
+    # and re-serializing the same 100+ KB census every 15s buys no freshness:
+    # the underlying derivation itself is intentionally stable for five minutes.
+    ("/api/intelligence_os", 300.0),
+    # Metabolism's live run strip is a separate no-cache endpoint; the panel
+    # snapshot (repo variables + recent-run summary) does not need a full GitHub
+    # round trip every time the operator tabs away and back.
+    ("/api/metabolism", 60.0),
     ("/api/analytics/fp/", 60.0),
 )
 _API_CACHE_MAX_ENTRIES = 256

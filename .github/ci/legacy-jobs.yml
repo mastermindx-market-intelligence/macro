@@ -404,6 +404,8 @@ jobs:
       # them. Pure Python: no node, so a minimal pip lane cannot disarm it.
       - name: inline handler attributes must not interpolate JS string literals
         run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
+      - name: admin navigation and copy UX guardrails
+        run: python -m pytest tests/test_admin_navigation_ux.py -q
 
   path-prune-lint:
     if: ${{ false }}
