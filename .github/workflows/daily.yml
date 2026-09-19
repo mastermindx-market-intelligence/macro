@@ -3119,6 +3119,20 @@ jobs:
         # policy_watch after policy_intent). special_situations stays IN this job (not a
         # sibling job like factor_series) because it writes a PAGE + hub card that must be
         # in THIS run's deploy artifact — it is event-driven, so a one-run lag is wrong.
+        #
+        # REACHABILITY GUARD (2026-09-15): run 34957877090 proved the barrier can wedge
+        # for >3h (15:37Z→18:56Z), starving every tail consumer behind it — including
+        # master_brain + build_aibrief — until the 300m engine-job cap cancels the night.
+        # End-to-end headroom is load-bearing, not just this band's own wall-clock.
+        # Recent successful barriers are p90 ~48.5m, but run 35168062576 reached
+        # commit-engine-outputs at 286.9m with a 46.4m barrier; substituting a full
+        # 60m barrier projects the commit to 300.5m, beyond the engine job's 300m cap.
+        # 50m projects ~290.5m on that same measured night, preserving ~9.5m for the
+        # commit/publication checkpoint. The slowest regional tail may therefore time
+        # out while otherwise healthy; continue-on-error is the explicit loss budget.
+        # Re-measure the whole start->barrier->commit path before changing this cap.
+        timeout-minutes: 50
+        continue-on-error: true
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
