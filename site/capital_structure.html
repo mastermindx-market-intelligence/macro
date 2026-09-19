@@ -282,7 +282,7 @@
   <script src="logo_config.js?v=b37d33d3" defer></script>
   <script src="stock-logos.js?v=cc29be53" defer></script>
   <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=f7bdf7cc" defer></script>
+  <script src="live.js?v=3cb38601" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -374,12 +374,77 @@
     <span class="cs-policy-mark" aria-hidden="true">◷</span>
     <div>
       <p class="cs-kicker"><span class="l-en">Policy watch</span><span class="l-zh">政策关注</span></p>
-      <strong><span class="l-en">Comment window closes in 13 days</span><span class="l-zh">征询意见期 13 天后截止</span></strong>
+      <strong><span class="l-en">Comment window closes in 7 days</span><span class="l-zh">征询意见期 7 天后截止</span></strong>
       <span><span class="l-en">Dated steps already on the public record. Not a rating and not a trade call.</span><span class="l-zh">均为已进入公开记录的既定日期节点。不是评级，也不是交易建议。</span></span>
     </div>
   </section>
 
 
+
+
+
+
+  <section class="cs-policy cs-policy-active" id="cs-policy-projection" aria-labelledby="cs-pp-kicker">
+    <div>
+      <p class="cs-kicker" id="cs-pp-kicker"><span class="l-en">Dated steps</span><span class="l-zh">既定日期节点</span></p>
+      <strong><span class="l-en">Dated steps on the public record</span><span class="l-zh">公开记录上的既定日期节点</span></strong>
+      <span><span class="l-en">Not a rating, not a trade call.</span><span class="l-zh">不是评级，也不是交易建议。</span></span>
+      <span><span class="l-en">Showing the next 12 dated steps; more are scheduled.</span><span class="l-zh">仅显示接下来的 12 个既定日期节点，后续仍有安排。</span></span>
+      <div class="cs-policy-windows">
+        <div class="cs-policy-window">
+          <p class="cs-kicker"><span class="l-en">Policy-rate decision</span><span class="l-zh">政策利率决议</span></p>
+          <ul class="cs-prl">
+            <li class="cs-pr"><strong><span class="l-en">Fed rate decision</span><span class="l-zh">美联储利率决议</span></strong> <time datetime="2026-10-28"><span class="l-en">in 40 days</span><span class="l-zh">40 天后</span></time> <a href="https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm" rel="noopener"><span class="l-en">Fed calendar</span><span class="l-zh">美联储日历</span></a></li>
+          </ul>
+        </div>
+        <div class="cs-policy-window">
+          <p class="cs-kicker"><span class="l-en">Government borrowing</span><span class="l-zh">政府举债</span></p>
+          <ul class="cs-prl">
+            <li class="cs-pr"><strong><span class="l-en">Treasury auctions 2-Year Note</span><span class="l-zh">财政部拍卖2年期中期国债</span></strong> <time datetime="2026-09-22"><span class="l-en">in 4 days</span><span class="l-zh">4 天后</span></time> <a href="https://www.treasurydirect.gov/auctions/upcoming/" rel="noopener"><span class="l-en">TreasuryDirect</span><span class="l-zh">国债直销</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Treasury auctions 2-Year Note</span><span class="l-zh">财政部拍卖2年期中期国债</span></strong> <time datetime="2026-09-23"><span class="l-en">in 5 days</span><span class="l-zh">5 天后</span></time> <a href="https://www.treasurydirect.gov/auctions/upcoming/" rel="noopener"><span class="l-en">TreasuryDirect</span><span class="l-zh">国债直销</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Treasury auctions 5-Year Note</span><span class="l-zh">财政部拍卖5年期中期国债</span></strong> <time datetime="2026-09-23"><span class="l-en">in 5 days</span><span class="l-zh">5 天后</span></time> <a href="https://www.treasurydirect.gov/auctions/upcoming/" rel="noopener"><span class="l-en">TreasuryDirect</span><span class="l-zh">国债直销</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Treasury auctions 7-Year Note</span><span class="l-zh">财政部拍卖7年期中期国债</span></strong> <time datetime="2026-09-24"><span class="l-en">in 6 days</span><span class="l-zh">6 天后</span></time> <a href="https://www.treasurydirect.gov/auctions/upcoming/" rel="noopener"><span class="l-en">TreasuryDirect</span><span class="l-zh">国债直销</span></a></li>
+          </ul>
+        </div>
+        <div class="cs-policy-window">
+          <p class="cs-kicker"><span class="l-en">New share sales</span><span class="l-zh">新股发行</span></p>
+          <span><span class="l-en">The equity-issuance calendar is not yet connected to this section.</span><span class="l-zh">本栏目暂未收录股票发行日历。</span></span>
+
+        </div>
+        <div class="cs-policy-window">
+          <p class="cs-kicker"><span class="l-en">New bond sales</span><span class="l-zh">新债发行</span></p>
+          <span><span class="l-en">The bond-issuance calendar is not yet connected to this section.</span><span class="l-zh">本栏目暂未收录债券发行日历。</span></span>
+
+        </div>
+        <div class="cs-policy-window">
+          <p class="cs-kicker"><span class="l-en">Disclosure rules</span><span class="l-zh">披露规则</span></p>
+          <ul class="cs-prl">
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 6 Federal Register documents</span><span class="l-zh">6 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-18"><span class="l-en">today</span><span class="l-zh">今天</span></time> <a href="https://www.federalregister.gov/d/2026-14539" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 10 Federal Register documents</span><span class="l-zh">10 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-21"><span class="l-en">in 3 days</span><span class="l-zh">3 天后</span></time> <a href="https://www.federalregister.gov/d/2026-16965" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 2 Federal Register documents</span><span class="l-zh">2 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-23"><span class="l-en">in 5 days</span><span class="l-zh">5 天后</span></time> <a href="https://www.federalregister.gov/d/2026-17211" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 3 Federal Register documents</span><span class="l-zh">3 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-24"><span class="l-en">in 6 days</span><span class="l-zh">6 天后</span></time> <a href="https://www.federalregister.gov/d/2026-17301" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 6 Federal Register documents</span><span class="l-zh">6 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-25"><span class="l-en">in 7 days</span><span class="l-zh">7 天后</span></time> <a href="https://www.federalregister.gov/d/2026-15068" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 11 Federal Register documents</span><span class="l-zh">11 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-28"><span class="l-en">in 10 days</span><span class="l-zh">10 天后</span></time> <a href="https://www.federalregister.gov/d/2026-15148" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+
+            <li class="cs-pr"><strong><span class="l-en">Comment periods close on 2 Federal Register documents</span><span class="l-zh">2 份联邦公报文件的意见征询期截止</span></strong> <time datetime="2026-09-29"><span class="l-en">in 11 days</span><span class="l-zh">11 天后</span></time> <a href="https://www.federalregister.gov/d/2026-15525" rel="noopener"><span class="l-en">Federal Register</span><span class="l-zh">联邦公报</span></a></li>
+          </ul><span><span class="l-en">15 more dated steps are not shown.</span><span class="l-zh">另有 15 个既定日期节点未展示。</span></span>
+        </div>
+        <div class="cs-policy-window">
+          <p class="cs-kicker"><span class="l-en">Export controls</span><span class="l-zh">出口管制</span></p>
+          <span><span class="l-en">No dated step is pending right now.</span><span class="l-zh">目前没有待办的既定日期节点。</span></span>
+
+        </div>
+      </div>
+    </div>
+  </section>
 
 
 
