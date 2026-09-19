@@ -1014,6 +1014,78 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
     assert "unowned path" not in reason, reason
 
 
+def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
+    """P0B's hermetic first-frame contract must run in the merge gate.
+
+    The generated-page population receipt remains data-dependent and belongs
+    in ``engine-render-guards``.  The template/composer/CSS/loader contract is
+    source-only, so merely listing it in that ``gate: data`` job would leave
+    the PR's real ``--gate code`` execution falsely green.
+    """
+    manifest = _yaml(MANIFEST)
+    code_job = manifest["jobs"]["stock-dashboard-first-frame"]
+    code_suite = "tests/test_stock_dashboard_first_frame.py"
+    data_suite = "tests/test_stock_dashboard_first_frame_data.py"
+
+    assert code_job["gate"] == "code"
+    assert code_job["scope"] == "exclusive"
+    required_paths = {
+        "templates/hk.html.j2",
+        "templates/canada.html.j2",
+        "templates/stock-dashboard.css",
+        "templates/dashboard-icons.js",
+        "site/hk-stock-v36.js",
+        "site/canada-stock-v36.js",
+        "site/stock-dashboard.css",
+        "site/dashboard-icons.js",
+        "scripts/render_stock_dashboard_fixture.py",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+        "mockups/evidence/prophet-p0b-zero-fouc/hk-js-disabled-dark-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/hk-composer-failed-light-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png",
+        "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png",
+        code_suite,
+    }
+    assert required_paths <= set(code_job["paths"])
+    assert any(code_suite in str(step.get("run") or "") for step in code_job["steps"])
+    assert _job_pip_packages(code_job) == {"beautifulsoup4", "jinja2", "pytest"}
+
+    data_job = manifest["jobs"]["engine-render-guards"]
+    data_runs = "\n".join(str(step.get("run") or "") for step in data_job["steps"])
+    assert data_job["gate"] == "data"
+    assert data_suite in data_runs
+    assert code_suite not in data_runs
+
+    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    code_jobs = [job for job in jobs if job.gate == "code"]
+    for changed in (
+        [code_suite],
+        ["templates/hk.html.j2"],
+        ["site/canada-stock-v36.js"],
+        ["scripts/render_stock_dashboard_fixture.py"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json"],
+        ["mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"],
+    ):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "stock-dashboard-first-frame" in {job.job_id for job in selected}, reason
+        assert "unowned path" not in reason, reason
+
+
 def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
@@ -3567,6 +3639,24 @@ CURATED_EXCLUSIVE = {
     # hook guard moved to tests/test_render_builder_ownership.py so this
     # job's closure stays the page family rather than the whole site builder.
     "market-os-macro-suite-pages",
+    # 2026-09-05 (P0B current-head repair): the first-frame suite executes its
+    # frozen Jinja/browser recipes through subprocess boundaries. Inference
+    # therefore conservatively added scripts/**, site/**, and templates/**,
+    # making this four-second gate a fallback selector for unrelated index and
+    # free-content edits. The suite no longer imports the broad Canada/HK test
+    # helpers; its measured 30-file closure is now declared exactly (including
+    # the two moving-data path *labels* the recipe validates but never opens).
+    # Exclusivity drops only those three opaque fallback roots while retaining
+    # every executable, template, fixture, receipt, and helper input it owns.
+    "stock-dashboard-first-frame",
+    # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
+    # hermetic PR owner for one recovered package and its root lineage test,
+    # and declared both exact path surfaces — but omitted `scope: exclusive`.
+    # Inference therefore unioned opaque package-test edges into whole-tree
+    # fallback breadth and made this job a third unscoped always-on selector
+    # for templates/index.html (133 > 132). Curate the stated owner boundary;
+    # do not fund that unrelated match by raising the packing ceiling.
+    "research-vault-source-lineage",
 }
 
 
@@ -3584,6 +3674,19 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
+    """The recovered MarketDesk owner must not become a whole-tree CI rider."""
+    manifest = _yaml(MANIFEST)
+    job = manifest["jobs"]["research-vault-source-lineage"]
+
+    assert job["gate"] == "code"
+    assert job["scope"] == "exclusive"
+    assert set(job["paths"]) == {
+        "collectors/marketdesk_extractor/**",
+        "tests/test_marketdesk_extractor_lineage.py",
+    }
 
 
 def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
@@ -3674,6 +3777,19 @@ def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -
             )
             match = PACK._job_diff_match(job, [dependency])
             assert match and match[1] == "declared", (job_id, dependency, match)
+
+
+def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None:
+    """The risk-dialog suite reads the shipped token source, so its job owns it."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["unrun-picks-boards"]
+
+    assert job.exclusive is True
+    assert "site/theme.css" in job.paths
+    selected, reason = PACK.select_jobs([job], ["site/theme.css"])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, ["site/theme.css"])
+    assert match and match[1] == "declared", match
 
 
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
