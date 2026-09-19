@@ -188,6 +188,10 @@
     font-size:12.5px; }
   .sf-docket-note { font-size:12px; color:var(--muted); border-left:2px solid var(--up);
     padding-left:9px; margin:8px 0 4px; }
+  .alert-trust-table { min-width: 980px; }
+  .d2-observation { margin-top: 8px; }
+  .d2-evidence code { overflow-wrap: anywhere; white-space: normal; }
+  .d2-evidence summary, .d2-history summary { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -268,6 +272,9 @@
           <div class="sig">{{ t(r.name, r.name_zh) }}<a class="anchor-link" href="#{{ r.anchor }}">#</a></div>
           <div class="mkt">{{ t('Direction: ' ~ (r.direction or 'unknown'), '方向：' ~ ('下行' if r.direction == 'down' else ('上行' if r.direction == 'up' else '未知'))) }}</div>
           <div class="extra">{{ t(r.purpose, r.purpose_zh) }}</div>
+          {% if r.identity == 'd2' and r.research_journey %}
+            {% include '_signal_lab_d2_journey.html.j2' %}
+          {% endif %}
         </td>
         <td><span class="pill {{ status_class }}">{{ t(r.status_text, r.status_zh) }}</span></td>
         <td>

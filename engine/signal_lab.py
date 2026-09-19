@@ -1906,13 +1906,20 @@ _ALERT_TRUST_STATUS = {
 }
 
 
-def _build_alert_trust(gate=None, evaluation_date=None) -> dict:
+def _build_alert_trust(gate=None, evaluation_date=None, d2_research=None) -> dict:
     """Current model evidence rows for the exact BTC impulse identities."""
     from engine import btc_impulse_radar as radar
     from engine import signal_evidence
     snapshot = signal_evidence.load_btc_gate() if gate is None else gate
     evaluated = (evaluation_date if evaluation_date is not None
                  else datetime.now(timezone.utc).date())
+    if d2_research is None:
+        try:
+            from engine import btc_impulse_ledger
+            d2_research = btc_impulse_ledger.latest_d2_journey()
+        except Exception as exc:  # noqa: BLE001 — research projection must fail closed
+            log.debug("D2 research journey unavailable: %s", exc)
+            d2_research = None
     rows = []
     for identity in ("d2", "d3", "u1", "d2+d3"):
         permission = radar.resolve_leg_permission(snapshot, identity, evaluated)
@@ -1946,6 +1953,7 @@ def _build_alert_trust(gate=None, evaluation_date=None) -> dict:
             "model_version": permission.get("model_version"),
             "version_state": permission.get("version_state", "absent"),
             "evidence_path": permission.get("gate_path") or "data/vector/impulse_legs_gate.json",
+            "research_journey": copy.deepcopy(d2_research) if identity == "d2" else None,
         })
     return {
         "present": True,
@@ -1957,13 +1965,15 @@ def _build_alert_trust(gate=None, evaluation_date=None) -> dict:
     }
 
 
-def build_scorecard(*, gate=None, evaluation_date=None) -> dict:
+def build_scorecard(*, gate=None, evaluation_date=None, d2_research=None) -> dict:
     """Assemble the full Signal Lab payload for the template. Pure assembler:
     the live-stats / provenance / source-ref passes stamp a per-call deep copy
     of ``REGISTRY``, never the module list itself, so a second caller in the
     same process sees the registry exactly as authored."""
     warnings: list[str] = []  # A9: collect build warnings
-    alert_trust = _build_alert_trust(gate=gate, evaluation_date=evaluation_date)
+    alert_trust = _build_alert_trust(
+        gate=gate, evaluation_date=evaluation_date, d2_research=d2_research,
+    )
 
     ft = _load_factor_table()
     factor_rows: list[dict] = []

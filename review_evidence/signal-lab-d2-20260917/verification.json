@@ -1,0 +1,48 @@
+{
+  "procedure_pin": "55a54fdaecef9cbf434492c3cce3b369dbc69b9b",
+  "base": "6f794f525ffef4a1cae4729226529c036d977524",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "4df508f2828d815f0bbcb8698843379704ba4cf1fe15432f654e6be41567dbcc",
+    "engine/btc_d2_research.py": "4d613121272a345faa12a7579e45dc2a43a049df0e8439a84da9cb8cee03070d",
+    "engine/btc_impulse_ledger.py": "1ea5a31b85b7f65e1ebe7fdd309dd111b00ad6a9de8993f111d0f2d8ef5aee56",
+    "engine/signal_lab.py": "ebc89b1daed7011e9587d35d85494bf3b869531b09cb371c19f9c76756863178",
+    "templates/signal_lab.html.j2": "196dd9a4bf854d7a8c6344df57a9f02e03fab9b95e03b27d6bd6e94d178045a1",
+    "templates/_signal_lab_d2_journey.html.j2": "dcb04187fa898b424bbce9e913297c3e74e9663287967e83a2a7f3c3945daaef",
+    "tests/test_btc_d2_research_journey.py": "44980ced3012fe1a37af17db72ad9c40929446a72cc4dd0df5754fb515458390",
+    "tests/test_signal_lab_alert_trust.py": "089cf965fd5dfc3774756c06211559c8aeae598b6fb6f61697c290c1a20fc84e"
+  },
+  "commands": [
+    {
+      "command": "python3 -m pytest tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_trust_projection.py tests/test_signal_evidence.py tests/test_signal_lab_alert_trust.py tests/test_btc_d2_research_journey.py -q --tb=short",
+      "exit": 0,
+      "log": "verification-0.log"
+    },
+    {
+      "command": "python3 -m py_compile engine/btc_d2_research.py engine/btc_impulse_ledger.py engine/signal_lab.py",
+      "exit": 0,
+      "log": "verification-1.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "verification-2.log"
+    },
+    {
+      "command": "python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/signal-lab-d2-repair-design.diff",
+      "exit": 0,
+      "result_tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (18979 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 18979)\n"
+    },
+    {
+      "command": "python3 scripts/check_runtime_style_injection.py",
+      "exit": 0,
+      "result_tail": "runtime style injection guard OK (195 .js files scanned, 44 injecting, 89 total hits \u2014 all within frozen allowances)\n"
+    },
+    {
+      "command": "python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/signal-lab-d2-repair-design.diff",
+      "exit": 0,
+      "result_tail": ""
+    }
+  ],
+  "browser_cases": 10,
+  "installed_production": false
+}
