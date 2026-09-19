@@ -580,3 +580,104 @@ def test_prophet_discovery_grade_market_receipt_includes_board_admission_bridge(
     assert bridge["n_prior_discovered"] == 1
     assert bridge["n_same_day_only"] == 1
     assert bridge["prior_discovery_recall_rate"] == pytest.approx(0.5)
+
+def _rank_race_fixture(*, challenger="hk_h3_ah_discount_rank_v1", covered=10):
+    pairs = []
+    outcomes = []
+    dates = pd.bdate_range("2026-01-05", periods=6)
+    for d in dates:
+        ds = str(d.date())
+        for i in range(1, 11):
+            ticker = f"T{i:02d}.HK"
+            pairs.append({
+                "date": ds,
+                "market": "HK",
+                "ticker": ticker,
+                "incumbent_definition": "hk_prophet_v2",
+                "incumbent_rank": i,
+                "incumbent_lane": "buy",
+                "challenger_definition": challenger,
+                "challenger_rank": (11 - i) if i <= covered else None,
+                "challenger_rank_domain": "minted_population",
+                "challenger_score_raw": float(11 - i) if i <= covered else None,
+                "challenger_score_conservative": None,
+                "challenger_coverage": covered / 10,
+                "population_n": 10,
+                "challenger_offlist_n": 0,
+            })
+            outcomes.append({
+                "session_date": ds,
+                "security_ref": ticker,
+                "security_ref_raw": ticker,
+                "excess_ret_5": float(11 - i) / 100.0,
+            })
+    return pd.DataFrame(pairs), pd.DataFrame(outcomes)
+
+
+def test_prophet_rank_race_uses_same_covered_names_and_canonical_rank_ic():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is True
+    assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
+
+    race = summary["challengers"]["hk_h3_ah_discount_rank_v1"]
+    assert race["n_population_rows"] == 60
+    assert race["n_ranked_rows"] == 60
+    assert race["observed_coverage_rate"] == pytest.approx(1.0)
+    assert race["challenger_offlist_n_max"] == 0
+
+    h5 = race["horizons"]["5d"]
+    assert h5["n_paired_dates"] == 6
+    assert h5["incumbent_rank_ic"]["mean_ic"] == pytest.approx(1.0)
+    assert h5["challenger_rank_ic"]["mean_ic"] == pytest.approx(-1.0)
+    assert h5["challenger_minus_incumbent_ic"]["mean_ic"] == pytest.approx(-2.0)
+    assert h5["incumbent_rank_ic"]["hac_lags_requested"] == 5
+    assert h5["challenger_rank_ic"]["hac_lags_requested"] == 5
+
+
+def test_prophet_rank_race_never_gives_incumbent_credit_on_names_challenger_could_not_rank():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture(covered=5)
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    race = summary["challengers"]["hk_h3_ah_discount_rank_v1"]
+    assert race["observed_coverage_rate"] == pytest.approx(0.5)
+    h5 = race["horizons"]["5d"]
+    # Canonical rank_ic requires 10 joint names. If incumbent were evaluated
+    # on its full population instead of the challenger's covered subset, this
+    # would report six positive IC dates and falsely flatter the incumbent.
+    assert h5["n_paired_dates"] == 0
+    assert h5["incumbent_rank_ic"] == {"n": 0}
+    assert h5["challenger_rank_ic"] == {"n": 0}
+    assert h5["challenger_minus_incumbent_ic"] == {"n": 0}
+
+
+def test_prophet_rank_race_refuses_corrupt_population_denominator():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    pairs.loc[
+        (pairs["date"] == pairs["date"].iloc[0])
+        & (pairs["ticker"] == "T10.HK"),
+        "population_n",
+    ] = 11
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is False
+    assert summary["reason"] == "rank_pair_population_contract_violation"
+    assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
+
+
+def test_prophet_rank_race_store_absence_is_explicit(tmp_path, monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    result = pdg.evaluate_rank_races("HK")
+    assert result == {
+        "available": False,
+        "reason": "rank_pair_store_absent",
+        "metric_semantics": "same_population_same_outcomes_shadow_rank_race",
+    }
+
