@@ -10,9 +10,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
-from engine import board_ledger, board_shadow, grading
+from engine import board_ledger, board_shadow, grading, validation
 from lib import config
 
 MARKETS = ("HK", "CA")
@@ -416,6 +417,203 @@ def summarize_board_admission_bridge(
     }
 
 
+_RANK_RACE_SEMANTICS = "same_population_same_outcomes_shadow_rank_race"
+
+
+def _rank_race_unavailable(reason: str) -> dict[str, Any]:
+    return {
+        "available": False,
+        "reason": reason,
+        "metric_semantics": _RANK_RACE_SEMANTICS,
+    }
+
+
+def _rank_ic_summary(values: list[float], horizon: int) -> dict[str, Any]:
+    return validation.ic_summary(
+        values,
+        periods_per_year=252,
+        hac_lags=int(horizon),
+    )
+
+
+def summarize_rank_races(
+    rank_pairs: pd.DataFrame | None,
+    outcomes: pd.DataFrame | None,
+) -> dict[str, Any]:
+    """Evaluate Lane-A rankers on identical covered names and outcomes.
+
+    Rank 1 is best, so the signal passed to canonical rank_ic is negative rank.
+    For every date/challenger/horizon the incumbent IC is computed on the exact
+    subset that challenger could rank. Coverage is reported separately; a thin
+    challenger can never make the incumbent look stronger by comparing against
+    a larger name set. This is zero-authority measurement only.
+    """
+    if rank_pairs is None:
+        return _rank_race_unavailable("rank_pair_store_absent")
+    if rank_pairs.empty:
+        return _rank_race_unavailable("rank_pair_store_empty")
+    if outcomes is None:
+        return _rank_race_unavailable("rank_outcomes_absent")
+
+    required = {
+        "date", "ticker", "challenger_definition",
+        "incumbent_rank", "challenger_rank",
+        "challenger_rank_domain", "challenger_coverage",
+        "population_n", "challenger_offlist_n",
+    }
+    if missing := sorted(required - set(rank_pairs.columns)):
+        return _rank_race_unavailable(
+            "rank_pair_missing_columns:" + ",".join(missing)
+        )
+    outcome_required = {"session_date", "security_ref"}
+    if missing := sorted(outcome_required - set(outcomes.columns)):
+        return _rank_race_unavailable(
+            "rank_outcome_missing_columns:" + ",".join(missing)
+        )
+
+    pairs = rank_pairs.copy()
+    pairs["_date"] = pairs["date"].astype(str)
+    pairs["_ticker"] = pairs["ticker"].astype(str)
+    pairs["_definition"] = pairs["challenger_definition"].astype(str)
+
+    if not (pairs["challenger_rank_domain"].astype(str) == "minted_population").all():
+        return _rank_race_unavailable("rank_pair_population_contract_violation")
+    if pairs.duplicated(["_date", "_ticker", "_definition"]).any():
+        return _rank_race_unavailable("rank_pair_population_contract_violation")
+
+    for (_date, _definition), group in pairs.groupby(
+        ["_date", "_definition"], sort=False
+    ):
+        pops = pd.to_numeric(group["population_n"], errors="coerce").dropna().unique()
+        if len(pops) != 1 or int(pops[0]) != len(group):
+            return _rank_race_unavailable(
+                "rank_pair_population_contract_violation"
+            )
+
+    graded = outcomes.copy()
+    graded["_date"] = graded["session_date"].astype(str)
+    graded["_ticker"] = graded["security_ref"].astype(str)
+    graded = graded.drop_duplicates(["_date", "_ticker"], keep="first")
+
+    challengers: dict[str, dict[str, Any]] = {}
+    for definition in sorted(pairs["_definition"].unique()):
+        sub = pairs[pairs["_definition"] == definition].copy()
+        merged = sub.merge(
+            graded,
+            on=["_date", "_ticker"],
+            how="left",
+            suffixes=("", "_outcome"),
+            validate="many_to_one",
+        )
+        challenger_rank = pd.to_numeric(
+            merged["challenger_rank"], errors="coerce"
+        )
+        n_population = int(len(merged))
+        n_ranked = int(challenger_rank.notna().sum())
+        stored_cov = pd.to_numeric(
+            merged["challenger_coverage"], errors="coerce"
+        ).dropna()
+        offlist = pd.to_numeric(
+            merged["challenger_offlist_n"], errors="coerce"
+        ).dropna()
+
+        horizon_rows: dict[str, dict[str, Any]] = {}
+        for horizon in HORIZONS:
+            outcome_col = f"excess_ret_{horizon}"
+            incumbent_ics: list[float] = []
+            challenger_ics: list[float] = []
+            deltas: list[float] = []
+            if outcome_col in merged.columns:
+                for _date, day in merged.groupby("_date", sort=True):
+                    inc = pd.to_numeric(day["incumbent_rank"], errors="coerce")
+                    chal = pd.to_numeric(day["challenger_rank"], errors="coerce")
+                    y = pd.to_numeric(day[outcome_col], errors="coerce")
+                    mask = (
+                        inc.notna() & chal.notna() & y.notna()
+                        & np.isfinite(inc) & np.isfinite(chal) & np.isfinite(y)
+                    )
+                    if not bool(mask.any()):
+                        continue
+                    inc_ic = validation.rank_ic(-inc[mask], y[mask])
+                    chal_ic = validation.rank_ic(-chal[mask], y[mask])
+                    if np.isfinite(inc_ic) and np.isfinite(chal_ic):
+                        incumbent_ics.append(float(inc_ic))
+                        challenger_ics.append(float(chal_ic))
+                        deltas.append(float(chal_ic - inc_ic))
+            horizon_rows[f"{horizon}d"] = {
+                "n_paired_dates": int(len(deltas)),
+                "incumbent_rank_ic": _rank_ic_summary(
+                    incumbent_ics, horizon
+                ),
+                "challenger_rank_ic": _rank_ic_summary(
+                    challenger_ics, horizon
+                ),
+                "challenger_minus_incumbent_ic": _rank_ic_summary(
+                    deltas, horizon
+                ),
+            }
+
+        challengers[definition] = {
+            "n_population_rows": n_population,
+            "n_ranked_rows": n_ranked,
+            "n_dates": int(sub["_date"].nunique()),
+            "observed_coverage_rate": (
+                float(n_ranked / n_population) if n_population else None
+            ),
+            "stored_coverage_min": (
+                float(stored_cov.min()) if not stored_cov.empty else None
+            ),
+            "stored_coverage_max": (
+                float(stored_cov.max()) if not stored_cov.empty else None
+            ),
+            "challenger_offlist_n_max": (
+                int(offlist.max()) if not offlist.empty else None
+            ),
+            "horizons": horizon_rows,
+        }
+
+    return {
+        "available": True,
+        "metric_semantics": _RANK_RACE_SEMANTICS,
+        "challengers": challengers,
+    }
+
+
+def evaluate_rank_races(market: str) -> dict[str, Any]:
+    """Read Lane A and grade its unique population with the canonical spine."""
+    m = str(market or "").upper()
+    if m not in MARKETS:
+        raise ValueError(f"unsupported market {market!r}")
+    path = board_shadow._lane_a_path(m)
+    if not path.exists():
+        return _rank_race_unavailable("rank_pair_store_absent")
+    try:
+        pairs = pd.read_parquet(path)
+    except Exception as exc:
+        return _rank_race_unavailable(
+            f"rank_pair_store_unreadable:{type(exc).__name__}"
+        )
+    if pairs.empty:
+        return _rank_race_unavailable("rank_pair_store_empty")
+
+    population = (
+        pairs[["date", "ticker"]]
+        .dropna()
+        .drop_duplicates()
+        .sort_values(["date", "ticker"], kind="stable")
+        .reset_index(drop=True)
+    )
+    source = pd.DataFrame({
+        "session_date": population["date"].astype(str),
+        "market": m,
+        "security_ref": population["ticker"].astype(str),
+        "security_ref_raw": population["ticker"].astype(str),
+        "challenger_definition": "rank_pair_outcome_v1",
+    })
+    outcomes = grade_frame(m, source)
+    return summarize_rank_races(pairs, outcomes)
+
+
 def grade_market(market: str) -> dict[str, Any]:
     """Refresh one market's derived outcome store from its append-only discovery source."""
     m = str(market or "").upper()
@@ -472,6 +670,7 @@ def grade_market(market: str) -> dict[str, Any]:
         "terminal_clean15_126": terminal15,
         "candidate_metrics": summarize_outcomes(fresh),
         "board_admission_bridge": board_admission_bridge,
+        "rank_races": evaluate_rank_races(m),
     }
 
 
