@@ -81,7 +81,7 @@
     }
   },
   "macro": {
-    "growth": 0.5,
+    "growth": 0.0,
     "inflation": -1.0,
     "quad": "Q1",
     "growth_legs": {
@@ -124,7 +124,7 @@
         }
       },
       "wei_trend": {
-        "value": 1,
+        "value": -1,
         "weight": 0.5,
         "freshness": {
           "asof": "2026-09-12",

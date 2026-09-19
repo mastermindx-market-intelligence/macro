@@ -1,17 +1,17 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-16",
-  "generated_at": "2026-09-18T05:36:47.570955+00:00",
+  "as_of": "2026-09-17",
+  "generated_at": "2026-09-18T16:52:12.281288+00:00",
   "is_context_only": true,
-  "n_snapshots": 785,
-  "n_days": 27,
+  "n_snapshots": 818,
+  "n_days": 28,
   "horizons": {
     "5": {
       "n_matured": 712,
       "by_stage": {
         "running": {
           "n": 638,
-          "mean_fwd_rel": -0.0051,
+          "mean_fwd_rel": -0.0052,
           "hit_rate": 0.451
         },
         "coiling": {
@@ -25,8 +25,8 @@
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0591,
-      "running_ic_t_hac": -0.721,
+      "running_ic": -0.056,
+      "running_ic_t_hac": -0.685,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -45,7 +45,7 @@
         },
         "coiling_primed": {
           "n": 37,
-          "mean_fwd_rel": 0.0161,
+          "mean_fwd_rel": 0.016,
           "hit_rate": 0.486
         }
       },
@@ -55,26 +55,26 @@
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 484,
+      "n_matured": 505,
       "by_stage": {
         "running": {
-          "n": 424,
-          "mean_fwd_rel": -0.0162,
-          "hit_rate": 0.392
+          "n": 443,
+          "mean_fwd_rel": -0.0174,
+          "hit_rate": 0.375
         },
         "coiling": {
-          "n": 28,
-          "mean_fwd_rel": -0.011,
-          "hit_rate": 0.429
+          "n": 30,
+          "mean_fwd_rel": -0.0119,
+          "hit_rate": 0.367
         },
         "coiling_primed": {
           "n": 32,
-          "mean_fwd_rel": 0.0262,
+          "mean_fwd_rel": 0.0259,
           "hit_rate": 0.656
         }
       },
-      "running_ic": -0.0314,
-      "running_ic_t_hac": -0.537,
+      "running_ic": -0.031,
+      "running_ic_t_hac": -0.58,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-26",
+      "date": "2026-08-27",
       "id": "russell:waste-management",
       "name": "Waste Management",
       "stage": "running",
-      "fwd_rel": -0.1437,
+      "fwd_rel": -0.1417,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-26",
+      "date": "2026-08-27",
       "id": "russell:other-industrial-metals-mining",
       "name": "Other Industrial Metals & Mining",
       "stage": "running",
-      "fwd_rel": -0.1151,
+      "fwd_rel": -0.1149,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-26",
-      "id": "subsectors:railroads",
-      "name": "Railroads",
+      "date": "2026-08-27",
+      "id": "subsectors:semiconductor-equipment-materials",
+      "name": "Semiconductor Equipment & Materials",
       "stage": "running",
-      "fwd_rel": -0.0684,
+      "fwd_rel": -0.0915,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-26",
+      "date": "2026-08-27",
+      "id": "subsectors:software-application",
+      "name": "Software - Application",
+      "stage": "running",
+      "fwd_rel": -0.0712,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-08-27",
       "id": "nasdaq:communication-equipment",
       "name": "Communication Equipment",
       "stage": "running",
-      "fwd_rel": -0.0602,
+      "fwd_rel": -0.0597,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-26",
-      "id": "baskets:us-sector-materials",
-      "name": "Materials (Equal-Weight)",
-      "stage": "coiling_primed",
-      "fwd_rel": -0.041,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-26",
-      "id": "baskets:robotics-automation",
-      "name": "Robotics & Automation",
+      "date": "2026-08-27",
+      "id": "subsectors:asset-management",
+      "name": "Asset Management",
       "stage": "running",
-      "fwd_rel": -0.0357,
+      "fwd_rel": -0.0479,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-26",
+      "date": "2026-08-27",
       "id": "russell:farm-heavy-construction-machinery",
       "name": "Farm & Heavy Construction Machinery",
       "stage": "running",
-      "fwd_rel": -0.0332,
+      "fwd_rel": -0.0422,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-26",
-      "id": "subsectors:communication-equipment",
-      "name": "Communication Equipment",
+      "date": "2026-08-27",
+      "id": "baskets:crypto",
+      "name": "Crypto & Digital Assets",
       "stage": "running",
-      "fwd_rel": -0.0301,
+      "fwd_rel": -0.0391,
       "horizon_d": 21
     }
   ],

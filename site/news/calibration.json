@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-09-17",
-  "n_events_logged": 798,
+  "asof": "2026-09-18",
+  "n_events_logged": 808,
   "n_events_graded": 494,
   "classes": [
     {
@@ -21,7 +21,7 @@
     {
       "event_type": "bankruptcy_restructuring",
       "direction": "bearish",
-      "n": 10,
+      "n": 11,
       "n_graded": 6,
       "hit_5d": 0.3333333333333333,
       "hit_21d": 0.6666666666666666,
@@ -86,11 +86,11 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 262,
+      "n": 264,
       "n_graded": 174,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.003253474917036986,
+      "avg_rel_5d": 0.0032255764496040363,
       "avg_rel_21d": 0.0018186063492063487,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
@@ -138,11 +138,11 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 182,
+      "n": 184,
       "n_graded": 164,
       "hit_5d": 0.5121951219512195,
       "hit_21d": 0.36363636363636365,
-      "avg_rel_5d": -0.0004786514227642281,
+      "avg_rel_5d": -0.0007078180894308947,
       "avg_rel_21d": 0.031246593663911845,
       "wilson_low_5d": 0.436294,
       "wilson_high_5d": 0.587538,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 82,
+      "n": 86,
       "n_graded": 14,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -207,7 +207,7 @@
       "n_graded": 28,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.0026428538832199548,
+      "avg_rel_5d": -0.002741553287981859,
       "avg_rel_21d": 0.0433235688712522,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
@@ -255,7 +255,7 @@
     {
       "event_type": "rating_change",
       "direction": "mixed",
-      "n": 13,
+      "n": 14,
       "n_graded": 10,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1234,
+    "n_sampled": 1254,
     "n_graded": 0,
     "classes": []
   }
