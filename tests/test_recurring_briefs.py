@@ -161,38 +161,27 @@ def _weekly_brief(*, state_asof="2026-09-13", include_zh_block=False):
 def _production_weekly(*, run_date_str="2026-09-12"):
     """Production measurement: weekly_saturday, generated Saturday with Friday state.
 
-    Uses {ticker, note} dict form for watch_items to exercise the ticker-
-    matching path in _target_has_artifact_coverage. The real master_brief.v2
-    uses string watch_items (handled by the _item_tickers crash fix); this
-    fixture preserves AAPL ticker coverage so that the weekly slot integration
-    test (test_weekly_artifact_production_shape_is_ready) stays GREEN without
-    depending on the real artifact. The zh block mirrors real HEAD content.
+    Reads the committed HEAD:site/master_brief.json via subprocess so the test
+    runs correctly in a sparse tree (where the path is not materialised).
+    Matches the real artifact shape: master_brief.v2, string watch_items,
+    no priority_queue / divergences, real zh block with Chinese content.
     """
-    return {
-        "schema": "master_brief.v2",
-        "state_asof": "2026-09-11",  # Friday
-        "generated_at": f"{run_date_str}T10:10:33.933810+00:00",  # Saturday
-        "tldr": [
-            "Main driver: Tougher Fed pricing is pushing yields higher.",
-            "Map shift: Stagflation is losing ground to Reflation, but confirmation remains incomplete.",
-        ],
-        "summary": "Higher yields are testing narrow US leadership, while healthy credit keeps the broader stress picture calm.",
-        "regime_read": "The US is still in Stagflation on the map, but it is moving toward Reflation.",
-        "confidence": "medium",
-        # Dict form: exercises _item_tickers correctly and provides AAPL coverage.
-        "watch_items": [
-            {"ticker": "AAPL", "note": "Apple stayed inside its range all week."},
-        ],
-        "zh": {
-            "summary": "收益率上升正考验美股狭窄的领涨格局，而健康的信贷状况使整体压力保持温和。",
-            "regime_read": "美国在图谱上仍处于滞胀阶段，但正向再通胀迈进。",
-            "tldr": [
-                "主要驱动因素：美联储政策预期趋于强硬，推动收益率上升。",
-                "格局变化：滞胀正在让位于再通胀，但尚未得到充分确认。",
-            ],
-            "watch_items": ["苹果股票整周保持在区间内震荡。"],
-        },
-    }
+    prod_path = ROOT / "site/master_brief.json"
+    if prod_path.exists():
+        import json as _json
+        return _json.loads(prod_path.read_text(encoding="utf-8"))
+    try:
+        import json as _json, subprocess as _subprocess
+        raw = _subprocess.check_output(
+            ["git", "show", f"HEAD:site/master_brief.json"],
+            stderr=_subprocess.STDOUT, text=True
+        )
+        return _json.loads(raw)
+    except _subprocess.CalledProcessError:
+        pytest.fail(
+            "Could not read HEAD:site/master_brief.json — "
+            "artifact may not exist on this branch"
+        )
 
 
 def _production_daily(*, run_date_str="2026-11-16"):
@@ -547,6 +536,38 @@ def test_daily_artifact_production_shape_is_ready():
     assert reason is None
 
 
+def test_weekly_artifact_production_named_thesis_is_ready_red_first():
+    """RED-first: MAJOR 2 round 2 — the weekly READY gate (RULING CONSTRAINT 1).
+
+    Pre-fix (5e2b2640e9): _target_has_artifact_coverage only checked
+    priority_queue / divergences / dict watch_items. master_brief.v2 has none
+    of those, so any named thesis degraded with the "not in this week's brief yet"
+    copy even though extract_market_read always includes tldr/summary/regime_read
+    and string watch_items for every target.
+
+    Post-fix: _target_has_artifact_coverage returns True for master_brief.v2 when
+    those content sections exist, so classify returns READY with bilingual rows.
+
+    Run at 5e2b2640e9 → FAIL (degraded). Run at this head → PASS (ready).
+    """
+    sub = _sub(cadence="weekly_saturday", run_date="2026-09-12")
+    artifact = _production_weekly()
+    # Named thesis — real AAPL ticker in production master_brief.v2.
+    target = _thesis_target(name="AAPL thesis", tickers=("AAPL",))
+    state, reason = rb.classify(sub, artifact, target)
+    assert state == "ready", (
+        f"BLOCKER (RULING CONSTRAINT 1): classify must return READY for "
+        f"thesis AAPL against real weekly artifact; got {state!r}: {reason!r}"
+    )
+    # compose_body must produce bilingual rows, not a miss sentence.
+    body = rb.compose_body(target, artifact, monitors=[], degraded_reason=reason)
+    assert body["market_read"], "ready body must have market_read rows"
+    assert not any("not in this week's brief yet" in (r.get("sentence_en") or "")
+                   for r in body["market_read"]), (
+        "ready body must NOT contain the no-coverage miss sentence"
+    )
+
+
 def test_weekly_body_draws_real_zh_from_published_block():
     """H3 / BLOCKER 3: ``sentence_zh`` must be real Chinese from the weekly
     ``zh`` block — the production measurement fed an English ``sentence_zh``
@@ -652,11 +673,12 @@ def test_no_coverage_tickers_thesis_degrades_on_production_daily_artifact():
     }
     state, reason = rb.classify(sub, prod, target)
     assert state == "degraded"
-    # Named thesis with tickers that miss the artifact → kind-specific miss.
-    assert reason == rb.NO_COVERAGE_THESIS_EN
+    # Named thesis with tickers that miss the artifact → kind-specific miss
+    # that names the actual tickers (MAJOR 1 fix: was hardcoded "AAPL").
+    assert "ZZZZ" in reason and "not in this week's brief yet" in reason
     body = rb.compose_body(target, prod, monitors=[], degraded_reason=reason)
-    assert body["market_read"][0]["sentence_en"] == rb.NO_COVERAGE_THESIS_EN
-    assert body["market_read"][0]["sentence_zh"] == rb.NO_COVERAGE_THESIS_ZH
+    assert "ZZZZ" in body["market_read"][0]["sentence_en"]
+    assert "ZZZZ" in body["market_read"][0]["sentence_zh"]
     # And no silent backdrop row was published: the only market_read row is
     # the typed honest-miss line, not the global macro_context posture.
     assert len(body["market_read"]) == 1

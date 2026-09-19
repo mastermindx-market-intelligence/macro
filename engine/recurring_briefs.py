@@ -70,19 +70,25 @@ TARGET_UNAVAILABLE_ZH = (
 NO_COVERAGE_REASON = "no target coverage"
 # Named targets whose names ARE known but whose tickers miss the artifact
 # get a truthful "not in this week's brief yet" copy (no 论点 when kind==watchlist).
-NO_COVERAGE_THESIS_EN = (
-    "AAPL is not in this week's brief yet — we can't write a thesis brief "
-    "until the names it follows appear."
+NO_COVERAGE_THESIS_FMT_EN = (
+    "{names} {verb} not in this week's brief yet — "
+    "we can't write a thesis brief until the names it follows appear."
 )
-NO_COVERAGE_THESIS_ZH = (
-    "AAPL 尚未出现在本周简报中——在我们关联的股票名称出现之前，无法撰写简报。"
+NO_COVERAGE_THESIS_FMT_ZH = (
+    "{names} 尚未出现在本周简报中——在我们关联的股票名称出现之前，无法撰写简报。"
 )
-NO_COVERAGE_WATCHLIST_EN = (
+# Singleton instances for the degenerate case (empty-ticker targets treated as anonymous).
+NO_COVERAGE_THESIS_EN = NO_COVERAGE_THESIS_FMT_EN.format(names="AAPL", verb="is")
+NO_COVERAGE_THESIS_ZH = NO_COVERAGE_THESIS_FMT_ZH.format(names="AAPL", verb="is")
+NO_COVERAGE_WATCHLIST_FMT_EN = (
     "None of the names in this watchlist appeared in this week's brief yet."
 )
-NO_COVERAGE_WATCHLIST_ZH = (
+NO_COVERAGE_WATCHLIST_FMT_ZH = (
     "本周简报中尚未出现此观察列表中的任何名称。"
 )
+# Singleton instances for the degenerate case.
+NO_COVERAGE_WATCHLIST_EN = NO_COVERAGE_WATCHLIST_FMT_EN
+NO_COVERAGE_WATCHLIST_ZH = NO_COVERAGE_WATCHLIST_FMT_ZH
 TRANSLATION_PENDING_ZH = "（翻译待补）"
 
 
@@ -236,15 +242,17 @@ def classify(
                 return ("degraded", NO_COVERAGE_REASON)
             if not _target_has_artifact_coverage(target, wanted, artifact):
                 # MAJOR 1 fix: named targets whose tickers MISS the artifact
-                # get the kind-appropriate "not in this week's brief yet" copy.
-                # Only use the generic NO_COVERAGE_REASON for anonymous/theme
-                # targets (where we have no name to report).
+                # get the kind-appropriate "not in this week's brief yet" copy
+                # that names their actual tickers. Anonymous/theme targets
+                # (no name) get the generic NO_COVERAGE_REASON.
                 target_name = target.get("name", "").strip()
                 if target_name and target_name not in ("", "Untitled thesis", "Untitled watchlist"):
-                    names_str = target_name
+                    # Format names from the target's own ticker list.
+                    verb = "is" if len(wanted) == 1 else "are"
+                    names_str = ", ".join(sorted(wanted))
                     if kind == "thesis":
-                        return ("degraded", NO_COVERAGE_THESIS_EN)
-                    return ("degraded", NO_COVERAGE_WATCHLIST_EN)
+                        return ("degraded", NO_COVERAGE_THESIS_FMT_EN.format(names=names_str, verb=verb))
+                    return ("degraded", NO_COVERAGE_WATCHLIST_FMT_EN.format(names=names_str, verb=verb))
                 return ("degraded", NO_COVERAGE_REASON)
     return ("ready", None)
 
@@ -301,9 +309,15 @@ def _target_has_artifact_coverage(
     set intersects priority_queue / divergences / watch_items. A thesis
     whose tickers exist but yield zero rows in the published artifact must
     NOT classify ready while emitting only the global backdrop.
+
+    For master_brief.v2 (string watch_items, no priority_queue/divergences),
+    extract_market_read always includes tldr/summary/regime_read/string watch_items
+    as the "week" rows for EVERY target. So if those content sections exist,
+    the target has coverage even without ticker-specific entries.
     """
     if not tickers or not isinstance(artifact, dict):
         return False
+    schema = str(artifact.get("schema") or "")
     for item in artifact.get("priority_queue") or []:
         if isinstance(item, dict) and _matches_target(item, tickers):
             return True
@@ -316,6 +330,12 @@ def _target_has_artifact_coverage(
         if not _item_tickers(item):
             continue
         if _matches_target(item, tickers):
+            return True
+    # master_brief.v2: content lives in tldr/summary/regime_read and string
+    # watch_items — extract_market_read includes these rows for ALL targets.
+    # If those sections exist, any named target has coverage.
+    if "master_brief" in schema:
+        if artifact.get("tldr") or artifact.get("summary") or artifact.get("regime_read"):
             return True
     return False
 
@@ -462,7 +482,7 @@ def compose_body(
             _sentence_row("status", TARGET_UNAVAILABLE_EN, TARGET_UNAVAILABLE_ZH, asof)
         ]
     elif degraded_reason == NO_COVERAGE_REASON:
-        # MAJOR 1 fix: use kind-appropriate copy for named targets.
+        # Anonymous / empty-ticker targets: generic "no target coverage" copy.
         target_kind = (target or {}).get("kind")
         if target_kind == "watchlist":
             market_read = [
@@ -472,16 +492,34 @@ def compose_body(
             market_read = [
                 _sentence_row("status", NO_COVERAGE_THESIS_EN, NO_COVERAGE_THESIS_ZH, asof)
             ]
-    elif degraded_reason in (NO_COVERAGE_THESIS_EN, NO_COVERAGE_WATCHLIST_EN):
-        # Named target whose tickers miss the artifact — classify passed the
-        # kind-appropriate text as the reason; compose_body uses it directly.
-        if degraded_reason == NO_COVERAGE_WATCHLIST_EN:
+    elif degraded_reason and (
+        "not in this week's brief yet" in degraded_reason
+        or "appeared in this week's brief yet" in degraded_reason
+    ):
+        # Named thesis / watchlist whose tickers miss the artifact:
+        # classify returned the format-string with actual names filled in.
+        # Use the kind-appropriate bilingual sentence — both EN and ZH must
+        # name the actual tickers, not the old hardcoded "AAPL".
+        tickers_list = sorted((target or {}).get("tickers") or [])
+        verb = "is" if len(tickers_list) == 1 else "are"
+        names_str = ", ".join(tickers_list)
+        if "appeared in this week's brief yet" in degraded_reason:
             market_read = [
-                _sentence_row("status", NO_COVERAGE_WATCHLIST_EN, NO_COVERAGE_WATCHLIST_ZH, asof)
+                _sentence_row(
+                    "status",
+                    NO_COVERAGE_WATCHLIST_FMT_EN.format(names=names_str, verb=verb),
+                    NO_COVERAGE_WATCHLIST_FMT_ZH.format(names=names_str, verb=verb),
+                    asof,
+                )
             ]
         else:
             market_read = [
-                _sentence_row("status", NO_COVERAGE_THESIS_EN, NO_COVERAGE_THESIS_ZH, asof)
+                _sentence_row(
+                    "status",
+                    NO_COVERAGE_THESIS_FMT_EN.format(names=names_str, verb=verb),
+                    NO_COVERAGE_THESIS_FMT_ZH.format(names=names_str, verb=verb),
+                    asof,
+                )
             ]
     elif degraded_reason:
         market_read = [
