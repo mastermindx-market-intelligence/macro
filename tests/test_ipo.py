@@ -1149,35 +1149,42 @@ def test_cw_force_hook_fallback_nodes_and_css_are_emitted(monkeypatch, tmp_path,
 
     css = "".join(style.get_text() for style in doc.select("style"))
     css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
-    css = re.sub(r"\s+", "", css)
+    css = re.sub(r"\s+", " ", css)
     assert '.cw-rail-fb,.cw-scale-fb{display:none}' in css
-    assert '[data-credit="null"].cw-rail-data,[data-credit="null"].cw-scale-data{display:none}' in css
-    assert '[data-credit="null"].cw-rail-fb{display:block}' in css
-    assert '[data-credit="null"].cw-scale-fb{display:flex}' in css
+    # Exact descendant selectors — whitespace is load-bearing; a compound
+    # [data-credit="null"].cw-rail-fb (no space) would be wrong.
+    assert '[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}' in css
+    assert '[data-credit="null"] .cw-rail-fb{display:block}' in css
+    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in css
     assert not re.search(r'\[data-credit="null"\][^{}]*\.tc-state', css)
 
 
 def test_cw_force_hook_comment_names_body_not_html():
     """The hook comment must name <body> as the element the capture script sets
     [data-credit="null"] on — not <html> (which the pre-fix comment stated).
-    Fails on the round-2 head before this fix."""
+    Both the CSS /* */ comment (~185-189) and the Jinja {# #} comment (~459-462)
+    must be checked; a regression in either would not be caught by scanning one."""
     tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
     src = tpl_path.read_text()
-    # The comment should say "on <body>", not "on <html>"
-    # Scan for the comment block that mentions data-credit
     import re
-    comment_blocks = re.findall(r'/\*.*?\*/', src, re.DOTALL)
-    hook_comment = None
-    for block in comment_blocks:
-        if 'data-credit' in block and 'force-state hook' in block:
-            hook_comment = block
-            break
-    assert hook_comment is not None, "Force-state hook comment not found in template"
-    assert "<body>" in hook_comment, (
-        "Hook comment must name <body> as the element [data-credit='null'] is set on "
-        "(capture_page_evidence.py sets it on <body>, not <html>)"
-    )
-    assert "<html>" not in hook_comment or "not <html>" in hook_comment, (
-        "Hook comment must not say [data-credit='null'] is set on <html> — "
-        "capture_page_evidence.py sets it on <body>"
-    )
+    css_comments = re.findall(r'/\*.*?\*/', src, re.DOTALL)
+    jinja_comments = re.findall(r'\{#.*?#\}', src, re.DOTALL)
+
+    hook_comments = [
+        b for b in css_comments
+        if 'data-credit' in b and 'force-state hook' in b
+    ] + [
+        b for b in jinja_comments
+        if 'data-credit' in b and 'Capture-only' in b
+    ]
+    assert hook_comments, "Force-state hook comment not found in CSS /* */ or Jinja {# #}"
+
+    for hook_comment in hook_comments:
+        assert "<body>" in hook_comment, (
+            "Hook comment must name <body> as the element [data-credit='null'] is set on "
+            "(capture_page_evidence.py sets it on <body>, not <html>)"
+        )
+        assert "<html>" not in hook_comment or "not <html>" in hook_comment, (
+            "Hook comment must not say [data-credit='null'] is set on <html> — "
+            "capture_page_evidence.py sets it on <body>"
+        )
