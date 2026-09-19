@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T10:10:36.351829+00:00",
-  "count": 2422,
+  "generated_at": "2026-09-19T10:25:40.988441+00:00",
+  "count": 2423,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1066,6 +1066,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4mognkqozbf-46e7ee",
+      "title": "India Weekly Kickstart NIFTY closed the week flat as oil stabilized",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:17:13Z",
+      "summary_points": [
+        "AI Enablers Surge 60% YTD: Cohort of 42 AI infrastructure stocks (power, data centers, semiconductors) surged 60% YTD driven by earnings accumulation, outperforming Nifty (12% decline) with 39% forward earnings growth vs.",
+        "MSCI India Small Mid’s 22%.",
+        "Monsoon Deficit & Agricultural Risk: 15% below-normal monsoon (Jun-Sep 2026), with South Peninsula (-28%) and North-East (-25%) severely impacted, signaling acute water scarcity, crop yield threats, and supply chain vulnerabilities.",
+        "NIFTY Target Anchored by Macro Fundamentals: Goldman Sachs forecasts NIFTY to reach 26,500 by June 2027, supported by robust GDP growth (7.4-7.7% CY24-CY27), moderate CPI (5.0-5.3%), and improving fiscal balance (-4.7% to -4.2% of GDP).",
+        "Pharma vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 22,
       "language": "en",
       "needs_metadata": false
     },
