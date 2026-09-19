@@ -33,6 +33,7 @@ discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 - DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
 - DSC:TERMINAL-TACTICAL-R1A-EXTENDED-SESSION-RESULT
+- DSC:TERMINAL-TACTICAL-R1A-CURRENT-MAIN-RECONCILIATION
 - DSC:TERMINAL-TACTICAL-BOUNDED-MINUTE-SEAM
 - DSC:TERMINAL-TACTICAL-MINUTE-AMBIGUITY-RESOLVER
 waves:
@@ -46,13 +47,13 @@ waves:
 - id: D1
   title: Current pilot history and finer-grain availability qualification
   status: in_progress
-  next_action: 'Macro #7275 is BUILT_NOT_PROVEN at 7e8d67133d3ae39c36d1a515dff1ef1db94f3fb3 on the existing Radar-owned minute seam: a pure fail-closed resolver converts a complete qualified one-minute SessionTape into target-first/adverse-first/same-minute-ambiguous/neither without another store or fetch plane. Latest-main local proof: complete C3 reader/resolver suite 64 passed and full Radar W1-W6 regression 1496 passed/2 skipped. The resolver now requires source vintage and always exposes source_clock_proven=false / availability_time_unproven. Independent review remains requested from mastermindx-2 and current-head hosted checks are pending. Terminal #595 still owns refresh source and remains CHANGES_REQUESTED at ba7c48c on the proven failure-masking defects; #601 remains green but awaiting its requested independent review.'
+  next_action: 'Macro #7275 is BUILT_NOT_PROVEN at cd25ac719522bdecfc15e35c81d0d5c1ca314c58 on the existing Radar-owned minute seam: the resolver is fail-closed, its authority/evidence class and adjusted-basis contract are caller-non-overridable, and it always exposes source_clock_proven=false / availability_time_unproven. Exact-head C3 reader/resolver suite: 66 passed; independent review remains requested from mastermindx-2. Hosted packs 3-5 failed before candidate checkout because the shared self-hosted runner received a shutdown signal; comment 5741053579 preserves the exact infrastructure evidence and no blind rerun was issued. Terminal #595 still owns refresh source and remains CHANGES_REQUESTED at ba7c48c on the proven failure-masking defects; #601 remains green but awaits requested independent review.'
 - id: R1
   title: Registered price-first hypotheses, causal evaluation and controls
   status: in_progress
   depends_on:
   - D0
-  next_action: 'Macro #7270 current semantic head is 982a99a8adcac29c8158c2c31ec6639894dfdce1 after wiring its tactical suites into the canonical Entry Radar CI step. Local full Radar step 1522 passed/2 skipped; hosted ci-plan/contract-delta/fence/authority/hosted-plan are green, trusted executor packs remain QUEUED, and independent review is requested from MastermindX1 with no review result yet. R1-B v3 is frozen separately on draft Macro #7274 (freeze commit 1518ef7dabc74428bd79e7724f080226381b6fe4; 60 cells; no registration/outcomes); synthetic-only spec check on unchanged frozen hashes passed 9 cases and is durable at #7274 head 974bc84623e9207dfe7f7e494ba81824f4118525. Independent review is requested from mastermindx-2. Do not touch shared TrialLedger/implementation for R1-B until #7270 shared-source execution/review gate clears. No R1-A threshold rescue.'
+  next_action: 'Macro #7270 head a3c539675e6314ad8fcdf5c633b8d136e79c0fd8 is conflict-free against main 7babc6c17d50968683a0b7fc49323c103edf89da. Current-main ledger 1676 + exactly 84 R1-A cells = 1760, with all main rows retained once and integrated SHA256 beb48ca70d10c81e9c149afea5dbdbc31614bfe2489f2558e8c45d8fb112a794. Exact integration proof: 68 focused tests, full Radar+tactical 1520 passed/4 skipped, contract-delta 0/0, compile/diff clean. Current-head hosted CI is running and independent review remains requested from MastermindX1 with no result. R1-B v3 remains frozen on #7274 head 974bc84623e9207dfe7f7e494ba81824f4118525: 60 cells, no registration/outcomes, 9-case synthetic spec check only. Do not touch shared TrialLedger/implementation for R1-B until #7270 hosted/review gate clears. No R1-A threshold rescue.'
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
@@ -110,7 +111,7 @@ artifacts:
 - research/species/TTI_R1A_REPORT.md
 - research/species/tti_r1/RESULT.json
 - research/species/tti_r1/REGISTRATION_RECEIPT.json
-next_action: 'Let #7270 current-head trusted executor packs and requested independent review complete under their existing owners; keep #7274 v3 docs/config-only until that shared-source gate clears, then append its frozen 60-cell grid before any outcome read and implement test-first. In parallel advance D1 through #7275 review/CI plus source-clock qualification on the existing VendorMinuteReader and consume #595/#601 when they move. Intraday top/HOD work remains a later separate preregistration under DEC:TERMINAL-TACTICAL-TOP-SIDE-BOUNDARY. No Executive prerequisite, live scan or validated edge is claimed.'
+next_action: 'Consume #7270 head a3c539675e6314ad8fcdf5c633b8d136e79c0fd8 current-head hosted checks and requested independent review; do not merge/promote on local integration proof alone. Keep #7274 v3 docs/config-only until that gate clears, then append its frozen 60-cell grid before any outcome read and implement test-first. In parallel finish D1 current-session arrival-receipt hardening on the existing #7275 carrier, preserving corrected-history versus live-arrival evidence classes, and consume #595/#601 when their incumbent owners move. Intraday top/HOD remains a later separate preregistration. No Executive prerequisite, live scan, or validated edge is claimed.'
 ---
 
 This record coordinates the approved Terminal product integration. Existing tactical and scientific owners remain controlling; no live execution is inferred from this authored record.
