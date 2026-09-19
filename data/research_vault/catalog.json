@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T23:27:44.273224+00:00",
-  "count": 2461,
+  "generated_at": "2026-09-19T23:44:48.113443+00:00",
+  "count": 2462,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -2390,6 +2390,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-idihu0rpbda-343121",
+      "title": "Amer Sports Inc. (AS) Salomon Investor Day Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:02Z",
+      "summary_points": [
+        "China Scalability: 330 stores (2026E), 85% retail mix, triple-digit million business; core to brand-direct execution at scale.",
+        "Raised Guidance: 20-22% Y/Y revenue growth (vs prior 18-20%), adj.",
+        "operating margin >13.5-14% (vs consensus 13.1%).",
+        "Target Price Deterioration: $48→$21 (Feb 2024), current target $48 above $37.45 closing price; downward revision trend signals bearish sentiment.",
+        "Gravel Expansion: 15% of 2026E sales (3x growth vs 2025), critical for revenue diversification beyond performance footwear."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
