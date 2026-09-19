@@ -275,7 +275,7 @@ def analyze_session(
             "settled_oi_known_contracts": settled_known_n,
             "fully_matched_contracts": matched_n,
             "trade_conservation_compatible_contracts": int(len(consistent)),
-            "oi_volume_inconsistent_contracts": int(len(inconsistent)),
+            "trade_conservation_incompatible_contracts": int(len(inconsistent)),
             "volume_contract_rate": _safe_fraction(volume_valid_n, eligible_n),
             "prior_oi_contract_rate": _safe_fraction(prior_known_n, eligible_n),
             "settled_oi_contract_rate": _safe_fraction(settled_known_n, eligible_n),
