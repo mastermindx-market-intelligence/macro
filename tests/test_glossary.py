@@ -184,6 +184,40 @@ def test_every_why_line_is_transcribed_from_its_own_bound_so_what():
             )
 
 
+def test_why_zh_also_matches_its_own_bound_so_what():
+    """h_7125 MINOR-2: why_zh was not measured against the source So-whats,
+    so round 1 had no signal when a ZH transcription came from the wrong
+    heading. The same fidelity check is run for why_zh against every source
+    file's So-what bullets. Rows with no why_zh are skipped."""
+    cache: dict[Path, list[dict]] = {}
+    for term in GLOSSARY_TERMS:
+        if not (term.why_zh or "").strip():
+            continue
+        path = ROOT / term.source_file
+        if path not in cache:
+            cache[path] = _source_sections(path)
+        sections = cache[path]
+        own = next((s for s in sections if s["line"] == term.source_line), None)
+        if own is None:
+            continue  # source_line may be None for programmatic rows
+        own_so_what = _so_what(own)
+        if not own_so_what.strip():
+            continue
+        own_score = _fidelity(term.why_zh, own_so_what)
+        for other in sections:
+            if other is own:
+                continue
+            other_so_what = _so_what(other)
+            if not other_so_what.strip():
+                continue
+            other_score = _fidelity(term.why_zh, other_so_what)
+            assert own_score >= other_score, (
+                f"{term.id}: why_zh matches {term.source_file}:{other['line']} "
+                f"({other_score:.2f}) better than its own bound So-what at "
+                f"{term.source_file}:{own['line']} ({own_score:.2f})"
+            )
+
+
 def test_no_why_line_repeats_its_own_answer():
     """B-F13-1 review round 2, MAJOR 2 / MINOR 4: `measurement-windows` and
     `market-tiles-china` printed their own ``answer`` a second time in the
@@ -219,6 +253,11 @@ def test_public_copy_never_names_an_internal_enum_state():
         ("sector-heat-strip", "may", "可能"),
         ("persistence-streak", "may", "可能"),
         ("washout-chip", "typically", "通常"),
+        # MAJOR-1 h_7125: "Net near zero with a high gross figure means the funds
+        # are trading against each other" — the gross qualifier is the load-bearing
+        # part; drop it and the row implies near-zero net IS the signal rather
+        # than the absence of one.
+        ("net-conviction", "gross", "总额"),
     ],
 )
 def test_a_hedge_the_source_carries_survives_into_the_why_line(term_id, en_hedge, zh_hedge):
@@ -227,23 +266,51 @@ def test_a_hedge_the_source_carries_survives_into_the_why_line(term_id, en_hedge
     "the move **may** be narrow" became "usually means a narrow move", "a
     position that **may** be finished" became "Flat means done.", and
     "**typically** a higher-quality entry" became an unqualified "beat". The
-    hedge is the claim, so it is pinned in both languages."""
+    hedge is the claim, so it is pinned in both languages.
+
+    h_7125 MAJOR-1: the gross-qualifier on net-conviction is not a hedge but
+    the load-bearing condition — without it the row says near-zero net IS the
+    signal, when the source says the opposite. Pinned identically in both
+    languages."""
     term = next(t for t in GLOSSARY_TERMS if t.id == term_id)
     assert en_hedge in (term.why_en or "").lower(), term.why_en
     assert zh_hedge in (term.why_zh or ""), term.why_zh
 
 
-def test_zh_stage_label_copy_uses_the_label_the_page_actually_renders():
-    """B-F13-1 review round 2, MINOR 3: the ZH label 「已迟」 appears nowhere on
-    the rendered page — templates/stocktable.js renders
-    ``bi('RAN / LATE', '信号已过')`` — so the new why pair must name the label a
-    reader can actually find. (The pre-existing ``answer_zh`` that first carried
-    「已迟」 is m#6909 copy and out of this heal's scope; this pins the field the
-    heal added.)"""
+def test_stage_labels_en_uses_the_chip_text_the_page_renders():
+    """h_7125 MAJOR-2 MINOR-3: the EN answer for stage-labels-cn says "Ran Late"
+    but the page renders ``bi('RAN / LATE', '信号已过')`` — the slash form is
+    what a reader sees, so the answer must use it."""
     term = next(t for t in GLOSSARY_TERMS if t.id == "stage-labels-cn")
+    assert "RAN / LATE" in (term.answer_en or ""), term.answer_en
+    # The slash form must appear, not the bare "Ran Late" that round 1 used.
+    assert "Ran Late" not in (term.answer_en or "").replace("RAN / LATE", ""), term.answer_en
+
+
+def test_stage_labels_zh_uses_the_chip_text_the_page_renders():
+    """h_7125 MAJOR-2: the ZH answer for stage-labels-cn carries 「已迟」 which
+    the page never renders — templates/stocktable.js line ~1173 renders
+    ``bi('RAN / LATE', '信号已过')``. Both the answer_zh and why_zh must use
+    the rendered chip text. (answer_zh 「已迟」 is m#6909 copy; the heal scope
+    covers the why_zh already, and answer_zh is repaired here as part of the
+    same defect class.)"""
+    term = next(t for t in GLOSSARY_TERMS if t.id == "stage-labels-cn")
+    assert "信号已过" in (term.answer_zh or ""), term.answer_zh
     assert "信号已过" in (term.why_zh or ""), term.why_zh
+    # The dead chip text must not appear in any glossary field.
     for entry in GLOSSARY_TERMS:
         assert "已迟" not in (entry.why_zh or ""), entry.id
+
+
+def test_consensus_board_why_uses_the_boards_own_words():
+    """h_7125 MINOR-1: the row must name the board's own words so a reader
+    can match the row to the board indicator they see. templates/_etf_board_rows.html.j2
+    line ~44 renders ``bi('they disagree', '存在分歧')`` for the contested state."""
+    term = next(t for t in GLOSSARY_TERMS if t.id == "consensus-board")
+    # EN: the board renders "they disagree".
+    assert "they disagree" in (term.why_en or "").lower(), term.why_en
+    # ZH: the board renders 「存在分歧」.
+    assert "存在分歧" in (term.why_zh or ""), term.why_zh
 
 
 def test_glance_text_carries_no_banned_vocabulary():
