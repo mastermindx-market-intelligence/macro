@@ -182,15 +182,11 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .cw-rail.is-null{background:var(--card);box-shadow:inset 0 0 0 1px var(--grid);opacity:.55}
 .cw-scale{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;
   letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
-/* Capture-time force-state hook for the not_evaluable variant: the .cw-rail-fb
-   and .cw-scale-fb nodes always render but stay hidden by default; toggling
-   [data-credit="null"] on <body> (set by scripts/capture_page_evidence.py ~line 1343)
-   swaps the data-bearing rail + scale for the null variant so the capture script can
-   verify the H2 display copy ("No read / 暂无读数" on .tc-state + "range can't be
-   read yet / 区间暂无读数" on the scale) without touching real data. The .tc-state
-   text is not swapped — the plain "No read" copy renders on the capture segment
-   naturally; the CSS hook only swaps the rail/scale nodes. No production path sets
-   the attribute. */
+/* Capture-time force-state hook for the not_evaluable rail variant. The capture
+   script sets [data-credit="null"] on <body>; the rules below swap only the rail
+   and scale. They do not change .tc-state or any data-derived text. The hidden
+   fallback nodes are capture-only until a product caller sets data-credit;
+   no production caller currently sets it. */
 .cw-rail-fb,.cw-scale-fb{display:none}
 [data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}
 [data-credit="null"] .cw-rail-fb{display:block}
@@ -460,11 +456,10 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       <div class="cw-rail is-null" aria-hidden="true"></div>
       <div class="cw-scale"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
       {% endif %}
-      {# Capture-time force-state hook for the not_evaluable variant: an always-present
-         hidden null rail + null scale, shown only when the capture script toggles
-         `[data-credit="null"]` on <body> (set by scripts/capture_page_evidence.py ~line 1343).
-         Real data is rendered untouched when the attribute is absent; the hook is
-         opt-in and never fires in production. No production path sets the attribute. #}
+      {# Capture-only fallback rail and scale, emitted for both data states and
+         hidden until scripts/capture_page_evidence.py sets [data-credit="null"]
+         on <body>. They remain capture-only until a product caller sets the
+         attribute. The hook changes only rail/scale visibility, never .tc-state. #}
       <div class="cw-rail is-null cw-rail-fb" aria-hidden="true"></div>
       <div class="cw-scale cw-scale-fb"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
 

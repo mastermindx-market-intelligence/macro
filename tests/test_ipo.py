@@ -1092,112 +1092,69 @@ def test_cw_state_and_clause_keys_do_not_leak_engine_token():
 
 
 # --------------------------------------------------------------------------- #
-# MAJOR-3 + minors 1/2 (h_7128) — RED-first test for the capture-time
-# force-state CSS hook. The hook lives in templates/ipo.html.j2 and toggles
-# [data-credit="null"] on <body> to swap the data-bearing rail/scale for the
-# null-variant fallback nodes. It was added in round 2; this test proves it
-# exists and works as designed.
+# h_7128 — exercise the full production Jinja render with both credit states.
 # --------------------------------------------------------------------------- #
-def test_cw_force_hook_fallback_nodes_and_css_are_emitted():
-    """Render templates/ipo.html.j2 with a not-evaluable credit window segment and
-    assert the .cw-rail-fb / .cw-scale-fb fallback nodes and the [data-credit="null"]
-    CSS rule are present in the rendered output. Fails on the round-1 head
-    (6c444f6f35f8) where neither the nodes nor the CSS rule exist.
+@pytest.mark.parametrize("has_data", [False, True], ids=["missing-data", "with-data"])
+def test_cw_force_hook_fallback_nodes_and_css_are_emitted(monkeypatch, tmp_path, has_data):
+    """The builder emits real fallback nodes and opposite normal rails in both states.
 
-    The ruling (MAJOR-3) requires a RED-first test that actually renders the
-    template — source-only assertions do not exercise the Jinja macros or prove the
-    fallback nodes are emitted in output."""
-    import jinja2
-    from scripts.build_vector import C
+    _render_ipo_html calls bi.build(), including its FileSystemLoader, autoescape=True,
+    i18n globals and complete fixture context. DOM selectors cannot be satisfied by
+    class names in CSS or comments. Capture fallbacks intentionally exist in BOTH
+    states; only the normal, server-selected null/data rail changes with the input.
+    """
+    from bs4 import BeautifulSoup
 
-    tpl_path = pathlib.Path(bi.__file__).resolve().parents[1] / "templates" / "ipo.html.j2"
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(tpl_path.parent)),
-                             autoescape=False, keep_trailing_newline=True)
-    tpl = env.get_template(tpl_path.name)
-
-    # Stub for the triad section (lines ~388-437) — not under test but must exist.
-    # Properties referenced: window.band, window.constructive, window.hostile,
-    # window.n_legs, window.n_expected, window.legs, window.stance_en, window.stance_zh,
-    # window.low_confidence; aftermarket.verdict, aftermarket.ipo_5y, etc.;
-    # pipeline.available, pipeline.pace, pipeline.spac_pct_90d, etc.
-    window_stub = type("WindowStub", (), {
-        "band": "NEUTRAL", "constructive": 3, "hostile": 2, "n_legs": 6,
-        "n_expected": 6, "legs": [], "stance_en": "Watch — don't chase",
-        "stance_zh": "观望，别追", "low_confidence": False,
-    })()
-    aftermarket_stub = type("AftermarketStub", (), {
-        "verdict": "tracks", "verdict_zh": "持平", "ipo_5y": "—",
-        "spy_5y": "—", "gap_5y": None, "stance_en": "Don't chase the basket",
-        "stance_zh": "别追新股篮子", "rows": [],
-    })()
-    pipeline_stub = type("PipelineStub", (), {
-        "available": True, "pace": "normal", "pace_zh": "正常",
-        "spac_pct_90d": 0, "froth_flags": [], "stance_en": "Normal issuance",
-        "stance_zh": "发行正常", "priced_90d": "",
-    })()
-
-    # Minimal credit_window context that hits the not-evaluable (rail=None) branch:
-    # state=not_evaluable so the is-null nodes render, and rail=None so the
-    # fallback nodes also render.
-    ctx = {
-        "C": C,
-        "window": window_stub,
-        "aftermarket": aftermarket_stub,
-        "pipeline": pipeline_stub,
-        "credit_window": {
-            "segments": [{
-                "label_en": "High-yield borrowers",
-                "label_zh": "高收益发行人",
-                "tip_en": "",
-                "tip_zh": "",
-                "state_en": "No read",
-                "state_zh": "暂无读数",
-                "clause_en": "We can't read this now.",
-                "clause_zh": "目前无法读取。",
-                "rail": None,          # triggers {% else %} — both is-null and fallback render
-                "inputs": [],
-            }],
-        },
+    seg = _seg("open" if has_data else "not_evaluable")
+    if not has_data:
+        seg.update(rail=None, inputs=[], n_inputs=0, low_confidence=True)
+    raw = {
+        "segments": [seg], "as_of": "2026-09-01",
+        "calendar": {"available": False, "reason": "no_upcoming_deal_calendar_source"},
     }
+    monkeypatch.setattr(bi.cwn, "window_state", lambda: raw)
+    rendered = _render_ipo_html(monkeypatch, tmp_path)
+    doc = BeautifulSoup(rendered, "html.parser")
+    cards = doc.select(".tcard.cw")
+    assert len(cards) == 1
+    card = cards[0]
 
-    rendered = tpl.render(**ctx)
+    fallback_rails = card.select(".cw-rail.is-null.cw-rail-fb")
+    fallback_scales = card.select(".cw-scale.cw-scale-fb")
+    assert len(fallback_rails) == 1, "Rendered capture fallback rail is missing"
+    assert len(fallback_scales) == 1, "Rendered capture fallback scale is missing"
+    assert fallback_rails[0]["aria-hidden"] == "true"
+    assert fallback_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+    assert fallback_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
 
-    # 1. The always-present fallback rail and scale nodes are in the rendered output
-    assert "cw-rail-fb" in rendered, (
-        ".cw-rail-fb fallback node must appear in rendered ipo.html — "
-        "it is the null rail and is toggled by [data-credit='null']"
-    )
-    assert "cw-scale-fb" in rendered, (
-        ".cw-scale-fb fallback node must appear in rendered ipo.html — "
-        "it is the null scale label and is toggled by [data-credit='null']"
-    )
+    # The normal branch is opposite with/without data. The hidden capture-only
+    # fallback above stays available in either case, as required by the ruling.
+    null_rails = card.select(".cw-rail.is-null:not(.cw-rail-fb)")
+    null_scales = card.select(".cw-scale:not(.cw-scale-data):not(.cw-scale-fb)")
+    assert len(null_rails) == (0 if has_data else 1)
+    assert len(null_scales) == (0 if has_data else 1)
+    assert len(card.select(".cw-rail-data")) == (1 if has_data else 0)
+    assert len(card.select(".cw-scale-data")) == (1 if has_data else 0)
+    if has_data:
+        assert "left:10.0%" in card.select_one(".cw-mark")["style"]
+        assert "width:33.0%" in card.select_one(".cw-band")["style"]
+    else:
+        assert null_scales[0].select_one(".l-en").get_text() == "range can’t be read yet"
+        assert null_scales[0].select_one(".l-zh").get_text() == "区间暂无读数"
 
-    # 2. The [data-credit="null"] CSS rule is in the <style> block
-    assert '[data-credit="null"] .cw-rail-data' in rendered, (
-        '[data-credit="null"] CSS rule must hide .cw-rail-data when the '
-        'capture attribute is set on <body>'
-    )
-    assert '[data-credit="null"] .cw-scale-data' in rendered, (
-        '[data-credit="null"] CSS rule must hide .cw-scale-data when the '
-        'capture attribute is set on <body>'
-    )
-    assert '[data-credit="null"] .cw-rail-fb{display:block}' in rendered, (
-        '[data-credit="null"] must show .cw-rail-fb (display:block)'
-    )
-    assert '[data-credit="null"] .cw-scale-fb{display:flex}' in rendered, (
-        '[data-credit="null"] must show .cw-scale-fb (display:flex)'
-    )
+    expected_state = ("Open", "开着") if has_data else ("No read", "暂无读数")
+    assert card.select_one(".tc-state .l-en").get_text() == expected_state[0]
+    assert card.select_one(".tc-state .l-zh").get_text() == expected_state[1]
+    assert not doc.body.has_attr("data-credit"), "Normal renders must not force capture state"
 
-    # 3. The null-state copy: "range can't be read yet" / "区间暂无读数" appears in
-    #    BOTH the is-null node and the fallback node — the ruling requires both.
-    assert "range can" in rendered and "t be read yet" in rendered, (
-        'Null rail/scale copy "range can\'t be read yet" must appear in the '
-        'rendered output — the is-null node AND the fallback node both carry it.'
-    )
-    assert "区间暂无读数" in rendered, (
-        'Null rail/scale copy "区间暂无读数" must appear in the rendered output — '
-        'the is-null node AND the fallback node both carry it.'
-    )
+    css = "".join(style.get_text() for style in doc.select("style"))
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)
+    css = re.sub(r"\s+", "", css)
+    assert '.cw-rail-fb,.cw-scale-fb{display:none}' in css
+    assert '[data-credit="null"].cw-rail-data,[data-credit="null"].cw-scale-data{display:none}' in css
+    assert '[data-credit="null"].cw-rail-fb{display:block}' in css
+    assert '[data-credit="null"].cw-scale-fb{display:flex}' in css
+    assert not re.search(r'\[data-credit="null"\][^{}]*\.tc-state', css)
 
 
 def test_cw_force_hook_comment_names_body_not_html():
