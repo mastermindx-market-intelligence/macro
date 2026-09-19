@@ -121,10 +121,11 @@ The exact post-merge acceptance command is:
 `python -m scripts.audit_china_gold_premium --strict-render --require-live-ready --require-method close_proxy`
 
 That command exits nonzero unless the Shanghai-close proxy is the selected fresh method, the
-rendered panel and machine projection both match the engine, and both the 5-session average and
-30-session range are honestly available. The normal nightly continues to accept an honest
-unavailable receipt; only the explicit acceptance invocation turns source/history readiness into
-a completion gate.
+rendered panel and machine projection both match the engine, both the 5-session average and
+30-session range are honestly available, and the two raw source artifacts are present with bound
+Data OS ids, non-zero rows, valid SHA-256s, and timestamps matching the selected close-proxy
+headline. The normal nightly continues to accept an honest unavailable receipt; only the explicit
+acceptance invocation turns source/history/artifact readiness into a completion gate.
 
 The two raw source datasets already have stable Data OS ids declared as `PROPOSED`:
 `commodity.gold.sge_au9999.close` and `commodity.gold.xaucny.close_ref`. After the first real

@@ -1147,7 +1147,11 @@ def test_gold_premium_run_binds_real_source_store_artifacts_for_dataos_promotion
         lambda cfg: real_build_view_model(cfg, now=now),
     )
 
-    rc = audit.run(strict_render=True)
+    rc = audit.run(
+        strict_render=True,
+        require_live_ready=True,
+        required_method="close_proxy",
+    )
     receipt = json.loads(
         data_root.joinpath("quality", "china_gold_premium.json").read_text()
     )
@@ -1344,3 +1348,52 @@ def test_gold_premium_dataos_promotion_requires_registry_dataset_id_binding(tmp_
         "source artifact sge Data OS id is not bound"
         in doc["close_proxy_dataos_promotion_blockers"]
     )
+
+
+def test_gold_premium_live_ready_close_proxy_requires_bound_source_artifacts(
+    tmp_path, monkeypatch
+):
+    from scripts import audit_china_gold_premium as audit
+
+    site = tmp_path / "site"
+    site.mkdir()
+    site.joinpath("commodities.html").write_text("<html></html>")
+
+    monkeypatch.setattr(audit.config, "ROOT", tmp_path)
+    monkeypatch.setattr(audit.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(
+        audit.config,
+        "load",
+        lambda: {
+            "storage": {"site_dir": "site"},
+            "commodities": {"china_gold_premium": {}},
+        },
+    )
+    monkeypatch.setattr(
+        audit.china_gold_premium,
+        "build_view_model",
+        lambda cfg: {},
+    )
+    ready_without_artifacts = {
+        "status": "available_fresh",
+        "render_consistent": True,
+        "machine_projection_consistent": True,
+        "stats_5_ready": True,
+        "stats_30_ready": True,
+        "headline_method": "close_proxy",
+        "source_asof": "2026-09-18T07:30:00+00:00",
+        "source_artifacts": [],
+    }
+    monkeypatch.setattr(
+        audit,
+        "write_receipt",
+        lambda *args, **kwargs: dict(ready_without_artifacts),
+    )
+
+    rc = audit.run(
+        strict_render=True,
+        require_live_ready=True,
+        required_method="close_proxy",
+    )
+
+    assert rc == 3

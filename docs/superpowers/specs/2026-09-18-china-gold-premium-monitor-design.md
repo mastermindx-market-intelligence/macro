@@ -115,9 +115,11 @@ Post-merge acceptance uses the same checker with an explicit completion gate:
 `python -m scripts.audit_china_gold_premium --strict-render --require-live-ready --require-method close_proxy`
 
 This mode exits nonzero unless the Shanghai-close proxy is the selected fresh method, the rendered
-panel and incumbent machine projection both match the engine, and both the 5-session average and
-30-session range are ready. The scheduled nightly keeps honest unavailability nonfatal; only the
-explicit acceptance invocation requires live readiness.
+panel and incumbent machine projection both match the engine, both the 5-session average and
+30-session range are ready, and both close-proxy raw artifacts are bound to their canonical Data
+OS ids with non-zero rows, SHA-256s, and the same selected-source timestamp. The scheduled nightly
+keeps honest unavailability nonfatal; only the explicit acceptance invocation requires full live
+readiness.
 
 The 5-session average is emitted only after five aligned observations exist, and the 30-session
 range only after thirty. Until then those statistics are null/“—” rather than mislabeled

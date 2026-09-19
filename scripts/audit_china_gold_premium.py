@@ -491,6 +491,10 @@ def run(
             doc,
             required_method=required_method,
             require_machine_projection=True,
+            require_source_artifacts=(
+                required_method == "close_proxy"
+                or doc.get("headline_method") == "close_proxy"
+            ),
         )
         if blockers:
             print(
@@ -530,8 +534,9 @@ def main(argv: list[str] | None = None) -> int:
         "--require-live-ready",
         action="store_true",
         help=(
-            "exit 3 unless the source is fresh, the render is consistent, and "
-            "both the 5- and 30-session statistics are ready"
+            "exit 3 unless the source is fresh, the render and machine projection "
+            "are consistent, both 5-/30-session statistics are ready, and a selected "
+            "close-proxy method has both raw source artifacts bound"
         ),
     )
     ap.add_argument(
