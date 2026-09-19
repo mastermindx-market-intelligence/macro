@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 from typing import Any, Sequence
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -61,6 +62,7 @@ def _read_json(path_text: str) -> dict[str, Any]:
 
 
 def _write_json(path_text: str, value: dict[str, Any], *, private: bool) -> None:
+    """Atomically publish JSON; private prompt material is never briefly world-readable."""
     path = Path(path_text).expanduser()
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(
@@ -70,9 +72,30 @@ def _write_json(path_text: str, value: dict[str, Any], *, private: bool) -> None
         separators=(",", ":"),
         allow_nan=False,
     ) + "\n"
-    path.write_text(payload, encoding="utf-8")
-    if private:
-        os.chmod(path, 0o600)
+    mode = 0o600 if private else 0o644
+    fd, temporary = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=str(path.parent),
+        text=True,
+    )
+    try:
+        os.fchmod(fd, mode)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            fd = -1
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        os.chmod(path, mode)
+    except Exception:
+        if fd >= 0:
+            os.close(fd)
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -166,6 +189,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 {
                     "state": "ok",
                     "candidate_count": len(aggregate["candidates"]),
+                    "case_set_sha256": aggregate["case_set_sha256"],
                     "output": str(Path(args.output).expanduser()),
                 },
                 sort_keys=True,
