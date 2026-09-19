@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from hashlib import sha256
 from io import BytesIO
 from pathlib import Path
@@ -19,6 +20,8 @@ from typing import Any
 
 _TURN_WATCH_SCHEMA = "prophet.candidate_episode_input.turn_watch/v1"
 _RADAR_EVENT_SCHEMA = "mastermind.entry_event.v1"
+_RECONCILE_RECEIPT_SCHEMA = "prophet.candidate_episode_reconcile_receipt/v1"
+_RADAR_FORWARD_CONTRACT_STATE = "PROVISIONAL_UNVERSIONED_EPISODE_ADDRESS"
 _GENERATION_RE = re.compile(r"^peg:[0-9a-f]{64}$")
 
 
@@ -85,6 +88,46 @@ def _text(value: object, field: str) -> str:
     return value
 
 
+def _utc_instant(value: object, field: str) -> datetime:
+    """Parse one accepted UTC source clock for chronological comparison only."""
+    text = _text(value, field)
+    if not text.endswith("Z"):
+        raise CandidateStateSourceError(f"{field} must be RFC3339 UTC ending in Z")
+    try:
+        parsed = datetime.fromisoformat(text[:-1] + "+00:00")
+    except ValueError as exc:
+        raise CandidateStateSourceError(f"{field} is not RFC3339: {text!r}") from exc
+    if parsed.tzinfo is None:
+        raise CandidateStateSourceError(f"{field} must be timezone-aware")
+    return parsed.astimezone(timezone.utc)
+
+
+def _generation_receipt_meta(
+    receipt: Mapping[str, object],
+) -> tuple[str, int]:
+    if (
+        not isinstance(receipt, Mapping)
+        or receipt.get("schema") != _RECONCILE_RECEIPT_SCHEMA
+    ):
+        raise CandidateStateSourceError("B1 generation receipt schema mismatch")
+    recorded_at = _text(receipt.get("recorded_at"), "B1 generation recorded_at")
+    _utc_instant(recorded_at, "B1 generation recorded_at")
+    source_counts = receipt.get("source_counts")
+    if not isinstance(source_counts, Mapping):
+        raise CandidateStateSourceError("B1 generation source_counts missing")
+    turn_watch = source_counts.get("turn_watch")
+    if not isinstance(turn_watch, Mapping):
+        raise CandidateStateSourceError("B1 generation turn_watch counts missing")
+    mapped = turn_watch.get("mapped")
+    if (
+        not isinstance(mapped, int)
+        or isinstance(mapped, bool)
+        or mapped < 0
+    ):
+        raise CandidateStateSourceError("B1 generation turn_watch mapped count invalid")
+    return recorded_at, mapped
+
+
 def _freeze_index(
     source: str,
     rows: Mapping[str, Mapping[str, object]],
@@ -126,13 +169,23 @@ def index_turn_watch_events(
     events: Iterable[Mapping[str, object]],
     *,
     candidate_generation_id: str,
+    generation_receipt: Mapping[str, object],
 ) -> SourceFactIndex:
-    """Index exact TURN WATCH OPENED relations from the validated B1 ledger."""
+    """Index generation-local TURN WATCH relations from the validated B1 ledger.
+
+    The B1 event ledger is cumulative. Current emergence therefore binds to the
+    exact immutable generation receipt and consumes only TURN WATCH relation
+    events materialised by that reconcile pass. Historical OPENED edges remain
+    history; they are never relabelled as current triggers.
+    """
 
     if not _GENERATION_RE.fullmatch(str(candidate_generation_id or "")):
         raise CandidateStateSourceError(
             "candidate generation id is invalid"
         )
+    generation_recorded_at, source_mapped = _generation_receipt_meta(
+        generation_receipt
+    )
 
     facts: dict[str, Mapping[str, object]] = {}
     scanned = 0
@@ -140,11 +193,19 @@ def index_turn_watch_events(
         if not isinstance(raw, Mapping):
             raise CandidateStateSourceError("B1 event must be an object")
         scanned += 1
+        event_type = raw.get("event_type")
         if (
-            raw.get("event_type") != "OPENED"
+            event_type not in {"OPENED", "OBSERVED"}
             or raw.get("source_system") != "turn_watch"
             or raw.get("source_schema") != _TURN_WATCH_SCHEMA
         ):
+            continue
+
+        recorded_at = _text(
+            raw.get("recorded_at"), "turn_watch recorded_at"
+        )
+        _utc_instant(recorded_at, "turn_watch recorded_at")
+        if recorded_at != generation_recorded_at:
             continue
 
         source_event_id = _text(
@@ -157,23 +218,40 @@ def index_turn_watch_events(
             raise CandidateStateSourceError(
                 "turn_watch source receipt is invalid"
             )
-
+        occurred_at = _text(
+            raw.get("occurred_at"), "turn_watch occurred_at"
+        )
+        known_at = _text(raw.get("known_at"), "turn_watch known_at")
+        occurred_instant = _utc_instant(
+            occurred_at, "turn_watch occurred_at"
+        )
+        known_instant = _utc_instant(known_at, "turn_watch known_at")
+        if occurred_instant > known_instant:
+            raise CandidateStateSourceError(
+                "turn_watch occurred_at is after known_at"
+            )
+        relation_event_id = _text(
+            raw.get("event_id"), "turn_watch B1 relation event_id"
+        )
         fact = {
             "episode_id": _text(raw.get("episode_id"), "turn_watch episode_id"),
             "source_system": "turn_watch",
             "source_schema": _TURN_WATCH_SCHEMA,
             "source_event_id": source_event_id,
             "source_receipt": source_receipt,
-            "occurred_at": _text(
-                raw.get("occurred_at"), "turn_watch occurred_at"
-            ),
-            "known_at": _text(raw.get("known_at"), "turn_watch known_at"),
-            "relation_event_id": _text(
-                raw.get("event_id"), "turn_watch B1 relation event_id"
-            ),
+            "occurred_at": occurred_at,
+            "known_at": known_at,
+            "recorded_at": recorded_at,
+            "relation_event_type": str(event_type),
+            "relation_event_id": relation_event_id,
         }
         _insert_unique(
-            facts, source_event_id, fact, source="turn_watch"
+            facts, relation_event_id, fact, source="turn_watch"
+        )
+
+    if len(facts) > source_mapped:
+        raise CandidateStateSourceError(
+            "generation-local TURN WATCH relations exceed receipt mapped count"
         )
 
     receipt = {
@@ -181,6 +259,8 @@ def index_turn_watch_events(
         "source": "turn_watch_via_b1",
         "source_schema": _TURN_WATCH_SCHEMA,
         "candidate_generation_id": candidate_generation_id,
+        "generation_recorded_at": generation_recorded_at,
+        "source_mapped": source_mapped,
         "b1_events_scanned": scanned,
         "facts": len(facts),
         "content_sha256": "sha256:"
@@ -191,7 +271,6 @@ def index_turn_watch_events(
         ).hexdigest(),
     }
     return _freeze_index("turn_watch", facts, receipt)
-
 
 _RADAR_FIELDS = (
     "episode_address",
@@ -220,7 +299,13 @@ def index_radar_rows(
     *,
     source_receipt: Mapping[str, object],
 ) -> SourceFactIndex:
-    """Index the append-only Radar forward store by exact episode_address."""
+    """Index the current unversioned Radar forward projection conservatively.
+
+    episode_address is an idempotent projection join key, not a proven immutable
+    entry-event identity: the owner may fall back to ticker|detector|session.
+    Until Radar publishes a versioned contract that guarantees exact immutable
+    event identity, B3 records these rows only as provisional source context.
+    """
 
     facts: dict[str, Mapping[str, object]] = {}
     count = 0
@@ -231,22 +316,28 @@ def index_radar_rows(
         plain = _plain(dict(raw))
         if not isinstance(plain, Mapping):
             raise CandidateStateSourceError("Radar row normalization failed")
-        event_id = _text(
+        address = _text(
             plain.get("episode_address"), "radar episode_address"
         )
+        for clock_field in ("signal_ts", "signal_known_ts", "observed_at"):
+            clock = plain.get(clock_field)
+            if clock:
+                _utc_instant(clock, f"radar {clock_field}")
         fact = {field: plain.get(field) for field in _RADAR_FIELDS}
         fact["source_system"] = "entry_radar"
-        fact["source_schema"] = _RADAR_EVENT_SCHEMA
-        _insert_unique(facts, event_id, fact, source="radar")
+        fact["source_schema"] = None
+        fact["source_contract_state"] = _RADAR_FORWARD_CONTRACT_STATE
+        fact["canonical_event_id"] = None
+        _insert_unique(facts, address, fact, source="radar")
 
     receipt = dict(source_receipt)
     receipt.setdefault("state", "OK")
     receipt["source"] = "entry_radar_forward"
-    receipt["source_schema"] = _RADAR_EVENT_SCHEMA
+    receipt["source_schema"] = None
+    receipt["source_contract_state"] = _RADAR_FORWARD_CONTRACT_STATE
     receipt["rows_scanned"] = count
     receipt["facts"] = len(facts)
     return _freeze_index("entry_radar", facts, receipt)
-
 
 def load_radar_fact_index(path: Path) -> SourceFactIndex:
     """Read one exact Radar parquet byte snapshot; missing/malformed is typed."""
@@ -298,7 +389,7 @@ def emergence_inputs(
     turn_watch: SourceFactIndex,
     radar: SourceFactIndex,
 ) -> tuple[dict[str, dict[str, object]], dict[str, tuple[str, ...]]]:
-    """Resolve exact B1 source relations into conservative B3 emergence inputs."""
+    """Resolve source relations into conservative current-generation B3 inputs."""
 
     generation_id = getattr(snapshot, "generation_id", None)
     if not isinstance(generation_id, str) or not _GENERATION_RE.fullmatch(
@@ -340,73 +431,57 @@ def emergence_inputs(
             )
 
         reasons: list[str] = []
-        radar_facts: list[Mapping[str, object]] = []
         for expert_id in sorted(set(expert_ids)):
             fact = radar.facts_by_event_id.get(expert_id)
             if fact is None:
                 reasons.append(f"RADAR_EVENT_UNRESOLVED:{expert_id}")
             else:
-                radar_facts.append(fact)
+                reasons.append(f"RADAR_EVENT_ID_UNPROVEN:{expert_id}")
 
         if expert_ids and radar.degraded_reasons:
             reasons.extend(radar.degraded_reasons)
 
-        if radar_facts:
-            def radar_clock(fact: Mapping[str, object]) -> tuple[str, str]:
-                clock = (
-                    fact.get("observed_at")
-                    or fact.get("signal_known_ts")
-                    or fact.get("signal_ts")
-                    or ""
+        turn_facts = tw_by_episode.get(episode_id, [])
+        if turn_facts:
+            def turn_clock(
+                fact: Mapping[str, object],
+            ) -> tuple[datetime, str, str]:
+                known = _utc_instant(
+                    fact.get("known_at"), "turn_watch known_at"
                 )
-                return str(clock), str(fact.get("episode_address") or "")
+                return (
+                    known,
+                    str(fact.get("source_event_id") or ""),
+                    str(fact.get("relation_event_id") or ""),
+                )
 
-            selected = max(radar_facts, key=radar_clock)
-            family = str(selected.get("family") or "unknown")
-            subtype = selected.get("subtype")
-            token = family + (f":{subtype}" if subtype else "")
+            selected = max(turn_facts, key=turn_clock)
+            relation_type = _text(
+                selected.get("relation_event_type"),
+                "turn_watch relation_event_type",
+            )
             emergence[episode_id] = {
                 "state": "TRIGGERED",
                 "reason": None,
-                "source_system": "entry_radar",
-                "source_token": token,
+                "source_system": "turn_watch",
+                "source_token": f"B1_{relation_type}",
                 "source_ref": _text(
-                    selected.get("episode_address"),
-                    "radar episode_address",
+                    selected.get("relation_event_id"),
+                    "turn_watch relation event id",
                 ),
             }
         else:
-            turn_facts = tw_by_episode.get(episode_id, [])
-            if turn_facts:
-                selected = max(
-                    turn_facts,
-                    key=lambda fact: (
-                        str(fact.get("known_at") or ""),
-                        str(fact.get("source_event_id") or ""),
-                    ),
-                )
-                emergence[episode_id] = {
-                    "state": "TRIGGERED",
-                    "reason": None,
-                    "source_system": "turn_watch",
-                    "source_token": "B1_OPENED",
-                    "source_ref": _text(
-                        selected.get("source_event_id"),
-                        "turn_watch source_event_id",
-                    ),
-                }
-            else:
-                emergence[episode_id] = {
-                    "state": "UNESTIMABLE",
-                    "reason": (
-                        "SOURCE_RELATION_UNRESOLVED"
-                        if reasons
-                        else "SOURCE_NOT_SUPPLIED"
-                    ),
-                    "source_system": None,
-                    "source_token": None,
-                    "source_ref": None,
-                }
+            emergence[episode_id] = {
+                "state": "UNESTIMABLE",
+                "reason": (
+                    "SOURCE_RELATION_UNRESOLVED"
+                    if reasons
+                    else "SOURCE_NOT_SUPPLIED"
+                ),
+                "source_system": None,
+                "source_token": None,
+                "source_ref": None,
+            }
 
         degraded[episode_id] = tuple(sorted(set(reasons)))
 
