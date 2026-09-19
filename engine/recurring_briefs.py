@@ -24,6 +24,12 @@ number, no score. Authority ceiling: workflow_only.
 Data access mirrors engine/thesis_condition_monitor.py: the same Supabase
 service client, the same env variable names, the same never-print-secrets
 discipline. Writes brief_deliveries ONLY (insert on conflict do nothing).
+
+NYSE-session gate (Round 6, h_7106_r6, Sol #7106 blocker 2): the daily
+cadence is gated by `lib.nyse_calendar.is_session(run_date)` — the owner
+workflow runs seven days a week, so Saturday / Sunday / NYSE-holiday
+dates return a typed `non_session=True` RunResult with zero subscription
+reads and zero planned/written rows. weekly_saturday is unchanged.
 """
 from __future__ import annotations
 
@@ -36,6 +42,8 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from lib import nyse_calendar  # Round 6 NYSE-session gate (Sol #7106 blocker 2)
+
 ROOT = Path(__file__).resolve().parent.parent
 
 SUPABASE_URL = os.environ.get(
@@ -46,6 +54,23 @@ SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 CADENCE_DAILY = "daily_after_us_close"
 CADENCE_WEEKLY = "weekly_saturday"
 CADENCES = (CADENCE_DAILY, CADENCE_WEEKLY)
+
+# Round 6 (h_7106_r6, Sol #7106 blocker 3): typed read state. The previous
+# implementation returned `[]` for missing credentials / HTTP errors / any
+# other exception, so run() could not distinguish a legitimate empty
+# subscription list from a failed read — same calm-zero signature. The
+# CLI and run() now branch on a small, explicit state token; the typed
+# `error` field carries a SHORT diagnostic (no secrets, no row content).
+READ_STATE_OK = "ok"
+READ_STATE_MISSING_CREDENTIALS = "missing_credentials"
+READ_STATE_HTTP_ERROR = "http_error"
+READ_STATE_ERROR = "error"
+READ_STATES = (
+    READ_STATE_OK,
+    READ_STATE_MISSING_CREDENTIALS,
+    READ_STATE_HTTP_ERROR,
+    READ_STATE_ERROR,
+)
 
 DAILY_ARTIFACT_REL = "site/intelligence/briefing.json"
 DAILY_ASOF_FIELDS = ("as_of", "asof")
@@ -118,6 +143,38 @@ class RunResult:
     read_missing: int = 0
     read_unavailable: int = 0
     planned_rows: tuple = ()
+    # Round 6 (h_7106_r6, Sol #7106 blocker 2): True when the daily cadence
+    # short-circuited on a non-NYSE-session run_date. The CLI surfaces it as
+    # a 0-counts summary line; healthy empty stays non_session=False.
+    non_session: bool = False
+    # Round 6 (h_7106_r6, Sol #7106 blocker 3): the typed state returned by
+    # read_subscriptions. Defaults to READ_STATE_OK so an engine caller
+    # that bypasses run() still sees a sensible value.
+    read_state: str = READ_STATE_OK
+    # Round 6 (h_7106_r6, Sol #7106 blocker 3): True when the result is
+    # non-calm — a non-session run_date OR a non-ok read state. Healthy
+    # empty (state="ok" + rows=()) stays non_calm=False. The CLI uses this
+    # to decide whether to emit the ::warning line.
+    non_calm: bool = False
+    # Round 6 (h_7106_r6, Sol #7106 blocker 3): short diagnostic attached
+    # to a non-ok read state (e.g. "HTTP 500"). MUST NOT carry secrets,
+    # user-authored text, or row content.
+    read_error: str | None = None
+
+
+@dataclass(frozen=True)
+class ReadResult:
+    """Typed return of read_subscriptions (Round 6, h_7106_r6).
+
+    The previous implementation returned `list[dict]` and used `[]` as
+    the failure signal — same shape as a legitimate empty list. Callers
+    (and the CLI's ::warning gate) now branch on `state`. `rows` is the
+    populated list when state == READ_STATE_OK, else ().
+    """
+
+    state: str
+    rows: tuple = ()
+    error: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -615,9 +672,17 @@ def load_published_artifact(cadence: str, root: Path | None = None) -> dict | No
     return data if isinstance(data, dict) else None
 
 
-def read_subscriptions(cadence: str) -> list[dict]:
+def read_subscriptions(cadence: str) -> ReadResult:
+    """Typed read (Round 6, h_7106_r6, Sol #7106 blocker 3).
+
+    Returns a ReadResult with state="ok" + rows when the service
+    responded. Missing credentials → state="missing_credentials". Any
+    HTTPError → state="http_error" with a short, secret-free diagnostic.
+    Any other exception → state="error". The previous `[]` blanket no
+    longer hides read failures from run() / the CLI.
+    """
     if not SUPABASE_SERVICE_ROLE_KEY:
-        return []
+        return ReadResult(state=READ_STATE_MISSING_CREDENTIALS, rows=())
     path = (
         "brief_subscriptions?state=eq.active"
         f"&cadence=eq.{cadence}"
@@ -625,11 +690,21 @@ def read_subscriptions(cadence: str) -> list[dict]:
     )
     try:
         rows = _pg("GET", path)
-    except urllib.error.HTTPError:
-        return []
-    except Exception:
-        return []
-    return rows if isinstance(rows, list) else []
+    except urllib.error.HTTPError as exc:
+        code = getattr(exc, "code", None)
+        return ReadResult(
+            state=READ_STATE_HTTP_ERROR,
+            rows=(),
+            error=f"HTTP {code}" if code is not None else "HTTP error",
+        )
+    except Exception as exc:
+        # Short, secret-free diagnostic. Do NOT carry the exception
+        # message verbatim — that may include the URL or env-derived
+        # values; the caller only needs to know it was a non-HTTP error.
+        return ReadResult(state=READ_STATE_ERROR, rows=(), error="unexpected error")
+    if not isinstance(rows, list):
+        return ReadResult(state=READ_STATE_OK, rows=())
+    return ReadResult(state=READ_STATE_OK, rows=tuple(rows))
 
 
 def _thesis_tickers(subject_ref: dict | None, content: dict | None) -> list[str]:
@@ -830,7 +905,36 @@ def run(
             or run_date
         )
 
+    # Round 6 (h_7106_r6, Sol #7106 blocker 2): NYSE-session gate for the
+    # daily cadence. The owner workflow runs seven days a week, so a
+    # Saturday / Sunday / NYSE-holiday run_date MUST NOT call
+    # read_subscriptions and MUST NOT plan any rows. weekly_saturday has
+    # its own slot semantics and is intentionally NOT gated here.
+    if cadence == CADENCE_DAILY and not nyse_calendar.is_session(run_date):
+        return RunResult(
+            subscription_n=0,
+            ready_n=0,
+            degraded_n=0,
+            slot=slot,
+            non_session=True,
+        )
+
     subscriptions = read_subscriptions(cadence)
+    # Round 6 (h_7106_r6, Sol #7106 blocker 3): on a non-ok read state,
+    # do NOT iterate subscriptions, do NOT call read_target, do NOT
+    # write any rows. Surface the typed state on RunResult and mark the
+    # outcome non-calm so the CLI emits the ::warning line. Healthy
+    # empty (state="ok" + rows=()) stays a quiet zero (non_calm=False).
+    if subscriptions.state != READ_STATE_OK:
+        return RunResult(
+            subscription_n=0,
+            ready_n=0,
+            degraded_n=0,
+            slot=slot,
+            read_state=subscriptions.state,
+            non_calm=True,
+            read_error=subscriptions.error,
+        )
     ready_n = 0
     degraded_n = 0
     duplicate_n = 0
@@ -841,7 +945,7 @@ def run(
     planned_rows: list[dict] = []
     considered = 0
 
-    for sub in subscriptions:
+    for sub in subscriptions.rows:
         if sub.get("cadence") not in (None, cadence):
             continue
         if sub.get("state") not in (None, "active"):
@@ -907,4 +1011,5 @@ def run(
         read_missing=read_missing,
         read_unavailable=read_unavailable,
         planned_rows=tuple(planned_rows),
+        read_state=READ_STATE_OK,
     )
