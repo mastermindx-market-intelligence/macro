@@ -1183,3 +1183,281 @@ def test_TTID1_adjusted_basis_is_a_fixed_contract_not_a_caller_override():
     import inspect
     sig = inspect.signature(mr.resolve_long_barrier_order)
     assert "expected_price_basis" not in sig.parameters
+
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 arrival receipts — client-observed source timing, no raw persistence
+# ---------------------------------------------------------------------------
+
+class _ReceiptClock:
+    def __init__(self, *values: datetime) -> None:
+        self.values = list(values)
+        self.calls = 0
+
+    def __call__(self) -> datetime:
+        self.calls += 1
+        if not self.values:
+            raise AssertionError("receipt clock called more times than expected")
+        return self.values.pop(0)
+
+
+def _minute_vendor_rows(session: date, count: int, *, skip: set[int] | None = None) -> list[dict]:
+    open_dt, _close_dt = session_window_et(session)
+    skip = skip or set()
+    rows: list[dict] = []
+    for i in range(count):
+        if i in skip:
+            continue
+        price = 100.0 + i * 0.01
+        rows.append({
+            "t": (open_dt + timedelta(minutes=i)).timestamp() * 1000.0,
+            "o": price, "h": price + 0.02, "l": price - 0.02,
+            "c": price + 0.01, "v": 100.0,
+        })
+    return rows
+
+
+def test_TTID1_arrival_receipt_binds_request_response_and_latest_completed_minute(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=5)
+    clock = _ReceiptClock(request, response)
+    recorder = Recorder(lambda _day: _minute_vendor_rows(session, 10))
+    reader = vm.VendorMinuteReader(transport=recorder, state_dir=tmp_path, sleep_seconds=0.0)
+
+    tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert len(tape.minutes) == 10
+    assert clock.calls == 2
+    assert len(recorder.calls) == 1
+    assert receipt.request_started_at == request
+    assert receipt.response_received_at == response
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.latest_observed_completed_known_at == open_dt + timedelta(minutes=10)
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.latest_observed_age_seconds == 5.0
+    assert receipt.tail_observation_gap_minutes == 0
+    assert receipt.returned_rows == 10
+    assert receipt.completed_rows == 10
+    assert receipt.forming_or_future_rth_rows == 0
+    assert receipt.fetch_clock_observed is True
+    assert receipt.historical_availability_proven is False
+    assert receipt.authority == "source_arrival_observation_only"
+
+
+def test_TTID1_arrival_receipt_does_not_count_a_forming_minute_as_completed(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10, seconds=5)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    clock = _ReceiptClock(request, response)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 11)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+
+    _tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert receipt.returned_rows == 11
+    assert receipt.completed_rows == 10
+    assert receipt.forming_or_future_rth_rows == 1
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.tail_observation_gap_minutes == 0
+
+
+def test_TTID1_arrival_receipt_exposes_observation_tail_gap_without_calling_it_vendor_delay(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=4)
+    clock = _ReceiptClock(request, response)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 8)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+
+    _tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=7)
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.tail_observation_gap_minutes == 2
+    assert "vendor_delay" not in receipt.to_dict()
+
+
+def test_TTID1_arrival_receipt_keeps_empty_response_honest(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=2)
+    clock = _ReceiptClock(request, response)
+    reader = vm.VendorMinuteReader(transport=lambda _path, _params: [],
+                                   state_dir=tmp_path, sleep_seconds=0.0)
+
+    tape, receipt = reader.read_with_receipt("GHOST", session, now_fn=clock)
+
+    assert tape.minutes == ()
+    assert receipt.returned_rows == 0
+    assert receipt.completed_rows == 0
+    assert receipt.latest_observed_completed_start is None
+    assert receipt.tail_observation_gap_minutes is None
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.empty_response is True
+    assert reader.empty == 1
+
+
+def test_TTID1_arrival_receipt_refuses_naive_or_backwards_clock(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    rows = Recorder(lambda _day: _minute_vendor_rows(session, 10))
+    reader = vm.VendorMinuteReader(transport=rows, state_dir=tmp_path, sleep_seconds=0.0)
+    naive = datetime(2026, 9, 17, 14, 0)
+    with pytest.raises(vm.VendorMinutesError, match="timezone-aware"):
+        reader.read_with_receipt("WASH", session, now_fn=_ReceiptClock(naive))
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    with pytest.raises(vm.VendorMinutesError, match="moved backwards"):
+        reader.read_with_receipt("WASH", session,
+                                 now_fn=_ReceiptClock(request, request - timedelta(seconds=1)))
+
+
+def test_TTID1_arrival_receipt_clock_stops_before_pacing_sleep(monkeypatch, tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=3)
+    clock = _ReceiptClock(request, response)
+    sleeps: list[float] = []
+    monkeypatch.setattr(vm.time, "sleep", sleeps.append)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=7.5,
+    )
+
+    _tape, receipt = reader.read_with_receipt("WASH", session, now_fn=clock)
+
+    assert receipt.response_received_at == response
+    assert receipt.latest_observed_age_seconds == 3.0
+    assert clock.calls == 2
+    assert sleeps == [7.5]
+
+
+def test_TTID1_arrival_receipt_is_in_memory_only_and_authority_is_non_overridable(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+    _tape, receipt = reader.read_with_receipt("WASH", session,
+                                              now_fn=_ReceiptClock(request, response))
+    assert list(tmp_path.rglob("*")) == []
+    fields = vm.MinuteFetchReceipt.__dataclass_fields__
+    assert fields["authority"].init is False
+    assert fields["historical_availability_proven"].init is False
+    payload = receipt.to_dict()
+    assert payload["source_evidence_class"] == "prospective_fetch_arrival_receipt"
+    assert payload["historical_availability_proven"] is False
+
+
+
+def test_TTID1_arrival_receipt_exposes_unparsed_timestamp_rows(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    rows = _minute_vendor_rows(session, 10)
+    rows.append({"t": None, "o": 1.0, "h": 1.0, "l": 1.0, "c": 1.0, "v": 1.0})
+    reader = vm.VendorMinuteReader(transport=lambda _path, _params: rows,
+                                   state_dir=tmp_path, sleep_seconds=0.0)
+
+    tape, receipt = reader.read_with_receipt("WASH", session,
+                                              now_fn=_ReceiptClock(request, response))
+    assert len(tape.minutes) == 10
+    assert receipt.returned_rows == 11
+    assert receipt.parsed_rows == 10
+    assert receipt.unparsed_rows == 1
+
+
+def test_TTID1_receipt_path_returns_the_same_tape_as_the_plain_reader(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    rows = _minute_vendor_rows(session, 10)
+    plain = vm.VendorMinuteReader(transport=lambda _path, _params: list(rows),
+                                  state_dir=tmp_path / "plain", sleep_seconds=0.0)
+    receipted = vm.VendorMinuteReader(transport=lambda _path, _params: list(rows),
+                                      state_dir=tmp_path / "receipted", sleep_seconds=0.0)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    plain_tape = plain("WASH", session)
+    receipt_tape, _receipt = receipted.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+    assert receipt_tape == plain_tape
+
+
+
+def test_TTID1_arrival_receipt_transport_failure_keeps_existing_pacing_and_error_accounting(monkeypatch, tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    clock = _ReceiptClock(request)
+    sleeps: list[float] = []
+    monkeypatch.setattr(vm.time, "sleep", sleeps.append)
+
+    def boom(_path, _params):
+        raise RuntimeError("synthetic transport failure")
+
+    reader = vm.VendorMinuteReader(transport=boom, state_dir=tmp_path, sleep_seconds=2.5)
+    with pytest.raises(RuntimeError, match="synthetic transport failure"):
+        reader.read_with_receipt("WASH", session, now_fn=clock)
+    assert clock.calls == 1
+    assert sleeps == [2.5]
+    assert reader.errors == 1
+    assert reader.fetched_n == 0
+
+
+def test_TTID1_arrival_receipt_tail_expectation_is_anchored_to_request_start(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    # At request start, the minute beginning +9m is the latest bar that has closed.
+    # The +10m bar closes while the request is in flight and must not become an
+    # expected bar whose absence is mislabelled as source lag.
+    request = (open_dt + timedelta(minutes=10, seconds=59)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=3)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=0.0,
+    )
+
+    _tape, receipt = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+
+    assert receipt.expected_latest_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.latest_observed_completed_start == open_dt + timedelta(minutes=9)
+    assert receipt.tail_observation_gap_minutes == 0
+
+
+def test_TTID1_arrival_receipt_separates_off_session_rows_from_forming_rth(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close_dt = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=1)
+    rows = _minute_vendor_rows(session, 10)
+    pre = open_dt - timedelta(minutes=30)
+    rows.insert(0, {
+        "t": pre.timestamp() * 1000.0,
+        "o": 99.0, "h": 99.1, "l": 98.9, "c": 99.0, "v": 100.0,
+    })
+    reader = vm.VendorMinuteReader(transport=lambda _path, _params: list(rows),
+                                   state_dir=tmp_path, sleep_seconds=0.0)
+
+    _tape, receipt = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+
+    assert receipt.returned_rows == 11
+    assert receipt.completed_rows == 10
+    assert receipt.off_session_rows == 1
+    assert receipt.forming_or_future_rth_rows == 0

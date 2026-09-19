@@ -59,9 +59,11 @@ production caller (``live_eval._run_c3``) always passes one.
 
 WHAT THIS MODULE DOES NOT DO.  It does not decide whether C3 runs (the evaluator
 does, from the pack's confirmed K and the ledger's open episodes), it does not
-compute a turn, and it writes nothing under ``data/``.  Its whole surface is
-"give me this name's minutes for this session, cheaply and no more often than
-necessary".
+compute a turn, and it writes no raw minute data under ``data/``.  The optional
+``read_with_receipt`` API returns an IN-MEMORY client-observed request/response
+receipt; it never upgrades historical bars to known-at evidence.  The module's
+whole data surface remains one bounded name/session read through the existing
+transport.
 """
 from __future__ import annotations
 
@@ -70,12 +72,13 @@ import os
 import tempfile
 import time
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from engine.entry_radar import challengers as ch
 from engine.entry_radar import four_hour as fh
+from engine.session_digest import session_window_et
 
 #: The vendor aggregate endpoint, exactly the ``build_polygon_intraday`` shape.
 AGGS_PATH = "/v2/aggs/ticker/{symbol}/range/{multiplier}/{timespan}/{start}/{end}"
@@ -99,6 +102,9 @@ MAX_WINDOW_SESSIONS = 180
 
 _CACHE_DIRNAME = "c3_buckets"
 _CACHE_SCHEMA = "entry_radar.c3_buckets/v1"
+_MINUTE_FETCH_RECEIPT_SCHEMA = "entry_radar.minute_fetch_receipt/v1"
+_MINUTE_FETCH_EVIDENCE_CLASS = "prospective_fetch_arrival_receipt"
+_MINUTE_FETCH_AUTHORITY = "source_arrival_observation_only"
 
 
 class VendorMinutesError(fh.C3Error):
@@ -122,6 +128,149 @@ class ReaderStats:
     def to_dict(self) -> dict[str, int]:
         return {"fetched_n": self.fetched_n, "cache_hits": self.cache_hits,
                 "errors": self.errors, "empty": self.empty}
+
+
+def _utc_iso(value: datetime | None) -> str | None:
+    if value is None:
+        return None
+    return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _aware_receipt_clock(value: datetime) -> datetime:
+    if not isinstance(value, datetime) or value.tzinfo is None:
+        raise VendorMinutesError("minute fetch receipt clock must be timezone-aware")
+    return value
+
+
+@dataclass(frozen=True, slots=True)
+class MinuteFetchReceipt:
+    """One client-observed fetch receipt; never historical availability proof.
+
+    ``response_received_at`` is when THIS reader invocation returned from the
+    injected transport, before the reader's deliberate pacing sleep.  It proves
+    only that this client observed this response by that time.  It does not prove
+    when the vendor first published any historical bar or what an earlier live
+    system knew.
+    """
+
+    ticker: str
+    session: date
+    request_started_at: datetime
+    response_received_at: datetime
+    price_basis: str
+    source_vintage: str
+    returned_rows: int
+    parsed_rows: int
+    unparsed_rows: int
+    completed_rows: int
+    forming_or_future_rth_rows: int
+    off_session_rows: int
+    rows_monotonic_unique: bool
+    latest_observed_completed_start: datetime | None
+    latest_observed_completed_known_at: datetime | None
+    expected_latest_completed_start: datetime | None
+    latest_observed_age_seconds: float | None
+    tail_observation_gap_minutes: int | None
+    empty_response: bool
+    schema: str = field(default=_MINUTE_FETCH_RECEIPT_SCHEMA, init=False)
+    fetch_clock_observed: bool = field(default=True, init=False)
+    historical_availability_proven: bool = field(default=False, init=False)
+    source_evidence_class: str = field(default=_MINUTE_FETCH_EVIDENCE_CLASS, init=False)
+    authority: str = field(default=_MINUTE_FETCH_AUTHORITY, init=False)
+
+    @property
+    def request_duration_seconds(self) -> float:
+        return (self.response_received_at - self.request_started_at).total_seconds()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "schema": self.schema,
+            "ticker": self.ticker,
+            "session": self.session.isoformat(),
+            "request_started_at": _utc_iso(self.request_started_at),
+            "response_received_at": _utc_iso(self.response_received_at),
+            "request_duration_seconds": self.request_duration_seconds,
+            "price_basis": self.price_basis,
+            "source_vintage": self.source_vintage,
+            "returned_rows": self.returned_rows,
+            "parsed_rows": self.parsed_rows,
+            "unparsed_rows": self.unparsed_rows,
+            "completed_rows": self.completed_rows,
+            "forming_or_future_rth_rows": self.forming_or_future_rth_rows,
+            "off_session_rows": self.off_session_rows,
+            "rows_monotonic_unique": self.rows_monotonic_unique,
+            "latest_observed_completed_start": _utc_iso(self.latest_observed_completed_start),
+            "latest_observed_completed_known_at": _utc_iso(self.latest_observed_completed_known_at),
+            "expected_latest_completed_start": _utc_iso(self.expected_latest_completed_start),
+            "latest_observed_age_seconds": self.latest_observed_age_seconds,
+            "tail_observation_gap_minutes": self.tail_observation_gap_minutes,
+            "empty_response": self.empty_response,
+            "fetch_clock_observed": self.fetch_clock_observed,
+            "historical_availability_proven": self.historical_availability_proven,
+            "source_evidence_class": self.source_evidence_class,
+            "authority": self.authority,
+        }
+
+
+def _expected_latest_completed_start(session: date, request_started_at: datetime) -> datetime | None:
+    session_open, session_close = session_window_et(session)
+    local_request = request_started_at.astimezone(session_open.tzinfo)
+    cutoff = min(local_request, session_close)
+    if cutoff < session_open + timedelta(minutes=1):
+        return None
+    minute_floor = cutoff.replace(second=0, microsecond=0)
+    candidate = minute_floor - timedelta(minutes=1)
+    if candidate < session_open:
+        return None
+    if candidate >= session_close:
+        candidate = session_close - timedelta(minutes=1)
+    return candidate
+
+
+def _build_fetch_receipt(
+    *, ticker: str, tape: ch.SessionTape, raw_row_count: int,
+    request_started_at: datetime, response_received_at: datetime,
+) -> MinuteFetchReceipt:
+    session_open, session_close = session_window_et(tape.session)
+    starts = [bar.start for bar in tape.minutes]
+    monotonic_unique = (
+        len(starts) == len(set(starts))
+        and all(left < right for left, right in zip(starts, starts[1:]))
+    )
+    rth_rows = [
+        bar for bar in tape.minutes
+        if session_open <= bar.start < session_close
+    ]
+    completed = [
+        bar for bar in rth_rows
+        if bar.knowable_at <= response_received_at
+    ]
+    latest = max(completed, key=lambda bar: bar.start) if completed else None
+    expected = _expected_latest_completed_start(tape.session, request_started_at)
+    lag = (
+        None if latest is None
+        else (response_received_at - latest.knowable_at).total_seconds()
+    )
+    gap = None
+    if latest is not None and expected is not None:
+        gap_seconds = (expected - latest.start).total_seconds()
+        gap = max(0, int(gap_seconds // 60))
+    return MinuteFetchReceipt(
+        ticker=str(ticker).upper(), session=tape.session,
+        request_started_at=request_started_at, response_received_at=response_received_at,
+        price_basis=tape.price_basis, source_vintage=tape.vintage,
+        returned_rows=int(raw_row_count), parsed_rows=len(tape.minutes),
+        unparsed_rows=max(0, int(raw_row_count) - len(tape.minutes)),
+        completed_rows=len(completed),
+        forming_or_future_rth_rows=max(0, len(rth_rows) - len(completed)),
+        off_session_rows=max(0, len(tape.minutes) - len(rth_rows)),
+        rows_monotonic_unique=monotonic_unique,
+        latest_observed_completed_start=(None if latest is None else latest.start),
+        latest_observed_completed_known_at=(None if latest is None else latest.knowable_at),
+        expected_latest_completed_start=expected,
+        latest_observed_age_seconds=lag, tail_observation_gap_minutes=gap,
+        empty_response=(raw_row_count == 0),
+    )
 
 
 def default_transport() -> Callable[[str, Mapping[str, Any]], list[dict]]:
@@ -189,6 +338,29 @@ class VendorMinuteReader:
         ``run_c3`` discloses as ``confirmed_empty`` rather than fabricating.
         """
         rows = self._fetch(ticker, session)
+        return self._tape_from_rows(session, rows)
+
+    def read_with_receipt(
+        self, ticker: str, session: date, *,
+        now_fn: Callable[[], datetime] | None = None,
+    ) -> tuple[ch.SessionTape, MinuteFetchReceipt]:
+        """Fetch one session and return an in-memory client-arrival receipt.
+
+        The receipt clock is deliberately separate from ``MinuteBar.knowable_at``:
+        the latter is a mathematical aggregate-close time, while this records when
+        THIS client request started and when its transport returned.  It cannot
+        establish historical first-availability and is never written by this reader.
+        """
+        clock = now_fn or (lambda: datetime.now(timezone.utc))
+        rows, requested, received = self._request_rows(ticker, session, now_fn=clock)
+        assert requested is not None and received is not None
+        tape = self._tape_from_rows(session, rows)
+        return tape, _build_fetch_receipt(
+            ticker=ticker, tape=tape, raw_row_count=len(rows),
+            request_started_at=requested, response_received_at=received,
+        )
+
+    def _tape_from_rows(self, session: date, rows: Sequence[Mapping[str, Any]]) -> ch.SessionTape:
         return fh.tape_from_rows(
             session, [(datetime.fromtimestamp(float(r["t"]) / 1000.0, tz=timezone.utc),
                        r.get("o"), r.get("h"), r.get("l"), r.get("c"), r.get("v") or 0.0)
@@ -241,14 +413,27 @@ class VendorMinuteReader:
 
     # -- internals ----------------------------------------------------------
     def _fetch(self, ticker: str, session: date) -> list[dict]:
+        rows, _requested, _received = self._request_rows(ticker, session)
+        return rows
+
+    def _request_rows(
+        self, ticker: str, session: date, *,
+        now_fn: Callable[[], datetime] | None = None,
+    ) -> tuple[list[dict], datetime | None, datetime | None]:
+        requested = _aware_receipt_clock(now_fn()) if now_fn is not None else None
         path = AGGS_PATH.format(symbol=polygon_symbol(ticker), multiplier=1,
                                 timespan="minute", start=session.isoformat(),
                                 end=session.isoformat())
         transport = self._transport
         if transport is None:
             transport = self._transport = default_transport()
+        received: datetime | None = None
         try:
             rows = transport(path, dict(AGGS_PARAMS)) or []
+            if now_fn is not None:
+                # Capture response BEFORE deliberate pacing so the reader's sleep
+                # cannot masquerade as source-arrival latency.
+                received = _aware_receipt_clock(now_fn())
         except Exception:
             self.errors += 1
             raise
@@ -260,7 +445,9 @@ class VendorMinuteReader:
         self.fetched_n += 1
         if not rows:
             self.empty += 1
-        return list(rows)
+        if requested is not None and received is not None and received < requested:
+            raise VendorMinutesError("minute fetch receipt clock moved backwards")
+        return list(rows), requested, received
 
     def _cache_path(self, ticker: str) -> Path | None:
         if self.state_dir is None:
@@ -417,5 +604,5 @@ def _parse(raw: Any, tz: Any = None) -> datetime:
 
 
 __all__ = ["AGGS_PARAMS", "AGGS_PATH", "MAX_WINDOW_SESSIONS", "SLEEP_SECONDS",
-           "ReaderStats", "VendorMinuteReader", "VendorMinutesError",
-           "default_transport", "polygon_symbol"]
+           "MinuteFetchReceipt", "ReaderStats", "VendorMinuteReader",
+           "VendorMinutesError", "default_transport", "polygon_symbol"]
