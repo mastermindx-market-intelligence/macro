@@ -128,3 +128,26 @@ def test_lane_guard_checks_the_same_runtimes() -> None:
         "".join(f'<script defer src="{a}?v=x"></script>' for a in mod.RUNTIMES)
     )
     assert mod.check_text('<script defer src="sky.js"></script>')
+
+
+
+def test_wh_banner_asset_copies_remain_identical() -> None:
+    """The shared alert rail is a plain-copy runtime and must ship paired bytes."""
+    source = ROOT / "templates" / "wh_banner.js"
+    shipped = ROOT / "site" / "wh_banner.js"
+    assert source.read_bytes() == shipped.read_bytes()
+
+
+def test_wh_banner_dismiss_control_meets_interaction_contract() -> None:
+    """Sitewide alert dismissal must be touch-, keyboard-, and locale-reachable."""
+    for relative in ("templates/wh_banner.js", "site/wh_banner.js"):
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        assert ".whb-x{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;" in text
+        assert "border-radius:var(--r-sm,10px);touch-action:manipulation" in text
+        assert ".whb-x:focus-visible{outline:2px solid currentColor;" in text
+        assert ".whb-x:active{opacity:1;" in text
+        assert 'function syncCloseLabel() {' in text
+        assert '? "关闭市场提醒"' in text
+        assert ': "Dismiss market alert"' in text
+        assert 'document.addEventListener("langchange", syncCloseLabel);' in text
+        assert 'document.removeEventListener("langchange", syncCloseLabel);' in text

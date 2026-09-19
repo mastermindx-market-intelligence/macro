@@ -493,13 +493,13 @@
       ".whb-rr-hz{font-size:10.5px;color:rgba(255,214,170,.85);font-weight:600}",
       ".whb-ramp .whb-sym{color:#e9c9a2;font-size:11px}",
       ".whb-x{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;",
-      "background:transparent;border:0;color:color-mix(in srgb,var(--text,#fff) 60%,transparent);",
+      "background:transparent;border:0;color:inherit;opacity:.6;",
       "font-size:21px;line-height:1;padding:0;cursor:pointer;align-self:center;",
       "border-radius:var(--r-sm,10px);touch-action:manipulation}",
-      ".whb-x:hover{color:var(--text,#fff);background:color-mix(in srgb,var(--text,#fff) 8%,transparent)}",
-      ".whb-x:focus-visible{outline:2px solid color-mix(in srgb,var(--text,#fff) 88%,transparent);",
-      "outline-offset:-4px;color:var(--text,#fff);background:color-mix(in srgb,var(--text,#fff) 8%,transparent)}",
-      ".whb-x:active{color:var(--text,#fff);background:color-mix(in srgb,var(--text,#fff) 14%,transparent)}",
+      ".whb-x:hover{opacity:1;background:color-mix(in srgb,currentColor 8%,transparent)}",
+      ".whb-x:focus-visible{outline:2px solid currentColor;outline-offset:-4px;opacity:1;",
+      "background:color-mix(in srgb,currentColor 8%,transparent)}",
+      ".whb-x:active{opacity:1;background:color-mix(in srgb,currentColor 14%,transparent)}",
       "@media print{.whb{display:none}}",
     ].join("");
     var st = document.createElement("style");
