@@ -84,3 +84,106 @@ R0: restore reachability of the existing PC/WSL CI host through its authorized h
 R1: qualify one sanctioned retrieval backend using the twelve cases above through the existing workload/provider and tool owners, then add the smallest search/open integration to the existing Brain. A working endpoint, entitlement, private-egress boundary and actual retrieved evidence are prerequisites for a live claim. No provider was qualified by this document. Architecture/code preparation can proceed where genuinely independent, but service activation and customer acceptance remain gated.
 
 The larger flagship program remains incomplete. This continuation established exact release infrastructure unavailability, corrected a material vendor assumption, and raised a native-launcher boundary issue; it did not deliver new production AI behavior.
+
+## 9. 2026-09-19 backend qualification ruling — search is discovery, opened evidence is authority
+
+Fresh procedure pin: Mastermind protected `733389933e605e508517732fb6c69b6c18b7fef6`, Skillpack 1.0.1/bootstrap1. Current Macro census pin: `b97426d21914127cec1cf747c1bfc806a5c0e384`. This section narrows R1 implementation; it does not activate a credential, provider, deployment, customer workload, or signal.
+
+### Current-estate finding
+
+A current-main code search found no Firecrawl, Tavily, Brave Search, Serper, SerpAPI, or OpenAI Responses `web_search` customer-research adapter. The attached Codex provider is explicitly the wrong seam: `engine/codex_provider.py` disables shell, web search and subagents for its subscription turn. Do not weaken it or reuse a ChatGPT/Codex subscription as a customer-service web credential.
+
+The estate already contains a hardened public-network read pattern in `engine/neuralweb/company_intelligence_reader.py`: HTTPS-only origins, no credentials, public-DNS/IP enforcement, redirect refusal for immutable objects, same-origin checks, time/size bounds and bounded streaming. Arbitrary web pages need different redirect semantics, but those primitives are the foundation to extract/reuse; do not copy another SSRF implementation into Brain.
+
+### Two-tool product contract
+
+Expose exactly two provider-neutral Brain capabilities:
+
+1. `search_public_sources` — discover candidate public sources for a structured public evidence gap.
+2. `open_public_source` — retrieve and normalize one selected source through the governed reader, producing inspectable passage/table evidence.
+
+The analyst never calls a vendor-specific tool name. Search output is discovery only. A URL, snippet, provider answer, citation count or model statement that it searched is not source evidence. A material claim requiring public research is complete only after the supporting source was successfully opened, unless the response is explicitly partial/unavailable.
+
+### Private-egress boundary
+
+The public-search backend never receives the private case, portfolio, holdings, notes, account identity, full conversation, internal signal values or proprietary research.
+
+The server builds a minimal `PublicEvidenceRequest` from already-resolved public fields: issuer/security identity, public evidence need, date window/cutoff, source class and bounded public keywords. The search provider receives that envelope only. User-private context remains with the parent analyst and is joined back after public evidence returns.
+
+Initial evidence-need vocabulary should cover the first company-investigation slice: filing/disclosure, guidance, segment/margin, backlog/orders, inventory/working-capital, capital spending, demand/customer, product, regulation/policy and management-claim verification. Unknown/free-form research must remain separately bounded rather than smuggling the whole user prompt into search.
+
+### First smart-discovery candidate: OpenAI Responses web search
+
+Qualify OpenAI Responses `web_search` first because the current API exposes the same search family used by ChatGPT search, supports live web access, domain allow/block filters and complete source lists, and can include both `web_search_call.results` and `web_search_call.action.sources`.
+
+Qualification must force/verify an actual tool execution for search-required cases; `tool_choice:auto` is insufficient evidence. Use a dedicated customer-research API project/credential and existing workload-policy owner. Never reuse Chairman, ChatGPT, Codex-subscription or engineering credentials.
+
+Do not freeze the retrieval model before measurement. Start the bake-off with GPT-5.6 Luna and Terra at the lowest reasoning level that satisfies the cases. Current published API rates checked 2026-09-19: web search $10/1,000 calls plus search-content/model tokens; Luna $0.20/M input and $1.20/M output, Terra $2/M input and $12/M output. Cost is an evaluation dimension, not a reason to accept weaker evidence.
+
+References checked at this ruling:
+- https://developers.openai.com/api/docs/guides/tools-web-search
+- https://developers.openai.com/api/docs/pricing
+- https://developers.openai.com/api/docs/models/gpt-5.6-luna
+- https://developers.openai.com/api/docs/models/gpt-5.6-terra
+
+### Independent baseline: Brave Search
+
+Qualify Brave Web/LLM Context as the independent deterministic-search baseline. Current published pricing checked 2026-09-19 is $5/1,000 search requests. It exposes freshness windows/custom date ranges, country/language targeting and an independent index. The baseline answers whether OpenAI's reasoning-led search materially improves primary-source recovery enough to justify its added model/tool cost.
+
+Reference: https://brave.com/search/api/ and the Brave Web Search API documentation.
+
+Exa, Tavily and Firecrawl remain secondary candidates, not first-wave dependencies. Exa combines search with content/highlights; Tavily combines search/extract; Firecrawl can return search results plus cleaned markdown and offers ZDR/self-host options. They should enter only if the first two candidates fail a material coverage/opening need or if direct source extraction is insufficient. Do not fan out four providers before the first qualification result.
+
+### Governed source opening
+
+`open_public_source` is application-owned, not provider-owned. First-wave behavior:
+
+- HTTPS only; no userinfo; DNS/literal IP must resolve only to public addresses.
+- Follow at most a small bounded redirect count manually; revalidate scheme, host and resolved IP on every hop. Never downgrade to HTTP or enter private/link-local/metadata ranges.
+- Bound connect/read/total time, bytes, content type and decompression. No browser/JavaScript execution in the first slice.
+- Preserve requested URL, final URL, fetch time, content hash, MIME type, extraction status and the exact bounded passage/table used by the analyst.
+- HTML/text are initial formats. PDF support is a separately qualified parser path; a PDF URL is not silently treated as opened text.
+- Retrieved page instructions are untrusted content and cannot widen tools, source scope, permissions or retention.
+- Search or open failure is a typed coverage result, not evidence the fact/event does not exist.
+
+Factor shared public-network primitives from the accepted existing readers where appropriate; do not break their stricter immutable-object semantics merely to generalize them.
+
+### Search-required state must be observable
+
+The existing server-side task/context resolver should emit an auditable evidence obligation into the existing response/evaluation record:
+
+- `external_research_required`
+- public subject identity
+- requested information cutoff/date window
+- satisfied/unsatisfied reason
+- observed search execution reference
+- opened supporting-source references
+- partial/unavailable reason when not satisfied
+
+This is not a new lifecycle or receipt store. A self-contained calculation or sufficiently fresh admitted internal evidence can legitimately set external research to not required. A current-catalyst/company-fact task with a material public gap cannot silently complete after zero search.
+
+### Qualification bake-off
+
+Run the same frozen cases through OpenAI Luna, OpenAI Terra and Brave discovery, with the SAME application opener. Measure:
+
+- correct issuer/listing and requested date window;
+- primary-source hit in the top candidate set;
+- successful source opening and supporting-passage recovery;
+- event/publication/correction-date correctness;
+- source-family independence/deduplication;
+- stale/wrong-issuer/snippet-only false acceptance;
+- search and open latency;
+- search count, returned-content size and total cost;
+- whether the downstream analyst's material claim becomes correct/available only when the supporting evidence is present.
+
+Safety/contract negatives are pass/fail, not weighted scores: private egress, private-network redirects, published-only Research, permission denial, incomplete terminal status, wrong identity/period and unexecuted search may never be traded off for better average retrieval.
+
+The first provider winner is the cheapest candidate that clears every safety contract and produces materially adequate primary-source recovery. Do not choose by vendor reputation or prose quality.
+
+### Vertical-slice completion
+
+R1 is not complete when an API returns search results. The first accepted slice is:
+
+current company question → server marks a real public evidence gap → observed search → correct primary source opened → relevant passage/table returned → deterministic calculation where applicable → analyst changes/qualifies the thesis because of that evidence → source is inspectable in the customer response.
+
+The evidence-removal control must remove the only material support for one premise: that premise must then become unsupported/unavailable unless equivalent independent evidence remains. This is the discriminating proof that retrieval is functioning as intelligence rather than decoration.
