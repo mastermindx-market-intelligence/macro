@@ -5112,6 +5112,35 @@ def _split_us_prophet_board(book: "dict | None", preview_rows: int, *, gated: bo
     return shell_book, life_gate, locked
 
 
+
+def _split_us_leader_observations(
+    projection: "dict | None", preview_rows: int, *, gated: bool = True
+):
+    """Server-side preview split for the display-only leader observation shelf.
+
+    Source status, provenance and aggregate counts remain on the shell; only ticker rows
+    beyond the configured preview move into the existing protected US payload. The input
+    projection is never mutated.
+    """
+    if not gated or not projection or not projection.get("rows"):
+        return projection, None, []
+    rows = list(projection.get("rows") or [])
+    preview_n = max(0, preview_rows)
+    preview = rows[:preview_n]
+    locked = rows[preview_n:]
+    if not locked:
+        return projection, None, []
+    shell = dict(projection)
+    shell["rows"] = preview
+    gate = {
+        "preview": len(preview),
+        "locked": len(locked),
+        "total": len(rows),
+        "tier": "essential",
+        "payload": US_PAYLOAD_URL,
+    }
+    return shell, gate, locked
+
 def _us_life_gate_cfg() -> bool:
     """P-MP1-SHELL repair round, finding S1: fail-CLOSED sibling of
     _us_board_gate_cfg(), for the PLAN-BOOK split only.
@@ -5436,7 +5465,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
                              if k in ("setups", "leaders", "ran", "actnow", "tape",
-                                      "plv_names")}
+                                      "plv_names", "leader_observations")}
         payload.update(panel_blocks)
     # P-MP1-SHELL §8b — the Setups grid's OWN locked remainder, independent of
     # `gate`/`cards_html` above. Always present in the payload shape (empty
@@ -5559,6 +5588,20 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     pgate: dict = {"tier": "essential", "payload": US_PAYLOAD_URL, "preview": preview}
     locked: dict = {}
+    overrides: dict = {}
+
+    # ── Leader observations — a separate display population, never Candidates/Plans.
+    leader_shell, leader_gate, leader_locked = _split_us_leader_observations(
+        vm.get("us_leader_observations"), preview, gated=True
+    )
+    if leader_gate:
+        overrides["us_leader_observations"] = leader_shell
+        pgate["leader_observations"] = {
+            "preview": leader_gate["preview"],
+            "locked": leader_gate["locked"],
+            "total": leader_gate["total"],
+        }
+        locked["leader_observations"] = leader_locked
 
     # ── .topsetups — the residual fresh-trigger table. The template filters
     # top_setups.buy against the carded board and caps at 10; that filter is
@@ -5641,7 +5684,7 @@ def _split_us_panels(vm: dict, preview: int, *, gated: bool = True):
 
     if len(pgate) <= 3:                       # tier/payload/preview only
         return {}, None, {}
-    return {}, pgate, locked
+    return overrides, pgate, locked
 
 
 def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dict,
@@ -5664,6 +5707,12 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
             log.error("us_stocks: locked %s render failed (%s)", key, e)
             out[key] = ""
 
+    if locked.get("leader_observations"):
+        _render(
+            "leader_observations_html",
+            "_us_leader_observation_rows.html.j2",
+            rows=locked["leader_observations"],
+        )
     if locked.get("setups"):
         _render("setups_html", "_us_setups_rows.html.j2", rows=locked["setups"])
     if locked.get("leaders"):
@@ -5985,6 +6034,22 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("prophet/index.json unreadable (%s)", e)
             us_prophet_book_error = True
+
+    # P1 — read the incumbent leader-pullback coverage independently of Candidates and
+    # Plans. The full roster exists only in this in-memory view and the existing protected
+    # US payload; the Prophet index carries aggregate source/count telemetry only.
+    from engine.us_leader_pullback_coverage import (  # noqa: PLC0415
+        load_prophet_observations,
+    )
+    _leader_reference_session = (
+        (us_prophet_book or {}).get("source_asof")
+        or ((us_standouts or {}).get("staleness") or {}).get("price_through")
+        or (us_standouts or {}).get("as_of")
+    )
+    us_leader_observations = load_prophet_observations(
+        site_root=site,
+        reference_session=_leader_reference_session,
+    )
 
     # THEME TAPE (W2) — the hottest themes reconciled against the board above, so a
     # heating theme the board is SILENT on still prints a line saying so. Pure
@@ -6771,6 +6836,7 @@ def main() -> int:
         top_setups=top_setups,
         us_standouts=us_standouts,
         us_prophet_book=us_prophet_book,
+        us_leader_observations=us_leader_observations,
         us_prophet_refusals=us_prophet_refusals,
         theme_tape=theme_tape,
         us_board_outcomes=us_board_outcomes,

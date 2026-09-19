@@ -326,8 +326,9 @@
 	# is not the page, it is the PAYLOAD. @reg_asset below is unchanged and still
 	# default-deny for every non-HTML path, so the graded rows keep their gates:
 	#   * premium.enforced_early — /premiumdata/*, /capital-structure-data/*,
-	#     /allocationdata/special_situations.json, /chinaspecialdata/special.json
-	#     — 403 for anonymous AND Free, ahead of the PAYWALL_ENABLED switch;
+	#     /allocationdata/special_situations.json, /chinaspecialdata/special.json,
+	#     /anticipationdata/us_leader_pullback.json — 403 for anonymous AND Free,
+	#     ahead of the PAYWALL_ENABLED switch;
 	#   * every per-ticker <market>stockdata/*.json graded emit;
 	#   * every other data payload not named in config/site_access.yml.
 	# So an anonymous visitor gets the shell, the methodology and the honest

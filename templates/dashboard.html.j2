@@ -16215,6 +16215,43 @@ html[data-theme="light"] :is(
         {% if _stale.get('unknown') or not _stale.get('price_through') %}<span class="l-en">We can’t confirm how current these prices are, so treat this board as out of date — check a live quote before you act.</span><span class="l-zh">目前无法确认这些价格是否最新，请把本榜单当作过期数据——操作前先看一下实时报价。</span>{% else %}<span class="l-en">Still ranked on prices as of {{ _stale.get('price_through') }}{% if _stale_behind is not none %} — {{ _stale_behind }} session{{ '' if _stale_behind == 1 else 's' }} behind{% endif %}. We’re updating it; check a live quote before you act.</span><span class="l-zh">仍按截至 {{ _stale.get('price_through') }} 的价格排序{% if _stale_behind is not none %}，落后 {{ _stale_behind }} 个交易日{% endif %}。数据正在更新，操作前请先看一下实时报价。</span>{% endif %}
       </div>
       {% endif %}
+      {# P1 — incumbent leader-pullback organ projected as a separate display shelf.
+          It is neither Candidates nor Plans and carries no rank, entry, or trade authority. #}
+      {% if us_leader_observations %}
+      {% set _plo = us_leader_observations %}
+      {% set _plo_src = _plo.get('source') or {} %}
+      {% set _plo_counts = _plo.get('counts') or {} %}
+      {% set _plo_gate = (pgate.get('leader_observations') if pgate else none) %}
+      <section class="plo" id="us-leader-observations" data-status="{{ _plo.get('status')|e }}">
+        <div class="plo-hd">
+          <h3><span class="l-en">Leaders / waiting for entry</span><span class="l-zh">领涨股 / 等待入场条件</span></h3>
+          <span class="plo-asof">
+            <span class="l-en">Source</span><span class="l-zh">数据日期</span>
+            {{ _plo_src.get('data_session') or _plo_src.get('as_of') or '—' }}
+          </span>
+        </div>
+        <div class="plo-summary">
+          <span><b>{{ _plo_counts.get('active', 0) }}</b> <span class="l-en">active observations</span><span class="l-zh">个活跃观察</span></span>
+          <span class="plo-authority"><span class="l-en">Context only · not a recommendation</span><span class="l-zh">仅供背景参考 · 非推荐</span></span>
+        </div>
+        {% if _plo.get('status') == 'unavailable' %}
+        <div class="plo-state"><span class="l-en">Leader observations unavailable.</span><span class="l-zh">领涨股观察暂不可用。</span></div>
+        {% elif _plo.get('status') == 'empty' %}
+        <div class="plo-state"><span class="l-en">No active leader-reset states.</span><span class="l-zh">暂无活跃的领涨重置状态。</span></div>
+        {% elif _plo.get('status') == 'degraded' %}
+        <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
+        {% endif %}
+        <div class="plo-rows">
+          {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
+        </div>
+        {% if _plo_gate %}
+        <div class="pg-more plo-more">
+          <span class="l-en">{{ _plo_gate.locked }} more observed names</span>
+          <span class="l-zh">另有 {{ _plo_gate.locked }} 个观察标的</span>
+        </div>
+        {% endif %}
+      </section>
+      {% endif %}
       {# B4 Conviction Delta — data prep for the "What changed today" dashboard.
          Rendered only when us_standouts.delta exists and has >=1 entry.
          Purely descriptive: shows which verb and which reason-codes changed.
@@ -19990,6 +20027,7 @@ if (document.readyState === 'loading') {
   }
 
   function hydratePanels(payload){
+    appendTo('#us-leader-observations .plo-rows', payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
     appendTo('#us-standouts .pbr-l', payload.ran_html);
