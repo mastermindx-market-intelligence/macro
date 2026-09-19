@@ -20,7 +20,8 @@ stop doing its job:
      one more unwired suite in the very lane whose job is finding those.
   4. SPARSE EXACTNESS — both head and base bind the tested commit's tracked-path
      inventory before deriving closure, so omitted non-Python leaves remain
-     visible without materializing the generated-heavy site/data trees.
+     visible without materializing the generated-heavy site/data trees. Cone and
+     non-cone sparse callers must materialize the same physical path set on base.
 """
 from __future__ import annotations
 
@@ -349,8 +350,12 @@ def _make_repo(tmp_path: Path) -> Path:
     _git("config", "user.name", "t", cwd=repo)
     (repo / "engine").mkdir()
     (repo / "data").mkdir()
+    (repo / "site").mkdir()
+    (repo / "future-root").mkdir()
     (repo / "engine" / "x.py").write_text("X = 1\n")
     (repo / "data" / "big.txt").write_text("generated\n")
+    (repo / "site" / "big.txt").write_text("generated-site\n")
+    (repo / "future-root" / "new.txt").write_text("future-safe\n")
     (repo / "README.md").write_text("root\n")
     _git("add", "-A", cwd=repo)
     _git("commit", "-q", "-m", "base", cwd=repo)
@@ -387,6 +392,47 @@ def test_sparse_caller_gets_a_base_tree_with_the_same_cone(tmp_path: Path, monke
         assert (tree / "README.md").exists(), "cone mode always materializes root files"
         assert not (tree / "data").exists(), "the omitted directory must stay omitted"
         assert _git("config", "--get", "core.sparseCheckout", cwd=tree).strip() == "true"
+        assert _git("status", "--porcelain", cwd=tree) == ""
+    finally:
+        cleanup()
+    assert not tree.exists()
+
+
+
+def test_noncone_sparse_caller_mirrors_negative_patterns_and_keeps_unknown_roots(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Hosted CI's non-cone exclusions must not force a full base checkout."""
+    repo = _make_repo(tmp_path)
+    profile = "/*\n!/data/\n!/site/\n"
+    subprocess.run(
+        ["git", "sparse-checkout", "set", "--no-cone", "--stdin"],
+        cwd=repo,
+        input=profile,
+        text=True,
+        check=True,
+        capture_output=True,
+    )
+    assert (repo / "engine" / "x.py").exists()
+    assert (repo / "future-root" / "new.txt").exists()
+    assert not (repo / "data").exists()
+    assert not (repo / "site").exists()
+    assert CCD.caller_sparse_profile(repo) == (
+        "non-cone",
+        ["/*", "!/data/", "!/site/"],
+    )
+
+    monkeypatch.setenv(CCD.TEMP_ROOT_ENV, str(tmp_path))
+    tree, sha, cleanup = CCD.materialize_base_tree("HEAD~1", repo_root=repo)
+    try:
+        assert sha == _git("rev-parse", "HEAD~1", cwd=repo).strip()
+        assert (tree / "engine" / "x.py").read_text() == "X = 1\n"
+        assert (tree / "README.md").exists()
+        assert (tree / "future-root" / "new.txt").read_text() == "future-safe\n"
+        assert not (tree / "data").exists()
+        assert not (tree / "site").exists()
+        assert _git("config", "--get", "core.sparseCheckout", cwd=tree).strip() == "true"
+        assert _git("config", "--get", "core.sparseCheckoutCone", cwd=tree).strip() == "false"
         assert _git("status", "--porcelain", cwd=tree) == ""
     finally:
         cleanup()
