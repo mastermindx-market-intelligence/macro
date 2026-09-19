@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from engine.neuralweb.public_research import investigate_public
+from engine.neuralweb.public_research import PUBLIC_QUERY_SCOPE, investigate_public
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -38,6 +38,7 @@ def main(argv: list[str] | None = None) -> int:
 
     result = investigate_public(
         args.query,
+        query_scope=PUBLIC_QUERY_SCOPE,
         open_top=args.open_top,
         max_results=args.max_results,
         topic=args.topic,
@@ -50,8 +51,10 @@ def main(argv: list[str] | None = None) -> int:
         filter_by_published_date=args.filter_by_published_date,
     )
     print(json.dumps(result, ensure_ascii=False, separators=(",", ":")), flush=True)
-    if result.get("status") in {"available", "partial"}:
+    if result.get("status") == "available":
         return 0
+    if result.get("status") == "partial":
+        return 3
     if result.get("error") in {
         "public_search_not_configured",
         "public_source_open_not_configured",

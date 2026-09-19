@@ -379,6 +379,7 @@ def test_investigate_searches_then_opens_selected_sources_and_joins_metadata():
     post = _FakePost([search, opened])
     result = pr.investigate_public(
         "AAPL filing margin change",
+        query_scope="public_minimal",
         api_key="k",
         post_json=post,
         max_results=3,
@@ -407,6 +408,7 @@ def test_investigate_search_failure_never_attempts_source_open():
     post = _FakePost([pr.PublicResearchTransportError("search dead")])
     result = pr.investigate_public(
         "AAPL current filing",
+        query_scope="public_minimal",
         api_key="k",
         post_json=post,
     )
@@ -421,6 +423,7 @@ def test_investigate_empty_search_is_coverage_gap_not_negative_evidence():
     post = _FakePost([{"results": []}])
     result = pr.investigate_public(
         "obscure current event",
+        query_scope="public_minimal",
         api_key="k",
         post_json=post,
     )
@@ -441,6 +444,7 @@ def test_investigate_all_open_failures_cannot_be_completed_research():
     ])
     result = pr.investigate_public(
         "current catalyst",
+        query_scope="public_minimal",
         api_key="k",
         post_json=post,
         open_top=1,
@@ -459,7 +463,7 @@ def test_investigate_bounds_open_top_and_never_opens_unreturned_urls():
     ]
     for kwargs in bad:
         post = _FakePost([])
-        result = pr.investigate_public("query", api_key="k", post_json=post, **kwargs)
+        result = pr.investigate_public("query", query_scope="public_minimal", api_key="k", post_json=post, **kwargs)
         assert result["status"] == "unavailable"
         assert result["error"] == "invalid_public_research_request"
         assert post.calls == []
@@ -632,3 +636,129 @@ def test_open_without_rerank_labels_bounded_page_extraction_not_full_review():
     row = result["sources"][0]
     assert row["content_scope"] == "bounded_page_extraction"
     assert row["full_document_reviewed"] is False
+
+
+def test_investigation_requires_explicit_public_minimal_scope_before_transport():
+    from engine.neuralweb import public_research as pr
+    for scope in (None, "", "private", "public", True):
+        post = _FakePost([])
+        result = pr.investigate_public(
+            "public query",
+            query_scope=scope,
+            api_key="k",
+            post_json=post,
+        )
+        assert result["status"] == "unavailable"
+        assert result["error"] == "invalid_public_research_scope"
+        assert result["query_scope"] is None
+        assert post.calls == []
+
+
+def test_investigation_receipt_carries_public_minimal_scope():
+    from engine.neuralweb import public_research as pr
+    post = _FakePost([
+        {"results": [{"title": "A", "url": "https://example.com/a", "content": "a"}]},
+        {"results": [{"url": "https://example.com/a", "raw_content": "full"}],
+         "failed_results": []},
+    ])
+    result = pr.investigate_public(
+        "public query",
+        query_scope="public_minimal",
+        api_key="k",
+        post_json=post,
+        open_top=1,
+    )
+    assert result["status"] == "available"
+    assert result["query_scope"] == "public_minimal"
+
+
+def test_operator_probe_attests_public_minimal_scope_in_receipt(monkeypatch, capsys):
+    import json
+    from engine.neuralweb import public_research as pr
+    from scripts import probe_public_research as probe
+
+    def fake_investigate(query, **kwargs):
+        assert kwargs["query_scope"] == "public_minimal"
+        return {
+            "schema": pr.INVESTIGATION_SCHEMA,
+            "status": "available",
+            "query_scope": kwargs["query_scope"],
+            "search_executed": True,
+            "open_executed": True,
+            "sources": [],
+        }
+
+    monkeypatch.setattr(probe, "investigate_public", fake_investigate)
+    assert probe.main(["public query", "--open-top", "1"]) == 0
+    row = json.loads(capsys.readouterr().out)
+    assert row["query_scope"] == "public_minimal"
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.1.1/a",
+        "http://0x7f.0.0.1/a",
+        "http://0177.0.0.1/a",
+    ],
+)
+def test_open_rejects_numeric_obfuscated_ipv4_hosts_before_transport(url):
+    from engine.neuralweb import public_research as pr
+    post = _FakePost([])
+    result = pr.open_public_sources([url], api_key="k", post_json=post)
+    assert result["error"] == "invalid_public_source_request"
+    assert post.calls == []
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://example.com:80/a",
+        "http://example.com:443/a",
+    ],
+)
+def test_open_rejects_scheme_mismatched_default_ports(url):
+    from engine.neuralweb import public_research as pr
+    post = _FakePost([])
+    result = pr.open_public_sources([url], api_key="k", post_json=post)
+    assert result["error"] == "invalid_public_source_request"
+    assert post.calls == []
+
+
+def test_search_receipt_separates_rejected_from_unselected_provider_rows():
+    from engine.neuralweb import public_research as pr
+    response = {
+        "results": [
+            {"title": "A", "url": "https://example.com/a", "content": "a", "score": 0.9},
+            {"title": "B", "url": "https://example.com/b", "content": "b", "score": 0.8},
+            {"title": "bad", "url": "http://127.0.0.1/x", "content": "bad"},
+            {"title": "C", "url": "https://example.com/c", "content": "c", "score": 0.7},
+        ]
+    }
+    result = pr.search_public(
+        "query",
+        api_key="k",
+        post_json=_FakePost([response]),
+        max_results=2,
+    )
+    assert len(result["results"]) == 2
+    assert result["rejected_results"] == 1
+    assert result["unselected_results"] == 1
+    assert result["provider_result_count"] == 4
+
+
+def test_probe_partial_has_distinct_exit_code(monkeypatch, capsys):
+    from scripts import probe_public_research as probe
+
+    monkeypatch.setattr(
+        probe,
+        "investigate_public",
+        lambda *a, **k: {
+            "schema": "mastermind.public_research_investigation.v1",
+            "status": "partial",
+            "query_scope": "public_minimal",
+            "sources": [],
+        },
+    )
+    assert probe.main(["public query"]) == 3
+    assert '"status":"partial"' in capsys.readouterr().out

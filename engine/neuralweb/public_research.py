@@ -20,6 +20,7 @@ SEARCH_ENDPOINT = "https://api.tavily.com/search"
 EXTRACT_ENDPOINT = "https://api.tavily.com/extract"
 PROVIDER = "tavily"
 SEARCH_SCHEMA = "mastermind.public_research_search.v1"
+PUBLIC_QUERY_SCOPE = "public_minimal"
 
 _MAX_QUERY_CHARS = 400
 _MAX_URL_CHARS = 2048
@@ -33,6 +34,8 @@ _PRIVATE_SUFFIXES = (
     ".localhost", ".local", ".localdomain", ".internal", ".lan", ".home", ".home.arpa",
 )
 _TOKEN_RE = re.compile(r"[A-Za-z0-9._:-]{1,128}\Z")
+_NUMERIC_HOST_LABEL = re.compile(r"(?:0[xX][0-9A-Fa-f]+|0[0-7]+|[0-9]+)\Z")
+_MAX_PROVIDER_ROWS = 64
 
 
 class PublicResearchTransportError(RuntimeError):
@@ -62,6 +65,12 @@ def _ascii_host(host: str) -> str:
     if not normalized or len(normalized) > 253 or "." not in normalized:
         raise ValueError("unsafe_public_source")
     if normalized == "localhost" or normalized.endswith(_PRIVATE_SUFFIXES):
+        raise ValueError("unsafe_public_source")
+    labels = normalized.split(".")
+    # Catch abbreviated / hexadecimal / octal IPv4 spellings before the
+    # provider sees them. DNS resolution itself is intentionally NOT performed
+    # here; Tavily remains responsible for its remote-fetch network boundary.
+    if labels and all(_NUMERIC_HOST_LABEL.fullmatch(label) for label in labels):
         raise ValueError("unsafe_public_source")
     try:
         ipaddress.ip_address(normalized)
@@ -131,9 +140,11 @@ def _canonical_public_url(value: object) -> str:
         port = parts.port
     except (ValueError, UnicodeError):
         raise ValueError("unsafe_public_source") from None
-    if port is not None and port not in {80, 443}:
-        raise ValueError("unsafe_public_source")
     scheme = parts.scheme.lower()
+    if port is not None:
+        expected_port = 80 if scheme == "http" else 443
+        if port != expected_port:
+            raise ValueError("unsafe_public_source")
     netloc = host
     path = parts.path or "/"
     return urlunsplit((scheme, netloc, path, parts.query, ""))
@@ -278,12 +289,13 @@ def search_public(
     normalized: list[dict] = []
     seen_urls: set[str] = set()
     rejected = 0
+    unselected = 0
     rows = response.get("results")
     if not isinstance(rows, list):
         rows = []
-    for row in rows:
-        if len(normalized) >= max_results:
-            break
+    provider_result_count = len(rows)
+    bounded_rows = rows[:_MAX_PROVIDER_ROWS]
+    for row in bounded_rows:
         if not isinstance(row, dict):
             rejected += 1
             continue
@@ -303,7 +315,7 @@ def search_public(
             if math.isfinite(candidate) and 0.0 <= candidate <= 1.0:
                 score = candidate
         published = _text(row.get("published_date"), 128) or None
-        normalized.append({
+        normalized_row = {
             "title": _text(row.get("title"), 512),
             "url": url,
             "source_family": urlsplit(url).hostname or "",
@@ -313,7 +325,11 @@ def search_public(
             "published_date_basis": "provider_estimate" if published else "unavailable",
             "source_open_state": "not_opened",
             "untrusted_content": True,
-        })
+        }
+        if len(normalized) < max_results:
+            normalized.append(normalized_row)
+        else:
+            unselected += 1
 
     return {
         "schema": SEARCH_SCHEMA,
@@ -325,7 +341,10 @@ def search_public(
         "request_id": _request_id(response.get("request_id")),
         "provider_usage_credits": _credits(response.get("usage")),
         "results": normalized,
+        "provider_result_count": provider_result_count,
         "rejected_results": rejected,
+        "unselected_results": unselected,
+        "unprocessed_provider_results": max(0, provider_result_count - len(bounded_rows)),
         "limits": [
             "Search snippets are untrusted discovery evidence and are not full-source review.",
             "Provider publication dates are estimates and require source-level date/correction checks.",
@@ -525,6 +544,7 @@ def _investigation_unavailable(
     search_executed: bool,
     open_executed: bool = False,
     query_sha256: str | None = None,
+    query_scope: str | None = None,
     sources: list[dict] | None = None,
 ) -> dict:
     result = {
@@ -534,6 +554,7 @@ def _investigation_unavailable(
         "coverage_state": coverage_state,
         "search_executed": search_executed,
         "open_executed": open_executed,
+        "query_scope": query_scope,
         "sources": sources or [],
         "limits": [
             "A search or extraction coverage gap is not proof that the underlying event or fact does not exist.",
@@ -550,6 +571,7 @@ def _investigation_unavailable(
 def investigate_public(
     query: object,
     *,
+    query_scope: object = None,
     api_key: str | None = None,
     post_json: Callable[..., dict] | None = None,
     topic: str = "finance",
@@ -564,6 +586,13 @@ def investigate_public(
     filter_by_published_date: bool = False,
 ) -> dict:
     """Search then open selected sources; no model synthesis is performed here."""
+    if type(query_scope) is not str or query_scope != PUBLIC_QUERY_SCOPE:
+        return _investigation_unavailable(
+            "invalid_public_research_scope",
+            coverage_state="invalid_request",
+            search_executed=False,
+            query_scope=None,
+        )
     if (
         type(open_top) is not int
         or type(max_results) is not int
@@ -598,6 +627,7 @@ def investigate_public(
             coverage_state="search_unavailable",
             search_executed=bool(search.get("search_executed")),
             query_sha256=query_hash if isinstance(query_hash, str) else None,
+            query_scope=PUBLIC_QUERY_SCOPE,
         )
 
     candidates = search.get("results") or []
@@ -607,6 +637,7 @@ def investigate_public(
             coverage_state="search_empty",
             search_executed=True,
             query_sha256=query_hash if isinstance(query_hash, str) else None,
+            query_scope=PUBLIC_QUERY_SCOPE,
         )
 
     selected = candidates[:open_top]
@@ -641,6 +672,7 @@ def investigate_public(
             search_executed=True,
             open_executed=bool(opened.get("open_executed")),
             query_sha256=query_hash if isinstance(query_hash, str) else None,
+            query_scope=PUBLIC_QUERY_SCOPE,
             sources=joined,
         )
 
@@ -652,6 +684,7 @@ def investigate_public(
         "search_executed": True,
         "open_executed": bool(opened.get("open_executed")),
         "query_sha256": query_hash,
+        "query_scope": PUBLIC_QUERY_SCOPE,
         "search_request_id": search.get("request_id"),
         "open_request_id": opened.get("request_id"),
         "opened_count": opened_count,

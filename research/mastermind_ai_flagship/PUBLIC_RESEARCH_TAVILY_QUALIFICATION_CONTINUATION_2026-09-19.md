@@ -227,3 +227,74 @@ The local contract-delta process began before later hardening, continuation and 
 registration edits. Even if it returns, it is not final-head proof. Do not start a
 duplicate while its existing process is unresolved; the PR's hosted exact-head
 contract-delta gate will be authoritative for this frozen candidate.
+
+## Independent review R1 and pre-canary hardening
+
+One-shot read-only Opus review
+`mastermind-ai-public-research-tavily-review-20260919-sol-001`
+returned **PASS** on head `9a68fbd83736ac6b5fbc741ff4fa13d3077ff58f`,
+with no blockers and one required pre-canary contract family.
+
+The reviewer independently verified search/open separation, unsafe URL checks,
+untrusted source semantics, partial/all-failed extraction states, no Brain wiring,
+no duplicate control plane and the registered CI owner. It did not run pytest/git
+or network requests.
+
+### Provider-field verification
+
+Current official Tavily Search docs were re-opened after review. They explicitly
+document all three queried fields:
+- `filter_by_published_date`;
+- Search `include_usage`;
+- and Tavily Extract docs explicitly document Extract `include_usage`.
+
+The source therefore keeps those payload keys. This verification is documentation
+evidence only; a real sanctioned provider canary remains required.
+
+### Query privacy contract
+
+The aggregate `investigate_public` call now requires exact
+`query_scope="public_minimal"` before any provider transport. Invalid/missing scope
+returns `invalid_public_research_scope` with zero transport calls. Every aggregate
+receipt carries the scope marker.
+
+The operator probe explicitly supplies `PUBLIC_QUERY_SCOPE`. This is an auditable
+contract for the future server resolver; it is NOT a semantic classifier. The
+resolver must still ensure that the actual query contains no private notes, portfolio
+context, account identifiers, secrets or unnecessary conversation content.
+`query_sha256` is correlation metadata only and is not a privacy control.
+
+### URL/network boundary hardening
+
+Abbreviated/hex/octal numeric IPv4 spellings such as `127.1.1`,
+`0x7f.0.0.1` and `0177.0.0.1` are now rejected before provider transport.
+Scheme-mismatched explicit default ports (`https:80`, `http:443`) are rejected
+rather than silently rewritten.
+
+This process still does not resolve caller-selected source DNS names locally.
+Wildcard/rebinding-style public domain names remain the remote fetch provider's
+network-safety responsibility. The application-side URL checks reduce obvious
+unsafe inputs but do not falsely claim to prove Tavily's resolved destination.
+
+### Result and machine-consumer semantics
+
+Search now distinguishes:
+- provider result count;
+- rejected malformed/unsafe/duplicate rows;
+- safe but unselected rows beyond the caller result budget;
+- and bounded unprocessed provider rows beyond the adapter safety scan.
+
+The operator probe now returns a distinct exit code 3 for partial source coverage,
+rather than making partial and fully available investigations identical to scripts.
+
+TDD before repair: 10 targeted review-follow-up tests failed.
+After repair: those 10 pass. The complete R1 suite is now **37 passed**.
+
+Fresh exact existing Brain owner selector after the review repair:
+**913 passed, 5 existing warnings, exit 0**.
+This supersedes the earlier903-pass source-head proof.
+
+Because these changes alter R1 semantics after the first PASS, the repaired
+immutable head requires a fresh exact-head review and fresh hosted CI before source
+acceptance. The first PASS remains useful review history, not acceptance of changed
+bytes.
