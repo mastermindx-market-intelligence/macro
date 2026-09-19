@@ -107,3 +107,27 @@ def test_rollback_keeps_dialog_truth_without_six_block_shell():
     assert "t('Signal agreement','信号一致度')" not in SRC
     assert "Driver table unavailable — the index rows are not ready." in SRC
     assert "驱动表暂不可用 — 指数行尚未就绪。" in SRC
+
+
+def _registry_page_block(page_id: str) -> str:
+    marker = f"  {page_id}:\n"
+    start = REGISTRY.index(marker)
+    rest = REGISTRY[start + len(marker):]
+    # Top-level page keys are exactly two-space-indented; nested mappings are deeper.
+    ends = [i for i, line in enumerate(rest.splitlines(True)) if line.startswith("  ") and not line.startswith("    ") and line.rstrip().endswith(":")]
+    if not ends:
+        return rest
+    return "".join(rest.splitlines(True)[:ends[0]])
+
+
+def test_primary_regional_family_migration_is_atomic():
+    """A normal geography route may not become the lone design-system migration again."""
+    primary = ("macro:macro", "macro:china", "macro:hk", "macro:canada")
+    states = {
+        page_id: "design_system: {compliant: true" in _registry_page_block(page_id)
+        for page_id in primary
+    }
+    assert len(set(states.values())) == 1, (
+        "primary regional macro routes must migrate together; "
+        f"partial design-system state: {states}"
+    )
