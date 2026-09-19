@@ -4758,3 +4758,27 @@ def trial_detail(
         history_model=history_model,
     )
     return _response(payload)
+
+# Shared-plane ownership exposes only the original source-fact route set.
+# The product router above is intentionally broader: What Matters Next composes
+# issuer/security identity and research-priority context and therefore must not
+# silently widen the facts-only adapter registered with Sector Intelligence.
+_TRIAL_FACT_ROUTE_PATHS = frozenset(
+    (
+        "/api/biocatalyst/v1/health",
+        "/api/biocatalyst/v1/trials",
+        "/api/biocatalyst/v1/trials:screen",
+        "/api/biocatalyst/v1/trials:screen/facets",
+        "/api/biocatalyst/v1/trial-peer-sets:resolve",
+        "/api/biocatalyst/v1/trials/changes",
+        "/api/biocatalyst/v1/trials/change-tape",
+        "/api/biocatalyst/v1/trials/milestones",
+        "/api/biocatalyst/v1/catalyst-radar",
+        "/api/biocatalyst/v1/trials/prospective-changes",
+        "/api/biocatalyst/v1/trials/{nct_id}",
+    )
+)
+trial_facts_router = APIRouter()
+trial_facts_router.routes.extend(
+    route for route in router.routes if getattr(route, "path", None) in _TRIAL_FACT_ROUTE_PATHS
+)
