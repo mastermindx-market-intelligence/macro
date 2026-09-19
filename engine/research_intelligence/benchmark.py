@@ -38,7 +38,9 @@ _METRIC_KEYS = (
     "number_recall",
     "entity_recall",
     "thesis_support_recall",
+    "thesis_semantic_accuracy",
     "analysis_category_recall",
+    "analysis_semantic_recall",
     "direction_accuracy",
 )
 _COUNT_KEYS = (
@@ -50,8 +52,12 @@ _COUNT_KEYS = (
     "matched_entities",
     "expected_thesis_support",
     "matched_thesis_support",
+    "thesis_semantic_expected",
+    "thesis_semantic_correct",
     "expected_analysis_categories",
     "matched_analysis_categories",
+    "expected_analysis_semantics",
+    "matched_analysis_semantics",
     "direction_expected",
     "direction_correct",
 )
@@ -123,6 +129,65 @@ def _strings(value: Any, *, label: str) -> list[str]:
     return out
 
 
+def _concept_groups(value: Any, *, label: str) -> list[list[str]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ValueError(f"{label} must be a list")
+    groups: list[list[str]] = []
+    for group_index, raw_group in enumerate(value):
+        alternatives = _strings(
+            raw_group,
+            label=f"{label}[{group_index}]",
+        )
+        normalized = []
+        for alternative in alternatives:
+            text = _norm(alternative)
+            if not text:
+                raise ValueError(f"{label}[{group_index}] contains empty normalized text")
+            if text not in normalized:
+                normalized.append(text)
+        if not normalized:
+            raise ValueError(f"{label}[{group_index}] requires at least one alternative")
+        groups.append(normalized)
+    return groups
+
+
+def _contains_phrase(haystack: str, phrase: str) -> bool:
+    haystack_tokens = _norm(haystack).split()
+    phrase_tokens = _norm(phrase).split()
+    if not phrase_tokens or len(phrase_tokens) > len(haystack_tokens):
+        return False
+    width = len(phrase_tokens)
+    return any(
+        haystack_tokens[index : index + width] == phrase_tokens
+        for index in range(len(haystack_tokens) - width + 1)
+    )
+
+
+def _concepts_match(text: str, groups: list[list[str]]) -> bool:
+    return bool(groups) and all(
+        any(_contains_phrase(text, alternative) for alternative in alternatives)
+        for alternatives in groups
+    )
+
+
+def _analysis_row_text(field: str, row: dict[str, Any]) -> str:
+    pieces = [str(row.get("statement") or "")]
+    if field == "forecasts":
+        pieces.extend(
+            [
+                str(row.get("horizon") or ""),
+                str(row.get("confidence") or ""),
+            ]
+        )
+    elif field == "implications":
+        pieces.extend(str(value) for value in row.get("assets") or [])
+        pieces.append(str(row.get("direction") or ""))
+        pieces.append(str(row.get("order") or ""))
+    return " ".join(piece for piece in pieces if piece)
+
+
 def validate_case(case: Any, source_body: str) -> dict[str, Any]:
     """Normalize one private benchmark case and bind it to exact source bytes."""
     if not isinstance(case, dict) or case.get("schema") != CASE_SCHEMA:
@@ -189,6 +254,11 @@ def validate_case(case: Any, source_body: str) -> dict[str, Any]:
     if direction and direction not in _DIRECTIONS:
         raise ValueError("unsupported expected thesis direction")
 
+    thesis_concepts = _concept_groups(
+        expected.get("thesis_concepts"),
+        label="thesis_concepts",
+    )
+
     raw_support = expected.get("analysis_support") or {}
     if not isinstance(raw_support, dict):
         raise ValueError("analysis_support must be an object")
@@ -212,6 +282,42 @@ def validate_case(case: Any, source_body: str) -> dict[str, Any]:
             normalized_entries.append(support)
         analysis_support[field] = normalized_entries
 
+    raw_semantics = expected.get("analysis_semantics") or {}
+    if not isinstance(raw_semantics, dict):
+        raise ValueError("analysis_semantics must be an object")
+    unknown_semantics = set(raw_semantics) - set(_ANALYSIS_FIELDS)
+    if unknown_semantics:
+        raise ValueError(
+            f"unsupported analysis_semantics fields: {sorted(unknown_semantics)!r}"
+        )
+    analysis_semantics: dict[str, list[dict[str, Any]]] = {}
+    for field in _ANALYSIS_FIELDS:
+        entries = raw_semantics.get(field) or []
+        if not isinstance(entries, list):
+            raise ValueError(f"analysis_semantics.{field} must be a list")
+        normalized_entries: list[dict[str, Any]] = []
+        for index, entry in enumerate(entries):
+            if not isinstance(entry, dict):
+                raise ValueError(f"analysis_semantics.{field}[{index}] must be an object")
+            support = _indices(
+                entry.get("support_claim_indices"),
+                claim_count,
+                label=f"analysis_semantics.{field}[{index}].support_claim_indices",
+            )
+            concepts = _concept_groups(
+                entry.get("concept_groups"),
+                label=f"analysis_semantics.{field}[{index}].concept_groups",
+            )
+            if not support or not concepts:
+                raise ValueError("analysis semantic expectation requires support and concepts")
+            normalized_entries.append(
+                {
+                    "support_claim_indices": support,
+                    "concept_groups": concepts,
+                }
+            )
+        analysis_semantics[field] = normalized_entries
+
     return {
         "schema": CASE_SCHEMA,
         "case_id": case_id,
@@ -221,7 +327,9 @@ def validate_case(case: Any, source_body: str) -> dict[str, Any]:
             "claims": claims,
             "thesis_direction": direction,
             "thesis_support_claim_indices": thesis_support,
+            "thesis_concepts": thesis_concepts,
             "analysis_support": analysis_support,
+            "analysis_semantics": analysis_semantics,
         },
     }
 
@@ -249,8 +357,12 @@ def _expected_counts(checked: dict[str, Any]) -> dict[str, int]:
         "numbers": sum(len(row["numbers"]) for row in claims),
         "entities": sum(len(row["entities"]) for row in claims),
         "thesis_support": len(checked["expected"]["thesis_support_claim_indices"]),
+        "thesis_semantic": 1 if checked["expected"]["thesis_concepts"] else 0,
         "analysis_categories": sum(
             len(rows) for rows in checked["expected"]["analysis_support"].values()
+        ),
+        "analysis_semantics": sum(
+            len(rows) for rows in checked["expected"]["analysis_semantics"].values()
         ),
         "direction": 1 if checked["expected"]["thesis_direction"] else 0,
     }
@@ -263,7 +375,9 @@ def _score_counts(
     number_hits: int = 0,
     entity_hits: int = 0,
     thesis_hits: int = 0,
+    thesis_semantic_correct: int = 0,
     category_hits: int = 0,
+    semantic_hits: int = 0,
     direction_correct: int = 0,
 ) -> dict[str, int]:
     counts = _expected_counts(checked)
@@ -276,8 +390,12 @@ def _score_counts(
         "matched_entities": entity_hits,
         "expected_thesis_support": counts["thesis_support"],
         "matched_thesis_support": thesis_hits,
+        "thesis_semantic_expected": counts["thesis_semantic"],
+        "thesis_semantic_correct": thesis_semantic_correct,
         "expected_analysis_categories": counts["analysis_categories"],
         "matched_analysis_categories": category_hits,
+        "expected_analysis_semantics": counts["analysis_semantics"],
+        "matched_analysis_semantics": semantic_hits,
         "direction_expected": counts["direction"],
         "direction_correct": direction_correct,
     }
@@ -315,6 +433,11 @@ def _metrics_from_counts(
             if valid
             else (0.0 if counts["expected_thesis_support"] else None)
         ),
+        "thesis_semantic_accuracy": (
+            float(counts["thesis_semantic_correct"])
+            if valid and counts["thesis_semantic_expected"]
+            else (0.0 if counts["thesis_semantic_expected"] else None)
+        ),
         "analysis_category_recall": (
             _ratio(
                 counts["matched_analysis_categories"],
@@ -322,6 +445,14 @@ def _metrics_from_counts(
             )
             if valid
             else (0.0 if counts["expected_analysis_categories"] else None)
+        ),
+        "analysis_semantic_recall": (
+            _ratio(
+                counts["matched_analysis_semantics"],
+                counts["expected_analysis_semantics"],
+            )
+            if valid
+            else (0.0 if counts["expected_analysis_semantics"] else None)
         ),
         "direction_accuracy": (
             float(counts["direction_correct"])
@@ -383,6 +514,38 @@ def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, A
             target = set(expectation)
             category_hits += int(any(target <= observed for observed in observed_sets))
 
+    thesis_semantic_correct = 0
+    thesis_concepts = checked["expected"]["thesis_concepts"]
+    if thesis_concepts:
+        thesis_text = " ".join(
+            [
+                str(thesis.get("summary") or ""),
+                *(str(value) for value in thesis.get("mechanism") or []),
+            ]
+        )
+        thesis_semantic_correct = int(_concepts_match(thesis_text, thesis_concepts))
+
+    semantic_hits = 0
+    for field, expectations in checked["expected"]["analysis_semantics"].items():
+        observed = obj["analysis"][field]
+        for expectation in expectations:
+            target_support = set(expectation["support_claim_indices"])
+            matched = False
+            for row in observed:
+                support = _supported_gold_indices(
+                    row["support_claim_indices"],
+                    output_to_gold,
+                )
+                if not target_support <= support:
+                    continue
+                if _concepts_match(
+                    _analysis_row_text(field, row),
+                    expectation["concept_groups"],
+                ):
+                    matched = True
+                    break
+            semantic_hits += int(matched)
+
     expected_direction = checked["expected"]["thesis_direction"]
     direction_correct = int(
         bool(expected_direction) and thesis["direction"] == expected_direction
@@ -393,7 +556,9 @@ def _score_grounded(checked: dict[str, Any], obj: dict[str, Any]) -> dict[str, A
         number_hits=number_hits,
         entity_hits=entity_hits,
         thesis_hits=thesis_hits,
+        thesis_semantic_correct=thesis_semantic_correct,
         category_hits=category_hits,
+        semantic_hits=semantic_hits,
         direction_correct=direction_correct,
     )
     metrics = _metrics_from_counts("ok", score_counts)
@@ -509,11 +674,17 @@ def _validated_result(raw: Any) -> dict[str, Any]:
         ("expected_numbers", "matched_numbers"),
         ("expected_entities", "matched_entities"),
         ("expected_thesis_support", "matched_thesis_support"),
+        ("thesis_semantic_expected", "thesis_semantic_correct"),
         ("expected_analysis_categories", "matched_analysis_categories"),
+        ("expected_analysis_semantics", "matched_analysis_semantics"),
         ("direction_expected", "direction_correct"),
     ):
         if checked_counts[matched_key] > checked_counts[expected_key]:
             raise ValueError("benchmark matched count exceeds expected count")
+    if checked_counts["thesis_semantic_expected"] not in {0, 1}:
+        raise ValueError("benchmark thesis_semantic_expected must be 0 or 1")
+    if checked_counts["thesis_semantic_correct"] not in {0, 1}:
+        raise ValueError("benchmark thesis_semantic_correct must be 0 or 1")
     if checked_counts["direction_expected"] not in {0, 1}:
         raise ValueError("benchmark direction_expected must be 0 or 1")
     if checked_counts["direction_correct"] not in {0, 1}:
@@ -525,7 +696,9 @@ def _validated_result(raw: Any) -> dict[str, Any]:
             "matched_numbers",
             "matched_entities",
             "matched_thesis_support",
+            "thesis_semantic_correct",
             "matched_analysis_categories",
+            "matched_analysis_semantics",
             "direction_correct",
         )
     ):
@@ -583,7 +756,7 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     groups: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
     bindings: dict[str, tuple[str, str, str]] = {}
     metric_shapes: dict[str, tuple[bool, ...]] = {}
-    expected_shapes: dict[str, tuple[int, int, int, int, int, int]] = {}
+    expected_shapes: dict[str, tuple[int, int, int, int, int, int, int, int]] = {}
 
     for raw in results:
         item = _validated_result(raw)
@@ -615,7 +788,9 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
             counts["expected_numbers"],
             counts["expected_entities"],
             counts["expected_thesis_support"],
+            counts["thesis_semantic_expected"],
             counts["expected_analysis_categories"],
+            counts["expected_analysis_semantics"],
             counts["direction_expected"],
         )
         prior_expected = expected_shapes.setdefault(case_id, expected_shape)
@@ -625,7 +800,8 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     if not groups:
         return {
             "schema": AGGREGATE_SCHEMA,
-            "ranking_basis": "private_gold_deterministic_metrics",
+            "ranking_basis": "private_gold_grounded_extraction_metrics",
+            "promotion_authority": "none",
             "case_set_sha256": _sha256_text("[]"),
             "candidates": [],
         }
@@ -670,7 +846,8 @@ def aggregate_results(results: Iterable[Any]) -> dict[str, Any]:
     rows.sort(key=lambda row: (-row["mean_overall_score"], row["candidate_label"]))
     return {
         "schema": AGGREGATE_SCHEMA,
-        "ranking_basis": "private_gold_deterministic_metrics",
+        "ranking_basis": "private_gold_grounded_extraction_metrics",
+        "promotion_authority": "none",
         "case_set_sha256": case_set_sha256,
         "candidates": rows,
     }
