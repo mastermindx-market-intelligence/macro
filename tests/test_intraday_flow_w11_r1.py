@@ -7,9 +7,11 @@ producer; the site copy is the render lane's job.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -456,3 +458,110 @@ def test_mag7_chip_and_honesty_chips_untouched():
     assert "~call buying" in src
     assert "~买入看涨" in src
     assert "id=\"hs-count\"" in src
+
+
+# ── --as-of / checked_at lock + ephemeral run_status skip (reviewer RED-first)
+
+_BUILDER = ROOT / "scripts" / "build_intraday_flow.py"
+_AS_OF_LOCK = "2026-09-18T22:30:00+00:00"
+_RUN_STATUS = ROOT / "data" / "run_status.json"
+
+
+def _builder_src() -> str:
+    return _BUILDER.read_text(encoding="utf-8")
+
+
+def test_builder_source_locks_as_of_and_checked_at():
+    """C0 stamps as_of/checked_at from datetime.now(); --as-of must lock both."""
+    src = _builder_src()
+    assert re.search(r'add_argument\(\s*"--as-of"', src), (
+        "builder must expose --as-of so two consecutive renders can lock the stamp"
+    )
+    rs = src[src.index("run_status registration") : src.index("Render HTML if template")]
+    assert re.search(r'"checked_at"\s*:\s*as_of', rs), (
+        "checked_at must reuse the as_of stamp under --as-of, not datetime.now()"
+    )
+    assert "datetime.now" not in rs
+
+
+def test_builder_source_skips_run_status_when_ephemeral():
+    """C0 always writes data/run_status.json; redirected roots must skip it."""
+    src = _builder_src()
+    assert "ephemeral" in src
+    assert "skipping run_status write" in src
+    main = src[src.index("def main") :]
+    assert "ephemeral = bool(args.data_root) or bool(args.site_root)" in main
+
+
+def test_builder_as_of_two_runs_are_byte_identical(tmp_path):
+    """Two --as-of nightly runs against the same roots must emit identical HTML."""
+    html_blobs = []
+    for i in range(2):
+        site = tmp_path / f"site{i}"
+        data = tmp_path / f"data{i}"
+        site.mkdir()
+        data.mkdir()
+        res = subprocess.run(
+            [
+                sys.executable,
+                str(_BUILDER),
+                "--mode",
+                "nightly",
+                "--as-of",
+                _AS_OF_LOCK,
+                "--site-root",
+                str(site),
+                "--data-root",
+                str(data),
+            ],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=180,
+            env={**os.environ, "COLLECT_LANE": ""},
+        )
+        assert res.returncode == 0, res.stderr or res.stdout
+        html = site / "intraday_flow.html"
+        assert html.is_file(), res.stdout
+        blob = html.read_bytes()
+        assert b"18 Sep 10:30pm UTC" in blob
+        html_blobs.append(blob)
+    assert html_blobs[0] == html_blobs[1]
+
+
+def test_builder_ephemeral_skips_run_status_when_roots_overridden(tmp_path):
+    """--site-root or --data-root must not touch the repo data/run_status.json."""
+    before = _RUN_STATUS.read_bytes() if _RUN_STATUS.exists() else None
+    try:
+        site = tmp_path / "site"
+        data = tmp_path / "data"
+        site.mkdir()
+        data.mkdir()
+        res = subprocess.run(
+            [
+                sys.executable,
+                str(_BUILDER),
+                "--mode",
+                "nightly",
+                "--site-root",
+                str(site),
+                "--data-root",
+                str(data),
+            ],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=180,
+            env={**os.environ, "COLLECT_LANE": ""},
+        )
+        assert res.returncode == 0, res.stderr or res.stdout
+        after = _RUN_STATUS.read_bytes() if _RUN_STATUS.exists() else None
+        assert after == before, (
+            "redirected --site-root/--data-root must not write repo data/run_status.json"
+        )
+    finally:
+        if before is None:
+            if _RUN_STATUS.exists():
+                _RUN_STATUS.unlink()
+        else:
+            _RUN_STATUS.write_bytes(before)
