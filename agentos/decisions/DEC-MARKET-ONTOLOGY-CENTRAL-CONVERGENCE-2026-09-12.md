@@ -93,14 +93,14 @@ A full current 130-row production-acceptance recensus, automated synchronization
 The organization decision above still governs. The operational frontier has materially advanced and is now source-pinned as follows:
 
 - The existing Linear document **MarketOntology - Program Control** was updated and read back on 2026-09-19; it remains the selected human entry point and still creates no lifecycle or second ledger.
-- Macro **#7335** is the sole F00C integration carrier for the previously colliding CSV writers #7011, #7014, #7340, #7343, #7348, #7349 and #7353. Exact reviewed semantic head: `7746af769e43e7cd049cd65727502e56f266ac01`.
+- Macro **#7335** is merged and canonical at `main@af617506e59c258c5786bab926a34b35b9ab2deb`. Post-merge readback confirms its reviewed semantic head `7746af769e43e7cd049cd65727502e56f266ac01` and the 130-row convergence. The seven absorbed sibling CSV carriers #7011, #7014, #7340, #7343, #7348, #7349 and #7353 are closed.
 - The candidate recensus is **130 rows = 21 PROVEN_LIVE, 23 BUILT_NOT_PROVEN, 37 PARTIAL, 7 SPEC_ONLY, 42 NOT_BUILT**. This is a state census, not a completion percentage.
-- The #7335 fold changes exactly **80** intended rows and proves the other **50** byte-equivalent to current protected F00C baseline content. Absorbed sibling CSV carriers must not merge independently before #7335 canonical readback.
+- The #7335 fold changes exactly **80** intended rows and proves the other **50** byte-equivalent to the protected F00C baseline content. That fold is now canonical. Post-closure reconciliation found one newer semantic correction only: MO-PAID-039, isolated on **#7390** at `c1e9ca94bbd287c4a9380590faa316932424f37b`; its capability state remains BUILT_NOT_PROVEN.
 - Macro **#7351** at `a1c07e93bd6b713b7483b06ba12b4d77a71f54b7` is the bounded UK-policy activation carrier. Its semantic review is PASS, but MO-PAID-023 remains BUILT_NOT_PROVEN until merge plus a canonical sentinel cycle and non-`gate_off` production readback.
 - Current Terminal truth used for proof-gated F08/F11/F12 row repair was read from protected Terminal master `dd7c6dec712a5b7f40d371e3b83827c694dd8f90`. Shipped routes/UI are recorded without promoting rows that still owe signed-in production proof.
 - Protected Sol procedure for this amendment was loaded from `mastermindx-market-intelligence/Mastermind@733389933e605e508517732fb6c69b6c18b7fef6` (Skillpack 1.0.1 / bootstrap major 1).
 
-This amendment does **not** strengthen the parent program to PROVEN_LIVE. #7335 is reviewed but still release-gated by binding exact-head CI; #7351 is still CI/release-gated and then production-proof-gated. Existing signed-in Terminal journeys, current Executive linkage and automatic Agent OS → Linear refresh remain separate unresolved proof obligations.
+This amendment does **not** strengthen the parent program to PROVEN_LIVE. #7335 is source-canonical, but its exact-head CI workflow still lacked a terminal verdict at the latest read and remains an evidence gap. #7390 is semantic-PASS and CI-gated; #7351 is still CI/release-gated and then production-proof-gated. Existing signed-in Terminal journeys, current Executive linkage and automatic Agent OS → Linear refresh remain separate unresolved proof obligations.
 
 The September 12 prohibition on replaying the blocked MAS-141 mutation remains unchanged.
 
