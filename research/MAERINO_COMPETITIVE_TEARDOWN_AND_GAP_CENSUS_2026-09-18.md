@@ -1,0 +1,428 @@
+# Maerino Competitive Teardown and Mastermind Gap Census — 2026-09-18
+
+## Purpose
+
+This is a bounded competitive-intelligence record, not a new program, scheduler, store,
+or authority. It preserves what is actually demonstrated by Maerino, contrasts that
+with current Mastermind production/source truth, and routes only the residual capability
+gaps to existing canonical owners.
+
+Operation: `maerino-competitive-gap-census-20260918-sol-001`.
+
+Mastermind source pin for this census:
+- Macro main: `1c4e91ca1d193e60c777377b22dabdc6fbb4c8a1`
+- Protected Sol Skillpack: `55473bb43c3ae1908f53ddd4ccfe724643dd6c69`
+- Skillpack schema/version: `mastermind.sol_skillpack.v1 / 1.0.1`
+
+## Executive finding
+
+Maerino is a useful benchmark for two narrow jobs:
+
+1. fast, company-specific post-print earnings flashes; and
+2. a prototype agentic forensic loop that decides what to investigate next and then
+   executes those follow-up filing comparisons.
+
+It is not evidence that Mastermind lacks the underlying research, provenance, macro,
+SEC, transcript, or correction substrate. In several of those areas Mastermind is
+already materially stronger. The residual is mostly **breadth + composition**:
+admit more issuers into the canonical earnings workspace, converge richer KPI/guidance
+truth through FIF, and connect event evidence to the existing Research Factory without
+creating a second research engine.
+
+## External Maerino evidence
+
+### Public product surface
+
+Observed public `maerino.com` is a launch/waitlist shell. The shipped React bundle
+contains the brand animation, market-like canvas, email form, and `POST /api/waitlist`.
+No public research dashboard, screener, company workspace, portfolio engine, signal
+engine, or execution surface was present in the inspected bundle.
+
+Domain RDAP observed:
+- registration: 2025-12-07
+- registrar: Cloudflare
+- Cloudflare nameservers
+- current web hosting resolves to Vercel infrastructure
+
+### Public GitHub lineage
+
+Public GitHub owner `miketravis` has:
+- `maerino-policies` — explicitly names Maerino and describes planned authenticated
+  app/account behavior and Google Cloud storage;
+- `forensicCompany` — Gemini-based forensic filing + earnings-call pipeline;
+- `paestelAnalyst` and `paestelanalyst-frontend` — earlier FastAPI/Cloud SQL and
+  React/Vercel application experiments.
+
+This is strong ancestry evidence, not proof that any public repository is current
+Maerino production source.
+
+### Maerino social/event output
+
+An older MaerinoResearch X status resolves through X oEmbed to the current
+`@MaerinoData` account, supporting a single evolving product identity.
+
+Observed equity flash example:
+- ADUS Q1 2026: revenue growth, net income, adjusted EBITDA, operating cash flow,
+  acquisitions/geographic expansion, and service mix.
+- Direct status id observed through X oEmbed: `2051415342879023319`.
+
+Observed macro output includes:
+- claims: current/prior/revised values;
+- payrolls: headline jobs, precise unemployment, revision aggregate, prime-age EPOP,
+  LFPR and wage growth.
+
+The macro output is useful but exposes a semantics risk. The 3.76% wage-growth value
+is consistent with a not-seasonally-adjusted AHE series while other fields are
+seasonally adjusted. The displayed two-month NFP revision of +66K did not reconcile
+to the BLS June +11K plus July +44K = +55K revision accounting under the inspected
+release. Treat this as a likely vintage/definition/calculation defect unless Maerino
+publishes a definition that reconciles it.
+
+## Public prototype architecture evidence
+
+`miketravis/forensicCompany` demonstrates the following prototype loop:
+
+```text
+SEC filings + earnings-call audio
+        |
+        v
+longitudinal filing comparison
+        |
+        v
+management-behavior/audio analysis
+        |
+        v
+model proposes next research questions
+        |
+        v
+program selects company/competitor filings
+        |
+        v
+parallel follow-up investigations
+        |
+        v
+consolidated forensic report
+```
+
+The prototype used Gemini 2.5 Pro in its public code. That model/vendor choice must not
+be projected onto current Maerino production.
+
+The important product idea is not the model. It is the feedback loop:
+**finding -> unresolved question -> evidence request -> deeper investigation -> synthesis**.
+
+## Mastermind current capability census
+
+### 1. Macro release intelligence
+
+**Classification: PROVEN_LIVE core; current fast-publication edge degraded.**
+
+Mastermind already has deterministic first-party release parsers, revision/vintage
+handling, point-in-time clocks, integrity/quirk metadata, forecast contracts and
+preregistered evaluation. This is stronger than the public Maerino macro semantics.
+
+Real-path check on 2026-09-18:
+- `/live/release_publications.json` is live and fresh;
+- Sep 16 FOMC was `published_unparsed`;
+- Sep 17 claims was `verification_delayed`.
+
+Existing owner/carrier: Macro PR #7241. Its current head
+`2935e42053d161eee00f156dd2a28ce302641094` contains the same-carrier recovery
+repair and CI wiring. Binding CI remained queued at observation time. Preserve as
+`BUILT_NOT_PROVEN`; do not duplicate, bypass, or blind-retry.
+
+### 2. Public earnings transcript evidence
+
+**Classification: PROVEN_LIVE.**
+
+Real-path production verification:
+- public Earnings Wire reported **5,581** admissible call records;
+- current weekly bridge Sep 7-13 reported **50 verified call records / 600 exact facts**;
+- individual records expose exact quotation, speaker, categories and receipt-bound
+  excerpts;
+- the weekly bridge is deterministic and advertises zero model calls.
+
+This means Maerino does **not** have a demonstrated breadth advantage in transcript
+evidence.
+
+### 3. Canonical event workspace
+
+**Classification: PROVEN_LIVE for a curated issuer set; PARTIAL as a general issuer plane.**
+
+Current `production_registry()` is exactly:
+- AAPL
+- DHI
+- PHM
+- KBH
+- TOL
+
+Production real-path reads returned current `event_workspace_public_glance.v1` for
+all five and 404 for KR despite KR existing in the broad Earnings Wire.
+
+AAPL current glance showed:
+- revenue `$109.4B · +16%`, exact receipt;
+- Q4 revenue-growth guidance 9-11%, exact receipt;
+- three exact watch claims;
+- 7 structured analyst Q&A exchanges;
+- consensus unlicensed;
+- market reaction not joined.
+
+DHI/PHM/KBH/TOL are live event workspaces, but their current public glance is sparse.
+The internal workspace is richer than the teaser.
+
+### 4. Deterministic release fact extraction
+
+**Classification: BUILT and production-used on the curated issuer set.**
+
+`engine/earnings_release/figures.py` is generic, model-free, receipt-bound extraction
+with a declared concept roster including:
+- revenue
+- gross profit / gross margin
+- operating income
+- net income
+- basic/diluted EPS
+- operating cash flow
+- capex
+- revenue guidance range
+
+The extraction law refuses values without declared basis, units, period and source.
+
+`engine/company_intelligence/issuer_profiles.py` already provides the correct
+issuer-specific seam. It currently contains:
+- AAPL profile;
+- DHI profile;
+- PHM profile;
+- KBH profile;
+- TOL profile.
+
+The four homebuilder profiles extract sector-specific net-order/cancellation facts
+with byte-replayed receipts or typed absence. This is already the architectural answer
+to Maerino-style sector KPI selection; it is not yet broad enough.
+
+### 5. Rich KPI/non-GAAP/guidance convergence
+
+**Classification: NOT_BUILT as the canonical broad convergence layer.**
+
+Canonical owner: `WS:FINANCIAL-INTELLIGENCE-FABRIC`, wave **FIF-7**:
+"Earnings, non-GAAP, KPI, and guidance convergence."
+
+FIF-7 is `todo` and depends on FIF-3. FIF-3 remains `in_progress`; its accepted
+work is golden/fixture/query substrate and production issuer service remains
+not built in the current record.
+
+Do not fork FIF-7 inside Earnings Intelligence merely to imitate Maerino.
+
+### 6. Structured Q&A generalization
+
+**Classification: PROVEN_LIVE on AAPL; PARTIAL / not accepted cross-issuer.**
+
+Existing owner: `WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER`.
+
+AAPL E3-B is do-not-redo:
+- 7 accepted Q&A exchanges;
+- 26 management turns;
+- 68 replay spans;
+- live Terminal consumer.
+
+E3-C cross-issuer format hardening remains incomplete. The prior R2 implementation
+recovered structure on the development corpus but hit a second source-truth falsifier
+around management-role identity. Later R3 records attempts closed unmerged. Do not
+promote their conclusions as current main law.
+
+### 7. Fundamental / filing forensics
+
+**Classification: PROVEN_LIVE current-quarter source plane; historical/bitemporal
+analyst plane PARTIAL/BLOCKED.**
+
+Mastermind already has broad SEC current-quarter ingestion and Filing Forensics product
+surfaces. The separate attested historical parity lane is not complete.
+
+This exceeds Maerino's public prototype on provenance and current source governance,
+but does not yet make the Maerino agentic follow-up loop automatic.
+
+### 8. Research Factory
+
+**Classification: substantial implementation exists; direct earnings-event intake
+bridge is NOT_BUILT.**
+
+Current main contains the existing `engine/research_factory/` owner with ledgers,
+state, source adapters, challenger/review machinery, monitoring and probes.
+
+Search of current main found no direct:
+- `event_workspace.v1 -> Research Factory` join;
+- `qa_exchange.v1 -> Research Factory` join.
+
+Therefore the Maerino-relevant residual is not "build an autonomous research engine."
+It is:
+
+> take a receipt-bound company-event anomaly/question, submit a bounded candidate to
+> the existing Research Factory / Fundamental Forensics sources, execute under current
+> research governance, and return receipted findings to the event/company context.
+
+No second hypothesis store, queue, grader or scheduler is permitted.
+
+### 9. Cross-company economic read-through
+
+**Classification: NOT_BUILT at issuer-mechanism hypothesis grain.**
+
+Existing owner: `WS:ALPHA-INTELLIGENCE-INTEGRATION` K3-D.
+
+Current source explicitly records `earnings_readthrough_hypothesis/v1` as the lawful
+join and not built. K3-D must consume existing relationship/theme/market graph owners,
+use exact identities, and abstain where a relationship path is unavailable.
+
+This is separate from same-company forensic follow-up. Do not assign both jobs to one
+new Maerino-parity component.
+
+## Disagreement / boundary ledger
+
+| Claim | Evidence | Ruling |
+|---|---|---|
+| "Mastermind only does AAPL earnings" | AAPL Q&A is the flagship, but production registry also includes four homebuilders and public Wire has 5,581 calls | False / too broad |
+| "Maerino is broader on transcripts" | Mastermind production Wire breadth and weekly receipts | Not demonstrated |
+| "Mastermind lacks sector-specific KPIs" | `IssuerProfile` + four homebuilder extractors | False architecturally; breadth remains limited |
+| "Mastermind already has broad KPI convergence" | FIF-7 is todo | False |
+| "Research Factory solves Maerino follow-up already" | Factory exists but no event-workspace intake bridge found | Partial; missing composition |
+| "Current macro publication is healthy" | latest FOMC/claims degraded on public feed | False at current edge; #7241 owns repair |
+| "Economic read-through is ready" | K3-D current state says not built | False |
+
+## Residual capability docket — existing owners only
+
+### Gap A — broad canonical issuer admission
+
+Owner: `WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER` / Earnings Intelligence.
+
+Job:
+- generalize issuer admission and structured Q&A without source-specific fabrication;
+- preserve the five-issuer production registry and AAPL 7/26/68 oracle;
+- admit a second issuer only when non-empty source-supported structure reaches a real
+  consumer.
+
+This is the immediate earnings breadth dependency.
+
+### Gap B — broad post-print KPI/guidance convergence
+
+Owner: FIF-7, after FIF-3 dependency is lawfully ready.
+
+Job:
+- converge GAAP, non-GAAP, issuer/sector KPIs and guidance onto one source-backed fact
+  authority;
+- reuse `earnings_release` receipts and `IssuerProfile` seam;
+- do not create a second metric registry or guessed beat/miss plane.
+
+Maerino is useful pressure to make this user-visible and fast, not justification to
+skip FIF dependencies.
+
+### Gap C — fast event synthesis / presentation
+
+Owner: Earnings Intelligence consumer/product layer, consuming A/B truth.
+
+Current Terminal can render all event facts in Results, but the top-level deterministic
+presentation is deliberately narrow. A future fast flash should be a **selection and
+presentation** over receipted canonical facts, not an LLM-authored truth layer.
+
+Target output:
+- headline financials;
+- material issuer/sector KPIs;
+- guidance deltas where legally available;
+- capital-allocation / strategic-event facts when sourced;
+- evidence link for every item;
+- correction rebuild behavior;
+- typed absence instead of guessed completeness.
+
+### Gap D — event-triggered research escalation
+
+Owners:
+- Earnings Intelligence: event/question source object;
+- Research Factory: research lifecycle;
+- Fundamental Forensics/FIF: filing and financial-fact evidence;
+- no new shared store.
+
+Target vertical:
+```text
+receipt-bound event fact / Q&A claim
+ -> deterministic anomaly or open-question trigger
+ -> existing Research Factory candidate
+ -> bounded source request
+ -> company/peer filing investigation
+ -> reviewed receipted finding
+ -> event/company context projection
+```
+
+First proof should be one real event with one genuinely useful follow-up question and
+one returned finding; infrastructure-only completion is insufficient.
+
+### Gap E — economic propagation / read-through
+
+Owner: Alpha Intelligence K3-D.
+
+Do not merge with Gap D. K3-D owns cross-company mechanism/read-through hypothesis
+semantics and the honesty-preserving graph join.
+
+### Gap F — current macro fast-publication recovery
+
+Owner: existing PR #7241 carrier.
+
+Hold until binding CI and same-carrier release gates complete; then require installed
+and production/natural-heartbeat proof.
+
+## Priority order
+
+No new Maerino program should be created.
+
+1. Preserve and finish the already-active **Earnings E3-C** generalization rather than
+   reopening AAPL.
+2. Keep **FIF-3 -> FIF-7** dependency honest; when FIF-7 is admissible, use Maerino as
+   product pressure for fast broad KPI/guidance coverage.
+3. Design the smallest **event -> existing Research Factory** intake/return adapter,
+   but do not implement it by creating a second queue/store or by racing active owner
+   paths.
+4. Let **K3-D** own later cross-company read-through.
+5. Let **#7241** finish the current macro recovery on its existing carrier.
+
+## 10/10 end-state
+
+The leapfrog product is not "Maerino with more fields." It is:
+
+```text
+event observed
+ -> exact source/vintage/correction identity
+ -> deterministic facts + issuer-specific KPIs
+ -> structured management Q&A
+ -> fast material event digest
+ -> unresolved questions / anomalies
+ -> governed autonomous follow-up research
+ -> peer and historical evidence
+ -> economic read-through hypotheses where relationship evidence exists
+ -> market-incorporation context
+ -> Neural Web / Terminal / portfolio context
+```
+
+Every visible item remains traceable to a receipt or an explicit typed absence.
+Research findings remain context until independently validated for any stronger
+authority. No summary, sentiment score or competitor-inspired shortcut may directly
+rank, size, gate or originate trades.
+
+## Sources / recovery anchors
+
+External:
+- https://www.maerino.com/
+- https://github.com/miketravis/maerino-policies
+- https://github.com/miketravis/forensicCompany
+- https://github.com/miketravis/paestelAnalyst
+- https://github.com/miketravis/paestelanalyst-frontend
+- X status 2051415342879023319 (older MaerinoResearch identity resolves to MaerinoData)
+
+Mastermind:
+- `agentos/workstreams/WS-EARNINGS-EVENT-INTELLIGENCE-COMPILER.md`
+- `agentos/workstreams/WS-EARNINGS-INTELLIGENCE-OS.md`
+- `agentos/workstreams/WS-FINANCIAL-INTELLIGENCE-FABRIC.md`
+- `agentos/workstreams/WS-FUNDAMENTAL-FORENSICS.md`
+- `agentos/workstreams/WS-CALCBENCH-FILING-FORENSICS-PARITY.md`
+- `agentos/workstreams/WS-ALPHA-INTELLIGENCE-INTEGRATION.md`
+- `engine/earnings_release/figures.py`
+- `engine/company_intelligence/issuer_profiles.py`
+- `engine/company_intelligence/event_workspace_build.py`
+- `research/earnings_intelligence/E0_E1_E2_CONTRACT_FREEZE.md`
+- `research/economic_propagation/D0_THREE_GRAPH_SEPARATION_MAP.md`
+- public production: `/stocks/earnings/`, `/api/event-workspace/{ticker}`,
+  `/live/release_publications.json`
