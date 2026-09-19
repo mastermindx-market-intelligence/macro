@@ -71,10 +71,13 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
     if attrs is None:
         violations.append("panel_missing")
         rendered_state = rendered_source = rendered_currency = None
+        rendered_asof = rendered_premium_raw = None
     else:
         rendered_state = attrs.get("data-cgp-state")
         rendered_source = attrs.get("data-cgp-display-source")
         rendered_currency = attrs.get("data-cgp-currency")
+        rendered_asof = attrs.get("data-cgp-source-asof")
+        rendered_premium_raw = attrs.get("data-cgp-premium")
 
     expected_state = str(vm.get("state") or ("unavailable" if not available else ""))
     if rendered_state is not None and rendered_state != expected_state:
@@ -84,9 +87,14 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
 
     expected_source = None
     expected_currency = None
+    expected_asof = None
+    expected_premium = None
+    meta = _method_meta(vm)
     if available:
         expected_source = (vm.get("chart") or {}).get("display_source") or "canonical"
         expected_currency = vm.get("price_currency") or "USD"
+        expected_asof = meta.get("asof")
+        expected_premium = vm.get("premium_pct")
         if rendered_source is not None and rendered_source != expected_source:
             violations.append(
                 f"display_source: expected {expected_source}, rendered {rendered_source}"
@@ -95,8 +103,25 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
             violations.append(
                 f"currency: expected {expected_currency}, rendered {rendered_currency}"
             )
+        if rendered_asof != (expected_asof or ""):
+            violations.append(
+                f"source_asof: expected {expected_asof or ''}, rendered {rendered_asof or ''}"
+            )
+        try:
+            rendered_premium = float(rendered_premium_raw) if rendered_premium_raw not in (None, "") else None
+        except (TypeError, ValueError):
+            rendered_premium = None
+        if (
+            expected_premium is None
+            or rendered_premium is None
+            or abs(float(expected_premium) - rendered_premium) > 5e-7
+        ):
+            violations.append(
+                f"premium_pct: expected {expected_premium}, rendered {rendered_premium}"
+            )
+    else:
+        rendered_premium = None
 
-    meta = _method_meta(vm)
     source_fresh = bool(meta.get("fresh")) if available else False
     if violations:
         status = "render_mismatch"
@@ -121,6 +146,8 @@ def evaluate(vm: dict, html: str, *, checked_at: str | None = None) -> dict:
         "expected_currency": expected_currency,
         "rendered_currency": rendered_currency,
         "rendered_state": rendered_state,
+        "rendered_source_asof": rendered_asof,
+        "rendered_premium_pct": rendered_premium,
         "source_fresh": source_fresh,
         "source_asof": meta.get("asof"),
         "sources": list(meta.get("sources") or []),

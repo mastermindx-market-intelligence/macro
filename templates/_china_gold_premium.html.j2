@@ -4,10 +4,21 @@
 {% set display_source = display_source or 'canonical' %}
 {% set sge_display = g.get('sge_price_oz') if g.get('sge_price_oz') is not none else g.get('sge_usd_oz') %}
 {% set reference_display = g.get('reference_price_oz') if g.get('reference_price_oz') is not none else g.get('london_usd_oz') %}
+{% if g.get('current_method') == 'close_proxy' %}
+  {% set proof_asof = g.get('close_proxy', {}).get('asof') %}
+{% elif g.get('current_method') == 'intraday' %}
+  {% set proof_asof = g.get('intraday', {}).get('asof') %}
+{% elif g.get('current_method') == 'canonical' %}
+  {% set proof_asof = g.get('canonical', {}).get('asof') %}
+{% else %}
+  {% set proof_asof = none %}
+{% endif %}
 <section class="panel cgp" id="gold-china-premium"
          data-cgp-state="{{ g.state|default('unavailable') }}"
          data-cgp-display-source="{{ display_source }}"
          data-cgp-currency="{{ price_currency }}"
+         data-cgp-source-asof="{{ proof_asof or '' }}"
+         data-cgp-premium="{{ '%.6f'|format(g.get('premium_pct')) if g.get('premium_pct') is not none else '' }}"
          aria-labelledby="cgp-title">
   <div class="cgp-head">
     <div>

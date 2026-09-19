@@ -340,7 +340,14 @@ def test_gold_premium_quality_receipt_marks_fresh_close_proxy_consistent(tmp_pat
             "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
         },
     }
-    html = '<section id="gold-china-premium" data-cgp-state="premium" data-cgp-display-source="proxy" data-cgp-currency="CNY"></section>'
+    html = (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" '
+        'data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" '
+        'data-cgp-source-asof="2026-09-18T07:30:00+00:00" '
+        'data-cgp-premium="0.167400"></section>'
+    )
 
     doc = audit.write_receipt(
         vm,
@@ -466,7 +473,9 @@ def test_gold_premium_quality_audit_reads_real_store_vm_and_page(tmp_path, monke
         '<section id="gold-china-premium" '
         f'data-cgp-state="{vm["state"]}" '
         f'data-cgp-display-source="{vm["chart"]["display_source"]}" '
-        f'data-cgp-currency="{vm["price_currency"]}"></section>'
+        f'data-cgp-currency="{vm["price_currency"]}" '
+        f'data-cgp-source-asof="{vm["close_proxy"]["asof"]}" '
+        f'data-cgp-premium="{vm["premium_pct"]:.6f}"></section>'
     )
 
     # Freeze the audit clock only through the engine's source freshness inputs:
@@ -486,3 +495,48 @@ def test_gold_premium_quality_audit_reads_real_store_vm_and_page(tmp_path, monke
     assert persisted["headline_method"] == "close_proxy"
     assert persisted["render_consistent"] is True
     assert persisted["source_asof"] == "2026-09-18T07:30:00+00:00"
+
+
+def test_gold_premium_quality_receipt_detects_stale_rendered_asof_or_value(tmp_path):
+    from scripts import audit_china_gold_premium as audit
+
+    vm = {
+        "available": True,
+        "status": "available",
+        "state": "premium",
+        "current_method": "close_proxy",
+        "premium_pct": 0.1674,
+        "price_currency": "CNY",
+        "chart": {"display_source": "proxy"},
+        "canonical": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "intraday": {"available": False, "fresh": False, "asof": None, "sources": []},
+        "close_proxy": {
+            "available": True,
+            "fresh": True,
+            "asof": "2026-09-18T07:30:00+00:00",
+            "sources": ["Shanghai Gold Exchange Au99.99", "Global XAU/CNY spot"],
+        },
+    }
+    html = (
+        '<section id="gold-china-premium" '
+        'data-cgp-state="premium" '
+        'data-cgp-display-source="proxy" '
+        'data-cgp-currency="CNY" '
+        'data-cgp-source-asof="2026-09-17T07:30:00+00:00" '
+        'data-cgp-premium="0.111100"></section>'
+    )
+
+    doc = audit.write_receipt(
+        vm,
+        html,
+        out_path=tmp_path / "china_gold_premium.json",
+        checked_at="2026-09-18T23:00:00+00:00",
+    )
+
+    assert doc["status"] == "render_mismatch"
+    assert doc["render_consistent"] is False
+    assert (
+        "source_asof: expected 2026-09-18T07:30:00+00:00, "
+        "rendered 2026-09-17T07:30:00+00:00"
+    ) in doc["violations"]
+    assert "premium_pct: expected 0.1674, rendered 0.1111" in doc["violations"]

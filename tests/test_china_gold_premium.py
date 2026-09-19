@@ -572,3 +572,12 @@ def test_proxy_partial_renders_cny_close_basis_as_primary_display():
     assert "Global XAU/CNY spot" in html
     assert "Tushare" not in html
     assert "Massive" not in html
+
+
+def test_gold_premium_partial_embeds_machine_proof_attrs_for_current_method():
+    vm = _available_ui_vm()
+
+    html = _render_premium_partial(vm)
+
+    assert 'data-cgp-source-asof="2026-09-18T02:10:00+00:00"' in html
+    assert 'data-cgp-premium="0.167400"' in html
