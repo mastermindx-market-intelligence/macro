@@ -27,13 +27,15 @@ The canonical live-flow event has already crossed an existing root-class premium
 
 OA candidate formation therefore must not add an outcome-tuned “bigger is better” score on top.
 
-The minimal additional semantic distinction is **persistence**. The current source engine already defines an event-level `repeated` state when the same exact contract becomes notable again. Campaign v2 preserves that state and publishes `descriptive.repeated_count`.
+The minimal additional semantic distinction is **campaign persistence**. V1 binds that persistence to the campaign's own immutable ordered membership rather than to the upstream event-level `repeated` boolean.
 
-V1 uses that existing state instead of inventing a new recurrence window or numeric score:
+Campaign v2 already freezes exact-contract/session grouping, complete ordered members, strict-prefix revision behavior and member/source receipts. Those bytes are sufficient to replay whether the campaign contains at least two members. By contrast, the episode-level `repeated` boolean does not receipt-bind the detector/repeat-policy version or threshold that produced it, so using `descriptive.repeated_count` as a formation predicate would allow future upstream rule drift without changing this candidate-policy identity.
 
-> A campaign becomes eligible for a research candidate at the first prospective campaign revision whose `descriptive.repeated_count >= 1`, provided the final member can be joined to real measured trade/NBBO microstructure with at least one source-valid print and at least one valid measured NBBO print.
+V1 therefore uses campaign-native membership and does not invent a new recurrence window or score:
 
-This is a formation rule, not evidence that recurrence predicts return.
+> A campaign becomes eligible for a research candidate at the first prospective campaign revision whose `descriptive.member_count >= 2`, provided the final member can be joined to real measured trade/NBBO microstructure with at least one source-valid print and at least one valid measured NBBO print.
+
+The source `repeated` field may remain descriptive context. It does not independently originate a v1 candidate. This is a formation rule, not evidence that recurrence predicts return.
 
 ## 3. Frozen formation rule
 
@@ -42,7 +44,7 @@ A revision may form a `research_candidate` only when all of the following are tr
 1. The source row strictly validates as canonical `options.signal_campaign/v2`.
 2. The campaign is in its prospective source phase and lies after both the policy and later activation fences in §4.
 3. Its source-prefix receipt and exact final-member identity are valid.
-4. `descriptive.repeated_count >= 1`.
+4. `descriptive.member_count >= 2`, computed from the canonical campaign revision itself; source `repeated` is descriptive-only.
 5. The final member's exact `source_event_id` joins to `options.trade_nbbo_microstructure/v1` measured at that event's decision-time source path.
 6. That measurement has `source_print_count >= 1`, `nbbo_valid_print_count >= 1`, and finite `nbbo_premium_coverage > 0`.
 7. Every formation evidence leg was available no later than the candidate decision cutoff.
@@ -133,7 +135,7 @@ The final product must preserve source event, campaign formation, candidate obse
 
 ## 9. Candidate, abstention, and degraded states
 
-A valid prospective campaign that has not reached persistence is `abstain / NO_REPEAT_PERSISTENCE`.
+A valid prospective campaign that has not reached persistence is `abstain / INSUFFICIENT_CAMPAIGN_MEMBERS`.
 
 A persistent campaign whose final member lacks measured microstructure is `degraded` or `abstain` with `FINAL_MEMBER_MICROSTRUCTURE_MISSING`.
 
@@ -201,7 +203,7 @@ The implementation must reuse the existing campaign/event/outcome/publication ow
 
 Before activation, real implementation tests must prove at least:
 
-- singleton/no-repeat campaign -> abstain;
+- campaign with fewer than two canonical members -> abstain;
 - first persistent measured campaign -> exactly one stable candidate;
 - later same-campaign revision -> same candidate identity, versioned update;
 - source reordering -> byte-identical decision;
