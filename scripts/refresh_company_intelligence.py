@@ -48,10 +48,15 @@ DEFAULT_TX_INDEX_URL = "https://app.mastermind-x.com/data/tx/index.json"
 # producer outage, not ordinary scheduling jitter. Keep this deliberately much
 # looser than the worker's expected same-evening cadence to avoid weekend noise.
 DEFAULT_SCORE_MAX_LAG_DAYS = 3
+SCORE_FRESHNESS_STALE = 3
 
 
 class RefreshError(RuntimeError):
     """A source is unavailable or invalid; retaining the last root marker is safer."""
+
+
+class ScoreFreshnessError(RefreshError):
+    """The score plane is structurally valid but too stale to advance v1."""
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
@@ -248,12 +253,12 @@ def assert_earnings_score_freshness(
     }
     print("company intelligence: earnings score freshness " + json.dumps(report, sort_keys=True))
     if score_latest is None:
-        raise RefreshError(
+        raise ScoreFreshnessError(
             "earnings score freshness stale: Terminal has causal calls but no "
             "healthy Terminal-linked transcript score is observable"
         )
     if lag_days is not None and lag_days > max_lag_days:
-        raise RefreshError(
+        raise ScoreFreshnessError(
             "earnings score freshness stale: newest healthy Terminal-linked score "
             f"{score_latest.isoformat()} lags newest causal Terminal call "
             f"{terminal_latest.isoformat()} by {lag_days} calendar days "
@@ -294,11 +299,18 @@ def refresh(
         ensure_earnings_inputs(source_dir)
         tx_index = scratch / "tx-index.json"
         tx_payload = fetch_transcript_index(tx_index_url, tx_index)
-        assert_earnings_score_freshness(
-            source_dir,
-            tx_payload,
-            as_of=run_as_of,
-        )
+        score_freshness_error: ScoreFreshnessError | None = None
+        try:
+            assert_earnings_score_freshness(
+                source_dir,
+                tx_payload,
+                as_of=run_as_of,
+            )
+        except ScoreFreshnessError as exc:
+            # Keep building the validated output tree so the workflow can still
+            # advance its path-independent event-workspace sibling before it
+            # reports the stale score lane. The v1 marker itself remains held.
+            score_freshness_error = exc
         earnings_dir = source_dir / "earnings_calls"
         build_rc = build_company_intelligence([
             "--scores", str(earnings_dir / "scores.parquet"),
@@ -320,6 +332,13 @@ def refresh(
             "company intelligence: validated "
             f"generation={health.get('generation_id')} companies={health['company_count']} events={health['event_count']}"
         )
+        if score_freshness_error is not None:
+            print(
+                "company intelligence: v1 root held for stale earnings score plane: "
+                + str(score_freshness_error),
+                file=sys.stderr,
+            )
+            return SCORE_FRESHNESS_STALE
         publish_rc = publish_generation(output_dir, dry_run=dry_run)
         if publish_rc == PUBLISH_CONFLICT:
             print("company intelligence: root-manifest promotion lost a safe compare-and-swap race")
