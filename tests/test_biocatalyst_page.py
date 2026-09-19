@@ -847,3 +847,11 @@ def test_biocatalyst_wmn_uses_frozen_research_lane_copy_not_internal_act_now_lab
     ):
         assert token in js
     assert "Act now — research" not in js
+
+
+def test_biocatalyst_wmn_exposes_every_frozen_research_horizon():
+    html = _render()
+    js = (TEMPLATES / "biocatalyst.js").read_text(encoding="utf-8")
+    for horizon in ("7", "30", "90", "180", "365"):
+        assert f'data-horizon="{horizon}"' in html
+        assert f"'{horizon}': true" in js

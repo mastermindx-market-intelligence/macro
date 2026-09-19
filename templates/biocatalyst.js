@@ -2702,7 +2702,7 @@
   var WMN_METHOD_ID = 'biocatalyst.research_triage.v1';
   var WMN_LANES = { ACT_NOW: true, RECONCILE: true, RESEARCH_NEXT: true, MONITOR: true };
   var WMN_VIEWS = { upcoming: true, reconcile: true, history: true };
-  var WMN_HORIZONS = { '30': true, '90': true, '180': true, '365': true };
+  var WMN_HORIZONS = { '7': true, '30': true, '90': true, '180': true, '365': true };
   var WMN_PAGE_LIMIT = 50;
   var state = { generation:'', rows:[], nextCursor:'', total:0, horizon:'90', view:'upcoming', lane:'', q:'', selectedKey:'', loading:false, listController:null, detailController:null, listToken:0, detailToken:0 };
   var root,queue,detail,statusNode,asOfNode,coverageNode,searchNode,viewNode,laneNode,refreshNode,loadMoreNode,horizonButtons;
