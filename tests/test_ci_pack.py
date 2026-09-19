@@ -995,13 +995,28 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
     """
     manifest = _yaml(MANIFEST)
     prophet_lab = manifest["jobs"]["prophet-lab"]
-    suite = "tests/test_company_intelligence_workspace_chain.py"
+    suites = {
+        "tests/test_company_intelligence_event_workspace.py",
+        "tests/test_company_intelligence_workspace_chain.py",
+        "tests/test_company_intelligence_workspace_v3.py",
+        "tests/test_refresh_event_workspaces.py",
+        "tests/test_publish_company_intelligence_r2.py",
+    }
+    owned_sources = {
+        "engine/company_intelligence/event_workspace.py",
+        "engine/neuralweb/company_intelligence_reader.py",
+        "scripts/publish_company_intelligence_r2.py",
+        "scripts/refresh_event_workspaces.py",
+    }
     assert prophet_lab["gate"] == "code"
-    assert suite in prophet_lab["paths"]
-    assert any(
-        suite in str(step.get("run") or "")
-        for step in prophet_lab["steps"]
-    )
+    for source_path in owned_sources:
+        assert source_path in prophet_lab["paths"]
+    for suite in suites:
+        assert suite in prophet_lab["paths"]
+        assert any(
+            suite in str(step.get("run") or "")
+            for step in prophet_lab["steps"]
+        )
     assert {"requests", "pyarrow"} <= _job_pip_packages(prophet_lab), (
         "prophet-lab's executing D5 suite imports requests and pyarrow in a clean "
         "Python 3.12 job; keep those dependencies on this owning job's install line"
@@ -1009,9 +1024,10 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
 
     jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
     code_jobs = [job for job in jobs if job.gate == "code"]
-    selected, reason = PACK.select_jobs(code_jobs, [suite])
-    assert "prophet-lab" in {job.job_id for job in selected}, reason
-    assert "unowned path" not in reason, reason
+    for suite in suites:
+        selected, reason = PACK.select_jobs(code_jobs, [suite])
+        assert "prophet-lab" in {job.job_id for job in selected}, reason
+        assert "unowned path" not in reason, reason
 
 
 def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:

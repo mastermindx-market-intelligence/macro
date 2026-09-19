@@ -33,7 +33,7 @@ from __future__ import annotations
 
 import argparse
 import calendar
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from hashlib import sha256
 from html import unescape as html_unescape
 import json
@@ -42,7 +42,7 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Mapping, Sequence
 from urllib.parse import urljoin
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -54,11 +54,16 @@ from engine.company_intelligence.event_workspace import (
     FLAGSHIP_EVENT_ID,
     LIVE_NARRATIVE_ALIAS,
     MANIFEST_SCHEMA_V2,
+    MANIFEST_SCHEMA_V3,
     apple_registry,
+    build_revision_index,
+    build_revision_index_from_legacy,
     flagship_fiscal_period,
-    preview_generation_identity,
+    preview_generation_identity_v3,
     production_registry,
-    write_workspace_generation,
+    validate_revision_index,
+    validate_workspace_manifest,
+    write_workspace_generation_v3,
 )
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.company_intelligence.events import FiscalPeriod, canonical_event_id, parse_canonical_event_id
@@ -107,6 +112,11 @@ FetchIndex = Callable[[str], object]
 FetchBody = Callable[[str, TranscriptRef], dict[str, Any]]
 PriorLoader = Callable[[], Mapping[str, Any] | None]
 PublishFn = Callable[..., int]
+CurrentRevisionIndexLoader = Callable[[Mapping[str, Any]], Mapping[str, Any] | None]
+LegacyRevisionLoader = Callable[
+    [Sequence[str], str],
+    Mapping[str, Sequence[Mapping[str, Any]]],
+]
 
 
 def _iso_z(raw: object) -> str:
@@ -117,6 +127,26 @@ def _iso_z(raw: object) -> str:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def load_current_revision_index(
+    manifest: Mapping[str, Any],
+) -> Mapping[str, Any] | None:
+    """Fetch the incumbent manifest-v3 index through the shared reader."""
+    if manifest.get("schema") != MANIFEST_SCHEMA_V3:
+        return None
+    return ci_reader.fetch_workspace_revision_index(manifest)
+
+
+def load_legacy_revisions(
+    event_ids: Sequence[str],
+    current_generation_id: str,
+) -> Mapping[str, Sequence[Mapping[str, Any]]]:
+    """Read every event from one verified v1/v2 history walk for first migration."""
+    del event_ids
+    return ci_reader.read_all_published_event_source_revisions(
+        start_generation_id=current_generation_id,
+    )
 
 
 def _http_get(url: str) -> tuple[int, bytes]:
@@ -1174,6 +1204,9 @@ def refresh(
     # never a bare Callable[[str], ...]). Injectable for tests; production
     # default is discover_new_homebuilder_revisions.
     homebuilder_discovery: Callable[..., list[tuple[str, dict[str, Any]]]] | None = None,
+    current_revision_index_loader: CurrentRevisionIndexLoader = load_current_revision_index,
+    legacy_revision_loader: LegacyRevisionLoader = load_legacy_revisions,
+    operation_time: datetime | None = None,
 ) -> int:
     """Acquire sources → build → write sibling nest → publish marker-last.
 
@@ -1208,6 +1241,12 @@ def refresh(
     later carry-forward read.
     """
     del work_dir  # reserved so the job shares the v1 scratch parent without writing it
+    operation_now = operation_time or datetime.now(timezone.utc)
+    if operation_now.tzinfo is None:
+        operation_now = operation_now.replace(tzinfo=timezone.utc)
+    else:
+        operation_now = operation_now.astimezone(timezone.utc)
+    operation_now = operation_now.replace(microsecond=0)
     filing = acquire_flagship_filing(http_get=http_get)
     transcript, transcript_sha256 = acquire_flagship_transcript(
         tx_index_url,
@@ -1241,7 +1280,7 @@ def refresh(
     source_clock = filing["acceptance_datetime"]
     # C2/C3: real wall-clock "now" for this build attempt; build_event_workspace
     # carries prior_observed_at forward instead whenever the source is unchanged.
-    now = datetime.now(timezone.utc)
+    now = operation_now
     payload = build_event_workspace(
         registry=apple_registry(),
         ticker="AAPL",
@@ -1354,6 +1393,18 @@ def refresh(
         raise RefreshError(f"failed to read the current event workspace marker: {exc}") from exc
     if current_marker_raw is not None:
         current_marker_bytes, current_marker = current_marker_raw
+        if not isinstance(current_marker_bytes, bytes):
+            raise RefreshError("current event-workspace marker raw bytes are invalid")
+        try:
+            marker_from_bytes = json.loads(current_marker_bytes)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RefreshError(
+                "current event-workspace marker raw bytes are not valid JSON"
+            ) from exc
+        if not isinstance(marker_from_bytes, Mapping) or dict(marker_from_bytes) != dict(current_marker):
+            raise RefreshError(
+                "current event-workspace marker mapping does not match its raw bytes"
+            )
     else:
         current_marker_bytes, current_marker = None, None
     original_current_generation_id = (
@@ -1366,6 +1417,102 @@ def refresh(
         sha256(current_marker_bytes).hexdigest()
         if current_marker_bytes is not None and original_current_generation_id else None
     )
+    current_index_manifest: Mapping[str, Any] | None = None
+    current_revision_index: Mapping[str, Any] | None = None
+    legacy_revision_seed: Mapping[str, Sequence[Mapping[str, Any]]] | None = None
+    if current_marker is not None:
+        marker_schema = current_marker.get("schema")
+        try:
+            validate_workspace_manifest(current_marker)
+        except Exception as exc:  # noqa: BLE001 - current source integrity is hard-fail
+            raise RefreshError(
+                f"current event-workspace marker failed validation: {exc}"
+            ) from exc
+        if marker_schema == MANIFEST_SCHEMA_V3:
+            try:
+                loaded_index = current_revision_index_loader(current_marker)
+                if loaded_index is None:
+                    raise RefreshError("current v3 marker has no authenticated revision index")
+                validate_revision_index(loaded_index, manifest=current_marker)
+            except Exception as exc:  # noqa: BLE001 - source integrity is hard-fail
+                if isinstance(exc, RefreshError):
+                    raise
+                raise RefreshError(
+                    f"failed to load the current event-workspace revision index: {exc}"
+                ) from exc
+            current_index_manifest = dict(current_marker)
+            current_revision_index = dict(loaded_index)
+        elif marker_schema in {"event_workspace_manifest.v1", MANIFEST_SCHEMA_V2}:
+            event_ids = tuple(
+                sorted(
+                    str(relative)[len("workspaces/"):-len(".json")]
+                    for relative in current_marker.get("files", {})
+                )
+            )
+            try:
+                legacy_revision_seed = legacy_revision_loader(
+                    event_ids,
+                    str(original_current_generation_id),
+                )
+            except Exception as exc:  # noqa: BLE001 - incomplete history must fail closed
+                raise RefreshError(
+                    f"failed to seed the v3 revision index from verified legacy history: {exc}"
+                ) from exc
+            missing = set(event_ids) - set(legacy_revision_seed)
+            if missing:
+                raise RefreshError(
+                    "legacy revision seed omitted current events: "
+                    + ", ".join(sorted(missing))
+                )
+        else:
+            raise RefreshError(f"unsupported current event-workspace marker schema: {marker_schema}")
+
+    mint_ordinal = 0
+
+    def next_mint_clock(previous_manifest: Mapping[str, Any] | None) -> str:
+        nonlocal mint_ordinal
+        candidate = operation_now + timedelta(seconds=mint_ordinal)
+        if previous_manifest is not None:
+            previous_text = _iso_z(previous_manifest.get("generated_at"))
+            previous_clock = datetime.fromisoformat(previous_text.replace("Z", "+00:00"))
+            if candidate <= previous_clock:
+                candidate = previous_clock + timedelta(seconds=1)
+        mint_ordinal += 1
+        return _iso_z(candidate)
+
+    def write_v3_snapshot(snapshot: Mapping[str, Mapping[str, Any]]) -> tuple[Path, str]:
+        nonlocal current_index_manifest, current_revision_index
+        mint_clock = next_mint_clock(current_index_manifest or current_marker)
+        if current_index_manifest is not None and current_revision_index is not None:
+            revision_index = build_revision_index(
+                snapshot,
+                previous_index=current_revision_index,
+                previous_manifest=current_index_manifest,
+            )
+        elif legacy_revision_seed is not None:
+            revision_index = build_revision_index_from_legacy(
+                snapshot,
+                legacy_revision_seed,
+                current_generation_id=str(original_current_generation_id),
+                migration_generated_at=mint_clock,
+            )
+        else:
+            revision_index = build_revision_index(snapshot)
+        generation_dir = write_workspace_generation_v3(
+            target,
+            snapshot,
+            revision_index=revision_index,
+            generated_at=mint_clock,
+            previous_generation_id=chain_previous_id,
+            previous_manifest_sha256=chain_previous_sha,
+        )
+        manifest_path = generation_dir / "manifest.json"
+        current_index_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        current_revision_index = json.loads(
+            (generation_dir / "revision_index.json").read_text(encoding="utf-8")
+        )
+        return generation_dir, mint_clock
+
     # MINOR-9/MAJOR-6 (Opus red-team, 2026-08-23): the LAST workspaces
     # snapshot actually published this cycle, if any — the closing write
     # below must semantic-no-op against THIS (the just-promoted generation),
@@ -1480,17 +1627,11 @@ def refresh(
     for ticker in HOMEBUILDER_TICKERS:
         for event_id, hb_payload in sequences.get(ticker, []):
             workspaces[event_id] = hb_payload
-            generation_dir = write_workspace_generation(
-                target,
-                dict(workspaces),
-                generated_at=source_clock,
-                previous_generation_id=chain_previous_id,
-                previous_manifest_sha256=chain_previous_sha,
-            )
+            generation_dir, mint_clock = write_v3_snapshot(dict(workspaces))
             print(
                 "event workspaces: validated "
                 f"events={sorted(workspaces)} generation={generation_dir.name} "
-                f"chained_revision={event_id}"
+                f"chained_revision={event_id} mint_clock={mint_clock}"
             )
             publish_rc = publish_generation(target, dry_run=dry_run)
             if publish_rc == PUBLISH_CONFLICT:
@@ -1516,39 +1657,36 @@ def refresh(
         )
         return 0
 
-    # Final combined write (IMCE A5C A4: preserve the semantic no-op). If NO
-    # discovery step advanced the chain this cycle (chain_previous_id is
-    # unchanged from the marker read above) AND the freshly-assembled
-    # workspaces content, hashed atop the CURRENT generation's OWN
-    # predecessor, reproduces that CURRENT generation_id exactly, this
-    # cycle's content is byte-identical to what is already published — reuse
-    # the SAME chain link (never advance) so the write/publish short-
-    # circuits before minting or PUTting anything new.
-    final_previous_id, final_previous_sha = chain_previous_id, chain_previous_sha
+    # Final combined write.  For an incumbent v3 generation, preview the
+    # freshly assembled semantic workspaces against the incumbent's OWN mint
+    # clock, predecessor and authenticated index.  A later invocation wall
+    # clock therefore cannot create a generation by itself.
     if (
         chain_previous_id == original_current_generation_id
         and current_marker is not None
-        and current_marker.get("schema") == MANIFEST_SCHEMA_V2
+        and current_marker.get("schema") == MANIFEST_SCHEMA_V3
+        and current_revision_index is not None
     ):
-        candidate_previous_id = current_marker.get("previous_generation_id")
-        candidate_previous_sha = current_marker.get("previous_manifest_sha256")
-        candidate_id = preview_generation_identity(
-            workspaces, source_clock, previous_generation_id=candidate_previous_id,
+        candidate_id = preview_generation_identity_v3(
+            workspaces,
+            current_revision_index,
+            str(current_marker["generated_at"]),
+            previous_generation_id=current_marker.get("previous_generation_id"),
         )
         if candidate_id == original_current_generation_id:
-            final_previous_id, final_previous_sha = candidate_previous_id, candidate_previous_sha
+            print(
+                "event workspaces: validated "
+                f"events={sorted(workspaces)} generation={original_current_generation_id} "
+                f"mint_clock={current_marker['generated_at']} "
+                "(write skipped: semantic no-op against incumbent v3)"
+            )
+            return 0
 
-    generation_dir = write_workspace_generation(
-        target,
-        workspaces,
-        generated_at=source_clock,
-        previous_generation_id=final_previous_id,
-        previous_manifest_sha256=final_previous_sha,
-    )
+    generation_dir, mint_clock = write_v3_snapshot(workspaces)
     print(
         "event workspaces: validated "
         f"events={sorted(workspaces)} generation={generation_dir.name} "
-        f"source_clock={source_clock}"
+        f"source_clock={source_clock} mint_clock={mint_clock}"
     )
     publish_rc = publish_generation(target, dry_run=dry_run)
     if publish_rc == PUBLISH_CONFLICT:

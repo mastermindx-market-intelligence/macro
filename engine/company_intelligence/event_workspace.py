@@ -42,6 +42,8 @@ WORKSPACE_SCHEMA = "event_workspace.v1"
 # discoverable predecessor pointer once a newer generation supersedes it.
 MANIFEST_SCHEMA_V1 = "event_workspace_manifest.v1"
 MANIFEST_SCHEMA_V2 = "event_workspace_manifest.v2"
+MANIFEST_SCHEMA_V3 = "event_workspace_manifest.v3"
+REVISION_INDEX_SCHEMA_V1 = "event_workspace_revision_index.v1"
 # Legacy alias -- historically "the" manifest schema constant.  Nothing
 # outside this module keys off its current value (grep-verified); kept
 # pointing at v1 so a caller that only ever compared against the OLD
@@ -95,6 +97,21 @@ MANIFEST_KEYS = (
 # v2 = v1's exact key set PLUS the two chain-link keys (A1).  Both are
 # REQUIRED in a v2 manifest -- never optional-and-silently-absent (A3).
 MANIFEST_KEYS_V2 = MANIFEST_KEYS + ("previous_generation_id", "previous_manifest_sha256")
+MANIFEST_KEYS_V3 = MANIFEST_KEYS_V2 + ("revision_index",)
+REVISION_INDEX_KEYS = ("schema", "events")
+REVISION_INDEX_RECEIPT_KEYS = ("schema", "path", "bytes", "sha256")
+REVISION_INDEX_ROW_KEYS = (
+    "event_id",
+    "source_sha256",
+    "form",
+    "source_available_at",
+    "observed_at",
+    "lifecycle_state",
+    "workspace_generation_ref",
+    "generated_at_basis",
+    "generated_at",
+    "workspace_receipt",
+)
 
 WORKSPACE_WARNINGS = frozenset({
     "wire_record_not_found",
@@ -344,10 +361,312 @@ def validate_event_workspace(payload: object) -> None:
             raise WorkspaceError("beat/miss is forbidden unless basis_match is true")
 
 
+def _validated_sha256(value: object, *, name: str) -> str:
+    digest = str(value or "")
+    if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+        raise WorkspaceError(f"{name} sha256 invalid")
+    return digest
+
+
+def _validated_receipt(value: object, *, name: str) -> dict[str, Any]:
+    receipt = _require_mapping(value, name=name)
+    if set(receipt) != {"bytes", "sha256"}:
+        raise WorkspaceError(f"{name} receipt keys mismatch")
+    size = receipt.get("bytes")
+    if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
+        raise WorkspaceError(f"{name} bytes invalid")
+    return {
+        "bytes": size,
+        "sha256": _validated_sha256(receipt.get("sha256"), name=name),
+    }
+
+
+def _revision_row_from_workspace(workspace: Mapping[str, Any]) -> dict[str, Any]:
+    event_id = str(workspace.get("event_id") or "")
+    if not _EVENT_ID_RE.fullmatch(event_id):
+        raise WorkspaceError("revision index workspace event_id is not canonical")
+    lifecycle = (
+        workspace.get("lifecycle")
+        if isinstance(workspace.get("lifecycle"), Mapping)
+        else {}
+    )
+    source_sha256 = None
+    form = None
+    for source in workspace.get("sources") or []:
+        if isinstance(source, Mapping) and source.get("kind") == "issuer_release":
+            source_sha256 = source.get("source_sha256")
+            form = source.get("form")
+            break
+    return {
+        "event_id": event_id,
+        "source_sha256": source_sha256,
+        "form": form,
+        "source_available_at": lifecycle.get("source_available_at"),
+        "observed_at": lifecycle.get("observed_at"),
+        "lifecycle_state": lifecycle.get("state"),
+        "workspace_generation_ref": "self",
+        "generated_at_basis": "ENCLOSING_MANIFEST",
+        "generated_at": None,
+        "workspace_receipt": None,
+    }
+
+
+def validate_revision_index(
+    payload: object,
+    *,
+    manifest: Mapping[str, Any] | None = None,
+) -> None:
+    index = _require_mapping(payload, name="event_workspace_revision_index")
+    _require_exact_keys(index, REVISION_INDEX_KEYS, name="event_workspace_revision_index")
+    if index.get("schema") != REVISION_INDEX_SCHEMA_V1:
+        raise WorkspaceError("revision index schema mismatch")
+    events = _require_mapping(index.get("events"), name="revision_index.events")
+    if not events:
+        raise WorkspaceError("revision index requires at least one event")
+
+    enclosing: Mapping[str, Any] | None = None
+    if manifest is not None:
+        validate_workspace_manifest(manifest)
+        if manifest.get("schema") != MANIFEST_SCHEMA_V3:
+            raise WorkspaceError("revision index enclosing manifest must be v3")
+        enclosing = manifest
+        current_events = {
+            str(relative)[len("workspaces/"):-len(".json")]
+            for relative in manifest.get("files", {})
+        }
+        missing_current = current_events - set(events)
+        if missing_current:
+            raise WorkspaceError(
+                "revision index does not cover current manifest events: "
+                + ", ".join(sorted(missing_current))
+            )
+
+    for event_id, raw_rows in events.items():
+        if not isinstance(event_id, str) or not _EVENT_ID_RE.fullmatch(event_id):
+            raise WorkspaceError("revision index event id is not canonical")
+        if not isinstance(raw_rows, list) or not raw_rows:
+            raise WorkspaceError("revision index event rows must be a nonempty list")
+        self_count = 0
+        prior_clock: str | None = None
+        for position, raw_row in enumerate(raw_rows):
+            row = _require_mapping(raw_row, name=f"revision index row {event_id}")
+            _require_exact_keys(row, REVISION_INDEX_ROW_KEYS, name="revision index row")
+            if row.get("event_id") != event_id:
+                raise WorkspaceError("revision index row event_id mismatch")
+            source_sha256 = row.get("source_sha256")
+            if source_sha256 is not None:
+                _validated_sha256(source_sha256, name="revision index source")
+            form = row.get("form")
+            if form is not None and (not isinstance(form, str) or not form.strip()):
+                raise WorkspaceError("revision index form invalid")
+            for clock_name in ("source_available_at", "observed_at"):
+                clock_value = row.get(clock_name)
+                if clock_value is not None and iso_timestamp(clock_value) is None:
+                    raise WorkspaceError(f"revision index {clock_name} invalid")
+            state = row.get("lifecycle_state")
+            if not isinstance(state, str) or not state.strip():
+                raise WorkspaceError("revision index lifecycle_state invalid")
+            basis = row.get("generated_at_basis")
+            if basis not in {
+                "WORKSPACE_ENVELOPE",
+                "V3_MIGRATION_MINT",
+                "ENCLOSING_MANIFEST",
+            }:
+                raise WorkspaceError("revision index generated_at_basis invalid")
+
+            generation_ref = row.get("workspace_generation_ref")
+            if generation_ref == "self":
+                self_count += 1
+                if position != len(raw_rows) - 1:
+                    raise WorkspaceError("revision index self row must be final")
+                if basis != "ENCLOSING_MANIFEST":
+                    raise WorkspaceError("revision index self row must use enclosing manifest clock")
+                if row.get("generated_at") is not None or row.get("workspace_receipt") is not None:
+                    raise WorkspaceError("revision index self row must use null envelope fields")
+                if enclosing is not None:
+                    relative = f"workspaces/{event_id}.json"
+                    if relative not in enclosing.get("files", {}):
+                        raise WorkspaceError("revision index self row has no enclosing workspace receipt")
+                    resolved_clock = iso_timestamp(enclosing.get("generated_at"))
+                else:
+                    resolved_clock = None
+            else:
+                if not _GENERATION_RE.fullmatch(str(generation_ref or "")):
+                    raise WorkspaceError("revision index historical generation ref invalid")
+                if enclosing is not None and generation_ref == enclosing.get("generation_id"):
+                    raise WorkspaceError("revision index current generation must use self")
+                if basis == "ENCLOSING_MANIFEST":
+                    raise WorkspaceError("revision index historical row cannot use enclosing manifest clock")
+                resolved_clock = iso_timestamp(row.get("generated_at"))
+                if resolved_clock is None:
+                    raise WorkspaceError("revision index historical generated_at invalid")
+                observed_clock = iso_timestamp(row.get("observed_at"))
+                if (
+                    basis == "V3_MIGRATION_MINT"
+                    and observed_clock is not None
+                    and resolved_clock < observed_clock
+                ):
+                    raise WorkspaceError("revision index migration mint precedes observed_at")
+                _validated_receipt(
+                    row.get("workspace_receipt"),
+                    name="revision index workspace",
+                )
+            if self_count > 1:
+                raise WorkspaceError("revision index permits one self row per event")
+            if resolved_clock is not None:
+                if prior_clock is not None and resolved_clock < prior_clock:
+                    raise WorkspaceError("revision index rows are not oldest-first by generated_at")
+                prior_clock = resolved_clock
+
+
+def _materialized_revision_index(
+    previous_index: Mapping[str, Any],
+    previous_manifest: Mapping[str, Any],
+) -> dict[str, list[dict[str, Any]]]:
+    validate_revision_index(previous_index, manifest=previous_manifest)
+    generation_id = str(previous_manifest["generation_id"])
+    generated_at = str(previous_manifest["generated_at"])
+    files = _require_mapping(previous_manifest.get("files"), name="manifest.files")
+    materialized: dict[str, list[dict[str, Any]]] = {}
+    for event_id, raw_rows in previous_index["events"].items():
+        rows: list[dict[str, Any]] = []
+        for raw_row in raw_rows:
+            row = dict(raw_row)
+            if row["workspace_generation_ref"] == "self":
+                relative = f"workspaces/{event_id}.json"
+                row["workspace_generation_ref"] = generation_id
+                row["generated_at_basis"] = "WORKSPACE_ENVELOPE"
+                row["generated_at"] = generated_at
+                row["workspace_receipt"] = dict(files[relative])
+            rows.append(row)
+        materialized[event_id] = rows
+    return materialized
+
+
+def build_revision_index(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    *,
+    previous_index: Mapping[str, Any] | None = None,
+    previous_manifest: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    if not workspaces:
+        raise WorkspaceError("revision index requires at least one workspace")
+    if (previous_index is None) != (previous_manifest is None):
+        raise WorkspaceError("previous revision index and manifest must be supplied together")
+    events = (
+        _materialized_revision_index(previous_index, previous_manifest)
+        if previous_index is not None and previous_manifest is not None
+        else {}
+    )
+    for event_id, workspace in sorted(workspaces.items()):
+        if event_id != workspace.get("event_id"):
+            raise WorkspaceError("revision index workspace map key must equal event_id")
+        row = _revision_row_from_workspace(workspace)
+        rows = events.setdefault(event_id, [])
+        if not rows or row["source_sha256"] != rows[-1]["source_sha256"]:
+            rows.append(row)
+    index = {
+        "schema": REVISION_INDEX_SCHEMA_V1,
+        "events": {event_id: events[event_id] for event_id in sorted(events)},
+    }
+    validate_revision_index(index)
+    return index
+
+
+def build_revision_index_from_legacy(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    legacy_revisions: Mapping[str, Sequence[Mapping[str, Any]]],
+    *,
+    current_generation_id: str,
+    migration_generated_at: str,
+) -> dict[str, Any]:
+    """Seed v3 from one verified legacy walk without preserving a bad current envelope.
+
+    Every absolute row before *current_generation_id* retains its original
+    workspace receipt and clocks.  A semantic revision carried by the current
+    legacy generation is deliberately reintroduced as the new v3 generation's
+    relative ``self`` row, so its mint clock is truthful rather than copied
+    from a source publication clock.
+    """
+    if not _GENERATION_RE.fullmatch(str(current_generation_id or "")):
+        raise WorkspaceError("legacy current_generation_id invalid")
+    migration_clock = iso_timestamp(migration_generated_at)
+    if migration_clock is None:
+        raise WorkspaceError("legacy migration mint clock invalid")
+    events: dict[str, list[dict[str, Any]]] = {}
+    for event_id, raw_revisions in sorted(legacy_revisions.items()):
+        if not _EVENT_ID_RE.fullmatch(str(event_id or "")):
+            raise WorkspaceError("legacy revision event id is not canonical")
+        if not isinstance(raw_revisions, Sequence) or isinstance(raw_revisions, (str, bytes)):
+            raise WorkspaceError("legacy revisions must be an ordered sequence")
+        rows: list[dict[str, Any]] = []
+        for raw_revision in raw_revisions:
+            revision = _require_mapping(raw_revision, name="legacy revision")
+            generation_id = str(revision.get("generation_id") or "")
+            if not _GENERATION_RE.fullmatch(generation_id):
+                raise WorkspaceError("legacy revision generation_id invalid")
+            workspace = _require_mapping(revision.get("workspace"), name="legacy revision workspace")
+            validate_event_workspace(workspace)
+            if workspace.get("event_id") != event_id:
+                raise WorkspaceError("legacy revision workspace event_id mismatch")
+            if workspace.get("generation_id") != generation_id:
+                raise WorkspaceError("legacy revision workspace generation mismatch")
+            derived = _revision_row_from_workspace(workspace)
+            for field in (
+                "source_sha256",
+                "source_available_at",
+                "observed_at",
+                "lifecycle_state",
+                "form",
+            ):
+                if revision.get(field) != derived[field]:
+                    raise WorkspaceError(f"legacy revision {field} disagrees with workspace")
+            if generation_id == current_generation_id:
+                continue
+            row = dict(derived)
+            row["workspace_generation_ref"] = generation_id
+            workspace_clock = iso_timestamp(workspace.get("generated_at"))
+            observed_clock = iso_timestamp(row.get("observed_at"))
+            if workspace_clock is None:
+                raise WorkspaceError("legacy revision workspace generated_at invalid")
+            if observed_clock is not None and workspace_clock < observed_clock:
+                if migration_clock < observed_clock:
+                    raise WorkspaceError("legacy migration mint precedes observed_at")
+                row["generated_at_basis"] = "V3_MIGRATION_MINT"
+                row["generated_at"] = migration_clock
+            else:
+                row["generated_at_basis"] = "WORKSPACE_ENVELOPE"
+                row["generated_at"] = workspace_clock
+            row["workspace_receipt"] = _validated_receipt(
+                revision.get("workspace_receipt"),
+                name="legacy revision workspace",
+            )
+            if not rows or row["source_sha256"] != rows[-1]["source_sha256"]:
+                rows.append(row)
+        if rows:
+            events[event_id] = rows
+
+    for event_id, workspace in sorted(workspaces.items()):
+        if event_id != workspace.get("event_id"):
+            raise WorkspaceError("legacy migration workspace map key must equal event_id")
+        row = _revision_row_from_workspace(workspace)
+        rows = events.setdefault(event_id, [])
+        if not rows or row["source_sha256"] != rows[-1]["source_sha256"]:
+            rows.append(row)
+    index = {
+        "schema": REVISION_INDEX_SCHEMA_V1,
+        "events": {event_id: events[event_id] for event_id in sorted(events)},
+    }
+    validate_revision_index(index)
+    return index
+
+
 def validate_workspace_manifest(payload: object) -> None:
     item = _require_mapping(payload, name="event_workspace_manifest")
     schema = item.get("schema")
-    if schema == MANIFEST_SCHEMA_V2:
+    if schema == MANIFEST_SCHEMA_V3:
+        _require_exact_keys(item, MANIFEST_KEYS_V3, name="event_workspace_manifest")
+    elif schema == MANIFEST_SCHEMA_V2:
         _require_exact_keys(item, MANIFEST_KEYS_V2, name="event_workspace_manifest")
     elif schema == MANIFEST_SCHEMA_V1:
         _require_exact_keys(item, MANIFEST_KEYS, name="event_workspace_manifest")
@@ -378,15 +697,7 @@ def validate_workspace_manifest(payload: object) -> None:
         event_id = name[len("workspaces/"):-len(".json")]
         if not _EVENT_ID_RE.fullmatch(event_id):
             raise WorkspaceError("manifest file is not a canonical event workspace")
-        block_map = _require_mapping(block, name=f"manifest file {name}")
-        if set(block_map) != {"bytes", "sha256"}:
-            raise WorkspaceError("manifest file receipt keys mismatch")
-        digest = str(block_map.get("sha256") or "")
-        if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
-            raise WorkspaceError("manifest file sha256 invalid")
-        size = block_map.get("bytes")
-        if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
-            raise WorkspaceError("manifest file bytes invalid")
+        _validated_receipt(block, name=f"manifest file {name}")
     aliases = _require_mapping(item.get("aliases"), name="manifest.aliases")
     for legacy, canonical in aliases.items():
         if not isinstance(legacy, str) or not isinstance(canonical, str):
@@ -396,13 +707,9 @@ def validate_workspace_manifest(payload: object) -> None:
     warnings = item.get("warnings")
     if not isinstance(warnings, list) or warnings != sorted(set(warnings)):
         raise WorkspaceError("manifest warnings invalid")
-    if schema == MANIFEST_SCHEMA_V2:
+    if schema in {MANIFEST_SCHEMA_V2, MANIFEST_SCHEMA_V3}:
         previous_id = item.get("previous_generation_id")
         previous_sha = item.get("previous_manifest_sha256")
-        # A2: previous_generation_id may be null ONLY for a genuine
-        # first-ever generation of the nest -- but a v2 manifest ALWAYS
-        # carries both keys (A3); when there is no predecessor, both are
-        # null together, never one without the other.
         if previous_id is None:
             if previous_sha is not None:
                 raise WorkspaceError(
@@ -412,14 +719,20 @@ def validate_workspace_manifest(payload: object) -> None:
         else:
             if not _GENERATION_RE.fullmatch(str(previous_id)):
                 raise WorkspaceError("invalid manifest previous_generation_id")
-            if (
-                not isinstance(previous_sha, str)
-                or len(previous_sha) != 64
-                or any(ch not in "0123456789abcdef" for ch in previous_sha)
-            ):
-                raise WorkspaceError("invalid manifest previous_manifest_sha256")
+            _validated_sha256(previous_sha, name="manifest previous")
             if str(previous_id) == str(item.get("generation_id") or ""):
                 raise WorkspaceError("manifest previous_generation_id cannot equal its own generation_id")
+    if schema == MANIFEST_SCHEMA_V3:
+        receipt = _require_mapping(item.get("revision_index"), name="manifest.revision_index")
+        _require_exact_keys(receipt, REVISION_INDEX_RECEIPT_KEYS, name="manifest.revision_index")
+        if receipt.get("schema") != REVISION_INDEX_SCHEMA_V1:
+            raise WorkspaceError("manifest revision index schema mismatch")
+        if receipt.get("path") != "revision_index.json":
+            raise WorkspaceError("manifest revision index path invalid")
+        size = receipt.get("bytes")
+        if isinstance(size, bool) or not isinstance(size, int) or size <= 0:
+            raise WorkspaceError("manifest revision index bytes invalid")
+        _validated_sha256(receipt.get("sha256"), name="manifest revision index")
 
 
 def _strip_private(workspace: Mapping[str, Any]) -> dict[str, Any]:
@@ -491,6 +804,90 @@ def preview_generation_identity(
     chain-pointer resolution)."""
     cleaned = {event_id: _strip_private(payload) for event_id, payload in workspaces.items()}
     return _generation_identity(cleaned, str(generated_at), previous_generation_id=previous_generation_id)
+
+
+def _effective_alias_map(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    cleaned: Mapping[str, Mapping[str, Any]] | None = None,
+) -> dict[str, str]:
+    public = (
+        dict(cleaned)
+        if cleaned is not None
+        else {event_id: _strip_private(payload) for event_id, payload in workspaces.items()}
+    )
+    aliases: dict[str, str] = {}
+    for event_id, payload in public.items():
+        if event_id != payload.get("event_id"):
+            raise WorkspaceError("workspace map key must equal event_id")
+        _register_alias(aliases, event_id, event_id)
+        for alias in payload.get("aliases") or []:
+            _register_alias(aliases, alias, event_id)
+        private = workspaces[event_id]
+        extra = private.get("_aliases") if isinstance(private, Mapping) else None
+        if isinstance(extra, Mapping):
+            _register_alias(aliases, extra.get("canonical_event_id"), event_id)
+            for family in (
+                extra.get("company_intelligence_ids") or [],
+                extra.get("earnings_narrative_keys") or [],
+                extra.get("public_slugs") or [],
+            ):
+                for alias in family:
+                    _register_alias(aliases, alias, event_id)
+    return dict(sorted(aliases.items()))
+
+
+def preview_generation_identity_v3(
+    workspaces: Mapping[str, Mapping[str, Any]],
+    revision_index: Mapping[str, Any],
+    generated_at: str,
+    *,
+    previous_generation_id: str | None = None,
+    aliases: Mapping[str, str] | None = None,
+) -> str:
+    """Pure v3 generation identity without a receipt/hash fixed point.
+
+    The operation-scoped mint clock remains part of immutable envelope
+    identity.  Workspace ``generation_id`` and ``generated_at`` are excluded
+    from semantic bodies, while the canonical revision-index body is bound
+    directly.  Its final ``self`` row contains no current generation id or
+    workspace receipt, so the identity can be computed exactly once.
+    """
+    generated = iso_timestamp(generated_at)
+    if generated is None:
+        raise WorkspaceError("v3 generated_at is required")
+    if previous_generation_id is not None and not _GENERATION_RE.fullmatch(
+        str(previous_generation_id)
+    ):
+        raise WorkspaceError("invalid v3 previous_generation_id")
+    validate_revision_index(revision_index)
+    alias_map = (
+        _effective_alias_map(workspaces)
+        if aliases is None
+        else dict(sorted(aliases.items()))
+    )
+    for alias, event_id in alias_map.items():
+        if not isinstance(alias, str) or not alias:
+            raise WorkspaceError("v3 generation alias must be a nonempty string")
+        if event_id not in workspaces:
+            raise WorkspaceError("v3 generation alias target is absent from workspaces")
+    semantic_workspaces: dict[str, dict[str, Any]] = {}
+    for event_id, payload in sorted(workspaces.items()):
+        cleaned = _strip_private(payload)
+        if event_id != cleaned.get("event_id"):
+            raise WorkspaceError("workspace map key must equal event_id")
+        semantic_workspaces[event_id] = {
+            key: cleaned[key]
+            for key in WORKSPACE_KEYS
+            if key not in {"generation_id", "generated_at"}
+        }
+    return sha256(canonical_json_bytes({
+        "identity_schema": "event_workspace_generation_identity.v3",
+        "generated_at": generated,
+        "previous_generation_id": previous_generation_id,
+        "revision_index": revision_index,
+        "aliases": alias_map,
+        "workspaces": semantic_workspaces,
+    })).hexdigest()[:24]
 
 
 def write_workspace_generation(
@@ -593,6 +990,115 @@ def write_workspace_generation(
     # Re-order to MANIFEST_KEYS_V2.
     manifest = {key: manifest[key] for key in MANIFEST_KEYS_V2}
     validate_workspace_manifest(manifest)
+    manifest_body = canonical_json_bytes(manifest)
+    immutable_manifest_path = generation_dir / "manifest.json"
+    if immutable_manifest_path.exists() and immutable_manifest_path.read_bytes() != manifest_body:
+        raise WorkspaceError(f"immutable generation collision: {immutable_manifest_path}")
+    if not immutable_manifest_path.exists():
+        _atomic_write(immutable_manifest_path, manifest_body)
+    _atomic_write(nest / "manifest.json", manifest_body)
+    return generation_dir
+
+
+def write_workspace_generation_v3(
+    out_dir: Path,
+    workspaces: Mapping[str, Mapping[str, Any]],
+    *,
+    revision_index: Mapping[str, Any],
+    generated_at: str,
+    status: str = "ready",
+    previous_generation_id: str | None = None,
+    previous_manifest_sha256: str | None = None,
+) -> Path:
+    """Write one immutable v3 generation and advance the local marker last.
+
+    Unlike v2, the mint clock is explicit and workspace envelope fields are
+    excluded from semantic identity.  ``revision_index.json`` is an
+    authenticated first-class payload.  Its typed final ``self`` row is
+    resolved only through the enclosing manifest, eliminating any need for
+    an index -> generation id -> workspace receipt -> index hash fixed point.
+    """
+    if not workspaces:
+        raise WorkspaceError("write_workspace_generation_v3 requires at least one workspace")
+    generated = iso_timestamp(generated_at)
+    if generated is None:
+        raise WorkspaceError("v3 generated_at is required")
+    if (previous_generation_id is None) != (previous_manifest_sha256 is None):
+        raise WorkspaceError("v3 predecessor id and manifest sha256 must be supplied together")
+    if previous_generation_id is not None:
+        if not _GENERATION_RE.fullmatch(str(previous_generation_id)):
+            raise WorkspaceError("invalid v3 previous_generation_id")
+        _validated_sha256(previous_manifest_sha256, name="v3 previous manifest")
+    validate_revision_index(revision_index)
+
+    cleaned = {
+        event_id: _strip_private(payload)
+        for event_id, payload in workspaces.items()
+    }
+    alias_map = _effective_alias_map(workspaces, cleaned)
+    generation_id = preview_generation_identity_v3(
+        workspaces,
+        revision_index,
+        generated,
+        previous_generation_id=previous_generation_id,
+        aliases=alias_map,
+    )
+    stamped: dict[str, dict[str, Any]] = {}
+    for event_id, payload in cleaned.items():
+        if event_id != payload.get("event_id"):
+            raise WorkspaceError("workspace map key must equal event_id")
+        row = dict(payload)
+        row["generation_id"] = generation_id
+        row["generated_at"] = generated
+        validate_event_workspace(row)
+        stamped[event_id] = row
+
+    nest = Path(out_dir) / NEST
+    generation_dir = nest / "generations" / generation_id
+    file_blocks: dict[str, dict[str, Any]] = {}
+    for event_id in sorted(stamped):
+        relative = f"workspaces/{event_id}.json"
+        object_path = generation_dir / relative
+        body = canonical_json_bytes(stamped[event_id])
+        if object_path.exists() and object_path.read_bytes() != body:
+            raise WorkspaceError(f"immutable generation collision: {object_path}")
+        if not object_path.exists():
+            _atomic_write(object_path, body)
+        file_blocks[relative] = {
+            "bytes": len(body),
+            "sha256": sha256(body).hexdigest(),
+        }
+
+    revision_index_body = canonical_json_bytes(revision_index)
+    revision_index_path = generation_dir / "revision_index.json"
+    if revision_index_path.exists() and revision_index_path.read_bytes() != revision_index_body:
+        raise WorkspaceError(f"immutable generation collision: {revision_index_path}")
+    if not revision_index_path.exists():
+        _atomic_write(revision_index_path, revision_index_body)
+    revision_index_receipt = {
+        "schema": REVISION_INDEX_SCHEMA_V1,
+        "path": "revision_index.json",
+        "bytes": len(revision_index_body),
+        "sha256": sha256(revision_index_body).hexdigest(),
+    }
+
+    manifest = {
+        "aliases": dict(sorted(alias_map.items())),
+        "authority": AUTHORITY,
+        "event_count": len(stamped),
+        "files": dict(sorted(file_blocks.items())),
+        "generated_at": generated,
+        "generation_id": generation_id,
+        "schema": MANIFEST_SCHEMA_V3,
+        "status": status,
+        "warnings": [],
+        "previous_generation_id": previous_generation_id,
+        "previous_manifest_sha256": previous_manifest_sha256,
+        "revision_index": revision_index_receipt,
+    }
+    manifest = {key: manifest[key] for key in MANIFEST_KEYS_V3}
+    validate_workspace_manifest(manifest)
+    validate_revision_index(revision_index, manifest=manifest)
     manifest_body = canonical_json_bytes(manifest)
     immutable_manifest_path = generation_dir / "manifest.json"
     if immutable_manifest_path.exists() and immutable_manifest_path.read_bytes() != manifest_body:
