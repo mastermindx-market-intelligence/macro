@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T01:09:27.827393+00:00",
-  "count": 2396,
+  "generated_at": "2026-09-19T01:24:23.439957+00:00",
+  "count": 2397,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -89,6 +89,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vvwnvaw5kjn-04f64f",
+      "title": "Position for market upside",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:58Z",
+      "summary_points": [
+        "Global equity growth drivers: S&P 500 earnings up 25% YOY, Eurozone 15% YOY; AI investment as structural catalyst beyond tech giants, with cash inadequacy vs. inflation/taxes/longevity costs.",
+        "AI-Driven Growth & Sector Exposure: Global AI capex to reach $900bn (2026) and $1.2tr (2027), extending to semiconductors, infrastructure, renewables, and healthcare innovation (oncology, cardiometabolic).",
+        "Strategic Positioning: Prioritize Eurozone, Asia ex-Japan, and emerging markets for relative gains; avoid over-concentration, retaining single-stock positions only for targeted innovation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-bvrjttmkmas-874349",
       "title": "Audio",
