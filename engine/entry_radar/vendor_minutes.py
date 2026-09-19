@@ -315,12 +315,15 @@ class VendorMinuteReader:
                  | None = None, state_dir: Path | str | None = None,
                  sleep_seconds: float = SLEEP_SECONDS,
                  price_basis: str = ch.BASIS_ADJUSTED,
-                 max_window_sessions: int = MAX_WINDOW_SESSIONS) -> None:
+                 max_window_sessions: int = MAX_WINDOW_SESSIONS,
+                 receipt_clock: Callable[[], datetime] | None = None) -> None:
         self._transport = transport
         self.state_dir = Path(state_dir) if state_dir is not None else None
         self.sleep_seconds = float(sleep_seconds)
         self.price_basis = str(price_basis)
         self.max_window_sessions = int(max_window_sessions)
+        self._receipt_clock = receipt_clock
+        self._latest_fetch_receipt: MinuteFetchReceipt | None = None
         self.fetched_n = 0
         self.cache_hits = 0
         self.errors = 0
@@ -337,8 +340,17 @@ class VendorMinuteReader:
         ``four_hour_buckets`` derives buckets with ``close=None`` that
         ``run_c3`` discloses as ``confirmed_empty`` rather than fabricating.
         """
-        rows = self._fetch(ticker, session)
-        return self._tape_from_rows(session, rows)
+        if self._receipt_clock is None:
+            rows = self._fetch(ticker, session)
+            return self._tape_from_rows(session, rows)
+        rows, requested, received = self._request_rows(
+            ticker, session, now_fn=self._receipt_clock)
+        assert requested is not None and received is not None
+        tape = self._tape_from_rows(session, rows)
+        self._latest_fetch_receipt = _build_fetch_receipt(
+            ticker=ticker, tape=tape, raw_row_count=len(rows),
+            request_started_at=requested, response_received_at=received)
+        return tape
 
     def read_with_receipt(
         self, ticker: str, session: date, *,
@@ -355,10 +367,16 @@ class VendorMinuteReader:
         rows, requested, received = self._request_rows(ticker, session, now_fn=clock)
         assert requested is not None and received is not None
         tape = self._tape_from_rows(session, rows)
-        return tape, _build_fetch_receipt(
+        receipt = _build_fetch_receipt(
             ticker=ticker, tape=tape, raw_row_count=len(rows),
             request_started_at=requested, response_received_at=received,
         )
+        self._latest_fetch_receipt = receipt
+        return tape, receipt
+
+    def latest_fetch_receipt(self) -> MinuteFetchReceipt | None:
+        """Latest successful receipted fetch on this reader, in memory only."""
+        return self._latest_fetch_receipt
 
     def _tape_from_rows(self, session: date, rows: Sequence[Mapping[str, Any]]) -> ch.SessionTape:
         return fh.tape_from_rows(

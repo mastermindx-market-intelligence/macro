@@ -1461,3 +1461,79 @@ def test_TTID1_arrival_receipt_separates_off_session_rows_from_forming_rth(tmp_p
     assert receipt.completed_rows == 10
     assert receipt.off_session_rows == 1
     assert receipt.forming_or_future_rth_rows == 0
+
+
+# ---------------------------------------------------------------------------
+# TTI-D1 live projection — same reader, same health plane, no new authority
+# ---------------------------------------------------------------------------
+
+def test_TTID1_plain_reader_captures_latest_receipt_only_when_clock_is_injected(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close = session_window_et(session)
+    now = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    plain = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path / "plain", sleep_seconds=0.0)
+    plain("WASH", session)
+    assert plain.latest_fetch_receipt() is None
+
+    observed = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path / "observed", sleep_seconds=0.0,
+        receipt_clock=lambda: now)
+    observed("WASH", session)
+    receipt = observed.latest_fetch_receipt()
+    assert receipt is not None
+    assert receipt.session == session
+    assert receipt.request_started_at == now
+    assert receipt.response_received_at == now
+    assert receipt.authority == "source_arrival_observation_only"
+
+
+def test_TTID1_explicit_receipt_read_updates_the_same_latest_receipt_slot(tmp_path):
+    session = NEXT_SESSION
+    open_dt, _close = session_window_et(session)
+    request = (open_dt + timedelta(minutes=10)).astimezone(timezone.utc)
+    response = request + timedelta(seconds=2)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(lambda _day: _minute_vendor_rows(session, 10)),
+        state_dir=tmp_path, sleep_seconds=0.0)
+    _tape, returned = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(request, response))
+    assert reader.latest_fetch_receipt() == returned
+
+
+def test_TTID1_live_entrypoint_enables_reader_arrival_clock_without_fetching(tmp_path):
+    import scripts.entry_radar_live as erl
+    reader = erl._reader(tmp_path)
+    assert isinstance(reader, vm.VendorMinuteReader)
+    assert reader.latest_fetch_receipt() is None
+    assert callable(reader._receipt_clock)
+
+
+def test_TTID1_live_health_projects_latest_reader_arrival_as_observability_only(tmp_path):
+    pack = late_wash_pack()
+    open_dt, _close = session_window_et(NEXT_SESSION)
+    pass_now = (open_dt + timedelta(minutes=32)).astimezone(timezone.utc)
+    reader = vm.VendorMinuteReader(
+        transport=Recorder(), state_dir=tmp_path, sleep_seconds=0.0,
+        receipt_clock=lambda: pass_now)
+
+    result = run_live_pass(pack, tmp_path, reader=reader)
+    arrival = result.health["inputs"]["c3_reader"]["source_arrival"]
+
+    assert arrival is not None
+    assert arrival["session"] == NEXT_SESSION.isoformat()
+    assert arrival["authority"] == "source_arrival_observation_only"
+    assert arrival["source_evidence_class"] == "prospective_fetch_arrival_receipt"
+    assert arrival["historical_availability_proven"] is False
+    assert arrival["fetch_clock_observed"] is True
+    assert not any(str(reason).startswith("source_arrival")
+                   for reason in result.health["reasons"])
+
+
+def test_TTID1_refusal_health_has_explicit_null_source_arrival(tmp_path):
+    now = datetime(2026, 8, 17, 8, 0, tzinfo=timezone.utc)
+    _payload, health = le.failure_payload(now=now, pack=None, state_dir=tmp_path,
+                                          error="synthetic refusal")
+    assert health["inputs"]["c3_reader"]["source_arrival"] is None
