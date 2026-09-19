@@ -134,6 +134,12 @@
     </div>
   </div>
   {% endif %}
+  {% if g.current_method == 'intraday' and chart_source is none %}
+  <p class="cgp-note cgp-history-note">
+    <span class="l-en">No compatible history for this intraday method yet. Proxy history remains methodologically separate.</span>
+    <span class="l-zh">当前日内方法尚无兼容的历史序列。代理历史仍按方法严格分离。</span>
+  </p>
+  {% endif %}
 
   <details class="cgp-details">
     <summary><span class="l-en">Method & sources</span><span class="l-zh">方法与数据源</span></summary>

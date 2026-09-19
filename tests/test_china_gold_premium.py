@@ -716,3 +716,6 @@ def test_intraday_without_compatible_canonical_history_does_not_render_blank_pro
 
     assert "Indicative intraday basis" in html
     assert 'class="cgp-chart"' not in html
+    assert "No compatible history for this intraday method yet." in html
+    assert "当前日内方法尚无兼容的历史序列。" in html
+    assert "Proxy history remains methodologically separate." in html
