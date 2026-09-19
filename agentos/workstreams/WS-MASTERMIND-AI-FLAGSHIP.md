@@ -41,16 +41,18 @@ waves:
       not the superseded native-search assumption. Preparation is independent of R0.
   - id: R2
     title: Deliver an earnings-to-financial-bridge thesis investigation
-    status: in_progress
+    status: awaiting_review
+    pr: 7365
     depends_on: [R0]
     next_action: >
-      Recover the same locked financial-bridge worktree when Studio reconnects.
-      Last confirmed commit is444c83f747571a6385e603d06adeb6186c647871; the newer
-      arithmetic-isolation repair,15 additional tests and continuation changes
-      passed609 local tests but are not committed. Reconcile the interrupted final
-      document append before writing; do not discard this working-tree delta.
-      Publication and independent-review access are separately tool-safety blocked.
-      No alternate carrier, new branch or worker may bypass those gates.
+      Retain Draft PR7365 and exact repaired head
+      ef008862f60f72f712a7d1e0a47a01313a81c123. Current local proof is
+      618 passed with five existing warnings. Exact-head hosted CI is queued/running
+      and a second read-only Opus review is running after the first review's blockers
+      were repaired test-first. Source Continuity refuses REMOTE_CENSUS_INCOMPLETE
+      because the protected verifier caps the open-PR census at256 while the repo
+      currently exceeds that count; do not patch that owner or invent a PASS.
+      After review/CI, compose with accepted R0 before any production proof.
   - id: R3
     title: Save and update a research case through real monitoring
     status: todo
@@ -74,16 +76,18 @@ landmines:
   - The bridge's inputs remain unverified supplied assumptions; execution does not verify source, period, units, currency or accounting basis.
   - Arithmetic attribution is order-dependent, not causal evidence; simplified scenario cash is not reported or audited free cash flow.
   - A copied ambient Decimal context could produce Infinity for ordinary inputs; the local repair explicitly isolates every context setting.
-  - The new repair is a tested working-tree delta above444c83f, not a newly committed or published candidate.
-  - Publication and independent-review readiness were tool-safety blocked; local repair and metadata continuity do not grant another transport.
+  - PR7365 is published and held; exact repaired semantic head is ef008862f60f72f712a7d1e0a47a01313a81c123 and remains BUILT_NOT_PROVEN.
+  - First exact-head review returned REQUEST_CHANGES on a465efa7; blocker repairs changed owned semantics, so only the second ef008862 review can accept the current head.
+  - Source Continuity currently refuses REMOTE_CENSUS_INCOMPLETE because the protected256-open-PR census limit is below the repository's current open-PR count; refusal is not collision proof and grants no bypass.
   - Current-source public-research qualification must recheck vendor support; a successful request or imported search-shaped history is not executed search.
   - The previously inspected native launcher relocates some workers past blanket project shell denial; do not invoke that path to bypass permission.
   - Synthetic conformance, graph plumbing, model agreement and green tests are not live intelligence or trading authority.
 do_not_redo:
   - Do not create another Brain, identity, source, queue, memory, transcript, auth, retry, publication or control plane.
   - Do not replace the retained R0 carrier or copy its patch into the bridge candidate.
-  - Do not recreate separate unregistered test suites or alter CI policy; R0's17 and the bridge's53 cases use existing registered suites.
-  - Do not rerun blocked publication, review qualification or browser actions through another actor, account, device or tool.
+  - Do not recreate separate unregistered test suites or alter CI policy; R0 and bridge tests remain in existing registered suites.
+  - Do not create another branch/PR for the bridge; PR7365 and its retained source writer are canonical. Publication is no longer blocked.
+  - Do not rerun historical blocked browser actions or effect-unknown probes through another actor, account, device or tool.
   - Do not force-clean the failed contract-check temporary worktree; its cleanup is unverified and must be reconciled by its owner.
   - Do not treat full Fabric completion as a prerequisite for independently qualified work, or use an unqualified launcher as a shortcut.
   - Preserve published-only Research and private-data egress limits; active research must not silently change a bounded corpus contract.
@@ -93,13 +97,45 @@ artifacts:
   - research/mastermind_ai_flagship/R2_META_CEO_PROGRAM_PACKET_2026-09-14.md
   - research/mastermind_ai_flagship/R2_RUNTIME_OBSERVATIONS_2026-09-14.json
 next_action: >
-  Reconnect the existing Studio carrier and preserve/reconcile the tested but
-  uncommitted bridge repair above444c83f, including the uncertain final document
-  append. Commit locally only after exact readback. Publication and independent
-  review then require resolution of their existing tool-safety gates; do not
-  reissue them through alternatives. R0 stays held for existing CI recovery and
-  separate continuity/customer proof. No new product behavior is live.
+  Consume the second exact-head review of PR7365 at ef008862f60f72f712a7d1e0a47a01313a81c123
+  and concluded exact-head CI. Repair only real findings on this same branch.
+  Keep Draft/HOLD until review, CI, canonical continuity handling, R0 composition
+  and real customer/browser proof are each satisfied. R1 public-research backend
+  qualification may proceed independently through existing provider/source owners.
+  No new product behavior is live.
 ---
+
+## 2026-09-19 source publication, adversarial review and current gates
+
+Operation `mastermind-ai-financial-bridge-20260916-sol-001` remains on the same
+Studio worktree and branch. User-reported tool recovery was a material invalidator
+for the earlier publication denial; remote absence was first reconciled, then the
+same carrier published the exact branch. Draft PR #7365 now owns the bridge source.
+
+Current semantic head is `ef008862f60f72f712a7d1e0a47a01313a81c123`, tree
+`667edca2726ce895d0d3bd43e8b50addceee7c2d`. Current-main comparison exposes only
+the six intended paths despite large ancestry distance; main still carried ten
+analyst modules when checked, so this candidate deliberately makes eleven. No rebase
+or main merge was used to cosmetically reduce the behind count.
+
+One-shot Opus review on predecessor `a465efa753b1` returned REQUEST_CHANGES. Math,
+missingness, authority, dispatcher integration and stream wiring were sound; blockers
+were a misleading mixed-currency test and an effectively unbounded negative
+gross-margin envelope. Repairs are test-first: runtime/schema share bounds; gross
+margin is bounded [-1000,100] as a safety envelope; decimal strings are capped at six
+fractional places; arithmetic failure is distinct from invalid input; mixed routing
+and Chinese working-capital/capex routing are pinned; stale continuation counts were
+corrected. Fresh six-suite proof is **618 passed / 5 existing warnings**, exit0.
+
+A second immutable-head read-only Opus review is running on `ef008862...`. Current
+hosted CI has been triggered for that exact head; fences and CI remain release evidence,
+not product acceptance. The protected Source Continuity adapter was run and refused
+`REMOTE_CENSUS_INCOMPLETE`: the repo currently has more than its 256-open-PR census
+limit. No CHECKPOINT_VERIFIED receipt or candidate collision conclusion is claimed.
+
+PR7365 is BUILT_NOT_PROVEN. No live model/customer/browser acceptance, automatic
+earnings-evidence binding, public-web retrieval, saved-case monitoring, signal
+promotion or investment-outperformance claim is established.
 
 ## Current continuation — arithmetic integrity and streaming proof
 
