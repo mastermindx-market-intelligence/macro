@@ -81,7 +81,7 @@ def _content_words(text: str) -> set[str]:
         for ch in text:
             if "一" <= ch <= "鿿":
                 chars.append(ch)
-        return {text[i : i + 2] for i in range(len(chars) - 1)}
+        return {"".join(chars[i : i + 2]) for i in range(len(chars) - 1)}
     return {
         word
         for word in re.findall(r"[a-z0-9]+", text.lower())
@@ -197,38 +197,40 @@ def test_every_why_line_is_transcribed_from_its_own_bound_so_what():
             )
 
 
-def test_why_zh_also_matches_its_own_bound_so_what():
-    """h_7125 MINOR-2: why_zh was not measured against the source So-whats,
-    so round 1 had no signal when a ZH transcription came from the wrong
-    heading. The same fidelity check is run for why_zh against every source
-    file's So-what bullets. Rows with no why_zh are skipped."""
-    cache: dict[Path, list[dict]] = {}
-    for term in GLOSSARY_TERMS:
-        if not (term.why_zh or "").strip():
-            continue
-        path = ROOT / term.source_file
-        if path not in cache:
-            cache[path] = _source_sections(path)
-        sections = cache[path]
-        own = next((s for s in sections if s["line"] == term.source_line), None)
-        if own is None:
-            continue  # source_line may be None for programmatic rows
-        own_so_what = _so_what(own)
-        if not own_so_what.strip():
-            continue
-        own_score = _fidelity(term.why_zh, own_so_what)
-        for other in sections:
-            if other is own:
-                continue
-            other_so_what = _so_what(other)
-            if not other_so_what.strip():
-                continue
-            other_score = _fidelity(term.why_zh, other_so_what)
-            assert own_score >= other_score, (
-                f"{term.id}: why_zh matches {term.source_file}:{other['line']} "
-                f"({other_score:.2f}) better than its own bound So-what at "
-                f"{term.source_file}:{own['line']} ({own_score:.2f})"
-            )
+# why_zh vs answer_zh CJK-bigram overlap. Bound So-whats are English-only
+# (measured at bcba723c: 53 rows, source_has_cjk=0, histogram {0.0: 53}), so
+# scoring why_zh against the So-what was vacuous. The two ZH strings of one
+# row must share vocabulary; a swapped why_zh from the next row must not.
+_ZH_VOCAB_THRESHOLD = 0.05
+
+
+def test_content_words_takes_cjk_bigrams_from_mixed_script():
+    assert _content_words("RAN / LATE 信号已过") == {"信号", "号已", "已过"}
+
+
+def test_why_zh_shares_vocabulary_with_its_own_answer_zh():
+    """h_7125 r3 MAJOR-1: score why_zh against the same row's answer_zh.
+
+    The previous check compared why_zh to the bound English So-what, so every
+    score was 0.0 and swapping why_zh across rows never failed. The two ZH
+    strings of one glossary row must share CJK character-bigram vocabulary;
+    replacing why_zh with the next row's why_zh must fall to or below the
+    threshold.
+    """
+    n = len(GLOSSARY_TERMS)
+    for i, term in enumerate(GLOSSARY_TERMS):
+        own = _fidelity(term.why_zh or "", term.answer_zh or "")
+        assert own > _ZH_VOCAB_THRESHOLD, (
+            f"{term.id}: why_zh shares no vocabulary with its own answer_zh "
+            f"({own:.3f} <= {_ZH_VOCAB_THRESHOLD}): why={term.why_zh!r} "
+            f"answer={term.answer_zh!r}"
+        )
+        nxt = GLOSSARY_TERMS[(i + 1) % n]
+        swapped = _fidelity(nxt.why_zh or "", term.answer_zh or "")
+        assert swapped <= _ZH_VOCAB_THRESHOLD, (
+            f"{term.id}: swapped why_zh from {nxt.id} still matches answer_zh "
+            f"({swapped:.3f} > {_ZH_VOCAB_THRESHOLD})"
+        )
 
 
 def test_no_why_line_repeats_its_own_answer():
