@@ -215,7 +215,7 @@ def _parse(quarter: str, zf: "zipfile.ZipFile", universe: set[str] | None) -> pd
 _LIVE_DAILY_IDX = "https://www.sec.gov/Archives/edgar/daily-index/{yr}/QTR{q}/form.{ds}.idx"
 _LIVE_ARCHIVES = "https://www.sec.gov/Archives"
 _LIVE_LOOKBACK_DAYS = 7
-_LIVE_BACKFILL_DAYS = 60
+_LIVE_BACKFILL_DAYS = 45
 _LIVE_MAX_FETCH = 20000
 _LIVE_PACE_SECONDS = 0.12
 
