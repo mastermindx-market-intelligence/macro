@@ -195,15 +195,15 @@ def _build_evidence_frame(
     prior_digest_frame = board[board["prior_oi_known"]][KEY + ["prior_open_interest"]].copy()
     later_digest_frame = board[board["settled_oi_known"]][KEY + ["settled_open_interest"]].copy()
 
+    prior_effective_session = calendar_api.session_n_back(session_day, 1)
+    if prior_effective_session is None:
+        raise R8Refusal(f"calendar cannot resolve prior session before {session}")
+
     receipt = {
         "root": root,
         "session": session,
         "prior_oi_publication_session": session,
-        "prior_position_effective_through_session": (
-            calendar_api.session_n_forward(session_day, -1).isoformat()
-            if calendar_api.session_n_forward(session_day, -1) is not None
-            else None
-        ),
+        "prior_position_effective_through_session": prior_effective_session.isoformat(),
         "settled_oi_publication_session": settled_publication_session,
         "settled_position_effective_through_session": session,
         "decision_eligible_not_before_session": settled_publication_session,
