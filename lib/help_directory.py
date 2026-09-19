@@ -456,7 +456,7 @@ _CHANGELOG_EMPTY_ZH = "\u76ee\u524d\u8fd8\u6ca1\u6709\u66f4\u65b0\u8bb0\u5f55\u3
 _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
-def product_changelog(root: Path, *, limit: int = 40) -> dict[str, Any]:
+def product_changelog(root: Path, *, limit: int = 80) -> dict[str, Any]:
     """Read data/product/changelog.yml. Always returns state/entries/note_en/note_zh."""
     import yaml  # noqa: PLC0415
 
