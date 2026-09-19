@@ -4326,6 +4326,32 @@ jobs:
       - name: CN board-append lane gate (fail-closed CN_LANE — board/ripening/audit/event-latch)
         run: python -m pytest tests/test_cn_board_lane_gate.py -q
 
+  trusted-ci-cache-update:
+    if: ${{ false }}
+    gate: code
+    # The PC cache updater is production infrastructure, not a data-health test.
+    # The old updater scanned ~7.4M reachable objects every three minutes and
+    # peaked at 14.2 GiB outside the CI slice. Keep its atomic publication,
+    # explicit validation boundary, fast-forward refusal and systemd resource
+    # envelope in the PR merge gate. This job is deliberately isolated from the
+    # gate:data workflow-yaml estate: a source-only repair must prove before merge.
+    runs-on: ubuntu-latest
+    scope: exclusive
+    paths:
+      - "ops/runner-host/pc/mastermind_ci_cache_update.sh"
+      - "ops/runner-host/pc/mastermind-ci-cache-update.service"
+      - "ops/runner-host/pc/mastermind-ci-cache-update.timer"
+      - "tests/test_ci_cache_update.py"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal cache-updater test dependency
+        run: pip install pytest
+      - name: trusted PC cache updater contracts
+        run: python -m pytest tests/test_ci_cache_update.py -q
+
   workflow-yaml:
     if: ${{ false }}
     gate: data

@@ -3649,6 +3649,12 @@ CURATED_EXCLUSIVE = {
     # Exclusivity drops only those three opaque fallback roots while retaining
     # every executable, template, fixture, receipt, and helper input it owns.
     "stock-dashboard-first-frame",
+    # 2026-09-18 cache-updater contention repair. This job is exclusive at
+    # birth: its four declared paths are the updater script, service, timer,
+    # and the contract suite that reads those exact files. Register it here so
+    # the manifest's exclusive declarations and the curated closure authority
+    # cannot drift apart.
+    "trusted-ci-cache-update",
     # 2026-09-16 main-red repair. #7164 created a deliberately bounded,
     # hermetic PR owner for one recovered package and its root lineage test,
     # and declared both exact path surfaces — but omitted `scope: exclusive`.
@@ -3674,6 +3680,21 @@ def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}
     assert declared == CURATED_EXCLUSIVE, sorted(declared ^ CURATED_EXCLUSIVE)
+
+
+def test_trusted_ci_cache_update_keeps_its_exact_merge_gate_scope() -> None:
+    """The cache updater must stay narrow, merge-binding, and closure-auditable."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["trusted-ci-cache-update"]
+
+    assert job.gate == "code"
+    assert job.exclusive
+    assert tuple(job.definition["paths"]) == (
+        "ops/runner-host/pc/mastermind_ci_cache_update.sh",
+        "ops/runner-host/pc/mastermind-ci-cache-update.service",
+        "ops/runner-host/pc/mastermind-ci-cache-update.timer",
+        "tests/test_ci_cache_update.py",
+    )
 
 
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
