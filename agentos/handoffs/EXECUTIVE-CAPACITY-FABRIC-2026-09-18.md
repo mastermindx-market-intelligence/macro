@@ -244,3 +244,29 @@ superseded as live pins by Checkpoint 2; the discovery remains in force as quali
 in Checkpoint 2. Sol root `C0BSBM78V1N/1789324397.992989`; operation
 `agent-fabric-end-to-end-fable-integration-20260913-sol-001`; VPS economical-provider
 track then ruled at edges `1789694411.329219` and `1789694989.668909`.
+
+
+# PF1 current-continuity addendum — 2026-09-19
+
+Same-carrier records correction for the existing EXECUTIVE-CAPACITY-FABRIC workstream.
+It preserves Checkpoint 2 and supersedes only stale PF1 continuation facts.
+
+## Current truth
+- Authoritative native PF1 source: `claude/ssd-pf1-native-claude-worker-adapter@5b461fb217e6f0fba5080a12eb98df82b396e6c7`, BUILT / UNMERGED / UNARMED, no PR.
+- Exact carrier remains `C0BSBM78V1N/1788797971.486229`.
+- R90 remains `HOLD_SAME_OWNER_AND_SOURCE / NO_RETRY / NO_SUCCESSION`; reset prose is not retry/transfer authority.
+- Do not create a replacement native writer, branch or carrier because the retained session is unavailable.
+- Mastermind #759 common launch-attestation law is protected / DO_NOT_REDO.
+- Mastermind #586 R8 is protected as `4948e271e0b7dfa7e8653a6a01bcd1399d113dae`; consume its auth-free validation and bounded cancellation/finalization semantics from current Mastermind.
+- Mastermind #762@495e4668 remains `SOURCE_CUSTODY_BLOCKED / CANDIDATE_FOLD_ONLY`; it is fold evidence, not a successor, and its last qualified state still had a current-D8 red plus an unresolved exact-model admission seam.
+
+## Exact-model admission
+The first native provider request must fail closed unless the existing Family-B/native-realm config owner supplies a generation-bound effective-policy observation proving the exact one-model/no-fallback contract.
+Use a full exact model ID under version-qualified `--restricted`, a single-model allowlist, empty availability fallback and `switchModelsOnFlag=false`.
+`/status` alone is insufficient: it does not expose `fallbackModel`, identify every effective key source, or rule out organization/account model substitution.
+Ambiguity, substitution, unresolvable allowlist or config-generation drift is a pre-request refusal; post-result model identity is secondary provenance.
+
+## Exact next action
+After lawful R90 same-owner resume: re-pin protected Mastermind + same-SHA Skillpack; reconcile retained `5b461fb2...`; consume #759/#586 as DO_NOT_REDO; selectively fold only still-needed #762 deltas; close D8 + exact-model admission; then run fresh current-base behavioral tests and genuine non-author review.
+Reuse the protected native preflight surface. Only after the Family-B realm/config owner and those source gates are current may the retained PF1 owner attempt one bounded real Executive child Job.
+This addendum is knowledge-plane continuity only: it does not release R90, transfer PF1 custody, authorize provider/login/credential work, Ready/merge held PRs, or create a runtime effect.

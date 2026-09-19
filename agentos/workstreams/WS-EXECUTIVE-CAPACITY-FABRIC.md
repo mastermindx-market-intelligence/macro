@@ -156,7 +156,20 @@ waves:
     status: todo
     depends_on: [RF1, HF1]
     next_action: >
-      Add exactly one reviewed provider/harness vertical, with Claude as the preferred first real
+      CURRENT OVERRIDE (2026-09-19): authoritative native PF1 source is retained branch
+      `claude/ssd-pf1-native-claude-worker-adapter@5b461fb217e6f0fba5080a12eb98df82b396e6c7`,
+      BUILT/UNMERGED/UNARMED. R90 remains `HOLD_SAME_OWNER_AND_SOURCE / NO_RETRY / NO_SUCCESSION`;
+      do not create a replacement native writer. Mastermind #759 launch-attestation law and #586 R8
+      (`4948e271e0b7dfa7e8653a6a01bcd1399d113dae`) are protected/DO_NOT_REDO. #762@495e4668 is
+      `SOURCE_CUSTODY_BLOCKED / CANDIDATE_FOLD_ONLY`, not a successor, and still carries a current-D8
+      red plus an unresolved pre-request exact-model policy seam. Exact-model admission must consume
+      a generation-bound effective managed/org policy observation from the existing Family-B realm/config
+      owner; `/status` alone is insufficient. After lawful R90 same-owner resume: re-pin protected
+      Mastermind+Skillpack, reconcile 5b461fb2, selectively fold only still-needed #762 deltas, close
+      D8 + exact-model admission, then fresh current-base tests and genuine non-author review. Reuse the
+      protected native preflight; only then may one bounded real Executive child Job run. The historical
+      paragraph below is superseded as live instruction and retained only as chronology.
+      HISTORICAL (superseded): Add exactly one reviewed provider/harness vertical, with Claude as the preferred first real
       non-Codex proof, and prove one bounded Executive child Job through the real adapter before
       making that provider generally routable. Cursor/Grok and other provider verticals remain V1.x
       expansion and may be researched in parallel, but do not block the first V1 operating proof.
