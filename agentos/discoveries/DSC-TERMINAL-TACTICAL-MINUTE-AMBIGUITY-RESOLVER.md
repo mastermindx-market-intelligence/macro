@@ -1,13 +1,13 @@
 ---
 key: TERMINAL-TACTICAL-MINUTE-AMBIGUITY-RESOLVER
 claim: >
-  Macro PR #7275 head 7e8d67133d3ae39c36d1a515dff1ef1db94f3fb3 implements a pure research-only resolver
+  Macro PR #7275 head afa4a50ec0149928063e6d650a9689b41b67b005 implements a pure research-only resolver plus a bounded client-arrival observability path
   that can disambiguate target-first versus adverse-first inside one five-minute interval only from a complete,
   ordered, adjusted-basis, positive-volume five-minute set of one-minute SessionTape observations; missing or
   malformed evidence remains unavailable and same-minute unresolved order remains ambiguous.
 falsifier: >
   Read engine/entry_radar/minute_resolution.py and the TTID1 cases appended to
-  tests/test_entry_radar_w4_c3_reader.py on #7275 head 7e8d67133d3ae39c36d1a515dff1ef1db94f3fb3. A path that fetches/persists data, emits an entry event,
+  tests/test_entry_radar_w4_c3_reader.py on #7275 head afa4a50ec0149928063e6d650a9689b41b67b005. A path that fetches/persists data, emits an entry event,
   sorts/fills incomplete minutes, accepts zero-volume price evidence, or guesses an open-between-thresholds
   same-minute order refutes the claim. Hosted review/CI or a later source head may revise acceptance state.
 so_what: >
@@ -18,10 +18,7 @@ so_what: >
 kind: architecture
 verified_at: '2026-09-17'
 verified_by: >
-  #7275 head 7e8d67133d3ae39c36d1a515dff1ef1db94f3fb3; complete C3 reader/resolver suite 64 passed;
-  full existing Radar W1-W6 regression 1496 passed/2 skipped on latest-main merged head; focused provenance/resolution
-  slice 55 passed/9 deselected; compileall and diff-check passed. Current hardening also requires non-empty source
-  vintage and emits source_clock_proven=false / availability_time_unproven. Hosted current-head contract/review pending.
+  #7275 head afa4a50ec0149928063e6d650a9689b41b67b005. Pre-commit exact-byte proof for the live-arrival projection: complete C3/receipt/resolver suite 83 passed; full existing Radar W1-W6 regression 1515 passed/2 skipped; compileall and diff-check passed. The resolver retains source_clock_proven=false / availability_time_unproven. The reader separately emits source_evidence_class=prospective_fetch_arrival_receipt with authority=source_arrival_observation_only, and the existing live C3 health block projects the latest in-memory receipt without gating detector behavior. Hosted current-head contract/review pending.
 scope:
 - WS:TERMINAL-TACTICAL-INTELLIGENCE
 - WS:LIVE-ENTRY-RADAR

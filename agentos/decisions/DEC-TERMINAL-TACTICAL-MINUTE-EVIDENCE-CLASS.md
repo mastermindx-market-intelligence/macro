@@ -38,3 +38,7 @@ decided_at: '2026-09-17'
 ---
 
 For R1-B corrected-history evaluation, an accepted resolver may refine an enumerated same-five-minute ambiguity only if the requested minute window is complete and source-qualified under this evidence class. A prospective/live promotion requires a new source receipt measuring current-session availability/freshness on the canonical path; historical as-observed replay requires genuine archived availability receipts rather than inferred clocks.
+
+## 2026-09-19 implementation clarification
+
+Macro #7275 head `afa4a50ec0149928063e6d650a9689b41b67b005` implements the separately required **client-observed** source-arrival receipt on the existing VendorMinuteReader and projects the latest receipt through the existing `health.inputs.c3_reader.source_arrival` path. This does not revise the historical ruling above: corrected historical minutes remain `availability_time_unproven`. The prospective receipt is `source_arrival_observation_only`, records request/response timing and RTH tail coverage, and cannot gate a detector or claim vendor first-publication time. A real natural current-RTH receipt is still required before the prospective/live source path may be called proven.
