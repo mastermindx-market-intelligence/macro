@@ -1,0 +1,69 @@
+{
+  "schema": "mastermind.rates_conditioned_leader_pullback_prereg.v1",
+  "operation": "rates-conditioned-leader-pullback-prereg-20260919-sol-001",
+  "freeze_base": "6f35b67d4a2655f2e8409406646f88adf852c2b6",
+  "authority": {
+    "research_only": true,
+    "can_rank": false,
+    "can_score": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_trade": false
+  },
+  "episode_source": "research/prophet_us_audit/early_admission_bakeoff_episodes.parquet",
+  "primary_trigger": "C2r",
+  "secondary_trigger": "C4",
+  "leader_like": {
+    "f_above200": true,
+    "f_rs63_operator": ">",
+    "f_rs63_value": 0.0
+  },
+  "rate_clock": {
+    "max_source_date_relative_to_decision": "T-1",
+    "source_rows_only": true,
+    "forward_fill_is_observation": false
+  },
+  "rate_series": {
+    "d10_5": "DGS10 5 observed-source-session bp change",
+    "d10_22": "DGS10 22 observed-source-session bp change",
+    "d2_5": "DGS2 5 observed-source-session bp change",
+    "dr10_5": "DFII10 5 observed-source-session bp change",
+    "dbe10_5": "T10YIE 5 observed-source-session bp change; descriptive only"
+  },
+  "states": {
+    "EASING_AFTER_PRESSURE": "d10_22>0 && d10_5<0 && dr10_5<=0",
+    "POLICY_CONFIRMED_RELIEF": "EASING_AFTER_PRESSURE && d2_5<=0",
+    "REACCELERATION": "d10_22>0 && d10_5>0 && dr10_5>=0",
+    "magnitude_sensitivity": "abs(d10_5)>=5"
+  },
+  "primary_metric": "date_clustered_false_start_rate_difference_pp",
+  "minimum_unique_decision_dates_per_arm": 30,
+  "supportive_diagnostic": {
+    "minimum_false_start_reduction_pp": 10.0,
+    "interval_must_exclude_zero": true,
+    "temporal_halves_same_sign": true
+  },
+  "suggestive_minimum_reduction_pp": 5.0,
+  "secondary_outcomes": [
+    "stop_A_survival",
+    "false_bounce",
+    "MFE_42",
+    "two_R_before_stop",
+    "entry_vs_low",
+    "td_to_trough"
+  ],
+  "closed_primary_family": [
+    "C2r leader-like easing-vs-non-easing false-start difference",
+    "C2r leader-minus-nonleader interaction across rate states"
+  ],
+  "forbidden_in_this_trial": [
+    "leader_reset_study resurrection",
+    "rate RSI/StochRSI/MACD parameter search",
+    "Elliott-wave search",
+    "options-flow or dealer feature fusion",
+    "post-outcome cutoff optimization",
+    "same-day rate observations without qualified historical receipt",
+    "episode trigger-time movement",
+    "new evaluation ledger"
+  ]
+}
