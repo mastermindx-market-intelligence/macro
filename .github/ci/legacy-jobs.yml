@@ -1671,6 +1671,8 @@ jobs:
       - "engine/entry_signal.py"
       - "engine/equity_alloc.py"
       - "engine/equity_factors.py"
+      - "engine/etf_board.py"
+      - "engine/etf_pulse.py"
       - "engine/event_calendar.py"
       - "engine/extension.py"
     # Wired 2026-08-02: neither suite was named by ANY run step, so #4297's caution
@@ -5836,6 +5838,16 @@ jobs:
     # .claude/hooks/ could otherwise skip the job that owns its contract.
     paths:
       - ".claude/hooks/**"
+      # The execution continuation law lives on four surfaces at once and is proven by
+      # cross-surface parity, so an edit to ANY of them has to re-run that proof. Path
+      # inference cannot reach them: the suite reads them as data, by relative path,
+      # not by import. A law corrected on three surfaces and left stale on the fourth
+      # is the exact failure DEC:HOLD-PARKS-SHIP-NOT-DIALOGUE was filed for.
+      - CLAUDE.md
+      - AGENTS.md
+      - ".cursor/rules/**"
+      - agentos/decisions/DEC-EXECUTION-CONTINUATION-INVARIANTS.md
+      - tests/test_execution_continuation_law.py
       - scripts/agentos.py
       - scripts/ci_authority.py
       - scripts/ci_authority_paths.py
@@ -5849,6 +5861,7 @@ jobs:
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
       - tests/test_f00c_terminal_reconciliation.py
+      - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
       - tests/test_f01_fx_commodity_source_rights.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
@@ -5905,7 +5918,7 @@ jobs:
         run: pip install pytest pyyaml
       - name: self-mod-fence selftest (all four cases proven)
         run: python3 scripts/check_self_mod_fence.py --selftest
-      - name: ship-loop guard contract (dirt, branch namespace, render scoping)
+      - name: ship-loop guard contract (dirt, branch namespace, render scoping, continuation law)
         # The Stop hook that enforces commit->merge->render->live had NO CI at all,
         # which is how its render precondition shipped scoped to the whole session
         # range: on a shared main that sweeps in concurrent sessions' templates/
@@ -5922,7 +5935,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -6003,7 +6016,7 @@ jobs:
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
-            tests/test_f00c_terminal_reconciliation.py -q
+            tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -7034,6 +7047,15 @@ jobs:
     #                             client-sent user id is ignored), validation, the
     #                             user_metadata MERGE, the email_prefs lang mirror, and the
     #                             honest partial/total failure statuses.
+    #   test_alert_prefs.py     — B-F08-1a alert delivery preferences (email opt-in,
+    #                             category subset, IANA tz, quiet hours): storage-shape
+    #                             validation via lib.user_prefs.normalize_value, the
+    #                             quiet_hours wire sentinel "off" reaching the writer as
+    #                             None (never the literal string), GET /api/account/prefs
+    #                             readback with unset/categories_available, no site/data
+    #                             filesystem writes, and the account.js JS-source
+    #                             contract for the new alert-prefs group (same
+    #                             no-browser-harness idiom as test_shared_pref_atomics.py).
     #   test_account_team_fields.py — GET /api/account teams field: RLS-scoped
     #                             PostgREST read (caller token on Authorization,
     #                             never the service-role key), own-row filter,
@@ -7071,7 +7093,7 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
       - name: shared preference atomics contract (templates/theme.js)
@@ -8858,7 +8880,7 @@ jobs:
         #   wire_story — D1 one event, one post; its docstring already names this lane
         #   wire_volume — a dark desk PARKS; no account takes an unbounded firehose
         # Verified in a clean pytest+pyyaml+jinja2 venv: 1006 passed, 0 skipped.
-        run: python -m pytest tests/test_marketing_ad_central.py tests/test_marketing_allies.py tests/test_marketing_anchor_law.py tests/test_marketing_attribution.py tests/test_marketing_breaking_card.py tests/test_marketing_card_ticker_agreement.py tests/test_marketing_cold_read.py tests/test_marketing_copy_review.py tests/test_marketing_earnings_call_lane.py tests/test_marketing_emitted_kind_ownership.py tests/test_marketing_lane_rerun.py tests/test_marketing_links.py tests/test_marketing_macro_print_tier.py tests/test_marketing_mover_stance.py tests/test_marketing_next_review.py tests/test_marketing_rejections.py tests/test_marketing_relay_hygiene.py tests/test_marketing_reply_elements.py tests/test_marketing_reply_pacing.py tests/test_marketing_reply_register.py tests/test_marketing_reply_shape.py tests/test_marketing_reply_targets.py tests/test_marketing_rewrite.py tests/test_marketing_source_authority.py tests/test_marketing_tape_reaction_basket.py tests/test_marketing_telemetry.py tests/test_marketing_wire_dehandle.py tests/test_marketing_wire_single_statement.py tests/test_marketing_wire_story.py tests/test_marketing_wire_volume.py -q
+        run: python -m pytest tests/test_marketing_ad_central.py tests/test_marketing_allies.py tests/test_marketing_anchor_law.py tests/test_marketing_attribution.py tests/test_marketing_breaking_card.py tests/test_marketing_card_ticker_agreement.py tests/test_marketing_cold_read.py tests/test_marketing_copy_review.py tests/test_marketing_earnings_call_lane.py tests/test_marketing_earnings_call_projection.py tests/test_marketing_emitted_kind_ownership.py tests/test_marketing_lane_rerun.py tests/test_marketing_links.py tests/test_marketing_macro_print_tier.py tests/test_marketing_mover_stance.py tests/test_marketing_next_review.py tests/test_marketing_rejections.py tests/test_marketing_relay_hygiene.py tests/test_marketing_reply_elements.py tests/test_marketing_reply_pacing.py tests/test_marketing_reply_register.py tests/test_marketing_reply_shape.py tests/test_marketing_reply_targets.py tests/test_marketing_rewrite.py tests/test_marketing_source_authority.py tests/test_marketing_tape_reaction_basket.py tests/test_marketing_telemetry.py tests/test_marketing_wire_dehandle.py tests/test_marketing_wire_single_statement.py tests/test_marketing_wire_story.py tests/test_marketing_wire_volume.py -q
       - name: reply-target register validates (config/reply_targets.yml)
         # The register is operator-curated, so a bad handle or an unknown tier is
         # an editing mistake, not a code change. Runs as its own step so a
@@ -11813,6 +11835,10 @@ jobs:
       - "engine/research_vault/**"
       - "engine/signal_foundry/**"
       - "lib/*"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # imports research/DO_NOT_REBUILD.md (transitive via the test_dashboard_template_render
+      # helpers) so the import-closure widening adds it to this job's paths.
+      - "research/DO_NOT_REBUILD.md"
       - "research/PROPHET_ARENA_REGISTRATION.md"
       - "research/REGIME_RELIABILITY_FACTOR_CROWDING_ADJUDICATION.md"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
@@ -11879,6 +11905,11 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # imports the capture scripts that produced the evidence crops, so the import
+      # closure is satisfied via this widening — no job count change.
+      - "scripts/capture_page_evidence.py"
+      - "scripts/capture_us_stocks_compression_evidence.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_spvector.py"
       - "scripts/build_stage_analysis.py"
@@ -11960,6 +11991,10 @@ jobs:
       - "site/qledger/track_record.json"
       - "site/sectordata/**"
       - "site/stocktable.js"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # imports site/tier_preview.js (organ/tape body the dashboard.html.j2 mode=stocks
+      # render consumes), so the import closure needs this path listed.
+      - "site/tier_preview.js"
       # F13-X1 help source-validation closure reached through build_site.
       - "templates/_navlinks.html.j2"
       - "templates/_prophet_card.html.j2"
@@ -12000,6 +12035,15 @@ jobs:
       - "tests/test_cn_track_ledger_eras.py"
       - "tests/test_confluence_veto_leg_telemetry.py"
       - "tests/test_dashboard_template_render.py"
+      # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
+      # renders the same dashboard.html.j2 template (mode=stocks) and imports engine.i18n,
+      # which the job's `engine/i18n.py` and `engine/holdings_signals.py` paths already
+      # cover; widened here so contract-delta sees the suite in the job's import closure.
+      - "tests/test_us_stocks_s2_compression.py"
+      # Import closure of the new suite reaches these helpers — added to satisfy
+      # contract-delta's import-closure widening rule (path-scoping-only, no new job).
+      - "tests/test_mag7_tape_strip.py"
+      - "tests/test_theme_tape.py"
       - "tests/test_grade_us_board.py"
       - "tests/test_heal_stage_forward_ledger.py"
       - "tests/test_macro_risk_dialog.py"
@@ -12146,7 +12190,7 @@ jobs:
       # No dependency widened: it renders Jinja templates only — jinja2 is already on
       # the install line above.  Measured 54s against this job's 245s body and 12m cap.
       - name: dashboard.html.j2 rendered-HTML contract (unrun backfill 2026-08-27)
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py -q
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_us_stocks_s2_compression.py -q
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
@@ -12435,7 +12479,7 @@ jobs:
       # above remains the masking unit. No new job; paths widened below to
       # cover the new suite's imports and its engine/template subjects.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py -q
+        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
@@ -12468,6 +12512,7 @@ jobs:
       - "tests/test_commodities_ignition_copy.py"
       - "tests/test_commodities_w6_truth.py"
       - "tests/test_macro_rates_curves_bonds_guard.py"
+      - "tests/test_build_forex_stance.py"
       - "scripts/build_bonds.py"
       - "scripts/build_commodities.py"
       - "site/bonds.html"

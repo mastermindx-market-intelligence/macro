@@ -44,62 +44,400 @@
   "first_lawful_comparison_read": "PENDING until 20 matured H=10 sessions",
   "honest_n_floor": 20,
   "last_run": {
-    "board_as_of": "2026-09-14",
+    "board_as_of": "2026-09-17",
     "coverage": {
-      "identical": 0,
+      "identical": 8,
       "matured": 0,
-      "revisions_refused": 0,
+      "revisions_refused": 4,
       "stamps": 0,
       "written": 0
     },
     "dry_run": false,
     "failures": [],
     "family": {
-      "identical": 0,
+      "identical": 8,
+      "matured": 0,
+      "revisions_refused": 5,
+      "stamps": 0,
+      "written": 0
+    },
+    "n_coverage_rows": 8,
+    "n_family_rows": 8,
+    "n_paired_rows": 1044,
+    "paired": {
+      "identical": 1001,
       "matured": 0,
       "revisions_refused": 0,
       "stamps": 0,
       "written": 0
     },
-    "n_coverage_rows": 0,
-    "n_family_rows": 0,
-    "n_paired_rows": 958,
-    "paired": {
-      "identical": 905,
-      "matured": 53,
-      "revisions_refused": 0,
-      "stamps": 1,
-      "written": 53
-    },
     "reconstruction_refused": [
-      "2026-09-14",
       "2026-07-31",
       "2026-08-05",
       "2026-08-06",
       "2026-08-07",
       "2026-08-12",
       "2026-08-14",
-      "2026-09-02"
+      "2026-09-02",
+      "2026-09-14",
+      "2026-09-15"
     ],
-    "require_stamp": "2026-09-14",
-    "same_stamp_revisions_refused": [],
+    "require_stamp": "2026-09-17",
+    "same_stamp_revisions_refused": [
+      {
+        "changed_fields": [
+          {
+            "existing": 25,
+            "field": "rows_contributing",
+            "incoming": 34
+          },
+          {
+            "existing": 3,
+            "field": "distinct_values",
+            "incoming": 4
+          },
+          {
+            "existing": 0.4,
+            "field": "modal_value",
+            "incoming": 0.3823529412
+          },
+          {
+            "existing": 0.68,
+            "field": "modal_share",
+            "incoming": 0.6176470588
+          },
+          {
+            "existing": 0.2351510153,
+            "field": "dispersion",
+            "incoming": 0.2467218414
+          },
+          {
+            "existing": 1.6279069767,
+            "field": "mean_abs_rank_delta",
+            "incoming": 1.3898305085
+          },
+          {
+            "existing": 9,
+            "field": "max_abs_rank_delta",
+            "incoming": 11
+          }
+        ],
+        "existing_fingerprint": "b8e4dbbead43b7c11f882d87a0c4209db1b65af6bd5f0818e08c1d0d9867a2f1",
+        "grain": "family",
+        "incoming_fingerprint": "b385c0d9f62ae6a3dfc52b1edbf8c73fc9b45476d47c3dc03536b244e5559f97",
+        "key": [
+          "2026-09-17",
+          "F1_TECHNICAL_CONFLUENCE"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 43,
+            "field": "rows_contributing",
+            "incoming": 59
+          },
+          {
+            "existing": 39,
+            "field": "distinct_values",
+            "incoming": 52
+          },
+          {
+            "existing": 0.4418604651,
+            "field": "modal_value",
+            "incoming": 0.593220339
+          },
+          {
+            "existing": 0.0465116279,
+            "field": "modal_share",
+            "incoming": 0.0677966102
+          },
+          {
+            "existing": 0.2089075961,
+            "field": "dispersion",
+            "incoming": 0.2331624658
+          },
+          {
+            "existing": 2.8372093023,
+            "field": "mean_abs_rank_delta",
+            "incoming": 2.5762711864
+          },
+          {
+            "existing": 28,
+            "field": "rows_moved",
+            "incoming": 44
+          }
+        ],
+        "existing_fingerprint": "5546af9b1accbd1d38596bb2fdd18851aa9c6b9466c4ed7c10cc08c5db2a7381",
+        "grain": "family",
+        "incoming_fingerprint": "4314aee17632db8a5341a7c6ba8258139222e4bf7477c939524eafb2131678e1",
+        "key": [
+          "2026-09-17",
+          "F2_MOMENTUM_EXTENSION"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 43,
+            "field": "rows_contributing",
+            "incoming": 59
+          },
+          {
+            "existing": 0.476744186,
+            "field": "modal_value",
+            "incoming": 0.4322033898
+          },
+          {
+            "existing": 0.9302325581,
+            "field": "modal_share",
+            "incoming": 0.8474576271
+          },
+          {
+            "existing": 0.127377339,
+            "field": "dispersion",
+            "incoming": 0.1797729105
+          },
+          {
+            "existing": 0.6976744186,
+            "field": "mean_abs_rank_delta",
+            "incoming": 1.6271186441
+          },
+          {
+            "existing": 9,
+            "field": "max_abs_rank_delta",
+            "incoming": 11
+          },
+          {
+            "existing": 17,
+            "field": "rows_moved",
+            "incoming": 36
+          },
+          {
+            "existing": 0,
+            "field": "top30_churn",
+            "incoming": 2
+          }
+        ],
+        "existing_fingerprint": "590db09098de776228d18becc4ce33b0c7b9ad24374907eb82ec7d71315d6f5a",
+        "grain": "family",
+        "incoming_fingerprint": "547f93d6a1027e8d3b836d8c637f43eaac865aea7c594bdbf6ad61a7deb564c4",
+        "key": [
+          "2026-09-17",
+          "F4_CATALYST_EVENT"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 43,
+            "field": "rows_contributing",
+            "incoming": 59
+          },
+          {
+            "existing": 2,
+            "field": "distinct_values",
+            "incoming": 3
+          },
+          {
+            "existing": 0.476744186,
+            "field": "modal_value",
+            "incoming": 0.4576271186
+          },
+          {
+            "existing": 0.8604651163,
+            "field": "modal_share",
+            "incoming": 0.813559322
+          },
+          {
+            "existing": 0.086625956,
+            "field": "dispersion",
+            "incoming": 0.1106573293
+          },
+          {
+            "existing": 0.7906976744,
+            "field": "mean_abs_rank_delta",
+            "incoming": 0.813559322
+          },
+          {
+            "existing": 5,
+            "field": "max_abs_rank_delta",
+            "incoming": 6
+          },
+          {
+            "existing": 19,
+            "field": "rows_moved",
+            "incoming": 29
+          }
+        ],
+        "existing_fingerprint": "8572984ffb9865eadfdcccaa94323327bf9ccf2a60c6b86b0e1eb9811beb1b54",
+        "grain": "family",
+        "incoming_fingerprint": "2e66e8441123ae9da4cfecb341b060072efdf53cce2a7e62b151880d5da108f9",
+        "key": [
+          "2026-09-17",
+          "F5_FLOW_POSITIONING"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 43,
+            "field": "rows_contributing",
+            "incoming": 59
+          },
+          {
+            "existing": 0.5,
+            "field": "modal_value",
+            "incoming": 0.4576271186
+          },
+          {
+            "existing": 0.976744186,
+            "field": "modal_share",
+            "incoming": 0.8983050847
+          },
+          {
+            "existing": 0.07535745,
+            "field": "dispersion",
+            "incoming": 0.1511233432
+          },
+          {
+            "existing": 0.1860465116,
+            "field": "mean_abs_rank_delta",
+            "incoming": 0.6779661017
+          },
+          {
+            "existing": 4,
+            "field": "max_abs_rank_delta",
+            "incoming": 9
+          },
+          {
+            "existing": 5,
+            "field": "rows_moved",
+            "incoming": 19
+          }
+        ],
+        "existing_fingerprint": "a9aa496777e44d17528ed16ddf5f7421e5446c051615d484186ac34ec4687be7",
+        "grain": "family",
+        "incoming_fingerprint": "164048c8678b0b62fbb5422c9aa64c793675fc6255e15b084978f5a8d82ce2bc",
+        "key": [
+          "2026-09-17",
+          "F8_ATTENTION_CROWDING"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 40,
+            "field": "distinct_values",
+            "incoming": 54
+          }
+        ],
+        "existing_fingerprint": "532494cfe2d2b3aace68e61b53a2edcaeebd63f7ab7de894683334b6cd4a55a9",
+        "grain": "coverage",
+        "incoming_fingerprint": "98976de05233fdae6949fb6396a791fa1e4f94b048fc56bf9a565f2e16dfff74",
+        "key": [
+          "2026-09-17",
+          "alpha"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 0.372093,
+            "field": "coverage",
+            "incoming": 0.423729
+          }
+        ],
+        "existing_fingerprint": "30eb8854cb7809a70da4beb5e71e26cfe56c41dded31aafc968f3242efcda68e",
+        "grain": "coverage",
+        "incoming_fingerprint": "ccc08687e344855f9d4c1d9a39c5a1b64cbaa55c0f41c2f1cc0644ffebb74fa5",
+        "key": [
+          "2026-09-17",
+          "gex_confirm_verdict"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 42,
+            "field": "distinct_values",
+            "incoming": 55
+          }
+        ],
+        "existing_fingerprint": "4891a4d66f20768eed5a4acd32dcc67f5042fd81302915ea9376d3f9640a3aaf",
+        "grain": "coverage",
+        "incoming_fingerprint": "9ec24fb0e588b7ade33c7b0fc0b59ca870bf3b4a6a3b408947725a92b8a6d2cb",
+        "key": [
+          "2026-09-17",
+          "off_high"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      },
+      {
+        "changed_fields": [
+          {
+            "existing": 0.581395,
+            "field": "coverage",
+            "incoming": 0.576271
+          },
+          {
+            "existing": 3,
+            "field": "distinct_values",
+            "incoming": 4
+          }
+        ],
+        "existing_fingerprint": "8d0cbc05f87b78932ca20364dd717e7a59c896a40a9aae2890654b2d6e207029",
+        "grain": "coverage",
+        "incoming_fingerprint": "5ca9ba2677ee4fc54cf79bfe8ca93e07bbed59aca687b43826ba1bf67f6ea652",
+        "key": [
+          "2026-09-17",
+          "tier_cascade"
+        ],
+        "kind": "SAME_STAMP_REVISION_REFUSED",
+        "schema": "us.prophet_w3_revision/v1",
+        "stamp_date": "2026-09-17"
+      }
+    ],
     "sessions_written": {
-      "identical": 17,
+      "identical": 18,
       "matured": 0,
       "refused": 0,
-      "written": 1
+      "written": 0
     }
   },
   "latest_session": {
-    "liveness": "degraded_or_unpaired",
-    "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
-    "stamp_date": "2026-09-15"
+    "liveness": "unmatured",
+    "reason": "paired observation accrued; H=10 outcome pending (not zero)",
+    "stamp_date": "2026-09-17"
   },
-  "matured_h10_sessions": 0,
+  "matured_h10_sessions": 1,
   "missing_sessions": [],
   "n_degraded_or_unpaired": 9,
   "n_missing": 0,
-  "paired_sessions_accrued": 17,
+  "paired_sessions_accrued": 18,
   "same_stamp_revisions_refused": [
     {
       "changed_fields": [
@@ -3344,12 +3682,648 @@
         "tier_cascade"
       ],
       "stamp_date": "2026-09-11"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 25,
+          "field": "rows_contributing",
+          "incoming": 34
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 4
+        },
+        {
+          "existing": 0.4,
+          "field": "modal_value",
+          "incoming": 0.3823529412
+        },
+        {
+          "existing": 0.68,
+          "field": "modal_share",
+          "incoming": 0.6176470588
+        },
+        {
+          "existing": 0.2351510153,
+          "field": "dispersion",
+          "incoming": 0.2467218414
+        },
+        {
+          "existing": 1.6279069767,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.3898305085
+        },
+        {
+          "existing": 9,
+          "field": "max_abs_rank_delta",
+          "incoming": 11
+        }
+      ],
+      "existing_fingerprint": "b8e4dbbead43b7c11f882d87a0c4209db1b65af6bd5f0818e08c1d0d9867a2f1",
+      "grain": "family",
+      "incoming_fingerprint": "b385c0d9f62ae6a3dfc52b1edbf8c73fc9b45476d47c3dc03536b244e5559f97",
+      "key": [
+        "2026-09-17",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 39,
+          "field": "distinct_values",
+          "incoming": 52
+        },
+        {
+          "existing": 0.4418604651,
+          "field": "modal_value",
+          "incoming": 0.593220339
+        },
+        {
+          "existing": 0.0465116279,
+          "field": "modal_share",
+          "incoming": 0.0677966102
+        },
+        {
+          "existing": 0.2089075961,
+          "field": "dispersion",
+          "incoming": 0.2331624658
+        },
+        {
+          "existing": 2.8372093023,
+          "field": "mean_abs_rank_delta",
+          "incoming": 2.5762711864
+        },
+        {
+          "existing": 28,
+          "field": "rows_moved",
+          "incoming": 44
+        }
+      ],
+      "existing_fingerprint": "5546af9b1accbd1d38596bb2fdd18851aa9c6b9466c4ed7c10cc08c5db2a7381",
+      "grain": "family",
+      "incoming_fingerprint": "4314aee17632db8a5341a7c6ba8258139222e4bf7477c939524eafb2131678e1",
+      "key": [
+        "2026-09-17",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 0.476744186,
+          "field": "modal_value",
+          "incoming": 0.4322033898
+        },
+        {
+          "existing": 0.9302325581,
+          "field": "modal_share",
+          "incoming": 0.8474576271
+        },
+        {
+          "existing": 0.127377339,
+          "field": "dispersion",
+          "incoming": 0.1797729105
+        },
+        {
+          "existing": 0.6976744186,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.6271186441
+        },
+        {
+          "existing": 9,
+          "field": "max_abs_rank_delta",
+          "incoming": 11
+        },
+        {
+          "existing": 17,
+          "field": "rows_moved",
+          "incoming": 36
+        },
+        {
+          "existing": 0,
+          "field": "top30_churn",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "590db09098de776228d18becc4ce33b0c7b9ad24374907eb82ec7d71315d6f5a",
+      "grain": "family",
+      "incoming_fingerprint": "547f93d6a1027e8d3b836d8c637f43eaac865aea7c594bdbf6ad61a7deb564c4",
+      "key": [
+        "2026-09-17",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 2,
+          "field": "distinct_values",
+          "incoming": 3
+        },
+        {
+          "existing": 0.476744186,
+          "field": "modal_value",
+          "incoming": 0.4576271186
+        },
+        {
+          "existing": 0.8604651163,
+          "field": "modal_share",
+          "incoming": 0.813559322
+        },
+        {
+          "existing": 0.086625956,
+          "field": "dispersion",
+          "incoming": 0.1106573293
+        },
+        {
+          "existing": 0.7906976744,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.813559322
+        },
+        {
+          "existing": 5,
+          "field": "max_abs_rank_delta",
+          "incoming": 6
+        },
+        {
+          "existing": 19,
+          "field": "rows_moved",
+          "incoming": 29
+        }
+      ],
+      "existing_fingerprint": "8572984ffb9865eadfdcccaa94323327bf9ccf2a60c6b86b0e1eb9811beb1b54",
+      "grain": "family",
+      "incoming_fingerprint": "2e66e8441123ae9da4cfecb341b060072efdf53cce2a7e62b151880d5da108f9",
+      "key": [
+        "2026-09-17",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 0.5,
+          "field": "modal_value",
+          "incoming": 0.4576271186
+        },
+        {
+          "existing": 0.976744186,
+          "field": "modal_share",
+          "incoming": 0.8983050847
+        },
+        {
+          "existing": 0.07535745,
+          "field": "dispersion",
+          "incoming": 0.1511233432
+        },
+        {
+          "existing": 0.1860465116,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.6779661017
+        },
+        {
+          "existing": 4,
+          "field": "max_abs_rank_delta",
+          "incoming": 9
+        },
+        {
+          "existing": 5,
+          "field": "rows_moved",
+          "incoming": 19
+        }
+      ],
+      "existing_fingerprint": "a9aa496777e44d17528ed16ddf5f7421e5446c051615d484186ac34ec4687be7",
+      "grain": "family",
+      "incoming_fingerprint": "164048c8678b0b62fbb5422c9aa64c793675fc6255e15b084978f5a8d82ce2bc",
+      "key": [
+        "2026-09-17",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 40,
+          "field": "distinct_values",
+          "incoming": 54
+        }
+      ],
+      "existing_fingerprint": "532494cfe2d2b3aace68e61b53a2edcaeebd63f7ab7de894683334b6cd4a55a9",
+      "grain": "coverage",
+      "incoming_fingerprint": "98976de05233fdae6949fb6396a791fa1e4f94b048fc56bf9a565f2e16dfff74",
+      "key": [
+        "2026-09-17",
+        "alpha"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.372093,
+          "field": "coverage",
+          "incoming": 0.423729
+        }
+      ],
+      "existing_fingerprint": "30eb8854cb7809a70da4beb5e71e26cfe56c41dded31aafc968f3242efcda68e",
+      "grain": "coverage",
+      "incoming_fingerprint": "ccc08687e344855f9d4c1d9a39c5a1b64cbaa55c0f41c2f1cc0644ffebb74fa5",
+      "key": [
+        "2026-09-17",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 42,
+          "field": "distinct_values",
+          "incoming": 55
+        }
+      ],
+      "existing_fingerprint": "4891a4d66f20768eed5a4acd32dcc67f5042fd81302915ea9376d3f9640a3aaf",
+      "grain": "coverage",
+      "incoming_fingerprint": "9ec24fb0e588b7ade33c7b0fc0b59ca870bf3b4a6a3b408947725a92b8a6d2cb",
+      "key": [
+        "2026-09-17",
+        "off_high"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.581395,
+          "field": "coverage",
+          "incoming": 0.576271
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 4
+        }
+      ],
+      "existing_fingerprint": "8d0cbc05f87b78932ca20364dd717e7a59c896a40a9aae2890654b2d6e207029",
+      "grain": "coverage",
+      "incoming_fingerprint": "5ca9ba2677ee4fc54cf79bfe8ca93e07bbed59aca687b43826ba1bf67f6ea652",
+      "key": [
+        "2026-09-17",
+        "tier_cascade"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 25,
+          "field": "rows_contributing",
+          "incoming": 34
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 4
+        },
+        {
+          "existing": 0.4,
+          "field": "modal_value",
+          "incoming": 0.3823529412
+        },
+        {
+          "existing": 0.68,
+          "field": "modal_share",
+          "incoming": 0.6176470588
+        },
+        {
+          "existing": 0.2351510153,
+          "field": "dispersion",
+          "incoming": 0.2467218414
+        },
+        {
+          "existing": 1.6279069767,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.3898305085
+        },
+        {
+          "existing": 9,
+          "field": "max_abs_rank_delta",
+          "incoming": 11
+        }
+      ],
+      "existing_fingerprint": "b8e4dbbead43b7c11f882d87a0c4209db1b65af6bd5f0818e08c1d0d9867a2f1",
+      "grain": "family",
+      "incoming_fingerprint": "b385c0d9f62ae6a3dfc52b1edbf8c73fc9b45476d47c3dc03536b244e5559f97",
+      "key": [
+        "2026-09-17",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 39,
+          "field": "distinct_values",
+          "incoming": 52
+        },
+        {
+          "existing": 0.4418604651,
+          "field": "modal_value",
+          "incoming": 0.593220339
+        },
+        {
+          "existing": 0.0465116279,
+          "field": "modal_share",
+          "incoming": 0.0677966102
+        },
+        {
+          "existing": 0.2089075961,
+          "field": "dispersion",
+          "incoming": 0.2331624658
+        },
+        {
+          "existing": 2.8372093023,
+          "field": "mean_abs_rank_delta",
+          "incoming": 2.5762711864
+        },
+        {
+          "existing": 28,
+          "field": "rows_moved",
+          "incoming": 44
+        }
+      ],
+      "existing_fingerprint": "5546af9b1accbd1d38596bb2fdd18851aa9c6b9466c4ed7c10cc08c5db2a7381",
+      "grain": "family",
+      "incoming_fingerprint": "4314aee17632db8a5341a7c6ba8258139222e4bf7477c939524eafb2131678e1",
+      "key": [
+        "2026-09-17",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 0.476744186,
+          "field": "modal_value",
+          "incoming": 0.4322033898
+        },
+        {
+          "existing": 0.9302325581,
+          "field": "modal_share",
+          "incoming": 0.8474576271
+        },
+        {
+          "existing": 0.127377339,
+          "field": "dispersion",
+          "incoming": 0.1797729105
+        },
+        {
+          "existing": 0.6976744186,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.6271186441
+        },
+        {
+          "existing": 9,
+          "field": "max_abs_rank_delta",
+          "incoming": 11
+        },
+        {
+          "existing": 17,
+          "field": "rows_moved",
+          "incoming": 36
+        },
+        {
+          "existing": 0,
+          "field": "top30_churn",
+          "incoming": 2
+        }
+      ],
+      "existing_fingerprint": "590db09098de776228d18becc4ce33b0c7b9ad24374907eb82ec7d71315d6f5a",
+      "grain": "family",
+      "incoming_fingerprint": "547f93d6a1027e8d3b836d8c637f43eaac865aea7c594bdbf6ad61a7deb564c4",
+      "key": [
+        "2026-09-17",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 2,
+          "field": "distinct_values",
+          "incoming": 3
+        },
+        {
+          "existing": 0.476744186,
+          "field": "modal_value",
+          "incoming": 0.4576271186
+        },
+        {
+          "existing": 0.8604651163,
+          "field": "modal_share",
+          "incoming": 0.813559322
+        },
+        {
+          "existing": 0.086625956,
+          "field": "dispersion",
+          "incoming": 0.1106573293
+        },
+        {
+          "existing": 0.7906976744,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.813559322
+        },
+        {
+          "existing": 5,
+          "field": "max_abs_rank_delta",
+          "incoming": 6
+        },
+        {
+          "existing": 19,
+          "field": "rows_moved",
+          "incoming": 29
+        }
+      ],
+      "existing_fingerprint": "8572984ffb9865eadfdcccaa94323327bf9ccf2a60c6b86b0e1eb9811beb1b54",
+      "grain": "family",
+      "incoming_fingerprint": "2e66e8441123ae9da4cfecb341b060072efdf53cce2a7e62b151880d5da108f9",
+      "key": [
+        "2026-09-17",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 43,
+          "field": "rows_contributing",
+          "incoming": 59
+        },
+        {
+          "existing": 0.5,
+          "field": "modal_value",
+          "incoming": 0.4576271186
+        },
+        {
+          "existing": 0.976744186,
+          "field": "modal_share",
+          "incoming": 0.8983050847
+        },
+        {
+          "existing": 0.07535745,
+          "field": "dispersion",
+          "incoming": 0.1511233432
+        },
+        {
+          "existing": 0.1860465116,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.6779661017
+        },
+        {
+          "existing": 4,
+          "field": "max_abs_rank_delta",
+          "incoming": 9
+        },
+        {
+          "existing": 5,
+          "field": "rows_moved",
+          "incoming": 19
+        }
+      ],
+      "existing_fingerprint": "a9aa496777e44d17528ed16ddf5f7421e5446c051615d484186ac34ec4687be7",
+      "grain": "family",
+      "incoming_fingerprint": "164048c8678b0b62fbb5422c9aa64c793675fc6255e15b084978f5a8d82ce2bc",
+      "key": [
+        "2026-09-17",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 40,
+          "field": "distinct_values",
+          "incoming": 54
+        }
+      ],
+      "existing_fingerprint": "532494cfe2d2b3aace68e61b53a2edcaeebd63f7ab7de894683334b6cd4a55a9",
+      "grain": "coverage",
+      "incoming_fingerprint": "98976de05233fdae6949fb6396a791fa1e4f94b048fc56bf9a565f2e16dfff74",
+      "key": [
+        "2026-09-17",
+        "alpha"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.372093,
+          "field": "coverage",
+          "incoming": 0.423729
+        }
+      ],
+      "existing_fingerprint": "30eb8854cb7809a70da4beb5e71e26cfe56c41dded31aafc968f3242efcda68e",
+      "grain": "coverage",
+      "incoming_fingerprint": "ccc08687e344855f9d4c1d9a39c5a1b64cbaa55c0f41c2f1cc0644ffebb74fa5",
+      "key": [
+        "2026-09-17",
+        "gex_confirm_verdict"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 42,
+          "field": "distinct_values",
+          "incoming": 55
+        }
+      ],
+      "existing_fingerprint": "4891a4d66f20768eed5a4acd32dcc67f5042fd81302915ea9376d3f9640a3aaf",
+      "grain": "coverage",
+      "incoming_fingerprint": "9ec24fb0e588b7ade33c7b0fc0b59ca870bf3b4a6a3b408947725a92b8a6d2cb",
+      "key": [
+        "2026-09-17",
+        "off_high"
+      ],
+      "stamp_date": "2026-09-17"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.581395,
+          "field": "coverage",
+          "incoming": 0.576271
+        },
+        {
+          "existing": 3,
+          "field": "distinct_values",
+          "incoming": 4
+        }
+      ],
+      "existing_fingerprint": "8d0cbc05f87b78932ca20364dd717e7a59c896a40a9aae2890654b2d6e207029",
+      "grain": "coverage",
+      "incoming_fingerprint": "5ca9ba2677ee4fc54cf79bfe8ca93e07bbed59aca687b43826ba1bf67f6ea652",
+      "key": [
+        "2026-09-17",
+        "tier_cascade"
+      ],
+      "stamp_date": "2026-09-17"
     }
   ],
   "schema": "us.prophet_w3_status/v1",
   "structural": {
-    "n_coverage_rows": 136,
-    "n_family_rows": 136,
+    "n_coverage_rows": 144,
+    "n_family_rows": 144,
     "outcome_blind": true,
     "schema": "prophet_fusion.w3_structural.v1"
   },

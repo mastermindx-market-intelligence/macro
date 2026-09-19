@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-09-15",
+  "asof": "2026-09-18",
   "candidates": {
-    "R": 1,
-    "T": 1,
-    "W": 3
+    "R": 0,
+    "T": 0,
+    "W": 4
   },
   "deduped": {
-    "R": 1,
-    "T": 1,
-    "W": 3
+    "R": 0,
+    "T": 0,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
@@ -86,41 +86,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-16 22:29:33",
-  "runtime_s": 147.9,
+  "run_utc": "2026-09-19 09:51:42",
+  "runtime_s": 123.7,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-09-15",
-    "n_members": 69,
+    "asof": "2026-09-18",
+    "n_members": 75,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 2.862,
+        "emerging_score": 3.655,
         "rank": 1,
+        "theme": "Education Technology"
+      },
+      {
+        "emerging_score": 2.544,
+        "rank": 2,
         "theme": "Cybersecurity"
       },
       {
-        "emerging_score": 2.059,
-        "rank": 2,
-        "theme": "Social Media"
-      },
-      {
-        "emerging_score": 1.984,
+        "emerging_score": 1.301,
         "rank": 3,
         "theme": "Biometrics"
       },
       {
-        "emerging_score": 1.444,
+        "emerging_score": 1.154,
         "rank": 4,
-        "theme": "Wearables"
+        "theme": "Mega-Cap"
       },
       {
-        "emerging_score": 1.205,
+        "emerging_score": 1.045,
         "rank": 5,
-        "theme": "Mega-Cap"
+        "theme": "Space Tech"
       }
     ]
   },
@@ -129,19 +129,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 3,
-    "asof_max": "2026-09-16",
-    "asof_mismatch": 3,
-    "asof_run": "2026-09-15",
+    "aligned": 4,
+    "asof_max": "2026-09-18",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-18",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 25.3,
+    "runtime_s": 21.5,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 83,
+    "state_turn": 76,
     "universe_n": 717
   }
 }
