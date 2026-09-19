@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T04:55:30.222913+00:00",
-  "count": 2407,
+  "generated_at": "2026-09-19T05:14:42.401944+00:00",
+  "count": 2408,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -106,6 +106,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3ezysidfims-105b4b",
+      "title": "Narrowing breadth warning signal or healthy rotation",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-19T01:50:42Z",
+      "summary_points": [
+        "Fed Policy Tightening & S&P Breadth Deterioration: Fed raised rates to 3.75%-4.00% (25bps); S&P 500 shows 32% of constituents ≥20% below peaks (vs. 8% in 2016), signaling narrowing breadth and heightened correction risk despite near-record highs.",
+        "Tech Sector Fragility Dominates Risk: 56.2% of Tech constituents in bear market (vs.",
+        "S&P 500 average 32.2%), driving concentrated weakness; resilience hinges on large tech names holding, with >71% bear-market participation indicating severe pressure.",
+        "Critical Technical Support at 7,492: S&P 500 must hold 7,492.11 to avoid deeper pullback to 7,314 and 200-day SMA (7,175); break below confirms extended correction, threatening path to 7,938-8,022."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
