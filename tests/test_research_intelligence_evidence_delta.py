@@ -389,3 +389,63 @@ def test_rights_safe_summary_refuses_nonhash_claim_entries():
         assert "claim counts" in str(exc)
     else:
         raise AssertionError("safe summary must reject non-hash claim entries")
+
+
+def test_repeated_same_statement_rows_preserve_multiplicity():
+    previous, current = _pair()
+    previous["claims"].append(
+        {
+            "statement": SECOND_CLAIM,
+            "evidence": [{"quote_span": SECOND_CLAIM}],
+            "numbers": [],
+            "entities": [],
+            "horizon": "current",
+            "explicit": True,
+        }
+    )
+    current["claims"].append(
+        {
+            "statement": SECOND_CLAIM,
+            "evidence": [{"quote_span": SECOND_CLAIM}],
+            "numbers": [],
+            "entities": [],
+            "horizon": "current",
+            "explicit": True,
+        }
+    )
+    duplicate_statement = "Server demand remains supported."
+    previous["analysis"]["forecasts"] = [
+        {
+            "statement": duplicate_statement,
+            "horizon": "near term",
+            "confidence": "moderate",
+            "support_claim_indices": [0],
+        },
+        {
+            "statement": duplicate_statement,
+            "horizon": "near term",
+            "confidence": "moderate",
+            "support_claim_indices": [1],
+        },
+    ]
+    current["analysis"]["forecasts"] = [
+        {
+            "statement": duplicate_statement,
+            "horizon": "near term",
+            "confidence": "moderate",
+            "support_claim_indices": [0],
+        }
+    ]
+
+    delta = compare_institutional_rio_evidence(
+        previous,
+        current,
+        topic_key=TOPIC_KEY,
+    )
+    forecasts = delta["categories"]["forecasts"]
+    assert len(forecasts["shared"]) == 1
+    assert len(forecasts["removed"]) == 1
+    assert forecasts["added"] == []
+    assert forecasts["modified"] == []
+    assert delta["surface_change_detected"] is True
+    assert "category_forecasts" in delta["surface_change_dimensions"]
