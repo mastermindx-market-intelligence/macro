@@ -74,6 +74,7 @@ import json
 import logging
 import time
 from collections import Counter
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -94,7 +95,10 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "SCHEMA", "ARTIFACT", "AUTHORITY", "DISCLOSURE", "DISCLOSURE_ZH",
+    "PROPHET_OBSERVATION_SCHEMA", "PROPHET_ACTIVE_STATES",
     "MIN_BARS", "COVERAGE_SHRINK_WARN", "STORE_LADDER",
+    "project_prophet_observations", "load_prophet_observations",
+    "prophet_observation_summary",
     "load_bars", "rs_cross_section", "compute_coverage", "write_artifact",
     "artifact_path", "run",
 ]
@@ -146,6 +150,248 @@ DISCLOSURE_ZH = (
     "仅供展示，采用 v0 参数、未经检验流程：不参与排序、准入或仓位。"
     "组件无法给出状态的个股会连同原因一并列出，而不是含糊地记为“否”。"
 )
+
+
+# ---------------------------------------------------------------------------
+# Prophet observation projection — display-only consumer of this artifact
+# ---------------------------------------------------------------------------
+
+PROPHET_OBSERVATION_SCHEMA = "prophet.leader_observations/v1"
+PROPHET_ACTIVE_STATES: tuple[str, ...] = (
+    organ.STATE_LEADER,
+    organ.STATE_PULLBACK,
+    organ.STATE_RESET_TURN,
+    organ.STATE_RESUMED,
+)
+_PROPHET_DISPOSITION = {
+    organ.STATE_LEADER: "OBSERVED_LEADER_WAIT",
+    organ.STATE_PULLBACK: "OBSERVED_PULLBACK_WAIT_SIGNATURE",
+    organ.STATE_RESET_TURN: "OBSERVED_RESET_WAIT_SIGNATURE",
+    organ.STATE_RESUMED: "OBSERVED_RESUMED_DO_NOT_CHASE",
+}
+_PROPHET_ROW_FIELDS: tuple[str, ...] = (
+    "rs_pct",
+    "pullback_depth",
+    "zone_low",
+    "zone_high",
+    "reset_low",
+    "pullback_age",
+)
+
+
+def _source_relation(source_session: str | None,
+                     reference_session: str | None) -> str:
+    """Name the source/reference clock relation without inventing a calendar."""
+    if not source_session or not reference_session:
+        return "unknown"
+    source = str(source_session)[:10]
+    reference = str(reference_session)[:10]
+    if source == reference:
+        return "aligned"
+    return "behind" if source < reference else "ahead_conflict"
+
+
+def _projection_source(payload: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Copy source-level provenance only — never the ticker-keyed state map."""
+    doc = payload if isinstance(payload, Mapping) else {}
+    source: dict[str, Any] = {}
+    for key in (
+        "schema",
+        "as_of",
+        "data_session",
+        "max_session",
+        "session_note",
+        "selection_era",
+        "construction_era",
+        "indicator_source",
+        "authority",
+        "coverage",
+        "disclosure",
+        "disclosure_zh",
+        "organ_disclosure",
+        "benchmark",
+    ):
+        if key in doc:
+            value = doc.get(key)
+            if isinstance(value, Mapping):
+                value = dict(value)
+            source[key] = value
+    return source
+
+
+def _unavailable_projection(reason_code: str,
+                            payload: Mapping[str, Any] | None = None,
+                            *, reference_session: str | None = None) -> dict[str, Any]:
+    source = _projection_source(payload)
+    source_session = source.get("data_session") or source.get("as_of")
+    return {
+        "schema": PROPHET_OBSERVATION_SCHEMA,
+        "status": "unavailable",
+        "reason_code": reason_code,
+        "source_relation": _source_relation(source_session, reference_session),
+        "source": source,
+        "counts": {
+            "source_rows": 0,
+            "active": 0,
+            "non_active": 0,
+            "nulled": 0,
+            "invalid": 0,
+            "by_state": {state: 0 for state in PROPHET_ACTIVE_STATES},
+        },
+        "ordering": "ticker_asc_no_rank",
+        "rows": [],
+    }
+
+
+def project_prophet_observations(
+    payload: Mapping[str, Any],
+    *,
+    reference_session: str | None,
+) -> dict[str, Any]:
+    """Project the existing leader-pullback coverage into a no-authority roster.
+
+    This is a strict consumer of :data:`SCHEMA`; it does not recompute an indicator,
+    widen a universe, mint a rank, or originate a plan.  Unknown/malformed source rows
+    are counted and named as degradation rather than disappearing into a quiet zero.
+    """
+    if not isinstance(payload, Mapping) or payload.get("schema") != SCHEMA:
+        return _unavailable_projection(
+            "schema_mismatch",
+            payload if isinstance(payload, Mapping) else None,
+            reference_session=reference_session,
+        )
+
+    source_session = payload.get("data_session") or payload.get("as_of")
+    if not source_session:
+        return _unavailable_projection(
+            "source_session_missing", payload, reference_session=reference_session
+        )
+    if payload.get("authority") != AUTHORITY:
+        return _unavailable_projection(
+            "authority_drift", payload, reference_session=reference_session
+        )
+
+    states = payload.get("states")
+    if not isinstance(states, Mapping):
+        projection = _unavailable_projection(
+            "invalid_rows", payload, reference_session=reference_session
+        )
+        projection["counts"]["invalid"] = 1
+        return projection
+
+    rows: list[dict[str, Any]] = []
+    by_state = {state: 0 for state in PROPHET_ACTIVE_STATES}
+    non_active = 0
+    nulled = 0
+    malformed = 0
+    unknown = 0
+
+    for raw_ticker, raw_row in states.items():
+        if not isinstance(raw_ticker, str) or not raw_ticker.strip():
+            malformed += 1
+            continue
+        ticker = raw_ticker.strip().upper()
+        if not isinstance(raw_row, Mapping):
+            malformed += 1
+            continue
+
+        state = raw_row.get("state")
+        if state is None:
+            nulled += 1
+            continue
+        if state == organ.STATE_NONE:
+            non_active += 1
+            continue
+        if not isinstance(state, str) or state not in PROPHET_ACTIVE_STATES:
+            unknown += 1
+            continue
+
+        row: dict[str, Any] = {
+            "ticker": ticker,
+            "state": state,
+            "state_asof": raw_row.get("asof"),
+            "data_session": str(source_session)[:10],
+            "disposition": _PROPHET_DISPOSITION[state],
+            "plan_authority": False,
+        }
+        for field in _PROPHET_ROW_FIELDS:
+            value = raw_row.get(field)
+            if value is not None:
+                row[field] = value
+        rows.append(row)
+        by_state[state] += 1
+
+    rows.sort(key=lambda row: row["ticker"])
+    invalid = malformed + unknown
+    if invalid:
+        status = "degraded"
+        reason_code = "invalid_rows" if malformed else "unknown_state_rows"
+    elif rows:
+        status = "available"
+        reason_code = None
+    else:
+        status = "empty"
+        reason_code = "no_active_states"
+
+    return {
+        "schema": PROPHET_OBSERVATION_SCHEMA,
+        "status": status,
+        "reason_code": reason_code,
+        "source_relation": _source_relation(str(source_session), reference_session),
+        "source": _projection_source(payload),
+        "counts": {
+            "source_rows": len(states),
+            "active": len(rows),
+            "non_active": non_active,
+            "nulled": nulled,
+            "invalid": invalid,
+            "by_state": by_state,
+        },
+        "ordering": "ticker_asc_no_rank",
+        "rows": rows,
+    }
+
+
+def load_prophet_observations(
+    site_root: Path | None = None,
+    *,
+    reference_session: str | None,
+) -> dict[str, Any]:
+    """Load and project the real site artifact, naming every availability failure."""
+    path = artifact_path(site_root)
+    if not path.exists():
+        return _unavailable_projection(
+            "artifact_absent", reference_session=reference_session
+        )
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001 — display projection is fail-soft.
+        log.warning("leader observation artifact unreadable (%s): %s", path, exc)
+        return _unavailable_projection(
+            "artifact_unreadable", reference_session=reference_session
+        )
+    return project_prophet_observations(
+        payload, reference_session=reference_session
+    )
+
+
+def prophet_observation_summary(
+    projection: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Return the ticker-free machine receipt safe for the Prophet index."""
+    return {
+        key: (dict(value) if isinstance(value, Mapping) else value)
+        for key, value in projection.items()
+        if key in {
+            "schema",
+            "status",
+            "reason_code",
+            "source_relation",
+            "source",
+            "counts",
+            "ordering",
+        }
+    }
 
 
 # ---------------------------------------------------------------------------
