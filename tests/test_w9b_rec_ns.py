@@ -110,3 +110,24 @@ def test_the_w9_namespace_note_carries_every_anchor_and_says_nothing_forbidden()
         f"{matches}; cite the merged pull request and the seat's handoff-kit receipt "
         "path instead, and never write the ref"
     )
+
+
+# --- Round-3 truth pins (seat, 2026-09-19): each of these FAILS at bf526615 and 426cccc3 ---
+_RULING_EXACT = '"#579 owns 0024, #577 owns 0025, #582 owns 0026 (reserved), #581 owns 0027."'
+_FALSE_RULING = "#581 owns 0024"
+_READ_DATE_EXACT = "(committed 2026-09-14T07:06:47Z; local 2026-09-14 00:06:47 -0700)"
+_REST_READ = "contents/supabase/migrations/RESERVATIONS.json?ref=master"
+_ROW_0027 = "0027: state=taken, packet=B-F12-10, pr=581, pr_state=merged, merged_sha=c9381593, applied_in_production=True, applied_date=2026-09-19"
+
+
+def test_round3_truth_pins_ruling_date_read_and_no_placeholder_clock() -> None:
+    text = NOTE.read_text(encoding="utf-8")
+    assert _RULING_EXACT in text, "the seat ruling must be quoted exactly (0024->#579, 0025->#577, 0026 reserved, 0027->#581)"
+    assert _FALSE_RULING not in text, "the false ruling sentence (#581 owning 0024) must not appear anywhere"
+    assert _READ_DATE_EXACT in text, "origin/main read date must carry the UTC instant and the -0700 local time"
+    assert "T00:06Z" not in text, "the -0700 wall time must never be written with a Z suffix"
+    assert _REST_READ in text, "the re-verify block must quote the REST contents read, not GraphQL"
+    assert _ROW_0027 in text, "the live 0027 row must be quoted verbatim"
+    assert "all three 0024-claimers" in text and "all four 0024-claimers" not in text
+    assert "07:5xZ" not in text and ":xxZ" not in text, "read timestamps are clocks, never placeholders"
+    assert "| OPEN |" not in text, "the 2026-09-13 table must not present the three PRs as OPEN in the present tense"
