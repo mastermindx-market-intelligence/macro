@@ -137,6 +137,41 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert semantic["inputs"]["source_rows"][-1]["asof"] == projection["source_asof"]
 
 
+def test_capture_refuses_an_inverted_dvol_high_low_bar():
+    d2 = _d2()
+    entry, sig, dvol = _frames(fired=True)
+    broken = dvol.copy()
+    broken.loc[broken.index[-1], "dvol_high"] = 80.0
+    broken.loc[broken.index[-1], "dvol_low"] = 90.0
+    journey = d2.new_journey()
+    assert d2.capture_source(
+        journey,
+        entry_asof=str(entry.date()),
+        sig_df=sig,
+        dvol_df=broken,
+        recorded_at="2026-09-17T05:00:00Z",
+    )
+    projection = d2.project(journey)
+    assert projection["status"] == "unavailable"
+    assert projection["reason"] == "dvol_range_invalid"
+    assert projection["fired"] is None
+
+
+def test_projection_rejects_an_almost_matching_frozen_fire_threshold():
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
+    semantic = copy.deepcopy(journey["generations"][0]["semantic"])
+    semantic["spec"]["fire_threshold"] = 2.0 + 1e-12
+    inconsistent = d2.new_journey()
+    assert d2.append_generation(
+        inconsistent,
+        d2.make_generation("source", semantic, recorded_at="2026-09-17T05:00:00Z"),
+    )
+    projection = d2.project(inconsistent)
+    assert projection["status"] == "unavailable"
+    assert projection["reason"] == "source_trigger_evidence_unavailable"
+    assert projection["fired"] is None
+
+
 def test_projection_replay_is_independent_of_the_mutable_runtime_z_helper(monkeypatch):
     d2, journey, _entry, _sig, _dvol = _capture_available(fired=True)
     from engine import btc_impulse_radar

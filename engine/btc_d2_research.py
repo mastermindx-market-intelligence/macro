@@ -291,6 +291,11 @@ def build_source_semantic(
                 entry=entry, source=source, dvol_w=dvol_w,
                 reason="dvol_values_invalid", observed_rows=len(window),
             )
+        if float(high) < float(low):
+            return _unavailable_source(
+                entry=entry, source=source, dvol_w=dvol_w,
+                reason="dvol_range_invalid", observed_rows=len(window),
+            )
         rng = (float(high) - float(low)) / float(close)
         if not _finite(rng):
             return _unavailable_source(
@@ -523,12 +528,17 @@ def _project_trigger_evidence(source_semantic: dict) -> dict | None:
         confirmation_lag = int(spec.get("confirmation_lag_bars"))
         if (
             spec.get("identity") != "d2"
+            or spec.get("source") != "deribit/dvol"
+            or spec.get("source_columns") != ["dvol_high", "dvol_low", "dvol_close"]
             or spec.get("input_transform") != "(dvol_high-dvol_low)/dvol_close"
             or spec.get("zscore_definition") != TRIGGER_REPLAY_DEFINITION
             or int(spec.get("zscore_std_ddof")) != 1
-            or not math.isclose(fire_threshold, D2_FIRE_THRESHOLD, abs_tol=0.0)
             or not math.isclose(
-                confirmation_threshold, D2_CONFIRM_THRESHOLD, abs_tol=0.0,
+                fire_threshold, D2_FIRE_THRESHOLD, rel_tol=0.0, abs_tol=0.0,
+            )
+            or not math.isclose(
+                confirmation_threshold, D2_CONFIRM_THRESHOLD,
+                rel_tol=0.0, abs_tol=0.0,
             )
             or confirmation_lag != 1
             or spec.get("fire_rule") != "z>=2.0 OR (z>=1.5 AND lag1(z)>=1.5)"
@@ -551,12 +561,12 @@ def _project_trigger_evidence(source_semantic: dict) -> dict | None:
                 for key in ("dvol_high", "dvol_low", "dvol_close", "range")
             ):
                 return None
+            high = float(row["dvol_high"])
+            low = float(row["dvol_low"])
             close = float(row["dvol_close"])
-            if close <= 0:
+            if close <= 0 or high < low:
                 return None
-            recomputed_range = (
-                float(row["dvol_high"]) - float(row["dvol_low"])
-            ) / close
+            recomputed_range = (high - low) / close
             if not math.isclose(
                 float(row["range"]), recomputed_range, rel_tol=1e-12, abs_tol=1e-12,
             ):
