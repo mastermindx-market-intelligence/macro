@@ -20,6 +20,7 @@ CURRENT_MECHANISM = "accelerating cloud orders and supply normalization support 
 PRIOR_FORECAST = "Server demand should remain firm through the September quarter."
 CURRENT_FORECAST = "Server demand should accelerate into the December quarter."
 SECOND_CLAIM = "Supply availability remains the main constraint on near-term server shipments."
+TOPIC_KEY = "AMD server demand"
 
 
 def _sha(text: str) -> str:
@@ -114,10 +115,13 @@ def _pair():
 
 def test_delta_tracks_direction_claim_and_category_change_without_private_text():
     previous, current = _pair()
-    delta = compare_institutional_rio(previous, current)
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
     serialized = json.dumps(delta)
 
     assert delta["schema"] == SCHEMA
+    assert len(delta["comparison_id"]) == 64
+    assert len(delta["topic_key_sha256"]) == 64
+    assert delta["pairing_authority"] == "caller_asserted_topic"
     assert delta["institution"] == "Fixture Research"
     assert delta["thesis"]["direction_before"] == "neutral"
     assert delta["thesis"]["direction_after"] == "bullish"
@@ -143,7 +147,7 @@ def test_delta_tracks_direction_claim_and_category_change_without_private_text()
 
 def test_support_lineage_is_claim_hash_based_and_document_bound():
     previous, current = _pair()
-    delta = compare_institutional_rio(previous, current)
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
 
     prior_claim_hash = delta["claims"]["removed_sha256"][0]
     current_claim_hash = delta["claims"]["added_sha256"][0]
@@ -172,7 +176,7 @@ def test_same_belief_with_new_document_is_not_material_change():
         mechanism=PRIOR_MECHANISM,
         forecast=PRIOR_FORECAST,
     )
-    delta = compare_institutional_rio(previous, current)
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
     assert delta["material_change"] is False
     assert delta["changed_categories"] == []
     assert delta["claims"]["added_sha256"] == []
@@ -184,7 +188,7 @@ def test_institution_identity_mismatch_fails_closed():
     current["document"]["institution"] = "Other Research"
     current["document"]["source_name"] = "Other Research"
     try:
-        compare_institutional_rio(previous, current)
+        compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
     except ValueError as exc:
         assert "institution identity" in str(exc)
     else:
@@ -197,7 +201,7 @@ def test_non_chronological_pair_and_same_document_id_fail_closed():
     reversed_current["document"] = dict(current["document"])
     reversed_current["document"]["published_at"] = "2026-07-01T12:00:00+00:00"
     try:
-        compare_institutional_rio(previous, reversed_current)
+        compare_institutional_rio(previous, reversed_current, topic_key=TOPIC_KEY)
     except ValueError as exc:
         assert "newer" in str(exc)
     else:
@@ -207,7 +211,7 @@ def test_non_chronological_pair_and_same_document_id_fail_closed():
     same_id["document"] = dict(current["document"])
     same_id["document"]["id"] = previous["document"]["id"]
     try:
-        compare_institutional_rio(previous, same_id)
+        compare_institutional_rio(previous, same_id, topic_key=TOPIC_KEY)
     except ValueError as exc:
         assert "distinct document ids" in str(exc)
     else:
@@ -216,7 +220,7 @@ def test_non_chronological_pair_and_same_document_id_fail_closed():
 
 def test_rights_safe_summary_contains_counts_not_private_text():
     previous, current = _pair()
-    projected = summary(compare_institutional_rio(previous, current))
+    projected = summary(compare_institutional_rio(previous, current, topic_key=TOPIC_KEY))
     serialized = json.dumps(projected)
     assert projected["direction_before"] == "neutral"
     assert projected["direction_after"] == "bullish"
@@ -224,6 +228,8 @@ def test_rights_safe_summary_contains_counts_not_private_text():
     assert projected["removed_claims"] == 1
     assert projected["changed_categories"] == ["forecasts"]
     assert projected["text_visibility"] == "metadata_only"
+    assert len(projected["comparison_id"]) == 64
+    assert len(projected["topic_key_sha256"]) == 64
     assert len(projected["institution_sha256"]) == 64
     assert len(projected["previous_document_id_sha256"]) == 64
     assert len(projected["current_document_id_sha256"]) == 64
@@ -239,7 +245,7 @@ def test_private_delta_writer_forces_owner_only_permissions(tmp_path):
     target = tmp_path / "delta.json"
     target.write_text("old", encoding="utf-8")
     target.chmod(0o644)
-    _write_private_json(target, compare_institutional_rio(previous, current))
+    _write_private_json(target, compare_institutional_rio(previous, current, topic_key=TOPIC_KEY))
     assert stat.S_IMODE(target.stat().st_mode) == 0o600
     loaded = json.loads(target.read_text(encoding="utf-8"))
     assert loaded["schema"] == SCHEMA
@@ -247,7 +253,7 @@ def test_private_delta_writer_forces_owner_only_permissions(tmp_path):
 
 def test_rights_safe_summary_refuses_forged_text_channel():
     previous, current = _pair()
-    delta = compare_institutional_rio(previous, current)
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
     delta["changed_categories"] = [PRIOR_CLAIM]
     try:
         summary(delta)
@@ -269,7 +275,7 @@ def test_same_forecast_statement_with_changed_horizon_is_modified_not_shared():
         forecast=PRIOR_FORECAST,
     )
     current["analysis"]["forecasts"][0]["horizon"] = "next year"
-    delta = compare_institutional_rio(previous, current)
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
     assert delta["categories"]["forecasts"]["added"] == []
     assert delta["categories"]["forecasts"]["removed"] == []
     assert len(delta["categories"]["forecasts"]["modified"]) == 1
@@ -310,10 +316,20 @@ def test_thesis_support_shift_is_material_even_when_belief_text_is_stable():
     previous["analysis"]["thesis"]["support_claim_indices"] = [0]
     current["analysis"]["thesis"]["support_claim_indices"] = [1]
 
-    delta = compare_institutional_rio(previous, current)
+    delta = compare_institutional_rio(previous, current, topic_key=TOPIC_KEY)
     assert delta["claims"]["added_sha256"] == []
     assert delta["claims"]["removed_sha256"] == []
     assert delta["thesis"]["direction_changed"] is False
     assert delta["thesis"]["support_changed"] is True
     assert delta["thesis"]["support_before_claim_sha256"] != delta["thesis"]["support_after_claim_sha256"]
     assert delta["material_change"] is True
+
+
+def test_missing_topic_context_fails_closed():
+    previous, current = _pair()
+    try:
+        compare_institutional_rio(previous, current, topic_key="   ")
+    except ValueError as exc:
+        assert "topic_key" in str(exc)
+    else:
+        raise AssertionError("longitudinal delta requires explicit topic context")
