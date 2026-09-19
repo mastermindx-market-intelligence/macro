@@ -661,3 +661,10 @@ def test_premium_chart_legend_tracks_selected_metric_in_both_languages():
         "伦敦参考价",
     ):
         assert text in html
+
+
+def test_hidden_metric_legends_are_not_revived_by_component_display_css():
+    from pathlib import Path
+
+    css = (Path(__file__).resolve().parents[1] / "templates" / "commodities.html.j2").read_text()
+    assert ".cgp-leg[hidden] { display:none; }" in css
