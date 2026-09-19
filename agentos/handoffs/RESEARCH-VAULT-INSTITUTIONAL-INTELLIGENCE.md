@@ -1,5 +1,35 @@
 # Research Vault institutional intelligence — continuation
 
+**R23 amendment — current convergence and execution frontier (2026-09-19).** Parent customer upgrade remains **SPEC_ONLY / unaccepted**. R22 architecture is accepted with one correction: the operational W1→W2 producer is **unnumbered and NOT W4**; frozen W4 remains the ZeroHedge qualitative adapter. Canonical semantic path is Vault -> merged W1 RIO -> W2 #7230 -> W3 existing Brain consumer -> frozen W4/W5/W6/W7/W8. Do not build a parallel claim graph/store/search/permission/correction plane.
+
+Current protected procedure for this R23 reconciliation: Mastermind@880e377cfa9d3fbdc921e931a55cc8c4143dc119, Skillpack 1.0.1/bootstrap1, same-pin INDEX/COLD_START/ACTIVE_EXECUTION/WEB_CEO_DELEGATION/RECONCILE_STATE/REVIEW_RETURN/CLOSEOUT loaded.
+
+Current material facts:
+- #7287 shared P0B repair is MERGED at a6848436f0ccc6b60f3f7e7e5321315f14e9ce87; do-not-redo.
+- #7079 exact source remains 8271ae320732997be4553957e3e2773d1b9e9f1b. Fresh requalification fences 35423395764 failed because the job checked stale merge c1cae8f3... based on old 8ff20f0a..., which predates merged Agent OS #7316. The event base bac5e74d... contains #7316/#7287 and current refs/pull/7079/merge is 48cadc0a... (exact head into bac5e74d...). CI 35423395875 belongs to that same event and must not be silently called current-base proof. Coordination comment: #7079/5740960105. No blind rerun/no-op source commit.
+- #7079 comment 5720608418 now holds a sealed **synthetic W3 implementation**, gateway proof, model-visible tool-loop proof, projection-budget proof and production private-R2/corpus readiness. W3 is transplant-ready but NOT published/canonical. The production probe found a real current report readable from live corpus with no W2 latest artifact: a live W1→W2 producer is now a demonstrated gap.
+- #7230 W2 remains open/draft at fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2. It owns persistence/correction/versioning; do not modify its carrier from this research branch.
+- R22 producer design is accepted in substance: explicit-ID canary, exact existing stored body, coverage honesty, no ingest coupling, zero model call when current/denied/no-text, exact-predecessor W2 corrections, existing llm_auth/ai_costs only. There is no general executable upstream source-use decision service; actual MarketDesk model processing stays gated by positive business/legal use permission. Public/right-cleared controls may be used for implementation proof.
+- A disposable current-main+W2 producer prototype operation was started on Mac Studio device 3f5ce987-e3eb-40a3-af9f-4b0ae54919cc, but the device disconnected before reconciliation. That local operation is **EFFECT_UNKNOWN on that exact carrier**. Do not retry/reroute it. Reconcile the same device when it returns.
+- Latest committed catalog measured at blob 4eac740ad0539c8676125b9cf545b8a695a1d155, generated 2026-09-19T09:55:58.238104Z: 2,421 rows, 2,406 summaries, 0 populated tickers, 2,316 page/language rows. Previous Sep18 blob b6900293... had 2,354 rows: +67/0 removed in 0.971 days = ~69/day. R7 Sep16 2,208 -> current 2,421 = +213 across 3.157 days = ~67.47/day. Repeated committed-catalog growth sits near the configured 70/account/day cap.
+- Allocator measured profile sums to 206.5 weekday and 85.2 weekend posts/day = 1,202.9/week. Nominal weekly capacity: 1 account 490 (-712.9); 2 = 980 (-222.9); 3 = 1,470 (+267.1); 4 = 1,960 (+757.1). **Three total accounts is the minimum nominal average-week catch-up configuration; fourth is peak/backfill/latency/resilience headroom.**
+- Latest +67 intake is concentrated: GS20 + S&T15 + UBS12 = 70.1% of raw labels. R7->current +213 top3 GS/S&T/JPM = 64.3%. Raw labels are not independent origins.
+- Existing paid corpus already has conservative literal title/summary incidence for key leaders (not entity resolution/body coverage): NVIDIA101, AMD23, Micron15, SanDisk16, Alphabet/Google80, Meta58, Microsoft59, Amazon84. Consumption remains a major unharvested value source.
+- Current public Professional price rechecked 2026-09-19: $150 month-to-month or $125/mo billed annually. Public terms do not establish pooling/automation/model-processing/subscriber-output/redistribution rights.
+
+Capital ruling:
+1. finish W2/R1B/W3 and one right-cleared W1→W2 real artifact + Brain/source journey;
+2. after positive use permission, add **one second account monthly** as a marginal evidence pilot;
+3. if useful gaps remain, move to **three total accounts**, which capacity math now identifies as the structural steady-state target;
+4. fourth account requires measured burst/backfill/latency/resilience value; not default;
+5. avoid annual commitment until rights + real consumption justify it.
+
+Exact next action: first reconcile the effect-unknown producer prototype on the SAME Mac when that device returns. Independently consume incumbent W2/R1B release movement without duplicate CI. Once both prerequisites are canonical, publish the already-sealed W3 patch on fresh main, then execute one right-cleared W1 analysis -> W2 strict persist/readback -> authenticated Brain generic/evidence/no-oracle/quota -> matching source inspection. Only after that begin the second-account pilot.
+
+New canonical R23 report: research/research_vault_expectations_r3/CHUNK23_CURRENT_CONVERGENCE_AND_CAPACITY_DECISION.md at commit f2ea72f8ded46f89ac6945bb0421bdd5af9df356.
+
+---
+
 **R22: architecture/capacity convergence. Parent customer upgrade remains SPEC_ONLY / unaccepted. R20 ordered-report leaf remains BUILT_NOT_PROVEN in draft #7258.** R22 adds no application code, subscription, vendor action, customer proof, model benchmark, or production source mutation. It does establish the canonical semantic architecture and current capacity evidence so future sessions stop designing a parallel intelligence plane.
 
 ## Mission and authority
