@@ -507,6 +507,7 @@ def project(journey: dict | None) -> dict:
         "schema": SCHEMA,
         "status": "unavailable",
         "entry_asof": None,
+        "entry_close": None,
         "source_asof": None,
         "check_after": None,
         "fired": None,
@@ -541,8 +542,10 @@ def project(journey: dict | None) -> dict:
     if source_generation is None or not isinstance(source_semantic, dict):
         return base
     prediction = source_semantic.get("prediction") or {}
+    inputs = source_semantic.get("inputs") or {}
     base.update({
         "entry_asof": source_semantic.get("entry_asof"),
+        "entry_close": inputs.get("entry_close"),
         "source_asof": source_semantic.get("source_asof"),
         "check_after": source_semantic.get("check_after"),
         "fired": prediction.get("fired"),

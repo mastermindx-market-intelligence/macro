@@ -106,6 +106,7 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert projection["schema"] == "btc_d2_forward.v1"
     assert projection["status"] == "pending"
     assert projection["entry_asof"] == str(entry.date())
+    assert projection["entry_close"] == 100.0
     assert projection["source_asof"] == str((entry - pd.Timedelta(days=1)).date())
     assert projection["check_after"] == str((entry + pd.Timedelta(days=3)).date())
     assert projection["fired"] is True

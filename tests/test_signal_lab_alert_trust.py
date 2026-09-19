@@ -112,6 +112,7 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
         "schema": "btc_d2_forward.v1",
         "status": "matured",
         "entry_asof": "2026-09-17",
+        "entry_close": 100.0,
         "source_asof": "2026-09-16",
         "check_after": "2026-09-20",
         "fired": True,
@@ -144,8 +145,11 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert "仅供研究 — 无交易权限" in html
     assert "Observed: 2026-09-16" in html
     assert "观察：2026-09-16" in html
-    assert "Entry close: 2026-09-17" in html
-    assert "入场收盘：2026-09-17" in html
+    assert "Entry date: 2026-09-17" in html
+    assert "入场日期：2026-09-17" in html
+    assert "Entry BTC close: 100.00" in html
+    assert "入场 BTC 收盘：100.00" in html
+    assert "Entry close: 2026-09-17" not in html
     assert "Grade after: 2026-09-20" in html
     assert "评估日：2026-09-20" in html
     assert "Immutable generations: 2" in html

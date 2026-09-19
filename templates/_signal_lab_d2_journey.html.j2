@@ -19,7 +19,12 @@
 <div class="extra d2-observation" data-d2-entry="{{ journey.entry_asof or '' }}">
   <strong>{{ t(heading_en, heading_zh) }}</strong><br>
   {{ t('Observed: ' ~ (journey.source_asof or '—'), '观察：' ~ (journey.source_asof or '—')) }}<br>
-  {{ t('Entry close: ' ~ (journey.entry_asof or '—'), '入场收盘：' ~ (journey.entry_asof or '—')) }}<br>
+  {{ t('Entry date: ' ~ (journey.entry_asof or '—'), '入场日期：' ~ (journey.entry_asof or '—')) }}<br>
+  {% if journey.entry_close is not none %}
+    {{ t('Entry BTC close: ' ~ ('%.2f'|format(journey.entry_close)), '入场 BTC 收盘：' ~ ('%.2f'|format(journey.entry_close))) }}<br>
+  {% else %}
+    {{ t('Entry BTC close: —', '入场 BTC 收盘：—') }}<br>
+  {% endif %}
   {{ t('Grade after: ' ~ (journey.check_after or '—'), '评估日：' ~ (journey.check_after or '—')) }}<br>
   {{ t('Immutable generations: ' ~ (journey.generation_count or 0), '不可变代次：' ~ (journey.generation_count or 0)) }}<br>
   {% if journey.fired is sameas true %}
