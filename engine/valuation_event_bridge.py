@@ -21,6 +21,8 @@ Event-class sources (closed set, exhaustive):
   - ``engine/special_situations.py``           — MATURE_CATEGORIES (issuer-level)
   - ``engine/capital_structure/event_spine.py`` — SEC form-route subtypes
   - ``engine/policy_calendar.py`` / ``collectors/federal_register.py`` — reg_stages
+  (Federal Register policy records are not issuer filings and never populate
+  the issuer panel)
 """
 from __future__ import annotations
 
@@ -59,6 +61,11 @@ _EVENT_CLASS_NAMES: dict[str, tuple[str, str]] = {
     # only where no ZH translation has been established by the desk.
     "registration_statement":           ("Registration Statement",               "登记说明书"),
     "automatic_shelf_registration":    ("Automatic Shelf Registration",         "自动架上登记"),
+    "registration_s1":                 ("S-1 Registration Statement",          "S-1 登记说明书"),
+    "registration_f1":                 ("F-1 Registration Statement",          "F-1 登记说明书"),
+    "registration_s3":                 ("S-3 Shelf Registration",              "S-3 架上登记"),
+    "registration_f3":                 ("F-3 Shelf Registration",              "F-3 架上登记"),
+    "registration_f10":                ("F-10 Shelf Registration",             "F-10 架上登记"),
     "registration_amendment":          ("Registration Amendment",              "登记修正案"),
     "post_effective_amendment":       ("Post-Effective Amendment",            "生效后修正"),
     "automatic_shelf_withdrawal":      ("Automatic Shelf Withdrawal",          "自动撤回登记"),
@@ -257,6 +264,9 @@ _ENTITY_LIST_THEMES_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
 EVENT_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     **SPECIAL_SITUATIONS_TO_ASSUMPTION,
     **EVENT_SPINE_TO_ASSUMPTION,
+}
+
+POLICY_EVENT_TO_ASSUMPTION: dict[str, tuple[str, str, str] | None] = {
     **POLICY_CALENDAR_TO_ASSUMPTION,
     **_ENTITY_LIST_THEMES_TO_ASSUMPTION,
 }

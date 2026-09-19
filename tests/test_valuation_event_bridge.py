@@ -7,7 +7,10 @@ invariant + a non-fallback fixture per event class + the typed-null paths.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
+import re
+import pandas as pd
 
 import jinja2
 
@@ -44,60 +47,44 @@ def test_classified_event_domain_is_exhaustively_typed():
 
 
 def test_vocab_closure():
-    """BLOCKER-1: map keys are exactly the union of the three source vocabularies.
+    """Map keys are exactly the union of the two issuer-filing vocabularies.
 
     Spine subtypes are exactly the keys emitted by engine/capital_structure/event_spine.py
-    route_form() (lines 167-249). Policy stages are exactly those of
-    collectors/federal_register.py _STAGE_WEIGHTS (lines 60-70).
-    Entity-list themes are exactly those of engine/policy_calendar.py _ENTITY_LIST_THEMES.
-
-    The spine import is authority-checked and may fail in test environments;
-    we read the map directly so the test passes in both test and prod contexts.
+    route_form(). Federal Register stages and entity-list themes are not issuer
+    filings and are excluded from the issuer map.
     """
-    domain = veb.classified_event_domain()
-    assert domain, "domain must not be empty"
+    from engine.special_situations import MATURE_CATEGORIES
+    import importlib.util
+    import sys
 
-    # Known spine subtypes from event_spine.py route_form() lines 167-249.
-    # Kept in sync with the live implementation.
-    spine_subtypes_expected = {
-        "automatic_shelf_registration", "registration_statement",
-        "registration_amendment", "post_effective_amendment",
-        "automatic_shelf_withdrawal", "withdrawal_request",
-        "prospectus_event", "charter_amendment_candidate",
-        "shareholder_vote_candidate", "unregistered_equity_sale_candidate",
-        "financing_agreement_candidate", "current_report_candidate",
-        "authorization_or_vote_candidate", "offering_statement",
-        "offering_statement_amendment", "reg_a_event_candidate",
-        "periodic_reconciliation_source", "ownership_context_source",
-        "effectiveness_notice", "unsupported_form",
+    spec = importlib.util.spec_from_file_location(
+        "valuation_test_event_spine", ROOT / "engine" / "capital_structure" / "event_spine.py"
+    )
+    event_spine = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = event_spine
+    assert spec.loader is not None
+    spec.loader.exec_module(event_spine)
+    route_form = event_spine.route_form
+
+    spine_forms = (
+        "S-1", "F-1", "S-3", "S-3ASR", "F-3", "F-3ASR", "F-10",
+        "S-1/A", "F-1/A", "S-3/A", "F-3/A", "F-10/A", "POS AM", "POSASR",
+        "1-A POS", "EFFECT", "RW", "RW/A", "AW", "AW/A", "424B1", "424B2",
+        "424B3", "424B4", "424B5", "424B7", "424B8", "8-K", "8-K/A", "6-K",
+        "6-K/A", "PRE 14A", "DEF 14A", "PRE 14C", "DEF 14C", "PREC14A",
+        "DEFC14A", "PREM14A", "DEFM14A", "DEFA14A", "1-A", "1-A/A", "1-U",
+        "253G1", "253G2", "253G3", "253G4", "1-K", "1-K/A", "10-K", "10-K/A",
+        "10-Q", "10-Q/A", "20-F", "20-F/A", "40-F", "40-F/A", "3", "3/A",
+        "4", "4/A", "5", "5/A", "SC 13D", "SC 13D/A", "SC 13G", "SC 13G/A",
+        "13F-HR", "13F-HR/A", "UNKNOWN-FORM", "8-K", "6-K",
+    )
+    spine_subtypes = {
+        route_form(form, items).subtype
+        for form in spine_forms
+        for items in (None, "5.03", "5.07", "3.02", "1.01")
     }
-    spine_missing = [k for k in spine_subtypes_expected if k not in domain]
-    assert not spine_missing, f"spine subtypes missing from map: {spine_missing}"
-
-    # Policy calendar reg_stages from federal_register.py _STAGE_WEIGHTS.
-    policy_stages_expected = {
-        "executive_order", "interim_final_rule", "final_rule",
-        "proposed_rule", "rfi", "funding_notice", "notice",
-    }
-    policy_missing = [k for k in policy_stages_expected if k not in domain]
-    assert not policy_missing, f"policy stages missing from map: {policy_missing}"
-
-    # Entity-list themes from engine/policy_calendar.py _ENTITY_LIST_THEMES.
-    entity_list_themes_expected = {
-        "ai_semiconductors", "semicap_equipment",
-        "rare_earth_critical_min", "memory_storage",
-    }
-    entity_missing = [k for k in entity_list_themes_expected if k not in domain]
-    assert not entity_missing, f"entity-list themes missing from map: {entity_missing}"
-
-    # No snake_case slug in event_class_zh values (MAJOR-1)
-    import re
-    snake_pattern = re.compile(r'^[a-z]+(_[a-z]+)*$')
-    for k in domain:
-        _en, zh = veb._EVENT_CLASS_NAMES.get(k, (k, k))
-        assert not snake_pattern.match(zh), (
-            f"{k}: event_class_zh {zh!r} is a snake_case slug"
-        )
+    expected = set(MATURE_CATEGORIES) | spine_subtypes
+    assert set(veb.classified_event_domain()) == expected
 
 
 def test_classified_event_domain_covers_every_special_situations_category():
@@ -185,14 +172,19 @@ def test_bridge_returns_typed_null_for_delistings():
     assert out is None, f"'Delistings' must be typed null, got {out!r}"
 
 
-def test_entity_list_themes_map_to_margin():
-    """The four entity-list themes from policy_calendar._ENTITY_LIST_THEMES all
-    map to margin (macro-sector reg/compliance events)."""
-    for theme in ("ai_semiconductors", "semicap_equipment",
-                  "rare_earth_critical_min", "memory_storage"):
-        out = veb.bridge(theme)
-        assert out is not None, f"{theme!r} must hit the map"
-        assert out["target"] == veb.MARGIN, f"{theme!r} -> {out['target']!r} not margin"
+def test_federal_register_policy_events_are_not_issuer_filings():
+    """Federal Register stages and entity-list themes cannot be labelled as the
+    issuer's latest filing, even though their policy mapping remains explicit."""
+    from collectors.federal_register import _STAGE_WEIGHTS
+    from engine.policy_calendar import _ENTITY_LIST_THEMES
+
+    issuer_domain = set(veb.classified_event_domain())
+    policy_domain = set(veb.POLICY_EVENT_TO_ASSUMPTION)
+    stages = {row[2] for row in _STAGE_WEIGHTS}
+    assert policy_domain == stages | set(_ENTITY_LIST_THEMES)
+    assert issuer_domain.isdisjoint(policy_domain)
+    assert veb.bridge_for_issuer("executive_order") is None
+    assert veb.bridge_for_issuer("ai_semiconductors") is None
 
 
 # ---------------------------------------------------------------------------
@@ -335,6 +327,25 @@ def test_panel_renders_one_line_per_event_class_with_target_emphasis():
         )
 
 
+def test_panel_renders_every_member_without_machine_slugs():
+    """Every issuer vocabulary member has bilingual plain-word labels."""
+    v1 = vs.compute(_rows(), ticker="AAPL")
+    controls = va.controls_blob(v1)
+    assert controls is not None
+    slug_pattern = re.compile(r"\b[a-z]+(?:_[a-z_]+)+\b")
+    for cls in veb.classified_event_domain():
+        bridge = veb.bridge(cls)
+        if bridge is None:
+            assert cls in veb._EVENT_CLASS_NAMES
+            continue
+        controls["latest_event_bridge"] = bridge
+        html = _render(controls)
+        assert slug_pattern.search(bridge["event_class_en"]) is None
+        assert slug_pattern.search(bridge["event_class_zh"]) is None
+        assert bridge["event_class_en"] in " ".join(html.split())
+        assert bridge["event_class_zh"] in " ".join(html.split())
+
+
 def test_panel_renders_typed_null_for_other_class():
     """The 'Other' catch-all class has no directional read; the panel must
     render the typed-null copy."""
@@ -374,11 +385,41 @@ def test_panel_does_not_inject_style_or_store_anything_from_bridge_line():
 # v1_blob's special_situation field (MAJOR-3).
 # ---------------------------------------------------------------------------
 
-def test_controls_blob_populates_latest_event_bridge():
-    """When the v1_blob carries a special_situation.latest_event_class,
-    controls_blob surfaces the corresponding bridge dict; otherwise None."""
+def test_controls_blob_populates_latest_event_bridge_from_spine(tmp_path):
+    """controls_blob reads the issuer's real capital-structure spine artifact."""
     v1 = vs.compute(_rows(), ticker="AAPL")
     assert v1 is not None
+    assert "special_situation" not in v1
+
+    events = [
+        {
+            "event_id": "old",
+            "ticker": "aapl",
+            "available_at": "2026-01-01T00:00:00Z",
+            "event_json": json.dumps({"event_id": "old", "event": {"subtype": "unsupported_form"}}),
+        },
+        {
+            "event_id": "new",
+            "ticker": "AAPL",
+            "available_at": "2026-02-01T00:00:00Z",
+            "event_json": json.dumps({"event_id": "new", "event": {"subtype": "registration_statement"}}),
+        },
+        {
+            "event_id": "other-issuer",
+            "ticker": "MSFT",
+            "available_at": "2026-03-01T00:00:00Z",
+            "event_json": json.dumps({"event_id": "other-issuer", "event": {"subtype": "unsupported_form"}}),
+        },
+    ]
+    frame = pd.DataFrame(events)
+    spine_path = tmp_path / "event_versions.parquet"
+    frame.to_parquet(spine_path, index=False)
+
+    assert va.latest_issuer_spine_event_class("AAPL", events_path=spine_path) == "registration_statement"
+    controls = va.controls_blob(v1, issuer_events_path=spine_path)
+    assert controls is not None
+    assert controls["latest_event_bridge"] is not None
+    assert controls["latest_event_bridge"]["event_class"] == "registration_statement"
 
     # Null path: no special_situation field
     controls = va.controls_blob(v1)

@@ -29,5 +29,5 @@ capture: |
   --theme dark/light, --locale en/zh, --viewport desktop=1440x900 / mobile=390x844
   and a 200ms settle post-data-theme/data-lang stamp. Screenshots cropped to
   the #va-event-bridge element only (Tier-2 receipt, not the full panel).
-captured_at: 2026-09-13T16:30Z
+captured_at: 2026-09-19T01:27Z
 resolved_sha_or_none: 90ad6215ddae

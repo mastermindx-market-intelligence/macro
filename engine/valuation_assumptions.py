@@ -24,8 +24,10 @@ and a future null path can reuse V1 diction without re-typing.
 """
 from __future__ import annotations
 
+import json
 import logging
 import math
+from pathlib import Path
 
 from engine import valuation_event_bridge as _veb
 from engine.valuation_scenario import MISSING_LABELS, SCENARIOS
@@ -48,6 +50,64 @@ _MARGIN_BASE_FLOOR = 0.01
 # without re-typing. The sandbox panel's too-thin sentence is the B-F07-2
 # verbatim copy, not MISSING_LABELS["margin_too_thin"].
 _V1_MISSING_LABELS = MISSING_LABELS
+_CAPITAL_STRUCTURE_EVENTS_REL = Path("data") / "capital_structure" / "event_versions.parquet"
+
+
+def latest_issuer_spine_event_class(
+    ticker: object,
+    *,
+    repository_root: Path | None = None,
+    events_path: Path | None = None,
+) -> str | None:
+    """Return the issuer's latest classified capital-structure spine subtype."""
+    if not isinstance(ticker, str) or not ticker.strip():
+        return None
+    wanted = ticker.strip().upper()
+    path = Path(events_path or (repository_root or Path.cwd()) / _CAPITAL_STRUCTURE_EVENTS_REL)
+    if not path.exists():
+        return None
+    import pandas as pd
+
+    frame = pd.read_parquet(path)
+    required = {"ticker", "event_json", "available_at", "event_id"}
+    if not required.issubset(frame.columns):
+        return None
+    latest_key = None
+    latest_event = None
+    for row in frame.to_dict(orient="records"):
+        if str(row.get("ticker") or "").upper() != wanted:
+            continue
+        event_json = row.get("event_json")
+        if not isinstance(event_json, str) or not event_json:
+            continue
+        try:
+            event = json.loads(event_json)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if not isinstance(event, dict):
+            continue
+        available = row.get("available_at")
+        if available is None:
+            available = (event.get("point_in_time") or {}).get("available_at")
+        if not available:
+            continue
+        key = (str(available), str(row.get("event_id") or ""))
+        if latest_key is None or key > latest_key:
+            latest_key = key
+            latest_event = event
+    if latest_event is None:
+        return None
+    subtype = (latest_event.get("event") or {}).get("subtype")
+    return str(subtype).strip() if isinstance(subtype, str) and subtype.strip() else None
+
+
+def _issuer_event_class(v1_blob: dict, issuer_events_path: Path | None = None) -> str | None:
+    special = v1_blob.get("special_situation")
+    if isinstance(special, dict):
+        return special.get("latest_event_class")
+    return latest_issuer_spine_event_class(
+        v1_blob.get("ticker"), events_path=issuer_events_path
+    )
 
 
 def round2(v):
@@ -121,7 +181,7 @@ def _control_defaults():
     return {c["key"]: c["default"] for c in CONTROLS}
 
 
-def controls_blob(v1_blob):
+def controls_blob(v1_blob, *, issuer_events_path: Path | None = None):
     """Build valuation_scenario_controls.v1 from a V1 compute() blob, or None.
 
     Returns None when the V1 blob is missing, when net income is missing or
@@ -154,12 +214,8 @@ def controls_blob(v1_blob):
     if fy is None or not period_end:
         return None
 
+    latest_event_class = _issuer_event_class(v1_blob, issuer_events_path)
     if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
-        _latest_event_class = (
-            (v1_blob.get("special_situation") or {}).get("latest_event_class")
-            if v1_blob and isinstance(v1_blob, dict)
-            else None
-        )
         return {
             "schema": "valuation_scenario_controls.v1",
             "ticker": ticker,
@@ -175,7 +231,7 @@ def controls_blob(v1_blob):
                 "net_margin_base": net_margin_base,
             },
             "margin_base_floor": _MARGIN_BASE_FLOOR,
-            "latest_event_bridge": _veb.bridge_for_issuer(_latest_event_class),
+            "latest_event_bridge": _veb.bridge_for_issuer(latest_event_class),
         }
 
     scenarios = v1_blob.get("scenarios") or []
@@ -218,16 +274,9 @@ def controls_blob(v1_blob):
             "earnings_multiple": mult_s,
         }
 
-    # B-F07-3 event bridge: the issuer's latest classified spine event
-    # drives the bridge line. Typed null when no event exists. No network,
-    # no new collector — reads from the v1_blob's pinned special_situation field
-    # (set by the capital_structure spine pipeline during the nightly build).
-    _latest_event_class = (
-        (v1_blob.get("special_situation") or {}).get("latest_event_class")
-        if v1_blob and isinstance(v1_blob, dict)
-        else None
-    )
-    _latest_event_bridge = _veb.bridge_for_issuer(_latest_event_class)
+    # The durable capital-structure spine is read directly; no new collector
+    # and no network access are introduced.
+    _latest_event_bridge = _veb.bridge_for_issuer(latest_event_class)
 
     return {
         "schema": "valuation_scenario_controls.v1",

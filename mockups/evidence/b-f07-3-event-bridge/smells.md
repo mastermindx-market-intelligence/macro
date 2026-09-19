@@ -14,7 +14,7 @@ one plain-word line under the controls.
 
 ## Hosts
 
-Three hosts in `mockups/evidence/b-f07-3-event-bridge/hosts/`:
+Three hosts in `mockups/evidence/b-f07-3-event-bridge/hosts/`, regenerated from the final template at the final head:
 
 1. `valuation-event-bridge-tender-offer.html` — bridge populated with
    `engine/valuation_event_bridge.bridge("Tender Offers")`. EN: "Latest
