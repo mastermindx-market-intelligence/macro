@@ -99,3 +99,11 @@ def test_rollback_preserves_orthogonal_truth_and_accessibility_fixes():
     # Locale correctness retained from #7054.
     assert "{% macro cny_yi_pair(n)" in SRC
     assert "'Neutral':'中性'" in SRC
+
+
+def test_rollback_keeps_dialog_truth_without_six_block_shell():
+    """Modal detail keeps corrected semantics even though L1 returns to the family shell."""
+    assert "signal_stack.agreement_pct" in SRC
+    assert "t('Signal agreement','信号一致度')" not in SRC
+    assert "Driver table unavailable — the index rows are not ready." in SRC
+    assert "驱动表暂不可用 — 指数行尚未就绪。" in SRC
