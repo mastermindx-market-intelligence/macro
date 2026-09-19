@@ -6,6 +6,7 @@ B4 Availability, ranking, plans, origination, sizing, execution, or trades.
 from __future__ import annotations
 
 from collections.abc import Mapping
+from datetime import date, datetime, timezone
 from hashlib import sha256
 import json
 import re
@@ -16,6 +17,9 @@ DEFINITION_ERA = "candidate-state-v1-2026-09-18"
 
 _GENERATION_RE = re.compile(r"^peg:[0-9a-f]{64}$")
 _DATE_RE = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
+_RFC3339_UTC_RE = re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z$"
+)
 _SOURCE_EPISODE_STATES = frozenset(
     {"ACTIVE", "RESOLVED", "INVALIDATED", "EXPIRED", "RETRACTED"}
 )
@@ -86,6 +90,104 @@ def _text(value: object, field: str) -> str:
             f"{field} must be non-empty control-free text"
         )
     return value
+
+
+def _market_session(value: object) -> str:
+    if not isinstance(value, str) or not _DATE_RE.fullmatch(value):
+        raise CandidateStateContractError("market_session must be YYYY-MM-DD")
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise CandidateStateContractError(
+            "market_session must be a real calendar date"
+        ) from exc
+    if parsed.isoformat() != value:
+        raise CandidateStateContractError("market_session is not canonical")
+    return value
+
+
+def _generated_at(value: object) -> str:
+    if not isinstance(value, str) or not _RFC3339_UTC_RE.fullmatch(value):
+        raise CandidateStateContractError("generated_at must be UTC RFC3339")
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as exc:
+        raise CandidateStateContractError(
+            "generated_at must be a real UTC RFC3339 instant"
+        ) from exc
+    if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+        raise CandidateStateContractError("generated_at must be UTC RFC3339")
+    parsed = parsed.astimezone(timezone.utc)
+    return (
+        parsed.isoformat(timespec="microseconds")
+        .replace("+00:00", "Z")
+        .replace(".000000Z", "Z")
+    )
+
+
+def _expected_lifecycle_state(
+    source_state: object, successor: object
+) -> str:
+    if successor is not None:
+        return "SUPERSEDED"
+    if source_state == "ACTIVE":
+        return "ACTIVE"
+    if source_state == "INVALIDATED":
+        return "INVALIDATED"
+    if source_state == "RETRACTED":
+        return "RETRACTED"
+    return "CLOSED"
+
+
+def _validate_lifecycle_projection(value: object) -> None:
+    if not isinstance(value, Mapping) or set(value) != {
+        "state",
+        "source_state",
+        "terminal_reason",
+        "superseded_by",
+    }:
+        raise CandidateStateContractError("lifecycle fields are not closed")
+    source_state = value.get("source_state")
+    if source_state not in _SOURCE_EPISODE_STATES:
+        raise CandidateStateContractError("lifecycle source state invalid")
+    terminal_reason = value.get("terminal_reason")
+    if source_state == "ACTIVE":
+        if terminal_reason is not None:
+            raise CandidateStateContractError(
+                "ACTIVE lifecycle cannot carry terminal_reason"
+            )
+    else:
+        _text(terminal_reason, "lifecycle.terminal_reason")
+    successor = value.get("superseded_by")
+    if successor is not None:
+        _text(successor, "lifecycle.superseded_by")
+    expected_state = _expected_lifecycle_state(source_state, successor)
+    if value.get("state") != expected_state:
+        raise CandidateStateContractError(
+            "lifecycle state is inconsistent with B1 source state"
+        )
+
+
+def _validate_emergence_projection(value: object) -> None:
+    if not isinstance(value, Mapping):
+        raise CandidateStateContractError("emergence state invalid")
+    normalized = _emergence(value)
+    if dict(value) != normalized:
+        raise CandidateStateContractError("emergence state is not canonical")
+
+
+def _validate_maturity_projection(value: object) -> None:
+    if not isinstance(value, Mapping) or set(value) != {
+        "state",
+        "reason",
+        "source_token",
+    }:
+        raise CandidateStateContractError("maturity fields are not closed")
+    expected = _maturity(value.get("source_token"))
+    if dict(value) != expected:
+        raise CandidateStateContractError(
+            "maturity state is inconsistent with source token"
+        )
 
 
 def _lifecycle(episode: Mapping[str, object]) -> dict[str, object]:
@@ -250,17 +352,8 @@ def project_candidate_states(
         raise CandidateStateContractError(
             "snapshot generation_id is invalid"
         )
-    if (
-        not isinstance(market_session, str)
-        or not _DATE_RE.fullmatch(market_session)
-    ):
-        raise CandidateStateContractError(
-            "market_session must be YYYY-MM-DD"
-        )
-    if not isinstance(generated_at, str) or not generated_at.endswith("Z"):
-        raise CandidateStateContractError(
-            "generated_at must be UTC RFC3339"
-        )
+    market_session = _market_session(market_session)
+    generated_at = _generated_at(generated_at)
 
     generation = getattr(snapshot, "generation", None)
     episodes = getattr(generation, "episodes", None)
@@ -359,6 +452,12 @@ def validate_candidate_state_projection(
         raise CandidateStateContractError(
             "projection generation invalid"
         )
+    if payload.get("market_session") != _market_session(
+        payload.get("market_session")
+    ):
+        raise CandidateStateContractError("market_session is not canonical")
+    if payload.get("generated_at") != _generated_at(payload.get("generated_at")):
+        raise CandidateStateContractError("generated_at is not canonical")
 
     rows = payload.get("rows")
     if (
@@ -410,34 +509,11 @@ def validate_candidate_state_projection(
             raise CandidateStateContractError("duplicate episode_id")
         seen.add(episode_id)
 
-        lifecycle = row.get("episode_lifecycle")
-        if (
-            not isinstance(lifecycle, Mapping)
-            or lifecycle.get("state") not in _LIFECYCLE_STATES
-            or lifecycle.get("source_state")
-            not in _SOURCE_EPISODE_STATES
-        ):
-            raise CandidateStateContractError(
-                "lifecycle state invalid"
-            )
-
-        emergence = row.get("emergence_state")
-        if (
-            not isinstance(emergence, Mapping)
-            or emergence.get("state") not in _EMERGENCE_STATES
-        ):
-            raise CandidateStateContractError(
-                "emergence state invalid"
-            )
-
-        maturity = row.get("maturity_state")
-        if (
-            not isinstance(maturity, Mapping)
-            or maturity.get("state") not in _MATURITY_STATES
-        ):
-            raise CandidateStateContractError(
-                "maturity state invalid"
-            )
+        _text(row.get("security_id"), "security_id")
+        _text(row.get("company_id"), "company_id")
+        _validate_lifecycle_projection(row.get("episode_lifecycle"))
+        _validate_emergence_projection(row.get("emergence_state"))
+        _validate_maturity_projection(row.get("maturity_state"))
 
         if row.get("entry_availability") != {
             "state": "UNAVAILABLE_DATA",

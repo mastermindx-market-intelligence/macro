@@ -1,6 +1,12 @@
+from copy import deepcopy
 from dataclasses import dataclass
+from hashlib import sha256
+import json
+
+import pytest
 
 from engine.prophet_candidate_state import (
+    CandidateStateContractError,
     project_candidate_states,
     validate_candidate_state_projection,
 )
@@ -133,3 +139,106 @@ def test_projection_is_deterministic_sorted_and_has_no_authority():
     assert not any(one["authority"].values())
     assert all(not any(r["authority"].values()) for r in one["rows"])
     validate_candidate_state_projection(one)
+
+def _rehash_projection(payload):
+    material = {key: value for key, value in payload.items() if key != "projection_id"}
+    canonical = json.dumps(
+        material, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+    )
+    payload["projection_id"] = "pcs:" + sha256(canonical.encode("utf-8")).hexdigest()
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        ("generated_at", "garbageZ"),
+        ("generated_at", "2026-99-99T25:61:61Z"),
+        ("market_session", "2026-99-99"),
+        ("market_session", "2026-02-31"),
+    ],
+)
+def test_projection_rejects_impossible_decision_clocks(field, bad_value):
+    kwargs = {
+        "market_session": "2026-09-17",
+        "generated_at": "2026-09-18T01:00:00Z",
+    }
+    kwargs[field] = bad_value
+    with pytest.raises(CandidateStateContractError):
+        project_candidate_states(Snap(GEN, Gen((ep("pe:1"),))), **kwargs)
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value"),
+    [
+        ("generated_at", "garbageZ"),
+        ("generated_at", "2026-99-99T25:61:61Z"),
+        ("market_session", "2026-99-99"),
+        ("market_session", "2026-02-31"),
+    ],
+)
+def test_validator_rejects_rehashed_impossible_decision_clocks(field, bad_value):
+    out = project_candidate_states(
+        Snap(GEN, Gen((ep("pe:1"),))),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+    )
+    tampered = deepcopy(out)
+    tampered[field] = bad_value
+    _rehash_projection(tampered)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(tampered)
+
+
+def test_validator_rejects_rehashed_trigger_without_source_provenance():
+    out = project_candidate_states(
+        Snap(GEN, Gen((ep("pe:1"),))),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+        emergence_by_episode={
+            "pe:1": {
+                "state": "TRIGGERED",
+                "reason": None,
+                "source_system": "turn_watch",
+                "source_token": "OPENED",
+                "source_ref": "tw:1",
+            }
+        },
+    )
+    tampered = deepcopy(out)
+    tampered["rows"][0]["emergence_state"] = {
+        "state": "TRIGGERED",
+        "reason": None,
+        "source_system": None,
+        "source_token": None,
+        "source_ref": None,
+    }
+    _rehash_projection(tampered)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(tampered)
+
+
+def test_validator_rejects_rehashed_incoherent_lifecycle():
+    out = project_candidate_states(
+        Snap(GEN, Gen((ep("pe:1"),))),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+    )
+    tampered = deepcopy(out)
+    tampered["rows"][0]["episode_lifecycle"]["state"] = "CLOSED"
+    _rehash_projection(tampered)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(tampered)
+
+
+def test_validator_rejects_rehashed_incoherent_maturity():
+    out = project_candidate_states(
+        Snap(GEN, Gen((ep("pe:1"),))),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+        maturity_stage_by_episode={"pe:1": "EARLY"},
+    )
+    tampered = deepcopy(out)
+    tampered["rows"][0]["maturity_state"]["state"] = "MATURE"
+    _rehash_projection(tampered)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(tampered)
