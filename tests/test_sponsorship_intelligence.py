@@ -11,7 +11,23 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from engine import altdata, altdata_signals, intel_discovery, intelligence
 from scripts.build_portfolio_ctx import build_ctx
 from engine.portfolio_brief import compose_brief
-from collectors.sec_insider import parse_live_form4_submission
+from collectors.sec_insider import parse_live_form4_idx, parse_live_form4_submission
+
+
+def test_official_form_index_admits_issuer_row_not_reporting_owner():
+    idx = """Form Type   Company Name                                                  CIK         Date Filed  File Name
+--------------------------------------------------------------------------------
+4                INTEL CORP                                                    50863       20260814    edgar/data/50863/0000050863-26-000177.txt
+4                TAN LIP BU                                                    1008463     20260814    edgar/data/1008463/0000050863-26-000177.txt
+"""
+    rows = parse_live_form4_idx(idx, {50863: "INTC"})
+    assert rows == [{
+        "accession": "0000050863-26-000177",
+        "issuer_cik": "50863",
+        "ticker": "INTC",
+        "date_filed": "2026-08-14",
+        "filename": "edgar/data/50863/0000050863-26-000177.txt",
+    }]
 
 
 def test_official_sec_form4_parser_recovers_large_ceo_open_market_purchase():
