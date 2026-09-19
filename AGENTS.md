@@ -64,6 +64,15 @@ Migration work follows `research/DESIGN_MIGRATION_FACTORY_V1.md`: builders execu
 a committed migration packet exactly and never invent design language — a builder
 that believes the packet is wrong stops and escalates.
 
+For any **material visual change**, do not design directly in production markup or from a
+chat-only render. The migration packet must identify an approved editable source
+(Figma/Paper/approved equivalent) with exact file/document + frame/node/artboard identifiers,
+the canonical components/tokens consumed, and the Dark/Light × EN/ZH × 1440/390 state matrix.
+The editable canvas projects repository law; it never becomes a second token root or component
+registry. Generated/exported code is implementation input, not automatic design authority.
+If a needed primitive is missing, return a DESIGN-SYSTEM GAP to the design lane instead of
+inventing a page-local substitute.
+
 ### Theme art direction — required (TP-0, 2026-08-27)
 
 Dark and light are **two deliberate art directions of one semantic system**, not
