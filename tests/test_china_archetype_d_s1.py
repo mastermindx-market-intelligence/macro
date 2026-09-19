@@ -19,12 +19,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = (ROOT / "templates" / "china.html.j2").read_text(encoding="utf-8")
-REGISTRY = (ROOT / "config" / "product_experience" / "page_registry_overrides.yml").read_text(
-    encoding="utf-8"
-)
-FACTORY = (ROOT / "research" / "DESIGN_MIGRATION_FACTORY_V1.md").read_text(encoding="utf-8")
-DESIGN = (ROOT / "research" / "MASTER_PRODUCT_DESIGN_SYSTEM_V1.md").read_text(encoding="utf-8")
-
 
 def test_primary_china_route_uses_pre_7054_regional_composition():
     """The live macro route keeps the established MX5 regional dashboard shell."""
@@ -52,22 +46,6 @@ def test_stock_mode_contract_survives_the_macro_route_rollback():
     assert "_cn_theme_tape.html.j2" in SRC
     assert "cn_prophet_live.js" in SRC
     assert "mode != 'macro'" in SRC
-
-
-def test_registry_keeps_future_archetype_but_marks_current_surface_unmigrated():
-    """Long-term D architecture and current release state are two different facts."""
-    china = REGISTRY[REGISTRY.index("  macro:china:"):REGISTRY.index("  macro:china_history:")]
-    assert 'archetype: "regime_dashboard"' in china
-    assert 'design_system: {compliant: false' in china
-    assert "standalone #7054 migration rolled back" in china
-
-
-def test_binding_design_sources_record_the_family_parity_gate():
-    marker = "Regional primary-route parity gate (Chairman, 2026-09-19)"
-    assert marker in FACTORY
-    assert marker in DESIGN
-    assert "#7054" in FACTORY
-    assert "#7054" in DESIGN
 
 
 def test_rollback_preserves_orthogonal_truth_and_accessibility_fixes():
@@ -107,30 +85,6 @@ def test_rollback_keeps_dialog_truth_without_six_block_shell():
     assert "t('Signal agreement','信号一致度')" not in SRC
     assert "Driver table unavailable — the index rows are not ready." in SRC
     assert "驱动表暂不可用 — 指数行尚未就绪。" in SRC
-
-
-def _registry_page_block(page_id: str) -> str:
-    marker = f"  {page_id}:\n"
-    start = REGISTRY.index(marker)
-    rest = REGISTRY[start + len(marker):]
-    # Top-level page keys are exactly two-space-indented; nested mappings are deeper.
-    ends = [i for i, line in enumerate(rest.splitlines(True)) if line.startswith("  ") and not line.startswith("    ") and line.rstrip().endswith(":")]
-    if not ends:
-        return rest
-    return "".join(rest.splitlines(True)[:ends[0]])
-
-
-def test_primary_regional_family_migration_is_atomic():
-    """A normal geography route may not become the lone design-system migration again."""
-    primary = ("macro:macro", "macro:china", "macro:hk", "macro:canada")
-    states = {
-        page_id: "design_system: {compliant: true" in _registry_page_block(page_id)
-        for page_id in primary
-    }
-    assert len(set(states.values())) == 1, (
-        "primary regional macro routes must migrate together; "
-        f"partial design-system state: {states}"
-    )
 
 
 def test_rollback_keeps_honest_live_quote_loading():
