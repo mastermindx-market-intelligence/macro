@@ -37,6 +37,8 @@ from scripts.build_flow_leaders import (
     _load_daily_close,
     _load_two_chain_days,
     _load_options_entry,
+    _finite_float_cell,
+    _extract_stock_context,
     _build_membership_df,
     build,
     _ETF_SET,
@@ -132,6 +134,37 @@ class TestJsonDefault:
     def test_unsupported_raises(self):
         with pytest.raises(TypeError):
             _json_default(object())
+
+
+# ─────────────────────────────────────────────── stockdata numeric cells ──
+
+class TestStockdataNumericCells:
+    def test_metric_cell_uses_point_value(self):
+        assert _finite_float_cell({"v": 28.0, "med": 25.0, "cheap": 40.0}) == 28.0
+
+    def test_plain_scalar_and_nonfinite_are_supported_honestly(self):
+        assert _finite_float_cell(1.25) == 1.25
+        assert _finite_float_cell(float("nan")) is None
+        assert _finite_float_cell({"med": 25.0, "cheap": 40.0}) is None
+
+    def test_stock_context_accepts_canonical_valuation_cell(self):
+        sd = {
+            "tech": {
+                "rs": {"rs_1m": 1.2},
+                "high52w_prox": 0.93,
+                "rel_volume": 1.1,
+            },
+            "profile": {"mktcap_bn": 123.4, "sector": "Technology"},
+            "valuation": {
+                "trailing_pe": {"v": 28.0, "med": 25.0, "cheap": 40.0}
+            },
+        }
+        ctx = _extract_stock_context(sd, "TEST")
+        assert ctx["trailing_pe"] == 28.0
+        assert ctx["mktcap_bn"] == 123.4
+        assert ctx["rs_1m"] == 1.2
+        assert ctx["high52w_prox"] == 0.93
+        assert ctx["rel_volume"] == 1.1
 
 
 # ──────────────────────────────────────────────────── _tape_ex0dte_net ──
