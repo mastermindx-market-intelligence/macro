@@ -43,8 +43,14 @@ def test_dated_handoff_does_not_repeat_superseded_release() -> None:
     assert "Merge A2 (#6699" not in " ".join(historical["next_actions"])
     assert "Do not reopen #6699/#6711" in " ".join(historical["do_not_redo"])
     text = json.dumps(historical, sort_keys=True)
-    assert "#841" in text and "merged/do-not-redo" in text
-    assert "release Mastermind #841" not in " ".join(historical["next_actions"])
+    actions = " ".join(historical["next_actions"])
+    do_not_redo = " ".join(historical["do_not_redo"])
+    verified = json.dumps(historical["verified"], sort_keys=True)
+    assert "Release Mastermind #841" not in actions
+    assert "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e" in do_not_redo
+    assert "OHF typed request failures are repaired and protected." in verified
+    assert "96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e" in verified
+    assert "eb00ed9745f055d3413f483b985fe4f9d8a1f11d" in verified
     assert "not protected until review/CI/release complete" not in text
 
 
