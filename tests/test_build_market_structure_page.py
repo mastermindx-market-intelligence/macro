@@ -500,23 +500,23 @@ def test_m3_null_pctile_is_missing_data_sentence_never_0th(tmp_path):
     assert "本次快照没有百分位读数" in hero
 
 
-def test_p3_machine_money_stance_map(tmp_path):
+def test_p3_systematic_fund_stance_map(tmp_path):
     cases = {
         "aligned_adding": (
-            "Watch — don't chase: machine buying is already in the price.",
-            "观望——勿追涨：机器买盘已在价格中。",
+            "Watch — don't chase: systematic buying is already in the price.",
+            "观望——勿追涨：系统化买盘已反映在价格中。",
         ),
         "aligned_cutting": (
-            "Watch — machine money is stepping back; don't lean against it.",
-            "观望——机器资金正在撤减，勿逆势加仓。",
+            "Watch — systematic funds are stepping back; don't lean against it.",
+            "观望——系统化资金正在撤减，勿逆势加仓。",
         ),
         "paused": (
-            "Stand aside — machine flows aren't pushing either way.",
-            "暂不行动——机器资金没有明确方向。",
+            "Stand aside — systematic flows aren't pushing either way.",
+            "暂不行动——系统化资金没有明确方向。",
         ),
         "split": (
-            "Stand aside — machine flows aren't pushing either way.",
-            "暂不行动——机器资金没有明确方向。",
+            "Stand aside — systematic flows aren't pushing either way.",
+            "暂不行动——系统化资金没有明确方向。",
         ),
         None: (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
         "mystery": (_STANCE_CAUTIOUS_EN, _STANCE_CAUTIOUS_ZH),
@@ -594,7 +594,7 @@ def test_p6_six_warmups_market_facing_both_lanes():
     pairs = [
         ("Shock-absorber reading isn't on this page yet.", "缓冲机制读数尚未出现在本页。"),
         ("Dealer-exposure history isn't on this page yet.", "做市商敞口历史尚未出现在本页。"),
-        ("Machine-money flows aren't on this page yet.", "机器资金动向尚未出现在本页。"),
+        ("Systematic fund flows aren't on this page yet.", "系统化资金流尚未出现在本页。"),
         ("Stock-picker conditions aren't on this page yet.", "选股行情尚未出现在本页。"),
         ("Vol weather isn't on this page yet.", "波动率天气尚未出现在本页。"),
         ("This week's expected range isn't on this page yet.", "本周预期区间尚未出现在本页。"),
@@ -671,8 +671,8 @@ def test_p10_vocabulary_glossed_in_place():
     assert "1个月隐含相关性" in html
     assert "later months cost more than the front (contango)" in html
     assert "远月贵于近月（升水）" in html
-    assert "typical range (±1σ, about 68% of weeks)" in html
-    assert "wide range (±2σ, about 95% of weeks)" in html
+    assert "typical range (68% of weeks)" in html
+    assert "wide range (95% of weeks)" in html
     assert "flip level (dealer hedging switch)" in html
     assert "M1 = front month" in html
     assert "M1=近月" in html

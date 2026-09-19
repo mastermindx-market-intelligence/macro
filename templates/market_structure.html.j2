@@ -18,7 +18,7 @@
 {%- if key == 'gamma_regime' -%}Dealer gamma regime
 {%- elif key == 'vc_state' -%}Vol-control funds
 {%- elif key == 'cta_state' -%}Trend-following funds
-{%- elif key == 'agreement' -%}Machine-money agreement
+{%- elif key == 'agreement' -%}Systematic-flow agreement
 {%- elif key == 'rv_cross_state' -%}Vol weather
 {%- elif key == 'cor1m_regime' -%}Stock-picker conditions
 {%- else -%}A structure field
@@ -28,7 +28,7 @@
 {%- if key == 'gamma_regime' -%}庄家伽马机制
 {%- elif key == 'vc_state' -%}波动率控制基金
 {%- elif key == 'cta_state' -%}趋势跟踪基金
-{%- elif key == 'agreement' -%}机器资金共识
+{%- elif key == 'agreement' -%}系统化资金共识
 {%- elif key == 'rv_cross_state' -%}波动率天气
 {%- elif key == 'cor1m_regime' -%}选股行情
 {%- else -%}一项结构字段
@@ -44,8 +44,8 @@
 <link rel="stylesheet" href="theme.css">
 <script defer src="theme.js"></script>
 <title>Market Structure</title>
-{% set seo_title = 'Market Structure — Dealer Positioning, Machine Flows & Dispersion | Mastermind' %}
-{% set seo_desc = 'Shock absorber state, machine money flows, stock-picker conditions, and weekly expected range — all in plain words.' %}
+{% set seo_title = 'Market Structure — Dealer Positioning, Systematic Fund Flows & Dispersion | Mastermind' %}
+{% set seo_desc = 'Dealer hedging, systematic fund flows, stock-picking conditions, volatility backdrop, and the options-implied weekly range.' %}
 {% set seo_path = 'market_structure.html' %}
 {% include "_seo_head.html.j2" %}
 <style>
@@ -290,7 +290,7 @@ html[data-theme="light"] :is(
     {{ t('How the market is built right now', '当前市场的底层结构') }}
   </h1>
   <p style="margin:4px 0 0;font-size:13px;color:var(--mut)">
-    {{ t('Shock absorbers · machine money · stock-picker conditions · the range options paid for', '缓冲机制 · 机器资金 · 选股行情 · 期权定价区间') }}
+    {{ t('Dealer hedging · systematic fund flows · stock-picking conditions · options-implied weekly range', '做市商对冲 · 系统化资金流 · 选股环境 · 期权隐含周度区间') }}
   </p>
 </div>
 
@@ -476,7 +476,7 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">Shock-absorber reading isn't on this page yet.</span><span class="l-zh">缓冲机制读数尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The dealer-gamma dataset (SPX options chain) hasn't arrived. Machine-money, stock-picker, vol-weather, and weekly-range panels still render when their own datasets are present.</span>
+    <span class="l-en">The dealer-gamma dataset (SPX options chain) hasn't arrived. Systematic-fund, stock-picker, vol-weather, and weekly-range panels still render when their own datasets are present.</span>
     <span class="l-zh">做市商伽马数据集（标普500期权链）尚未到达。机器资金、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
@@ -521,14 +521,14 @@ html[data-theme="light"] :is(
 <section class="msp-driver" data-driver="flows">
 <div class="sec-head">
   <span class="eyebrow">3</span>
-  <h2>{{ t('Machine money flows', '机器资金动向') }}</h2>
+  <h2>{{ t('Systematic fund flows', '系统化资金流') }}</h2>
   {# The dollar figures below are arithmetic on a STYLIZED pool ($300B AUM at a 10%
      vol target), not observed fund flow — say so where the numbers are, not only
      in a hover. #}
   <span class="badge est">{{ t('model estimate', '模型估算') }}</span>
   <span class="help">?<span class="tip">
-    <span class="l-en"><b>What these are</b><br>Volatility-control funds (VC): target ~{{ vc.aum_bn if vc is not none and vc.aum_bn is not none else '300' }}B AUM; hold SPX at fraction min(1, 10% / max(RV21,RV63)). Pure price arithmetic — full backcast.<br><br>Trend-following funds (CTA): 20/50/100/200d trend z-score; flow estimated from positioning change.<br><br><em>Representative model estimates of mechanical fund behavior — NOT audited positions or actual AUM data.</em></span>
-    <span class="l-zh"><b>说明</b><br>波动率控制基金（VC）：目标规模约{{ ((vc.aum_bn|float * 10)|round|int) if vc is not none and vc.aum_bn is not none else 3000 }}亿美元；持仓比例 min(1, 10%/max(RV21,RV63))，纯价格计算，可全程回测。<br><br>趋势跟踪基金（CTA）：20/50/100/200日趋势Z分数；持仓变化估算资金流。<br><br><em>代表性机械基金行为的模型估算，非实际基金审计持仓。</em></span>
+    <span class="l-en"><b>What these are</b><br>Volatility-control funds adjust exposure as realized volatility rises or falls. Trend-following funds adjust exposure with medium- and long-term price trends.<br><br><em>These are model estimates of systematic fund behavior, not observed fund positions. Dollar figures show approximate direction and scale.</em></span>
+    <span class="l-zh"><b>说明</b><br>波动率控制基金会随已实现波动率上升或下降调整敞口。趋势跟踪基金会根据中长期价格趋势调整敞口。<br><br><em>这些是系统化基金行为的模型估算，并非观测到的实际持仓；金额用于表示大致方向和量级。</em></span>
   </span></span>
   {% if sys is not none and sys.history is not none and sys.history | length > 0 %}
   <div class="range-btns" id="sys-range-btns" style="margin-left:auto">
@@ -542,22 +542,22 @@ html[data-theme="light"] :is(
 {% if sys is not none %}
 <div class="agree {{ agree if agree is not none else '' }}">
   {% if _wn > 0 %}
-  {% if agree == 'aligned_adding' %}<span class="l-en">Machine money: aligned · both adding over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步加仓</span>
-  {% elif agree == 'aligned_cutting' %}<span class="l-en">Machine money: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步减仓</span>
-  {% elif agree == 'split' %}<span class="l-en">Machine money: split — signals disagree over {{ _wn }} days</span><span class="l-zh">机器资金：分歧 — {{ _wn }}日信号不一致</span>
-  {% elif agree == 'paused' %}<span class="l-en">Machine money: both paused over the last {{ _wn }} days</span><span class="l-zh">机器资金：两路近{{ _wn }}日均暂停</span>
+  {% if agree == 'aligned_adding' %}<span class="l-en">Systematic funds: aligned · both adding over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步加仓</span>
+  {% elif agree == 'aligned_cutting' %}<span class="l-en">Systematic funds: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步减仓</span>
+  {% elif agree == 'split' %}<span class="l-en">Systematic funds: split — signals disagree over {{ _wn }} days</span><span class="l-zh">系统化资金：分歧 — {{ _wn }}日信号不一致</span>
+  {% elif agree == 'paused' %}<span class="l-en">Systematic funds: both paused over the last {{ _wn }} days</span><span class="l-zh">系统化资金：两路近{{ _wn }}日均暂停</span>
   {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
   {% endif %}
   {% else %}
-  <span class="l-en">Machine money: window is being updated.</span><span class="l-zh">机器资金：窗口更新中。</span>
+  <span class="l-en">Systematic funds: window is being updated.</span><span class="l-zh">系统化资金：窗口更新中。</span>
   {% endif %}
 </div>
 {% if agree == 'aligned_adding' %}
-<span class="stance-chip watch"><span class="l-en">Watch — don't chase: machine buying is already in the price.</span><span class="l-zh">观望——勿追涨：机器买盘已在价格中。</span></span>
+<span class="stance-chip watch"><span class="l-en">Watch — don't chase: systematic buying is already in the price.</span><span class="l-zh">观望——勿追涨：系统化买盘已反映在价格中。</span></span>
 {% elif agree == 'aligned_cutting' %}
-<span class="stance-chip watch"><span class="l-en">Watch — machine money is stepping back; don't lean against it.</span><span class="l-zh">观望——机器资金正在撤减，勿逆势加仓。</span></span>
+<span class="stance-chip watch"><span class="l-en">Watch — systematic funds are stepping back; don't lean against it.</span><span class="l-zh">观望——系统化资金正在撤减，勿逆势加仓。</span></span>
 {% elif agree == 'paused' or agree == 'split' %}
-<span class="stance-chip neutral"><span class="l-en">Stand aside — machine flows aren't pushing either way.</span><span class="l-zh">暂不行动——机器资金没有明确方向。</span></span>
+<span class="stance-chip neutral"><span class="l-en">Stand aside — systematic flows aren't pushing either way.</span><span class="l-zh">暂不行动——系统化资金没有明确方向。</span></span>
 {% else %}
 <span class="stance-chip watch"><span class="l-en">Watch — this read is being updated.</span><span class="l-zh">观望——该读数更新中。</span></span>
 {% endif %}
@@ -608,7 +608,7 @@ html[data-theme="light"] :is(
 
 {% else %}
 <div class="warmup">
-  <b><span class="l-en">Machine-money flows aren't on this page yet.</span><span class="l-zh">机器资金动向尚未出现在本页。</span></b>
+  <b><span class="l-en">Systematic fund flows aren't on this page yet.</span><span class="l-zh">系统化资金流尚未出现在本页。</span></b>
   <span class="empty-why">
     <span class="l-en">The vol-control and trend-following model series haven't arrived. Shock-absorber, stock-picker, vol-weather, and weekly-range panels still render from their own datasets.</span>
     <span class="l-zh">波动率控制与趋势跟踪模型序列尚未到达。缓冲机制、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
@@ -685,7 +685,7 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">Stock-picker conditions aren't on this page yet.</span><span class="l-zh">选股行情尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The 1-month implied-correlation dataset (COR1M) hasn't arrived. Shock-absorber, machine-money, vol-weather, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-en">The 1-month implied-correlation dataset (COR1M) hasn't arrived. Shock-absorber, systematic-fund, vol-weather, and weekly-range panels still render from their own datasets.</span>
     <span class="l-zh">1个月隐含相关性数据集（COR1M）尚未到达。缓冲机制、机器资金、波动率天气与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
@@ -758,7 +758,7 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">Vol weather isn't on this page yet.</span><span class="l-zh">波动率天气尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The realized-vol and VIX-curve datasets haven't arrived. Shock-absorber, machine-money, stock-picker, and weekly-range panels still render from their own datasets.</span>
+    <span class="l-en">The realized-vol and VIX-curve datasets haven't arrived. Shock-absorber, systematic-fund, stock-picker, and weekly-range panels still render from their own datasets.</span>
     <span class="l-zh">已实现波动率与VIX曲线数据集尚未到达。缓冲机制、机器资金、选股行情与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
@@ -832,8 +832,8 @@ html[data-theme="light"] :is(
     </div>
   </div>
   <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (±1σ, about 68% of weeks)', '典型区间（±1σ，约68%的周）') }}</div>
-    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (±2σ, about 95% of weeks)', '宽区间（±2σ，约95%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (68% of weeks)', '典型区间（约68%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (95% of weeks)', '宽区间（约95%的周）') }}</div>
     {% if wm_flip is not none %}<div class="kpi"><b class="amb">{{ '%.0f'|format(wm_flip|float) }}</b>{{ t('flip level (dealer hedging switch)', '翻转点（做市商对冲切换）') }}</div>{% endif %}
   </div>
   {% endif %}
@@ -846,8 +846,8 @@ html[data-theme="light"] :is(
 <div class="warmup">
   <b><span class="l-en">This week's expected range isn't on this page yet.</span><span class="l-zh">本周预期区间尚未出现在本页。</span></b>
   <span class="empty-why">
-    <span class="l-en">The Friday-locked implied-move band hasn't been computed. Shock-absorber, machine-money, stock-picker, and vol-weather panels still render from their own datasets.</span>
-    <span class="l-zh">周五锁定的隐含波动区间尚未计算。缓冲机制、机器资金、选股行情与波动率天气在各自数据到位时仍会显示。</span>
+    <span class="l-en">The Friday-locked implied-move band hasn't been computed. Shock-absorber, systematic-fund, stock-picker, and vol-weather panels still render from their own datasets.</span>
+    <span class="l-zh">周五锁定的隐含波动区间尚未计算。缓冲机制、系统化资金流、选股行情与波动率天气在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -856,8 +856,8 @@ html[data-theme="light"] :is(
 
 {# ── Footer ── #}
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">
-  <span class="l-en">Context for expectations and sizing — not buy or sell signals. Machine-flow figures are model estimates, not audited fund positions: the dollar amounts are arithmetic on one stylised $300B pool run at a 10% volatility target, so read them as scale and direction, not as money that actually moved. Shock-absorber series from {{ gamma.series_start if gamma is not none and gamma.series_start is not none else 'inception' }}; correlation series from 2006.</span>
-  <span class="l-zh">仅供把握市场环境与仓位预期 — 并非买卖信号。机器资金数据为模型估算，非审计持仓：其中的美元金额是按单一模型化的3000亿美元资金池、10%波动率目标推算而来，应视为量级与方向的参考，而非真实成交的资金。缓冲机制数据自{{ gamma.series_start if gamma is not none and gamma.series_start is not none else '首日' }}起，相关性数据自2006年起。</span>
+  <span class="l-en">Market context, not buy or sell signals. Systematic-fund figures are model estimates, not observed positions. Read them as direction and scale, not as cash that actually moved. Dealer-exposure estimates are reconstructed from options data. Shock-absorber series from {{ gamma.series_start if gamma is not none and gamma.series_start is not none else 'inception' }}; correlation series from 2006.</span>
+  <span class="l-zh">仅供市场环境参考，并非买卖信号。系统化资金数据为模型估算，并非观测到的实际持仓；请将其视为方向和量级参考，而非真实成交资金。做市商敞口根据期权数据重建。缓冲机制数据自{{ gamma.series_start if gamma is not none and gamma.series_start is not none else '首日' }}起，相关性数据自2006年起。</span>
   {% if msp is defined and msp is not none and msp.built_at is not none %} · {{ t('Built', '构建于') }} {{ msp.built_at[:10] }}{% endif %}
 </div>
 

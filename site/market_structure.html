@@ -52,17 +52,17 @@
 
 
 
-<meta name="description" content="Shock absorber state, machine money flows, stock-picker conditions, and weekly expected range — all in plain words.">
+<meta name="description" content="Dealer hedging, systematic fund flows, stock-picking conditions, volatility backdrop, and the options-implied weekly range.">
 <link rel="canonical" href="https://www.mastermind-x.com/market_structure.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MastermindX">
 <meta property="og:title" content="Market Structure — Dealer Positioning, Machine Flows &amp; Dispersion | Mastermind">
-<meta property="og:description" content="Shock absorber state, machine money flows, stock-picker conditions, and weekly expected range — all in plain words.">
+<meta property="og:description" content="Dealer hedging, systematic fund flows, stock-picking conditions, volatility backdrop, and the options-implied weekly range.">
 <meta property="og:url" content="https://www.mastermind-x.com/market_structure.html">
 <meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Market Structure — Dealer Positioning, Machine Flows &amp; Dispersion | Mastermind">
-<meta name="twitter:description" content="Shock absorber state, machine money flows, stock-picker conditions, and weekly expected range — all in plain words.">
+<meta name="twitter:description" content="Dealer hedging, systematic fund flows, stock-picking conditions, volatility backdrop, and the options-implied weekly range.">
 <meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -382,7 +382,7 @@ html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
     <span class="l-en">How the market is built right now</span><span class="l-zh">当前市场的底层结构</span>
   </h1>
   <p style="margin:4px 0 0;font-size:13px;color:var(--mut)">
-    <span class="l-en">Shock absorbers · machine money · stock-picker conditions · the range options paid for</span><span class="l-zh">缓冲机制 · 机器资金 · 选股行情 · 期权定价区间</span>
+    <span class="l-en">Dealer hedging · systematic fund flows · stock-picking conditions · options-implied weekly range</span><span class="l-zh">做市商对冲 · 系统化资金流 · 选股环境 · 期权隐含周度区间</span>
   </p>
 </div>
 
@@ -545,12 +545,12 @@ html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
 <section class="msp-driver" data-driver="flows">
 <div class="sec-head">
   <span class="eyebrow">3</span>
-  <h2><span class="l-en">Machine money flows</span><span class="l-zh">机器资金动向</span></h2>
+  <h2><span class="l-en">Systematic fund flows</span><span class="l-zh">系统化资金流</span></h2>
   
   <span class="badge est"><span class="l-en">model estimate</span><span class="l-zh">模型估算</span></span>
   <span class="help">?<span class="tip">
-    <span class="l-en"><b>What these are</b><br>Volatility-control funds (VC): target ~300.0B AUM; hold SPX at fraction min(1, 10% / max(RV21,RV63)). Pure price arithmetic — full backcast.<br><br>Trend-following funds (CTA): 20/50/100/200d trend z-score; flow estimated from positioning change.<br><br><em>Representative model estimates of mechanical fund behavior — NOT audited positions or actual AUM data.</em></span>
-    <span class="l-zh"><b>说明</b><br>波动率控制基金（VC）：目标规模约3000亿美元；持仓比例 min(1, 10%/max(RV21,RV63))，纯价格计算，可全程回测。<br><br>趋势跟踪基金（CTA）：20/50/100/200日趋势Z分数；持仓变化估算资金流。<br><br><em>代表性机械基金行为的模型估算，非实际基金审计持仓。</em></span>
+    <span class="l-en"><b>What these are</b><br>Volatility-control funds adjust exposure as realized volatility rises or falls. Trend-following funds adjust exposure with medium- and long-term price trends.<br><br><em>These are model estimates of systematic fund behavior, not observed fund positions. Dollar figures show approximate direction and scale.</em></span>
+    <span class="l-zh"><b>说明</b><br>波动率控制基金会随已实现波动率上升或下降调整敞口。趋势跟踪基金会根据中长期价格趋势调整敞口。<br><br><em>这些是系统化基金行为的模型估算，并非观测到的实际持仓；金额用于表示大致方向和量级。</em></span>
   </span></span>
   
   <div class="range-btns" id="sys-range-btns" style="margin-left:auto">
@@ -564,12 +564,12 @@ html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
 
 <div class="agree split">
   
-  <span class="l-en">Machine money: split — signals disagree over 5 days</span><span class="l-zh">机器资金：分歧 — 5日信号不一致</span>
+  <span class="l-en">Systematic funds: split — signals disagree over 5 days</span><span class="l-zh">系统化资金：分歧 — 5日信号不一致</span>
   
   
 </div>
 
-<span class="stance-chip neutral"><span class="l-en">Stand aside — machine flows aren't pushing either way.</span><span class="l-zh">暂不行动——机器资金没有明确方向。</span></span>
+<span class="stance-chip neutral"><span class="l-en">Stand aside — systematic flows aren't pushing either way.</span><span class="l-zh">暂不行动——系统化资金没有明确方向。</span></span>
 
 
 <div class="grid-2" style="margin-bottom:16px">
@@ -835,8 +835,8 @@ html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
     </div>
   </div>
   <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>7524 – 7790</b><span class="l-en">typical range (±1σ, about 68% of weeks)</span><span class="l-zh">典型区间（±1σ，约68%的周）</span></div>
-    <div class="kpi"><b>7390 – 7924</b><span class="l-en">wide range (±2σ, about 95% of weeks)</span><span class="l-zh">宽区间（±2σ，约95%的周）</span></div>
+    <div class="kpi"><b>7524 – 7790</b><span class="l-en">typical range (68% of weeks)</span><span class="l-zh">典型区间（约68%的周）</span></div>
+    <div class="kpi"><b>7390 – 7924</b><span class="l-en">wide range (95% of weeks)</span><span class="l-zh">宽区间（约95%的周）</span></div>
     <div class="kpi"><b class="amb">7624</b><span class="l-en">flip level (dealer hedging switch)</span><span class="l-zh">翻转点（做市商对冲切换）</span></div>
   </div>
   
@@ -851,8 +851,8 @@ html[data-theme="light"] { --green:#15764f; --amber:#8a5c00; }
 
 
 <div style="margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint)">
-  <span class="l-en">Context for expectations and sizing — not buy or sell signals. Machine-flow figures are model estimates, not audited fund positions: the dollar amounts are arithmetic on one stylised $300B pool run at a 10% volatility target, so read them as scale and direction, not as money that actually moved. Shock-absorber series from 2026-06-15; correlation series from 2006.</span>
-  <span class="l-zh">仅供把握市场环境与仓位预期 — 并非买卖信号。机器资金数据为模型估算，非审计持仓：其中的美元金额是按单一模型化的3000亿美元资金池、10%波动率目标推算而来，应视为量级与方向的参考，而非真实成交的资金。缓冲机制数据自2026-06-15起，相关性数据自2006年起。</span>
+  <span class="l-en">Market context, not buy or sell signals. Systematic-fund figures are model estimates, not observed positions. Read them as direction and scale, not as cash that actually moved. Dealer-exposure estimates are reconstructed from options data. Shock-absorber series from 2026-06-15; correlation series from 2006.</span>
+  <span class="l-zh">仅供市场环境参考，并非买卖信号。系统化资金数据为模型估算，并非观测到的实际持仓；请将其视为方向和量级参考，而非真实成交资金。做市商敞口根据期权数据重建。缓冲机制数据自2026-06-15起，相关性数据自2006年起。</span>
    · <span class="l-en">Built</span><span class="l-zh">构建于</span> 2026-09-18
 </div>
 
