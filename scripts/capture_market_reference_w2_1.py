@@ -450,8 +450,11 @@ def main() -> int:
             ),
             "theme_application": (
                 "theme and locale were written to localStorage (theme, lang; themeAuto cleared) by an init "
-                "script before navigation; window.setTheme was re-applied post-load through the page's own "
-                "toggle when present; every frame asserted .sky-fx absent or display:none"
+                "script before navigation; window.setTheme is intentionally NOT called (it triggers "
+                "skyToggleFx()'s ~1100ms sun/moon flourish mid-screen and the shot would catch the animation); "
+                "document.documentElement.setAttribute('data-theme', state.theme) and "
+                "setAttribute('data-lang', state.locale) are written post-load instead; every frame asserted "
+                ".sky-fx absent or display:none"
             ),
         },
         "named_details": named_details,
@@ -475,7 +478,7 @@ def main() -> int:
         "target": {
             "base_url": None,
             "kind": "site_dir",
-            "resolved_gitdir_or_none": str((REPO / ".git").resolve()),
+            "resolved_gitdir_or_none": subprocess_run_git_rev_parse_gitdir(),
             "resolved_sha_or_none": head_sha,
             "resolved_sha_source": (
                 f"git rev-parse HEAD at capture time = {head_sha} (pre-commit sha of this worktree; "
@@ -485,7 +488,11 @@ def main() -> int:
         },
         "tool": {
             "module_ref": "scripts/capture_market_reference_w2_1.py",
-            "theme_method": "pre-navigation localStorage seed; setTheme re-applied post-load when present",
+            "theme_method": (
+                "pre-navigation localStorage seed; document.documentElement.setAttribute('data-theme', state.theme) "
+                "written post-load; window.setTheme intentionally NOT called (would trigger skyToggleFx animation "
+                "mid-shot)"
+            ),
             "user_agent": "mastermind-page-census/1.0 (internal product observability)",
             "version": "1.0.0",
         },
@@ -526,6 +533,18 @@ def subprocess_run_git_rev_parse() -> str:
     import subprocess
     out = subprocess.run(
         ["git", "rev-parse", "HEAD"],
+        cwd=str(REPO), capture_output=True, text=True, check=True,
+    )
+    return out.stdout.strip()
+
+
+def subprocess_run_git_rev_parse_gitdir() -> str:
+    """Return the canonical gitdir (e.g. .../.git/worktrees/<name>) via
+    `git rev-parse --git-dir`. Resolves the per-worktree directory unambiguously
+    (the worktree's .git file is a gitfile pointing here)."""
+    import subprocess
+    out = subprocess.run(
+        ["git", "rev-parse", "--git-dir"],
         cwd=str(REPO), capture_output=True, text=True, check=True,
     )
     return out.stdout.strip()

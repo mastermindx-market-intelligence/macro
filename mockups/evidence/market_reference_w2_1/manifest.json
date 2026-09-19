@@ -30,8 +30,8 @@
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
     "dashboard_substitution": "Look-up row (.mx5-deep-chips--ref) from templates/dashboard.html.j2 substituted into the More-row container of the staged site/macro.html (the capture-time substitution the Opus r2 review verified: chips in real composition, no standalone harness). site/reference.html is staged as-is from the committed build.",
     "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
-    "resolved_sha_note": "pre-commit HEAD 93022f29be4e8d27d256f3e6370106f06b6321fd (git rev-parse HEAD at capture time); the commit that lands this matrix will be a descendant of this sha",
-    "theme_application": "theme and locale were written to localStorage (theme, lang; themeAuto cleared) by an init script before navigation; window.setTheme was re-applied post-load through the page's own toggle when present; every frame asserted .sky-fx absent or display:none"
+    "resolved_sha_note": "pre-commit HEAD 5cca2d32ed51407b161dfed0b4110c5a7f08c40c (git rev-parse HEAD at capture time); the commit that lands this matrix will be a descendant of this sha",
+    "theme_application": "theme and locale were written to localStorage (theme, lang; themeAuto cleared) by an init script before navigation; window.setTheme is intentionally NOT called (it triggers skyToggleFx()'s ~1100ms sun/moon flourish mid-screen and the shot would catch the animation); document.documentElement.setAttribute('data-theme', state.theme) and setAttribute('data-lang', state.locale) are written post-load instead; every frame asserted .sky-fx absent or display:none"
   },
   "named_details": {
     "detail-chips-1440-dark-en.png": {
@@ -538,7 +538,7 @@
     ],
     "max_pages": 30,
     "mode": "explicit_routes",
-    "note": "committed site/{p}.html at head 93022f29be4e8d27d256f3e6370106f06b6321fd; Look-up row substituted into staged macro.html; theme seeded pre-navigation; no mid-toggle capture",
+    "note": "committed site/{p}.html at head 5cca2d32ed51407b161dfed0b4110c5a7f08c40c; Look-up row substituted into staged macro.html; theme seeded pre-navigation; no mid-toggle capture",
     "priority": null,
     "registry": null,
     "registry_rows": 0,
@@ -548,14 +548,14 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": "/Users/chriswong/lanes/wt/mo-ext-fix-6912-9351dbb93c4f/.git",
-    "resolved_sha_or_none": "93022f29be4e8d27d256f3e6370106f06b6321fd",
-    "resolved_sha_source": "git rev-parse HEAD at capture time = 93022f29be4e8d27d256f3e6370106f06b6321fd (pre-commit sha of this worktree; disclosed as such)",
+    "resolved_gitdir_or_none": "/Users/chriswong/lanes/repos/macro/.git/worktrees/mo-ext-fix-6912-9351dbb93c4f",
+    "resolved_sha_or_none": "5cca2d32ed51407b161dfed0b4110c5a7f08c40c",
+    "resolved_sha_source": "git rev-parse HEAD at capture time = 5cca2d32ed51407b161dfed0b4110c5a7f08c40c (pre-commit sha of this worktree; disclosed as such)",
     "site_dir": "site"
   },
   "tool": {
     "module_ref": "scripts/capture_market_reference_w2_1.py",
-    "theme_method": "pre-navigation localStorage seed; setTheme re-applied post-load when present",
+    "theme_method": "pre-navigation localStorage seed; document.documentElement.setAttribute('data-theme', state.theme) written post-load; window.setTheme intentionally NOT called (would trigger skyToggleFx animation mid-shot)",
     "user_agent": "mastermind-page-census/1.0 (internal product observability)",
     "version": "1.0.0"
   },
