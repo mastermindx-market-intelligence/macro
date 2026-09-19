@@ -80,9 +80,11 @@ waves:
     status: in_progress
     depends_on: [A2]
     next_action: >
-      Preserve #398 at d79d2ec3537d8eb060055731a7c3cebee0c543eb; source review/CI are green.
-      Real OL-V1 remains held until a source-custody-lawful current-Macro workspace exists for exact
-      Executive grounding; no directive intent has been submitted and no effect has run.
+      Preserve #398 at d79d2ec3537d8eb060055731a7c3cebee0c543eb; source review/CI/current-protected proof are green.
+      Canonical current-Macro grounding is now proven, but no directive intent exists. Executive control
+      remains STOPPED/UNARMED under incident #386: #760 is merged/do-not-redo and the next runtime gate is
+      the local Keychain-to-stdin service-account credential/readiness ceremony before the canonical control
+      listener can admit one untouched READ/A0 directive. Do not load/restart that global service from Agent Eval.
   - id: F1
     title: Experience distillation candidates and read-only evidence experience
     status: todo
@@ -93,8 +95,9 @@ waves:
     depends_on: [C2, D1, F1]
 next_action: >
   Obtain the incumbent Fable C2 ruling when that exact principal regains capacity; do not self-adopt
-  #687/#692 or mutate historical E1. In parallel unblock #398 only through a lawful current-Macro
-  grounding workspace. #841 is merged/do-not-redo.
+  #687/#692 or mutate historical E1. For D1 keep #398 frozen and consume #386's credential/readiness/ARM
+  sequence until canonical Executive control is healthy; then action-time refresh Macro grounding and
+  submit/reconcile exactly one READ/A0 compose-only directive before compose. #760/#841 are merged/do-not-redo.
 decisions:
   - DEC:AGENT-EVAL-FABLE-COO-DELEGATION
 artifacts:
@@ -110,10 +113,12 @@ landmines:
   - "E1 seals anthropic/claude-sonnet-5; #162 Fresh-Sol requires gpt-5.6-sol. Never substitute provider/model at execution."
   - "Historical E1 still seals anthropic/claude-sonnet-5 while #162 Fresh-Sol requires gpt-5.6-sol; never substitute provider/model at execution."
   - "OL-V1 d79 approval closes source rereview only; Agent OS prose never authorizes its real effect."
+  - "D1's Macro workspace gate is solved; the current blocker is the shared Executive #386 credential/readiness/ARM sequence. Never expose the Keychain token to chat/tools or start the global control service from Agent Eval."
   - "Eval OS WS-EVAL-OS-* is separate; do not cross-wire carriers or authority."
 do_not_redo:
   - "Mastermind #162 is merged/do-not-redo; preserve #398 on its existing carrier with no replacement runner, branch, PR or blind effect retry."
   - "Mastermind #841 is merged/do-not-redo at 96c9ab97aa64bce65fe0da140c9d6c5bbf2c778e; do not recreate or re-enqueue the OHF typed-failure repair."
+  - "Mastermind #760 is merged/do-not-redo at d57d793b588fc7819559bdc2b408977dd01691e6; do not recreate the installed-binary readiness repair or bypass its separate secret-owning credential ceremony."
   - "Macro #6699 and #6711 are superseded, closed-unmerged history; #6760 and #6713 are already merged."
   - "EFFECT_UNKNOWN requires original-operation reconciliation; no replay, account switch or inferred owner release."
   - "No universal worker leaderboard, aggregate authority score, second memory/lifecycle/queue/router or automatic policy promotion."
