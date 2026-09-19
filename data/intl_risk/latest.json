@@ -1,9 +1,9 @@
 {
-  "built": "2026-09-13T09:48:15.974454+00:00",
-  "timing_sec": 1.65,
+  "built": "2026-09-18T18:17:57.951257+00:00",
+  "timing_sec": 1.8,
   "em_stress": {
     "state": "calm",
-    "thermometer": 36.0,
+    "thermometer": 41.3,
     "lead_lag": "coincident thermometer — not leading",
     "n_legs_available": 6,
     "n_legs_total": 6,
@@ -12,38 +12,38 @@
     ],
     "legs": {
       "em_hy_oas": {
-        "value": 2.79,
+        "value": 2.81,
         "z": null,
         "vel_5d_z": null,
-        "vel_20d_z": -0.029,
-        "pctile": 0.2,
-        "asof": "2026-09-10",
+        "vel_20d_z": -0.111,
+        "pctile": 1.2,
+        "asof": "2026-09-16",
         "stale": false,
         "window_days": 504,
         "source": "BAMLEMHBHYCRPIOAS",
         "note": "IRD-R9: BAML cap ~3y from first fetch; window_days discloses depth"
       },
       "vxeem": {
-        "value": 26.3,
+        "value": 27.48,
         "z": null,
         "vel_5d_z": null,
-        "vel_20d_z": -0.563,
-        "pctile": 78.1,
-        "asof": "2026-09-10",
+        "vel_20d_z": -0.101,
+        "pctile": 82.7,
+        "asof": "2026-09-16",
         "stale": false,
-        "window_days": 3895,
+        "window_days": 3899,
         "note": "2011+ history; EVZ ended 2025-03 and is not used"
       },
       "em_fx_basket": {
-        "value": -0.42,
-        "rvol_20d": 3.29,
-        "dd_pctile": 15.1,
-        "rvol_pctile": 3.1,
-        "pctile": 9.1,
+        "value": -1.4,
+        "rvol_20d": 3.5,
+        "dd_pctile": 35.3,
+        "rvol_pctile": 4.3,
+        "pctile": 19.8,
         "vel_5d_z": null,
-        "vel_20d_z": 0.393,
+        "vel_20d_z": -0.455,
         "z": null,
-        "asof": "2026-09-13",
+        "asof": "2026-09-18",
         "stale": false,
         "window_days": 504,
         "pairs_used": [
@@ -59,14 +59,14 @@
         "pairs_missing": []
       },
       "em_equity_breadth": {
-        "value": 71.4,
-        "pctile": 28.6,
+        "value": 57.1,
+        "pctile": 42.9,
         "vel_5d_z": null,
         "vel_20d_z": null,
         "z": null,
-        "above": 5,
+        "above": 4,
         "total": 7,
-        "asof": "2026-09-11",
+        "asof": "2026-09-17",
         "stale": false,
         "window_days": 200,
         "tickers": [
@@ -82,12 +82,12 @@
         "note": "TUR absent from intl_etf store; basket uses 7 confirmed tickers"
       },
       "em_dollar_vel": {
-        "value": 126.17,
+        "value": 126.44,
         "z": null,
         "vel_5d_z": null,
-        "vel_20d_z": -0.767,
-        "pctile": 0.2,
-        "asof": "2026-09-04",
+        "vel_20d_z": -0.525,
+        "pctile": 1.0,
+        "asof": "2026-09-11",
         "stale": false,
         "window_days": 504,
         "source": "DTWEXEMEGS"
@@ -96,18 +96,18 @@
         "value": 1.03,
         "z": null,
         "vel_5d_z": null,
-        "vel_20d_z": 0.001,
+        "vel_20d_z": 0.403,
         "pctile": 100.0,
-        "asof": "2026-09-11",
+        "asof": "2026-09-17",
         "stale": false,
         "window_days": 504,
         "dd_60d_pct": 0.0,
-        "dd_adversity_pctile": 9.4
+        "dd_adversity_pctile": 9.5
       }
     },
     "gaps": [],
-    "as_of": "2026-09-13",
-    "built": "2026-09-13T09:48:14.407072+00:00",
+    "as_of": "2026-09-18",
+    "built": "2026-09-18T18:17:56.237482+00:00",
     "k_of_n_params": {
       "stressed_threshold": 3,
       "strained_threshold": 2,
@@ -215,7 +215,7 @@
         "debt_trend_3y": "rising",
         "fiscal_balance": -7.9,
         "current_account": 3.7,
-        "bis_credit_gap": -7.69,
+        "bis_credit_gap": -5.14,
         "flags": [
           "debt>70.0%_rising",
           "fiscal<-5.0%GDP"
@@ -645,7 +645,7 @@
         "debt_trend_3y": "rising",
         "fiscal_balance": -6.8,
         "current_account": -3.6,
-        "bis_credit_gap": -11.54,
+        "bis_credit_gap": -11.32,
         "flags": [
           "debt>70.0%_rising",
           "CA<-3.0%GDP",
@@ -724,265 +724,265 @@
     },
     "berg_pattillo_receipt": "Historical early-warning-system caveat (Berg-Pattillo): best-in-class EWS models missed approximately 68% of currency/debt crises out-of-sample; approximately 60% of their 'danger' signals proved false alarms. This table is a fragility MAP — it identifies who is vulnerable, not when a crisis will occur.",
     "note": "BIS credit-to-GDP gap: only US and CN currently in store; other countries accrue as the BIS adapter extends.",
-    "built": "2026-09-13T09:48:14.494133+00:00"
+    "built": "2026-09-18T18:17:56.396272+00:00"
   },
   "spillover": {
-    "total_connectedness": 81.7,
+    "total_connectedness": 81.0,
     "to_others": {
-      "EWJ": 99.3,
-      "EWG": 125.0,
-      "EWU": 87.7,
-      "EWC": 116.6,
-      "EWA": 127.6,
-      "EWL": 94.6,
-      "EWZ": 23.3,
-      "EWW": 73.4,
-      "INDA": 72.5,
-      "EIDO": 62.8,
-      "EZA": 94.9,
-      "EWY": 91.3,
-      "EEM": 55.5,
-      "SPY": 19.1
+      "EWJ": 100.2,
+      "EWG": 126.0,
+      "EWU": 87.1,
+      "EWC": 118.5,
+      "EWA": 130.5,
+      "EWL": 93.8,
+      "EWZ": 23.7,
+      "EWW": 66.8,
+      "INDA": 74.5,
+      "EIDO": 47.5,
+      "EZA": 95.3,
+      "EWY": 87.8,
+      "EEM": 60.1,
+      "SPY": 22.1
     },
     "from_others": {
-      "EWJ": 87.6,
-      "EWG": 85.5,
-      "EWU": 87.7,
-      "EWC": 87.3,
-      "EWA": 87.0,
-      "EWL": 85.6,
-      "EWZ": 77.5,
-      "EWW": 72.9,
-      "INDA": 84.7,
-      "EIDO": 81.3,
-      "EZA": 89.7,
-      "EWY": 77.2,
-      "EEM": 58.4,
-      "SPY": 81.1
+      "EWJ": 87.4,
+      "EWG": 85.2,
+      "EWU": 87.6,
+      "EWC": 86.6,
+      "EWA": 86.5,
+      "EWL": 85.5,
+      "EWZ": 74.5,
+      "EWW": 72.0,
+      "INDA": 84.3,
+      "EIDO": 84.8,
+      "EZA": 89.3,
+      "EWY": 74.4,
+      "EEM": 53.8,
+      "SPY": 81.8
     },
     "top_transmitters": [
       {
         "ticker": "EWA",
-        "to_others_pct": 127.6
+        "to_others_pct": 130.5
       },
       {
         "ticker": "EWG",
-        "to_others_pct": 125.0
+        "to_others_pct": 126.0
       },
       {
         "ticker": "EWC",
-        "to_others_pct": 116.6
+        "to_others_pct": 118.5
       }
     ],
-    "us_from_others": 81.1,
+    "us_from_others": 81.8,
     "history_weekly": [
       {
-        "date": "2025-09-05",
-        "total": 90.2
-      },
-      {
-        "date": "2025-09-12",
-        "total": 90.5
-      },
-      {
-        "date": "2025-09-19",
-        "total": 90.6
-      },
-      {
-        "date": "2025-09-26",
-        "total": 90.6
-      },
-      {
-        "date": "2025-10-03",
+        "date": "2025-09-11",
         "total": 90.4
       },
       {
-        "date": "2025-10-10",
+        "date": "2025-09-18",
+        "total": 90.7
+      },
+      {
+        "date": "2025-09-25",
+        "total": 90.6
+      },
+      {
+        "date": "2025-10-02",
+        "total": 90.7
+      },
+      {
+        "date": "2025-10-09",
         "total": 90.3
       },
       {
-        "date": "2025-10-17",
+        "date": "2025-10-16",
         "total": 90.1
       },
       {
-        "date": "2025-10-24",
+        "date": "2025-10-23",
+        "total": 89.9
+      },
+      {
+        "date": "2025-10-30",
         "total": 90.0
       },
       {
-        "date": "2025-10-31",
-        "total": 89.7
+        "date": "2025-11-06",
+        "total": 88.2
       },
       {
-        "date": "2025-11-07",
-        "total": 88.0
+        "date": "2025-11-13",
+        "total": 87.9
       },
       {
-        "date": "2025-11-14",
-        "total": 87.8
+        "date": "2025-11-20",
+        "total": 88.8
       },
       {
-        "date": "2025-11-21",
-        "total": 88.5
+        "date": "2025-11-28",
+        "total": 87.5
       },
       {
-        "date": "2025-12-01",
-        "total": 86.5
+        "date": "2025-12-05",
+        "total": 77.4
       },
       {
-        "date": "2025-12-08",
-        "total": 74.6
+        "date": "2025-12-12",
+        "total": 72.7
       },
       {
-        "date": "2025-12-15",
-        "total": 73.2
+        "date": "2025-12-19",
+        "total": 75.4
       },
       {
-        "date": "2025-12-22",
-        "total": 76.5
+        "date": "2025-12-29",
+        "total": 77.0
       },
       {
-        "date": "2025-12-30",
-        "total": 77.5
+        "date": "2026-01-06",
+        "total": 79.5
       },
       {
-        "date": "2026-01-07",
-        "total": 80.2
+        "date": "2026-01-13",
+        "total": 83.8
       },
       {
-        "date": "2026-01-14",
-        "total": 82.9
-      },
-      {
-        "date": "2026-01-22",
-        "total": 82.9
-      },
-      {
-        "date": "2026-01-29",
-        "total": 85.1
-      },
-      {
-        "date": "2026-02-05",
-        "total": 79.6
-      },
-      {
-        "date": "2026-02-12",
-        "total": 80.8
-      },
-      {
-        "date": "2026-02-20",
-        "total": 81.7
-      },
-      {
-        "date": "2026-02-27",
-        "total": 81.6
-      },
-      {
-        "date": "2026-03-06",
-        "total": 84.3
-      },
-      {
-        "date": "2026-03-13",
+        "date": "2026-01-21",
         "total": 82.8
       },
       {
-        "date": "2026-03-20",
-        "total": 82.6
+        "date": "2026-01-28",
+        "total": 83.9
       },
       {
-        "date": "2026-03-27",
-        "total": 82.1
+        "date": "2026-02-04",
+        "total": 80.5
       },
       {
-        "date": "2026-04-06",
-        "total": 82.0
+        "date": "2026-02-11",
+        "total": 80.5
       },
       {
-        "date": "2026-04-13",
-        "total": 81.2
-      },
-      {
-        "date": "2026-04-20",
-        "total": 81.1
-      },
-      {
-        "date": "2026-04-27",
-        "total": 82.7
-      },
-      {
-        "date": "2026-05-04",
-        "total": 84.0
-      },
-      {
-        "date": "2026-05-11",
-        "total": 84.0
-      },
-      {
-        "date": "2026-05-18",
-        "total": 82.6
-      },
-      {
-        "date": "2026-05-26",
-        "total": 82.2
-      },
-      {
-        "date": "2026-06-02",
-        "total": 82.9
-      },
-      {
-        "date": "2026-06-09",
-        "total": 83.5
-      },
-      {
-        "date": "2026-06-16",
-        "total": 81.5
-      },
-      {
-        "date": "2026-06-24",
-        "total": 79.9
-      },
-      {
-        "date": "2026-07-01",
-        "total": 79.4
-      },
-      {
-        "date": "2026-07-09",
+        "date": "2026-02-19",
         "total": 81.4
       },
       {
-        "date": "2026-07-16",
-        "total": 82.0
+        "date": "2026-02-26",
+        "total": 81.5
       },
       {
-        "date": "2026-07-23",
-        "total": 82.5
+        "date": "2026-03-05",
+        "total": 82.9
       },
       {
-        "date": "2026-07-30",
-        "total": 82.8
+        "date": "2026-03-12",
+        "total": 82.9
       },
       {
-        "date": "2026-08-06",
-        "total": 82.6
+        "date": "2026-03-19",
+        "total": 83.0
       },
       {
-        "date": "2026-08-13",
+        "date": "2026-03-26",
+        "total": 82.1
+      },
+      {
+        "date": "2026-04-02",
+        "total": 81.5
+      },
+      {
+        "date": "2026-04-10",
+        "total": 81.0
+      },
+      {
+        "date": "2026-04-17",
         "total": 81.2
       },
       {
-        "date": "2026-08-20",
-        "total": 79.8
+        "date": "2026-04-24",
+        "total": 81.0
       },
       {
-        "date": "2026-08-27",
-        "total": 81.1
+        "date": "2026-05-01",
+        "total": 84.0
       },
       {
-        "date": "2026-09-03",
-        "total": 81.8
+        "date": "2026-05-08",
+        "total": 83.8
       },
       {
-        "date": "2026-09-11",
-        "total": 81.7
+        "date": "2026-05-15",
+        "total": 82.9
+      },
+      {
+        "date": "2026-05-22",
+        "total": 82.4
+      },
+      {
+        "date": "2026-06-01",
+        "total": 82.7
+      },
+      {
+        "date": "2026-06-08",
+        "total": 82.5
+      },
+      {
+        "date": "2026-06-15",
+        "total": 81.6
+      },
+      {
+        "date": "2026-06-23",
+        "total": 80.0
+      },
+      {
+        "date": "2026-06-30",
+        "total": 79.6
+      },
+      {
+        "date": "2026-07-08",
+        "total": 80.4
+      },
+      {
+        "date": "2026-07-15",
+        "total": 82.4
+      },
+      {
+        "date": "2026-07-22",
+        "total": 82.3
+      },
+      {
+        "date": "2026-07-29",
+        "total": 83.1
+      },
+      {
+        "date": "2026-08-05",
+        "total": 82.7
+      },
+      {
+        "date": "2026-08-12",
+        "total": 81.5
+      },
+      {
+        "date": "2026-08-19",
+        "total": 80.2
+      },
+      {
+        "date": "2026-08-26",
+        "total": 81.2
+      },
+      {
+        "date": "2026-09-02",
+        "total": 82.7
+      },
+      {
+        "date": "2026-09-10",
+        "total": 81.6
+      },
+      {
+        "date": "2026-09-17",
+        "total": 81.0
       }
     ],
     "n_series": 14,
@@ -1006,9 +1006,9 @@
       "EEM: OHLC absent — using close-return vol proxy",
       "SPY: OHLC absent — using close-return vol proxy"
     ],
-    "as_of": "2026-09-11",
-    "built": "2026-09-13T09:48:14.626553+00:00",
-    "timing_sec": 0.13,
+    "as_of": "2026-09-17",
+    "built": "2026-09-18T18:17:56.524316+00:00",
+    "timing_sec": 0.12,
     "params": {
       "window": 150,
       "var_lag": 2,
@@ -1033,13 +1033,13 @@
     }
   },
   "corr_tightening": {
-    "eem_emfx_corr_60d": -0.057,
-    "pairwise_avg_corr": 0.461,
-    "pairwise_vel_20d_z": -0.608,
+    "eem_emfx_corr_60d": -0.038,
+    "pairwise_avg_corr": 0.476,
+    "pairwise_vel_20d_z": -0.362,
     "tightening": false,
     "gaps": [],
-    "as_of": "2026-09-11",
-    "built": "2026-09-13T09:48:15.442395+00:00"
+    "as_of": "2026-09-17",
+    "built": "2026-09-18T18:17:57.389278+00:00"
   },
   "two_tier": {
     "state": "quiet",
@@ -1048,19 +1048,19 @@
       "hottest_region": "asia",
       "regional_oas": {
         "asia": {
-          "value": 0.81,
-          "vel_20d_z": -0.047,
-          "asof": "2026-09-10"
+          "value": 0.82,
+          "vel_20d_z": 0.04,
+          "asof": "2026-09-16"
         },
         "latam": {
-          "value": 1.93,
-          "vel_20d_z": -0.14,
-          "asof": "2026-09-10"
+          "value": 1.9,
+          "vel_20d_z": -0.64,
+          "asof": "2026-09-16"
         },
         "emea": {
-          "value": 1.36,
-          "vel_20d_z": -0.853,
-          "asof": "2026-09-10"
+          "value": 1.45,
+          "vel_20d_z": -0.269,
+          "asof": "2026-09-16"
         }
       }
     },
@@ -1069,35 +1069,35 @@
       "legs": {
         "us_hy_oas_vel": {
           "value": 2.7,
-          "vel_20d_z": 0.03,
+          "vel_20d_z": -0.044,
           "hot": false,
           "threshold": "vel_20d_z >= 2"
         },
         "kre_spy_rs": {
-          "value": -3.2,
-          "kre_ret_20d": -4.95,
-          "spy_ret_20d": -1.75,
+          "value": -2.2,
+          "kre_ret_20d": -3.01,
+          "spy_ret_20d": -0.84,
           "hot": false,
           "threshold": "KRE-SPY 20d RS < -5%",
           "note": "EUFN/KBWB absent from yahoo store — only KRE included"
         },
         "move_pctile": {
-          "value": 82.21,
-          "pctile": 52.6,
+          "value": 76.22,
+          "pctile": 44.1,
           "hot": false,
           "threshold": "pctile >= 85 (full history)",
-          "asof": "2026-09-11"
+          "asof": "2026-09-17"
         },
         "sofr_iorb_corridor": {
-          "value": -0.03,
+          "value": -0.28,
           "last5_all_positive": false,
           "hot": false,
           "threshold": "SOFR-IORB > 0 for 5 consecutive days",
           "caveat": "Quarter-end spikes (late Dec/Mar/Jun/Sep) are technical — not structural funding stress; verify calendar proximity."
         },
         "safety_bid_flag": {
-          "dxy_5d_chg": -0.059,
-          "dgs2_5d_chg": 17.0,
+          "dxy_5d_chg": 1.384,
+          "dgs2_5d_chg": 31.0,
           "safety_bid": false,
           "hot": false,
           "note": "DXY up & 2y yield down = safe-haven demand, not hot for K-of-N"
@@ -1107,7 +1107,7 @@
     "safety_bid": false,
     "gaps": [],
     "state_logic": "quiet: tier1 calm | contained: tier1>=strained, 0 tier2 hot | watching: 1 tier2 hot | transmitting: >=2 tier2 hot with tier1>=strained",
-    "built": "2026-09-13T09:48:15.480580+00:00"
+    "built": "2026-09-18T18:17:57.443320+00:00"
   },
   "cb_desk": {
     "cbs": [
@@ -1130,21 +1130,21 @@
           "prev_rate": 3.64,
           "new_rate": 3.63
         },
-        "trend_3m": "hiking",
+        "trend_3m": "hold",
         "bs_impulse": {
-          "impulse_13w": 0.23,
-          "impulse_52w": 2.04,
-          "level": 6740.6,
-          "asof": "2026-09-09",
+          "impulse_13w": 0.15,
+          "impulse_52w": 2.09,
+          "level": 6746.5,
+          "asof": "2026-09-16",
           "unit": "USD billions",
           "series": "WALCL",
           "gap_note": null
         },
         "next_meeting": {
-          "date": "2026-09-16",
-          "days": 3
+          "date": "2026-10-28",
+          "days": 40
         },
-        "asof": "2026-09-10",
+        "asof": "2026-09-16",
         "stale": false
       },
       {
@@ -1152,7 +1152,7 @@
         "name_en": "European Central Bank",
         "name_zh": "欧洲央行",
         "country": "XM",
-        "policy_rate": 2.25,
+        "policy_rate": 2.5,
         "rate_unit": "percent",
         "source": {
           "series": "ECBDFR",
@@ -1160,27 +1160,27 @@
           "cadence": "daily"
         },
         "last_change": {
-          "date": "2026-06-17",
+          "date": "2026-09-16",
           "direction": "hike",
           "bp": 25.0,
-          "prev_rate": 2.0,
-          "new_rate": 2.25
+          "prev_rate": 2.25,
+          "new_rate": 2.5
         },
-        "trend_3m": "hold",
+        "trend_3m": "hiking",
         "bs_impulse": {
-          "impulse_13w": -3.65,
-          "impulse_52w": -2.79,
-          "level": 5912.2,
-          "asof": "2026-09-04",
+          "impulse_13w": -3.66,
+          "impulse_52w": -2.83,
+          "level": 5911.2,
+          "asof": "2026-09-11",
           "unit": "EUR billions",
           "series": "ECBASSETSW",
           "gap_note": null
         },
         "next_meeting": {
           "date": "2026-10-29",
-          "days": 46
+          "days": 41
         },
-        "asof": "2026-09-11",
+        "asof": "2026-09-18",
         "stale": false
       },
       {
@@ -1188,7 +1188,7 @@
         "name_en": "Bank of Japan",
         "name_zh": "日本银行",
         "country": "JP",
-        "policy_rate": 0.841,
+        "policy_rate": 0.977,
         "rate_unit": "percent",
         "source": {
           "series": "IRSTCI01JPM156N",
@@ -1196,11 +1196,11 @@
           "cadence": "monthly"
         },
         "last_change": {
-          "date": "2026-06-01",
+          "date": "2026-07-01",
           "direction": "hike",
-          "bp": 11.4,
-          "prev_rate": 0.727,
-          "new_rate": 0.841
+          "bp": 13.7,
+          "prev_rate": 0.841,
+          "new_rate": 0.978
         },
         "trend_3m": "hiking",
         "bs_impulse": {
@@ -1214,10 +1214,10 @@
         },
         "next_meeting": {
           "date": "2026-09-18",
-          "days": 5
+          "days": 0
         },
-        "asof": "2026-06-01",
-        "stale": true
+        "asof": "2026-08-01",
+        "stale": false
       },
       {
         "id": "BOE",
@@ -1241,8 +1241,8 @@
         "trend_3m": "easing",
         "bs_impulse": null,
         "next_meeting": {
-          "date": "2026-09-17",
-          "days": 4
+          "date": "2026-11-05",
+          "days": 48
         },
         "asof": "2026-01-01",
         "stale": true
@@ -1266,21 +1266,21 @@
           "prev_rate": -0.064,
           "new_rate": -0.048
         },
-        "trend_3m": "easing",
+        "trend_3m": "hold",
         "bs_impulse": null,
         "next_meeting": {
-          "date": "2026-09-17",
-          "days": 4
+          "date": "2026-12-10",
+          "days": 83
         },
-        "asof": "2026-06-01",
-        "stale": true
+        "asof": "2026-08-01",
+        "stale": false
       },
       {
         "id": "BOC",
         "name_en": "Bank of Canada",
         "name_zh": "加拿大央行",
         "country": "CA",
-        "policy_rate": 2.2725,
+        "policy_rate": 2.28,
         "rate_unit": "percent",
         "source": {
           "series": "IR3TIB01CAM156N",
@@ -1288,27 +1288,27 @@
           "cadence": "monthly"
         },
         "last_change": {
-          "date": "2026-06-01",
-          "direction": "cut",
-          "bp": -2.0,
-          "prev_rate": 2.292,
-          "new_rate": 2.272
+          "date": "2026-08-01",
+          "direction": "hike",
+          "bp": 2.2,
+          "prev_rate": 2.258,
+          "new_rate": 2.28
         },
-        "trend_3m": "hold",
+        "trend_3m": "hiking",
         "bs_impulse": null,
         "next_meeting": {
           "date": "2026-10-28",
-          "days": 45
+          "days": 40
         },
-        "asof": "2026-06-01",
-        "stale": true
+        "asof": "2026-08-01",
+        "stale": false
       },
       {
         "id": "RBA",
         "name_en": "Reserve Bank of Australia",
         "name_zh": "澳大利亚储备银行",
         "country": "AU",
-        "policy_rate": 4.46,
+        "policy_rate": 4.51,
         "rate_unit": "percent",
         "source": {
           "series": "IR3TIB01AUM156N",
@@ -1316,20 +1316,20 @@
           "cadence": "monthly"
         },
         "last_change": {
-          "date": "2026-06-01",
+          "date": "2026-08-01",
           "direction": "hike",
           "bp": 3.0,
-          "prev_rate": 4.43,
-          "new_rate": 4.46
+          "prev_rate": 4.48,
+          "new_rate": 4.51
         },
         "trend_3m": "hiking",
         "bs_impulse": null,
         "next_meeting": {
           "date": "2026-09-29",
-          "days": 16
+          "days": 11
         },
-        "asof": "2026-06-01",
-        "stale": true
+        "asof": "2026-08-01",
+        "stale": false
       }
     ],
     "n_cbs": 7,
@@ -1339,16 +1339,16 @@
       "BOC: balance-sheet series not available (honest null)",
       "RBA: balance-sheet series not available (honest null)"
     ],
-    "as_of": "2026-09-11",
-    "built": "2026-09-13T09:48:15.919534+00:00",
+    "as_of": "2026-09-18",
+    "built": "2026-09-18T18:17:57.883479+00:00",
     "bs_note": "Balance-sheet impulse available for: FED (WALCL), ECB (ECBASSETSW), BoJ (JPNASSETS). BoE: FRED provides annual-only balance-sheet data — honest null. PBoC: no clean keyless balance-sheet series available — honest null. SNB/BoC/RBA: no balance-sheet series configured — honest null.",
     "irdr7_note": "IRD-R7: This desk is DESCRIPTIVE. It reports realized policy rates, observed changes, and published meeting dates. No policy-intent projection, no forward guidance scoring, no consensus-surprise computation (no free consensus source)."
   },
   "smile": {
-    "beta": 0.0248,
-    "r2": 0.156,
-    "residual_20d": 0.00159,
-    "residual_20d_z": 0.121,
+    "beta": 0.0291,
+    "r2": 0.198,
+    "residual_20d": 0.00795,
+    "residual_20d_z": 0.613,
     "regime": "rates-driven",
     "regime_60d": "rates-driven",
     "safety_bid_today": false,
@@ -1367,7 +1367,7 @@
     "weights_note": "DXY basket weights: EUR 57.6%, JPY 13.6%, GBP 11.9% (ICE benchmark). Re-weighted to available 2y series: EUR 69.3%, JPY 16.4%, GBP 14.3%. CAD/SEK/CHF excluded (no 2y in store). Actual weights after re-norm: {'eur2y': 0.693, 'jpy2y': 0.164, 'gbp2y': 0.143}.",
     "gaps": [],
     "display_only": true,
-    "built": "2026-09-13T09:01:03.164556+00:00"
+    "built": "2026-09-18T17:28:53.061149+00:00"
   },
   "inversion_board": {
     "n_inverted": 0,
@@ -1375,13 +1375,13 @@
     "countries": [
       {
         "cc": "US",
-        "slope_bp": 39.0,
+        "slope_bp": 27.0,
         "inverted": false,
         "since_days": null
       },
       {
         "cc": "DE",
-        "slope_bp": 40.3,
+        "slope_bp": 33.9,
         "inverted": false,
         "since_days": null
       },
@@ -1393,103 +1393,103 @@
       },
       {
         "cc": "GB",
-        "slope_bp": 108.6,
+        "slope_bp": 127.9,
         "inverted": false,
         "since_days": null
       },
       {
         "cc": "CA",
-        "slope_bp": 114.8,
+        "slope_bp": 139.5,
         "inverted": false,
         "since_days": null
       },
       {
         "cc": "AU",
-        "slope_bp": 37.1,
+        "slope_bp": 50.5,
         "inverted": false,
         "since_days": null
       }
     ],
     "synchronized": false,
-    "built": "2026-09-13T09:48:15.965745+00:00"
+    "built": "2026-09-18T18:17:57.942161+00:00"
   },
   "swap_lines_bn": 0.1,
   "top_transmitters_display": [
     {
       "ticker": "EWA",
-      "to_others_pct": 127.6,
+      "to_others_pct": 130.5,
       "name_en": "Australia",
       "name_zh": "澳大利亚",
       "flag": "🇦🇺"
     },
     {
       "ticker": "EWG",
-      "to_others_pct": 125.0,
+      "to_others_pct": 126.0,
       "name_en": "Germany",
       "name_zh": "德国",
       "flag": "🇩🇪"
     },
     {
       "ticker": "EWC",
-      "to_others_pct": 116.6,
+      "to_others_pct": 118.5,
       "name_en": "Canada",
       "name_zh": "加拿大",
       "flag": "🇨🇦"
     }
   ],
-  "emb_ief_spark_svg": "<svg class=\"nch\" viewBox=\"0 0 220 38\" preserveAspectRatio=\"none\" width=\"100%\" height=\"38\"><polyline points=\"0,38 0.0,31.5 1.8,32.5 3.7,30.3 5.5,31.6 7.4,34.9 9.2,38.0 11.1,33.9 12.9,31.9 14.8,32.6 16.6,31.2 18.5,32.4 20.3,26.7 22.2,24.0 24.0,23.0 25.9,21.1 27.7,20.3 29.6,20.3 31.4,21.1 33.3,19.9 35.1,19.8 37.0,20.0 38.8,19.1 40.7,21.0 42.5,20.5 44.4,20.2 46.2,20.1 48.1,20.1 49.9,19.3 51.8,19.3 53.6,20.1 55.5,18.2 57.3,16.5 59.2,17.0 61.0,17.0 62.9,16.1 64.7,15.6 66.6,16.8 68.4,16.4 70.3,16.8 72.1,17.2 73.9,17.2 75.8,17.0 77.6,16.9 79.5,16.3 81.3,15.9 83.2,14.0 85.0,13.8 86.9,13.3 88.7,12.8 90.6,11.7 92.4,12.4 94.3,11.9 96.1,13.2 98.0,13.3 99.8,12.5 101.7,13.9 103.5,12.3 105.4,10.7 107.2,9.1 109.1,10.9 110.9,10.2 112.8,9.5 114.6,9.3 116.5,10.9 118.3,12.9 120.2,13.4 122.0,15.0 123.9,13.4 125.7,12.7 127.6,11.9 129.4,11.3 131.3,10.7 133.1,10.2 135.0,9.9 136.8,10.2 138.7,9.5 140.5,11.1 142.4,11.6 144.2,12.1 146.1,12.6 147.9,13.7 149.7,12.8 151.6,11.3 153.4,11.7 155.3,13.7 157.1,14.2 159.0,13.7 160.8,14.1 162.7,15.6 164.5,14.4 166.4,13.5 168.2,12.1 170.1,11.9 171.9,12.6 173.8,11.7 175.6,11.2 177.5,11.1 179.3,11.9 181.2,11.8 183.0,11.3 184.9,11.6 186.7,12.5 188.6,13.5 190.4,13.4 192.3,13.8 194.1,12.3 196.0,12.7 197.8,12.6 199.7,11.8 201.5,12.3 203.4,11.4 205.2,11.4 207.1,11.6 208.9,11.7 210.8,10.5 212.6,10.1 214.5,10.3 216.3,9.8 218.2,9.9 220.0,9.2 220,38\" fill=\"var(--info)\" opacity=\"0.12\" stroke=\"none\"/><polyline points=\"0.0,31.5 1.8,32.5 3.7,30.3 5.5,31.6 7.4,34.9 9.2,38.0 11.1,33.9 12.9,31.9 14.8,32.6 16.6,31.2 18.5,32.4 20.3,26.7 22.2,24.0 24.0,23.0 25.9,21.1 27.7,20.3 29.6,20.3 31.4,21.1 33.3,19.9 35.1,19.8 37.0,20.0 38.8,19.1 40.7,21.0 42.5,20.5 44.4,20.2 46.2,20.1 48.1,20.1 49.9,19.3 51.8,19.3 53.6,20.1 55.5,18.2 57.3,16.5 59.2,17.0 61.0,17.0 62.9,16.1 64.7,15.6 66.6,16.8 68.4,16.4 70.3,16.8 72.1,17.2 73.9,17.2 75.8,17.0 77.6,16.9 79.5,16.3 81.3,15.9 83.2,14.0 85.0,13.8 86.9,13.3 88.7,12.8 90.6,11.7 92.4,12.4 94.3,11.9 96.1,13.2 98.0,13.3 99.8,12.5 101.7,13.9 103.5,12.3 105.4,10.7 107.2,9.1 109.1,10.9 110.9,10.2 112.8,9.5 114.6,9.3 116.5,10.9 118.3,12.9 120.2,13.4 122.0,15.0 123.9,13.4 125.7,12.7 127.6,11.9 129.4,11.3 131.3,10.7 133.1,10.2 135.0,9.9 136.8,10.2 138.7,9.5 140.5,11.1 142.4,11.6 144.2,12.1 146.1,12.6 147.9,13.7 149.7,12.8 151.6,11.3 153.4,11.7 155.3,13.7 157.1,14.2 159.0,13.7 160.8,14.1 162.7,15.6 164.5,14.4 166.4,13.5 168.2,12.1 170.1,11.9 171.9,12.6 173.8,11.7 175.6,11.2 177.5,11.1 179.3,11.9 181.2,11.8 183.0,11.3 184.9,11.6 186.7,12.5 188.6,13.5 190.4,13.4 192.3,13.8 194.1,12.3 196.0,12.7 197.8,12.6 199.7,11.8 201.5,12.3 203.4,11.4 205.2,11.4 207.1,11.6 208.9,11.7 210.8,10.5 212.6,10.1 214.5,10.3 216.3,9.8 218.2,9.9 220.0,9.2\" fill=\"none\" stroke=\"var(--info)\" stroke-width=\"1.7\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"220.0\" cy=\"9.2\" r=\"2.6\" fill=\"var(--info)\"/></svg>",
-  "spillover_spark_svg": "<svg class=\"nch\" viewBox=\"0 0 200 34\" preserveAspectRatio=\"none\" width=\"100%\" height=\"34\"><polyline points=\"0,34 0.0,8.8 3.9,8.3 7.8,8.2 11.8,8.2 15.7,8.5 19.6,8.6 23.5,8.9 27.5,9.1 31.4,9.5 35.3,12.0 39.2,12.3 43.1,11.3 47.1,14.2 51.0,31.9 54.9,34.0 58.8,29.1 62.7,27.6 66.7,23.6 70.6,19.6 74.5,19.6 78.4,16.3 82.4,24.5 86.3,22.7 90.2,21.4 94.1,21.5 98.0,17.5 102.0,19.7 105.9,20.0 109.8,20.8 113.7,20.9 117.6,22.1 121.6,22.3 125.5,19.9 129.4,18.0 133.3,18.0 137.3,20.0 141.2,20.6 145.1,19.6 149.0,18.7 152.9,21.7 156.9,24.1 160.8,24.8 164.7,21.8 168.6,20.9 172.5,20.2 176.5,19.7 180.4,20.0 184.3,22.1 188.2,24.2 192.2,22.3 196.1,21.2 200.0,21.4 200,34\" fill=\"var(--warn)\" opacity=\"0.12\" stroke=\"none\"/><polyline points=\"0.0,8.8 3.9,8.3 7.8,8.2 11.8,8.2 15.7,8.5 19.6,8.6 23.5,8.9 27.5,9.1 31.4,9.5 35.3,12.0 39.2,12.3 43.1,11.3 47.1,14.2 51.0,31.9 54.9,34.0 58.8,29.1 62.7,27.6 66.7,23.6 70.6,19.6 74.5,19.6 78.4,16.3 82.4,24.5 86.3,22.7 90.2,21.4 94.1,21.5 98.0,17.5 102.0,19.7 105.9,20.0 109.8,20.8 113.7,20.9 117.6,22.1 121.6,22.3 125.5,19.9 129.4,18.0 133.3,18.0 137.3,20.0 141.2,20.6 145.1,19.6 149.0,18.7 152.9,21.7 156.9,24.1 160.8,24.8 164.7,21.8 168.6,20.9 172.5,20.2 176.5,19.7 180.4,20.0 184.3,22.1 188.2,24.2 192.2,22.3 196.1,21.2 200.0,21.4\" fill=\"none\" stroke=\"var(--warn)\" stroke-width=\"1.7\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"200.0\" cy=\"21.4\" r=\"2.6\" fill=\"var(--warn)\"/></svg>",
+  "emb_ief_spark_svg": "<svg class=\"nch\" viewBox=\"0 0 220 38\" preserveAspectRatio=\"none\" width=\"100%\" height=\"38\"><polyline points=\"0,38 0.0,34.9 1.8,38.0 3.7,34.0 5.5,32.0 7.4,32.6 9.2,31.3 11.1,32.4 12.9,26.8 14.8,24.2 16.6,23.2 18.5,21.3 20.3,20.5 22.2,20.5 24.0,21.3 25.9,20.1 27.7,20.1 29.6,20.3 31.4,19.4 33.3,21.2 35.1,20.7 37.0,20.4 38.8,20.3 40.7,20.3 42.5,19.6 44.4,19.5 46.2,20.4 48.1,18.5 49.9,16.8 51.8,17.3 53.6,17.3 55.5,16.4 57.3,15.9 59.2,17.0 61.0,16.7 62.9,17.1 64.7,17.4 66.6,17.5 68.4,17.3 70.3,17.2 72.1,16.6 73.9,16.2 75.8,14.3 77.6,14.1 79.5,13.6 81.3,13.2 83.2,12.0 85.0,12.8 86.9,12.3 88.7,13.5 90.6,13.6 92.4,12.8 94.3,14.2 96.1,12.6 98.0,11.0 99.8,9.5 101.7,11.3 103.5,10.5 105.4,9.9 107.2,9.6 109.1,11.3 110.9,13.2 112.8,13.7 114.6,15.3 116.5,13.8 118.3,13.0 120.2,12.2 122.0,11.7 123.9,11.1 125.7,10.6 127.6,10.3 129.4,10.5 131.3,9.8 133.1,11.5 135.0,12.0 136.8,12.4 138.7,12.9 140.5,14.1 142.4,13.1 144.2,11.6 146.1,12.1 147.9,14.0 149.7,14.5 151.6,14.1 153.4,14.4 155.3,15.9 157.1,14.7 159.0,13.8 160.8,12.4 162.7,12.2 164.5,12.9 166.4,12.0 168.2,11.6 170.1,11.5 171.9,12.2 173.8,12.1 175.6,11.7 177.5,11.9 179.3,12.9 181.2,13.8 183.0,13.8 184.9,14.1 186.7,12.6 188.6,13.0 190.4,12.9 192.3,12.1 194.1,12.7 196.0,11.7 197.8,11.8 199.7,11.9 201.5,12.1 203.4,10.8 205.2,10.5 207.1,10.6 208.9,10.1 210.8,10.3 212.6,9.6 214.5,9.8 216.3,10.6 218.2,9.5 220.0,9.1 220,38\" fill=\"var(--info)\" opacity=\"0.12\" stroke=\"none\"/><polyline points=\"0.0,34.9 1.8,38.0 3.7,34.0 5.5,32.0 7.4,32.6 9.2,31.3 11.1,32.4 12.9,26.8 14.8,24.2 16.6,23.2 18.5,21.3 20.3,20.5 22.2,20.5 24.0,21.3 25.9,20.1 27.7,20.1 29.6,20.3 31.4,19.4 33.3,21.2 35.1,20.7 37.0,20.4 38.8,20.3 40.7,20.3 42.5,19.6 44.4,19.5 46.2,20.4 48.1,18.5 49.9,16.8 51.8,17.3 53.6,17.3 55.5,16.4 57.3,15.9 59.2,17.0 61.0,16.7 62.9,17.1 64.7,17.4 66.6,17.5 68.4,17.3 70.3,17.2 72.1,16.6 73.9,16.2 75.8,14.3 77.6,14.1 79.5,13.6 81.3,13.2 83.2,12.0 85.0,12.8 86.9,12.3 88.7,13.5 90.6,13.6 92.4,12.8 94.3,14.2 96.1,12.6 98.0,11.0 99.8,9.5 101.7,11.3 103.5,10.5 105.4,9.9 107.2,9.6 109.1,11.3 110.9,13.2 112.8,13.7 114.6,15.3 116.5,13.8 118.3,13.0 120.2,12.2 122.0,11.7 123.9,11.1 125.7,10.6 127.6,10.3 129.4,10.5 131.3,9.8 133.1,11.5 135.0,12.0 136.8,12.4 138.7,12.9 140.5,14.1 142.4,13.1 144.2,11.6 146.1,12.1 147.9,14.0 149.7,14.5 151.6,14.1 153.4,14.4 155.3,15.9 157.1,14.7 159.0,13.8 160.8,12.4 162.7,12.2 164.5,12.9 166.4,12.0 168.2,11.6 170.1,11.5 171.9,12.2 173.8,12.1 175.6,11.7 177.5,11.9 179.3,12.9 181.2,13.8 183.0,13.8 184.9,14.1 186.7,12.6 188.6,13.0 190.4,12.9 192.3,12.1 194.1,12.7 196.0,11.7 197.8,11.8 199.7,11.9 201.5,12.1 203.4,10.8 205.2,10.5 207.1,10.6 208.9,10.1 210.8,10.3 212.6,9.6 214.5,9.8 216.3,10.6 218.2,9.5 220.0,9.1\" fill=\"none\" stroke=\"var(--info)\" stroke-width=\"1.7\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"220.0\" cy=\"9.1\" r=\"2.6\" fill=\"var(--info)\"/></svg>",
+  "spillover_spark_svg": "<svg class=\"nch\" viewBox=\"0 0 200 34\" preserveAspectRatio=\"none\" width=\"100%\" height=\"34\"><polyline points=\"0,34 0.0,8.6 3.9,8.2 7.8,8.3 11.8,8.2 15.7,8.7 19.6,9.0 23.5,9.3 27.5,9.2 31.4,11.7 35.3,12.2 39.2,10.9 43.1,12.8 47.1,27.3 51.0,34.0 54.9,30.1 58.8,27.8 62.7,24.2 66.7,18.1 70.6,19.5 74.5,17.9 78.4,22.8 82.4,22.8 86.3,21.5 90.2,21.4 94.1,19.4 98.0,19.4 102.0,19.2 105.9,20.5 109.8,21.4 113.7,22.1 117.6,21.8 121.6,22.1 125.5,17.8 129.4,18.1 133.3,19.4 137.3,20.1 141.2,19.6 145.1,19.9 149.0,21.2 152.9,23.5 156.9,24.1 160.8,22.9 164.7,20.1 168.6,20.2 172.5,19.1 176.5,19.6 180.4,21.4 184.3,23.2 188.2,21.8 192.2,19.6 196.1,21.2 200.0,22.1 200,34\" fill=\"var(--warn)\" opacity=\"0.12\" stroke=\"none\"/><polyline points=\"0.0,8.6 3.9,8.2 7.8,8.3 11.8,8.2 15.7,8.7 19.6,9.0 23.5,9.3 27.5,9.2 31.4,11.7 35.3,12.2 39.2,10.9 43.1,12.8 47.1,27.3 51.0,34.0 54.9,30.1 58.8,27.8 62.7,24.2 66.7,18.1 70.6,19.5 74.5,17.9 78.4,22.8 82.4,22.8 86.3,21.5 90.2,21.4 94.1,19.4 98.0,19.4 102.0,19.2 105.9,20.5 109.8,21.4 113.7,22.1 117.6,21.8 121.6,22.1 125.5,17.8 129.4,18.1 133.3,19.4 137.3,20.1 141.2,19.6 145.1,19.9 149.0,21.2 152.9,23.5 156.9,24.1 160.8,22.9 164.7,20.1 168.6,20.2 172.5,19.1 176.5,19.6 180.4,21.4 184.3,23.2 188.2,21.8 192.2,19.6 196.1,21.2 200.0,22.1\" fill=\"none\" stroke=\"var(--warn)\" stroke-width=\"1.7\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><circle cx=\"200.0\" cy=\"22.1\" r=\"2.6\" fill=\"var(--warn)\"/></svg>",
   "contagion_links": {
-    "as_of": "2026-09-13",
+    "as_of": "2026-09-18",
     "pressure": {
       "us": {
-        "pct": 0.8333,
+        "pct": 0.754,
         "level": "moderate"
       },
       "cn": {
-        "pct": 0.7937,
-        "level": "moderate"
+        "pct": 0.6984,
+        "level": "low"
       },
       "hk": {
-        "pct": 0.8036,
-        "level": "moderate"
+        "pct": 0.6905,
+        "level": "low"
       },
       "ca": {
-        "pct": 0.8274,
+        "pct": 0.754,
         "level": "moderate"
       },
       "kr": {
-        "pct": 0.8254,
-        "level": "moderate"
+        "pct": 0.7123,
+        "level": "low"
       },
       "jp": {
-        "pct": 0.7163,
+        "pct": 0.7381,
         "level": "low"
       },
       "tw": {
-        "pct": 0.7778,
+        "pct": 0.756,
         "level": "moderate"
       },
       "in": {
-        "pct": 0.8353,
-        "level": "moderate"
+        "pct": 0.7361,
+        "level": "low"
       },
       "au": {
-        "pct": 0.8036,
-        "level": "moderate"
+        "pct": 0.6885,
+        "level": "low"
       },
       "gb": {
-        "pct": 0.8413,
+        "pct": 0.7758,
         "level": "moderate"
       },
       "ez": {
-        "pct": 0.8036,
-        "level": "moderate"
+        "pct": 0.6925,
+        "level": "low"
       }
     },
     "top_stressed": [
       "gb",
-      "in",
+      "tw",
       "us"
     ]
   }

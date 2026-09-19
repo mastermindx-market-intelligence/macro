@@ -1,15 +1,15 @@
 {
   "schema": "macro_snapshot.v1.2",
-  "asof": "2026-09-13",
-  "oldest_component_asof": "2026-09-11",
-  "macro_context_id": "39217b4ddc746407",
+  "asof": "2026-09-18",
+  "oldest_component_asof": "2026-09-17",
+  "macro_context_id": "01fbf10df63ca59a",
   "labels": {
     "us": {
       "us_quad": "Q3",
       "us_transition_state": "TRANSITIONING",
       "us_fused_risk": "elevated",
       "us_vol_regime": "normalizing",
-      "us_risk_radar": "caution",
+      "us_risk_radar": "calm",
       "us_rate_pressure": "pressure",
       "us_business_cycle_phase": "recovery",
       "us_liquidity_quality": "stress-expansion",
@@ -34,18 +34,18 @@
       "usd_regime": "Global reflation",
       "fx_risk": "risk-on",
       "real_rate_regime": "Restrictive real yields",
-      "fx_liquidity_dir": "soft",
-      "fx_regime_radar": null,
+      "fx_liquidity_dir": "supportive",
+      "fx_regime_radar": "intervention_risk",
       "usd_valuation": "fair",
       "usd_positioning": "neutral",
       "fed_path_lean": "hawkish_repricing",
       "fx_eurusd_action": "FLAT",
       "fx_gbpusd_action": "FLAT",
       "fx_usdjpy_action": "FLAT",
-      "fx_usdchf_action": "FLAT",
+      "fx_usdchf_action": "LONG",
       "fx_audusd_action": "SHORT",
       "fx_usdcad_action": "FLAT",
-      "fx_usdmxn_action": "SHORT",
+      "fx_usdmxn_action": "FLAT",
       "fx_usdbrl_action": "FLAT",
       "fx_usdcnh_action": "FLAT",
       "fx_dxy_action": null
@@ -65,14 +65,14 @@
       "commodity_confluence_state": "Neutral",
       "commodity_breadth_bucket": "broad",
       "gold_action": "SELL",
-      "silver_action": "SELL",
+      "silver_action": "HOLD",
       "copper_action": "HOLD",
-      "oil_action": "HOLD"
+      "oil_action": "SELL"
     },
     "china": {
       "china_quad": "Q4",
-      "china_property_regime": "Contraction (easing)",
-      "china_fe_band": "Neutral"
+      "china_property_regime": "Contraction",
+      "china_fe_band": "Greed"
     },
     "hk": {
       "hk_quad": "Q4",
@@ -82,7 +82,7 @@
     "canada": {
       "canada_quad": "Q2",
       "canada_overlay_state": "Neutral",
-      "canada_cycle_tag": "mid"
+      "canada_cycle_tag": "late"
     },
     "dispersion": {
       "dispersion_state": "neutral"
@@ -92,29 +92,29 @@
       "intl_ez_quad": "Q3",
       "intl_gb_quad": "Q3",
       "intl_in_quad": "Q3",
-      "intl_jp_quad": "Q3",
+      "intl_jp_quad": "Q2",
       "intl_kr_quad": "Q3",
-      "intl_tw_quad": "Q3"
+      "intl_tw_quad": "Q2"
     }
   },
   "sources": {
-    "data/regime/latest.json": "2026-09-11",
-    "data/market_state/latest.json": "2026-09-11",
-    "data/transmission/latest.json": "2026-09-11",
-    "data/forex/latest.json": "2026-09-13",
-    "data/bonds/bond_health.json": "2026-09-11",
-    "data/commodity/latest.json": "2026-09-11",
-    "data/china_regime/latest.json": "2026-09-11",
-    "data/hk_regime/latest.json": "2026-09-11",
-    "data/canada_regime/latest.json": "2026-09-11",
-    "data/dispersion/regime.json": "2026-09-13",
-    "data/intl_regime/AU_history.parquet": "2026-09-11",
-    "data/intl_regime/EZ_history.parquet": "2026-09-11",
-    "data/intl_regime/GB_history.parquet": "2026-09-11",
-    "data/intl_regime/IN_history.parquet": "2026-09-11",
-    "data/intl_regime/JP_history.parquet": "2026-09-11",
-    "data/intl_regime/KR_history.parquet": "2026-09-11",
-    "data/intl_regime/TW_history.parquet": "2026-09-11"
+    "data/regime/latest.json": "2026-09-17",
+    "data/market_state/latest.json": "2026-09-17",
+    "data/transmission/latest.json": "2026-09-17",
+    "data/forex/latest.json": "2026-09-18",
+    "data/bonds/bond_health.json": "2026-09-17",
+    "data/commodity/latest.json": "2026-09-18",
+    "data/china_regime/latest.json": "2026-09-18",
+    "data/hk_regime/latest.json": "2026-09-18",
+    "data/canada_regime/latest.json": "2026-09-17",
+    "data/dispersion/regime.json": "2026-09-18",
+    "data/intl_regime/AU_history.parquet": "2026-09-18",
+    "data/intl_regime/EZ_history.parquet": "2026-09-18",
+    "data/intl_regime/GB_history.parquet": "2026-09-18",
+    "data/intl_regime/IN_history.parquet": "2026-09-18",
+    "data/intl_regime/JP_history.parquet": "2026-09-18",
+    "data/intl_regime/KR_history.parquet": "2026-09-18",
+    "data/intl_regime/TW_history.parquet": "2026-09-18"
   },
   "gaps": [],
   "display_only": true

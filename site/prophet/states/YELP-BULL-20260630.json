@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "YELP-BULL-20260630",
-  "asof": "2026-09-13",
-  "phase": "pre_trigger",
-  "detection_phase": "pre_trigger",
-  "management_confidence": 33.0,
-  "raw_confidence": 33.8,
-  "delta_vs_base": -27.0,
-  "recommended_action": "wait",
-  "human_state": "Approaching Trigger",
+  "asof": "2026-09-18",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 22.9,
+  "raw_confidence": 21.8,
+  "delta_vs_base": -37.1,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 18.7,
+    "validity": 0.7,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 61.0
+    "pace": 24.7,
+    "retention": 0.0,
+    "overlay": 55.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.289,
+    "dist_to_stop_r": 0.061,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 97.8,
-    "p1": -0.4742,
-    "p2": -0.2371,
+    "horizon_pct_used": 108.9,
+    "p1": -0.6262,
+    "p2": -0.3131,
     "p3": null,
-    "move_r": -0.711,
+    "move_r": -0.939,
     "mfe_r": 0.0,
-    "mae_r": -0.823
+    "mae_r": -0.939
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 3.051757815342171e-07,
-  "_mae": -5.9600006866455075,
+  "_mae": -6.800000839233398,
   "_max_p1": 2.810090069375848e-08,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 44,
-  "tau": 0.9778
+  "days_elapsed": 49,
+  "tau": 1.0889
 }

@@ -1,0 +1,54 @@
+{
+  "390": {
+    "width": 390,
+    "page_scroll": false,
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "chip_wrap": true,
+    "focus_ring": true,
+    "lens_tap": true,
+    "reduced_motion": {
+      "ok": true,
+      "animationName": "none",
+      "w": 114
+    },
+    "table_scroll": {
+      "overflowX": "auto",
+      "scrollWidth": 640,
+      "clientWidth": 364,
+      "contained": true
+    }
+  },
+  "768": {
+    "width": 768,
+    "page_scroll": false,
+    "scrollWidth": 768,
+    "clientWidth": 768,
+    "chip_wrap": true,
+    "focus_ring": true,
+    "lens_tap": null,
+    "reduced_motion": null,
+    "table_scroll": {
+      "overflowX": "auto",
+      "scrollWidth": 724,
+      "clientWidth": 724,
+      "contained": false
+    }
+  },
+  "1440": {
+    "width": 1440,
+    "page_scroll": false,
+    "scrollWidth": 1440,
+    "clientWidth": 1440,
+    "chip_wrap": true,
+    "focus_ring": true,
+    "lens_tap": null,
+    "reduced_motion": null,
+    "table_scroll": {
+      "overflowX": "auto",
+      "scrollWidth": 1156,
+      "clientWidth": 1156,
+      "contained": false
+    }
+  }
+}
