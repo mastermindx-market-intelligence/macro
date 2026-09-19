@@ -502,6 +502,61 @@ def mature_outcome(
     )
 
 
+def _project_trigger_evidence(source_semantic: dict) -> dict | None:
+    """Explain the frozen D2 fire from frozen rows without changing identity."""
+    inputs = source_semantic.get("inputs") or {}
+    rows = inputs.get("source_rows")
+    evaluation_dates = inputs.get("evaluation_dates")
+    spec = source_semantic.get("spec") or {}
+    try:
+        window = int(spec.get("dvol_z_window", DVOL_WINDOW))
+        if (
+            not isinstance(rows, list)
+            or len(rows) < window + 2
+            or not isinstance(evaluation_dates, list)
+            or not evaluation_dates
+        ):
+            return None
+        ranges: list[float] = []
+        dates: list[pd.Timestamp] = []
+        for row in rows:
+            if not isinstance(row, dict) or not _finite(row.get("range")):
+                return None
+            asof = _date(row.get("asof"))
+            if asof is None:
+                return None
+            dates.append(pd.Timestamp(asof))
+            ranges.append(float(row["range"]))
+
+        from engine import btc_impulse_radar
+
+        series = pd.Series(ranges, index=pd.DatetimeIndex(dates), dtype=float)
+        evaluation_index = pd.to_datetime(evaluation_dates)
+        z = btc_impulse_radar._causal_z(series, window).reindex(evaluation_index)
+        if z.empty or pd.isna(z.iloc[-1]):
+            return None
+        current_z = float(z.iloc[-1])
+        previous_z = (
+            float(z.iloc[-2])
+            if len(z) >= 2 and not pd.isna(z.iloc[-2])
+            else None
+        )
+        if current_z >= 2.0:
+            mode = "single_z_ge_2"
+        elif current_z >= 1.5 and previous_z is not None and previous_z >= 1.5:
+            mode = "confirmed_z_ge_1_5"
+        else:
+            mode = "threshold_not_met"
+        return {
+            "current_z": round(current_z, 2),
+            "previous_z": round(previous_z, 2) if previous_z is not None else None,
+            "mode": mode,
+            "rule": "z>=2.0 or second consecutive z>=1.5",
+        }
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
 def project(journey: dict | None) -> dict:
     base = {
         "schema": SCHEMA,
@@ -511,6 +566,7 @@ def project(journey: dict | None) -> dict:
         "source_asof": None,
         "check_after": None,
         "fired": None,
+        "trigger_evidence": None,
         "trading_authority": False,
         "source_generation_id": None,
         "outcome_generation_id": None,
@@ -549,6 +605,7 @@ def project(journey: dict | None) -> dict:
         "source_asof": source_semantic.get("source_asof"),
         "check_after": source_semantic.get("check_after"),
         "fired": prediction.get("fired"),
+        "trigger_evidence": _project_trigger_evidence(source_semantic),
         "source_generation_id": source_generation.get("generation_id"),
         "source_recorded_at": source_generation["lifecycle"]["recorded_at"],
         "reason": source_semantic.get("reason"),

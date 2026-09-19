@@ -110,6 +110,9 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert projection["source_asof"] == str((entry - pd.Timedelta(days=1)).date())
     assert projection["check_after"] == str((entry + pd.Timedelta(days=3)).date())
     assert projection["fired"] is True
+    assert projection["trigger_evidence"]["current_z"] >= 2.0
+    assert projection["trigger_evidence"]["previous_z"] < 1.5
+    assert projection["trigger_evidence"]["mode"] == "single_z_ge_2"
     assert projection["trading_authority"] is False
     assert projection["outcome"] is None
 
@@ -122,6 +125,17 @@ def test_source_generation_freezes_previous_complete_d2_observation():
     assert semantic["evaluator"]["collector"] == "btc_impulse_radar._d2_cond.v1"
     assert len(semantic["inputs"]["source_rows"]) == 62
     assert semantic["inputs"]["source_rows"][-1]["asof"] == projection["source_asof"]
+
+
+def test_projection_explains_a_non_fire_without_changing_generation_identity():
+    d2, journey, _entry, _sig, _dvol = _capture_available(fired=False)
+    before = copy.deepcopy(journey)
+    projection = d2.project(journey)
+    assert journey == before
+    assert projection["fired"] is False
+    assert projection["trigger_evidence"]["current_z"] < 1.5
+    assert projection["trigger_evidence"]["mode"] == "threshold_not_met"
+    assert projection["trigger_evidence"]["rule"] == "z>=2.0 or second consecutive z>=1.5"
 
 
 def test_late_source_arrival_appends_correction_without_rewriting_first_generation():

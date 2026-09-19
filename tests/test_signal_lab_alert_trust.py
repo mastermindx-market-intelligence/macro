@@ -116,6 +116,12 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
         "source_asof": "2026-09-16",
         "check_after": "2026-09-20",
         "fired": True,
+        "trigger_evidence": {
+            "current_z": 2.37,
+            "previous_z": 1.12,
+            "mode": "single_z_ge_2",
+            "rule": "z>=2.0 or second consecutive z>=1.5",
+        },
         "trading_authority": False,
         "source_generation_id": "sha256:source",
         "outcome_generation_id": "sha256:outcome",
@@ -139,6 +145,13 @@ def test_signal_lab_exposes_the_append_only_d2_research_projection():
     assert "前瞻研究轨迹" in html
     assert "Raw D2 observation: fired" in html
     assert "原始 D2 观察：已触发" in html
+    assert "DVOL range z-score: 2.37" in html
+    assert "DVOL 振幅 z 分数：2.37" in html
+    assert "prior: 1.12" in html
+    assert "前值：1.12" in html
+    assert "Trigger path: current z ≥ 2.0" in html
+    assert "触发路径：当前 z ≥ 2.0" in html
+    assert "Rule: z ≥ 2.0, or two consecutive z ≥ 1.5" in html
     assert "Matured · down target hit" in html
     assert "已成熟 · 下行目标命中" in html
     assert "Research only — no trading authority" in html

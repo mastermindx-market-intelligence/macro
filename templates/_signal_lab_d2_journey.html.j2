@@ -34,6 +34,20 @@
   {% else %}
     {{ t('Raw D2 observation: unavailable', '原始 D2 观察：不可用') }}
   {% endif %}<br>
+  {% if journey.trigger_evidence %}
+    {{ t('DVOL range z-score: ' ~ ('%.2f'|format(journey.trigger_evidence.current_z)), 'DVOL 振幅 z 分数：' ~ ('%.2f'|format(journey.trigger_evidence.current_z))) }}
+    {% if journey.trigger_evidence.previous_z is not none %}
+      · {{ t('prior: ' ~ ('%.2f'|format(journey.trigger_evidence.previous_z)), '前值：' ~ ('%.2f'|format(journey.trigger_evidence.previous_z))) }}
+    {% endif %}<br>
+    {% if journey.trigger_evidence.mode == 'single_z_ge_2' %}
+      {{ t('Trigger path: current z ≥ 2.0', '触发路径：当前 z ≥ 2.0') }}
+    {% elif journey.trigger_evidence.mode == 'confirmed_z_ge_1_5' %}
+      {{ t('Trigger path: second consecutive z ≥ 1.5', '触发路径：连续第二次 z ≥ 1.5') }}
+    {% else %}
+      {{ t('Trigger path: threshold not met', '触发路径：未达到阈值') }}
+    {% endif %}<br>
+    {{ t('Rule: z ≥ 2.0, or two consecutive z ≥ 1.5', '规则：z ≥ 2.0，或连续两次 z ≥ 1.5') }}<br>
+  {% endif %}
   {% if journey.status == 'matured' and journey.outcome %}
     {% if journey.fired is not sameas true %}
       {{ t('Matured · no signal fired', '已成熟 · 未触发信号') }}
