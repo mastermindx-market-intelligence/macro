@@ -24,17 +24,17 @@
   a { text-decoration:none; }
   h1 { font-size:20px; margin:0; }
   h2 { font-size:15px; margin:0 0 6px; }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,10px);
            padding:14px 16px; margin-bottom:14px; }
   .muted { color:var(--muted); }
   .sm { font-size:13px; }
   .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
-          height:15px; border-radius:50%; border:1px solid var(--muted); color:var(--muted);
+          height:15px; border-radius:var(--r-pill,999px); border:1px solid var(--muted); color:var(--muted);
           font-size:10px; font-weight:600; cursor:help; position:relative;
           vertical-align:middle; margin-left:5px; }
   .help .tip { display:none; position:absolute; top:140%; left:50%;
                transform:translateX(-50%); width:330px; max-width:78vw; background:var(--panel);
-               border:1px solid var(--line); padding:9px 11px; border-radius:8px; z-index:60;
+               border:1px solid var(--line); padding:9px 11px; border-radius:var(--r-ctl,8px); z-index:60;
                font-size:12px; line-height:1.45; color:var(--text); font-weight:400;
                box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
                max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; }
@@ -42,7 +42,7 @@
   .help:hover .tip { display:block; }
   .ctx-strip { display:flex; flex-wrap:wrap; gap:10px 20px; align-items:flex-start; }
   .ctx-chip { display:inline-flex; align-items:center; gap:5px; background:var(--panel);
-              border:1px solid var(--line); border-radius:6px; padding:5px 10px;
+              border:1px solid var(--line); border-radius:var(--r-ctl,6px); padding:5px 10px;
               font-size:13px; font-weight:600; }
   .ctx-chip.regime { border-color:var(--link); color:var(--ink-link, var(--link)); }
   .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
@@ -50,12 +50,12 @@
                letter-spacing:.05em; white-space:nowrap; }
   .brief-link-panel { display:flex; align-items:center; gap:10px; padding:10px 16px; }
   .brief-link { display:inline-flex; align-items:center; gap:6px; background:var(--panel);
-                border:1px solid var(--link); border-radius:6px; padding:7px 14px;
+                border:1px solid var(--link); border-radius:var(--r-ctl,6px); padding:7px 14px;
                 font-size:13px; font-weight:600; color:var(--ink-link, var(--link));
                 text-decoration:none; }
   .brief-link:hover { opacity:0.8; }
   .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
-                 border-radius:999px; padding:3px 10px; font-size:12px; font-weight:600; }
+                 border-radius:var(--r-pill,999px); padding:3px 10px; font-size:12px; font-weight:600; }
   .state-open   { border-color:var(--up); color:var(--up); }
   .state-closed { border-color:var(--muted); color:var(--muted); }
   .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
@@ -96,7 +96,8 @@
 <div class="panel" style="border-color:var(--link)">
   <p class="muted sm" style="margin:0">
     <strong>{{ t('Note:', '注意：') }}</strong>
-    {{ payload.morning_source_feasibility_cause_en or payload.morning_source_feasibility_cause_zh or '' }}
+    {{ t(payload.morning_source_feasibility_cause_en or '',
+         payload.morning_source_feasibility_cause_zh or payload.morning_source_feasibility_cause_en or '') }}
   </p>
 </div>
 {% endif %}
@@ -120,7 +121,9 @@
         {{ t('Open', '交易中') }}
         {% if block.rows %}
           {% for row in block.rows %}
-            {% if row.phase_en %}— {{ row.phase_en }}{% endif %}
+            {% if row.phase_en or row.phase_zh %}
+              — {{ t(row.phase_en or '', row.phase_zh or row.phase_en or '') }}
+            {% endif %}
           {% endfor %}
         {% endif %}
       </span>
@@ -142,18 +145,19 @@
       </span>
     {% endif %}
 
-    {% if block.state_reason_zh %}
-    <span class="muted sm">{{ block.state_reason_zh }}</span>
-    {% elif block.state_reason_en %}
-    <span class="muted sm">{{ block.state_reason_en }}</span>
+    {% if block.state_reason_en or block.state_reason_zh %}
+    <span class="muted sm">{{ t(block.state_reason_en or '',
+                                block.state_reason_zh or block.state_reason_en or '') }}</span>
     {% endif %}
   </div>
 
   {% if block.rows and (block.state == 'CURRENT' or block.state == 'STALE_WITH_LAST_KNOWN') %}
   <div style="margin-top:8px;font-size:13px;color:var(--muted)">
     {% for row in block.rows %}
-      {% if row.phase_zh %}{{ row.phase_zh }}{% elif row.phase_en %}{{ row.phase_en }}{% endif %}
-      {% if row.next_event_en or row.next_event_zh %} — {{ row.next_event_zh or row.next_event_en }}{% endif %}
+      {{ t(row.phase_en or '', row.phase_zh or row.phase_en or '') }}
+      {% if row.next_event_en or row.next_event_zh %}
+        — {{ t(row.next_event_en or '', row.next_event_zh or row.next_event_en or '') }}
+      {% endif %}
     {% endfor %}
   </div>
   {% endif %}
@@ -188,7 +192,8 @@
     {% endfor %}
   </div>
   {% if block.state == 'STALE_WITH_LAST_KNOWN' and block.state_reason_en %}
-  <p class="feasibility-note">{{ block.state_reason_en }}</p>
+  <p class="feasibility-note">{{ t(block.state_reason_en or '',
+                                   block.state_reason_zh or block.state_reason_en or '') }}</p>
   {% endif %}
   {% endif %}
 </div>
@@ -208,18 +213,17 @@
     {% for row in block.rows %}
     <div class="ctx-strip">
       <span class="ctx-chip regime">
-        {{ row.label_zh or row.label_en or t('Regime unavailable', '周期状态不可用') }}
+        {{ t(row.label_en or 'Regime unavailable',
+             row.label_zh or row.label_en or '周期状态不可用') }}
       </span>
-      {% if row.posture_zh %}
-      <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span> {{ row.posture_zh }}</span>
-      {% elif row.posture_en %}
-      <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span> {{ row.posture_en }}</span>
+      {% if row.posture_en or row.posture_zh %}
+      <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span>
+        {{ t(row.posture_en or '', row.posture_zh or row.posture_en or '') }}</span>
       {% endif %}
     </div>
-    {% if row.headline_zh %}
-    <p class="muted sm" style="margin-top:6px">{{ row.headline_zh }}</p>
-    {% elif row.headline_en %}
-    <p class="muted sm" style="margin-top:6px">{{ row.headline_en }}</p>
+    {% if row.headline_en or row.headline_zh %}
+    <p class="muted sm" style="margin-top:6px">{{ t(row.headline_en or '',
+                                                     row.headline_zh or row.headline_en or '') }}</p>
     {% endif %}
     {% endfor %}
   {% else %}
@@ -242,18 +246,17 @@
     {% for row in block.rows %}
     <div class="ctx-strip" style="margin-bottom:6px">
       <span class="ctx-chip regime">
-        {{ row.verdict.label_zh or row.verdict.label_en or t('Cross-asset view unavailable', '跨资产视角不可用') }}
+        {{ t(row.verdict.label_en or 'Cross-asset view unavailable',
+             row.verdict.label_zh or row.verdict.label_en or '跨资产视角不可用') }}
       </span>
     </div>
-    {% if row.contradictions_zh %}
-    <p class="muted sm">{{ row.contradictions_zh }}</p>
-    {% elif row.contradictions_en %}
-    <p class="muted sm">{{ row.contradictions_en }}</p>
+    {% if row.contradictions_en or row.contradictions_zh %}
+    <p class="muted sm">{{ t(row.contradictions_en or '',
+                             row.contradictions_zh or row.contradictions_en or '') }}</p>
     {% endif %}
-    {% if row.freshness_zh %}
-    <p class="muted sm">{{ row.freshness_zh }}</p>
-    {% elif row.freshness_en %}
-    <p class="muted sm">{{ row.freshness_en }}</p>
+    {% if row.freshness_en or row.freshness_zh %}
+    <p class="muted sm">{{ t(row.freshness_en or '',
+                             row.freshness_zh or row.freshness_en or '') }}</p>
     {% endif %}
     {% endfor %}
   {% else %}
@@ -264,6 +267,10 @@
 
 {# ── Today's calendar ──────────────────────────────────────────────────────── #}
 {% if block.key == 'todays_calendar' %}
+{% set calendar_title_zh = {
+  'CPI 总体（消费者物价）': '总体消费者物价指数',
+  'CPI 核心（消费者物价）': '核心消费者物价指数',
+} %}
 <div class="panel">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <h2 style="margin:0">{{ t("Today's calendar", '今日日历') }}</h2>
@@ -277,14 +284,14 @@
     {% for row in block.rows %}
     <li style="display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)">
       <span class="muted" style="font-size:12px;white-space:nowrap">{{ row.release_date }}</span>
-      <span>{{ row.title_en }}{% if row.title_zh %} / {{ row.title_zh }}{% endif %}</span>
+      <span>{{ t(row.title_en or '',
+                   calendar_title_zh.get(row.title_zh, row.title_zh or row.title_en or '')) }}</span>
     </li>
     {% endfor %}
   </ul>
-  {% elif block.state_reason_zh %}
-  <p class="muted sm">{{ block.state_reason_zh }}</p>
-  {% elif block.state_reason_en %}
-  <p class="muted sm">{{ block.state_reason_en }}</p>
+  {% elif block.state_reason_en or block.state_reason_zh %}
+  <p class="muted sm">{{ t(block.state_reason_en or '',
+                           block.state_reason_zh or block.state_reason_en or '') }}</p>
   {% else %}
   <p class="muted sm">{{ t('No scheduled US releases today.', '今日无美国经济数据发布。') }}</p>
   {% endif %}

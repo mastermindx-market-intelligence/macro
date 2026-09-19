@@ -8,6 +8,7 @@ no needs_full_checkout marker.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -136,6 +137,41 @@ def test_page_renders_with_heading_and_bilingual(tmp_path):
             "US markets not yet open" in html or "美股尚未开盘" in html)
 
 
+def test_page_contains_no_english_only_payload_values_in_zh_mode(tmp_path):
+    """Payload values must render as paired EN/ZH spans, not ZH-only fallbacks."""
+    from bs4 import BeautifulSoup
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+    env = Environment(
+        loader=FileSystemLoader("templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _fresh_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08"
+    )
+    payload = build_payload(site, data, now=now)
+    payload["morning_source_feasibility"] = "DEGRADED"
+    payload["morning_source_feasibility_cause_en"] = "Morning source is degraded."
+    payload["morning_source_feasibility_cause_zh"] = "晨间数据源已降级。"
+    html = env.get_template("am_edition.html.j2").render(
+        payload=payload, as_of="2026-09-08T15:00Z"
+    )
+
+    soup = BeautifulSoup(html, "html.parser")
+    for element in soup.find_all("script"):
+        element.decompose()
+    for element in soup.find_all("nav"):
+        element.decompose()
+    for element in soup.find_all(class_="l-en"):
+        element.decompose()
+    visible_text = " ".join(soup.get_text(" ").split())
+    for token in ("Risk-on", "Constructive", "Risk-off", "CPI"):
+        assert token not in visible_text, (
+            f"English-only payload token {token!r} leaks in ZH mode; the shared nav is excluded"
+        )
+
+
 def test_page_contains_aibrief_link(tmp_path):
     """The prior-close brief block must render as a link to /aibrief.html."""
     from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -254,9 +290,10 @@ def test_html_written_via_write_page_contains_dbase_shim(tmp_path):
         mod.main()
         html_path = site / "am_edition.html"
         content = html_path.read_text(encoding="utf-8")
-        # write_page injects a data-base shim comment; raw write_text would not.
-        assert "data-base" in content or "db" in content, \
-            "am_edition.html does not contain data-base shim — not written via write_page"
+        marker_pattern = re.compile(r"<script[^>]+\bdata-dbase\b[^>]*>")
+        assert marker_pattern.search(content), (
+            "am_edition.html is missing lib.pages.write_page's data-dbase shim marker"
+        )
     finally:
         mod.config.load = orig_load
         mod.config.ROOT = orig_root
