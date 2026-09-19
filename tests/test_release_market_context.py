@@ -977,6 +977,10 @@ def test_reaction_evidence_h1_is_next_session_not_one_hour(tmp_path: Path):
     assert detail["horizon"] == "h1"
     assert detail["reference_basis"] == "next_trading_session_close_vs_pre_event_prior_close"
     assert "hour" not in detail["reference_basis"]
+    assert "descriptive_historical_context_only_no_forecast_or_trade_authority" in detail["limitations"]
+    assert "effective_n" in detail["unknowns"]
+    assert "sample_span" in detail["unknowns"]
+    assert "cell_specific_exclusions" in detail["unknowns"]
 
 
 def test_reaction_evidence_cpi_target_keeps_legacy_index_point_basis(tmp_path: Path):
