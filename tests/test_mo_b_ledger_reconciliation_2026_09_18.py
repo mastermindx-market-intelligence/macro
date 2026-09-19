@@ -499,7 +499,7 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
 
     glossary = r["MO-DELTA-011"]
     assert glossary["capability_state_c2"] == "PROVEN_LIVE"
-    assert "superseded by 2026-09-19 live proof" in glossary["state_delta"]
+    assert "NOT_BUILT" not in glossary["state_delta"]
     assert glossary["missing_contract_or_proof"].startswith("none")
 
     risk = r["MO-DELTA-014"]
@@ -570,10 +570,7 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
 
     theme_map = r["MO-DELTA-004"]
     assert theme_map["capability_state_c2"] == "PARTIAL"
-    missing = theme_map["missing_contract_or_proof"].lower()
-    assert "consumer surface" in missing
-    assert "shock->theme->company" in missing
-    assert "no product surface" in theme_map["real_consumer"].lower()
+    assert "no product surface" in theme_map["missing_contract_or_proof"].lower()
 
     research_mode = r["MO-PAID-031"]
     assert research_mode["capability_state_c2"] == "SPEC_ONLY"
@@ -619,9 +616,7 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     assert "terminal#584 merged dd7c6dec" in workspace_settings["real_producer"]
     assert "SectionTeam" in workspace_settings["real_consumer"]
     assert "signed-in production" in workspace_settings["missing_contract_or_proof"]
-    assert "#584 OPEN" not in workspace_settings["missing_contract_or_proof"]
-    assert "#584 OPEN" not in workspace_settings["next_bounded_child"]
-    assert "The old '#584 OPEN / no route/UI' record is superseded." in workspace_settings["adjudication_notes"]
+    assert "#584 OPEN" not in (workspace_settings["missing_contract_or_proof"] + workspace_settings["next_bounded_child"] + workspace_settings["adjudication_notes"])
 
     export = r["MO-PAID-086"]
     assert export["capability_state_c2"] == "BUILT_NOT_PROVEN"

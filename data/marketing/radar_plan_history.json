@@ -2,6 +2,16 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-19",
+      "tickers": [
+        "ASTE",
+        "LUV",
+        "NABL",
+        "PLMR",
+        "TTD"
+      ]
+    },
+    {
       "as_of": "2026-09-18",
       "tickers": [
         "AAP",
@@ -98,20 +108,6 @@
         "GMED",
         "RHP",
         "SEDG"
-      ]
-    },
-    {
-      "as_of": "2026-09-11",
-      "tickers": [
-        "ALGM",
-        "ASTE",
-        "CHTR",
-        "MPT",
-        "PCG",
-        "POST",
-        "SIG",
-        "VTR",
-        "WMB"
       ]
     }
   ]

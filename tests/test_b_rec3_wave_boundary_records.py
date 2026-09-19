@@ -210,33 +210,49 @@ def test_f12_rows_moved_to_built_not_proven(row_id: str) -> None:
 # Round-2 FIX-3: byte-identical to the base branch (ecaf8f8e), not merely an
 # open capability_state_c2 word — every other column of these rows could have
 # been rewritten and the prior assertion would still have passed.
+#
+# 2026-09-19 seat records pass (Meta-CEO B 026851bd): MO-PAID-085 and MO-PAID-088
+# were moved by Sol's single-writer F00C integration #7335 (merge af617506;
+# ruling = #7335 comment 5739279644: 085 PARTIAL per #7138 §LEDGER_MOVES #10,
+# 088 PROVEN_LIVE from the #7353 live Help receipt). The B-REC-3 wave still owns
+# neither row, so the fence stays — re-pinned to the integration head's lines.
+# MO-PAID-084 is unchanged since ecaf8f8e.
 _UNTOUCHED_F12_ROWS_AT_BASE: dict[str, str] = {
     'MO-PAID-084': 'MO-PAID-084,F12-TEAM-API-PLATFORM,NEW_BOUNDED_BUILD,NOT_BUILT,UNCHANGED,WS:MARKET-OS (F12 lane) — canonical auth/secrets owner + API projection,NONE (api_key hits = server-side secrets only),NONE,API key issuance/management,n/a,DEFER — dependency MO-PAID-055 public API,an issued key authenticates one request and is revocable,n/a,access_control_only,',
-    'MO-PAID-085': 'MO-PAID-085,F08-PORTFOLIO-ALERTS,UPGRADE_EXISTING_OWNER,NOT_BUILT,UNCHANGED,WS:MARKET-OS (F08 lane) — Market OS alerts + app/account_prefs.py (prefs sink),"app/account_prefs.py (no alert prefs) + engine/portfolio_digest.py (\'SEND PATH IS NOT WIRED, DELIBERATELY\')",NONE,alert/notification preference UI/API + mailer wiring,n/a,F08 delivery-path child includes prefs + app/mailer.py wiring (not rights-blocked),a set preference causes an actual send on the next matching alert,"email via existing app/mailer.py (unwired, not rights-blocked)",notification_only,',
-    'MO-PAID-088': 'MO-PAID-088,F13-OPS-LEARNING,UPGRADE_EXISTING_OWNER,PARTIAL,EVIDENCE-REFINED: /learn SEO hub (templates/seo_learn_index.html.j2 via build_free_content.py:1201) and an economic-release calendar widget exist but are NOT in-product help/FAQ/changelog; state unchanged,WS:MARKET-OS (F13 lane) — F13 lane + Market OS product/help owners,templates/methodology.html.j2 + app/support.py (tickets) + seo_learn_index (marketing surface),public SEO pages + support mailbox,/help FAQ template + genuine product changelog surface,ticket ids stable; no ticket-update path,bounded /help + changelog child (F01/F13 cheap-projection batch; 1-2 templates),an authenticated user reaches /help FAQs and a dated product changelog,Market OS product/help + release/receipt owners,operations_and_explanation_only,',
+    'MO-PAID-085': 'MO-PAID-085,F08-PORTFOLIO-ALERTS,UPGRADE_EXISTING_OWNER,PARTIAL,"REFRESHED per #7138 §LEDGER_MOVES #10: preferences half MERGED (#6907 squash 715acf5f 2026-09-18T22:49:38Z; live /api/health commit 715acf5f3c; GET /api/account/prefs -> 401 auth-gated); live /account.js carries prefs UI. Send path (engine/portfolio_digest.py ""SEND PATH IS NOT WIRED"") still unwired; #7131 OPEN. NOT DONE.",WS:MARKET-OS (F08 lane) — Market OS alerts + app/account_prefs.py (prefs sink),"app/account_prefs.py (no alert prefs) + engine/portfolio_digest.py (\'SEND PATH IS NOT WIRED, DELIBERATELY\')",NONE,alert/notification preference UI/API + mailer wiring,n/a,F08 delivery-path child includes prefs + app/mailer.py wiring (not rights-blocked). | #7131 OPEN: send path unwired; prefs UI live but alert send not wired.,a set preference causes an actual send on the next matching alert,"email via existing app/mailer.py (unwired, not rights-blocked)",notification_only,"2026-09-19 seat: prefs half built via macro #6907 (MERGED 2026-09-18T22:49:38Z, squash 715acf5f3ce5: app/account_prefs.py GET/POST /api/account/prefs, templates/account.js prefs UI, tests/test_alert_prefs.py); live /api/health reported commit 715acf5f3c and anonymous GET /api/account/prefs -> 401 (route live, auth-gated); DONE still needs the signed-in save journey (Chairman-only); delivery-path half (app/mailer.py wiring) remains NOT_BUILT"',
+    'MO-PAID-088': 'MO-PAID-088,F13-OPS-LEARNING,UPGRADE_EXISTING_OWNER,PROVEN_LIVE,EVIDENCE-REFINED: /learn SEO hub (templates/seo_learn_index.html.j2 via build_free_content.py:1201) and an economic-release calendar widget exist but are NOT in-product help/FAQ/changelog; state unchanged,WS:MARKET-OS (F13 lane) — F13 lane + Market OS product/help owners,lib/help_directory.py:606 + templates/help.html.j2:238-254 (#6959) + app/support.py + methodology/seo_learn_index,public help.html (FAQs + dated changelog) + support mailbox,none — live-proven 2026-09-19: GET help.html 200 52137 changelog published 2026-09-05 #6828 and 14 FAQ answers,ticket ids stable; no ticket-update path,Help+changelog live. No second /help child.,an authenticated user reaches /help FAQs and a dated product changelog,Market OS product/help + release/receipt owners,operations_and_explanation_only,Public /help serves FAQs and a dated changelog. Authenticated-only was the old bar; anonymous 200 exceeds it.',
 }
 
 
-def test_the_untouched_f12_rows_were_open_in_the_b_rec3_base_snapshot() -> None:
-    """B-REC-3 did not own 084/085/088; pin only what was true at that wave boundary."""
-    assert set(_UNTOUCHED_F12_ROWS_AT_BASE) == {
-        "MO-PAID-084",
-        "MO-PAID-085",
-        "MO-PAID-088",
+def test_the_untouched_f12_rows_keep_an_open_state_word() -> None:
+    """B-REC-3 item 3: no half-B PR ships 084, 085 or 088.
+
+    2026-09-19: Sol's F00C integration #7335 (comment 5739279644) moved 088 to
+    PROVEN_LIVE on the #7353 live Help receipt — a later single-writer ruling,
+    not a half-B PR — so 088 is pinned to that word; 084/085 stay open.
+    """
+    rows = _ledger_rows()
+    for row_id in ("MO-PAID-084", "MO-PAID-085"):
+        assert rows[row_id]["capability_state_c2"] in {"NOT_BUILT", "SPEC_ONLY", "PARTIAL"}, (
+            f"{row_id}: nothing in this wave ships it, so it cannot read as built"
+        )
+    assert rows["MO-PAID-088"]["capability_state_c2"] == "PROVEN_LIVE", (
+        "MO-PAID-088: Sol ruled PROVEN_LIVE (#7335 comment 5739279644, #7353 receipt)"
+    )
+
+
+def test_the_untouched_f12_rows_are_byte_identical_to_base() -> None:
+    """B-REC-3 item 3, strengthened: 084/085/088 are not owned by this wave,
+    so their raw CSV line must match the base branch (ecaf8f8e) exactly —
+    not just keep an open capability_state_c2 word."""
+    raw_by_id = {
+        line.split(",", 1)[0]: line
+        for line in LEDGER.read_text(encoding="utf-8").splitlines()
     }
     for row_id, base_line in _UNTOUCHED_F12_ROWS_AT_BASE.items():
-        fields = next(csv.reader([base_line]))
-        assert fields[0] == row_id
-        assert fields[3] in {"NOT_BUILT", "SPEC_ONLY", "PARTIAL"}, (
-            f"{row_id}: the historical B-REC-3 base snapshot must remain auditable"
-        )
-
-
-def test_the_untouched_f12_rows_are_historical_scope_evidence_not_a_future_freeze() -> None:
-    """Later accepted waves may change these rows; this test must not freeze current F00C."""
-    for row_id, base_line in _UNTOUCHED_F12_ROWS_AT_BASE.items():
-        assert base_line.startswith(f"{row_id},"), (
-            f"{row_id}: malformed historical base-line receipt"
+        assert raw_by_id[row_id] == base_line, (
+            f"{row_id}: this wave does not own this row — its raw CSV line "
+            "must stay byte-identical to the base branch"
         )
 
 
