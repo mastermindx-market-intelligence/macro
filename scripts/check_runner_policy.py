@@ -720,6 +720,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         trust_gate = trusted_jobs.get("trust-gate") or {}
         plan_job = trusted_jobs.get("plan") or {}
         trusted_job = trusted_jobs.get(trusted_job_id) or {}
+        hosted_compat_job = trusted_jobs.get("legacy-hosted-pack") or {}
         trigger_config = trusted_document.get(
             "on", trusted_document.get(True, {})
         )
@@ -765,6 +766,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "BASE_REF": "${{ github.base_ref }}",
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+            "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
         }
         executable_refusals_are_exact = {
             'test "$REPOSITORY" = mastermindx-market-intelligence/macro || {',
@@ -782,6 +784,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "pr_number": "${{ steps.admit.outputs.pr_number }}",
             "mode": "${{ steps.admit.outputs.mode }}",
             "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+            "execution_route": "${{ steps.admit.outputs.execution_route }}",
         }
         plan_text = str(plan_job)
         selector = next(
@@ -798,8 +801,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 "${{ needs.trust-gate.outputs.control_sha }}",
                 "${{ needs.trust-gate.outputs.pr_number }}",
                 "${{ needs.trust-gate.outputs.semantic_workflow }}",
+                "${{ needs.trust-gate.outputs.execution_route }}",
                 "${{ github.event_name }}",
             )
+        ) and plan_job.get("outputs", {}).get("execution_route") == (
+            "${{ needs.trust-gate.outputs.execution_route }}"
         ) and selector.get("env") == {
             "EXECUTION_MODE": "${{ needs.trust-gate.outputs.mode }}",
             "FULL_MATRIX": "${{ steps.plan.outputs.matrix }}",
@@ -826,8 +832,76 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             or trusted_job.get("runs-on")
             != {"group": "macro-home-canary", "labels": "ci-linux"}
             or (trusted_job.get("strategy") or {}).get("max-parallel") != 3
+            or trusted_job.get("if") != "needs.plan.outputs.execution_route == 'pc'"
         ):
-            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, or three-slot bound"))
+            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, three-slot bound, or explicit PC route"))
+
+        hosted_compat_steps = hosted_compat_job.get("steps") or []
+        hosted_compat_execute = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name")
+                == "execute the frozen logical pack and retain its semantic result"
+            ),
+            {},
+        )
+        hosted_compat_upload = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name") == "publish the legacy caller semantic fragment"
+            ),
+            {},
+        )
+        hosted_compat_text = str(hosted_compat_execute.get("run", ""))
+        hosted_compat_is_exact = (
+            isinstance(hosted_compat_job, dict)
+            and hosted_compat_job.get("needs") == "plan"
+            and hosted_compat_job.get("if")
+            == "needs.plan.outputs.execution_route == 'hosted'"
+            and hosted_compat_job.get("runs-on") == HOSTED
+            and (hosted_compat_job.get("strategy") or {}).get("fail-fast") is False
+            and "max-parallel" not in (hosted_compat_job.get("strategy") or {})
+            and (hosted_compat_job.get("strategy") or {}).get("matrix")
+            == "${{ fromJSON(needs.plan.outputs.matrix) }}"
+            and hosted_compat_execute.get("env", {}).get(
+                "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+            )
+            == "${{ github.workspace }}"
+            and all(
+                token in hosted_compat_text
+                for token in (
+                    '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"',
+                    '--plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json"',
+                    '--expect-plan-sha "${{ needs.plan.outputs.plan_sha }}"',
+                    '--expect-tested-tree-sha "${{ needs.plan.outputs.tested_sha }}"',
+                    '--expect-subject-head-sha "${{ needs.plan.outputs.head_sha }}"',
+                    '--expect-base-sha "${{ needs.plan.outputs.base_sha }}"',
+                    "--base-replay-budget-seconds 900",
+                    "set +e",
+                    "pack_rc=$?",
+                    'test -s "$RUNNER_TEMP/ci-semantic-fragments/trusted-fragment.json"',
+                )
+            )
+            and "exit $pack_rc" not in hosted_compat_text
+            and hosted_compat_upload.get("uses") == "actions/upload-artifact@v4"
+            and (hosted_compat_upload.get("with") or {}).get("name")
+            == "trusted-ci-fragment-${{ matrix.pack }}"
+            and (hosted_compat_upload.get("with") or {}).get("path")
+            == "${{ runner.temp }}/ci-semantic-fragments/trusted-fragment.json"
+            and (hosted_compat_upload.get("with") or {}).get("if-no-files-found")
+            == "error"
+        )
+        if not hosted_compat_is_exact:
+            findings.append(
+                Finding(
+                    "R13",
+                    "legacy same-repo callers must use the protected hosted compatibility pack and preserve the trusted fragment contract",
+                )
+            )
         ci_document = documents.get(".github/workflows/ci.yml") or {}
         ci_jobs = ci_document.get("jobs") or {}
         trusted_call = ci_jobs.get("trusted-ci")
