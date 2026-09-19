@@ -48,6 +48,12 @@ zero string occurrences for `login`, `dashboard`, `portfolio` or `screener`.
 This supports the current boundary: the automated public data/social surface is ahead
 of the publicly exposed application.
 
+Public build-artifact probing also closed the obvious source-disclosure paths:
+the current hashed JS source map, Vite manifest, generic asset manifest,
+`manifest.webmanifest`, and raw `/src/main.jsx` / `/src/main.tsx` paths all returned
+404. `GET /api/waitlist` returned 405 with `Allow: POST`. No exposed source map or
+manifest was found that would justify inferring a richer hidden frontend.
+
 Domain RDAP observed:
 - registration: 2025-12-07
 - registrar: Cloudflare
