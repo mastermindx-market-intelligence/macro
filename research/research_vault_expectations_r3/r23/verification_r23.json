@@ -1,0 +1,150 @@
+{
+  "schema": "research_vault.r23_reconciliation.v1",
+  "state": "RECORDS_ONLY_CURRENT_FRONTIER",
+  "procedure": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "880e377cfa9d3fbdc921e931a55cc8c4143dc119",
+    "skillpack": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "carrier": {
+    "pr": 7182,
+    "branch": "sol/research-vault-intelligence-design-r2-20260915",
+    "r22_head": "2e5c7a147f3a3c373f4d30301abf0755befa7168",
+    "r23_report_commit": "f2ea72f8ded46f89ac6945bb0421bdd5af9df356",
+    "r23_handoff_commit": "84e4279639a6a6ef1e2a5217ff1c75d730ba3a49"
+  },
+  "canonical_architecture": {
+    "W1": {
+      "pr": 7101,
+      "merged": true
+    },
+    "W2": {
+      "pr": 7230,
+      "head": "fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2",
+      "state": "BUILT_NOT_PROVEN"
+    },
+    "R1B": {
+      "pr": 7079,
+      "head": "8271ae320732997be4553957e3e2773d1b9e9f1b",
+      "state": "BUILT_NOT_PROVEN"
+    },
+    "W3": {
+      "published": false,
+      "synthetic_proof_comment": 5720608418,
+      "sealed_patch_sha256": "e5feb802c30b9e8383ad4d30bce0c3349bc203814323d62c10216523b84f268e"
+    },
+    "W4": "ZeroHedge qualitative adapter",
+    "W5": "longitudinal belief memory",
+    "W6": "cross-document synthesis",
+    "producer": "unnumbered W1->W2 operational seam; NOT W4"
+  },
+  "reader_requalification": {
+    "shared_repair_7287_merged": "a6848436f0ccc6b60f3f7e7e5321315f14e9ce87",
+    "fences_run": 35423395764,
+    "fences_conclusion": "failure",
+    "failure": "Agent OS unfalsifiable discovery on stale synthetic merge",
+    "stale_merge": "c1cae8f3e4982251c45526030dc81e95cab2d131",
+    "stale_first_parent": "8ff20f0a5903624ba69d685ec9c1b4d34a40a0f6",
+    "event_base": "bac5e74d7c6a8ddfde5754f39d6eb9cc313995ca",
+    "current_merge_ref": "48cadc0ac74eac93aadc76a27f1c393544c8fc77",
+    "coordination_comment": 5740960105,
+    "ci_run": 35423395875,
+    "ci_interpretation": "same event; do not promote as current-base proof without owner reconciliation"
+  },
+  "catalog": {
+    "blob": "4eac740ad0539c8676125b9cf545b8a695a1d155",
+    "generated_at": "2026-09-19T09:55:58.238104+00:00",
+    "rows": 2421,
+    "summary_points_nonempty": 2406,
+    "tickers_nonempty": 0,
+    "pages_nonempty": 2316,
+    "language_nonempty": 2316,
+    "previous_blob": "b6900293dc9281124d3018d2fc5eda52873dc04a",
+    "previous_rows": 2354,
+    "previous_generated_at": "2026-09-18T10:37:44.200123+00:00",
+    "latest_added": 67,
+    "latest_removed": 0,
+    "latest_elapsed_days": 0.9709958101851852,
+    "latest_net_per_day": 69.00132760327975,
+    "r7_rows": 2208,
+    "r7_to_current_added": 213,
+    "r7_to_current_days": 3.157123611111111,
+    "r7_to_current_per_day": 67.46647462594512
+  },
+  "allocator_profile": {
+    "weekday_posts_per_day": 206.5,
+    "weekend_posts_per_day": 85.2,
+    "weekly_posts": 1202.9,
+    "per_account_daily_cap": 70,
+    "weekly_capacity": {
+      "one": 490,
+      "two": 980,
+      "three": 1470,
+      "four": 1960
+    },
+    "weekly_surplus": {
+      "one": -712.9,
+      "two": -222.9,
+      "three": 267.1,
+      "four": 757.1
+    }
+  },
+  "source_concentration": {
+    "latest_67": {
+      "Goldman_Sachs": 20,
+      "S_and_T": 15,
+      "UBS": 12,
+      "top3_share": 0.7014925373134329
+    },
+    "r7_to_current_213": {
+      "Goldman_Sachs": 75,
+      "S_and_T": 39,
+      "JPM": 23,
+      "top3_share": 0.6431924882629108
+    },
+    "current_S_and_T_total": 260,
+    "current_S_and_T_title_explicit_GS": 234,
+    "current_S_and_T_title_explicit_GS_share": 0.9,
+    "warning": "raw labels and literal title markers are not canonical source-origin resolution"
+  },
+  "existing_metadata_incidence": {
+    "warning": "literal title+summary metadata only; not entity resolution/body coverage/independence",
+    "NVIDIA": 101,
+    "AMD": 23,
+    "Micron": 15,
+    "SanDisk": 16,
+    "Alphabet_Google": 80,
+    "Meta": 58,
+    "Microsoft": 59,
+    "Amazon": 84
+  },
+  "pricing": {
+    "observed_date": "2026-09-19",
+    "professional_monthly_usd": 150,
+    "annual_monthly_equivalent_usd": 125,
+    "annual_total_usd": 1500,
+    "rights": "pooling/automation/model-processing/subscriber-output/redistribution NOT_ESTABLISHED"
+  },
+  "capital_ruling": [
+    "finish W2/R1B/W3 + one right-cleared real W1->W2 artifact and Brain/source journey",
+    "then second account monthly marginal-value pilot after positive use permission",
+    "move to three total accounts if useful gaps remain; capacity target",
+    "fourth only with measured burst/backfill/latency/resilience value",
+    "avoid annual commitment until rights + consumption justify"
+  ],
+  "producer_prototype": {
+    "carrier": "Mac-Studio.ts.net lan / device 3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "state": "EFFECT_UNKNOWN",
+    "reason": "device disconnected after start_process before result reconciliation",
+    "retry_or_reroute": false
+  },
+  "capability_claims": {
+    "new_product_live": false,
+    "new_model_benchmark": false,
+    "account_purchased": false,
+    "vendor_contacted": false,
+    "marketdesk_rights_established": false
+  },
+  "exact_next_action": "Reconcile producer prototype on same Mac if it returns; independently consume incumbent W2/R1B release movement; after W2+R1B canonical publish sealed W3, then right-cleared W1->W2 real artifact + authenticated Brain/source proof."
+}
