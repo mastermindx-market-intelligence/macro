@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T21:01:26.895864+00:00",
-  "count": 2523,
+  "generated_at": "2026-09-20T21:15:45.654022+00:00",
+  "count": 2524,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1578,6 +1578,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yo9yyzfay9f-790d5c",
+      "title": "Bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:52Z",
+      "summary_points": [
+        "Fed Policy Mispricing: Markets overprice 75bps of tightening (ECB/US), while Fed delivered 25bps hike; energy spikes (gas >80 EUR/MWh) and contained inflation support yield trends, creating tactical duration extension opportunity in high-quality bonds.",
+        "US Yield Peak & Geopolitics: US 10Y Treasury hit 5.04% (2008 high) due to Fed hawkishness and Middle East conflict; European Bunds at 3.5% with ECB raising deposit rate to 2.5%, but market overestimates ECB tightening.",
+        "Credit Spread Dynamics: Credit spreads widened due to hyperscalers’ debt issuance and private credit spillover (supply-driven), not deteriorating fundamentals; investment grade offers attractive carry amid resilient demand.",
+        "EM Dollar Debt Outperformance: EM US dollar debt (sovereign/corporate) outperforms developed markets amid geopolitical volatility; rated Attractive with positive outlook due to resilience, elevated yields, and supportive fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
