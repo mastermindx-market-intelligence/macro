@@ -5073,15 +5073,44 @@ jobs:
         # neither scripts/run_ci_pack.py's inference nor
         # scripts/audit_unrun_tests.py's census imports the product data stack.
         run: pip install pytest pyyaml
-      - name: fetch the PR's base commit
+      - name: resolve the exact tested PR merge base
+        id: contract-merge
+        shell: bash
+        env:
+          EXPECTED_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          tested_merge=$(git rev-parse HEAD)
+          if [ "$tested_merge" != "$GITHUB_SHA" ]; then
+            echo "::error title=contract-delta::checkout HEAD does not match GITHUB_SHA" >&2
+            exit 1
+          fi
+          parents=$(git show -s --format='%P' HEAD)
+          set -- $parents
+          if [ "$#" -ne 2 ]; then
+            echo "::error title=contract-delta::PR checkout is not an exact two-parent tested merge" >&2
+            exit 1
+          fi
+          tested_base=$1
+          tested_head=$2
+          if [ "$tested_head" != "$EXPECTED_PR_HEAD" ]; then
+            echo "::error title=contract-delta::tested merge second parent does not match the exact PR head" >&2
+            exit 1
+          fi
+          echo "base_sha=$tested_base" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$tested_head" >> "$GITHUB_OUTPUT"
+      - name: fetch the exact tested PR merge base
         # check_contract_delta.py materializes the base tree itself (a detached
-        # `git worktree add`), which needs the base commit's object present
-        # locally — the fetch-depth: 1 checkout above only guarantees the head.
-        run: git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
+        # `git worktree add`), which needs the tested merge's first-parent object
+        # present locally — the fetch-depth: 1 merge checkout may omit that parent.
+        # Do not use pull_request.base.sha here: on a long-lived PR that event
+        # field can remain the creation-era base even though GitHub has tested a
+        # fresh synthetic merge against newer main.
+        run: git fetch --depth=1 origin ${{ steps.contract-merge.outputs.base_sha }}
       - name: differential contract-delta gate
         run: >-
           python scripts/check_contract_delta.py
-          --base ${{ github.event.pull_request.base.sha }}
+          --base ${{ steps.contract-merge.outputs.base_sha }}
   # ONE STABLE NAME FOR "CI SAID YES" (Wave B, 2026-08-11). Every other check name
   # in this workflow is now conditional: `ci-pack-N` exists only when the plan
   # selected pack N, and the whole matrix is skipped on a proven no-work PR. That
