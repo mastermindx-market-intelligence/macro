@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T05:28:18.923304+00:00",
-  "count": 2478,
+  "generated_at": "2026-09-20T05:43:20.405099+00:00",
+  "count": 2479,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -90,6 +90,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-dodqs2l8l6c-cfe9a0",
+      "title": "European Economics Analyst Euro Area—Introducing Our Nearcast Model for Inflation",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:05:39Z",
+      "summary_points": [
+        "Inflation Trajectory Shift: Core inflation projected at 2.66% by Dec 2026 (up from 2% pre-Middle East crisis), driven by energy volatility and persistent core goods pressures (vehicles, appliances, ICT), signaling upside risk beyond consensus.",
+        "Nearcast Model Outperformance: Daily high-frequency model delivered 15-20%+ RMSE reductions vs benchmarks (e.g., AR(1)) during 2022 crisis, accurately forecasting headline/core inflation spikes (9% and 5% by mid-2022), outperforming ECB/SPF.",
+        "Commodity Volatility Fueling Inflation: Oil/refined products/natural gas swings pushed market-implied HICP ex tobacco >4% (Dec), while spot core inflation (ex food/energy) held at 2.40% (Aug), creating asymmetric upside risk in core goods and energy.",
+        "Core Goods as Critical Risk Driver: New model identifies core goods (vehicles, appliances, ICT) as primary upside risk source, with firming August pressures signaling persistent inflation beyond energy volatility.",
+        "Real-Time Data Integration: Daily nearcast model tracks 600+ price variables (sectoral PPIs, commodities, HICP components) to provide high-frequency inflation outlook adjustments, enabling rapid portfolio response to data flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-7z09plii439-70368b",
       "title": "GS Quek Weekend Thoughts Chinas Go Global Indias AI Enablers 19 Sep 2026",
