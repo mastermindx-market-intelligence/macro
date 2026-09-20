@@ -14,7 +14,7 @@ state_before: >
   9 source-clean calls and 7 expected-refusal calls. The eight holdout revisions (ranks 17-24)
   were sealed with holdout_bodies_inspected = 0.
 prs:
-  - 7521
+  - 7530
 decisions:
   - DEC:E3FMT-STRUCTURAL-SEPARATORS-PROXY-IDENTITY-AND-SOURCE-CONDITIONED-HOLDOUT
   - DEC:E3FMT-DEVELOPMENT-GOLD-R2-FIRST-HANDOFF-OMISSIONS

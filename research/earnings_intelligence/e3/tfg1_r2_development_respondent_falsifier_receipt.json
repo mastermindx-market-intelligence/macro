@@ -273,5 +273,20 @@
   "supported": 103,
   "unresolved": 10
  },
- "next_action_for_sol": "Rule on (1) whether FANG/2026Q2 leaves the source-clean set, making the R2 development bar 8/8 rather than 9/9, exactly as MBLY left it in the v1 amendment; (2) the role-conflict under-count; (3) the unresolved-respondent contract question. The holdout remains sealed and single-use until a corrected development bar is green against a frozen head."
+ "next_action_for_sol": "Rule on (1) whether FANG/2026Q2 leaves the source-clean set, making the R2 development bar 8/8 rather than 9/9, exactly as MBLY left it in the v1 amendment; (2) the role-conflict under-count; (3) the unresolved-respondent contract question. The holdout remains sealed and single-use until a corrected development bar is green against a frozen head.",
+ "carrier": {
+  "pr": 7530,
+  "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7530",
+  "branch": "claude/ssd-tfg1-r2-earnings-fmt-7397df423722788e",
+  "head_sha": "a1c5a0afe2a0a476564a2da01d9f5b7c5b94a4e0",
+  "state": "DRAFT / HOLD-FOR-SOL",
+  "note": "Carrier only. This head is NOT the frozen implementation head; no freeze was performed."
+ },
+ "holdout_integrity_proof": {
+  "bodies_fetched": 18,
+  "allowlist": "16 development pairs + AAPL/2026Q3 + GOOGL/2026Q2",
+  "outside_allowlist": 0,
+  "holdout_bodies_fetched": 0,
+  "holdout_selection_file": "unmodified; bodies_inspected remains 0"
+ }
 }
