@@ -55,6 +55,12 @@ changed:
     what: "Recorded Lane D exact-head semantic PASS / carrier REQUEST_CHANGES with current-main integration, real-path entry-context proof, and the single Agent OS admission blocker."
   - path: research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md
     what: "Returned Lane D bounded semantic acceptance, records-only repair requirement, review-reuse law, and release limits to Lane A."
+  - path: research/theme_intelligence_acceptance/current_main_fa85fb5_cases.v1.json
+    what: "Pinned the exact current-main subject into the existing preregistered acceptance matrix without changing expectations."
+  - path: research/theme_intelligence_acceptance/current_main_fa85fb5_result.json
+    what: "Recorded a clean current-main execution reproducing the same two product defects while artifact-health and authority checks pass."
+  - path: research/theme_intelligence_acceptance/current_main_fa85fb5_mutations.json
+    what: "Recorded all eleven current-main false-green mutations killed."
   - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
     what: "Preserved the Lane C REJECTED_FOR_REPAIR receipt."
   - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
@@ -125,6 +131,9 @@ verified:
   - claim: "Lane D exact head passes the bounded entry-context semantics on current-main integration."
     command: "Integrate Lane D 0ce6bbf54b9c623891274e278a6ff581b602bfef with protected main fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 into tree fd12a6f4fa8b32e2c3861a9fd7d6964ae94fb673; compile; run tests/test_stock_board_v2.py tests/test_subsector_confluence.py; execute real-artifact and stale-confluence discriminators."
     result: "PASS semantic path: 55 passed; AMD/ADI/NVDA preserve qualified/pending/member-ineligible distinctions, fallback nulls, stale-group fail-close, unchanged Board population/order, and all-false authority. Carrier remains REQUEST_CHANGES because its Agent OS handoff is schema-invalid."
+  - claim: "The review-hardened evaluator independently reproduces the frozen defects on clean current Macro main."
+    command: "Run harness.py on detached macro@fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 / tree 9806d988f5d1e025dc3780dea348b82bd8630bfd using current_main_fa85fb5_cases.v1.json; then run --mutations and --require-product-pass."
+    result: "PASS as evaluator: baseline exit 0 with REJECTED_CURRENT_SOURCE on watch_invalidation, lane_matrix and real_precipice_path; artifact_health PASS; 11/11 mutations killed; product gate exit 1 as required. Exact receipt SHA-256 locally: cases c84f2eddd4ccc65049e5eb44fd8646fcdd05057a303052040481f071f9d56ec8, result 027c44e3560760f51deaad6efefa20eb7c307a58074adf6ffa7a293180d7e824, mutations df89a6ee6e42692fbc58ecb6a715ffafe4c8ea826ba6c0459092d7e8ba265407."
 unverified:
   - claim: "The review-hardened final PR head has an independent external code-review PASS."
     what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
@@ -139,6 +148,7 @@ unverified:
 unresolved:
   - "PR #7453 remains Draft/HOLD; Lane F does not Ready, merge, deploy, or self-accept it."
   - "Frozen subject 68f80a8edf78966a3a89e1294038654944e9c217 remains REJECTED_CURRENT_SOURCE on two defects represented by three checks."
+  - "Current Macro main fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 independently reproduces the same two product defects; current-main freshness is no longer inference-only for this observation."
   - "RE-RATING lane interpretation remains LANE_A_ADJUDICATION_REQUIRED; a clean mutation candidate is held rather than labeled acceptable."
   - "Lane C pushed repair head 2208fe40039d356929fac0f96b626edc33d42288 remains REJECTED_FOR_REPAIR on six blockers after closing stale reclaim leakage. Its source worktree is already dirty with the next health repair; Lane F did not touch those bytes."
   - "Lane D 0ce6bbf54b9c623891274e278a6ff581b602bfef is semantic PASS / BUILT_NOT_PROVEN but carrier REQUEST_CHANGES: the Agent OS handoff is not schema-admissible and causes fences/semantic CI red. A records-only repair may reuse semantic review if product blobs and material dependencies stay unchanged."
@@ -218,3 +228,12 @@ The bounded semantic contract passes: candidate and integrated real artifacts pr
 Lane D is nevertheless **REQUEST_CHANGES** at the carrier level. Its committed Agent OS handoff has noncanonical frontmatter and fails the current required-field contract, which is the candidate-owned cause of fences run `35502935108` and semantic CI run `35502935516` being red. The accepted repair is records-only on that same Lane D handoff. If semantic blobs remain byte-identical and current-base movement remains material-path disjoint, Lane F permits semantic review reuse and requires only Agent OS/fences plus integration reproof.
 
 Machine receipt: `research/theme_intelligence_acceptance/lane_d_exact_head_result.json`. Human assessment: `research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md`. No merge, deployment, browser acceptance, or production acceptance is implied.
+
+
+## Current-main product recheck
+
+Lane F executed the review-hardened evaluator against clean protected Macro main `fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2` / tree `9806d988f5d1e025dc3780dea348b82bd8630bfd` using the same preregistered expectations with only the immutable subject pin changed.
+
+The result remains `REJECTED_CURRENT_SOURCE`: AI Semiconductors still fires `ai_semi_f2` from current WATCH without prior-stage transition evidence, and Medical Devices still traverses `PRECIPICE + no fired falsifier + medium crowding + null divergence` to `caution` in the production classifier, lane artifact, and served card rather than expected `early`. Artifact health passes, all authority remains inert, all 11 false-green mutations are killed, and `--require-product-pass` exits 1 as required.
+
+Committed receipts: `current_main_fa85fb5_cases.v1.json`, `current_main_fa85fb5_result.json`, and `current_main_fa85fb5_mutations.json`. This proves current source state at that exact commit; it is not merge, deployment, browser, or prospective-outcome proof.
