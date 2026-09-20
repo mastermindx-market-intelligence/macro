@@ -1,9 +1,10 @@
-Alert Center source-bound watch-family battery
-source_commit=0118300585193a38039ce131b8fdbcc671291d91
+Alert Center final source-bound decision-brief battery
+source_commit=d79a799e867b9bb18d552f07ab3922c9bf0f8767
 command=python3 -m pytest -q tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_center_explorer.py tests/test_alert_center_surface.py --disable-warnings
-result=154 passed, 5 warnings, 0 failures
+result=155 passed, 5 warnings, 0 failures
 browser=11/11 checks passed; 9 screenshots; 0 page errors
 adversarial=14/14 checks passed; 10 screenshots
 capture=24/24 states: 8 rest + 8 focus + 8 hover; 0 console errors; 0 failed responses
 first_glance=all top-eight rows have supported source-bound next actions
+source_bound_families=macro.transition_state_change, macro.risk_state_elevated, vector.impulse_warn_down, commodity.price_shock, vector.allocation_change, altdata.convergence, rotation.rotation_emerging
 production_acceptance=false

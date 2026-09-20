@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-20T03:30:00Z",
+  "generated_at": "2026-09-20T04:15:00Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 4409146,
+        "payload_bytes_total": 569715,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 14,
@@ -72,7 +72,7 @@
     "resolved_gitdir_or_none": null,
     "resolved_sha_or_none": null,
     "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/alert-center-watch-final-proof.ffnYl7"
+    "site_dir": "/private/tmp/alert-center-final-source-proof.k375YS"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",

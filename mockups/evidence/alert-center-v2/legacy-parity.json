@@ -1,10 +1,10 @@
 {
   "schema": "mastermind.alert_center.legacy_parity.v3",
-  "observed_at": "2026-09-20T03:35:00Z",
+  "observed_at": "2026-09-20T04:20:00Z",
   "baseline": "origin/main",
-  "baseline_commit": "ef9880ea9cbd85284dc8bc61211189dd29849f94",
-  "candidate_commit": "0118300585193a38039ce131b8fdbcc671291d91",
-  "board_day": "2026-09-19",
+  "baseline_commit": "e3329833b29be7d2d8b9b0889acf5aadd8bcc686",
+  "candidate_commit": "d79a799e867b9bb18d552f07ab3922c9bf0f8767",
+  "board_day": "2026-09-20",
   "baseline_module_sha256": "f71ddcfb509a7f3831f5b2777c893a9af7a233c756369b6d75db4b7b24f8105e",
   "candidate_module_sha256": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
   "legacy_fields_compared": [
@@ -31,8 +31,8 @@
     "explorer"
   ],
   "differences": [],
-  "baseline_payload_sha256": "38f319111bade3543baef6961eb125c64139d0c86ef4f1c3599d760d3e10241b",
-  "candidate_payload_sha256": "38f319111bade3543baef6961eb125c64139d0c86ef4f1c3599d760d3e10241b",
+  "baseline_payload_sha256": "6f46134e92d70bda5fc91ad4ef6cb0910cb98155f96b5e73aed3e5f85c044170",
+  "candidate_payload_sha256": "6f46134e92d70bda5fc91ad4ef6cb0910cb98155f96b5e73aed3e5f85c044170",
   "baseline_alerts": 60,
   "candidate_alerts": 60,
   "same_input_context": true,
