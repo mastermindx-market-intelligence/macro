@@ -2383,8 +2383,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }} <button type="button" class="cnx-ctitle-note" onclick="cnxOpenDlg('cnx-dlg-news')">{{ t('What changed ↓','最近变化 ↓') }}</button></div>
       {% if (CN and CN.news and CN.news.headlines) or latest.alerts %}
       <div class="cnx-change-list">
+        {% set _chg_news_n = 1 if latest.alerts else 2 %}
         {% if CN and CN.news and CN.news.headlines %}
-          {% for h in CN.news.headlines[:2] %}
+          {% for h in CN.news.headlines[:_chg_news_n] %}
           {% set _tl = CN.theme_label.get(h.theme, [h.theme, h.theme]) if CN.theme_label else [h.theme, h.theme] %}
           <a class="cnx-change-row" href="china_news.html">
             <span class="cnx-change-when">{{ (h.published or h.date or '')[5:10] or '—' }}</span>
