@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T21:45:45.140044+00:00",
-  "count": 2525,
+  "generated_at": "2026-09-20T22:01:06.635806+00:00",
+  "count": 2526,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1637,6 +1637,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hv77u8vrz6v-192585",
+      "title": "Private debt",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:43Z",
+      "summary_points": [
+        "Direct Lending Returns Decline: H1 2026 returns at 3% (vs 4.5% H1 2025), driven by loan portfolio concerns, BDC redemptions, and elevated credit stress necessitating selectivity amid tight spreads.",
+        "Credit Stress Bifurcation: 7.45% of direct loans delinquent (Q2 2026), with heightened stress in smaller borrowers, junior loans, and 2021-22 vintages; defaults rising in lower-middle segment amid AI disruption risks.",
+        "Market Liquidity Pressure: Direct lending volumes down 13% YoY (USD 110bn), BDCs recorded USD 3bn net outflows, and fundraising at USD 42bn (31% below 2025 pace) amid limited loan pricing cushion (499bps origination spreads).",
+        "Private Debt Structural Risks: Lack of control, limited disclosure, blind pool risk, uncertain cash flows, and leverage usage pose critical vulnerabilities for portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
