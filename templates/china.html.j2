@@ -1053,15 +1053,12 @@
   body.page-china .cnx-row .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
   /* Selective synthesis: better glance hierarchy and explanations from the
      retired compression experiment, without replacing the deep dashboard. */
-  body.page-china .cnx-hero-read{display:flex;align-items:flex-start;gap:10px 12px;flex-wrap:wrap;margin:10px 0 2px;max-width:54ch}
-  body.page-china .cnx-hero-read-copy{flex:1 1 260px;font-size:12.5px;line-height:1.48;color:var(--text)}
-  body.page-china .cnx-hero-read-label{display:block;font-size:9.5px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-  html[data-lang="zh"] body.page-china .cnx-hero-read-label{letter-spacing:0;text-transform:none}
+  body.page-china .cnx-hero-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+  body.page-china .cnx-live-freshness{margin-left:3px;opacity:.78}
   body.page-china .cnx-stance{--c:var(--muted);display:inline-flex;align-items:center;white-space:nowrap;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill,999px);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 36%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--panel))}
   body.page-china .cnx-stance.st-up{--c:var(--ink-up,var(--up))}
   body.page-china .cnx-stance.st-down{--c:var(--ink-down,var(--down))}
   body.page-china .cnx-stance.st-warn{--c:var(--ink-warn,var(--warn))}
-  body.page-china .cnx-freshness{font-size:10px;color:var(--muted);white-space:nowrap;padding-top:5px}
   body.page-china .cnx-action-lead .sub{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase}
   html[data-lang="zh"] body.page-china .cnx-action-lead .sub{letter-spacing:0;text-transform:none}
   body.page-china .cnx-reason-row{position:relative}
@@ -1091,7 +1088,8 @@
   @media (max-width:640px){
     body.page-china .cnx-change-row{grid-template-columns:42px minmax(0,1fr)}
     body.page-china .cnx-change-tag{display:none}
-    body.page-china .cnx-hero-read{gap:8px}
+    body.page-china .cnx-live-freshness{display:none}
+    body.page-china .cnx-score-line .cnx-stance{display:none}
   }
   body.page-china .cnx-kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
   body.page-china .cnx-kv:last-of-type{border-bottom:none}
@@ -1821,11 +1819,15 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <!-- =============== HERO =============== -->
   <div class="cnx-card cnx-hero{{ ' cnx-hero-solo' if not (ms_history and ms_history|length >= 2) else '' }} ms-front ms ms-{{ _ms_color }}" style="padding:0">
     <div class="cnx-hero-left">
-      <span class="cnx-regime-pill"><span class="dot"></span>
-        {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
-      <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
-        <span class="l-en">LIVE</span><span class="l-zh">实时</span>
-        <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span></span>
+      <div class="cnx-hero-meta">
+        <span class="cnx-regime-pill"><span class="dot"></span>
+          {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
+        <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
+          <span class="l-en">LIVE</span><span class="l-zh">实时</span>
+          <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
+          {% if health %}<span class="cnx-live-freshness"><span class="l-en">· {{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} feeds</span><span class="l-zh">· {{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据源</span></span>{% endif %}
+        </span>
+      </div>
       {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
          Geometry: arc M14,75 A56 → π·56≈175.93 arc-len; needle+numeral rotate around
          (70,75). data-gauge-* attrs let china_risk_state_live.js patch geometry without
@@ -1891,7 +1893,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
            wrapper via .cnx-big-score/.cnx-verdict/.cnx-sub-line rules (--up/--down), so these
            DIRECTION reads flip in zh (risk-off → green), matching the gauge, tiles and path. #}
         <div>
-          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span></div>
+          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span>{% if _pd %}<span class="cnx-stance st-{{ _stance_tone }}"><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></span>{% endif %}</div>
           <div class="cnx-sub-line">
             {# zh names the TIER (偏多/中性/避险), never the colour word — the paint flips 红涨绿跌
                in zh (risk-off→green), so a literal 红/绿 would contradict it. Matches macro.html. #}
@@ -1901,18 +1903,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           </div>
         </div>
       </div>
-      <p class="v-thesis cnx-thesis">{{ t(_ms_thesis or 'China A-share market state.', _ms_thesis_zh or '中国A股市场状态。') }}</p>
+      <p class="v-thesis cnx-thesis"><span class="l-en">{{ _hero_clause[0] }}</span><span class="l-zh">{{ _hero_clause[1] }}</span></p>
       <div class="v-flip cnx-flip">{{ t(_ms_flip or '—', _ms_flip_zh or '—') }}</div>
-      <div class="cnx-hero-read">
-        <div class="cnx-hero-read-copy">
-          <span class="cnx-hero-read-label"><span class="l-en">Plain read</span><span class="l-zh">一眼判读</span></span>
-          <span class="l-en">{{ _hero_clause[0] }}</span><span class="l-zh">{{ _hero_clause[1] }}</span>
-        </div>
-        {% if _pd %}<span class="cnx-stance st-{{ _stance_tone }}"><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></span>{% endif %}
-        {% if health %}
-        <span class="cnx-freshness"><span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} feeds fresh</span><span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span></span>
-        {% endif %}
-      </div>
       <div class="cnx-hero-btns">
         {# signals button #}
         {% set _n_bull = (_comps | selectattr('tone', 'equalto', 'pos') | list | length) %}
@@ -2530,6 +2522,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-dlg-head"><span class="cnx-dlg-title">{{ t('Market State — Evidence & Signals','市场状态 — 证据与信号') }}</span><button class="cnx-dlg-close" onclick="cnxCloseDlg()">×</button></div>
       <div class="cnx-dlg-body">
         <div class="cnx-eyebrow">{{ t('What the composite measures','综合指标测量') }} · {{ _ms_score }}/100 {{ t(_ms_label, _ms_label_zh) }}</div>
+        {% if _ms_thesis or _ms_thesis_zh %}
+        <div class="cnx-row"><span class="ic" aria-hidden="true">↳</span><div class="tx"><b>{{ t('Model headline','模型原始标题') }}</b><span class="sub">{{ t(_ms_thesis or '—', _ms_thesis_zh or '—') }}</span></div></div>
+        {% endif %}
         {% for c in _comps %}
         <div class="cnx-frow">
           <span>{{ t(c.label_en, c.label_zh) }}</span>

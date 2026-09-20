@@ -76,7 +76,9 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{% set _hero_clause = hero_clause(pb_obj, ms) %}",
         "{% set _stance = posture_lane(_pd.posture if _pd else none) %}",
         "{% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}",
-        'class="cnx-hero-read"',
+        'class="cnx-hero-meta"',
+        'class="v-thesis cnx-thesis"><span class="l-en">{{ _hero_clause[0] }}',
+        "{{ t('Model headline','模型原始标题') }}",
         'class="cnx-row cnx-reason-row',
         'class="cnx-lens"',
         'onclick="cnxToggleLens(this,event)"',
@@ -89,6 +91,11 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         'href="alerts.html"',
     ):
         assert marker in TPL
+
+    # The borrowed words-first read replaces the old headline slot; it must not
+    # grow into a second standalone hero block and make the restored page wordier.
+    assert 'class="cnx-hero-read"' not in TPL
+    assert 'class="cnx-live-freshness"' in TPL
 
     # The richer original information architecture remains the page skeleton.
     for marker in (
