@@ -1,5 +1,5 @@
 {
-  "head": "8a582eda4e",
+  "head": "b411fa31d2",
   "branch": "claude/mo-a-unified-dashboard-b1",
   "pr": 7469,
   "source_url": "site/macro.html",
@@ -17,7 +17,7 @@
         "h": 323,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on, narrowing"
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_dark_zh_1440.png",
@@ -30,7 +30,7 @@
         "h": 323,
         "rows": 5
       },
-      "verdict_excerpt": "风险偏好 在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     },
     {
       "file": "dashboard_light_en_1440.png",
@@ -43,7 +43,7 @@
         "h": 323,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on, narrowing"
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_light_zh_1440.png",
@@ -56,7 +56,7 @@
         "h": 323,
         "rows": 5
       },
-      "verdict_excerpt": "风险偏好 在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     },
     {
       "file": "dashboard_dark_en_390.png",
@@ -66,10 +66,10 @@
       "language": "en",
       "spine": {
         "w": 308,
-        "h": 596,
+        "h": 662,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on, narrowing"
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_dark_zh_390.png",
@@ -79,10 +79,10 @@
       "language": "zh",
       "spine": {
         "w": 308,
-        "h": 574,
+        "h": 640,
         "rows": 5
       },
-      "verdict_excerpt": "风险偏好 在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     },
     {
       "file": "dashboard_light_en_390.png",
@@ -92,10 +92,10 @@
       "language": "en",
       "spine": {
         "w": 308,
-        "h": 596,
+        "h": 662,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on, narrowing"
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_light_zh_390.png",
@@ -105,10 +105,10 @@
       "language": "zh",
       "spine": {
         "w": 308,
-        "h": 574,
+        "h": 640,
         "rows": 5
       },
-      "verdict_excerpt": "风险偏好 在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     }
   ]
 }
