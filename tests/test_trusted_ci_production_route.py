@@ -50,7 +50,7 @@ def test_hosted_first_executes_ordinary_prs_and_keeps_pc_relay_fallback() -> Non
         "matrix": "${{ fromJSON(needs.ci-plan.outputs.matrix) }}",
     }
     assert job["if"] == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
