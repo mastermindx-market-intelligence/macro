@@ -573,7 +573,8 @@ def test_ca_discovery_registration_is_after_artifact_persist_and_before_return()
     assert '"CA"' in source[register:register + 240]
     assert persist < register < return_board
     block = source[persist:return_board]
-    assert "canada_discovery_challenger.freeze_evidence" in block
+    assert "canada_discovery_challenger.freeze_population_contract" in block
+    assert "_ca_populations.prealignment_research" in block
     assert "canada_discovery_challenger.build_candidates" in block
 
 
@@ -717,3 +718,112 @@ def test_ca_builder_registers_native_rank_race_after_publication():
     assert persist < native < return_board
     assert persist < discovery < return_board
 
+
+
+def test_ca_population_contract_separates_immutable_official_and_research():
+    from dataclasses import FrozenInstanceError
+    from engine import canada_discovery_challenger as cadc
+
+    cand = [
+        (3.0, {"ticker": "A.TO", "score": 99}),
+        (2.0, {"ticker": "B.V", "score": 88}),
+        (1.0, {"ticker": "C.TO", "score": 77}),
+    ]
+    board = {
+        "buy": [{"ticker": "A.TO", "group": "entry_open", "board_pos": 1}],
+        "watch": [{"ticker": "B.V", "watch_reason": "knife"}],
+    }
+    contract = cadc.freeze_population_contract(
+        official_board=board,
+        candidates=cand,
+        align_map={"A.TO": {"aligned": True}, "B.V": {"near": True}},
+        entry_signals={"A.TO": {"status": "buy_now"}},
+    )
+
+    assert contract.official_screen.status == cadc.PopulationStatus.OBSERVED
+    assert [(m.ticker, m.lane, m.owner_group) for m in contract.official_screen.members] == [
+        ("A.TO", "buy", "entry_open"),
+        ("B.V", "watch", "watch"),
+    ]
+    assert contract.prealignment_research.status == cadc.PopulationStatus.OBSERVED
+    assert [m.ticker for m in contract.prealignment_research.members] == [
+        "A.TO", "B.V", "C.TO",
+    ]
+
+    # The contract is a snapshot, not an alias to producer rows.
+    board["buy"][0]["ticker"] = "MUTATED.TO"
+    cand[0][1]["ticker"] = "MUTATED-RESEARCH.TO"
+    assert contract.official_screen.members[0].ticker == "A.TO"
+    assert contract.prealignment_research.members[0].ticker == "A.TO"
+    with pytest.raises(FrozenInstanceError):
+        contract.official_screen.status = cadc.PopulationStatus.UNAVAILABLE
+
+
+def test_ca_population_contract_distinguishes_zero_from_unavailable_and_watch_only():
+    from engine import canada_discovery_challenger as cadc
+
+    unavailable = cadc.freeze_population_contract(
+        official_board=None, candidates=None, align_map=None, entry_signals=None,
+    )
+    assert unavailable.official_screen.status == cadc.PopulationStatus.UNAVAILABLE
+    assert unavailable.prealignment_research.status == cadc.PopulationStatus.UNAVAILABLE
+
+    observed_zero = cadc.freeze_population_contract(
+        official_board={"buy": [], "watch": []},
+        candidates=[], align_map={}, entry_signals={},
+    )
+    assert observed_zero.official_screen.status == cadc.PopulationStatus.OBSERVED_ZERO
+    assert observed_zero.prealignment_research.status == cadc.PopulationStatus.OBSERVED_ZERO
+
+    watch_only = cadc.freeze_population_contract(
+        official_board={"buy": [], "watch": [{"ticker": "WATCH.V"}]},
+        candidates=[(1.0, {"ticker": "WATCH.V"})],
+        align_map={}, entry_signals={},
+    )
+    assert watch_only.official_screen.status == cadc.PopulationStatus.OBSERVED
+    assert [(m.ticker, m.lane) for m in watch_only.official_screen.members] == [
+        ("WATCH.V", "watch"),
+    ]
+
+
+def test_ca_population_contract_refuses_official_identity_absent_from_research():
+    from engine import canada_discovery_challenger as cadc
+
+    with pytest.raises(ValueError, match="absent from pre-alignment research"):
+        cadc.freeze_population_contract(
+            official_board={"buy": [{"ticker": "OFFLIST.TO"}], "watch": []},
+            candidates=[(1.0, {"ticker": "A.TO"})],
+            align_map={}, entry_signals={},
+        )
+
+
+def test_ca_research_population_keeps_valid_zero_distinct_and_refuses_unknown_session():
+    from engine import canada_discovery_challenger as cadc
+
+    unavailable = cadc.freeze_research_population(None, None, None)
+    with pytest.raises(cadc.ResearchPopulationUnavailable):
+        cadc.build_candidates(unavailable, "2026-09-18")
+
+    observed_zero = cadc.freeze_research_population([], {}, {})
+    assert observed_zero.status == cadc.PopulationStatus.OBSERVED_ZERO
+    assert cadc.build_candidates(observed_zero, "2026-09-18") == []
+
+    observed = cadc.freeze_research_population(
+        [(1.0, {"ticker": "RAW.V"})], {}, {},
+    )
+    for invalid_asof in (None, "", "None", "2026-09-18T00:00:00"):
+        with pytest.raises(ValueError, match="source session"):
+            cadc.build_candidates(observed, invalid_asof)
+
+
+def test_ca_builder_registers_discovery_from_typed_population_contract():
+    source = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
+    ).read_text()
+    persist = source.index("_write_canada_standouts(board, site)")
+    return_board = source.index("    return board", persist)
+    block = source[persist:return_board]
+
+    assert "freeze_population_contract(" in block
+    assert ".prealignment_research" in block
+    assert "freeze_evidence(" not in block

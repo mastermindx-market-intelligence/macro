@@ -1243,13 +1243,16 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
                 canada_native_intelligence,
             )
 
-            _ca_disc_frozen = canada_discovery_challenger.freeze_evidence(
-                cand, align_map, entry_sig,
+            _ca_populations = canada_discovery_challenger.freeze_population_contract(
+                official_board=board,
+                candidates=cand,
+                align_map=align_map,
+                entry_signals=entry_sig,
             )
 
             def _ca_discovery_fn(_asof_arg: str) -> list[dict]:
                 return canada_discovery_challenger.build_candidates(
-                    _ca_disc_frozen, _asof_arg,
+                    _ca_populations.prealignment_research, _asof_arg,
                 )
 
             # CA-NATIVE-INTEL / CA-RANK-RACE: one typed ACCRUING name family,
