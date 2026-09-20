@@ -30,6 +30,7 @@ decisions:
 - DEC:TERMINAL-TACTICAL-TOP-SIDE-BOUNDARY
 - DEC:TERMINAL-TACTICAL-MINUTE-EVIDENCE-CLASS
 - DEC:TERMINAL-TACTICAL-SYNTHETIC-CONSTRUCTION-CONTINUE
+- DEC:TERMINAL-TACTICAL-R1B-STACKED-RESEARCH-ADMISSION
 discoveries:
 - DSC:TERMINAL-TACTICAL-PILOT-HISTORY-QUALIFICATION
 - DSC:TERMINAL-INTRADAY-REFRESH-FAILURE-MASKING
@@ -40,11 +41,8 @@ discoveries:
 waves:
 - id: D0
   title: Existing-store qualification and causal cutoff consumer
-  status: in_progress
-  next_action: 'Preserve Terminal #601 at c0f36cb16fadd190ad747fc47a28405d9ec0fca4. Independent review remains unproven.
-    One GitHub-native Copilot request was made on the same existing review operation; returned metadata, review
-    list and timeline did not establish a reviewer or execution. No duplicate request, raw provider launch or Executive
-    reconnection prerequisite. Require actual current-head review and concluded applicable checks before release.'
+  status: done
+  next_action: 'DONE: immutable D0 head c0f36cb16fadd190ad747fc47a28405d9ec0fca4 received independent APPROVED review from mastermindx-3 after a fresh 59-case focused run and all hosted source/security/e2e checks were green; stale PR metadata claiming 65 focused tests was corrected. Terminal #601 squash-merged as f4bc91827a075748dc5c97c889888ae2ee643a87. Preserve its corrected-history/as-observed distinction and do not rebuild the qualifier.'
 - id: D1
   title: Current pilot history and finer-grain availability qualification
   status: in_progress
@@ -54,7 +52,7 @@ waves:
   status: in_progress
   depends_on:
   - D0
-  next_action: "R1-B v4 now has executable synthetic construction on #7274 at f6738dffff1516216b552d426f956f8f6551248d: strict fresh-low/forming candidates, chronological reclaim/continuation/expiry, independent selectors, separate candidate/episode lows and entry clocks with five-minute latency, plus a synthetic JSON/Markdown consumer. Forty new tests; detector suite 192 passed; full Radar 1520 passed/3 skipped; import-pinning 11 passed. Frozen v4 hashes unchanged; R1-B registered cells 0, market reads/outcomes 0, TrialLedger unchanged. DEC:TERMINAL-TACTICAL-SYNTHETIC-CONSTRUCTION-CONTINUE narrows the former all-code hold to empirical/shared-source and release gates. #7270 head b73f1c7bf13aa386fb11c4fdce762b999e91eae7 and independent review remain unresolved; receive review then register all 60 cells before market outcomes. Do not rebuild this constructor or retune R1-A."
+  next_action: 'R1-A head b73f1c7bf13aa386fb11c4fdce762b999e91eae7 is independently APPROVED after custody checks, 265-pass causal/TrialLedger review, a preserved-input rerun with byte-identical feature/outcome rows, and conflict-free current-base TrialLedger integration. Its protected-main merge remains held by required ci-gate because lane-external HK/Canada stock-dashboard receipt hashes are red. D0 is merged. DEC:TERMINAL-TACTICAL-R1B-STACKED-RESEARCH-ADMISSION permits R1-B research to stack on accepted R1-A without bypassing release: merge accepted R1-A into #7274 research branch, append all 60 frozen v4 cells before any R1-B market outcome, then execute corrected-history research under no-promotion law. Current #7274 head 3222dd1a6f199a561d03707bc6e279563af86220 additionally derives ATR20/beta from prior-only daily inputs; full Radar regression 1537 passed/2 skipped.'
 - id: I1
   title: Existing Radar-owned shadow opportunity integration
   status: todo
