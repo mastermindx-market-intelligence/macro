@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T12:29:15.300967+00:00",
-  "count": 2498,
+  "generated_at": "2026-09-20T12:44:10.300005+00:00",
+  "count": 2499,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -971,6 +971,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ilbiybhicne-8fdcf5",
+      "title": "Blog",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:11Z",
+      "summary_points": [
+        "Persistent Oil Shock Risk: Iran-linked oil price persistence (vs. one-off shocks) fundamentally alters central bank policy calculus, demanding proactive intervention beyond neutral stance.",
+        "Policy Restriction Trigger: Central banks face pressure to implement restrictive measures (e.g., rate hikes) to deliberately slow non-oil economic activity amid sustained energy price pressures.",
+        "Recession Probability Surge: Non-oil economy slowdown engineered via policy tightening significantly elevates near-term recession risk, overriding traditional monetary policy frameworks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
