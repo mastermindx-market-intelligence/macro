@@ -2279,6 +2279,25 @@ def test_hk_successor_binds_real_modal_and_no_js_proof_without_rewriting_p0b() -
         assert row["modal_open"] is True and row["url_unchanged"] is True
         assert row["owner_nodes_unchanged"] is True and row["owner_preview_count"] > 0
         assert row["dead_route_requests"] == 0
+    interaction_cases = modal["interaction_cases"]
+    assert len(interaction_cases) == 6
+    assert {
+        (row["activation"], row["dismissal"], row["control_index"])
+        for row in interaction_cases
+    } == {
+        (activation, dismissal, index)
+        for activation, dismissal in (
+            ("pointer", "close_button"),
+            ("keyboard", "escape"),
+            ("touch", "backdrop"),
+        )
+        for index in (0, 1)
+    }
+    for row in interaction_cases:
+        assert row["pass"] is True
+        assert row["modal_open"] is True and row["modal_closed"] is True
+        assert row["url_unchanged"] is True and row["owner_nodes_unchanged"] is True
+        assert row["overflow_restored"] is True and row["dead_route_requests"] == 0
     assert len(modal["no_js_cases"]) == 2
     assert {r["control_index"] for r in modal["no_js_cases"]} == {0, 1}
     for row in modal["no_js_cases"]:

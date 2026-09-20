@@ -4,11 +4,11 @@
   "production": "none",
   "verifier": {
     "path": "scripts/verify_hk_sector_modal.cjs",
-    "sha256": "ba62c7a4e2630377af872d0829cc65af804f3127c9978b5bfa36e719469ac726"
+    "sha256": "cee662dd21de39d0dc0fe167834bd00552fc6b4136f207578194298a2d7835ca"
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.48"
+    "version": "153.0.8010.12"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-hk-sector-link-20260916/rendered-fixture.json",
@@ -116,6 +116,80 @@
       "pass": true
     }
   ],
+  "interaction_cases": [
+    {
+      "control_index": 0,
+      "activation": "pointer",
+      "dismissal": "close_button",
+      "modal_open": true,
+      "modal_closed": true,
+      "url_unchanged": true,
+      "owner_nodes_unchanged": true,
+      "overflow_restored": true,
+      "dead_route_requests": 0,
+      "pass": true
+    },
+    {
+      "control_index": 1,
+      "activation": "pointer",
+      "dismissal": "close_button",
+      "modal_open": true,
+      "modal_closed": true,
+      "url_unchanged": true,
+      "owner_nodes_unchanged": true,
+      "overflow_restored": true,
+      "dead_route_requests": 0,
+      "pass": true
+    },
+    {
+      "control_index": 0,
+      "activation": "keyboard",
+      "dismissal": "escape",
+      "modal_open": true,
+      "modal_closed": true,
+      "url_unchanged": true,
+      "owner_nodes_unchanged": true,
+      "overflow_restored": true,
+      "dead_route_requests": 0,
+      "pass": true
+    },
+    {
+      "control_index": 1,
+      "activation": "keyboard",
+      "dismissal": "escape",
+      "modal_open": true,
+      "modal_closed": true,
+      "url_unchanged": true,
+      "owner_nodes_unchanged": true,
+      "overflow_restored": true,
+      "dead_route_requests": 0,
+      "pass": true
+    },
+    {
+      "control_index": 0,
+      "activation": "touch",
+      "dismissal": "backdrop",
+      "modal_open": true,
+      "modal_closed": true,
+      "url_unchanged": true,
+      "owner_nodes_unchanged": true,
+      "overflow_restored": true,
+      "dead_route_requests": 0,
+      "pass": true
+    },
+    {
+      "control_index": 1,
+      "activation": "touch",
+      "dismissal": "backdrop",
+      "modal_open": true,
+      "modal_closed": true,
+      "url_unchanged": true,
+      "owner_nodes_unchanged": true,
+      "overflow_restored": true,
+      "dead_route_requests": 0,
+      "pass": true
+    }
+  ],
   "no_js_cases": [
     {
       "control_index": 0,
@@ -135,11 +209,11 @@
   "screenshots": [
     {
       "path": "mockups/evidence/prophet-hk-sector-link-20260916/screenshots/sector-modal-dark.png",
-      "sha256": "00e180304d7a8a88c8a7d650eaa4e5dc3baa319833a83730e459af71db77ba3a"
+      "sha256": "4847c9c828f17a0ade94aecb5a12a42e68e20ec9f9a845bc8bca509c54a57456"
     },
     {
       "path": "mockups/evidence/prophet-hk-sector-link-20260916/screenshots/sector-modal-light.png",
-      "sha256": "aeb4363d9344d372479e211fabc4d004d73c2fec54534288e6b29cad007431cb"
+      "sha256": "c47da69c6c446c149082781687f85fcf72509bdc7caf3ff8d190df01dab6b65e"
     }
   ],
   "pass": true

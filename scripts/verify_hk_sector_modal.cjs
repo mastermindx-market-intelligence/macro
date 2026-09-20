@@ -84,6 +84,56 @@ async function main() {
       }
       await context.close();
     }
+    const interactionCases = [];
+    const interactions = [
+      {activation:'pointer', dismissal:'close_button'},
+      {activation:'keyboard', dismissal:'escape'},
+      {activation:'touch', dismissal:'backdrop'},
+    ];
+    for (const interaction of interactions) for (let index=0; index<2; index++) {
+      const context=await browser.newContext({viewport:{width:1280,height:900},
+        hasTouch:interaction.activation==='touch'});
+      await context.addInitScript(()=>{
+        localStorage.setItem('lang','en');localStorage.setItem('theme','dark');
+      });
+      await installRoutes(context);const page=await context.newPage();
+      const errors=[],deadRequests=[];
+      page.on('pageerror',e=>errors.push(e.message));
+      page.on('request',r=>{if(new URL(r.url()).pathname.endsWith('/sector_ranking.html'))deadRequests.push(r.url());});
+      await page.goto('http://stock-dashboard.invalid/hk_stocks.html',{waitUntil:'load'});
+      await page.waitForSelector('#hk-v37[data-hk-enhanced="true"]');
+      await page.waitForTimeout(200);
+      const link=page.locator('a[data-hk-expand]').nth(index);
+      await page.evaluate(()=>{
+        window.__modalProofCards = Array.from(document.querySelectorAll('#hk-v37-card-grid .pvcard[data-ticker]'));
+      });
+      const beforeUrl=page.url();
+      if (interaction.activation==='keyboard') { await link.focus(); await page.keyboard.press('Enter'); }
+      else if (interaction.activation==='touch') await link.tap();
+      else await link.click();
+      await page.waitForSelector('#hk-v37-modal.is-open[aria-hidden="false"]');
+      const modalOpen=await page.locator('#hk-v37-modal').isVisible();
+      const unchanged=await page.evaluate(()=>{
+        const now=Array.from(document.querySelectorAll('#hk-v37-card-grid .pvcard[data-ticker]'));
+        return now.length===window.__modalProofCards.length && now.every((n,i)=>n===window.__modalProofCards[i]);
+      });
+      if (interaction.dismissal==='escape') await page.keyboard.press('Escape');
+      else if (interaction.dismissal==='backdrop') {
+        const box=await page.locator('#hk-v37-modal').boundingBox();assert(box);
+        await page.mouse.click(box.x+4,box.y+4);
+      } else await page.locator('[data-hk-modal-close]').first().click();
+      await page.waitForSelector('#hk-v37-modal[aria-hidden="true"]',{state:'attached'});
+      const closed=await page.locator('#hk-v37-modal').evaluate(el=>!el.classList.contains('is-open'));
+      const overflowRestored=await page.evaluate(()=>document.documentElement.style.overflow==='');
+      const row={control_index:index,activation:interaction.activation,dismissal:interaction.dismissal,
+        modal_open:modalOpen,modal_closed:closed,url_unchanged:page.url()===beforeUrl,
+        owner_nodes_unchanged:unchanged,overflow_restored:overflowRestored,
+        dead_route_requests:deadRequests.length};
+      row.pass=row.modal_open&&row.modal_closed&&row.url_unchanged&&row.owner_nodes_unchanged&&
+        row.overflow_restored&&!row.dead_route_requests&&!errors.length;
+      interactionCases.push(row);assert(row.pass,JSON.stringify({row,errors}));
+      await context.close();
+    }
     for (let index=0; index<2; index++) {
       const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:1280,height:900}});
       await installRoutes(context);const page=await context.newPage();
@@ -99,8 +149,11 @@ async function main() {
       verifier:bind(__filename),browser:{engine:'chromium',version:browser.version()},fixture_receipt:bind(fixture),
       inputs:{'templates/hk.html.j2':sha(fs.readFileSync(path.join(ROOT,'templates/hk.html.j2'))),
         'site/hk-stock-v36.js':sha(fs.readFileSync(path.join(ROOT,'site/hk-stock-v36.js')))},
-      modal_cases:cases,no_js_cases:fallback,screenshots,pass:cases.length===8&&fallback.length===2};
-    fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({pass:result.pass,modal_cases:cases.length,no_js_cases:fallback.length}));
+      modal_cases:cases,interaction_cases:interactionCases,no_js_cases:fallback,screenshots,
+      pass:cases.length===8&&interactionCases.length===6&&fallback.length===2};
+    fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n');
+    console.log(JSON.stringify({pass:result.pass,modal_cases:cases.length,
+      interaction_cases:interactionCases.length,no_js_cases:fallback.length}));
   } finally {await browser.close();}
 }
 main().catch(e=>{console.error(e.stack||String(e));process.exitCode=1;});
