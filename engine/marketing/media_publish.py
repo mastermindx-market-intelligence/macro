@@ -18,9 +18,10 @@ R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_BUCKET the oracle/data lanes use.
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
-from typing import Any
+from typing import Any, Callable
 
 log = logging.getLogger(__name__)
 
@@ -85,38 +86,226 @@ def public_url_for_key(key: str) -> str:
     return f"{_public_base()}/{key.lstrip('/')}"
 
 
-def publish_chart_png(png_bytes: bytes, key: str, *, s3=None) -> str | None:
-    """Upload PNG bytes to R2 under `key`; return the public https URL or None.
+def content_addressed_chart_key(as_of: str, chart_id: str,
+                                  png_bytes: bytes) -> str:
+    """Immutable chart key shared by the producer and repair consumer.
 
-    Fail-soft: creds absent (no client) → None + log line; any upload error →
-    None + log.warning. `s3` may be injected for tests (a stub with put_object).
-    Content-Type is image/png. `key` is the full R2 key (see chart_key()).
+    ``chart_id`` is only a per-day allocator label. The digest prevents a later
+    build from replacing bytes at a URL already booked by Buffer.
     """
+    digest = hashlib.sha256(png_bytes).hexdigest()
+    safe_as_of = (str(as_of or "").strip() or "unknown").replace("/", "-")
+    safe_id = (str(chart_id or "").strip() or "chart").replace("/", "-")
+    return f"{R2_MARKETING_PREFIX}/{safe_as_of}/{safe_id}-{digest}.png"
+
+
+def _public_get(url: str, timeout: float) -> tuple[int, dict[str, str], bytes]:
+    """Unauthenticated GET used to prove the exact public object bytes."""
+    from urllib.error import HTTPError  # noqa: PLC0415
+    from urllib.request import Request, urlopen  # noqa: PLC0415
+
+    request = Request(url, method="GET", headers={
+        "Accept": "image/png",
+        "Cache-Control": "no-cache",
+        "User-Agent": "Mastermind-Marketing-Media-Readiness/1",
+    })
+    try:
+        with urlopen(request, timeout=timeout) as response:  # noqa: S310
+            status = int(getattr(response, "status", response.getcode()))
+            headers = {str(k).lower(): str(v) for k, v in response.headers.items()}
+            return status, headers, response.read()
+    except HTTPError as exc:
+        headers = ({str(k).lower(): str(v) for k, v in exc.headers.items()}
+                   if exc.headers else {})
+        return int(exc.code), headers, exc.read()
+
+
+def _repair(state: str, reason: str, *, process: str,
+            repairable: bool) -> dict[str, Any]:
+    return {
+        "state": state,
+        "reason": reason,
+        "repair_process": process,
+        "repairable": repairable,
+    }
+
+
+def verify_public_png(
+    url: str,
+    expected_png: bytes,
+    *,
+    fetcher: Callable[[str, float], tuple[int, dict[str, str], bytes]] | None = None,
+    timeout: float = 15.0,
+) -> dict[str, Any]:
+    """Prove unauthenticated public bytes, MIME and digest for one PNG URL.
+
+    A URL-shaped string is not readiness. This performs GET rather than HEAD so
+    a successful verdict covers the bytes Buffer will fetch. Every failure is
+    local to this asset; callers must not infer that one failure means the
+    bucket is unavailable.
+    """
+    expected_sha = hashlib.sha256(expected_png).hexdigest()
+    base: dict[str, Any] = {
+        "media_url": None,
+        "expected_sha256": expected_sha,
+        "observed_sha256": None,
+        "http_status": None,
+        "content_type": None,
+    }
+    if not str(url or "").lower().startswith(("http://", "https://")):
+        base["media_repair"] = _repair(
+            "public_fetch_failure", "invalid_public_url",
+            process="marketing_media_backfill", repairable=True,
+        )
+        base.update(base["media_repair"])
+        return base
+
+    try:
+        status, headers, body = (fetcher or _public_get)(str(url), timeout)
+    except Exception as exc:  # noqa: BLE001
+        base["fetch_error"] = f"{type(exc).__name__}: {exc}"
+        base["media_repair"] = _repair(
+            "public_fetch_failure", "fetch_error",
+            process="marketing_media_backfill", repairable=True,
+        )
+        base.update(base["media_repair"])
+        return base
+
+    normalized_headers = {str(k).lower(): str(v) for k, v in (headers or {}).items()}
+    mime = normalized_headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    observed_sha = hashlib.sha256(body or b"").hexdigest()
+    base.update({
+        "http_status": int(status),
+        "content_type": mime,
+        "observed_sha256": observed_sha,
+    })
+    if int(status) != 200:
+        reason = f"http_{int(status)}"
+    elif mime != "image/png":
+        reason = "wrong_mime"
+    elif not (body or b"").startswith(b"\x89PNG"):
+        reason = "wrong_png_signature"
+    elif observed_sha != expected_sha:
+        reason = "digest_mismatch"
+    else:
+        base["media_url"] = str(url)
+        base["media_repair"] = _repair(
+            "complete", "public_bytes_verified", process="", repairable=False,
+        )
+        base.update(base["media_repair"])
+        return base
+
+    base["media_repair"] = _repair(
+        "public_fetch_failure", reason,
+        process="marketing_media_backfill", repairable=True,
+    )
+    base.update(base["media_repair"])
+    return base
+
+
+def publish_chart_png_result(
+    png_bytes: bytes,
+    key: str,
+    *,
+    s3=None,
+    fetcher: Callable[[str, float], tuple[int, dict[str, str], bytes]] | None = None,
+) -> dict[str, Any]:
+    """Reconcile an immutable public key, upload only when absent, then verify.
+
+    A timeout, 403, wrong MIME or digest mismatch is not proof the key is absent,
+    so none of those states triggers a replacement PUT. Only a proven 404/410
+    may write the expected immutable key. After a PUT, the URL is publishable
+    only when a public GET returns the exact expected PNG bytes.
+    """
+    url = public_url_for_key(key)
+    result: dict[str, Any] = {
+        "media_url": None,
+        "media_asset_key": key,
+        "media_sha256": hashlib.sha256(png_bytes or b"").hexdigest(),
+        "uploaded": False,
+    }
     if not png_bytes:
-        log.warning("media_publish: empty png_bytes for key %s — skip", key)
-        return None
+        result["media_repair"] = _repair(
+            "render_failure", "empty_png_bytes",
+            process="content_studio", repairable=True,
+        )
+        return result
 
     client = s3 if s3 is not None else _r2_client()
     if client is None:
-        log.info("media_publish: no R2 creds (R2_ENDPOINT/ACCESS_KEY_ID/SECRET_ACCESS_KEY"
-                 "/R2_BUCKET) — chart PNG stays local (no public URL this run)")
-        return None
-
+        result["media_repair"] = _repair(
+            "upload_pending", "upload_credentials_unavailable",
+            process="marketing_media_backfill", repairable=True,
+        )
+        return result
     bucket = os.environ.get("R2_BUCKET", "").strip()
     if not bucket:
-        log.warning("media_publish: R2_BUCKET not set — cannot upload %s", key)
-        return None
+        result["media_repair"] = _repair(
+            "upload_pending", "r2_bucket_unavailable",
+            process="marketing_media_backfill", repairable=True,
+        )
+        return result
+
+    # Injected S3 without an injected fetcher is the legacy no-network unit-test
+    # seam. Production (real client) always verifies before exposing a URL.
+    verify_public = fetcher is not None or s3 is None
+    if verify_public:
+        before = verify_public_png(url, png_bytes, fetcher=fetcher)
+        result["public_fetch"] = before
+        if before["state"] == "complete":
+            result.update({
+                "media_url": url,
+                "media_repair": before["media_repair"],
+            })
+            return result
+        if before["reason"] not in {"http_404", "http_410"}:
+            result["media_repair"] = before["media_repair"]
+            return result
 
     try:
         client.put_object(Bucket=bucket, Key=key, Body=png_bytes,
                           ContentType="image/png")
+        result["uploaded"] = True
     except Exception as exc:  # noqa: BLE001
-        log.warning("media_publish: upload failed for %s: %s", key, exc)
-        return None
+        log.warning("media_publish: upload effect unknown for %s: %s", key, exc)
+        result["upload_error"] = f"{type(exc).__name__}: {exc}"
+        result["media_repair"] = _repair(
+            "upload_pending", "upload_effect_unknown",
+            process="marketing_media_backfill", repairable=True,
+        )
+        return result
 
-    url = public_url_for_key(key)
-    log.info("media_publish: uploaded chart PNG → %s (%d bytes)", url, len(png_bytes))
-    return url
+    if verify_public:
+        after = verify_public_png(url, png_bytes, fetcher=fetcher)
+        result["public_fetch"] = after
+        result["media_repair"] = after["media_repair"]
+        if after["state"] == "complete":
+            result["media_url"] = url
+        return result
+
+    result["media_url"] = url
+    result["media_repair"] = _repair(
+        "complete", "injected_client_upload_accepted",
+        process="", repairable=False,
+    )
+    return result
+
+
+def publish_chart_png(
+    png_bytes: bytes,
+    key: str,
+    *,
+    s3=None,
+    fetcher: Callable[[str, float], tuple[int, dict[str, str], bytes]] | None = None,
+    return_result: bool = False,
+) -> str | dict[str, Any] | None:
+    """Publish one PNG; production returns a URL only after public-byte proof."""
+    result = publish_chart_png_result(
+        png_bytes, key, s3=s3, fetcher=fetcher,
+    )
+    if return_result:
+        return result
+    return result.get("media_url")
 
 
 def publish_card(
@@ -231,12 +420,32 @@ def publish_card(
         log.warning("publish_card: PNG write failed for %s: %s", chart_id, exc)
         return out
 
-    # ── Public URL (Buffer hosts no uploads; absent creds → text-only post) ───
+    # ── Public URL (Buffer hosts no uploads; absent creds → held for repair) ──
+    key = content_addressed_chart_key(str(as_of), str(chart_id), png)
+    out["media_asset_key"] = key
+    out["media_sha256"] = hashlib.sha256(png).hexdigest()
     try:
-        out["media_url"] = publish_chart_png(png, chart_key(str(as_of), str(chart_id)))
+        published = publish_chart_png(png, key, return_result=True)
+        if isinstance(published, dict):
+            out["media_url"] = published.get("media_url")
+            if isinstance(published.get("media_repair"), dict):
+                out["media_repair"] = dict(published["media_repair"])
+        else:
+            # Backward-compatible seam for injected/monkeypatched publishers.
+            out["media_url"] = published if isinstance(published, str) else None
+            out["media_repair"] = _repair(
+                "complete" if out["media_url"] else "upload_pending",
+                "hosted_media_present" if out["media_url"] else "hosted_media_unavailable",
+                process="" if out["media_url"] else "marketing_media_backfill",
+                repairable=not bool(out["media_url"]),
+            )
     except Exception as exc:  # noqa: BLE001
         log.warning("publish_card: upload failed for %s: %s", chart_id, exc)
         out["media_url"] = None
+        out["media_repair"] = _repair(
+            "upload_pending", "upload_effect_unknown",
+            process="marketing_media_backfill", repairable=True,
+        )
     return out
 
 

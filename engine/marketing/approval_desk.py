@@ -794,10 +794,8 @@ def _chart_bearing_kinds() -> frozenset[str]:
     engine must not hard-depend on a script at import time.
     """
     try:
-        from scripts.marketing_publisher import (  # noqa: PLC0415
-            _CHART_BEARING_KINDS, _TICKER_ROLLUP_KINDS,
-        )
-        return frozenset(_CHART_BEARING_KINDS) | frozenset(_TICKER_ROLLUP_KINDS)
+        from engine.marketing.outbox import chart_bearing_kinds  # noqa: PLC0415
+        return chart_bearing_kinds()
     except Exception:  # noqa: BLE001
         return frozenset({"signal", "chart", "watchlist", "receipt",
                           "theme_list", "mover"})
@@ -853,6 +851,16 @@ def check_chart_law(item: dict, *, media_enabled: bool = True) -> Check:
     url = _hosted_media_url(item)
     if url:
         return Check("chart_law", PASS, "hosted media present")
+
+    source = item.get("source") if isinstance(item.get("source"), dict) else {}
+    repair = source.get("media_repair")
+    if isinstance(repair, dict) and repair.get("state") == "no_specification":
+        return Check(
+            "chart_law", HOLD,
+            f"ticker kind {kind!r} has no chart specification — Content Studio "
+            f"must revalidate and supersede or retire it; media backfill cannot "
+            f"invent historical chart inputs",
+        )
     return Check(
         "chart_law", HOLD,
         f"ticker kind {kind!r} carries no hosted media_url yet — leaving queued "

@@ -117,6 +117,24 @@ class TestTheAgeBoundCannotSilenceARescue:
     def test_an_explicit_as_of_overrides_the_bound(self):
         assert self._ids("2026-07-24", 3) == ["old"]
 
+    def test_unattended_sweep_emits_expiry_evidence_without_retrying(self):
+        from scripts.marketing_media_backfill import _iter_missing
+
+        rows = _iter_missing(
+            self.ITEMS, None, 3, self.TODAY, include_expired=True,
+        )
+        expired = [(it, projection) for it, projection in rows
+                   if projection.get("repair_state") == "expired"]
+        assert len(expired) == 1
+        item, projection = expired[0]
+        assert item["media"][0]["chart_id"] == "old"
+        assert projection == {
+            "repair_state": "expired",
+            "repair_reason": "content_expired_while_waiting_for_media",
+            "repair_process": "outbox_retirement",
+            "repairable": False,
+        }
+
     def test_no_bound_is_still_no_bound(self):
         assert self._ids(None, None) == ["today", "old", "unparseable"]
 
@@ -228,3 +246,75 @@ class TestAnR2CredentialWithoutBoto3IsADeadLane:
             "posts ship with no picture — silently, at full green: "
             + ", ".join(offenders)
         )
+
+
+class TestProducerToRepairSelection:
+    """The real producer must not create records the repair lane cannot see."""
+
+    def test_chart_without_spec_is_visible_as_no_specification(
+        self, tmp_path, monkeypatch, capsys,
+    ):
+        import sys
+
+        from engine.marketing.outbox import emit_from_content_plan, read_items
+        from scripts import marketing_media_backfill as backfill
+
+        _iter_missing = backfill._iter_missing
+
+        plan = {
+            "as_of": "2026-09-18",
+            "accounts": [{
+                "id": "flagship",
+                "queue": [{
+                    "id": "post-flagship-016",
+                    "type": "chart",
+                    "account": "flagship",
+                    "ticker": "CLH",
+                    "headline": "$CLH entry is 323.",
+                    "body": "A close above 323 activates the setup.",
+                    "chart_id": None,
+                    "slot": "D1-S16",
+                    "status": "drafted",
+                }],
+            }],
+            "featured_charts": [],
+        }
+        result = emit_from_content_plan(
+            plan, root=tmp_path,
+            cfg={"sentinel": {"max_posts_per_account_per_day": 8}},
+        )
+        assert result["emitted"] == 1
+
+        [item] = read_items(tmp_path)
+        assert item["media"] == []
+        assert item["source"]["chart_id"] is None
+        assert item["source"]["media_repair"] == {
+            "state": "no_specification",
+            "reason": "missing_chart_specification",
+            "repair_process": "content_studio",
+            "repairable": False,
+        }
+
+        selected = _iter_missing(
+            [item], as_of=None, max_age_days=None,
+            today=date(2026, 9, 18),
+        )
+        assert len(selected) == 1
+        selected_item, projection = selected[0]
+        assert selected_item["id"] == item["id"]
+        assert projection["repair_state"] == "no_specification"
+        assert projection["repair_reason"] == "missing_chart_specification"
+        assert projection["repair_process"] == "content_studio"
+        assert projection["repairable"] is False
+
+
+        monkeypatch.setattr(backfill, "_repo_root", lambda: tmp_path)
+        monkeypatch.setattr(sys, "argv", [
+            "marketing_media_backfill.py", "--dry-run",
+        ])
+        assert backfill.main() == 0
+        output = capsys.readouterr().out
+        assert "::warning title=marketing-media-no-specification::" in output
+        assert item["id"] in output
+        assert "missing_chart_specification" in output
+        assert "WOULD PUBLISH" not in output

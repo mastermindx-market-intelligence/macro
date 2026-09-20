@@ -92,3 +92,169 @@ def test_publish_upload_error_returns_none():
         assert publish_chart_png(b"\x89PNG", "marketing/charts/x/y.png", s3=_BoomS3()) is None
     finally:
         os.environ.pop("R2_BUCKET", None)
+
+
+class TestImmutablePublicAssetContract:
+    def test_content_addressed_key_prevents_same_id_overwrite(self):
+        from engine.marketing.media_publish import content_addressed_chart_key
+
+        first = content_addressed_chart_key("2026-09-20", "chart-001", b"\x89PNG-one")
+        same = content_addressed_chart_key("2026-09-20", "chart-001", b"\x89PNG-one")
+        second = content_addressed_chart_key("2026-09-20", "chart-001", b"\x89PNG-two")
+        assert first == same
+        assert first != second
+        assert first.startswith("marketing/charts/2026-09-20/chart-001-")
+        assert first.endswith(".png")
+
+    def test_content_addressed_key_binds_the_full_sha256(self):
+        import hashlib
+
+        from engine.marketing.media_publish import content_addressed_chart_key
+
+        payload = b"\x89PNG-full-digest-contract"
+        digest = hashlib.sha256(payload).hexdigest()
+        key = content_addressed_chart_key("2026-09-20", "chart-001", payload)
+        assert key == f"marketing/charts/2026-09-20/chart-001-{digest}.png"
+
+    @pytest.mark.parametrize(
+        ("status", "mime", "body", "reason"),
+        [
+            (403, "text/html", b"forbidden", "http_403"),
+            (200, "text/html", b"\x89PNG-expected", "wrong_mime"),
+            (200, "image/png", b"\x89PNG-other", "digest_mismatch"),
+        ],
+    )
+    def test_public_verifier_rejects_unpublishable_responses(
+        self, status, mime, body, reason,
+    ):
+        from engine.marketing.media_publish import verify_public_png
+
+        result = verify_public_png(
+            "https://pub.example/card.png", b"\x89PNG-expected",
+            fetcher=lambda _url, _timeout: (status, {"content-type": mime}, body),
+        )
+        assert result["state"] == "public_fetch_failure"
+        assert result["reason"] == reason
+        assert result["media_url"] is None
+
+    def test_public_verifier_proves_expected_bytes_mime_and_digest(self):
+        from engine.marketing.media_publish import verify_public_png
+
+        expected = b"\x89PNG-expected"
+        result = verify_public_png(
+            "https://pub.example/card.png", expected,
+            fetcher=lambda _url, _timeout: (
+                200, {"content-type": "image/png; charset=binary"}, expected,
+            ),
+        )
+        assert result["state"] == "complete"
+        assert result["media_url"] == "https://pub.example/card.png"
+        assert result["observed_sha256"] == result["expected_sha256"]
+
+    def test_ambiguous_public_timeout_does_not_trigger_a_replacement_upload(
+        self, monkeypatch,
+    ):
+        from engine.marketing.media_publish import publish_chart_png_result
+
+        monkeypatch.setenv("R2_BUCKET", "research")
+        puts = []
+
+        class _StubS3:
+            def put_object(self, **kwargs):
+                puts.append(kwargs)
+
+        def _timeout(_url, _timeout_s):
+            raise TimeoutError("public edge timed out")
+
+        result = publish_chart_png_result(
+            b"\x89PNG-expected",
+            "marketing/charts/2026-09-20/chart-001-deadbeef.png",
+            s3=_StubS3(), fetcher=_timeout,
+        )
+        assert result["media_repair"]["state"] == "public_fetch_failure"
+        assert result["media_repair"]["reason"] == "fetch_error"
+        assert puts == [], "a timeout is not proof that the immutable key is absent"
+
+    def test_absent_key_uploads_once_then_requires_public_byte_proof(
+        self, monkeypatch,
+    ):
+        from engine.marketing.media_publish import publish_chart_png_result
+
+        monkeypatch.setenv("R2_BUCKET", "research")
+        expected = b"\x89PNG-expected"
+        responses = iter([
+            (404, {"content-type": "text/plain"}, b"missing"),
+            (200, {"content-type": "image/png"}, expected),
+        ])
+        puts = []
+
+        class _StubS3:
+            def put_object(self, **kwargs):
+                puts.append(kwargs)
+
+        result = publish_chart_png_result(
+            expected,
+            "marketing/charts/2026-09-20/chart-001-deadbeef.png",
+            s3=_StubS3(), fetcher=lambda _url, _timeout: next(responses),
+        )
+        assert result["media_repair"]["state"] == "complete"
+        assert result["media_url"].startswith("https://")
+        assert result["uploaded"] is True
+        assert len(puts) == 1
+        assert puts[0]["Body"] == expected
+
+
+    def test_identical_rerun_reuses_verified_key_without_put(self, monkeypatch):
+        from engine.marketing.media_publish import publish_chart_png_result
+
+        monkeypatch.setenv("R2_BUCKET", "research")
+        expected = b"\x89PNG-expected"
+        puts = []
+
+        class _StubS3:
+            def put_object(self, **kwargs):
+                puts.append(kwargs)
+
+        result = publish_chart_png_result(
+            expected,
+            "marketing/charts/2026-09-20/chart-001-deadbeef.png",
+            s3=_StubS3(),
+            fetcher=lambda _url, _timeout: (
+                200, {"content-type": "image/png"}, expected,
+            ),
+        )
+        assert result["media_repair"]["state"] == "complete"
+        assert result["uploaded"] is False
+        assert puts == []
+
+    def test_publish_card_uses_the_shared_immutable_key(self, tmp_path, monkeypatch):
+        from engine.marketing import chart_render, media_publish
+
+        png = b"\x89PNG-card"
+        monkeypatch.setattr(chart_render, "rasterize_svg", lambda _svg, **_kw: png)
+        captured = {}
+
+        def _publish(payload, key, **_kwargs):
+            captured["payload"] = payload
+            captured["key"] = key
+            return {
+                "media_url": "https://pub.example/card.png",
+                "media_asset_key": key,
+                "media_sha256": __import__("hashlib").sha256(payload).hexdigest(),
+                "media_repair": {
+                    "state": "complete", "reason": "public_bytes_verified",
+                    "repair_process": "", "repairable": False,
+                },
+            }
+
+        monkeypatch.setattr(media_publish, "publish_chart_png", _publish)
+        out = media_publish.publish_card(
+            '<svg width="10" height="10">$CLH</svg>',
+            chart_id="chart-001", as_of="2026-09-20", root=tmp_path,
+        )
+        assert captured["payload"] == png
+        assert captured["key"] == media_publish.content_addressed_chart_key(
+            "2026-09-20", "chart-001", png,
+        )
+        assert out["media_asset_key"] == captured["key"]
+        assert out["media_repair"]["state"] == "complete"

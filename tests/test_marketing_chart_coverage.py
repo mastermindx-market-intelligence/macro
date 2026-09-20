@@ -190,6 +190,51 @@ def test_a_post_with_no_ticker_stays_text_only():
 # 2. Cause two: the live gate picks the VARIANT, it does not veto the chart
 # ---------------------------------------------------------------------------
 
+def test_producer_names_an_unavailable_chart_specification(tmp_path):
+    """A chart-dependent item with no trustworthy bars is not upload-pending."""
+    from engine.marketing.content_studio import content_plan
+
+    _, closes = _series()
+    plans = [_plan(t, entry=closes[-1], signal_date=_FRESH)
+             for t in ("PLTR", "SBUX", "MSFT", "EQT")]
+    cfg = {"desk_network": {"stage": "A", "accounts": [
+        {"id": "flagship", "kind": "branded", "beat": "b",
+         "voice": "authoritative desk"},
+    ]}}
+    plan = content_plan(cfg, plans, closes_loader=lambda _ticker: None,
+                        root=tmp_path)
+
+    blocked = [
+        q for row in plan["accounts"] for q in (row.get("queue") or [])
+        if str(q.get("slot") or "").startswith("D1-")
+        and q.get("ticker") and q.get("type") in _CHARTABLE
+        and not q.get("chart_id")
+    ]
+    assert blocked, "fixture produced no chart-dependent missing-spec items"
+    for item in blocked:
+        assert item["media_repair"] == {
+            "state": "no_specification",
+            "reason": "trusted_chart_specification_unavailable",
+            "repair_process": "content_studio",
+            "repairable": False,
+        }
+
+    from engine.marketing.outbox import emit_from_content_plan, read_items
+
+    emit_from_content_plan(
+        plan, root=tmp_path,
+        cfg={"sentinel": {"max_posts_per_account_per_day": 8}},
+    )
+    queued = {
+        str(row.get("source", {}).get("plan_post_id") or ""): row
+        for row in read_items(tmp_path)
+    }
+    preserved = [item for item in blocked if item["id"] in queued]
+    assert preserved, "producer items did not reach the real Outbox emitter"
+    for item in preserved:
+        assert queued[item["id"]]["source"]["media_repair"] == item["media_repair"]
+
+
 def test_stale_signal_still_gets_a_card_but_without_the_setup_marker():
     """A signal that fails the live gate is demoted to `watchlist` further down
     content_plan. It must keep a chart — a "watching, not triggered" post needs
