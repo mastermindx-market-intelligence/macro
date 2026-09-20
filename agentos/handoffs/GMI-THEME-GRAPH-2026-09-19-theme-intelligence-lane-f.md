@@ -290,3 +290,13 @@ PR #7526 head aaa69397ccce14fa26f5081fc71e69ee0fcd9ec7 / tree d7564da8053eb8f66e
 
 ### Package boundary
 Neither semantic PASS authorizes merge/deployment. Exact next integration dependency is one immutable A+C composition proving the shared CI registration against the actual Lane C test files and preserving all authority false. Lane B/E acceptance and deployed-browser/prospective proof remain separate.
+
+## 2026-09-20 continuation — current Lane A and A+C composition
+
+Lane A moved after the prior aaa69397 review and was re-pinned at PR #7526 head c98d079816dfe3dc3ae3d0192ce76a1bbefe43f9, tree cb643fd18eaa32b80ef869bd2cd02a6e4d1a92c4. Fresh exact-head execution returned 124 passed / 1 skipped / 1 deselected with Agent OS 0 errors. Evidence-family identity, owner clock truth, transition semantics, and RE-RATING thesis/entry separation pass. Formal semantic approval is GitHub review 5261936139. Protected-main movement after the candidate checkpoint is one path-disjoint audit file; hosted fences are green and CI was still in progress at this checkpoint.
+
+Lane C remains exact head fdd731f18a7634c57cdc83fc80cbe13811ec745e and has formal semantic approval 5261931678.
+
+A proof-only composition of those exact A+C heads produced conflict-free merge tree 83a75b67320c00a73f16b7b4f6e3f57be4882025. The environment refused a synthetic commit object and Lane F did not retry that effect. Read-only extracted-tree execution passed A semantics 125/0 with one repository-global deselection, C subsector 106/0, and C ThemeState/leadership/builder 55/0. The combined tree contains the three Lane C suites and Lane A existing-owner CI registration plus Foresight scope. This closes the A+C source/CI composition uncertainty as proof, not release.
+
+Lane B and Lane E still have dirty local worktrees but no pushed immutable branch/PR return. They remain NOT_YET_PROVEN and their active writer custody is preserved.
