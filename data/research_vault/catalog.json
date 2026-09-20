@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T21:15:45.654022+00:00",
-  "count": 2524,
+  "generated_at": "2026-09-20T21:45:45.140044+00:00",
+  "count": 2525,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1613,6 +1613,25 @@
         "BoE Hawkish Guidance: 3.75% hold signals Nov/Feb 2027 25bps hikes; energy-driven inflation extends tightening cycle.",
         "Fixed Income Positioning: Prioritize selective duration in high-quality medium-long bonds; avoid longest maturities due to fiscal risks and AI debt concerns.",
         "Brent Crude Momentum: Robust YTD +71.1% performance signals strong energy price momentum impacting portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nf6vhtcz8it-9ffa75",
+      "title": "Eurozone equities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:45Z",
+      "summary_points": [
+        "Earnings Growth Catalyst: Upgraded 2026-2027 Eurozone earnings forecast to 10-15% (vs prior), driven by manufacturing expansion and investment boom (AI/electrification/defense), offsetting near-term headwinds from energy disruptions/higher rates.",
+        "Critical Downside Risk Threshold: Energy disruption scenario targets EuroStoxx 50 at 4,700, representing a material valuation shock; primary risks include energy volatility, AI investment disappointment, and US-EU/China trade wars.",
+        "Valuation Gap Closure Catalyst: US/Asian investor diversification flows closing Europe’s valuation gap with US equities, supported by structural reforms (defense spending, EU savings union) and potential global policy shifts (rate hike reversal/fiscal stimulus)."
       ],
       "tags": [],
       "tickers": [],
