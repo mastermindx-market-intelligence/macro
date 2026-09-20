@@ -7,7 +7,7 @@
       "--mode",
       "enforce-added",
       "--diff-file",
-      "/tmp/alert-center-cb26-candidate.diff"
+      "/tmp/alert-risk-candidate.diff"
     ],
     "exit_code": 0,
     "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (18945 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 18945)\n"
@@ -29,7 +29,7 @@
       "--repo-root",
       "/Volumes/Mastermind/worktrees/alert-center-v2-rescue-20260919",
       "--diff-file",
-      "/tmp/alert-center-cb26-candidate.diff"
+      "/tmp/alert-risk-candidate.diff"
     ],
     "exit_code": 0,
     "output": ""
@@ -53,10 +53,7 @@
       "--base",
       "origin/main"
     ],
-    "exit_code": 0,
-    "output": "contract-delta: 0 introduced, 0 inherited (base 9a481ef520e3)\n",
-    "execution_tree": "4d4d725567f0ffbc41ab906dc3138d11d35d200d",
-    "execution_worktree": "detached sparse exact-tree worktree",
-    "base_commit": "9a481ef520e397853c9f5a8edd120cfff528ce16"
+    "exit_code": null,
+    "output": "PENDING exact committed evidence tree"
   }
 ]

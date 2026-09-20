@@ -1,15 +1,15 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v6",
+  "schema": "mastermind.alert_center.current_main_proof.v7",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T06:20:06Z",
+  "verified_at": "2026-09-20T06:45:00Z",
   "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
-  "macro_origin_main_observed": "b24bfa533a61b4a4c8dbf1305fcdc3811c490fcd",
-  "candidate_source_commit": "cb26efac05e85cd680229793f62db38869c38e89",
-  "current_merge_tree": "37a6b886dd966cc677d803c3dc9fd84e30a2cea2",
+  "macro_origin_main_observed": "83746deb2f3f4ce2de6ef4e683d66e9337087e38",
+  "candidate_source_commit": "a67fe15f7a31fa825061b268f3dc6fd4a9ce4e64",
+  "current_merge_tree": "3c41cf3c67cf2cb58d3d4ee29e4b9c58e6c5d38f",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
-    "passed": 158,
+    "passed": 162,
     "warnings": 5,
     "failures": 0
   },
@@ -27,10 +27,15 @@
     "commodity.price_shock",
     "vector.allocation_change",
     "altdata.convergence",
-    "rotation.rotation_emerging"
+    "rotation.rotation_emerging",
+    "commodity.risk_regime",
+    "forex.risk_regime",
+    "macro.gex_flip_cross",
+    "macro.hidden_fragility",
+    "macro.breadth_divergence"
   ],
   "browser": {
-    "interaction_checks": 11,
+    "interaction_checks": 12,
     "named_screenshots": 9,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
@@ -62,7 +67,7 @@
     "production_acceptance": false
   },
   "legacy_parity": {
-    "baseline_commit": "9a481ef520e397853c9f5a8edd120cfff528ce16",
+    "baseline_commit": "83746deb2f3f4ce2de6ef4e683d66e9337087e38",
     "fields_compared": 17,
     "differences": [],
     "payload_hash_equal": true
@@ -72,28 +77,29 @@
     "runtime_style": "pass",
     "visual_evidence_current_main": "pass",
     "diff_check": "pass",
-    "contract_delta": "pass: 0 introduced, 0 inherited; execution tree 4d4d725567f0; base 9a481ef520e3"
+    "contract_delta": "pending exact evidence commit"
   },
   "source_sha256": {
-    "engine/alert_center_view.py": "3fdeb00983100ea8cb5619d5427f9c5e86c15156ca89905ccddf80bae254434a",
+    "engine/alert_center_view.py": "719052639e1c2289a9a51746f373e9fa66d24b0797dca14bfe91dc06e51d9459",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
     "templates/alert_center.css": "2224812555f7f2f81a1957f8ed08f22fde2595c905e93067b8f522b2c63d8557",
     "templates/alert_center.js": "c229a2d139b57f0578fb8678ed2696c625fde201301927d9e4983025b9f18fdf",
-    "scripts/qa_alert_center_v2.py": "f9b64c901ad8d321decdf1d1b7b362ae5583537ebe3a68acddf8e82dec08175c"
+    "scripts/qa_alert_center_v2.py": "37497f9769c1cb97c6fc683679a9568f93caa8b379cdaaa87a8b2f09011431ba"
   },
   "evidence_sha256": {
-    "browser-proof.json": "cd974786615bb528c1ecd160de0728eb10a8e025772cbd66be1749c5bf2da9c5",
+    "browser-proof.json": "c0e514201dd0ae9ed007e9a047890e9d0994e0ecd4e2c3b09b4209c50f889183",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "84d1fa93547b23aae77903e8bf64c2bce64a11575a6b0dc7bccc2e2d10e05af7",
-    "manifest.json": "1f71f7bf464bcfe8286e83e2a8a04aef1ddc06ee1166f2aaa652688fd2929d63",
-    "smells.json": "de6439c544e859f64b5c0eba521c94d2f2f0d7206686fcd10723e689e4cdef03",
-    "guard-results.json": "2b684e967177da518957d76aff416e929bd5060bbe773f1fba431ecb5921c65c",
-    "legacy-parity.json": "b7382b86031a19a6559007e19143ddc9e7024342b7211b66debba38d543fa776",
-    "targeted-tests.log": "a679acfff54c519c91b1a181cb741c403bf408436fc49fd1ee3460bf6ce49d10",
+    "input-manifest.json": "d197bb14702cf0cc10dd1ce69e3efe4c8c1ea23ab3afbbfc6f2e8158f4bb04c8",
+    "manifest.json": "52d10f5e85fe07806db26cfd89855e21ac4d15077cb3e7421c347e0df26b967d",
+    "smells.json": "92d883916f1392954f551790b76b0ccb529b1425b078977d07b565df7c71a7a5",
+    "guard-results.json": "2c6bd2f218017370cbfb166fbc9eb98f87b98c41a0ae0abbdf70fbb52265b374",
+    "legacy-parity.json": "8f2c322c586333a0fe1f012248b4b56e3812effaba56458948783700fa5a03c8",
+    "targeted-tests.log": "9bacbe20c8dca606e58e424f6b05b69b3cfef207178511fb1111a9354d275c5a",
     "production-baseline-20260920.json": "d2c149d9156ec64e70ab6cb1e15623b3bc35e4b07f79e0506239f0261d748ee1",
     "production-baseline-dark-en.png": "3d15b8d8bacb3e9f2e0ce8dbb8aee76d8803b7accb47e9fb01884f78fabe66d9"
   },
+  "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
     "file_key": "r1hSkfDg4vGzjWRySgrHE1",
     "modified_this_turn": false,
@@ -108,7 +114,5 @@
     "production-route visibility",
     "customer acceptance",
     "trading edge"
-  ],
-  "evidence_commit": "4d4d725567f0ffbc41ab906dc3138d11d35d200d",
-  "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json"
+  ]
 }

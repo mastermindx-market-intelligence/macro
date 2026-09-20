@@ -1,7 +1,7 @@
-Alert Center source-bound action brief battery
-source_commit=cb26efac05e85cd680229793f62db38869c38e89
-result=158 passed, 5 warnings, 0 failures
-browser=11/11 checks passed; 9 screenshots; 0 page errors
+Alert Center priority-risk source-bound battery
+source_commit=a67fe15f7a31fa825061b268f3dc6fd4a9ce4e64
+result=162 passed, 5 warnings, 0 failures
+browser=12/12 checks passed; 9 screenshots; 0 page errors
 adversarial=14/14 checks passed; 10 screenshots
 capture=24/24 states: rest + real focus + real hover; 0 console errors; 0 failed responses
 legacy_parity=17 fields; zero differences; payload hashes equal
