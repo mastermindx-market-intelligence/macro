@@ -2,7 +2,7 @@
 workstream: "WS:EARNINGS-EVENT-INTELLIGENCE-COMPILER"
 session: opus/tfg1-r2-transcript-format-hardening-20260920
 model: opus
-ended_because: development_gate_falsifier
+ended_because: blocked
 mission: >
   Implement the frozen TFG-1 R2 source-native separator/proxy/role law generically, prove it
   against the ratified 16-call development truth without weakening source-supported identity,
