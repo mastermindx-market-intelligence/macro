@@ -752,6 +752,6 @@
       },
       "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_rec3_held_for_sol.json (33 row/cell pairs; proposed states unchanged from the _b block)"
     },
-    "rows_note": "merges recorded on the 3 written rows - exactly the PRs named in the 5 appended cells: macro #7127 52ecfd96 (covenant headroom panel; MO-DELTA-021), #7132 a9b87e9a (account routes; MO-PAID-078) and #7451 e338508d (W8-1 cash runway; MO-PAID-059); MO-DELTA-021 and MO-PAID-059 are rendered-but-gated behind the render lane red since 09-13 and stay PARTIAL under Sol's pin; every producer stays unproven until a signed-in readback"
+    "rows_note": "merges recorded on the 3 written rows - exactly the PRs named in the 5 appended cells: macro #7127 52ecfd96 (covenant headroom panel; MO-DELTA-021), #7132 e1e8de31 (account routes; MO-PAID-078) and #7451 e338508d (W8-1 cash runway; MO-PAID-059); MO-DELTA-021 and MO-PAID-059 are rendered-but-gated behind the render lane red since 09-13 and stay PARTIAL under Sol's pin; every producer stays unproven until a signed-in readback"
   }
 }
