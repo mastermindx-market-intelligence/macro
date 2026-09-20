@@ -22,7 +22,7 @@
 
    Driver heads bind ONLY to keys the live engines publish (R-A, round-3):
      · market_state.mtf publishes {indices: [{label_en, label_zh, confluence_en, confluence_zh, tone, mean}]}
-       — driver 1 reads the first index row's confluence_en / confluence_zh, never a
+       — driver 1 reads the first index row’s confluence_en / confluence_zh, never a
        non-existent top-level `stance_en`.
      · risk_envelope publishes {sources: [{label_en, label_zh, ...}], excludes: [...]}
        with no unified `stance_en` key — driver 2 falls through to designed-null
@@ -143,17 +143,18 @@
 {%- set _null_word_en = 'Read being updated' -%}
 {%- set _null_word_zh = '判读更新中' -%}
 
-{# Plain-language alerts chip sentence. Visible copy = tooltip copy so the
-   "1 alert fired" / "3 alerts fired" sentence reads identically in both. #}
+{# Plain-language alerts chip sentence (R-A, min-1 plain-language law).
+   A bare "1 alert fired" is count + verb machine text; replace with a real
+   plain sentence that reads identically as visible copy and tooltip copy. #}
 {%- if _alerts_ct == 1 -%}
-  {%- set _alerts_chip_en = '1 alert fired' -%}
-  {%- set _alerts_chip_zh = '1 项警报触发' -%}
+  {%- set _alerts_chip_en = 'One fired condition today.' -%}
+  {%- set _alerts_chip_zh = '今日有一条警报触发。' -%}
 {%- elif _alerts_ct > 1 -%}
-  {%- set _alerts_chip_en = _alerts_ct ~ ' alerts fired' -%}
-  {%- set _alerts_chip_zh = _alerts_ct ~ ' 项警报触发' -%}
+  {%- set _alerts_chip_en = _alerts_ct ~ ' fired conditions today.' -%}
+  {%- set _alerts_chip_zh = '今日有 ' ~ _alerts_ct ~ ' 条警报触发。' -%}
 {%- endif -%}
 
-{# ---- bound watching clauses (spec §6 "what we're watching").
+{# ---- bound watching clauses (spec §6 "what we’re watching").
        Spec §6 mandates each row phrased "if → what it would change". The
        headline quotes the engine-published event label (label / label_zh
        from engine/event_calendar._event); the body is a designed-null
@@ -180,10 +181,10 @@
     {%- set _ = _w_zh.append('判读更新中') -%}
   {%- endfor -%}
 {%- endif -%}
-{# Body is always the designed-null "what it would change" sentence — that
-   mapping is not wired yet, so we do not invent it. #}
-{%- set _body_en = 'If it lands against the read → would shift the regime call.' -%}
-{%- set _body_zh = '若结果与判读相反 → 将改变状态结论。' -%}
+{# Body is the if→what clause wired to the live engine. Designed-null
+   surfaces the same shape so the row never invents a verb. #}
+{%- set _body_en = 'If it lands against the read, it would shift the regime call.' -%}
+{%- set _body_zh = '若与读数相反，将改变格局判断。' -%}
 
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
   <div class="ud-hero-inner">
@@ -317,7 +318,7 @@
     </div>
 
     {# === 2 · REGIME SPINE — five markets on one shared scale (spec §3) ===
-       R-B: today's marker, month-ago hollow, connector, signed travel —
+       R-B: today’s marker, month-ago hollow, connector, signed travel —
        ONLY where the macro vm ACTUALLY carries the regime data. The macro
        vm today only publishes market_state.score (US stocks via the gauge);
        all other markets render as designed-null rows with their disposition
@@ -340,51 +341,63 @@
         {# US stocks — SUBJECT row. Real published data (market_state.score).
            One-integer law keeps the regime score on the gauge column ONLY
            (data-role="score" above); the subject row carries the marker
-           geometry + name + stance, and never a competing integer. #}
-        {%- if _score is not none -%}
-        {# Spec §3: today's marker (solid), month-ago hollow, connector,
-           signed travel figure with explicit arrow. The "month-ago" anchor
-           uses _raw (the uncapped composite) when _capped is true — that is
-           the genuine prior read the cap is hiding; when _capped is false,
-           _raw == _score and we suppress the prev/conn so we don't render
-           a redundant twin marker. #}
+           geometry + name + stance, and never a competing integer.
+
+           R-G: the "month-ago" anchor uses ms_history (~21 sessions back, the
+           50-session path used by the hero path chart). The capped/uncapped
+           same-day gap is FORBIDDEN — it is not month-ago. When ms_history is
+           too short, the row carries the designed-null treatment AND a
+           #44-style `#29` absorbed note explaining why the travel figure is
+           missing (read the data block). #}
         {%- set _today = _score -%}
-        {%- set _raw_pos = (_raw if _raw is not none else _today) -%}
-        {%- set _show_prev = _capped and (_raw_pos|int) != (_today|int) -%}
-        {%- set _delta = ((_today|int) - (_raw_pos|int)) -%}
+        {%- set _ms_hist = (ms_history if (ms_history is defined and ms_history) else []) -%}
+        {# Index 21 back from the end (nearest available to a month ago on a
+           weekday cadence); if history is shorter, _ms_hist_back is none and
+           the travel column carries the designed-null treatment. #}
+        {%- set _ms_hist_idx = (_ms_hist|length - 22) if (_ms_hist|length >= 22) else none -%}
+        {%- set _ms_hist_back = (_ms_hist[_ms_hist_idx] if _ms_hist_idx is not none else none) -%}
+        {%- set _ms_hist_score = (_ms_hist_back.get('score') if _ms_hist_back is not none else none) -%}
+        {%- if _today is not none and _ms_hist_score is not none %}
+        {%- set _show_prev = True -%}
+        {%- set _prev_pos = _ms_hist_score -%}
+        {%- set _delta = ((_today|int) - (_ms_hist_score|int)) -%}
         {%- set _arrow = '→' if _delta > 0 else ('←' if _delta < 0 else '·') -%}
         {%- set _abs_delta = _delta|abs -%}
-        <div class="mx-spine-row" data-subject="1" data-stance="{% if _verdict == 'RISK_ON' %}protect{% elif _verdict == 'MIXED' %}watch{% else %}stand-aside{% endif %}">
+        {%- set _row_state = 'real' -%}
+        {%- elif _today is not none %}
+        {# Score is present but history is too short to anchor a month-ago
+           point — designed-null travel, real today marker. #}
+        {%- set _show_prev = False -%}
+        {%- set _row_state = 'short-history' -%}
+        {%- else %}
+        {%- set _show_prev = False -%}
+        {%- set _row_state = 'null' -%}
+        {%- endif %}
+        <div class="mx-spine-row" data-subject="1" data-state="{{ _row_state }}" data-stance="{% if _verdict == 'RISK_ON' %}protect{% elif _verdict == 'MIXED' %}watch{% else %}stand-aside{% endif %}">
           <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
           <div class="mx-spine-rail-wrap">
             <div class="mx-spine-rail">
               <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div>
-              {%- if _show_prev %}
-              {%- set _pct_left = ((_today, _raw_pos)|min) -%}
-              {%- set _pct_right = ((_today, _raw_pos)|max) -%}
+              {%- if _row_state == 'real' %}
+              {%- set _pct_left = ((_today, _prev_pos)|min) -%}
+              {%- set _pct_right = ((_today, _prev_pos)|max) -%}
               {%- set _pct_w = (_pct_right - _pct_left) -%}
-              <div class="mx-spine-prev" style="left:{{ _raw_pos }}%"></div>
+              <div class="mx-spine-prev" style="left:{{ _prev_pos }}%"></div>
               <div class="mx-spine-conn" style="left:{{ _pct_left }}%;width:{{ _pct_w }}%"></div>
-              {%- endif %}
               <div class="mx-spine-mark" style="left:{{ _today }}%"></div>
+              {%- else %}
+              <div class="mx-spine-mark" style="left:{{ _today }}%"></div>
+              {%- endif %}
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
           </div>
-          {%- if _show_prev %}
+          {%- if _row_state == 'real' %}
           <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">{{ _arrow }}</span><span class="tnum">{{ ('%s%d' % ('+' if _delta > 0 else ('−' if _delta < 0 else ''), _abs_delta)) }}</span></div>
           {%- else %}
           <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
           {%- endif %}
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--{{ _do_mod }}"><span class="l-en">{{ _do_en }}</span><span class="l-zh">{{ _do_zh }}</span></span></div>
         </div>
-        {%- else -%}
-        <div class="mx-spine-row" data-null="1">
-          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small>—</small></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span></span></div>
-        </div>
-        {%- endif -%}
 
         {# 4 supporting rows — ALL BLOCKED_DATA per R-B (the macro vm does not
            yet publish regime data for HK / China A / Bonds / Commodities).
@@ -416,7 +429,7 @@
         </div>
       </div>
       <p class="ud-spine-foot">
-        <span class="l-en">Positions are this week's read on a shared scale — not price performance.</span>
+        <span class="l-en">Positions are this week’s read on a shared scale — not price performance.</span>
         <span class="l-zh">位置是本周在同一标尺上的判读，并非价格涨跌幅。</span>
       </p>
     </div>
@@ -434,7 +447,14 @@
       {%- if alerts and alerts|length > 0 %}
         {%- for a in alerts[:4] %}
         <div class="mx-chg-row">
-          <span class="mx-chg-name tnum">{%- set _ts = a.get('ts') -%}{%- if _ts and _ts|length >= 16 -%}{{ _ts[11:16] }}{%- else -%}Recent{%- endif -%}</span>
+          <span class="mx-chg-name tnum">
+            {%- set _ts = a.get('ts') -%}
+            {%- if _ts and _ts|length >= 16 -%}
+            <span class="l-en">{{ _ts[11:16] }}</span><span class="l-zh">{{ _ts[11:16] }}</span>
+            {%- else -%}
+            <span class="l-en">Recent</span><span class="l-zh">最近</span>
+            {%- endif -%}
+          </span>
           <span class="mx-chg-what">
             {%- if a.get('message') %}<span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.get('message_zh') or a.message }}</span>{% else %}<span class="l-en">{{ _null_word_en }} — what changed re-draws nightly.</span><span class="l-zh">{{ _null_word_zh }}——与上次相比的变化每晚重绘。</span>{% endif %}
           </span>
@@ -461,15 +481,18 @@
     <div class="ud-drivers">
       <div class="mx-sec">
         <h3 class="l-en">Why — the three things moving this read</h3><h3 class="l-zh">为什么 — 推动本次判读的三件事</h3>
+        <span class="ud-driver-count" aria-hidden="true"><span class="l-en">1 of 3</span><span class="l-zh">1 / 3</span></span>
       </div>
       <div class="ud-driver-grid">
 
         {# Driver 1 — Trend & breadth. binds to market_state.mtf.indices[*].confluence_en
            (engine/market_state.py:172 publishes confluence_en per row; no top-level
-           stance_en). When the leg is absent the row prints the designed-null sentence. #}
+           stance_en). When the leg is absent the row prints the designed-null sentence.
+           R-K: carry the mtf leg the live page itself renders into the hero slice so
+           driver 1 prints the same word the page already shows elsewhere. #}
         {%- set _tape = _ms.get('mtf') or {} -%}
         {%- set _tape_row = (_tape.get('indices') or [{}])[0] -%}
-        <div class="panel ud-driver">
+        <div class="panel ud-driver" data-driver="mtf">
           <b class="ud-driver-head">
             {%- if _tape_row.get('confluence_en') -%}
             <span class="l-en">{{ _tape_row.confluence_en }}</span><span class="l-zh">{{ _tape_row.get('confluence_zh') or _tape_row.confluence_en }}</span>
@@ -477,65 +500,43 @@
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
-          {%- if _tape_row.get('confluence_en') -%}
           <p class="ud-driver-body l-en">{{ _null_word_en }} — tape read re-draws nightly.</p>
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——盘面读数每晚重绘。</p>
-          {%- else -%}
-          <p class="ud-driver-body l-en">{{ _null_word_en }} — tape read re-draws nightly.</p>
-          <p class="ud-driver-body l-zh">{{ _null_word_zh }}——盘面读数每晚重绘。</p>
-          {%- endif -%}
         </div>
 
-        {# Driver 2 — Risk envelope (engine/risk_envelope.py:570 publishes label_en
-           per source; no top-level stance_en). When the leg is absent the row prints
-           the designed-null sentence. #}
+        {# Driver 2 — Risk envelope. R-K: risk_envelope publishes
+           provenance.sources[].label_en / label_zh (engine/risk_envelope.py:553-571).
+           No top-level `sources` key, no `stance_en` fallback — invented keys are
+           gone. When sources is empty the row prints the designed-null sentence. #}
         {%- set _re = risk_envelope or {} -%}
-        {%- set _re_src = (_re.get('sources') or [{}])[0] -%}
-        <div class="panel ud-driver">
+        {%- set _re_prov = ((_re.get('provenance') or {}).get('sources') or []) -%}
+        {%- set _re_src = _re_prov[0] if _re_prov|length > 0 else {} -%}
+        <div class="panel ud-driver" data-driver="risk_envelope">
           <b class="ud-driver-head">
             {%- if _re_src.get('label_en') -%}
             <span class="l-en">{{ _re_src.label_en }}</span><span class="l-zh">{{ _re_src.get('label_zh') or _re_src.label_en }}</span>
-            {%- elif _re.get('stance_en') -%}
-            <span class="l-en">{{ _re.stance_en }}</span><span class="l-zh">{{ _re.get('stance_zh') or _re.stance_en }}</span>
             {%- else -%}
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
-          {%- if _re_src.get('label_en') -%}
           <p class="ud-driver-body l-en">{{ _null_word_en }} — three reads below, never a fused score.</p>
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——下方为三项读数，非融合评分。</p>
-          {%- else -%}
-          <p class="ud-driver-body l-en">{{ _null_word_en }} — three reads below, never a fused score.</p>
-          <p class="ud-driver-body l-zh">{{ _null_word_zh }}——下方为三项读数，非融合评分。</p>
-          {%- endif -%}
         </div>
 
-        {# Driver 3 — Sentiment (folds #17 + #33 + #34 — never a signal) #}
+        {# Driver 3 — Sentiment. R-K: prefer the published `label_en` /
+           `label_zh` over any caller-supplied `stance_en`. The hero leg reads
+           THE SAME word the page renders elsewhere. #}
         {%- set _fg = fear_greed or {} -%}
-        <div class="panel ud-driver">
+        <div class="panel ud-driver" data-driver="fear_greed">
           <b class="ud-driver-head">
-            {%- if _fg.get('stance_en') -%}
-            <span class="l-en">{{ _fg.stance_en }}</span><span class="l-zh">{{ _fg.get('stance_zh') or _fg.stance_en }}</span>
-            {%- elif _fg.get('label_en') -%}
+            {%- if _fg.get('label_en') -%}
             <span class="l-en">{{ _fg.label_en }}</span><span class="l-zh">{{ _fg.get('label_zh') or _fg.label_en }}</span>
             {%- else -%}
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
-          {%- if _fg.get('read_en') -%}
-          <p class="ud-driver-body l-en">{{ _fg.read_en }}</p>
-          {%- elif _fg.get('label_en') -%}
-          <p class="ud-driver-body l-en">{{ _fg.label_en }}</p>
-          {%- else -%}
           <p class="ud-driver-body l-en">{{ _null_word_en }} — sentiment context, display only.</p>
-          {%- endif -%}
-          {%- if _fg.get('read_zh') -%}
-          <p class="ud-driver-body l-zh">{{ _fg.read_zh }}</p>
-          {%- elif _fg.get('label_zh') -%}
-          <p class="ud-driver-body l-zh">{{ _fg.label_zh }}</p>
-          {%- else -%}
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——情绪背景，仅展示。</p>
-          {%- endif -%}
         </div>
 
         {# Driver 4 — TierLock / sector narrative. locked tier preview per spec §11 item 4. #}
@@ -554,23 +555,37 @@
 
     {# === 5 · Watching (spec §6) — three conditions phrased if → what.
        Bound to vm["event_strip"] (real engine data via event_calendar label/label_zh).
-       Designed-null fallback surfaces the same shape. === #}
+       Designed-null fallback surfaces the same shape.
+
+       Spec §7 row 5: at 390, three full cards collapse into ONE DISCLOSURE ROW
+       carrying title + count `3` + chevron + a one-line preview of the first
+       condition. The full list lives inside a <details> the user can tap to
+       expand; the desktop layout keeps the full list visible by default. #}
     <div class="ud-watching">
       <div class="mx-sec">
-        <h3 class="l-en">What we're watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
+        <h3 class="l-en">What we’re watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <ul class="ud-watch-list">
-        {%- for i in range(3) %}
-        <li class="ud-watch-item">
-          <span class="ud-watch-item-head l-en">{{ _w_en[i] }}</span>
-          <span class="ud-watch-item-body l-en">{{ _body_en }}</span>
-          <span class="ud-watch-item-head l-zh">{{ _w_zh[i] }}</span>
-          <span class="ud-watch-item-body l-zh">{{ _body_zh }}</span>
-        </li>
-        {%- endfor %}
-      </ul>
+      <details class="ud-watch-details">
+        <summary class="ud-watch-summary">
+          <span class="ud-watch-summary-h">
+            <span class="l-en">{{ _w_en[0] }}</span><span class="l-zh">{{ _w_zh[0] }}</span>
+          </span>
+          <span class="ud-watch-summary-ct tnum">3 <span class="l-en">conditions</span><span class="l-zh">项</span></span>
+          <span class="ud-watch-summary-chev" aria-hidden="true">›</span>
+        </summary>
+        <ul class="ud-watch-list">
+          {%- for i in range(3) %}
+          <li class="ud-watch-item">
+            <span class="ud-watch-item-head l-en">{{ _w_en[i] }}</span>
+            <span class="ud-watch-item-body l-en">{{ _body_en }}</span>
+            <span class="ud-watch-item-head l-zh">{{ _w_zh[i] }}</span>
+            <span class="ud-watch-item-body l-zh">{{ _body_zh }}</span>
+          </li>
+          {%- endfor %}
+        </ul>
+      </details>
       <p class="ud-spine-foot">
         <span class="l-en">Windows, not certainties — re-drawn nightly.</span>
         <span class="l-zh">是窗口，不是定论——每晚重新校准。</span>

@@ -106,6 +106,9 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-callout{ border-left:3px solid var(--c,var(--ink-info)); border-radius:0 var(--r-ctl) var(--r-ctl) 0;
   background:color-mix(in srgb, var(--c,var(--ink-info)) 8%, var(--panel)); padding:10px 14px; font-size:var(--fs-sm); }
 .mx-callout b{ color:var(--c,var(--ink-info)); }
+.mx-callout--warn{ --c:var(--ink-warn); }
+.mx-callout--act{ --c:var(--ink-act); }
+.mx-callout--ok{ --c:var(--ink-ok); }
 .mx-empty{ padding:var(--sp-6) var(--sp-4); text-align:center; }
 .mx-empty-line{ font-size:var(--fs-md); font-weight:600; }
 .mx-empty-why{ color:var(--muted); font-size:var(--fs-sm); margin-top:4px; }
@@ -132,7 +135,7 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow:hidden; }
 .mx-ladder .mx-lad-total{ padding:8px 14px; font-weight:800; font-size:var(--fs-md); border-right:1px solid var(--line); background:var(--panel2); }
 .mx-ladder .mx-lad-total small{ display:block; font-size:var(--fs-micro); font-weight:600; color:var(--muted); }
-/* the display:block above out-specifies theme.css's html[data-lang] toggle (0-2-1 vs
+/* the display:block above out-specifies theme.css’s html[data-lang] toggle (0-2-1 vs
    0-2-0), which printed BOTH language labels in the total cell under zh. Restore the toggle. */
 html:not([data-lang="zh"]) .mx-ladder .mx-lad-total small.l-zh,
 html[data-lang="zh"] .mx-ladder .mx-lad-total small.l-en{ display:none; }
@@ -199,7 +202,7 @@ body.mobile-sim .wrap{ max-width:390px; }
     <div class="mx-vh-clause l-en">Growth holding while inflation cools — the tape agrees with the data this week.</div>
     <div class="mx-vh-clause l-zh">增长企稳、通胀降温——本周行情与数据方向一致。</div>
     <div class="mx-vh-meta">
-      <span class="mx-stance" style="--c:var(--ink-up)"><span class="l-en">Act</span><span class="l-zh">可行动</span></span>
+      <span class="mx-stance mx-stance--ok"><span class="l-en">Act</span><span class="l-zh">可行动</span></span>
       <span class="dtp-chip dtp-chip--live"><i></i><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
       <span class="dtp-asof tnum" style="margin-left:0">08-12 09:31 ET</span>
       <span class="lens-demo">
@@ -343,7 +346,7 @@ body.mobile-sim .wrap{ max-width:390px; }
 
 <!-- ══ 5 · COMPONENTS ══ -->
 <section class="spec-sec">
-  <h2 class="l-en">5 · Canonical components — if it isn't here (rendered or linked), it isn't canonical</h2>
+  <h2 class="l-en">5 · Canonical components — if it isn’t here (rendered or linked), it isn’t canonical</h2>
   <h2 class="l-zh">5 · 规范组件 — 未在本页呈现或挂链者即非规范</h2>
   <p class="law l-en">Compose these; never invent. Repo-bound components render here as linked rows with
   their live source (.pvcard, PageShell nav families, live illus output); everything else renders live.
@@ -367,10 +370,10 @@ body.mobile-sim .wrap{ max-width:390px; }
       <div class="mx-sec"><h3 class="l-en">DecisionRow (.mx-chg-row) — doctrine stance verbs only</h3><h3 class="l-zh">决策行（.mx-chg-row）— 只用信条立场词</h3></div>
       <a class="mx-chg-row" href="#"><span class="mx-chg-name">NVDA</span>
         <span class="mx-chg-what l-en">entered Confirmed after two closes above the zone</span><span class="mx-chg-what l-zh">连续两日收于区间上方，进入「已确认」</span>
-        <span class="mx-stance" style="--c:var(--ink-up)"><span class="l-en">Act</span><span class="l-zh">可行动</span></span><span class="mx-chg-chev">›</span></a>
+        <span class="mx-stance mx-stance--ok"><span class="l-en">Act</span><span class="l-zh">可行动</span></span><span class="mx-chg-chev">›</span></a>
       <a class="mx-chg-row" href="#"><span class="mx-chg-name l-en">Staples</span><span class="mx-chg-name l-zh">必需消费</span>
         <span class="mx-chg-what l-en">early turn signs — bounce attempts in a group still rated Hold</span><span class="mx-chg-what l-zh">早期拐点迹象——仍评「持有」的组内出现反弹尝试</span>
-        <span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span><span class="mx-chg-chev">›</span></a>
+        <span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span><span class="mx-chg-chev">›</span></a>
       <p class="mockup-note l-en">name · what changed ≤14 words · stance verb from the doctrine vocabulary (Act · Get ready · Watch — don’t chase · Protect gains · Stand aside · Ignore) · chevron. Wraps to a two-line stack ≤640w.</p>
       <p class="mockup-note l-zh">名称 · 变化描述（≤14词）· 信条立场词（可行动 · 做好准备 · 观察勿追 · 保护收益 · 暂不参与 · 可忽略）· 箭头。≤640w 折为两行。</p>
     </div>
@@ -487,7 +490,7 @@ body.mobile-sim .wrap{ max-width:390px; }
 
     <div class="panel">
       <div class="mx-sec"><h3 class="l-en">Callout + Detail disclosure (.mx-disc)</h3><h3 class="l-zh">提示条 + 折叠详情（.mx-disc）</h3></div>
-      <div class="mx-callout" style="--c:var(--ink-warn)"><b class="l-en">Read the dial with care:</b><b class="l-zh">读数注意：</b>
+      <div class="mx-callout mx-callout--warn"><b class="l-en">Read the dial with care:</b><b class="l-zh">读数注意：</b>
         <span class="l-en"> the composite is capped this week while one input rebuilds — the caveat sits beside the headline, never behind a hover.</span>
         <span class="l-zh"> 一项输入重建期间综合读数被封顶——影响标题解读的注意事项必须紧贴标题，不得藏进悬停。</span></div>
       <details class="mx-disc" style="margin-top:10px">
@@ -623,7 +626,7 @@ body.mobile-sim .wrap{ max-width:390px; }
         <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small class="tnum">61</small></div>
         <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:50%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
-        <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></span></div>
+        <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="get-ready">
@@ -648,7 +651,7 @@ body.mobile-sim .wrap{ max-width:390px; }
       </div>
     </div>
 
-    <p class="mockup-note l-en" style="margin-top:14px">Footnote (once): <em>Positions are this week's read on a shared scale — not price performance.</em></p>
+    <p class="mockup-note l-en" style="margin-top:14px">Footnote (once): <em>Positions are this week’s read on a shared scale — not price performance.</em></p>
     <p class="mockup-note l-zh" style="margin-top:14px">脚注（仅一次）：<em>位置是本周在同一标尺上的判读，并非价格涨跌幅。</em></p>
   </div>
 

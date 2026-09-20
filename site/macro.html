@@ -3359,6 +3359,8 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
 
 
 
+
+
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
   <div class="ud-hero-inner">
 
@@ -3391,16 +3393,16 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
           <span class="mx-stance mx-stance--warn">
             <span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span>
           </span>
-          <span class="ud-fired-chip" data-tip-en="1 alert fired" data-tip-zh="1 项警报触发">
-            <span class="l-en">1 alert fired</span><span class="l-zh">1 项警报触发</span>
+          <span class="ud-fired-chip" data-tip-en="3 fired conditions today." data-tip-zh="今日有 3 条警报触发。">
+            <span class="l-en">3 fired conditions today.</span><span class="l-zh">今日有 3 条警报触发。</span>
           </span>
         </div>
 
         
         <div class="ud-callout mx-callout">
           <b class="l-en">Read the dial with care:</b><b class="l-zh">读数注意：</b>
-          <span class="l-en"> the composite is capped this week while one input rebuilds — see the dial on the right.</span>
-          <span class="l-zh">本周综合读数封顶——一项输入正在重建，请查看右侧仪表。</span>
+          <span class="l-en"> the dial is the measured blend; one input may rebuild tomorrow — check the as-of stamp.</span>
+          <span class="l-zh">仪表读数为测量综合——某项输入次日可能重建，请核对时间戳。</span>
         </div>
       </div>
 
@@ -3438,11 +3440,6 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
                 class="ud-arc-track" stroke-width="6" stroke-linecap="round" opacity=".55"/><path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
                 class="ud-arc-stroke" stroke-width="6" stroke-linecap="round"
                 stroke-dasharray="172.47 999"/>
-          <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
-                class="ud-arc-stroke" stroke-width="6" stroke-linecap="round"
-                stroke-dasharray="67.86 999"
-                stroke-dashoffset="-172.47"
-                opacity=".26"/>
         </svg>
       </div>
     </div>
@@ -3463,19 +3460,22 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
           <span><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></span>
         </div>
 
-        <div class="mx-spine-row" data-subject="1" data-stance="protect">
+        
+        <div class="mx-spine-row" data-subject="1" data-state="real" data-stance="protect">
           <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
           <div class="mx-spine-rail-wrap">
             <div class="mx-spine-rail">
-              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:85%"></div>
-              <div class="mx-spine-conn" style="left:61%;width:24%"></div>
+              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:76%"></div>
+              <div class="mx-spine-conn" style="left:61%;width:15%"></div>
               <div class="mx-spine-mark" style="left:61%"></div>
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
           </div>
-          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">←</span><span class="tnum">−24</span></div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">←</span><span class="tnum">−15</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
         </div>
+
+        
         <div class="mx-spine-row" data-null="1" data-blocked-feed="hk_regime">
           <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
@@ -3502,7 +3502,7 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
         </div>
       </div>
       <p class="ud-spine-foot">
-        <span class="l-en">Positions are this week's read on a shared scale — not price performance.</span>
+        <span class="l-en">Positions are this week’s read on a shared scale — not price performance.</span>
         <span class="l-zh">位置是本周在同一标尺上的判读，并非价格涨跌幅。</span>
       </p>
     </div>
@@ -3515,8 +3515,26 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
         <small class="mx-asof l-zh">每行对应警报日志中的一次触发。</small>
       </div>
         <div class="mx-chg-row">
-          <span class="mx-chg-name tnum">15:30</span>
-          <span class="mx-chg-what"><span class="l-en">Breadth narrowed again — fewer than half of big US stocks are above their 50-day line.</span><span class="l-zh">广度再次收窄——不到一半的大盘股位于 50 日均线之上。</span>
+          <span class="mx-chg-name tnum"><span class="l-en">Recent</span><span class="l-zh">最近</span></span>
+          <span class="mx-chg-what"><span class="l-en">GEX: net GEX changed sign (net +5bn, spot vs flip +0.2%)</span><span class="l-zh">GEX：净 GEX 转变方向（净 +5bn，现价相对翻转点 +0.2%）</span>
+          </span>
+          <span class="mx-stance mx-stance--warn">
+            <span class="l-en">Watch</span><span class="l-zh">观察</span>
+          </span>
+          <span class="mx-chg-chev">›</span>
+        </div>
+        <div class="mx-chg-row">
+          <span class="mx-chg-name tnum"><span class="l-en">Recent</span><span class="l-zh">最近</span></span>
+          <span class="mx-chg-what"><span class="l-en">Complacency watch: calm tape starting to mask weakening internals</span><span class="l-zh">自满预警：平静走势开始掩盖走弱的内部结构</span>
+          </span>
+          <span class="mx-stance mx-stance--warn">
+            <span class="l-en">Watch</span><span class="l-zh">观察</span>
+          </span>
+          <span class="mx-chg-chev">›</span>
+        </div>
+        <div class="mx-chg-row">
+          <span class="mx-chg-name tnum"><span class="l-en">Recent</span><span class="l-zh">最近</span></span>
+          <span class="mx-chg-what"><span class="l-en">Breadth divergence: index near its 1y high while %&gt;200dma is weak (16% pctile) — fewer names carrying the tape</span><span class="l-zh">宽度背离：指数接近一年高点但 %&gt;200日均线偏弱（16% 分位）— 抬指数的个股在减少</span>
           </span>
           <span class="mx-stance mx-stance--warn">
             <span class="l-en">Watch</span><span class="l-zh">观察</span>
@@ -3529,19 +3547,27 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
     <div class="ud-drivers">
       <div class="mx-sec">
         <h3 class="l-en">Why — the three things moving this read</h3><h3 class="l-zh">为什么 — 推动本次判读的三件事</h3>
+        <span class="ud-driver-count" aria-hidden="true"><span class="l-en">1 of 3</span><span class="l-zh">1 / 3</span></span>
       </div>
       <div class="ud-driver-grid">
 
-        <div class="panel ud-driver">
-          <b class="ud-driver-head"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></b><p class="ud-driver-body l-en">Read being updated — tape read re-draws nightly.</p>
-          <p class="ud-driver-body l-zh">判读更新中——盘面读数每晚重绘。</p></div>
+        <div class="panel ud-driver" data-driver="mtf">
+          <b class="ud-driver-head"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></b>
+          <p class="ud-driver-body l-en">Read being updated — tape read re-draws nightly.</p>
+          <p class="ud-driver-body l-zh">判读更新中——盘面读数每晚重绘。</p>
+        </div>
 
-        <div class="panel ud-driver">
-          <b class="ud-driver-head"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></b><p class="ud-driver-body l-en">Read being updated — three reads below, never a fused score.</p>
-          <p class="ud-driver-body l-zh">判读更新中——下方为三项读数，非融合评分。</p></div>
+        <div class="panel ud-driver" data-driver="risk_envelope">
+          <b class="ud-driver-head"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></b>
+          <p class="ud-driver-body l-en">Read being updated — three reads below, never a fused score.</p>
+          <p class="ud-driver-body l-zh">判读更新中——下方为三项读数，非融合评分。</p>
+        </div>
 
-        <div class="panel ud-driver">
-          <b class="ud-driver-head"><span class="l-en">Greed in the read</span><span class="l-zh">判读中贪婪占优</span></b><p class="ud-driver-body l-en">Greed in the read</p><p class="ud-driver-body l-zh">判读中贪婪占优</p></div>
+        <div class="panel ud-driver" data-driver="fear_greed">
+          <b class="ud-driver-head"><span class="l-en">Neutral</span><span class="l-zh">Neutral</span></b>
+          <p class="ud-driver-body l-en">Read being updated — sentiment context, display only.</p>
+          <p class="ud-driver-body l-zh">判读更新中——情绪背景，仅展示。</p>
+        </div>
 
         
         <div class="panel ud-driver ud-driver--locked" aria-label="locked depth">
@@ -3560,30 +3586,39 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
     
     <div class="ud-watching">
       <div class="mx-sec">
-        <h3 class="l-en">What we're watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
+        <h3 class="l-en">What we’re watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <ul class="ud-watch-list">
-        <li class="ud-watch-item">
-          <span class="ud-watch-item-head l-en">FOMC rate decision</span>
-          <span class="ud-watch-item-body l-en">If it lands against the read → would shift the regime call.</span>
-          <span class="ud-watch-item-head l-zh">美联储议息会议</span>
-          <span class="ud-watch-item-body l-zh">若结果与判读相反 → 将改变状态结论。</span>
-        </li>
-        <li class="ud-watch-item">
-          <span class="ud-watch-item-head l-en">CPI (consumer prices)</span>
-          <span class="ud-watch-item-body l-en">If it lands against the read → would shift the regime call.</span>
-          <span class="ud-watch-item-head l-zh">消费者物价指数（CPI）</span>
-          <span class="ud-watch-item-body l-zh">若结果与判读相反 → 将改变状态结论。</span>
-        </li>
-        <li class="ud-watch-item">
-          <span class="ud-watch-item-head l-en">Jobs report (nonfarm payrolls)</span>
-          <span class="ud-watch-item-body l-en">If it lands against the read → would shift the regime call.</span>
-          <span class="ud-watch-item-head l-zh">非农就业报告</span>
-          <span class="ud-watch-item-body l-zh">若结果与判读相反 → 将改变状态结论。</span>
-        </li>
-      </ul>
+      <details class="ud-watch-details">
+        <summary class="ud-watch-summary">
+          <span class="ud-watch-summary-h">
+            <span class="l-en">FOMC rate decision</span><span class="l-zh">美联储议息会议</span>
+          </span>
+          <span class="ud-watch-summary-ct tnum">3 <span class="l-en">conditions</span><span class="l-zh">项</span></span>
+          <span class="ud-watch-summary-chev" aria-hidden="true">›</span>
+        </summary>
+        <ul class="ud-watch-list">
+          <li class="ud-watch-item">
+            <span class="ud-watch-item-head l-en">FOMC rate decision</span>
+            <span class="ud-watch-item-body l-en">If it lands against the read, it would shift the regime call.</span>
+            <span class="ud-watch-item-head l-zh">美联储议息会议</span>
+            <span class="ud-watch-item-body l-zh">若与读数相反，将改变格局判断。</span>
+          </li>
+          <li class="ud-watch-item">
+            <span class="ud-watch-item-head l-en">CPI (consumer prices)</span>
+            <span class="ud-watch-item-body l-en">If it lands against the read, it would shift the regime call.</span>
+            <span class="ud-watch-item-head l-zh">消费者物价指数（CPI）</span>
+            <span class="ud-watch-item-body l-zh">若与读数相反，将改变格局判断。</span>
+          </li>
+          <li class="ud-watch-item">
+            <span class="ud-watch-item-head l-en">Jobs report (nonfarm payrolls)</span>
+            <span class="ud-watch-item-body l-en">If it lands against the read, it would shift the regime call.</span>
+            <span class="ud-watch-item-head l-zh">非农就业报告</span>
+            <span class="ud-watch-item-body l-zh">若与读数相反，将改变格局判断。</span>
+          </li>
+        </ul>
+      </details>
       <p class="ud-spine-foot">
         <span class="l-en">Windows, not certainties — re-drawn nightly.</span>
         <span class="l-zh">是窗口，不是定论——每晚重新校准。</span>

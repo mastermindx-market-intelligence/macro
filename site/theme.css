@@ -2622,27 +2622,9 @@ html[data-theme="light"] .mx-spine{
    The --mobile:1 opt-in lets the specimen preview the reduction at any
    viewport (used in mockups/design_system/specimen.html §6.6); it does NOT
    affect real production render — only fires alongside the @media query. */
-@media (max-width: 640px){
-  .mx-spine-head{ display:none; }
-  .mx-spine-row,
-  .mx-spine[data-mobile="1"] ~ * .mx-spine-row,
-  .mx-spine[style*="--mobile:1"] .mx-spine-row{
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "name    stance"
-      "rail    rail"
-      "travel  travel";
-    column-gap: 10px;
-    row-gap: 6px;
-    padding: 14px 0;
-  }
-  /* Spec §7: row 1 = name + stance. Stance stays in row 1 (right of name)
-     for both subject and null rows; null rows get muted ink and no rail marker. */
-  .mx-spine-name{ grid-area: name; flex-direction:row; align-items:center; justify-content:space-between; }
-  .mx-spine-stance{ grid-area: stance; align-self:center; }
-  .mx-spine-rail-wrap{ grid-area: rail; }
-  .mx-spine-travel{ grid-area: travel; }
-}
+/* (Canonical @media (max-width:640px) spine rule is unified below in the
+   .ud-hero block — see UD-B1 §3. The older two-column variant lived here and
+   contradicted the spec §7 single-column + grid-template-areas form.) */
 /* specimen opt-in: when a `.mx-spine` carries `style="--mobile:1;"` (the
    design_system specimen's §6.6 panel) the reduction also fires at any
    viewport. Real production never sets this flag; the rule is scoped to
@@ -2781,13 +2763,24 @@ body.page-macro .ud-verdict{
 body.page-macro .ud-verdict > .l-en,
 body.page-macro .ud-verdict > .l-zh{
   /* Per-locale phrase is its own flex item; the comma + qualifier are inline
-     within it so the gap can never strand the comma on its own line. */
-  display:inline-flex; align-items:baseline; gap:0;
+     within it so the gap can never strand the comma on its own line. The
+     inline-flex gap stays >0 so the comma hugs the verdict word with a real
+     word-space, never glued onto the next qualifier. */
+  display:inline-flex; align-items:baseline; flex-wrap:wrap;
+  row-gap:0; column-gap:0;
 }
+body.page-macro .ud-verdict > .l-en .ud-verdict-comma{ margin-right:.25em; }
+body.page-macro .ud-verdict > .l-en .ud-verdict-qualifier{ margin-left:.25em; }
 body.page-macro .ud-verdict-comma{ font-weight:800; color:var(--ink-1,var(--text)); }
 html[data-lang="zh"] body.page-macro .ud-verdict-comma{ display:none; }
 html[data-lang="zh"] body.page-macro .ud-verdict{ letter-spacing:0; }
-@media (max-width:390px){ body.page-macro .ud-verdict{ font-size:36px; } }
+@media (max-width:390px){
+  /* Spec §7 390: two-tone pair wraps to 2 lines at 36px, gauge below. */
+  body.page-macro .ud-verdict{ font-size:36px; }
+  body.page-macro .ud-verdict > .l-en, body.page-macro .ud-verdict > .l-zh{
+    flex-basis:100%;
+  }
+}
 body.page-macro .ud-verdict-word--up{ color:var(--ink-up,var(--up)); }
 body.page-macro .ud-verdict-word--down{ color:var(--ink-down,var(--down)); }
 body.page-macro .ud-verdict-word--warn{ color:var(--ink-warn,var(--warn)); }
@@ -2908,14 +2901,20 @@ body.page-macro .ud-watch-item{
   font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted));
   line-height:1.5;
 }
-body.page-macro .ud-watch-item-head{
-  display:none; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px;
-}
-body.page-macro .ud-watch-item-body{
-  display:none; font-weight:400; line-height:1.5; color:var(--ink-2,var(--muted));
-}
+/* Per-cell locale display law: BOTH head AND body cells paint in each locale.
+   EN locale hides ZH spans (global .l-zh{display:none}); ZH locale hides EN.
+   Pre-fix only unhide one head + one body, leaving the other two blank. */
+body.page-macro .ud-watch-item-head{ display:none; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px; }
+body.page-macro .ud-watch-item-body{ display:none; font-weight:400; line-height:1.5; color:var(--ink-2,var(--muted)); }
 html:not([data-lang="zh"]) body.page-macro .ud-watch-item-head.l-en{ display:block; }
+html:not([data-lang="zh"]) body.page-macro .ud-watch-item-body.l-en{ display:block; }
+html[data-lang="zh"] body.page-macro .ud-watch-item-head.l-zh{ display:block; }
 html[data-lang="zh"] body.page-macro .ud-watch-item-body.l-zh{ display:block; }
+/* Each .ud-watch-item is a flex row carrying head + body cells. */
+body.page-macro .ud-watch-item{ display:flex; flex-direction:column; gap:2px; }
+/* Desktop: full list visible, summary row hidden. */
+body.page-macro .ud-watch-summary{ display:none; }
+body.page-macro .ud-driver-count{ display:none; }
 
 /* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
 body.page-macro .ud-deeper{ margin-top:6px; }
@@ -2999,5 +2998,58 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
   .mockup-spine-390 .mx-spine-rail-wrap{ grid-area:rail; }
   .mockup-spine-390 .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
   .mockup-spine-390 .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
+}
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ──────
+   1. Verdict two-tone pair wraps to 2 lines at 36px (no mid-word hyphen).
+   2. Drivers become a horizontal SWIPE STRIP — cards at ~86% width, with a
+      `1 / 3` counter overlay; the clipped second card is the affordance.
+      Locked (#4) hidden — same demotion rule as the desktop locked content.
+   3. Watching collapses to ONE DISCLOSURE ROW — title, count `3`, chevron,
+      plus a one-line preview of the first condition. Windows footnote stays. */
+@media (max-width:390px){
+  body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
+  body.page-macro .ud-verdict{ font-size:36px; }
+
+  /* Drivers → swipe strip. */
+  body.page-macro .ud-driver-grid{
+    display:flex; flex-wrap:nowrap; gap:12px; overflow-x:auto;
+    grid-template-columns:none;
+    scroll-snap-type:x mandatory;
+    padding-bottom:4px;
+    margin:0 -8px; padding-left:8px; padding-right:8px;
+  }
+  body.page-macro .ud-driver{
+    flex:0 0 86%; scroll-snap-align:start; min-width:0;
+  }
+  body.page-macro .ud-driver--locked{ display:none; }
+
+  /* Driver counter chip — `1 / 3` badge that floats over the strip's right
+     edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
+  body.page-macro .ud-driver-count{ display:inline-flex; }
+
+  /* Watching → single disclosure row. The .ud-watch-summary is the row that
+     always shows at 390 (title + count + chevron + one-line preview of the
+     first condition); the <details> wraps the full 3-item list for tap-open. */
+  body.page-macro .ud-watch-list{
+    flex-direction:column; gap:6px;
+  }
+  body.page-macro .ud-watch-item{ display:none; }
+  body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
+  body.page-macro .ud-watch-summary{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px;
+    border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+    border-radius:var(--r-ctl,8px);
+    background:var(--panel2);
+  }
+  body.page-macro .ud-watch-summary-h{ flex:1; font-weight:700; color:var(--ink-1,var(--text)); }
+  body.page-macro .ud-watch-summary-ct{
+    font-size:var(--fs-sm,12.5px); font-weight:600;
+    color:var(--ink-2,var(--muted));
+  }
+  body.page-macro .ud-watch-summary-chev{
+    color:var(--ink-2,var(--muted)); font-size:18px;
+  }
 }
 /* end .ud-hero — UD-B1 §1/§3/§6 */
