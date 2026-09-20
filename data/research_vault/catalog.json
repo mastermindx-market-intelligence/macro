@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T19:15:43.967623+00:00",
-  "count": 2518,
+  "generated_at": "2026-09-20T19:30:33.152022+00:00",
+  "count": 2519,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1480,6 +1480,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xeganueolpu-b1b69d",
+      "title": "Weekly - Regional View Italian",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:25Z",
+      "summary_points": [
+        "Geopolitical Debt Risks: Middle East tensions pushed Brent crude above $100, triggering inflation fears; critical risk factors include unsustainable public debt surges (US: 55%→123%, Japan: 135%→235%, Italy: 109%→137%) and AI/defense spending funded by bond market borrowing, amplifying persistent inflation.",
+        "Bond Yield Cushion: Euro area investment grade corporate bonds now yield ~4%, providing volatility protection amid geopolitical tensions; historical bond index corrections (2022) highlight current dynamics as a tactical opportunity.",
+        "Allocation Shift: Reduce crowded tech exposure; shift to traditional sectors as monetary tightening pressures growth, but earnings growth at Q2 2026 pace may sustain equity upside despite rate hikes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
