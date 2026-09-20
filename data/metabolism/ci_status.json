@@ -1,43 +1,43 @@
 {
-  "ts": "2026-09-20T19:09:36+00:00",
-  "main_sha": "73c210e1b3269f650396a898c2efaac29ace4b73",
+  "ts": "2026-09-20T22:48:20+00:00",
+  "main_sha": "b0903c75b4ffed9008e0fc7343fbb9e37a4916e9",
   "red_required": [
     {
-      "name": "publish",
-      "conclusion": "cancelled",
+      "name": "health",
+      "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35522124093/job/106107941362"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35542566976/job/106162768820"
     },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35521852685/job/106107184571"
-    },
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35521852685/job/106107184492"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35536861903/job/106147329682"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35521852685/job/106107184380"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35536861903/job/106147329679"
+    },
+    {
+      "name": "engine-render-guards",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35536861903/job/106147329622"
     },
     {
       "name": "template-site-sync",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35521852685/job/106107184324"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/35536861903/job/106147329559"
     }
   ],
   "green": false,
-  "consecutive_failures": 162,
+  "consecutive_failures": 163,
   "sensed_shas": [
-    "73c210e1b3269f650396a898c2efaac29ace4b73",
-    "b3cc54466180fa0437c444b0d634f474f5b04119"
+    "b0903c75b4ffed9008e0fc7343fbb9e37a4916e9",
+    "b99b4a0793187b8de5daf2e83abf95d059205f8c"
   ],
   "heartbeat_degraded": false
 }
