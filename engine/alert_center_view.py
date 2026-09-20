@@ -179,6 +179,13 @@ _FOREX_SCENARIO_INACTIVE = re.compile(
     r'^The (carry-trade unwind|dollar squeeze|em outflows|flight to safety|risk-on rally|'
     r'intervention watch) stress pattern fell below the activation threshold\.$'
 )
+_BONDS_MOVE_HEADLINE = re.compile(
+    r'^Rates volatility \(MOVE\) → (calm|normal|elevated|crisis)$'
+)
+_BONDS_MOVE_DETAIL = re.compile(
+    r"^The MOVE index crossed into the (calm|normal|elevated|crisis) band at ([0-9]+)\. "
+    r"A MOVE spike is the bond market's systemic-stress thermometer\.$"
+)
 
 _DEMAND_AHEAD = re.compile(
     r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
@@ -598,6 +605,77 @@ def build_alert_brief(row: dict) -> dict:
                     f'若当前动量状态不再是 {to_state}、来源记录新的反向转换，或更新证据取代该事件，则改变判断。'),
                 'evidence_label': 'Open current FX timeline',
                 'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    move_headline = _BONDS_MOVE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    move_detail = _BONDS_MOVE_DETAIL.fullmatch(detail)
+    if source == 'bonds' and type_ == 'rates_vol' and move_headline and move_detail:
+        headline_band = move_headline.group(1)
+        detail_band, move_text = move_detail.groups()
+        if headline_band == detail_band and str(row.get('asset') or '') == 'rates':
+            move_value = int(move_text)
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current MOVE band.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前 MOVE 区间。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated band-crossing events are separate observations and do not prove '
+                    'the band persisted between them.')
+                recurrence_limit_zh = ' 重复区间穿越是独立观测，并不能证明该区间在观测之间持续存在。'
+            scorecard_name = str(validation.get('scorecard_name') or '')
+            if str(validation.get('verdict') or '') == 'scored' and scorecard_name:
+                validation_limit = (
+                    f' The attached scorecard ({scorecard_name}) validates the broader bond-health '
+                    'drawdown gauge; it does not make this single MOVE-band crossing an independent '
+                    'return forecast.')
+                validation_limit_zh = (
+                    f' 附带评分卡（{scorecard_name}）验证的是更广泛的债券健康回撤指标；'
+                    '它并不把这一次 MOVE 区间穿越变成独立收益预测。')
+            else:
+                validation_limit = (
+                    ' This band crossing is descriptive stress context, not a standalone return forecast.')
+                validation_limit_zh = ' 该区间穿越只是压力背景，并非独立收益预测。'
+            brief.update({
+                'status': 'supported', 'family': 'bonds.rates_vol',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports MOVE crossed into the {headline_band} band at {move_value}, '
+                    'changing the rates-volatility backdrop that informs systemic-stress monitoring.'),
+                'implication_zh': (
+                    f'来源报告 MOVE 在 {move_value} 进入 {headline_band} 区间，改变了用于监测系统性压力的'
+                    '利率波动背景。'),
+                'limitation': (
+                    f'A {headline_band} MOVE band is not proof markets are safe, nor is it a trade '
+                    'instruction, calibrated probability or directional equity call.' +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    f'MOVE 处于 {headline_band} 区间并不能证明市场安全，也不是交易指令、校准概率或股票'
+                    '方向判断。' + validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Bonds timeline and verify MOVE is still in the {headline_band} '
+                    f'band, compare the latest level with {move_value}, and check credit/funding '
+                    'stress before changing risk.'),
+                'next_action_zh': (
+                    f'打开当前债券时间线，确认 MOVE 仍处于 {headline_band} 区间，将最新水平与 '
+                    f'{move_value} 对比，并检查信用/融资压力后再调整风险。'),
+                'next_action_label': 'Recheck MOVE',
+                'next_action_label_zh': '复核 MOVE',
+                'reassessment': (
+                    f'Change the read if MOVE leaves the {headline_band} band, the rates-volatility '
+                    'state changes again, or newer credit/funding evidence materially changes the backdrop.'),
+                'reassessment_zh': (
+                    f'若 MOVE 离开 {headline_band} 区间、利率波动状态再次变化，或更新的信用/融资证据'
+                    '实质改变背景，则改变判断。'),
+                'evidence_label': 'Open current Bonds timeline',
+                'evidence_label_zh': '打开当前债券时间线',
             })
             return brief
 

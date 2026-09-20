@@ -219,6 +219,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-forex-scenario.png'))
             report['screenshots'].append('desktop-forex-scenario.png')
             report['checks'].append('FX scenarios expose threshold-state verification without claiming the named real-world cause')
+            move_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                           if brief.get('family') == 'bonds.rates_vol')
+            move_brief = payload['explorer']['briefs'][move_id]
+            page.goto(url + '#view=explore&id=' + move_id, wait_until='domcontentloaded')
+            move_text = page.locator('#ac-detail').inner_text()
+            assert move_brief['limitation'] in move_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == move_brief['next_action']
+            assert move_brief['evidence_label'] in move_text
+            page.screenshot(path=str(out / 'desktop-bonds-move.png'))
+            report['screenshots'].append('desktop-bonds-move.png')
+            report['checks'].append('MOVE band changes expose current stress verification without equating calm with safety')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]

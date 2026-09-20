@@ -1048,3 +1048,74 @@ def test_forex_scenario_abstains_on_impossible_threshold_or_name_mismatch():
     rows = [impossible, mismatch, wrong_asset]
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_bonds_move_brief_does_not_equate_calm_with_market_safety():
+    row = signal('move-calm', source='bonds', type_='rates_vol', asset='rates')
+    row.update({
+        'tier': 'watch', 'age_days': 3, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': "The MOVE index crossed into the calm band at 76. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'detail_zh': 'MOVE指数进入平静区间，报 76。MOVE跳升是债市系统性压力的温度计。',
+        'link': 'bonds.html#timeline',
+        'validation': {
+            'verdict': 'scored',
+            'scorecard_name': 'Bond-health drawdown gauge',
+            'ic': 0.234,
+        },
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'bonds.rates_vol'
+    assert brief['attention'] == 'for_awareness'
+    assert 'MOVE crossed into the calm band at 76' in brief['implication']
+    assert 'not proof markets are safe' in brief['limitation']
+    assert 'broader bond-health drawdown gauge' in brief['limitation']
+    assert 'does not make this single MOVE-band crossing an independent return forecast' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert 'do not prove the band persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck MOVE'
+    assert brief['evidence_label'] == 'Open current Bonds timeline'
+
+
+def test_bonds_move_elevated_state_is_context_not_equity_direction_call():
+    row = signal('move-elevated', source='bonds', type_='rates_vol', asset='rates')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Rates volatility (MOVE) → elevated',
+        'detail': "The MOVE index crossed into the elevated band at 126. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'link': 'bonds.html#timeline',
+        'validation': {'verdict': 'scored', 'scorecard_name': 'Bond-health drawdown gauge'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'elevated band at 126' in brief['implication']
+    assert 'directional equity call' in brief['limitation']
+    assert 'MOVE leaves the elevated band' in brief['reassessment']
+
+
+def test_bonds_move_abstains_on_band_or_asset_mismatch():
+    mismatch = signal('move-mismatch', source='bonds', type_='rates_vol', asset='rates')
+    mismatch.update({
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': "The MOVE index crossed into the elevated band at 126. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'link': 'bonds.html#timeline',
+    })
+    wrong_asset = signal('move-asset', source='bonds', type_='rates_vol', asset='credit')
+    wrong_asset.update({
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': "The MOVE index crossed into the calm band at 76. A MOVE spike is the bond market's systemic-stress thermometer.",
+        'link': 'bonds.html#timeline',
+    })
+    malformed = signal('move-shape', source='bonds', type_='rates_vol', asset='rates')
+    malformed.update({
+        'headline': 'Rates volatility (MOVE) → calm',
+        'detail': 'MOVE is calm so stocks are safe.',
+        'link': 'bonds.html#timeline',
+    })
+    rows = [mismatch, wrong_asset, malformed]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
