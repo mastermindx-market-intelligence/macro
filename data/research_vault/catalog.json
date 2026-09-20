@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T17:14:55.696328+00:00",
-  "count": 2512,
+  "generated_at": "2026-09-20T17:29:57.839068+00:00",
+  "count": 2513,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -109,6 +109,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wizvxnyoqdr-4034d5",
+      "title": "MS Goodbye disinflation, hello oil risk premium",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T16:54:29Z",
+      "summary_points": [
+        "Fed Hikes & Oil-Driven Inflation: Two additional 25bp Fed hikes (Dec/March) to 4.25-4.50%, core PCE inflation revised higher to 3.2% (2026) and 2.7% (2027) due to oil price spikes and supply constraints.",
+        "SPR Levels & Drawdown Trends: SPR at 285M barrels (lowest since 1984), drawdown pace slowing (30M barrels/4 weeks), indicating reduced strategic reserve depletion pressure and potential supply stability.",
+        "Geopolitical Supply Dependencies: Strait of Hormuz disruptions constrain Saudi Arabia imports (May-August), highlighting regional supply chain vulnerabilities; Canada remains largest U.S.",
+        "crude import source.",
+        "Energy Price Transmission: Broader pass-through of energy costs into core inflation expected in early 2027 as firms treat transportation costs as persistent, slowing convergence to 2% target."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
