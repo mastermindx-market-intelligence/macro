@@ -56,6 +56,7 @@ the site copy does not exist yet are skipped (new asset not yet wired/shipped).
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import sys
 import tempfile
@@ -70,7 +71,8 @@ _SKIP_SUFFIXES = (".j2",)
 # real divergence and refuses the publish (pages.yml) on a perfectly healthy tree.
 _THEME_TOKEN = "/*__SUPABASE_CFG__*/null"
 _MM_BRAIN_VER_TOKEN = "/*__MM_BRAIN_VER__*/''"
-_THEME_TOKENS = (_THEME_TOKEN, _MM_BRAIN_VER_TOKEN)
+_SOFT_CONTRAST_TOKEN = "/*__SOFT_CONTRAST_CSS__*/''"
+_THEME_TOKENS = (_THEME_TOKEN, _MM_BRAIN_VER_TOKEN, _SOFT_CONTRAST_TOKEN)
 # OUR ?v= stamp shape, as written by lib.pages.optimize_assets_text: an 8-hex
 # sha256 prefix and nothing else. A hand-written query (?v=3, ?foo=bar) is not
 # ours and is deliberately not audited here — same rule the stamper applies.
@@ -83,6 +85,7 @@ def _bake_theme(tpl: Path) -> str | None:
         from lib import site_assets
         assert site_assets.SUPABASE_TOKEN == _THEME_TOKEN, "SUPABASE_TOKEN drifted"
         assert site_assets.MM_BRAIN_VER_TOKEN == _MM_BRAIN_VER_TOKEN, "MM_BRAIN_VER_TOKEN drifted"
+        assert site_assets.SOFT_CONTRAST_TOKEN == _SOFT_CONTRAST_TOKEN, "SOFT_CONTRAST_TOKEN drifted"
         return site_assets.emit_theme_js(tpl)
     except AssertionError:
         raise
@@ -227,6 +230,14 @@ def check(root: Path, fix: bool = False) -> list[str]:
                 # stdlib fallback: everything around the baked tokens must match.
                 expected = None  # cannot reproduce the bake here — report-only
                 site_text = site_bytes.decode("utf-8", errors="replace")
+                # Material CSS is NOT an opaque configuration value. Reproduce
+                # it even without PyYAML, so a stale standalone palette cannot
+                # hide inside the generic bake-token allowance.
+                if _SOFT_CONTRAST_TOKEN in tpl_text:
+                    from lib.theme_materials import shared_contrast_css
+                    tpl_text = tpl_text.replace(
+                        _SOFT_CONTRAST_TOKEN, json.dumps(shared_contrast_css(tpl))
+                    )
                 segs = _token_segments(tpl_text, _THEME_TOKENS)
                 overlay = tpl.with_name("terminal_overlay.js")
                 if overlay.is_file():

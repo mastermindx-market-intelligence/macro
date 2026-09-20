@@ -167,19 +167,8 @@ html[data-theme="light"] {
   --gbtn-sheen:     rgba(255,255,255,.7);
 }
 html[data-theme="light"] {
-  /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA
-     canvas, white cards on a soft #EAECF0 grid, and the same vivid #285FFF
-     primary so links / buttons / accents read as one design family. The dark
-     theme (the :root block above) is intentionally left untouched. */
-  --bg: #f7f8fa; --panel: #ffffff; --panel2: #eef1f6; --text: #1c2430;
-  --muted: #5d6b7e;
-  /* Estate contrast pass 2026-08-03: #eaecf0 drew a 1.02–1.18:1 hairline on the
-     light surfaces — a card boundary you have to hunt for (the W3 audit's words
-     for the same defect on the sector page). 16% text lands the container edge
-     at 1.61 vs a white card / 1.48 vs the canvas, matching the W3 light floor
-     (1.6) and the raised dark hairline below, without turning row rules into a
-     grid. */
-  --line: color-mix(in srgb, #1c2430 16%, #eaecf0);
+  /* Semantic light colors. Neutral materials have one canonical home in the
+     shared-contrast block below, including the standalone-page projection. */
   --q1: #1f8b41; --q2: #b07d05; --q3: #c12f2f; --q4: #2f63c4;
   --warn: #b9791a; --act: #c43d3d; --ok: #2f8a52;
   --fresh-ok: var(--ok);
@@ -195,20 +184,49 @@ html[data-theme="light"] {
   --pv-buy: color-mix(in srgb, var(--up) 54%, var(--text));
   --pv-near: color-mix(in srgb, var(--pv-buy) 70%, var(--muted));
   --pv-wait: #b9791a;
-  --pv-hold: #5d6b7e; --pv-avoid: #cf4040;
+  --pv-avoid: #cf4040;
   --chart-bg: #11151c;            /* keep dark-rendered Plotly charts legible */
-  --card-shadow: 0 1px 3px rgba(20,30,50,.07);
-  /* soft, light popover shadow — the dark theme's heavy 50%-black drop shadow
-     reads as a murky grey halo on the white light-mode tooltips */
-  --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);
-  /* light glass: brighter fill (white reads thin when too transparent) + an airy
-     soft shadow with a crisp white top-edge sheen instead of the dark theme's
-     heavy drop. */
-  --glass-bg: color-mix(in srgb, var(--panel) 90%, transparent);
-  --glass-brd: color-mix(in srgb, #1c2430 9%, transparent);
-  --glass-shadow: 0 20px 54px -24px rgba(20,32,64,.34), 0 10px 24px -14px rgba(20,32,64,.20),
-    inset 0 1px 0 rgba(255,255,255,.85);
 }
+/* BEGIN SHARED_CONTRAST_CSS
+   Canonical neutral materials for BOTH theme.css and standalone pages.
+   lib.site_assets exports this exact block into the existing theme.js compatibility
+   shim; never hand-author a second palette in JavaScript. The shared stylesheet
+   paints it early; the identical shim also repairs warm, older CSS caches. */
+html[data-theme="light"],
+html.soft-contrast[data-theme="light"] {
+  --bg: #eef1f5; --panel: #fafbfd; --panel2: #edf1f6;
+  --text: #334155; --muted: #536176; --line: #c0c8d4;
+  /* Calibrated ink MUST travel with these surfaces: a new theme.js can meet an
+     older cached theme.css. Neutral-only projection made Hold/Avoid miss AA. */
+  --pv-hold: var(--muted);
+  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 76%, var(--text));
+  /* Standalone Vector-family names, light only: same paper and slate ink,
+     without importing theme.css's typography/layout into those pages. */
+  --card: var(--panel); --ink: var(--text);
+  --card-shadow: 0 1px 2px rgba(23,32,55,.035), 0 6px 18px -12px rgba(23,32,55,.08);
+  --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);
+  --glass-bg: color-mix(in srgb, var(--panel) 92%, transparent);
+  --glass-brd: color-mix(in srgb, var(--text) 9%, transparent);
+  --glass-shadow: 0 16px 42px -22px rgba(20,32,64,.26), 0 8px 20px -12px rgba(20,32,64,.16),
+    inset 0 1px 0 rgba(255,255,255,.75);
+}
+html[data-theme="light"][data-lang="zh"],
+html.soft-contrast[data-theme="light"][data-lang="zh"] {
+  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 54%, var(--text));
+}
+/* Preserve the existing effective dark treatment; this repair is light-only. */
+html.soft-contrast[data-theme="dark"] {
+  --bg: #0d1018; --panel: #151820; --panel2: #1b1f28; --text: #c8d0dc; --line: #3a4150;
+}
+/* Light needs a quiet margin, not dark-mode bloom translated into pastel. */
+html.soft-contrast[data-theme="light"] body::before {
+  background:
+    radial-gradient(680px 440px at 10% -8%, color-mix(in srgb, #416aec 5%, transparent), transparent 68%),
+    radial-gradient(620px 440px at 94% 2%, color-mix(in srgb, #8b5cf6 4%, transparent), transparent 70%),
+    radial-gradient(760px 520px at 50% 112%, color-mix(in srgb, #0ea5e9 3%, transparent), transparent 70%);
+}
+/* END SHARED_CONTRAST_CSS */
+
 /* ---- Chinese mode: Asia colour convention -----------------------------------
    In Asia red = up/bullish, green = down/bearish — the inverse of the West. So
    in zh mode we SWAP the up/down pair and flip the green/red quadrants
@@ -420,7 +438,7 @@ html[data-theme="light"] {
   --ink-pv-buy:   var(--pv-buy);
   --ink-pv-near:  var(--pv-near);
   --ink-pv-wait:  color-mix(in srgb, var(--pv-wait)  62%, var(--text));
-  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 84%, var(--text));
+  /* Light Avoid calibration travels with the shared material projection. */
 }
 html[data-theme="light"][data-lang="zh"] {
   /* C8-C RETIRED the buy/near rungs that used to sit here (84% / 70%). They existed
@@ -434,7 +452,7 @@ html[data-theme="light"][data-lang="zh"] {
      AA floor and that ordering on this exact quadrant; re-measure with
      mockups/refs/prophet_verb_ink/probe_pv_ink.py. --pv-avoid keeps its rung
      because it is still a literal on this plane. */
-  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 62%, var(--text));
+  /* Light Avoid calibration travels with the shared material projection. */
 }
 /* W-L1 provisional plane (research/WL1_PROVISIONAL_BOARD_DESIGN_SPEC.md §4.1).
    Same hue as the P1 .pv-live chip's local --plvc, and that is the point: the ◐ strip
@@ -2366,6 +2384,18 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
   .dmr-lb{grid-area:lb;} .dmr-val{grid-area:val;} .dmr-tr{grid-area:tr;height:22px;}
 }
 /* end debt maturity ladder */
+
+/* ===================== cash runway (_debt_maturity.html.j2, packet B-F09-3 second slice) =====================
+   Reuses the ladder's .dmw-lede / .dmw-null / .dmw-nullwhy tokens and the
+   same mod-ft footer. Dark/light treatment is inherited from the ladder panel
+   above (same section, same #debt-maturity / #cash-runway parent). No new
+   colours — same tokens as the ladder rules above. */
+.dmw-runway{margin-top:28px;padding-top:22px;
+  border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent);}
+[data-theme="light"] .dmw-runway{
+  border-top-color:var(--hair);}
+/* end cash runway */
+
 /* account sheet: alert delivery preferences (B-F08-1a) */
 .mmacc-alerts{position:relative;padding-left:14px}
 .mmacc-alerts::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:var(--r-ctl,8px);background:var(--line);transition:background .22s ease,box-shadow .22s ease}

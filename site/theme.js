@@ -586,37 +586,13 @@
   window.toggleTheme = function () { setTheme(curTheme() === 'light' ? 'dark' : 'light'); };
   window.setThemeAuto = setThemeAuto;
 
-  /* ---- soft-contrast palette (default for everyone) ------------------------
-     Injects a <style id="soft-contrast-css"> that adds html.soft-contrast
-     overrides: light gets the depth recipe (white panels on a deeper canvas +
-     real card shadows — DESIGN_DOCTRINE §5.8, estate rollout 2026-08-03 after
-     the us_stocks/subsectors light pass proved panel≈bg was the flatness bug);
-     dark keeps lifted blacks. Measured on the light surfaces (#fff panel /
-     #eef1f6 panel2 / #e8ebf1 canvas): body --text 9.7-11.6:1 (AAA); --muted
-     5.9-7.0:1 (comfortably above the 4.5:1 AA floor).
-     Applied unconditionally at boot (no user toggle). theme.js loads end-of-
-     body, so pages get one standard-palette paint first on cold load; the hub's
-     <head> boot script also sets the class pre-paint (delta is subtle). */
-  /* --line raised in both palettes (estate contrast pass 2026-08-03): the old
-     #d0d4db / #262c38 hairlines measured 1.02–1.45:1 against these surfaces —
-     card boundaries you had to hunt for, and dark sat FAINTER than light. The
-     raised pair keeps both themes in one perceptual band on the depth-recipe
-     surfaces (#c0c4cd: 1.46–1.75 light · #3a4150: 1.61–1.86 dark), matching
-     the W3 sector-page floor. This block outcascades theme.css, so these are
-     the operative estate values. */
-  var SOFT_CONTRAST_CSS =
-    'html.soft-contrast[data-theme="light"]{' +
-      '--bg:#e8ebf1;--panel:#ffffff;--panel2:#eef1f6;--text:#2e3950;--muted:#4c5a6c;--line:#c0c4cd;' +
-      '--glass-bg:color-mix(in srgb,#ffffff 64%,transparent);' +
-      '--glass-brd:color-mix(in srgb,#2e3950 9%,transparent);' +
-      '--card-shadow:0 1px 2px rgba(23,32,55,.05),0 8px 24px -12px rgba(23,32,55,.10)' +
-    '}' +
-    'html.soft-contrast[data-theme="dark"]{' +
-      '--bg:#0d1018;--panel:#151820;--panel2:#1b1f28;--text:#c8d0dc;--line:#3a4150' +
-    '}';
+  /* Canonical material CSS is authored in theme.css and baked here by the
+     existing site-asset emitter. The compatibility projection reaches standalone
+     pages without importing shared geometry, and keeps warm CSS caches coherent. */
+  var SOFT_CONTRAST_CSS = "/* BEGIN SHARED_CONTRAST_CSS\n   Canonical neutral materials for BOTH theme.css and standalone pages.\n   lib.site_assets exports this exact block into the existing theme.js compatibility\n   shim; never hand-author a second palette in JavaScript. The shared stylesheet\n   paints it early; the identical shim also repairs warm, older CSS caches. */\nhtml[data-theme=\"light\"],\nhtml.soft-contrast[data-theme=\"light\"] {\n  --bg: #eef1f5; --panel: #fafbfd; --panel2: #edf1f6;\n  --text: #334155; --muted: #536176; --line: #c0c8d4;\n  /* Calibrated ink MUST travel with these surfaces: a new theme.js can meet an\n     older cached theme.css. Neutral-only projection made Hold/Avoid miss AA. */\n  --pv-hold: var(--muted);\n  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 76%, var(--text));\n  /* Standalone Vector-family names, light only: same paper and slate ink,\n     without importing theme.css's typography/layout into those pages. */\n  --card: var(--panel); --ink: var(--text);\n  --card-shadow: 0 1px 2px rgba(23,32,55,.035), 0 6px 18px -12px rgba(23,32,55,.08);\n  --popover-shadow: 0 4px 10px rgba(20,30,50,.06), 0 12px 28px rgba(20,30,50,.14);\n  --glass-bg: color-mix(in srgb, var(--panel) 92%, transparent);\n  --glass-brd: color-mix(in srgb, var(--text) 9%, transparent);\n  --glass-shadow: 0 16px 42px -22px rgba(20,32,64,.26), 0 8px 20px -12px rgba(20,32,64,.16),\n    inset 0 1px 0 rgba(255,255,255,.75);\n}\nhtml[data-theme=\"light\"][data-lang=\"zh\"],\nhtml.soft-contrast[data-theme=\"light\"][data-lang=\"zh\"] {\n  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 54%, var(--text));\n}\n/* Preserve the existing effective dark treatment; this repair is light-only. */\nhtml.soft-contrast[data-theme=\"dark\"] {\n  --bg: #0d1018; --panel: #151820; --panel2: #1b1f28; --text: #c8d0dc; --line: #3a4150;\n}\n/* Light needs a quiet margin, not dark-mode bloom translated into pastel. */\nhtml.soft-contrast[data-theme=\"light\"] body::before {\n  background:\n    radial-gradient(680px 440px at 10% -8%, color-mix(in srgb, #416aec 5%, transparent), transparent 68%),\n    radial-gradient(620px 440px at 94% 2%, color-mix(in srgb, #8b5cf6 4%, transparent), transparent 70%),\n    radial-gradient(760px 520px at 50% 112%, color-mix(in srgb, #0ea5e9 3%, transparent), transparent 70%);\n}\n/* END SHARED_CONTRAST_CSS */";
 
   function _applySoftContrastCSS() {
-    if (document.getElementById('soft-contrast-css')) return;
+    if (!SOFT_CONTRAST_CSS || document.getElementById('soft-contrast-css')) return;
     var st = document.createElement('style');
     st.id = 'soft-contrast-css'; st.textContent = SOFT_CONTRAST_CSS;
     (document.head || document.documentElement).appendChild(st);

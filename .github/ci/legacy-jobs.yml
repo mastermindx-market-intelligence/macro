@@ -4204,6 +4204,7 @@ jobs:
       - "lib/pages.py"
       - "lib/seo.py"
       - "lib/site_assets.py"
+      - "lib/theme_materials.py"
       - "lib/store.py"
       - "lib/ticker_aliases.py"
       - "lib/ticker_popularity.py"
