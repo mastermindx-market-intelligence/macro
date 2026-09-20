@@ -770,8 +770,9 @@
     },
     "open_blockers_named_not_claimed": {
       "render_lane": "macro#7163 and macro#7215 both OPEN; render since 2026-09-19 is 19 cancelled / 6 failed / 0 successful, so every page-half proof stays owed",
-      "debt_maturity_cache": "data/debt_maturity is empty on main; the drip persist step entered the workflow at af9d8ea2 2026-09-19T07:45:45Z, twelve minutes after that day's run started, so run 35498174229 is the first to carry it"
+      "debt_maturity_cache": "data/debt_maturity is empty on main. The persist step reached main only with the macro#7121 merge cc32ad62 at 2026-09-19T10:02:14Z; that day's drip run 35429631272 started at 07:33:04Z from main sha 9aae769b whose checked-out workflow had no persist step, so run 35498174229 is the first to carry it. An empty cache means not_loaded only for CIK-resolved filers: crypto and ETF/macro return not_applicable before any cache lookup and an unresolved CIK returns unresolved."
     },
-    "rows_note": "No state move is claimed or implied by this pass. The 33 held-for-Sol pairs remain unwritten and the unhold applier remains staged and unrun. The 12 OUTSIDE-50 rows and 7 pin conflicts that macro#7357 and macro#7358 want to edit are raised on macro#7390 for Sol's decision."
+    "rows_note": "No state move is claimed or implied by this pass. The 33 held-for-Sol pairs remain unwritten and the unhold applier remains staged and unrun. The 12 OUTSIDE-50 rows and 7 pin conflicts that macro#7357 and macro#7358 want to edit are raised on macro#7390 for Sol's decision.",
+    "review_history": "Grok h_rec5b_rv1 at eb02ffcb returned FIX_REQUIRED (1 major / 1 minor), both on the MO-PAID-059 adjudication_notes text and its mirror here: a false universal ('every ticker resolves not_loaded') and a merge-timing mis-framing ('twelve-minute miss'). Both corrected in the follow-up commit; the seat re-verified each against origin/main before rewriting."
   }
 }
