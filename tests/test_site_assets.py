@@ -8,7 +8,10 @@ No network, no full render — all tests are deterministic and fast.
 """
 from __future__ import annotations
 
+import json
 import re
+
+import pytest
 import sys
 from pathlib import Path
 
@@ -242,3 +245,49 @@ def test_missing_bundle_degrades_to_an_unversioned_request(tmp_path) -> None:
     """No sibling mm_brain.js -> empty version, not a crash and not a stale hash."""
     (tmp_path / "theme.js").write_text("x")
     assert site_assets.mm_brain_version(tmp_path / "theme.js") == ""
+
+
+# Neutral material authoring lives in CSS; the existing emitter is its only
+# compatibility projection. In particular standalone pages must not need a new
+# stylesheet loader or receive theme.css's geometry/type rules.
+def test_shared_material_css_is_projected_exactly() -> None:
+    src = TEMPLATES / "theme.js"
+    css = site_assets.shared_contrast_css(src)
+    emitted = site_assets.emit_theme_js(src)
+    match = re.search(r"var SOFT_CONTRAST_CSS = (.*?);\n", emitted)
+    assert match, "emitter lost the standalone material projection"
+    assert json.loads(match.group(1)) == css
+    assert site_assets.SOFT_CONTRAST_TOKEN not in emitted
+    assert src.read_text().count(site_assets.SOFT_CONTRAST_TOKEN) == 1
+    assert "--bg:#e8ebf1" not in src.read_text(), "second JS palette returned"
+    assert "--card: var(--panel)" in css and "--ink: var(--text)" in css
+    assert not re.search(r"(?:font-size|padding|width|height|display|opacity)\s*:", css)
+
+
+@pytest.mark.parametrize("defect", ["missing", "duplicate", "reversed", "empty"])
+def test_shared_material_export_rejects_ambiguous_source(tmp_path: Path, defect: str) -> None:
+    css = site_assets.shared_contrast_css(TEMPLATES / "theme.js")
+    start, end = "/* BEGIN SHARED_CONTRAST_CSS", "/* END SHARED_CONTRAST_CSS */"
+    if defect == "missing":
+        css = css.replace(end, "")
+    elif defect == "duplicate":
+        css += css
+    elif defect == "reversed":
+        css = end + css.replace(end, "")
+    else:
+        css = start + " */\n" + end
+    (tmp_path / "theme.css").write_text(css)
+    (tmp_path / "theme.js").write_text(site_assets.SOFT_CONTRAST_TOKEN)
+    with pytest.raises(ValueError, match="SHARED_CONTRAST_CSS"):
+        site_assets.emit_theme_js(tmp_path / "theme.js")
+
+
+def test_shared_material_dark_defaults_are_unchanged() -> None:
+    css = site_assets.shared_contrast_css(TEMPLATES / "theme.js")
+    block = re.search(r'html\.soft-contrast\[data-theme="dark"\]\s*\{([^}]+)\}', css)
+    assert block
+    tokens = dict(re.findall(r"(--[a-z0-9-]+):\s*([^;]+);", block.group(1)))
+    assert tokens == {
+        "--bg": "#0d1018", "--panel": "#151820", "--panel2": "#1b1f28",
+        "--text": "#c8d0dc", "--line": "#3a4150",
+    }, "light repair changed dark material or leaked standalone aliases into dark"

@@ -1,0 +1,446 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "nav-hover",
+        "spec": "nav-hover:hover(.nav-dd)",
+        "value": ".nav-dd"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "nav-focus",
+        "spec": "nav-focus:focus(.nav-dd > a.nav-link)",
+        "value": ".nav-dd > a.nav-link"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-20T00:44:42Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "a forced state is either a class/attribute toggled on <body> or a real browser hover/focus applied to a selector before the shot; it shows that state's presentation, not data the page returned; metrics are measured on the rest cells only, and a state that did not take is recorded as a gap",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-hover:hover(.nav-dd) did not take on mobile/en/light; the driver confirmed None",
+          "value": "nav-hover"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-focus:focus(.nav-dd > a.nav-link) did not take on mobile/en/light; the driver confirmed None",
+          "value": "nav-focus"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-hover:hover(.nav-dd) did not take on mobile/en/dark; the driver confirmed None",
+          "value": "nav-hover"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-focus:focus(.nav-dd > a.nav-link) did not take on mobile/en/dark; the driver confirmed None",
+          "value": "nav-focus"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-hover:hover(.nav-dd) did not take on mobile/zh/light; the driver confirmed None",
+          "value": "nav-hover"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-focus:focus(.nav-dd > a.nav-link) did not take on mobile/zh/light; the driver confirmed None",
+          "value": "nav-focus"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-hover:hover(.nav-dd) did not take on mobile/zh/dark; the driver confirmed None",
+          "value": "nav-hover"
+        },
+        {
+          "captured": true,
+          "dimension": "force_state_application",
+          "reason": "--force-state nav-focus:focus(.nav-dd > a.nav-link) did not take on mobile/zh/dark; the driver confirmed None",
+          "value": "nav-focus"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 5483,
+            "elements_wider_than_viewport": 1,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 7641,
+            "elements_wider_than_viewport": 36,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 5483,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 1,
+        "heading_counts": {
+          "h1": 1,
+          "h2": 9,
+          "h3": 0,
+          "h4": 2,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 14,
+        "payload_bytes_total": 719532,
+        "raw_slug_hit_count": 4,
+        "raw_slug_hits": [
+          "discipline_not_prediction",
+          "modest_or_none",
+          "no_basket_drawdown_edge",
+          "validated_risk_control"
+        ],
+        "request_count": 25,
+        "screenshot_completion": 1.0,
+        "section_count": 1,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 1656
+      },
+      "page_id": "allocation_canada.html",
+      "registry_route": "/allocation_canada.html",
+      "route": "/allocation_canada.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1083348,
+          "captured": true,
+          "file": "374f29f6f9f0482f.png",
+          "force_state": null,
+          "height": 5483,
+          "locale": "en",
+          "sha256": "374f29f6f9f0482ff06e925a97fc36cf57a9cd3d0fba43c61e9afca06bfb24fe",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nav-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1133034,
+          "captured": true,
+          "file": "a904763d85314fd4--nav-hover.png",
+          "force_state": "nav-hover",
+          "height": 5483,
+          "locale": "en",
+          "sha256": "a904763d85314fd483e7baadafcd50cb672f7f2278701a5454cb11f18f48d106",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nav-focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 1155010,
+          "captured": true,
+          "file": "e1321d6ebc2deb3e--nav-focus.png",
+          "force_state": "nav-focus",
+          "height": 5483,
+          "locale": "en",
+          "sha256": "e1321d6ebc2deb3e3e11b8c351a5e448e4021076981b416cec1235b07b9370b0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1095425,
+          "captured": true,
+          "file": "b8188643cfd94a97.png",
+          "force_state": null,
+          "height": 5483,
+          "locale": "en",
+          "sha256": "b8188643cfd94a97b8c3c18ceaef3d0a708dc20bc81e17f4ae72e6f447b68b5b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nav-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1089145,
+          "captured": true,
+          "file": "83059645551382db--nav-hover.png",
+          "force_state": "nav-hover",
+          "height": 5483,
+          "locale": "en",
+          "sha256": "83059645551382dbc459620c0a6b72354001d4c66ca334f42ed02e23189dc17b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "nav-focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 1091509,
+          "captured": true,
+          "file": "3fbecba5671baa53--nav-focus.png",
+          "force_state": "nav-focus",
+          "height": 5483,
+          "locale": "en",
+          "sha256": "3fbecba5671baa5320540ff69acb94c91fb4b8dae8451a9be25b0b31f0e38285",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 1108301,
+          "captured": true,
+          "file": "4d0a81aa5150ae8d.png",
+          "force_state": null,
+          "height": 5392,
+          "locale": "zh",
+          "sha256": "4d0a81aa5150ae8d9356ae22e1e0d6cb65c9e077e16de13455924e54f5d094d0",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 1121014,
+          "captured": true,
+          "file": "26cb553b5491bff5.png",
+          "force_state": null,
+          "height": 5392,
+          "locale": "zh",
+          "sha256": "26cb553b5491bff5a660ccafb304e833341db2902bf2cbcbf784861877a819b8",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 847879,
+          "captured": true,
+          "file": "e2478c35a6e3aead.png",
+          "force_state": null,
+          "height": 7641,
+          "locale": "en",
+          "sha256": "e2478c35a6e3aeadabfe7a4b207ca38228c2fbf4a167fae139e574b66496ee74",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 852798,
+          "captured": true,
+          "file": "0fbf137edbd4bfa4.png",
+          "force_state": null,
+          "height": 7641,
+          "locale": "en",
+          "sha256": "0fbf137edbd4bfa4cfd87a84bafa3a0a3b8ecaf05e9a09d0e354346ba3eccf4f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 882615,
+          "captured": true,
+          "file": "d49d4e4982141eb8.png",
+          "force_state": null,
+          "height": 7018,
+          "locale": "zh",
+          "sha256": "d49d4e4982141eb8b41f497f47fb25ddd0e65ac1f7ac2d93c6104acdcdcc86f1",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 887931,
+          "captured": true,
+          "file": "fa6029ee1d279dd7.png",
+          "force_state": null,
+          "height": 7018,
+          "locale": "zh",
+          "sha256": "fa6029ee1d279dd7bdf4114604f0363c37bd1c1993540df208821e09ded48093",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/allocation_canada.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied; bounded acceptance selection from capture-full.json; all included cells and image bytes are unchanged.",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/light-theme-comfort-20260919-astra",
+    "resolved_sha_or_none": "af92792954e1ad8a4812cf0e73a2dc54dac0672a",
+    "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/light-theme-comfort-20260919-astra (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
+    "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/light-theme-comfort-20260919-astra/site"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 12,
+    "states_captured": 12
+  }
+}

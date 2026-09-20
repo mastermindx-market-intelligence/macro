@@ -453,3 +453,21 @@ def test_known_gap_entries_are_still_failing(theme_css, verbs, surfaces):
             f"{lang}/{theme} .pv-{verb} .{consumer} now measures {got:.2f}:1 and "
             f"clears AA — delete its KNOWN_GAP entry (pinned at {pinned})."
         )
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_light_neutral_material_comfort_preserves_readable_ink(theme_css, lang):
+    """Comfort is smaller surface jumps, never opacity/washed-out text."""
+    env = _env_for(theme_css, lang, "light")
+    colors = {k: _resolve("var(" + k + ")", env) for k in
+              ("--bg", "--panel", "--panel2", "--text", "--muted", "--line")}
+    # A visible but quiet paper/canvas step: neither the old 1.19 white slab,
+    # nor a zero-depth same-background repaint.
+    assert 1.06 <= _ratio(colors["--panel"], colors["--bg"]) <= 1.13
+    assert _lum(colors["--panel"]) > _lum(colors["--bg"])
+    for surface in ("--bg", "--panel", "--panel2"):
+        assert _ratio(colors["--text"], colors[surface]) >= 7
+        assert _ratio(colors["--muted"], colors[surface]) >= 4.5
+    assert _ratio(colors["--line"], colors["--panel"]) >= 1.6
+    assert env["--card"] == "var(--panel)"
+    assert env["--ink"] == "var(--text)"

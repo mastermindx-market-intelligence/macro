@@ -72,7 +72,6 @@
     },
     "site/theme.js": {
       "create_style": 10,
-      "style_markup": 1,
       "style_text": 1
     },
     "site/theme_addons.js": {
@@ -146,8 +145,7 @@
       "style_text": 1
     },
     "templates/theme.js": {
-      "create_style": 9,
-      "style_markup": 1
+      "create_style": 9
     },
     "templates/time_machine.js": {
       "create_style": 1,
@@ -157,6 +155,6 @@
       "create_style": 1
     }
   },
-  "generated_from": "feec1fe60c4eb00fb5211636fe389a56974ef3fa",
+  "generated_from": "af92792954e1ad8a4812cf0e73a2dc54dac0672a",
   "schema": "mastermind.runtime_style_allowlist.v1"
 }
