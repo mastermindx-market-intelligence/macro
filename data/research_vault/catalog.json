@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T19:00:25.023025+00:00",
-  "count": 2517,
+  "generated_at": "2026-09-20T19:15:43.967623+00:00",
+  "count": 2518,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1460,6 +1460,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rff9ysonlha-7c366d",
+      "title": "Listed real estate",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:37Z",
+      "summary_points": [
+        "NAV Discount & Yield Upside: Global REITs trade at 8% NAV discount (vs 7-yr avg 3.6% yield), signaling potential upside as financing costs stabilize and yields normalize.",
+        "Earnings Growth Catalyst: REIT earnings forecasted to rise 11% in 2026 (vs long-term avg), driven by rental income, reversion, and acquisitions amid easing stagflation risks.",
+        "Index Target & Key Drivers: FTSE EPRA/Nareit 2027 target 9,100 (vs current 6,889) supported by rental growth, active portfolio management, take-up demand, and stable debt markets.",
+        "Critical Downside Risks: Target floor at 8,500 due to high capitalization rates (bond yields/risk premiums), weak rental growth, submarket dislocation (retail/office vs logistics), and persistent capital cost pressures."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
