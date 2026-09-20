@@ -153,6 +153,17 @@ def main():
                 assert page.locator('#ac-detail .acx-next-action').inner_text() == rotation_brief['next_action']
                 assert rotation_brief['evidence_label'] in text
             report['checks'].append('Three rotation rollover families render breadth-aware limits and current-panel reassessment')
+            demand_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                             if brief.get('family') == 'demand.demand_ahead')
+            demand_brief = payload['explorer']['briefs'][demand_id]
+            page.goto(url + '#view=explore&id=' + demand_id, wait_until='domcontentloaded')
+            demand_text = page.locator('#ac-detail').inner_text()
+            assert demand_brief['limitation'] in demand_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == demand_brief['next_action']
+            assert demand_brief['evidence_label'] in demand_text
+            page.screenshot(path=str(out / 'desktop-demand-ahead.png'))
+            report['screenshots'].append('desktop-demand-ahead.png')
+            report['checks'].append('Demand-ahead variants render an expectations-gap workflow without becoming buy signals')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]

@@ -142,6 +142,12 @@ _THEME_EMERGING = re.compile(
     r'\((?:constructive label shifts are debounced|constructive label shifts wait for a second session); '
     r'risk label shifts fire immediately\))?\.$', re.IGNORECASE,
 )
+_DEMAND_AHEAD = re.compile(
+    r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
+    r"([A-Z0-9.\-]+)'s analyst revisions — a forward-demand signal not yet fully in "
+    r"the price\. Context for review; not a buy signal\.$"
+)
+
 _THEME_LEADERSHIP = re.compile(
     r'^(.+?) took the #1 theme rank \(score ([0-9]{1,3})\), displacing (.+?)'
     r'(?: — held #1 for ([0-9]+) consecutive sessions with a '
@@ -399,6 +405,57 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前风险框架',
         })
         return brief
+
+    demand = _DEMAND_AHEAD.fullmatch(detail)
+    if source == 'demand' and type_ == 'demand_ahead' and demand:
+        measure, growth_text, ticker = demand.groups()
+        if ticker == str(row.get('asset') or ''):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current demand and revisions.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前需求与分析师调整。'
+            measure_label = measure.replace('_', ' ')
+            brief.update({
+                'status': 'supported', 'family': 'demand.demand_ahead',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports {measure_label} demand growing {growth_text}% YoY '
+                    f'and running ahead of {ticker} analyst revisions, creating a possible '
+                    'expectations gap to investigate.'),
+                'implication_zh': (
+                    f'来源报告 {measure_label} 需求同比增长 {growth_text}%，并领先于 {ticker} '
+                    '分析师调整，形成一个值得调查的潜在预期差。'),
+                'limitation': (
+                    'This source-described demand variant is not proof the stock is underpriced, '
+                    'a buy signal, a calibrated probability, or an independent confirmation of '
+                    'future returns. Analyst revisions can lag for procedural reasons, and this '
+                    f'family is documented but not separately backtested as a timing signal.{age_limit}'),
+                'limitation_zh': (
+                    '该来源描述的需求变体不能证明股票被低估，也不是买入信号、校准概率或未来收益的'
+                    '独立确认。分析师调整可能因流程原因滞后，且该信号族虽有记录，但未作为择时信号'
+                    f'单独回测。{age_limit_zh}'),
+                'next_action': (
+                    f'Open the current demand timeline and verify the {measure_label} as-of date, '
+                    f'its {growth_text}% YoY reading, {ticker} revision direction, and whether '
+                    'price expectations have already moved.'),
+                'next_action_zh': (
+                    f'打开当前需求时间线，核对 {measure_label} 的观测日期、{growth_text}% 同比读数、'
+                    f'{ticker} 分析师调整方向，以及价格预期是否已经变化。'),
+                'next_action_label': 'Recheck demand lead',
+                'next_action_label_zh': '复核需求领先',
+                'reassessment': (
+                    'Change the read if the current demand measure decelerates, analyst revisions '
+                    'catch up or reverse, or the price already discounts the change.'),
+                'reassessment_zh': (
+                    '若当前需求指标减速、分析师调整追上或反转，或价格已经计入该变化，则改变判断。'),
+                'evidence_label': 'Open current demand timeline',
+                'evidence_label_zh': '打开当前需求时间线',
+            })
+            return brief
 
     impulse = _VECTOR_IMPULSE_DOWN.fullmatch(detail)
     if source == 'vector' and type_ == 'impulse_warn_down' and impulse:

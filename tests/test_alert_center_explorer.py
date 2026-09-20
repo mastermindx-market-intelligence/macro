@@ -675,3 +675,58 @@ def test_rotation_family_specific_copy_abstains_on_unsupported_shapes():
     briefs=project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status']=='fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_demand_ahead_gets_expectations_gap_brief_without_mutation():
+    row = signal('demand-ahead', source='demand', type_='demand_ahead', asset='AVGO')
+    row.update({
+        'tier': 'context', 'age_days': 2,
+        'detail': "ai_datacenter (+69% YoY) is running ahead of AVGO's analyst revisions — a forward-demand signal not yet fully in the price. Context for review; not a buy signal.",
+        'detail_zh': 'ai_datacenter (+69% YoY) 跑在 AVGO 分析师评级调整之前——一个尚未充分计入价格的前瞻需求信号。供审阅参考；非买入信号。',
+        'link': 'demand.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'demand.demand_ahead'
+    assert brief['attention'] == 'for_awareness'
+    assert '69% YoY' in brief['implication']
+    assert 'AVGO' in brief['implication']
+    assert 'possible expectations gap' in brief['implication']
+    assert 'not proof the stock is underpriced' in brief['limitation']
+    assert 'not separately backtested' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck demand lead'
+    assert brief['evidence_label'] == 'Open current demand timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_demand_ahead_discloses_age_and_revision_catchup_falsifier():
+    row = signal('demand-old', source='demand', type_='demand_ahead', asset='CRWD')
+    row.update({
+        'tier': 'context', 'age_days': 11,
+        'detail': "own_rpo (+38% YoY) is running ahead of CRWD's analyst revisions — a forward-demand signal not yet fully in the price. Context for review; not a buy signal.",
+        'link': 'demand.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '11 days old' in brief['limitation']
+    assert 'revisions catch up' in brief['reassessment']
+    assert 'demand measure decelerates' in brief['reassessment']
+    assert 'already discounts the change' in brief['reassessment']
+
+
+def test_demand_ahead_abstains_on_malformed_or_ticker_mismatched_shapes():
+    malformed = signal('demand-malformed', source='demand', type_='demand_ahead', asset='AVGO')
+    malformed.update({'detail': 'Demand is ahead in an unsupported shape.',
+                      'link': 'demand.html#timeline'})
+    mismatch = signal('demand-mismatch', source='demand', type_='demand_ahead', asset='AVGO')
+    mismatch.update({
+        'detail': "ai_datacenter (+69% YoY) is running ahead of HUBB's analyst revisions — a forward-demand signal not yet fully in the price. Context for review; not a buy signal.",
+        'link': 'demand.html#timeline',
+    })
+    briefs = project([malformed, mismatch])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (malformed, mismatch))
+    assert all(briefs[row['alert_id']]['family'] is None for row in (malformed, mismatch))
