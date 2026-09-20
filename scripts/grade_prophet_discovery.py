@@ -13,7 +13,18 @@ from engine import prophet_discovery_grade  # noqa: E402
 
 
 def main() -> int:
-    print(json.dumps(prophet_discovery_grade.grade_all(), sort_keys=True, default=str))
+    try:
+        result = prophet_discovery_grade.grade_all()
+    except Exception as exc:  # noqa: BLE001 — scheduler receipt must be truthful
+        result = {
+            "available": False,
+            "state": "ERROR",
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+        }
+        print(json.dumps(result, sort_keys=True, default=str))
+        return 1
+    print(json.dumps(result, sort_keys=True, default=str))
     return 0
 
 

@@ -7,6 +7,8 @@ It never changes discovery identity, rank, entry, publication or Brain state.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +24,16 @@ KEY = (
     "session_date", "market", "security_ref",
     "security_ref_raw", "challenger_definition",
 )
+_SOURCE_KEY = (
+    "session_date", "security_ref", "security_ref_raw",
+    "challenger_definition",
+)
+_HISTORY_LIMITS = {
+    "history_coverage": "window_bounded_positive_records_only",
+    "continuous_tenure_supported": False,
+    "exact_exit_supported": False,
+    "exit_reason_supported": False,
+}
 
 MATURED = "MATURED"
 ACCRUING = "ACCRUING"
@@ -44,14 +56,71 @@ for _h in HORIZONS:
         f"bench_ret_{_h}", f"excess_ret_{_h}",
     ])
 SCHEMA = tuple([*_BASE, *_METRICS])
-_SOURCE_REQUIRED = {
-    "session_date", "security_ref", "security_ref_raw",
-    "challenger_definition",
-}
+_SOURCE_REQUIRED = set(_SOURCE_KEY)
+_SOURCE_EVIDENCE = (
+    "candidate_origin", "availability_status", "availability_source",
+)
 
 
 def _empty_frame() -> pd.DataFrame:
     return pd.DataFrame(columns=list(SCHEMA))
+
+
+def _frame_digest(frame: pd.DataFrame, columns: tuple[str, ...]) -> str:
+    canonical = frame.reindex(columns=list(columns)).copy()
+    for column in columns:
+        canonical[column] = canonical[column].map(
+            lambda value: "<NULL>" if pd.isna(value) else str(value)
+        )
+    canonical = canonical.sort_values(list(columns), kind="stable")
+    payload = json.dumps(
+        {"columns": list(columns), "rows": canonical.values.tolist()},
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _identity_digest(frame: pd.DataFrame) -> str:
+    return _frame_digest(frame, _SOURCE_KEY)
+
+
+def _cohort_digest(frame: pd.DataFrame) -> str:
+    return _frame_digest(frame, (*_SOURCE_KEY, *_SOURCE_EVIDENCE))
+
+
+def _source_evidence(frame: pd.DataFrame) -> dict[tuple[str, ...], tuple[str, ...]]:
+    if frame.duplicated(list(KEY), keep=False).any():
+        raise RuntimeError("append-only source continuity: prior outcome identity duplicated")
+    evidence: dict[tuple[str, ...], tuple[str, ...]] = {}
+    for _, row in frame.iterrows():
+        key = tuple(
+            "<NULL>" if pd.isna(row.get(column)) else str(row.get(column))
+            for column in KEY
+        )
+        values = tuple(
+            "<NULL>" if pd.isna(row.get(column)) else str(row.get(column))
+            for column in _SOURCE_EVIDENCE
+        )
+        evidence[key] = values
+    return evidence
+
+
+def _assert_append_only_source_continuity(
+    prior: pd.DataFrame, fresh: pd.DataFrame
+) -> None:
+    prior_evidence = _source_evidence(prior)
+    fresh_evidence = _source_evidence(fresh)
+    missing = set(prior_evidence) - set(fresh_evidence)
+    revised = {
+        key for key in set(prior_evidence) & set(fresh_evidence)
+        if prior_evidence[key] != fresh_evidence[key]
+    }
+    if missing or revised:
+        raise RuntimeError(
+            "append-only source continuity violated: "
+            f"missing_identities={len(missing)} revised_identities={len(revised)}"
+        )
 
 
 def _blank_metrics() -> dict[str, Any]:
@@ -103,6 +172,8 @@ def grade_frame(market: str, discovery: pd.DataFrame) -> pd.DataFrame:
         }
         if foreign:
             raise ValueError(f"{m} discovery source contains foreign market rows: {sorted(foreign)}")
+    if discovery.duplicated(list(_SOURCE_KEY), keep=False).any():
+        raise ValueError(f"{m} discovery source contains duplicate observation identity")
 
     bench = board_ledger._bench_close(m)
     cache: dict = {}
@@ -245,6 +316,16 @@ def _summary_core(frame: pd.DataFrame) -> dict[str, Any]:
         if "outcome_state" in frame.columns else pd.Series(dtype=object)
     )
     unavailable = int((states == UNAVAILABLE_PRICE).sum()) if n else 0
+    if "benchmark_available" in frame.columns:
+        benchmark_available = int(
+            frame["benchmark_available"].fillna(False).astype(bool).sum()
+        )
+        benchmark_coverage_rate = (
+            float(benchmark_available / n) if n else None
+        )
+    else:
+        benchmark_available = None
+        benchmark_coverage_rate = None
     horizons: dict[str, dict[str, Any]] = {}
     for h in HORIZONS:
         mfe_col = f"fwd_mfe_{h}"
@@ -263,6 +344,8 @@ def _summary_core(frame: pd.DataFrame) -> dict[str, Any]:
         "price_store_coverage_rate": (
             float((n - unavailable) / n) if n else None
         ),
+        "n_benchmark_available": benchmark_available,
+        "benchmark_coverage_rate": benchmark_coverage_rate,
         "horizons": horizons,
         "terminal_states": {
             "clean8_21": _terminal_summary(
@@ -314,6 +397,7 @@ def _bridge_unavailable(reason: str) -> dict[str, Any]:
         "available": False,
         "reason": reason,
         "metric_semantics": "board_admission_not_eventual_winner",
+        **_HISTORY_LIMITS,
     }
 
 
@@ -414,6 +498,7 @@ def summarize_board_admission_bridge(
             float((prior + same_day) / n) if n else None
         ),
         "calendar_lead_days": lead_summary,
+        **_HISTORY_LIMITS,
     }
 
 
@@ -498,6 +583,15 @@ def summarize_rank_races(
             return _rank_race_unavailable(
                 "rank_pair_population_contract_violation"
             )
+        for column in (
+            "incumbent_rank", "challenger_rank", "challenger_offlist_n"
+        ):
+            supplied = group[column].notna()
+            numeric = pd.to_numeric(group[column], errors="coerce")
+            if bool((supplied & ~np.isfinite(numeric)).any()):
+                return _rank_race_unavailable(
+                    "rank_pair_population_contract_violation"
+                )
         stored_cov = pd.to_numeric(
             group["challenger_coverage"], errors="coerce"
         ).dropna().unique()
@@ -652,16 +746,47 @@ def grade_market(market: str) -> dict[str, Any]:
         raise ValueError(f"unsupported market {market!r}")
     source_path = board_shadow._lane_b_path(m)
     out_path = _outcome_path(m)
+    source_artifact = f"{board_shadow.STORE_DIR}/{m.lower()}_discovery.parquet"
+    output_artifact = (
+        f"{board_shadow.STORE_DIR}/{m.lower()}_discovery_outcomes.parquet"
+    )
     if not source_path.exists():
         return {
             "market": m, "available": False, "state": "SOURCE_ABSENT",
             "n_source": 0, "n_rows": 0,
+            "source_artifact": source_artifact,
+            "output_artifact": output_artifact,
+            "source_cutoff": None,
+            "source_session_count": 0,
+            "source_identity_digest": None,
+            "outcome_identity_digest": None,
+            "identity_parity": None,
+            "source_cohort_digest": None,
+            "outcome_cohort_digest": None,
+            "cohort_parity": None,
+            "source_contract": "lane_b_append_only_keep_first",
         }
     try:
         source = pd.read_parquet(source_path)
     except Exception as exc:
         raise RuntimeError(f"{m} discovery source unreadable: {exc}") from exc
     fresh = grade_frame(m, source)
+    source_identity_digest = _identity_digest(source)
+    outcome_identity_digest = _identity_digest(fresh)
+    identity_parity = (
+        len(source) == len(fresh)
+        and source_identity_digest == outcome_identity_digest
+    )
+    if not identity_parity:
+        raise RuntimeError(f"{m} discovery outcome identity parity failed")
+    source_cohort_digest = _cohort_digest(source)
+    outcome_cohort_digest = _cohort_digest(fresh)
+    cohort_parity = source_cohort_digest == outcome_cohort_digest
+    if not cohort_parity:
+        raise RuntimeError(f"{m} discovery outcome cohort parity failed")
+    source_dates = source["session_date"].dropna().astype(str)
+    source_cutoff = str(source_dates.max()) if len(source_dates) else None
+    source_session_count = int(source_dates.nunique())
     board = board_shadow._read_board_parquet(m, ["date", "ticker"])
     board_admission_bridge = summarize_board_admission_bridge(source, board)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -670,9 +795,10 @@ def grade_market(market: str) -> dict[str, Any]:
     if out_path.exists():
         try:
             prior = pd.read_parquet(out_path).reindex(columns=list(SCHEMA))
-            changed = not _same_frame(prior, fresh)
-        except Exception:
-            changed = True
+        except Exception as exc:
+            raise RuntimeError(f"{m} prior outcome store unreadable: {exc}") from exc
+        _assert_append_only_source_continuity(prior, fresh)
+        changed = not _same_frame(prior, fresh)
 
     if changed:
         tmp = out_path.with_suffix(".tmp.parquet")
@@ -697,6 +823,17 @@ def grade_market(market: str) -> dict[str, Any]:
         "n_suspended": int(counts.get(SUSPENDED, 0)),
         "n_unavailable_price": int(counts.get(UNAVAILABLE_PRICE, 0)),
         "n_no_fill": int(counts.get(NO_FILL, 0)),
+        "source_artifact": source_artifact,
+        "output_artifact": output_artifact,
+        "source_cutoff": source_cutoff,
+        "source_session_count": source_session_count,
+        "source_identity_digest": source_identity_digest,
+        "outcome_identity_digest": outcome_identity_digest,
+        "identity_parity": identity_parity,
+        "source_cohort_digest": source_cohort_digest,
+        "outcome_cohort_digest": outcome_cohort_digest,
+        "cohort_parity": cohort_parity,
+        "source_contract": "lane_b_append_only_keep_first",
         "terminal_clean8_21": terminal8,
         "terminal_clean15_126": terminal15,
         "candidate_metrics": summarize_outcomes(fresh),

@@ -8,6 +8,8 @@ Covers the four axes it standardizes:
 """
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -228,6 +230,27 @@ def test_prophet_discovery_outcome_parity_with_shared_grader_and_benchmark(monke
     assert row["outcome_state"] == pdg.MATURED
     assert row["survivorship"] == "no_dead_name_store"
 
+
+def test_prophet_discovery_uses_canonical_split_adjusted_series(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+
+    adjusted = _trend(180, step=1.0)
+    raw_with_split_gap = adjusted.copy()
+    raw_with_split_gap.iloc[:8] *= 4.0
+    sig = str(adjusted.index[5].date())
+
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: adjusted)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: adjusted)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    row = pdg.grade_frame("HK", _discovery_rows("0005.HK", session_date=sig)).iloc[0]
+    canonical = grading.forward_metrics(adjusted, sig, horizons=pdg.HORIZONS)
+    false_raw = grading.forward_metrics(raw_with_split_gap, sig, horizons=pdg.HORIZONS)
+    assert row["fwd_ret_5"] == pytest.approx(canonical["fwd_ret_5"])
+    assert row["fwd_ret_5"] > -0.5
+    assert false_raw["fwd_ret_5"] < -0.5
+
+
 def test_prophet_discovery_outcome_uses_shared_suspension_law(monkeypatch):
     from engine import prophet_discovery_grade as pdg
     close = _trend(30)
@@ -281,6 +304,24 @@ def test_prophet_discovery_outcomes_preserve_raw_identity_collisions(monkeypatch
     assert set(out["security_ref_raw"]) == {"ABC.TO", " ABC.TO "}
     assert not {"rank", "score", "board_pos", "featured", "published_authority"} & set(out.columns)
 
+
+def test_prophet_discovery_refuses_duplicate_observation_identity(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+
+    discovery = _discovery_rows("0005.HK")
+    discovery = pd.concat([discovery, discovery.copy()], ignore_index=True)
+    monkeypatch.setattr(
+        pdg.board_ledger,
+        "_name_close",
+        lambda *_a, **_k: (_ for _ in ()).throw(
+            AssertionError("corrupt identity must fail before price access")
+        ),
+    )
+
+    with pytest.raises(ValueError, match="duplicate observation identity"):
+        pdg.grade_frame("HK", discovery)
+
+
 def test_prophet_discovery_store_upserts_maturation_without_duplicate(tmp_path, monkeypatch):
     from engine import prophet_discovery_grade as pdg
     from lib import config
@@ -326,6 +367,46 @@ def test_prophet_discovery_store_upserts_maturation_without_duplicate(tmp_path, 
     pd.testing.assert_frame_equal(before, after)
 
 
+@pytest.mark.parametrize("mutation", ["rewrite_metadata", "delete_identity"])
+def test_prophet_discovery_replay_refuses_source_revision_or_deletion(
+    mutation, tmp_path, monkeypatch
+):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    src = tmp_path / "prophet_shadow"
+    src.mkdir(parents=True)
+    source_path = src / "ca_discovery.parquet"
+    source = pd.concat([
+        _discovery_rows("ABC.TO", session_date="2026-01-12", market="CA"),
+        _discovery_rows("XYZ.TO", session_date="2026-01-13", market="CA"),
+    ], ignore_index=True)
+    source.to_parquet(source_path, index=False)
+
+    close = _trend(180)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    first = pdg.grade_market("CA")
+    assert first["n_rows"] == 2
+    outcome_path = src / "ca_discovery_outcomes.parquet"
+    before = pd.read_parquet(outcome_path)
+
+    revised = source.copy()
+    if mutation == "rewrite_metadata":
+        revised.loc[0, "candidate_origin"] = "revised_without_lineage"
+    else:
+        revised = revised.iloc[:1].copy()
+    revised.to_parquet(source_path, index=False)
+
+    with pytest.raises(RuntimeError, match="append-only source continuity"):
+        pdg.grade_market("CA")
+    after = pd.read_parquet(outcome_path)
+    pd.testing.assert_frame_equal(before, after)
+
+
 def test_prophet_discovery_grader_is_explicit_and_not_render_wired():
     from pathlib import Path
     root = Path(__file__).resolve().parents[1]
@@ -348,6 +429,23 @@ def test_prophet_discovery_cli_runs_both_markets_once(monkeypatch):
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", fake)
     assert runner.main() == 0
     assert called["n"] == 1
+
+
+def test_prophet_discovery_cli_reports_structured_failure(monkeypatch, capsys):
+    import scripts.grade_prophet_discovery as runner
+
+    def fail():
+        raise RuntimeError("source continuity violated")
+
+    monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", fail)
+    assert runner.main() == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert payload == {
+        "available": False,
+        "state": "ERROR",
+        "error_type": "RuntimeError",
+        "error": "source continuity violated",
+    }
 
 
 def test_prophet_discovery_summary_reports_only_canonical_measured_metrics():
@@ -401,6 +499,24 @@ def test_prophet_discovery_summary_reports_only_canonical_measured_metrics():
     assert "catastrophic" not in serialized
 
 
+def test_prophet_discovery_summary_names_missing_benchmark_coverage(monkeypatch):
+    from engine import prophet_discovery_grade as pdg
+
+    close = _trend(180)
+    sig = str(close.index[5].date())
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: None)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    frame = pdg.grade_frame("HK", _discovery_rows("0005.HK", session_date=sig))
+    summary = pdg.summarize_outcomes(frame)
+    assert bool(frame.iloc[0]["benchmark_available"]) is False
+    assert summary["n_benchmark_available"] == 0
+    assert summary["benchmark_coverage_rate"] == pytest.approx(0.0)
+    assert summary["horizons"]["21d"]["n_matured"] == 1
+    assert summary["horizons"]["21d"]["excess_ret_median"] is None
+
+
 def test_prophet_discovery_grade_market_receipt_includes_candidate_summary(tmp_path, monkeypatch):
     from engine import prophet_discovery_grade as pdg
     from lib import config
@@ -409,9 +525,11 @@ def test_prophet_discovery_grade_market_receipt_includes_candidate_summary(tmp_p
     src = tmp_path / "prophet_shadow"
     src.mkdir(parents=True)
     sig = "2026-01-12"
+    source_path = src / "ca_discovery.parquet"
     _discovery_rows("ABC.TO", session_date=sig, market="CA").to_parquet(
-        src / "ca_discovery.parquet", index=False
+        source_path, index=False
     )
+    source_before = source_path.read_bytes()
     close = _trend(180)
     monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
     monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: close)
@@ -421,6 +539,24 @@ def test_prophet_discovery_grade_market_receipt_includes_candidate_summary(tmp_p
     assert receipt["candidate_metrics"]["n_observations"] == 1
     assert receipt["candidate_metrics"]["horizons"]["21d"]["n_matured"] == 1
     assert receipt["candidate_metrics"]["terminal_states"]["clean8_21"]["n_matured"] == 1
+    assert receipt["source_artifact"] == "prophet_shadow/ca_discovery.parquet"
+    assert receipt["output_artifact"] == "prophet_shadow/ca_discovery_outcomes.parquet"
+    assert receipt["source_cutoff"] == sig
+    assert receipt["source_session_count"] == 1
+    assert len(receipt["source_identity_digest"]) == 64
+    assert len(receipt["outcome_identity_digest"]) == 64
+    assert receipt["source_identity_digest"] == receipt["outcome_identity_digest"]
+    assert receipt["identity_parity"] is True
+    assert len(receipt["source_cohort_digest"]) == 64
+    assert len(receipt["outcome_cohort_digest"]) == 64
+    assert receipt["source_cohort_digest"] == receipt["outcome_cohort_digest"]
+    assert receipt["cohort_parity"] is True
+    assert receipt["source_contract"] == "lane_b_append_only_keep_first"
+    assert source_path.read_bytes() == source_before
+    assert sorted(path.name for path in src.iterdir()) == [
+        "ca_discovery.parquet",
+        "ca_discovery_outcomes.parquet",
+    ]
 
 
 def test_prophet_discovery_outcome_preserves_discovery_reason_and_availability(monkeypatch):
@@ -529,6 +665,10 @@ def test_prophet_discovery_board_admission_bridge_separates_prior_same_day_and_m
     assert s["calendar_lead_days"]["p75"] == pytest.approx(4.0)
     assert s["metric_semantics"] == "board_admission_not_eventual_winner"
     assert "eventual_winner_recall" not in s
+    assert s["history_coverage"] == "window_bounded_positive_records_only"
+    assert s["continuous_tenure_supported"] is False
+    assert s["exact_exit_supported"] is False
+    assert s["exit_reason_supported"] is False
 
 
 def test_prophet_discovery_board_admission_bridge_degrades_without_board_store():
@@ -542,6 +682,10 @@ def test_prophet_discovery_board_admission_bridge_degrades_without_board_store()
         "available": False,
         "reason": "board_store_absent",
         "metric_semantics": "board_admission_not_eventual_winner",
+        "history_coverage": "window_bounded_positive_records_only",
+        "continuous_tenure_supported": False,
+        "exact_exit_supported": False,
+        "exit_reason_supported": False,
     }
 
 
@@ -637,6 +781,30 @@ def test_prophet_rank_race_uses_same_covered_names_and_canonical_rank_ic():
     assert h5["challenger_rank_ic"]["hac_lags_requested"] == 5
 
 
+def test_prophet_rank_race_surfaces_offlist_attempt_without_widening_population():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    pairs["challenger_offlist_n"] = 3
+    outcomes = pd.concat([
+        outcomes,
+        pd.DataFrame([{
+            "session_date": str(pd.bdate_range("2026-01-05", periods=1)[0].date()),
+            "security_ref": "OFFLIST.HK",
+            "security_ref_raw": "OFFLIST.HK",
+            "excess_ret_5": 9.99,
+        }]),
+    ], ignore_index=True)
+
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    race = summary["challengers"]["hk_h3_ah_discount_rank_v1"]
+    assert summary["available"] is True
+    assert race["n_population_rows"] == 60
+    assert race["n_ranked_rows"] == 60
+    assert race["challenger_offlist_n_max"] == 3
+    assert race["horizons"]["5d"]["n_paired_dates"] == 6
+
+
 def test_prophet_rank_race_never_gives_incumbent_credit_on_names_challenger_could_not_rank():
     from engine import prophet_discovery_grade as pdg
 
@@ -682,6 +850,26 @@ def test_prophet_rank_race_refuses_fractional_population_denominator():
     assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
 
 
+@pytest.mark.parametrize(
+    ("column", "bad_value"),
+    [
+        ("incumbent_rank", np.inf),
+        ("challenger_rank", np.inf),
+        ("challenger_offlist_n", np.inf),
+    ],
+)
+def test_prophet_rank_race_refuses_non_finite_persisted_inputs(column, bad_value):
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    pairs[column] = pairs[column].astype(float)
+    pairs.loc[pairs.index[0], column] = bad_value
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is False
+    assert summary["reason"] == "rank_pair_population_contract_violation"
+    assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
+
+
 def test_prophet_rank_race_store_absence_is_explicit(tmp_path, monkeypatch):
     from engine import prophet_discovery_grade as pdg
     from lib import config
@@ -721,4 +909,3 @@ def test_prophet_rank_race_store_refuses_foreign_market_rows(tmp_path, monkeypat
         "reason": "rank_pair_store_foreign_market",
         "metric_semantics": "same_population_same_outcomes_shadow_rank_race",
     }
-
