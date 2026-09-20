@@ -259,8 +259,9 @@
   .mmb-rail{width:52px;flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 0;border-right:1px solid color-mix(in srgb,var(--mmb-line) 55%,transparent)}
   .mmb-rail .logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(145deg,var(--mmb-glow),var(--mmb-violet));display:grid;place-items:center;margin-bottom:8px}
   .mmb-rail .logo svg{width:16px;height:16px;fill:#fff}
-  .mmb-icon{width:34px;height:34px;border:none;background:transparent;border-radius:10px;color:var(--mmb-muted);cursor:pointer;display:grid;place-items:center;transition:background .13s,color .13s}
+  .mmb-icon{width:40px;height:40px;border:none;background:transparent;border-radius:10px;color:var(--mmb-muted);cursor:pointer;display:grid;place-items:center;transition:background .13s,color .13s;touch-action:manipulation}
   .mmb-icon:hover{background:color-mix(in srgb,var(--mmb-ink) 7%,transparent);color:var(--mmb-text)}
+  .mmb-icon:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info) 70%,transparent);outline-offset:2px}
   .mmb-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8}
   .mmb-rail .sp{flex:1}
   .mmb-threads{width:0;flex:none;overflow:hidden auto;border-right:1px solid color-mix(in srgb,var(--mmb-line) 55%,transparent);transition:width .26s ease}
@@ -905,8 +906,9 @@
   .mmb-gate h2{margin:0;font:800 clamp(20px,2.6vw,26px)/1.1 var(--mmb-font);letter-spacing:-.01em;
     background:linear-gradient(176deg,var(--mmb-text) 22%,color-mix(in srgb,var(--mmb-text) 54%,var(--mmb-muted)));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
   .mmb-gate p{margin:0;color:var(--mmb-muted);font:400 13.5px/1.5 var(--mmb-font);max-width:340px}
-  .mmb-signin{margin-top:6px;padding:12px 26px;border:none;border-radius:12px;cursor:pointer;color:#fff;font:700 14px/1 var(--mmb-font);
+  .mmb-signin{margin-top:6px;min-height:40px;padding:12px 26px;border:none;border-radius:12px;cursor:pointer;color:#fff;font:700 14px/1 var(--mmb-font);touch-action:manipulation;
     background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-info) 92%,#fff),var(--mmb-info));box-shadow:0 10px 28px -8px color-mix(in srgb,var(--mmb-info) 70%,transparent)}
+  .mmb-signin:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info) 70%,transparent);outline-offset:2px}
   @media(max-width:560px){#mmb-panel,#mmb-panel.max,#mmb-panel.mmb-top{right:0;left:0;bottom:0;top:auto;margin:0;transform-origin:bottom center;transform:translateY(20px);width:100vw;height:88vh;border-radius:20px 20px 0 0}
     #mmb-panel.open{transform:none} .mmb-cards,#mmb-panel.max .mmb-cards{grid-template-columns:1fr}
     /* mobile is compact-only: no large mode (the overlay isn't responsive there) */

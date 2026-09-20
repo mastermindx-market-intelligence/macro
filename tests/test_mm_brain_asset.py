@@ -277,3 +277,21 @@ def test_mm_brain_template_and_site_copy_stay_identical() -> None:
     if not all(path.exists() for path in COPIES):
         pytest.skip("paired asset absent (sparse checkout)")
     assert COPIES[0].read_bytes() == COPIES[1].read_bytes()
+
+
+
+@pytest.mark.parametrize("path", COPIES, ids=lambda p: str(p.relative_to(ROOT)))
+def test_brain_shell_primary_controls_keep_touch_and_focus_floor(
+    path: pathlib.Path,
+) -> None:
+    """Header actions and the signed-out CTA must remain finger/keyboard reachable."""
+    text = _read(path)
+    start, close = _css_template_span(text)
+    css = text[start + 1 : close]
+
+    assert ".mmb-icon{width:40px;height:40px;" in css
+    assert ".mmb-icon:focus-visible{outline:2px solid" in css
+    assert ".mmb-icon{width:34px;height:34px;" not in css
+    assert "touch-action:manipulation" in css
+    assert ".mmb-signin{margin-top:6px;min-height:40px;" in css
+    assert ".mmb-signin:focus-visible{outline:2px solid" in css
