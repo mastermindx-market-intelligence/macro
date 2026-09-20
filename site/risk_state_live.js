@@ -18,20 +18,20 @@
      tests/test_risk_state_live_copy_sync.py). These exist so an intraday band flip can
      never leave render-time "Risk-on" prose sitting next to a live Mixed gauge. */
   var HEADLINE = {
-    RISK_ON: ["Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.",
-              "风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。"],
+    RISK_ON: ["Risk-on — the composite backdrop is supportive. Check participation and entry quality before treating strength as broad.",
+              "风险偏好 — 综合背景提供支持。在把强势视为普涨前，请检查市场参与度与入场质量。"],
     MIXED: ["Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
             "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"],
     RISK_OFF: ["Risk-off — stress is elevated; defend capital first.",
                "避险 — 压力升高；优先防守。"]
   };
   var SUBLINE = {
-    RISK_ON: ["GREEN — Trend-following supported", "偏多 — 顺势而为受支撑"],
+    RISK_ON: ["GREEN — Check participation", "偏多 — 检查广度"],
     MIXED: ["YELLOW — Trade with caution", "谨慎操作"],
     RISK_OFF: ["RED — Defend capital first", "优先保住本金"]
   };
   var ACTION = {
-    RISK_ON: ["Follow the trend. Add on strength.", "顺势而为，强势中加仓。"],
+    RISK_ON: ["Stay selective. Follow confirmed strength.", "保持精选，跟随已确认的强势方向。"],
     MIXED: ["Trade small. Stay selective.", "缩小仓位，精选标的。"],
     RISK_OFF: ["Reduce risk. Protect capital.", "降低风险，保护本金。"]
   };
@@ -275,14 +275,18 @@
         disp.verdict !== d.nightly.verdict) {
       var ntl = d.nightly;
       disp = { verdict: ntl.verdict, label_en: ntl.label_en, label_zh: ntl.label_zh,
-               color: ntl.color, score: disp.score, raw_score: disp.raw_score };
+               color: ntl.color, score: disp.score, raw_score: disp.raw_score,
+               presentation: ntl.presentation || null };
     }
+    var pres = (disp.presentation && typeof disp.presentation === "object") ? disp.presentation : null;
+    var stanceEn = (pres && pres.stance_en) || disp.label_en || disp.verdict;
+    var stanceZh = (pres && pres.stance_zh) || disp.label_zh || stanceEn;
     if (bakedLabelEn === null) {
       var b0 = document.querySelector(".mx5-verdict-word .l-en");
       bakedLabelEn = b0 ? b0.textContent.trim() : "";
     }
     var arr = word.querySelector(".arr");
-    verdictBL(word, disp);
+    setBL(word, stanceEn, stanceZh);
     if (arr) word.appendChild(arr);
     var sc = document.getElementById("ms-score");
     if (sc && disp.score != null) sc.textContent = disp.score;
@@ -309,7 +313,7 @@
         if (bigSc) bigSc.textContent = disp.score;
         /* v5 verdict word next to big-score */
         var vw = document.querySelector(".mx5-verdict-word");
-        if (vw) setBL(vw, disp.label_en || disp.verdict, disp.label_zh || disp.label_en || disp.verdict);
+        if (vw) setBL(vw, stanceEn, stanceZh);
       }
     }
     /* VIS-04/COPY-02: also update progress fill width so bar matches live score */
@@ -323,12 +327,16 @@
     var col = COLOR[disp.verdict];
     if (col && HEADLINE[disp.verdict]) {
       var th = document.querySelector(".mx5-thesis");
-      if (th) setBL(th, HEADLINE[disp.verdict][0], HEADLINE[disp.verdict][1]);
+      var headlineEn = (pres && pres.headline_en) || HEADLINE[disp.verdict][0];
+      var headlineZh = (pres && pres.headline_zh) || HEADLINE[disp.verdict][1];
+      if (th) setBL(th, headlineEn, headlineZh);
       var sub = document.querySelector(".mx5-sub-line");
-      if (sub) setBL(sub, SUBLINE[disp.verdict][0], SUBLINE[disp.verdict][1]);
+      var subEn = (pres && pres.subline_en) || SUBLINE[disp.verdict][0];
+      var subZh = (pres && pres.subline_zh) || SUBLINE[disp.verdict][1];
+      if (sub) setBL(sub, subEn, subZh);
       var gsvgA = document.querySelector(".mx5-gauge-svg");
       if (gsvgA && disp.score != null)
-        gsvgA.setAttribute("aria-label", (disp.label_en || disp.verdict) + " — score " + disp.score);
+        gsvgA.setAttribute("aria-label", stanceEn + " — score " + disp.score);
       /* gauge cluster color scope — big-score color/glow are CSS keyed off this class */
       var grow = document.querySelector(".mx5-sc-gauge-row");
       if (grow) {
@@ -356,12 +364,14 @@
       }
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
+      var actionEn = (pres && pres.action_en) || ACTION[disp.verdict][0];
+      var actionZh = (pres && pres.action_zh) || ACTION[disp.verdict][1];
       if (wl && ACTION[disp.verdict])
-        setBL(wl, ACTION[disp.verdict][0], ACTION[disp.verdict][1]);
+        setBL(wl, actionEn, actionZh);
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
-        setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",
-                  (disp.label_zh || disp.label_en || disp.verdict) + " · " + disp.score + "/100");
+        setBL(ws, stanceEn + " · " + disp.score + "/100",
+                  stanceZh + " · " + disp.score + "/100");
       var wicon = document.querySelector("[data-wtd-primary] .mx5-action-icon");
       if (wicon) {
         wicon.classList.remove("mx5-ai-green", "mx5-ai-yellow", "mx5-ai-gray");

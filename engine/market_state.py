@@ -445,6 +445,99 @@ _COLOR = {"RISK_ON": "green", "MIXED": "yellow", "RISK_OFF": "red"}
 _VERDICT_ORDER = ["RISK_OFF", "MIXED", "RISK_ON"]
 
 
+def _market_presentation(verdict: str, components: list, *, asof: str | None,
+                         input_vintages: dict | None, market: str) -> dict | None:
+    """US-only descriptive copy projection; never changes score or verdict authority."""
+    if market != "us":
+        return None
+
+    base = {
+        "RISK_OFF": ("Risk-off", "避险",
+                     "Risk-off — stress is elevated; defend capital first.",
+                     "避险 — 压力升高；优先保住本金。",
+                     "RED — Defend capital first", "优先保住本金",
+                     "Reduce risk. Protect capital.", "降低风险，保护本金。"),
+        "MIXED": ("Mixed / transition", "混合 / 转换",
+                  "Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
+                  "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。",
+                  "YELLOW — Trade with caution", "谨慎操作",
+                  "Trade small. Stay selective.", "缩小仓位，精选标的。"),
+    }
+    if verdict in base:
+        stance_en, stance_zh, headline_en, headline_zh, sub_en, sub_zh, act_en, act_zh = base[verdict]
+        return {
+            "schema": "market_state.presentation.v1", "state": "not_applicable",
+            "stance_en": stance_en, "stance_zh": stance_zh,
+            "headline_en": headline_en, "headline_zh": headline_zh,
+            "subline_en": sub_en, "subline_zh": sub_zh,
+            "action_en": act_en, "action_zh": act_zh,
+            "breadth_score": None, "breadth_asof": None,
+        }
+
+    if verdict != "RISK_ON":
+        return None
+
+    breadth = [c for c in (components or []) if isinstance(c, dict) and c.get("key") == "breadth"]
+    vintages = input_vintages if isinstance(input_vintages, dict) else {}
+    vintage = vintages.get("pct_above_200") if isinstance(vintages.get("pct_above_200"), dict) else {}
+    score = _num(breadth[0].get("score")) if len(breadth) == 1 else None
+    valid = (
+        len(breadth) == 1
+        and score is not None and 0 <= score <= 100
+        and not bool(breadth[0].get("degraded"))
+        and bool(asof) and vintage.get("asof") == asof
+        and vintage.get("stale") is False
+    )
+    if not valid:
+        return {
+            "schema": "market_state.presentation.v1", "state": "unverified",
+            "stance_en": "Risk-on composite", "stance_zh": "风险偏好合成",
+            "headline_en": "Risk-on composite — participation is unverified. Do not infer a broad rally until breadth is current.",
+            "headline_zh": "风险偏好合成 — 市场参与度尚未验证。广度更新前，不应推断为普涨行情。",
+            "subline_en": "GREEN — Breadth unverified", "subline_zh": "偏多 — 广度待验证",
+            "action_en": "Stay selective until participation is verified.",
+            "action_zh": "在参与度得到验证前保持精选。",
+            "breadth_score": score, "breadth_asof": vintage.get("asof"),
+        }
+
+    score_i = int(round(score))
+    if score < 42:
+        state = "weak"
+        stance = ("Selective risk-on", "选择性风险偏好")
+        headline = (
+            "Selective risk-on — the composite backdrop is supportive, but participation is weak. Stay selective; this is not a broad-market all-clear.",
+            "选择性风险偏好 — 综合背景仍有支撑，但市场参与度偏弱。保持精选；这不是全市场放行信号。",
+        )
+        sub = ("GREEN — Selective · weak breadth", "偏多 — 精选 · 广度偏弱")
+        action = ("Stay selective. Follow confirmed leadership.", "保持精选，跟随已确认的领导方向。")
+    elif score < 60:
+        state = "uneven"
+        stance = ("Selective risk-on", "选择性风险偏好")
+        headline = (
+            "Selective risk-on — the composite backdrop is supportive, but participation is uneven. Treat strength as selective, not broad.",
+            "选择性风险偏好 — 综合背景仍有支撑，但市场参与度不均。应把强势视为选择性机会，而非普涨。",
+        )
+        sub = ("GREEN — Selective · uneven breadth", "偏多 — 精选 · 广度不均")
+        action = ("Stay selective. Follow confirmed strength.", "保持精选，跟随已确认的强势方向。")
+    else:
+        state = "supportive"
+        stance = ("Risk-on", "风险偏好")
+        headline = (
+            "Risk-on — participation is supportive. Trend-following is supported, but entry quality still matters.",
+            "风险偏好 — 市场参与度提供支持。顺势交易得到支撑，但入场质量仍然重要。",
+        )
+        sub = ("GREEN — Breadth supportive", "偏多 — 广度支持")
+        action = ("Follow the trend. Check entry quality.", "顺势而为，同时检查入场质量。")
+    return {
+        "schema": "market_state.presentation.v1", "state": state,
+        "stance_en": stance[0], "stance_zh": stance[1],
+        "headline_en": headline[0], "headline_zh": headline[1],
+        "subline_en": sub[0], "subline_zh": sub[1],
+        "action_en": action[0], "action_zh": action[1],
+        "breadth_score": score_i, "breadth_asof": vintage.get("asof"),
+    }
+
+
 def _verdict_from_score(score: int) -> str:
     if score >= 60:
         return "RISK_ON"
@@ -992,6 +1085,11 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
 
         flip_en, flip_zh = _flip_text(comps, verdict, raw_score=raw_score,
                                       radar=radar, overrides=overrides)
+        input_vintages = ((latest.get("conditions") or {}).get("vintages") or {})
+        presentation = _market_presentation(
+            verdict, comps, asof=latest.get("date"),
+            input_vintages=input_vintages, market=profile.key,
+        )
         return {
             "schema": "market_state.v1",
             "asof": latest.get("date"),
@@ -1008,7 +1106,9 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
             "color": _COLOR[verdict],
             "label_en": _LABEL[verdict][0], "label_zh": _LABEL[verdict][1],
             "posture_en": _POSTURE[verdict][0], "posture_zh": _POSTURE[verdict][1],
-            "headline_en": _HEADLINES[verdict][0], "headline_zh": _HEADLINES[verdict][1],
+            "headline_en": ((presentation or {}).get("headline_en") or _HEADLINES[verdict][0]),
+            "headline_zh": ((presentation or {}).get("headline_zh") or _HEADLINES[verdict][1]),
+            "presentation": presentation,
             "components": comps,
             "mtf": tape,
             "overrides": overrides,

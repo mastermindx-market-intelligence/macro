@@ -212,11 +212,25 @@ def _verdict_block(ms: dict | None) -> dict:
         "verdict": ms.get("verdict"), "score": ms.get("score"), "raw_score": ms.get("raw_score"),
         "color": ms.get("color"), "label_en": ms.get("label_en"), "label_zh": ms.get("label_zh"),
         "headline_en": ms.get("headline_en"), "headline_zh": ms.get("headline_zh"),
+        "presentation": ms.get("presentation"),
         "radar": {k: (ms.get("radar") or {}).get(k)
                   for k in ("state", "state_ungated", "top_score", "label_en", "label_zh",
                             "context_gate", "amp", "ceiling")},
         "overrides": ms.get("overrides") or [],
     }
+
+
+def _display_presentation(verdict: str | None, source_ms: dict | None) -> dict | None:
+    """Project copy for the debounced DISPLAY verdict from the same measured snapshot."""
+    if not verdict or not isinstance(source_ms, dict):
+        return None
+    return market_state._market_presentation(
+        verdict,
+        source_ms.get("components") or [],
+        asof=source_ms.get("asof"),
+        input_vintages=source_ms.get("input_vintages") or {},
+        market=source_ms.get("market") or "us",
+    )
 
 
 def _debounce(prev: dict, live_verdict: str | None, baseline_verdict: str | None,
@@ -379,6 +393,12 @@ def build(offline: bool = False) -> dict:
         "band_changed": deb.get("band_changed", False),
         "pending": deb.get("pending"),
     }
+    display_source = (
+        live_ms if live_active and isinstance(live_ms, dict)
+        else nightly_ms if isinstance(nightly_ms, dict) and nightly_ms
+        else live_ms
+    )
+    display["presentation"] = _display_presentation(disp_verdict, display_source)
 
     out = {
         "schema": "risk_state.v1",

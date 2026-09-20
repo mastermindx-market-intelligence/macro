@@ -16,7 +16,8 @@ def _glance_source() -> str:
     return source[start:end]
 
 
-def _render_glance(*, catalysts=True, policy_state="QUIET", risk_elevated=True) -> str:
+def _render_glance(*, catalysts=True, policy_state="QUIET", risk_elevated=True,
+                   presentation=None) -> str:
     state = {
         "color": "yellow",
         "label_en": "Mixed",
@@ -28,6 +29,8 @@ def _render_glance(*, catalysts=True, policy_state="QUIET", risk_elevated=True) 
             "do_zh": "避免追逐过度延伸的领涨股。",
         },
     }
+    if presentation is not None:
+        state["presentation"] = presentation
     events = (
         [{"label": "FOMC rate decision", "label_zh": "FOMC 利率决议", "impact": "high"}]
         if catalysts
@@ -78,7 +81,7 @@ def test_quiet_policy_copy_does_not_consume_a_glance_row():
 def test_primary_copy_is_short_and_live_patchable():
     glance = _glance_source()
     assert "Trade small. Stay selective." in glance
-    assert "{{ MS.label_en }} &middot; {{ MS.score }}/100" in glance
+    assert "_wtd_present.get('stance_en') or MS.label_en" in glance
 
 
 def test_glance_uses_the_dashboard_typography_without_alert_labels():
@@ -95,3 +98,18 @@ def test_glance_uses_the_dashboard_typography_without_alert_labels():
     assert "font-weight:760" not in css
     assert "text-transform:uppercase" not in css
     assert "mx5-action-verb" not in html
+
+
+def test_primary_copy_uses_market_state_presentation_when_available():
+    html = _render_glance(
+        presentation={
+            "stance_en": "Selective risk-on",
+            "stance_zh": "选择性风险偏好",
+            "action_en": "Stay selective. Follow confirmed leadership.",
+            "action_zh": "保持精选，跟随已确认的领导方向。",
+        },
+        risk_elevated=False,
+    )
+    assert "Selective risk-on" in html
+    assert "Stay selective. Follow confirmed leadership." in html
+    assert "Mixed · 44/100" not in html

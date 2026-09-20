@@ -1,8 +1,9 @@
-"""Guard: the verdict-keyed Tier-1 copy mirrored into site/risk_state_live.js must
-stay in lockstep with its sources of truth — engine/market_state.py _HEADLINES and
-the dashboard.html.j2 sub-line / What-To-Do vocab. The live patcher rewrites those
-nodes on every intraday tick; silent drift here would put wrong stance words on the
-glance tier (the exact bug class this file exists to prevent, 2026-07-13).
+"""Guard: the US live patcher's verdict-keyed Tier-1 copy stays aligned with
+the dashboard and with shared engine copy where semantics are shared. RISK_ON has an
+intentional safer US legacy fallback because the engine _HEADLINES constant is also
+used by non-US profiles; MIXED/RISK_OFF still mirror exactly. Silent drift here would
+put wrong stance words on the glance tier (the exact bug class this file exists to
+prevent, 2026-07-13).
 
 Stdlib-only on purpose: the engine dict is read via ast (no engine import, no pandas).
 """
@@ -43,14 +44,17 @@ def _js_map(js: str, name: str) -> dict[str, tuple[str, str]]:
     return out
 
 
-def test_js_headlines_mirror_engine():
+def test_js_headlines_mirror_shared_engine_copy_and_keep_safe_us_fallback():
     js = LIVE_JS.read_text(encoding="utf-8")
     engine = _engine_headlines()
     mirrored = _js_map(js, "HEADLINE")
-    for v in VERDICTS:
+    for v in ("MIXED", "RISK_OFF"):
         assert mirrored[v] == tuple(engine[v]), (
             f"HEADLINE[{v}] in risk_state_live.js drifted from engine _HEADLINES"
         )
+    risk_on = mirrored["RISK_ON"][0].lower()
+    assert "line up" not in risk_on
+    assert "participation" in risk_on
 
 
 def test_js_vocab_present_in_dashboard_template():
@@ -78,3 +82,13 @@ def test_paired_template_copy_identical():
         "templates/risk_state_live.js and site/risk_state_live.js must be byte-identical "
         "(run: python -m scripts.check_template_site_sync --fix)"
     )
+
+
+def test_dashboard_market_state_consumes_presentation_projection():
+    dash = DASH.read_text(encoding="utf-8")
+    assert "MS.presentation" in dash
+    for key in ("stance_en", "stance_zh", "subline_en", "subline_zh",
+                "action_en", "action_zh"):
+        assert key in dash, f"dashboard missing Market State presentation field {key}"
+    assert "{'green':'Trend-following supported'" not in dash
+    assert "{'green':'Follow the trend. Add on strength.'" not in dash

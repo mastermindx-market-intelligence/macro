@@ -129,6 +129,8 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         var bigEl   = reg(".mx5-big-score", new El("", "mx5-big-score", "{BAKED_SCORE}"));
         var vwEl    = reg(".mx5-verdict-word", new El("", "mx5-verdict-word", {BAKED_WORD!r}));
         var thesis  = reg(".mx5-thesis", new El("", "mx5-thesis", "Risk-on — the tape"));
+        var subline = reg(".mx5-sub-line", new El("", "mx5-sub-line", "GREEN — Trend-following supported"));
+        var action  = reg("[data-wtd-primary] .mx5-action-label", new El("", "mx5-action-label", "Follow the trend. Add on strength."));
         var pill    = reg("#ms-live-pill", new El("ms-live-pill", "on"));
         reg("#ms-date", new El("ms-date", "", "{BAKED_SESSION}"));
         reg("#regime-asof", new El("regime-asof", "", "{BAKED_SESSION}"));
@@ -140,7 +142,10 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         out.word  = (wordEl.children[0] || {}).textContent || wordEl.textContent;
         out.score = String(scoreEl.textContent);
         out.big   = String(bigEl.textContent);
+        out.verdict_word = (vwEl.children[0] || {}).textContent || vwEl.textContent;
         out.thesis = (thesis.children[0] || {}).textContent || thesis.textContent;
+        out.subline = (subline.children[0] || {}).textContent || subline.textContent;
+        out.action = (action.children[0] || {}).textContent || action.textContent;
         out.pill_on = pill.hasClass("on");
         """
     else:
@@ -807,3 +812,58 @@ class TestSyntheticQuoteClockFlag:
             "regularMarketPrice": 412.6}}]}]}}   # no regularMarketTime
         q = lq.parse_yahoo_spark(payload)["0700.HK"]
         assert q["quote_ts_synthetic"] is True
+
+
+def _display_source_ms(verdict="RISK_ON", breadth_score=0):
+    return {
+        "market": "us",
+        "asof": BAKED_SESSION,
+        "verdict": verdict,
+        "components": [{
+            "key": "breadth", "score": breadth_score, "degraded": False,
+        }],
+        "input_vintages": {
+            "pct_above_200": {"asof": BAKED_SESSION, "stale": False},
+        },
+    }
+
+
+def test_display_presentation_follows_debounced_verdict_not_source_verdict():
+    source = _display_source_ms(verdict="RISK_ON", breadth_score=0)
+    p = brs._display_presentation("MIXED", source)
+    assert p["state"] == "not_applicable"
+    assert p["stance_en"] == "Mixed / transition"
+    assert p["breadth_score"] is None
+
+
+@needs_node
+@US_PAGES
+def test_us_same_session_uses_transported_selective_risk_presentation(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed["display"]["presentation"] = {
+        "stance_en": "Selective risk-on", "stance_zh": "选择性风险偏好",
+        "headline_en": "Selective risk-on — test weak breadth.",
+        "headline_zh": "选择性风险偏好 — 测试弱广度。",
+        "subline_en": "GREEN — Selective · weak breadth",
+        "subline_zh": "偏多 — 精选 · 广度偏弱",
+        "action_en": "Stay selective. Follow confirmed leadership.",
+        "action_zh": "保持精选，跟随已确认的领导方向。",
+    }
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+    assert not out.get("error"), out.get("error")
+    assert out["verdict_word"] == "Selective risk-on"
+    assert out["thesis"] == "Selective risk-on — test weak breadth."
+    assert out["subline"] == "GREEN — Selective · weak breadth"
+    assert out["action"] == "Stay selective. Follow confirmed leadership."
+
+
+@needs_node
+@US_PAGES
+def test_us_legacy_risk_on_payload_uses_safe_generic_copy(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+    assert not out.get("error"), out.get("error")
+    assert "line up" not in out["thesis"].lower()
+    assert "breadth and cross-asset" not in out["thesis"].lower()
+    assert out["action"] != "Follow the trend. Add on strength."
+    assert "select" in out["action"].lower() or "entry" in out["action"].lower()

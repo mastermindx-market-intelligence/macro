@@ -7268,6 +7268,7 @@ html[data-theme="light"] :is(
     } %}
     {% if market_state %}
     {% set MS = market_state %}
+    {% set _ms_present = MS.presentation if MS.presentation is mapping else {} %}
     {% set _va = {'green':'▲','yellow':'▶','red':'▼'}.get(MS.color, '▶') %}
     {% set _nalerts = (alerts|length if alerts else 0) + (1 if (latest.dislocation and latest.dislocation.dislocation_active) else 0) %}
     {# Pre-compute _band_weakest for verdict band Zone 2/3 (same logic as _weakest below) #}
@@ -7420,7 +7421,7 @@ html[data-theme="light"] :is(
             <span class="v-outof">/100</span>
             <div class="mx2-score-label-stack">
               <span class="mx2-score-label">{{ t('Market state','市场状态') }}</span>
-              <p class="v-word" id="ms-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh }}</span><span class="arr">{{ _va }}</span></p>
+              <p class="v-word" id="ms-word"><span class="l-en">{{ _ms_present.get('stance_en') or MS.label_en }}</span><span class="l-zh">{{ _ms_present.get('stance_zh') or MS.label_zh }}</span><span class="arr">{{ _va }}</span></p>
             </div>
             <div class="mx2-score-live-wrap">
               <span class="ms-live" id="ms-live-pill"></span>
@@ -7713,11 +7714,11 @@ html[data-theme="light"] :is(
         <div>
           <div class="mx5-score-line">
             <span class="mx5-big-score">{{ _mx5_score }}</span>
-            <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
+            <span class="mx5-verdict-word"><span class="l-en">{{ _ms_present.get('stance_en') or MS.label_en }}</span><span class="l-zh">{{ _ms_present.get('stance_zh') or MS.label_zh or MS.label_en }}</span></span>
           </div>
           <div class="mx5-sub-line">
-            <span class="l-en">{{ {'green':'GREEN','yellow':'YELLOW','red':'RED'}.get(MS.color,'—') }} &mdash; {{ {'green':'Trend-following supported','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,'') }}</span>
-            <span class="l-zh">{{ {'green':'偏多 — 顺势而为受支撑','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'') }}</span>
+            <span class="l-en">{{ _ms_present.get('subline_en') or {'green':'GREEN — Check participation','yellow':'YELLOW — Trade with caution','red':'RED — Defend capital first'}.get(MS.color,'') }}</span>
+            <span class="l-zh">{{ _ms_present.get('subline_zh') or {'green':'偏多 — 检查广度','yellow':'谨慎操作','red':'优先保住本金'}.get(MS.color,'') }}</span>
             {% if _mx5_ghost and _mx5_capw %}
             {{ help('The dial is capped at ' ~ _mx5_score ~ '; the six-signal blend is ' ~ _mx5_raw ~ '. The cap can only pull the dial down, never up.',
                     '刻度盘上限为 ' ~ _mx5_score ~ '；六项信号合成为 ' ~ _mx5_raw ~ '。上限只能压低刻度盘，不会抬高。') }}
@@ -8527,6 +8528,7 @@ html[data-theme="light"] :is(
   <div class="sx" id="sx-evidence" style="--isle-color:var(--isle-evidence)">
     {# Three-priority glance. Details stay in the Evidence dialog opened by the card.
        Priority order: stance, nearest event/weakest leg, active policy/risk radar. #}
+    {% set _wtd_present = (MS.get('presentation') or {}) if MS is mapping else {} %}
     <div class="sxg-face mx5-card-face" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-evidence')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-evidence');}">
       <div class="mx5-card-title"><span class="l-en">What To Do Now</span><span class="l-zh">现在怎么做</span></div>
       <div class="mx5-action-list">
@@ -8552,12 +8554,12 @@ html[data-theme="light"] :is(
           </div>
           <div class="mx5-action-text">
             <div class="mx5-action-label">
-              <span class="l-en">{{ {'green':'Follow the trend. Add on strength.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.') }}</span>
-              <span class="l-zh">{{ {'green':'顺势而为，强势中加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
+              <span class="l-en">{{ _wtd_present.get('action_en') or {'green':'Stay selective. Follow confirmed strength.','yellow':'Trade small. Stay selective.','red':'Reduce risk. Protect capital.'}.get(MS.color,'Stay selective.') }}</span>
+              <span class="l-zh">{{ _wtd_present.get('action_zh') or {'green':'保持精选，跟随已确认的强势方向。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
             </div>
             <div class="mx5-action-sub">
-              <span class="l-en">{{ MS.label_en }} &middot; {{ MS.score }}/100</span>
-              <span class="l-zh">{{ MS.label_zh or MS.label_en }} &middot; {{ MS.score }}/100</span>
+              <span class="l-en">{{ _wtd_present.get('stance_en') or MS.label_en }} &middot; {{ MS.score }}/100</span>
+              <span class="l-zh">{{ _wtd_present.get('stance_zh') or MS.label_zh or MS.label_en }} &middot; {{ MS.score }}/100</span>
             </div>
           </div>
         </div>

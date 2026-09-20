@@ -285,3 +285,135 @@ def test_market_state_ledger_preserves_measured_vs_policy_score_provenance():
     assert entry["radar_binding"] is False
     assert entry["radar_monitor_fresh"] is True
     assert entry["radar_authority_reason"] == "early_tier_advisory"
+
+
+def _participation_case(score, *, asof="2026-09-18", stale=False, degraded=False):
+    components = [{"key": "breadth", "score": score, "degraded": degraded}]
+    vintages = {"pct_above_200": {"asof": asof, "stale": stale}}
+    return components, vintages
+
+
+def test_risk_on_zero_breadth_is_selective_not_broad_all_clear():
+    components, vintages = _participation_case(0)
+    p = ms._market_presentation(
+        "RISK_ON", components, asof="2026-09-18",
+        input_vintages=vintages, market="us",
+    )
+    assert p["state"] == "weak"
+    assert p["breadth_score"] == 0
+    assert p["stance_en"] == "Selective risk-on"
+    assert "participation is weak" in p["headline_en"].lower()
+    assert "line up" not in p["headline_en"].lower()
+
+
+def test_risk_on_uneven_and_supportive_breadth_stay_distinct():
+    components, vintages = _participation_case(55)
+    uneven = ms._market_presentation(
+        "RISK_ON", components, asof="2026-09-18",
+        input_vintages=vintages, market="us",
+    )
+    components[0]["score"] = 60
+    supportive = ms._market_presentation(
+        "RISK_ON", components, asof="2026-09-18",
+        input_vintages=vintages, market="us",
+    )
+    assert uneven["state"] == "uneven"
+    assert uneven["stance_en"] == "Selective risk-on"
+    assert supportive["state"] == "supportive"
+    assert supportive["stance_en"] == "Risk-on"
+
+
+def test_risk_on_stale_or_wrong_session_breadth_is_unverified():
+    components, stale_v = _participation_case(80, stale=True)
+    stale = ms._market_presentation(
+        "RISK_ON", components, asof="2026-09-18",
+        input_vintages=stale_v, market="us",
+    )
+    _components, old_v = _participation_case(80, asof="2026-09-17")
+    old = ms._market_presentation(
+        "RISK_ON", components, asof="2026-09-18",
+        input_vintages=old_v, market="us",
+    )
+    assert stale["state"] == "unverified"
+    assert old["state"] == "unverified"
+    assert "unverified" in stale["headline_en"].lower()
+
+
+def test_weaker_market_verdict_is_never_upgraded_by_strong_breadth():
+    components, vintages = _participation_case(95)
+    mixed = ms._market_presentation(
+        "MIXED", components, asof="2026-09-18",
+        input_vintages=vintages, market="us",
+    )
+    off = ms._market_presentation(
+        "RISK_OFF", components, asof="2026-09-18",
+        input_vintages=vintages, market="us",
+    )
+    assert mixed["stance_en"] == "Mixed / transition"
+    assert off["stance_en"] == "Risk-off"
+    assert mixed["state"] == "not_applicable"
+    assert off["state"] == "not_applicable"
+
+
+def test_participation_projection_is_us_only():
+    components, vintages = _participation_case(0)
+    assert ms._market_presentation(
+        "RISK_ON", components, asof="2026-09-18",
+        input_vintages=vintages, market="cn",
+    ) is None
+
+
+def test_market_state_snapshot_attaches_us_presentation_without_changing_score():
+    def breadth_reader(_latest):
+        return {
+            "key": "breadth", "label_en": "Breadth & participation",
+            "label_zh": "广度与参与", "score": 0, "weight": 0.16,
+            "tone": "bad", "arrow": "▼", "read_en": "weak",
+            "read_zh": "弱", "metrics": [], "degraded": False,
+        }
+
+    def backdrop_reader(_latest):
+        return {
+            "key": "risk", "label_en": "Risk appetite", "label_zh": "风险偏好",
+            "score": 85, "weight": 0.84, "tone": "good", "arrow": "▲",
+            "read_en": "supportive", "read_zh": "支持", "metrics": [], "degraded": False,
+        }
+
+    profile = ms.MarketProfile(
+        key="us", indices=(), tape_noun_en="US indices", tape_noun_zh="美股指数",
+        component_readers=(breadth_reader, backdrop_reader),
+        radar_override=None, overrides=frozenset(),
+    )
+    latest = {
+        "date": "2026-09-18",
+        "conditions": {"vintages": {"pct_above_200": {
+            "asof": "2026-09-18", "stale": False,
+        }}},
+    }
+    out = ms.market_state_snapshot(latest, profile=profile)
+    assert out["score"] == 71
+    assert out["verdict"] == "RISK_ON"
+    assert out["presentation"]["state"] == "weak"
+    assert out["headline_en"] == out["presentation"]["headline_en"]
+
+
+def test_non_us_risk_on_headline_preserves_existing_copy():
+    def backdrop_reader(_latest):
+        return {
+            "key": "risk", "label_en": "Risk appetite", "label_zh": "风险偏好",
+            "score": 85, "weight": 1.0, "tone": "good", "arrow": "▲",
+            "read_en": "supportive", "read_zh": "支持", "metrics": [],
+            "degraded": False,
+        }
+
+    profile = ms.MarketProfile(
+        key="cn", indices=(), tape_noun_en="China indices", tape_noun_zh="中国指数",
+        component_readers=(backdrop_reader,), radar_override=None, overrides=frozenset(),
+    )
+    out = ms.market_state_snapshot({"date": "2026-09-18"}, profile=profile)
+    assert out["verdict"] == "RISK_ON"
+    assert out["presentation"] is None
+    assert out["headline_en"] == (
+        "Risk-on — the tape, breadth and cross-asset signals line up. "
+        "Trend-following and adding on strength is supported."
+    )
