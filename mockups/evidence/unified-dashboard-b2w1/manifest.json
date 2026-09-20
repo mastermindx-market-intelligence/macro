@@ -1,5 +1,5 @@
 {
-  "head": "a85b884ab8",
+  "head": "0cdc8557fbc7992b8ffef14e93c7fffc9e4277aa",
   "branch": "claude/mo-a-ud-b2-w1-volweather-fold",
   "pr": "DRAFT",
   "source_url": "site/macro.html",
@@ -7,10 +7,10 @@
   "page_errors": [],
   "r_e_byte_identity": {
     "selector": "#sx-risk-v2 (slice from '<div class=\"sx\" id=\"sx-risk-v2\"' to matching close)",
-    "sha256": "5ff56269841b1f078a6d76a7561abbf3eaf3729cd518b1fd3380c656a663c22c",
-    "sha256_short": "5ff56269841b",
-    "bytes": 8822,
-    "captured_at_head": "a85b884ab8",
+    "sha256": "30321d5e85c27c27e25592dc0e53422f168cfab6cbbdd4b05ffb0b02364ac469",
+    "sha256_short": "30321d5e85c2",
+    "bytes": 7576,
+    "captured_at_head": "0cdc8557fbc7992b8ffef14e93c7fffc9e4277aa",
     "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. Any byte diff fails the R-E gate (UD-B2-W1 R-E pattern, site/macro.html is nightly wire-churned so whole-file identity is a false gate — the slice is the gate)."
   },
   "cells": [
@@ -22,7 +22,7 @@
       "language": "en",
       "strip": {
         "w": 1360,
-        "h": 467,
+        "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -36,7 +36,7 @@
       "language": "zh",
       "strip": {
         "w": 1360,
-        "h": 467,
+        "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -50,7 +50,7 @@
       "language": "en",
       "strip": {
         "w": 1360,
-        "h": 467,
+        "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -64,7 +64,7 @@
       "language": "zh",
       "strip": {
         "w": 1360,
-        "h": 467,
+        "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -78,7 +78,7 @@
       "language": "en",
       "strip": {
         "w": 354,
-        "h": 523,
+        "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -92,7 +92,7 @@
       "language": "zh",
       "strip": {
         "w": 354,
-        "h": 477,
+        "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -106,7 +106,7 @@
       "language": "en",
       "strip": {
         "w": 354,
-        "h": 523,
+        "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"
@@ -120,7 +120,7 @@
       "language": "zh",
       "strip": {
         "w": 354,
-        "h": 477,
+        "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
         "eyebrow_zh": "波动率天气"

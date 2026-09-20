@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path.cwd()
 EVIDENCE = ROOT / "mockups/evidence/unified-dashboard-b2w1"
 HEAD_SHA = subprocess.run(
-    ["git", "rev-parse", "--short", "HEAD"],
+    ["git", "rev-parse", "HEAD"],
     cwd=ROOT, capture_output=True, text=True, check=True,
 ).stdout.strip()  # noqa: S603 — read-only `git rev-parse`
 
