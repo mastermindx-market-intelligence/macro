@@ -463,6 +463,37 @@ def test_genuine_tiny_decimal_crossing_is_not_erased_by_rounding_cure():
     assert last["Technology|pct_above_20"] == 100.0
 
 
+def test_huge_finite_nonconstant_window_does_not_overflow_ma20_or_split_summary_detail():
+    """Positive finite closes remain valid even when binary rolling sums overflow."""
+    days = _sessions(20)
+    syms = [f"T{i}" for i in range(5)]
+    values = [1e308] * 19 + [1.000000000000001e308]
+    closes = _wide(syms, days, lambda ticker, i: values[i])
+    out = _adapter().compute_sector_participation_20(closes, _members(syms))
+    last = out.iloc[-1]
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 5
+    assert last["Technology|pct_above_20"] == 100.0
+    for symbol in syms:
+        assert out.attrs["members"][symbol]["states"][-1] == "A"
+        assert np.isfinite(out.attrs["members"][symbol]["distance_bps"][-1])
+
+
+def test_huge_finite_constant_window_remains_eligible_equal_and_zero_distance():
+    """An exact-equality huge window stays B/0%, never NaN or ineligible."""
+    days = _sessions(20)
+    syms = [f"T{i}" for i in range(5)]
+    closes = _wide(syms, days, lambda ticker, i: 1e308)
+    out = _adapter().compute_sector_participation_20(closes, _members(syms))
+    last = out.iloc[-1]
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 0
+    assert last["Technology|pct_above_20"] == 0.0
+    for symbol in syms:
+        assert out.attrs["members"][symbol]["states"][-1] == "B"
+        assert out.attrs["members"][symbol]["distance_bps"][-1] == 0.0
+
+
 def test_five_rising_five_falling_is_50pct_a02():
     days = _sessions(20)
     syms = [f"U{i}" for i in range(5)] + [f"D{i}" for i in range(5)]

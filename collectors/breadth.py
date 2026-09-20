@@ -23,7 +23,7 @@ import re
 import time
 from collections import deque
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from pathlib import Path
 
 import numpy as np
@@ -87,49 +87,61 @@ def _w1_http_controls(provider_cfg: dict) -> tuple[float, int, float]:
     return timeout, retries, backoff
 
 
-def _w1_strict_above_decimal_window(
-        series: pd.Series, *, window: int = 20) -> pd.Series:
-    """Return exact decimal-value last-greater-than-mean decisions.
+def _w1_decimal_window_stats(
+        series: pd.Series, *, window: int = 20) -> tuple[pd.Series, pd.Series]:
+    """Return exact-decimal strict-above decisions and finite window means.
 
     Licensed daily closes arrive as JSON decimal numbers but are held in pandas as
-    binary floats. A binary rolling mean can round just below an economically equal
-    decimal close, fabricating an above signal. Compare the shortest round-tripping
-    decimal representation of each accepted close instead. Multiplying the current
-    close by the window avoids a second rounding step and keeps the rule strictly
-    greater than, with no epsilon that could erase a genuine tiny crossing.
+    binary floats. Binary rolling arithmetic can both round an economically equal
+    close below its mean and overflow while every accepted close remains finite.
+    Reconstruct the shortest round-tripping decimal for each accepted close and own
+    the entire W1 20-session window arithmetic here.
 
-    Missing or invalid closes remain False here; eligibility and state typing stay
-    with the existing W1 window logic.
+    The strict A/B decision avoids division entirely: current * window > sum.
+    The companion mean is converted to float only after the exact Decimal sum is
+    divided by the bounded window, which guarantees a finite mean for a window of
+    finite positive closes. Missing/invalid closes stay ineligible and retain NaN
+    means; state typing remains with the existing W1 window logic.
     """
     if window < 1:
         raise ValueError("window must be positive")
 
-    out = pd.Series(False, index=series.index, dtype=bool)
+    above = pd.Series(False, index=series.index, dtype=bool)
+    means = pd.Series(np.nan, index=series.index, dtype=float)
     rolling: deque[Decimal | None] = deque()
     rolling_sum = Decimal(0)
     valid_count = 0
     window_decimal = Decimal(window)
 
-    for position, value in enumerate(series):
-        decimal_value: Decimal | None = None
-        if pd.notna(value):
-            decimal_value = Decimal(str(float(value)))
-            rolling_sum += decimal_value
-            valid_count += 1
-        rolling.append(decimal_value)
+    # A binary float round-trips through at most 17 significant decimal digits.
+    # 50 digits leaves ample headroom for a 20-value exact sum without depending
+    # on the process-global Decimal context.
+    with localcontext() as context:
+        context.prec = 50
+        for position, value in enumerate(series):
+            decimal_value: Decimal | None = None
+            if pd.notna(value):
+                decimal_value = Decimal(str(float(value)))
+                rolling_sum += decimal_value
+                valid_count += 1
+            rolling.append(decimal_value)
 
-        if len(rolling) > window:
-            expired = rolling.popleft()
-            if expired is not None:
-                rolling_sum -= expired
-                valid_count -= 1
+            if len(rolling) > window:
+                expired = rolling.popleft()
+                if expired is not None:
+                    rolling_sum -= expired
+                    valid_count -= 1
 
-        if (len(rolling) == window and valid_count == window
-                and decimal_value is not None):
-            out.iat[position] = decimal_value * window_decimal > rolling_sum
+            if (len(rolling) == window and valid_count == window
+                    and decimal_value is not None):
+                above.iat[position] = decimal_value * window_decimal > rolling_sum
+                exact_mean = rolling_sum / window_decimal
+                mean_float = float(exact_mean)
+                if not np.isfinite(mean_float):
+                    raise ArithmeticError("finite W1 window produced a non-finite mean")
+                means.iat[position] = mean_float
 
-    return out
-
+    return above, means
 
 def _w1_request_ceiling_seconds(provider_cfg: dict) -> float:
     """Worst-case wall time of one bounded request under Adapter.http_get."""
@@ -1033,17 +1045,20 @@ class BreadthAdapter(Adapter):
             evidence.setdefault("adjusted", True)
             source_evidence[str(symbol)] = evidence
 
-        ma20 = clean.rolling(20, min_periods=20).mean()
-        # W1 strictness is defined on the provider's decimal price values, not on
-        # incidental IEEE-754 mean rounding. Keep pandas MA20 for eligibility and
-        # display-distance math, but own the A/B boundary with an exact decimal
-        # sliding comparison. This touches only W1; the protected 50/200 breadth
-        # calculations remain unchanged.
+        # W1 owns its complete 20-session arithmetic in one bounded Decimal
+        # window. This avoids both strict-boundary rounding and binary rolling-sum
+        # overflow while leaving the protected 50/200 breadth calculations above
+        # untouched.
+        window_stats = {
+            symbol: _w1_decimal_window_stats(clean[symbol], window=20)
+            for symbol in clean.columns
+        }
         above = pd.DataFrame(
-            {
-                symbol: _w1_strict_above_decimal_window(clean[symbol], window=20)
-                for symbol in clean.columns
-            },
+            {symbol: stats[0] for symbol, stats in window_stats.items()},
+            index=clean.index,
+        )
+        ma20 = pd.DataFrame(
+            {symbol: stats[1] for symbol, stats in window_stats.items()},
             index=clean.index,
         )
         eligible = ma20.notna()
