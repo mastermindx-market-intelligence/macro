@@ -16,6 +16,7 @@ import pandas as pd
 from scripts import research_skylit_r2_exposure_decomposition as r2
 
 SCHEMA = "skylit.r6.cross_expiry_topology_feasibility/v1"
+TRANSITION_SCHEMA = "skylit.r6.topology_transition/v1"
 EXPOSURE_UNIT = getattr(r2, "EXPOSURE_UNIT", "USD dealer-delta change per +1% spot move")
 COSINE_MAX_CLIPPED_MASS = 0.01
 TENOR_BUCKETS = (
@@ -356,6 +357,74 @@ def _slope(rows: list[dict[str, Any]], field: str) -> float | None:
     return float(np.polyfit(x, y, 1)[0])
 
 
+def _dominant_tenor(by_tenor: list[dict[str, Any]]) -> str | None:
+    present = [row for row in by_tenor if row.get("present")]
+    if not present:
+        return None
+    return max(present, key=lambda row: float(row["gross_abs_exposure"]))["tenor_bucket"]
+
+
+def _persistent_track_transition(
+    block0: dict[str, Any],
+    block1: dict[str, Any],
+) -> dict[str, Any]:
+    if block0.get("status") != "COMPLETE" or block1.get("status") != "COMPLETE":
+        return {
+            "status": "NOT_REQUESTED",
+            "continued": None,
+            "born": None,
+            "died": None,
+            "continuations": [],
+        }
+    spec0 = block0.get("spec") or {}
+    spec1 = block1.get("spec") or {}
+    tolerance0 = float(spec0.get("match_tolerance_x", np.nan))
+    tolerance1 = float(spec1.get("match_tolerance_x", np.nan))
+    if not np.isfinite(tolerance0) or not np.isfinite(tolerance1) or not np.isclose(tolerance0, tolerance1):
+        raise R6Refusal("persistent-node transition requires the same match_tolerance_x in both states")
+    tolerance = tolerance0
+    tracks0 = block0.get("tracks") or []
+    tracks1 = block1.get("tracks") or []
+    pairs: list[tuple[float, int, int]] = []
+    for i, left in enumerate(tracks0):
+        for j, right in enumerate(tracks1):
+            distance = abs(float(left["x_mean"]) - float(right["x_mean"]))
+            if distance <= tolerance:
+                pairs.append((distance, i, j))
+    pairs.sort(key=lambda item: (item[0], item[1], item[2]))
+
+    used0: set[int] = set()
+    used1: set[int] = set()
+    continuations: list[dict[str, Any]] = []
+    for distance, i, j in pairs:
+        if i in used0 or j in used1:
+            continue
+        left = tracks0[i]
+        right = tracks1[j]
+        used0.add(i)
+        used1.add(j)
+        continuations.append({
+            "track0_id": left["track_id"],
+            "track1_id": right["track_id"],
+            "x0": float(left["x_mean"]),
+            "x1": float(right["x_mean"]),
+            "delta_x": float(right["x_mean"] - left["x_mean"]),
+            "match_distance_x": float(distance),
+            "n_expiries0": int(left["n_expiries"]),
+            "n_expiries1": int(right["n_expiries"]),
+        })
+
+    continuations.sort(key=lambda row: (row["match_distance_x"], row["x0"]))
+    return {
+        "status": "COMPLETE",
+        "match_tolerance_x": tolerance,
+        "continued": len(continuations),
+        "born": len(tracks1) - len(used1),
+        "died": len(tracks0) - len(used0),
+        "continuations": continuations,
+    }
+
+
 def analyze_state(
     settled_state: dict[str, Any],
     session: str,
@@ -515,6 +584,169 @@ def analyze_state(
             "cosine uses an explicit fixed coordinate grid and refuses any pair with >1% clipped mass; Wasserstein remains exact on discrete support",
             "persistent-node matching is construction-only and parameter-explicit; expiry-roll prediction is a later R6 slice",
             "signed fields inherit the declared R2 position tier; magnitude fields do not",
+        ],
+    }
+
+
+def analyze_transition(
+    settled_state0: dict[str, Any],
+    settled_state1: dict[str, Any],
+    session0: str,
+    session1: str,
+    *,
+    expected_move_pct0: float | None = None,
+    expected_move_pct1: float | None = None,
+    node_prominence_fraction: float | None = None,
+    node_match_tolerance_x: float | None = None,
+    node_min_expiries: int | None = None,
+) -> dict[str, Any]:
+    day0 = date.fromisoformat(session0)
+    day1 = date.fromisoformat(session1)
+    if day1 <= day0:
+        raise R6Refusal("R6 transition requires session1 after session0")
+
+    view0 = analyze_state(
+        settled_state0,
+        session0,
+        expected_move_pct=expected_move_pct0,
+        node_prominence_fraction=node_prominence_fraction,
+        node_match_tolerance_x=node_match_tolerance_x,
+        node_min_expiries=node_min_expiries,
+    )
+    view1 = analyze_state(
+        settled_state1,
+        session1,
+        expected_move_pct=expected_move_pct1,
+        node_prominence_fraction=node_prominence_fraction,
+        node_match_tolerance_x=node_match_tolerance_x,
+        node_min_expiries=node_min_expiries,
+    )
+    spec0 = view0["coordinate"]
+    spec1 = view1["coordinate"]
+    if spec0["kind"] != spec1["kind"]:
+        raise R6Refusal("R6 transition cannot mix expected-move and raw log-moneyness coordinates")
+
+    frame0 = settled_state0.get("frame")
+    frame1 = settled_state1.get("frame")
+    if not isinstance(frame0, pd.DataFrame) or not isinstance(frame1, pd.DataFrame):
+        raise R6Refusal("R6 transition requires both settled-state frames")
+    work0 = _normalize_frame(frame0, session0, spec0)
+    work1 = _normalize_frame(frame1, session1, spec1)
+    dist0 = _strike_distribution(work0)
+    dist1 = _strike_distribution(work1)
+    metrics0 = _distribution_metrics(dist0)
+    metrics1 = _distribution_metrics(dist1)
+
+    comparison_spec = dict(spec0)
+    cosine, clip0, clip1 = _cosine_similarity(dist0, dist1, comparison_spec)
+
+    tenor0 = {row["tenor_bucket"]: row for row in view0["by_tenor"] if row.get("present")}
+    tenor1 = {row["tenor_bucket"]: row for row in view1["by_tenor"] if row.get("present")}
+    total0 = float(sum(float(row["gross_abs_exposure"]) for row in tenor0.values()))
+    total1 = float(sum(float(row["gross_abs_exposure"]) for row in tenor1.values()))
+    tenor_changes: list[dict[str, Any]] = []
+    polarity_changes: list[dict[str, Any]] = []
+    for name, _, _ in TENOR_BUCKETS:
+        left = tenor0.get(name)
+        right = tenor1.get(name)
+        share0 = (
+            float(left["gross_abs_exposure"]) / total0
+            if left is not None and total0 > 0
+            else None
+        )
+        share1 = (
+            float(right["gross_abs_exposure"]) / total1
+            if right is not None and total1 > 0
+            else None
+        )
+        tenor_changes.append({
+            "tenor_bucket": name,
+            "present0": left is not None,
+            "present1": right is not None,
+            "gross_share0": share0,
+            "gross_share1": share1,
+            "gross_share_change": (
+                share1 - share0
+                if share0 is not None and share1 is not None
+                else None
+            ),
+        })
+        if (
+            left is not None
+            and right is not None
+            and int(left["signed_regime"]) != int(right["signed_regime"])
+        ):
+            polarity_changes.append({
+                "tenor_bucket": name,
+                "signed_regime0": int(left["signed_regime"]),
+                "signed_regime1": int(right["signed_regime"]),
+            })
+
+    expiries0 = {row["expiration"] for row in view0["by_expiry"]}
+    expiries1 = {row["expiration"] for row in view1["by_expiry"]}
+    persistent_transition = _persistent_track_transition(
+        view0["persistent_node_matching"],
+        view1["persistent_node_matching"],
+    )
+
+    return {
+        "schema": TRANSITION_SCHEMA,
+        "status": "TOPOLOGY_TRANSITION_COMPLETE",
+        "research_authority": "research_only",
+        "outcome_labels_opened": False,
+        "root": settled_state0.get("root"),
+        "session0": session0,
+        "session1": session1,
+        "calendar_days": (day1 - day0).days,
+        "decision_eligible_not_before_session": settled_state1.get(
+            "decision_eligible_not_before_session"
+        ),
+        "coordinate0": spec0,
+        "coordinate1": spec1,
+        "whole_board": {
+            "wasserstein_1_x": _wasserstein_1(dist0, dist1),
+            "cosine_similarity": cosine,
+            "cosine_available": cosine is not None,
+            "cosine_refusal_reason": (
+                "grid_clipped_mass"
+                if cosine is None
+                and max(clip0, clip1) > float(comparison_spec["cosine_max_clipped_mass"])
+                else None
+            ),
+            "grid_clipped_mass0": clip0,
+            "grid_clipped_mass1": clip1,
+            "centroid_change_x": metrics1["centroid_x"] - metrics0["centroid_x"],
+            "dispersion_change_x": metrics1["dispersion_x"] - metrics0["dispersion_x"],
+            "entropy_change": metrics1["normalized_entropy"] - metrics0["normalized_entropy"],
+            "hhi_change": metrics1["hhi"] - metrics0["hhi"],
+            "top_node_share_change": metrics1["top_node_share"] - metrics0["top_node_share"],
+            "gross_abs_exposure0": metrics0["gross_abs_exposure"],
+            "gross_abs_exposure1": metrics1["gross_abs_exposure"],
+            "gross_abs_exposure_change": (
+                metrics1["gross_abs_exposure"] - metrics0["gross_abs_exposure"]
+            ),
+            "signed_regime0": metrics0["signed_regime"],
+            "signed_regime1": metrics1["signed_regime"],
+        },
+        "expiry_population": {
+            "count0": len(expiries0),
+            "count1": len(expiries1),
+            "common": len(expiries0 & expiries1),
+            "dropped": sorted(expiries0 - expiries1),
+            "added": sorted(expiries1 - expiries0),
+        },
+        "tenor": {
+            "dominant0": _dominant_tenor(view0["by_tenor"]),
+            "dominant1": _dominant_tenor(view1["by_tenor"]),
+            "changes": tenor_changes,
+            "polarity_changes": polarity_changes,
+        },
+        "persistent_nodes": persistent_transition,
+        "limitations": [
+            "construction-only topology migration; no future price/return/volatility labels are read",
+            "whole-board comparison uses the declared normalized coordinate in each session",
+            "persistent-track continuation is one-to-one within the same declared normalized-x tolerance",
+            "added/dropped expiry populations are reported, not silently zero-imputed",
         ],
     }
 
