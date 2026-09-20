@@ -47,3 +47,18 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-disc > summary {display:flex; gap:6px; align-items:center; padding:0;}
 #dlg-risk .gde-disc > summary::before {content:"+";}
 #dlg-risk .gde-disc[open] > summary::before {content:"−";}
+
+/* The existing button carries a separate stress caveat, never a changed radar score. */
+#mx5BtnRisk {max-width:100%; flex-wrap:wrap;}
+#mx5BtnRisk .gde-button-context {border-left:1px solid var(--line); padding-left:6px; white-space:normal;}
+.gde-button-context[data-gde-stage="FRAGILE"] {color:var(--ink-warn);}
+.gde-button-context[data-gde-stage="TRANSMITTING"], .gde-button-context[data-gde-stage="BREAKDOWN"] {color:var(--ink-act);}
+#mx5BtnRisk .gde-button-context[hidden], #dlg-risk .gde-live-reading[hidden], #dlg-risk .gde-input-caveat[hidden] {display:none;}
+#dlg-risk .gde-causes {margin:8px 0 0; font-size:var(--fs-sm); line-height:1.45; color:var(--ink-1);}
+#dlg-risk .gde-input-caveat {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-warn);}
+#dlg-risk .gde-live-reading {display:flex; gap:4px 10px; flex-wrap:wrap; margin-top:8px; font-size:var(--fs-sm); line-height:1.4;}
+#dlg-risk .gde-live-reading strong {font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-live-reading > span {color:var(--ink-2);}
+
+#dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
+#dlg-risk #gde-live-sources[hidden] {display:none;}

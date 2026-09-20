@@ -61,7 +61,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="illus.css?v=cbe6a0b4">
-<link rel="stylesheet" href="assets/css/33f039d3.css?v=33f039d3">
+<link rel="stylesheet" href="assets/css/f5ed7f7d.css?v=f5ed7f7d">
 <link rel="stylesheet" href="assets/css/080bfc12.css?v=080bfc12">
 
 
@@ -353,7 +353,7 @@
         
         <span class="pill"><span class="l-en">Drawdown risk: low</span><span class="l-zh">回撤风险：低</span><button type="button" class="lens-q" aria-label="Scored 7.0 out of 100, where 100 is the highest risk this model measures." data-tip-en="Scored 7.0 out of 100, where 100 is the highest risk this model measures." data-tip-zh="评分 7.0/100，100 为该模型可测的最高风险。">?</button></span>
         
-        <span class="dtp-chip dtp-chip--live"><i></i><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
+        <span class="dtp-chip dtp-chip--snapshot"><i></i><span class="l-en">Latest bond snapshot</span><span class="l-zh">最新债券快照</span></span>
         <span class="dtp-asof"><span class="l-en">As of Sep 18, 2026</span><span class="l-zh">截至 2026年9月18日</span></span>
       </div>
       <div class="mx-callout"><b class="l-en">Read the score with care:</b><b class="l-zh">读数注意：</b>
@@ -563,11 +563,11 @@
         </div>
         
         
-        <div class="measured-edge"><span class="pill"><span class="l-en">Measured</span><span class="l-zh">已校准</span><button type="button" class="lens-q" aria-label="Recession-IC 0.545 — rank correlation between this stress reading and recessions 12 months ahead. 1.0 = perfect ordering, 0 = none. Window 1967-06-01..2026-06-23, n=15409." data-tip-en="Recession-IC 0.545 — rank correlation between this stress reading and recessions 12 months ahead. 1.0 = perfect ordering, 0 = none. Window 1967-06-01..2026-06-23, n=15409." data-tip-zh="衰退IC 0.545 — 该压力读数与未来12个月衰退的秩相关。1.0=完全一致，0=无关。样本区间1967-06-01..2026-06-23，n=15409。">?</button></span>
+        <div class="measured-edge"><span class="pill"><span class="l-en">Backtested</span><span class="l-zh">历史回测</span><button type="button" class="lens-q" aria-label="Historical recession ordering: 0.545. Higher means this stress read more consistently ranked later recession periods above non-recession periods. Sample window 1967-06-01..2026-06-23; 15409 observations." data-tip-en="Historical recession ordering: 0.545. Higher means this stress read more consistently ranked later recession periods above non-recession periods. Sample window 1967-06-01..2026-06-23; 15409 observations." data-tip-zh="历史衰退排序：0.545。数值越高，表示该压力读数越能稳定地把后续衰退期排在非衰退期之前。样本区间1967-06-01..2026-06-23；15409个观测。">?</button></span>
           <span class="l-en">top-stress readings were followed by a 10%+ S&amp;P drawdown within 63 days</span><span class="l-zh">压力最高档读数之后，63天内出现标普10%+回撤的概率为</span>
           <b>23.9%</b> <span class="l-en">of the time vs a</span><span class="l-zh">，而基准为</span> <b>12.2%</b><span class="l-en"> baseline</span>
           (<b>+11.7pp</b>).
-          <span class="faint"><span class="l-en">Glyphs: ✓ measured · ~ directional · · context.</span><span class="l-zh">符号：✓ 已校准 · ~ 有方向 · · 仅背景。</span></span></div>
+          <span class="faint"><span class="l-en">Glyphs: ✓ backtested · ~ directional · · context.</span><span class="l-zh">符号：✓ 历史回测 · ~ 有方向 · · 仅背景。</span></span></div>
         
         <div class="dtp-asof" style="margin-top:10px"><span class="l-en">As of Sep 18, 2026</span><span class="l-zh">截至 2026年9月18日</span></div>
       </div>
@@ -857,7 +857,7 @@
   <div class="sec-head"><span class="l-en">Credit &amp; real rates — detail</span><span class="l-zh">信用与实际利率 · 详情</span></div>
   <div class="grid cols-2">
     <div class="card">
-      <h2><span class="l-en">Credit — the &#34;smart money&#34; canary</span><span class="l-zh">信用 · “聪明钱”预警</span></h2>
+      <h2><span class="l-en">Credit — early stress signal</span><span class="l-zh">信用 · 早期压力信号</span></h2>
       <div style="margin:6px 0 4px"><span class="band-chip" style="background:#15764f"><span class="l-en">Tight</span><span class="l-zh">偏紧</span></span>
         <span class="pill"><span class="l-en">widening</span><span class="l-zh">扩大</span></span></div>
       <div class="kpis">
@@ -1374,10 +1374,10 @@
 
 
   <!-- ===================== STRESS + CROSS-ASSET ===================== -->
-  <div class="sec-head"><span class="l-en">Stress, plumbing &amp; the stock-bond hedge — detail</span><span class="l-zh">压力、资金管道与股债对冲 · 详情</span></div>
+  <div class="sec-head"><span class="l-en">Stress &amp; funding · the stock-bond hedge</span><span class="l-zh">压力与资金状况 · 股债对冲</span></div>
   <div class="grid cols-2">
     <div class="card">
-      <h2><span class="l-en">Rates volatility &amp; funding plumbing</span><span class="l-zh">利率波动与资金管道</span></h2>
+      <h2><span class="l-en">Rates volatility &amp; funding stress</span><span class="l-zh">利率波动与资金压力</span></h2>
       <div style="margin:6px 0 4px"><span class="band-chip" style="background:#1c4fe0">MOVE 81.0 · <span class="l-en">Normal</span><span class="l-zh">正常</span></span></div>
       <div class="kpis">
         <div class="kpi"><span class="l-en">MOVE %ile (1y)</span><span class="l-zh">MOVE百分位(1年)</span><b>86.0%</b></div>
@@ -1549,7 +1549,7 @@
 
   
   <div class="card">
-    <h2><span class="l-en">Global credit cycle — the crisis early-warning (BIS)</span><span class="l-zh">全球信用周期 · 危机预警 (BIS)</span></h2>
+    <h2><span class="l-en">Global credit cycle — leverage risk (BIS)</span><span class="l-zh">全球信用周期 · 杠杆风险 (BIS)</span></h2>
     <div class="sub faint" style="margin:4px 0 8px"><span class="l-en">Private-sector leverage vs trend.</span><span class="l-zh">私人部门杠杆相对趋势。</span> <b><span class="l-en">Latest read</span><span class="l-zh">最新读数</span></b> · <span class="l-en">as of</span><span class="l-zh">截至</span> 2026-03-31</div>
     <div class="table-wrap">
     <table class="credit-cycle-tbl">
@@ -1872,7 +1872,7 @@
     </table>
     </div>
     <div class="sub faint" style="margin-top:8px"><span class="l-en">Auction demand is scored versus recent same-tenor auctions. Higher bid-to-cover and indirect share are stronger; higher dealer share is weaker.</span><span class="l-zh">拍卖需求相对近期同期限拍卖评分。认购倍数与间接占比越高越强；交易商占比越高越弱。</span></div>
-    <div class="sub faint" style="margin-top:6px"><span class="l-en">Supply context only; not scored.</span><span class="l-zh">仅为供给背景，不参与评分。</span></div>
+    <div class="sub faint" style="margin-top:6px"><span class="l-en">Supply context only; does not affect the bond-health score.</span><span class="l-zh">仅作供给背景，不影响债券健康度评分。</span></div>
   </div>
   
 
@@ -1995,7 +1995,7 @@
       
     
     </div>
-    <div class="sub faint" style="margin-top:10px"><span class="l-en">Daily state changes, debounced to reduce whipsaw. Context only.</span><span class="l-zh">每日状态变化，经去抖以减少噪音。仅供参考。</span></div>
+    <div class="sub faint" style="margin-top:10px"><span class="l-en">Daily state changes with repeat flips filtered out. Context only.</span><span class="l-zh">每日状态变化，已过滤重复翻转。仅供参考。</span></div>
   </div>
   
 

@@ -334,15 +334,25 @@ waves:
     title: Promotion scorecard and learning loop
     status: todo
     depends_on: [GD-5A, GD-6A, GD-8A]
+  - id: GD-UI-RADAR-1
+    title: Remove standalone Risk Envelope and integrate in existing Risk Radar
+    status: done
+    pr: 7467
+    # 96d3ddf6d500: merged, exact VPS assets and 8 public browser cells proven.
+  - id: GD-UI-RADAR-2
+    title: Source-backed risk-button causes and truthful live provisional context
+    status: in_progress
+    depends_on: [GD-UI-RADAR-1]
 next_action: >
-  2026-08-27: GD-3 DONE. The authenticated-browser four-clock production
-  acceptance passed on the first natural qualifying US-session source event;
-  the complete receipt is
-  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-08-27-GD3-DONE.md. This
-  acceptance seat does not commission follow-on work: GD-8A/GD-8B/GD-9A remain
-  unstarted pending an explicit new commission; GD-5A/B/C stay closed;
-  GD-4B/4C open and uncommissioned; GD-6/7 and Portfolio cutover are not
-  authorized.
+  Finish the Chairman-authorized GD-UI-RADAR-2 source-backed button/live-context
+  slice on claude/risk-radar-explanations-live-20260920; exact-source evidence,
+  required CI, merge and production proof remain its release sequence.
+  GD-UI-RADAR-1 is live and DO_NOT_REDO (PR7467, merge96d3ddf6d500).
+  GD-3's accepted four-clock event proof remains complete. This UI continuation
+  does not commission GD-8A/GD-8B/GD-9A, GD-4B/4C, GD-6/7 or Portfolio cutover;
+  GD-5A/B/C remain closed. Latest receipt:
+  agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-20-RADAR-REMOVAL.md.
+
 ---
 
 # Grey Deer Risk Intelligence & Capital Protection

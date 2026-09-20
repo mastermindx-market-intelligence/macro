@@ -1715,6 +1715,21 @@ jobs:
       - "engine/commodity_inputs.py"
       - "engine/commodity_signals.py"
       - "engine/commodity_strategies.py"
+      # China physical-gold premium core + production-path quality receipt
+      # are independently merge-gated here.
+      - "engine/china_gold_premium.py"
+      - "scripts/audit_china_gold_premium.py"
+      - "scripts/promote_china_gold_dataos.py"
+      - "tests/test_china_gold_premium_engine_contract.py"
+      # The audit/promotion proof reads the canonical Data OS registry through
+      # lib.dataos.registry; keep conviction-profile's exclusive closure honest.
+      - "config/dataset_registry.yml"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"
       - "engine/confluence_tiers.py"
@@ -1839,6 +1854,12 @@ jobs:
           tests/test_valuation_assumptions.py
           tests/test_valuation_event_bridge.py
           tests/test_china_archetype_d_s1.py -q
+      # Gold China-premium core is a code contract, not merely a render/data
+      # check. The full builder/template matrix remains on unrun-macro-panels;
+      # this hermetic subset prevents the calculation or rights gate from
+      # merging dark on ordinary code PRs.
+      - name: China physical-gold premium — calculation, alignment, entitlement
+        run: python -m pytest tests/test_china_gold_premium_engine_contract.py -q
       # W7B F06-5 (MO-PAID-020) ticker<->CIK collision census (MO-B). The
       # classifier is a pure function over list-of-dict records (no pandas at
       # module top per R5); the live-data test pins invariants only and prints
@@ -2898,6 +2919,7 @@ jobs:
           tests/test_commodity_confluence.py
           tests/test_commodity_cycle_state.py
           tests/test_commodity_coverage_matrix.py
+          tests/test_china_gold_premium.py
           tests/test_fear_euphoria.py tests/test_froth_fragility.py
           tests/test_vol_velocity.py tests/test_fear_greed_honesty.py
           tests/test_archive_context_snapshots.py
@@ -6593,7 +6615,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: FTR tape-surface template guards
-        run: python -m pytest tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py -q
+        run: python -m pytest tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py tests/test_basket_detail_glance_copy.py -q
 
   live-flow-ops:
     if: ${{ false }}
@@ -7018,13 +7040,14 @@ jobs:
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
-        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py -v
+        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py -v
     # T10 moved to unrun-macro-panels (gate: data). That job already installs
     # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
     # data commit, so it must not live on this gate: code job.
     paths:
       - "tests/test_bonds_corp_credit_vm.py"
       - "tests/test_bonds_divergence_gate.py"
+      - "tests/test_bonds_glance_copy.py"
       - "scripts/build_bonds.py"
       - "templates/bonds.html.j2"
       - "lib/macro_suite_view.py"
@@ -11208,6 +11231,12 @@ jobs:
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
         run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
+      # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
+      # existing CODE-gated turn/organ lane: the source adapter consumes canonical
+      # generation-local TURN WATCH facts, while Radar identity remains fail-closed
+      # and B4/ranking/trading authority stay absent. No new job or runner is added.
+      - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
+        run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
@@ -11215,6 +11244,11 @@ jobs:
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
         run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
+      # V4 B2-0 records-only evidence regression. This must be owned by
+      # an existing merge-binding CODE gate, not only by the data-gated
+      # anticipation lane. No new job/runner/control plane is introduced.
+      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
+        run: python -m pytest tests/test_prophet_b2_disposition.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -14729,6 +14763,10 @@ jobs:
       - config/issuer_group_allowlist.yml
       - lib/__init__.py
       - lib/config.py
+      # Dataset-registry proof for the China-gold source IDs imports the display
+      # engine and its canonical store reader. Keep this exclusive scope honest.
+      - lib/store.py
+      - engine/china_gold_premium.py
       - lib/delisted_symbols.py
       - lib/ticker_aliases.py
       - scripts/build_security_master.py
