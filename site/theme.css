@@ -184,7 +184,7 @@ html[data-theme="light"] {
   --pv-buy: color-mix(in srgb, var(--up) 54%, var(--text));
   --pv-near: color-mix(in srgb, var(--pv-buy) 70%, var(--muted));
   --pv-wait: #b9791a;
-  --pv-hold: var(--muted); --pv-avoid: #cf4040;
+  --pv-avoid: #cf4040;
   --chart-bg: #11151c;            /* keep dark-rendered Plotly charts legible */
 }
 /* BEGIN SHARED_CONTRAST_CSS
@@ -196,6 +196,10 @@ html[data-theme="light"],
 html.soft-contrast[data-theme="light"] {
   --bg: #eef1f5; --panel: #fafbfd; --panel2: #edf1f6;
   --text: #334155; --muted: #536176; --line: #c0c8d4;
+  /* Calibrated ink MUST travel with these surfaces: a new theme.js can meet an
+     older cached theme.css. Neutral-only projection made Hold/Avoid miss AA. */
+  --pv-hold: var(--muted);
+  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 76%, var(--text));
   /* Standalone Vector-family names, light only: same paper and slate ink,
      without importing theme.css's typography/layout into those pages. */
   --card: var(--panel); --ink: var(--text);
@@ -205,6 +209,10 @@ html.soft-contrast[data-theme="light"] {
   --glass-brd: color-mix(in srgb, var(--text) 9%, transparent);
   --glass-shadow: 0 16px 42px -22px rgba(20,32,64,.26), 0 8px 20px -12px rgba(20,32,64,.16),
     inset 0 1px 0 rgba(255,255,255,.75);
+}
+html[data-theme="light"][data-lang="zh"],
+html.soft-contrast[data-theme="light"][data-lang="zh"] {
+  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 54%, var(--text));
 }
 /* Preserve the existing effective dark treatment; this repair is light-only. */
 html.soft-contrast[data-theme="dark"] {
@@ -430,7 +438,7 @@ html[data-theme="light"] {
   --ink-pv-buy:   var(--pv-buy);
   --ink-pv-near:  var(--pv-near);
   --ink-pv-wait:  color-mix(in srgb, var(--pv-wait)  62%, var(--text));
-  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 76%, var(--text));
+  /* Light Avoid calibration travels with the shared material projection. */
 }
 html[data-theme="light"][data-lang="zh"] {
   /* C8-C RETIRED the buy/near rungs that used to sit here (84% / 70%). They existed
@@ -444,7 +452,7 @@ html[data-theme="light"][data-lang="zh"] {
      AA floor and that ordering on this exact quadrant; re-measure with
      mockups/refs/prophet_verb_ink/probe_pv_ink.py. --pv-avoid keeps its rung
      because it is still a literal on this plane. */
-  --ink-pv-avoid: color-mix(in srgb, var(--pv-avoid) 54%, var(--text));
+  /* Light Avoid calibration travels with the shared material projection. */
 }
 /* W-L1 provisional plane (research/WL1_PROVISIONAL_BOARD_DESIGN_SPEC.md §4.1).
    Same hue as the P1 .pv-live chip's local --plvc, and that is the point: the ◐ strip
@@ -2376,6 +2384,18 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
   .dmr-lb{grid-area:lb;} .dmr-val{grid-area:val;} .dmr-tr{grid-area:tr;height:22px;}
 }
 /* end debt maturity ladder */
+
+/* ===================== cash runway (_debt_maturity.html.j2, packet B-F09-3 second slice) =====================
+   Reuses the ladder's .dmw-lede / .dmw-null / .dmw-nullwhy tokens and the
+   same mod-ft footer. Dark/light treatment is inherited from the ladder panel
+   above (same section, same #debt-maturity / #cash-runway parent). No new
+   colours — same tokens as the ladder rules above. */
+.dmw-runway{margin-top:28px;padding-top:22px;
+  border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent);}
+[data-theme="light"] .dmw-runway{
+  border-top-color:var(--hair);}
+/* end cash runway */
+
 /* account sheet: alert delivery preferences (B-F08-1a) */
 .mmacc-alerts{position:relative;padding-left:14px}
 .mmacc-alerts::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:var(--r-ctl,8px);background:var(--line);transition:background .22s ease,box-shadow .22s ease}

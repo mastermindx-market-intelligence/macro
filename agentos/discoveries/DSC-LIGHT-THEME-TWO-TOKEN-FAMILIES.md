@@ -26,3 +26,16 @@ The raw template JS intentionally carries a safe empty CSS placeholder. Always
 emit `site/theme.js` through `lib.site_assets.emit_theme_js`; a raw copy discards
 not just this CSS but the existing auth configuration, brain version and Terminal
 overlay. This task changes no data, ranking, allocations, routes, or page layouts.
+
+
+## Compatibility must carry readable ink, not just surfaces
+A mixed-version probe reproduced four sub-AA Hold/Avoid chip readings when old
+CSS met a new neutral-only projection. The light ink calibrations now travel
+inside the same canonical exported block. Keep the full current/legacy ×
+EN/ZH × light/dark ink matrix: all 160 native-browser pairs pass after repair,
+and corresponding fresh/legacy pairs are paint-equivalent. See
+`mixed-version-before.json` and `mixed-version-after.json` under
+`mockups/evidence/light-theme-comfort-20260919/`; the browser-free regression is
+`test_cached_stylesheet_with_new_material_projection_clears_aa` in
+`tests/test_prophet_verb_ink_contrast.py`. This is cache-version compatibility
+proof, not evidence that the public CDN has published the candidate.

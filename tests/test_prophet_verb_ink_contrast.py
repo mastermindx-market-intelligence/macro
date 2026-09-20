@@ -205,32 +205,31 @@ def _split_decls(body: str):
     return [p.strip() for p in out if p.strip()]
 
 
-def _env_for(css: str, lang: str, theme: str) -> dict:
-    """Merge every custom property that applies to this theme × language.
+def _env_for(css: str, lang: str, theme: str, *, soft_contrast: bool = False) -> dict:
+    """Resolve root tokens, including the actual compatibility class when requested.
 
-    Ordered by specificity then document order, mirroring the cascade: ``:root``
-    (0,1,0) < ``html[data-theme=…]`` / ``html[data-lang=…]`` (0,1,1) < the
-    ``html[data-theme="light"][data-lang="zh"]`` twin (0,2,1). theme.css's own
-    comment calls out that middle tie, which is why rank is computed rather than
-    assumed from file order.
+    A selector list uses the MOST specific matching member, not its first member.
+    Descendant rules are not root declarations and must not enter this cascade.
     """
     applicable = []
     for selector, body in _blocks(css):
+        ranks = []
         for sel in (s.strip() for s in selector.split(",")):
             if sel == ":root":
-                rank = 0
-            elif sel.startswith("html["):
-                attrs = re.findall(r'\[([a-z-]+)="([a-z]+)"\]', sel)
-                if len(attrs) != sel.count("["):
-                    continue                       # not a plain attribute selector
-                want = {"data-theme": theme, "data-lang": lang}
-                if any(want.get(k) != v for k, v in attrs):
-                    continue
-                rank = len(attrs)
-            else:
+                ranks.append(0)
                 continue
-            applicable.append((rank, _decls(body)))
-            break
+            if not re.fullmatch(r'html(?:\.soft-contrast)?(?:\[[a-z-]+="[a-z]+"\])+', sel):
+                continue
+            has_class = ".soft-contrast" in sel
+            if has_class and not soft_contrast:
+                continue
+            attrs = re.findall(r'\[([a-z-]+)="([a-z]+)"\]', sel)
+            want = {"data-theme": theme, "data-lang": lang}
+            if any(want.get(k) != v for k, v in attrs):
+                continue
+            ranks.append(len(attrs) + int(has_class))
+        if ranks:
+            applicable.append((max(ranks), _decls(body)))
     env = {}
     for _, decls in sorted(applicable, key=lambda r: r[0]):
         env.update(decls)
@@ -293,8 +292,8 @@ def surfaces(card_css: str) -> dict:
     }
 
 
-def _measure(theme_css, verbs, surfaces, lang, theme, verb, consumer):
-    env = _env_for(theme_css, lang, theme)
+def _measure(theme_css, verbs, surfaces, lang, theme, verb, consumer, *, soft_contrast=False):
+    env = _env_for(theme_css, lang, theme, soft_contrast=soft_contrast)
     pvh, pvh_ink = verbs[verb]
     env = {**env, "--pvh": pvh, "--pvh-ink": pvh_ink}
     fg_expr, bg_expr = surfaces[consumer]
@@ -471,3 +470,48 @@ def test_light_neutral_material_comfort_preserves_readable_ink(theme_css, lang):
     assert _ratio(colors["--line"], colors["--panel"]) >= 1.6
     assert env["--card"] == "var(--panel)"
     assert env["--ink"] == "var(--text)"
+
+
+# Frozen compatibility inputs from af92792954e1ad8a4812cf0e73a2dc54dac0672a.
+# These are a TEST fixture, never another product palette. Returning visitors can
+# temporarily combine the old CSS with the new generated JS material projection.
+_LEGACY_LIGHT_MATERIALS = """
+html[data-theme="light"] {
+  --bg:#f7f8fa; --panel:#ffffff; --panel2:#eef1f6;
+  --text:#1c2430; --muted:#5d6b7e;
+  --pv-hold:#5d6b7e;
+  --ink-pv-avoid:color-mix(in srgb,var(--pv-avoid) 84%,var(--text));
+}
+html[data-theme="light"][data-lang="zh"] {
+  --ink-pv-avoid:color-mix(in srgb,var(--pv-avoid) 62%,var(--text));
+}
+"""
+
+
+@pytest.mark.parametrize("lang,theme,verb,consumer", CASES)
+def test_cached_stylesheet_with_new_material_projection_clears_aa(
+    theme_css, verbs, surfaces, lang, theme, verb, consumer,
+):
+    from lib.theme_materials import shared_contrast_css
+
+    projection = shared_contrast_css(ROOT / "templates" / "theme.js")
+    # Keep the real semantic palette/consumers but restore the old material and
+    # affected ink declarations. Only the shipping JS projection may repair them.
+    legacy = theme_css.replace(projection, "") + _LEGACY_LIGHT_MATERIALS
+    mixed = legacy + projection
+    got = _measure(mixed, verbs, surfaces, lang, theme, verb, consumer,
+                   soft_contrast=True)
+    assert got >= AA_SMALL - 0.005, (
+        f"cached CSS + new material projection: {lang}/{theme} {verb}/{consumer} "
+        f"is {got:.2f}:1; the compatibility projection must carry its ink repair"
+    )
+
+
+def test_selector_list_uses_strongest_matching_specificity():
+    css = """
+    html[data-theme="light"], html.soft-contrast[data-theme="light"] { --text:#334155; }
+    html[data-theme="light"] { --text:#000000; }
+    html[data-theme="light"] .child { --text:#ffffff; }
+    """
+    assert _env_for(css, "en", "light", soft_contrast=True)["--text"] == "#334155"
+    assert _env_for(css, "en", "light")["--text"] == "#000000"

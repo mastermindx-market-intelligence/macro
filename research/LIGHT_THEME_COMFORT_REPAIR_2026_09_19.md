@@ -62,3 +62,20 @@ Concluded CI run `35480528739` rejected exactly two owned release dependencies: 
 Fresh main `01896d6da34d67df45056dd82795be6c8cbf187e` leaves governing guides, source emitter, theme JS and screener code/payload unchanged. Its independent cash-runway CSS addition remains preserved by the merge. Vercel preview rate limit is separately reported, not a VPS production deployment result or a claim that CI passed. Next: exact-head revalidation, release gate reconciliation, canonical asset version publication, public-browser proof.
 
 Direct-origin diagnostic lane: the Studio SSH read request was blocked before execution. No SSH mutation occurred and this session will not switch tools/identities to retry that request. GitHub's existing render/pull publisher and anonymous public-browser/HTTP verification remain independent permitted release paths. Public checks still observe the old references (`theme.css?v=d41ce2d4`, `theme.js?v=48082a1e`) on the three motivating routes.
+
+
+## Mixed-version and current-base integration repair
+The initial two CI repairs passed 145 targeted tests, including the complete exclusive import-closure check. Repair head `c308e2e898431b9f394cf31a101109b626176ec7` was pushed and its remote SHA read back before any further branch change.
+
+A bounded integrated-tree check against main `01896d6da34d67df45056dd82795be6c8cbf187e` produced tree `e484486c7c7fadee680c241f331f4178ef343214` and found a REAL template/site mismatch: main's accepted cash-runway CSS was absent from the paired generated asset. Therefore a history-preserving source join was necessary for asset composition, not to make ancestry current. The source join preserves that CSS and its existing tests/evidence; paired assets and the screener's stamped fixture are emitted from the integrated sources. No research inputs were recomputed.
+
+The existing Chromium ink probe then tested prior CSS plus the new exact emitted material projection. It reproduced four small-text failures (EN/ZH Hold and Avoid chips, ratios 4.43–4.48). `mixed-version-before.json` preserves this negative proof. New regression cases reproduce those same four failures without fetching Git history. The calibrated Hold/Avoid inks now reside INSIDE the canonical exported material block, so new JavaScript plus older CSS receives the same readability repair. This changes mixed-version compatibility; fresh-sheet colors and all dark tokens are preserved. A selector-list test also pins the CSS rule that the strongest matching selector controls specificity.
+
+Release remains pending fresh exact-head CI and actual published asset hashes. No screenshot or test is represented as a production deployment.
+
+
+## Integrated candidate verification
+- 225 targeted emitter, token, canonical/legacy contrast and research-screener tests pass. The earlier import-closure proof passed as part of the 145-test repair run; no new imported path was introduced afterward.
+- Existing native Chromium probe: 80/80 current-sheet and 80/80 pre-repair-sheet pairs pass, minimum 4.55:1, maximum corresponding-ratio difference zero. Both use the actual soft-contrast boot class and exact emitted compatibility CSS. The four negative cases are preserved rather than erased.
+- 99 template/site pairs match; both JavaScript sources parse; runtime-style ratchet passes. The committed visual-evidence gate passes. Existing normal-render screenshots are retained as the preserved layout/material design reference; the compatibility change is separately bound to the before/after native-browser receipts. No new production screenshot is claimed.
+- Release ownership remains PR #7466. Do not repeat completed screenshot/contrast work unless its source or behavior changes. Next is fresh exact-head CI and canonical asset publication, then public browser proof on all three motivating routes.
