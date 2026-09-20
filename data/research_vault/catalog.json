@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T01:18:22.478269+00:00",
-  "count": 2466,
+  "generated_at": "2026-09-20T01:42:33.152059+00:00",
+  "count": 2467,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -765,6 +765,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-csgc4mzdlre-4bf8f1",
+      "title": "European Week Ahead September 21 September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T21:44:38Z",
+      "summary_points": [
+        "Euro Area PMI & Confidence Data: Flash PMIs (French Composite 48.7, German Manufacturing 53.8, Euro Area Composite 51.7) and Consumer Confidence (consensus -16.0) as critical growth indicators with tight consensus, directly assessing Eurozone economic health.",
+        "ECB Speeches & Policy Signals: Lagarde/Cipollone on Pontes launch (Mon) and Vujčić on digital banking (Wed) signaling central bank communication on innovation and monetary policy direction, critical for rate expectations.",
+        "Swiss SNB Policy Rate Outlook: SNB to hold rate at 0% amid 4% CHF depreciation since June, with potential intervention signal via removing foreign-exchange market qualification, raising import pressure risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
