@@ -114,6 +114,7 @@ def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
     assert 'aria-expanded="false"' in TPL
     assert 'aria-label="Why this read / 为什么"' in TPL
     assert 'onclick="cnxToggleLens(this,event)"' in TPL
+    assert "{% if not face.empty %}<button type=\"button\" class=\"cnx-lens\"" in TPL
     assert "window.cnxToggleLens=cnxToggleLens;" in TPL
     assert "window.cnxCloseLenses=cnxCloseLenses;" in TPL
     assert '.cnx-card[role="button"]' in TPL
