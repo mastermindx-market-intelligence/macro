@@ -37,7 +37,9 @@ def main():
             page.goto(url, wait_until='domcontentloaded')
             page.locator('#ac-results .acx-row').first.wait_for()
             assert page.locator('#ac-results .acx-row').count() == 8
-            report['checks'].append('Now initially shows eight canonical ranked observations')
+            assert page.locator('#ac-results .acx-attention-group').count() >= 2
+            assert page.locator('#ac-results').get_by_text('Review first', exact=True).count() == 1
+            report['checks'].append('Now shows eight canonical observations grouped by source-derived attention')
             page.select_option('#ac-source', 'bonds')
             ids = page.locator('#ac-results .acx-row').evaluate_all('(rows) => rows.map(r => r.dataset.alertId)')
             assert ids and all(by_id[id_]['source'] == 'bonds' for id_ in ids)
@@ -57,13 +59,21 @@ def main():
             assert page.locator('#ac-detail').evaluate('(d) => d.open')
             assert page.locator('#ac-detail-title').inner_text()
             report['checks'].append('Evidence selection has a reloadable canonical-ID permalink')
+            supported_id = next(k for k, v in payload['explorer']['briefs'].items() if v.get('status') == 'supported')
+            supported = payload['explorer']['briefs'][supported_id]
+            page.goto(url + '#view=explore&id=' + supported_id, wait_until='domcontentloaded')
+            assert page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator('#ac-detail').get_by_text('Takeaway', exact=True).count() == 1
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == supported['next_action']
+            assert 'current source panel' in page.locator('#ac-detail').inner_text().lower()
+            report['checks'].append('A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary')
             page.keyboard.press('Escape')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
             assert page.locator(':focus').get_attribute('data-alert-id') == selected
             report['checks'].append('Native Escape closes evidence and restores the selected row')
             page.click('[data-view="history"]')
             page.go_back(wait_until='domcontentloaded')
-            assert page.locator('[data-view="signals"]').get_attribute('aria-current') == 'page'
+            assert page.locator('[data-view="explore"]').get_attribute('aria-current') == 'page'
             page.goto(url + '#sev=major&cl=all&q=recurring&s=%E0%A4%A', wait_until='domcontentloaded')
             assert page.locator('#ac-noresults').is_visible()
             report['checks'].append('Browser back and malformed legacy hash values do not crash')

@@ -22,10 +22,10 @@ def render(*, partial=False):
                   'total_signals': 0, 'history_total': 0, 'history_truncated': 0})
 
 
-def test_workspace_has_four_real_tasks_and_an_evidence_inspector():
+def test_workspace_has_three_real_tasks_and_an_evidence_inspector():
     html = render()
     assert 'id="alert-center"' in html
-    for view in ('now', 'situations', 'signals', 'history'):
+    for view in ('now', 'explore', 'history'):
         assert f'data-view="{view}"' in html
     assert '<dialog' in html and 'id="ac-detail"' in html
     assert 'aria-labelledby="ac-detail-title"' in html
@@ -46,7 +46,7 @@ def test_empty_and_partial_are_different_states_and_do_not_claim_calm():
 
 def test_bilingual_controls_and_non_javascript_source_path_are_present():
     html = render()
-    assert '全部信号' in html and '历史记录' in html and '相关变化' in html
+    assert '探索' in html and '历史记录' in html and '当前重点' in html
     assert '<noscript>' in html and 'id="ac-noresults"' in html
     assert 'id="ac-reset"' in html and 'id="ac-show-more"' in html
     assert 'alerts_last_visit' not in html
@@ -72,3 +72,25 @@ def test_shared_html_never_inlines_account_specific_legacy_rows():
         summary={'total':1})
     assert 'PRIVATE_SENTINEL_TITLE' not in html
     assert 'PRIVATE_ID' not in html
+
+
+
+def test_action_led_monitor_contract_replaces_the_generic_four_tab_shell():
+    html = render()
+    assert 'data-view="now"' in html
+    assert 'data-view="explore"' in html
+    assert 'data-view="history"' in html
+    assert 'data-view="situations"' not in html
+    assert 'data-view="signals"' not in html
+    assert 'acx-context-strip' in html
+    assert 'acx-context"' not in html
+
+
+def test_client_renders_attention_groups_and_takeaway_before_receipts():
+    source = (ROOT / 'templates' / 'alert_center.js').read_text()
+    for text in ('Review first', 'Watch next', 'For awareness', 'Takeaway',
+                 'What would change the read'):
+        assert text in source
+    assert "legacyView === 'signals'" in source
+    assert "legacyView === 'situations'" in source
+    assert "route({view:'explore'" in source

@@ -147,3 +147,69 @@ def test_history_missing_detail_is_not_filled_from_the_latest_event():
     old = {k: v for k, v in current.items() if k != 'detail'}
     result = project([current], [old])
     assert result['history'][0]['detail'] == ''
+
+
+
+def test_macro_transition_gets_source_bound_action_brief_without_mutation():
+    row = signal('macro-transition', source='macro', type_='transition_state_change', asset='macro')
+    row.update({
+        'tier': 'act', 'severity': 'critical', 'priority': 76, 'age_days': 10,
+        'detail': "The regime's footing went from a new regime to shifting (4 warning flags active)",
+        'detail_zh': '周期状态由「新周期」转为「转换中」（4 个预警激活）',
+        'edge': 'High — a regime shift re-prices everything downstream.',
+        'edge_zh': '高 — 周期转变会重新定价其下游的一切。',
+        'link': 'macro.html#regime-radar',
+    })
+    before = deepcopy(row)
+    result = project([row])
+    projected = result['signals'][0]
+    brief = result['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['schema'] == 'mastermind.alert_brief.v1'
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.transition_state_change'
+    assert brief['attention'] == 'review_first'
+    assert brief['change'] == row['detail']
+    assert brief['change_zh'] == row['detail_zh']
+    assert brief['next_action_label'] == 'Recheck regime'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+    assert '10 days old' in brief['limitation']
+
+
+def test_macro_risk_brief_keeps_source_risk_separate_from_attention_priority():
+    row = signal('macro-risk', source='macro', type_='risk_state_elevated', asset='macro')
+    row.update({
+        'tier': 'act', 'severity': 'major', 'priority': 64, 'age_days': 8,
+        'detail': 'Equity risk-state crossed into ELEVATED (63/100) — positioning/vol/breadth fragility building; de-gross, favor entries over chasing leaders',
+        'detail_zh': '股票风险状态进入偏高区（63/100）— 仓位/波动/宽度脆弱性上升；降低敞口、择优入场而非追高',
+        'edge': 'High — the equity-internal early-warning the credit gauge misses. De-risk response is sizing, not selection.',
+        'edge_zh': '高 — 信用指标看不到的股票内部早期预警。应对是调仓位，而非选股。',
+        'link': 'macro.html#dlg-risk',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '63/100' in brief['change']
+    assert 'attention priority 64' in brief['limitation']
+    assert 'return forecast' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck risk'
+
+
+def test_unrecognized_macro_shape_abstains_from_family_specific_copy():
+    row = signal('macro-unknown', source='macro', type_='transition_state_change', asset='macro')
+    row.update({'tier': 'act', 'detail': 'The regime changed in an unsupported shape',
+                'detail_zh': '周期发生变化，但格式未知', 'link': 'macro.html#regime-radar'})
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'fallback'
+    assert brief['family'] is None
+    assert brief['change'] == row['detail']
+    assert brief['next_action_label'] == 'Inspect evidence'
+    assert brief['reassessment'] == ''
+
+
+def test_attention_language_derives_from_canonical_tier_not_numeric_priority():
+    act = signal('act'); act.update({'tier': 'act', 'priority': 1})
+    watch = signal('watch'); watch.update({'tier': 'watch', 'priority': 99})
+    context = signal('context'); context.update({'tier': 'context', 'priority': 100})
+    result = project([act, watch, context])
+    briefs = [result['briefs'][r['alert_id']] for r in (act, watch, context)]
+    assert [b['attention'] for b in briefs] == ['review_first', 'watch_next', 'for_awareness']

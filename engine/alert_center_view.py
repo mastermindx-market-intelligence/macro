@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import date
 import unicodedata
 import math
+import re
 
 from engine import alert_time
 
@@ -40,6 +41,137 @@ def _plain(text: str) -> str:
     while text and (unicodedata.category(text[0])[0] in 'PS' or text[0].isspace()):
         text = text[1:]
     return text.strip()
+
+
+BRIEF_SCHEMA = 'mastermind.alert_brief.v1'
+_TRANSITION_DETAIL = re.compile(
+    r"^The regime's footing went from (.+?) to (.+?) \((\d+) warning flags active\)$"
+)
+_RISK_DETAIL = re.compile(
+    r'^Equity risk-state crossed into ([A-Z][A-Z _-]+) \((\d{1,3})/100\) — (.+?); (.+)$'
+)
+
+
+def _attention(row: dict) -> str:
+    return {'act': 'review_first', 'watch': 'watch_next'}.get(
+        str(row.get('tier') or ''), 'for_awareness')
+
+
+def _age_days(row: dict) -> int | None:
+    value = row.get('age_days')
+    if isinstance(value, bool):
+        return None
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return None
+    return value if value >= 0 else None
+
+
+def _fallback_brief(row: dict) -> dict:
+    validation = row.get('validation') if isinstance(row.get('validation'), dict) else {}
+    implication = str(row.get('edge') or validation.get('note') or '')
+    implication_zh = str(row.get('edge_zh') or validation.get('note_zh') or implication)
+    verdict = str(validation.get('verdict') or '')
+    if verdict in {'no_edge', 'killed'}:
+        limitation = 'No validated forward edge. Use this as evidence context, not a timing signal.'
+        limitation_zh = '没有经过验证的前瞻优势。应将其作为证据背景，而非择时信号。'
+    elif verdict == 'underpowered':
+        limitation = 'The available sample is insufficient for a predictive claim.'
+        limitation_zh = '现有样本不足以支持预测性结论。'
+    elif int(row.get('fire_count') or 0) > 1:
+        limitation = 'Repeated firings are observations, not proof the condition stayed active between them.'
+        limitation_zh = '重复触发只是观测记录，并不能证明状态在期间持续有效。'
+    else:
+        limitation = 'Attention level and predictive evidence are separate.'
+        limitation_zh = '关注级别与预测证据是两回事。'
+    link = str(row.get('link') or '')
+    return {
+        'schema': BRIEF_SCHEMA, 'status': 'fallback', 'family': None,
+        'attention': _attention(row),
+        'change': str(row.get('detail') or _plain(row.get('headline') or '')),
+        'change_zh': str(row.get('detail_zh') or row.get('detail') or _plain(row.get('headline_zh') or '')),
+        'implication': implication, 'implication_zh': implication_zh,
+        'limitation': limitation, 'limitation_zh': limitation_zh,
+        'next_action': 'Open the source evidence before drawing a conclusion.',
+        'next_action_zh': '先打开来源证据，再形成结论。',
+        'next_action_label': 'Inspect evidence', 'next_action_label_zh': '查看证据',
+        'reassessment': '', 'reassessment_zh': '',
+        'evidence_scope': 'current_panel_not_historical_archive' if link else 'no_verified_destination',
+        'evidence_label': 'Open source evidence', 'evidence_label_zh': '打开来源证据',
+        'event_age_days': _age_days(row),
+    }
+
+
+def build_alert_brief(row: dict) -> dict:
+    """Build presentation-only copy without changing alert authority or identity."""
+    brief = _fallback_brief(row)
+    source, type_ = str(row.get('source') or ''), str(row.get('type') or '')
+    detail = str(row.get('detail') or '')
+    detail_zh = str(row.get('detail_zh') or detail)
+    edge = str(row.get('edge') or (row.get('validation') or {}).get('note') or '')
+    edge_zh = str(row.get('edge_zh') or (row.get('validation') or {}).get('note_zh') or edge)
+    age = _age_days(row)
+
+    transition = _TRANSITION_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'transition_state_change' and transition:
+        age_clause = f'This event is {age} days old; ' if age is not None and age > 2 else ''
+        age_clause_zh = f'该事件发生于 {age} 天前；' if age is not None and age > 2 else ''
+        brief.update({
+            'status': 'supported', 'family': 'macro.transition_state_change',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                'A regime-model transition is not market confirmation or a price forecast. '
+                f'{age_clause}re-check the current regime before acting.'),
+            'limitation_zh': (
+                '周期模型转换并不等于市场确认或价格预测。'
+                f'{age_clause_zh}行动前应重新核对当前周期状态。'),
+            'next_action': (
+                'Open the current Regime Radar and compare today’s state before changing '
+                'growth-sensitive exposure.'),
+            'next_action_zh': '打开当前周期雷达，在调整增长敏感型敞口前核对今日状态。',
+            'next_action_label': 'Recheck regime', 'next_action_label_zh': '复核周期',
+            'reassessment': (
+                'Change the read only if the current radar has returned to a stable state '
+                'or the named warning flags have cleared.'),
+            'reassessment_zh': '仅当当前雷达恢复稳定状态或相关预警消退时，才改变判断。',
+            'evidence_label': 'Open current Regime Radar',
+            'evidence_label_zh': '打开当前周期雷达',
+        })
+        return brief
+
+    risk = _RISK_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'risk_state_elevated' and risk:
+        source_score = int(risk.group(2))
+        priority = row.get('priority')
+        priority_text = str(priority) if isinstance(priority, (int, float)) and not isinstance(priority, bool) else 'unknown'
+        age_sentence = f' This event is {age} days old.' if age is not None and age > 2 else ''
+        age_sentence_zh = f' 该事件发生于 {age} 天前。' if age is not None and age > 2 else ''
+        brief.update({
+            'status': 'supported', 'family': 'macro.risk_state_elevated',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                f'{source_score}/100 is the source risk-state reading; attention priority '
+                f'{priority_text} is a separate ordering value, not a return forecast or '
+                f'stock-selection score.{age_sentence}'),
+            'limitation_zh': (
+                f'{source_score}/100 是来源风险状态读数；关注优先级 {priority_text} 是独立的排序值，'
+                f'并非收益预测或选股评分。{age_sentence_zh}'),
+            'next_action': (
+                'Open the current Risk Envelope, re-check breadth, volatility and positioning, '
+                'then review gross exposure before chasing leaders.'),
+            'next_action_zh': '打开当前风险框架，复核宽度、波动与仓位，再决定是否追逐领涨标的。',
+            'next_action_label': 'Recheck risk', 'next_action_label_zh': '复核风险',
+            'reassessment': (
+                'Reassess when the current source no longer reports ELEVATED or the named '
+                'fragility inputs improve.'),
+            'reassessment_zh': '当当前来源不再显示偏高状态，或相关脆弱性指标改善时再重新评估。',
+            'evidence_label': 'Open current Risk Envelope',
+            'evidence_label_zh': '打开当前风险框架',
+        })
+    return brief
 
 
 def _subject(rows: list[dict], asset: str, language: str = 'en') -> str:
@@ -87,6 +219,8 @@ def build_explorer(signals: list[dict], raw_events: list[dict], *,
         raise ValueError('history_limit must be a non-negative integer')
     # Tenant-bound sentinel evidence must not expand into a shared page.
     signals = [_json_safe(r) for r in signals if r.get('source') != 'watchlist']
+    briefs = {str(row['alert_id']): build_alert_brief(row)
+              for row in signals if row.get('alert_id')}
     index = {_key(row): row for row in signals}
     sources: dict[str, dict] = {}
     for row in signals:
@@ -115,6 +249,7 @@ def build_explorer(signals: list[dict], raw_events: list[dict], *,
         })
     history.sort(key=_clock_key, reverse=True)
     return {'schema': 'mastermind.alert_center_view.v1',
+            'brief_schema': BRIEF_SCHEMA, 'briefs': briefs,
             'signals': list(signals), 'total_signals': len(signals),
             'restricted_sources': ['watchlist'],
             'sources': sorted(sources.values(), key=lambda s: s['label']),

@@ -1,7 +1,7 @@
 {% from "_icons.html.j2" import icon %}
 {% macro t(en, zh='') -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
 {% set public_ranked = alerts|rejectattr('source','equalto','watchlist')|list %}
-{% set xp = explorer if explorer is defined else {'signals': public_ranked, 'restricted_sources':['watchlist'], 'situations': [], 'history': [], 'sources': [], 'total_signals': public_ranked|length, 'history_total': 0, 'history_truncated': 0} %}
+{% set xp = explorer if explorer is defined else {'signals': public_ranked, 'briefs': {}, 'restricted_sources':['watchlist'], 'situations': [], 'history': [], 'sources': [], 'total_signals': public_ranked|length, 'history_total': 0, 'history_truncated': 0} %}
 {% set partial = coverage and coverage.state == 'partial' %}
 <!DOCTYPE html>
 <html lang="en">
@@ -18,20 +18,29 @@
 {% include '_site_nav.html.j2' %}
 <main id="alert-center" class="acx" data-coverage-state="{{ coverage.state if coverage else 'unknown' }}">
   <header class="acx-header">
-    <div><div class="acx-eyebrow">{{ t('MONITOR / MARKET CHANGES', '监测 / 市场变化') }}</div><h1>{{ t('Alerts', '警报中心') }}</h1>
+    <div><div class="acx-eyebrow">{{ t('MARKET CHANGES DESK', '市场变化工作台') }}</div><h1>{{ t('Alert Center', '警报中心') }}</h1>
     </div>
     <div class="acx-session">{{ t('New York session', '纽约交易日') }}<strong>{{ board_date or '—' }}</strong></div>
   </header>
   <section class="acx-brief" aria-label="Evidence briefing">
     {% if partial %}<div><strong>{{ t('Partial evidence', '证据不完整') }}</strong><p>{{ t('Missing evidence is not a quiet market', '证据缺失不代表市场平静') }}. {{ t('Review what is available; inspect coverage below.', '可查看现有记录，并检查下方的数据覆盖。') }} <span data-missing-sources>{{ (coverage.blocking or [])|join(', ') }}{% if coverage.backdrop_missing %} · {{ t('Market backdrop unavailable', '市场背景暂不可用') }}{% endif %}</span></p></div>
-    {% else %}<div><strong>{{ t('Review the changes. Follow the evidence.', '查看变化，追溯证据。') }}</strong><p>{{ t('Start with the highest-ranked observations, then investigate the full picture.', '先查看优先记录，再深入了解完整证据。') }}</p></div>{% endif %}
+    {% else %}<div><strong>{{ t('Review first. Watch next. Keep the evidence close.', '优先查看，持续关注，证据随手可查。') }}</strong><p>{{ t('Attention, evidential weight and predictive edge stay separate.', '关注级别、证据权重与预测优势保持分离。') }}</p></div>{% endif %}
     <a href="#coverage" class="acx-text-link">{{ t('Check coverage', '查看覆盖') }} <span aria-hidden="true">→</span></a>
   </section>
   <p class="acx-stale" id="ac-stale" role="status" hidden></p>
   <nav class="acx-tabs" aria-label="Alert workspace">
-    {% for key,en,zh in [('now','Now','当前重点'),('situations','Situations','相关变化'),('signals','Signals','全部信号'),('history','History','历史记录')] %}
+    {% for key,en,zh in [('now','Now','当前重点'),('explore','Explore','探索'),('history','History','历史记录')] %}
     <button type="button" data-view="{{ key }}" aria-current="{{ 'page' if key == 'now' else 'false' }}" aria-controls="ac-results">{{ t(en,zh) }}</button>{% endfor %}
   </nav>
+  <details id="ac-context" class="acx-context-strip">
+    <summary><span>{{ t('Market context', '市场背景') }}</span><strong>{{ t(regime.quad_name or 'Not available', regime.quad_name_zh or '暂无数据') }} · {{ t(cross_asset.verdict or 'Not available', cross_asset.verdict_zh or '暂无数据') }}</strong></summary>
+    <div class="acx-context-grid" aria-label="Shared market context">
+      <div class="acx-context-item"><span>{{ t('Regime', '市场环境') }}</span><strong>{{ t(regime.quad_name or 'Not available', regime.quad_name_zh or '暂无数据') }}</strong></div>
+      <div class="acx-context-item"><span>{{ t('Cross-asset', '跨资产') }}</span><strong>{{ t(cross_asset.verdict or 'Not available', cross_asset.verdict_zh or '暂无数据') }}</strong></div>
+      <div class="acx-context-item"><span>{{ t('Next catalyst', '下一事件') }}</span><strong>{% if events.next %}{{ events.next.type }} · {{ events.next.md }}{% if events.next.time_et %} · {{ events.next.time_et }} ET{% endif %}{% else %}{{ t('No event listed', '暂无事件记录') }}{% endif %}</strong></div>
+      <p>{{ t('Context supports investigation; it does not confirm every alert.', '背景信息用于辅助调查，并不逐条确认警报。') }} · {{ t('Backdrop observed', '背景观测于') }} {{ asof or '—' }}</p>
+    </div>
+  </details>
   <div class="acx-layout">
     <section class="acx-workspace" aria-labelledby="ac-view-title">
       <div class="acx-section-head"><div><h2 id="ac-view-title" tabindex="-1">{{ t('Review queue', '优先查看') }}</h2><p id="ac-view-note">{{ t('Original attention order — not trading instructions.', '原有关注优先级，并非交易指令。') }}</p></div><span id="ac-count" class="acx-count" role="status"></span></div>
@@ -50,17 +59,8 @@
       <div class="acx-empty"><h3>{{ t('No observations in this window', '此时间段暂无记录') }}</h3><p>{{ t('Check source coverage before drawing a market conclusion.', '请先检查数据覆盖，不要据此判断市场。') }}</p></div>{% endfor %}
       </div>
       <div id="ac-noresults" class="acx-empty" hidden><h3>{{ t('Nothing matches these filters', '没有符合筛选条件的记录') }}</h3><p>{{ t('Try another source, a wider topic, or reset the filters.', '请切换来源、扩大主题范围或重置筛选。') }}</p><button type="button" class="acx-button" id="ac-reset-empty">{{ t('Reset filters', '重置筛选') }}</button></div>
-      <div class="acx-queue-footer"><button type="button" class="acx-button" id="ac-show-more" hidden>{{ t('Show more', '显示更多') }}</button><button type="button" class="acx-text-link" id="ac-browse-all">{{ t('Browse all signals', '浏览全部信号') }} →</button><span id="ac-result-status" role="status"></span></div>
+      <div class="acx-queue-footer"><button type="button" class="acx-button" id="ac-show-more" hidden>{{ t('Show more', '显示更多') }}</button><button type="button" class="acx-text-link" id="ac-browse-all">{{ t('Browse Explore', '进入探索') }} →</button><span id="ac-result-status" role="status"></span></div>
     </section>
-    <aside class="acx-context" aria-label="Shared market context">
-      <section class="acx-context-panel"><h2>{{ t('Keep the context', '结合市场背景') }}</h2>
-        <dl><dt>{{ t('Market regime', '市场环境') }}</dt><dd>{{ t(regime.quad_name or 'Not available', regime.quad_name_zh or '暂无数据') }}</dd>
-        <dt>{{ t('Cross-asset context', '跨资产背景') }}</dt><dd>{{ t(cross_asset.verdict or 'Not available', cross_asset.verdict_zh or '暂无数据') }}</dd>
-        <dt>{{ t('Next scheduled catalyst', '下一预定事件') }}</dt><dd>{% if events.next %}{{ events.next.type }} · {{ events.next.md }}{% if events.next.time_et %}<small>{{ events.next.time_et }} ET</small>{% endif %}{% else %}{{ t('No event listed', '暂无事件记录') }}{% endif %}</dd></dl>
-        <p class="acx-footnote">{{ t('Backdrop observed', '背景观测于') }} {{ asof or '—' }}. {{ t('Context, not confirmation of every alert.', '背景信息，不代表逐条确认。') }}</p>
-      </section>
-      <section class="acx-context-panel acx-how"><h2>{{ t('Read it in context', '如何阅读') }}</h2><p>{{ t('An alert records a change. It does not prove the condition is still active.', '警报记录变化，并不证明状态仍在持续。') }}</p><p>{{ t('Open any observation to inspect its date, source and validation.', '打开记录，查看日期、来源与验证情况。') }}</p></section>
-    </aside>
   </div>
   <details class="acx-coverage" id="coverage"><summary>{{ t('What this board can see', '数据覆盖与读取情况') }}<span>{{ t('Source coverage and methodology', '来源覆盖与方法说明') }}</span></summary>
     <p>{{ t('A successful read is not a freshness guarantee. No recent firing does not mean a broken source.', '读取成功不保证数据新鲜；近期未触发不代表来源故障。') }}</p>
@@ -68,7 +68,7 @@
     {% if partial %}<p class="acx-caveat">{{ t('Missing:', '缺失：') }} {{ (coverage.blocking or [])|join(', ') }}{% if coverage.backdrop_missing %} · {{ t('cross-asset backdrop', '跨资产背景') }}{% endif %}</p>{% endif %}
     <details class="acx-method"><summary>{{ t('How attention order works', '关注优先级的计算方式') }}</summary><p>{{ t('Priority combines existing source conviction, severity, recency and cross-asset context. It is not a probability, position size or instruction to trade.', '优先级由原有来源等级、严重程度、时间与跨资产背景组成，并非概率、仓位或交易指令。') }}</p>
       {% if board_read.score is not none %}<p data-overall-score="{{ board_read.score }}">{{ t('Legacy descriptive pressure', '原有描述性压力读数') }}: {{ board_read.score }}/100. {{ t('Calculated from the capped review queue, not the whole market.', '由有限的优先列表计算，并不代表整个市场。') }}</p>{% else %}<p>{{ t('Partial tape read — no overall score is shown.', '读数不完整，不展示整体分数。') }}</p>{% endif %}
-      <p>{{ t('Re-fired counts are observed events, never proof of continuous persistence. A situation groups distinct observations about one explicit subject; it is not independent confirmation.', '重复触发是记录次数，不代表状态持续。相关变化仅汇集同一明确对象的不同记录，并非独立确认。') }}</p>
+      <p>{{ t('Re-fired counts are observed events, never proof of continuous persistence. Related observations group distinct records about one explicit subject; they are not independent confirmation.', '重复触发是记录次数，不代表状态持续。相关记录仅汇集同一明确对象的不同观测，并非独立确认。') }}</p>
     </details>
   </details>
   <section id="ac-fallback" class="acx-context-panel"><noscript><p>{{ t("Interactive browsing is unavailable without JavaScript.", "未启用 JavaScript，交互浏览暂不可用。") }}</p></noscript><h2>{{ t('Original evidence', '原始证据') }}</h2><p>{{ t('Interactive browsing is unavailable. These original source links remain available.', '交互浏览暂不可用，以下原始来源链接仍可使用。') }}</p>{% for a in xp.signals %}{% if a.link and a.link[0].isalnum() and ':' not in a.link and '\\' not in a.link %}<p><a href="{{ a.link }}">{{ t(a.headline,a.headline_zh) }}</a> · {{ a.board_date or 'Date unknown' }}</p>{% endif %}{% endfor %}</section>
@@ -76,7 +76,7 @@
   <footer class="acx-footer">{{ t('Page built', '页面生成于') }} {{ generated_utc }} UTC · {{ t('Event dates belong to the New York session. Build time is not event time.', '事件日期按纽约交易日记录，生成时间不是事件时间。') }}</footer>
 </main>
 <dialog id="ac-detail" class="acx-inspector" aria-labelledby="ac-detail-title">
-  <div class="acx-inspector-bar"><span>{{ t('EVIDENCE / INVESTIGATE', '证据 / 深入查看') }}</span><button type="button" id="ac-close" aria-label="Close evidence"><span aria-hidden="true">×</span></button></div>
+  <div class="acx-inspector-bar"><span>{{ t('TAKEAWAY / EVIDENCE / HISTORY', '结论 / 证据 / 历史') }}</span><button type="button" id="ac-close" aria-label="Close evidence"><span aria-hidden="true">×</span></button></div>
   <div id="ac-detail-body"></div>
   <div class="acx-inspector-footer"><a class="acx-button" id="ac-share" href="#">{{ t('Evidence permalink', '证据链接') }}</a><span id="ac-share-status" role="status"></span></div>
 </dialog>

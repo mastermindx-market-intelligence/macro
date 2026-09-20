@@ -6,9 +6,9 @@
   let data;
   try { data = JSON.parse($('ac-data').textContent); }
   catch (_) { $('ac-stale').hidden = false; $('ac-stale').textContent = document.documentElement.dataset.lang === 'zh' ? '交互证据无法载入，原始来源链接仍可使用。' : 'Interactive evidence could not load. The original source links remain available below.'; return; }
-  const xp = data.explorer || {}, signals = xp.signals || [], history = xp.history || [];
+  const xp = data.explorer || {}, signals = xp.signals || [], history = xp.history || [], briefs = xp.briefs || {};
   const byId = new Map(signals.map(a => [String(a.alert_id), a]));
-  const topIds = new Set(data.top_ids || []), views = ['now', 'situations', 'signals', 'history'];
+  const topIds = new Set(data.top_ids || []), views = ['now', 'explore', 'history'];
   const small = window.matchMedia('(max-width:1000px)');
   let limit = 8, returnId = '', state = {}, searchTimer;
   const zh = () => document.documentElement.dataset.lang === 'zh';
@@ -18,6 +18,20 @@
   const finite = v => typeof v === 'number' && Number.isFinite(v);
   const day = a => a.board_date || tr('Date unknown', '日期未知');
   const hasFilters = () => state.src !== 'all' || state.sev !== 'all' || state.cl !== 'all' || state.q || state.s;
+  const attentionLabels = {
+    review_first: ['Review first', '优先查看'],
+    watch_next: ['Watch next', '持续关注'],
+    for_awareness: ['For awareness', '背景了解']
+  };
+  const briefFor = a => briefs[String(a.alert_id)] || {
+    status: 'fallback', attention: a.tier === 'act' ? 'review_first' : a.tier === 'watch' ? 'watch_next' : 'for_awareness',
+    change: a.detail || plain(a.headline), change_zh: a.detail_zh || a.detail || plain(a.headline_zh),
+    implication: (a.validation || {}).note || '', implication_zh: (a.validation || {}).note_zh || (a.validation || {}).note || '',
+    limitation: 'Attention level and predictive evidence are separate.', limitation_zh: '关注级别与预测证据是两回事。',
+    next_action: 'Open the source evidence before drawing a conclusion.', next_action_zh: '先打开来源证据，再形成结论。',
+    next_action_label: 'Inspect evidence', next_action_label_zh: '查看证据', reassessment: '', reassessment_zh: '',
+    evidence_scope: a.link ? 'current_panel_not_historical_archive' : 'no_verified_destination'
+  };
   function node(tag, text, cls) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; }
   function safeHref(value) {
     if (typeof value !== 'string' || !value.trim()) return null;
@@ -27,7 +41,10 @@
   function readState() {
     const p = new URLSearchParams(location.hash.slice(1));
     const source = p.get('src') || 'all', topic = p.get('cl') || 'all';
-    return {view: views.includes(p.get('view')) ? p.get('view') : 'now',
+    const legacyView = p.get('view');
+    const view = legacyView === 'signals' || legacyView === 'situations'
+      ? 'explore' : views.includes(legacyView) ? legacyView : 'now';
+    return {view,
       sev: ['act', 'critical', 'major'].includes(p.get('sev')) ? p.get('sev') : 'all',
       cl: ['stress', 'regime', 'liquidity', 'rotation', 'single_name', 'other'].includes(topic) ? topic : 'all',
       q: ['new', 'recurring'].includes(p.get('q')) ? p.get('q') : '',
@@ -77,51 +94,73 @@
   const eventClock = e => e.event_ts || e.event_date || e.board_date || 'unknown';
   function select(id, trigger, observed) { returnId = id; route({id, evt:observed ? eventClock(observed) : ''}); if (trigger) $('ac-close').focus(); }
   function signalRow(a, index, observed) {
-    const r = node('button', undefined, 'acx-row'); r.type = 'button';
-    r.dataset.alertId = a.alert_id; r.setAttribute('aria-haspopup', 'dialog'); r.setAttribute('aria-controls', 'ac-detail');
+    const brief = briefFor(a), attention = brief.attention || 'for_awareness';
+    const r = node('button', undefined, 'acx-row is-' + attention); r.type = 'button';
+    r.dataset.alertId = a.alert_id; r.dataset.attention = attention;
+    r.setAttribute('aria-haspopup', 'dialog'); r.setAttribute('aria-controls', 'ac-detail');
     r.setAttribute('aria-expanded', String(state.id === a.alert_id));
     const item = observed || a, main = node('span', undefined, 'acx-row-main');
-    const meta = node('span', field(a, 'source_label') + ' · ' + day(item), 'acx-row-meta');
+    const label = attentionLabels[attention] || attentionLabels.for_awareness;
+    const meta = node('span', field(a, 'source_label') + ' · ' + day(item) + (observed ? '' : ' · ' + tr(...label)), 'acx-row-meta');
     main.append(meta, node('strong', plain(field(item, 'headline')) || tr('Untitled observation', '未命名记录')));
+    const meaning = observed ? field(item, 'detail') : field(brief, 'implication') || field(brief, 'change') || field(a, 'detail');
+    if (meaning) main.append(node('span', meaning, 'acx-row-meaning'));
+    if (!observed && brief.status === 'supported' && field(brief, 'limitation')) {
+      main.append(node('span', field(brief, 'limitation'), 'acx-row-limit'));
+    }
     if (!observed && a.fire_count > 1) main.append(node('span', tr('Re-fired ', '重复触发 ') + a.fire_count + (a.continuity_verified ? tr(' times · source reports continuity', ' 次 · 来源报告持续状态') : tr(' times · continuity not verified', ' 次 · 未验证持续性')), 'acx-row-sub'));
-    const action = node('span', observed ? tr('Open history →', '查看历史 →') : a.tier === 'act' ? tr('Review first →', '优先查看 →') : tr('Investigate →', '查看证据 →'), 'acx-row-action');
-    if (a.tier === 'act' && !observed) action.classList.add('is-priority');
+    const actionText = observed ? tr('Open history →', '查看历史 →') : field(brief, 'next_action_label') + ' →';
+    const action = node('span', actionText, 'acx-row-action');
+    if (attention === 'review_first' && !observed) action.classList.add('is-priority');
     r.append(node('span', String(index + 1).padStart(2, '0'), 'acx-rank'), main, action);
     r.addEventListener('click', () => select(a.alert_id, true, observed)); return r;
   }
-  function situationRow(s) {
-    const wrap = node('section', undefined, 'acx-situation');
-    const members = s.member_ids.map(id => byId.get(id)).filter(Boolean);
-    const matching = members.filter(a => matches(a));
-    wrap.append(node('h3', field(s, 'subject')),
-      node('p', tr('Same explicit subject, ', '同一明确对象，') + matching.length + '/' + members.length + tr(' observations match. No claim of independent confirmation.', ' 条记录匹配；不代表独立确认。')));
-    matching.forEach((a, i) => wrap.append(signalRow(a, i))); return wrap;
+  function attentionGroup(key, rows, startIndex) {
+    const copy = {
+      review_first: ['Review first', '优先查看', 'Highest source-authority observations. Importance is not predictive certainty.', '来源权威最高的观测；重要性不等于预测确定性。'],
+      watch_next: ['Watch next', '持续关注', 'Changes worth monitoring for confirmation, deterioration or reversal.', '值得持续观察确认、恶化或反转的变化。'],
+      for_awareness: ['For awareness', '背景了解', 'Useful context that should not dominate the decision loop.', '有用背景，但不应主导决策流程。']
+    }[key];
+    const wrap = node('section', undefined, 'acx-attention-group acx-attention-' + key);
+    const head = node('header', undefined, 'acx-attention-head');
+    head.append(node('div', copy ? tr(copy[0], copy[1]) : key, 'acx-attention-title'),
+      node('p', copy ? tr(copy[2], copy[3]) : '', 'acx-attention-note'),
+      node('span', String(rows.length), 'acx-attention-count'));
+    wrap.append(head);
+    rows.forEach((a, i) => wrap.append(signalRow(a, startIndex + i)));
+    return wrap;
   }
   function render() {
     labels();
-    const titles = {now:['Review queue','优先查看'], situations:['Related changes','相关变化'], signals:['All signals','全部信号'], history:['Observed firings','实际触发记录']};
-    const notes = {now:['Original attention order — not trading instructions.','原有关注优先级，并非交易指令。'], situations:['Specific subjects, with the original observations side by side.','同一明确对象的不同记录，并列查看。'], signals:['The complete grouped population, beyond the capped review queue.','完整分组记录，不受优先列表数量上限影响。'], history:['Actual logged events. Dates do not imply continuous activity.','真实事件记录，日期不代表持续状态。']};
+    const titles = {now:['Attention queue','关注队列'], explore:['Explore all observations','探索全部观测'], history:['Observed firings','实际触发记录']};
+    const notes = {now:['Review first, watch next, then keep the lower-authority context available.','先处理优先事项，再持续关注，并保留低权威背景。'], explore:['Search and filter the complete grouped population without changing source authority.','搜索和筛选完整观测集合，不改变来源权威。'], history:['Actual logged events. Dates do not imply continuous activity.','真实事件记录，日期不代表持续状态。']};
     $('ac-view-title').textContent = tr(...titles[state.view]); $('ac-view-note').textContent = tr(...notes[state.view]);
     let rows;
-    if (state.view === 'situations') rows = (xp.situations || []).filter(s => s.member_ids.some(id => byId.has(id) && matches(byId.get(id))));
-    else if (state.view === 'history') rows = history.filter(h => byId.has(h.alert_id) && matches(byId.get(h.alert_id), h));
-    else rows = signals.filter(a => (state.view !== 'now' || hasFilters() || topIds.has(a.alert_id)) && matches(a));
-    const selectedIndex = rows.findIndex(r => state.view === 'situations'
-      ? r.member_ids.includes(state.id)
-      : r.alert_id === state.id && (state.view !== 'history' || !state.evt || eventClock(r) === state.evt));
+    if (state.view === 'history') rows = history.filter(h => byId.has(h.alert_id) && matches(byId.get(h.alert_id), h));
+    else rows = signals.filter(a => (state.view !== 'now' || topIds.has(a.alert_id)) && matches(a));
+    const selectedIndex = rows.findIndex(r => r.alert_id === state.id && (state.view !== 'history' || !state.evt || eventClock(r) === state.evt));
     if (selectedIndex >= limit) limit = selectedIndex + 1;
     const list = $('ac-results'); list.replaceChildren();
-    rows.slice(0, limit).forEach((r, i) => list.append(state.view === 'situations' ? situationRow(r) : state.view === 'history' ? signalRow(byId.get(r.alert_id), i, r) : signalRow(r, i)));
+    const visible = rows.slice(0, limit);
+    if (state.view === 'now') {
+      let ordinal = 0;
+      for (const key of ['review_first', 'watch_next', 'for_awareness']) {
+        const grouped = visible.filter(a => briefFor(a).attention === key);
+        if (grouped.length) { list.append(attentionGroup(key, grouped, ordinal)); ordinal += grouped.length; }
+      }
+    } else {
+      visible.forEach((r, i) => list.append(state.view === 'history' ? signalRow(byId.get(r.alert_id), i, r) : signalRow(r, i)));
+    }
     const empty = $('ac-noresults'); empty.hidden = rows.length > 0;
     if (!rows.length) {
       let title = tr('Nothing matches these filters','没有符合筛选条件的记录'), why = tr('Try another source, a wider topic, or reset the filters.','请切换来源、扩大主题范围或重置筛选。');
-      if (!hasFilters()) { title = state.view === 'situations' ? tr('No related changes to bundle','暂无可归组的相关变化') : tr('No observations in this window','此时间段暂无记录'); why = state.view === 'situations' ? tr('Bundles require different observations about the same explicit subject. Individual signals remain available.','归组需要同一明确对象的不同记录，仍可浏览单条信号。') : tr('Check source coverage before drawing a market conclusion.','请先检查数据覆盖，不要据此判断市场。'); }
+      if (!hasFilters()) { title = tr('No observations in this window','此时间段暂无记录'); why = tr('Check source coverage before drawing a market conclusion.','请先检查数据覆盖，不要据此判断市场。'); }
       const source = ((data.coverage || {}).sources || []).find(s => s.source === state.src);
       if (source && ['unavailable','no_coverage'].includes(source.state)) { title = tr('This source has no available coverage','该来源暂无可用覆盖'); why = tr('Other sources remain usable. Missing evidence is not a quiet market.','其他来源仍可使用；证据缺失不代表市场平静。'); }
       empty.querySelector('h3').textContent = title; empty.querySelector('p').textContent = why;
     }
     $('ac-count').textContent = String(rows.length) + (hasFilters() ? tr(' matching',' 条匹配') : tr(' observations',' 条记录'));
-    $('ac-show-more').hidden = rows.length <= limit; $('ac-browse-all').hidden = state.view === 'signals';
+    $('ac-show-more').hidden = rows.length <= limit; $('ac-browse-all').hidden = state.view === 'explore';
     $('ac-result-status').textContent = rows.length ? tr('Showing ','已显示 ') + Math.min(limit, rows.length) + '/' + rows.length : '';
     const note = $('ac-filter-note'); note.hidden = true;
     if (state.view === 'history' && xp.history_truncated > 0) { note.hidden = false; note.textContent = tr('Published history contains the latest ','已发布历史包含最近 ') + history.length + '/' + xp.history_total + tr(' firings. Older records remain in the source log.',' 次触发；更早记录仍在原始日志中。'); }
@@ -136,6 +175,14 @@
     $('ac-share').href = location.href;
     body.append(node('p', field(a, 'source_label') + ' · ' + day(a), 'acx-eyebrow'));
     const title = node('h2', plain(field(a, 'headline'))); title.id = 'ac-detail-title'; body.append(title);
+    const brief = briefFor(a), takeaway = section(body, 'Takeaway', '结论');
+    if (field(brief, 'change')) takeaway.append(node('strong', field(brief, 'change'), 'acx-takeaway-change'));
+    if (field(brief, 'implication')) takeaway.append(node('p', field(brief, 'implication')));
+    if (field(brief, 'limitation')) takeaway.append(node('p', field(brief, 'limitation'), 'acx-takeaway-limit'));
+    if (field(brief, 'next_action')) takeaway.append(node('p', field(brief, 'next_action'), 'acx-next-action'));
+    if (field(brief, 'reassessment')) {
+      takeaway.append(node('h3', tr('What would change the read', '什么会改变判断')), node('p', field(brief, 'reassessment')));
+    }
     if (state.evt) {
       const selectedEvents = history.filter(e => e.alert_id === a.alert_id && eventClock(e) === state.evt);
       const selected = section(body, 'Selected historical firing', '选中的历史触发');
@@ -150,10 +197,14 @@
       selected.append(node('p', tr('The following source summary and validation describe the current snapshot, not a reconstructed historical score.','下方摘要与验证描述当前快照，不是重建的历史评分。')));
       body.append(node('h3', tr('Current signal summary', '当前信号摘要')));
     }
-    if (field(a, 'detail')) body.append(node('p', field(a, 'detail')));
+    const evidence = section(body, 'Evidence', '证据');
+    if (field(a, 'detail')) evidence.append(node('p', field(a, 'detail')));
     const href = safeHref(a.link);
-    if (href) { const link = node('a', tr('Open original evidence →', '打开原始证据 →'), 'acx-text-link'); link.href = href; body.append(link); }
-    else body.append(node('p', tr('A verified source link is not available.','暂无已确认的来源链接。')));
+    if (href) {
+      const link = node('a', field(brief, 'evidence_label') || tr('Open source evidence →', '打开来源证据 →'), 'acx-text-link');
+      link.href = href; evidence.append(link);
+      if (brief.evidence_scope === 'current_panel_not_historical_archive') evidence.append(node('p', tr('This opens the current source panel, not an archived copy of the original firing.','此链接打开当前来源面板，并非原始触发的历史存档。')));
+    } else evidence.append(node('p', tr('A verified source link is not available.','暂无已确认的来源链接。')));
     const clocks = section(body, 'When this happened', '事件时间');
     pairs(clocks, [[tr('Event time / date','事件时间 / 日期'), a.event_ts || a.event_date || a.board_date || tr('Unknown','未知')], [tr('Source observation','来源观测'), a.source_asof || tr('Not supplied','未提供')], [tr('Recorded by source','来源记录时间'), a.recorded_at || tr('Not supplied','未提供')]]);
     clocks.append(node('p', a.date_precision === 'date' ? tr('The source provides a session date, not an intraday timestamp.','来源仅提供交易日，并无日内时间。') : tr('Build time is separate from the event clock.','生成时间与事件时间不同。')));
@@ -225,23 +276,23 @@
   }));
   $('ac-filters').addEventListener('submit', e => {
     e.preventDefault(); clearTimeout(searchTimer);
-    route({s:$('ac-search').value, view:state.view === 'now' ? 'signals' : state.view, id:''});
+    route({s:$('ac-search').value, view:state.view === 'now' ? 'explore' : state.view, id:''});
   });
   $('ac-search').addEventListener('input', e => {
     const s = e.target.value.slice(0,300); state.s = s; clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => { limit = 25; route({s, view:state.view === 'now' ? 'signals' : state.view, id:''}, true); }, 160);
+    searchTimer = setTimeout(() => { limit = 25; route({s, view:state.view === 'now' ? 'explore' : state.view, id:''}, true); }, 160);
   });
   for (const [id, key] of [['ac-source','src'], ['ac-priority','sev'], ['ac-topic','cl']]) {
-    $(id).addEventListener('change', e => { limit = 25; route({[key]:e.target.value, view:state.view === 'now' ? 'signals' : state.view, id:''}); });
+    $(id).addEventListener('change', e => { limit = 25; route({[key]:e.target.value, view:state.view === 'now' ? 'explore' : state.view, id:''}); });
   }
   $('ac-reset').addEventListener('click', reset);
   $('ac-reset-empty').addEventListener('click', reset);
   $('ac-show-more').addEventListener('click', () => { limit += 25; render(); });
-  $('ac-browse-all').addEventListener('click', () => { limit = 25; route({view:'signals', id:''}); });
+  $('ac-browse-all').addEventListener('click', () => { limit = 25; route({view:'explore', id:''}); });
   $('ac-close').addEventListener('click', closeDetail);
   dialog.addEventListener('cancel', e => { e.preventDefault(); closeDetail(); });
   root.querySelectorAll('[data-quick]').forEach(b => b.addEventListener('click', () => {
-    limit = 25; route({q:state.q === b.dataset.quick ? '' : b.dataset.quick, view:state.view === 'now' ? 'signals' : state.view, id:''});
+    limit = 25; route({q:state.q === b.dataset.quick ? '' : b.dataset.quick, view:state.view === 'now' ? 'explore' : state.view, id:''});
   }));
   root.querySelectorAll('a[href="#coverage"]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault(); $('coverage').open = true; $('coverage').scrollIntoView({block:'start'});

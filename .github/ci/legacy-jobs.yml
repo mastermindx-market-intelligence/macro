@@ -1161,6 +1161,9 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # Alert Center V2 current-main closure widening 2026-09-19 (contract-delta):
+      # the shared build-site/dossier route reaches the pure explorer projection.
+      - "engine/alert_center_view.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
