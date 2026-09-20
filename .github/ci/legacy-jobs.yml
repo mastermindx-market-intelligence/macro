@@ -9486,6 +9486,9 @@ jobs:
       - "scripts/build_options_command.py"
       - "scripts/build_options_intel_brief.py"
       - "scripts/build_options_screener.py"
+      # R5 construction-only PIT spot/IV shock distribution; tested by the
+      # existing options_hub suite and intentionally owned by this estate pack.
+      - "scripts/research_skylit_r5_spot_iv_shock_distribution.py"
       - "scripts/validate_gex.py"
       - "site/altdata/**"
       - "site/basketdata/**"
