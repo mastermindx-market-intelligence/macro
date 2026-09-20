@@ -1,10 +1,10 @@
 {
   "schema": "mastermind.p0_evidence.v2",
-  "generated_at": "2026-09-20T21:33:02Z",
+  "generated_at": "2026-09-20T21:56:56Z",
   "target": "macro.html",
   "selector": ".mx-spine",
-  "head": "50e020e456532fb2a55dab187b5e22f3515fe086",
-  "capture_head": "50e020e456532fb2a55dab187b5e22f3515fe086",
+  "head": "d9a57dd944eb54784bd71ab84f0009eef2f29fe7",
+  "capture_head": "d9a57dd944eb54784bd71ab84f0009eef2f29fe7",
   "source_slice_sha256": "d1a914a628b7fe99ccdcd8f0ddbf44a8f9a13f4a0749e1c42e66c6aaadf3da89",
   "source_slice_bytes": 9997,
   "axes": {
@@ -107,8 +107,8 @@
       "width": 1440,
       "height": 900,
       "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_en_desktop.png",
-      "png_sha256": "1f6a0d046d5f3e4527ec870cf274a3a451d9761e78cd4eb39f288e2d3e4c07ab",
-      "png_bytes": 303802,
+      "png_sha256": "7003bb4412cb691da6558c99e22c02b74e6afa485b21475e140dda87b89699c4",
+      "png_bytes": 311048,
       "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
       "dom_slice_bytes": 9914,
       "bounding_box": {
@@ -125,8 +125,8 @@
       "width": 390,
       "height": 844,
       "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_en_mobile.png",
-      "png_sha256": "c31eba8b47c812e4f09e9f2d03622d1397fee23d103eb37f451c7c3304f5ce69",
-      "png_bytes": 337379,
+      "png_sha256": "ebd545a2daee193b995f8d34edd890bba6080f97491763349cdd926aa11869e6",
+      "png_bytes": 352927,
       "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
       "dom_slice_bytes": 9914,
       "bounding_box": {
@@ -143,8 +143,8 @@
       "width": 1440,
       "height": 900,
       "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_zh_desktop.png",
-      "png_sha256": "71155af649eefe53e59c53f647f436d2f62139af03ba2e32a496f269280cdefe",
-      "png_bytes": 295271,
+      "png_sha256": "e1a9dcde630d703735a1328bf859870405ca5cf03205ecde648908e71b750589",
+      "png_bytes": 301187,
       "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
       "dom_slice_bytes": 9914,
       "bounding_box": {
@@ -161,8 +161,8 @@
       "width": 390,
       "height": 844,
       "file": "mockups/evidence/unified-dashboard-b2w2/spine_light_zh_mobile.png",
-      "png_sha256": "ae35813924ec42b280f3b1b4beb7e36a58d3cc8bb6fd0a9ed4fa4baedb43c189",
-      "png_bytes": 280318,
+      "png_sha256": "0b942f37b43889b866ce54d8c26dad335522252623592021265d0cd8eda8521c",
+      "png_bytes": 293720,
       "dom_slice_sha256": "07899209412838a552e1e0d3ffa422f961465919e2e65d7998037ae275ec2d52",
       "dom_slice_bytes": 9914,
       "bounding_box": {
