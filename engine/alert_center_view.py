@@ -56,7 +56,8 @@ _NET_LIQUIDITY_ROC_FLIP = re.compile(
     r'([+-][0-9]+(?:\.[0-9]+)?)bn$'
 )
 _COMMODITY_PRICE_SHOCK = re.compile(
-    r'^Oil ([0-9][0-9,.]*) \$/bbl — the acute move is settling\.$'
+    r'^(Gold|Silver|Copper|Oil) ([0-9][0-9,.]*) (\$/oz|\$/lb|\$/bbl) '
+    r'— the acute move is settling\.$'
 )
 _VECTOR_ALLOCATION_CHANGE = re.compile(
     r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% BTC '
@@ -1012,25 +1013,50 @@ def build_alert_brief(row: dict) -> dict:
 
     commodity = _COMMODITY_PRICE_SHOCK.fullmatch(detail)
     if source == 'commodity' and type_ == 'price_shock' and commodity:
+        label, price_text, unit = commodity.groups()
+        asset = str(row.get('asset') or '')
+        expected_unit = {'gold': '$/oz', 'silver': '$/oz', 'copper': '$/lb', 'oil': '$/bbl'}.get(asset)
+        if asset != label.lower() or unit != expected_unit:
+            return brief
+        asset_zh = {'gold': '黄金', 'silver': '白银', 'copper': '铜', 'oil': '原油'}[asset]
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck the current shock state.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核当前冲击状态。'
+        recurrence_limit = ''
+        recurrence_limit_zh = ''
+        if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+            recurrence_limit = ' Re-fired observations do not prove continuous stabilization between events.'
+            recurrence_limit_zh = ' 重复触发并不能证明两次事件之间持续处于稳定状态。'
         brief.update({
             'status': 'supported', 'family': 'commodity.price_shock',
             'change': detail, 'change_zh': detail_zh,
             'implication': (
-                'The acute oil move is losing intensity, which may reduce immediate '
-                'shock pressure without establishing the next price direction.'),
-            'implication_zh': '原油急剧波动正在减弱，短期冲击压力可能下降，但下一价格方向仍未确定。',
+                f'The acute {label.lower()} move is losing intensity near {price_text} {unit}, '
+                'which may reduce immediate shock pressure without establishing the next '
+                'price direction.'),
+            'implication_zh': (
+                f'{asset_zh}在 {price_text} {unit} 附近的急剧波动正在减弱，短期冲击压力可能下降，'
+                '但下一价格方向仍未确定。'),
             'limitation': (
                 'The source says the shock is settling; it does not establish direction, '
-                'a durable regime, or a separately backtested timing edge. Re-fired '
-                'observations do not prove continuous stabilization.'),
+                'a durable regime, calibrated probability, or a separately backtested timing '
+                'edge.' + age_limit + recurrence_limit),
             'limitation_zh': (
-                '来源仅表示冲击正在平息；这不能确定方向、持久状态或经过单独回测的择时优势。'
-                '重复触发也不能证明稳定状态持续存在。'),
+                '来源仅表示冲击正在平息；这不能确定方向、持久状态、校准概率或经过单独回测的择时优势。'
+                + age_limit_zh + recurrence_limit_zh),
             'next_action': (
-                'Open the current commodity timeline and confirm whether the shock is '
-                'still settling before changing oil-sensitive exposure.'),
-            'next_action_zh': '打开当前商品时间线，确认冲击是否仍在平息，再调整原油敏感敞口。',
-            'next_action_label': 'Recheck oil', 'next_action_label_zh': '复核原油',
+                f'Open the current commodity timeline and confirm {label} is still in the '
+                f'stabilizing shock state, compare the latest price with {price_text} {unit}, '
+                'and check whether acceleration has resumed before changing exposure.'),
+            'next_action_zh': (
+                f'打开当前商品时间线，确认{asset_zh}仍处于冲击趋稳状态，将最新价格与 '
+                f'{price_text} {unit} 对比，并检查波动是否重新加速，再调整敞口。'),
+            'next_action_label': f'Recheck {asset}', 'next_action_label_zh': f'复核{asset_zh}',
             'reassessment': (
                 'Change the read if the current timeline shows renewed acceleration, '
                 'a new shock direction, or the stabilization state has disappeared.'),

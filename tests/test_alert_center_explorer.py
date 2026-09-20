@@ -1119,3 +1119,49 @@ def test_bonds_move_abstains_on_band_or_asset_mismatch():
     rows = [mismatch, wrong_asset, malformed]
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_commodity_stabilizing_shock_supports_gold_silver_and_copper_source_units():
+    cases = [
+        ('silver', 'Silver', '63.97', '$/oz', 10, 'for_awareness'),
+        ('gold', 'Gold', '4,485.60', '$/oz', 20, 'for_awareness'),
+        ('copper', 'Copper', '5.12', '$/lb', 1, 'watch_next'),
+    ]
+    for asset, label, price, unit, age, attention in cases:
+        row = signal('shock-' + asset, source='commodity', type_='price_shock', asset=asset)
+        row.update({
+            'tier': 'watch', 'age_days': age,
+            'detail': f'{label} {price} {unit} — the acute move is settling.',
+            'link': 'commodities.html#timeline',
+            'validation': {'verdict': 'documented'},
+        })
+        brief = project([row])['briefs'][row['alert_id']]
+        assert brief['status'] == 'supported'
+        assert brief['family'] == 'commodity.price_shock'
+        assert brief['attention'] == attention
+        assert f'acute {label.lower()} move is losing intensity' in brief['implication']
+        assert 'does not establish direction' in brief['limitation']
+        assert brief['next_action_label'] == f'Recheck {asset}'
+        if age > 2:
+            assert f'{age} days old' in brief['limitation']
+
+
+def test_commodity_stabilizing_shock_abstains_on_asset_or_unit_mismatch():
+    wrong_asset = signal('shock-asset', source='commodity', type_='price_shock', asset='gold')
+    wrong_asset.update({
+        'detail': 'Silver 63.97 $/oz — the acute move is settling.',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_unit = signal('shock-unit', source='commodity', type_='price_shock', asset='silver')
+    wrong_unit.update({
+        'detail': 'Silver 63.97 $/bbl — the acute move is settling.',
+        'link': 'commodities.html#timeline',
+    })
+    unsupported = signal('shock-unsupported', source='commodity', type_='price_shock', asset='uranium')
+    unsupported.update({
+        'detail': 'Uranium 82.00 $/lb — the acute move is settling.',
+        'link': 'commodities.html#timeline',
+    })
+    rows = [wrong_asset, wrong_unit, unsupported]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)

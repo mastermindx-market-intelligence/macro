@@ -230,6 +230,19 @@ def main():
             page.screenshot(path=str(out / 'desktop-bonds-move.png'))
             report['screenshots'].append('desktop-bonds-move.png')
             report['checks'].append('MOVE band changes expose current stress verification without equating calm with safety')
+            silver_id = next(id_ for id_, row in by_id.items()
+                             if row.get('source') == 'commodity' and
+                             row.get('type') == 'price_shock' and row.get('asset') == 'silver')
+            silver_brief = payload['explorer']['briefs'][silver_id]
+            assert silver_brief['family'] == 'commodity.price_shock'
+            page.goto(url + '#view=explore&id=' + silver_id, wait_until='domcontentloaded')
+            silver_text = page.locator('#ac-detail').inner_text()
+            assert silver_brief['limitation'] in silver_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == silver_brief['next_action']
+            assert silver_brief['evidence_label'] in silver_text
+            page.screenshot(path=str(out / 'desktop-silver-shock.png'))
+            report['screenshots'].append('desktop-silver-shock.png')
+            report['checks'].append('Commodity shock workflow now covers silver without turning stabilization into a direction call')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]
