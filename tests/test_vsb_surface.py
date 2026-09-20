@@ -248,15 +248,32 @@ def _render(ctx: dict) -> str:
 # ---------------------------------------------------------------------------
 
 class TestVSBSurfaceBothPayloads:
-    """Scenario (i): both vol_weather and breadth_split present."""
+    """Scenario (i): both vol_weather and breadth_split present.
 
-    def test_vol_weather_section_present(self):
+    UD-B2-W1 (R3): the vol-weather chips no longer render inside
+    #dlg-sentiment. They now live as a sub-row inside the Risk isle
+    (#sx-risk-v2) — see test_ud_b2_w1_vw_fold.py for the engine-true
+    fold tests. This class keeps the surface-render assertions
+    (plain text, pctile phrasing, breadth_split surface) on the new
+    location: vol-weather text and chip markers must still appear on
+    the page, but inside the isle slice, with the new scoped markers.
+    """
+
+    def test_vol_weather_subrow_present_in_risk_isle(self):
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         ctx["breadth_split"] = _full_breadth_split(spread=25.0)
         html = _render(ctx)
-        assert 'id="vsb-vol-weather-section"' in html, (
-            "Vol weather section header should render when payload present"
+        # The new sub-row is identified by data-sx-vw-strip + scope class
+        assert "data-sx-vw-strip" in html, (
+            "Vol weather sub-row must render (folded into the risk isle)"
+        )
+        assert "sx-vw-strip--risk-isle" in html, (
+            "Vol weather sub-row must carry its scope class"
+        )
+        # And the OLD sibling-section id must NOT appear anymore
+        assert 'id="vsb-vol-weather-section"' not in html, (
+            "Old dialog sibling-section id (vsb-vol-weather-section) must not appear on the page"
         )
 
     def test_vol_weather_chip_rows_present(self):
@@ -264,11 +281,13 @@ class TestVSBSurfaceBothPayloads:
         ctx["vol_weather"] = _full_vol_weather()
         ctx["breadth_split"] = _full_breadth_split()
         html = _render(ctx)
-        # At least some chip keys should appear as data-vsb-chip attributes
-        assert 'data-vsb-chip="vix_level"' in html
-        assert 'data-vsb-chip="vix_velocity"' in html
-        assert 'data-vsb-chip="cor1m"' in html
-        assert 'data-vsb-chip="dspx"' in html
+        # After the fold, chips carry data-sx-vw-chip= on the new sub-row
+        assert 'data-sx-vw-chip="vix_level"' in html
+        assert 'data-sx-vw-chip="vix_velocity"' in html
+        assert 'data-sx-vw-chip="cor1m"' in html
+        assert 'data-sx-vw-chip="dspx"' in html
+        # And the OLD dialog-row marker is gone
+        assert 'data-vsb-chip="' not in html
 
     def test_vol_weather_plain_text_and_pctile_phrase(self):
         ctx = _base_ctx()
@@ -344,10 +363,12 @@ class TestVSBSurfaceBothPayloads:
         html = _render(ctx)
         # The brief check: no Jinja undefined-variable render artifacts
         assert "<< NaN" not in html, "No << NaN artifacts should appear"
-        # Spot-check our added sections specifically: extract the vol/breadth block
-        # by looking between our sentinel ids; neither should contain rendering NaNs
-        if 'id="vsb-vol-weather-section"' in html:
-            start = html.index('id="vsb-vol-weather-section"')
+        # Spot-check our added sections specifically: extract the vol-weather
+        # sub-row from the risk isle slice and the breadth block; neither should
+        # contain rendering NaNs. Post-fold, vol-weather lives inside the risk
+        # isle, so we slice by the new data-sx-vw-strip sentinel.
+        if "data-sx-vw-strip" in html:
+            start = html.index("data-sx-vw-strip")
             snippet = html[start:start + 4000]
             assert "<< NaN" not in snippet
 
@@ -364,7 +385,10 @@ class TestVSBSurfaceAbsent:
     def test_vol_weather_section_absent_when_none(self):
         ctx = _base_ctx()
         html = _render(ctx)
+        # Old dialog sibling-section id is never present, regardless of VM
         assert 'id="vsb-vol-weather-section"' not in html
+        # The new scoped sub-row must also be absent when vol_weather is None
+        assert 'data-sx-vw-strip' not in html
 
     def test_breadth_split_section_absent_when_none(self):
         ctx = _base_ctx()

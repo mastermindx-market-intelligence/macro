@@ -1,0 +1,122 @@
+{
+  "head": "c22864f809",
+  "branch": "claude/mo-a-ud-b2-w1-volweather-fold",
+  "pr": "DRAFT",
+  "source_url": "site/macro.html",
+  "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
+  "page_errors": [],
+  "r_e_byte_identity": {
+    "selector": "#sx-risk-v2 (slice from '<div class=\"sx\" id=\"sx-risk-v2\"' to matching close)",
+    "sha256": "f8fda2cf9ba985a876e277ad40866345c03887baf3a1befa55d6b473ae3ba427",
+    "sha256_short": "f8fda2cf9ba9",
+    "bytes": 8898,
+    "captured_at_head": "c22864f809",
+    "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. Any byte diff fails the R-E gate (UD-B2-W1 R-E pattern, site/macro.html is nightly wire-churned so whole-file identity is a false gate — the slice is the gate)."
+  },
+  "cells": [
+    {
+      "file": "macro_dark_en_1440.png",
+      "isle_file": "risk_isle_dark_en_1440.png",
+      "viewport": "1440",
+      "theme": "dark",
+      "language": "en",
+      "strip": {
+        "w": 1360,
+        "h": 467,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_dark_zh_1440.png",
+      "isle_file": "risk_isle_dark_zh_1440.png",
+      "viewport": "1440",
+      "theme": "dark",
+      "language": "zh",
+      "strip": {
+        "w": 1360,
+        "h": 467,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_light_en_1440.png",
+      "isle_file": "risk_isle_light_en_1440.png",
+      "viewport": "1440",
+      "theme": "light",
+      "language": "en",
+      "strip": {
+        "w": 1360,
+        "h": 467,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_light_zh_1440.png",
+      "isle_file": "risk_isle_light_zh_1440.png",
+      "viewport": "1440",
+      "theme": "light",
+      "language": "zh",
+      "strip": {
+        "w": 1360,
+        "h": 467,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_dark_en_390.png",
+      "isle_file": "risk_isle_dark_en_390.png",
+      "viewport": "390",
+      "theme": "dark",
+      "language": "en",
+      "strip": {
+        "w": 354,
+        "h": 431,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_dark_zh_390.png",
+      "isle_file": "risk_isle_dark_zh_390.png",
+      "viewport": "390",
+      "theme": "dark",
+      "language": "zh",
+      "strip": {
+        "w": 354,
+        "h": 431,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_light_en_390.png",
+      "isle_file": "risk_isle_light_en_390.png",
+      "viewport": "390",
+      "theme": "light",
+      "language": "en",
+      "strip": {
+        "w": 354,
+        "h": 431,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    },
+    {
+      "file": "macro_light_zh_390.png",
+      "isle_file": "risk_isle_light_zh_390.png",
+      "viewport": "390",
+      "theme": "light",
+      "language": "zh",
+      "strip": {
+        "w": 354,
+        "h": 431,
+        "rows": 8,
+        "eyebrow": "\n    Volatility weather波动率天气\n  "
+      }
+    }
+  ]
+}

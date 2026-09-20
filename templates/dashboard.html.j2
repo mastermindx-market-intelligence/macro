@@ -210,6 +210,55 @@
 {%- endif -%}
 </svg>
 {%- endmacro %}
+
+{# ── Wave B2 W1 (UD-B2-W1): vol-weather sub-row. Folded into the Risk isle
+   (sx-risk-v2) per seat ruling R3 (research/UNIFIED_DASHBOARD_DISPOSITION.md
+   rows 21+35). The sub-row inherits the isle's tokens (--isle-color,
+   --line/--ink-2/--up/--warn/--down/--info/--panel). Calm ≤35 / breeze ≤60 /
+   gust ≤82 / storm >82 — band thresholds are unchanged. The strip renders only
+   when vm['vol_weather'] is present; absent VM means no strip, no warning. -#}
+{% macro sx_vw_strip(scope_class) -%}
+{% set _vw_chips_all = vol_weather.get('chips') or [] %}
+{% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
+{% set _vw_map = {} %}
+{% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
+<div class="sx-vw-strip {{ scope_class }}" data-sx-vw-strip>
+  <div class="sx-vw-eyebrow">
+    <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
+  </div>
+  {% for key in _vw_order %}
+  {% set _chip = _vw_map.get(key) %}
+  {% if _chip %}
+  {% set _chip_fresh = _chip.get('freshness') %}
+  {% set _chip_pctile = _chip.get('pctile') %}
+  {# weather tier from percentile: calm ≤35, breeze ≤60, gust ≤82, storm >82 #}
+  {% set _wx_tier = (0 if _chip_pctile is none else (3 if _chip_pctile > 82 else (2 if _chip_pctile > 60 else (1 if _chip_pctile > 35 else 0)))) %}
+  {% set _wx_col = ('var(--muted)' if _chip_fresh in ('young','missing') else ('var(--down,#ef4444)' if _wx_tier >= 3 else ('var(--warn,#f59e0b)' if _wx_tier == 2 else ('var(--info,#4d8ef5)' if _wx_tier == 1 else 'var(--up,#22c55e)')))) %}
+  <div class="sx-vw-row" data-sx-vw-chip="{{ key }}" style="--sg-wx-c:{{ _wx_col }}">
+    <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier) }}</div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name"><span class="l-en">{{ _chip.get('name_en') or key }}</span><span class="l-zh">{{ _chip.get('name_zh') or _chip.get('name_en') or key }}</span></div>
+      {% if _chip_fresh in ('young', 'missing') %}
+      <div class="sx-vw-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
+      {% else %}
+      <div class="sx-vw-read">
+        <span class="l-en">{{ _chip.get('plain_en') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} · {% if _chip_pctile >= 50 %}higher than {{ _chip_pctile }}% of days{% else %}lower than {{ 100 - _chip_pctile }}% of days{% endif %}{% endif %}</span>
+        <span class="l-zh">{{ _chip.get('plain_zh') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} · {% if _chip_pctile >= 50 %}高于历史 {{ _chip_pctile }}% 的交易日{% else %}低于历史 {{ 100 - _chip_pctile }}% 的交易日{% endif %}{% endif %}</span>
+      </div>
+      {% endif %}
+    </div>
+    <div class="sx-vw-val">
+      {% if _chip_fresh in ('young', 'missing') %}
+      <span class="sx-vw-val-na">—</span>
+      {% else %}
+      {{ _chip.get('value') if _chip.get('value') is not none else '—' }}
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11505,6 +11554,10 @@ html[data-theme="light"] :is(
       {% endif %}
       {% endif %}
     </div>
+    {# ── UD-B2-W1: vol-weather sub-row (folded into the Risk isle, R3). -#}
+    {% if vol_weather is defined and vol_weather %}
+      {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
+    {% endif %}
   </div>{# /sx-risk-v2 #}
   {% endif %}{# /market_state #}
 
@@ -14612,54 +14665,9 @@ html[data-theme="light"] :is(
         </div>
         {% endif %}
 
-        {# VSB W3: Volatility weather strip #}
-        {% if vol_weather is defined and vol_weather %}
-        {% set _vw_chips_all = vol_weather.get('chips') or [] %}
-        {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
-        {% set _vw_map = {} %}
-        {% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
-        <div class="mx5-dlg-sep"></div>
-        <div id="vsb-vol-weather-section" style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:10px">
-          <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
-        </div>
-        {% for key in _vw_order %}
-        {% set _chip = _vw_map.get(key) %}
-        {% if _chip %}
-        {% set _chip_fresh = _chip.get('freshness') %}
-        {% set _chip_pctile = _chip.get('pctile') %}
-        {# weather tier from percentile: calm ≤35, breeze ≤60, gust ≤82, storm >82 #}
-        {% set _wx_tier = (0 if _chip_pctile is none else (3 if _chip_pctile > 82 else (2 if _chip_pctile > 60 else (1 if _chip_pctile > 35 else 0)))) %}
-        {% set _wx_col = ('var(--muted)' if _chip_fresh in ('young','missing') else ('var(--down,#ef4444)' if _wx_tier >= 3 else ('var(--warn,#f59e0b)' if _wx_tier == 2 else ('var(--info,#4d8ef5)' if _wx_tier == 1 else 'var(--up,#22c55e)')))) %}
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="{{ key }}" style="--sg-wx-c:{{ _wx_col }}">
-          <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier) }}</div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">{{ _chip.get('name_en') or key }}</span><span class="l-zh">{{ _chip.get('name_zh') or _chip.get('name_en') or key }}</span></div>
-            {% if _chip_fresh in ('young', 'missing') %}
-            <div class="mx5-dlg-factor-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
-            {% else %}
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">{{ _chip.get('plain_en') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} &middot; {% if _chip_pctile >= 50 %}higher than {{ _chip_pctile }}% of days{% else %}lower than {{ 100 - _chip_pctile }}% of days{% endif %}{% endif %}</span>
-              <span class="l-zh">{{ _chip.get('plain_zh') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} &middot; {% if _chip_pctile >= 50 %}高于历史 {{ _chip_pctile }}% 的交易日{% else %}低于历史 {{ 100 - _chip_pctile }}% 的交易日{% endif %}{% endif %}</span>
-            </div>
-            {% endif %}
-          </div>
-          <div class="sg-pos-wrap">
-            {% if _chip_pctile is not none and _chip_fresh not in ('young','missing') %}
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:{{ _chip_pctile }}%"></span></div>
-            <div class="sg-pos-axis"><span>{{ t('Low','低') }}</span><span>{{ t('High','高') }}</span></div>
-            {% endif %}
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            {% if _chip_fresh in ('young', 'missing') %}
-            <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">—</span>
-            {% else %}
-            {{ _chip.get('value') if _chip.get('value') is not none else '—' }}
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
+        {# VSB W3: Volatility weather strip — REMOVED 2026-09-20 (UD-B2-W1 fold).
+           The chips now live as a sub-row inside the Risk isle (#sx-risk-v2);
+           the dialog no longer carries the duplicate section. #}
 
         {# VSB W4: AI names vs the rest #}
         {% if breadth_split is defined and breadth_split %}
