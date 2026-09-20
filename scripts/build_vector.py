@@ -1711,9 +1711,15 @@ _ZH_HALF_TRANSLATED_RULES = frozenset({
 _ZH_HALF_TRANSLATED_PREFIXES = ("cycle_falsifier_fired:",)
 
 
-def _zh_needs_rebuild(rule: str) -> bool:
-    """True when the persisted message_zh for `rule` is known to carry English."""
+def _zh_needs_rebuild(rule: str, stored_zh: str = "") -> bool:
+    """Heal known leaks without overwriting richer emitter-authored Chinese."""
     rule = str(rule or "")
+    if rule == "transition_state_change" and stored_zh:
+        from engine.alerts import _TS_PLAIN_ZH as _transition_states
+        return any(
+            re.search(rf"\b{re.escape(state)}\b", stored_zh)
+            for state in _transition_states
+        )
     return (rule in _ZH_HALF_TRANSLATED_RULES
             or rule.startswith(_ZH_HALF_TRANSLATED_PREFIXES))
 
@@ -1996,7 +2002,7 @@ def home_alert_feed() -> list[dict]:
             # _zh_needs_rebuild subsumes the plain _ZH_HALF_TRANSLATED_RULES
             # membership test and adds the per-tripwire PREFIX family.
             stored_zh = str(r.get("message_zh", "") or "").strip()
-            if not stored_zh or _zh_needs_rebuild(r["rule"]):
+            if not stored_zh or _zh_needs_rebuild(r["rule"], stored_zh):
                 stored_zh = _translate_macro_detail(r["message"], r["rule"]) or stored_zh
             detail_zh = stored_zh or r["message"]
             out.append({
