@@ -1867,7 +1867,8 @@ def test_hub_entry_omitted_when_card_count_is_zero():
             ]
         )
     )
-    assert two.count('href="measurement.html#ric-section"') == 1
+    assert two.count('class="card rid"') == 1
+    assert 'href="measurement.html#ric-section"' not in two
     assert "what 2 frozen studies actually produced" in two
     assert "2 项冻结研究的实际产出" in two
 
@@ -1911,11 +1912,14 @@ def test_rendered_card_has_no_snake_case_slug(contract, real_section):
             assert hit is None, f"{card['method_family']} {cls} leaked {hit.group(0)!r}"
 
 
-def test_hub_entry_is_bilingual_and_inside_track_record_band():
+def test_hub_research_context_is_bilingual_non_navigating_and_inside_track_record_band():
     hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
-    m = re.search(r'<a class="card rid"[^>]*>(.*?)</a>', hub, flags=re.DOTALL)
-    assert m, "no .rid entry row found in the hub template"
+    assert 'href="measurement.html#ric-section"' not in hub
+    m = re.search(r'<div class="card rid" role="note">(.*?)</div>', hub, flags=re.DOTALL)
+    assert m, "no non-navigating .rid research-context row found in the hub template"
     row = m.group(1)
+    assert "Calibration Lab" not in row
+    assert "Research context" in row
     spans = re.findall(
         r'class="(rid-k|rid-t|rid-d)">'
         r'<span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
