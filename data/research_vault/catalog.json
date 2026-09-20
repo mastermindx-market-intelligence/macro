@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T23:00:56.757720+00:00",
-  "count": 2529,
+  "generated_at": "2026-09-20T23:31:00.028260+00:00",
+  "count": 2530,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1718,6 +1718,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gysvcg91hg4-8d7392",
+      "title": "Private equity",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:22Z",
+      "summary_points": [
+        "Global PE Fundraising Surge: H1 2026 global PE fundraising at $262B (60%+ of FY25 total), led by Asia Pacific; geopolitical risks (Middle East conflict, AI disruption) and Fed rate hikes by year-end threaten momentum.",
+        "Europe Deal Diversification: Europe’s 12-mo PE deal value share rose 31%→35% (Q25→Q26), driven by middle-market expansion and sector diversification (materials, chemicals, industrials), signaling sustainable M&A recovery.",
+        "Fed Rate Hikes as Critical Risk: Near-term deal risk from Fed’s 25-basis-point rate hikes by year-end, offsetting resilient private company revenue/earnings growth and easing funding costs (2024-25 levels).",
+        "Secondary Market Defensive Shift: Secondary volumes 15% ahead of 1H25, driven by liquidity demand and portfolio rebalancing, supporting defensive exposure amid exit backlog and recession risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
