@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-20T16:47:26.436493+00:00",
+  "as_of": "2026-09-20T19:27:12.184105+00:00",
   "posts_seen": 24,
-  "seen_total": 213,
-  "evaluated": 0,
+  "seen_total": 214,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-09-20-presidential-message-on-yom-kippur-a68b",
+      "importance": 0,
+      "activated": false,
+      "degraded_reason": "served_by:codex"
+    }
+  ]
 }
