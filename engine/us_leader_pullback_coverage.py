@@ -35,10 +35,11 @@ same construction:
   computed ONCE per run over the graded universe against the SPY close on the same
   adjustment basis — never a per-name RS invented here, which would be a second answer
   to the question that lane measures;
-* the universe is :mod:`engine.us_turn_watch`'s GRADED DECK STORE — the same population
-  that desk's leg (d) ranks over, so the percentile in this artifact and the percentile
-  behind that desk mean the same thing and the two can never disagree about a name.  A
-  cross-section over a different population is a different number wearing the same name,
+* the universe is :mod:`engine.us_turn_watch`'s immutable selection-era population — the
+  same population that desk's leg (d) ranks over, backed by the Yahoo price store but never
+  widened by unrelated files added there. The percentile in this artifact and the percentile
+  behind that desk therefore mean the same thing. A cross-section over a different population
+  is a different number wearing the same name,
   and ``RS_TOP_PCT`` is a pre-registered v0 constant whose quartile was measured against
   THIS population (#5026: leader fires 28 -> 7 once the organ was fed a real PIT
   cross-section).  ``STORE_LADDER`` below is a parameter so a widening is a one-line
@@ -87,6 +88,7 @@ from engine.us_turn_watch import (
     SELECTION_ERA,
     _safe_stem,
     load_close,
+    source_contract_status,
     universe,
 )
 
@@ -213,7 +215,7 @@ def rs_cross_section(closes: dict[str, pd.Series],
     universe: that is the honest "no cross-section" state, and :func:`compute_coverage`
     treats it as a run-wide data failure rather than publishing a board of nulls.
 
-    The percentile is over THIS universe (the graded deck store, ~700 US names).  Its
+    The percentile is over THIS universe (the frozen v1 selection-era population, 697 names). Its
     width rides into the artifact as ``coverage.cross_section_names`` so the number is
     never read as a market-wide rank.
     """
@@ -289,9 +291,10 @@ def compute_coverage(data_root: Path | None = None, *,
                      universe_limit: int | None = None) -> dict[str, Any]:
     """Build the coverage artifact.  Never raises; returns the artifact dict.
 
-    ``coverage.publishable`` is FALSE only on a run-wide data failure (no graded names or
-    no cross-section).  :func:`run` refuses to write in that case so a broken store cannot
-    overwrite a real artifact with a dead one — see the module docstring.
+    ``coverage.publishable`` is FALSE on a run-wide data failure OR when the immutable
+    selection-era source contract fails. :func:`run` refuses to write in either case so
+    raw-store growth, a fractured source session or missing population members cannot
+    silently redefine the RS ruler — see the module docstring.
     """
     t0 = time.time()
     from lib import config as _cfg  # noqa: PLC0415
@@ -303,9 +306,11 @@ def compute_coverage(data_root: Path | None = None, *,
     closes: dict[str, pd.Series] = {}
     volumes: dict[str, pd.Series | None] = {}
     short: list[str] = []
+    missing_store: list[str] = []
     for tk in tickers:
         close, vol, _store = load_bars(tk, root)
         if close is None:
+            missing_store.append(tk)
             continue
         if len(close) < MIN_BARS:
             short.append(tk)
@@ -345,8 +350,12 @@ def compute_coverage(data_root: Path | None = None, *,
         else:
             state_counts[str(st)] += 1
 
+    source_contract = source_contract_status(
+        root, members=tickers, closes=closes, missing_store=missing_store, benchmark=bench,
+        min_bars=MIN_BARS, universe_limit=universe_limit,
+    )
     elapsed = round(time.time() - t0, 2)
-    publishable = bool(states) and bool(rs)
+    publishable = bool(states) and bool(rs) and bool(source_contract.get("pass"))
 
     return {
         "schema": SCHEMA,
@@ -368,6 +377,8 @@ def compute_coverage(data_root: Path | None = None, *,
             "universe": len(tickers),
             "graded": len(closes),
             "skipped_short_history": len(short),
+            "missing_store": len(missing_store),
+            "source_contract": source_contract,
             "min_bars": MIN_BARS,
             "store_ladder": list(STORE_LADDER),
             "cross_section_names": len(rs),
