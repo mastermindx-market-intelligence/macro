@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T03:42:58.351660+00:00",
-  "count": 2473,
+  "generated_at": "2026-09-20T03:57:55.892785+00:00",
+  "count": 2474,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -90,6 +90,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-jrhdvubg68b-1d7ccd",
+      "title": "BofA Raising Internet capex ests A look into Internet capex, capacity and monetization",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:21:06Z",
+      "summary_points": [
+        "Hyperscaler Capex Surge: Alphabet ($195bn 2026), Meta ($185bn 2026), Amazon AWS ($159bn 2026) capex hikes driven by AI infrastructure, with Amazon’s data center capacity projected at 39GW (2026) and 57GW (2027).",
+        "Valuation Discrepancy: Meta’s AI capacity implied valuation at $4bn/GW vs.",
+        "Alphabet’s $110bn/GW and Amazon’s $59bn/GW, highlighting market underpricing of Meta’s AI infrastructure potential.",
+        "Cost Efficiency Edge: Amazon’s $25bn/GW incremental cost vs.",
+        "Google’s $37bn/GW (2026), driven by custom silicon (Trainium/TPUs), directly impacting future margins and scalability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-7lmxc2lmgvp-380fae",
       "title": "Strategy Daily",
