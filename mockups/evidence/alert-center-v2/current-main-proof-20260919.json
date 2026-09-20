@@ -64,7 +64,8 @@
     "manifest.json": "ba76c72f207be84ccc08596c87e2a9f50229f4a986444567bbf3e8ec98191e73",
     "smells.json": "df67871fac43b576c5aef683551da0aa844893c15990f31fbbc058c941093a17",
     "guard-results.json": "77f1108cac500339cbdb757981103e25fbd511e93b51a19f46d45e26485cf668",
-    "legacy-parity.json": "addb579c19d539ef0896a6dbb58f2d0a9ae6506eb76e8f9f7bf8b466e6ece643"
+    "legacy-parity.json": "addb579c19d539ef0896a6dbb58f2d0a9ae6506eb76e8f9f7bf8b466e6ece643",
+    "latest-base-compatibility-20260919.json": "dc26e80efae66a58565c2e57ab0cc57a56615935c3452811ab00be04c27b7eaa"
   },
   "figma": {
     "file_key": "r1hSkfDg4vGzjWRySgrHE1",
@@ -77,5 +78,13 @@
     "production-route visibility",
     "customer acceptance",
     "trading edge"
-  ]
+  ],
+  "evidence_commit": "1b8caa50a1b43a9e2843c0855b8f347900ec2c91",
+  "publication_skillpack_commit": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+  "latest_base_compatibility": {
+    "receipt": "mockups/evidence/alert-center-v2/latest-base-compatibility-20260919.json",
+    "latest_protected_main": "e338508d91bca30fadf9c0bbac3f154bf02f81de",
+    "merge_tree": "97b08efa5e30508f24c9d5ef9aa1389605b0bb76",
+    "classification": "REVIEW_REUSE_ALLOWED"
+  }
 }
