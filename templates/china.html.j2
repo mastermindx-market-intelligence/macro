@@ -1805,7 +1805,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _hero_clause = hero_clause(pb_obj, ms) %}
   {% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}
   {% set _todo_actual = _todo_faces | rejectattr('empty') | list %}
-  {% set _todo_shown = _todo_actual if _todo_actual else _todo_faces[:1] %}
+  {% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}
 
   <div class="cnx-wrap">
 
