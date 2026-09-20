@@ -1,6 +1,6 @@
 # Prophet HK + Canada shared product design contract — R1
 
-**Status:** `PROVISIONAL_EDITABLE_PROJECTION / IMPLEMENTATION_CONTRACT_DRAFT`  
+**Status:** `DESIGN_AUTHORITY_REVIEWED / REFERENCE_REWORK_REQUIRED / IMPLEMENTATION_CONTRACT_DRAFT`
 **Operation:** `prophet-hkca-shared-design-contract-r1-20260920-sol-001`  
 **Parent:** `WS:PROPHET-HK-CA-REVAMP`  
 **Source assignment:** `D_SHARED_PRODUCT_DESIGN_AND_UI(1).md`, V2, September 19, 2026  
@@ -65,9 +65,47 @@ Governed Paper projection:
 - artboard `9N-1`: `21 · Canada · Daily Workspace · Light · EN · 1440`.
 
 Observed file state: 291 nodes and three 1440px artboards. Paper MCP server `0.5.9`
-now returns `WEEKLY_LIMIT` for both tree reads and editing; the current design could not
-receive its mandatory fresh screenshot/tree review. Do not claim these artboards canonical,
-complete, or approved.
+returns `WEEKLY_LIMIT` for tree reads and editing. A fresh read-only public-browser render was
+captured at 3× device scale on September 20, 2026 and all three artboards were visually reviewed.
+That render proves the pixel projection only; exact node provenance, editable variants, and
+reference approval remain unverified.
+
+### 3.1 Design-authority review — `REWORK_REQUIRED`
+
+The current visual reference is **not approved for R1 implementation**. The useful direction is
+preserved, but the pair is materially incomplete against the assignment and sixteen-cell bar.
+
+What stands:
+
+- The shared contract separates Current, Research, Changed, and Record, and distinguishes current
+  authority from a non-actionable historical row.
+- The Hong Kong board communicates `39 current names / 2 live`, exposes Top versus All, Grid/Table,
+  search, stage totals, and owner-native cards with why-shown, timing, price, and evidence.
+- The Canada header truthfully says Branch-B screen, `17 current names`, `Top Picks 0`, and no
+  confirmed entry instead of fabricating scarcity or action.
+
+Blocking gaps:
+
+1. Canada is only a header and Top/All toggle shell. It lacks search, Grid/Table, stage/watch counts,
+   current cards, reasons, timing, evidence, recent changes, record, and designed degraded states.
+2. Only three desktop artboards exist: shared dark EN, HK dark EN, and Canada light EN. The required
+   market × locale × theme × width matrix has no ZH, no 390/320, and no opposite-theme market pairs.
+3. No complete interaction or permission-state variants are shown for keyboard focus, expanded
+   evidence, loading, stale, source failure, unauthenticated, expired entitlement, or filter-empty.
+4. Exact approved component-variant and node/version identifiers cannot be handed to B/C while the
+   editable tree remains quota-blocked.
+
+Ordered remediation:
+
+1. Complete Canada to semantic parity with HK while preserving its screen and watch-only authority.
+2. Compose deliberate HK-light and Canada-dark treatments, then EN/ZH 390 variants for both markets.
+3. Add one governed state/interaction board covering the required failure, permission, history, and
+   input modalities without inventing another evidence plane.
+4. Re-open the editable tree, record exact approved node/version identifiers, and capture the primary
+   sixteen cells plus targeted 320/history/permission evidence before releasing R1 source work.
+
+This R1 reference gap does not block lawful R0 truth/roster restoration using already accepted
+styling. B/C must not begin the new R1 visual migration from these provisional boards.
 
 Draft Figma projection named in `#7394`:
 
