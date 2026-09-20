@@ -423,6 +423,46 @@ def test_constant_window_is_not_above_a01():
     assert last["Technology|pct_above_20"] == 0.0    # valid 0%, not withheld
 
 
+def test_nonconstant_decimal_window_exactly_at_ma20_is_not_above():
+    """Strict > means decimal equality is B even when float rolling mean rounds down."""
+    days = _sessions(20)
+    syms = [f"T{i}" for i in range(5)]
+    values = [
+        0.58, 0.22, 0.66, 0.20, 0.83, 0.28, 0.91, 0.50, 0.45, 0.41,
+        0.85, 0.16, 0.36, 0.83, 0.59, 0.16, 0.29, 0.23, 0.23, 0.46,
+    ]
+    # In decimal arithmetic sum(values) / 20 == 0.46 exactly. Pandas' binary
+    # rolling mean is 0.45999999999999996, so a raw float comparison is false-above.
+    closes = pd.DataFrame(
+        {symbol: values for symbol in syms},
+        index=pd.DatetimeIndex(pd.Timestamp(day) for day in days),
+    )
+    out = _adapter().compute_sector_participation_20(closes, _members(syms))
+    last = out.iloc[-1]
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 0
+    assert last["Technology|pct_above_20"] == 0.0
+
+
+def test_genuine_tiny_decimal_crossing_is_not_erased_by_rounding_cure():
+    """The cure is exact comparison, not an epsilon that suppresses real crossings."""
+    days = _sessions(20)
+    syms = [f"T{i}" for i in range(5)]
+    values = [
+        0.58, 0.22, 0.66, 0.20, 0.83, 0.28, 0.91, 0.50, 0.45, 0.41,
+        0.85, 0.16, 0.36, 0.83, 0.59, 0.16, 0.29, 0.23, 0.23, 0.460000000001,
+    ]
+    closes = pd.DataFrame(
+        {symbol: values for symbol in syms},
+        index=pd.DatetimeIndex(pd.Timestamp(day) for day in days),
+    )
+    out = _adapter().compute_sector_participation_20(closes, _members(syms))
+    last = out.iloc[-1]
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 5
+    assert last["Technology|pct_above_20"] == 100.0
+
+
 def test_five_rising_five_falling_is_50pct_a02():
     days = _sessions(20)
     syms = [f"U{i}" for i in range(5)] + [f"D{i}" for i in range(5)]

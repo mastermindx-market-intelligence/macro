@@ -21,7 +21,9 @@ import json
 import logging
 import re
 import time
+from collections import deque
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 
 import numpy as np
@@ -83,6 +85,50 @@ def _w1_http_controls(provider_cfg: dict) -> tuple[float, int, float]:
     backoff = max(0.0, min(1.0, float(
         provider_cfg.get("w1_request_backoff_seconds", 1.0))))
     return timeout, retries, backoff
+
+
+def _w1_strict_above_decimal_window(
+        series: pd.Series, *, window: int = 20) -> pd.Series:
+    """Return exact decimal-value last-greater-than-mean decisions.
+
+    Licensed daily closes arrive as JSON decimal numbers but are held in pandas as
+    binary floats. A binary rolling mean can round just below an economically equal
+    decimal close, fabricating an above signal. Compare the shortest round-tripping
+    decimal representation of each accepted close instead. Multiplying the current
+    close by the window avoids a second rounding step and keeps the rule strictly
+    greater than, with no epsilon that could erase a genuine tiny crossing.
+
+    Missing or invalid closes remain False here; eligibility and state typing stay
+    with the existing W1 window logic.
+    """
+    if window < 1:
+        raise ValueError("window must be positive")
+
+    out = pd.Series(False, index=series.index, dtype=bool)
+    rolling: deque[Decimal | None] = deque()
+    rolling_sum = Decimal(0)
+    valid_count = 0
+    window_decimal = Decimal(window)
+
+    for position, value in enumerate(series):
+        decimal_value: Decimal | None = None
+        if pd.notna(value):
+            decimal_value = Decimal(str(float(value)))
+            rolling_sum += decimal_value
+            valid_count += 1
+        rolling.append(decimal_value)
+
+        if len(rolling) > window:
+            expired = rolling.popleft()
+            if expired is not None:
+                rolling_sum -= expired
+                valid_count -= 1
+
+        if (len(rolling) == window and valid_count == window
+                and decimal_value is not None):
+            out.iat[position] = decimal_value * window_decimal > rolling_sum
+
+    return out
 
 
 def _w1_request_ceiling_seconds(provider_cfg: dict) -> float:
@@ -988,10 +1034,18 @@ class BreadthAdapter(Adapter):
             source_evidence[str(symbol)] = evidence
 
         ma20 = clean.rolling(20, min_periods=20).mean()
-        roll_max = clean.rolling(20, min_periods=20).max()
-        roll_min = clean.rolling(20, min_periods=20).min()
-        is_constant = roll_max == roll_min
-        above = (clean > ma20) & ~is_constant
+        # W1 strictness is defined on the provider's decimal price values, not on
+        # incidental IEEE-754 mean rounding. Keep pandas MA20 for eligibility and
+        # display-distance math, but own the A/B boundary with an exact decimal
+        # sliding comparison. This touches only W1; the protected 50/200 breadth
+        # calculations remain unchanged.
+        above = pd.DataFrame(
+            {
+                symbol: _w1_strict_above_decimal_window(clean[symbol], window=20)
+                for symbol in clean.columns
+            },
+            index=clean.index,
+        )
         eligible = ma20.notna()
 
         cols: dict[str, pd.Series] = {}
