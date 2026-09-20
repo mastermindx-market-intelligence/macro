@@ -1804,6 +1804,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set _stance_tone = posture_tone(_pd.posture if _pd else none) %}
   {% set _hero_clause = hero_clause(pb_obj, ms) %}
   {% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}
+  {% set _todo_actual = _todo_faces | rejectattr('empty') | list %}
+  {% set _todo_shown = _todo_actual if _todo_actual else _todo_faces[:1] %}
 
   <div class="cnx-wrap">
 
@@ -2142,7 +2144,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-row cnx-action-lead"><span class="ic" aria-hidden="true">→</span>
           <div class="tx"><b><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></b>
             <span class="sub"><span class="l-en">Current posture</span><span class="l-zh">当前操作姿态</span></span></div></div>
-        {% for face in _todo_faces %}
+        {% for face in _todo_shown %}
         <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
           <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
             {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div>
