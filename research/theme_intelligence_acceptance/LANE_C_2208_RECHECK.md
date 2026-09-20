@@ -34,11 +34,28 @@ Hosted run `35499134338` executed all twelve semantic packs successfully. Its ov
 contract-delta: the three Lane C suites above plus unrelated `tests/test_unified_dashboard_b1.py`
 are unregistered. The unrelated dashboard suite is not counted as a Lane C repair blocker.
 
+## Corporate-action basis follow-up
+
+A subsequent deterministic Lane F audit against the same immutable `2208fe` subject resolves the
+US first vertical's adjusted price basis. `data/baskets/ohlcv`, `data/stocks`, and `data/yahoo`
+agree through NVDA 2024-06-10 and AVGO 2024-07-15 split boundaries with continuous adjusted
+returns and identical volume. AAPL 2024-05-10 and XOM 2025-08-15 show the expected divergence
+between dividend-adjusted `close` and dividend-unadjusted `close_price`, while the `stocks`
+fallback matches the adjusted Yahoo close and volume.
+
+Receipt: `corporate_action_basis_result.json`, SHA-256
+`514fc26661b79a8ccc8a3473c6bfbec4449da40e1468a8f63067ee5022c139ac`, verdict
+`US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN`.
+
+This closes the generic split/dividend-basis uncertainty for the current US first vertical.
+It does not prove every historical corporate action, future basis stability, or predictive edge.
+
 ## Still not proven
 
 Correction-safe first-seen/first-visible history, distinct observations versus repeat renders,
-duplicate evidence-family identity, split/dividend corporate-action basis, deployed-byte/browser
-parity, and prospective predictive outcomes remain unproven.
+duplicate evidence-family identity, universal historical corporate-action correctness beyond the
+representative immutable witnesses, deployed-byte/browser parity, and prospective predictive
+outcomes remain unproven.
 
 ## Exact continuation
 

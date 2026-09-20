@@ -47,6 +47,10 @@ changed:
     what: "Recorded exact-head evaluator PASS with Lane C still REJECTED_FOR_REPAIR on six blockers."
   - path: research/theme_intelligence_acceptance/LANE_C_2208_RECHECK.md
     what: "Returned the accepted stale-reclaim/calendar delta, six remaining blockers, exact tests, CI distinction, and continuation."
+  - path: research/theme_intelligence_acceptance/corporate_action_basis_audit.py
+    what: "Added a deterministic exact-Git-object audit of Lane C's US adjusted price/volume basis through representative split and dividend-adjustment boundaries."
+  - path: research/theme_intelligence_acceptance/corporate_action_basis_result.json
+    what: "Recorded US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN with immutable source/bar hashes and explicit universal-history limitations."
   - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
     what: "Preserved the Lane C REJECTED_FOR_REPAIR receipt."
   - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
@@ -108,6 +112,9 @@ verified:
   - claim: "Lane C exact-head hosted semantic execution completed independently of the contract-delta failure."
     command: "GitHub Actions run 35499134338 on 2208fe40039d356929fac0f96b626edc33d42288."
     result: "PASS for all twelve semantic packs; overall CI red is contract-delta on the three unwired Lane C suites plus unrelated tests/test_unified_dashboard_b1.py."
+  - claim: "The US first vertical's inherited close/volume basis is adjusted across representative split and dividend boundaries."
+    command: "python3 research/theme_intelligence_acceptance/corporate_action_basis_audit.py --output research/theme_intelligence_acceptance/corporate_action_basis_result.json"
+    result: "PASS: NVDA and AVGO split boundaries remain continuous across baskets/stocks/yahoo with volume parity; AAPL and XOM dividend-adjusted close differs from nominal close_price while stocks matches adjusted Yahoo. Verdict US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN; receipt SHA-256 514fc26661b79a8ccc8a3473c6bfbec4449da40e1468a8f63067ee5022c139ac."
 unverified:
   - claim: "The review-hardened final PR head has an independent external code-review PASS."
     what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
@@ -184,5 +191,7 @@ Lane C pushed repair head `2208fe40039d356929fac0f96b626edc33d42288` / tree `29a
 Exact reacceptance passes as evaluator with 103 passed / 3 skipped subsector tests, 45 passed / 3 skipped ThemeState/builder tests, 20 passed sector-page tests, Agent OS 0 errors, mixed parent/subtheme separation, and all-false authority. The repair also uses the incumbent NYSE calendar settle/holiday boundary and keeps internal missing bars null. `lane_c_2208_result.json` SHA-256 is `d73781dba1d28f35ae3e9afabe3d6cbf4d8274b398c4fd422e9a0762902768ec`.
 
 Six blockers remain: stale leadership health not propagated, unavailable producer receipt lost, producer failure reason lost, three new suites unwired in hosted CI, eight trailing-whitespace diff-hygiene errors, and unreproducible real-price proof bytes. Hosted semantic packs all pass; contract-delta remains red on those three suites plus unrelated `tests/test_unified_dashboard_b1.py`.
+
+A separate exact-Git-object basis audit closes the generic US split/dividend-basis uncertainty for this first vertical: NVDA/AVGO split-day adjusted returns remain continuous across all three loader rungs with exact volume parity, while AAPL/XOM prove dividend-adjusted `close` against nominal `close_price`. Receipt SHA-256 `514fc26661b79a8ccc8a3473c6bfbec4449da40e1468a8f63067ee5022c139ac`. Universal historical corporate-action correctness and future basis drift remain outside that proof.
 
 The Lane C source worktree is already dirty with the next shared-consumer health repair. Lane F did not edit, stage, reset, commit, or accept those uncommitted bytes. Preserve that writer and reaccept only its next pushed exact head.
