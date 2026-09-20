@@ -96,6 +96,10 @@ _VECTOR_IMPULSE_DOWN = re.compile(
     r'^DVOL intraday-range spike \(unusually large versus its own history\) '
     r'— the options market is repricing risk\. BTC \$([0-9][0-9,]*)\.$'
 )
+_VECTOR_OI_CROWDING = re.compile(
+    r'^Open interest crossed into (elevated|stretched) \(funding-independent\)\. '
+    r'Leverage fuel loading, not a crash call\.(?: BTC \$([0-9][0-9,]*)\.)?$'
+)
 
 _INSTRUMENT_RISK_HEADLINE = re.compile(
     r'^(.+?) risk turned (Elevated|Calm)$'
@@ -610,6 +614,59 @@ def build_alert_brief(row: dict) -> dict:
                 'evidence_label_zh': '打开当前需求时间线',
             })
             return brief
+
+    oi_crowding = _VECTOR_OI_CROWDING.fullmatch(detail)
+    if (source == 'vector' and type_ == 'oi_crowding_derisk' and oi_crowding and
+            _plain(row.get('headline') or '') == 'OI crowding building — de-risk context'):
+        state, price_text = oi_crowding.groups()
+        state_label = 'elevated' if state == 'elevated' else 'stretched'
+        state_zh = '偏高' if state == 'elevated' else '极度拥挤'
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck the current leverage state.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核当前杠杆状态。'
+        price_clause = (' at BTC $' + price_text) if price_text else ''
+        price_clause_zh = ('（BTC $' + price_text + '）') if price_text else ''
+        brief.update({
+            'status': 'supported', 'family': 'vector.oi_crowding_derisk',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The source reports open interest moved into {state_label}{price_clause} '
+                'without requiring elevated funding, flagging more leverage fuel that could '
+                'amplify a later move if other cascade conditions arrive.'),
+            'implication_zh': (
+                f'来源报告未平仓合约在不要求资金费率升高的情况下进入{state_zh}{price_clause_zh}，'
+                '表示杠杆燃料增加；若其他连环清算条件随后出现，行情可能被放大。'),
+            'limitation': (
+                'Funding-independent crowding does not establish a liquidation cascade, crash '
+                'direction, timing or probability. ' +
+                (edge or 'The source treats standalone open interest as low-conviction context, not a crash call.') +
+                age_limit),
+            'limitation_zh': (
+                '与资金费率无关的拥挤并不能证明连环清算、下跌方向、时点或概率。' +
+                (edge_zh or '来源将单独的未平仓合约视为低信心背景，而非下跌信号。') +
+                age_limit_zh),
+            'next_action': (
+                f'Open the current Bitcoin leverage panel and verify open interest is still '
+                f'{state_label}, check whether funding or other cascade conditions have joined, '
+                'and recheck the current BTC price before changing risk.'),
+            'next_action_zh': (
+                f'打开当前比特币杠杆面板，确认未平仓合约仍处于{state_zh}，检查资金费率或其他连环清算'
+                '条件是否加入，并复核当前 BTC 价格后再调整风险。'),
+            'next_action_label': 'Recheck leverage', 'next_action_label_zh': '复核杠杆',
+            'reassessment': (
+                'Change the read if open interest leaves elevated/stretched, the source no longer '
+                'flags crowding, or the broader leverage setup materially changes.'),
+            'reassessment_zh': (
+                '若未平仓合约退出偏高/极度拥挤、来源不再标记拥挤，或更广泛的杠杆结构发生实质变化，则改变判断。'),
+            'evidence_label': 'Open current Bitcoin leverage panel',
+            'evidence_label_zh': '打开当前比特币杠杆面板',
+        })
+        return brief
 
     impulse = _VECTOR_IMPULSE_DOWN.fullmatch(detail)
     if source == 'vector' and type_ == 'impulse_warn_down' and impulse:

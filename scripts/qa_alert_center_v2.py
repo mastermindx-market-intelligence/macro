@@ -125,6 +125,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-net-liquidity.png'))
             report['screenshots'].append('desktop-net-liquidity.png')
             report['checks'].append('Net-liquidity flips expose current-state sizing work without becoming timing signals')
+            oi_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                         if brief.get('family') == 'vector.oi_crowding_derisk')
+            oi_brief = payload['explorer']['briefs'][oi_id]
+            page.goto(url + '#view=explore&id=' + oi_id, wait_until='domcontentloaded')
+            oi_text = page.locator('#ac-detail').inner_text()
+            assert oi_brief['limitation'] in oi_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == oi_brief['next_action']
+            assert oi_brief['evidence_label'] in oi_text
+            page.screenshot(path=str(out / 'desktop-oi-crowding.png'))
+            report['screenshots'].append('desktop-oi-crowding.png')
+            report['checks'].append('OI crowding exposes leverage verification without becoming a crash call')
             theme_families = {
                 'themes.reco_change', 'themes.theme_deteriorating',
                 'themes.theme_topping', 'themes.theme_emerging',

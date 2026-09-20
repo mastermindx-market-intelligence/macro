@@ -850,3 +850,65 @@ def test_net_liquidity_flip_abstains_when_detail_does_not_prove_a_sign_flip():
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+def test_oi_crowding_gets_leverage_context_without_becoming_a_crash_call():
+    row = signal('oi-crowding', source='vector', type_='oi_crowding_derisk', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 5,
+        'headline': 'OI crowding building — de-risk context',
+        'detail': 'Open interest crossed into elevated (funding-independent). Leverage fuel loading, not a crash call. BTC $75,584.',
+        'detail_zh': '未平仓合约升至偏高（与资金费率无关）。杠杆燃料堆积，并非下跌信号。 BTC $75,584.',
+        'edge': "OI-crowding de-risk nudge — funding-INDEPENDENT (breaks the cascade AND-gate). LOW-CONVICTION: open interest is anti-predictive standalone (measured lift ~0.36) — a 'fuel building' context flag, not a validated crash call.",
+        'edge_zh': '持仓拥挤减仓提示 — 与资金费率无关。低信心：未平仓合约单独使用为反向指标；仅为背景标记。',
+        'link': 'vector.html#leverage',
+        'validation': {'verdict': 'calibrated'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.oi_crowding_derisk'
+    assert brief['attention'] == 'for_awareness'
+    assert 'open interest moved into elevated' in brief['implication']
+    assert 'amplify a later move' in brief['implication']
+    assert 'does not establish a liquidation cascade' in brief['limitation']
+    assert 'anti-predictive standalone' in brief['limitation']
+    assert '5 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck leverage'
+    assert brief['evidence_label'] == 'Open current Bitcoin leverage panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_stretched_oi_crowding_is_watch_next_even_without_a_price():
+    row = signal('oi-stretched', source='vector', type_='oi_crowding_derisk', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'OI crowding building — de-risk context',
+        'detail': 'Open interest crossed into stretched (funding-independent). Leverage fuel loading, not a crash call.',
+        'link': 'vector.html#leverage',
+        'validation': {'verdict': 'calibrated'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'moved into stretched' in brief['implication']
+    assert 'crash direction, timing or probability' in brief['limitation']
+    assert 'open interest leaves elevated/stretched' in brief['reassessment']
+
+
+def test_oi_crowding_abstains_on_wrong_headline_or_unsupported_state():
+    wrong_headline = signal('oi-head', source='vector', type_='oi_crowding_derisk', asset='vector')
+    wrong_headline.update({
+        'headline': 'Leverage alert',
+        'detail': 'Open interest crossed into elevated (funding-independent). Leverage fuel loading, not a crash call. BTC $75,584.',
+        'link': 'vector.html#leverage',
+    })
+    bad_state = signal('oi-state', source='vector', type_='oi_crowding_derisk', asset='vector')
+    bad_state.update({
+        'headline': 'OI crowding building — de-risk context',
+        'detail': 'Open interest crossed into extreme (funding-independent). Leverage fuel loading, not a crash call. BTC $75,584.',
+        'link': 'vector.html#leverage',
+    })
+    briefs = project([wrong_headline, bad_state])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (wrong_headline, bad_state))
+    assert all(briefs[row['alert_id']]['family'] is None for row in (wrong_headline, bad_state))
