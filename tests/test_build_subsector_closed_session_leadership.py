@@ -200,3 +200,15 @@ def test_no_completed_market_session_fails_closed_instead_of_using_partial_bar()
     assert result["requested_asof"] == "2026-09-18"
     assert result["bar_status"] == "UNCONFIRMED"
     assert result["reason_codes"] == ["NO_COMPLETED_SESSION"]
+
+
+def test_unavailable_builder_receipt_names_attempted_themes():
+    result = build._unavailable_closed_session_leadership(
+        requested_asof="2026-09-18",
+        reason="OWNER_INPUT_LOAD_FAILED",
+        requested_themes={"Semiconductors"},
+    )
+
+    assert result["status"] == "UNAVAILABLE"
+    assert result["requested_themes"] == ["Semiconductors"]
+    assert result["reason_codes"] == ["OWNER_INPUT_LOAD_FAILED"]

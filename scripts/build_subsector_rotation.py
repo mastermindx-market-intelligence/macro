@@ -92,7 +92,9 @@ def _build_closed_session_leadership(
     completed_asof = _completed_session_asof(market, requested_asof, now_utc=now_utc)
     if completed_asof is None:
         return _unavailable_closed_session_leadership(
-            requested_asof=requested_asof, reason="NO_COMPLETED_SESSION"
+            requested_asof=requested_asof,
+            reason="NO_COMPLETED_SESSION",
+            requested_themes=parent_keys,
         )
     selected = [
         th for th in tree
@@ -108,9 +110,11 @@ def _build_closed_session_leadership(
         frame = loader(ticker)
         if frame is not None:
             frames[ticker] = frame
-    return sr.compute_closed_session_leadership(
+    result = sr.compute_closed_session_leadership(
         selected, frames, market, asof=completed_asof, parent_keys=set(parent_keys)
     )
+    result["requested_themes"] = sorted(set(parent_keys))
+    return result
 
 
 def _attach_closed_session_leadership(payload: dict, observation: dict) -> None:
@@ -126,13 +130,17 @@ def _attach_closed_session_leadership(payload: dict, observation: dict) -> None:
 
 
 def _unavailable_closed_session_leadership(
-    *, requested_asof: str | None, reason: str
+    *,
+    requested_asof: str | None,
+    reason: str,
+    requested_themes: set[str] | frozenset[str] | None = None,
 ) -> dict:
     """Visible fail-closed receipt for an unavailable owner-input path."""
     block = sr.compute_closed_session_leadership(
         [], {}, None, asof=requested_asof, parent_keys=set()
     )
     block["requested_asof"] = requested_asof
+    block["requested_themes"] = sorted(set(requested_themes or ()))
     block["reason_codes"] = [reason]
     return block
 
@@ -416,6 +424,7 @@ def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict
         leadership = _unavailable_closed_session_leadership(
             requested_asof=snap.get("asof") or None,
             reason="OWNER_INPUT_LOAD_FAILED",
+            requested_themes=CLOSED_SESSION_PARENT_KEYS,
         )
     _stamp_closed_session_metadata(
         leadership, input_snapshot_asof=snap.get("asof") or None,
