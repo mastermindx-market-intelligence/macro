@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T09:58:38.623475+00:00",
-  "count": 2491,
+  "generated_at": "2026-09-20T10:28:42.517726+00:00",
+  "count": 2492,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1840,6 +1840,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cj2lmcs8lpx-a33a10",
+      "title": "Municipals Weekly Stabilization in order",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:36Z",
+      "summary_points": [
+        "Fed's 25bp hike and Treasury buybacks stabilize muni market: Fed hawkishness + Treasury buybacks steady market; AAA curve up 49bp since 14 Aug, exemption value near 300bp threshold breached twice in two decades.",
+        "Tax exemption value near 300bp: Critical threshold breached (first time in two decades), signaling heightened sensitivity to tax policy changes and relative value shifts for yield-focused investors.",
+        "Muni market expands to $4.54tn: Up $75bn q/q; dealers (+26.6%), ETFs (+10.3%), households (+3.3% to $2.1tn) drive structural growth and key flows.",
+        "Yield bogeys targeting: 5.0-5.5% yield bogeys abundant in 25-30yr AA-rated maturities; significant value shifting to 4-6% YTW brackets (Exhibit 4).",
+        "UOAO 1mo return weakness: UOAO posted -2.80% (weakest since April 2022), signaling short-term technical stress; recovery expected post-negative levels."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
       "language": "en",
       "needs_metadata": false
     },
