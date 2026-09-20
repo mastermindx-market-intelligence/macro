@@ -522,18 +522,21 @@ def test_prophet_discovery_summary_reports_only_canonical_measured_metrics():
         {
             "outcome_state": pdg.MATURED,
             "fwd_mfe_5": 0.04, "fwd_mdd_5": -0.02, "excess_ret_5": 0.01,
+            "fwd_ret_21": -0.20,
             "terminal_state_clean8_21": grading.TerminalState.CLEAN_LIFTOFF,
             "terminal_state_clean15_126": None,
         },
         {
             "outcome_state": pdg.ACCRUING,
             "fwd_mfe_5": 0.02, "fwd_mdd_5": -0.06, "excess_ret_5": -0.01,
+            "fwd_ret_21": 0.05,
             "terminal_state_clean8_21": grading.TerminalState.STOPPED,
             "terminal_state_clean15_126": None,
         },
         {
             "outcome_state": pdg.UNAVAILABLE_PRICE,
             "fwd_mfe_5": None, "fwd_mdd_5": None, "excess_ret_5": None,
+            "fwd_ret_21": None,
             "terminal_state_clean8_21": None,
             "terminal_state_clean15_126": None,
         },
@@ -560,10 +563,28 @@ def test_prophet_discovery_summary_reports_only_canonical_measured_metrics():
     assert clean15["clean_liftoff_rate"] is None
     assert clean15["stopped_dead_money_rate"] is None
 
+    catastrophic = summary["catastrophic_outcome_21d"]
+    assert catastrophic["definition"] == "fwd_ret_21<=-0.15"
+    assert catastrophic["n_matured"] == 2
+    assert catastrophic["n_catastrophic"] == 1
+    assert catastrophic["rate"] == pytest.approx(0.5)
+
     serialized = repr(summary).lower()
     assert "eventual_winner" not in serialized
     assert "top_k_regret" not in serialized
-    assert "catastrophic" not in serialized
+
+
+def test_prophet_catastrophic_h21_unmatured_is_not_zero():
+    from engine import prophet_discovery_grade as pdg
+
+    summary = pdg.summarize_outcomes(pd.DataFrame([{
+        "outcome_state": pdg.ACCRUING,
+        "fwd_ret_21": None,
+    }]))
+    catastrophic = summary["catastrophic_outcome_21d"]
+    assert catastrophic["n_matured"] == 0
+    assert catastrophic["n_catastrophic"] == 0
+    assert catastrophic["rate"] is None
 
 
 def test_prophet_discovery_summary_names_missing_benchmark_coverage(monkeypatch):
@@ -848,6 +869,7 @@ def _rank_race_fixture(*, challenger="hk_h3_ah_discount_rank_v1", covered=10):
                 "security_ref": ticker,
                 "security_ref_raw": ticker,
                 "excess_ret_5": float(11 - i) / 100.0,
+                "excess_ret_21": float(11 - i) / 100.0,
             })
     return pd.DataFrame(pairs), pd.DataFrame(outcomes)
 
@@ -873,6 +895,43 @@ def test_prophet_rank_race_uses_same_covered_names_and_canonical_rank_ic():
     assert h5["challenger_minus_incumbent_ic"]["mean_ic"] == pytest.approx(-2.0)
     assert h5["incumbent_rank_ic"]["hac_lags_requested"] == 5
     assert h5["challenger_rank_ic"]["hac_lags_requested"] == 5
+
+
+def test_prophet_rank_race_h21_reports_preregistered_top_k_regret():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    h21 = summary["challengers"]["hk_h3_ah_discount_rank_v1"]["horizons"]["21d"]
+    regret = h21["top_k_regret"]
+
+    assert regret["definition"] == (
+        "oracle_mean_excess_21-minus-arm_topk_mean_excess_21"
+    )
+    assert regret["1"]["n_dates"] == 6
+    assert regret["1"]["incumbent_mean_regret"] == pytest.approx(0.0)
+    assert regret["1"]["challenger_mean_regret"] == pytest.approx(0.09)
+    assert regret["5"]["incumbent_mean_regret"] == pytest.approx(0.0)
+    assert regret["5"]["challenger_mean_regret"] == pytest.approx(0.05)
+    assert regret["top_decile"]["k_min"] == 1
+    assert regret["top_decile"]["k_max"] == 1
+    assert regret["top_decile"]["challenger_mean_regret"] == pytest.approx(0.09)
+
+
+def test_prophet_rank_race_h21_regret_unmatured_is_not_zero():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    outcomes = outcomes.drop(columns=["excess_ret_21"])
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    regret = summary["challengers"]["hk_h3_ah_discount_rank_v1"]["horizons"]["21d"][
+        "top_k_regret"
+    ]
+    assert regret["1"]["n_dates"] == 0
+    assert regret["1"]["incumbent_mean_regret"] is None
+    assert regret["1"]["challenger_mean_regret"] is None
+    assert regret["5"]["n_dates"] == 0
+    assert regret["top_decile"]["n_dates"] == 0
 
 
 def test_prophet_rank_race_surfaces_offlist_attempt_without_widening_population():

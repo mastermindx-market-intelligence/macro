@@ -20,6 +20,9 @@ from lib import config
 
 MARKETS = ("HK", "CA")
 HORIZONS = tuple(board_ledger._HORIZONS_D)
+_CATASTROPHIC_HORIZON = 21
+_CATASTROPHIC_RETURN = -0.15
+_TOP_K_REGRET_HORIZON = 21
 KEY = (
     "session_date", "market", "security_ref",
     "security_ref_raw", "challenger_definition",
@@ -308,6 +311,26 @@ def _terminal_summary(frame: pd.DataFrame, column: str) -> dict[str, Any]:
     }
 
 
+def _catastrophic_summary(frame: pd.DataFrame) -> dict[str, Any]:
+    column = f"fwd_ret_{_CATASTROPHIC_HORIZON}"
+    values = (
+        pd.to_numeric(frame[column], errors="coerce")
+        if column in frame.columns else pd.Series(dtype=float)
+    )
+    valid = values.notna() & np.isfinite(values)
+    matured = values[valid]
+    n = int(len(matured))
+    n_catastrophic = int((matured <= _CATASTROPHIC_RETURN).sum())
+    return {
+        "definition": "fwd_ret_21<=-0.15",
+        "horizon": _CATASTROPHIC_HORIZON,
+        "threshold": _CATASTROPHIC_RETURN,
+        "n_matured": n,
+        "n_catastrophic": n_catastrophic,
+        "rate": (float(n_catastrophic / n) if n else None),
+    }
+
+
 def _summary_core(frame: pd.DataFrame) -> dict[str, Any]:
     """Canonical measured metrics for one observation cohort."""
     n = int(len(frame))
@@ -355,6 +378,7 @@ def _summary_core(frame: pd.DataFrame) -> dict[str, Any]:
                 frame, "terminal_state_clean15_126"
             ),
         },
+        "catastrophic_outcome_21d": _catastrophic_summary(frame),
     }
 
 
@@ -362,7 +386,8 @@ def summarize_outcomes(frame: pd.DataFrame) -> dict[str, Any]:
     """Measured discovery quality, including descriptive source strata.
 
     Origin-token cohorts overlap by construction and are NEVER a rank/promotion
-    plane. Undefined winner/first-surface/catastrophic denominators remain absent.
+    plane. Eventual-winner/first-surface metrics remain absent until their complete
+    owner-universe population is lawfully available.
     """
     summary = _summary_core(frame)
     by_availability: dict[str, dict[str, Any]] = {}
@@ -534,6 +559,83 @@ def _rank_ic_summary(values: list[float], horizon: int) -> dict[str, Any]:
     )
 
 
+def _top_k_regret_summary(merged: pd.DataFrame) -> dict[str, Any]:
+    outcome_col = f"excess_ret_{_TOP_K_REGRET_HORIZON}"
+
+    def summarize(rule: str) -> dict[str, Any]:
+        incumbent_regret: list[float] = []
+        challenger_regret: list[float] = []
+        ks: list[int] = []
+        if outcome_col not in merged.columns:
+            day_groups = ()
+        else:
+            day_groups = merged.groupby("_date", sort=True)
+        for _date, day in day_groups:
+            inc = pd.to_numeric(day["incumbent_rank"], errors="coerce")
+            chal = pd.to_numeric(day["challenger_rank"], errors="coerce")
+            y = pd.to_numeric(day[outcome_col], errors="coerce")
+            mask = (
+                inc.notna() & chal.notna() & y.notna()
+                & np.isfinite(inc) & np.isfinite(chal) & np.isfinite(y)
+            )
+            if not bool(mask.any()):
+                continue
+            eligible = pd.DataFrame({
+                "_ticker": day.loc[mask, "_ticker"].astype(str),
+                "incumbent_rank": inc[mask].astype(float),
+                "challenger_rank": chal[mask].astype(float),
+                "outcome": y[mask].astype(float),
+            })
+            n = int(len(eligible))
+            if rule == "1":
+                k = 1
+            elif rule == "5":
+                if n < 5:
+                    continue
+                k = 5
+            else:
+                k = max(1, int(np.ceil(0.10 * n)))
+            oracle = eligible.sort_values(
+                ["outcome", "_ticker"], ascending=[False, True], kind="stable"
+            ).head(k)["outcome"].mean()
+            inc_mean = eligible.sort_values(
+                ["incumbent_rank", "_ticker"], ascending=[True, True], kind="stable"
+            ).head(k)["outcome"].mean()
+            chal_mean = eligible.sort_values(
+                ["challenger_rank", "_ticker"], ascending=[True, True], kind="stable"
+            ).head(k)["outcome"].mean()
+            incumbent_regret.append(float(oracle - inc_mean))
+            challenger_regret.append(float(oracle - chal_mean))
+            ks.append(k)
+
+        return {
+            "n_dates": int(len(ks)),
+            "k_min": int(min(ks)) if ks else None,
+            "k_max": int(max(ks)) if ks else None,
+            "incumbent_mean_regret": (
+                float(np.mean(incumbent_regret)) if incumbent_regret else None
+            ),
+            "incumbent_median_regret": (
+                float(np.median(incumbent_regret)) if incumbent_regret else None
+            ),
+            "challenger_mean_regret": (
+                float(np.mean(challenger_regret)) if challenger_regret else None
+            ),
+            "challenger_median_regret": (
+                float(np.median(challenger_regret)) if challenger_regret else None
+            ),
+        }
+
+    return {
+        "definition": "oracle_mean_excess_21-minus-arm_topk_mean_excess_21",
+        "horizon": _TOP_K_REGRET_HORIZON,
+        "population": "same_joined_challenger_covered_names",
+        "1": summarize("1"),
+        "5": summarize("5"),
+        "top_decile": summarize("top_decile"),
+    }
+
+
 def summarize_rank_races(
     rank_pairs: pd.DataFrame | None,
     outcomes: pd.DataFrame | None,
@@ -701,7 +803,7 @@ def summarize_rank_races(
                         incumbent_ics.append(float(inc_ic))
                         challenger_ics.append(float(chal_ic))
                         deltas.append(float(chal_ic - inc_ic))
-            horizon_rows[f"{horizon}d"] = {
+            horizon_summary = {
                 "n_paired_dates": int(len(deltas)),
                 "incumbent_rank_ic": _rank_ic_summary(
                     incumbent_ics, horizon
@@ -713,6 +815,9 @@ def summarize_rank_races(
                     deltas, horizon
                 ),
             }
+            if horizon == _TOP_K_REGRET_HORIZON:
+                horizon_summary["top_k_regret"] = _top_k_regret_summary(merged)
+            horizon_rows[f"{horizon}d"] = horizon_summary
 
         challengers[definition] = {
             "n_population_rows": n_population,
