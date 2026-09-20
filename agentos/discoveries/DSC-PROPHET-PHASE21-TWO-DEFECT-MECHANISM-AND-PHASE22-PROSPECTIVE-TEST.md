@@ -30,7 +30,7 @@ market; a sound entry can also be damaged by an adverse regime transition after 
 ## Development evidence boundary
 
 Studio Phase-21 synthesis:
-`/Volumes/Mastermind/research/US_Prophet_Phase21_FAST_SLOW_REGIME_SYNTHESIS.md`  
+`/Volumes/Mastermind/research/US_Prophet_Phase21_FAST_SLOW_REGIME_SYNTHESIS.md`
 SHA-256:
 `37b5ac78bd93c6d8ebc9b7effb260eb00c0fb77ef8c3259ecd29c231bd124ed6`.
 
