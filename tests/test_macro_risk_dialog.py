@@ -395,3 +395,29 @@ def test_leadership_rank_delta_uses_locale_aware_up_down_tokens():
     assert '--up: #45b873; --down: #e06464;' in css
     assert 'html[data-lang="zh"] {' in css
     assert '--up: #e06464; --down: #45b873;' in css
+
+
+# Keep the new envelope regression contract on this existing CI-selected suite.
+def test_risk_envelope_ci_bridge_markup():
+    from tests import test_risk_envelope_radar_integration as checks
+
+    checks.test_only_instance_is_inside_existing_radar()
+    checks.test_compact_read_retains_disagreement_and_defers_receipts()
+    for state, label in [('ALIGNED', 'Signals align'), ('MIXED', 'Incomplete picture'),
+                         (None, 'Incomplete picture'), ('NEW_ENUM', 'Incomplete picture')]:
+        checks.test_alignment_is_never_invented(state, label)
+    checks.test_missing_inputs_never_render_calm_or_risk_on()
+    checks.test_missing_radar_does_not_hide_available_envelope()
+    checks.test_absent_artifact_and_stocks_mode_have_no_context()
+    checks.test_live_identity_hooks_and_both_languages_survive()
+    checks.test_nonzero_policy_count_is_not_reported_as_none()
+
+
+def test_risk_envelope_ci_bridge_javascript():
+    import shutil
+    from tests import test_risk_envelope_radar_integration as checks
+
+    if shutil.which('node') is None:
+        pytest.skip('node required for shipped live consumer')
+    for scenario in ('legacy', 'current', 'no-dialog', 'absent'):
+        checks.test_legacy_relocation_executes_once_without_cloning(scenario)
