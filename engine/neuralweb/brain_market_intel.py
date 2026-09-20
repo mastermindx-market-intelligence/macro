@@ -1305,6 +1305,88 @@ def _load_evidence_document(doc_id: str):
 
 
 _RIO_AUTHORITY = "descriptive_research_only"
+_RIO_SUMMARY_SCHEMA = "mastermind.research_summary_point.v1"
+_RIO_SUMMARY_TEXT_MAX_CHARS = 2_500
+_RIO_SUMMARY_POINT_LIMIT = 6
+_RIO_SUPPORT_INDEX_LIMIT = 30
+_RIO_DERIVED_FIELDS = frozenset({
+    "schema", "source_document_id", "source_content_sha256",
+    "epistemic_layer", "text", "text_visibility",
+    "support_claim_indices", "authority",
+})
+_RIO_PRIVATE_FIELDS = _RIO_DERIVED_FIELDS | {"claim_statement_sha256"}
+
+
+def _project_rio_summary_point(
+    row,
+    *,
+    report_id: str,
+    source_sha: str,
+) -> dict | None:
+    """Project one W2 summary row through an exact model-visible whitelist."""
+    if not isinstance(row, dict):
+        return None
+
+    visibility = row.get("text_visibility")
+    if visibility == "derived_summary":
+        fields = _RIO_DERIVED_FIELDS
+        layer = "model_synthesis"
+    elif visibility == "private_rio_only":
+        fields = _RIO_PRIVATE_FIELDS
+        layer = "source_claim"
+    else:
+        return None
+
+    if set(row) != fields:
+        return None
+    if (
+        row.get("schema") != _RIO_SUMMARY_SCHEMA
+        or row.get("source_document_id") != report_id
+        or row.get("source_content_sha256") != source_sha
+        or row.get("epistemic_layer") != layer
+        or row.get("authority") != _RIO_AUTHORITY
+    ):
+        return None
+
+    support = row.get("support_claim_indices")
+    if (
+        not isinstance(support, list)
+        or not support
+        or len(support) > _RIO_SUPPORT_INDEX_LIMIT
+        or any(type(index) is not int or index < 0 for index in support)
+        or len(set(support)) != len(support)
+    ):
+        return None
+
+    text_value = row.get("text")
+    if visibility == "derived_summary":
+        if (
+            not isinstance(text_value, str)
+            or not text_value
+            or text_value != text_value.strip()
+            or len(text_value) > _RIO_SUMMARY_TEXT_MAX_CHARS
+        ):
+            return None
+    else:
+        if text_value != "":
+            return None
+        claim_hash = row.get("claim_statement_sha256")
+        if _sha256_or_empty(claim_hash) != claim_hash:
+            return None
+
+    projected = {
+        "schema": _RIO_SUMMARY_SCHEMA,
+        "source_document_id": report_id,
+        "source_content_sha256": source_sha,
+        "epistemic_layer": layer,
+        "text": text_value,
+        "text_visibility": visibility,
+        "support_claim_indices": list(support),
+        "authority": _RIO_AUTHORITY,
+    }
+    if visibility == "private_rio_only":
+        projected["claim_statement_sha256"] = row["claim_statement_sha256"]
+    return projected
 
 
 def _rio_projection(state: str, summary_points=None) -> dict:
@@ -1369,35 +1451,33 @@ def _research_intelligence_projection(
         return _rio_projection("available")
 
     try:
-        rows = rio_mod.summary_points(stored.rio)
+        rows = rio_mod.summary_points(
+            stored.rio,
+            limit=_RIO_SUMMARY_POINT_LIMIT,
+        )
     except Exception:  # noqa: BLE001 — malformed/private projection refuses closed
         return _rio_projection("invalid")
-    if not isinstance(rows, list):
+    if (
+        not isinstance(rows, list)
+        or not rows
+        or len(rows) > _RIO_SUMMARY_POINT_LIMIT
+    ):
         return _rio_projection("invalid")
 
-    # W2 owns the rights-safe projection. This is only a narrow boundary check
-    # against accidental future widening of that projection before Brain emits it.
+    # W2 owns the private projection contract; Brain still reconstructs every
+    # model-visible row from a literal whitelist so later widening cannot leak.
+    projected_rows: list[dict] = []
     for row in rows:
-        if not isinstance(row, dict):
+        projected = _project_rio_summary_point(
+            row,
+            report_id=report_id,
+            source_sha=source_sha,
+        )
+        if projected is None:
             return _rio_projection("invalid")
-        if row.get("source_document_id") != report_id:
-            return _rio_projection("invalid")
-        if row.get("source_content_sha256") != source_sha:
-            return _rio_projection("invalid")
-        if row.get("authority") != _RIO_AUTHORITY:
-            return _rio_projection("invalid")
-        visibility = row.get("text_visibility")
-        text = row.get("text")
-        if visibility == "derived_summary":
-            if not isinstance(text, str) or not text.strip():
-                return _rio_projection("invalid")
-        elif visibility == "private_rio_only":
-            if text != "":
-                return _rio_projection("invalid")
-        else:
-            return _rio_projection("invalid")
+        projected_rows.append(projected)
 
-    return _rio_projection("available", rows)
+    return _rio_projection("available", projected_rows)
 
 
 def _select_evidence(document, query: str) -> dict:
@@ -2106,9 +2186,10 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             body_text, truncated = "", False
     else:
         raw_body_value = (document or {}).get("body") if isinstance(document, dict) else None
+        body_raw = raw_body_value if isinstance(raw_body_value, str) else ""
         stored_body_sha256 = (
-            hashlib.sha256(raw_body_value.encode("utf-8")).hexdigest()
-            if isinstance(raw_body_value, str)
+            hashlib.sha256(body_raw.encode("utf-8")).hexdigest()
+            if body_raw.strip()
             else ""
         )
         research_intelligence = _research_intelligence_projection(
@@ -2116,7 +2197,6 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
             stored_body_sha256=stored_body_sha256,
             include_summary=True,
         )
-        body_raw = str(raw_body_value or "")
         if body_raw.strip():
             allowed, info = _charge_report_view(uid, now)
             if not allowed:
