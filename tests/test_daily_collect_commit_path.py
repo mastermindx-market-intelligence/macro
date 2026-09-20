@@ -833,3 +833,37 @@ def test_gitignored_russell_cache_uses_the_collect_jobs_exact_same_run_key():
         "engine's Russell restore must remain exact-key-only; a prefix fallback may select "
         "a prior run and silently reintroduce stale source data"
     )
+
+
+def test_agentos_nightly_materializes_mastermind_p0_source_before_generation():
+    """The sole Agent OS regenerator must make canonical Mastermind P0 state readable."""
+    doc = yaml.safe_load(DAILY.read_text(encoding="utf-8"))
+    matches = []
+    for job_name, job in doc["jobs"].items():
+        steps = job.get("steps") or []
+        for index, step in enumerate(steps):
+            if step.get("name") == "generate agent OS state":
+                matches.append((job_name, steps, index, step))
+    assert len(matches) == 1, f"expected one Agent OS regenerator, found {len(matches)}"
+
+    _job_name, steps, generate_at, generate = matches[0]
+    assert (generate.get("env") or {}).get("MACRO_MASTERMIND_REPO") == (
+        "${{ runner.temp }}/agentos-mastermind"
+    )
+
+    producers = [
+        (index, step) for index, step in enumerate(steps[:generate_at])
+        if step.get("name") == "materialize Mastermind P0 source"
+    ]
+    assert len(producers) == 1, "nightly must materialize Mastermind before Agent OS generation"
+    index, producer = producers[0]
+    run = str(producer.get("run") or "")
+    assert index < generate_at
+    assert "mastermindx-market-intelligence/Mastermind.git" in run
+    assert "--branch master" in run and "--depth=1" in run
+    assert "${RUNNER_TEMP}/agentos-mastermind" in run
+    assert "rev-parse HEAD" in run, "nightly logs must identify the exact Mastermind source SHA"
+    assert "::warning::Mastermind P0 source unavailable" in run
+    assert "rm -rf -- \"$root\"" in run, "failed/partial materialization must be discarded"
+    generate_run = str(generate.get("run") or "")
+    assert "rm -rf -- \"${RUNNER_TEMP}/agentos-mastermind\"" in generate_run

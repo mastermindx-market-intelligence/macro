@@ -6297,6 +6297,24 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python -m scripts.build_active_build_map || echo "::warning::active_build_map generation failed (non-fatal — fail-open)"
+      - name: materialize Mastermind P0 source
+        # Agent OS stays network-free itself.  The sole nightly writer explicitly
+        # materializes the canonical cross-repo strategy source before projection so
+        # GitHub-hosted/self-hosted Actions never depend on an ambient sibling checkout.
+        run: |
+          set -u
+          root="${RUNNER_TEMP}/agentos-mastermind"
+          rm -rf -- "$root"
+          if GIT_TERMINAL_PROMPT=0 GIT_LFS_SKIP_SMUDGE=1 \
+             perl -e 'alarm 90; exec @ARGV or die' -- \
+             git clone --quiet --depth=1 --single-branch --branch master \
+             https://github.com/mastermindx-market-intelligence/Mastermind.git "$root" \
+             && test -r "$root/config/strategic_state.yml"; then
+            echo "Mastermind P0 source SHA: $(git -C "$root" rev-parse HEAD)"
+          else
+            echo "::warning::Mastermind P0 source unavailable; Agent OS will report p0_active unknown"
+            rm -rf -- "$root"
+          fi
       - name: generate agent OS state
         # ORDERED AFTER the active build map, which is its PR-state input: the join is
         # only as fresh as active_builds.json, so regenerating first would publish a
@@ -6307,9 +6325,13 @@ jobs:
         # a regenerated copy — that would put two independent record edits into conflict
         # on a shared generated file, which is the write pattern invariant I2 exists to
         # prevent.  One writer; staleness is printed in the artifact, never hidden.
-        # No network: PR state comes only from the file written by the step above.
+        # Network collection is complete before this command: PR state is local and the
+        # Mastermind strategy snapshot is passed through the existing read-only override.
+        env:
+          MACRO_MASTERMIND_REPO: ${{ runner.temp }}/agentos-mastermind
         run: |
           python3 scripts/agentos.py status || echo "::warning::agent_os_state generation failed (non-fatal — fail-open)"
+          rm -rf -- "${RUNNER_TEMP}/agentos-mastermind"
       - name: commit active build map outputs
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
