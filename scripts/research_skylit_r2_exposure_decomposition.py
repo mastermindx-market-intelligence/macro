@@ -25,6 +25,12 @@ PCT_MOVE = 0.01
 CONTRACT_MATCH_TARGET = 0.90
 MODEL_INPUT_MATCH_TARGET = 0.90
 EXPOSURE_MASS_TARGET = 0.95
+SATURATED_IV_ABS_MAX = 1e-12
+SATURATED_DELTA_MIN = 0.999999
+SATURATED_ZERO_GREEK_TOL = 1e-12
+MODEL_STATE_IV = "iv_recomputable"
+MODEL_STATE_SATURATED = "saturated_zero_curvature"
+MODEL_STATE_UNRESOLVED = "unresolved_model_input"
 
 
 class R2Refusal(ValueError):
@@ -49,6 +55,15 @@ def _greek_method_metadata(greeks_fn: Callable | None) -> dict[str, Any]:
             "dividend_yield": float(intraday_greeks.DEFAULT_Q),
             "vol_counterfactual": "sticky_strike",
             "position_tier": POSITION_TIER,
+            "model_state_classifier": {
+                "iv_recomputable": "finite implied_vol > 0",
+                "saturated_zero_curvature": {
+                    "finite_abs_iv_max": SATURATED_IV_ABS_MAX,
+                    "abs_delta_min": SATURATED_DELTA_MIN,
+                    "abs_vega_max": SATURATED_ZERO_GREEK_TOL,
+                    "abs_theta_max": SATURATED_ZERO_GREEK_TOL,
+                },
+            },
         }
     return {
         "kernel": f"{getattr(greeks_fn, '__module__', 'unknown')}.{getattr(greeks_fn, '__name__', 'callable')}",
@@ -121,6 +136,35 @@ def _normalize_identity(frame: pd.DataFrame, root: str, *, require_oi: bool = Fa
         bad = out.loc[out.duplicated(KEY, keep=False), KEY].drop_duplicates().head(5)
         raise R2Refusal(f"conflicting duplicate contract identities: {bad.to_dict('records')}")
     return out.reset_index(drop=True)
+
+
+def _source_saturated_zero_curvature_mask(
+    frame: pd.DataFrame,
+    iv_values: pd.Series,
+) -> pd.Series:
+    """Classify Theta rows whose source Greeks say the option is curvature-saturated.
+
+    This is deliberately narrower than "missing IV": NaN/negative IV is never promoted.
+    The current empirical Theta pattern is finite IV == 0 with |delta| == 1 and both
+    vega/theta exactly zero. Those rows are classified but remain outside continuous
+    IV counterfactuals and Shapley attribution.
+    """
+    needed = ("delta", "vega", "theta")
+    if any(col not in frame.columns for col in needed):
+        return pd.Series(False, index=frame.index, dtype=bool)
+    delta = pd.to_numeric(frame["delta"], errors="coerce")
+    vega = pd.to_numeric(frame["vega"], errors="coerce")
+    theta = pd.to_numeric(frame["theta"], errors="coerce")
+    finite_zero_iv = np.isfinite(iv_values) & (np.abs(iv_values) <= SATURATED_IV_ABS_MAX)
+    return (
+        finite_zero_iv
+        & np.isfinite(delta)
+        & (np.abs(delta) >= SATURATED_DELTA_MIN)
+        & np.isfinite(vega)
+        & (np.abs(vega) <= SATURATED_ZERO_GREEK_TOL)
+        & np.isfinite(theta)
+        & (np.abs(theta) <= SATURATED_ZERO_GREEK_TOL)
+    )
 
 
 def _canon_number(value: Any) -> str:
@@ -247,12 +291,39 @@ def build_settled_state(
     spot_range_bps = float((spots.max() - spots.min()) / spot * 10000.0) if spot else float("nan")
     merged["spot"] = spot
 
-    iv_mask = np.isfinite(merged["implied_vol"]) & (merged["implied_vol"] > 0)
-    model_input_rate = float(iv_mask.mean()) if eligible_n else 0.0
+    iv_values = pd.to_numeric(merged["implied_vol"], errors="coerce")
+    iv_mask = np.isfinite(iv_values) & (iv_values > 0)
+    saturated_mask = _source_saturated_zero_curvature_mask(merged, iv_values)
+    classified_model_mask = iv_mask | saturated_mask
+    unresolved_model_mask = ~classified_model_mask
+    iv_contract_rate = float(iv_mask.mean()) if eligible_n else 0.0
+    model_state_classified_rate = float(classified_model_mask.mean()) if eligible_n else 0.0
+    saturated_contract_rate = float(saturated_mask.mean()) if eligible_n else 0.0
+    unresolved_model_rate = float(unresolved_model_mask.mean()) if eligible_n else 0.0
+
     settled_mask = np.isfinite(merged["settled_open_interest"])
     prior_mask = np.isfinite(merged["prior_open_interest"]) & (merged["prior_open_interest"] >= 0)
     settled_rate = float(settled_mask.mean()) if eligible_n else 0.0
     prior_rate = float(prior_mask.mean()) if eligible_n else 0.0
+
+    settled_oi_total = float(merged.loc[settled_mask, "settled_open_interest"].sum())
+    saturated_settled_oi = float(
+        merged.loc[saturated_mask & settled_mask, "settled_open_interest"].sum()
+    )
+    saturated_settled_oi_share = (
+        saturated_settled_oi / settled_oi_total
+        if settled_oi_total > 0
+        else None
+    )
+    prior_oi_total = float(merged.loc[prior_mask, "prior_open_interest"].sum())
+    saturated_prior_oi = float(
+        merged.loc[saturated_mask & prior_mask, "prior_open_interest"].sum()
+    )
+    saturated_prior_oi_share = (
+        saturated_prior_oi / prior_oi_total
+        if prior_oi_total > 0
+        else None
+    )
 
     prior_exposure = _exposure_gex(
         merged["prior_open_interest"].to_numpy(float),
@@ -267,7 +338,7 @@ def build_settled_state(
     reference_mask = iv_mask & prior_mask & np.isfinite(prior_mass)
     prior_mass_den = float(np.sum(prior_mass[reference_mask])) if reference_mask.any() else 0.0
     if (
-        model_input_rate < MODEL_INPUT_MATCH_TARGET
+        model_state_classified_rate < MODEL_INPUT_MATCH_TARGET
         or prior_rate < CONTRACT_MATCH_TARGET
         or not np.isfinite(prior_mass_den)
         or prior_mass_den <= 0
@@ -280,12 +351,23 @@ def build_settled_state(
         )
 
     qualified = bool(
-        model_input_rate >= MODEL_INPUT_MATCH_TARGET
+        model_state_classified_rate >= MODEL_INPUT_MATCH_TARGET
         and spot_input_rate >= MODEL_INPUT_MATCH_TARGET
         and settled_rate >= CONTRACT_MATCH_TARGET
         and prior_rate >= CONTRACT_MATCH_TARGET
         and exposure_mass_coverage is not None
         and exposure_mass_coverage >= EXPOSURE_MASS_TARGET
+    )
+
+    model_state_frame = merged.loc[settled_mask, KEY].copy()
+    model_state_frame["model_state"] = np.where(
+        iv_mask[settled_mask],
+        MODEL_STATE_IV,
+        np.where(
+            saturated_mask[settled_mask],
+            MODEL_STATE_SATURATED,
+            MODEL_STATE_UNRESOLVED,
+        ),
     )
 
     usable = merged[iv_mask & settled_mask].copy()
@@ -302,7 +384,14 @@ def build_settled_state(
     )
     usable = usable[np.isfinite(usable["exposure_gex"])].copy().reset_index(drop=True)
 
-    base_digest_cols = KEY + ["implied_vol", "underlying_price", "prior_open_interest"]
+    base_digest_cols = KEY + [
+        "implied_vol",
+        "delta",
+        "vega",
+        "theta",
+        "underlying_price",
+        "prior_open_interest",
+    ]
     oi_digest_cols = KEY + ["settled_open_interest"]
     return {
         "session": session,
@@ -315,12 +404,22 @@ def build_settled_state(
         "spot_cross_contract_range_bps": spot_range_bps,
         "spot_input_contract_rate": spot_input_rate,
         "unexpired_identity_contracts": int(len(unexpired)),
-        "model_input_contract_rate": model_input_rate,
-        "iv_contract_rate": model_input_rate,
+        "model_input_contract_rate": model_state_classified_rate,
+        "model_state_classified_rate": model_state_classified_rate,
+        "iv_contract_rate": iv_contract_rate,
+        "iv_recomputable_contracts": int(iv_mask.sum()),
+        "saturated_zero_curvature_contracts": int(saturated_mask.sum()),
+        "saturated_zero_curvature_contract_rate": saturated_contract_rate,
+        "saturated_zero_curvature_settled_oi_share": saturated_settled_oi_share,
+        "saturated_zero_curvature_prior_oi_share": saturated_prior_oi_share,
+        "unresolved_model_input_contracts": int(unresolved_model_mask.sum()),
+        "unresolved_model_input_contract_rate": unresolved_model_rate,
         "eligible_contracts": eligible_n,
         "settled_oi_matched_contracts": int(settled_mask.sum()),
         "settled_oi_contract_rate": settled_rate,
         "prior_oi_contract_rate": prior_rate,
+        "reference_exposure_mass_scope": "iv_recomputable_only",
+        "iv_recomputable_exposure_mass_coverage": exposure_mass_coverage,
         "settled_oi_exposure_mass_coverage_on_prior_known_mass": exposure_mass_coverage,
         "target_gate_pass": qualified,
         "base_input_sha256": _digest_frame(merged, base_digest_cols),
@@ -331,6 +430,7 @@ def build_settled_state(
         "frame": usable[
             KEY + ["position", "spot", "vol", "time_years", "exposure_gex"]
         ].copy(),
+        "model_state_frame": model_state_frame.reset_index(drop=True),
     }
 
 
@@ -420,17 +520,36 @@ def _composition_summary(
     state0: pd.DataFrame,
     state1: pd.DataFrame,
     session1: str,
+    model_state0: pd.DataFrame | None = None,
+    model_state1: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     k0 = state0.set_index(KEY)
     k1 = state1.set_index(KEY)
-    only0 = k0.index.difference(k1.index)
-    only1 = k1.index.difference(k0.index)
+    only0 = list(k0.index.difference(k1.index))
+    only1 = list(k1.index.difference(k0.index))
+
+    def state_lookup(frame: pd.DataFrame | None) -> dict[tuple, str]:
+        if frame is None or frame.empty:
+            return {}
+        return {
+            tuple(row[key] for key in KEY): str(row["model_state"])
+            for _, row in frame.iterrows()
+        }
+
+    ms0 = state_lookup(model_state0)
+    ms1 = state_lookup(model_state1)
+    to_saturated = [key for key in only0 if ms1.get(tuple(key)) == MODEL_STATE_SATURATED]
+    from_saturated = [key for key in only1 if ms0.get(tuple(key)) == MODEL_STATE_SATURATED]
+    only0_remaining = [key for key in only0 if key not in to_saturated]
+    only1_remaining = [key for key in only1 if key not in from_saturated]
+
     known_expired = []
     unresolved_exit = []
     cutoff = date.fromisoformat(session1)
-    for key in only0:
+    for key in only0_remaining:
         expiry = date.fromisoformat(str(key[1]))
         (known_expired if expiry <= cutoff else unresolved_exit).append(key)
+
     expired_net = (
         -float(k0.loc[known_expired, "exposure_gex"].sum())
         if known_expired
@@ -442,23 +561,46 @@ def _composition_summary(
         else 0.0
     )
     unresolved_entry_net = (
-        float(k1.loc[only1, "exposure_gex"].sum())
-        if len(only1)
+        float(k1.loc[only1_remaining, "exposure_gex"].sum())
+        if only1_remaining
+        else 0.0
+    )
+    to_saturated_net = (
+        -float(k0.loc[to_saturated, "exposure_gex"].sum())
+        if to_saturated
+        else 0.0
+    )
+    from_saturated_net = (
+        float(k1.loc[from_saturated, "exposure_gex"].sum())
+        if from_saturated
         else 0.0
     )
     return {
         "known_expiry_deaths": len(known_expired),
         "known_expiry_death_net": expired_net,
+        "model_state_to_saturated": len(to_saturated),
+        "model_state_to_saturated_net": to_saturated_net,
+        "model_state_from_saturated": len(from_saturated),
+        "model_state_from_saturated_net": from_saturated_net,
         "unresolved_exits": len(unresolved_exit),
         "unresolved_exit_net": unresolved_exit_net,
-        "unresolved_entries": int(len(only1)),
+        "unresolved_entries": int(len(only1_remaining)),
         "unresolved_entry_net": unresolved_entry_net,
-        "full_map_composition_resolved": not unresolved_exit and len(only1) == 0,
+        "full_map_composition_resolved": (
+            not unresolved_exit
+            and not only1_remaining
+            and not to_saturated
+            and not from_saturated
+        ),
     }
 
 
 def _public_state_summary(state: dict[str, Any]) -> dict[str, Any]:
-    return {k: v for k, v in state.items() if k != "frame"}
+    return {
+        k: v
+        for k, v in state.items()
+        if k not in {"frame", "model_state_frame"}
+    }
 
 
 def analyze_pair(
@@ -514,6 +656,8 @@ def analyze_pair(
             "settled EOD position for session S is consumed from next-session OI publication",
             "current store reader binds OI availability only to the publication session, not an exact intraday availability timestamp",
             "Tier A dealer sign convention is an estimate: calls long / puts short",
+            "source-saturated zero-curvature rows are classified from IV=0, |delta|≈1, vega=theta=0 but are excluded from continuous-IV Shapley counterfactuals",
+            "transitions into or out of the saturated state remain explicit model-state composition rather than position attribution",
             "new-contract births and non-expiry disappearances remain unresolved composition in Stage 0",
             "this analyzer opens no future market or option outcome labels",
         ],
@@ -528,7 +672,13 @@ def analyze_pair(
         state1["frame"],
         greeks_fn=greeks_fn,
     )
-    composition = _composition_summary(state0["frame"], state1["frame"], session1)
+    composition = _composition_summary(
+        state0["frame"],
+        state1["frame"],
+        session1,
+        state0.get("model_state_frame"),
+        state1.get("model_state_frame"),
+    )
     base["status"] = "SURVIVOR_DECOMPOSITION_COMPLETE"
     base["decomposition"] = decomposition
     base["composition"] = composition
