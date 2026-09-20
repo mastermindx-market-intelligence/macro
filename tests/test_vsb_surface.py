@@ -367,18 +367,21 @@ class TestVSBSurfaceBothPayloads:
         from the glance tier — they belonged to the dialog's scoreboard row
         and have been demoted/removed entirely.
 
-        This test now verifies the TIER-WORD contract: each chip's band
-        maps to the tier-word family, and pctile scoreboard phrases are
-        absent from the rendered output.
+        Round-3 DEV-VW-LOCATION: the strip renders inside the mx5 scorecard's
+        left column (.mx5-sc-vw host), NOT inside #sx-risk-v2 — slice that
+        host to inspect the strip's glance tier.
         """
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         html = _render(ctx)
-        # The risk isle slice is where the vol-weather strip lives.
-        risk_isle_start = html.find('<div class="sx" id="sx-risk-v2"')
-        assert risk_isle_start >= 0, "Risk isle must exist when mode=macro"
+        # Round-3: slice the mx5-sc-vw host (the vol-weather's new home).
+        host_start = html.find('<div class="mx5-sc-vw"')
+        assert host_start >= 0, (
+            "mx5-sc-vw host must exist when mode=macro + vol_weather set "
+            "(DEV-VW-LOCATION)"
+        )
         depth = 0
-        i = risk_isle_start
+        i = host_start
         n = len(html)
         while i < n:
             if html.startswith("<div ", i) or html.startswith("<div>", i):
@@ -391,7 +394,7 @@ class TestVSBSurfaceBothPayloads:
                     break
             else:
                 i += 1
-        isle = html[risk_isle_start:i]
+        isle = html[host_start:i]
         # Every tier word family must be reachable from a chip in the fixture.
         # The fixture uses bands: normal/calm/quiet/low/elevated/extreme. The
         # template's _vw_band_word map covers every one of them — at least one
@@ -402,11 +405,11 @@ class TestVSBSurfaceBothPayloads:
         any_zh = [w for w in tier_words_zh if f'>{w}</span>' in isle or f'>{w}<' in isle]
         assert any_en, (
             f"At least one tier word EN {tier_words_en} must appear on the "
-            f"rendered risk isle row (R-W1-B)"
+            f"rendered strip (R-W1-B)"
         )
         assert any_zh, (
             f"At least one tier word ZH {tier_words_zh} must appear on the "
-            f"rendered risk isle row (R-W1-B)"
+            f"rendered strip (R-W1-B)"
         )
         # pctile scoreboard phrases must NOT appear on the page at all
         # (one-integer law: removed entirely, not demoted)

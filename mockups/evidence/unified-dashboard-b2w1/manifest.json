@@ -1,17 +1,17 @@
 {
-  "head": "0cdc8557fbc7992b8ffef14e93c7fffc9e4277aa",
+  "head": "4f98b80fadbe17cf95296503130776d84da059ce",
   "branch": "claude/mo-a-ud-b2-w1-volweather-fold",
   "pr": "DRAFT",
   "source_url": "site/macro.html",
   "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
   "page_errors": [],
   "r_e_byte_identity": {
-    "selector": "#sx-risk-v2 (slice from '<div class=\"sx\" id=\"sx-risk-v2\"' to matching close)",
-    "sha256": "30321d5e85c27c27e25592dc0e53422f168cfab6cbbdd4b05ffb0b02364ac469",
-    "sha256_short": "30321d5e85c2",
-    "bytes": 7576,
-    "captured_at_head": "0cdc8557fbc7992b8ffef14e93c7fffc9e4277aa",
-    "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. Any byte diff fails the R-E gate (UD-B2-W1 R-E pattern, site/macro.html is nightly wire-churned so whole-file identity is a false gate — the slice is the gate)."
+    "selector": ".mx5-sc-left (slice from '<div class=\"mx5-sc-left\">' to matching close)",
+    "sha256": "64be53ded234c570043dab4e913d5d0ffc8aed667270e36bbba1b2b3705c68ad",
+    "sha256_short": "64be53ded234",
+    "bytes": 23395,
+    "captured_at_head": "4f98b80fadbe17cf95296503130776d84da059ce",
+    "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. Round-3 DEV-VW-LOCATION: the strip lives in .mx5-sc-vw (a child of .mx5-sc-left), so the R-E gate slice is .mx5-sc-left (the visual unit = dial + scar chips + strip). Captures are committed in the same commit as code+tests+site, so captured_at_head == HEAD."
   },
   "cells": [
     {
@@ -21,7 +21,7 @@
       "theme": "dark",
       "language": "en",
       "strip": {
-        "w": 1360,
+        "w": 354,
         "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -35,7 +35,7 @@
       "theme": "dark",
       "language": "zh",
       "strip": {
-        "w": 1360,
+        "w": 354,
         "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -49,7 +49,7 @@
       "theme": "light",
       "language": "en",
       "strip": {
-        "w": 1360,
+        "w": 354,
         "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -63,7 +63,7 @@
       "theme": "light",
       "language": "zh",
       "strip": {
-        "w": 1360,
+        "w": 354,
         "h": 391,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -77,7 +77,7 @@
       "theme": "dark",
       "language": "en",
       "strip": {
-        "w": 354,
+        "w": 327,
         "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -91,7 +91,7 @@
       "theme": "dark",
       "language": "zh",
       "strip": {
-        "w": 354,
+        "w": 327,
         "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -105,7 +105,7 @@
       "theme": "light",
       "language": "en",
       "strip": {
-        "w": 354,
+        "w": 327,
         "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",
@@ -119,7 +119,7 @@
       "theme": "light",
       "language": "zh",
       "strip": {
-        "w": 354,
+        "w": 327,
         "h": 371,
         "rows": 8,
         "eyebrow_en": "Volatility weather",

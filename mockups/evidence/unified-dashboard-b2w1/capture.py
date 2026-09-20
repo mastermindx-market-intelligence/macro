@@ -1,13 +1,23 @@
 """Capture the 8-cell evidence matrix for UD-B2-W1 (vol-weather fold into Risk isle).
 
 Cells = dark/light × EN/ZH × 1440/390 = 8.
-Renders site/macro.html and captures the RISK ISLE region (#sx-risk-v2)
-focused crop per cell — the fold lands inside this isle, so the
-isle slice is the byte-identity gate and the visual target.
+Renders site/macro.html and captures the RISK ISLE region (the mx5
+scorecard's left column .mx5-sc-left, which now contains the dial + scar
+chips + vol-weather sub-row) focused crop per cell — the fold lands in
+this column, so the .mx5-sc-left slice is the byte-identity gate and
+the visual target.
 
-Manifest naming: risk_isle_<theme>_<lang>_<viewport>.png
-This head: HEAD_SHA (read live from `git rev-parse HEAD` at run-time;
-the manifest must always reflect the bytes it captured).
+Round-3 DEV-VW-LOCATION: the strip moved out of #sx-risk-v2 and into
+.mx5-sc-vw (host inside .mx5-sc-left). The R-E gate slice is now
+.mx5-sc-left (the visual unit = dial + scar chips + strip), and the
+manifest names the same SHA for `head` and `captured_at_head` because
+the captures commit IS the final head (no separate captures-only commit,
+per R-W1-E's "git diff <capture>..HEAD -- templates/ mockups/.../ EMPTY"
+requirement: between capture head and final head, NOTHING changes).
+
+Manifest naming: risk_isle_<theme>_<lang>_<viewport>.png (legacy name kept;
+the "isle" is the visual unit — dial + scar chips + strip — not the literal
+#sx-risk-v2 element).
 """
 import hashlib
 import json
@@ -35,14 +45,14 @@ def sha256(s: str) -> str:
 
 
 def _slice_risk_isle(macro_text: str) -> str:
-    """Extract the #sx-risk-v2 slice from site/macro.html for the R-E gate.
+    """Extract the .mx5-sc-left slice from site/macro.html for the R-E gate.
 
-    The opener is '<div class="sx" id="sx-risk-v2"'. We depth-count
-    '<div ' / '<div>' / '</div>' from the opener; the slice ends at the
-    first </div> that brings depth back to 0. No nested .sx lives inside
-    the risk isle, so depth-1 close is exact.
+    Round-3 DEV-VW-LOCATION: the strip lives inside .mx5-sc-vw (a child of
+    .mx5-sc-left), so the "risk isle" — the visual unit containing dial +
+    scar chips + vol-weather sub-row — IS .mx5-sc-left. We slice from
+    '<div class="mx5-sc-left">' to its matching </div> at depth 0.
     """
-    sentinel = '<div class="sx" id="sx-risk-v2"'
+    sentinel = '<div class="mx5-sc-left">'
     start = macro_text.find(sentinel)
     if start < 0:
         raise SystemExit(
@@ -96,8 +106,8 @@ def main() -> int:
                         page.evaluate("document.fonts.ready")
                         page.wait_for_timeout(250)
 
-                        # RISK ISLE region: the fold lands here.
-                        isle = page.locator("#sx-risk-v2").first
+                        # RISK ISLE region: the fold lands in .mx5-sc-left.
+                        isle = page.locator(".mx5-sc-left").first
                         if isle.count() == 0:
                             records.append(
                                 {
@@ -149,7 +159,7 @@ def main() -> int:
                         # inside the isle, present, and non-empty. Eyebrow is
                         # read as separate EN/ZH spans (no textContent
                         # concatenation — each language is its own receipt).
-                        strip = page.locator("#sx-risk-v2 .sx-vw-strip").first
+                        strip = page.locator(".mx5-sc-vw .sx-vw-strip").first
                         strip_metrics = (
                             strip.evaluate(
                                 """(e)=>{const eb=e.querySelector('.sx-vw-eyebrow');
@@ -181,8 +191,11 @@ def main() -> int:
         return 1
 
     # R-E byte-identity gate (UD-B2-W1 pattern, R-E law):
-    # the sx-risk-v2 element slice, sliced from site/macro.html, must
-    # hash to the same value at capture head and FINAL head.
+    # the .mx5-sc-left element slice, sliced from site/macro.html, must
+    # hash to the same value at capture head and FINAL head. With
+    # round-3's single-commit workflow (captures are part of the same
+    # commit as code+tests+site), `captured_at_head` == HEAD == `head`,
+    # so the gate trivially holds.
     macro_path = ROOT / "site" / "macro.html"
     macro_text = macro_path.read_text()
     isle_slice = _slice_risk_isle(macro_text)
@@ -197,16 +210,18 @@ def main() -> int:
         "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
         "page_errors": page_errors,
         "r_e_byte_identity": {
-            "selector": "#sx-risk-v2 (slice from '<div class=\"sx\" id=\"sx-risk-v2\"' to matching close)",
+            "selector": ".mx5-sc-left (slice from '<div class=\"mx5-sc-left\">' to matching close)",
             "sha256": isle_sha,
             "sha256_short": isle_sha_short,
             "bytes": len(isle_slice.encode("utf-8")),
             "captured_at_head": HEAD_SHA,
             "note": ("Byte-identity gate. The same slice, extracted from "
                      "site/macro.html at FINAL head, must hash to this value. "
-                     "Any byte diff fails the R-E gate (UD-B2-W1 R-E pattern, "
-                     "site/macro.html is nightly wire-churned so whole-file "
-                     "identity is a false gate — the slice is the gate)."),
+                     "Round-3 DEV-VW-LOCATION: the strip lives in .mx5-sc-vw "
+                     "(a child of .mx5-sc-left), so the R-E gate slice is "
+                     ".mx5-sc-left (the visual unit = dial + scar chips + "
+                     "strip). Captures are committed in the same commit as "
+                     "code+tests+site, so captured_at_head == HEAD."),
         },
         "cells": records,
     }

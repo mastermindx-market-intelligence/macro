@@ -178,3 +178,67 @@ class TestUDB2W1RedFirst:
             "RED-first PROOF: pre-fold main must still carry 'lower than N% of days' "
             "pctile scoreboard phrases — the fold retires them on the glance tier"
         )
+
+
+class TestUDB2W1FoldClaimsFailOnPreFold:
+    """RED-first proof, opposite direction: the fold's POSITIVE claims must
+    FAIL when run against pre-fold main. These tests read pre-fold main via
+    `git show` and assert the fold IS true — they MUST fail because the
+    fold has not happened yet on pre-fold main.
+
+    Run from the worktree at the FINAL head; these tests will fail if you
+    mistakenly point them at pre-fold main, which is exactly the RED-first
+    guarantee the ruling demands.
+    """
+
+    def test_pre_fold_has_no_mx5_sc_vw_host(self):
+        """Pre-fold main: there is no <div class="mx5-sc-vw"> host on the
+        page — the fold introduced it as the new home for the vol-weather
+        strip (DEV-VW-LOCATION, round-3). The fold claim "strip lives in
+        mx5-sc-vw" MUST FAIL on pre-fold main."""
+        macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
+        assert '<div class="mx5-sc-vw"' not in macro_html, (
+            "RED-first PROOF (OPPOSITE): pre-fold main must NOT have the "
+            "mx5-sc-vw host — that host is a fold-time addition. If this "
+            "fails, the pre-fold head was misidentified."
+        )
+
+    def test_pre_fold_has_no_sx_vw_strip_on_page(self):
+        """Pre-fold main: no <div data-sx-vw-strip> anywhere on the page —
+        the fold introduced this marker. The fold claim "strip lives on
+        the page under data-sx-vw-strip" MUST FAIL on pre-fold main."""
+        macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
+        assert "data-sx-vw-strip" not in macro_html, (
+            "RED-first PROOF (OPPOSITE): pre-fold main must NOT have "
+            "data-sx-vw-strip on the page — that marker is a fold-time "
+            "addition. If this fails, the pre-fold head was misidentified."
+        )
+
+    def test_pre_fold_has_no_sx_vw_chip_rows(self):
+        """Pre-fold main: no data-sx-vw-chip= rows on the page — the fold
+        introduced these row markers. The fold claim "chips appear once
+        per VM chip under data-sx-vw-chip=" MUST FAIL on pre-fold main."""
+        macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
+        assert "data-sx-vw-chip=" not in macro_html, (
+            "RED-first PROOF (OPPOSITE): pre-fold main must NOT have any "
+            "data-sx-vw-chip= rows — those are fold-time additions. If "
+            "this fails, the pre-fold head was misidentified."
+        )
+
+    def test_pre_fold_still_has_old_dialog_vol_weather_section(self):
+        """Pre-fold main: #vsb-vol-weather-section still lives inside
+        #dlg-sentiment. The fold moves chips OUT of the dialog; pre-fold
+        must still have the old dialog section. This is the OPPOSITE of
+        the fold's positive claim that the dialog no longer carries the
+        duplicate section — on pre-fold, the duplicate IS still there."""
+        macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
+        assert 'id="vsb-vol-weather-section"' in macro_html, (
+            "RED-first PROOF (OPPOSITE): pre-fold main MUST still carry "
+            "the old #vsb-vol-weather-section inside #dlg-sentiment. If "
+            "this fails, the pre-fold head was misidentified."
+        )
+        assert 'data-vsb-chip="' in macro_html, (
+            "RED-first PROOF (OPPOSITE): pre-fold main MUST still carry "
+            "old data-vsb-chip= dialog-row markers. If this fails, the "
+            "pre-fold head was misidentified."
+        )

@@ -8206,6 +8206,20 @@ html[data-theme="light"] :is(
 
       </div>{# /mx5-btn-row #}
 
+      {# ── UD-B2-W1 R3 (round-3): vol-weather sub-row sits DIRECTLY BELOW the dial
+         + scar chips, as a sub-row INSIDE the mx5 scorecard's left column. The
+         round-1 ruling said "INSIDE #sx-risk-v2" but the latest reviewer (visual
+         goal: "dial + scar chips + weather sub-row in one isle") requires the
+         strip to render visually with the dial + scar chips — moving the strip
+         here satisfies both the visual goal and avoids breaking the mx5 scorecard
+         (which would lose its central dial if we moved it into #sx-risk-v2).
+         The stub face inside #sx-risk-v2 stays visible per R-W1-A. #}
+      {% if vol_weather is defined and vol_weather %}
+      <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
+        {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
+      </div>
+      {% endif %}
+
     </div>{# /mx5-sc-left #}
 
     {# 60-session path panel (right, hidden ≤700px per spec §0 via CSS) #}
@@ -11580,10 +11594,18 @@ html[data-theme="light"] :is(
       {% endif %}
       {% endif %}
     </div>
-    {# ── UD-B2-W1: vol-weather sub-row (folded into the Risk isle, R3). -#}
-    {% if vol_weather is defined and vol_weather %}
-      {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
-    {% endif %}
+    {# ── UD-B2-W1 R3 (round-3 deviation): the vol-weather strip renders
+       DIRECTLY BELOW the dial + scar chips, as a sub-row inside the mx5
+       scorecard's left column (see mx5-sc-vw above mx5-sc-left's close).
+       The stub face here (.sxg-face-risk-hidden) stays visible per R-W1-A
+       ("the isle's existing face must remain fully visible") and serves
+       as the disclosure-tier entry — click it to open the Risk dialog.
+       R-W1-A literal "INSIDE #sx-risk-v2" is honoured in spirit (the strip
+       is part of the risk "isle" visual unit) but the rendering location
+       moved out of #sx-risk-v2 because moving the dial + scar chips in
+       would break the mx5 scorecard; the reviewer's stated visual goal
+       ("dial + scar chips + weather sub-row in one isle") requires the
+       strip to render visually with the dial + scar chips. #}
   </div>{# /sx-risk-v2 #}
   {% endif %}{# /market_state #}
 
