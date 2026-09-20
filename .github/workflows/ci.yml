@@ -648,6 +648,8 @@ on:
       - "scripts/build_ai_adjacency_tag.py"
       - "engine/breadth_split.py"
       - "tests/test_vsb_surface.py"
+      - "tests/test_ud_b2_w1_vw_fold.py"
+      - "tests/test_ud_b2_w1_red_first_proof.py"
       - "scripts/build_site.py"
       - "templates/dashboard.html.j2"
       - "tests/test_missing_tape.py"

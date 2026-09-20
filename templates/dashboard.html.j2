@@ -210,6 +210,85 @@
 {%- endif -%}
 </svg>
 {%- endmacro %}
+
+{# ── Wave B2 W1 (UD-B2-W1): vol-weather sub-row. Folded into the Risk isle
+   (sx-risk-v2) per seat ruling R3 (research/UNIFIED_DASHBOARD_DISPOSITION.md
+   rows 21+35). Plain-word glance tier (R-W1-B): the glance tier carries
+   ONLY the tier word family (calm / breeze / gust / storm, EN + ZH twins)
+   and short plain clauses. Internal metric names ("Term structure",
+   "Vol-of-vol balance", "vol demand", "Single-stock vol", "期限结构",
+   "波动率的波动", "盘中波动需求", "个股波动率") demote to the isle's
+   dialog / disclosure tier — never on glance. The tier word comes straight
+   from vm['vol_weather'].chips[].band — the engine already classifies; the
+   template does not re-classify from percentiles. No raw values, no
+   "higher/lower than N%" integers on the glance tier (one-integer law;
+   the hero already owns N/100). Color is class-driven (data-tier), not
+   inline style, so theme.css owns material decisions. -#}
+{% macro sx_vw_strip(scope_class) -%}
+{% set _vw_chips_all = vol_weather.get('chips') or [] %}
+{% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
+{% set _vw_plain_name = {
+  'vix_level':   ('Volatility level',                '波动率水平'),
+  'vix_velocity':('5-day volatility change',         '5 日波动率变化'),
+  'term_slope':  ('Near-term vs far-term outlook',   '近期与远期展望'),
+  'vvix_vix':    ('How much traders expect next',    '交易员对未来的预期'),
+  'vix1d':       ('Overnight price swings',          '隔夜价格波动'),
+  'cor1m':       ('How much stocks move together',   '股票同步程度'),
+  'cor3m':       ('3-month implied correlation',     '3个月隐含相关性'),
+  'dspx':        ('Stock-by-stock swings',           '个股走势分散度'),
+} %}
+{% set _vw_band_word = {
+  'calm':     ('calm',     '平静'),
+  'quiet':    ('breeze',   '微风'),
+  'low':      ('breeze',   '微风'),
+  'normal':   ('breeze',   '微风'),
+  'elevated': ('gust',     '疾风'),
+  'extreme':  ('storm',    '风暴'),
+} %}
+{% set _vw_band_idx = {'calm': 0, 'quiet': 1, 'low': 1, 'normal': 1, 'elevated': 2, 'extreme': 3} %}
+{% set _vw_map = {} %}
+{% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
+<div class="sx-vw-strip {{ scope_class }}" data-sx-vw-strip>
+  <div class="sx-vw-eyebrow">
+    <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
+  </div>
+  {% for key in _vw_order %}
+  {% set _chip = _vw_map.get(key) %}
+  {% if _chip %}
+  {% set _chip_fresh = _chip.get('freshness') %}
+  {% set _chip_band = (_chip.get('band') or 'normal') %}
+  {% set _wx_tier_idx = _vw_band_idx.get(_chip_band, 1) %}
+  {% set _wx_word_pair = _vw_band_word.get(_chip_band, ('breeze', '微风')) %}
+  {% set _name_pair = _vw_plain_name.get(key) %}
+  {% set _chip_tier = 'sx-vw-row--young' if _chip_fresh in ('young','missing') else ('sx-vw-row--' ~ _chip_band) %}
+  <div class="sx-vw-row {{ _chip_tier }}" data-sx-vw-chip="{{ key }}" data-tier="{{ 'young' if _chip_fresh in ('young','missing') else _chip_band }}">
+    <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier_idx) }}</div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">{{ _name_pair[0] if _name_pair else key }}</span><span class="l-zh">{{ _name_pair[1] if _name_pair else key }}</span>
+      </div>
+      {% if _chip_fresh in ('young', 'missing') %}
+      <div class="sx-vw-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
+      {% else %}
+      {# Glance tier (R-W1-B): tier word only — no engine plain_en, no raw
+         values, no internal metric names. Plain clauses demoted to the
+         isle's disclosure / dialog tier (engine still carries plain_en in
+         vm['vol_weather'].chips[].plain_en for that tier). -#}
+      <div class="sx-vw-read" aria-hidden="true"></div>
+      {% endif %}
+    </div>
+    <div class="sx-vw-tier">
+      {% if _chip_fresh in ('young', 'missing') %}
+      <span class="l-en">—</span><span class="l-zh">—</span>
+      {% else %}
+      <span class="l-en">{{ _wx_word_pair[0] }}</span><span class="l-zh">{{ _wx_word_pair[1] }}</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -3975,6 +4054,14 @@ body.page-macro.mx4-grid .mx4-rack{
 
 /* Show face in grid view (.mx4-grid is permanent in macro mode) */
 body.page-macro.mx4-grid .sxg-face{display:flex;}
+/* R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+   container on the macro route. Its face is display:none!important
+   BY DESIGN, including the .mx4-grid carve-out that would otherwise
+   flex-show .sxg-face. The visible risk surface is .mx5-sc-left. */
+body.page-macro #sx-risk-v2,
+body.page-macro.mx4-grid #sx-risk-v2{display:none!important;}
+body.page-macro #sx-risk-v2 .sxg-face,
+body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
 
 /* ── Card spans (desktop ≥1100px) ───────────────────────────── */
 /* v5 layout:
@@ -4021,9 +4108,10 @@ body.page-macro.mx4-grid .sxg-face{display:flex;}
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
-/* ── Risk card: face hidden in grid (band zone-2 is its face) ── */
-body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
-/* But when data-open, show the tray normally */
+/* ── Risk card: the visible risk surface is the mx5 scorecard
+   (.mx5-sc-left). #sx-risk-v2 is an invisible legacy container
+   (R-W1-A-AMENDED). The vol-weather strip is a sub-row of
+   .mx5-sc-left, below the dial + scar chips. */
 
 /* ── Sibling dim on expansion (graft 5, reuse v3 dim) ────────── */
 /* v3 already dims via has-open-island / many-open on body;
@@ -4194,20 +4282,10 @@ body.page-macro .sxg-deep-chip:hover{border-color:var(--link);color:var(--ink-li
 }
 
 /* ── In grid view the sx-tray behaves as normal (expands in-flow at 1/-1) ── */
-/* sx-risk-v2: face and sum hidden — band zone-2 (S2/S3) is its card face.
-   The .sx element collapses to zero height when not open; when open (data-open),
-   it spans 1/-1 at order:-1 top of rack showing the full island. */
 /* sx-risk-v2 sx-sum{display:none} — removed (sx-sum rows retired v5.1) */
-/* Collapse the risk card when not expanded — it has no face in grid view */
-body.page-macro.mx4-grid #sx-risk-v2:not([data-open]){
-  min-height:0;
-  border:none;
-  background:transparent;
-  box-shadow:none;
-  padding:0;
-  margin:0;
-  /* still keep order:-1 so when opened it goes to top */
-}
+/* R-W1-A-AMENDED: #sx-risk-v2 is display:none!important on the macro
+   route (see the hide rule next to .mx4-grid .sxg-face). Empty card
+   chrome must not paint a leftover Risk sibling under the scorecard. */
 
 /* ── grid-only utility: visible only in mx4-grid, hidden in ledger ── */
 body.page-macro .mx4-grid-only{display:none;}
@@ -4217,10 +4295,8 @@ body.page-macro.mx4-grid .mx4-grid-only{display:block;}
 body.page-macro .mx4-verdict-band{display:none!important;}
 
 /* ── In grid view: sx-evidence face = WHAT TO DO card (v5); popover button opens island ── */
-/* sx-risk-v2 face still hidden; its tray opens from the rack as before */
 /* sx-evidence face is now visible in grid view as the WTD card — override the hide rule */
 body.page-macro.mx4-grid #sx-evidence .sxg-face{display:flex!important;}
-/* sx-risk-v2 face already hidden via existing rule body.page-macro.mx4-grid #sx-risk-v2 .sxg-face */
 
 /* ══════════════════════════════════════════════════════════
    S2 — EVIDENCE face full content
@@ -6892,14 +6968,12 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 /* graph slot collapses when no history is present — no fake chart (house law) */
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
-#dlg-sentiment .vsb-vw-row{grid-template-columns:26px minmax(110px,1.3fr) 1fr 54px;gap:12px;}
-.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--sg-wx-c,var(--muted));}
+/* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
+   lives inside .mx5-sc-left and inherits tokens via .sx-vw-row.) */
+.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
 [data-theme="light"] .sg-pos{background:rgba(0,0,0,.08);}
-.sg-pos-mark{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);
-  background:var(--sg-wx-c,var(--muted));border:2px solid var(--panel,#0f1420);box-shadow:0 1px 3px rgba(0,0,0,.35);}
-[data-theme="light"] .sg-pos-mark{border-color:#fff;}
 .sg-pos-axis{display:flex;justify-content:space-between;font:600 8px/1 var(--font-ui,inherit);color:var(--muted);margin-top:4px;letter-spacing:.02em;}
 @media(prefers-reduced-motion:no-preference){
   #dlg-sentiment .sg-pos-mark{left:50%;transition:left 640ms cubic-bezier(.34,1.2,.5,1) .12s;}
@@ -6936,8 +7010,6 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 @media(max-width:430px){
   .sg-hero-num{font-size:34px;}
-  #dlg-sentiment .vsb-vw-row{grid-template-columns:24px 1fr 48px;}
-  #dlg-sentiment .vsb-vw-row .sg-pos-wrap{display:none;}
   .sg-split-row{grid-template-columns:minmax(80px,auto) 1fr 38px;gap:8px;}
   .row-pop .sg-dial{width:120px;height:68px;}
 }
@@ -8130,6 +8202,16 @@ html[data-theme="light"] :is(
         </div>{# /mx5PopFactors #}
 
       </div>{# /mx5-btn-row #}
+
+      {# ── UD-B2-W1 (R-W1-A-AMENDED 2026-09-20): vol-weather sub-row sits
+         DIRECTLY BELOW the dial + scar chips, as a sub-row INSIDE the mx5
+         scorecard's left column (.mx5-sc-left). #sx-risk-v2 is an invisible
+         legacy container — do not host the strip there. #}
+      {% if vol_weather is defined and vol_weather %}
+      <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
+        {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
+      </div>
+      {% endif %}
 
     </div>{# /mx5-sc-left #}
 
@@ -11460,51 +11542,13 @@ html[data-theme="light"] :is(
   </div>{# /sx-markets-v2 #}
 
   {# ── 4. RISK row + tray (Stage B) ── #}
-  {# Requires: market_state (MS.radar), latest.risk_radar (if present), froth_fragility, fear_euphoria, fear_greed #}
+  {# R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+     container. The RISK/风险 + Credit Stress stub face was removed so
+     the strip and the risk read appear once, inside .mx5-sc-left. The
+     empty wrapper stays for any hash/JS that still names the id; CSS
+     sets display:none!important on the macro route. #}
   {% if market_state %}
-  {% set _rdr = market_state.radar if market_state.radar is defined else {} %}
-  {% set _rdr_state = _rdr.state if _rdr else 'unknown' %}
-  {% set _rdr_score = _rdr.top_score if _rdr else none %}
-  {% set _rdr_col = 'var(--down)' if _rdr_state == 'risk-off' else ('var(--orange,var(--warn))' if _rdr_state in ('elevated','caution') else 'var(--up)') %}
   <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)">
-    {# RISK face — opens the risk dialog (S1: wires to dialog; full redesign in S3) #}
-    {% set _rdr_label_en = _rdr.label_en if (_rdr.label_en is defined and _rdr.label_en) else _rdr_state %}
-    {% set _rdr_label_zh = (_rdr.label_zh if (_rdr.label_zh is defined and _rdr.label_zh) else none) or _rdr_label_en %}
-    <div class="sxg-face sxg-face-risk-hidden" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-risk');}">
-      <div class="sxg-face-eyebrow"><span class="l-en">Risk</span><span class="l-zh">风险</span></div>
-      <div class="sxg-face-stance" style="color:{{ _rdr_col }}">
-        {# COPY-01: use _rdr_label_en/_rdr_label_zh (set above at glance) for parity #}
-        <span class="l-en">{{ _rdr_label_en | title }}</span>
-        <span class="l-zh">{{ _rdr_label_zh }}</span>
-      </div>
-      {% if _rdr_score is not none %}
-      <div class="sxg-face-sub"><span class="l-en">Intensity {{ _rdr_score }}/100</span><span class="l-zh">强度 {{ _rdr_score }}/100</span></div>
-      {% endif %}
-      {# W4 EVW: high-impact event ≤2 trading days out — context chip (display-only, RIC-R3). #}
-      {# engine/risk_radar.py is untouched; this chip is rendered-only calendar context. #}
-      {% if evw_snap is defined and evw_snap and evw_snap.get('available') %}
-      {% set _evw_td_cpi = evw_snap.get('td_to_cpi') %}
-      {% set _evw_td_fomc = evw_snap.get('td_to_fomc') %}
-      {% set _evw_td_nfp = evw_snap.get('td_to_nfp') %}
-      {% set _evw_td_ppi = evw_snap.get('td_to_ppi') %}
-      {% set _evw_near = (
-          (_evw_td_cpi is not none and _evw_td_cpi <= 2) or
-          (_evw_td_fomc is not none and _evw_td_fomc <= 2) or
-          (_evw_td_nfp is not none and _evw_td_nfp <= 2) or
-          (_evw_td_ppi is not none and _evw_td_ppi <= 2)
-      ) %}
-      {% if _evw_near %}
-      {% set _evw_what_en = 'CPI' if (_evw_td_cpi is not none and _evw_td_cpi <= 2) else ('Fed decision' if (_evw_td_fomc is not none and _evw_td_fomc <= 2) else ('Payrolls' if (_evw_td_nfp is not none and _evw_td_nfp <= 2) else 'PPI')) %}
-      {% set _evw_what_zh = '消费者物价' if (_evw_td_cpi is not none and _evw_td_cpi <= 2) else ('美联储决议' if (_evw_td_fomc is not none and _evw_td_fomc <= 2) else ('非农就业' if (_evw_td_nfp is not none and _evw_td_nfp <= 2) else '生产者物价')) %}
-      {% set _evw_days_en = 'today' if ((_evw_td_cpi == 0 or _evw_td_fomc == 0 or _evw_td_nfp == 0 or _evw_td_ppi == 0)) else ('tomorrow' if ((_evw_td_cpi == 1 or _evw_td_fomc == 1 or _evw_td_nfp == 1 or _evw_td_ppi == 1)) else 'in 2 days') %}
-      {% set _evw_days_zh = '今日' if ((_evw_td_cpi == 0 or _evw_td_fomc == 0 or _evw_td_nfp == 0 or _evw_td_ppi == 0)) else ('明日' if ((_evw_td_cpi == 1 or _evw_td_fomc == 1 or _evw_td_nfp == 1 or _evw_td_ppi == 1)) else '2日后') %}
-      <div style="margin-top:5px;font-size:10.5px;color:var(--ink-warn, var(--warn,#f59e0b));line-height:1.4">
-        <span class="l-en">{{ _evw_what_en }} {{ _evw_days_en }} — expect elevated tape noise.</span>
-        <span class="l-zh">{{ _evw_what_zh }}{{ _evw_days_zh }}发布 — 市场噪音可能放大。</span>
-      </div>
-      {% endif %}
-      {% endif %}
-    </div>
   </div>{# /sx-risk-v2 #}
   {% endif %}{# /market_state #}
 
@@ -14612,54 +14656,9 @@ html[data-theme="light"] :is(
         </div>
         {% endif %}
 
-        {# VSB W3: Volatility weather strip #}
-        {% if vol_weather is defined and vol_weather %}
-        {% set _vw_chips_all = vol_weather.get('chips') or [] %}
-        {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
-        {% set _vw_map = {} %}
-        {% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
-        <div class="mx5-dlg-sep"></div>
-        <div id="vsb-vol-weather-section" style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3,rgba(255,255,255,.36));margin-bottom:10px">
-          <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
-        </div>
-        {% for key in _vw_order %}
-        {% set _chip = _vw_map.get(key) %}
-        {% if _chip %}
-        {% set _chip_fresh = _chip.get('freshness') %}
-        {% set _chip_pctile = _chip.get('pctile') %}
-        {# weather tier from percentile: calm ≤35, breeze ≤60, gust ≤82, storm >82 #}
-        {% set _wx_tier = (0 if _chip_pctile is none else (3 if _chip_pctile > 82 else (2 if _chip_pctile > 60 else (1 if _chip_pctile > 35 else 0)))) %}
-        {% set _wx_col = ('var(--muted)' if _chip_fresh in ('young','missing') else ('var(--down,#ef4444)' if _wx_tier >= 3 else ('var(--warn,#f59e0b)' if _wx_tier == 2 else ('var(--info,#4d8ef5)' if _wx_tier == 1 else 'var(--up,#22c55e)')))) %}
-        <div class="mx5-dlg-factor-row vsb-vw-row" data-vsb-chip="{{ key }}" style="--sg-wx-c:{{ _wx_col }}">
-          <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier) }}</div>
-          <div>
-            <div class="mx5-dlg-factor-name"><span class="l-en">{{ _chip.get('name_en') or key }}</span><span class="l-zh">{{ _chip.get('name_zh') or _chip.get('name_en') or key }}</span></div>
-            {% if _chip_fresh in ('young', 'missing') %}
-            <div class="mx5-dlg-factor-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
-            {% else %}
-            <div class="mx5-dlg-factor-read">
-              <span class="l-en">{{ _chip.get('plain_en') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} &middot; {% if _chip_pctile >= 50 %}higher than {{ _chip_pctile }}% of days{% else %}lower than {{ 100 - _chip_pctile }}% of days{% endif %}{% endif %}</span>
-              <span class="l-zh">{{ _chip.get('plain_zh') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} &middot; {% if _chip_pctile >= 50 %}高于历史 {{ _chip_pctile }}% 的交易日{% else %}低于历史 {{ 100 - _chip_pctile }}% 的交易日{% endif %}{% endif %}</span>
-            </div>
-            {% endif %}
-          </div>
-          <div class="sg-pos-wrap">
-            {% if _chip_pctile is not none and _chip_fresh not in ('young','missing') %}
-            <div class="sg-pos"><span class="sg-pos-mark" style="--sg-pp:{{ _chip_pctile }}%"></span></div>
-            <div class="sg-pos-axis"><span>{{ t('Low','低') }}</span><span>{{ t('High','高') }}</span></div>
-            {% endif %}
-          </div>
-          <div style="font-size:13px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2,rgba(255,255,255,.7))">
-            {% if _chip_fresh in ('young', 'missing') %}
-            <span style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))">—</span>
-            {% else %}
-            {{ _chip.get('value') if _chip.get('value') is not none else '—' }}
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
+        {# VSB W3: Volatility weather strip — REMOVED 2026-09-20 (UD-B2-W1 fold).
+           The chips now live as a sub-row inside .mx5-sc-left;
+           the dialog no longer carries the duplicate section. #}
 
         {# VSB W4: AI names vs the rest #}
         {% if breadth_split is defined and breadth_split %}
