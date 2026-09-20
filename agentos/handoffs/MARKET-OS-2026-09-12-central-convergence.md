@@ -138,3 +138,24 @@ The September 12 organizer is now being source-published on this same PR rather 
 
 This checkpoint changes no lifecycle authority, no A/B lane ownership and no MAS-141 projection. It converts the organizer from a September 12 planning snapshot into a recoverable pointer to the current canonical release work without creating a second ledger.
 
+
+## 2026-09-20 continuation update
+
+The earlier 2026-09-19 checkpoint is preserved as dated history. The release frontier has since moved:
+
+- **#7407** merged `134c041bc9c2dc11918b05e68ff7796886f7f13d`, repairing the stale F00C reconciliation guard/manifest layer that had made post-#7335 main red. This is guard-plane repair, not a capability promotion.
+- **#7390** merged `102abb1b7d4fa34db6becb6429671abf17a8e221` with exact-head fences + CI SUCCESS and independent approval. Current-main readback confirms MO-PAID-039 is still BUILT_NOT_PROVEN. Do not build another measurement producer; the remaining work is authenticated admin implication-card proof plus the public Intelligence Hub link correction.
+- **#7335** remains the canonical convergence merge, but its own exact-head CI run `35433097717` ultimately concluded FAILURE after merge. Preserve that immutable historical receipt; later guard repair does not retroactively make the old run green.
+- The **130-row census is unchanged** at 21 PROVEN_LIVE / 23 BUILT_NOT_PROVEN / 37 PARTIAL / 7 SPEC_ONLY / 42 NOT_BUILT.
+- **#7351** is now on integration head `83345bba6c41132d34c34edb11659accb4dbf5f9`, current-main compatible with exactly the existing White House sentinel activation change plus its owning test. Fences are green and full CI is running. After merge, one canonical sentinel execution and non-`gate_off` Policy Watch readback are still required before MO-PAID-023 can move from BUILT_NOT_PROVEN.
+
+### Exact next actions
+
+1. Finish #7351's exact-head CI/current merge-ref gate; merge only by expected head if still green and collision-free.
+2. After #7351 merges, consume the first canonical White House sentinel run that uses the merged activation, then read back `site/uk_policy.json` and the Policy Watch UK card. A typed `source_outage`, `stale`, or `model_unavailable` state is honest execution evidence but not a successful non-degraded proof; `gate_off` after merge is a defect.
+3. Before releasing this #7084 organizer, refresh these two records once more if #7351 materially advances, integrate against then-current main, rerun exact-head checks, obtain current semantic review, merge, and read both records back from main.
+4. Continue the remaining 23 BUILT_NOT_PROVEN rows through their real proof journeys rather than opening replacement implementations.
+
+### Do not redo
+
+Do not reopen #7011/#7014/#7340/#7343/#7348/#7349/#7353 or #7390 to recreate already-merged convergence work. Do not rewrite #7335's failed CI receipt. Do not create another MarketOntology organizer, ledger, scheduler, identity map, state store, or synchronization plane.
