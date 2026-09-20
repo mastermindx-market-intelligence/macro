@@ -99,7 +99,8 @@ def _make_research_root(tmp_path: pathlib.Path, *, with_briefing: bool = True) -
 
 
 def _research_chat(tmp_path, reply_text: str, message: str = "What is the capital of France?",
-                   user_jwt: str = "", company_source_span: dict | None = None, *,
+                   user_jwt: str = "", company_source_span: dict | None = None,
+                   history: list[dict] | None = None, images: list[str] | None = None, *,
                    with_briefing: bool = True):
     """Drive gw.chat(mode='research') with the gateway's loop replaced by a double."""
     root = _make_research_root(tmp_path, with_briefing=with_briefing)
@@ -122,6 +123,8 @@ def _research_chat(tmp_path, reply_text: str, message: str = "What is the capita
                                 root=root,
                                 user_jwt=user_jwt,
                                 company_source_span=company_source_span,
+                                history=history,
+                                images=images,
                             )
 
 
@@ -175,6 +178,52 @@ def test_research_mode_exact_source_gate_covers_chat_and_stream():
     guard = 'if mode != "research" and company_source_span is not None:'
     assert guard in inspect.getsource(gw.chat)
     assert guard in inspect.getsource(gw.chat_stream)
+
+
+def test_research_mode_does_not_resolve_images(tmp_path):
+    """Images are normal-chat inputs, not one of MO-PAID-031 corpora 1-3."""
+    with patch.object(
+        gw,
+        "_image_blocks",
+        side_effect=AssertionError("research mode must not resolve image attachments"),
+    ) as resolver:
+        result = _research_chat(
+            tmp_path,
+            "The daily briefing says the US session was mixed and breadth was thin.",
+            message="How did the US session look?",
+            images=["data:image/png;base64,Zm9yYmlkZGVu"],
+        )
+    resolver.assert_not_called()
+    assert "Daily briefing" in result["reply"]
+
+
+def test_research_mode_does_not_consult_client_history(tmp_path):
+    """Prior chat may contain general knowledge; it cannot become research grounding."""
+    with patch.object(
+        gw,
+        "_screen_client_history",
+        side_effect=AssertionError("research mode must not consult prior chat history"),
+    ) as screen:
+        result = _research_chat(
+            tmp_path,
+            "The daily briefing says the US session was mixed and breadth was thin.",
+            message="How did the US session look?",
+            history=[{"role": "assistant", "content": "Unpublished general-knowledge claim."}],
+        )
+    screen.assert_not_called()
+    assert "Unpublished general-knowledge claim" not in result["reply"]
+
+
+def test_research_mode_closed_corpus_guards_cover_both_entrypoints():
+    """Non-streaming and streaming must share the same fail-closed boundary."""
+    import inspect
+
+    for fn in (gw.chat, gw.chat_stream):
+        src = inspect.getsource(fn)
+        assert 'image_blocks = [] if mode == "research" else _image_blocks(images)' in src
+        assert 'if thread_id and mode != "research"' in src
+        assert 'if mode == "research":\n        active_history = []' in src
+        assert 'None if images or mode == "research"' in src  # native + instant fast paths
 
 
 def test_uncited_answer_replaced_by_null_form(tmp_path):
