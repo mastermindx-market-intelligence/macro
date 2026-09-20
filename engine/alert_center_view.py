@@ -61,7 +61,10 @@ _ALTDATA_CONVERGENCE = re.compile(
     r'^(.+?) lit up by ([0-9]+) independent alt-data channels: (.+)\.$'
 )
 _ROTATION_EMERGING = re.compile(
-    r'^(.+?) just turned improving & accelerating \((.+?); accel '
+    r'^(.+?) just turned (improving|leading) & accelerating '
+    r'\(1W ([+-]?[0-9]+(?:\.[0-9]+)?)%, '
+    r'1M ([+-]?[0-9]+(?:\.[0-9]+)?)%, '
+    r'3M ([+-]?[0-9]+(?:\.[0-9]+)?)%; accel '
     r'([+-]?[0-9]+(?:\.[0-9]+)?)\)\. An early rotate-in candidate '
     r'— context, not a buy list\.$'
 )
@@ -205,6 +208,10 @@ def build_alert_brief(row: dict) -> dict:
                 'The source describes a 2–4 day edge window, but event age is unavailable, '
                 'so current validity cannot be established.')
             window_limit_zh = '来源描述的是 2–4 天优势窗口，但事件时间未知，无法确认当前有效性。'
+            implication = (
+                'The source reports a short leading de-risk window, but without an event '
+                'age it cannot be treated as current.')
+            implication_zh = '来源报告了一个短期领先减仓窗口，但事件时间未知，不能视为当前信号。'
             blind_spot = (
                 'The model is blind to slow or options-calm selloffs, so this is not a '
                 'current de-risk instruction.')
@@ -219,6 +226,9 @@ def build_alert_brief(row: dict) -> dict:
                 f'The source describes a 2–4 day edge window; this event is {age} {unit} '
                 'old, so any urgency is bounded to that short horizon.')
             window_limit_zh = f'来源描述的是 2–4 天优势窗口；该事件已过去 {age} 天，紧迫性仅限于这一短期范围。'
+            implication = edge or (
+                'The source reports a fresh leading precursor with a short forward de-risk window.')
+            implication_zh = edge_zh or '来源报告了一个最新领先前兆，伴随短期前瞻减仓窗口。'
             blind_spot = (
                 'The model is blind to slow or options-calm selloffs, so this is a bounded '
                 'risk-management signal rather than a universal selloff detector.')
@@ -232,6 +242,10 @@ def build_alert_brief(row: dict) -> dict:
                 f'The source describes a 2–4 day edge window; at {age} days old, that '
                 '2–4 day edge window has elapsed.')
             window_limit_zh = f'来源描述的是 2–4 天的优势窗口；该事件已过去 {age} 天，窗口已经结束。'
+            implication = (
+                f'The source originally reported a short leading de-risk window from this '
+                f'precursor; at {age} days old, that signal is historical rather than current.')
+            implication_zh = f'来源曾报告该前兆带来的短期领先减仓窗口；事件已过去 {age} 天，属于历史信号而非当前信号。'
             blind_spot = (
                 'The model is blind to slow or options-calm selloffs, so this is not a '
                 'current de-risk instruction.')
@@ -243,7 +257,7 @@ def build_alert_brief(row: dict) -> dict:
         brief.update({
             'status': 'supported', 'family': 'vector.impulse_warn_down',
             'change': detail, 'change_zh': detail_zh,
-            'implication': edge, 'implication_zh': edge_zh,
+            'implication': implication, 'implication_zh': implication_zh,
             'limitation': f'{window_limit} {blind_spot}',
             'limitation_zh': f'{window_limit_zh}{blind_spot_zh}',
             'next_action': (
@@ -295,8 +309,8 @@ def build_alert_brief(row: dict) -> dict:
         brief.update({
             'status': 'supported', 'family': 'vector.allocation_change',
             'change': detail, 'change_zh': detail_zh,
-            'implication': edge, 'implication_zh': (
-                '这是策略模型的配置输出；历史回测曾跑赢买入并持有。'),
+            'implication': edge,
+            'implication_zh': edge_zh or '这是策略模型的配置输出；历史回测曾跑赢买入并持有。',
             'limitation': (
                 f'The {old_weight}% → {new_weight}% change is a model allocation output. '
                 'Its historical backtest does not guarantee future returns, and repeated '
@@ -354,32 +368,35 @@ def build_alert_brief(row: dict) -> dict:
 
     rotation = _ROTATION_EMERGING.fullmatch(detail)
     if source == 'rotation' and type_ == 'rotation_emerging' and rotation:
-        subject, horizons, acceleration = rotation.groups()
+        subject, state, one_week, one_month, three_month, acceleration = rotation.groups()
+        state_zh = {'improving': '改善', 'leading': '领先'}[state]
+        horizon_text = f'1W {one_week}%, 1M {one_month}%, 3M {three_month}%'
         brief.update({
             'status': 'supported', 'family': 'rotation.rotation_emerging',
             'change': detail, 'change_zh': detail_zh,
             'implication': (
-                f'{subject} has moved into improving and accelerating status '
-                f'({horizons}; acceleration {acceleration}), making it an early '
-                'research candidate.'),
-            'implication_zh': f'{subject} 转为改善且加速状态，是一个早期研究候选。',
+                f'{subject} is {state} and accelerating, with {horizon_text} and '
+                f'acceleration {acceleration}; this is an early research candidate.'),
+            'implication_zh': (
+                f'{subject} 当前处于{state_zh}且加速状态；1周 {one_week}%，1月 {one_month}%，'
+                f'3月 {three_month}%，加速 {acceleration}。这是一个早期研究候选。'),
             'limitation': (
                 'This is explicitly context, not a buy list or a separately backtested '
-                'timing signal. Positive one-week momentum can coexist with negative '
-                'one- and three-month returns, and repeated firings do not prove persistence.'),
+                'timing signal. The 1W/1M/3M return profile and state label are descriptive '
+                'snapshots that can reverse; repeated firings do not prove persistence.'),
             'limitation_zh': (
-                '这明确只是背景，不是买入清单，也不是经过单独回测的择时信号。单周动量为正时，'
-                '一个月和三个月收益仍可能为负；重复触发也不能证明状态持续。'),
+                '这明确只是背景，不是买入清单，也不是经过单独回测的择时信号。1周/1月/3月收益'
+                '与状态标签只是可能反转的描述性快照；重复触发也不能证明状态持续。'),
             'next_action': (
-                'Open the current rotation panel and confirm the subgroup still ranks '
-                'improving and accelerating before promoting it to a research candidate.'),
-            'next_action_zh': '打开当前轮动面板，确认该子行业仍处于改善且加速状态，再将其列为研究候选。',
+                f'Open the current rotation panel and confirm {subject} still ranks {state} '
+                'and accelerating before promoting it to a research candidate.'),
+            'next_action_zh': f'打开当前轮动面板，确认 {subject} 仍处于{state_zh}且加速状态，再将其列为研究候选。',
             'next_action_label': 'Check rotation',
             'next_action_label_zh': '检查轮动',
             'reassessment': (
-                'Change the read if the current status loses its improving/accelerating '
-                'classification or longer-horizon relative strength keeps deteriorating.'),
-            'reassessment_zh': '若当前状态不再改善/加速，或较长期相对强度继续恶化，则改变判断。',
+                f'Change the read if the current status loses its {state}/accelerating '
+                'classification or the observed horizon profile deteriorates.'),
+            'reassessment_zh': f'若当前状态不再{state_zh}/加速，或所示周期表现恶化，则改变判断。',
             'evidence_label': 'Open current rotation panel',
             'evidence_label_zh': '打开当前轮动面板',
         })

@@ -322,3 +322,49 @@ def test_vector_impulse_window_copy_is_age_aware():
     assert unknown_brief['attention'] == 'earlier_priority'
     assert 'event age is unavailable' in unknown_brief['limitation']
     assert 'has elapsed' not in unknown_brief['limitation']
+
+
+def test_aged_impulse_takeaway_never_repeats_expired_act_early_copy():
+    row = signal('aged-impulse-copy', source='vector', type_='impulse_warn_down', asset='vector')
+    row.update({
+        'tier': 'act', 'age_days': 17,
+        'detail': 'DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.',
+        'detail_zh': 'DVOL 日内波幅激增（相对自身历史异常偏大）— 期权市场正在重新定价风险。BTC 81,264 美元。',
+        'edge': 'Forward de-risk window from a verified LEADING precursor cross; act early — the edge decays in ~2-4 days.',
+        'edge_zh': '来自经验证领先前兆突破的前瞻减仓窗口；应尽早行动 — 优势在约 2-4 天内衰减。',
+        'link': 'vector.html#impulse',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['attention'] == 'earlier_priority'
+    assert 'originally reported' in brief['implication']
+    assert 'act early' not in brief['implication'].lower()
+    assert '历史' in brief['implication_zh']
+
+
+def test_rotation_brief_describes_actual_horizons_without_inventing_negative_returns():
+    row = signal('rotation-positive', source='rotation', type_='rotation_emerging', asset='security')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Security just turned leading & accelerating (1W +6.9%, 1M +4.4%, 3M +26.7%; accel +4.8). An early rotate-in candidate — context, not a buy list.',
+        'detail_zh': 'Security 刚转为领先且加速（1周 +6.9%，1月 +4.4%，3月 +26.7%；加速 +4.8）。早期轮入候选 — 仅作参考，非买入清单。',
+        'link': 'subsector_rotation.html#rotation-app',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '1W +6.9%, 1M +4.4%, 3M +26.7%' in brief['implication']
+    assert 'negative one- and three-month returns' not in brief['limitation']
+    assert 'descriptive' in brief['limitation']
+
+
+def test_allocation_brief_preserves_source_localized_implication():
+    row = signal('allocation-localized', source='vector', type_='allocation_change', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Optimal strategy moved 41% → 43% BTC (momentum × risk grid).',
+        'detail_zh': '最优策略从 41% 调整为 43% BTC（动量 × 风险网格）。',
+        'edge': 'Strategy output — beat buy-and-hold in backtest.',
+        'edge_zh': '来源本地化：策略输出在历史回测中跑赢买入并持有。',
+        'link': 'vector.html#allocation',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['implication_zh'] == row['edge_zh']
