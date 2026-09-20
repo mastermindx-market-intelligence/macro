@@ -509,3 +509,60 @@ def test_basket_flow_metrics_wrap_together_instead_of_vertical_slivers():
     for d in ('basket','basket_china','basket_hk','basket_canada','basket_intl'):
         for page in (TMPL_DIR.parent/'site'/d).glob('*.html'):
             assert block in page.read_text(), page
+
+
+def _hold_header(column, direction, chosen):
+    import json
+    import subprocess
+    src = _src("basket_detail.html.j2")
+    assert "function holdSortHeader(" in src
+    helper = src[src.index("function holdSortHeader("):src.index("function render(){")]
+    setup = "const esc=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));const L=(en,zh)=>'<span class=\"l-en\">'+en+'</span><span class=\"l-zh\">'+zh+'</span>';"
+    setup += "const _sort=" + json.dumps({"col": column, "dir": direction}) + ";"
+    return subprocess.check_output(["node", "-e", setup + helper + "console.log(holdSortHeader(" + json.dumps(chosen) + ", 'Potential', '潜力', 'hold-potential'));"], text=True)
+
+
+def test_basket_holdings_sort_controls_are_native_and_truthful():
+    # Potential is the pre-existing multi-key research order, not numeric-score order.
+    html = _hold_header("recommend", -1, "recommend")
+    assert 'scope="col"' in html and 'aria-sort="other"' in html
+    assert '<button type="button"' in html and 'data-hold-sort="recommend"' in html
+    assert 'aria-hidden="true"' in html and 'research order' in html and '研究顺序' in html
+    assert 'aria-sort="descending"' not in html
+    assert 'aria-sort=' not in _hold_header("r20", -1, "recommend")
+    assert 'aria-sort="descending"' in _hold_header("r20", -1, "r20")
+    assert 'aria-sort="ascending"' in _hold_header("r20", 1, "r20")
+
+
+def test_basket_holdings_sort_help_is_bilingual_and_not_a_native_title():
+    html = _hold_header("recommend", -1, "recommend")
+    assert 'data-tip-en=' in html and 'data-tip-zh=' in html
+    assert 'title=' not in html
+    assert 'not numeric score order' in html
+    assert '并非仅按数值大小排列' in html
+
+
+def test_basket_holdings_sort_keeps_one_native_activation_and_focus():
+    src = _src("basket_detail.html.j2")
+    assert 'th2=>th2.onclick=' not in src
+    assert 'button.onclick=()=>sortHold(button.dataset.holdSort);' in src
+    assert "document.activeElement.closest('#hold button[data-hold-sort]')" in src
+    assert 'restoreHoldSortFocus(app,sortFocusKey);' in src
+    assert 'button.focus({preventScroll:true})' in src
+    assert '<caption class="hold-sr-only">' in src
+
+
+def test_all_basket_sort_artifacts_keep_semantics_and_static_styles():
+    src = _src("basket_detail.html.j2")
+    style = src[src.index('<style data-basket-hold-sort>'):src.index('</style>', src.index('<style data-basket-hold-sort>'))+8]
+    assert '#hold .hold-sort:focus-visible' in style
+    assert 'min-height:32px' in style
+    pages = [p for d in ('basket','basket_china','basket_hk','basket_canada','basket_intl')
+             for p in (TMPL_DIR.parent/'site'/d).glob('*.html')]
+    assert len(pages) >= 121
+    for p in pages:
+        html = p.read_text()
+        assert style in html, p
+        assert 'function holdSortHeader(' in html, p
+        assert 'restoreHoldSortFocus(app,sortFocusKey);' in html, p
+        assert 'th2=>th2.onclick=' not in html, p

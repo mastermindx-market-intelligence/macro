@@ -28,3 +28,6 @@ confidence: verified
 The repair is built and browser-verified, not yet a production acceptance. Its
 continuation README names exact authority, source, unchanged data/auth/model
 boundaries, evidence, shared-owner release blockers and VPS-only next actions.
+
+## Keyboard-sort continuation (same carrier #7497)
+At 49c879f7ce5e47219759f4a0aa767cd0c96a8dc4, the two sort headers were mouse-only (tabIndex -1) and exposed no sort state. The same native-DOM preservation rule also applies to focused header buttons: capture the focused sort key before replacing the table and restore the matching native button without scrolling. Test Tab/Enter/Space as well as clicks; a programmatic sorter call cannot prove keyboard usability. Preserve `aria-sort=other` for the existing multi-key research order, not an inaccurate numeric-order claim. Reproduction, source/data invariants and pending production acceptance are in research/evidence/uiux-basket-score-resilience-20260920/sorting/README.md.

@@ -49,6 +49,14 @@
 .basket-flow-metrics>.sbx{min-width:0;overflow-wrap:anywhere}
 @media(max-width:720px){.basket-flow-cards{grid-template-columns:minmax(0,1fr)}}
 </style>
+<style data-basket-hold-sort>
+#hold .hold-sort{appearance:none;font:inherit;color:inherit;background:transparent;border:0;border-radius:var(--r-sm);display:inline-flex;align-items:center;justify-content:flex-end;gap:3px;width:100%;min-height:32px;padding:2px;cursor:pointer;white-space:normal;line-height:1.2}
+#hold .hold-sort:hover{background:var(--panel2);color:var(--ink-link,var(--link))}
+#hold .hold-sort:focus-visible{outline:2px solid var(--ink-link,var(--link));outline-offset:2px}
+#hold .hold-sort-icon{font-size:10px}
+@media(max-width:720px){ #hold .hold-potential{width:80px}#hold .hold-sort{white-space:nowrap}}
+#hold .hold-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+</style>
 </head>
 <body>
 
@@ -1148,9 +1156,29 @@ function restoreBasketScoreState(app,state){
   if(state.focused){const summary=detail.querySelector('summary');if(summary) summary.focus({preventScroll:true});}
 }
 
+// Native header buttons own keyboard activation; _sort remains the existing order owner.
+function holdSortHeader(col,en,zh,klass){
+  const active=_sort.col===col;
+  const sortValue=col==='recommend'?'other':(_sort.dir===1?'ascending':'descending');
+  const aria=active?' aria-sort="'+sortValue+'"':'';
+  const icon=active?(_sort.dir===1?'↑':'↓'):'↕';
+  const context=col==='recommend'
+    ? L(_sort.dir===1&&active?', reversed research order':', research order',_sort.dir===1&&active?'，反向研究顺序':'，研究顺序')
+    : L(' return','收益');
+  const help=col==='recommend'?' data-tip-en="Research order combines entry setup, verdict and Potential; it is not numeric score order. Activate to reverse the order." data-tip-zh="研究顺序结合入场条件、结论与潜力，并非仅按数值大小排列。点击可反转顺序。"':'';
+  return `<th scope="col" class="num ${klass}" data-s="${col}"${aria}${help}><button type="button" class="hold-sort" data-hold-sort="${col}">${L(esc(en),esc(zh))}<span class="hold-sort-icon" aria-hidden="true">${icon}</span><span class="hold-sr-only">${context}</span></button></th>`;
+}
+function restoreHoldSortFocus(app,key){
+  if(!key||!app) return;
+  const button=Array.from(app.querySelectorAll('#hold button[data-hold-sort]')).find(b=>b.dataset.holdSort===key);
+  if(button) button.focus({preventScroll:true});
+}
+
 function render(){
   const app=document.getElementById('app');
   const scoreUi=basketScoreState(app);
+  const focusedSort=document.activeElement&&document.activeElement.closest('#hold button[data-hold-sort]');
+  const sortFocusKey=focusedSort?focusedSort.dataset.holdSort:null;
   const d=DETAIL, b=d.basket||{}, th=d.theme||{}, tx=th.textures||{};
   const SB=d.stock_base||'';   // per-stock link base ('' for markets with no per-stock page → plain ticker)
   const stk=(sym)=> SB ? `<a class="tk" href="${SB}${encodeURIComponent(sym)}">${esc(sym)}</a>` : `<span class="tk">${esc(sym)}</span>`;
@@ -1390,8 +1418,9 @@ function render(){
   const nBoard=mem.filter(m=>m.on_board).length;
   h+=`<h2><span class="idx">04</span>${L('Holdings — own-it conviction + entry timing','成分股 — 持有信念 + 入场择时')} <span class="chip">${mem.length} ${L('names','只')}</span>${nBoard?` <span class="chip sb-chip" title="Members currently on the US Prophet buy board">★ ${nBoard} ${L('on Prophet board','在 Prophet 榜')}</span>`:''}</h2>
   <div class="panel"><div class="ts"><table id="hold">
+    <caption class="hold-sr-only">${L('Holdings. Column buttons change sort order. Potential uses research priority rather than numeric score order.','成分股。列标题按钮可改变排序。潜力列采用研究优先顺序，而非简单数值排序。')}</caption>
     <colgroup><col class="hold-stock"><col class="hold-potential"><col class="hold-verdict"><col class="hold-entry"><col class="hold-20d"></colgroup>
-    <thead><tr><th>${L('Stock','个股')}</th><th class="num hold-potential" data-s="recommend" title="Potential combines cycle state, room to run, survivability and entry timing. A fast setup can appear before the slow cycle confirms.">${L('Potential','潜力')}</th><th>${L('Verdict','结论')}</th><th class="hold-entry">${L('Entry now','入场时机')}</th><th class="num hold-20d" data-s="r20">20d</th></tr></thead>
+    <thead><tr><th scope="col">${L('Stock','个股')}</th>${holdSortHeader('recommend','Potential','潜力','hold-potential')}<th scope="col">${L('Verdict','结论')}</th><th scope="col" class="hold-entry">${L('Entry now','入场时机')}</th>${holdSortHeader('r20','20d','20日','hold-20d')}</tr></thead>
     <tbody>${rows}</tbody></table></div>
     <div class="disc">${L('Potential combines cycle state, room to run, survivability and entry timing. The default order puts fresh entry setups first, then weighs verdict quality and Potential; cycle-blocked names move down. ⚠ means the cycle blocks a buy.','潜力综合周期状态、上涨空间、生存质量和入场时机。默认排序优先显示新的入场机会，再结合结论质量与潜力；被周期阻断的个股会下调。⚠ 表示周期阻止买入。')}</div>
     <div class="disc" style="margin-top:4px">${L('Conviction score = earnings/flow edge, not trend leadership — a rotation leader can score low here.','信念评分＝盈利/资金面优势，非趋势领涨度 — 轮动领涨股在此可能低分。')}</div>
@@ -1406,10 +1435,14 @@ function render(){
 
   document.getElementById('app').innerHTML=h;
   // sortable holdings
-  document.querySelectorAll('#hold th[data-s]').forEach(th2=>th2.onclick=()=>sortHold(th2.dataset.s));
+  document.querySelectorAll('#hold th[data-s]').forEach(th2=>{
+    const button=th2.querySelector('button[data-hold-sort]');
+    if(button) button.onclick=()=>sortHold(button.dataset.holdSort);
+  });
   // Snapshot score details do not depend on optional authenticated live reads.
   if(window._ftrTryInject) window._ftrTryInject();
   restoreBasketScoreState(app,scoreUi);
+  restoreHoldSortFocus(app,sortFocusKey);
 }
 let _sort={col:'recommend',dir:-1};
 function sortHold(col){
