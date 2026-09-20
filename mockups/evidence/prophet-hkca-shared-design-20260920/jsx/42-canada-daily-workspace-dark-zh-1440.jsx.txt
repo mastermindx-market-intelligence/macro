@@ -47,7 +47,7 @@
       <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', gap: '44px', justifyContent: 'space-between', paddingBottom: '8px', paddingTop: '14px', width: '100%' }}>
         <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '820px' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
-            加拿大 PROPHET · B 分支筛选 · 参考样本 · 2026年9月3日
+            加拿大 PROPHET · 当前筛选 · 截至2026年9月3日
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-display)', fontWeight: 'var(--fw-extrabold)', lineHeight: '50px' }}>
             17 个当前名单，尚无确认入场。
@@ -59,7 +59,7 @@
         <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '280px' }}>
           <div style={{ borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
             <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
-              当前归属 · 筛选
+              当前 · 筛选
             </div>
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', justifyContent: 'end', lineHeight: '18px', textAlign: 'right', whiteSpace: 'pre-wrap' }}>
@@ -145,7 +145,7 @@
         </div>
         <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
-            17 个当前归属名称
+            17 个当前候选
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
             9 个符合筛选，8 个观察
@@ -170,7 +170,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                当前归属 · 9月3日
+                当前候选
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@
                 入选原因
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
-                符合 B 分支筛选；发行人证据完整，但尚未确认入场。
+                符合当前筛选；发行人证据完整，但尚未确认入场。
               </div>
             </div>
             <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
@@ -192,7 +192,7 @@
                   观察—勿追。
                 </div>
                 <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-                  下一触发：当前归属发布确认入场条件。
+                  下一触发：入场条件获得确认。
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
@@ -203,7 +203,7 @@
               <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
                   <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
-                    B 分支筛选
+                    当前筛选
                   </div>
                 </div>
                 <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
@@ -240,7 +240,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                当前归属 · 9月3日
+                当前候选
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@
                   观察—勿追。
                 </div>
                 <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-                  下一触发：对齐条件解除，当前归属开放时机。
+                  下一触发：对齐条件解除，并出现可用时机。
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
@@ -343,7 +343,7 @@
                 定义
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
-                B 分支筛选
+                当前筛选
               </div>
             </div>
             <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>

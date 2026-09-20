@@ -1,18 +1,18 @@
 # Prophet HK + Canada shared product design contract — R1
 
-**Status:** `DESIGN_AUTHORITY_APPROVED / EDITABLE_REFERENCE_FROZEN / RIG_IN_REVIEW / PRODUCTION_NOT_PROVEN`
+**Status:** `DESIGN_AUTHORITY_REPAIR_COMPLETE / EDITABLE_REFERENCE_REPLACEMENT_FROZEN_ON_THIS_COMMIT / RIG_RESET_REQUIRED / PRODUCTION_NOT_PROVEN`
 **Operation:** `prophet-hkca-shared-design-contract-r1-20260920-sol-001`  
 **Parent:** `WS:PROPHET-HK-CA-REVAMP`  
 **Source assignment:** `D_SHARED_PRODUCT_DESIGN_AND_UI(1).md`, V2, September 19, 2026  
-**Protected procedure:** `Mastermind@5f62e9f6119cc3e3bc542a793ba96731e063e3a1`, Skillpack 1.0.1/bootstrap 1
+**Protected procedure:** `Mastermind@8300950ac10a6c4c9e613ef26da42e67fb5c2dc8`, Skillpack 1.0.1/bootstrap 1
 **Macro build base:** `86634cb89ad4e7253b44a049b6e5712406899f90`
-**Current Macro compatibility pin:** `ad5be0675196666ef37165d73a18fe3730805792`
+**Current Macro compatibility pin:** `ba2f4a2a89777a02caae6e9e538302ad3d9c2a3c`
 
 This contract turns the accepted HK/Canada roster, continuity, card, and state requirements into one bounded product-design handoff for the existing Hong Kong and Canada carriers. It does not change producer truth, rank, thresholds, entitlement, access policy, publication authority, or portfolio action.
 
-The current design authority has approved and frozen the paired Paper reference for bounded R1 implementation on the named B/C carriers. That approval does not make Paper a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
+The current design authority approved the paired Paper geometry, component anatomy, states, themes, locales, counts, and roster/authority semantics. Session A then accepted those dimensions and required one bounded repair: remove fixture, programme, and source-authority vocabulary from user-facing Tier 1 while preserving every product invariant. The replacement Paper boards and evidence bundle in this commit complete that copy repair. Paper still does not become a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
 
-RIG reference `prophet-hkca-shared-r1` is now `in_review` at `research/reference_integrity/prophet-hkca-shared-r1/`, bound to frozen artifact SHA `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1`. Product-regression and visual/taste critic receipts, the design-authority verdict, and `approval.yml` do not yet exist; the reference remains provisional and non-canonical.
+The prior RIG review target `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` is superseded by the replacement reference bytes in this commit. No product-regression receipt, visual/taste receipt, design-authority RIG verdict, or `approval.yml` has been earned for the replacement. `prophet-hkca-shared-r1` must be rebound to this immutable reference in the succeeding control commit and independently reviewed again; it remains provisional and non-canonical.
 
 ## 1. Authority, carriers, and non-goals
 
@@ -94,9 +94,9 @@ The exact committed evidence bundle is:
 `mockups/evidence/prophet-hkca-shared-design-20260920/`
 
 Its `manifest.json` SHA-256 is
-`99ca807425b929dd411814671fb558992b9bf20b324a8e7a721b5cbb2ed313ad`.
+`65e9099da2d8b8b671b0016e4ac155598e280ee3313124de5b3fc6112f3d75cb`.
 It binds each accepted artboard to a screenshot digest and a Paper `get_jsx`
-`inline-styles` snapshot digest; `SHA256SUMS` binds every committed evidence byte.
+`inline-styles` snapshot digest; `SHA256SUMS` binds every committed evidence byte. The replacement keeps all artboard IDs, declared geometry, tokens, node count, and state coverage unchanged. Publication-wide dates now appear once at board level; row dates remain only when genuinely row-specific. User-facing JSX contains none of the rejected fixture, Branch-B, owner-current/owner-visible, screening-authority, or corresponding Chinese architecture labels; exact source and authority provenance remains in this contract and RIG evidence.
 
 ### 3.1 Design-authority disposition — `APPROVED_FOR_BOUNDED_IMPLEMENTATION`
 
@@ -120,10 +120,11 @@ The accepted product decisions are:
   stale, source failure, unauthenticated, entitlement expired, filter empty, incomplete history,
   correction, expanded, focus-visible, disabled/locked, and recovered.
 
-This approval authorizes B/C to implement against the exact artboards above after their normal
-source-custody and shared-partial gates clear. It does **not** grant repository-global canonical
-reference status, satisfy the Reference Integrity Gate, substitute for Session H independent
-review, or authorize merge, deployment, access-policy change, rank/signal change, or publication.
+This approval preserves the exact artboards as the replacement design candidate, but it does **not**
+yet release B/C to begin the new R1 visual migration. The replacement must first be rebound to the
+Reference Integrity Gate and receive fresh independent review. It does not grant repository-global
+canonical reference status or authorize merge, deployment, access-policy change, rank/signal change,
+or publication.
 A forced state proves intended presentation only unless the real producer/runtime emitted it.
 
 The Figma file `IKqTiq7jeVBJusBfoHnPsH` remains a secondary design-system projection and is not
@@ -211,10 +212,10 @@ Required invariants:
 Every current card has the same seven regions:
 
 1. **Identity:** market, listing/ticker, company/display name.
-2. **Owner state:** the current owner-native stage and plain-language stance.
-3. **Why shown:** owner-supplied reason, translated for Tier 1.
+2. **Current state:** the market-native stage and plain-language stance; exact source identity stays in details.
+3. **Why shown:** a plain-language reason for inclusion; source provenance stays in Tier-2 receipts.
 4. **Timing:** current permission/block and dated freshness.
-5. **Next trigger:** only when the owner supplies one; otherwise honest unavailability.
+5. **Next trigger:** only when the current producer supplies one; otherwise honest unavailability.
 6. **Compact evidence:** the few facts that explain the card without exposing an internal dump.
 7. **Details:** keyboard/touch-accessible evidence and receipts.
 
@@ -291,7 +292,12 @@ locked/disabled content remains legible without a dirty blur.
 | Screen | 筛选结果 |
 
 Copy stays within doctrine budgets. Raw ranks, scores, internal state slugs, statistical receipts,
-and architecture terms stay out of Tier 1.
+and architecture terms stay out of Tier 1. In particular, implementation-source boards may not expose
+`REFERENCE FIXTURE`, `BRANCH-B`, `OWNER CURRENT`, `owner-current`, `owner-visible`,
+`Screening authority`, `参考样本`, `当前归属`, `B 分支筛选`, or generic owner/source labels as
+default user copy. Those exact identities remain available in Tier-2 evidence and repository receipts.
+A publication-wide as-of appears once at board level; a card repeats a date only when that date is
+row-specific.
 
 ## 11. Required data and permission states
 
@@ -363,8 +369,9 @@ transition, correction, and exit behaviour are observed rather than inferred.
 
 ## 14. Implementation order
 
-1. **COMPLETE — Session D:** paired Paper reference approved, frozen, and evidence-bound at the exact
-   artboard IDs in §3.
+1. **REPAIR COMPLETE — Session D:** paired Paper geometry, component anatomy, state coverage, and
+   artboard IDs remain frozen; the plain-language Tier-1 replacement is evidence-bound in this commit.
+   RIG rebinding and fresh independent review are the next gate before R1 implementation release.
 2. The shared-card incumbent grants or denies an exact lease for any required partial change.
 3. B implements the HK route on `#7163` without seizing Canada or shared paths.
 4. C implements the Canada route on `#7018` without weakening Branch-B screen semantics.
@@ -393,10 +400,11 @@ Stop the affected lane and return to Session D/A when:
 
 ## 16. Acceptance boundary
 
-Session D's **design-contract outcome is complete and frozen** at the Paper/evidence identities in
-§3: the current design authority reviewed the editable reference; exact implementation artboards,
-measurements, copy, state transitions, screenshot receipts, and JSX digests are durable; the
-shared-card writer boundary and B/C carriers remain explicit.
+Session D's **design-contract repair is complete and frozen on this commit** at the Paper/evidence
+identities in §3: exact implementation artboards, measurements, plain-language copy, state transitions,
+screenshot receipts, and JSX digests are durable; the shared-card writer boundary and B/C carriers remain
+explicit. The earlier RIG target and its review requests are superseded and confer no acceptance on this
+replacement.
 
 The following are deliberately **not** claimed by that result:
 
@@ -409,4 +417,6 @@ The following are deliberately **not** claimed by that result:
 The product outcome is not complete when this document, a Paper/Figma file, a CSS patch, or CI alone
 exists. Completion requires the real HK and Canada routes to implement the design, preserve truth and
 access boundaries, pass independent and browser review, and establish continuity across two natural
-publications. B/C may consume this frozen design now, but merge/release remains gated by those owners.
+publications. B/C remain held from the new R1 visual migration until the replacement reference is
+rebound to RIG, independently reviewed, and explicitly released; lawful R0 restoration on already
+accepted styling remains independent.

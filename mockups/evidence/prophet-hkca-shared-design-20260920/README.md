@@ -1,6 +1,6 @@
 # Prophet HK + Canada shared design evidence
 
-Status: **DESIGN_AUTHORITY_APPROVED / RIG + INDEPENDENT REVIEW PENDING / PRODUCTION NOT PROVEN**
+Status: **DESIGN AUTHORITY COPY REPAIR COMPLETE / RIG RESET REQUIRED / PRODUCTION NOT PROVEN**
 
 Editable source:
 
@@ -10,7 +10,12 @@ Editable source:
 - page id: `p-2-1`
 - observed token content hash: `5ae876bc`
 
-This bundle freezes the accepted editable projection for implementation handoff. It contains:
+This replacement bundle preserves the accepted geometry, component anatomy, roster semantics,
+states, themes, locales, counts, and authority boundaries while removing internal fixture/source
+vocabulary from user-facing Tier 1. Publication-wide dates appear once at board level; card dates
+remain only when row-specific.
+
+It contains:
 
 - the required 16-cell primary matrix: 2 markets × EN/ZH × dark/light × 1440/390;
 - targeted dark/light state and interaction matrices;

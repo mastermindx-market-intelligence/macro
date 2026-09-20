@@ -47,7 +47,7 @@
       <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'space-between', paddingBottom: '8px', paddingTop: '14px', width: '100%' }}>
         <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '820px', width: '100%' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
-            HONG KONG PROPHET · REFERENCE FIXTURE · 03 SEP 2026
+            HONG KONG PROPHET · CURRENT CANDIDATES · AS OF 03 SEP 2026
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: '32px', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.03em', lineHeight: '35px' }}>
             39 current names. 2 are live now.
@@ -59,11 +59,11 @@
         <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '280px', width: '100%' }}>
           <div style={{ borderColor: 'var(--mx-dark-ok)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
             <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-ok)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
-              OWNER CURRENT · CLOSE
+              CURRENT · CLOSE
             </div>
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
-            Complete entitled owner-visible roster<br />Top is an explicit subset
+            All current candidates shown<br />Top is a smaller selection
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@
         </div>
         <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px', width: '100%' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
-            2 owner-selected names
+            2 selected names
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
             All 39 remain one click away
@@ -170,7 +170,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                Owner current · 03 Sep
+                Current candidate
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@
                 WHY SHOWN
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
-                Owner shows a clean entry with sector leadership still improving.
+                Current signals show a clean entry with sector leadership still improving.
               </div>
             </div>
             <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
@@ -240,7 +240,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                Owner current · 03 Sep
+                Current candidate
               </div>
             </div>
           </div>
@@ -250,7 +250,7 @@
                 WHY SHOWN
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
-                Owner shows a clean entry while sector leadership remains supportive.
+                Current signals show a clean entry while sector leadership remains supportive.
               </div>
             </div>
             <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
@@ -308,7 +308,7 @@
             Fixture finance
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-            Two owner-held names merit more work. This selection does not change rank or entry permission.
+            Two current names merit more work. This selection does not change rank or entry permission.
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
             Open research
@@ -327,7 +327,7 @@
             One prior name is no longer current
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-            MTL.TO · last seen 02 Sep · owner reason unavailable. No stale action state is carried forward.
+            MTL.TO · last seen 02 Sep · change reason unavailable. No stale action state is carried forward.
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
             Open transitions
@@ -343,7 +343,7 @@
                 Definition
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
-                Current owner era
+                Current definition
               </div>
             </div>
             <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>

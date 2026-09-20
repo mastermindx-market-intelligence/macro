@@ -47,7 +47,7 @@
       <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'space-between', paddingBottom: '8px', paddingTop: '14px', width: '100%' }}>
         <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '820px', width: '100%' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
-            CANADA PROPHET · BRANCH-B SCREEN · REFERENCE FIXTURE · 03 SEP 2026
+            CANADA PROPHET · CURRENT SCREEN · AS OF 03 SEP 2026
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: '32px', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.03em', lineHeight: '35px' }}>
             17 current names. No entry is confirmed.
@@ -59,11 +59,11 @@
         <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '280px', width: '100%' }}>
           <div style={{ borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
             <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
-              OWNER CURRENT · SCREEN
+              CURRENT · SCREEN
             </div>
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
-            Screening authority only<br />No official pick is implied
+            Screening results only<br />Not official picks
           </div>
         </div>
       </div>
@@ -145,7 +145,7 @@
         </div>
         <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px', width: '100%' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
-            17 owner-current names
+            17 current candidates
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
             Nine screen; eight watch
@@ -170,7 +170,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                Owner current · 03 Sep
+                Current candidate
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@
                 WHY SHOWN
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
-                Meets the Branch-B screen; issuer evidence is intact but entry confirmation is absent.
+                Meets the current screen; issuer evidence is intact, but entry is not confirmed.
               </div>
             </div>
             <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
@@ -192,7 +192,7 @@
                   Watch — don’t chase.
                 </div>
                 <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-                  Next trigger: owner publishes a confirmed entry condition.
+                  Next trigger: the entry condition is confirmed.
                 </div>
               </div>
               <div style={{ alignSelf: 'start', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
@@ -203,7 +203,7 @@
               <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
                   <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
-                    Branch-B screen
+                    Current screen
                   </div>
                 </div>
                 <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
@@ -240,7 +240,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                Owner current · 03 Sep
+                Current candidate
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@
                   Watch — don’t chase.
                 </div>
                 <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-                  Next trigger: alignment clears and the owner opens timing.
+                  Next trigger: alignment clears and timing becomes available.
                 </div>
               </div>
               <div style={{ alignSelf: 'start', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
@@ -305,7 +305,7 @@
             </div>
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
-            Approved research owners
+            Approved research sources
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
             Optional research can explain names; it never changes screen status, rank, or entry permission.
@@ -343,7 +343,7 @@
                 Definition
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
-                Branch-B screen
+                Current screen
               </div>
             </div>
             <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>

@@ -47,7 +47,7 @@
       <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'space-between', paddingBottom: '8px', paddingTop: '14px', width: '100%' }}>
         <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '820px', width: '100%' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
-            香港 PROPHET · 参考样本 · 2026年9月3日
+            香港 PROPHET · 当前候选 · 截至2026年9月3日
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: '32px', fontWeight: 'var(--fw-extrabold)', lineHeight: '35px' }}>
             39 个当前名单，2 个现可执行。
@@ -59,7 +59,7 @@
         <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '280px', width: '100%' }}>
           <div style={{ borderColor: 'var(--mx-dark-ok)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
             <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-ok)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
-              当前归属 · 收盘
+              当前 · 收盘
             </div>
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
@@ -145,7 +145,7 @@
         </div>
         <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px', width: '100%' }}>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
-            2 个归属方精选名称
+            2 个精选名称
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
             全部 39 个仍可一键查看
@@ -170,7 +170,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                当前归属 · 9月3日
+                当前候选
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@
                 入选原因
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
-                当前归属显示入场条件清晰，板块领先仍在改善。
+                当前信号显示入场条件清晰，板块领先仍在改善。
               </div>
             </div>
             <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
@@ -240,7 +240,7 @@
                 </div>
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
-                当前归属 · 9月3日
+                当前候选
               </div>
             </div>
           </div>
@@ -250,7 +250,7 @@
                 入选原因
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
-                当前归属显示入场条件清晰，板块领先仍然稳固。
+                当前信号显示入场条件清晰，板块领先仍然稳固。
               </div>
             </div>
             <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
@@ -308,7 +308,7 @@
             金融板块样本
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-            两个由当前归属保留的名称值得进一步研究。此选择不改变排名或入场权限。
+            两个当前候选值得进一步研究。此选择不改变排名或入场权限。
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
             打开研究
@@ -327,7 +327,7 @@
             一个此前名称已不再属于当前名单
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
-            MTL.TO · 最后出现于9月2日 · 当前归属未提供原因。不携带过期操作状态。
+            MTL.TO · 最后出现于9月2日 · 暂无变更原因。不显示过期操作状态。
           </div>
           <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
             查看变化
@@ -343,7 +343,7 @@
                 定义
               </div>
               <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
-                当前归属时期
+                当前阶段
               </div>
             </div>
             <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
