@@ -1260,30 +1260,48 @@ def _flip_text(comps: list, verdict: str, *, raw_score=None, radar: dict | None 
 # re-deriving a (divergent) read — which is exactly how sector_central used to disagree
 # with macro.html. Build order already runs build_site before build_sector_central, so the
 # file is fresh when the latter reads it. Never raises.
-def _store_path(root=None):
+def _store_path(root=None, market_key: str | None = None):
+    """Per-market snapshot path. `market_key=None`/'"us"' preserves the canonical
+    US path data/market_state/latest.json (no-regress guard, freshness stamp). Any
+    other key lands at data/<dir>/latest.json so the per-market home pages and
+    the macro spine can each read their own snapshot without overwriting the US
+    one. The directory follows the long-standing convention
+    (engine/market_state_hk.py builds the HK score_log beside
+    data/hk_market_state/, build_china.py:1888 writes CN beside
+    data/china_market_state/) — "cn" maps to "china_market_state", "hk" maps
+    to "hk_market_state", any other key uses <key>_market_state."""
     from pathlib import Path
     from lib import config
     base = config.data_dir() if root is None else (Path(root) / "data")
+    if market_key and market_key != "us":
+        _dir = {"hk": "hk_market_state", "cn": "china_market_state"}.get(
+            market_key, f"{market_key}_market_state")
+        return base / _dir / "latest.json"
     return base / "market_state" / "latest.json"
 
 
-def persist(snap: dict | None, root=None, now=None) -> None:
-    """Write the canonical market-state snapshot to data/market_state/latest.json.
+def persist(snap: dict | None, root=None, now=None, market_key: str | None = None) -> None:
+    """Write the canonical market-state snapshot. With `market_key=None` or
+    "us" the US path data/market_state/latest.json is used unchanged. Any other
+    `market_key` (e.g. "hk", "cn") writes to data/<key>_market_state/latest.json —
+    NEVER the US latest.json. The freshness stamp against the NYSE calendar is
+    kept US-only by design: HK/CN home lanes own their own staleness discipline
+    and the macro spine consumes a display-only caveat stamp.
 
     Freshness contract (2026-07-07 stale-regime incident):
     - NO-REGRESS: refuse to overwrite a persisted snapshot whose asof is NEWER than the
       incoming one. Two lanes raced that day (a stale scheduled engine run + a manually
       re-dispatched fresh one); ordering luck decided which verdict the site carried.
       Equal asof always overwrites (same-session recomputes are routine).
-    - SELF-DECLARING STALENESS: stamp snap["freshness"] against the NYSE calendar
-      (lib.nyse_calendar — independent of every price store, so it still fires when the
-      whole collection push dies and all stores agree on the stale date), so downstream
-      consumers (build_risk_state's nightly backbone, macro.html) can see a stale read
-      without cross-referencing the store. Both legs degrade-never-raise."""
+    - SELF-DECLARING STALENESS (US path only): stamp snap["freshness"] against the NYSE
+      calendar (lib.nyse_calendar — independent of every price store, so it still fires
+      when the whole collection push dies and all stores agree on the stale date), so
+      downstream consumers (build_risk_state's nightly backbone, macro.html) can see a
+      stale read without cross-referencing the store. Both legs degrade-never-raise."""
     if not snap:
         return
     try:
-        p = _store_path(root)
+        p = _store_path(root, market_key)
         incoming = str(snap.get("asof") or "")
         try:
             if incoming and p.exists():
@@ -1294,43 +1312,47 @@ def persist(snap: dict | None, root=None, now=None) -> None:
                     return
         except Exception as e:  # noqa: BLE001 — an unreadable existing file never blocks
             log.warning("market_state no-regress check skipped: %s", e)
-        try:
-            from lib import nyse_calendar
-            expected = str(nyse_calendar.expected_last_session(now))
-            fresh = {
-                "data_asof": incoming or None,
-                "expected_asof": expected,
-                # PRICE-calendar staleness — unchanged meaning, unchanged consumers.
-                "stale": bool(incoming) and incoming < expected,
-            }
-            # NO LONGER SELF-CERTIFYING (audit 2026-07-29). `stale` above is derived from the
-            # snapshot's own asof, which comes from the FRAME calendar — and the frame ffills slow
-            # macro series onto trading days, so it reported stale:false on a session where the
-            # NFCI print was 12 days old and had already dropped out of the drawdown composite and
-            # the credit leg. The per-input vintages (engine/conditions._input_vintages) are real
-            # per-store last-print dates, so the stamp now carries a claim it can actually back.
-            # Surfacing is the template lane's call; this only makes the truth available.
-            v = (snap.get("input_vintages") or {})
-            stale_inputs = sorted(k for k, d in v.items() if (d or {}).get("stale"))
-            ages = [d.get("age_days") for d in v.values()
-                    if isinstance(d, dict) and d.get("age_days") is not None]
-            fresh["inputs"] = v
-            fresh["stale_inputs"] = stale_inputs
-            fresh["any_input_stale"] = bool(stale_inputs)
-            fresh["worst_input_age_days"] = (max(ages) if ages else None)
-            snap["freshness"] = fresh
-        except Exception as e:  # noqa: BLE001 — the stamp is additive, never the gate
-            log.warning("market_state freshness stamp skipped: %s", e)
+        # NYSE freshness stamp is US-only — HK/CN use their own session calendar and the
+        # macro spine reads the lighter caveat_en caveat_zh on the row instead.
+        if not market_key or market_key == "us":
+            try:
+                from lib import nyse_calendar
+                expected = str(nyse_calendar.expected_last_session(now))
+                fresh = {
+                    "data_asof": incoming or None,
+                    "expected_asof": expected,
+                    # PRICE-calendar staleness — unchanged meaning, unchanged consumers.
+                    "stale": bool(incoming) and incoming < expected,
+                }
+                # NO LONGER SELF-CERTIFYING (audit 2026-07-29). `stale` above is derived from the
+                # snapshot's own asof, which comes from the FRAME calendar — and the frame ffills slow
+                # macro series onto trading days, so it reported stale:false on a session where the
+                # NFCI print was 12 days old and had already dropped out of the drawdown composite and
+                # the credit leg. The per-input vintages (engine/conditions._input_vintages) are real
+                # per-store last-print dates, so the stamp now carries a claim it can actually back.
+                # Surfacing is the template lane's call; this only makes the truth available.
+                v = (snap.get("input_vintages") or {})
+                stale_inputs = sorted(k for k, d in v.items() if (d or {}).get("stale"))
+                ages = [d.get("age_days") for d in v.values()
+                        if isinstance(d, dict) and d.get("age_days") is not None]
+                fresh["inputs"] = v
+                fresh["stale_inputs"] = stale_inputs
+                fresh["any_input_stale"] = bool(stale_inputs)
+                fresh["worst_input_age_days"] = (max(ages) if ages else None)
+                snap["freshness"] = fresh
+            except Exception as e:  # noqa: BLE001 — the stamp is additive, never the gate
+                log.warning("market_state freshness stamp skipped: %s", e)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(snap, ensure_ascii=False, default=str))
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("market_state persist failed: %s", e)
 
 
-def load_persisted(root=None) -> dict | None:
-    """Read the persisted canonical snapshot; None if absent/unreadable."""
+def load_persisted(root=None, market_key: str | None = None) -> dict | None:
+    """Read the persisted canonical snapshot for `market_key` ("us" default;
+    "hk"/"cn" land in their per-market directories). None if absent/unreadable."""
     try:
-        p = _store_path(root)
+        p = _store_path(root, market_key)
         if p.exists():
             return json.loads(p.read_text())
     except Exception as e:  # noqa: BLE001
