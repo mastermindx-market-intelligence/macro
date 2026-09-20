@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T22:46:01.846731+00:00",
-  "count": 2528,
+  "generated_at": "2026-09-20T23:00:56.757720+00:00",
+  "count": 2529,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1698,6 +1698,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wrczpkxknwa-d33fee",
+      "title": "Investing in China (onshore)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:28Z",
+      "summary_points": [
+        "A-shares upgraded to Attractive: Policy support for strategic sectors (AI, advanced manufacturing) amid weak domestic demand; direct exposure to industrial/tech upgrading cycle insulates from consumption weakness, outperforming offshore equities.",
+        "Two-speed economy policy shift: Prioritizes AI/infrastructure over consumption; offshore equities downgraded (45% MSCI China exposure to consumption-linked sectors), while A-shares preferred for stronger earnings outlook and resilient cash flows.",
+        "High-dividend A-shares & credit bonds attractive: A-share high-dividend yield (~4.1%) outperforms CGBs (1.7%); credit bonds (AA-rated, spreads 47-61bps) supported by institutional demand, PBOC liquidity, and low defaults.",
+        "Near-term risk: Earnings revisions & sentiment: Downside risk from elevated investment spending, weak free cash flow, and limited visibility; requires stabilization before constructive positioning in offshore Chinese equities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 16,
       "language": "en",
       "needs_metadata": false
     },
