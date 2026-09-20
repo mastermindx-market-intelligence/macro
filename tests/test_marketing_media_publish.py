@@ -95,6 +95,57 @@ def test_publish_upload_error_returns_none():
 
 
 class TestImmutablePublicAssetContract:
+    def test_publish_card_names_render_failure_when_no_png_can_be_built(
+        self, tmp_path, monkeypatch,
+    ):
+        from engine.marketing import chart_render, media_publish
+
+        monkeypatch.setattr(chart_render, "rasterize_svg", lambda _svg, **_kw: b"")
+        monkeypatch.setattr(chart_render, "find_chrome", lambda: None)
+
+        out = media_publish.publish_card(
+            '<svg width="10" height="10">$CLH</svg>',
+            chart_id="chart-001",
+            as_of="2026-09-20",
+            root=tmp_path,
+            legacy_png=lambda: b"",
+        )
+
+        assert out["svg_path"].endswith("/chart-001.svg")
+        assert out["media_repair"] == {
+            "state": "render_failure",
+            "reason": "png_render_unavailable",
+            "repair_process": "marketing_media_backfill",
+            "repairable": True,
+        }
+
+    def test_publish_card_names_png_persist_failure(
+        self, tmp_path, monkeypatch,
+    ):
+        from pathlib import Path
+
+        from engine.marketing import chart_render, media_publish
+
+        monkeypatch.setattr(
+            chart_render, "rasterize_svg", lambda _svg, **_kw: b"\x89PNG-card",
+        )
+        monkeypatch.setattr(
+            Path, "write_bytes",
+            lambda _self, _payload: (_ for _ in ()).throw(OSError("disk full")),
+        )
+
+        out = media_publish.publish_card(
+            '<svg width="10" height="10">$CLH</svg>',
+            chart_id="chart-001", as_of="2026-09-20", root=tmp_path,
+        )
+
+        assert out["media_repair"] == {
+            "state": "render_failure",
+            "reason": "png_persist_failed",
+            "repair_process": "marketing_media_backfill",
+            "repairable": True,
+        }
+
     def test_content_addressed_key_prevents_same_id_overwrite(self):
         from engine.marketing.media_publish import content_addressed_chart_key
 

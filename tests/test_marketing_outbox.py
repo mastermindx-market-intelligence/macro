@@ -1180,6 +1180,37 @@ def test_fold_state_attempts_counts_failures(tmp_path):
 # 12. apply_decisions — batch approval application + governed retry
 # ─────────────────────────────────────────────────────────────────────────────
 
+def test_media_repair_projection_prefers_newer_entry_failure():
+    from engine.marketing.outbox import media_repair_observation
+
+    observed = media_repair_observation(
+        [{
+            "kind": "chart_svg",
+            "path": "data/marketing/outbox/media/2026-09-20/chart-001.svg",
+            "chart_id": "chart-001",
+            "media_repair": {
+                "state": "render_failure",
+                "reason": "empty_png_bytes",
+                "repair_process": "content_studio",
+                "repairable": True,
+            },
+        }],
+        chart_id="chart-001",
+        producer_observation={
+            "state": "upload_pending",
+            "reason": "hosted_media_missing",
+            "repair_process": "marketing_media_backfill",
+            "repairable": True,
+        },
+    )
+    assert observed == {
+        "state": "render_failure",
+        "reason": "empty_png_bytes",
+        "repair_process": "content_studio",
+        "repairable": True,
+    }
+
+
 def test_apply_decisions_approves_queued(tmp_path):
     from engine.marketing.outbox import (
         apply_decisions, current_statuses, enqueue, record_decision,

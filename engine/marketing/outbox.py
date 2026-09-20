@@ -922,6 +922,28 @@ def media_repair_observation(
         if url.startswith(("http://", "https://")):
             return {"state": "complete", "reason": "hosted_media_present",
                     "repair_process": "", "repairable": False}
+
+    # A media entry is stamped by the deferred raster/upload pass AFTER the plan
+    # item received its producer-side projection. It is therefore the newer
+    # observation. Prefer a concrete entry-level failure over a stale pre-raster
+    # "upload_pending" stamp, or an actual render failure gets routed to the
+    # backfill process that cannot repair it.
+    for entry in entries:
+        observed = entry.get("media_repair")
+        if not isinstance(observed, dict):
+            continue
+        state = str(observed.get("state") or "")
+        if state in {
+            "no_specification", "render_failure", "upload_pending",
+            "public_fetch_failure", "expired",
+        }:
+            return {
+                "state": state,
+                "reason": str(observed.get("reason") or "unknown"),
+                "repair_process": str(observed.get("repair_process") or ""),
+                "repairable": bool(observed.get("repairable")),
+            }
+
     if isinstance(producer_observation, dict):
         producer_state = str(producer_observation.get("state") or "")
         if producer_state in {

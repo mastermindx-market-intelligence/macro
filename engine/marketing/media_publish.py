@@ -405,6 +405,16 @@ def publish_card(
             log.warning("publish_card: legacy PNG failed for %s: %s", chart_id, exc)
             png = b""
     if not png:
+        # The SVG is the durable repair input. If it was persisted, the existing
+        # media-backfill lane can retry rasterization without inventing market
+        # data or refreshing the post's timestamp. If even the SVG write failed,
+        # only Content Studio can rebuild the specification truthfully.
+        has_repair_input = bool(out.get("svg_path"))
+        out["media_repair"] = _repair(
+            "render_failure", "png_render_unavailable",
+            process=("marketing_media_backfill" if has_repair_input else "content_studio"),
+            repairable=has_repair_input,
+        )
         return out
 
     try:
@@ -418,6 +428,12 @@ def publish_card(
         out["media_render"] = render_mode
     except Exception as exc:  # noqa: BLE001
         log.warning("publish_card: PNG write failed for %s: %s", chart_id, exc)
+        has_repair_input = bool(out.get("svg_path"))
+        out["media_repair"] = _repair(
+            "render_failure", "png_persist_failed",
+            process=("marketing_media_backfill" if has_repair_input else "content_studio"),
+            repairable=has_repair_input,
+        )
         return out
 
     # ── Public URL (Buffer hosts no uploads; absent creds → held for repair) ──

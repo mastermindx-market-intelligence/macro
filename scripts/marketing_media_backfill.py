@@ -232,6 +232,11 @@ def main() -> int:
     # card reused across a day), and re-uploading identical bytes per item is
     # pure waste. Ordered so the report reads chronologically.
     todo: dict[str, dict] = {}
+    # A sidecar key is only as specific as as_of/chart_id. If two different
+    # artworks claim that key, publishing either would make the publisher attach
+    # the chosen URL to BOTH items. Such a key is therefore permanently excluded
+    # from this run; Content Studio must supersede the ambiguous records.
+    conflicted: set[str] = set()
     observed_states: dict[str, int] = {}
     for it, m in missing:
         repair_state = str(m.get("repair_state") or "")
@@ -263,22 +268,24 @@ def main() -> int:
         k = media_key(as_of, chart_id)
         if k in already:
             continue          # a previous run already published this one
+        if k in conflicted:
+            continue          # already proven ambiguous in this run
         spec = {"as_of": as_of, "chart_id": chart_id,
                 "svg_path": str(m.get("path") or ""),
                 "png_path": str(m.get("media_png_path") or "")}
         prior = todo.get(k)
         if prior is not None:
-            # The sidecar is a flat as_of/chart_id map, so two UNSTAMPED items
-            # sharing a chart_id but pointing at different artwork cannot both be
-            # recorded — one would silently inherit the other's chart. Same
-            # per-build-counter root cause as the R2 clobber r2_key_for guards
-            # (chart_id is not an identity). Publish the first, say so, and leave
-            # the second text-only: a missing image beats a wrong one.
+            # The sidecar is a flat as_of/chart_id map. If different artwork
+            # shares that key, writing ONE row would make every matching item
+            # inherit the same URL. Fail closed: remove the first candidate too.
             if prior["svg_path"] != spec["svg_path"]:
                 print(f"::warning title=media-backfill-chart-id-collision::"
                       f"{k} names two different charts ({prior['svg_path']} and "
-                      f"{spec['svg_path']}); publishing the first, second stays "
-                      f"text-only", flush=True)
+                      f"{spec['svg_path']}); refusing BOTH sidecar candidates — "
+                      f"Content Studio must supersede the ambiguous records",
+                      flush=True)
+                todo.pop(k, None)
+                conflicted.add(k)
             continue
         todo[k] = spec
 

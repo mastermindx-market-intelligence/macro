@@ -318,3 +318,98 @@ class TestProducerToRepairSelection:
         assert item["id"] in output
         assert "missing_chart_specification" in output
         assert "WOULD PUBLISH" not in output
+
+
+    def test_render_failure_survives_producer_to_repair_selection(
+        self, tmp_path, monkeypatch,
+    ):
+        from engine.marketing import chart_render, media_publish
+        from engine.marketing.outbox import emit_from_content_plan, read_items
+        from scripts.marketing_media_backfill import _iter_missing
+
+        monkeypatch.setattr(chart_render, "rasterize_svg", lambda _svg, **_kw: b"")
+        monkeypatch.setattr(chart_render, "find_chrome", lambda: None)
+        svg = '<svg width="10" height="10"><text>CLH</text></svg>'
+        stamped = media_publish.publish_card(
+            svg, chart_id="chart-001", as_of="2026-09-20",
+            root=tmp_path, legacy_png=lambda: b"",
+        )
+        assert stamped["media_repair"]["state"] == "render_failure"
+
+        plan = {
+            "as_of": "2026-09-20",
+            "accounts": [{
+                "id": "flagship",
+                "queue": [{
+                    "id": "post-flagship-001",
+                    "type": "chart",
+                    "account": "flagship",
+                    "ticker": "CLH",
+                    "headline": "$CLH chart repair.",
+                    "body": "The original chart could not raster.",
+                    "chart_id": "chart-001",
+                    "slot": "D1-S1",
+                    "status": "drafted",
+                    "media_repair": {
+                        "state": "upload_pending",
+                        "reason": "hosted_media_missing",
+                        "repair_process": "marketing_media_backfill",
+                        "repairable": True,
+                    },
+                }],
+            }],
+            "featured_charts": [{
+                "id": "chart-001", "ticker": "CLH", "svg": svg, **stamped,
+            }],
+        }
+        result = emit_from_content_plan(
+            plan, root=tmp_path,
+            cfg={"sentinel": {"max_posts_per_account_per_day": 8}},
+        )
+        assert result["emitted"] == 1
+
+        [item] = read_items(tmp_path)
+        assert item["source"]["media_repair"]["state"] == "render_failure"
+        selected = _iter_missing(
+            [item], as_of=None, max_age_days=None,
+            today=date(2026, 9, 20),
+        )
+        assert len(selected) == 1
+        selected_item, media_entry = selected[0]
+        assert selected_item["id"] == item["id"]
+        assert media_entry["media_repair"]["state"] == "render_failure"
+        assert media_entry["path"].endswith("/chart-001.svg")
+
+
+    def test_chart_id_collision_refuses_both_sidecar_candidates(
+        self, tmp_path, monkeypatch, capsys,
+    ):
+        import sys
+
+        from engine.marketing.ledgers import append_jsonl
+        from scripts import marketing_media_backfill as backfill
+
+        items_path = tmp_path / "data" / "marketing" / "outbox" / "items.jsonl"
+        for item_id, svg_path in (
+            ("ob-first", "data/marketing/outbox/media/2026-09-20/first.svg"),
+            ("ob-second", "data/marketing/outbox/media/2026-09-20/second.svg"),
+        ):
+            assert append_jsonl(items_path, {
+                "id": item_id,
+                "as_of": "2026-09-20",
+                "media": [{
+                    "kind": "chart_svg",
+                    "chart_id": "chart-001",
+                    "path": svg_path,
+                }],
+            })
+        monkeypatch.setattr(backfill, "_repo_root", lambda: tmp_path)
+        monkeypatch.setattr(sys, "argv", [
+            "marketing_media_backfill.py", "--dry-run",
+        ])
+        assert backfill.main() == 0
+
+        output = capsys.readouterr().out
+        assert "::warning title=media-backfill-chart-id-collision::" in output
+        assert "2026-09-20/chart-001" in output
+        assert "WOULD PUBLISH 2026-09-20/chart-001" not in output
