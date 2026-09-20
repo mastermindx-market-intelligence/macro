@@ -1421,7 +1421,8 @@
     /* extra specificity so the tap-flight beats the idle bob above */
     "button.nav-totop.launch svg{animation:nav-totop-launch .5s cubic-bezier(.5,0,.6,1)}",
     "@media (max-width:900px){",
-      ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:34px;padding:0;flex:none;cursor:pointer;border-radius:10px;border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));-webkit-tap-highlight-color:transparent}",
+      ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:40px;padding:0;flex:none;cursor:pointer;border-radius:var(--r-sm,10px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));-webkit-tap-highlight-color:transparent;touch-action:manipulation}",
+      ".nav-toggle:focus-visible{outline:2px solid currentColor;outline-offset:2px}",
       ".nav-toggle-bars,.nav-toggle-bars::before,.nav-toggle-bars::after{content:'';display:block;width:18px;height:2px;border-radius:2px;background:currentColor;transition:transform .22s ease,opacity .2s ease}",
       ".nav-toggle-bars{position:relative}",
       ".nav-toggle-bars::before{position:absolute;left:0;top:-6px}",
@@ -4098,7 +4099,8 @@
        the gear — no trip to screen-centre — and follows it on scroll. No scrim;
        click-outside / Esc / a second click on the gear closes it. */
     '.nav-settings{position:relative;display:inline-flex;flex:none}',
-    '.nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:none;cursor:pointer;border-radius:50%;border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));transition:border-color .2s,color .2s,background .2s,transform .16s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent}',
+    '.nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;flex:none;cursor:pointer;border-radius:var(--r-pill,999px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));transition:border-color .2s,color .2s,background .2s,transform .16s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}',
+    '.nav-settings-btn:focus-visible{outline:2px solid currentColor;outline-offset:2px}',
     '.nav-settings-btn:hover{border-color:var(--link,var(--blue));color:var(--ink-link, var(--link,var(--blue)));transform:translateY(-1px);box-shadow:0 5px 14px -6px color-mix(in srgb,var(--link,var(--blue)) 45%,transparent)}',
     '.nav-settings-btn:active{transform:translateY(0);box-shadow:none}',
     '.nav-settings-btn[aria-expanded="true"]{border-color:var(--link,var(--blue));color:var(--ink-link, var(--link,var(--blue)));background:color-mix(in srgb,var(--link,var(--blue)) 13%,var(--panel2,var(--card)))}',
@@ -4125,12 +4127,12 @@
     '}',
     '.settings-head{display:flex;align-items:center;gap:8px;margin:0;padding:0 2px 2px}',
     '.settings-head h2{margin:0;padding:0;border:0;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;line-height:1.2;color:var(--muted,var(--ink-3))}',
-    '.settings-close{width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s}',
+    '.settings-close{width:40px;height:40px;border-radius:var(--r-sm,10px);border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s;touch-action:manipulation}',
     '.settings-close:hover{background:var(--panel2,var(--card));color:var(--text,var(--ink))}',
     '.settings-close svg{width:15px;height:15px}',
     '.settings-close:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     /* expand-to-dashboard button: sits at the header end, pushed right with the close */
-    '.settings-expand{margin-left:auto;width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s}',
+    '.settings-expand{margin-left:auto;width:40px;height:40px;border-radius:var(--r-sm,10px);border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s;touch-action:manipulation}',
     '.settings-expand:hover{background:var(--panel2,var(--card));color:var(--ink-link, var(--link,var(--blue)))}',
     '.settings-expand svg{width:15px;height:15px}',
     '.settings-expand:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
@@ -5159,7 +5161,7 @@
      <script> tags, so this dynamic request and a page-authored one share ONE
      cache key. An unbaked build (local/custom, serving templates/ raw) leaves
      it '' and simply requests the unversioned URL. */
-  var MM_BRAIN_VER = "405c0e15";
+  var MM_BRAIN_VER = "0b8fb001";
   /* The hosts mm_brain.js decorates with per-card "Ask the Brain" buttons. */
   var MMB_EXPLAIN_SEL = '.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face';
   var _mmBrainScript = null, _mmBrainWaiters = [], _mmBootEl = null, _mmBootWarmed = false;
