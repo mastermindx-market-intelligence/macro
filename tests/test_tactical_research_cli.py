@@ -199,3 +199,56 @@ def test_r1b_v4_market_sign_requires_exact_positive_volume_prefix():
     assert s.qqq_open_to_decision_sign(frame.drop(idx[1]),start+pd.Timedelta(minutes=20)) is None
     broken=frame.copy(); broken.loc[idx[2],"volume"]=0
     assert s.qqq_open_to_decision_sign(broken,start+pd.Timedelta(minutes=20)) is None
+
+
+def _r1b_synthetic_daily_and_session():
+    from datetime import date
+    from engine.session_digest import session_window_et
+    from lib.nyse_calendar import session_n_back
+    day=date(2026,9,17)
+    prior_days=[session_n_back(day,n) for n in range(70,0,-1)]
+    q=100.; stock=100.; qs=[]; ss=[]
+    for i,_d in enumerate(prior_days):
+        r=(.0004+(i%7)*.0001)*(1 if i%2==0 else -1)
+        q*=1+r; stock*=1+2*r; qs.append(q); ss.append(stock)
+    sd=pd.DataFrame({'high':[x+1 for x in ss],'low':[x-1 for x in ss],'close':ss},
+                    index=pd.DatetimeIndex(prior_days))
+    qd=pd.DataFrame({'close':qs},index=pd.DatetimeIndex(prior_days))
+    start,close=session_window_et(day); idx=pd.date_range(start,close-pd.Timedelta(minutes=5),freq='5min')
+    base=[[100,100.2,99,99.4,100],[99.4,99.5,98.8,99,100],[99,99.1,98.6,98.98,100],
+          [98.98,99.1,98.55,98.95,100],[98.95,99.2,98.8,99.1,100],[99.1,99.5,99,99.4,100]]
+    rows=base+[[99.4,99.6,99.2,99.45,100] for _ in range(len(idx)-len(base))]
+    sf=pd.DataFrame(rows,index=idx,columns=['open','high','low','close','volume'],dtype=float)
+    qrows=[]
+    for i in range(len(idx)):
+        px=100.+i*.01; qrows.append([px,px+.05,px-.05,px+.01,100.])
+    qf=pd.DataFrame(qrows,index=idx,columns=sf.columns,dtype=float)
+    return day,sd,qd,sf,qf
+
+
+def test_r1b_v4_construct_one_day_decorates_candidate_time_market_context_only():
+    s=r1b_study(); day,sd,qd,sf,qf=_r1b_synthetic_daily_and_session()
+    got=s.construct_one_day('AMD',day,sf,qf,sd,qd)
+    assert got['normalization']['availability']=='AVAILABLE'
+    assert got['events']
+    selected=next(x for x in got['events'] if x['selector']=='EXHAUSTION_RECLAIM')
+    assert selected['qqq_open_to_decision_sign']==1
+    assert selected['beta']==pytest.approx(got['normalization']['beta'])
+    assert selected['market_outcomes_computed'] is False
+    assert got['controls'] and all(x['future_family_labels_used'] is False for x in got['controls'])
+    assert all(x['qqq_open_to_decision_sign']==1 for x in got['controls'])
+
+
+def test_r1b_v4_measure_event_grid_preserves_all_12_cells_and_censors_missing_path():
+    s=r1b_study(); day,sd,qd,sf,qf=_r1b_synthetic_daily_and_session()
+    built=s.construct_one_day('AMD',day,sf,qf,sd,qd)
+    event=next(x for x in built['events'] if x['selector']=='EXHAUSTION_RECLAIM')
+    rows=s.measure_event_grid(event,sf,qf,session=day)
+    assert len(rows)==12
+    assert {(x['horizon'],x['cost_bps']) for x in rows}=={
+        (h,c) for h in ('30m','60m','120m','close') for c in (10,25,50)}
+    broken=sf.drop(pd.Timestamp(event['entry_reference_at'])+pd.Timedelta(minutes=10))
+    censored=s.measure_event_grid(event,broken,qf,session=day)
+    short=[x for x in censored if x['horizon']=='30m']
+    assert len(short)==3 and all(x['status']=='censored' for x in short)
+    assert all(x['selector']=='EXHAUSTION_RECLAIM' for x in short)
