@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T17:29:57.839068+00:00",
-  "count": 2513,
+  "generated_at": "2026-09-20T18:00:02.953815+00:00",
+  "count": 2514,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -130,6 +130,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-bqtmmzfccnf-1c5bb8",
+      "title": "MS Fed Balance Sheet Reform More Shrinkage, Less Tightening",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T16:54:22Z",
+      "summary_points": [
+        "Fed Balance Sheet Reduction Scope: Base case $1.5T reduction over two years (Q2 2027 start), range $0.6T–$2.5T; retains ample-reserves framework via interest-on-reserves (IORB).",
+        "Mortgage Sales & Spread Risk: Active MBS sales ($35bn/month max) widen lower-coupon spreads 10–20bps; reserve scarcity amplifies repo volatility and dealer funding costs.",
+        "Tiered IORB Mechanism: Fed could pay full IORB rate on 50–75bp below threshold, reducing reserve demand by ~$1.5T (base case $1T), enabling balance sheet shrinkage without disrupting liquidity.",
+        "Treasury Funding Duration Impact: Treasury’s mix of bills (no duration) vs. coupon debt dictates duration flow; bill issuance shifts private sector toward duration risk (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 44,
       "language": "en",
       "needs_metadata": false
     },
