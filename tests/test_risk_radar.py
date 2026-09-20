@@ -410,3 +410,79 @@ def test_deescalation_deescalated_empty_on_missing_drivers():
     """Old artifacts / missing trajectory degrade to an empty chip list, never a crash."""
     assert rr._deescalation(None, None, None, None)["deescalated"] == []
     assert rr._deescalation(None, None, {"phase": "peaking"}, None)["deescalated"] == []
+
+
+# Replay maturity: synthetic regression fixtures, never market/research evidence.
+def _maturity_replay_fixture(prices, horizon=21, lo=None):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    idx = pd.bdate_range("2026-01-01", periods=len(prices))
+    spy = pd.Series(prices, index=idx, dtype=float)
+    subs = pd.DataFrame({"synthetic": 0.}, index=idx)
+    with patch.object(bt, "_spy", return_value=spy), \
+         patch.object(rr, "leading_signals", return_value=pd.DataFrame(index=idx)), \
+         patch.object(rr, "subscore_series", return_value=subs), \
+         patch.object(bt, "state_series", return_value=pd.Series("elevated", index=idx)):
+        return bt.state_accuracy({}, H=horizon, lo=lo)
+
+
+def test_replay_maturity_counts_only_complete_outcome_windows():
+    for n, h in [(30, 21), (30, 5), (3, 1)]:
+        result = _maturity_replay_fixture([100.] * n, h)
+        assert result["n_days"] == n - h
+        assert result["n_alert"] == n - h
+        assert result["n_unscored"] == h
+
+
+def test_replay_maturity_does_not_score_an_incomplete_positive_tail():
+    result = _maturity_replay_fixture([100.] * 29 + [90.])
+    assert result["n_days"] == 9 and result["n_alert"] == 9
+    assert result["precision"] == .111 and result["recall"] == 1.
+    assert result["f1"] == .2
+
+
+def test_replay_maturity_empty_evidence_is_not_zero_performance():
+    for prices, lo in [([100.] * 20, None), ([100.] * 30, "2027-01-01")]:
+        result = _maturity_replay_fixture(prices, lo=lo)
+        assert result["n_days"] == result["n_alert"] == 0
+        for metric in ("precision", "recall", "f1", "fire_rate"):
+            assert result[metric] is None
+
+
+def test_replay_maturity_rejects_invalid_horizons():
+    import pytest
+    for horizon in (0, -1, True, 1.5):
+        with pytest.raises(ValueError):
+            _maturity_replay_fixture([100.] * 30, horizon)
+
+
+def _maturity_comparison_fixture(scores):
+    from unittest.mock import patch
+    from engine import risk_radar_backtest as bt
+    with patch.object(bt, "state_accuracy", side_effect=[{"f1": s} for s in scores]), \
+         patch.object(bt, "detect_events", return_value=[]), \
+         patch.object(bt, "gate_report", return_value={}):
+        return bt.compare_calib({"legs": {}}, base={"legs": {}})
+
+
+def test_replay_maturity_missing_comparison_never_passes_retune_gate():
+    for scores in [(None, None, .5, .5), (.2, None, .5, .5), (.2, .2, None, .5)]:
+        result = _maturity_comparison_fixture(scores)
+        assert result["improves"] is False and result["comparison_ready"] is False
+
+
+def test_replay_maturity_preserves_complete_comparison_rule():
+    for scores, expected in [((.2, .3, .4, .5), True),
+                             ((.2, .3, .2, .3), False),
+                             ((.2, .3, .1, .5), False),
+                             ((0., 0., .1, .1), True)]:
+        result = _maturity_comparison_fixture(scores)
+        assert result["comparison_ready"] is True
+        assert result["improves"] is expected
+
+
+def test_replay_maturity_invalid_scores_cannot_authorize_retuning():
+    for invalid in (float("inf"), float("nan"), True, -.1, 1.1, "0.8"):
+        result = _maturity_comparison_fixture((.2, .2, invalid, .5))
+        assert result["comparison_ready"] is False
+        assert result["improves"] is False
