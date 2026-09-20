@@ -2366,6 +2366,18 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
   .dmr-lb{grid-area:lb;} .dmr-val{grid-area:val;} .dmr-tr{grid-area:tr;height:22px;}
 }
 /* end debt maturity ladder */
+
+/* ===================== cash runway (_debt_maturity.html.j2, packet B-F09-3 second slice) =====================
+   Reuses the ladder's .dmw-lede / .dmw-null / .dmw-nullwhy tokens and the
+   same mod-ft footer. Dark/light treatment is inherited from the ladder panel
+   above (same section, same #debt-maturity / #cash-runway parent). No new
+   colours — same tokens as the ladder rules above. */
+.dmw-runway{margin-top:28px;padding-top:22px;
+  border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent);}
+[data-theme="light"] .dmw-runway{
+  border-top-color:var(--hair);}
+/* end cash runway */
+
 /* account sheet: alert delivery preferences (B-F08-1a) */
 .mmacc-alerts{position:relative;padding-left:14px}
 .mmacc-alerts::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:var(--r-ctl,8px);background:var(--line);transition:background .22s ease,box-shadow .22s ease}
