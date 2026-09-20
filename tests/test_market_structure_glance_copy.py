@@ -33,7 +33,7 @@ def test_header_and_seo_use_reader_language() -> None:
 
 def test_systematic_help_is_plain_and_methodology_is_demoted() -> None:
     src = _src()
-    start = src.index("<h2>{{ t('Systematic fund flows'")
+    start = src.index("{{ t('Systematic fund flows'")
     end = src.index("{% if sys is not none %}", start)
     block = src[start:end]
     m = re.search(r'<span class="l-en"><b>What these are</b><br>(.*?)</span>', block, re.S)
