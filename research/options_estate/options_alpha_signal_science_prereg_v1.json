@@ -41,6 +41,7 @@
     ],
     "source_pooling_allowed": false,
     "artifact_population_key": [
+      "evaluation_spec_version",
       "source",
       "detector_version",
       "dte_construction"
@@ -117,7 +118,9 @@
       "fail_closed_when_registered_root_disjoint_fold_is_impossible",
       "make_calibration_fit_eval_ordered_disjoint_and_embargoed",
       "remove_whole_calibration_one_class_isotonic_fallback",
-      "separate_artifact_health_from_statistical_acceptance_state"
+      "separate_artifact_health_from_statistical_acceptance_state",
+      "execute_registered_cpcv_geometry_or_fail_closed_until_a_new_preregistration_changes_it",
+      "report_real_effective_n_separately_from_raw_row_count"
     ],
     "implementation_owner": "existing_FS_Evaluation_writer_only",
     "model_fit_during_repair": false,
@@ -147,5 +150,19 @@
     "may_promote": false,
     "may_change_candidate_formation": false,
     "may_change_exact_option_ruler": false
+  },
+  "model_selection_contract": {
+    "registered_geometry": "combinatorial_purged_cross_validation",
+    "cpcv_paths_claimed_must_be_actually_executed": true,
+    "reported_trial_count_must_match_registered_executed_selection_paths": true,
+    "final_oos_block_may_participate_in_model_selection": false,
+    "replacement_geometry_requires_new_preregistration_before_fit": true
+  },
+  "effective_n_contract": {
+    "raw_row_count_is_effective_n": false,
+    "uniqueness_weighting_preserved": true,
+    "same_session_underlying_dependence_preserved": true,
+    "report_raw_rows_and_effective_n_separately": true,
+    "sample_floors_apply_to_registered_effective_support_not_raw_duplicate_rows": true
   }
 }
