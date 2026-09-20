@@ -139,17 +139,26 @@ def _parse_date(value: Any, field: str) -> dt.date:
         raise ValueError(f"{field} must be YYYY-MM-DD, got {text!r}") from exc
 
 
-def _clock_date(value: Any, field: str) -> dt.date:
+def _clock_instant(value: Any, field: str) -> dt.datetime:
+    """Compare belief clocks in UTC; keep legacy unzoned/date-only behavior."""
     if isinstance(value, dt.datetime):
-        return value.date()
-    if isinstance(value, dt.date):
-        return value
-    text = str(value or "").strip()
-    normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
-    try:
-        return dt.datetime.fromisoformat(normalized).date()
-    except ValueError:
-        return _parse_date(text, field)
+        stamp = value
+    elif isinstance(value, dt.date):
+        stamp = dt.datetime.combine(value, dt.time.min)
+    else:
+        text = str(value or "").strip()
+        normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+        try:
+            stamp = dt.datetime.fromisoformat(normalized)
+        except ValueError:
+            stamp = dt.datetime.combine(_parse_date(text, field), dt.time.min)
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=dt.timezone.utc)
+    return stamp.astimezone(dt.timezone.utc)
+
+
+def _clock_date(value: Any, field: str) -> dt.date:
+    return _clock_instant(value, field).date()
 
 
 def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
@@ -193,7 +202,7 @@ def _nodes_as_known(
             continue
         visible[node_id] = row
 
-    latest: dict[str, tuple[str, int, dict[str, Any]]] = {}
+    latest: dict[str, tuple[dt.datetime, int, dict[str, Any]]] = {}
     for index, original in enumerate(lifecycle_rows):
         row = dict(original)
         node_id = str(row.get("node_id") or "")
@@ -202,10 +211,10 @@ def _nodes_as_known(
         computed = row.get("computed_at")
         if _is_null(computed):
             continue
-        computed_date = _clock_date(computed, "computed_at")
-        if computed_date > knowledge_cutoff:
+        computed_instant = _clock_instant(computed, "computed_at")
+        if computed_instant.date() > knowledge_cutoff:
             continue
-        candidate = (str(computed), index, row)
+        candidate = (computed_instant, index, row)
         if node_id not in latest or candidate[:2] > latest[node_id][:2]:
             latest[node_id] = candidate
 

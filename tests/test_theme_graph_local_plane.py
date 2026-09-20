@@ -1710,3 +1710,72 @@ def test_latest_lifecycle_belief_precedes_effective_time(reverse, asof, cutoff, 
         knowledge_cutoff=cutoff, rights_resolver=_ont_rights)
     assert result["subject"]["status"] == expected
     assert result["relations"][0]["peer"]["status"] == expected
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("older,newer", [
+    ("2026-05-01T10:00:00+02:00", "2026-05-01T09:00:00Z"),
+    ("2026-05-01T09:00:00Z", "2026-05-01T09:00:00.500Z"),
+])
+def test_ontology_lifecycle_orders_clock_instants(reverse, older, newer):
+    local, theme = "ltheme:finviz:ai", "theme:ai_semiconductors"
+    rows = [_ont_lifecycle(node, retire_date=retire, computed_at=stamp)
+            for node in (local, theme) for retire, stamp in [
+                ("2026-03-01", older), ("2026-07-01", newer)]]
+    schema = json.loads((ROOT / "contracts/theme_graph/node_lifecycle.v1.schema.json").read_text())
+    for row in rows:
+        jsonschema.validate(row, schema)
+    view = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        edges=[_ont_edge("e-map", "EXPRESSES", local, theme)],
+        lifecycle=list(reversed(rows)) if reverse else rows)
+    result = compose_neighborhood(view, node_id=local, asof="2026-06-01",
+        knowledge_cutoff="2026-06-01", rights_resolver=_ont_rights)
+    assert result["subject"]["status"] == "canonical"
+    assert result["relations"][0]["peer"]["status"] == "canonical"
+
+
+@pytest.mark.parametrize("surface", ["subject", "peer", "lifecycle", "created", "adjudicated"])
+@pytest.mark.parametrize("stamp", ["2026-06-01T23:30:00-02:00", "2026-06-02T01:30:00Z"])
+def test_ontology_knowledge_cutoff_uses_utc_day(surface, stamp):
+    local, theme = "ltheme:finviz:ai", "theme:ai_semiconductors"
+    nodes = [_ont_node(local, "local_theme"), _ont_node(theme, "theme")]
+    proposal = _ont_proposal("prop:aaaaaaaaaaaaaaaa", {
+        "local_theme": local, "canonical_theme": theme}, created="2026-01-01T00:00:00Z")
+    lifecycle = []
+    if surface in {"subject", "peer"}:
+        nodes[int(surface == "peer")]["computed_at"] = stamp
+    elif surface == "lifecycle":
+        lifecycle = [_ont_lifecycle(node, retire_date="2026-03-01", computed_at=stamp)
+                     for node in (local, theme)]
+    elif surface == "created":
+        proposal["created"] = stamp
+    else:
+        proposal.update(status="ratified", ratified_by="curator:test", adjudicated_at=stamp)
+    view = _OntologyStore(nodes=nodes, lifecycle=lifecycle, proposals=[proposal],
+        edges=[_ont_edge("e-map", "EXPRESSES", local, theme)])
+    result = compose_neighborhood(view, node_id=local, asof="2026-06-01",
+        knowledge_cutoff="2026-06-01", rights_resolver=_ont_rights)
+    if surface == "subject":
+        assert result["availability"]["state"] == "SUBJECT_NOT_FOUND"
+    elif surface == "peer":
+        # A known edge survives; unavailable peer context must stay null.
+        assert result["relations"][0]["peer"] is None
+    elif surface == "lifecycle":
+        assert result["subject"]["status"] == "canonical"
+        assert result["relations"][0]["peer"]["status"] == "canonical"
+    elif surface == "created":
+        assert result["proposals"] == []
+    else:
+        assert result["proposals"][0]["status"] == "proposed"
+        assert result["proposals"][0]["ratified_by"] is None
+        assert result["proposals"][0]["adjudicated_at"] is None
+
+
+@pytest.mark.parametrize("clock", ["2026-05-01", "2026-05-01T00:00:00"])
+def test_ontology_legacy_clock_forms_remain_compatible(clock):
+    local = "ltheme:finviz:ai"
+    node = dict(_ont_node(local, "local_theme"), computed_at=clock)
+    result = compose_neighborhood(_OntologyStore(nodes=[node]), node_id=local,
+        asof="2026-06-01", knowledge_cutoff="2026-06-01", rights_resolver=_ont_rights)
+    assert result["availability"]["state"] == "OK"

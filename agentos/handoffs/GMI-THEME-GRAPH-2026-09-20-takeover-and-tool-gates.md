@@ -3,49 +3,27 @@ workstream: WS:GMI-THEME-GRAPH
 session: sol/gmi-d2d-ontology-neighborhood-20260919
 model: sol
 ended_because: ci_handoff
-mission: Continue Chairman-directed GMI ownership on the existing D2D branch and PR, without changing graph or investment authority.
-state_before: At bc571dbc46117266836dd30daf6b7b4cc373e40d the reader still had the correction-order defect documented in review 5259465390.
+mission: Continue Chairman-directed GMI ownership on the existing D2D branch and PR; preserve graph, curation and investment authority.
+state_before: Head 7618fe3f8c4cfd20f42f10fb4c62d6c1d890631d fixed correction ordering but compared timestamp text and source-local dates. All 12 old-head CI packs passed; inherited contract-delta still blocked release.
 changed:
-  - path: engine/theme_graph/ontology.py
-    what: Select the newest known lifecycle correction before testing its effective date, so postponed retirement cannot resurrect a superseded belief.
-  - path: tests/test_theme_graph_local_plane.py
-    what: Add eight hosted regression cases covering input order, subject and peer, knowledge cutoff, and effective-date boundaries.
-  - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-20-takeover-and-tool-gates.md
-    what: Record the actual source repair and remaining release, production and workstream-record gates.
+  - {path: engine/theme_graph/ontology.py, what: Normalize belief timestamps to UTC instants before newest-correction ordering and UTC-day cutoff checks; preserve legacy unzoned inputs and effective dates.}
+  - {path: contracts/theme_graph/ontology_neighborhood.v1.schema.json, what: Document the inclusive UTC knowledge date without changing schema shape or authority.}
+  - {path: tests/test_theme_graph_local_plane.py, what: Add 16 hosted cases for offsets and fractional seconds plus subject/peer/lifecycle/proposal clocks and legacy compatibility.}
+  - {path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-20-takeover-and-tool-gates.md, what: Preserve current source repair and exact release gates rather than an absent-builder dependency.}
 verified:
-  - claim: The hosted regression distinguishes the defect and the real source repair passes the focused suite.
-    command: python3 -m pytest tests/test_theme_graph_local_plane.py -q
-    result: RED 2 failed and 6 passed; after the exact reviewed patch, 81 passed.
-  - claim: The selected graph and downstream consumer battery passes on the repaired working source.
-    command: Nine-module pytest command in the same-PR continuation evidence; owner.log under /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol.
-    result: 463 passed, exit 0; owner.log SHA256 435cdbf32952e4bd7cb3ac7da9961b4e3be7fee2487105fa9b936e6743ca3924.
-  - claim: Strict committed-store contracts and their selftest pass.
-    command: python3 -m scripts.check_theme_graph_contracts --selftest and --strict
-    result: Both exit 0; strict output contains licensing-history and identity-census notices only.
-  - claim: Real committed-data machine queries preserve unmapped context, exact mapping and historical lifecycle state.
-    command: scripts/query_theme_ontology.py for energybaseutilities, THS 300013 and historical co:us:GOLD; jsonschema.validate on each output.
-    result: Unmapped with 2 proposals and 9 relations; mapped to defense_aerospace; historical GOLD remains canonical. All three schema-valid.
+  - {claim: The corrected regressions discriminate timestamp defects., command: "python3 -m pytest tests/test_theme_graph_local_plane.py -q -k 'orders_clock_instants or cutoff_uses_utc_day or legacy_clock_forms'", result: "Before repair: 9 failed, 7 passed. After repair: full local-plane suite 97 passed."}
+  - {claim: Selected graph and downstream consumers pass on the amended working source., command: "python3 -m pytest tests/test_theme_graph_identity.py tests/test_theme_graph_materialize.py tests/test_theme_graph_contracts.py tests/test_theme_graph_lifecycle.py tests/test_theme_graph_crosswalk.py tests/test_theme_graph_local_plane.py tests/test_market_ontology_exposure_map.py tests/test_finviz_tree_refresh.py tests/test_theme_sources_registry.py -q", result: "479 passed; owner.log SHA256 ceb6c353814d7f1891ec675f7434b8c18d0f464e8dad724491f5b79fdff3d002."}
+  - {claim: Existing contracts and three accepted committed-input journeys remain unchanged., command: "scripts.check_theme_graph_contracts --selftest and --strict; query_theme_ontology.py using the saved node_id/asof/knowledge_cutoff values", result: "Both guards pass; unmapped.json, mapped.json and historical-gold.json are semantically identical to the prior accepted outputs."}
 unverified:
-  - claim: Current-base integration, exact-head hosted acceptance, merge and production release.
-    what_would_verify: Immutable integrated candidate and concluded binding checks, exact-head adjudication, merge readback and required natural output.
-  - claim: D2C natural production acceptance after merged PRs 6809 and 7458.
-    what_would_verify: Published natural Theme Graph generation with accepted source identity and PIT cutover evidence; a running job is insufficient.
-unresolved: [Release proof remains separate from local proof, workstream-record correction was platform-refused and remains unapplied, full D2D curation and structural-owner breadth remain unfinished, D2E and ThemeState dependencies remain held]
-next_actions: [Verify current-base compatibility and publish this repair on PR 7462, adjudicate exact-head review and binding checks without blanket reruns, obtain natural D2C output and then finish the remaining D2D obligations]
-do_not_redo: [Merged PRs 6809 and 7458, prior isolated PIT replay and no-op experiment, initial three D2D falsifiers, correction-order investigation or an equivalent replacement PR]
-danger_areas: [No graph data mutation from this reader, no proposal auto-ratification, no second lifecycle or ontology owner, no ranking or trade authority, local tests do not prove production]
+  - {claim: Amended-head current-base integration and hosted release acceptance., what_would_verify: "Immutable integration proof, concluded binding checks, exact-head adjudication and merge readback; old-head green is not new-head proof."}
+  - {claim: Natural D2C and full D2D production acceptance., what_would_verify: "Published natural generation and accepted-source evidence, plus remaining curation/structural-owner obligations."}
+unresolved: [Shared dashboard test registration under existing PR 7469 owner, refused structural-owner scan not retried, earlier workstream-record edit refusal, full D2D breadth and D2E/W3B/W3C dependencies]
+next_actions: [Commit and push the verified UTC repair on the same PR 7462, prove current-base compatibility without ancestry-only source commits, consume binding CI and existing-owner registration repair before release, verify the natural D2C graph output]
+do_not_redo: [Merged PRs 6809 and 7458, prior isolated PIT replay and no-op, original three reader repairs, newest-belief-before-effective repair, any replacement GMI branch or PR]
+danger_areas: [No graph or proposal data writes, no automatic mapping or ratification, no second identity/lifecycle/clock owner, no ranking or trade authority, no retries or alternate routes for refused requests, no blanket CI waiver]
 prs: [7462, 6809, 7458]
 ---
-
-Chairman takeover remains binding; no absent builder is the next-action owner.
-Procedure pin: Mastermind@db4ef921c1e9a1abd790197d2719ba5316fbf99e (v1.0.1, bootstrap 1).
-The same native file-write tool accepted the regression after prior NOT_APPLIED reconciliation.
-The earlier refusal's internal cause remains unknown; no permissions, accounts or safety settings were changed.
-This supersedes the prior handoff's active feature-edit blocker, not its historical incident evidence.
-The attempted WS-GMI-THEME-GRAPH.md correction was refused; native readback still showed its old owner and todo waves. It was not retried or rerouted.
-Host GitHub REST reported a shared-account quota refusal at 2026-09-20T06:49:42Z; repeated requests stopped.
-Native Git reconciliation reached Macro main 83746deb2f3f4ce2de6ef4e683d66e9337087e38; its graph generation remained 2026-09-18T17:42:29Z.
-Evidence directory: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol.
-The nine selected modules cover identity, materialization, contracts, lifecycle, crosswalk, local plane, MarketOntology exposure, Finviz refresh and source rights.
-Separate identity-resolution fixture-drift failures documented on PR 7462 were not rerun or relabeled green.
-Direct execution rationale remains CRITICAL_PATH_SHORTCUT / LOWER_TOTAL_OVERHEAD for the reviewed bounded correction.
+Chairman takeover remains active; Sol owns the next action. Procedure: Mastermind@23061ab70a7fb79636b7962d9b440a3de23fe016.
+Evidence: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/utc-clock; same-PR continuation review 5260019285 records the new falsifiers.
+The initial UTC regression assumed an unavailable peer removed its already-known edge; corrected to the existing nullable-peer contract before recording the 9-failure RED. Shared pytest-temp cleanup warnings were avoided with a dedicated basetemp; no shared temp directory was modified manually.
+No natural pipeline was duplicated or cancelled. The source scan refusal is distinct from the permitted UTC reader repair; its cause is unknown. No independent external review, final acceptance or production deployment is claimed.

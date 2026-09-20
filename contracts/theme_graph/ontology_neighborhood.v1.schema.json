@@ -24,7 +24,7 @@
     },
     "node_id": {"type": "string", "minLength": 1},
     "asof": {"$ref": "#/$defs/date"},
-    "knowledge_cutoff": {"$ref": "#/$defs/date"},
+    "knowledge_cutoff": {"$ref": "#/$defs/date", "description": "Inclusive UTC belief date. Timestamp offsets are normalized before comparison; legacy date-only and unzoned clocks retain UTC interpretation. Effective asof dates remain unchanged."},
     "subject": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/node"}]},
     "relations": {
       "type": "array",
