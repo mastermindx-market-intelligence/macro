@@ -127,3 +127,75 @@ def test_invalid_regular_session_is_missing_for_that_day_only():
     rows=_two_bar_day(day,1_000_000,100.); rows[1]["c"]=float("nan")
     frame=pd.DataFrame(rows).set_index("event_start_utc")
     assert s._regular(frame,day,_EveryDayCalendar()) is None
+
+# ---------------------------------------------------------------------------
+# TTI R1-B v4 empirical study runner — admission and causal aggregation
+# ---------------------------------------------------------------------------
+
+R1B_SCRIPT = ROOT / "scripts/research/terminal_tactical_r1b_study.py"
+
+
+def r1b_study():
+    return importlib.import_module("scripts.research.terminal_tactical_r1b_study")
+
+
+def test_r1b_v4_admission_accepts_exact_registered_repo_state():
+    receipt = r1b_study().verify_admission()
+    assert receipt["study_id"] == "tti-r1b-exhaustion-reclaim-v4"
+    assert receipt["study_cells"] == 60
+    assert receipt["registration_commit"] == "350c57e1c6aab6e064c022a483389c905d2b7ad0"
+    assert receipt["market_outcomes_opened_before_registration"] is False
+
+
+def test_r1b_v4_admission_refuses_config_mutation_before_any_input_loader(tmp_path):
+    s = r1b_study()
+    config = ROOT / "research/species/tti_r1b/config_v4.json"
+    prereg = ROOT / "research/species/TTI_R1B_V4_PREREG.md"
+    receipt = ROOT / "research/species/tti_r1b/REGISTRATION_RECEIPT_V4.json"
+    ledger = ROOT / "data/trial_ledger.jsonl"
+    changed = tmp_path / "config.json"
+    doc = json.loads(config.read_text()); doc["local_touch_atr"] = 9.0
+    changed.write_text(json.dumps(doc, sort_keys=True))
+    touched = []
+    with pytest.raises(ValueError, match="config_sha256"):
+        s.verify_admission(config_path=changed, prereg_path=prereg,
+                           receipt_path=receipt, ledger_path=ledger,
+                           before_input=lambda: touched.append(True))
+    assert touched == [], "admission failure must precede every market-input callback"
+
+
+def test_r1b_v4_admission_refuses_missing_registered_cell(tmp_path):
+    s=r1b_study()
+    source=ROOT/"data/trial_ledger.jsonl"
+    rows=[json.loads(x) for x in source.read_text().splitlines() if x.strip()]
+    target=[i for i,row in enumerate(rows)
+            if row.get("family")=="entry_radar" and isinstance(row.get("config"),dict)
+            and row["config"].get("study_id")=="tti-r1b-exhaustion-reclaim-v4"]
+    assert len(target)==60
+    rows.pop(target[-1])
+    ledger=tmp_path/"ledger.jsonl"; ledger.write_text("\n".join(map(json.dumps,rows))+"\n")
+    with pytest.raises(ValueError, match="registered_grid"):
+        s.verify_admission(ledger_path=ledger, enforce_receipt_ledger_sha=False)
+
+
+def test_r1b_v4_verify_only_cli_reads_no_market_inputs():
+    result=subprocess.run([sys.executable,str(R1B_SCRIPT),"--verify-only"],cwd=ROOT,
+                          text=True,capture_output=True)
+    assert result.returncode==0,result.stderr
+    body=json.loads(result.stdout)
+    assert body["study_id"]=="tti-r1b-exhaustion-reclaim-v4"
+    assert body["study_cells"]==60
+    assert body["market_data_read"] is False
+    assert body["outcomes_computed"] is False
+
+
+def test_r1b_v4_market_sign_requires_exact_positive_volume_prefix():
+    s=r1b_study()
+    start=pd.Timestamp("2026-09-17T13:30:00Z")
+    idx=pd.date_range(start, periods=4, freq="5min")
+    frame=pd.DataFrame({"open":[100,100,100,100],"high":[101]*4,"low":[99]*4,
+                        "close":[100.1,100.2,100.2,100.3],"volume":[1,1,1,1]},index=idx)
+    assert s.qqq_open_to_decision_sign(frame,start+pd.Timedelta(minutes=20))==1
+    assert s.qqq_open_to_decision_sign(frame.drop(idx[1]),start+pd.Timedelta(minutes=20)) is None
+    broken=frame.copy(); broken.loc[idx[2],"volume"]=0
+    assert s.qqq_open_to_decision_sign(broken,start+pd.Timedelta(minutes=20)) is None
