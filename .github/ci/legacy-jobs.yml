@@ -11244,6 +11244,11 @@ jobs:
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
         run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
+      # V4 B2-0 records-only evidence regression. This must be owned by
+      # an existing merge-binding CODE gate, not only by the data-gated
+      # anticipation lane. No new job/runner/control plane is introduced.
+      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
+        run: python -m pytest tests/test_prophet_b2_disposition.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
