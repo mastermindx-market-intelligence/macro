@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T11:59:02.477132+00:00",
-  "count": 2497,
+  "generated_at": "2026-09-20T12:29:15.300967+00:00",
+  "count": 2498,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -951,6 +951,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-5aj5gkumkmf-40e77b",
+      "title": "Diversify with alternatives",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:13Z",
+      "summary_points": [
+        "Record Hedge Fund Assets: $5.6T industry assets (Q2 2023), with low net/market neutral equity (5.0% YTD) and merger arbitrage/fixed income relative value rated Attractive.",
+        "Private Infrastructure Resilience: 11% annualized returns (Cambridge Associates), low correlation to traditional assets, strong inflows (30% into open-ended funds), secular growth support despite Q1 moderation.",
+        "Private Equity Recovery Fundamentals: Median buyout EBITDA growth 8% (Q1), discount to public equities near all-time highs, deal activity expanding beyond megacaps (HALO, energy, business products).",
+        "Direct Lending Manager Criteria: Target 5-6% returns (2026); critical selection on top-tier platforms, less-cyclical sectors, upper-middle-market borrowers, conservative leverage, and strong covenants."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
