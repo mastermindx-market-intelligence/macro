@@ -38,6 +38,8 @@ def test_narrow_risk_on_copy_is_selective_not_broad():
     assert copy["label_en"] == "Risk-on"
     assert copy["scope_en"] == "Selective risk-on"
     assert "breadth is weak" in copy["headline_en"]
+    assert "sector/theme participation" in copy["action_en"]
+    assert "entry setup" in copy["action_en"]
     assert "Do not" in copy["action_en"]
     assert "broad buy signal" in copy["action_en"]
 

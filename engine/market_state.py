@@ -519,8 +519,9 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
                          "Strength is concentrated rather than market-wide."),
             headline_zh="选择性风险偏好 — 大环境仍有支撑，但市场广度偏弱。强势集中于少数方向，并非全市场普涨。",
             subline_en="GREEN — Narrow participation", subline_zh="偏多 — 窄幅参与",
-            action_en="Focus on confirmed leaders. Do not treat green as a broad buy signal.",
-            action_zh="聚焦已确认的强势方向；不要把绿色解读为全市场买入信号。",
+            action_en=("Require sector/theme participation and entry setup to agree. "
+                       "Do not treat green as a broad buy signal."),
+            action_zh="要求板块／主题参与度与入场条件一致；不要把绿色解读为全市场买入信号。",
         )
     else:
         out.update(
