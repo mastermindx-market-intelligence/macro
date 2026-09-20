@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T04:28:31.022738+00:00",
-  "count": 2475,
+  "generated_at": "2026-09-20T04:43:13.421239+00:00",
+  "count": 2476,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -90,6 +90,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-7z09plii439-70368b",
+      "title": "GS Quek Weekend Thoughts Chinas Go Global Indias AI Enablers 19 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:05:21Z",
+      "summary_points": [
+        "US Tech Fundamentals: SPX EPS up 50% YoY (not bubble), GS base case 11% growth to $460 by 2028, AI tailwind driving largest net buying in 5 weeks.",
+        "China Latecomers Structural Shift: Ex-China EM share to jump to 31% by 2035; \"Latecomers\" (robotics, e-commerce, clear aligners) offer structural margin/ROE upside with 30% export discounts.",
+        "India AI Capex Catalyst: 42 AI-ecosystem names (power, data centers, semis) drive ~40% of NIFTY 500 capex growth; FII flows turning positive in Q2/Jul/Aug.",
+        "Europe Prime Book Decline: Gross MV (black) and Net MV (blue) peak mid-2024, followed by sustained decline through 2025–2026, signaling reduced relative market share.",
+        "Sector Reallocation: Semis & Semi Equip net exposure overtakes Software by 2025–2026 (rising from near 0% to ~10%), structural shift toward hardware over software."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-f8qbww3h5m9-233d9e",
       "title": "Thematic Pulse water technology",
