@@ -14917,25 +14917,36 @@ jobs:
     # (measured 2026-09-18: the ratchet reds, exactly as it is built to when a
     # new job is handed the fallback tier). Curated away at the source, the way
     # `options-estate-guards` was in wave 3, rather than paid for in the bound.
-    # Exclusivity means these paths are the WHOLE scope, so the second-level
-    # modules the three suites really read are declared here rather than lost
-    # with the smear: engine/macro_news.py imports news_common, news_events,
-    # event_calendar and qkernel, and all three leaves read lib/config.py.
-    # Everything inference added BEYOND this list (collectors/**, codex_*,
-    # neuralweb/key_pool, news_translate, macro_surprise, lib/store.py,
-    # lib/ai_costs.py) is reached through those imports, not by these suites.
+    # Exclusivity means these paths are the WHOLE scope. Keep the exact
+    # contract-delta import closure here rather than relying on fallback roots:
+    # the direct subjects plus every source/config module transitively reached
+    # by the three suites. This stays narrower than engine/** / collectors/**
+    # while preserving the repository's fail-closed trigger-closure contract.
     scope: exclusive
     paths:
       - "config.yml"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "engine/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
       - "engine/event_calendar.py"
       - "engine/gdelt_client.py"
       - "engine/macro_news.py"
+      - "engine/macro_surprise.py"
+      - "engine/neuralweb/key_pool.py"
       - "engine/news_common.py"
       - "engine/news_events.py"
+      - "engine/news_translate.py"
       - "engine/news_vector.py"
       - "engine/qbus.py"
       - "engine/qkernel.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
       - "lib/config.py"
+      - "lib/store.py"
       - "tests/test_gdelt_client.py"
       - "tests/test_macro_news.py"
       - "tests/test_news_vector.py"
