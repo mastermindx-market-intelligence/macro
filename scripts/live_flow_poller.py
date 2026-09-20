@@ -1259,29 +1259,45 @@ def _log_rss_phase(phase: str, *, cycle_n: int | None = None) -> tuple[int | Non
 # session — cache the {(exp,strike,right)→oi} map per surface root ONCE per session so the
 # greek path costs no extra parquet read after the first cycle. Reuses _load_oi_prev (the
 # same EOD-t-1 source the feed uses) — no new API fetch, no 8-request-ceiling contention.
-_SURFACE_OI_CACHE: dict[str, dict] = {}
+_SURFACE_OI_CACHE: dict[str, tuple[dict, str | None]] = {}
 
 
-def _surface_oi_map(root: str, session_date: str) -> dict:
-    """Session-cached {(exp_str,strike,right)→oi} for a surface root (Lane G). {} if absent."""
+def _surface_oi_snapshot(root: str, session_date: str) -> tuple[dict, str | None]:
+    """Session-cached ({contract→oi}, exact source session) for one surface root."""
     key = f"{session_date}:{root.upper()}"
     if key in _SURFACE_OI_CACHE:
         return _SURFACE_OI_CACHE[key]
+
     oi_map: dict = {}
+    oi_vintage: str | None = None
     try:
-        oi_df = _load_oi_prev(root, session_date)  # cols: expiration, strike, right, open_interest
+        oi_df = _load_oi_prev(root, session_date)  # attrs carries exact oi_vintage
         if oi_df is not None:
             from scripts.build_flow_surface import oi_by_contract
             oi_map = oi_by_contract(oi_df)
+            raw_vintage = oi_df.attrs.get("oi_vintage")
+            if isinstance(raw_vintage, str) and raw_vintage:
+                oi_vintage = raw_vintage
     except Exception as e:  # noqa: BLE001 — never break a cycle for greek OI
-        log.debug("poller: surface OI map failed for %s: %s", root, e)
+        log.debug("poller: surface OI snapshot failed for %s: %s", root, e)
         oi_map = {}
-    _SURFACE_OI_CACHE[key] = oi_map
+        oi_vintage = None
+
+    snapshot = (oi_map, oi_vintage)
+    _SURFACE_OI_CACHE[key] = snapshot
     if oi_map:
-        log.info("poller: surface OI cached %s — %d contracts (EOD t-1)", root.upper(), len(oi_map))
+        log.info(
+            "poller: surface OI cached %s — %d contracts vintage=%s",
+            root.upper(), len(oi_map), oi_vintage or "unknown",
+        )
     else:
         log.info("poller: surface OI empty for %s (greek grids will show 0 coverage)", root.upper())
-    return oi_map
+    return snapshot
+
+
+def _surface_oi_map(root: str, session_date: str) -> dict:
+    """Backward-compatible map-only projection of the surface OI snapshot."""
+    return _surface_oi_snapshot(root, session_date)[0]
 
 
 # ── prior-session close loader (FIX 3 — moneyness) ───────────────────────────
@@ -2165,7 +2181,10 @@ def run_cycle(
         # Advance watermark by subtracting overlap
         try:
             wm_dt = datetime.fromisoformat(wm["ts"].replace("Z", "+00:00"))
-            wm_et = wm_dt.astimezone(ET)
+            wm_et = (
+                wm_dt.replace(tzinfo=ET) if wm_dt.tzinfo is None
+                else wm_dt.astimezone(ET)
+            )
             overlap_dt = wm_et - timedelta(seconds=_OVERLAP_SEC)
             return overlap_dt.strftime("%H:%M:%S")
         except Exception:  # noqa: BLE001
@@ -2208,6 +2227,7 @@ def run_cycle(
         _surface_root_set = set()
     surface_quotes: dict[str, list] = {}
     surface_spot_fallback: dict[str, float] = {}
+    surface_observed_at: dict[str, str] = {}
     surface_quote_sec: float = 0.0
 
     # Fetch in parallel (max_concurrent=2); per-root start_time in time_window mode
@@ -2377,11 +2397,15 @@ def run_cycle(
         # spot fallback the greek engine uses when parity can't resolve.
         if root.upper() in _surface_root_set:
             _sq_t0 = time.perf_counter()
+            if observed_at is not None:
+                surface_observed_at[root.upper()] = observed_at
             try:
                 from scripts.build_flow_surface import extract_cycle_quotes
                 near_cap = cfg.get("near_dte_cap_days", 90)
                 quotes = extract_cycle_quotes(
-                    calls_df, puts_df, session_date=session_date,
+                    calls_df, puts_df,
+                    session_date=session_date,
+                    observed_at=observed_at,
                     near_dte_cap_days=int(near_cap) if near_cap is not None else None)
                 if quotes:
                     surface_quotes[root.upper()] = quotes
@@ -2568,6 +2592,7 @@ def run_cycle(
         # ephemeral, never serialized to day_state). Consumed by build_and_stage_surfaces.
         "surface_quotes":         surface_quotes,
         "surface_spot_fallback":  surface_spot_fallback,
+        "surface_observed_at":    surface_observed_at,
     }
 
     updated_state = {
@@ -3138,11 +3163,17 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             surf_roots = resolve_surface_roots(cfg, rg_dict)
             surf_quotes = tide_day_state.get("surface_quotes", {}) or {}
             surf_spot_fb = tide_day_state.get("surface_spot_fallback", {}) or {}
-            # EOD-t-1 OI map per surface root that has quotes (session-cached; no new fetch).
+            surf_observed = tide_day_state.get("surface_observed_at", {}) or {}
+            # Pre-session OI map + exact source session per surface root that
+            # has quotes (session-cached; no new fetch).
             surf_oi = {}
+            surf_oi_vintage = {}
             for _sr in surf_roots:
                 if surf_quotes.get(_sr.upper()):
-                    surf_oi[_sr.upper()] = _surface_oi_map(_sr, session_date)
+                    oi_map, oi_vintage = _surface_oi_snapshot(_sr, session_date)
+                    surf_oi[_sr.upper()] = oi_map
+                    if oi_vintage is not None:
+                        surf_oi_vintage[_sr.upper()] = oi_vintage
             surface_paths = build_and_stage_surfaces(
                 root_strikes_by_root=tide_day_state.get("root_strikes", {}),
                 roots=surf_roots,
@@ -3152,6 +3183,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
                 quotes_by_root=surf_quotes,
                 oi_by_root=surf_oi,
                 spot_fallback_by_root=surf_spot_fb,
+                observed_at_by_root=surf_observed,
+                oi_vintage_by_root=surf_oi_vintage,
                 retain_sessions=int(cfg.get("surface_retain_sessions",
                                             SURFACE_RETAIN_SESSIONS) or
                                     SURFACE_RETAIN_SESSIONS),
