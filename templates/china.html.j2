@@ -2159,9 +2159,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% set _high_ev = [] %}
       {% for c in (calendar or []) %}{% if c.importance == 'high' %}{% set _ = _high_ev.append(c) %}{% endif %}{% endfor %}
       {% if _high_ev %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact print ahead','项高影响数据待发') }}</div>{% endif %}
-      {% set _hi_strip = [] %}
-      {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _hi_strip.append(c) %}{% endif %}{% endfor %}
-      {% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}
+      {% set _ev_pool = [] %}
+      {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _ev_pool.append(c) %}{% endif %}{% endfor %}
+      {% for c in (event_strip or []) %}{% if c.importance != 'high' %}{% set _ = _ev_pool.append(c) %}{% endif %}{% endfor %}
       {% set _ev_shown = _ev_pool[:4] %}
       {% if _ev_shown %}
       <div class="cnx-estrip">
