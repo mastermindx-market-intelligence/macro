@@ -67,8 +67,8 @@ def test_systematic_stances_are_plain_language() -> None:
 def test_weekly_range_kpis_use_plain_labels() -> None:
     src = _src()
     kpi = src[src.index('<div class="kpi-row" style="margin-top:8px">', src.index("PANEL 6")):]
-    assert "typical range (68% of weeks)" in kpi
-    assert "wide range (95% of weeks)" in kpi
+    assert "typical range (about 68% of weeks)" in kpi
+    assert "wide range (about 95% of weeks)" in kpi
     assert "typical range (±1σ" not in kpi
     assert "wide range (±2σ" not in kpi
 
@@ -87,8 +87,8 @@ def test_committed_page_matches_market_structure_copy_contract() -> None:
     html = SITE.read_text(encoding="utf-8")
     for required in (
         "Systematic fund flows",
-        "typical range (68% of weeks)",
-        "wide range (95% of weeks)",
+        "typical range (about 68% of weeks)",
+        "wide range (about 95% of weeks)",
         "Market context, not buy or sell signals.",
     ):
         assert required in html
@@ -99,3 +99,16 @@ def test_committed_page_matches_market_structure_copy_contract() -> None:
         "machine buying is already in the price",
     ):
         assert banned not in html
+
+
+def test_chinese_fallback_copy_uses_the_same_fund_name() -> None:
+    # Covers dormant missing-data and funds-cutting branches, not just today's snapshot.
+    for path in (TEMPLATE, SITE):
+        assert "机器资金" not in path.read_text(encoding="utf-8")
+
+
+def test_weekly_model_ranges_retain_the_approximation_qualifier() -> None:
+    for path in (TEMPLATE, SITE):
+        html = path.read_text(encoding="utf-8")
+        assert "typical range (about 68% of weeks)" in html
+        assert "wide range (about 95% of weeks)" in html

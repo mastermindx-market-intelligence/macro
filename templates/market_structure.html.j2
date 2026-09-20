@@ -477,7 +477,7 @@ html[data-theme="light"] :is(
   <b><span class="l-en">Shock-absorber reading isn't on this page yet.</span><span class="l-zh">缓冲机制读数尚未出现在本页。</span></b>
   <span class="empty-why">
     <span class="l-en">The dealer-gamma dataset (SPX options chain) hasn't arrived. Systematic-fund, stock-picker, vol-weather, and weekly-range panels still render when their own datasets are present.</span>
-    <span class="l-zh">做市商伽马数据集（标普500期权链）尚未到达。机器资金、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+    <span class="l-zh">做市商伽马数据集（标普500期权链）尚未到达。系统化资金、选股行情、波动率天气与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -543,7 +543,7 @@ html[data-theme="light"] :is(
 <div class="agree {{ agree if agree is not none else '' }}">
   {% if _wn > 0 %}
   {% if agree == 'aligned_adding' %}<span class="l-en">Systematic funds: aligned · both adding over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步加仓</span>
-  {% elif agree == 'aligned_cutting' %}<span class="l-en">Systematic funds: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">机器资金：一致 · 两路{{ _wn }}日同步减仓</span>
+  {% elif agree == 'aligned_cutting' %}<span class="l-en">Systematic funds: aligned · both cutting over {{ _wn }} days</span><span class="l-zh">系统化资金：一致 · 两路{{ _wn }}日同步减仓</span>
   {% elif agree == 'split' %}<span class="l-en">Systematic funds: split — signals disagree over {{ _wn }} days</span><span class="l-zh">系统化资金：分歧 — {{ _wn }}日信号不一致</span>
   {% elif agree == 'paused' %}<span class="l-en">Systematic funds: both paused over the last {{ _wn }} days</span><span class="l-zh">系统化资金：两路近{{ _wn }}日均暂停</span>
   {% else %}<span class="l-en">Agreement: {{ agree if agree is not none else 'unknown' }}</span><span class="l-zh">共识：{{ agree if agree is not none else '未知' }}</span>
@@ -686,7 +686,7 @@ html[data-theme="light"] :is(
   <b><span class="l-en">Stock-picker conditions aren't on this page yet.</span><span class="l-zh">选股行情尚未出现在本页。</span></b>
   <span class="empty-why">
     <span class="l-en">The 1-month implied-correlation dataset (COR1M) hasn't arrived. Shock-absorber, systematic-fund, vol-weather, and weekly-range panels still render from their own datasets.</span>
-    <span class="l-zh">1个月隐含相关性数据集（COR1M）尚未到达。缓冲机制、机器资金、波动率天气与本周区间在各自数据到位时仍会显示。</span>
+    <span class="l-zh">1个月隐含相关性数据集（COR1M）尚未到达。缓冲机制、系统化资金、波动率天气与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -759,7 +759,7 @@ html[data-theme="light"] :is(
   <b><span class="l-en">Vol weather isn't on this page yet.</span><span class="l-zh">波动率天气尚未出现在本页。</span></b>
   <span class="empty-why">
     <span class="l-en">The realized-vol and VIX-curve datasets haven't arrived. Shock-absorber, systematic-fund, stock-picker, and weekly-range panels still render from their own datasets.</span>
-    <span class="l-zh">已实现波动率与VIX曲线数据集尚未到达。缓冲机制、机器资金、选股行情与本周区间在各自数据到位时仍会显示。</span>
+    <span class="l-zh">已实现波动率与VIX曲线数据集尚未到达。缓冲机制、系统化资金、选股行情与本周区间在各自数据到位时仍会显示。</span>
   </span>
 </div>
 {% endif %}
@@ -832,8 +832,8 @@ html[data-theme="light"] :is(
     </div>
   </div>
   <div class="kpi-row" style="margin-top:8px">
-    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (68% of weeks)', '典型区间（约68%的周）') }}</div>
-    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (95% of weeks)', '宽区间（约95%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(lo1) }} – {{ '%.0f'|format(hi1) }}</b>{{ t('typical range (about 68% of weeks)', '典型区间（约68%的周）') }}</div>
+    <div class="kpi"><b>{{ '%.0f'|format(pr_lo) }} – {{ '%.0f'|format(pr_hi) }}</b>{{ t('wide range (about 95% of weeks)', '宽区间（约95%的周）') }}</div>
     {% if wm_flip is not none %}<div class="kpi"><b class="amb">{{ '%.0f'|format(wm_flip|float) }}</b>{{ t('flip level (dealer hedging switch)', '翻转点（做市商对冲切换）') }}</div>{% endif %}
   </div>
   {% endif %}

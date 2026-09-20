@@ -671,8 +671,8 @@ def test_p10_vocabulary_glossed_in_place():
     assert "1个月隐含相关性" in html
     assert "later months cost more than the front (contango)" in html
     assert "远月贵于近月（升水）" in html
-    assert "typical range (68% of weeks)" in html
-    assert "wide range (95% of weeks)" in html
+    assert "typical range (about 68% of weeks)" in html
+    assert "wide range (about 95% of weeks)" in html
     assert "flip level (dealer hedging switch)" in html
     assert "M1 = front month" in html
     assert "M1=近月" in html
