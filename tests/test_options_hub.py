@@ -44,6 +44,8 @@ from engine.options_hub import (
     compute_vol,
 )
 
+from scripts import research_skylit_r5_spot_iv_shock_distribution as r5_shocks
+
 
 # --------------------------------------------------------------------------- #
 # fixture helpers
@@ -1109,3 +1111,152 @@ class TestGexProfileBlock:
         assert result["profile"] is None
         # and the payload still carries the key, so consumers never KeyError
         assert "profile" in result
+
+
+# --------------------------------------------------------------------------- #
+# Skylit R5 — PIT spot/IV shock distribution
+# --------------------------------------------------------------------------- #
+
+class _R5ShockCalendar:
+    @staticmethod
+    def is_session(d):
+        return d.weekday() < 5
+
+    @staticmethod
+    def session_n_forward(d, n):
+        from datetime import timedelta
+        cur = d
+        for _ in range(n):
+            cur += timedelta(days=1)
+            while cur.weekday() >= 5:
+                cur += timedelta(days=1)
+        return cur
+
+
+def _r5_shock_frame(states):
+    rows = []
+    for session, spot, iv in states:
+        rows.append({
+            "root": "SPY",
+            "date": session,
+            "expiration": "2026-10-16",
+            "strike": 100.0,
+            "right": "C",
+            "implied_vol": iv,
+            "underlying_price": spot,
+        })
+    return pd.DataFrame(rows)
+
+
+def test_r5_shock_distribution_is_strictly_prior_to_asof():
+    frame = _r5_shock_frame([
+        ("2026-09-14", 100.0, 0.20),
+        ("2026-09-15", 101.0, 0.22),
+        # This extreme move is on the as-of session and MUST NOT enter the
+        # distribution available before that session.
+        ("2026-09-16", 120.0, 0.50),
+    ])
+    got = r5_shocks.build_distribution(
+        frame,
+        asof="2026-09-16",
+        root="SPY",
+        window_sessions=10,
+        min_samples=1,
+        calendar_api=_R5ShockCalendar,
+    )
+    assert got["status"] == "DISTRIBUTION_COMPLETE"
+    assert got["construction_cutoff_session"] == "2026-09-15"
+    assert got["n_samples"] == 1
+    assert got["samples"][0]["spot_pct"] == pytest.approx(1.0)
+    assert got["samples"][0]["vol_pts"] == pytest.approx(2.0)
+    assert got["outcome_labels_opened"] is False
+
+
+def test_r5_shock_distribution_excludes_nonconsecutive_state_pairs():
+    frame = _r5_shock_frame([
+        ("2026-09-11", 100.0, 0.20),  # Friday
+        ("2026-09-15", 101.0, 0.22),  # Tuesday; Monday state is missing
+    ])
+    got = r5_shocks.build_distribution(
+        frame,
+        asof="2026-09-16",
+        root="SPY",
+        window_sessions=10,
+        min_samples=1,
+        calendar_api=_R5ShockCalendar,
+    )
+    assert got["status"] == "INSUFFICIENT_HISTORY"
+    assert got["n_samples"] == 0
+    assert got["coverage"]["nonconsecutive_pairs_excluded"] == 1
+
+
+def test_r5_shock_distribution_preserves_out_of_envelope_tail_mass():
+    frame = _r5_shock_frame([
+        ("2026-09-14", 100.0, 0.20),
+        ("2026-09-15", 104.0, 0.26),  # +4% spot, +6 vol points
+    ])
+    got = r5_shocks.build_distribution(
+        frame,
+        asof="2026-09-16",
+        root="SPY",
+        window_sessions=10,
+        min_samples=1,
+        calendar_api=_R5ShockCalendar,
+    )
+    env = got["local_scenario_envelope"]
+    assert env["n_inside"] == 0
+    assert env["mass_inside"] == pytest.approx(0.0)
+    assert env["mass_outside"] == pytest.approx(1.0)
+    assert env["n_spot_tail"] == 1
+    assert env["n_vol_tail"] == 1
+    assert env["renormalized"] is False
+    assert got["samples"][0]["within_local_scenario_envelope"] is False
+
+
+def test_r5_shock_distribution_uses_equal_weight_trailing_window():
+    frame = _r5_shock_frame([
+        ("2026-09-14", 100.0, 0.20),
+        ("2026-09-15", 101.0, 0.21),
+        ("2026-09-16", 100.0, 0.20),
+        ("2026-09-17", 102.0, 0.23),
+    ])
+    got = r5_shocks.build_distribution(
+        frame,
+        asof="2026-09-18",
+        root="SPY",
+        window_sessions=2,
+        min_samples=2,
+        calendar_api=_R5ShockCalendar,
+    )
+    assert got["n_samples"] == 2
+    assert [row["to_session"] for row in got["samples"]] == [
+        "2026-09-16", "2026-09-17",
+    ]
+    assert sum(row["empirical_weight"] for row in got["samples"]) == pytest.approx(1.0)
+    assert all(row["empirical_weight"] == pytest.approx(0.5) for row in got["samples"])
+
+
+def test_r5_shock_distribution_refuses_invalid_registration_parameters():
+    frame = _r5_shock_frame([
+        ("2026-09-14", 100.0, 0.20),
+        ("2026-09-15", 101.0, 0.21),
+    ])
+    with pytest.raises(r5_shocks.R5ShockRefusal, match="cannot exceed"):
+        r5_shocks.build_distribution(
+            frame,
+            asof="2026-09-16",
+            root="SPY",
+            window_sessions=2,
+            min_samples=3,
+            calendar_api=_R5ShockCalendar,
+        )
+
+
+def test_r5_shock_cli_accepts_repeated_year_parquets():
+    args = r5_shocks._parse_args([
+        "--greeks-parquet", "/tmp/2025.parquet",
+        "--greeks-parquet", "/tmp/2026.parquet",
+        "--root", "SPY",
+        "--asof", "2026-09-18",
+    ])
+    assert args.greeks_parquet == ["/tmp/2025.parquet", "/tmp/2026.parquet"]
