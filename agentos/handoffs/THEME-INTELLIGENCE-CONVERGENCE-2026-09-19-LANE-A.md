@@ -3,7 +3,7 @@ workstream: "WS:GMI-THEME-GRAPH"
 session: theme-intelligence-a-integration-and-semantic-repair-20260919-sol-001
 model: sol
 ended_because: ci_handoff
-prs: []
+prs: [7526]
 mission: >
   Repair the predecessor Theme Intelligence consumer seam so WATCH/non-scarcity
   does not falsely invalidate the thesis, while preserving real deterioration,
