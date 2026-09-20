@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T08:00:51.061537+00:00",
-  "count": 2479,
+  "generated_at": "2026-09-20T10:58:53.478150+00:00",
+  "count": 2494,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -31,6 +31,7 @@
     "Danske",
     "Deutsche Bank",
     "DoubleLine",
+    "Doubleline",
     "Dragon Capital",
     "Eastspring",
     "Fidelity",
@@ -133,6 +134,23 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-3vnwckkjfue-b991f0",
+      "title": "GS Pasquariello markets macro 19 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:05:19Z",
+      "summary_points": [
+        "Document Missing: No source document provided for extraction"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-7jiurukmgfm-eb732a",
       "title": "GS Crook Thoughts from the Floor Connecting You to GS 19 Sep 2026",
       "institution": "S&T",
@@ -154,6 +172,67 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yqgqymloega-6d01e9",
+      "title": "Trt into alts lite edition sept",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:03:04Z",
+      "summary_points": [
+        "Geopolitical Inflation Spillover: Middle East tensions (Strait of Hormuz closure) drove Brent crude above $100, sustaining energy inflation and escalating real estate inflation risks via energy cost pass-through.",
+        "AI Infrastructure Structural Shift: Data center transactions surged to 29% of market (2025), with global transaction values quadrupling (2023–2025); AI capex spillover boosted power generation returns (>60% sector returns).",
+        "Central Bank Divergence & Rate Volatility: ECB hiked rates (25bps), BoE may hike despite prior cuts, BoJ raised to 1%—divergent policies amplify financing uncertainty for real estate and infrastructure.",
+        "Energy Intensity Risk Factor: US data centers consume 4% of national power (projecting 10% by 2030), with land constraints acting as a \"guardrail\" against speculative development.",
+        "Private Markets Resilience: Infrastructure (data centers/power gen) and private equity benefit from AI-driven demand, while hedge funds leverage dispersion amid higher-for-longer rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qjr3g82xait-0e7f6f",
+      "title": "September 2026 Week 3",
+      "institution": "Doubleline",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:01:29Z",
+      "summary_points": [
+        "U.S.",
+        "Treasury Yield Curve Steepening: 30Y yield at 5.33% (up from 5.28%), 10Y at 5.00% (up from 4.72%) signals rising long-term rates and inflation/interest rate hike expectations, critical for fixed income positioning.",
+        "U.S.",
+        "Retail Sales Rebound: YoY sales at 6.0% (after low of -19.7%) indicates strengthening consumer demand, a key fundamental for economic outlook and sector allocation.",
+        "U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vwyjdyzuetw-6cd65e",
+      "title": "AI and rates",
+      "institution": "Allianz",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:57:02Z",
+      "summary_points": [
+        "Fiscal Collateral Dominance: US relies on AI productivity to sustain expansionary fiscal policy (CBO: 20pp debt/GDP trajectory), while Eurozone’s stable debt path amplifies AI benefits; fiscal collateral beta 1.6x higher in Eurozone per AI growth point, driving terminal yield divergence (US: -85bp, Eurozone: -46bp).",
+        "AI Productivity vs Fiscal Relief Mispricing: Market priced AI productivity (+67bp to US 10Y) but not fiscal collateral improvement (-85bp), creating 135bp mispricing gap (US 10Y round trip vs Eurozone 80bp); front-loaded correction risk as tax receipts lag.",
+        "US-Eurozone Yield Curve Divergence: US exhibits butterfly peak (buy belly, sell wings) from AI-driven job displacement and fiscal expansion, while Eurozone curve flattens; US 10Y volatility 158bp vs Eurozone 78bp due to higher channel activity (fiscal collateral, spillovers)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-f8qbww3h5m9-233d9e",
       "title": "Thematic Pulse water technology",
       "institution": "Allianz",
@@ -169,6 +248,149 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-uzdj4mvq9fu-1549b0",
+      "title": "Ii why market structure rewards active management in local currency emd",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-20T03:53:48Z",
+      "summary_points": [
+        "Active Management Necessity: Wide dispersion and independent return drivers (rate/currency risk) in local currency EMD require disciplined active risk control, inaccessible to passive strategies.",
+        "Market Size vs.",
+        "Benchmark Gap: JPMorgan GBI-EM Index covers only 17% of tradable local currency government debt ($2.8T vs.",
+        "$16.6T), exposing unrepresented segments for active targeting.",
+        "Structural Dispersion: Heterogeneity across EM economies (divergent inflation, growth, policy) enables active allocation via country-specific analysis and risk separation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-0cwovy6bhjr-f73e36",
+      "title": "Article afirmerfed ltr",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:45:31Z",
+      "summary_points": [
+        "Fed Policy Shift: Jackson Hole speech reaffirmed 2% PCE target, shifting market expectations; short-dated yields rose (2-yr +5bps) while long-dated stabilized (10-yr +1.5bps), flattening curves.",
+        "Japan Fiscal Risk: Yields hit 1990s highs amid fiscal expansion concerns; 10-yr surge +15bps (highest monthly change), contrasting with EM spread dynamics.",
+        "EM Spread Fragmentation: Colombia 10-yr spread widened +75bps vs.",
+        "Japan +14bps; Brazil narrowed -14bps, highlighting divergent risk premiums requiring country-specific allocation.",
+        "IG Underweight: Investment Grade underweight due to tight valuations, limited spread compression, and later-cycle pressures (M&A, AI, infrastructure)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ayrjizfh3gn-afa83a",
+      "title": "Article tofreeornottofree ltr",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:45:27Z",
+      "summary_points": [
+        "ROIC-WACC Spread as Core Valuation Driver: Hyperscalers consistently maintain ROIC above WACC (e.g., Amazon 35% peak vs. 7-8% WACC), signaling sustainable value creation and directly correlating with enterprise value/invested capital ratios.",
+        "FCF Bottoming in Q3 2027 with Structural Recovery: Hyperscaler combined FCF bottoms at ~-$265B (Q3 2027) before rebounding to $505B by 2030, driven by capex normalization and operational efficiency.",
+        "Nvidia’s FCF Surge vs.",
+        "Apple’s Stability: Nvidia’s FCF projected to reach $420B by 2028 (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-n877ypk08a0-78d570",
+      "title": "MS Savone Global Reflections 19 Sep 2026",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:44:41Z",
+      "summary_points": [
+        "Fed Policy & Terminal Rate: Hawkish 25bps hike with mixed data; terminal rate 4.25–4.50% by Dec 2026/Mar 2027; bear flattening bearish for Financials.",
+        "Geopolitical & US-China Tech Race: Middle East conflict pressure; China controls 97% of global humanoid shipments, accelerating US-China tech rivalry via AI sovereignty and semi localization.",
+        "AI Execution Risk & Valuation: BKNG Overweight ($230 PT) vs ABNB Equal-weight ($170 PT) vs EXPE Underweight ($235 PT); AI booking execution risk critical for sector positioning.",
+        "Software Loan Defaults & Credit Risk: Software defaults rising to 8% (Private Credit); pre-2028 maturities down to ~$50B, 5 of 12 borrowers defaulting.",
+        "Global Flows & Sector Rotation: US/Asia selling Semis/AI; Europe in EU Semis/Banks; global equity net sold amid Fed policy shift."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 33,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gdjsxv8voog-61e4aa",
+      "title": "Economic commentary for",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-20T03:44:16Z",
+      "summary_points": [
+        "Europe's Pension Sustainability Crisis: Aging demographics (45 median age, 2 workers per retiree by 2070) and public spending (16-5% GDP) strain pay-as-you-go systems, with EU retirement assets ($5T, <30% GDP) dwarfed by U.S.",
+        "($45T, >150% GDP) and minimal equity allocation (3% vs U.S. 32%+), missing growth opportunities.",
+        "Accelerating Pension Reforms & Political Risks: Governments raising retirement ages (Italy to 67+, France linked to life expectancy) face political turmoil (e.g., France’s 64-year hike), balancing growth/security while impacting public finances and capital markets.",
+        "1929 Regulatory Failure Parallels: Current deregulation debates (e.g., Barr’s speech) mirror pre-1929 risks (ineffective self-regulation, commingling banking), with deregulation periods correlating to higher bank failures—signaling systemic risk for portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sgatca3x00l-9f9c4c",
+      "title": "Direct indexing survey brochure 2026",
+      "institution": "LSEG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:40:40Z",
+      "summary_points": [
+        "Direct Indexing Mainstream Scale: $175B in assets linked to FTSE Russell indexes, with 83% net adoption (using or planning to use) in 2026 (up from 76% in 2025), signaling structural industry shift.",
+        "Tax Benefits Drive Adoption: 83% of advisors cite direct indexing strengthens HNW business, with tax-loss harvesting (66% of clients) as primary customization feature and key benefit.",
+        "Implementation Complexity Dominates Barriers: 33% of advisors identify implementation complexity as top hurdle (vs. 45% client demand in 2025), alongside high costs (29%), posing scalability risks.",
+        "Strategic Necessity Acceleration: 57% of advisors view direct indexing as essential for competitiveness (up from 52% in 2025), with 42% of non-users planning adoption within 12 months."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4i0hqyityws-b6f5f8",
+      "title": "BofA Rise of the agents raising CPU TAM (again) to $210bn",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:21:19Z",
+      "summary_points": [
+        "CPU TAM Expansion Driven by Agentic AI: $210bn CPU TAM (36% CAGR) as agentic inference shifts CPU-to-GPU ratio from 1:4 to 1:1, with CPUs central to agentic workloads beyond substitution.",
+        "AI Compute TAM Structure: $1.8T AI Data Center Systems TAM (2030E) with AI CPUs at $180bn (50/50 split: cluster/head nodes vs. agentic standalone nodes).",
+        "Agentic AI Infrastructure Shift: CPUs become control plane for orchestration/state management in agentic workflows (not just host processors), creating new CPU-only rack TAM for RAG/tool execution.",
+        "Vendor Dynamics & Core Advantage: AMD leads in core count (256-core EPYC Venice vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 33,
       "language": "en",
       "needs_metadata": false
     },
@@ -351,6 +573,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cwslqg3ob9p-aa0043",
+      "title": "GPS The World Rewired",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:43:00Z",
+      "summary_points": [
+        "Global Supply Chain Pressure: Index at highest since 2021-22 due to US tariffs and Iran conflict, with Brent oil at $90/barrel and Strait of Hormuz closure driving supply chain stress and margin pressure.",
+        "FDI Regional Divergence: Global FDI at $1.62T (2025), but Europe +39% vs.",
+        "Africa -26% and North America -2%, signaling uneven capital allocation and policy-driven shifts.",
+        "China Auto Export Pivot: North America’s share of China auto exports fell to ~13% (2026), while Africa rose to 15%, reflecting strategic shift to politically stable, high-price-sensitivity markets.",
+        "Asia Supply Chain Dominance: Healthcare (Asia: 77% of payment flows) and Technology (Asia: 60%) sectors show structural integration, demanding portfolio adjustments for high-value supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 36,
       "language": "en",
       "needs_metadata": false
     },
@@ -1560,6 +1803,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-b76m372gece-6432c6",
+      "title": "Luxury Goods China taking stock",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:30:23Z",
+      "summary_points": [
+        "China Luxury Demand Downgrade: 2027 growth forecast cut to 3% (vs 4%) due to muted sentiment, fiscal tightening, and no property/stock market wealth effect; hard luxury (watches/jewellery) outperforms soft luxury, with HK tourism (+11% YTD) driving resilience.",
+        "Sector-Wide EBIT & Revenue Downgrades: BofA revises 2027-28E revenue -1.1%, EBIT/EBITDA -2-3%, EPS -3-4% vs consensus; EBIT estimates 2pt below consensus (sector avg -2.3% to -1.8%), signaling margin compression risk.",
+        "Critical China Dependency Risk: Sector revenue exposure to Chinese consumers averages 29% (19% Mainland, 10% offshore), with high-exposure names (Moncler, Hermès at 37%) facing elevated policy volatility risk vs low-exposure peers (Pandora at 1%).",
+        "US Consumer Dominance Offset: American consumers drive 2026 revenue growth (+9% cFX), offsetting China’s minimal growth (+1% cFX); Korea (+6% cFX) and Middle East (+6% cFX) rebound to compensate for 2026 losses.",
+        "Pricing Discipline in Gold Jewelry: Chow Sang Sang adjusts gold product prices downward with gold corrections (avoiding discounts), preserving margins amid material cost volatility—critical for luxury jewelry fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 53,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-38o4qoivecq-db9e77",
       "title": "India Watch Monsoon Tracker In the tail end but no signs of pickup",
       "institution": "Bank of America",
@@ -1601,6 +1865,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-cj2lmcs8lpx-a33a10",
+      "title": "Municipals Weekly Stabilization in order",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:29:36Z",
+      "summary_points": [
+        "Fed's 25bp hike and Treasury buybacks stabilize muni market: Fed hawkishness + Treasury buybacks steady market; AAA curve up 49bp since 14 Aug, exemption value near 300bp threshold breached twice in two decades.",
+        "Tax exemption value near 300bp: Critical threshold breached (first time in two decades), signaling heightened sensitivity to tax policy changes and relative value shifts for yield-focused investors.",
+        "Muni market expands to $4.54tn: Up $75bn q/q; dealers (+26.6%), ETFs (+10.3%), households (+3.3% to $2.1tn) drive structural growth and key flows.",
+        "Yield bogeys targeting: 5.0-5.5% yield bogeys abundant in 25-30yr AA-rated maturities; significant value shifting to 4-6% YTW brackets (Exhibit 4).",
+        "UOAO 1mo return weakness: UOAO posted -2.80% (weakest since April 2022), signaling short-term technical stress; recovery expected post-negative levels."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-7cqjaytqple-28c1b5",
       "title": "The Oil Gusher Even ‘hotter’ winter ahead in European gas",
       "institution": "Bank of America",
@@ -1638,6 +1923,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zalfzcqtxeh-a156ec",
+      "title": "Situation Room Out of bonds, into stocks",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:28:56Z",
+      "summary_points": [
+        "Bond-to-stock flow shift: Equity inflows surge to $62.14bn (largest since June), while US HG bond funds show slowed inflows (+$0.42bn vs prior +$4.74bn) and IG corporates face negative demand (-$0.1bn), signaling a defensive rotation.",
+        "HG/HY allocation structural shift: HG flows now represent 26% of AUM (vs.",
+        "HY’s 13%), indicating a sustained move toward higher-quality assets amid risk aversion and reduced HY volatility.",
+        "Dealer inventory volatility: US IG corporate dealer inventories show intensified net selling (-$0.6bn vs -$4.9bn), yet reduced rate sensitivity (DV01 narrowed to -$7.2mn), highlighting liquidity risks despite active positioning.",
+        "EM flows surge: EM fund flows trend upward since May 2025, driven by EM Local funds, signaling potential portfolio rotation into emerging markets amid shifting global capital allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },

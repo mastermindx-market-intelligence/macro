@@ -1,9 +1,9 @@
 {
-  "fetched_at": "2026-09-19T11:35:25.397677+00:00",
+  "fetched_at": "2026-09-20T08:23:49.812667+00:00",
   "n_events": 3660,
   "earliest": "2026-04-13",
   "latest": "2026-09-18",
-  "n_new": 8,
+  "n_new": 0,
   "by_category": {
     "interim_results": 2160,
     "general_mandate": 699,

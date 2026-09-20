@@ -1,9 +1,9 @@
 {
-  "fetched_at": "2026-09-19T11:34:36.043224+00:00",
+  "fetched_at": "2026-09-20T08:23:02.294737+00:00",
   "n_events": 729,
   "earliest": "2026-03-05",
   "latest": "2026-09-18",
-  "n_new": 5,
+  "n_new": 0,
   "by_category": {
     "placing": 562,
     "rights_issue": 167
