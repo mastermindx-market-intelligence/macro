@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T20:15:34.459548+00:00",
-  "count": 2521,
+  "generated_at": "2026-09-20T20:45:37.692931+00:00",
+  "count": 2523,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1537,6 +1537,47 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yhuefzqqomd-51dec6",
+      "title": "High grade",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:57Z",
+      "summary_points": [
+        "High-Grade Outlook: Attractive yields (energy prices, hawkish central banks) with low default risk; prefer short-to-medium maturities, tactical duration extension for diversification amid geopolitical volatility.",
+        "USD Curve & Fed Policy: 10Y yields at 5.04% (GFC high) driven by hawkish Fed (Jackson Hole) and inflation; 2-5Y segment optimal risk-reward with 75bps tightening priced in, tied to AI infrastructure growth.",
+        "Eurozone/GBP Rate Risks: ECB hikes to 2.5% amid energy surge (gas >80/MWh); BoE near-term hike risk persists as long as energy prices stay elevated, market overpricing 75bps tightening.",
+        "GBP Positioning: Yield offsets 100bps tightening (MPC deems 3.75% restrictive); short-to-medium GBP HG bonds best risk-reward; political uncertainty (Labour fiscal consolidation) persists until Oct 28."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ysomlnfkpht-bc2800",
+      "title": "UK equities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:55Z",
+      "summary_points": [
+        "Valuation & Earnings: UK equities offer attractive absolute returns (12.4x forward P/E vs 12.8x median) with 16% earnings growth (slowing to 9% by 2027), though lagging other regions and facing near-term interest rate risks.",
+        "Key Risk Factor: Lower commodity prices (20-25% of FTSE 100 earnings) and sharply higher bond yields pose significant downside risks, offsetting earnings growth from energy sector (18% of MSCI UK earnings).",
+        "Scenario Targets: Upside (FTSE 100 2027: 12,300) driven by global growth/commodity prices/weaker sterling; downside (7,700) from Middle East energy disruption and trade wars.",
+        "Strategic Rating: UK equities rated Least Preferred vs.",
+        "Eurozone, signaling prioritization of alternatives over direct exposure despite \"Attractive\" rating in asset class positioning framework."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
