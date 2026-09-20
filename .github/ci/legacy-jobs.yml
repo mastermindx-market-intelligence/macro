@@ -13544,6 +13544,7 @@ jobs:
       - "scripts/check_template_site_sync.py"
       - "scripts/worktree_sparse.py"
       - "site/chat.html"
+      - "site/basketdata/foresight_cascade.json"
       - "site/factordata/**"
       - "site/state_of_themes.html"
       - "templates/_navlinks.html.j2"
