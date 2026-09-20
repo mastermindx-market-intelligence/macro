@@ -231,7 +231,7 @@ def build_alert_brief(row: dict) -> dict:
             window_limit = (
                 f'The source describes a 2–4 day edge window; at {age} days old, that '
                 '2–4 day edge window has elapsed.')
-            window_limit_zh = f'来源描述的是 2–4 天优势窗口；该事件已过去 {age} 天，窗口已经结束。'
+            window_limit_zh = f'来源描述的是 2–4 天的优势窗口；该事件已过去 {age} 天，窗口已经结束。'
             blind_spot = (
                 'The model is blind to slow or options-calm selloffs, so this is not a '
                 'current de-risk instruction.')
