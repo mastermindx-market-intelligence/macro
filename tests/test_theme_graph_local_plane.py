@@ -1965,3 +1965,50 @@ def test_proposal_review_default_rights_resolver_reaches_real_edges(monkeypatch,
     monkeypatch.setattr(cli, "RepositoryStore", lambda: view)
     assert cli.main(["--proposal-id", _REVIEW_ID, "--asof", "2026-06-01"]) == 0
     assert json.loads(capsys.readouterr().out)["relation"]["state"] == "RELATION_PRESENT"
+
+
+@pytest.mark.parametrize("status", ["ratified", "rejected"])
+@pytest.mark.parametrize("created,decided,predates", [
+    ("2026-06-01T23:30:00", "2026-06-02T00:30:00Z", False),
+    ("2026-06-01T23:30:00Z", "2026-06-02T00:30:00", False),
+    ("2026-06-01", "2026-06-01T00:00:00Z", False),
+    ("2026-06-02T00:00:00", "2026-06-01T23:30:00Z", True),
+    ("2026-06-01T23:30:00-02:00", "2026-06-02T00:30:00", True),
+    ("2026-06-02T01:00:00", "2026-06-01T23:30:00-02:00", False),
+])
+def test_probation_mixed_legacy_clock_validation(status, created, decided, predates):
+    candidate = _ont_proposal(_REVIEW_ID,
+        {"local_theme": _REVIEW_LOCAL, "canonical_theme": _REVIEW_THEME},
+        status=status, ratified_by="curator:test" if status == "ratified" else None,
+        created=created, adjudicated_at=decided)
+    schema = json.loads((ROOT / "contracts/theme_graph/probation_proposal.v1.schema.json").read_text())
+    jsonschema.validate(candidate, schema)
+    before = json.dumps(candidate, sort_keys=True)
+    errors = probation.validate(candidate)
+    assert errors == (["adjudicated_at predates created"] if predates else [])
+    assert json.dumps(candidate, sort_keys=True) == before
+
+
+@pytest.mark.parametrize("status", ["ratified", "rejected"])
+@pytest.mark.parametrize("cutoff", ["2026-06-01", "2026-06-02"])
+def test_proposal_review_mixed_legacy_clock_public_paths(status, cutoff, monkeypatch, capsys):
+    from scripts import query_theme_ontology as cli
+    view = _review_view(status=status)
+    view._proposals[0].update(created="2026-06-01T23:30:00",
+                              adjudicated_at="2026-06-02T00:30:00Z")
+    before = json.dumps(view.__dict__, sort_keys=True)
+    expected = "proposed" if cutoff == "2026-06-01" else status
+    review = _review_proposal(view, cutoff=cutoff, asof="2026-06-02")
+    assert review["proposal"]["status"] == expected
+    assert review["proposal"]["truth_status"] == "PROPOSAL_ONLY"
+    assert review["relation"]["state"] == "RELATION_ABSENT"
+    node = _ont_compose(view, _REVIEW_LOCAL, cutoff=cutoff)
+    assert node["proposals"][0]["status"] == expected
+    monkeypatch.setattr(cli, "RepositoryStore", lambda: view)
+    assert cli.main(["--proposal-id", _REVIEW_ID, "--asof", "2026-06-02",
+                     "--knowledge-cutoff", cutoff]) == 0
+    assert json.loads(capsys.readouterr().out)["proposal"]["status"] == expected
+    if expected == "proposed":
+        assert review["proposal"]["adjudicated_at"] is None
+        assert review["proposal"]["ratified_by"] is None
+    assert json.dumps(view.__dict__, sort_keys=True) == before

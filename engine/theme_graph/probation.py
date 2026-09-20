@@ -51,12 +51,16 @@ def utc_now_stamp() -> str:
 
 
 def _parse_stamp(value: object, field: str) -> datetime:
+    """Compare decision clocks in UTC, including legacy unzoned/date-only rows."""
     text = str(value or "").strip()
     normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
     try:
-        return datetime.fromisoformat(normalized)
+        stamp = datetime.fromisoformat(normalized)
     except ValueError as exc:
         raise ValueError(f"{field} must be an ISO-8601 timestamp") from exc
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=timezone.utc)
+    return stamp.astimezone(timezone.utc)
 
 
 def proposal_id(kind: str, subject: dict) -> str:
