@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T23:31:00.028260+00:00",
-  "count": 2530,
+  "generated_at": "2026-09-20T23:46:02.133668+00:00",
+  "count": 2531,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1738,6 +1738,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ztxgefa8zlu-da2531",
+      "title": "Asian bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:17Z",
+      "summary_points": [
+        "Asian bonds: Resilient core holding with strong fundamentals: Investment-grade yields at 5.7% (JACI IG) supported by rating migration, low distress ratios, and mid-single-digit returns; high-yield offers 5% YTD return with mid-to-high single-digit outlook.",
+        "JACI composite spread targets: Sustained attractiveness reflected in 95bps target (Dec 2026/Jun 2027), with upside catalysts including China recovery, tariff rollback, and dovish Fed action compressing spreads to 75bps (Jun 2027).",
+        "Asia High-Yield Credit Performance: Non-Investment Grade Index returned 4.9% (Sept 11), featuring shorter duration (~3y), yield carry >7%, and diversified geographies/sectors, though Middle East conflict poses sector-specific risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
