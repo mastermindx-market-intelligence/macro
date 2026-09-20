@@ -75,7 +75,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{% set _stance = posture_lane(_pd.posture if _pd else none) %}",
         "{% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}",
         "{% set _todo_actual = _todo_faces | rejectattr('empty') | list %}",
-        "{% set _todo_shown = _todo_actual if _todo_actual else _todo_faces[:1] %}",
+        "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}",
         "{% for face in _todo_shown %}",
         'class="cnx-hero-meta"',
         'class="v-thesis cnx-thesis"><span class="l-en">{{ _hero_clause[0] }}',
@@ -83,7 +83,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         'class="cnx-row cnx-reason-row',
         'class="cnx-lens"',
         'onclick="cnxToggleLens(this,event)"',
-        "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}",
+        "{% set _ev_pool = [] %}",
         "{{ t('Macro News','宏观新闻') }}",
         "{{ t('What changed ↓','最近变化 ↓') }}",
         "{% set _chg_news_n = 1 if latest.alerts else 2 %}",
@@ -109,6 +109,11 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "ROW 4: Property + AI Brief + Alerts Centre",
     ):
         assert marker in TPL
+
+
+def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
+    assert "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}" in TPL
+    assert "cnx-dlg-playbook" in TPL
 
 
 def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
