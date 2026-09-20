@@ -118,8 +118,10 @@ def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
 
 
 def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> None:
-    assert "{% set _hi_strip = [] %}" in TPL
-    assert "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}" in TPL
+    assert "{% set _ev_pool = [] %}" in TPL
+    assert "if c.importance == 'high'" in TPL
+    assert "if c.importance != 'high'" in TPL
+    assert "{% set _ev_shown = _ev_pool[:4] %}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
