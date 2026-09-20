@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T04:58:13.008351+00:00",
-  "count": 2477,
+  "generated_at": "2026-09-20T05:28:18.923304+00:00",
+  "count": 2478,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -169,6 +169,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dmynqpbgndk-94949f",
+      "title": "BofA Broadcom Inc XPV uncertainty to remain an overhang",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T03:21:00Z",
+      "summary_points": [
+        "Broadcom Downgrade to Marketweight: XPV platform uncertainty drives downgrade; key risks include end-customer concentration (Anthropic/OpenAI), credit spread volatility, and AVGO’s debt management amid growth, despite conservative balance sheet (1.3x gross leverage) and 3-4x revenue/FCF growth potential (FY25-FY28).",
+        "Peak Loss Exposure: Max RVG loss peaks at $42B (100% default) by 2029 on 20GW XPV platform, escalating to $151.2B under 50% default + 50% price shock; critical risk drivers are end-customer concentration and no secondary market.",
+        "Credit Risk & Leverage: Adjusted gross leverage could rise to 2.2x by 2028 in downside scenario (XPV defaults/collateral shortfall), with $85B CFC in 2027 partially absorbing $42B loss but requiring debt issuance to retire senior debt.",
+        "Valuation & Spreads: AVGO spreads 35-45 bp wider since June vs. non-AI semis (TXN/QCOM at +30-45 bp), reflecting persistent XPV platform uncertainty; underperformance attributed to platform risk despite FY26 revenue/EBITDA up 10-13%."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
