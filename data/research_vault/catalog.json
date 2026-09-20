@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T21:57:22.987510+00:00",
-  "count": 2457,
+  "generated_at": "2026-09-19T23:57:21.044774+00:00",
+  "count": 2462,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1779,6 +1779,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-megzxd2zdji-d1359c",
+      "title": "Japan Weekly Kickstart Has it been better to travel or to arrive with the BOJ",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:49Z",
+      "summary_points": [
+        "BOJ Rate Hike & Bank Sector Outperformance: BOJ raised policy rate to 1.25% (from 0.1%), driving banks to outperform TOPIX by 27pts YTD and 10pts QTD, with banks contributing significantly to TOPIX NTM EPS growth.",
+        "Net Flows & Yen Positioning Shift: Domestic institutions/foreigners net sold ¥476bn/¥274bn, while individuals net bought ¥426bn; speculative yen positioning flipped to net long post-yen strengthening, signaling reduced foreign selling pressure.",
+        "Elevated Valuation & Momentum Risks: TOPIX forward P/E at 15.6 (+1 s.d.) and P/B at 1.8 (+2.9 s.d.) indicate overvaluation, with index above 25d/200d MAs, raising correction risk amid slowing earnings growth (19% FY26 → 9% FY28).",
+        "Critical Sector Allocation: Overweight Machinery, IT/Services, Banks, Electrical, Steel; Underweight Electric Power/Gas, Foods, Pharma, Transport—driven by bank outperformance and tech-led momentum.",
+        "AI Beneficiaries & Sector Divergence: AI Beneficiaries surged 50% YTD with 114% spread vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ejmaw49cqar-88ed99",
       "title": "GS Utilities Daily PPC Major DC deal announcement with Amazon, a positive",
       "institution": "Goldman Sachs",
@@ -1795,6 +1816,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-atcvcozdq78-f7854f",
+      "title": "Global Strategy Views Competition for Capital",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T15:16:44Z",
+      "summary_points": [
+        "Capital Cost Surge: AI infrastructure spending and rising rates (e.g., 30-yr yields near 0% in Germany/Japan) elevate capital costs, squeezing private/public cash flow amid geopolitical uncertainty.",
+        "Equity-Bond Regime Shift: Near-record equity outperformance vs. bonds preceded rising yields, signaling a fundamental capital allocation shift as bond yields surge.",
+        "ERP Vulnerability: Equity risk premia (ERP) at late 1990s lows heighten equities' sensitivity to rising bond yields, with US/Japan ERPs rebounding from recent lows.",
+        "Earnings Dominance: Since 2025, 12-month forward EPS growth drives global equity returns (MSCI EM, AP ex Japan), overriding PE multiples as primary return driver despite falling valuations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
@@ -2310,6 +2351,66 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ptvh18vu9bk-1effc9",
+      "title": "Global Economics Comment Is Poor Economic Sentiment Really About the Economy",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:13Z",
+      "summary_points": [
+        "Fundamental-Sentiment Divergence: Strong US fundamentals (labor market, GDP, consumer spending) coexist with globally weak sentiment driven by post-pandemic inflation, political biases, and persistent low happiness since 2020—creating a critical misalignment for economic forecasting.",
+        "Institutional Distrust as Core Risk: Falling trust in key institutions (medicine, science, government) since 2016 explains most post-2020 happiness decline, rendering consumer sentiment an unreliable economic indicator and amplifying persistent societal risk for discretionary sectors.",
+        "K-Shaped Sentiment Erosion: Lower-socioeconomic households exhibit disproportionately negative sentiment due to cost-of-living pressures and structural divides, signaling uneven recovery risks to equity valuations and consumer-driven sectors."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rbj4kvemfy7-1b4117",
+      "title": "Energy, Utilities & Mining Pulse Investors Asking What Are Takeaways from the Road or Recent Management Meetings",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:10Z",
+      "summary_points": [
+        "Chevron Growth & Geopolitical Risks: Venezuela production to double to ~600kbd by 2031, Argentina output to triple to ~240kbd by 2035; geopolitical risk discount debate ongoing amid cash flow from Venezuela, Iraq, Argentina, West Africa, Eastern Mediterranean.",
+        "E&P Valuation Pressure: 4-week rolling avg.",
+        "implied discount rate for E&Ps exceeds 11% (based on five-year futures), indicating elevated cost of capital and potential underpricing risks.",
+        "Oil Valuation Gap: E&P stock valuations imply WTI oil prices slightly below five-year strip (current implied ~$68/bbl), signaling market expectations of near-term oil price pressure vs. longer-term strip."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-idihu0rpbda-343121",
+      "title": "Amer Sports Inc. (AS) Salomon Investor Day Takeaways",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T02:17:02Z",
+      "summary_points": [
+        "China Scalability: 330 stores (2026E), 85% retail mix, triple-digit million business; core to brand-direct execution at scale.",
+        "Raised Guidance: 20-22% Y/Y revenue growth (vs prior 18-20%), adj.",
+        "operating margin >13.5-14% (vs consensus 13.1%).",
+        "Target Price Deterioration: $48→$21 (Feb 2024), current target $48 above $37.45 closing price; downward revision trend signals bearish sentiment.",
+        "Gravel Expansion: 15% of 2026E sales (3x growth vs 2025), critical for revenue diversification beyond performance footwear."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
