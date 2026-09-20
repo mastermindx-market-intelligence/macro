@@ -2142,7 +2142,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
           <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
             {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div>
-          <button type="button" class="cnx-lens" aria-expanded="false" aria-label="{{ t('Why this read','为什么') }}" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}" onclick="cnxToggleLens(this,event)">?</button></div>
+          <button type="button" class="cnx-lens" aria-expanded="false" aria-label="Why this read / 为什么" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}" onclick="cnxToggleLens(this,event)">?</button></div>
         {% endfor %}
         {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
       {% else %}

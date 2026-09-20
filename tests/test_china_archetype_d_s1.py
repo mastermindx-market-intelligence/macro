@@ -102,6 +102,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
 def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
     assert 'class="cnx-lens"' in TPL
     assert 'aria-expanded="false"' in TPL
+    assert 'aria-label="Why this read / 为什么"' in TPL
     assert 'onclick="cnxToggleLens(this,event)"' in TPL
     assert "window.cnxToggleLens=cnxToggleLens;" in TPL
     assert "window.cnxCloseLenses=cnxCloseLenses;" in TPL
