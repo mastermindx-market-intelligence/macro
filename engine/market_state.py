@@ -429,8 +429,8 @@ def _comp_stress(latest: dict) -> dict | None:
 # --------------------------------------------------------------- assembly ----
 
 _HEADLINES = {
-    "RISK_ON": ("Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.",
-                "风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。"),
+    "RISK_ON": ("Risk-on — the overall backdrop is supportive. Trend-following is supported, but participation and entry quality still matter.",
+                "风险偏好 — 整体环境支持风险资产。顺势交易受支持，但仍需结合市场参与度与入场质量。"),
     "MIXED": ("Mixed / transition — the signals disagree. Trade smaller, favour quality, take profits faster; don't position aggressively.",
               "混合 / 转换 — 信号分歧。缩小仓位、偏好质量、更快获利了结；勿激进布局。"),
     "RISK_OFF": ("Risk-off — stress is elevated; defend capital first.",
@@ -451,6 +451,95 @@ def _verdict_from_score(score: int) -> str:
     if score >= 42:
         return "MIXED"
     return "RISK_OFF"
+
+
+_US_SCOPE_GUIDANCE = {
+    ("broad", "supportive"): {
+        "subline_en": "GREEN — Broad participation confirms",
+        "subline_zh": "偏多 — 广泛参与确认",
+        "action_en": "Follow the trend. Add where setups confirm.",
+        "action_zh": "顺势而为，仅在入场条件确认时加仓。",
+    },
+    ("selective", "uneven"): {
+        "subline_en": "GREEN — Selective risk-on",
+        "subline_zh": "偏多 — 选择性风险偏好",
+        "action_en": "Stay selective. Follow confirmed leadership.",
+        "action_zh": "保持精选。跟随已确认的强势板块。",
+    },
+    ("selective", "weak"): {
+        "subline_en": "GREEN — Selective risk-on",
+        "subline_zh": "偏多 — 选择性风险偏好",
+        "action_en": "Stay selective. Follow confirmed leadership and fresh turns.",
+        "action_zh": "保持精选。跟随已确认的强势板块与新出现的转强信号。",
+    },
+    ("unverified", "unverified"): {
+        "subline_en": "GREEN — Participation unverified",
+        "subline_zh": "偏多 — 市场参与度未验证",
+        "action_en": "Stay selective until participation confirms.",
+        "action_zh": "在市场参与度确认前保持精选。",
+    },
+}
+
+
+def _participation_scope(verdict: str, comps: list, *, market: str) -> dict | None:
+    """Display-only breadth qualifier for the US Risk-on band.
+
+    The 0-100 score and discrete verdict keep their existing authority. This helper
+    only answers whether participation justifies reading a US RISK_ON print as a
+    broad rally. The 42/60 boundaries deliberately reuse the component tone cuts
+    instead of introducing a second breadth model.
+    """
+    if market != "us" or verdict != "RISK_ON":
+        return None
+    breadth = next((c for c in (comps or []) if c.get("key") == "breadth"), None)
+    score = _num((breadth or {}).get("score"))
+    if score is None:
+        state, participation, score = "unverified", "unverified", None
+    else:
+        score = int(round(score))
+        if score >= 60:
+            state, participation = "broad", "supportive"
+        else:
+            state = "selective"
+            participation = "uneven" if score >= 42 else "weak"
+    out = {
+        "state": state,
+        "participation": participation,
+        "breadth_score": score,
+    }
+    out.update(_US_SCOPE_GUIDANCE[(state, participation)])
+    return out
+
+
+_US_SCOPE_HEADLINES = {
+    ("broad", "supportive"): (
+        "Broad risk-on — the broader backdrop is supportive and participation confirms the move. "
+        "Trend-following is supported; individual setup quality still matters.",
+        "广泛风险偏好 — 大环境支持风险资产，市场参与度也确认上涨。顺势交易受支持，但个别标的仍需看入场质量。",
+    ),
+    ("selective", "uneven"): (
+        "Selective risk-on — the broader backdrop is supportive, but participation is uneven. "
+        "Stay selective rather than treating this as a broad rally.",
+        "选择性风险偏好 — 大环境仍支持风险资产，但市场参与度分化。保持精选，不要把它当作全面普涨。",
+    ),
+    ("selective", "weak"): (
+        "Selective risk-on — the broader backdrop is supportive, but participation is weak. "
+        "Focus on confirmed leaders and fresh turns rather than treating this as a broad rally.",
+        "选择性风险偏好 — 大环境仍支持风险资产，但市场参与度偏弱。聚焦已确认的强势板块与新出现的转强信号，不要把它当作全面普涨。",
+    ),
+    ("unverified", "unverified"): (
+        "Risk-on — the broader backdrop is supportive, but participation is unverified. "
+        "Broad-rally confirmation is unavailable.",
+        "风险偏好 — 大环境支持风险资产，但市场参与度尚无法验证。当前不能确认全面普涨。",
+    ),
+}
+
+
+def _headline_for(verdict: str, comps: list, *, market: str) -> tuple[str, str]:
+    scope = _participation_scope(verdict, comps, market=market)
+    if scope is None:
+        return _HEADLINES[verdict]
+    return _US_SCOPE_HEADLINES[(scope["state"], scope["participation"])]
 
 
 def _cap(verdict: str, ceiling: str) -> str:
@@ -992,6 +1081,8 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
 
         flip_en, flip_zh = _flip_text(comps, verdict, raw_score=raw_score,
                                       radar=radar, overrides=overrides)
+        participation_scope = _participation_scope(verdict, comps, market=profile.key)
+        headline_en, headline_zh = _headline_for(verdict, comps, market=profile.key)
         return {
             "schema": "market_state.v1",
             "asof": latest.get("date"),
@@ -1008,7 +1099,8 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
             "color": _COLOR[verdict],
             "label_en": _LABEL[verdict][0], "label_zh": _LABEL[verdict][1],
             "posture_en": _POSTURE[verdict][0], "posture_zh": _POSTURE[verdict][1],
-            "headline_en": _HEADLINES[verdict][0], "headline_zh": _HEADLINES[verdict][1],
+            "headline_en": headline_en, "headline_zh": headline_zh,
+            "participation_scope": participation_scope,
             "components": comps,
             "mtf": tape,
             "overrides": overrides,

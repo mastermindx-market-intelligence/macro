@@ -241,6 +241,18 @@ def _debounce(prev: dict, live_verdict: str | None, baseline_verdict: str | None
             "in_order": (order.index(live_verdict) if live_verdict in order else None)}
 
 
+def _display_participation_copy(verdict: str, block: dict | None) -> dict:
+    """Project the canonical US participation-aware copy onto the live display band."""
+    components = (block or {}).get("components") or []
+    scope = market_state._participation_scope(verdict, components, market="us")
+    headline_en, headline_zh = market_state._headline_for(verdict, components, market="us")
+    return {
+        "headline_en": headline_en,
+        "headline_zh": headline_zh,
+        "participation_scope": scope,
+    }
+
+
 def build(offline: bool = False) -> dict:
     cfg = config.load().get("live") or {}
     rs_cfg = cfg.get("risk_state") or {}
@@ -366,6 +378,8 @@ def build(offline: bool = False) -> dict:
     disp_label = {"RISK_ON": ("Risk-on", "风险偏好", "green"),
                   "MIXED": ("Mixed", "混合", "yellow"),
                   "RISK_OFF": ("Risk-off", "避险", "red")}.get(disp_verdict, ("—", "—", "yellow"))
+    display_block = live_blk if live_active else nightly_blk
+    display_copy = _display_participation_copy(disp_verdict, display_block)
     display = {
         "verdict": disp_verdict,
         "label_en": disp_label[0], "label_zh": disp_label[1], "color": disp_label[2],
@@ -378,6 +392,7 @@ def build(offline: bool = False) -> dict:
                             else live_blk.get("raw_score"))),
         "band_changed": deb.get("band_changed", False),
         "pending": deb.get("pending"),
+        **display_copy,
     }
 
     out = {

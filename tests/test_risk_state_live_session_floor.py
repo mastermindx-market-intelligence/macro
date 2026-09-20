@@ -129,6 +129,8 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         var bigEl   = reg(".mx5-big-score", new El("", "mx5-big-score", "{BAKED_SCORE}"));
         var vwEl    = reg(".mx5-verdict-word", new El("", "mx5-verdict-word", {BAKED_WORD!r}));
         var thesis  = reg(".mx5-thesis", new El("", "mx5-thesis", "Risk-on — the tape"));
+        var subline = reg(".mx5-sub-line", new El("", "mx5-sub-line", "GREEN — Risk-on backdrop"));
+        var action  = reg("[data-wtd-primary] .mx5-action-label", new El("", "mx5-action-label", "Stay selective."));
         var pill    = reg("#ms-live-pill", new El("ms-live-pill", "on"));
         reg("#ms-date", new El("ms-date", "", "{BAKED_SESSION}"));
         reg("#regime-asof", new El("regime-asof", "", "{BAKED_SESSION}"));
@@ -141,6 +143,8 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         out.score = String(scoreEl.textContent);
         out.big   = String(bigEl.textContent);
         out.thesis = (thesis.children[0] || {}).textContent || thesis.textContent;
+        out.subline = (subline.children[0] || {}).textContent || subline.textContent;
+        out.action = (action.children[0] || {}).textContent || action.textContent;
         out.pill_on = pill.hasClass("on");
         """
     else:
@@ -524,6 +528,51 @@ def test_us_feed_on_the_rendered_session_still_patches(js):
     assert out["word"] == "Mixed"
     assert out["chart_last"]["s"] == 44, "same-session patch must carry the chart with it"
     assert out["chart_last"]["v"] == "Mixed"
+
+
+@needs_node
+@US_PAGES
+def test_us_feed_prefers_canonical_participation_aware_headline(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed["display"]["headline_en"] = (
+        "Selective risk-on — the broader backdrop is supportive, but participation is weak."
+    )
+    feed["display"]["headline_zh"] = "选择性风险偏好 — 大环境仍支持风险资产，但市场参与度偏弱。"
+    feed["display"]["participation_scope"] = {
+        "state": "selective",
+        "participation": "weak",
+        "breadth_score": 0,
+        "subline_en": "GREEN — Selective risk-on",
+        "subline_zh": "偏多 — 选择性风险偏好",
+        "action_en": "Stay selective. Follow confirmed leadership and fresh turns.",
+        "action_zh": "保持精选。跟随已确认的强势板块与新出现的转强信号。",
+    }
+
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+
+    assert not out.get("error"), out["error"]
+    assert out["thesis"].startswith("Selective risk-on")
+    assert out["subline"] == "GREEN — Selective risk-on"
+    assert out["action"] == "Stay selective. Follow confirmed leadership and fresh turns."
+    assert "breadth and cross-asset signals line up" not in out["thesis"]
+
+
+@needs_node
+@US_PAGES
+def test_us_feed_participation_unverified_headline_fails_closed(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed["display"]["headline_en"] = (
+        "Risk-on — the broader backdrop is supportive, but participation is unverified."
+    )
+    feed["display"]["headline_zh"] = "风险偏好 — 大环境支持风险资产，但市场参与度尚无法验证。"
+    feed["display"]["participation_scope"] = {
+        "state": "unverified", "participation": "unverified", "breadth_score": None
+    }
+
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+
+    assert not out.get("error"), out["error"]
+    assert "participation is unverified" in out["thesis"]
 
 
 @needs_node
