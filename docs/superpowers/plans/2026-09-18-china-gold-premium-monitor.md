@@ -81,8 +81,11 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
 - cold-starts with 90 calendar days (enough depth for honest 30-session statistics in normal
   trading calendars), then refreshes a bounded 14-day overlap nightly; Massive history is
   requested newest-first so an older-history access/network failure cannot black out the current
-  close-aligned point, while the collector continues retrying cold-start depth until at least 30
-  persisted dates overlap across both raw legs; if either raw leg falls outside the normal
+  close-aligned point; after the first observed Massive HTTP 429, the historical repair retries
+  that same chunk after one Basic-plan-safe interval and paces each older request for the rest of
+  the run, preventing a transient 5-calls/minute ceiling from becoming permanent chart holes;
+  the collector continues retrying cold-start depth until at least 30 persisted dates overlap
+  across both raw legs; if either raw leg falls outside the normal
   overlap the next run expands to cover the whole observed gap plus overlap, bounded by the
   370-day full-history horizon; explicit full-history runs remain available for deeper backfill;
 - leaves the official SHAUPM/LBMA-AM canonical method untouched and unavailable until its

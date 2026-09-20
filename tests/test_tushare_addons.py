@@ -1637,3 +1637,71 @@ def test_gold_basis_backfill_is_main_only_and_skips_unrelated_archive_fetch():
     assert "gold_china_basis may only run from main" in text
     assert 'GITHUB_REF_NAME' in text
     assert "if: github.event.inputs.only != 'gold_china_basis'" in text
+
+
+def test_gold_basis_rate_limit_retries_same_history_chunk_then_paces_older_requests(monkeypatch):
+    from collections import Counter
+    from datetime import date, datetime, timezone
+    from types import SimpleNamespace
+
+    from collectors import china_gold_basis as cgb
+
+    class FixedDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(2026, 9, 18, 12, 0, tzinfo=timezone.utc)
+            return value if tz is None else value.astimezone(tz)
+
+    chunks = [
+        (date(2026, 9, 5), date(2026, 9, 18)),
+        (date(2026, 8, 22), date(2026, 9, 4)),
+        (date(2026, 8, 8), date(2026, 8, 21)),
+    ]
+    raw_sge = pd.DataFrame(
+        [{"ts_code": "Au99.99", "trade_date": "20260918", "close": 947.09}]
+    )
+    monkeypatch.setattr(cgb, "datetime", FixedDateTime)
+    monkeypatch.setattr(cgb.tushare_client, "enabled", lambda: True)
+    monkeypatch.setattr(cgb.config, "secret", lambda name: "fixture-key")
+    monkeypatch.setattr(cgb.tushare_client, "query", lambda api_name, **kwargs: raw_sge.copy())
+    monkeypatch.setattr(
+        cgb,
+        "_date_chunks",
+        lambda start, end, *, max_days, newest_first: iter(chunks),
+    )
+
+    sleeps = []
+    monkeypatch.setattr(
+        cgb,
+        "time",
+        SimpleNamespace(sleep=lambda seconds: sleeps.append(float(seconds))),
+        raising=False,
+    )
+    adapter = cgb.ChinaGoldBasisAdapter()
+    calls = Counter()
+
+    payloads = {
+        "2026-09-05/2026-09-18": ("2026-09-18T07:30:00Z", 29481.9),
+        "2026-08-22/2026-09-04": ("2026-09-01T07:30:00Z", 29200.0),
+        "2026-08-08/2026-08-21": ("2026-08-15T07:30:00Z", 29100.0),
+    }
+
+    def fake_get(url, **kwargs):
+        suffix = next(key for key in payloads if url.endswith("/" + key))
+        calls[suffix] += 1
+        if suffix == "2026-08-22/2026-09-04" and calls[suffix] == 1:
+            raise RuntimeError("HTTP 429")
+        stamp, close = payloads[suffix]
+        return _GoldBasisResp(
+            {"results": [{"t": _gold_basis_ms(stamp), "c": close}]}
+        )
+
+    monkeypatch.setattr(adapter, "http_get", fake_get)
+
+    frames = adapter.fetch(full_history=True)
+
+    assert calls["2026-08-22/2026-09-04"] == 2
+    assert pd.Timestamp("2026-09-01T07:30:00") in frames["xaucny_spot"].index
+    assert pd.Timestamp("2026-08-15T07:30:00") in frames["xaucny_spot"].index
+    assert len(sleeps) >= 2
+    assert min(sleeps) >= 12.0

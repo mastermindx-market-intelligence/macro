@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 import logging
+import time
 
 import numpy as np
 import pandas as pd
@@ -36,8 +37,17 @@ _CLOSE_MINUTE_UTC = 30
 _REFRESH_DAYS = 13  # today + 13 prior days = one <=14-day minute-bar request
 _COLD_START_DAYS = 90  # enough calendar depth for honest 30-session product statistics
 _MAX_MASSIVE_RESULTS = 50_000
+_MASSIVE_BASIC_PACE_SECONDS = 12.5  # <= 5 calls/minute after an observed 429
 
 log = logging.getLogger("collector.gold_china_basis")
+
+
+def _is_rate_limit_error(exc: Exception) -> bool:
+    response = getattr(exc, "response", None)
+    return (
+        getattr(response, "status_code", None) == 429
+        or "HTTP 429" in str(exc)
+    )
 
 
 def _date_chunks(start, end, *, max_days: int = 14, newest_first: bool = False):
@@ -266,6 +276,7 @@ class ChinaGoldBasisAdapter(Adapter):
 
         base = str(config.load().get("polygon", {}).get("base_url") or "https://api.massive.com")
         pieces: list[pd.DataFrame] = []
+        rate_limited = False
         for chunk_start, chunk_end in _date_chunks(
             start, end, max_days=14, newest_first=True
         ):
@@ -273,10 +284,13 @@ class ChinaGoldBasisAdapter(Adapter):
                 f"{base.rstrip('/')}/v2/aggs/ticker/{_MASSIVE_TICKER}/range/1/minute/"
                 f"{chunk_start.isoformat()}/{chunk_end.isoformat()}"
             )
-            try:
+            if rate_limited:
+                time.sleep(_MASSIVE_BASIC_PACE_SECONDS)
+
+            def fetch_piece(*, retries: int = 3) -> pd.DataFrame:
                 response = self.http_get(
                     url,
-                    retries=3,
+                    retries=retries,
                     timeout=60,
                     headers={"Authorization": f"Bearer {self.massive_key}"},
                     params={
@@ -285,12 +299,40 @@ class ChinaGoldBasisAdapter(Adapter):
                         "limit": _MAX_MASSIVE_RESULTS,
                     },
                 )
-                piece = _massive_xaucny_frame(response.json(), tolerance_minutes=2)
+                return _massive_xaucny_frame(
+                    response.json(), tolerance_minutes=2
+                )
+
+            try:
+                piece = fetch_piece()
             except Exception as exc:
+                if _is_rate_limit_error(exc):
+                    # Massive Currencies Basic currently permits five calls/minute.
+                    # Do not permanently punch holes in a full-history repair merely
+                    # because the adaptive fast path discovered that ceiling. Wait
+                    # through one full request interval, retry the SAME chunk once,
+                    # then pace every older request in this run.
+                    rate_limited = True
+                    log.warning(
+                        "Massive XAUCNY rate limit observed at %s..%s; "
+                        "retrying after %.1fs and pacing older history",
+                        chunk_start,
+                        chunk_end,
+                        _MASSIVE_BASIC_PACE_SECONDS,
+                    )
+                    time.sleep(_MASSIVE_BASIC_PACE_SECONDS)
+                    try:
+                        piece = fetch_piece(retries=1)
+                    except Exception as retry_exc:
+                        exc = retry_exc
+                    else:
+                        if not piece.empty:
+                            pieces.append(piece)
+                        continue
+
                 # Once the current chunk has produced an aligned point, an older
-                # history failure is a DEPTH degradation, not a reason to black
-                # out today's product. The next nightly keeps attempting depth
-                # until the 30-session readiness floor is reached.
+                # non-recoverable history failure is a DEPTH degradation, not a
+                # reason to black out today's product.
                 if pieces:
                     log.warning(
                         "Massive XAUCNY historical chunk %s..%s unavailable; "

@@ -73,7 +73,10 @@ The indicative close-aligned source contract is:
   session plus the current 09:00-15:30 Shanghai session; the comparison timestamp is the
   trade-date close at 15:30 Asia/Shanghai;
 - Massive Currencies `C:XAUCNY` minute aggregates, aligned within the configured close
-  tolerance; the committed capability manifest records the FX probe as entitled;
+  tolerance; the committed capability manifest records the FX probe as entitled. Historical
+  backfill starts unthrottled, but after the first observed HTTP 429 it retries that exact chunk
+  after a 12.5-second interval and paces subsequent older chunks at the same interval so the
+  Basic-plan 5-calls/minute ceiling degrades speed rather than history completeness;
 - raw legs persist under `gold_china_basis/` and are consumed only by this display engine;
 - a cold store seeds 90 calendar days before switching to the bounded nightly overlap, so a
   rendered "30-session range" is not synthesized from a handful of observations;
