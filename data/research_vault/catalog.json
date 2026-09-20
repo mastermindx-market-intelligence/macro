@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T14:29:29.830368+00:00",
-  "count": 2504,
+  "generated_at": "2026-09-20T14:44:26.507251+00:00",
+  "count": 2505,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1109,6 +1109,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3h88sk9mtku-b95e4a",
+      "title": "Senior loans",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:41Z",
+      "summary_points": [
+        "Leveraged Loan Distress Bifurcation: Software/IT issuers (12% of index) face 3-4% distress ratios amid 2.88% trailing 12-mo default rates, despite strong August returns (0.93% LSTA index) and year-to-date 3.07% outperformance.",
+        "Fed Policy & Carry Dynamics: Elevated base rates support carry returns; Fed hike expected by Dec 2026 (not prolonged tightening), with issuance rebounding to $31B in Sept (vs $15B Aug) driven by refinancing.",
+        "Geopolitical Oil-Growth Nexus: Oil below $90 stabilizes growth (2.5-3% 2026-27 GDP), but Strait of Hormuz disruptions risk oil shocks → 0.5-1% GDP and aggressive rate cuts; CLO flows (USD 112.1B, 21% below prior year) signal market sentiment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
