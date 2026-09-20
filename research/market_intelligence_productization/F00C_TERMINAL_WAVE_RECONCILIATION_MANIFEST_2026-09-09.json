@@ -653,7 +653,7 @@
   "seat_records_pass_2026_09_20_c": {
     "recorded_by": "Meta-CEO B seat 026851bd (Fable 5.1)",
     "ledger_sha_source": "origin/main at e338508d (macro #7451 merge, 2026-09-20T00:40:06Z) = ledger blob 70505eaa (last ledger commit 5b4bbbc9 = #7447 records pass)",
-    "single_writer_note": "append-only in-cell notes on 3 rows already inside Sol's 80-row union; no state moves; no manifest row changes (none of the 12 mirrored rows touched); source heads named in every appended cell; tests/test_mo_b_ledger_reconciliation_2026_09_18.py untouched and green (5 passed); ledger commit 99acab58 + this manifest commit form one records PR",
+    "single_writer_note": "append-only in-cell notes on 3 rows already inside Sol's 80-row union; no state moves; no manifest row changes (none of the 12 mirrored rows touched); source heads named in every appended cell; tests/test_mo_b_ledger_reconciliation_2026_09_18.py untouched and green (5 passed); commits 99acab58 (ledger) + 6e5523c8 (this manifest block) + 8baae5bc (#7132 source head corrected to its merge commit e1e8de31 after Grok h_rec5_rv1 MAJOR 1) form one records PR (#7465)",
     "rows_written": [
       "MO-DELTA-021",
       "MO-PAID-059",
