@@ -1,0 +1,184 @@
+{
+  "appended": 6,
+  "asof": "2026-09-18",
+  "candidates": {
+    "R": 0,
+    "T": 7,
+    "W": 4
+  },
+  "deduped": {
+    "R": 0,
+    "T": 1,
+    "W": 4
+  },
+  "dry_run": false,
+  "feature_source": {
+    "enabled": true,
+    "foresight": {
+      "asof": "2026-09-18",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
+    },
+    "ignition": {
+      "coil_min_sessions": 293,
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 10
+      },
+      "reason": null,
+      "source": "data/baskets/ohlcv/<ticker>.parquet",
+      "themes_read": {
+        "Quantum Computing": {
+          "theme_thrust_frac": 0.0714,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Semiconductors": {
+          "theme_thrust_frac": 0.0909,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
+      "thrust_min_members": 6,
+      "thrust_min_sessions": 27,
+      "tickers_ok": 43,
+      "tickers_read": 53
+    },
+    "keys": [
+      "relay_count_3d",
+      "relay_position",
+      "relay_members_covered",
+      "turnover_pctile",
+      "turnover_window",
+      "foresight_stage",
+      "foresight_covered",
+      "coil_compressed",
+      "coil_bars_compressed",
+      "coil_reason",
+      "theme_thrust_state",
+      "theme_thrust_frac",
+      "theme_thrust_reason"
+    ],
+    "relay": {
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 108,
+      "n_covered": 69,
+      "reason": null,
+      "window_sessions": 21
+    },
+    "turnover": {
+      "consulted": true,
+      "last_session": "2026-09-18",
+      "n_tickers": 1544,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
+    }
+  },
+  "feature_source_w": {
+    "atlas": {
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
+    },
+    "enabled": true,
+    "keys": [
+      "era",
+      "regime_bucket",
+      "archetype",
+      "atlas_event_date",
+      "atlas_event_on_cross",
+      "atlas_class",
+      "atlas_name_post_13w",
+      "atlas_name_post_13w_exc",
+      "atlas_arch_post_13w",
+      "atlas_arch_post_13w_exc",
+      "atlas_n_name",
+      "atlas_n_archetype",
+      "atlas_n_global",
+      "atlas_covered"
+    ]
+  },
+  "flag_tickers": {
+    "R": [],
+    "T": [
+      "AMD",
+      "ADI",
+      "AMKR",
+      "COHU",
+      "FORM",
+      "NXPI"
+    ],
+    "W": []
+  },
+  "n_universe": 1496,
+  "overflow": {
+    "R": 0,
+    "T": 0,
+    "W": 0
+  },
+  "run_utc": "2026-09-19 22:25:02",
+  "runtime_s": 116.9,
+  "schema": "prophet_doors/v1",
+  "theme_source": {
+    "age_days": 0,
+    "asof": "2026-09-18",
+    "n_members": 108,
+    "ok": true,
+    "reason": null,
+    "source": "site/marketdata/subsector_rotation.json",
+    "top_themes": [
+      {
+        "emerging_score": 2.983,
+        "rank": 1,
+        "theme": "Cybersecurity"
+      },
+      {
+        "emerging_score": 1.913,
+        "rank": 2,
+        "theme": "Education Technology"
+      },
+      {
+        "emerging_score": 1.705,
+        "rank": 3,
+        "theme": "Quantum Computing"
+      },
+      {
+        "emerging_score": 1.439,
+        "rank": 4,
+        "theme": "Semiconductors"
+      },
+      {
+        "emerging_score": 1.4,
+        "rank": 5,
+        "theme": "Crypto & Blockchain"
+      }
+    ]
+  },
+  "washout_source": {
+    "align_grids": [
+      "2B",
+      "3B"
+    ],
+    "aligned": 4,
+    "asof_max": "2026-09-18",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-18",
+    "evaluated": 713,
+    "fresh": 4,
+    "fresh_weeks_max": 2,
+    "ok": true,
+    "reason": null,
+    "runtime_s": 25.6,
+    "skipped": 4,
+    "source": "baskets/membership.json",
+    "state_turn": 76,
+    "universe_n": 717
+  }
+}

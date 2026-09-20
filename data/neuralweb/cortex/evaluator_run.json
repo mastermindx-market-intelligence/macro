@@ -1,0 +1,40 @@
+{
+  "as_of": "2026-09-19",
+  "evaluator_version": "W7b-PR3",
+  "dry_run": false,
+  "n_due": 1,
+  "results": [
+    {
+      "id": "cortex-2026-08-22-when-the-confirmed-us-regime-label-remai-710a86",
+      "claim_shape": "conditional_regime",
+      "verdict": "uncomputable-metric",
+      "n": 0,
+      "metric_value": null,
+      "detail": {
+        "gate_error": "metric 'matched_mean_spy_excess_difference' is not computable by this evaluator",
+        "supported_metrics": [
+          "excess_mean",
+          "excess_mean_difference",
+          "hit_rate",
+          "hit_rate_difference",
+          "hit_rate_ratio",
+          "stop_out_rate",
+          "stop_out_rate_difference"
+        ],
+        "remediation": "re-register with a supported metric name; the evaluator will not substitute a different metric for the one that was pre-committed",
+        "evaluator_version": "W7b-PR3"
+      },
+      "gate": {
+        "metric": "matched_mean_spy_excess_difference",
+        "threshold": -0.02,
+        "min_n": 30,
+        "horizon_d": 21,
+        "direction_expected": -1
+      },
+      "note": null
+    }
+  ],
+  "n_passed": 0,
+  "n_failed": 0,
+  "n_insufficient": 0
+}

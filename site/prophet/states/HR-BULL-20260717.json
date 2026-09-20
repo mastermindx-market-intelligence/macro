@@ -1,0 +1,50 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "HR-BULL-20260717",
+  "asof": "2026-09-18",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 27.9,
+  "raw_confidence": 27.1,
+  "delta_vs_base": -32.1,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "components": {
+    "validity": 33.0,
+    "progress": 0.0,
+    "pace": 6.0,
+    "retention": 47.1,
+    "overlay": 55.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 0.44,
+    "dist_to_t1_r": 1.5,
+    "dist_to_t2_r": 3.0,
+    "horizon_pct_used": 140.0,
+    "p1": -0.3736,
+    "p2": -0.1868,
+    "p3": null,
+    "move_r": -0.56,
+    "mfe_r": 0.0,
+    "mae_r": -0.56
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 0.0,
+  "_mae": -2.920000381469727,
+  "_max_p1": 0.0,
+  "_first_trigger_ts": null,
+  "_first_t1_ts": null,
+  "_first_t2_ts": null,
+  "days_elapsed": 63,
+  "tau": 1.4
+}

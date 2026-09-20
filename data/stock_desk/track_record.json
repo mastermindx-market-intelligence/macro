@@ -1,0 +1,178 @@
+{
+  "schema": "stock_desk.v1",
+  "as_of": "2026-09-19",
+  "scored_total": 182,
+  "open": 89,
+  "unscored_neutral": 269,
+  "overall": {
+    "n": 182,
+    "hits": 116,
+    "misses": 66,
+    "hit_rate": 0.637,
+    "dir_accuracy": 0.418
+  },
+  "by_lean": {
+    "constructive": {
+      "n": 110,
+      "hits": 62,
+      "misses": 48,
+      "hit_rate": 0.564,
+      "dir_accuracy": 0.309
+    },
+    "neutral": {
+      "n": 0,
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null,
+      "dir_accuracy": null
+    },
+    "cautious": {
+      "n": 71,
+      "hits": 54,
+      "misses": 17,
+      "hit_rate": 0.761,
+      "dir_accuracy": 0.592
+    },
+    "avoid": {
+      "n": 1,
+      "hits": 0,
+      "misses": 1,
+      "hit_rate": 0.0,
+      "dir_accuracy": 0.0
+    }
+  },
+  "by_conviction": {
+    "low": {
+      "n": 152,
+      "hits": 95,
+      "misses": 57,
+      "hit_rate": 0.625,
+      "dir_accuracy": 0.388
+    },
+    "medium": {
+      "n": 28,
+      "hits": 19,
+      "misses": 9,
+      "hit_rate": 0.679,
+      "dir_accuracy": 0.607
+    },
+    "high": {
+      "n": 2,
+      "hits": 2,
+      "misses": 0,
+      "hit_rate": 1.0,
+      "dir_accuracy": 0.0
+    }
+  },
+  "calibration_note": "182 leans scored, hit-rate 0.637 (directional accuracy 0.418). Chance alone would land a hit-rate near 0.7514 (directional accuracy near 0.5077) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "recent": [
+    {
+      "id": "2026-08-18-HWM-20260819191449-4",
+      "ticker": "HWM",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2192,
+      "check_by": "2026-09-15"
+    },
+    {
+      "id": "2026-08-18-GNW-20260819191449-5",
+      "ticker": "GNW",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0062,
+      "check_by": "2026-09-15"
+    },
+    {
+      "id": "2026-08-17-EQIX-20260818143708-1",
+      "ticker": "EQIX",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0748,
+      "check_by": "2026-09-14"
+    },
+    {
+      "id": "2026-07-31-SHOO-20260807174121-4",
+      "ticker": "SHOO",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.0915,
+      "check_by": "2026-09-11"
+    },
+    {
+      "id": "2026-07-29-TMP-1",
+      "ticker": "TMP",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.07,
+      "check_by": "2026-09-09"
+    },
+    {
+      "id": "2026-07-29-CASY-3",
+      "ticker": "CASY",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.3198,
+      "check_by": "2026-09-09"
+    },
+    {
+      "id": "2026-07-29-TNL-5",
+      "ticker": "TNL",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2126,
+      "check_by": "2026-09-09"
+    },
+    {
+      "id": "2026-07-29-TPR-6",
+      "ticker": "TPR",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2876,
+      "check_by": "2026-09-09"
+    },
+    {
+      "id": "2026-07-28-YETI-3",
+      "ticker": "YETI",
+      "lean": "constructive",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.2485,
+      "check_by": "2026-09-08"
+    },
+    {
+      "id": "2026-07-28-LLY-6",
+      "ticker": "LLY",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.1131,
+      "check_by": "2026-09-08"
+    },
+    {
+      "id": "2026-08-07-ROIV-20260809100621-3",
+      "ticker": "ROIV",
+      "lean": "cautious",
+      "conviction": "medium",
+      "outcome": "miss",
+      "realized": 0.1509,
+      "check_by": "2026-09-07"
+    },
+    {
+      "id": "2026-08-07-WT-20260809100621-6",
+      "ticker": "WT",
+      "lean": "cautious",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": 0.1586,
+      "check_by": "2026-09-07"
+    }
+  ]
+}

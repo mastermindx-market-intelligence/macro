@@ -1,0 +1,164 @@
+{
+  "schema": "master_brain_track_record.v1",
+  "as_of": "2026-09-18",
+  "scored_total": 12,
+  "open": 0,
+  "unscored_soft": 0,
+  "expired": 0,
+  "overall": {
+    "n": 12,
+    "hits": 10,
+    "misses": 2,
+    "hit_rate": 0.833,
+    "dir_accuracy": 0.583
+  },
+  "by_conviction": {
+    "high": {
+      "n": 0,
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null,
+      "dir_accuracy": null
+    },
+    "medium": {
+      "n": 4,
+      "hits": 4,
+      "misses": 0,
+      "hit_rate": 1.0,
+      "dir_accuracy": 0.75
+    },
+    "low": {
+      "n": 8,
+      "hits": 6,
+      "misses": 2,
+      "hit_rate": 0.75,
+      "dir_accuracy": 0.5
+    }
+  },
+  "by_kind": {
+    "rel_return": {
+      "n": 12,
+      "hits": 10,
+      "misses": 2,
+      "hit_rate": 0.833,
+      "dir_accuracy": 0.583
+    },
+    "level": {
+      "n": 0,
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null,
+      "dir_accuracy": null
+    }
+  },
+  "by_regime": {
+    "Goldilocks": {
+      "n": 11,
+      "hits": 9,
+      "misses": 2,
+      "hit_rate": 0.818,
+      "dir_accuracy": 0.545
+    },
+    "Reflation": {
+      "n": 1,
+      "hits": 1,
+      "misses": 0,
+      "hit_rate": 1.0,
+      "dir_accuracy": 1.0
+    }
+  },
+  "calibration_note": "12 leans scored, hit-rate 0.833 (directional accuracy 0.583). Chance alone would land a hit-rate near 0.829 (directional accuracy near 0.4729) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "recent": [
+    {
+      "id": "mb-2026-07-24-1",
+      "subject": "Growth over value",
+      "lean": "underweight",
+      "conviction": "medium",
+      "outcome": "hit",
+      "realized": 0.009,
+      "check_by": "2026-09-04"
+    },
+    {
+      "id": "mb-2026-07-30-1",
+      "subject": "Semiconductors",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0109,
+      "check_by": "2026-08-28"
+    },
+    {
+      "id": "mb-2026-07-16-1",
+      "subject": "Growth over value",
+      "lean": "underweight",
+      "conviction": "medium",
+      "outcome": "hit",
+      "realized": -0.0104,
+      "check_by": "2026-08-27"
+    },
+    {
+      "id": "mb-2026-07-24-2",
+      "subject": "Bitcoin",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": 0.1875,
+      "check_by": "2026-08-21"
+    },
+    {
+      "id": "mb-2026-07-17-1",
+      "subject": "High-yield credit",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0437,
+      "check_by": "2026-08-14"
+    },
+    {
+      "id": "mb-2026-06-29-1",
+      "subject": "US equities",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0432,
+      "check_by": "2026-08-10"
+    },
+    {
+      "id": "mb-2026-07-09-1",
+      "subject": "China equities",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0536,
+      "check_by": "2026-08-06"
+    },
+    {
+      "id": "mb-2026-07-20-1",
+      "subject": "Semiconductors",
+      "lean": "underweight",
+      "conviction": "medium",
+      "outcome": "hit",
+      "realized": -0.0449,
+      "check_by": "2026-08-03"
+    },
+    {
+      "id": "mb-2026-07-01-1",
+      "subject": "Long Treasuries",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0094,
+      "check_by": "2026-07-29"
+    },
+    {
+      "id": "mb-2026-06-26-1",
+      "subject": "China equities",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": 0.081,
+      "check_by": "2026-07-24"
+    }
+  ],
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 12 \u6761\uff0c\u547d\u4e2d\u7387 0.833\uff08\u65b9\u5411\u51c6\u786e\u7387 0.583\uff09\u3002\u540c\u6837\u6761\u4ef6\u4e0b\uff0c\u65e0\u6280\u80fd\u5224\u65ad\u51ed\u673a\u4f1a\u5373\u53ef\u8fbe\u5230\u7ea6 0.829 \u7684\u547d\u4e2d\u7387\uff08\u65b9\u5411\u51c6\u786e\u7387\u7ea6 0.4729\uff09\u2014\u2014\u4e0a\u8ff0\u6570\u5b57\u5e94\u4e0e\u8be5\u57fa\u7ebf\u6bd4\u8f83\uff0c\u800c\u975e 0.5\u3002"
+}

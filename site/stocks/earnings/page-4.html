@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script data-dbase>(function () {
+  window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
+  var B = window.DATA_BASE;
+  if (!B) return;                                         // no-op when unset -> zero behavior change
+  B = B.replace(/\/+$/, "");                              // strip trailing slash
+  // the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
+  var RE = /^(ohlc|chinaohlc|hkohlc|intlohlc|canadaohlc|subsectorohlc(?:_china|_russell|_nasdaq)?|stockdata|chinastockdata|hkstockdata|canadastockdata|intlstockdata|intraday)\//;
+  var orig = window.fetch;
+  window.fetch = function (u, o) {
+    try {
+      if (typeof u === "string") {
+        /* theme.js resolves shared assets from its own script URL, so its stock
+           libraries arrive here as absolute same-origin URLs.  The old shim only
+           recognized bare/../ paths, leaving those requests on the protected HTML
+           origin (401 on Start) and the search spinner alive forever.  Normalize
+           every same-origin string to a root-relative key before matching; preserve
+           query/hash cache keys, and never rewrite an already-external URL. */
+        var a = new URL(u, location.href);
+        if (a.origin === location.origin) {
+          var rel = a.pathname.replace(/^\/+/, "") + a.search + a.hash;
+          if (RE.test(rel)) u = B + "/" + rel;            // -> https://<data-host>/ohlc/AAPL.json
+        }
+      }
+    } catch (e) { /* never let the shim break a fetch */ }
+    return orig.call(this, u, o);
+  };
+})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earnings call records — page 4 — MastermindX</title>
+<script>try{var th=localStorage.getItem('theme');if(th)document.documentElement.setAttribute('data-theme',th);var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);document.documentElement.classList.add('has-js');}catch(e){}</script><meta name="description" content="Receipt-bound excerpts from company earnings-call transcripts.">
+<link rel="canonical" href="https://www.mastermind-x.com/stocks/earnings/page-4.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MastermindX">
+<meta property="og:title" content="Earnings call records — page 4">
+<meta property="og:description" content="Receipt-bound excerpts from company earnings-call transcripts.">
+<meta property="og:url" content="https://www.mastermind-x.com/stocks/earnings/page-4.html">
+<meta property="og:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Earnings call records — page 4">
+<meta name="twitter:description" content="Receipt-bound excerpts from company earnings-call transcripts.">
+<meta name="twitter:image" content="https://www.mastermind-x.com/apple-touch-icon.png">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png"><link rel="stylesheet" href="../../theme.css?v=d41ce2d4"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.mastermind-x.com/index.html"},{"@type":"ListItem","position":2,"name":"Earnings call records"}]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"MastermindX Earnings Wire","description":"Receipt-bound excerpts from earnings-call transcripts.","url":"https://www.mastermind-x.com/stocks/earnings/page-4.html","isPartOf":{"@type":"WebSite","name":"MastermindX","url":"https://www.mastermind-x.com/"},"numberOfItems":96}</script>
+<link rel="stylesheet" href="../../assets/css/b3779016.css?v=b3779016">
+<link rel="stylesheet" href="../../assets/css/17c15c21.css?v=17c15c21"><link rel="stylesheet" href="assets/earnings-wire.css?v=f9a1ee1d">
+<link rel="preload" as="style" href="../../product-nav-icons.css?v=093ad1ea">
+<link rel="alternate" type="application/rss+xml" title="MastermindX Earnings Wire" href="feed.xml">
+</head>
+<body class="estate public-page earnings-wire earnings-wire-index">
+
+<nav class="public-nav" aria-label="Main">
+  <div class="public-nav-in">
+    <a class="public-brand" href="../../index.html" aria-label="MastermindX home"><span class="m">M</span> MASTERMINDX</a>
+    <button class="public-nav-toggle" id="public-nav-toggle" type="button" aria-expanded="false"
+            aria-controls="public-primary-navigation" aria-label="Open navigation">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+    <ul class="public-nav-links" id="public-primary-navigation">
+      <li class="public-nav-group">
+        <button class="public-nav-trigger" id="public-platform-trigger" type="button" aria-expanded="false" aria-controls="public-platform-panel">
+          <span class="l-en">Platform</span><span class="l-zh">平台</span> <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5"/></svg>
+        </button>
+        <div class="public-nav-panel" id="public-platform-panel" aria-labelledby="public-platform-trigger" hidden>
+          <div class="public-nav-panel-head">
+            <div><span><span class="l-en">CONNECTED RESEARCH DESK</span><span class="l-zh">互联研究工作台</span></span><strong><span class="l-en">Move from market state to the underlying evidence</span><span class="l-zh">从市场状态一路深入到底层证据</span></strong></div>
+            <a href="../../products/index.html"><span class="l-en">Platform overview →</span><span class="l-zh">平台概览 →</span></a>
+          </div>
+          <div class="public-nav-card-grid">
+            <a class="public-nav-card" href="../../products/market-terminal.html"><i>01</i><span><strong><span class="l-en">Market Terminal</span><span class="l-zh">市场终端</span></strong><small><span class="l-en">Browser charting, watchlists and stock research context.</span><span class="l-zh">浏览器图表、观察列表与股票研究资料。</span></small></span></a>
+            <a class="public-nav-card" href="../../products/mastermind-ai.html"><i>02</i><span><strong>Mastermind AI</strong><small><span class="l-en">A market research assistant grounded in the page and its sources.</span><span class="l-zh">结合当前页面与来源的市场研究助手。</span></small></span></a>
+            <a class="public-nav-card" href="../../products/market-dashboards.html"><i>03</i><span><strong><span class="l-en">Market Dashboards</span><span class="l-zh">市场仪表盘</span></strong><small><span class="l-en">Macro, cycle, sector rotation and cross-asset context.</span><span class="l-zh">宏观、周期、行业轮动与跨资产情况。</span></small></span></a>
+          </div>
+        </div>
+      </li>
+      <li class="public-nav-group">
+        <button class="public-nav-trigger" id="public-research-trigger" type="button" aria-expanded="false" aria-controls="public-research-panel">
+          <span class="l-en">Research</span><span class="l-zh">研究</span> <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5"/></svg>
+        </button>
+        <div class="public-nav-panel public-nav-panel-research" id="public-research-panel" aria-labelledby="public-research-trigger" hidden>
+          <div class="public-nav-panel-head">
+            <div><span><span class="l-en">PUBLIC RESEARCH SURFACES</span><span class="l-zh">公开研究界面</span></span><strong><span class="l-en">From report excerpts to ticker-level dossiers</span><span class="l-zh">从报告节选到逐股档案</span></strong></div>
+          </div>
+          <div class="public-nav-card-grid">
+            <a class="public-nav-card" href="https://www.mastermind-x.com/research_vault.html"><i>R</i><span><strong><span class="l-en">Institutional Research</span><span class="l-zh">机构研报</span></strong><small><span class="l-en">Preview the latest three report summaries; full research and PDFs are available with Pro.</span><span class="l-zh">预览最新三篇研报摘要；完整研报与 PDF 为 Pro 专享。</span></small></span></a>
+            <a class="public-nav-card" href="../../glossary.html"><i>G</i><span><strong><span class="l-en">Glossary</span><span class="l-zh">词汇表</span></strong><small><span class="l-en">Every reading on the dashboards, in plain words.</span><span class="l-zh">用平实语言解释仪表盘上的每一项读数。</span></small></span></a>
+            <a class="public-nav-card" href="../../am_edition.html"><i>M</i><span><strong><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></strong><small><span class="l-en">Before the US open — tape, clock, regime and calendar.</span><span class="l-zh">美股开盘前 — 盘面、时钟、周期与日历。</span></small></span></a>
+            <a class="public-nav-card" href="../../stocks/index.html"><i>S</i><span><strong><span class="l-en">Stock Dossiers</span><span class="l-zh">股票档案</span></strong><small><span class="l-en">Ticker pages for technical, fundamental, ownership and options context.</span><span class="l-zh">按股票整理的技术面、基本面、持仓与期权情况。</span></small></span></a>
+            <a class="public-nav-card" href="../../stocks/earnings/index.html"><i>E</i><span><strong><span class="l-en">Earnings Intelligence</span><span class="l-zh">财报情报</span></strong><small><span class="l-en">Receipt-bound call records that lead directly into the ticker dossier.</span><span class="l-zh">可追溯的电话会记录，并可直接进入个股档案。</span></small></span></a>
+          </div>
+        </div>
+      </li>
+      <li class="public-nav-group">
+        <button class="public-nav-trigger" id="public-resources-trigger" type="button" aria-expanded="false" aria-controls="public-resources-panel">
+          <span class="l-en">Resources</span><span class="l-zh">资源</span> <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5"/></svg>
+        </button>
+        <div class="public-nav-panel public-nav-panel-resources" id="public-resources-panel" aria-labelledby="public-resources-trigger" hidden>
+          <div class="public-nav-panel-head">
+            <div><span><span class="l-en">USEFUL BEFORE SIGNUP</span><span class="l-zh">无需账户即可使用</span></span><strong><span class="l-en">Start by solving one real problem</span><span class="l-zh">先解决一个真实问题</span></strong></div>
+          </div>
+          <div class="public-nav-card-grid two">
+            <a class="public-nav-card" href="../../tools/index.html"><i>T</i><span><strong><span class="l-en">Free Tools</span><span class="l-zh">免费工具</span></strong><small><span class="l-en">Calculators for sizing, risk, returns and portfolios.</span><span class="l-zh">仓位、风险、回报与投资组合计算器。</span></small></span></a>
+            <a class="public-nav-card" href="../../learn/index.html"><i>L</i><span><strong><span class="l-en">Learning Center</span><span class="l-zh">学习中心</span></strong><small><span class="l-en">Lessons on technicals, risk, options and filings.</span><span class="l-zh">技术分析、风险、期权与披露文件课程。</span></small></span></a>
+            <a class="public-nav-card" href="../../blog/index.html"><i>B</i><span><strong><span class="l-en">Blog</span><span class="l-zh">博客</span></strong><small><span class="l-en">Plain-English articles on trading math and market mechanics.</span><span class="l-zh">关于交易数学与市场机制的朴素文章。</span></small></span></a>
+            <a class="public-nav-card" href="../../help.html"><i>H</i><span><strong><span class="l-en">Help</span><span class="l-zh">帮助</span></strong><small><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span> · <span class="l-en">Methodology</span><span class="l-zh">方法论</span> · <span class="l-en">Support</span><span class="l-zh">支持</span></small></span></a>
+            <a class="public-nav-card" href="../../support.html"><i>?</i><span><strong><span class="l-en">Support</span><span class="l-zh">支持</span></strong><small><span class="l-en">Help with account, product and access questions.</span><span class="l-zh">账户、产品与访问问题的帮助入口。</span></small></span></a>
+          </div>
+        </div>
+      </li>
+      <li class="public-nav-direct"><a href="../../plans.html"><span class="l-en">Pricing</span><span class="l-zh">定价</span></a></li>
+    </ul>
+    <div class="public-nav-right">
+      <a id="nav-login" class="public-nav-login" href="https://app.mastermind-x.com/terminal?signin=1"><span class="l-en">Log in</span><span class="l-zh">登录</span></a>
+      <a id="nav-cta" class="public-nav-cta" href="https://app.mastermind-x.com/terminal?signup=1"><span class="l-en">Start free</span><span class="l-zh">免费开始</span></a>
+      <span class="gear-wrap">
+        <button class="gearbtn" id="gear-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div class="gear-pop" id="gear-pop" role="menu" aria-label="Settings">
+          <p class="gp-kicker"><span class="l-en">Settings</span><span class="l-zh">设置</span></p>
+          <div class="gp-lang">
+            <span class="gp-lbl"><span class="l-en">Language</span><span class="l-zh">语言</span></span>
+            <span class="gp-seg" role="group" aria-label="Language">
+              <button type="button" class="gp-seg-b" data-set-lang="en">EN</button>
+              <button type="button" class="gp-seg-b" data-set-lang="zh">中文</button>
+            </span>
+          </div>
+          <div class="gp-div"></div>
+          <a class="gp-link" role="menuitem" href="../../start.html"><span class="l-en">Open the dashboard</span><span class="l-zh">打开仪表盘</span></a>
+          <div class="gp-div"></div>
+          <div class="gp-acct">
+            <p class="gp-acct-t"><span class="l-en">Account</span><span class="l-zh">账户</span></p>
+            <div class="gp-acct-out" id="gp-acct-out">
+              <p class="gp-acct-d"><span class="l-en">Sign in to sync your watchlists, alerts and settings across devices.</span><span class="l-zh">登录以在所有设备同步自选、提醒与设置。</span></p>
+              <div class="gp-acct-btns">
+                <button type="button" class="gp-abtn ghost" id="gp-signin"><span class="l-en">Sign in</span><span class="l-zh">登录</span></button>
+                <button type="button" class="gp-abtn solid" id="gp-signup"><span class="l-en">Create account</span><span class="l-zh">创建账户</span></button>
+              </div>
+            </div>
+            <div class="gp-acct-in" id="gp-acct-in" hidden>
+              <div class="gp-acct-card" id="gp-acct-card" role="button" tabindex="0">
+                <span class="gp-avatar" id="gp-avatar"></span>
+                <span class="gp-acct-main"><span class="gp-acct-email" id="gp-email"></span><span class="gp-acct-sub"><span class="l-en">Manage account & sync ›</span><span class="l-zh">管理账户与同步 ›</span></span></span>
+              </div>
+              <button type="button" class="gp-signout" id="gp-signout"><span class="l-en">Sign out</span><span class="l-zh">退出登录</span></button>
+            </div>
+          </div>
+        </div>
+      </span>
+    </div>
+  </div>
+</nav>
+<nav class="est-crumb" aria-label="Breadcrumb">
+  <ol>
+    <li>
+<a href="../../index.html">Home</a>    </li>
+<li class="sep" aria-hidden="true">/</li>    <li aria-current="page">
+Earnings call records    </li>
+  </ol>
+</nav>
+
+<main id="main">
+<section class="ew-hero">
+  <div class="ew-wrap">
+    <div class="ew-kicker"><span class="ew-pulse" aria-hidden="true"></span><span class="l-en">Earnings call record</span><span class="l-zh">财报电话会记录</span></div>
+    <div class="ew-hero-grid">
+      <div>
+        <h1><span class="l-en">Source-first earnings records.</span><span class="l-zh">来源优先的财报记录。</span></h1>
+        <p class="ew-dek"><span class="l-en">A live archive of receipt-bound excerpts from company earnings calls. No generated thesis, no recommendation — just the recorded language, its source coordinates, and a direct path into the ticker dossier or live Terminal.</span><span class="l-zh">来自公司财报电话会的可追溯摘录档案。没有生成式投资结论，也没有推荐——只有原始表述、来源坐标，以及进入个股档案或实时终端的直接入口。</span></p>
+        <a class="ew-conversion" href="https://app.mastermind-x.com/terminal?signup=1&amp;utm_source=earnings_wire&amp;utm_medium=organic_research&amp;utm_campaign=company_intelligence" target="_blank" rel="noopener noreferrer"><span class="l-en">Start free in Terminal</span><span class="l-zh">免费开始使用终端</span> <span aria-hidden="true">↗</span></a>
+      </div>
+      <aside class="ew-hero-proof">
+        <span class="ew-proof-k"><span class="l-en">Method</span><span class="l-zh">方法</span></span>
+        <strong><span class="l-en">Exact approved spans only</span><span class="l-zh">仅展示已核验原文片段</span></strong>
+        <p><span class="l-en">Every visible excerpt is bound to a verified source snapshot by hash and byte coordinates.</span><span class="l-zh">每段可见摘录都通过哈希与字节坐标绑定到已核验的来源快照。</span></p>
+      </aside>
+    </div>
+    <div class="ew-ledger">
+      <span><b class="mono">5604</b><span class="l-en"> admitted call records</span><span class="l-zh"> 份准入电话会记录</span></span>
+      <span><b class="mono">29570</b><span class="l-en"> ingested packets</span><span class="l-zh"> 份已摄取数据包</span></span>
+      <span><b class="mono">23966</b><span class="l-en"> held by evidence policy</span><span class="l-zh"> 份因证据策略暂缓</span></span>
+      <span><b class="mono">3050</b><span class="l-en"> tickers</span><span class="l-zh"> 个代码</span></span>
+      <span><b class="mono">0</b><span class="l-en"> model calls in this publication</span><span class="l-zh"> 次模型调用</span></span>
+      <a href="feed.xml">RSS <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="ew-weekly-bridge" aria-labelledby="weekly-bridge-title">
+  <div class="ew-wrap">
+    <div><span><span class="l-en">Weekly intelligence</span><span class="l-zh">每周情报</span></span><h2 id="weekly-bridge-title"><span class="l-en">See the pattern across calls.</span><span class="l-zh">查看跨电话会的模式。</span></h2><p>17 <span class="l-en">verified call records</span><span class="l-zh">份已核验电话会记录</span> · 204 <span class="l-en">exact facts</span><span class="l-zh">条精确事实</span> · 2026-09-14 → 2026-09-20</p></div>
+    <a href="weekly/2026-09-14.html"><span><span class="l-en">Open this week’s evidence brief</span><span class="l-zh">打开本周证据简报</span></span><b>q and a</b><i aria-hidden="true">↗</i></a>
+  </div>
+</section>
+
+<section class="ew-directory" aria-labelledby="wire-directory-heading">
+  <div class="ew-wrap">
+    <div class="ew-section-head">
+      <div><span class="ew-eyebrow"><span class="l-en">Directory</span><span class="l-zh">目录</span></span><h2 id="wire-directory-heading"><span class="l-en">Currently admissible records</span><span class="l-zh">当前符合准入条件的记录</span></h2></div>
+      <p><span class="l-en">Browse the full archive page by page. Search on this page by ticker, period, category, or speaker; every card preview is a verbatim call excerpt.</span><span class="l-zh">分页浏览完整档案。在本页按代码、期间、分类或发言人搜索；每张卡片预览均为电话会原文摘录。</span></p>
+    </div>
+    <div class="ew-controls" role="search">
+      <label class="ew-search"><span class="sr-only"><span class="l-en">Search records</span><span class="l-zh">搜索记录</span></span><input id="wire-search" type="search" autocomplete="off" placeholder="Search ticker, period, topic or speaker" data-placeholder-en="Search ticker, period, topic or speaker" data-placeholder-zh="搜索代码、期间、主题或发言人"></label>
+      <button type="button" class="ew-filter active" data-wire-filter="all" aria-pressed="true"><span class="l-en">This page</span><span class="l-zh">本页全部</span> <b>96</b></button>
+      <button type="button" class="ew-filter" data-wire-filter="guidance" aria-pressed="false"><span class="l-en">Guidance</span><span class="l-zh">指引</span></button>
+      <button type="button" class="ew-filter" data-wire-filter="performance" aria-pressed="false"><span class="l-en">Performance</span><span class="l-zh">表现</span></button>
+      <button type="button" class="ew-filter" data-wire-filter="risks" aria-pressed="false"><span class="l-en">Risks</span><span class="l-zh">风险</span></button>
+    </div>
+    <p class="ew-results" id="wire-results" aria-live="polite"><span class="l-en">Showing records 289–384 of 5604.</span><span class="l-zh">显示第 289–384 条，共 5604 条。</span></p>
+    <div class="ew-grid" id="wire-grid">
+      <article class="ew-card" data-wire-card data-categories="risks segment_changes performance demand margins capital_allocation guidance" data-search="rdib rdib q2 fy2026 2026-08-18 risks risks segment_changes performance segment_changes demand margins capital_allocation guidance capital_allocation segment_changes performance performance demand segment_changes capital_allocation gilbert avanes gilbert avanes gilbert avanes ellen cotter ellen cotter ellen cotter ellen cotter ellen cotter ellen cotter ellen cotter ellen cotter ellen cotter">
+        <div class="ew-card-top"><span class="ew-ticker">RDIB</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="rdib-2026q2-call-record.html">RDIB · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>segment changes</span><span>performance</span></div>
+        <blockquote lang="en">“Breaking it down by division for the second quarter of 2026 and compared to the same period last year, with respect to Australia, our real estate revenue increased by 1% to AUD 2.8 million, and our operating income of AUD 1.3 million remained relatively flat.”</blockquote>
+        <div class="ew-card-foot"><span>Ellen Cotter</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand segment_changes q_and_a guidance performance margins capital_allocation" data-search="pony pony q2 fy2026 2026-08-18 demand segment_changes q_and_a demand segment_changes q_and_a demand segment_changes q_and_a guidance performance q_and_a performance segment_changes q_and_a performance q_and_a guidance performance margins q_and_a performance segment_changes q_and_a margins q_and_a margins q_and_a capital_allocation q_and_a guidance performance q_and_a james peng james peng james peng james peng leo wang leo wang leo wang leo wang leo wang leo wang leo wang leo wang">
+        <div class="ew-card-top"><span class="ew-ticker">PONY</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="pony-2026q2-call-record.html">PONY · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>segment changes</span><span>q and a</span></div>
+        <blockquote lang="en">“Together with approximately 2,000 vehicles produced, operating footprint across the world, more than 1.5 million registered domestic users, and $1.39 billion cash reserve, we have the operating momentum, global opportunities, and financial resources to execute our full year&#39;s target and support sustainable growth beyond 2026.”</blockquote>
+        <div class="ew-card-foot"><span>Leo Wang</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance management_commitments demand guidance margins capital_allocation risks q_and_a segment_changes" data-search="mrcy mercury systems q4 fy2026 2026-08-18 performance management_commitments performance demand guidance performance margins capital_allocation performance guidance margins demand guidance performance capital_allocation demand margins risks margins demand q_and_a demand q_and_a demand segment_changes q_and_a margins demand q_and_a bill ballhaus bill ballhaus bill ballhaus bill ballhaus bill ballhaus bill ballhaus bill ballhaus dave farnsworth bill ballhaus peter arment bill ballhaus clarke jeffries">
+        <div class="ew-card-top"><span class="ew-ticker">MRCY</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="mrcy-2026q4-call-record.html">Mercury Systems · Q4 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>management commitments</span><span>demand</span></div>
+        <blockquote lang="en">“Gross margin for FY 2026 of 28.6% was up 70 basis points year-over-year, consistent with our expectation that average backlog margin will continue to increase as we convert legacy lower margin backlog and bring in new bookings that we believe will be in line with our targeted margin profile.”</blockquote>
+        <div class="ew-card-foot"><span>Bill Ballhaus</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance demand capital_allocation q_and_a risks margins guidance management_commitments" data-search="keys keysight technologies q3 fy2026 2026-08-18 performance demand capital_allocation q_and_a demand risks q_and_a demand q_and_a demand q_and_a margins demand q_and_a performance capital_allocation risks q_and_a guidance margins q_and_a guidance performance q_and_a guidance performance q_and_a performance q_and_a margins demand management_commitments q_and_a margins demand q_and_a satish dhanasekaran satish dhanasekaran satish dhanasekaran satish dhanasekaran neil dougherty neil dougherty neil dougherty neil dougherty neil dougherty neil dougherty satish dhanasekaran satish dhanasekaran">
+        <div class="ew-card-top"><span class="ew-ticker">KEYS</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="keys-2026q3-call-record.html">Keysight Technologies · Q3 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>demand</span><span>capital allocation</span></div>
+        <blockquote lang="en">“Orders grew 56%, revenue grew 36%, and earnings per share grew 79%, alongside robust free cash flow generation.”</blockquote>
+        <div class="ew-card-foot"><span>Satish Dhanasekaran</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance margins q_and_a capital_allocation management_commitments guidance segment_changes" data-search="iq iq q2 fy2026 2026-08-18 performance margins q_and_a capital_allocation management_commitments q_and_a guidance performance q_and_a q_and_a q_and_a guidance performance q_and_a guidance performance q_and_a segment_changes q_and_a performance q_and_a capital_allocation q_and_a capital_allocation q_and_a performance q_and_a yu gong yu gong yu gong yu gong yu gong yu gong yu gong yu gong ying tian ying tian ying tian xianghua yang">
+        <div class="ew-card-top"><span class="ew-ticker">IQ</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="iq-2026q2-call-record.html">IQ · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>margins</span><span>q and a</span></div>
+        <blockquote lang="en">“[Non-English content] Our overseas business maintained rapid growth in Q2, with overall membership revenue grew 40% year-over-year, and we remain profitable on a managerial accounting basis.”</blockquote>
+        <div class="ew-card-foot"><span>Xianghua Yang</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a risks segment_changes margins capital_allocation performance guidance management_commitments" data-search="hd home depot (the) q2 fy2027 2026-08-18 demand q_and_a demand risks segment_changes q_and_a demand q_and_a margins capital_allocation risks q_and_a performance q_and_a guidance performance capital_allocation q_and_a guidance performance q_and_a guidance margins q_and_a performance capital_allocation management_commitments q_and_a margins risks q_and_a margins capital_allocation risks q_and_a performance risks q_and_a richard mcphail richard mcphail billy bastek richard mcphail richard mcphail richard mcphail richard mcphail richard mcphail richard mcphail richard mcphail richard mcphail richard mcphail">
+        <div class="ew-card-top"><span class="ew-ticker">HD</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="hd-2027q2-call-record.html">Home Depot (The) · Q2 FY2027 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>risks</span></div>
+        <blockquote lang="en">“In the second quarter, our gross margin was 33.7%, an increase of approximately 25 basis points from the second quarter of last year, which was primarily driven by the benefit from the IEEPA tariff refund, largely offset by incremental cost pressures related to fuel, energy, and other product input costs, as well as a change in mix as a result of the GMS acquisition.”</blockquote>
+        <div class="ew-card-foot"><span>Richard McPhail</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance demand margins capital_allocation risks segment_changes guidance q_and_a" data-search="flxs flexsteel industries inc q4 fy2026 2026-08-18 performance demand performance margins capital_allocation demand risks demand segment_changes margins risks performance margins risks capital_allocation guidance performance guidance margins q_and_a margins risks q_and_a guidance margins risks q_and_a demand risks q_and_a derek schmidt derek schmidt derek schmidt derek schmidt mike ressler mike ressler mike ressler mike ressler mike ressler mike ressler mike ressler derek schmidt">
+        <div class="ew-card-top"><span class="ew-ticker">FLXS</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="flxs-2026q4-call-record.html">Flexsteel Industries Inc · Q4 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>demand</span><span>margins</span></div>
+        <blockquote lang="en">“Excluding the impact of these items, adjusted operating margin was 7.1% of sales in the current quarter, compared to adjusted operating margin of 9.0% of sales in the prior year quarter.”</blockquote>
+        <div class="ew-card-foot"><span>Mike Ressler</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance demand q_and_a capital_allocation risks" data-search="evgn evgn q2 fy2026 2026-08-18 guidance performance demand q_and_a capital_allocation q_and_a capital_allocation q_and_a q_and_a q_and_a demand q_and_a guidance demand q_and_a q_and_a performance q_and_a performance q_and_a performance q_and_a risks q_and_a ofer haviv polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin polina ravzin">
+        <div class="ew-card-top"><span class="ew-ticker">EVGN</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="evgn-2026q2-call-record.html">EVGN · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>demand</span></div>
+        <blockquote lang="en">“For the full year of 2026, we expect cash usage to be in the range of approximately $8.5 million-$9.5 million.”</blockquote>
+        <div class="ew-card-foot"><span>Polina Ravzin</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a performance management_commitments guidance margins capital_allocation" data-search="enrd enrd q2 fy2026 2026-08-18 demand q_and_a performance q_and_a performance demand q_and_a demand q_and_a performance demand management_commitments q_and_a management_commitments q_and_a guidance performance q_and_a guidance performance margins q_and_a guidance demand management_commitments q_and_a demand management_commitments q_and_a margins q_and_a margins capital_allocation q_and_a roozbeh charli roozbeh charli roozbeh charli roozbeh charli roozbeh charli anubhav verma anubhav verma anubhav verma anubhav verma anubhav verma jesse sobelson anubhav verma">
+        <div class="ew-card-top"><span class="ew-ticker">ENRD</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="enrd-2026q2-call-record.html">ENRD · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“As our revenue expands and fleet utilization climbs in the second half of this year, we expect contribution margin to land between 21%-23% for the second half of this year.”</blockquote>
+        <div class="ew-card-foot"><span>Anubhav Verma</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation demand segment_changes performance risks margins guidance q_and_a management_commitments" data-search="caap corp america air q2 fy2026 2026-08-18 capital_allocation demand segment_changes performance demand segment_changes demand risks segment_changes performance demand performance margins capital_allocation demand segment_changes guidance performance q_and_a management_commitments q_and_a guidance capital_allocation q_and_a capital_allocation management_commitments q_and_a martín eurnekian martín eurnekian martín eurnekian martín eurnekian jorge arruda jorge arruda jorge arruda martín eurnekian guilherme mendes martín eurnekian pablo ricalde jorge arruda">
+        <div class="ew-card-top"><span class="ew-ticker">CAAP</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="caap-2026q2-call-record.html">CORP AMERICA AIR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>demand</span><span>segment changes</span></div>
+        <blockquote lang="en">“Italy posted a 19% increase or 11% when excluding construction service at Toscana Aeroporti, and margin expanding 3.1 percentage points on passenger growth and higher duty-free and VIP lounge revenues.”</blockquote>
+        <div class="ew-card-foot"><span>Jorge Arruda</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance q_and_a demand capital_allocation guidance management_commitments margins" data-search="bidu baidu inc-sp adr q2 fy2026 2026-08-18 performance q_and_a demand q_and_a performance q_and_a demand capital_allocation q_and_a guidance management_commitments q_and_a guidance performance q_and_a performance q_and_a demand q_and_a margins demand q_and_a margins demand q_and_a margins demand q_and_a guidance performance margins q_and_a robin li robin li robin li henry haijian he robin li alicia yap dou shen dou shen dou shen dou shen henry haijian he henry haijian he">
+        <div class="ew-card-top"><span class="ew-ticker">BIDU</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="bidu-2026q2-call-record.html">BAIDU INC-SP ADR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>q and a</span><span>demand</span></div>
+        <blockquote lang="en">“As adoption growth and monetization progresses, we expect them to become a more meaningful contributor to overall profitability.”</blockquote>
+        <div class="ew-card-foot"><span>Henry Haijian He</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="segment_changes q_and_a demand performance margins risks guidance management_commitments" data-search="as amer sports inc q2 fy2026 2026-08-18 segment_changes q_and_a demand segment_changes q_and_a performance q_and_a performance q_and_a margins q_and_a margins risks q_and_a performance margins segment_changes q_and_a guidance performance q_and_a guidance performance segment_changes q_and_a guidance performance q_and_a margins risks q_and_a demand management_commitments segment_changes q_and_a james zheng james zheng james zheng andrew page andrew page andrew page andrew page andrew page andrew page andrew page andrew page guillaume meyzenq">
+        <div class="ew-card-top"><span class="ew-ticker">AS</span><span class="ew-date mono">2026-08-18</span></div>
+        <h3><a href="as-2026q2-call-record.html">AMER SPORTS INC · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>segment changes</span><span>q and a</span><span>demand</span></div>
+        <blockquote lang="en">“Outdoor Performance adjusted operating profit margin expanded 800 basis points from last year to 14.6% in Q2, including a 270 basis point positive impact from net tariff refunds.”</blockquote>
+        <div class="ew-card-foot"><span>Andrew Page</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance guidance risks segment_changes demand margins capital_allocation" data-search="xp xp inc - class a q2 fy2026 2026-08-17 performance guidance performance performance risks performance segment_changes demand segment_changes margins risks segment_changes margins capital_allocation demand guidance performance guidance margins demand thiago maffra thiago maffra gustavo alejo gustavo alejo gustavo alejo gustavo alejo gustavo alejo gustavo alejo thiago maffra tito labarta marcelo mizrahi thiago maffra">
+        <div class="ew-card-top"><span class="ew-ticker">XP</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="xp-2026q2-call-record.html">XP INC - CLASS A · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>guidance</span><span>risks</span></div>
+        <blockquote lang="en">“That said, depending on how these dynamics evolve, we continue to target double-digit growth throughout 2026, supported by stronger execution across key verticals and a more diversified revenue base.”</blockquote>
+        <div class="ew-card-foot"><span>Thiago Maffra</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks management_commitments performance demand capital_allocation guidance" data-search="stex stex q2 fy2026 2026-08-17 risks management_commitments management_commitments risks performance demand capital_allocation capital_allocation capital_allocation risks performance management_commitments guidance demand performance risks adele carey henry mcphie henry mcphie henry mcphie henry mcphie christine plummer christine plummer christine plummer christine plummer christine plummer henry mcphie henry mcphie">
+        <div class="ew-card-top"><span class="ew-ticker">STEX</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="stex-2026q2-call-record.html">STEX · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>management commitments</span><span>performance</span></div>
+        <blockquote lang="en">“By removing our own access constraints and working on what we&#39;ve done over the last six months and will continue to work on beyond that, it will continue to drive growth, it will continue to drive revenue for the company, and we are positioned truly in the best spot that we can be.”</blockquote>
+        <div class="ew-card-foot"><span>Henry McPhie</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks performance demand q_and_a segment_changes margins guidance" data-search="prpo prpo q2 fy2026 2026-08-17 risks performance demand risks q_and_a demand risks q_and_a risks q_and_a demand segment_changes q_and_a performance q_and_a demand q_and_a margins q_and_a performance q_and_a guidance performance q_and_a guidance performance q_and_a guidance performance q_and_a operator ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli ilan danieli">
+        <div class="ew-card-top"><span class="ew-ticker">PRPO</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="prpo-2026q2-call-record.html">PRPO · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>performance</span><span>demand</span></div>
+        <blockquote lang="en">“We talked about the timing of shipping orders to customers and how that impacted quarterly revenue numbers.”</blockquote>
+        <div class="ew-card-foot"><span>Ilan Danieli</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance q_and_a risks guidance capital_allocation demand" data-search="nuai new era energy &amp;amp; digital inc q2 fy2026 2026-08-17 performance q_and_a risks q_and_a guidance q_and_a q_and_a capital_allocation q_and_a risks q_and_a risks q_and_a demand q_and_a capital_allocation q_and_a guidance capital_allocation q_and_a performance demand q_and_a performance q_and_a operator charlie nelson charlie nelson charlie nelson charlie nelson charlie nelson charlie nelson charlie nelson evan pierce ted warner ted warner mike randall">
+        <div class="ew-card-top"><span class="ew-ticker">NUAI</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="nuai-2026q2-call-record.html">New Era Energy &amp;amp; Digital Inc · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>q and a</span><span>risks</span></div>
+        <blockquote lang="en">“I think lastly, you guys called out in the press release that the 757 megawatts growth in phase one and two align with Governor Abbott&#39;s data center directive.”</blockquote>
+        <div class="ew-card-foot"><span>Mike Randall</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance management_commitments margins demand q_and_a guidance segment_changes capital_allocation" data-search="hive hive q1 fy2027 2026-08-17 performance management_commitments performance margins performance demand q_and_a guidance performance demand q_and_a guidance management_commitments q_and_a segment_changes q_and_a demand segment_changes q_and_a demand segment_changes q_and_a guidance capital_allocation q_and_a capital_allocation q_and_a capital_allocation q_and_a frank holmes aydin kilic darcy daubaras aydin kilic aydin kilic aydin kilic aydin kilic aydin kilic aydin kilic aydin kilic aydin kilic aydin kilic">
+        <div class="ew-card-top"><span class="ew-ticker">HIVE</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="hive-2027q1-call-record.html">HIVE · Q1 FY2027 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>management commitments</span><span>margins</span></div>
+        <blockquote lang="en">“USD 79 million of revenue, USD 24 million of gross operating margins, and USD 15.2 million of earnings from operations, which is revenue less COGS, less corporate G&amp;A.”</blockquote>
+        <div class="ew-card-foot"><span>Aydin Kilic</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a guidance performance demand margins capital_allocation" data-search="fn fabrinet q4 fy2026 2026-08-17 risks q_and_a guidance performance q_and_a performance q_and_a demand q_and_a q_and_a performance q_and_a margins q_and_a performance demand q_and_a guidance performance capital_allocation q_and_a guidance performance q_and_a demand q_and_a demand q_and_a garo toomajanian seamus grady seamus grady seamus grady seamus grady csaba sverha csaba sverha csaba sverha csaba sverha csaba sverha seamus grady seamus grady">
+        <div class="ew-card-top"><span class="ew-ticker">FN</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="fn-2026q4-call-record.html">Fabrinet · Q4 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“Fourth quarter revenue of $1.316 billion increased 45% year-over-year and exceeded the top end of our guidance range.”</blockquote>
+        <div class="ew-card-foot"><span>Seamus Grady</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand performance margins capital_allocation guidance management_commitments segment_changes risks" data-search="duot duot q2 fy2026 2026-08-17 demand performance margins performance margins performance margins capital_allocation guidance performance demand guidance performance margins guidance performance margins management_commitments demand segment_changes risks management_commitments demand segment_changes doug recker adrian goldfarb adrian goldfarb adrian goldfarb adrian goldfarb adrian goldfarb adrian goldfarb adrian goldfarb doug recker bill papanastasiou doug recker doug recker">
+        <div class="ew-card-top"><span class="ew-ticker">DUOT</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="duot-2026q2-call-record.html">DUOT · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>performance</span><span>margins</span></div>
+        <blockquote lang="en">“In the fourth quarter of 2026, we expect recurring infrastructure revenue, GPU-as-a-service colocation and hosting of approximately $17 million-$18 million, which represent an expected annualized recurring revenue exit run rate in excess of $70 million, contracted under multi-year agreements and carrying gross margins well above 70%.”</blockquote>
+        <div class="ew-card-foot"><span>Adrian Goldfarb</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a performance demand guidance margins segment_changes" data-search="crgo crgo q2 fy2026 2026-08-17 risks q_and_a performance q_and_a performance q_and_a demand risks q_and_a guidance q_and_a demand q_and_a margins q_and_a segment_changes q_and_a demand segment_changes q_and_a guidance performance q_and_a guidance performance q_and_a performance demand q_and_a anat earon-heilborn pablo pinillos pablo pinillos pablo pinillos pablo pinillos pablo pinillos pablo pinillos ian arroyo ian arroyo pablo pinillos pablo pinillos anat earon-heilborn">
+        <div class="ew-card-top"><span class="ew-ticker">CRGO</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="crgo-2026q2-call-record.html">CRGO · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“But in total, we assume lower teens growth and revise our full-year expectations slightly upwards to 12%-14% growth year-on-year.”</blockquote>
+        <div class="ew-card-foot"><span>Pablo Pinillos</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance capital_allocation demand guidance risks" data-search="bhp bhp q4 fy2026 2026-08-17 performance performance capital_allocation capital_allocation demand guidance capital_allocation performance capital_allocation guidance demand demand demand risks guidance brandon craig vandita pant vandita pant vandita pant brandon craig vandita pant vandita pant brandon craig brandon craig brandon craig vandita pant vandita pant">
+        <div class="ew-card-top"><span class="ew-ticker">BHP</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="bhp-2026q4-call-record.html">BHP · Q4 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>capital allocation</span><span>demand</span></div>
+        <blockquote lang="en">“If you have a look at potash as an example, that&#39;s another area where we expect very significant long-term demand.”</blockquote>
+        <div class="ew-card-foot"><span>Brandon Craig</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance risks q_and_a demand segment_changes margins guidance" data-search="amss amss q2 fy2026 2026-08-17 performance risks q_and_a demand segment_changes q_and_a performance segment_changes q_and_a margins q_and_a margins q_and_a guidance performance q_and_a guidance performance q_and_a guidance performance q_and_a margins risks q_and_a performance margins q_and_a demand segment_changes q_and_a demand q_and_a rob kelly mark thomas lynn zach ament zach ament zach ament mark thomas lynn mark thomas lynn mark thomas lynn mark thomas lynn mark thomas lynn mark thomas lynn mark thomas lynn">
+        <div class="ew-card-top"><span class="ew-ticker">AMSS</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="amss-2026q2-call-record.html">AMSS · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>risks</span><span>q and a</span></div>
+        <blockquote lang="en">“Based on current trends and our operating plan, we expect a return to year-over-year growth in the second half of fiscal 2026, with second half net revenues of at least $8.7 million, up at least approximately 10% from the second half of fiscal 2025.”</blockquote>
+        <div class="ew-card-foot"><span>Mark Thomas Lynn</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="margins demand risks guidance performance segment_changes" data-search="agpu agpu q2 fy2026 2026-08-17 margins demand risks guidance performance demand margins performance demand performance segment_changes guidance performance demand demand segment_changes demand segment_changes erin mcmahon erin mcmahon erin mcmahon christopher miglino christopher miglino jeremy yaukey-witter jeremy yaukey-witter jeremy yaukey-witter jeremy yaukey-witter kyle okamoto kyle okamoto kyle okamoto">
+        <div class="ew-card-top"><span class="ew-ticker">AGPU</span><span class="ew-date mono">2026-08-17</span></div>
+        <h3><a href="agpu-2026q2-call-record.html">AGPU · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>margins</span><span>demand</span><span>risks</span></div>
+        <blockquote lang="en">“We generated $17.4 million positive operating cash flow for the first half of 2026, primarily driven by customer prepayments, which totaled $60.8 million at June 30th.”</blockquote>
+        <div class="ew-card-foot"><span>Jeremy Yaukey-Witter</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a performance guidance management_commitments" data-search="vnrx vnrx q2 fy2026 2026-08-14 risks q_and_a performance q_and_a performance q_and_a performance q_and_a guidance performance management_commitments q_and_a q_and_a risks q_and_a q_and_a q_and_a risks q_and_a guidance performance q_and_a guidance performance management_commitments q_and_a louise batchelor cameron reynolds terig hughes terig hughes terig hughes terig hughes terig hughes terig hughes terig hughes michael okunewitch terig hughes terig hughes">
+        <div class="ew-card-top"><span class="ew-ticker">VNRX</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="vnrx-2026q2-call-record.html">VNRX · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“While we remain confident of continuing to see solid growth year-over-year, we will not be providing revenue guidance for 2026 at this point in time.”</blockquote>
+        <div class="ew-card-foot"><span>Terig Hughes</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks performance margins demand q_and_a guidance segment_changes" data-search="sle sle q2 fy2026 2026-08-14 risks performance margins margins demand q_and_a demand q_and_a performance margins q_and_a q_and_a guidance performance q_and_a guidance performance q_and_a guidance performance segment_changes q_and_a performance margins demand q_and_a operator matt edelman matt edelman matt edelman james kisner matt edelman matt edelman matt edelman matt edelman matt edelman jack cordero matt edelman">
+        <div class="ew-card-top"><span class="ew-ticker">SLE</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="sle-2026q2-call-record.html">SLE · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>performance</span><span>margins</span></div>
+        <blockquote lang="en">“As we move through the second half of 2026, our priorities remain clear: converting a growing pipeline into revenue, continuing to improve the economics of the business, maintaining financial discipline, and executing against our path toward profitability.”</blockquote>
+        <div class="ew-card-foot"><span>Matt Edelman</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks guidance demand performance margins management_commitments segment_changes" data-search="sidu sidu q2 fy2026 2026-08-14 risks risks guidance demand demand demand performance margins performance margins performance margins management_commitments guidance performance guidance segment_changes alan khalili alan khalili carol craig carol craig carol craig carol craig alan khalili alan khalili alan khalili alan khalili alan khalili carol craig">
+        <div class="ew-card-top"><span class="ew-ticker">SIDU</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="sidu-2026q2-call-record.html">SIDU · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>guidance</span><span>demand</span></div>
+        <blockquote lang="en">“Cost of revenue was $1.2 million compared to $2.3 million, a decrease of 47%, driven by lower satellite and related software depreciation and reduced contractual material and labor costs.”</blockquote>
+        <div class="ew-card-foot"><span>Alan Khalili</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="margins q_and_a performance demand management_commitments guidance capital_allocation" data-search="sgml sgml q2 fy2026 2026-08-14 margins q_and_a performance demand q_and_a management_commitments q_and_a demand q_and_a guidance demand q_and_a margins q_and_a capital_allocation q_and_a management_commitments q_and_a guidance q_and_a performance demand q_and_a demand management_commitments q_and_a performance capital_allocation management_commitments q_and_a ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner ana cabral-gardner">
+        <div class="ew-card-top"><span class="ew-ticker">SGML</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="sgml-2026q2-call-record.html">SGML · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>margins</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“Therefore, we are on track to deliver on the year of 2027 guidance of $620 all-in cash costs, total cash costs per ton as we continue to increase production volumes.”</blockquote>
+        <div class="ew-card-foot"><span>Ana Cabral-Gardner</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance demand q_and_a management_commitments segment_changes capital_allocation margins risks" data-search="rmix rmix q2 fy2026 2026-08-14 guidance performance demand q_and_a performance management_commitments segment_changes q_and_a capital_allocation q_and_a margins capital_allocation q_and_a demand segment_changes q_and_a performance margins demand q_and_a guidance performance capital_allocation q_and_a performance q_and_a risks management_commitments q_and_a demand risks q_and_a margins capital_allocation management_commitments q_and_a demand capital_allocation q_and_a randall edgar randall edgar randall edgar randall edgar randall edgar randall edgar tommy wentroth tommy wentroth randall edgar randall edgar speaker 8 rohit seth">
+        <div class="ew-card-top"><span class="ew-ticker">RMIX</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="rmix-2026q2-call-record.html">RMIX · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>demand</span></div>
+        <blockquote lang="en">“Supported by favorable demand fundamentals across our footprint, including infrastructure investment, population and economic growth, and healthy commercial and residential construction activity, we remain confident in maintaining our 2026 guidance.”</blockquote>
+        <div class="ew-card-foot"><span>Randall Edgar</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand risks q_and_a guidance performance margins capital_allocation" data-search="pwcm pwcm q2 fy2026 2026-08-14 demand risks q_and_a guidance risks q_and_a q_and_a demand q_and_a demand q_and_a performance q_and_a q_and_a performance margins q_and_a margins q_and_a performance margins q_and_a capital_allocation q_and_a capital_allocation q_and_a phil carlson phil carlson bruce rodgers bruce rodgers bruce rodgers richard russell richard russell richard russell richard russell richard russell richard russell richard russell">
+        <div class="ew-card-top"><span class="ew-ticker">PWCM</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="pwcm-2026q2-call-record.html">PWCM · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>risks</span><span>q and a</span></div>
+        <blockquote lang="en">“Mining margin in the current quarter was supported by $145,000 in curtailment and energy sales, which was recognized as a reduction of cost of revenues set against an average Bitcoin price that declined to $72,000 in the second quarter of 2026, from around $75,700 in the first quarter of 2026.”</blockquote>
+        <div class="ew-card-foot"><span>Richard Russell</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a performance demand guidance capital_allocation margins segment_changes" data-search="para para q2 fy2026 2026-08-14 risks q_and_a performance demand q_and_a guidance performance capital_allocation q_and_a margins demand segment_changes q_and_a guidance performance demand q_and_a performance demand q_and_a performance demand q_and_a demand capital_allocation q_and_a demand segment_changes q_and_a demand segment_changes q_and_a capital_allocation q_and_a guidance performance q_and_a dean ditto joe davy joe davy joe davy joe davy joe davy joe davy joe davy joe davy joe davy joe davy dean ditto">
+        <div class="ew-card-top"><span class="ew-ticker">PARA</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="para-2026q2-call-record.html">PARA · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“Our expectation for 2027 is a 50%-55% growth in revenue, driven by continued organic growth in our legacy products, as well as the full year effect of the ConnectAndSell business that we acquired.”</blockquote>
+        <div class="ew-card-foot"><span>Dean Ditto</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance demand segment_changes q_and_a management_commitments guidance risks" data-search="otlk otlk q3 fy2026 2026-08-14 performance demand segment_changes q_and_a demand segment_changes q_and_a demand management_commitments q_and_a demand q_and_a guidance performance q_and_a performance q_and_a guidance performance q_and_a guidance performance q_and_a segment_changes q_and_a risks q_and_a management_commitments segment_changes q_and_a performance risks q_and_a bob jahr bob jahr bob jahr bob jahr bob jahr lawrence kenyon lawrence kenyon lawrence kenyon bob jahr bob jahr bob jahr bob jahr">
+        <div class="ew-card-top"><span class="ew-ticker">OTLK</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="otlk-2026q3-call-record.html">OTLK · Q3 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>demand</span><span>segment changes</span></div>
+        <blockquote lang="en">“As we move into 2027, we expect to be in a stronger position to begin translating that foundation into broader adoption and commercial growth upon receipt of a permanent J-code expected in April of next year.”</blockquote>
+        <div class="ew-card-foot"><span>Bob Jahr</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand performance capital_allocation risks margins segment_changes guidance" data-search="obai obai q2 fy2026 2026-08-14 demand performance capital_allocation performance risks margins capital_allocation capital_allocation capital_allocation segment_changes performance demand demand demand guidance performance doron kempel doron kempel doron kempel doron kempel doron kempel doron kempel doron kempel doron kempel doron kempel doron kempel doron kempel operator">
+        <div class="ew-card-top"><span class="ew-ticker">OBAI</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="obai-2026q2-call-record.html">OBAI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>performance</span><span>capital allocation</span></div>
+        <blockquote lang="en">“The good news, if there is good news in that regard, because we wanted that deal if we would have gotten all the conditions that we require, is that this is going to have no impact on cash flow in 2026 because that deal would have required us to make some investments in order to handle that particular deal.”</blockquote>
+        <div class="ew-card-foot"><span>Doron Kempel</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand management_commitments segment_changes performance margins risks capital_allocation guidance" data-search="nvve nvve q2 fy2026 2026-08-14 demand demand management_commitments management_commitments segment_changes demand performance margins performance margins risks performance margins capital_allocation risks capital_allocation guidance performance demand gregory poilasne gregory poilasne gregory poilasne gregory poilasne gregory poilasne gregory poilasne david robson david robson david robson david robson david robson david robson">
+        <div class="ew-card-top"><span class="ew-ticker">NVVE</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="nvve-2026q2-call-record.html">NVVE · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>management commitments</span><span>segment changes</span></div>
+        <blockquote lang="en">“Margin was negatively impacted quarter-over-quarter, primarily by a $1.2 million write-down of certain costs related to the Troy project, along with a higher mix of hardware charging station sales and higher replacement warranty costs of certain DC chargers.”</blockquote>
+        <div class="ew-card-foot"><span>David Robson</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="management_commitments guidance demand segment_changes performance risks" data-search="move move q2 fy2026 2026-08-14 management_commitments guidance demand demand demand demand segment_changes performance demand guidance performance risks performance risks performance demand management_commitments jay crystal jay crystal jay crystal jay crystal jay crystal jay crystal jay crystal chance moreland chance moreland chance moreland jay crystal jay crystal">
+        <div class="ew-card-top"><span class="ew-ticker">MOVE</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="move-2026q2-call-record.html">MOVE · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>management commitments</span><span>guidance</span><span>demand</span></div>
+        <blockquote lang="en">“We anticipate being able to share more with you in the near future about growth in our contracted power capacity, as well as how we are building out our team to continue to scale our power footprint.”</blockquote>
+        <div class="ew-card-foot"><span>Jay Crystal</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand margins performance risks segment_changes capital_allocation guidance" data-search="gemi gemi q2 fy2026 2026-08-14 demand demand margins demand performance performance demand risks performance demand demand segment_changes capital_allocation capital_allocation guidance demand capital_allocation guidance guidance performance cameron winklevoss tyler winklevoss tyler winklevoss danijela stojanovic danijela stojanovic danijela stojanovic danijela stojanovic danijela stojanovic danijela stojanovic danijela stojanovic danijela stojanovic danijela stojanovic">
+        <div class="ew-card-top"><span class="ew-ticker">GEMI</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="gemi-2026q2-call-record.html">GEMI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>margins</span><span>performance</span></div>
+        <blockquote lang="en">“This growth came despite a 38% year-over-year decline in exchange revenue as crypto market volumes remained under pressure throughout the quarter.”</blockquote>
+        <div class="ew-card-foot"><span>Danijela Stojanovic</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation q_and_a performance segment_changes guidance margins demand" data-search="firy firy q2 fy2026 2026-08-14 capital_allocation q_and_a performance segment_changes q_and_a guidance performance margins q_and_a performance q_and_a guidance performance q_and_a capital_allocation q_and_a demand q_and_a demand q_and_a demand q_and_a capital_allocation q_and_a performance q_and_a guidance performance q_and_a andrew paradise andrew paradise andrew paradise andrew paradise andrew paradise alex walsh andrew paradise ed alter andrew paradise alex walsh alex walsh alex walsh">
+        <div class="ew-card-top"><span class="ew-ticker">FIRY</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="firy-2026q2-call-record.html">FIRY · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“We have very bullish expectations for RZR and for the full year in 2026, we expect the revenue to nearly double year-over-year.”</blockquote>
+        <div class="ew-card-foot"><span>Alex Walsh</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a performance guidance demand segment_changes margins capital_allocation" data-search="edbl edbl q2 fy2026 2026-08-14 risks q_and_a performance q_and_a guidance performance demand q_and_a guidance performance segment_changes q_and_a guidance segment_changes q_and_a demand q_and_a demand segment_changes q_and_a performance q_and_a margins q_and_a performance capital_allocation q_and_a q_and_a demand q_and_a ted ayvas jim kras jim kras jim kras jim kras jim kras jim kras kostas dafoulas kostas dafoulas kostas dafoulas kostas dafoulas jim kras">
+        <div class="ew-card-top"><span class="ew-ticker">EDBL</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="edbl-2026q2-call-record.html">EDBL · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“Cut herb sales increased more than 42%, driven by continued growth with existing customers and newer programs with major retailers, including Kroger, Target, and Weis.”</blockquote>
+        <div class="ew-card-foot"><span>Jim Kras</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a guidance performance segment_changes capital_allocation management_commitments" data-search="dgxx dgxx q2 fy2026 2026-08-14 risks q_and_a q_and_a guidance q_and_a performance segment_changes q_and_a performance q_and_a capital_allocation q_and_a q_and_a guidance risks q_and_a management_commitments q_and_a performance q_and_a capital_allocation management_commitments q_and_a capital_allocation q_and_a operator michel amar michel amar michel amar michel amar michel amar michel amar operator michel amar michel amar michel amar michel amar">
+        <div class="ew-card-top"><span class="ew-ticker">DGXX</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="dgxx-2026q2-call-record.html">DGXX · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“Given your sites in North Tonawanda, Buffalo, New York, does the one-year moratorium on data centers in New York impact your ability to meet your targets of exiting 2027, delivering on 10 MW for NeoCloudz and 99 additional 50 MW for colocation data centers for HPC?”</blockquote>
+        <div class="ew-card-foot"><span>Operator</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand risks segment_changes guidance performance capital_allocation management_commitments" data-search="cig cig q2 fy2026 2026-08-14 demand risks segment_changes guidance performance capital_allocation risks risks performance demand demand risks guidance management_commitments performance capital_allocation risks capital_allocation management_commitments risks management_commitments capital_allocation management_commitments alexandre ramos peixoto leonardo george de magalhães leonardo george de magalhães leonardo george de magalhães leonardo george de magalhães leonardo george de magalhães leonardo george de magalhães leonardo george de magalhães carolina sena leonardo george de magalhães leonardo george de magalhães leonardo george de magalhães">
+        <div class="ew-card-top"><span class="ew-ticker">CIG</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="cig-2026q2-call-record.html">CIG · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>risks</span><span>segment changes</span></div>
+        <blockquote lang="en">“We have increased revenue from sales to end customers, 124 MW average, and also inflation adjustment on RBO revenue for plants that receive by quota.”</blockquote>
+        <div class="ew-card-foot"><span>Leonardo George de Magalhães</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a guidance segment_changes margins performance capital_allocation" data-search="brun brun q2 fy2026 2026-08-14 demand q_and_a guidance q_and_a segment_changes q_and_a margins demand q_and_a performance demand q_and_a performance q_and_a performance margins demand q_and_a demand q_and_a guidance performance q_and_a margins demand q_and_a capital_allocation q_and_a demand capital_allocation q_and_a andrew karos andrew karos andrew karos andrew karos erik guckel erik guckel erik guckel erik guckel andrew karos andrew karos andrew karos andrew karos">
+        <div class="ew-card-top"><span class="ew-ticker">BRUN</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="brun-2026q2-call-record.html">BRUN · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“We currently expect to achieve a sustainable net cash flow margin of 15%-20% moving forward, driven by project cash flows and the substantial upfront payments we collect from our customers.”</blockquote>
+        <div class="ew-card-foot"><span>Erik Guckel</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a performance demand guidance capital_allocation margins segment_changes" data-search="bnzi bnzi q2 fy2026 2026-08-14 risks q_and_a performance demand q_and_a guidance performance capital_allocation q_and_a margins demand segment_changes q_and_a guidance performance demand q_and_a performance demand q_and_a performance demand q_and_a demand capital_allocation q_and_a demand segment_changes q_and_a demand segment_changes q_and_a capital_allocation q_and_a guidance performance q_and_a dean ditto joe davy joe davy joe davy joe davy joe davy joe davy joe davy joe davy joe davy joe davy dean ditto">
+        <div class="ew-card-top"><span class="ew-ticker">BNZI</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="bnzi-2026q2-call-record.html">BNZI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“Our expectation for 2027 is a 50%-55% growth in revenue, driven by continued organic growth in our legacy products, as well as the full year effect of the ConnectAndSell business that we acquired.”</blockquote>
+        <div class="ew-card-foot"><span>Dean Ditto</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance margins demand q_and_a management_commitments segment_changes" data-search="bkyi bkyi q2 fy2026 2026-08-14 guidance performance margins demand q_and_a management_commitments segment_changes q_and_a demand segment_changes q_and_a demand q_and_a demand q_and_a performance demand q_and_a performance demand q_and_a performance margins q_and_a guidance performance margins q_and_a margins demand q_and_a margins demand q_and_a guidance performance q_and_a mike depasquale mike depasquale mike depasquale mike depasquale mike depasquale ceci welch ceci welch ceci welch ceci welch mike depasquale mike depasquale dan khamis">
+        <div class="ew-card-top"><span class="ew-ticker">BKYI</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="bkyi-2026q2-call-record.html">BKYI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>margins</span></div>
+        <blockquote lang="en">“Considering that shift, combined with the opportunities already in our pipeline, we expect continued growth and are targeting profitability for the second half of 2026.”</blockquote>
+        <div class="ew-card-foot"><span>Mike DePasquale</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance risks demand guidance margins q_and_a segment_changes" data-search="bap credicorp ltd q2 fy2026 2026-08-14 performance risks performance demand performance risks demand guidance risks demand risks margins risks guidance performance q_and_a risks segment_changes q_and_a risks segment_changes q_and_a risks segment_changes q_and_a guidance demand q_and_a gianfranco ferrari gianfranco ferrari alejandro pérez-reyes alejandro pérez-reyes alejandro pérez-reyes alejandro pérez-reyes alejandro pérez-reyes alejandro pérez-reyes cesar rios gianfranco ferrari cesar rios francesca raffo">
+        <div class="ew-card-top"><span class="ew-ticker">BAP</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="bap-2026q2-call-record.html">CREDICORP LTD · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>risks</span><span>demand</span></div>
+        <blockquote lang="en">“Our efficiency ratio stood at 45.4%, while investments in innovation and digital capabilities continue to broaden our revenue base, deepen customer engagement, foster financial inclusion, and support more scalable growth.”</blockquote>
+        <div class="ew-card-foot"><span>Gianfranco Ferrari</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks management_commitments performance capital_allocation guidance demand" data-search="aya aya q2 fy2026 2026-08-14 risks management_commitments performance capital_allocation guidance management_commitments performance guidance capital_allocation management_commitments guidance management_commitments demand performance capital_allocation capital_allocation management_commitments elisabeth hamaoui benoit la salle benoit la salle benoit la salle benoit la salle benoit la salle benoit la salle benoit la salle benoit la salle ugo landry-tolszczuk benoit la salle justin chan">
+        <div class="ew-card-top"><span class="ew-ticker">AYA</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="aya-2026q2-call-record.html">AYA · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>management commitments</span><span>performance</span></div>
+        <blockquote lang="en">“We are going to be up to 15-16 drills turning at Boumadine, and we expect to complete the 200,000-m program as we have, and if everything goes well, maybe a little bit more.”</blockquote>
+        <div class="ew-card-foot"><span>Benoit La Salle</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="margins guidance demand segment_changes performance capital_allocation management_commitments" data-search="api agora inc-adr q2 fy2026 2026-08-14 margins guidance demand demand segment_changes guidance performance margins performance performance margins capital_allocation guidance performance performance margins demand demand management_commitments tony zhao tony zhao tony zhao jingbo wang jingbo wang jingbo wang jingbo wang jingbo wang jingbo wang jingbo wang jingbo wang jingbo wang">
+        <div class="ew-card-top"><span class="ew-ticker">API</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="api-2026q2-call-record.html">AGORA INC-ADR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>margins</span><span>guidance</span><span>demand</span></div>
+        <blockquote lang="en">“Based on currently available information, we expect total revenue for the third quarter of 2026 to be between $41 million and $42 million, representing year-over-year growth of 15.8%-18.6%.”</blockquote>
+        <div class="ew-card-foot"><span>Jingbo Wang</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="q_and_a demand performance segment_changes risks management_commitments guidance" data-search="airj airjoule technologies corp q2 fy2026 2026-08-14 q_and_a demand q_and_a performance demand segment_changes q_and_a demand q_and_a risks management_commitments q_and_a segment_changes q_and_a performance segment_changes q_and_a guidance demand q_and_a guidance q_and_a performance q_and_a demand segment_changes q_and_a guidance q_and_a matt jore matt jore matt jore pat eilers pat eilers pat eilers bryan barton bryan barton stephen pang stephen pang bryan barton stephen pang">
+        <div class="ew-card-top"><span class="ew-ticker">AIRJ</span><span class="ew-date mono">2026-08-14</span></div>
+        <h3><a href="airj-2026q2-call-record.html">AirJoule Technologies Corp · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>q and a</span><span>demand</span><span>performance</span></div>
+        <blockquote lang="en">“Looking ahead, we still expect modest pay deployment revenue at the JV during 2026, but more meaningful commercial revenue beginning in 2027 as our Core and Prime deployments come online.”</blockquote>
+        <div class="ew-card-foot"><span>Stephen Pang</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="segment_changes q_and_a performance demand management_commitments margins capital_allocation guidance" data-search="yxt yxt q2 fy2026 2026-08-13 segment_changes q_and_a performance demand q_and_a management_commitments segment_changes q_and_a demand segment_changes q_and_a demand q_and_a margins q_and_a performance margins q_and_a performance demand capital_allocation q_and_a demand management_commitments segment_changes q_and_a margins q_and_a guidance performance margins q_and_a margins management_commitments q_and_a peter lu peter lu peter lu shen cao shen cao shen cao shen cao shen cao shen cao shen cao shen cao alan wang">
+        <div class="ew-card-top"><span class="ew-ticker">YXT</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="yxt-2026q2-call-record.html">YXT · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>segment changes</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“Our improvements in revenue growth and cost efficiencies continues and strengthens our financial foundation, which means we expect we would achieve a higher gross margin in the second half of 2026.”</blockquote>
+        <div class="ew-card-foot"><span>Shen Cao</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a performance guidance margins capital_allocation risks" data-search="yswy yswy q2 fy2026 2026-08-13 demand q_and_a demand q_and_a performance q_and_a guidance performance q_and_a margins demand q_and_a performance q_and_a capital_allocation q_and_a guidance performance q_and_a guidance margins risks q_and_a performance capital_allocation q_and_a margins demand q_and_a margins demand q_and_a tom trkla tom trkla tom trkla tom trkla tom trkla ericka ayles ericka ayles ericka ayles ericka ayles ericka ayles ethan huntley ethan huntley">
+        <div class="ew-card-top"><span class="ew-ticker">YSWY</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="yswy-2026q2-call-record.html">YSWY · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“While we do not provide a fuel margin forecast, as this is difficult to predict, particularly in volatile markets, our outlook for adjusted EBITDA assumes that fuel margins moderate in the low $0.40 per gallon range for the second half of the year, consistent with our historical average.”</blockquote>
+        <div class="ew-card-foot"><span>Ericka Ayles</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance demand capital_allocation management_commitments q_and_a margins risks" data-search="yss yss q2 fy2026 2026-08-13 guidance performance demand capital_allocation management_commitments q_and_a demand q_and_a guidance performance q_and_a demand q_and_a demand capital_allocation q_and_a performance capital_allocation q_and_a margins risks q_and_a performance margins q_and_a guidance performance q_and_a performance demand capital_allocation q_and_a margins q_and_a margins demand q_and_a christopher evenden dirk wallinger dirk wallinger dirk wallinger brian frantz brian frantz brian frantz brian frantz brian frantz dirk wallinger brian frantz speaker 10">
+        <div class="ew-card-top"><span class="ew-ticker">YSS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="yss-2026q2-call-record.html">YSS · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>demand</span></div>
+        <blockquote lang="en">“Adjusted EBITDA for the quarter was a loss of $9.5 million, slightly elevated from the $8.9 million loss from the prior year quarter due to an increased operating expenses offsetting profitability growth in our gross margins.”</blockquote>
+        <div class="ew-card-foot"><span>Brian Frantz</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance margins capital_allocation q_and_a demand risks segment_changes management_commitments guidance" data-search="yeti yeti holdings q2 fy2026 2026-08-13 performance margins capital_allocation q_and_a demand risks segment_changes q_and_a risks q_and_a demand risks management_commitments q_and_a demand segment_changes q_and_a performance margins q_and_a margins risks segment_changes q_and_a performance q_and_a capital_allocation q_and_a guidance performance margins q_and_a guidance performance q_and_a guidance performance q_and_a matt reintjes matt reintjes matt reintjes matt reintjes scott bomar scott bomar scott bomar scott bomar scott bomar scott bomar scott bomar scott bomar">
+        <div class="ew-card-top"><span class="ew-ticker">YETI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="yeti-2026q2-call-record.html">Yeti Holdings · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>margins</span><span>capital allocation</span></div>
+        <blockquote lang="en">“We now expect 2026 adjusted operating income margin to be approximately 14.9%, up 30 basis points compared to our prior guidance of 14.6%.”</blockquote>
+        <div class="ew-card-foot"><span>Scott Bomar</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance demand performance margins segment_changes capital_allocation management_commitments q_and_a" data-search="xos xos q2 fy2026 2026-08-13 guidance demand guidance performance margins segment_changes margins performance demand margins margins demand performance demand performance capital_allocation demand guidance performance demand segment_changes demand management_commitments q_and_a dakota semler dakota semler liana pogosyan liana pogosyan liana pogosyan liana pogosyan liana pogosyan liana pogosyan liana pogosyan liana pogosyan liana pogosyan giordano sordoni">
+        <div class="ew-card-top"><span class="ew-ticker">XOS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="xos-2026q2-call-record.html">XOS · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>demand</span><span>performance</span></div>
+        <blockquote lang="en">“In order to better reflect changes in the expected product mix and volume expectations for the second half of the year, we are revising our full year 2026 guidance of revenue to fall within the range of $35 million to $43 million, unit deliveries to be within the range of 250 to 350 units, and non-GAAP operating loss to be in the range of $14.7 million to $11.4 million.”</blockquote>
+        <div class="ew-card-foot"><span>Liana Pogosyan</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation management_commitments segment_changes guidance performance margins q_and_a" data-search="xnet xunlei ltd-adr q2 fy2026 2026-08-13 capital_allocation management_commitments segment_changes guidance segment_changes performance margins performance margins margins margins performance capital_allocation capital_allocation q_and_a q_and_a q_and_a management_commitments q_and_a luhan tang luhan tang eric zhou eric zhou eric zhou eric zhou eric zhou eric zhou eric zhou eric zhou eric zhou eric zhou">
+        <div class="ew-card-top"><span class="ew-ticker">XNET</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="xnet-2026q2-call-record.html">XUNLEI LTD-ADR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>management commitments</span><span>segment changes</span></div>
+        <blockquote lang="en">“Cost of revenues was $44.8 million during the quarter, accounting for 43.6% of total revenues.”</blockquote>
+        <div class="ew-card-foot"><span>Eric Zhou</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="q_and_a demand risks management_commitments performance capital_allocation guidance" data-search="xe xe q2 fy2026 2026-08-13 q_and_a demand risks q_and_a management_commitments q_and_a demand risks q_and_a q_and_a performance q_and_a performance q_and_a performance q_and_a capital_allocation q_and_a demand management_commitments q_and_a guidance demand q_and_a guidance management_commitments q_and_a clay sell clay sell clay sell clay sell clay sell daniel gross daniel gross daniel gross daniel gross clay sell clay sell clay sell">
+        <div class="ew-card-top"><span class="ew-ticker">XE</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="xe-2026q2-call-record.html">XE · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>q and a</span><span>demand</span><span>risks</span></div>
+        <blockquote lang="en">“That&#39;s $50.1 million of services revenue, which is primarily the Xe-100 design work under the Advanced Reactor Demonstration Program.”</blockquote>
+        <div class="ew-card-foot"><span>Daniel Gross</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance guidance margins segment_changes q_and_a management_commitments demand" data-search="xair xair q1 fy2027 2026-08-13 performance guidance performance guidance performance performance margins segment_changes q_and_a management_commitments q_and_a management_commitments q_and_a performance demand q_and_a guidance performance q_and_a management_commitments q_and_a demand q_and_a robert goodman robert goodman robert goodman dan moorhead dan moorhead dan moorhead dan moorhead dan moorhead robert goodman yale jen robert goodman robert goodman">
+        <div class="ew-card-top"><span class="ew-ticker">XAIR</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="xair-2027q1-call-record.html">XAIR · Q1 FY2027 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>guidance</span><span>margins</span></div>
+        <blockquote lang="en">“In our press release issued earlier today, we reaffirmed our previously issued revenue guidance of $8 million for calendar 2026, representing approximately 15% growth over calendar year 2025.”</blockquote>
+        <div class="ew-card-foot"><span>Robert Goodman</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance margins segment_changes demand capital_allocation q_and_a" data-search="wyy wyy q2 fy2026 2026-08-13 guidance performance margins segment_changes demand demand guidance performance guidance performance margins performance margins performance margins performance capital_allocation margins demand capital_allocation demand q_and_a jin kang jin kang jin kang jin kang jin kang jin kang jason holloway robert george robert george robert george robert george jin kang">
+        <div class="ew-card-top"><span class="ew-ticker">WYY</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="wyy-2026q2-call-record.html">WYY · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>margins</span></div>
+        <blockquote lang="en">“With DaaS margin economics expected to land in the 60%-70% range on these large engagements, securing even one of these engagements could materially improve our EPS outlook.”</blockquote>
+        <div class="ew-card-foot"><span>Jason Holloway</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance q_and_a segment_changes margins risks guidance capital_allocation" data-search="www wolverine world wide, inc. q2 fy2026 2026-08-13 performance q_and_a performance q_and_a segment_changes q_and_a margins q_and_a margins risks q_and_a guidance performance q_and_a capital_allocation q_and_a guidance performance q_and_a guidance performance capital_allocation q_and_a risks q_and_a performance margins risks q_and_a margins risks q_and_a christoph hufnagel taryn miller taryn miller taryn miller taryn miller taryn miller taryn miller taryn miller taryn miller taryn miller taryn miller taryn miller">
+        <div class="ew-card-top"><span class="ew-ticker">WWW</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="www-2026q2-call-record.html">Wolverine World Wide, Inc. · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>q and a</span><span>segment changes</span></div>
+        <blockquote lang="en">“Adjusted operating margin is expected to be approximately 10.4%, an increase of 130 basis points compared to last year, with the improvement driven by revenue growth and disciplined cost management, which more than offset the impact of higher tariffs and elevated oil prices on gross margin.”</blockquote>
+        <div class="ew-card-foot"><span>Taryn Miller</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance demand management_commitments performance risks q_and_a" data-search="wwr wwr q2 fy2026 2026-08-13 guidance demand demand demand management_commitments performance performance performance management_commitments risks q_and_a q_and_a demand q_and_a guidance q_and_a q_and_a frank bakker frank bakker frank bakker frank bakker steve cates steve cates steve cates frank bakker frank bakker terence cryan pat mccann pat mccann">
+        <div class="ew-card-top"><span class="ew-ticker">WWR</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="wwr-2026q2-call-record.html">WWR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>demand</span><span>management commitments</span></div>
+        <blockquote lang="en">“The CSPG produced on the qualification line is representative of material we expect to produce in a future commercial setting, and we expect the line to support additional bulk sample production for customer qualification activities.”</blockquote>
+        <div class="ew-card-foot"><span>Frank Bakker</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation q_and_a guidance performance demand management_commitments" data-search="whk whk q2 fy2026 2026-08-13 capital_allocation q_and_a guidance performance capital_allocation q_and_a guidance performance capital_allocation q_and_a guidance performance demand q_and_a performance capital_allocation management_commitments q_and_a demand q_and_a demand capital_allocation q_and_a performance q_and_a performance capital_allocation q_and_a capital_allocation q_and_a capital_allocation management_commitments q_and_a management_commitments q_and_a daniel herz daniel herz daniel herz daniel herz daniel herz jeffrey slotterback jeffrey slotterback jeffrey slotterback jeffrey slotterback jeffrey slotterback jeffrey slotterback daniel herz">
+        <div class="ew-card-top"><span class="ew-ticker">WHK</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="whk-2026q2-call-record.html">WHK · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“In total, we expect 21 billion cubic feet per day of natural gas demand growth by 2031, much of which will be met by growth in the Marcellus, Utica, and Haynesville Shale.”</blockquote>
+        <div class="ew-card-foot"><span>Daniel Herz</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance segment_changes q_and_a demand guidance management_commitments" data-search="vuzi vuzi q2 fy2026 2026-08-13 performance segment_changes q_and_a demand segment_changes q_and_a performance demand q_and_a guidance segment_changes q_and_a demand q_and_a guidance demand q_and_a demand q_and_a management_commitments q_and_a performance q_and_a q_and_a q_and_a guidance performance q_and_a paul travers paul travers paul travers paul travers paul travers paul travers paul travers grant russell grant russell grant russell grant russell paul travers">
+        <div class="ew-card-top"><span class="ew-ticker">VUZI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="vuzi-2026q2-call-record.html">VUZI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>segment changes</span><span>q and a</span></div>
+        <blockquote lang="en">“With the first half of 2026 behind us, Vuzix is focused around our three core growth pillars: enterprise smart glasses, OEM products and solutions, and waveguides.”</blockquote>
+        <div class="ew-card-foot"><span>Paul Travers</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance margins q_and_a demand segment_changes management_commitments capital_allocation guidance risks" data-search="veri veri q2 fy2026 2026-08-13 performance margins q_and_a performance demand q_and_a demand segment_changes q_and_a margins q_and_a performance margins management_commitments q_and_a capital_allocation q_and_a capital_allocation q_and_a guidance performance margins q_and_a guidance capital_allocation management_commitments q_and_a demand q_and_a demand risks q_and_a guidance performance margins q_and_a mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra mike zemetra">
+        <div class="ew-card-top"><span class="ew-ticker">VERI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="veri-2026q2-call-record.html">VERI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>margins</span><span>q and a</span></div>
+        <blockquote lang="en">“As I will explain further in my prepared remarks, these efforts will ensure we are on target to achieve break-even profitability with revenue growth at or near $125 million-$130 million of annualized revenue in fiscal year 2025, or approximately 11% year-over-year growth from the high point of our fiscal 2026 guide.”</blockquote>
+        <div class="ew-card-foot"><span>Mike Zemetra</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance risks q_and_a demand margins management_commitments" data-search="valn valn q2 fy2026 2026-08-13 guidance performance risks q_and_a performance q_and_a performance risks q_and_a demand risks q_and_a demand q_and_a margins demand q_and_a margins risks q_and_a margins demand q_and_a guidance performance q_and_a guidance performance risks q_and_a management_commitments q_and_a performance demand q_and_a thomas lingelbach peter bühler peter bühler peter bühler peter bühler peter bühler peter bühler peter bühler peter bühler peter bühler shyam kotadia thomas lingelbach">
+        <div class="ew-card-top"><span class="ew-ticker">VALN</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="valn-2026q2-call-record.html">VALN · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>risks</span></div>
+        <blockquote lang="en">“We confirm our financial guidance for the fiscal year 2026 with product sales of EUR 135 million-EUR 150 million and total revenues of EUR 145 million-EUR 160 million.”</blockquote>
+        <div class="ew-card-foot"><span>Peter Bühler</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation q_and_a segment_changes performance demand margins management_commitments" data-search="ugp ugp q2 fy2026 2026-08-13 capital_allocation q_and_a segment_changes q_and_a capital_allocation q_and_a performance demand q_and_a demand segment_changes q_and_a performance demand q_and_a performance q_and_a demand q_and_a demand segment_changes q_and_a capital_allocation q_and_a margins demand q_and_a margins capital_allocation management_commitments q_and_a rodrigo pizzinatto alexandre palhares alexandre palhares alexandre palhares alexandre palhares alexandre palhares alexandre palhares alexandre palhares alexandre palhares rodrigo pizzinatto rodrigo pizzinatto alexandre palhares">
+        <div class="ew-card-top"><span class="ew-ticker">UGP</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="ugp-2026q2-call-record.html">UGP · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>q and a</span><span>segment changes</span></div>
+        <blockquote lang="en">“Our ability to ensure supply under these circumstances, supported by a significant increase in diesel imports, strengthened Ipiranga&#39;s competitive position and contributed to 8% volume growth in the first half of 2026, compared with market growth of 3%.”</blockquote>
+        <div class="ew-card-foot"><span>Alexandre Palhares</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a performance margins guidance segment_changes" data-search="tssi tss inc q2 fy2026 2026-08-13 demand q_and_a performance margins q_and_a performance margins q_and_a demand q_and_a margins demand q_and_a guidance q_and_a margins demand segment_changes q_and_a performance demand segment_changes q_and_a guidance performance margins q_and_a demand q_and_a margins q_and_a guidance q_and_a darryll dewan darryll dewan darryll dewan darryll dewan darryll dewan darryll dewan danny chism danny chism danny chism danny chism danny chism danny chism">
+        <div class="ew-card-top"><span class="ew-ticker">TSSI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="tssi-2026q2-call-record.html">TSS INC · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“With our higher margin systems integration and facilities management revenue streams representing a larger portion of our revenue and other income mix, profitability improved during the quarter with consolidated gross profit up 11% and Adjusted EBITDA up 12%, even as total revenue declined 20% due to the expected pullback in procurement.”</blockquote>
+        <div class="ew-card-foot"><span>Darryll Dewan</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance margins q_and_a demand segment_changes risks capital_allocation guidance management_commitments" data-search="tpr tapestry, inc. q4 fy2026 2026-08-13 performance margins q_and_a demand segment_changes q_and_a demand risks segment_changes q_and_a demand capital_allocation segment_changes q_and_a performance margins segment_changes q_and_a guidance performance risks q_and_a capital_allocation q_and_a guidance capital_allocation q_and_a performance capital_allocation q_and_a guidance performance capital_allocation q_and_a margins demand capital_allocation q_and_a management_commitments segment_changes q_and_a joanne crevoiserat joanne crevoiserat joanne crevoiserat joanne crevoiserat scott roe scott roe scott roe scott roe scott roe scott roe scott roe todd kahn">
+        <div class="ew-card-top"><span class="ew-ticker">TPR</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="tpr-2026q4-call-record.html">Tapestry, Inc. · Q4 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>margins</span><span>q and a</span></div>
+        <blockquote lang="en">“Fourth quarter EPS of $1.32 increased 28% versus last year, also exceeding our guidance, despite a headwind of more than $0.05 from a higher tax rate versus plan due to a number of discrete items.”</blockquote>
+        <div class="ew-card-foot"><span>Scott Roe</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance margins guidance demand management_commitments" data-search="tnon tnon q2 fy2026 2026-08-13 performance margins margins margins guidance margins margins demand management_commitments guidance performance demand performance margins performance margins demand guidance demand steve foster steve foster steve foster steve foster steve foster steve foster kevin williamson kevin williamson kevin williamson steve foster steve foster steve foster">
+        <div class="ew-card-top"><span class="ew-ticker">TNON</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="tnon-2026q2-call-record.html">TNON · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>margins</span><span>guidance</span></div>
+        <blockquote lang="en">“Over the past 12 months, we have meaningfully increased our physician user base and surgical case volume, and we expect to continue to build on that momentum through sales force expansion, increased physician and distributor engagement, and future product launches.”</blockquote>
+        <div class="ew-card-foot"><span>Kevin Williamson</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks management_commitments performance demand guidance capital_allocation" data-search="tmc tmc q2 fy2026 2026-08-13 risks management_commitments risks performance risks demand risks guidance performance performance capital_allocation capital_allocation capital_allocation guidance demand craig shesky gerard barron gerard barron gerard barron gerard barron gerard barron gerard barron craig shesky craig shesky craig shesky heiko ihle craig shesky">
+        <div class="ew-card-top"><span class="ew-ticker">TMC</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="tmc-2026q2-call-record.html">TMC · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>management commitments</span><span>performance</span></div>
+        <blockquote lang="en">“Let&#39;s just say if you&#39;re thinking about 3 million tons per year, which is the target capacity for the Hidden Gem, that alone, if processed domestically, depending on whose model you&#39;re looking at could satisfy somewhere from a quarter to maybe a third of domestic needs based on current demand for nickel and cobalt.”</blockquote>
+        <div class="ew-card-foot"><span>Craig Shesky</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="segment_changes q_and_a performance margins risks guidance demand management_commitments" data-search="tbbb tbbb q2 fy2026 2026-08-13 segment_changes q_and_a performance q_and_a performance q_and_a performance margins q_and_a margins risks q_and_a q_and_a guidance margins q_and_a margins demand q_and_a management_commitments segment_changes q_and_a demand risks q_and_a guidance margins q_and_a demand q_and_a anthony hatoum anthony hatoum eduardo pizzuto eduardo pizzuto eduardo pizzuto eduardo pizzuto andrew ruben anthony hatoum eduardo pizzuto anthony hatoum froylan mendez anthony hatoum">
+        <div class="ew-card-top"><span class="ew-ticker">TBBB</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="tbbb-2026q2-call-record.html">TBBB · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>segment changes</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“EBITDA for the second quarter of 2026, excluding non-cash share-based payment expense, increased 44% to MXN 1.6 billion, driven by strong sales growth, improved gross margin, and operational efficiencies.”</blockquote>
+        <div class="ew-card-foot"><span>Eduardo Pizzuto</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a demand performance margins capital_allocation guidance" data-search="swmr swmr q2 fy2026 2026-08-13 risks q_and_a risks q_and_a demand q_and_a performance demand q_and_a demand q_and_a margins q_and_a q_and_a performance margins q_and_a performance margins demand q_and_a q_and_a demand capital_allocation q_and_a guidance capital_allocation q_and_a alex fink alex fink alex fink alex fink brooks ensign brooks ensign brooks ensign alex fuhrman alex fuhrman alex fink alex fink alex latimore">
+        <div class="ew-card-top"><span class="ew-ticker">SWMR</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="swmr-2026q2-call-record.html">SWMR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>demand</span></div>
+        <blockquote lang="en">“Then just bigger picture, as you start to move into the millions of dollars of revenue, where should we start to see gross margins shake out as volumes pick up?”</blockquote>
+        <div class="ew-card-foot"><span>Alex Fuhrman</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance capital_allocation risks demand segment_changes margins guidance" data-search="stn stn q2 fy2026 2026-08-13 performance capital_allocation performance capital_allocation risks demand segment_changes margins margins capital_allocation guidance capital_allocation demand performance demand capital_allocation guidance performance guidance performance demand gord johnston gord johnston vito culmone vito culmone vito culmone vito culmone vito culmone gord johnston gord johnston gord johnston gord johnston vito culmone">
+        <div class="ew-card-top"><span class="ew-ticker">STN</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="stn-2026q2-call-record.html">STN · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>capital allocation</span><span>risks</span></div>
+        <blockquote lang="en">“Lastly, our global business delivered over 18% net revenue growth in the second quarter, driven by almost 13% organic and over 2% acquisition growth, as well as positive foreign exchange impacts.”</blockquote>
+        <div class="ew-card-foot"><span>Gord Johnston</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks demand segment_changes guidance performance margins q_and_a" data-search="ssys stratasys ltd q2 fy2026 2026-08-13 risks demand demand segment_changes risks guidance performance margins performance performance demand margins performance margins risks guidance performance guidance performance demand q_and_a yonah lloyd yoav zeif yoav zeif yoav zeif yoav zeif eitan zamir eitan zamir eitan zamir eitan zamir eitan zamir eitan zamir yoav zeif">
+        <div class="ew-card-top"><span class="ew-ticker">SSYS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="ssys-2026q2-call-record.html">STRATASYS LTD · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>demand</span><span>segment changes</span></div>
+        <blockquote lang="en">“Non-GAAP gross margin was 47.2% for the quarter, compared to 47.7% in the same period last year, driven by the adverse impact of the strong Israeli shekel, in which many of our expenses are incurred, partially offset by the contribution of higher consumables revenue margins and an improvement from 46.3% last quarter.”</blockquote>
+        <div class="ew-card-foot"><span>Eitan Zamir</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="margins risks demand guidance performance q_and_a segment_changes" data-search="ssti soundthinking in q2 fy2026 2026-08-13 margins risks demand guidance performance guidance performance performance demand performance margins guidance performance margins demand q_and_a q_and_a segment_changes q_and_a demand q_and_a performance demand q_and_a ralph clark ralph clark ralph clark ralph clark ralph clark alan stewart alan stewart ralph clark richard baldry ralph clark alan stewart alan stewart">
+        <div class="ew-card-top"><span class="ew-ticker">SSTI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="ssti-2026q2-call-record.html">SOUNDTHINKING IN · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>margins</span><span>risks</span><span>demand</span></div>
+        <blockquote lang="en">“As our revenue growth drives most of our adjusted EBITDA growth, we are also reducing our full year 2026 adjusted EBITDA margin guidance to a range of 8%-9%.”</blockquote>
+        <div class="ew-card-foot"><span>Alan Stewart</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance guidance management_commitments q_and_a demand segment_changes" data-search="ssmr ssmr q2 fy2026 2026-08-13 performance performance performance guidance performance management_commitments management_commitments q_and_a management_commitments q_and_a q_and_a management_commitments q_and_a demand q_and_a guidance management_commitments q_and_a guidance management_commitments q_and_a segment_changes q_and_a andré van niekerk andré van niekerk andré van niekerk heather white heather white heather white heather white heather white andré van niekerk andré van niekerk andré van niekerk heather white">
+        <div class="ew-card-top"><span class="ew-ticker">SSMR</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="ssmr-2026q2-call-record.html">SSMR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>guidance</span><span>management commitments</span></div>
+        <blockquote lang="en">“Turning to cash flows on slide 17, cash used in operating activities was $22.8 million during the first six months of 2026, compared with $7.2 million in the prior year period.”</blockquote>
+        <div class="ew-card-foot"><span>André van Niekerk</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation performance margins guidance demand segment_changes risks management_commitments" data-search="srxh srxh q3 fy2026 2026-08-13 capital_allocation capital_allocation performance margins guidance performance margins demand segment_changes guidance performance margins capital_allocation segment_changes margins margins performance margins capital_allocation capital_allocation risks management_commitments performance margins capital_allocation kent cunningham kent cunningham kent cunningham kent cunningham kent cunningham kent cunningham nina martinez nina martinez nina martinez nina martinez nina martinez nina martinez">
+        <div class="ew-card-top"><span class="ew-ticker">SRXH</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="srxh-2026q3-call-record.html">SRXH · Q3 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>performance</span><span>margins</span></div>
+        <blockquote lang="en">“Going forward, our focus is on converting improved product availability and more efficient consumer acquisition into sustainable revenue growth and improved profitability.”</blockquote>
+        <div class="ew-card-foot"><span>Kent Cunningham</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks demand guidance performance segment_changes margins" data-search="spry ars pharmaceuticals inc q2 fy2026 2026-08-13 risks demand guidance performance segment_changes guidance performance performance demand guidance performance segment_changes margins margins performance performance margins donn casale donn casale donn casale donn casale donn casale donn casale donn casale donn casale kathy scott kathy scott donn casale donn casale">
+        <div class="ew-card-top"><span class="ew-ticker">SPRY</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="spry-2026q2-call-record.html">ARS Pharmaceuticals Inc · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>demand</span><span>guidance</span></div>
+        <blockquote lang="en">“Importantly, within our field sales targeted universe, market share increased to 8%, up from 4% in the prior year quarter.”</blockquote>
+        <div class="ew-card-foot"><span>Donn Casale</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance guidance capital_allocation margins segment_changes demand q_and_a management_commitments" data-search="slnh slnh q2 fy2026 2026-08-13 performance guidance performance capital_allocation performance capital_allocation margins margins segment_changes capital_allocation capital_allocation guidance performance capital_allocation performance capital_allocation demand demand q_and_a demand management_commitments q_and_a john belizaire john belizaire michael picchi michael picchi michael picchi michael picchi michael picchi michael picchi michael picchi john belizaire john belizaire john belizaire">
+        <div class="ew-card-top"><span class="ew-ticker">SLNH</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="slnh-2026q2-call-record.html">SLNH · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>guidance</span><span>capital allocation</span></div>
+        <blockquote lang="en">“For a 100-MW build-out, which we estimate at $1.2 billion-$1.3 billion, we would target 70%-80% project level debt, likely high yield notes sized against the contracted tenant cash flows under the lease, with the remaining 20%-30% from Soluna contributions or third-party project equity.”</blockquote>
+        <div class="ew-card-foot"><span>Michael Picchi</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a guidance capital_allocation demand performance margins segment_changes" data-search="slnd slnd q2 fy2026 2026-08-13 risks q_and_a guidance q_and_a capital_allocation q_and_a risks q_and_a demand q_and_a demand q_and_a guidance demand q_and_a performance margins risks q_and_a capital_allocation q_and_a performance segment_changes q_and_a performance segment_changes q_and_a guidance performance demand q_and_a alex murray frank renda frank renda frank renda frank renda frank renda frank renda keith bassano keith bassano keith bassano keith bassano keith bassano">
+        <div class="ew-card-top"><span class="ew-ticker">SLND</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="slnd-2026q2-call-record.html">SLND · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“As a result of this reassessment, we reduced the estimated value of certain claims and recorded a cumulative catch-up adjustment that negatively impacts revenue and gross profit for the quarter of $102.3 million and $93.6 million, respectively.”</blockquote>
+        <div class="ew-card-foot"><span>Keith Bassano</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a performance margins capital_allocation guidance risks management_commitments" data-search="secz secz q2 fy2026 2026-08-13 demand q_and_a demand q_and_a performance margins q_and_a performance margins q_and_a capital_allocation q_and_a guidance performance risks q_and_a guidance performance q_and_a guidance performance risks q_and_a margins management_commitments q_and_a performance risks q_and_a margins demand management_commitments q_and_a demand q_and_a carlos domingo carlos domingo francisco flores francisco flores francisco flores francisco flores francisco flores francisco flores francisco flores devin ryan francisco flores carlos domingo">
+        <div class="ew-card-top"><span class="ew-ticker">SECZ</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="secz-2026q2-call-record.html">SECZ · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“While we continue to expect to recognize the vast majority of this revenue, given the lower AUM trends and the other industry headwinds I just mentioned, we now expect total revenue to be in the range of $70 million-$80 million for the full year 2026.”</blockquote>
+        <div class="ew-card-foot"><span>Francisco Flores</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance risks q_and_a management_commitments demand guidance capital_allocation" data-search="sdst sdst q2 fy2026 2026-08-13 performance risks q_and_a risks management_commitments q_and_a demand management_commitments q_and_a performance q_and_a guidance management_commitments q_and_a capital_allocation q_and_a q_and_a q_and_a q_and_a guidance q_and_a capital_allocation q_and_a capital_allocation management_commitments q_and_a johanna gonzalez roshan pujari roshan pujari uday devasper uday devasper uday devasper uday devasper uday devasper uday devasper uday devasper uday devasper uday devasper">
+        <div class="ew-card-top"><span class="ew-ticker">SDST</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="sdst-2026q2-call-record.html">SDST · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>risks</span><span>q and a</span></div>
+        <blockquote lang="en">“With several important project development milestones achieved, including completion of final major permitting and FEL-3 engineering, our current investment profile is increasingly focused on targeted pre-construction and strategic development activities as we position the Muskogee refinery for construction.”</blockquote>
+        <div class="ew-card-foot"><span>Uday Devasper</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance demand q_and_a margins risks capital_allocation management_commitments guidance" data-search="sbs sbs q2 fy2026 2026-08-13 performance demand q_and_a margins q_and_a demand q_and_a risks q_and_a performance q_and_a capital_allocation management_commitments q_and_a guidance capital_allocation management_commitments q_and_a demand q_and_a demand q_and_a performance q_and_a guidance management_commitments q_and_a guidance management_commitments q_and_a daniel szlak daniel szlak daniel szlak daniel szlak daniel szlak daniel szlak daniel szlak carlos piani carlos piani carlos piani daniel szlak daniel szlak">
+        <div class="ew-card-top"><span class="ew-ticker">SBS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="sbs-2026q2-call-record.html">SBS · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>demand</span><span>q and a</span></div>
+        <blockquote lang="en">“Adjusted net revenue grew by 9.4% year-on-year, mainly reflecting the tariff and the expansion of customers.”</blockquote>
+        <div class="ew-card-foot"><span>Daniel Szlak</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand management_commitments guidance risks performance margins" data-search="qsi qsi q2 fy2026 2026-08-13 demand management_commitments guidance risks performance performance demand margins margins guidance demand guidance performance demand demand margins jeff hawkins jeff hawkins jeff keyes jeff keyes jeff keyes jeff keyes jeff keyes jeff keyes jeff keyes jeff keyes jeff hawkins jeff hawkins">
+        <div class="ew-card-top"><span class="ew-ticker">QSI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="qsi-2026q2-call-record.html">QSI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>management commitments</span><span>guidance</span></div>
+        <blockquote lang="en">“For the full year 2026, we&#39;re reiterating guidance of revenue of approximately $1 million, adjusted operating expenses of $98 million or less, and total cash usage of $93 million or less.”</blockquote>
+        <div class="ew-card-foot"><span>Jeff Keyes</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance q_and_a guidance capital_allocation risks management_commitments" data-search="pths pths q2 fy2026 2026-08-13 performance q_and_a performance q_and_a q_and_a guidance q_and_a q_and_a capital_allocation q_and_a capital_allocation risks q_and_a risks q_and_a performance q_and_a guidance performance management_commitments q_and_a guidance performance q_and_a management_commitments q_and_a scott plesha scott plesha sai rangarao sai rangarao john gay john gay john gay john gay john gay john gay scott plesha john gay">
+        <div class="ew-card-top"><span class="ew-ticker">PTHS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="pths-2026q2-call-record.html">PTHS · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“We expect that quarterly cash basis SG&amp;A, excluding milestones, royalties, and severance, will fluctuate in 2026 as we continue to invest in the expected growth of ZELSUVMI and as we prepare XEPI and XEGLYZE for commercialization.”</blockquote>
+        <div class="ew-card-foot"><span>John Gay</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance capital_allocation segment_changes q_and_a demand performance margins" data-search="psfe psfe q2 fy2026 2026-08-13 guidance capital_allocation segment_changes q_and_a demand capital_allocation segment_changes q_and_a performance margins q_and_a performance q_and_a guidance performance q_and_a margins segment_changes q_and_a performance margins segment_changes q_and_a margins segment_changes q_and_a capital_allocation q_and_a guidance performance q_and_a capital_allocation q_and_a margins segment_changes q_and_a bruce lowthers bruce lowthers john crawford john crawford john crawford john crawford john crawford john crawford john crawford john crawford bruce lowthers john crawford">
+        <div class="ew-card-top"><span class="ew-ticker">PSFE</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="psfe-2026q2-call-record.html">PSFE · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>capital allocation</span><span>segment changes</span></div>
+        <blockquote lang="en">“Without the VAT adjustment, which was approximately $4 million, and the increased marketing investment of $3 million, adjusted EBITDA margin for the segment would have been about 40%.”</blockquote>
+        <div class="ew-card-foot"><span>John Crawford</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="capital_allocation management_commitments q_and_a performance risks segment_changes guidance demand" data-search="ps ps q2 fy2026 2026-08-13 capital_allocation management_commitments capital_allocation q_and_a performance risks q_and_a risks segment_changes q_and_a risks management_commitments q_and_a performance capital_allocation q_and_a guidance performance capital_allocation management_commitments q_and_a guidance performance capital_allocation q_and_a demand risks q_and_a performance risks q_and_a capital_allocation q_and_a guidance q_and_a bill ackman bill ackman ryan israel bill ackman ryan israel bill ackman bill ackman ryan israel ryan israel ryan israel bill ackman bill ackman">
+        <div class="ew-card-top"><span class="ew-ticker">PS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="ps-2026q2-call-record.html">PS · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>capital allocation</span><span>management commitments</span><span>q and a</span></div>
+        <blockquote lang="en">“So for example, our earnings yield being higher relative to kind of that bond yield, if you will, for your equity risk premium, and the growth of our companies being significantly in excess of what the average company is going to be giving you on a multi-year basis makes us feel really good that not just perhaps that the market has a reasonable chance of doing well from here, but more importantly, that the individual kind of 12 to 15 securities that we hold at any one time have a very good chance of doing significantly better than that.”</blockquote>
+        <div class="ew-card-foot"><span>Ryan Israel</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a demand performance guidance management_commitments" data-search="pmn pmn q2 fy2026 2026-08-13 risks q_and_a demand q_and_a performance q_and_a guidance q_and_a demand q_and_a q_and_a guidance q_and_a q_and_a performance q_and_a q_and_a performance q_and_a guidance management_commitments q_and_a carie pierce neil warma larry altstiel larry altstiel neil warma neil warma neil warma neil warma neil warma neil warma neil warma larry altstiel">
+        <div class="ew-card-top"><span class="ew-ticker">PMN</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="pmn-2026q2-call-record.html">PMN · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>demand</span></div>
+        <blockquote lang="en">“Based on our current operating plan, we expect our existing cash and investments to be sufficient to fund operations through 2027, which importantly carries us through the anticipated 12-month top-line readout from our PRECISE-AD phase I trial expected in the first quarter of 2027.”</blockquote>
+        <div class="ew-card-foot"><span>Neil Warma</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance risks q_and_a demand margins segment_changes capital_allocation" data-search="plgo plgo q2 fy2026 2026-08-13 guidance performance risks q_and_a performance demand risks q_and_a performance margins segment_changes q_and_a margins q_and_a capital_allocation q_and_a guidance performance risks segment_changes q_and_a capital_allocation q_and_a capital_allocation q_and_a performance capital_allocation q_and_a risks q_and_a margins capital_allocation q_and_a guidance q_and_a dan burrows dan burrows dan burrows dan burrows allan decleir allan decleir allan decleir allan decleir allan decleir jonny strickle allan decleir david motemaden">
+        <div class="ew-card-top"><span class="ew-ticker">PLGO</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="plgo-2026q2-call-record.html">PLGO · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>risks</span></div>
+        <blockquote lang="en">“Marine political risk and political violence all saw increased demand because of elevated geopolitical uncertainty during the quarter, particularly across the Middle East, where disruption to trade flows and heightened conflict-related risks resulted in strong demand and favorable pricing.”</blockquote>
+        <div class="ew-card-foot"><span>Dan Burrows</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="performance margins segment_changes demand guidance capital_allocation" data-search="phi phi q2 fy2026 2026-08-13 performance margins performance segment_changes performance segment_changes demand segment_changes guidance capital_allocation capital_allocation margins demand segment_changes demand segment_changes guidance capital_allocation guidance capital_allocation butch jimenez butch jimenez butch jimenez butch jimenez butch jimenez butch jimenez butch jimenez butch jimenez gina gabrillas john palanca leo posadas leo posadas">
+        <div class="ew-card-top"><span class="ew-ticker">PHI</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="phi-2026q2-call-record.html">PHI · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>performance</span><span>margins</span><span>segment changes</span></div>
+        <blockquote lang="en">“Cash OpEx subsidies and provisions were broadly flat at PHP 41.7 billion, supporting EBITDA of PHP 56.1 billion in a stable 52% margin.”</blockquote>
+        <div class="ew-card-foot"><span>Butch Jimenez</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="q_and_a performance demand capital_allocation management_commitments guidance risks" data-search="park park q2 fy2026 2026-08-13 q_and_a performance demand capital_allocation management_commitments q_and_a performance q_and_a guidance performance q_and_a performance demand q_and_a q_and_a risks q_and_a q_and_a capital_allocation q_and_a capital_allocation q_and_a guidance performance q_and_a guidance capital_allocation management_commitments q_and_a pete swenson pete swenson pete swenson pete swenson christopher bernander christopher bernander christopher bernander christopher bernander christopher bernander christopher bernander christopher bernander christopher bernander">
+        <div class="ew-card-top"><span class="ew-ticker">PARK</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="park-2026q2-call-record.html">PARK · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>q and a</span><span>performance</span><span>demand</span></div>
+        <blockquote lang="en">“Same-practice revenue growth was 2.3% during the quarter and 3.2% year to date, reflecting continued patient demand, reimbursement growth, and increased provider capacity.”</blockquote>
+        <div class="ew-card-foot"><span>Christopher Bernander</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance demand q_and_a capital_allocation segment_changes margins risks" data-search="onds ondas inc q2 fy2026 2026-08-13 guidance performance demand q_and_a performance demand q_and_a performance demand capital_allocation q_and_a capital_allocation segment_changes q_and_a demand segment_changes q_and_a demand capital_allocation q_and_a demand q_and_a performance margins capital_allocation segment_changes q_and_a guidance performance capital_allocation q_and_a capital_allocation risks q_and_a guidance performance q_and_a margins demand q_and_a eric brock eric brock eric brock eric brock eric brock eric brock neil laird neil laird neil laird ryan hartman eric brock eric brock">
+        <div class="ew-card-top"><span class="ew-ticker">ONDS</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="onds-2026q2-call-record.html">Ondas Inc · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>demand</span></div>
+        <blockquote lang="en">“Based on our results, backlog, and current visibility, we are also increasing our full-year 2026 revenue target to a range of $525 million-$550 million.”</blockquote>
+        <div class="ew-card-foot"><span>Eric Brock</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks management_commitments demand capital_allocation guidance performance margins segment_changes" data-search="nuwe nuwe q2 fy2026 2026-08-13 risks management_commitments demand management_commitments capital_allocation guidance demand performance margins performance performance margins segment_changes capital_allocation capital_allocation management_commitments leah mcmullen mike mccormick mike mccormick mike mccormick mike mccormick mike mccormick carisa schultz carisa schultz carisa schultz carisa schultz carisa schultz mike mccormick">
+        <div class="ew-card-top"><span class="ew-ticker">NUWE</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="nuwe-2026q2-call-record.html">NUWE · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>management commitments</span><span>demand</span></div>
+        <blockquote lang="en">“Revenue for the second quarter of 2026 was $1.97 million, compared with approximately $1.7 million in the prior year quarter, representing an increase of 14%, while U.S.”</blockquote>
+        <div class="ew-card-foot"><span>Carisa Schultz</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand segment_changes performance guidance margins risks" data-search="nu nu holdings lt-a q2 fy2026 2026-08-13 demand demand segment_changes demand performance demand segment_changes guidance performance segment_changes performance margins risks performance margins margins risks guidance performance risks margins risks segment_changes guidance margins risks david vélez david vélez david vélez david vélez david vélez rob livingston rob livingston rob livingston rob livingston tito labarta rob livingston jorge kuri">
+        <div class="ew-card-top"><span class="ew-ticker">NU</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="nu-2026q2-call-record.html">NU HOLDINGS LT-A · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>segment changes</span><span>performance</span></div>
+        <blockquote lang="en">“You feel comfortable, but given the macro that we are seeing in Brazil, how do you think about the growth outlook maybe going into 2027 and the ability to maintain this level of risk-adjusted NIM?”</blockquote>
+        <div class="ew-card-foot"><span>Tito Labarta</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="risks q_and_a guidance performance margins capital_allocation demand segment_changes" data-search="nomd nomd q2 fy2026 2026-08-13 risks q_and_a guidance performance q_and_a q_and_a guidance performance q_and_a performance q_and_a performance margins q_and_a capital_allocation q_and_a demand q_and_a demand q_and_a demand risks q_and_a performance demand q_and_a risks segment_changes q_and_a dominic brisby dominic brisby dominic brisby andrew lazar steve powers ruben baldew scott marks dominic brisby dominic brisby jon tanwanteng dominic brisby dominic brisby">
+        <div class="ew-card-top"><span class="ew-ticker">NOMD</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="nomd-2026q2-call-record.html">NOMD · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>risks</span><span>q and a</span><span>guidance</span></div>
+        <blockquote lang="en">“I think the main message is you see a return to gross margin growth that is driven by pricing kicking in, as we also said after our quarter 1 results.”</blockquote>
+        <div class="ew-card-foot"><span>Ruben Baldew</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="margins segment_changes guidance performance capital_allocation risks demand management_commitments q_and_a" data-search="noa north american c q2 fy2026 2026-08-13 margins segment_changes guidance performance margins performance capital_allocation capital_allocation risks demand guidance performance performance demand segment_changes guidance margins margins demand capital_allocation management_commitments demand segment_changes performance capital_allocation demand q_and_a jason veenstra jason veenstra jason veenstra jason veenstra barry palmer barry palmer barry palmer barry palmer barry palmer barry palmer barry palmer jason veenstra">
+        <div class="ew-card-top"><span class="ew-ticker">NOA</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="noa-2026q2-call-record.html">NORTH AMERICAN C · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>margins</span><span>segment changes</span><span>guidance</span></div>
+        <blockquote lang="en">“Direct adjusted G&amp;A was CAD 15 million, or 3.8% of reported revenue, well below our 5% targeted threshold, demonstrating operating leverage on stronger revenue.”</blockquote>
+        <div class="ew-card-foot"><span>Jason Veenstra</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance demand margins segment_changes management_commitments performance risks q_and_a" data-search="nmtc nmtc q3 fy2026 2026-08-13 guidance demand margins segment_changes demand management_commitments performance demand demand performance demand risks performance margins demand segment_changes q_and_a margins risks q_and_a margins demand q_and_a guidance management_commitments q_and_a dave rosa dave rosa dave rosa dave rosa david wambeke chris volker chris volker dave rosa dave rosa dave rosa dave rosa dave rosa">
+        <div class="ew-card-top"><span class="ew-ticker">NMTC</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="nmtc-2026q3-call-record.html">NMTC · Q3 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>demand</span><span>margins</span></div>
+        <blockquote lang="en">“We delivered 16% year-over-year product revenue growth, increased gross margins of 59.9%, and received product orders of $2.7 million, representing an increase of 43%.”</blockquote>
+        <div class="ew-card-foot"><span>Dave Rosa</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="segment_changes guidance performance demand margins capital_allocation q_and_a" data-search="nmax nmax q2 fy2026 2026-08-13 segment_changes guidance performance performance segment_changes performance demand performance margins capital_allocation guidance performance guidance performance margins q_and_a q_and_a segment_changes q_and_a margins q_and_a christopher ruddy christopher ruddy darryle burnham darryle burnham darryle burnham darryle burnham darryle burnham darryle burnham darryle burnham michael kupinski darryle burnham darryle burnham">
+        <div class="ew-card-top"><span class="ew-ticker">NMAX</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="nmax-2026q2-call-record.html">NMAX · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>segment changes</span><span>guidance</span><span>performance</span></div>
+        <blockquote lang="en">“Our quarterly adjusted EBITDA was $5.7 million, an improvement of $9.5 million from negative $3.8 million reported in the same quarter last year, primarily due to growth in high-margin affiliate fee and licensing revenue and lower general and administrative expenses, partially offset by continued investment in programming, production, and OTT initiatives.”</blockquote>
+        <div class="ew-card-foot"><span>Darryle Burnham</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="demand q_and_a performance risks management_commitments guidance capital_allocation" data-search="nktr nktr q2 fy2026 2026-08-13 demand q_and_a performance risks q_and_a management_commitments q_and_a management_commitments q_and_a performance q_and_a guidance management_commitments q_and_a capital_allocation q_and_a guidance q_and_a performance q_and_a guidance performance q_and_a q_and_a management_commitments q_and_a howard robin howard robin jonathan zalevsky jonathan zalevsky jonathan zalevsky jonathan zalevsky linda rubinstein linda rubinstein linda rubinstein linda rubinstein linda rubinstein mary tagliaferri">
+        <div class="ew-card-top"><span class="ew-ticker">NKTR</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="nktr-2026q2-call-record.html">NKTR · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>demand</span><span>q and a</span><span>performance</span></div>
+        <blockquote lang="en">“Full-year revenue for 2026 is still expected to total $40 million to $45 million.”</blockquote>
+        <div class="ew-card-foot"><span>Linda Rubinstein</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+      <article class="ew-card" data-wire-card data-categories="guidance performance q_and_a demand risks margins" data-search="mwh mwh q2 fy2026 2026-08-13 guidance performance q_and_a demand risks q_and_a performance margins risks q_and_a margins q_and_a performance demand q_and_a guidance performance margins q_and_a margins q_and_a performance demand q_and_a margins demand q_and_a demand q_and_a guidance demand q_and_a demand q_and_a george hershman george hershman chad plotkin chad plotkin chad plotkin chad plotkin chad plotkin julien dumoulin-smith julien dumoulin-smith george hershman ben kallo chad plotkin">
+        <div class="ew-card-top"><span class="ew-ticker">MWH</span><span class="ew-date mono">2026-08-13</span></div>
+        <h3><a href="mwh-2026q2-call-record.html">MWH · Q2 FY2026 <span class="l-en">call record</span><span class="l-zh">电话会记录</span> <span aria-hidden="true">↗</span></a></h3>
+        <div class="ew-tags"><span>guidance</span><span>performance</span><span>q and a</span></div>
+        <blockquote lang="en">“For context, while this modification did reduce planned adjusted gross margin by over 60 basis points through the first half of the year, as reflected in the 16.5% of adjusted gross margin, it has no impact on adjusted EBITDA, net income, or cash flows, as there was a direct offset in SG&amp;A expense.”</blockquote>
+        <div class="ew-card-foot"><span>Chad Plotkin</span><span>12 <span class="l-en">receipted excerpts</span><span class="l-zh">条可追溯摘录</span></span></div>
+      </article>
+    </div>
+    <div class="ew-empty" id="wire-empty" hidden>
+      <strong><span class="l-en">No records match that search.</span><span class="l-zh">没有符合该搜索的记录。</span></strong>
+      <p><span class="l-en">Try a ticker, period, category, or a call speaker.</span><span class="l-zh">请尝试代码、期间、分类或电话会发言人。</span></p>
+    </div>
+    <nav class="ew-pagination" aria-labelledby="wire-pagination-label">
+      <span class="sr-only" id="wire-pagination-label"><span class="l-en">Earnings record pages</span><span class="l-zh">财报记录分页</span></span>
+<a href="page-3.html" rel="prev">← <span class="l-en">Newer</span><span class="l-zh">较新</span></a>      <div><a href="index.html">1</a><a href="page-2.html">2</a><a href="page-3.html">3</a><span class="current" aria-current="page">4</span><a href="page-5.html">5</a><a href="page-6.html">6</a><a href="page-7.html">7</a><a href="page-8.html">8</a><a href="page-9.html">9</a><a href="page-10.html">10</a><a href="page-11.html">11</a><a href="page-12.html">12</a><a href="page-13.html">13</a><a href="page-14.html">14</a><a href="page-15.html">15</a><a href="page-16.html">16</a><a href="page-17.html">17</a><a href="page-18.html">18</a><a href="page-19.html">19</a><a href="page-20.html">20</a><a href="page-21.html">21</a><a href="page-22.html">22</a><a href="page-23.html">23</a><a href="page-24.html">24</a><a href="page-25.html">25</a><a href="page-26.html">26</a><a href="page-27.html">27</a><a href="page-28.html">28</a><a href="page-29.html">29</a><a href="page-30.html">30</a><a href="page-31.html">31</a><a href="page-32.html">32</a><a href="page-33.html">33</a><a href="page-34.html">34</a><a href="page-35.html">35</a><a href="page-36.html">36</a><a href="page-37.html">37</a><a href="page-38.html">38</a><a href="page-39.html">39</a><a href="page-40.html">40</a><a href="page-41.html">41</a><a href="page-42.html">42</a><a href="page-43.html">43</a><a href="page-44.html">44</a><a href="page-45.html">45</a><a href="page-46.html">46</a><a href="page-47.html">47</a><a href="page-48.html">48</a><a href="page-49.html">49</a><a href="page-50.html">50</a><a href="page-51.html">51</a><a href="page-52.html">52</a><a href="page-53.html">53</a><a href="page-54.html">54</a><a href="page-55.html">55</a><a href="page-56.html">56</a><a href="page-57.html">57</a><a href="page-58.html">58</a><a href="page-59.html">59</a></div>
+<a href="page-5.html" rel="next"><span class="l-en">Older</span><span class="l-zh">较早</span> →</a>    </nav>
+  </div>
+</section>
+
+<section class="ew-protocol">
+  <div class="ew-wrap ew-protocol-in">
+    <span class="ew-protocol-no mono">01</span>
+    <div><span class="ew-eyebrow"><span class="l-en">Read it correctly</span><span class="l-zh">如何正确阅读</span></span><h2><span class="l-en">A record of what was said — not a market call.</span><span class="l-zh">这是对已说内容的记录，而非市场判断。</span></h2></div>
+    <p><span class="l-en">This is a transcript-only, historically incomplete publication. Releases, filings, slides, consensus and price reaction are visibly marked as not joined; lower-evidence packets remain held instead of being inferred.</span><span class="l-zh">这是仅基于电话会文本且历史覆盖尚不完整的发布。新闻稿、披露文件、演示材料、一致预期和股价反应均明确标注为未接入；证据不足的数据包会被暂缓，而非由推断补齐。</span></p>
+  </div>
+</section>
+</main>
+
+<footer class="public-footer">
+  <div class="f-in">
+    <div class="f-grid">
+      <div class="f-brand">
+        <div class="fb-row"><span class="fm">M</span><span class="fn">MASTERMINDX</span></div>
+        <p class="ft"><span class="l-en">Institutional-grade market intelligence.</span><span class="l-zh">机构级市场情报。</span></p>
+      </div>
+      <div class="f-cols">
+        <div class="f-col">
+          <p><span class="l-en">Platform</span><span class="l-zh">平台</span></p>
+          <a href="../../products/market-terminal.html"><span class="l-en">Market Terminal</span><span class="l-zh">市场终端</span></a>
+          <a href="../../products/mastermind-ai.html">Mastermind AI</a>
+          <a href="../../products/market-dashboards.html"><span class="l-en">Market Intelligence</span><span class="l-zh">市场情报</span></a>
+          <a href="../../plans.html"><span class="l-en">Plans &amp; pricing</span><span class="l-zh">方案与定价</span></a>
+        </div>
+        <div class="f-col">
+          <p><span class="l-en">Research</span><span class="l-zh">研究</span></p>
+          <a href="../../research_vault.html"><span class="l-en">Institutional research</span><span class="l-zh">机构研报</span></a>
+          <a href="../../stocks/index.html"><span class="l-en">Stock dossiers</span><span class="l-zh">股票档案</span></a>
+          <a href="../../about-research.html"><span class="l-en">About the research</span><span class="l-zh">关于研究</span></a>
+        </div>
+        <div class="f-col">
+          <p><span class="l-en">Resources</span><span class="l-zh">资源</span></p>
+          <a href="../../tools/index.html"><span class="l-en">Tools</span><span class="l-zh">工具</span></a>
+          <a href="../../learn/index.html"><span class="l-en">Learn</span><span class="l-zh">学习</span></a>
+          <a href="../../blog/index.html"><span class="l-en">Blog</span><span class="l-zh">博客</span></a>
+          <a href="../../support.html"><span class="l-en">Support</span><span class="l-zh">支持</span></a>
+          <a href="../../about.html"><span class="l-en">About MastermindX</span><span class="l-zh">关于 MastermindX</span></a>
+        </div>
+        <div class="f-col">
+          <p><span class="l-en">Legal</span><span class="l-zh">法律</span></p>
+          <a href="../../privacy.html"><span class="l-en">Privacy</span><span class="l-zh">隐私政策</span></a>
+          <a href="../../terms.html"><span class="l-en">Terms</span><span class="l-zh">服务条款</span></a>
+          <a href="../../disclaimer.html"><span class="l-en">Disclaimer</span><span class="l-zh">免责声明</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="f-bot">
+      <span>© 2026 MastermindX · mastermind-x.com</span>
+      <span class="f-legal"><a href="../../privacy.html"><span class="l-en">Privacy</span><span class="l-zh">隐私政策</span></a> · <a href="../../terms.html"><span class="l-en">Terms</span><span class="l-zh">服务条款</span></a> · <a href="../../disclaimer.html"><span class="l-en">Disclaimer</span><span class="l-zh">免责声明</span></a></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/earnings-wire.js?v=aeb69f06" defer></script>
+<script>window.MM_API=window.MM_API||'https://app.mastermind-x.com';window.__mmAccountLoading=true;</script>
+<script src="../../supabase.js?v=8596965f" defer></script>
+<script src="../../account.js?v=647354a0" defer></script>
+<script src="../../theme.js?v=48082a1e" defer></script>
+<script>
+(function(){
+  var nav=document.querySelector('.public-nav');
+  if(nav){
+    var raf=false;
+    var update=function(){nav.classList.toggle('sc',window.scrollY>10);raf=false;};
+    window.addEventListener('scroll',function(){
+      if(!raf){raf=true;window.requestAnimationFrame(update);}
+    },{passive:true});
+    update();
+  }
+
+  var drawer=document.getElementById('public-primary-navigation');
+  var drawerBtn=document.getElementById('public-nav-toggle');
+  var triggers=Array.prototype.slice.call(document.querySelectorAll('.public-nav-trigger'));
+  var mq=window.matchMedia('(max-width:900px)');
+  var panelFor=function(trigger){return document.getElementById(trigger.getAttribute('aria-controls'));};
+  var closePanels=function(focus){
+    var focused=null;
+    triggers.forEach(function(trigger){
+      if(trigger.getAttribute('aria-expanded')==='true')focused=trigger;
+      trigger.setAttribute('aria-expanded','false');
+      var panel=panelFor(trigger);if(panel)panel.hidden=true;
+    });
+    if(focus&&focused)focused.focus();
+  };
+  var closeDrawer=function(focus){
+    if(!drawer||!drawerBtn)return;
+    drawer.classList.remove('open');
+    drawerBtn.setAttribute('aria-expanded','false');
+    drawerBtn.setAttribute('aria-label','Open navigation');
+    if(focus)drawerBtn.focus();
+  };
+  triggers.forEach(function(trigger){
+    trigger.addEventListener('click',function(e){
+      e.stopPropagation();
+      var wasOpen=trigger.getAttribute('aria-expanded')==='true';
+      closePanels(false);
+      if(!wasOpen){
+        trigger.setAttribute('aria-expanded','true');
+        var panel=panelFor(trigger);if(panel)panel.hidden=false;
+      }
+    });
+    trigger.addEventListener('keydown',function(e){
+      if(e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;
+      e.preventDefault();
+      closePanels(false);
+      trigger.setAttribute('aria-expanded','true');
+      var panel=panelFor(trigger);
+      if(!panel)return;
+      panel.hidden=false;
+      var links=panel.querySelectorAll('a[href]');
+      var target=e.key==='ArrowUp'?links[links.length-1]:links[0];
+      if(target)target.focus();
+    });
+    var group=trigger.closest('.public-nav-group');
+    if(group)group.addEventListener('focusout',function(e){
+      if(mq.matches||group.contains(e.relatedTarget))return;
+      closePanels(false);
+    });
+  });
+  if(drawer&&drawerBtn){
+    drawerBtn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var opening=drawerBtn.getAttribute('aria-expanded')!=='true';
+      if(opening){
+        drawer.classList.add('open');
+        drawerBtn.setAttribute('aria-expanded','true');
+        drawerBtn.setAttribute('aria-label','Close navigation');
+      }else{
+        closePanels(false);closeDrawer(false);
+      }
+    });
+    drawer.querySelectorAll('a[href]').forEach(function(link){
+      link.addEventListener('click',function(){closePanels(false);closeDrawer(false);});
+    });
+    var reset=function(){closePanels(false);closeDrawer(false);};
+    if(mq.addEventListener)mq.addEventListener('change',reset);else mq.addListener(reset);
+  }
+
+  var btn=document.getElementById('gear-btn');
+  var pop=document.getElementById('gear-pop');
+  document.addEventListener('pointerdown',function(e){
+    if(nav&&!nav.contains(e.target)){closePanels(false);closeDrawer(false);}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    var open=triggers.some(function(trigger){return trigger.getAttribute('aria-expanded')==='true';});
+    if(open){e.preventDefault();closePanels(true);return;}
+    if(drawerBtn&&drawerBtn.getAttribute('aria-expanded')==='true'){e.preventDefault();closeDrawer(true);}
+  });
+  if(!btn||!pop)return;
+  var segs=Array.prototype.slice.call(pop.querySelectorAll('.gp-seg-b'));
+  var current=function(){return document.documentElement.getAttribute('data-lang')==='zh'?'zh':'en';};
+  var close=function(){pop.classList.remove('open');btn.setAttribute('aria-expanded','false');};
+  var sync=function(){var lang=current();segs.forEach(function(s){s.classList.toggle('on',s.getAttribute('data-set-lang')===lang);});};
+  btn.addEventListener('click',function(e){
+    e.stopPropagation();
+    closePanels(false);
+    var opening=!pop.classList.contains('open');
+    pop.classList.toggle('open',opening);
+    btn.setAttribute('aria-expanded',opening?'true':'false');
+  });
+  segs.forEach(function(s){
+    s.addEventListener('click',function(e){
+      e.stopPropagation();
+      var lang=s.getAttribute('data-set-lang')==='zh'?'zh':'en';
+      document.documentElement.setAttribute('data-lang',lang);
+      document.documentElement.lang=lang==='zh'?'zh-CN':'en';
+      try{localStorage.setItem('lang',lang);}catch(ignore){}
+      try{document.dispatchEvent(new CustomEvent('langchange',{detail:{lang:lang}}));}catch(ignore){}
+      sync();
+    });
+  });
+  document.addEventListener('click',function(e){if(!pop.contains(e.target)&&e.target!==btn)close();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&pop.classList.contains('open')){close();btn.focus();}
+  });
+  sync();
+})();
+</script><script src="../../onboard.js?v=bac59999" defer></script>
+</body>
+</html>

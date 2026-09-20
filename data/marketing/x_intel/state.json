@@ -1,0 +1,98 @@
+{
+  "handles": {
+    "Barchart": {
+      "last_captured_at": "2026-09-19T22:56:18Z",
+      "last_kept": 0
+    },
+    "DeItaone": {
+      "last_captured_at": "2026-09-19T22:56:18Z",
+      "last_kept": 0
+    },
+    "FirstSquawk": {
+      "last_captured_at": "2026-09-19T22:56:18Z",
+      "last_kept": 0
+    },
+    "KobeissiLetter": {
+      "last_captured_at": "2026-09-19T22:56:18Z",
+      "last_kept": 0
+    },
+    "LizAnnSonders": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 20
+    },
+    "Mr_Derivatives": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 20
+    },
+    "PeterLBrandt": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 18
+    },
+    "RyanDetrick": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 15
+    },
+    "StockMKTNewz": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 15
+    },
+    "alphatrends": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 16
+    },
+    "bespokeinvest": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 19
+    },
+    "charliebilello": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 10
+    },
+    "jam_croissant": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 3
+    },
+    "markminervini": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 17
+    },
+    "traderstewie": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 20
+    },
+    "unusual_whales": {
+      "last_captured_at": "2026-09-19T22:56:18Z",
+      "last_kept": 0
+    },
+    "wallstengine": {
+      "last_captured_at": "2026-09-13T23:47:40Z",
+      "last_kept": 19
+    }
+  },
+  "last_run": {
+    "at": "2026-09-19T22:56:18Z",
+    "calls": 5,
+    "rows": 0,
+    "stopped": null,
+    "usd": 0.00075
+  },
+  "months": {
+    "2026-07": {
+      "calls": 27,
+      "tweets": 340,
+      "usd": 0.0525
+    },
+    "2026-08": {
+      "calls": 183,
+      "tweets": 2880,
+      "usd": 0.43785
+    },
+    "2026-09": {
+      "calls": 124,
+      "tweets": 940,
+      "usd": 0.15255
+    }
+  },
+  "schema": "marketing.x_intel_state/v1",
+  "updated_at": "2026-09-19T22:56:18Z"
+}

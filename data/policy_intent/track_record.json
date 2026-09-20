@@ -1,0 +1,119 @@
+{
+  "schema": "ai_desk_track_record.v1",
+  "as_of": "2026-09-18",
+  "scored_total": 5,
+  "open": 32,
+  "unscored_soft": 3,
+  "expired": 0,
+  "overall": {
+    "n": 5,
+    "hits": 3,
+    "misses": 2,
+    "hit_rate": 0.6,
+    "dir_accuracy": 0.6
+  },
+  "by_conviction": {
+    "high": {
+      "n": 0,
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null,
+      "dir_accuracy": null
+    },
+    "medium": {
+      "n": 0,
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null,
+      "dir_accuracy": null
+    },
+    "low": {
+      "n": 5,
+      "hits": 3,
+      "misses": 2,
+      "hit_rate": 0.6,
+      "dir_accuracy": 0.6
+    }
+  },
+  "by_kind": {
+    "rel_return": {
+      "n": 5,
+      "hits": 3,
+      "misses": 2,
+      "hit_rate": 0.6,
+      "dir_accuracy": 0.6
+    },
+    "level": {
+      "n": 0,
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null,
+      "dir_accuracy": null
+    }
+  },
+  "by_regime": {
+    "Goldilocks": {
+      "n": 3,
+      "hits": 1,
+      "misses": 2,
+      "hit_rate": 0.333,
+      "dir_accuracy": 0.333
+    },
+    "Reflation": {
+      "n": 2,
+      "hits": 2,
+      "misses": 0,
+      "hit_rate": 1.0,
+      "dir_accuracy": 1.0
+    }
+  },
+  "calibration_note": "5 scored, hit-rate 0.6 (directional accuracy 0.6). Sample is tiny \u2014 treat conviction as provisional and lean low.",
+  "recent": [
+    {
+      "id": "2026-08-17-20260818064546-1",
+      "subject": "XLE",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0733,
+      "check_by": "2026-09-15"
+    },
+    {
+      "id": "2026-08-01-022230-2",
+      "subject": "XLE",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0473,
+      "check_by": "2026-08-31"
+    },
+    {
+      "id": "2026-07-25-015718-4",
+      "subject": "XLE",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": 0.0253,
+      "check_by": "2026-08-24"
+    },
+    {
+      "id": "2026-06-25-073307-4",
+      "subject": "SMH",
+      "lean": "overweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": -0.1578,
+      "check_by": "2026-08-24"
+    },
+    {
+      "id": "2026-07-10-080843-4",
+      "subject": "GLD",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "miss",
+      "realized": 0.1119,
+      "check_by": "2026-08-21"
+    }
+  ],
+  "calibration_note_zh": "\u5df2\u8bc4\u5206 5 \u6761\uff0c\u547d\u4e2d\u7387 0.6\uff08\u65b9\u5411\u51c6\u786e\u7387 0.6\uff09\u3002\u6837\u672c\u6781\u5c0f \u2014\u2014 \u5c06\u7f6e\u4fe1\u89c6\u4e3a\u6682\u5b9a\u5e76\u4fdd\u6301\u504f\u4f4e\u3002"
+}

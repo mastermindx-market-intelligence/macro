@@ -1,0 +1,26 @@
+
+.va-lede{margin:2px 0 16px;font-size:13px;line-height:1.55;color:var(--muted);max-width:62ch;}
+.va-ctls{display:flex;flex-direction:column;gap:14px;margin:4px 0 18px;}
+.va-ctl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;}
+.va-ctl label{font-size:12.5px;font-weight:650;color:var(--text);}
+.va-ctl .va-readout{font-variant-numeric:tabular-nums;font-weight:700;color:var(--link);font-size:12.5px;text-align:right;}
+.va-ctl .va-unit{font-size:11px;font-weight:500;color:var(--muted);text-align:right;}
+.va-ctl input[type=range]{grid-column:1 / -1;width:100%;accent-color:var(--link);height:22px;margin:0;background:transparent;}
+.va-out{margin:4px 0 14px;padding:14px 16px;background:color-mix(in srgb,var(--panel2) 55%,transparent);border:1px solid var(--hair);border-radius:var(--r-card,13px);}
+[data-theme="light"] .va-out{background:var(--panel);border:1px solid var(--hair);box-shadow:0 6px 18px -12px color-mix(in srgb,var(--text) 18%,transparent);}
+.va-out-k{font-size:10.5px;font-weight:650;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+[data-lang="zh"] .va-out-k{letter-spacing:0;text-transform:none;}
+/* Never louder than the server-computed authority it defers to: V1's
+   .vs-card .vv is 20px/800 with no glow, and this sandbox figure matches it. */
+.va-out-num{margin-top:6px;font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
+.va-out-null{margin-top:8px;font-size:13px;line-height:1.5;color:var(--muted);font-weight:600;}
+.va-bridge{margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--muted);}
+.va-presets{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
+.va-presets .va-preset-on{border-color:var(--link);color:var(--link);}
+.va-note{margin:0 0 6px;font-size:11.5px;line-height:1.5;color:var(--muted);}
+.va-is-null .va-out-num,.va-is-null .va-bridge{display:none;}
+.va-is-null .va-out-null{display:block;}
+@media(max-width:390px){
+  .va-ctl{grid-template-columns:1fr;gap:4px;}
+  .va-ctl .va-readout,.va-ctl .va-unit{text-align:left;}
+}

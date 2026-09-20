@@ -1,0 +1,258 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      "model_unavailable"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "generated_at": "2026-09-08T08:12:15Z",
+  "honesty": {
+    "access": "anonymous fixture render of templates/policy_watch.html.j2; not the live VPS page",
+    "authority": "this capture measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them",
+    "live_payload": "site/uk_policy.json was not read; the 8 rest cells use state=ok stance=restrictive; the two extra frames use state=model_unavailable"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        }
+      ],
+      "page_id": "macro:policy_watch_uk_desk",
+      "registry_route": "/policy_watch.html",
+      "route": "/ok.html",
+      "route_kind": "page",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 30941,
+          "captured": true,
+          "file": "uk-desk-ok-dark-en-1440.png",
+          "force_state": null,
+          "height": 291,
+          "locale": "en",
+          "prefers_reduced_motion": true,
+          "sha256": "9fabcf02a9d28eae1c92fee3e504981f94ff2267f69e42d4d44b1d36768393bb",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1360
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 30607,
+          "captured": true,
+          "file": "uk-desk-ok-dark-zh-1440.png",
+          "force_state": null,
+          "height": 291,
+          "locale": "zh",
+          "prefers_reduced_motion": true,
+          "sha256": "d46cbdab971efeca81f3a44afe912bf389186cc56d07c5de56f532ecef4891d7",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1360
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 30774,
+          "captured": true,
+          "file": "uk-desk-ok-light-en-1440.png",
+          "force_state": null,
+          "height": 291,
+          "locale": "en",
+          "prefers_reduced_motion": true,
+          "sha256": "6c40d6eab578c4ea27752505668e2ca41865759a61e330f8d3c99a2b5674faf2",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1360
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 30286,
+          "captured": true,
+          "file": "uk-desk-ok-light-zh-1440.png",
+          "force_state": null,
+          "height": 291,
+          "locale": "zh",
+          "prefers_reduced_motion": true,
+          "sha256": "97c6683a7020f05ce9fb4697c12d4025b8578aa91a21e19bc90f50ce72d29a08",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1360
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 28167,
+          "captured": true,
+          "file": "uk-desk-ok-dark-en-390.png",
+          "force_state": null,
+          "height": 349,
+          "locale": "en",
+          "prefers_reduced_motion": true,
+          "sha256": "088a4db7cb2233b18660df014087a9d7016071e2185ed8775125dee98d8e90ad",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 354
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 27409,
+          "captured": true,
+          "file": "uk-desk-ok-dark-zh-390.png",
+          "force_state": null,
+          "height": 327,
+          "locale": "zh",
+          "prefers_reduced_motion": true,
+          "sha256": "c916d45573db67c2daee374f302853f742fcfcede929cd4c8ebc2913cc5182b1",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 354
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 27897,
+          "captured": true,
+          "file": "uk-desk-ok-light-en-390.png",
+          "force_state": null,
+          "height": 349,
+          "locale": "en",
+          "prefers_reduced_motion": true,
+          "sha256": "bb156e08bd03c1b90dc88826f084503706d1c51aa9f0a4428a30f5797a3648bb",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 354
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 26891,
+          "captured": true,
+          "file": "uk-desk-ok-light-zh-390.png",
+          "force_state": null,
+          "height": 327,
+          "locale": "zh",
+          "prefers_reduced_motion": true,
+          "sha256": "bbffeeee965eed64919f12fdc81084f343d7746cc7315179e24256012ce21b58",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 354
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 35220,
+          "captured": true,
+          "file": "uk-desk-model_unavailable-dark-en-1440.png",
+          "force_state": {
+            "kind": "rendered_fixture",
+            "name": "model_unavailable",
+            "spec": "jinja uk_desk.state=model_unavailable (same harness as tests/test_uk_policy_brain.py)"
+          },
+          "height": 305,
+          "locale": "en",
+          "prefers_reduced_motion": true,
+          "sha256": "6a002f432b880593bc54f4f9c59e85af621f517b8b80e0c185a1b110488e2f23",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1360
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 35163,
+          "captured": true,
+          "file": "uk-desk-model_unavailable-light-en-1440.png",
+          "force_state": {
+            "kind": "rendered_fixture",
+            "name": "model_unavailable",
+            "spec": "jinja uk_desk.state=model_unavailable (same harness as tests/test_uk_policy_brain.py)"
+          },
+          "height": 305,
+          "locale": "en",
+          "prefers_reduced_motion": true,
+          "sha256": "1596a2ba1ee09f6a7cc83d8a144ff7e5f867d93e303dfc204ca0a054e09d30f4",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1360
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "sha": "060e5b6795daf9b566ac24e4e66b6d050377de8b",
+  "timestamp": "2026-09-08T08:12:15Z",
+  "tool": "scripts/capture_page_evidence.py not used — element-clip of .uk-desk via playwright; theme+lang seeded in add_init_script before load; prefers-reduced-motion: reduce"
+}

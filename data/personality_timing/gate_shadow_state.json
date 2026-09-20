@@ -1,0 +1,55 @@
+{
+ "schema": "personality_gate_shadow.v1",
+ "is_context_only": true,
+ "display_only": true,
+ "authority_tier": "display",
+ "as_of": "2026-09-19",
+ "generated_utc": "2026-09-19T19:50:27.165984+00:00",
+ "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
+ "gate_open": false,
+ "uniform_rung": "2W",
+ "coverage_census": {
+  "codex_names": 1631,
+  "covered": 1629,
+  "no_prices": 2,
+  "bad_rung": 0,
+  "rung_distribution": {
+   "3D": 552,
+   "1W": 731,
+   "2W": 346
+  },
+  "classes": {
+   "both": 16,
+   "fired_uniform_only": 35,
+   "fired_tailored_only": 76,
+   "neither": 1502
+  },
+  "disagreements": 111,
+  "agree_by_construction": 14
+ },
+ "ledger": {
+  "fire_rows": 3981,
+  "appended_today": 0,
+  "graded": 0,
+  "grades_advanced_today": 0
+ },
+ "timing": {
+  "uniform": {
+   "n_graded": 0,
+   "n_timing_labeled": 0,
+   "confirmed_reset": 0,
+   "called_low": 0,
+   "early": 0,
+   "median_fwd63": null
+  },
+  "tailored": {
+   "n_graded": 0,
+   "n_timing_labeled": 0,
+   "confirmed_reset": 0,
+   "called_low": 0,
+   "early": 0,
+   "median_fwd63": null
+  }
+ },
+ "note": "PSS-W3 reset-confirmer shadow (masterplan §W3, ruling R-W1T-2). Logs uniform-gate (2W Stoch-RSI) vs tailored-gate (Stoch-RSI at the codex structure-derived rung) disagreements both directions; graded later under dual rulers (fwd63 + timing). Display/shadow tier only: it NEVER gates, ranks, sizes, or alters any Prophet, washout, or board decision. Promotion of any gate change needs its own prereg + ruling. First quarterly miss-rate readout ≈ 3 months post-ship."
+}

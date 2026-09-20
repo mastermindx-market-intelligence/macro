@@ -1,0 +1,139 @@
+{
+  "schema": "master_brief.v2",
+  "lens": "macro",
+  "is_context_only": true,
+  "generated_at": "2026-09-18T18:20:35.378104+00:00",
+  "model": "gpt-5.6-sol",
+  "served_by": "codex",
+  "state_asof": "2026-09-17",
+  "tldr": [
+    "Fed leads: Markets are pricing fewer cuts, lifting short rates and the dollar backdrop.",
+    "Regime unsettled: The map says Stagflation, but current growth and inflation signs look like Reflation.",
+    "Credit calm: Tight credit and a healthy bond market do not show broad stress.",
+    "What to do: Get ready \u2014 watch rates and the dollar before adding risk."
+  ],
+  "summary": "Hawkish Fed repricing is the main force, but calm credit makes this pressure rather than a broad alarm.",
+  "regime_read": "The map still says Stagflation, but current growth and inflation signs look like Reflation. Momentum is shifting back toward Stagflation, so the label remains unsettled.\n\nToday's main driver is hawkish Fed repricing. Markets are removing expected cuts, pushing short rates higher and supporting the dollar backdrop.",
+  "conflicts": [
+    "Rates versus credit: Short rates are rising, while credit remains tight and calm \u2014 pressure without a broad stress signal.",
+    "Dollar split: The dollar is falling now, while rate gaps still favor it \u2014 near-term relief rests on a fragile mismatch.",
+    "America versus Asia: US liquidity is expanding, while China and Hong Kong liquidity is shrinking \u2014 global risk appetite lacks breadth."
+  ],
+  "rotation_check": "Bitcoin shows appetite for risk while China and Hong Kong liquidity is contracting, so the expected sequence is running out of order.",
+  "transmission": [
+    "If hawkish Fed repricing keeps up \u2192 higher borrowing costs pressure growth stocks, Bitcoin and long bonds",
+    "If the softer dollar keeps up \u2192 US and emerging-market stocks keep some support"
+  ],
+  "watch_items": [
+    "Short rates reverse: The main driver is fading",
+    "Credit spreads widen: Calm markets are becoming genuinely worried",
+    "China liquidity turns: Global risk appetite gains broader support",
+    "Inflation cools further: Pressure for a hawkish Fed stance eases"
+  ],
+  "confidence": "low",
+  "theses": [],
+  "raw_text": "{\n  \"tldr\": [\n    \"Fed leads: Markets are pricing fewer cuts, lifting short rates and the dollar backdrop.\",\n    \"Regime unsettled: The map says Stagflation, but current growth and inflation signs look like Reflation.\",\n    \"Credit calm: Tight credit and a healthy bond market do not show broad stress.\",\n    \"What to do: Get ready \u2014 watch rates and the dollar before adding risk.\"\n  ],\n  \"summary\": \"Hawkish Fed repricing is the main force, but calm credit makes this pressure rather than a broad alarm.\",\n  \"regime_read\": \"The map still says Stagflation, but current growth and inflation signs look like Reflation. Momentum is shifting back toward Stagflation, so the label remains unsettled.\\n\\nToday's main driver is hawkish Fed repricing. Markets are removing expected cuts, pushing short rates higher and supporting the dollar backdrop.\",\n  \"conflicts\": [\n    \"Rates versus credit: Short rates are rising, while credit remains tight and calm \u2014 pressure without a broad stress signal.\",\n    \"Dollar split: The dollar is falling now, while rate gaps still favor it \u2014 near-term relief rests on a fragile mismatch.\",\n    \"America versus Asia: US liquidity is expanding, while China and Hong Kong liquidity is shrinking \u2014 global risk appetite lacks breadth.\"\n  ],\n  \"transmission\": [\n    \"If hawkish Fed repricing keeps up \u2192 higher borrowing costs pressure growth stocks, Bitcoin and long bonds\",\n    \"If the softer dollar keeps up \u2192 US and emerging-market stocks keep some support\"\n  ],\n  \"rotation_check\": \"Bitcoin shows appetite for risk while China and Hong Kong liquidity is contracting, so the expected sequence is running out of order.\",\n  \"watch_items\": [\n    \"Short rates reverse: The main driver is fading\",\n    \"Credit spreads widen: Calm markets are becoming genuinely worried\",\n    \"China liquidity turns: Global risk appetite gains broader support\",\n    \"Inflation cools further: Pressure for a hawkish Fed stance eases\"\n  ],\n  \"confidence\": \"low\",\n  \"forward_watch\": [\n    {\n      \"date\": \"2026-09-30\",\n      \"label\": \"GDP (BEA estimate)\",\n      \"kind\": \"GDP\",\n      \"note\": \"Shows whether growth stays firm enough to justify higher rates.\"\n    },\n    {\n      \"date\": \"2026-09-30\",\n      \"label\": \"PCE / personal income (BEA)\",\n      \"kind\": \"PCE\",\n      \"note\": \"Tests whether sticky inflation is cooling enough to ease rate pressure.\"\n    },\n    {\n      \"date\": \"2026-10-02\",\n      \"label\": \"Jobs report (nonfarm payrolls)\",\n      \"kind\": \"NFP\",\n      \"note\": \"Tests whether firm hiring can survive higher borrowing costs.\"\n    }\n  ],\n  \"forward_read\": \"Growth, inflation and jobs arrive together. They will test whether the hawkish rate move has solid economic backing.\"\n}",
+  "degraded_reason": null,
+  "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
+  "style_flags": [],
+  "forward_watch": [
+    {
+      "date": "2026-09-30",
+      "label": "GDP (BEA estimate)",
+      "kind": "GDP",
+      "note": "Shows whether growth stays firm enough to justify higher rates."
+    },
+    {
+      "date": "2026-09-30",
+      "label": "PCE / personal income (BEA)",
+      "kind": "PCE",
+      "note": "Tests whether sticky inflation is cooling enough to ease rate pressure."
+    },
+    {
+      "date": "2026-10-02",
+      "label": "Jobs report (nonfarm payrolls)",
+      "kind": "NFP",
+      "note": "Tests whether firm hiring can survive higher borrowing costs."
+    }
+  ],
+  "forward_read": "Growth, inflation and jobs arrive together. They will test whether the hawkish rate move has solid economic backing.",
+  "nw_context_used": true,
+  "cortex_status": "absent",
+  "refresh_days": 1,
+  "key_facts": [
+    {
+      "key": "regime",
+      "label_en": "Regime",
+      "label_zh": "\u5e02\u573a\u683c\u5c40",
+      "value_en": "Stagflation \u00b7 shifting",
+      "value_zh": "\u6ede\u80c0 \u00b7 \u8f6c\u6362\u4e2d",
+      "tone": "warn"
+    },
+    {
+      "key": "risk",
+      "label_en": "Market risk",
+      "label_zh": "\u5e02\u573a\u98ce\u9669",
+      "value_en": "Low",
+      "value_zh": "\u4f4e",
+      "tone": "good"
+    },
+    {
+      "key": "money",
+      "label_en": "Money",
+      "label_zh": "\u8d44\u91d1\u9762",
+      "value_en": "Expanding",
+      "value_zh": "\u6269\u5f20",
+      "tone": "good"
+    },
+    {
+      "key": "bonds",
+      "label_en": "Bonds vs stocks",
+      "label_zh": "\u503a\u80a1\u5173\u7cfb",
+      "value_en": "Disagree \u2014 bonds worried",
+      "value_zh": "\u5206\u6b67 \u2014 \u503a\u5e02\u62c5\u5fe7",
+      "tone": "warn"
+    },
+    {
+      "key": "credit",
+      "label_en": "Credit",
+      "label_zh": "\u4fe1\u7528",
+      "value_en": "Tight",
+      "value_zh": "\u504f\u7d27",
+      "tone": "good"
+    },
+    {
+      "key": "driver",
+      "label_en": "What's moving markets",
+      "label_zh": "\u5f53\u524d\u4e3b\u5bfc",
+      "value_en": "Fed repricing",
+      "value_zh": "Fed repricing",
+      "tone": "info"
+    }
+  ],
+  "zh": {
+    "summary": "\u9e70\u6d3e\u7f8e\u8054\u50a8\u91cd\u65b0\u5b9a\u4ef7\u662f\u4e3b\u8981\u9a71\u52a8\u529b\uff0c\u4f46\u4fe1\u8d37\u5e02\u573a\u5e73\u9759\uff0c\u8868\u660e\u8fd9\u53ea\u662f\u538b\u529b\uff0c\u800c\u975e\u5168\u9762\u8b66\u62a5\u3002",
+    "regime_read": "\u5b8f\u89c2\u56fe\u8c31\u4ecd\u6307\u5411\u6ede\u80c0\uff0c\u4f46\u5f53\u524d\u589e\u957f\u548c\u901a\u80c0\u4fe1\u53f7\u66f4\u50cf\u518d\u901a\u80c0\u3002\u52a8\u80fd\u6b63\u91cd\u65b0\u8f6c\u5411\u6ede\u80c0\uff0c\u56e0\u6b64\u6807\u7b7e\u4ecd\u672a\u5b9a\u3002\n\n\u4eca\u65e5\u4e3b\u8981\u9a71\u52a8\u529b\u662f\u9e70\u6d3e\u7f8e\u8054\u50a8\u91cd\u65b0\u5b9a\u4ef7\u3002\u5e02\u573a\u6b63\u5728\u64a4\u56de\u964d\u606f\u9884\u671f\uff0c\u63a8\u52a8\u77ed\u671f\u5229\u7387\u4e0a\u5347\uff0c\u5e76\u4e3a\u7f8e\u5143\u63d0\u4f9b\u652f\u6491\u3002",
+    "rotation_check": "Bitcoin\u663e\u793a\u98ce\u9669\u504f\u597d\uff0c\u800c\u4e2d\u56fd\u5185\u5730\u548c\u9999\u6e2f\u7684\u6d41\u52a8\u6027\u6b63\u5728\u6536\u7f29\uff0c\u56e0\u6b64\u9884\u671f\u4e2d\u7684\u4f20\u5bfc\u987a\u5e8f\u51fa\u73b0\u9519\u4f4d\u3002",
+    "tldr": [
+      "\u7f8e\u8054\u50a8\u4e3b\u5bfc\uff1a\u5e02\u573a\u6b63\u8ba1\u5165\u66f4\u5c11\u7684\u964d\u606f\u9884\u671f\uff0c\u63a8\u9ad8\u77ed\u671f\u5229\u7387\uff0c\u5e76\u652f\u6491\u7f8e\u5143\u3002",
+      "\u683c\u5c40\u672a\u5b9a\uff1a\u56fe\u8868\u663e\u793a\u4e3a\u6ede\u80c0\uff0c\u4f46\u5f53\u524d\u589e\u957f\u548c\u901a\u80c0\u4fe1\u53f7\u66f4\u50cf\u518d\u901a\u80c0\u3002",
+      "\u4fe1\u8d37\u5e73\u7a33\uff1a\u4fe1\u7528\u5229\u5dee\u8f83\u7a84\u3001\u503a\u5238\u5e02\u573a\u5065\u5eb7\uff0c\u672a\u663e\u793a\u5e7f\u6cdb\u538b\u529b\u3002",
+      "\u5e94\u5bf9\u7b56\u7565\uff1a\u505a\u597d\u51c6\u5907\u2014\u2014\u589e\u52a0\u98ce\u9669\u655e\u53e3\u524d\uff0c\u5148\u5173\u6ce8\u5229\u7387\u548c\u7f8e\u5143\u8d70\u52bf\u3002"
+    ],
+    "conflicts": [
+      "\u5229\u7387\u4e0e\u4fe1\u8d37\uff1a\u77ed\u671f\u5229\u7387\u6b63\u5728\u4e0a\u5347\uff0c\u800c\u4fe1\u7528\u5229\u5dee\u4ecd\u7a84\u4e14\u5e73\u7a33\u2014\u2014\u5b58\u5728\u538b\u529b\uff0c\u4f46\u6ca1\u6709\u5e7f\u6cdb\u7684\u7d27\u5f20\u4fe1\u53f7\u3002",
+      "\u7f8e\u5143\u5206\u5316\uff1a\u7f8e\u5143\u76ee\u524d\u6b63\u5728\u4e0b\u8dcc\uff0c\u4f46\u5229\u5dee\u4ecd\u5bf9\u5176\u6709\u5229\u2014\u2014\u77ed\u671f\u7f13\u89e3\u5efa\u7acb\u5728\u8106\u5f31\u7684\u80cc\u79bb\u4e4b\u4e0a\u3002",
+      "\u7f8e\u56fd\u4e0e\u4e9a\u6d32\uff1a\u7f8e\u56fd\u6d41\u52a8\u6027\u6b63\u5728\u6269\u5f20\uff0c\u800c\u4e2d\u56fd\u5185\u5730\u548c\u9999\u6e2f\u7684\u6d41\u52a8\u6027\u6b63\u5728\u6536\u7f29\u2014\u2014\u5168\u7403\u98ce\u9669\u504f\u597d\u7f3a\u4e4f\u5e7f\u5ea6\u3002"
+    ],
+    "transmission": [
+      "\u5982\u679c\u7f8e\u8054\u50a8\u9e70\u6d3e\u91cd\u65b0\u5b9a\u4ef7\u6301\u7eed\u2192\u501f\u8d37\u6210\u672c\u4e0a\u5347\u5c06\u538b\u5236\u6210\u957f\u80a1\u3001\u6bd4\u7279\u5e01\u548c\u957f\u671f\u503a\u5238",
+      "\u5982\u679c\u7f8e\u5143\u6301\u7eed\u8d70\u8f6f\u2192\u7f8e\u80a1\u548c\u65b0\u5174\u5e02\u573a\u80a1\u7968\u5c06\u7ee7\u7eed\u83b7\u5f97\u4e00\u5b9a\u652f\u6491"
+    ],
+    "watch_items": [
+      "\u77ed\u671f\u5229\u7387\u53cd\u8f6c\uff1a\u4e3b\u8981\u9a71\u52a8\u56e0\u7d20\u6b63\u5728\u6d88\u9000",
+      "\u4fe1\u7528\u5229\u5dee\u6269\u5927\uff1a\u5e73\u9759\u7684\u5e02\u573a\u6b63\u53d8\u5f97\u771f\u6b63\u62c5\u5fe7",
+      "\u4e2d\u56fd\u6d41\u52a8\u6027\u8f6c\u5411\uff1a\u5168\u7403\u98ce\u9669\u504f\u597d\u83b7\u5f97\u66f4\u5e7f\u6cdb\u652f\u6491",
+      "\u901a\u80c0\u8fdb\u4e00\u6b65\u964d\u6e29\uff1a\u7f8e\u8054\u50a8\u7ef4\u6301\u9e70\u6d3e\u7acb\u573a\u7684\u538b\u529b\u7f13\u89e3"
+    ]
+  }
+}

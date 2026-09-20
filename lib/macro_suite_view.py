@@ -1,0 +1,1942 @@
+"""Pure view model for the Macro & Monetary suite shell (F01 / R1B).
+
+Turns one validated ``mastermind.macro_workspace_snapshot.v1`` snapshot into the
+flat, pre-labelled structure the shared Jinja shell renders. Doing the work here
+instead of in the template is deliberate:
+
+* every closed vocabulary is resolved through :mod:`lib.macro_suite_labels`, so
+  no producer slug can reach a page;
+* every absence becomes a TYPED absence (a null reason + a reviewed label), so a
+  template can never fall back to ``0``, ``neutral``, ``easy`` or a blank cell;
+* the rules are unit-testable without rendering HTML.
+
+The builder is generic over the twelve workspace identities: it reads only
+contract blocks, never a ``liquidity_regime`` field name. A workspace page
+supplies identity and its own dominant-visualization choice; everything else in
+the section 6.3 grammar comes from here.
+
+Pure: no I/O, no clock read, no network. ``page_built_at`` is supplied.
+"""
+from __future__ import annotations
+
+import math
+from datetime import date, datetime, timedelta
+
+from typing import Any, Mapping, Sequence
+
+from lib import macro_suite_labels as L
+
+# Reading orders the shell can compose. The grammar order is merged architecture
+# section 6.3 and remains the default for every workspace; the decision-first
+# order is the narrowly amended one (see build_view's docstring).
+LAYOUT_GRAMMAR = "grammar"
+LAYOUT_DECISION_FIRST = "decision_first"
+_LAYOUTS = frozenset({LAYOUT_GRAMMAR, LAYOUT_DECISION_FIRST})
+
+EM_DASH = L.EM_DASH
+_MONTHS_EN = (
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+)
+# The ten nominal CMT series ids the curve hero reads. Their component-histories
+# Range cell must be a bilingual sentence, never a bare ISO span.
+_CMT_COMPONENT_SERIES_IDS = frozenset({
+    "us3m", "us6m", "us1y", "us2y", "us3y", "us5y", "us7y", "us10y", "us20y", "us30y",
+})
+
+
+def _pair(en: str, zh: str) -> dict[str, str]:
+    return {"en": en, "zh": zh}
+
+
+def _bilingual(node: Any) -> dict[str, str] | None:
+    """Normalise a contract ``{"en", "zh"}`` node; ``zh`` may legitimately be
+    null, in which case the toggle shows the English string in both modes."""
+    if not isinstance(node, Mapping):
+        return None
+    en = node.get("en")
+    if en is None:
+        return None
+    zh = node.get("zh")
+    return {"en": str(en), "zh": str(zh) if zh else str(en)}
+
+
+def _absence(null_reason: Any, fallback: str = "UNKNOWN") -> dict[str, Any]:
+    """A typed absence cell: a reviewed reason label plus its raw token for the
+    evidence drawer. Missing NEVER becomes zero or neutral."""
+    token = null_reason or fallback
+    return {"token": str(token), "label": L.label("null_reason", token), "display": EM_DASH}
+
+
+def _region_view(code: Any, display_name: Any, supported: bool) -> dict[str, Any]:
+    """Region identity with a reviewed bilingual name.
+
+    The contract's ``display_name`` is English by design. Rendering it raw would
+    put an English proper noun in the middle of a Chinese page, so a supported
+    region resolves through the reviewed table and falls back to the artifact's
+    own name only when we have not reviewed that region yet.
+    """
+    fallback = str(display_name) if display_name else str(code or "")
+    reviewed = L.REGION.get(str(code)) if code else None
+    return {
+        "code": code,
+        "display_name": fallback,
+        "display": dict(reviewed) if reviewed else _pair(fallback, fallback),
+        "supported": supported,
+    }
+
+
+def _clock_rows(node: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Every section 7.5 clock this node carries, present or typed-absent."""
+    rows = []
+    for key, name, meaning in L.CLOCKS:
+        value = L.date_or_none(node.get(key))
+        rows.append({
+            "key": key,
+            "name": name,
+            "meaning": meaning,
+            "value": value,
+            "absent": value is None,
+        })
+    return rows
+
+
+# --- context header ----------------------------------------------------------
+
+def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
+    availability = snapshot.get("availability") or {}
+    generation = snapshot.get("generation") or {}
+    region = snapshot.get("region") or {}
+
+    required = []
+    cuts: list[str] = []
+    for item in availability.get("required") or []:
+        asof = L.date_or_none(item.get("source_asof"))
+        if asof:
+            cuts.append(asof)
+        required.append({
+            "component_id": item.get("component_id"),
+            "label": _bilingual(item.get("label")) or _pair(L.deslug(item.get("component_id") or ""),
+                                                            L.deslug(item.get("component_id") or "")),
+            "required": bool(item.get("required")),
+            "freshness": L.label("freshness", item.get("freshness")),
+            "freshness_tone": L.tone("freshness", item.get("freshness")),
+            "presence": L.label("presence", item.get("status")),
+            "presence_tone": L.tone("presence", item.get("status")),
+            "source_asof": asof,
+            "absence": None if asof else _absence(item.get("null_reason")),
+        })
+
+    contradiction = availability.get("contradiction") or {}
+    contradiction_view = None
+    if contradiction.get("present"):
+        contradiction_view = {
+            "kind": L.label("contradiction_kind", contradiction.get("kind")) if contradiction.get("kind") else None,
+            "kind_raw": contradiction.get("kind"),
+            "text": _bilingual(contradiction) or _pair("Contradiction present", "存在矛盾"),
+            "components": list(contradiction.get("components") or []),
+        }
+
+    state = availability.get("state")
+    # The header states the page's OWN freshness conservatively over the
+    # required set (section 7.6); an optional degraded leg cannot turn it green.
+    return {
+        "state": state,
+        "state_label": L.label("freshness", state),
+        "state_tone": L.tone("freshness", state),
+        "worst_freshness": L.label("freshness", availability.get("worst_freshness")),
+        "worst_freshness_tone": L.tone("freshness", availability.get("worst_freshness")),
+        # Raw token beside the label: a consumer that must DECIDE (rather than
+        # print) needs the token, and re-deriving it from a label is a bug.
+        "worst_freshness_token": availability.get("worst_freshness"),
+        "coverage": L.fmt_ratio_pct(availability.get("coverage_ratio")),
+        # Same rule as the boundary distance: absent coverage must render as a
+        # typed absence, not as an unlabelled dash or an apparent 0%.
+        "coverage_ratio": availability.get("coverage_ratio") if _finite(availability.get("coverage_ratio")) else None,
+        "coverage_present": _finite(availability.get("coverage_ratio")),
+        "coverage_absence": None if _finite(availability.get("coverage_ratio")) else _absence(None),
+        "required": required,
+        "degraded": list(availability.get("degraded") or []),
+        "reasons": list(availability.get("reasons") or []),
+        "contradiction": contradiction_view,
+        "last_source_cut": max(cuts) if cuts else None,
+        "calculation_as_of": L.date_or_none(generation.get("calculation_as_of")),
+        "artifact_built_at": L.date_or_none(generation.get("built_at")),
+        "page_built_at": page_built_at,
+        "region_supported": bool(region.get("supported")),
+    }
+
+
+# --- causal implications ribbon ---------------------------------------------
+
+def _implications(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    # NOTE the view key is `entries`, never `items`: in Jinja, `x.items` on a
+    # dict resolves to the built-in dict method, not the value. Guarded by
+    # tests/test_template_items_footgun.py.
+    items = []
+    for raw in (snapshot.get("implications") or {}).get("items") or []:
+        text = _bilingual(raw.get("text"))
+        if text is None:
+            continue
+        confidence = raw.get("confidence") or {}
+        bands = []
+        for key, name in L.CONFIDENCE_DIMENSION.items():
+            token = confidence.get(key)
+            if key == "contradiction_state":
+                value = L.label("presence", token)
+            else:
+                value = L.label("confidence_band", token)
+            bands.append({"name": name, "value": value,
+                          "absence": None if value else _absence(None)})
+        items.append({
+            "implication_id": raw.get("implication_id"),
+            "text": text,
+            "evidence_class": raw.get("evidence_class"),
+            "evidence_label": L.label("evidence_class", raw.get("evidence_class")),
+            "evidence_claim": L.label("evidence_claim", raw.get("evidence_class")),
+            "horizon": L.label("horizon", raw.get("horizon")),
+            "channels": [L.label("channel", c) for c in (raw.get("channels") or [])],
+            "contradictions": list(raw.get("contradictions") or []),
+            "confidence": bands,
+            "trace_ref": raw.get("trace_ref"),
+        })
+    # The ribbon renders ONLY what the snapshot carries. An empty block is a
+    # typed absence, never invented prose.
+    return {
+        "entries": items[:3],
+        "truncated": max(0, len(items) - 3),
+        "absent": not items,
+        "absence_text": _pair(
+            "This snapshot carries no evidence-grounded implication. Nothing is inferred here.",
+            "本快照未附带任何有证据支持的推论。此处不作任何推断。"),
+    }
+
+
+# --- headline state band ------------------------------------------------------
+
+def _axis_view(axis: Mapping[str, Any]) -> dict[str, Any]:
+    value = axis.get("value")
+    thresholds = axis.get("thresholds") or {}
+    components = []
+    for component in axis.get("components") or []:
+        components.append({
+            "component_id": component.get("component_id"),
+            "label": _bilingual(component.get("label")),
+            "owner_field": component.get("owner_field"),
+            "owner_ref": component.get("owner_ref"),
+            "raw": L.value_pair(component.get("raw_value")),
+            "raw_absence": None if component.get("raw_value") is not None else _absence(component.get("null_reason")),
+            "standardized": L.fmt_number(component.get("standardized_value")),
+            "standardized_present": _finite(component.get("standardized_value")),
+            "standardized_absence": (None if _finite(component.get("standardized_value"))
+                                     else _absence(component.get("null_reason"))),
+            "contribution": L.fmt_signed(component.get("contribution")),
+            "contribution_present": _finite(component.get("contribution")),
+            "contribution_absence": (None if _finite(component.get("contribution"))
+                                     else _absence(component.get("null_reason"))),
+            "contribution_sign": _sign(component.get("contribution")),
+            "sign": component.get("sign"),
+            "weight": L.fmt_number(component.get("weight")),
+            "coverage": L.label("presence", component.get("coverage_state")),
+            "coverage_tone": L.tone("presence", component.get("coverage_state")),
+            "freshness": L.label("freshness", component.get("freshness")),
+            "freshness_tone": L.tone("freshness", component.get("freshness")),
+        })
+    return {
+        "axis_id": axis.get("axis_id"),
+        "label": _bilingual(axis.get("label")),
+        "direction": L.label("direction", axis.get("direction_semantics")),
+        "value": L.fmt_number(value),
+        "value_raw": value if isinstance(value, (int, float)) and not isinstance(value, bool) else None,
+        "absence": None if value is not None else _absence(axis.get("null_reason")),
+        "freshness": L.label("freshness", axis.get("freshness")),
+        "freshness_tone": L.tone("freshness", axis.get("freshness")),
+        "boundary": thresholds.get("boundary"),
+        "boundary_text": L.fmt_number(thresholds.get("boundary")),
+        "hysteresis_band": thresholds.get("hysteresis_band"),
+        "low_label": _bilingual(thresholds.get("low_label")),
+        "high_label": _bilingual(thresholds.get("high_label")),
+        "components": components,
+        "components_available": axis.get("components_available"),
+        "min_components": axis.get("min_components"),
+        "coverage_floor": L.fmt_ratio_pct(axis.get("coverage_floor")),
+        "weights_law": axis.get("weights_law"),
+        "transformation": axis.get("transformation"),
+        "frequency_alignment": axis.get("frequency_alignment"),
+        "revision_behavior": axis.get("revision_behavior"),
+        "definition_version": axis.get("definition_version"),
+        "data_version": axis.get("data_version"),
+        "authority_ceiling": axis.get("authority_ceiling"),
+    }
+
+
+def _sign(value: Any) -> str | None:
+    # None, never "flat". An absent value that renders as no-change is the whole
+    # defect: the reader cannot tell "we measured, nothing moved" from "we have
+    # no number", and the second is the one that should stop them.
+    if not _finite(value):
+        return None
+    if value > 0:
+        return "up"
+    if value < 0:
+        return "down"
+    return "flat"
+
+
+def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    headline = snapshot.get("headline") or {}
+    quadrant = headline.get("quadrant") or {}
+    vector = headline.get("one_month_vector") or {}
+    prior = headline.get("prior_state") or {}
+    boundary = headline.get("nearest_boundary") or {}
+    hysteresis = headline.get("hysteresis") or {}
+
+    axis_by_id = {a["axis_id"]: a for a in axes}
+    boundary_axis = axis_by_id.get(boundary.get("axis"))
+
+    movement_state = headline.get("movement_state")
+    raw_vector = headline.get("one_month_vector")
+    no_earlier_move = (
+        raw_vector is None or movement_state == "NO_EARLIER_PUBLICATION"
+    )
+    vector_incomplete = (
+        not no_earlier_move
+        and vector.get("status") == "PRESENT"
+        and (vector.get("dx") is None or vector.get("dy") is None)
+    )
+    vector_present = (
+        not no_earlier_move
+        and vector.get("status") == "PRESENT"
+        and vector.get("dx") is not None
+        and vector.get("dy") is not None
+    )
+    return {
+        "state_id": headline.get("state_id"),
+        "state_label": _bilingual(headline.get("state_label")),
+        "subtitle": _bilingual(headline.get("subtitle")),
+        "status": headline.get("status"),
+        "absence": None if headline.get("state_id") else _absence(headline.get("null_reason")),
+        "method_version": headline.get("method_version"),
+        "effective_date": L.date_or_none(headline.get("effective_date")),
+        "x": quadrant.get("x"),
+        "y": quadrant.get("y"),
+        "x_text": L.fmt_number(quadrant.get("x")),
+        "y_text": L.fmt_number(quadrant.get("y")),
+        "x_absence": None if quadrant.get("x") is not None else _absence(headline.get("null_reason")),
+        "y_absence": None if quadrant.get("y") is not None else _absence(headline.get("null_reason")),
+        "prior": {
+            "state_id": prior.get("state_id"),
+            "effective_date": L.date_or_none(prior.get("effective_date")),
+            "method_version": prior.get("method_version"),
+            "absent": not prior.get("state_id"),
+        },
+        "transition_distance": L.fmt_number(headline.get("transition_distance")),
+        "nearest_boundary": {
+            "axis_label": boundary_axis["label"] if boundary_axis else None,
+            "distance": L.fmt_number(boundary.get("distance")),
+            # The raw value and an explicit present flag, because the caller has
+            # to DECIDE on this: a missing distance formats to a truthy dash, and
+            # a genuine zero-distance boundary -- sitting exactly on the line, the
+            # most urgent case there is -- formats to a falsey "0".
+            "distance_raw": boundary.get("distance") if _finite(boundary.get("distance")) else None,
+            "distance_present": _finite(boundary.get("distance")),
+            "absence": None if boundary.get("distance") is not None else _absence(boundary.get("null_reason")),
+        },
+        "vector": {
+            "present": vector_present,
+            "incomplete": vector_incomplete,
+            "dx": L.fmt_signed(vector.get("dx")),
+            "dy": L.fmt_signed(vector.get("dy")),
+            "dx_raw": vector.get("dx"),
+            "dy_raw": vector.get("dy"),
+            "absence": (
+                None if vector_present
+                else (_no_earlier_absence(vector.get("null_reason")) if no_earlier_move
+                      else (_absence("VECTOR_INCOMPLETE") if vector_incomplete
+                            else _absence(vector.get("null_reason"))))
+            ),
+            "status": L.label("presence", vector.get("status")),
+        },
+        "hysteresis": {
+            "band": L.fmt_number(hysteresis.get("band")),
+            "applied": bool(hysteresis.get("applied")),
+            "held_prior": bool(hysteresis.get("held_prior")),
+            "note": hysteresis.get("note"),
+        },
+    }
+
+
+# --- dominant visualization: the quadrant state map --------------------------
+# Generic over any two-axis workspace: nine of the twelve blueprints in section
+# 10 are x/y state models, so the map is shell furniture rather than a
+# liquidity-only widget. The letter grid follows the producer's classification
+# law: A = low-x/high-y, B = high-x/high-y, C = low-x/low-y, D = high-x/low-y.
+
+def _finite(value: Any) -> bool:
+    """A plottable coordinate: numeric, not a bool, and actually a number.
+
+    ``isinstance(True, int)`` is True in Python and ``json.loads`` parses a bare
+    ``NaN`` into a float, so the obvious numeric check accepts two values that
+    are not readings: ``true`` plotted at cx=1.0 and ``NaN`` rendered as
+    ``cx="nan"``, which most renderers drop. Either way the point disappears or
+    lands somewhere arbitrary while the page still claims a plotted state, which
+    is the "missing looks like zero" failure the typed-absence cell exists to
+    prevent.
+    """
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
+_QUADRANT_GRID = (
+    # (letter, x-half, y-half, css position)
+    ("A", "low", "high", "tl"),
+    ("B", "high", "high", "tr"),
+    ("C", "low", "low", "bl"),
+    ("D", "high", "low", "br"),
+)
+
+
+def _quadrant_map(headline: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> dict[str, Any] | None:
+    if len(axes) < 2:
+        return None
+    x_axis, y_axis = axes[0], axes[1]
+    cells = []
+    for letter, x_half, y_half, position in _QUADRANT_GRID:
+        x_label = x_axis["low_label"] if x_half == "low" else x_axis["high_label"]
+        y_label = y_axis["low_label"] if y_half == "low" else y_axis["high_label"]
+        if not x_label or not y_label:
+            return None
+        cells.append({
+            "letter": letter,
+            "position": position,
+            # Two lines, not one: a single "X / Y" string overflows its quadrant
+            # and collides with the neighbouring cell at map scale.
+            "line1": dict(x_label),
+            "line2": dict(y_label),
+            "label": _pair(f"{x_label['en']} / {y_label['en']}",
+                           f"{x_label['zh']} / {y_label['zh']}"),
+            "current": letter == headline.get("state_id"),
+        })
+
+    x_value, y_value = headline.get("x"), headline.get("y")
+    plotted = _finite(x_value) and _finite(y_value)
+    return {
+        "x_axis": x_axis,
+        "y_axis": y_axis,
+        "cells": cells,
+        "plotted": plotted,
+        # SVG space is 0-100 on both axes with y inverted (0 at the bottom).
+        "point": {"cx": round(float(x_value), 2), "cy": round(100 - float(y_value), 2)} if plotted else None,
+        "absence": None if plotted else _absence(None),
+        "boundary_x": x_axis.get("boundary"),
+        "boundary_y": y_axis.get("boundary"),
+        "band_x": x_axis.get("hysteresis_band"),
+        "band_y": y_axis.get("hysteresis_band"),
+        "vector": headline.get("vector"),
+    }
+
+
+# --- what changed -------------------------------------------------------------
+
+def _no_earlier_absence(null_reason: Any = None) -> dict[str, Any]:
+    """Plain-word typed absence for a missing earlier publication.
+
+    Never ``None`` / ``nan`` / a fabricated 0 — the shell prints this label.
+    """
+    token = "NO_EARLIER_PUBLICATION"
+    return {
+        "token": token,
+        "label": L.label("comparability", token) or _pair(
+            "No earlier reading available to compare yet.",
+            "暂无可比较的更早读数。"),
+        "display": EM_DASH,
+        "null_reason": null_reason,
+    }
+
+
+def _current_unavailable_absence(null_reason: Any = None) -> dict[str, Any]:
+    """Plain-word typed absence when the earlier reading exists but this one does not."""
+    return {
+        "token": "CURRENT_UNAVAILABLE",
+        "label": _pair("Current reading not available", "当前读数不可用"),
+        "display": EM_DASH,
+        "null_reason": null_reason,
+    }
+
+
+def _changes(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    changes = snapshot.get("changes") or {}
+    comparability = changes.get("comparability")
+    no_earlier = comparability == "NO_EARLIER_PUBLICATION"
+    deltas = []
+    for delta in changes.get("deltas") or []:
+        prior_raw, current_raw = delta.get("prior_value"), delta.get("current_value")
+        delta_raw = delta.get("delta")
+        # Classify on the RAW values, format afterwards. Deciding from the
+        # formatted string is how an em dash became truthy and a real 0 became
+        # false-like; every consumer below branches on these booleans, never on
+        # the display text.
+        prior_present = _finite(prior_raw)
+        current_present = _finite(current_raw)
+        delta_present = _finite(delta_raw)
+        if prior_present and current_present and delta_raw is None and not no_earlier:
+            # Both readings exist under a genuine COMPARABLE block: a missing
+            # delta is a computation defect, not an absence. Compute it.
+            delta_raw = float(current_raw) - float(prior_raw)
+            delta_present = True
+        comparable_row = prior_present and current_present and delta_present
+        row_absence = None
+        if not comparable_row:
+            if no_earlier or not prior_present:
+                row_absence = _no_earlier_absence(delta.get("null_reason"))
+            else:
+                row_absence = _current_unavailable_absence(delta.get("null_reason"))
+        deltas.append({
+            "metric_id": delta.get("metric_id"),
+            "label": L.label("metric", delta.get("metric_id")),
+            "prior_raw": prior_raw if prior_present else None,
+            "current_raw": current_raw if current_present else None,
+            "delta_raw": delta_raw if delta_present else None,
+            "prior_present": prior_present,
+            "current_present": current_present,
+            "delta_present": delta_present,
+            "comparable": comparable_row,
+            # A real zero keeps its "0" and its flat class; an absent value gets
+            # neither a number nor a class that reads as success.
+            "prior": L.fmt_number(prior_raw) if prior_present else None,
+            "current": L.fmt_number(current_raw) if current_present else None,
+            "delta": L.fmt_signed(delta_raw) if delta_present else None,
+            "sign": _sign(delta_raw),
+            "absence": row_absence,
+            "note": delta.get("note"),
+        })
+    comparable = comparability == "COMPARABLE"
+    if no_earlier:
+        block_absence = _no_earlier_absence(changes.get("null_reason"))
+    elif comparability in ("METHOD_CHANGED", "DEFINITION_INCOMPARABLE"):
+        block_absence = {
+            "token": comparability,
+            "label": L.label("comparability", comparability) or _pair(
+                str(comparability), str(comparability)),
+            "display": EM_DASH,
+            "null_reason": changes.get("null_reason"),
+        }
+    elif not (comparable and deltas):
+        block_absence = _absence(changes.get("null_reason"))
+    else:
+        block_absence = None
+    return {
+        "comparability": comparability,
+        "comparability_label": L.label("comparability", comparability),
+        "comparable": comparable,
+        "deltas": deltas,
+        "prior_generation_id": changes.get("prior_generation_id"),
+        "prior_effective_date": L.date_or_none(changes.get("prior_effective_date")),
+        "prior_method_version": changes.get("prior_method_version"),
+        "absence": block_absence,
+        "status": L.label("presence", changes.get("status")),
+    }
+
+
+# --- component metrics --------------------------------------------------------
+
+def _metrics(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
+    rows = []
+    for metric in (snapshot.get("metrics") or {}).get("items") or []:
+        value = metric.get("value")
+        rows.append({
+            "metric_id": metric.get("metric_id"),
+            "label": L.label("metric", metric.get("metric_id")),
+            "value": L.value_pair(value),
+            "absence": None if value is not None else _absence(metric.get("null_reason")),
+            "unit": L.label("unit", metric.get("unit")),
+            "basis": L.label("basis", metric.get("basis")),
+            "direction": L.label("direction", metric.get("direction_semantics")),
+            "freshness": L.label("freshness", metric.get("freshness")),
+            "freshness_tone": L.tone("freshness", metric.get("freshness")),
+            "presence": L.label("presence", metric.get("status")),
+            "rights": L.label("rights_state", metric.get("rights_state")),
+            "reference_id": metric.get("reference_id"),
+            "definition_id": metric.get("definition_id"),
+            "definition_version": metric.get("definition_version"),
+            "owner_ref": metric.get("owner_ref"),
+            "model_version": metric.get("model_version"),
+            "transformation": metric.get("transformation"),
+            "coverage": L.fmt_ratio_pct(metric.get("coverage")),
+            "authority_ceiling": metric.get("authority_ceiling"),
+            "clocks": _clock_rows(metric),
+            "reference_period": L.date_or_none(metric.get("reference_period")),
+            "source_refs": list(metric.get("source_refs") or []),
+        })
+    return rows
+
+
+def _plain_day_pair(value: Any) -> dict[str, str] | None:
+    """A calendar day as a plain EN/ZH sentence fragment. Never an ISO stamp."""
+    when = _as_date(value)
+    if when is None:
+        return None
+    return _pair(
+        f"{when.day} {_MONTHS_EN[when.month - 1]} {when.year}",
+        f"{when.year}年{when.month}月{when.day}日",
+    )
+
+
+def _plain_range_pair(first: Any, last: Any) -> dict[str, str] | None:
+    """Bilingual range for the component-histories table. Same-year ZH omits the second year."""
+    start = _as_date(first)
+    end = _as_date(last)
+    a = _plain_day_pair(start)
+    b = _plain_day_pair(end)
+    if a is None or b is None or start is None or end is None:
+        return None
+    if start.year == end.year:
+        zh = f"{start.year}年{start.month}月{start.day}日至{end.month}月{end.day}日"
+    else:
+        zh = f"{a['zh']}至{b['zh']}"
+    return _pair(f"From {a['en']} to {b['en']}", zh)
+
+
+_EMPTY_HISTORY_RANGE = _pair(
+    "No history published for this series in tonight's data.",
+    "本次数据未发布该序列的历史。",
+)
+
+
+def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    block = snapshot.get("series") or {}
+    items = []
+    for entry in block.get("items") or []:
+        points = [p for p in (entry.get("points") or []) if p.get("v") is not None]
+        first = points[0]["t"] if points else None
+        last = points[-1]["t"] if points else None
+        series_id = entry.get("series_id")
+        if not points:
+            range_pair = _EMPTY_HISTORY_RANGE
+        elif series_id in _CMT_COMPONENT_SERIES_IDS:
+            range_pair = _plain_range_pair(first, last)
+        else:
+            range_pair = None
+        items.append({
+            "series_id": series_id,
+            "label": _bilingual(entry.get("label")),
+            "unit": L.label("unit", entry.get("unit")),
+            "basis": L.label("basis", entry.get("basis")),
+            "count": len(points),
+            "first": first,
+            "last": last,
+            "range": range_pair,
+            "freshness": L.label("freshness", entry.get("freshness")),
+            "freshness_tone": L.tone("freshness", entry.get("freshness")),
+            "revision_behavior": entry.get("revision_behavior"),
+            "source_ref": entry.get("source_ref"),
+        })
+    return {
+        # `entries`, not `items` — see the note in _implications.
+        "entries": items,
+        "absent": not items,
+        "absence": None if items else _absence(block.get("null_reason")),
+        "status": L.label("presence", block.get("status")),
+    }
+
+
+def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    block = snapshot.get("drivers") or {}
+    axis_by_index = list(axes)
+    groups = []
+    for key, fallback_en, fallback_zh, axis_index in (
+        ("rate_side", "Rate-side drivers", "利率侧驱动", 0),
+        ("balance_sheet", "Balance-sheet drivers", "资产负债表驱动", 1),
+    ):
+        rows = []
+        for driver in block.get(key) or []:
+            magnitude = driver.get("impact_magnitude")
+            sign = driver.get("impact_sign")
+            signed = None
+            if isinstance(magnitude, (int, float)) and isinstance(sign, int):
+                signed = L.fmt_signed(magnitude * sign)
+            rows.append({
+                "driver_id": driver.get("driver_id"),
+                "label": _bilingual(driver.get("label")),
+                "owner_field": driver.get("owner_field"),
+                "value": L.value_pair(driver.get("value")),
+                "absence": None if driver.get("value") is not None else _absence(None),
+                "unit": L.label("unit", driver.get("unit")),
+                "impact": signed,
+                # `(sign or 0)` collapsed an ABSENT sign to 0 and then to "flat",
+                # so a driver with no published impact wore the same styling as a
+                # driver measured at exactly no impact. Presence first, direction
+                # second: a real 0 keeps "flat", an absent one gets no sign at all.
+                "impact_present": signed is not None,
+                "impact_sign": (("up" if sign > 0 else "down" if sign < 0 else "flat")
+                                if signed is not None and isinstance(sign, int) else None),
+                "impact_absence": None if signed is not None else _absence(None),
+                "note": driver.get("note"),
+                "coverage": L.label("presence", driver.get("coverage_state")),
+                "coverage_tone": L.tone("presence", driver.get("coverage_state")),
+            })
+        axis = axis_by_index[axis_index] if axis_index < len(axis_by_index) else None
+        groups.append({
+            "group_id": key,
+            "title": (axis["label"] if axis and axis.get("label") else _pair(fallback_en, fallback_zh)),
+            "fallback_title": _pair(fallback_en, fallback_zh),
+            "rows": rows,
+            "absent": not rows,
+            "absence": None if rows else _absence(None),
+        })
+    return groups
+
+
+# --- diagnostics --------------------------------------------------------------
+
+def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
+                 changes: Mapping[str, Any], series: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Constraints, supports, disagreements, missing components, source issues
+    and method warnings — assembled from what the snapshot actually declares."""
+    out: list[dict[str, Any]] = []
+
+    if context.get("contradiction"):
+        out.append({
+            "tone": "bad",
+            "title": _pair("Contradictory signals", "信号相互矛盾"),
+            "body": context["contradiction"]["text"],
+        })
+
+    stale = [c for c in context.get("required") or []
+             if c["freshness_tone"] in ("warn", "bad")]
+    if stale:
+        names_en = ", ".join(c["label"]["en"] for c in stale)
+        names_zh = "、".join(c["label"]["zh"] for c in stale)
+        out.append({
+            "tone": "warn",
+            "title": _pair("Required source not current", "必需数据源并非最新"),
+            "body": _pair(f"Degraded required components: {names_en}.",
+                          f"降级的必需分项：{names_zh}。"),
+        })
+
+    for component in context.get("required") or []:
+        if component["absence"] is not None:
+            out.append({
+                "tone": "warn",
+                "title": component["label"],
+                "body": _pair(
+                    f"No accepted source cut. Reason: {component['absence']['label']['en']}.",
+                    f"没有已接受的数据截止。原因：{component['absence']['label']['zh']}。"),
+            })
+
+    if context.get("degraded"):
+        joined = ", ".join(str(d) for d in context["degraded"])
+        out.append({
+            "tone": "warn",
+            "title": _pair("Optional legs degraded", "可选分项已降级"),
+            "body": _pair(f"Shown separately, and excluded from the page state: {joined}.",
+                          f"单独呈现，且不计入本页状态：{joined}。"),
+        })
+
+    if not changes.get("comparable"):
+        out.append({
+            "tone": "neutral",
+            "title": _pair("No method-comparable prior print", "无方法可比的历史读数"),
+            "body": changes["comparability_label"],
+        })
+
+    if series.get("absent"):
+        out.append({
+            "tone": "neutral",
+            "title": _pair("Component histories not published", "未发布分项历史序列"),
+            "body": series["absence"]["label"],
+        })
+
+    scenario = snapshot.get("scenario_contract") or {}
+    if not scenario.get("execution_available"):
+        out.append({
+            "tone": "neutral",
+            "title": _pair("Scenario execution not available", "情景推演功能不可用"),
+            "body": _pair(
+                "The assumption vocabulary is declared and closed, but no scenario "
+                "function is published — so no Scenario tab is offered.",
+                "假设变量词表已声明并封闭，但尚未发布情景函数 — 因此不提供“情景”标签页。"),
+        })
+
+    alerts = snapshot.get("alert_contract") or {}
+    if not alerts.get("service_available"):
+        out.append({
+            "tone": "neutral",
+            "title": _pair("Alert service not available", "预警服务不可用"),
+            "body": _pair(
+                "Eligible conditions are declared, but no service can create, list, "
+                "evaluate or delete them — so no Alerts tab is offered.",
+                "可用的预警条件已声明，但尚无服务能够创建、列出、评估或删除它们 — 因此不提供“预警”标签页。"),
+        })
+
+    if not out:
+        out.append({
+            "tone": "ok",
+            "title": _pair("No constraint recorded", "未记录任何约束"),
+            "body": _pair("Every required component is present and current.",
+                          "所有必需分项均已具备且为最新。"),
+        })
+    return out
+
+
+# --- evidence drawer ----------------------------------------------------------
+
+def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
+              page_built_at: str, artifact: Mapping[str, Any]) -> dict[str, Any]:
+    sources = []
+    for source in (snapshot.get("sources") or {}).get("items") or []:
+        sources.append({
+            "source_id": source.get("source_id"),
+            "label": _bilingual(source.get("label")),
+            "provider": source.get("provider"),
+            "owner_ref": source.get("owner_ref"),
+            "artifact_ref": source.get("artifact_ref"),
+            "transform": source.get("transform"),
+            "definition_id": source.get("definition_id"),
+            "definition_version": source.get("definition_version"),
+            "rights": L.label("rights_state", source.get("rights_state")),
+            "freshness": L.label("freshness", source.get("freshness")),
+            "freshness_tone": L.tone("freshness", source.get("freshness")),
+            "correction": L.label("correction_state", source.get("correction_state")),
+            "clocks": _clock_rows({
+                **source,
+                "observed_at": source.get("reference_period"),
+                "available_at": source.get("first_known_at"),
+                "calculation_as_of": None,
+            }),
+        })
+
+    generation = snapshot.get("generation") or {}
+    authority = snapshot.get("authority") or {}
+    corrections = snapshot.get("corrections") or {}
+    return {
+        "sources": sources,
+        "non_economic_clocks": [
+            {"name": name, "meaning": meaning,
+             "value": generation.get("built_at") if key == "built_at" else page_built_at}
+            for key, name, meaning in L.NON_ECONOMIC_CLOCKS
+        ],
+        "generation": {
+            "generation_id": generation.get("generation_id"),
+            "producer": generation.get("producer"),
+            "code_version": generation.get("code_version"),
+            "content_sha256": generation.get("content_sha256"),
+            "calculation_as_of": context.get("calculation_as_of"),
+        },
+        "artifact": dict(artifact),
+        "authority": {
+            "class": authority.get("class"),
+            "ceiling": authority.get("axis_authority_ceiling"),
+            "flags": [
+                {"name": _pair("Can rank", "可排名"), "value": bool(authority.get("can_rank"))},
+                {"name": _pair("Can gate", "可作为闸门"), "value": bool(authority.get("can_gate"))},
+                {"name": _pair("Can size", "可决定仓位"), "value": bool(authority.get("can_size"))},
+                {"name": _pair("Can originate a signal", "可产生信号"),
+                 "value": bool(authority.get("can_originate_signal"))},
+                {"name": _pair("Can execute", "可执行交易"), "value": bool(authority.get("can_execute"))},
+            ],
+            "statement": _pair(
+                "Display-only context. This page cannot rank, gate, size, originate a "
+                "signal, or execute anything.",
+                "仅供展示的背景信息。本页不能排名、设闸、定仓位、产生信号或执行任何交易。"),
+        },
+        "corrections": {
+            "state": L.label("correction_state", corrections.get("correction_state")),
+            "predecessor": corrections.get("predecessor_generation_id"),
+            "changed_fingerprints": list(corrections.get("changed_fingerprints") or []),
+            "note": corrections.get("note"),
+        },
+    }
+
+
+# --- declared-but-withheld capabilities --------------------------------------
+
+def _withheld_tabs(snapshot: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Tabs the reference grammar allows but this snapshot forbids.
+
+    Rendered as a note, NEVER as a tab: section 6.2 forbids a decorative tab and
+    section 9.2 forbids showing Alerts before the service can serve real
+    conditions.
+    """
+    out = []
+    scenario = snapshot.get("scenario_contract") or {}
+    if not scenario.get("execution_available"):
+        out.append({
+            "tab_id": "scenario",
+            "name": _pair("Scenario", "情景"),
+            "reason": _pair("No scenario execution is published for this workspace.",
+                            "本工作区尚未发布情景推演能力。"),
+            "declared": [
+                {"label": _bilingual(a.get("label")),
+                 "unit": L.label("unit", a.get("unit")),
+                 "step": L.fmt_number(a.get("step")),
+                 "min": L.fmt_number(a.get("min")),
+                 "max": L.fmt_number(a.get("max"))}
+                for a in scenario.get("assumptions") or []
+            ],
+            "declared_title": _pair("Assumption vocabulary declared (not executable)",
+                                    "已声明的假设变量词表（尚不可执行）"),
+        })
+    alerts = snapshot.get("alert_contract") or {}
+    if not alerts.get("service_available"):
+        out.append({
+            "tab_id": "alerts",
+            "name": _pair("Alerts", "预警"),
+            "reason": _pair("No alert service can create, evaluate or delete these conditions yet.",
+                            "尚无服务能够创建、评估或删除这些预警条件。"),
+            "declared": [
+                {"label": _bilingual(c.get("label")),
+                 "unit": L.label("alert_kind", c.get("kind")),
+                 "step": None, "min": None, "max": None}
+                for c in alerts.get("eligible_conditions") or []
+            ],
+            "declared_title": _pair("Eligible conditions declared (not offered)",
+                                    "已声明的可用条件（尚未开放）"),
+        })
+    return out
+
+
+# --- next action -------------------------------------------------------------
+# The doctrine requires every signal surface to answer "so what do I do", and the
+# authority ceiling forbids this lane from answering with a position, a size or a
+# gate. The compliant answer is a RESEARCH action, and it is chosen by a total
+# function over typed tokens the producer already published — no model, no
+# weighting, no judgement. When the honest answer is "watch, don't chase", that
+# is what it says.
+
+#: Freshness tokens that mean this print cannot be read as today's answer.
+_NOT_TODAYS_ANSWER = frozenset({
+    "SOURCE_FAILED", "STALE_SOURCE", "RIGHTS_BLOCKED", "SIMULATED", "NOT_YET_RELEASED",
+})
+
+
+# Every route below points at a region that is present AND visible with client
+# state off: the default "current" tab panel, or the context detail block that
+# sits outside the tab system entirely. Routing into the Drivers or History panel
+# would look right in the markup and land on a JS-hidden target in a real
+# browser, and the evidence drawer ships `hidden inert` by design.
+_ROUTE_SOURCE_CLOCKS = ("#mq-contextdetail-title", _pair("Open source clocks and coverage", "查看数据源时钟与覆盖率"))
+_ROUTE_COMPONENTS = ("#mq-metrics-title", _pair("Open current components", "查看当前分项"))
+_ROUTE_STATE_MAP = ("#mq-map-title", _pair("Open the state map", "查看状态图"))
+
+
+def _route(target: tuple[str, dict[str, Any]]) -> dict[str, Any]:
+    href, label = target
+    return {"href": href, "label": label}
+
+
+def _next_action(context: Mapping[str, Any],
+                 headline: Mapping[str, Any]) -> dict[str, Any]:
+    """One typed research action, in a fixed precedence.
+
+    Precedence is deliberate and is the whole design: an unusable print outranks
+    a disagreement, a disagreement outranks a boundary watch, and a settled quiet
+    read says so plainly rather than manufacturing something to do.
+
+    Every branch carries a real route to a page region the reader already owns.
+    None of them is a trade instruction, a size, a rank or a composite -- the
+    action is always "go look at this", never "do this in the market".
+    """
+    heading = _pair("Next action", "下一步")
+
+    state = context.get("state")
+    if state in _NOT_TODAYS_ANSWER or context.get("worst_freshness_token") in _NOT_TODAYS_ANSWER:
+        return {
+            "token": "WAIT_FOR_SOURCES",
+            "heading": heading,
+            "tone": "warn",
+            "text": _pair(
+                "Do not read this as today's answer. A required source is not current — "
+                "wait for the next accepted print.",
+                "请勿将此视为今日读数。某项必需数据源并非最新 — 请等待下一次已接受的读数。"),
+            "route": _route(_ROUTE_SOURCE_CLOCKS),
+            "watch": None,
+        }
+
+    if context.get("contradiction"):
+        return {
+            "token": "TREAT_AS_UNSETTLED",
+            "heading": heading,
+            "tone": "warn",
+            "text": _pair(
+                "Required components disagree. Read them separately below — the summary "
+                "state is not settled while they conflict.",
+                "必需分项之间存在矛盾。请在下方分别查看 — 矛盾未消解前，汇总状态尚未确定。"),
+            "route": _route(_ROUTE_COMPONENTS),
+            "watch": None,
+        }
+
+    boundary = headline.get("nearest_boundary") or {}
+    # `distance_present`, never the formatted `distance`: an absent distance
+    # formats to a truthy em dash, and a boundary distance of exactly 0 -- the
+    # state sitting right on the line, the single most watch-worthy case -- is a
+    # falsey "0". Both were wrong in the obvious version of this test.
+    if boundary.get("distance_present") and boundary.get("axis_label"):
+        return {
+            "token": "WATCH_BOUNDARY",
+            "heading": heading,
+            "tone": "neutral",
+            # Plain words on purpose, and no "recommendation": the merged authority
+            # guard in tests/test_macro_suite_pages.py bans that vocabulary from
+            # the surface outright, and a denial is still a use.
+            "text": _pair(
+                "Watch the axis closest to changing this state. Nothing here tells "
+                "you to act.",
+                "关注最接近改变当前状态的坐标轴。此处不提供任何操作指示。"),
+            "route": _route(_ROUTE_STATE_MAP),
+            "watch": {
+                "label": _pair("Closest to changing", "最接近发生改变"),
+                "axis_label": boundary.get("axis_label"),
+                "distance": boundary.get("distance"),
+                "distance_raw": boundary.get("distance_raw"),
+            },
+        }
+
+    return {
+        "token": "WATCH_ONLY",
+        "heading": heading,
+        "tone": "neutral",
+        "text": _pair(
+            "Nothing here asks you to act. Watch — don't chase.",
+            "此处没有需要采取的操作。观察即可 — 不要追高杀跌。"),
+        "route": _route(_ROUTE_COMPONENTS),
+        "watch": None,
+    }
+
+
+def _rows_say_currents_missing(changes: Mapping[str, Any]) -> bool:
+    """True only when every non-comparable row has a prior and no current."""
+    deltas = list(changes.get("deltas") or [])
+    non_comp = [d for d in deltas if not d.get("comparable")]
+    if not non_comp:
+        return False
+    return all(
+        d.get("prior_present") and not d.get("current_present")
+        for d in non_comp
+    )
+
+
+def _glance_change_absence(
+    changes: Mapping[str, Any],
+    comparable_rows: list[Any],
+) -> dict[str, Any] | None:
+    """Preserve the block's reviewed absence pair; mint CURRENT_UNAVAILABLE
+    only when the rows themselves say the current reading is missing."""
+    if comparable_rows and changes.get("comparable"):
+        return None
+    block = changes.get("absence")
+    if _rows_say_currents_missing(changes):
+        return block or _current_unavailable_absence()
+    if block:
+        return block
+    for delta in changes.get("deltas") or []:
+        row_abs = delta.get("absence") if isinstance(delta, Mapping) else None
+        if row_abs:
+            return row_abs
+    return None
+
+
+def _glance(changes: Mapping[str, Any],
+            implications: Mapping[str, Any]) -> dict[str, Any]:
+    """The bounded brief: one change, one meaning, both owner-published.
+
+    Deliberately NOT "the biggest move". Selecting a lead row by magnitude would
+    be a new ranking over published values, which this commission forbids; the
+    hub already takes published order for the same reason, so this takes the
+    first comparable row in published order and states the denominators beside
+    it. A reader who wants the full table is one disclosure away.
+    """
+    deltas = list(changes.get("deltas") or [])
+    comparable = [d for d in deltas if d.get("comparable")]
+    entries = list(implications.get("entries") or [])
+    lead_implication = entries[0] if entries else None
+
+    return {
+        "change": {
+            "present": bool(comparable) and bool(changes.get("comparable")),
+            "lead": comparable[0] if comparable else None,
+            # Denominators always, present or not: "3 of 11 comparable" is the
+            # honest form of a partial table, and "0 of 11" is a real statement
+            # rather than an empty section the reader has to interpret.
+            "comparable_count": len(comparable),
+            "total_count": len(deltas),
+            "absence": _glance_change_absence(changes, comparable),
+        },
+        "meaning": {
+            "present": lead_implication is not None,
+            "text": lead_implication.get("text") if lead_implication else None,
+            "evidence_label": lead_implication.get("evidence_label") if lead_implication else None,
+            "evidence_claim": lead_implication.get("evidence_claim") if lead_implication else None,
+            "remaining": max(0, len(entries) - 1) if entries else 0,
+            "absence_text": implications.get("absence_text"),
+        },
+    }
+
+
+# --- rates_curves curve-shape hero (A-F01-W4-1) ------------------------------
+# Context-only: shape + arithmetic spreads. No probability, no forecast, no
+# second producer. Computed from the snapshot's existing series points.
+
+_CURVE_TENORS: tuple[str, ...] = (
+    "3m", "6m", "1y", "2y", "3y", "5y", "7y", "10y", "20y", "30y",
+)
+_CURVE_SERIES_ALIASES: dict[str, tuple[str, ...]] = {
+    "3m": ("us3m", "3m", "us3m_level", "DGS3MO"),
+    "6m": ("us6m", "6m", "us6m_level", "DGS6MO"),
+    "1y": ("us1y", "1y", "us1y_level", "DGS1"),
+    "2y": ("us2y", "2y", "us2y_level", "DGS2"),
+    "3y": ("us3y", "3y", "us3y_level", "DGS3"),
+    "5y": ("us5y", "5y", "us5y_level", "DGS5"),
+    "7y": ("us7y", "7y", "us7y_level", "DGS7"),
+    "10y": ("us10y", "10y", "us10y_level", "DGS10"),
+    "20y": ("us20y", "20y", "us20y_level", "DGS20"),
+    "30y": ("us30y", "30y", "us30y_level", "DGS30"),
+}
+_CURVE_TENOR_LABELS: dict[str, dict[str, str]] = {
+    "3m": _pair("3-month", "3月期"),
+    "6m": _pair("6-month", "6月期"),
+    "1y": _pair("1-year", "1年期"),
+    "2y": _pair("2-year", "2年期"),
+    "3y": _pair("3-year", "3年期"),
+    "5y": _pair("5-year", "5年期"),
+    "7y": _pair("7-year", "7年期"),
+    "10y": _pair("10-year", "10年期"),
+    "20y": _pair("20-year", "20年期"),
+    "30y": _pair("30-year", "30年期"),
+}
+_CURVE_TENOR_SHORT = {
+    "3m": _pair("3 mo", "3个月"),
+    "6m": _pair("6 mo", "6个月"),
+    "1y": _pair("1 yr", "1年"),
+    "2y": _pair("2 yr", "2年"),
+    "3y": _pair("3 yr", "3年"),
+    "5y": _pair("5 yr", "5年"),
+    "7y": _pair("7 yr", "7年"),
+    "10y": _pair("10 yr", "10年"),
+    "20y": _pair("20 yr", "20年"),
+    "30y": _pair("30 yr", "30年"),
+}
+# At a 390 CSS px viewport ten overlay labels cannot clear each other: the ZH
+# short forms are ~26 px wide against a ~33 px tick pitch. These five stay
+# visible there; the other five keep their <li> in the <ol> and are hidden by
+# CSS alone, so the label list is never rewritten between viewports.
+_CURVE_MOBILE_TENORS: frozenset[str] = frozenset({"3m", "1y", "5y", "10y", "30y"})
+_CURVE_MIN_USABLE = 6
+_CURVE_PRIOR_MONTH_DAYS = 30
+_CURVE_FLAT_BAND = 0.25  # |10y − 3m| in percentage points
+_SHAPE_NORMAL = _pair(
+    "The curve is upward-sloping — longer maturities pay more than shorter ones.",
+    "曲线呈正常形态——期限越长，收益率越高。",
+)
+_SHAPE_NORMAL_LONG_DIP = _pair(
+    "The curve is upward-sloping — longer maturities pay more than shorter ones, with a small dip at the very long end.",
+    "曲线呈正常形态——期限越长，收益率越高，仅在最长端有小幅回落。",
+)
+_SHAPE_FLAT = _pair(
+    "The curve is close to flat — long and short maturities pay about the same.",
+    "曲线接近平坦——长短期限的收益率大致相同。",
+)
+_SHAPE_INVERTED_FRONT = _pair(
+    "The curve is inverted at the front — three-month yields are at or above ten-year yields.",
+    "曲线在短端倒挂——三个月期收益率已不低于十年期。",
+)
+_SHAPE_INVERTED_BELLY = _pair(
+    "The curve is inverted between two and ten years — two-year yields are at or above ten-year yields.",
+    "曲线在两年期与十年期之间倒挂——两年期收益率不低于十年期收益率。",
+)
+_SHAPE_INVERTED_BOTH = _pair(
+    "The curve is inverted at the front and between two and ten years — three-month and two-year yields are at or above ten-year yields.",
+    "曲线在短端以及两年期与十年期之间均倒挂——三个月期与两年期收益率均不低于十年期收益率。",
+)
+_SHAPE_UNSTATED = _pair(
+    "The curve's shape is not stated today: a deciding maturity has no reading.",
+    "今日不判断曲线形态：关键期限缺少读数。",
+)
+_CURVE_NULL_PANEL = _pair(
+    "The curve panel needs the Treasury data from tonight, which did not arrive.",
+    "曲线面板需要当晚的美债数据，但数据未能到达。",
+)
+# ok=False and availability CURRENT: the panel is not drawn. The code knows
+# only that fewer than six maturities have a reading — not that "today's
+# curve is shown" and not that a later update will fill the gap.
+_CURVE_NULL_NOT_DRAWN = _pair(
+    "The curve is not drawn: not enough maturities have a reading.",
+    "曲线未画出：有读数的期限不足。",
+)
+# ok=True and no prior-close / prior-month line: today's curve is on the
+# chart, and no earlier curve is on file to draw beside it.
+_CURVE_NULL_FIRST_NIGHTLY = _pair(
+    "Today's curve is shown alone: no earlier curve is on file to compare it with.",
+    "今天的曲线单独显示：暂无更早的曲线可供对比。",
+)
+_CURVE_NULL_TENOR = _pair(
+    "No reading for this maturity in tonight's data.",
+    "本次数据未覆盖该期限。",
+)
+_CURVE_NULL_SPREAD = _pair(
+    "No reading for this spread in tonight's data.",
+    "本次数据未覆盖该利差。",
+)
+_CURVE_CHANGE_CLOSE = _pair(
+    "Change since prior close",
+    "较上一交易日收盘变动",
+)
+_CURVE_CHANGE_MONTH = _pair(
+    "Change over a month",
+    "较一个月前变动",
+)
+_CURVE_UNIT_SPREAD = _pair("percentage points", "个百分点")
+_CURVE_HEADING = _pair("The Treasury curve", "美债收益率曲线")
+_CURVE_SUBTITLE = _pair(
+    "today versus the prior close versus a month ago",
+    "今日、上一交易日收盘与一个月前对比",
+)
+
+
+def _as_date(value: Any) -> date | None:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            return date.fromisoformat(value.strip()[:10])
+        except ValueError:
+            return None
+    return None
+
+
+def _r4(value: Any) -> float | None:
+    if not _finite(value):
+        return None
+    return round(float(value), 4)
+
+
+def _delta(today: float | None, prior: float | None) -> float | None:
+    if today is None or prior is None:
+        return None
+    return round(today - prior, 4)
+
+
+def _parse_level_points(raw: Any) -> list[tuple[date, float]]:
+    """Ascending unique (date, value) rows; last listing of a date wins."""
+    by_date: dict[date, float] = {}
+    for point in raw or []:
+        if not isinstance(point, Mapping):
+            continue
+        when = _as_date(point.get("t"))
+        value = _r4(point.get("v"))
+        if when is None or value is None:
+            continue
+        by_date[when] = value
+    return sorted(by_date.items())
+
+
+def _prior_close_value(rows: Sequence[tuple[date, float]]) -> float | None:
+    if len(rows) < 2:
+        return None
+    return rows[-2][1]
+
+
+def _prior_month_value(rows: Sequence[tuple[date, float]], as_of: date | None) -> float | None:
+    """Nearest row at least 30 calendar days before as_of. Never today, never future."""
+    if as_of is None or not rows:
+        return None
+    target = as_of - timedelta(days=_CURVE_PRIOR_MONTH_DAYS)
+    best: tuple[date, float] | None = None
+    for when, value in rows:
+        if when <= target:
+            best = (when, value)
+        else:
+            break
+    return None if best is None else best[1]
+
+
+def _series_points_index(snapshot: Mapping[str, Any]) -> dict[str, list[tuple[date, float]]]:
+    index: dict[str, list[tuple[date, float]]] = {}
+    for entry in ((snapshot.get("series") or {}).get("items") or []):
+        if not isinstance(entry, Mapping):
+            continue
+        series_id = str(entry.get("series_id") or "")
+        if not series_id:
+            continue
+        index[series_id] = _parse_level_points(entry.get("points"))
+    return index
+
+
+def _rows_for_tenor(index: Mapping[str, list[tuple[date, float]]], tenor: str) -> list[tuple[date, float]]:
+    for alias in _CURVE_SERIES_ALIASES[tenor]:
+        rows = index.get(alias)
+        if rows:
+            return rows
+    return []
+
+
+def _null_tenor_copy(tenor: str) -> dict[str, str]:
+    label = _CURVE_TENOR_LABELS[tenor]
+    return _pair(
+        f"No reading for the {label['en']} maturity in tonight's data.",
+        f"本次数据未覆盖{label['zh']}。",
+    )
+
+
+def _tenor_today(tenors: Sequence[Mapping[str, Any]], tenor: str) -> float | None:
+    for row in tenors:
+        if row.get("tenor") == tenor and _finite(row.get("today")):
+            return float(row["today"])
+    return None
+
+
+def _shape_read(tenors: Sequence[Mapping[str, Any]]) -> dict[str, str]:
+    """Shape states with a where. Policy spreads only; a long-end kink is not inverted.
+
+    UNSTATED — neither 10y−3m nor 10y−2y can be computed.
+    INVERTED — 10y−3m or 10y−2y is at or below zero, and the sentence names where.
+    FLAT — 10y−3m is within ±0.25 pp and no policy spread is negative.
+    NORMAL — otherwise. A 20y-above-30y dip may add one plain clause.
+    """
+    y3m = _tenor_today(tenors, "3m")
+    y2y = _tenor_today(tenors, "2y")
+    y10 = _tenor_today(tenors, "10y")
+    y20 = _tenor_today(tenors, "20y")
+    y30 = _tenor_today(tenors, "30y")
+    spread_10y3m = None if y3m is None or y10 is None else y10 - y3m
+    spread_2s10s = None if y2y is None or y10 is None else y10 - y2y
+    if spread_10y3m is None and spread_2s10s is None:
+        return dict(_SHAPE_UNSTATED)
+    front_inv = spread_10y3m is not None and spread_10y3m <= 0
+    belly_inv = spread_2s10s is not None and spread_2s10s <= 0
+    if front_inv and belly_inv:
+        return dict(_SHAPE_INVERTED_BOTH)
+    if front_inv:
+        return dict(_SHAPE_INVERTED_FRONT)
+    if belly_inv:
+        return dict(_SHAPE_INVERTED_BELLY)
+    if (
+        spread_10y3m is not None
+        and abs(spread_10y3m) <= _CURVE_FLAT_BAND
+        and not front_inv
+        and not belly_inv
+    ):
+        return dict(_SHAPE_FLAT)
+    long_dip = y20 is not None and y30 is not None and y20 > y30
+    if long_dip:
+        return dict(_SHAPE_NORMAL_LONG_DIP)
+    return dict(_SHAPE_NORMAL)
+
+
+def _spread_row(tenors_by_id: Mapping[str, Mapping[str, Any]], *,
+                spread_id: str, short: str, long: str,
+                label: dict[str, str]) -> dict[str, Any]:
+    """Long minus short — same arithmetic as this route's published slopes.
+
+    ``curve_2s10s_level`` in the producer is ``10y − 2y`` (higher = steeper).
+    The hero strip must not invert that sign.
+    """
+    left = tenors_by_id.get(short) or {}
+    right = tenors_by_id.get(long) or {}
+    today = _delta(right.get("today"), left.get("today"))
+    close = _delta(right.get("prior_close"), left.get("prior_close"))
+    month = _delta(right.get("prior_month"), left.get("prior_month"))
+    return {
+        "id": spread_id,
+        "label": dict(label),
+        "today": today,
+        "delta_close": _delta(today, close),
+        "delta_month": _delta(today, month),
+    }
+
+
+def _chart_payload(tenors: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Inline-SVG geometry for three comparison windows. Token colours only.
+
+    Axis labels are HTML overlays (not SVG ``<text>``) so they stay 10 CSS px
+    at a 390-wide viewport instead of scaling with the 640-unit viewBox.
+    The last x-tick is end-anchored so ``30-year`` cannot clip the viewBox.
+    """
+    width, height = 640, 200
+    # pad_l/width is also the CSS width of `.mq-curve-ylabels li` (11.25%), at
+    # every viewport and with no media override, so a y-tick label box ends
+    # exactly at the plot's left edge and no series can run through a glyph.
+    # Measured in the browser at a 390 CSS px viewport: the plot is 336 px, a
+    # "5.28%"-shaped label in Inter at 10 px is 31.7 px of ink, and the 4 px
+    # gutter has to fit beside it. 64/640 leaves 29.6 px of content box and the
+    # glyphs overflow it into the plot; 72/640 leaves 33.8 px and they do not.
+    # pad_l rose 48→72 (took 24 units). pad_r fell 16→8 (gave back 8, not the
+    # 24 that pad_l took). Inner width 576→560; tick pitch 64.00→62.22 units;
+    # the last-two-label gap shrank by about 1.8 CSS px at 1440. The 390
+    # x-label gap rule (≥4 px) still holds because only five labels stay
+    # visible there.
+    pad_l, pad_r, pad_t, pad_b = 72, 8, 14, 28
+    n = max(1, len(tenors) - 1)
+    inner_w = width - pad_l - pad_r
+    inner_h = height - pad_t - pad_b
+    values: list[float] = []
+    for row in tenors:
+        for key in ("today", "prior_close", "prior_month"):
+            value = row.get(key)
+            if _finite(value):
+                values.append(float(value))
+    if values:
+        y_min, y_max = min(values), max(values)
+        if y_max <= y_min:
+            y_max = y_min + 0.1
+            y_min = y_min - 0.1
+        pad = (y_max - y_min) * 0.08
+        y_min -= pad
+        y_max += pad
+    else:
+        y_min, y_max = 0.0, 1.0
+
+    def x_at(index: int) -> float:
+        return round(pad_l + (inner_w * index / n), 2)
+
+    def y_at(value: float) -> float:
+        return round(pad_t + (y_max - value) / (y_max - y_min) * inner_h, 2)
+
+    def polyline_segments(key: str) -> list[str]:
+        """One polyline per contiguous run. A missing tenor breaks the line."""
+        segments: list[str] = []
+        current: list[str] = []
+        for i, row in enumerate(tenors):
+            value = row.get(key)
+            if not _finite(value):
+                if len(current) >= 2:
+                    segments.append(" ".join(current))
+                current = []
+                continue
+            current.append(f"{x_at(i)},{y_at(float(value))}")
+        if len(current) >= 2:
+            segments.append(" ".join(current))
+        return segments
+
+    last_i = len(tenors) - 1
+    x_ticks = []
+    for i, row in enumerate(tenors):
+        x = x_at(i)
+        tenor = row["tenor"]
+        x_ticks.append({
+            "x": x,
+            "x_pct": round(100.0 * x / width, 3),
+            "anchor": "end" if i == last_i else "middle",
+            "label": dict(row.get("label") or _CURVE_TENOR_LABELS[tenor]),
+            "short": dict(_CURVE_TENOR_SHORT[tenor]),
+            "mobile": tenor in _CURVE_MOBILE_TENORS,
+        })
+    y_ticks = []
+    # Stay inside the plot, not on the baseline, so the lowest label cannot
+    # sit on the axis line.
+    for frac in (0.12, 0.50, 0.88):
+        value = y_min + (y_max - y_min) * frac
+        y = y_at(value)
+        y_ticks.append({
+            "y": y,
+            "y_pct": round(100.0 * y / height, 3),
+            "text": f"{value:.2f}%",
+        })
+    today_segments = polyline_segments("today")
+    close_segments = polyline_segments("prior_close")
+    month_segments = polyline_segments("prior_month")
+    return {
+        "width": width,
+        "height": height,
+        "pad_l": pad_l,
+        "pad_r": pad_r,
+        "pad_t": pad_t,
+        "pad_b": pad_b,
+        "baseline_y": height - pad_b,
+        "today_segments": today_segments,
+        "prior_close_segments": close_segments,
+        "prior_month_segments": month_segments,
+        "has_today": bool(today_segments),
+        "has_prior_close": bool(close_segments),
+        "has_prior_month": bool(month_segments),
+        "x_ticks": x_ticks,
+        "y_ticks": y_ticks,
+    }
+
+
+def _curve_levels_caption(days: Sequence[date]) -> dict[str, str] | None:
+    """Plain bilingual caption for the days the PLOTTED levels actually carry.
+
+    Derived from the plotted rows, never from ``generation.calculation_as_of``:
+    a page-wide stamp over per-tenor last-available levels is exactly how a
+    stale tenor inherits a fresher one's date. When the plotted tenors span
+    more than one day the caption names the range in both languages.
+    """
+    if not days:
+        return None
+    first, last = min(days), max(days)
+    a = _plain_day_pair(first)
+    b = _plain_day_pair(last)
+    if a is None or b is None:
+        return None
+    if first == last:
+        return _pair(f"Levels as of {a['en']}", f"各期限水平截至{a['zh']}")
+    if first.year == last.year and first.month == last.month:
+        en = f"{first.day}–{last.day} {_MONTHS_EN[first.month - 1]} {first.year}"
+        zh = f"{first.year}年{first.month}月{first.day}日至{last.day}日"
+    elif first.year == last.year:
+        en = (f"{first.day} {_MONTHS_EN[first.month - 1]} – "
+              f"{last.day} {_MONTHS_EN[last.month - 1]} {first.year}")
+        zh = f"{first.year}年{first.month}月{first.day}日至{last.month}月{last.day}日"
+    else:
+        en = f"{a['en']} – {b['en']}"
+        zh = f"{a['zh']}至{b['zh']}"
+    return _pair(f"Levels as of {en}", f"各期限水平截至{zh}")
+
+
+def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
+    """Today vs prior close vs prior month for the ten nominal CMT tenors.
+
+    Returns the honest-null panel (ok=False, no partial chart) when fewer than
+    six tenors have a today reading. Missing tenors stay in the list with
+    today=None rather than being dropped.
+    """
+    index = _series_points_index(snapshot)
+    # The caption is per-tenor, taken from the rows this hero actually plots.
+    # generation.calculation_as_of is a page-wide stamp; printing it over
+    # per-tenor last-available levels is how a stale series inherits a fresher
+    # one's date. A tenor with no row is not plotted and never dated.
+    plotted_days: list[date] = []
+
+    tenors: list[dict[str, Any]] = []
+    missing: list[str] = []
+    for tenor in _CURVE_TENORS:
+        rows = _rows_for_tenor(index, tenor)
+        today = rows[-1][1] if rows else None
+        as_of_tenor = rows[-1][0] if rows else None
+        prior_close = _prior_close_value(rows)
+        prior_month = _prior_month_value(rows, as_of_tenor)
+        if today is None:
+            missing.append(tenor)
+        elif as_of_tenor is not None:
+            plotted_days.append(as_of_tenor)
+        tenors.append({
+            "tenor": tenor,
+            "as_of_tenor": as_of_tenor.isoformat() if as_of_tenor is not None else None,
+            "label": dict(_CURVE_TENOR_LABELS[tenor]),
+            "today": today,
+            "prior_close": prior_close,
+            "prior_month": prior_month,
+            "delta_close": _delta(today, prior_close),
+            "delta_month": _delta(today, prior_month),
+        })
+
+    usable = sum(1 for row in tenors if row["today"] is not None)
+    ok = usable >= _CURVE_MIN_USABLE
+    as_of = min(plotted_days).isoformat() if plotted_days else None
+    as_of_caption = _curve_levels_caption(plotted_days) if ok else None
+    availability_state = str(
+        (snapshot.get("availability") or {}).get("state") or ""
+    ).upper()
+    availability_current = availability_state == "CURRENT"
+    chart = _chart_payload(tenors) if ok else None
+    first_nightly = None
+    if ok:
+        null_panel = dict(_CURVE_NULL_PANEL)
+        shape = _shape_read(tenors)
+        if chart is not None and not chart["has_prior_close"] and not chart["has_prior_month"]:
+            first_nightly = dict(_CURVE_NULL_FIRST_NIGHTLY)
+    elif availability_current:
+        # Panel not drawn. Do not claim today's curve is shown.
+        null_panel = dict(_CURVE_NULL_NOT_DRAWN)
+        shape = dict(null_panel)
+    else:
+        null_panel = dict(_CURVE_NULL_PANEL)
+        shape = dict(null_panel)
+    tenors_by_id = {row["tenor"]: row for row in tenors}
+    spreads = [
+        _spread_row(
+            tenors_by_id, spread_id="10y3m", short="3m", long="10y",
+            label=_pair("10-year minus 3-month", "10年期减3月期"),
+        ),
+        _spread_row(
+            tenors_by_id, spread_id="2s10s", short="2y", long="10y",
+            label=_pair("10-year minus 2-year", "10年期减2年期"),
+        ),
+    ]
+    return {
+        "ok": ok,
+        "as_of": as_of,
+        "as_of_caption": as_of_caption,
+        "tenors": tenors,
+        "spreads": spreads,
+        "shape_read": shape,
+        "missing_tenors": missing,
+        "missing_copy": [_null_tenor_copy(tenor) for tenor in missing],
+        "null_panel": null_panel,
+        "first_nightly": first_nightly,
+        "null_tenor": dict(_CURVE_NULL_TENOR),
+        "null_spread": dict(_CURVE_NULL_SPREAD),
+        "heading": dict(_CURVE_HEADING),
+        "subtitle": dict(_CURVE_SUBTITLE),
+        "legend_today": _pair("Today", "今日"),
+        "legend_close": _pair("Prior close", "上一交易日收盘"),
+        "legend_month": _pair("A month ago", "一个月前"),
+        "legend_close_null": _pair(
+            "Prior close is not drawn: that comparison needs two days of history.",
+            "未画出上一交易日收盘线：该对比需要两个交易日的数据。",
+        ),
+        "legend_month_null": _pair(
+            "A month ago is not drawn: that comparison needs a month of history.",
+            "未画出“一个月前”对比线：该对比需要一个月的历史数据。",
+        ),
+        "change_close": dict(_CURVE_CHANGE_CLOSE),
+        "change_month": dict(_CURVE_CHANGE_MONTH),
+        "spread_now": _pair("Spread now", "当前利差"),
+        "unit_spread": dict(_CURVE_UNIT_SPREAD),
+        "chart": chart,
+    }
+
+
+def _null_curve_hero() -> dict[str, Any]:
+    """Honest-null shape used by the degraded path and by an empty snapshot."""
+    return _curve_hero({"generation": {}, "series": {"items": []}})
+
+
+def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
+               artifact: Mapping[str, Any],
+               layout: str = LAYOUT_GRAMMAR) -> dict[str, Any]:
+    """The complete section 6.3 view for one validated snapshot.
+
+    ``artifact`` carries the publication receipt the page shows in the evidence
+    drawer: ``{"path", "sha256", "bytes", "manifest_path", "min_client_contract"}``.
+
+    ``layout`` selects the reading order the shell composes. ``LAYOUT_GRAMMAR``
+    is the merged architecture section 6.3 order and stays the default for every
+    workspace. ``LAYOUT_DECISION_FIRST`` leads with state / what changed / why it
+    matters / next action and demotes the expanded diagnostics behind disclosure;
+    it is authorized for the Liquidity Regime pattern-setter alone by the Sol
+    ruling of 2026-09-05, recorded in
+    ``research/market_intelligence_productization/MARKET_ONTOLOGY_F01_R1_DECISION_FIRST_AMENDMENT_2026-09-05.md``.
+    The selector is a rendering order only: it changes no producer semantics, no
+    metric, and no freshness or null verdict.
+    """
+    if layout not in _LAYOUTS:
+        raise ValueError(f"unknown layout {layout!r}; expected one of {sorted(_LAYOUTS)}")
+    axes = [_axis_view(a) for a in (snapshot.get("axes") or {}).get("items") or []]
+    context = _context(snapshot, page_built_at)
+    headline = _headline(snapshot, axes)
+    changes = _changes(snapshot)
+    series = _series(snapshot)
+
+    tabs = [
+        {"tab_id": "current", "name": _pair("Current", "当前")},
+        {"tab_id": "drivers", "name": _pair("Drivers", "驱动因子")},
+        {"tab_id": "history", "name": _pair("History", "历史")},
+    ]
+
+    view = {
+        "ok": True,
+        "layout": layout,
+        "decision_first": layout == LAYOUT_DECISION_FIRST,
+        "next_action": _next_action(context, headline),
+        "glance": _glance(changes, _implications(snapshot)),
+        "workspace": {
+            "id": (snapshot.get("workspace") or {}).get("id"),
+            "title": _bilingual((snapshot.get("workspace") or {}).get("title")),
+            "subtitle": _bilingual((snapshot.get("workspace") or {}).get("subtitle")),
+        },
+        "region": _region_view((snapshot.get("region") or {}).get("code"),
+                               (snapshot.get("region") or {}).get("display_name"),
+                               bool((snapshot.get("region") or {}).get("supported"))),
+        "context": context,
+        "implications": _implications(snapshot),
+        "headline": headline,
+        "axes": axes,
+        "tabs": tabs,
+        "withheld_tabs": _withheld_tabs(snapshot),
+        "quadrant_map": _quadrant_map(headline, axes),
+        "diagnostics": _diagnostics(snapshot, context, changes, series),
+        "changes": changes,
+        "metrics": _metrics(snapshot),
+        "series": series,
+        "drivers": _drivers(snapshot, axes),
+        "evidence": _evidence(snapshot, context, page_built_at, artifact),
+        "learning_events": list((snapshot.get("learning") or {}).get("event_names") or []),
+        "page_built_at": page_built_at,
+    }
+    # Curve-shape hero is rates_curves-only. Other workspaces must not grow the key.
+    if view["workspace"]["id"] == "rates_curves":
+        view["curve_hero"] = _curve_hero(snapshot)
+    return view
+
+
+def degraded_view(*, workspace_id: str, title: Mapping[str, str],
+                  subtitle: Mapping[str, str], region_code: str,
+                  region_display_name: str, page_built_at: str,
+                  artifact: Mapping[str, Any], failure_kind: str,
+                  failure_detail: str) -> dict[str, Any]:
+    """The honest refusal page.
+
+    Used when the artifact is missing, unreadable, fails the closed schema,
+    declares an unsupported contract version, or does not match its published
+    content hash. It renders the workspace identity, the typed failure, and the
+    exact receipt — and NOTHING that could be mistaken for a state. There is no
+    zero, no neutral quadrant, no empty chart.
+    """
+    view = {
+        "ok": False,
+        "layout": LAYOUT_GRAMMAR,
+        "decision_first": False,
+        "workspace": {"id": workspace_id, "title": dict(title), "subtitle": dict(subtitle)},
+        "region": _region_view(region_code, region_display_name, True),
+        "page_built_at": page_built_at,
+        "failure": {
+            "kind": failure_kind,
+            "label": L.label("null_reason", failure_kind),
+            "detail": failure_detail,
+            "headline": _pair("This workspace is not rendering a state",
+                              "本工作区当前不呈现任何状态"),
+            "body": _pair(
+                "The published snapshot did not pass the closed contract, so nothing on "
+                "this page may be read as the current regime. No value has been "
+                "substituted, defaulted or estimated.",
+                "已发布的快照未通过封闭契约校验，因此本页任何内容都不得视为当前体制读数。"
+                "系统没有以任何默认值、替代值或估计值填补。"),
+            "next": _pair("The page recovers automatically on the next accepted producer build.",
+                          "下一次生产端成功构建后，本页将自动恢复。"),
+        },
+        "artifact": dict(artifact),
+    }
+    # Rates & Curves always includes the curve panel; the degraded path must
+    # still carry the honest-null hero so the null copy renders.
+    if workspace_id == "rates_curves":
+        view["curve_hero"] = _null_curve_hero()
+    return view
+
+
+# ==========================================================================
+# Macro & Monetary suite hub (F01 / R1)
+# ==========================================================================
+#
+# The hub COMPOSES what each workspace owner already published. It runs the
+# same `_context`, `_headline` and `_changes` composers the workspace pages
+# use, so the hub and the page can never disagree about a state, a clock or a
+# delta. It originates nothing.
+#
+# Three constructions are deliberately absent, and must stay absent
+# (`DNR:KILL-FUSED-COMPOSITE`, `DNR:KILL-REGIME-SCORECARD`, and the Sol ruling
+# of 2026-09-05):
+#   * no cross-workspace normalized magnitude,
+#   * no fused composite or single "macro regime" verdict,
+#   * no importance score, ranking or reordering of the closed registry order.
+# Operational trouble is carried in its own attention notice precisely so that
+# "this source broke" is never rendered as "this matters most".
+
+#: How many change lines the hub prints before it defers to the workspaces.
+HUB_CHANGE_LIMIT = 5
+
+#: Freshness tokens that mean a reader must not treat the row as settled.
+_ATTENTION_FRESHNESS = frozenset({
+    "SOURCE_FAILED", "STALE_SOURCE", "RIGHTS_BLOCKED", "SIMULATED",
+})
+
+#: Null reasons that mean the same thing, in the null-reason vocabulary.
+_ATTENTION_NULL_REASON = frozenset({
+    "SOURCE_FAILED", "RIGHTS_BLOCKED", "DISAGREEMENT", "REVISION_PENDING_REBUILD",
+})
+
+#: Comparability states that mean a printed delta cannot be read as a like-for-like move.
+_ATTENTION_COMPARABILITY = frozenset({
+    "METHOD_CHANGED", "DEFINITION_INCOMPARABLE",
+})
+
+
+def _attention(vocabulary: str, token: Any) -> dict[str, Any]:
+    """One typed attention cell, labelled in the vocabulary it actually came from.
+
+    Resolving a comparability token through the null-reason table would mint an
+    unreviewed label and register an unknown token, so the namespace travels
+    with the token rather than being assumed at the call site.
+    """
+    return {
+        "namespace": vocabulary,
+        "token": str(token),
+        "label": L.label(vocabulary, token),
+        "tone": L.tone("freshness", token) if vocabulary == "freshness" else "warn",
+    }
+
+
+def _hub_attention_reason(context: Mapping[str, Any],
+                          changes: Mapping[str, Any]) -> dict[str, Any] | None:
+    """The one typed reason this row needs attention, or None when it is settled.
+
+    Deterministic and token-driven: it reads the owner's own published freshness,
+    null-reason and comparability vocabularies in a fixed precedence. It never
+    weighs one workspace against another, and it never invents a severity — the
+    attention notice is an operational note, not an importance ordering.
+    """
+    for token in (context.get("state"), context.get("worst_freshness_token")):
+        if token in _ATTENTION_FRESHNESS:
+            return _attention("freshness", token)
+    if context.get("contradiction"):
+        return _attention("null_reason", "DISAGREEMENT")
+    for reason in context.get("reasons") or []:
+        if reason in _ATTENTION_NULL_REASON:
+            return _attention("null_reason", reason)
+    if changes.get("comparability") in _ATTENTION_COMPARABILITY:
+        return _attention("comparability", changes["comparability"])
+    return None
+
+
+def build_hub_view(entries: Sequence[Mapping[str, Any]], *,
+                   page_built_at: str) -> dict[str, Any]:
+    """The Macro & Monetary hub view.
+
+    ``entries`` arrive in the closed registry order and are rendered in that
+    order. Each entry is
+    ``{"workspace_id", "region", "output", "title", "subtitle",
+       "snapshot" | None, "failure" | None}``.
+    """
+    rows: list[dict[str, Any]] = []
+    changes_pool: list[dict[str, Any]] = []
+    attention: list[dict[str, Any]] = []
+    unavailable: list[dict[str, Any]] = []
+    effective_dates: list[str] = []
+
+    for entry in entries:
+        snapshot = entry.get("snapshot")
+        row: dict[str, Any] = {
+            "workspace_id": entry["workspace_id"],
+            "href": entry["output"],
+            "title": dict(entry["title"]),
+            "subtitle": dict(entry["subtitle"]),
+            "region": entry.get("region"),
+        }
+
+        if not snapshot:
+            failure = entry.get("failure") or {}
+            kind = failure.get("kind") or "UNKNOWN"
+            row.update({
+                "available": False,
+                "absence": _absence(kind),
+                # An unreadable workspace is NEVER calm and NEVER zero. It says
+                # so in words, and it says what would fix it.
+                "absence_text": _pair(
+                    "Not readable in this build — no state is shown for it.",
+                    "本次构建无法读取 — 因此不展示任何状态读数。"),
+                "recovery_text": _pair(
+                    "Recovers on the next accepted producer build.",
+                    "下一次生产端成功构建后自动恢复。"),
+            })
+            rows.append(row)
+            unavailable.append({"workspace_id": entry["workspace_id"],
+                                "title": dict(entry["title"]),
+                                "reason": _absence(kind)})
+            attention.append({"workspace_id": entry["workspace_id"],
+                              "title": dict(entry["title"]),
+                              "href": entry["output"],
+                              "reason": _attention("null_reason", kind),
+                              "tone": "bad"})
+            continue
+
+        axes = [_axis_view(a) for a in (snapshot.get("axes") or {}).get("items") or []]
+        context = _context(snapshot, page_built_at)
+        headline = _headline(snapshot, axes)
+        changes = _changes(snapshot)
+
+        if headline.get("effective_date"):
+            effective_dates.append(str(headline["effective_date"]))
+
+        row.update({
+            "available": True,
+            "state_id": headline.get("state_id"),
+            "state_label": headline.get("state_label"),
+            "effective_date": headline.get("effective_date"),
+            "freshness": context.get("state_label"),
+            "freshness_tone": context.get("state_tone"),
+            "coverage": context.get("coverage"),
+            "coverage_present": context.get("coverage_present"),
+            "coverage_absence": context.get("coverage_absence"),
+            "comparability_label": changes.get("comparability_label"),
+            "comparable": changes.get("comparable"),
+            "change_count": len(changes.get("deltas") or []),
+            "changes_absence": changes.get("absence"),
+        })
+        rows.append(row)
+
+        # Changes are pooled in registry order and truncated in registry order.
+        # No magnitude comparison decides what a reader sees first.
+        for delta in changes.get("deltas") or []:
+            # A row the producer published with no prior, no current and no delta
+            # is not a change — it is a metric that could not be compared. Putting
+            # it here would spend one of the few slots saying nothing, and would
+            # print a bare em dash where the reader expects a move. The workspace's
+            # own what-changed table still carries the row and its typed reason.
+            # The typed flag, not the formatted strings: an em dash is truthy
+            # and a formatted "0" is not, so the string test both admitted
+            # unavailable rows and dropped real no-change ones.
+            if not delta.get("comparable"):
+                continue
+            changes_pool.append({
+                "workspace_id": entry["workspace_id"],
+                "workspace_title": dict(entry["title"]),
+                "href": entry["output"],
+                "label": delta.get("label"),
+                "prior": delta.get("prior"),
+                "current": delta.get("current"),
+                "delta": delta.get("delta"),
+                "sign": delta.get("sign"),
+            })
+
+        reason = _hub_attention_reason(context, changes)
+        if reason:
+            attention.append({"workspace_id": entry["workspace_id"],
+                              "title": dict(entry["title"]),
+                              "href": entry["output"],
+                              "reason": reason,
+                              "tone": reason["tone"]})
+
+    available = [r for r in rows if r.get("available")]
+    shown = changes_pool[:HUB_CHANGE_LIMIT]
+
+    return {
+        "page_built_at": page_built_at,
+        "kicker": _pair("Macro & Monetary", "宏观与货币"),
+        "title": _pair("Macro & Monetary", "宏观与货币"),
+        "deck": _pair("Fourteen research workspaces, one current read.",
+                      "十四个研究工作区，一个当前读数。"),
+        "as_of": {
+            # The suite is only as current as its oldest accepted print.
+            "effective_date": min(effective_dates) if effective_dates else None,
+            "newest_effective_date": max(effective_dates) if effective_dates else None,
+            "label": _pair("Suite effective date", "套件生效日期"),
+            "note": _pair(
+                "The suite is dated by its oldest accepted workspace print, never its newest.",
+                "套件日期取自最旧的已接受工作区读数，而非最新读数。"),
+        },
+        "coverage": {
+            "available": len(available),
+            "total": len(rows),
+            "complete": len(available) == len(rows),
+            "label": _pair("Workspaces readable", "可读取工作区"),
+        },
+        "workspaces": rows,
+        "changes": {
+            "entries": shown,
+            "shown": len(shown),
+            "remaining": max(0, len(changes_pool) - len(shown)),
+            "total": len(changes_pool),
+            "heading": _pair("Recent changes", "近期变化"),
+            # Named honestly: these are the first N in the suite's own order, not
+            # a curated set of the N that matter most.
+            "note": _pair(
+                "The first few changes in suite order — not a ranking. Open a workspace for its full list.",
+                "按套件既定顺序列出的前几项变化 — 并非重要性排序。完整列表请进入相应工作区。"),
+            "empty_text": _pair(
+                "No workspace published a method-comparable change in this build.",
+                "本次构建中，没有工作区发布方法可比的变化。"),
+        },
+        "attention": {
+            "entries": attention,
+            "count": len(attention),
+            "heading": _pair("Needs data attention", "数据需要关注"),
+            "note": _pair(
+                "Source or revision trouble. This is an operational note, not a judgement about what matters.",
+                "数据源或修订问题。这是运行状态提示，不代表重要性判断。"),
+            "clear_text": _pair("Every workspace read cleanly in this build.",
+                                "本次构建中所有工作区均读取正常。"),
+        },
+        "unavailable": unavailable,
+    }

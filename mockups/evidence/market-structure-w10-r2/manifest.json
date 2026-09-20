@@ -1,0 +1,183 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-11T06:27:07Z",
+  "tool": "scripts/capture_market_structure_w10_r2.py",
+  "target": "market_structure.html",
+  "head": "115400bf49af5189f464b31316f389e444fe97d0",
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ]
+    },
+    "locales": [
+      "en"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "changed",
+      "empty",
+      "near-flat"
+    ]
+  },
+  "aliases": {
+    "crop-changed-dark-en.png": "d10ed403a267efed.png",
+    "crop-changed-light-en.png": "7b84149510628c1c.png",
+    "crop-empty-dark-en.png": "1f9b81cfa99ed091.png",
+    "crop-empty-light-en.png": "184640919795ffd8.png",
+    "crop-near-flat-dark-en.png": "5b9936241b56b5c6.png",
+    "crop-near-flat-light-en.png": "b84d076f74508030.png"
+  },
+  "outcome": "captured",
+  "totals": {
+    "crops": 6,
+    "crops_required": 6
+  },
+  "honesty": {
+    "access": "anonymous only",
+    "page": "templates/market_structure.html.j2 rendered against the committed fixture (tests/fixtures/market_structure_latest.json) with three synthetic overlays: producer long→short note, empty-note hole, cta_near_flat=true. No live data/ bake. Decorative layers (.aurora, .sky-fx, theme FAB) hidden with disclosure; window.__skyDeck seeded so setTheme does not photograph the sun/moon disc.",
+    "overlays": {
+      "changed-dark": [],
+      "changed-light": [],
+      "empty-dark": [],
+      "empty-light": [],
+      "near-flat-dark": [],
+      "near-flat-light": []
+    }
+  },
+  "crops": [
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "force_state": "changed",
+      "subject": "changed",
+      "captured": true,
+      "file": "d10ed403a267efed.png",
+      "alias": "crop-changed-dark-en.png",
+      "sha256": "d10ed403a267efed18e7fa12a8ed39c4c45710e2db32a1ff8e173e53cb436850",
+      "bytes": 16178,
+      "width": 1140,
+      "height": 31,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "body_class": "page-msp",
+      "overlay": []
+    },
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "force_state": "changed",
+      "subject": "changed",
+      "captured": true,
+      "file": "7b84149510628c1c.png",
+      "alias": "crop-changed-light-en.png",
+      "sha256": "7b84149510628c1c215c848e17fa3a0addff0c5c9b66857b7043633323748b7f",
+      "bytes": 14853,
+      "width": 1140,
+      "height": 31,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "body_class": "page-msp",
+      "overlay": []
+    },
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "force_state": "empty",
+      "subject": "empty",
+      "captured": true,
+      "file": "1f9b81cfa99ed091.png",
+      "alias": "crop-empty-dark-en.png",
+      "sha256": "1f9b81cfa99ed091c176de0d78488924715291207c9ea4f445baab77be5bab3f",
+      "bytes": 14669,
+      "width": 326,
+      "height": 82,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "body_class": "page-msp",
+      "overlay": []
+    },
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "force_state": "empty",
+      "subject": "empty",
+      "captured": true,
+      "file": "184640919795ffd8.png",
+      "alias": "crop-empty-light-en.png",
+      "sha256": "184640919795ffd831dfc8afa50eb3fd16f262d065528c18682619ff7594d56c",
+      "bytes": 12328,
+      "width": 326,
+      "height": 82,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "body_class": "page-msp",
+      "overlay": []
+    },
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "force_state": "near-flat",
+      "subject": "near-flat",
+      "captured": true,
+      "file": "5b9936241b56b5c6.png",
+      "alias": "crop-near-flat-dark-en.png",
+      "sha256": "5b9936241b56b5c6ac67006e709cf890f17030fe83862e2f27a8395546534f4b",
+      "bytes": 18386,
+      "width": 562,
+      "height": 215,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "body_class": "page-msp",
+      "overlay": []
+    },
+    {
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "force_state": "near-flat",
+      "subject": "near-flat",
+      "captured": true,
+      "file": "b84d076f74508030.png",
+      "alias": "crop-near-flat-light-en.png",
+      "sha256": "b84d076f74508030bea56086ed97a8d9726b421c7449ebb9a8c5803638ff4336",
+      "bytes": 18790,
+      "width": 562,
+      "height": 215,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "body_class": "page-msp",
+      "overlay": []
+    }
+  ]
+}

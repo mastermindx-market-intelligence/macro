@@ -1,0 +1,121 @@
+{
+  "adapters": {
+    "earnings": {
+      "count": 8245,
+      "dropped_from_source": 459,
+      "gap": "coverage: 2092/2259 tickers carried reported surprises; 459 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+      "retracted_by_authority": 0
+    },
+    "earnings_call": {
+      "count": 3504,
+      "dropped_from_source": 0,
+      "gap": null,
+      "retracted_by_authority": 0
+    },
+    "macro_release": {
+      "count": 26,
+      "dropped_from_source": 0,
+      "gap": "26/26 release event(s) joined to a scored actual print",
+      "retracted_by_authority": 0
+    },
+    "prophet_ledger": {
+      "count": 148,
+      "dropped_from_source": 0,
+      "gap": null,
+      "retracted_by_authority": 0
+    },
+    "regime_flip": {
+      "count": 10,
+      "dropped_from_source": 0,
+      "gap": null,
+      "retracted_by_authority": 0
+    },
+    "research_vault": {
+      "count": 2404,
+      "dropped_from_source": 0,
+      "gap": null,
+      "retracted_by_authority": 0
+    },
+    "risk_band": {
+      "count": 20,
+      "dropped_from_source": 0,
+      "gap": null,
+      "retracted_by_authority": 0
+    }
+  },
+  "as_of": "2026-09-19",
+  "coverage": {
+    "end": "2026-09-19",
+    "note": "14816 events across 638 distinct date(s)",
+    "start": "2013-05-21"
+  },
+  "elapsed_s": 3.228,
+  "gap_notes": [
+    "earnings: coverage: 2092/2259 tickers carried reported surprises; 459 event(s) retained after their source row left the current snapshot (union-merge, never deleted)",
+    "macro_release: 26/26 release event(s) joined to a scored actual print"
+  ],
+  "inputs_hash": "sha256:89ca0546bad40f33d8e1f7a904a0d29804581beb06488c3b98d0d56693d8a2f3",
+  "ledgers": {
+    "earnings_calls": {
+      "path": "data/chronicle/earnings_call_events.jsonl",
+      "present": true,
+      "rows": 3504,
+      "sha256": "sha256:19af5a07b5344fb01519fd60db3327e8a0e687bd718fb205e6ba30a417c6ddc2"
+    },
+    "events": {
+      "path": "data/chronicle/events.jsonl",
+      "present": true,
+      "rows": 14816,
+      "sha256": "sha256:28b9d73fa05c1f7e91badda3242a5e6224bde8e6c658e0073c9c8073f1d6577e"
+    },
+    "state_log": {
+      "path": "data/chronicle/state_log.jsonl",
+      "present": true,
+      "rows": 34,
+      "sha256": "sha256:16062e4ce6af9fd72e4bd17722f180008efdc4edc3f58846932f47cf35a7c3dd"
+    }
+  },
+  "produced_at": "2026-09-19T09:15:38Z",
+  "produced_by": "scripts/build_chronicle.py",
+  "schema": "chronicle.manifest/v1",
+  "schema_version": 1,
+  "source_fingerprints": {
+    "data/chronicle/earnings_call_events.jsonl": {
+      "present": true,
+      "sha256": "sha256:19af5a07b5344fb01519fd60db3327e8a0e687bd718fb205e6ba30a417c6ddc2"
+    },
+    "data/chronicle/state_log.jsonl": {
+      "present": true,
+      "sha256": "sha256:16062e4ce6af9fd72e4bd17722f180008efdc4edc3f58846932f47cf35a7c3dd"
+    },
+    "data/earnings/earnings.parquet": {
+      "present": true,
+      "sha256": "sha256:acdaea3c019adaae96388fe1955adc624c864dae8abb3a878f6be51a442252f9"
+    },
+    "data/prophet/ledger.jsonl": {
+      "present": true,
+      "sha256": "sha256:768b6ee9272640de1a043de609fd4bb1638372ebb7af9f5caa9f2a7eb224eca2"
+    },
+    "data/prophet/ledger_corrections.jsonl": {
+      "present": true,
+      "sha256": "sha256:2b51e2306d5dc8acc0e80722dcdde3ca369e32774dc415b6d53409cd296cf410"
+    },
+    "data/prophet/ledger_quarantine.json": {
+      "present": true,
+      "sha256": "sha256:953012c11e75889a34031e1c81fa5ec89e0202a7dff4e0a9f49ba2a64c7ba40c"
+    },
+    "data/release_forecast/forward_ledger.jsonl": {
+      "present": true,
+      "sha256": "sha256:06abaefff072741130d114bf5f4e8574bc52f14fc9fdb95c717e423359ad49d9"
+    },
+    "data/research_vault/catalog.json": {
+      "present": true,
+      "sha256": "sha256:3cfbf743a9722374d4cba39437c4ef989032b5b93904d96d2c02fb98bb6e5039"
+    },
+    "data/risk_radar/forward_log.jsonl": {
+      "present": true,
+      "sha256": "sha256:dd40549e048b66a91d054db955ccb8d0a1cfd1ee766589708381cdfee38097ad"
+    }
+  },
+  "tier": "display"
+}

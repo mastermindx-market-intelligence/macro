@@ -1,0 +1,249 @@
+{
+  "schema": "china_intel.analogs.v1",
+  "is_context_only": true,
+  "generated_utc": "2026-09-19T12:37:35Z",
+  "as_of": "2026-09-18",
+  "coverage": {
+    "start": "2006-03-30",
+    "end": "2026-09-18",
+    "n_candidate_days": 5342
+  },
+  "query": {
+    "date": "2026-09-18",
+    "quad": "Q4",
+    "quad_name": "Growth-scare",
+    "liquidity": "contracting",
+    "cycle": "mid",
+    "growth_z": -1.1549,
+    "inflation_z": -1.1741
+  },
+  "analogs": [
+    {
+      "date": "2023-05-16",
+      "distance": 0.1149,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.016963,
+        "h60": -0.029346,
+        "h120": -0.075128
+      },
+      "fwd_csi300": {
+        "h20": -0.018907,
+        "h60": -0.000253,
+        "h120": -0.079242
+      }
+    },
+    {
+      "date": "2008-11-18",
+      "distance": 0.1246,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.020357,
+        "h60": 0.114172,
+        "h120": 0.282732
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2011-11-29",
+      "distance": 0.1246,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.072599,
+        "h60": 0.053111,
+        "h120": 0.017006
+      },
+      "fwd_csi300": null
+    },
+    {
+      "date": "2022-12-02",
+      "distance": 0.1445,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.030121,
+        "h60": 0.022562,
+        "h120": 0.006403
+      },
+      "fwd_csi300": {
+        "h20": -0.013832,
+        "h60": 0.02501,
+        "h120": -0.024956
+      }
+    },
+    {
+      "date": "2023-12-21",
+      "distance": 0.1846,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.055889,
+        "h60": 0.039259,
+        "h120": 0.019619
+      },
+      "fwd_csi300": {
+        "h20": -0.039332,
+        "h60": 0.057225,
+        "h120": 0.048121
+      }
+    },
+    {
+      "date": "2018-12-12",
+      "distance": 0.1846,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.038027,
+        "h60": 0.161724,
+        "h120": 0.102309
+      },
+      "fwd_csi300": {
+        "h20": -0.048349,
+        "h60": 0.177691,
+        "h120": 0.147366
+      }
+    },
+    {
+      "date": "2018-10-12",
+      "distance": 0.9082,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.024016,
+        "h60": -0.009292,
+        "h120": 0.216843
+      },
+      "fwd_csi300": {
+        "h20": 0.024187,
+        "h60": -0.017733,
+        "h120": 0.245208
+      }
+    },
+    {
+      "date": "2018-02-09",
+      "distance": 0.9082,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.038904,
+        "h60": 0.012345,
+        "h120": -0.12415
+      },
+      "fwd_csi300": {
+        "h20": 0.047784,
+        "h60": 0.00437,
+        "h120": -0.118266
+      }
+    },
+    {
+      "date": "2019-08-21",
+      "distance": 0.9196,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.041776,
+        "h60": 0.000641,
+        "h120": 0.043969
+      },
+      "fwd_csi300": {
+        "h20": 0.03647,
+        "h60": 0.014953,
+        "h120": 0.079686
+      }
+    },
+    {
+      "date": "2024-08-15",
+      "distance": 0.9639,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "contracting",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": -0.062827,
+        "h60": 0.150176,
+        "h120": 0.151602
+      },
+      "fwd_csi300": {
+        "h20": -0.05485,
+        "h60": 0.173978,
+        "h120": 0.164818
+      }
+    },
+    {
+      "date": "2012-08-16",
+      "distance": 1.0077,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "expanding",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.004226,
+        "h60": -0.048521,
+        "h120": 0.125289
+      },
+      "fwd_csi300": {
+        "h20": 0.001276,
+        "h60": -0.063262,
+        "h120": 0.137779
+      }
+    },
+    {
+      "date": "2009-01-23",
+      "distance": 1.0077,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "expanding",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.03984,
+        "h60": 0.177096,
+        "h120": 0.516713
+      },
+      "fwd_csi300": null
+    }
+  ],
+  "fan": {
+    "h20": {
+      "p25": -0.042493,
+      "median": -0.01866,
+      "p75": 0.027738,
+      "n": 12
+    },
+    "h60": {
+      "p25": -0.001842,
+      "median": 0.030911,
+      "p75": 0.123173,
+      "n": 12
+    },
+    "h120": {
+      "p25": 0.014355,
+      "median": 0.073139,
+      "p75": 0.167912,
+      "n": 12
+    }
+  },
+  "method_note": "Feature vector: z-scored growth_score and inflation_score (population z over all valid candidate rows) plus one-hot categorical distance for quad, liquidity, and cycle (each mismatched category contributes 1.0 to the Euclidean distance). Weighting is fixed and undifferentiated across the five dimensions. Neighbors selected by greedy Euclidean nearest-neighbor with time-exclusion >=120 calendar days and intra-result diversity >=60 calendar days. Forward paths use PIT-anchored first close strictly after the analog date; off-history windows return null.",
+  "disclaimer_en": "DISPLAY ONLY. Historical analogs are descriptive summaries of past regime similarity. They are not signals, forecasts, or recommendations. Past market paths under similar regimes do not predict future returns.",
+  "disclaimer_zh": "仅供展示。历史相似情景是对过去制度相似性的描述性总结，不构成任何信号、预测或投资建议。过去在类似制度下的市场走势不代表未来收益。"
+}

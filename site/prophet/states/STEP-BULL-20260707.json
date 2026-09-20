@@ -1,0 +1,50 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "STEP-BULL-20260707",
+  "asof": "2026-09-18",
+  "phase": "between_t1_t2",
+  "detection_phase": "post_t1_failed_hold",
+  "management_confidence": 59.7,
+  "raw_confidence": 59.3,
+  "delta_vs_base": -0.3,
+  "recommended_action": "trim",
+  "human_state": "T1 Giveback Warning",
+  "components": {
+    "validity": 100.0,
+    "progress": 46.2,
+    "pace": 26.6,
+    "retention": 52.3,
+    "overlay": 61.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 1.57,
+    "dist_to_t1_r": 0.93,
+    "dist_to_t2_r": 2.43,
+    "horizon_pct_used": 144.4,
+    "p1": 0.38,
+    "p2": 0.19,
+    "p3": null,
+    "move_r": 0.57,
+    "mfe_r": 1.744,
+    "mae_r": -0.231
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "Giving Back Gains",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 8.839998321533201,
+  "_mae": -1.1700000000000017,
+  "_max_p1": 1.1623929416874694,
+  "_first_trigger_ts": "2026-07-15",
+  "_first_t1_ts": "2026-08-13",
+  "_first_t2_ts": null,
+  "days_elapsed": 65,
+  "tau": 1.4444
+}
