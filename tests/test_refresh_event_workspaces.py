@@ -4,12 +4,15 @@ from __future__ import annotations
 import gzip
 import io
 import json
+import subprocess
+import sys
 from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 
 import pytest
 
+import scripts.refresh_event_workspaces as refresh_module
 from engine.company_intelligence.event_workspace import (
     AAPL_ACCESSION,
     AAPL_CALL_DATE,
@@ -27,7 +30,11 @@ from engine.company_intelligence.event_workspace import (
 from engine.company_intelligence.event_workspace_build import build_event_workspace
 from engine.earnings_transcript_intake import TranscriptRef, canonical_body_sha256
 from engine.neuralweb import company_intelligence_reader as reader
-from scripts.publish_company_intelligence_r2 import PUBLISH_CONFLICT, publish, publish_event_workspaces
+from scripts.publish_company_intelligence_r2 import (
+    PUBLISH_CONFLICT,
+    publish,
+    publish_event_workspaces,
+)
 from scripts.refresh_event_workspaces import (
     PriorWorkspaceFetchFailed,
     RefreshError,
@@ -1829,3 +1836,144 @@ def test_v3_workspace_publisher_refuses_marker_immutable_manifest_mismatch(tmp_p
     target = _FakeR2()
     assert publish_event_workspaces(tmp_path, s3=target, bucket="bucket") == 1
     assert target.puts == []
+
+
+def test_main_requires_explicit_operation_time(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(refresh_module, "refresh", lambda *_args, **_kwargs: 0)
+    with pytest.raises(SystemExit):
+        refresh_module.main([
+            "--work-dir", str(tmp_path / "work"),
+            "--out-dir", str(tmp_path / "out"),
+        ])
+
+
+def test_main_rejects_naive_operation_time(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(
+        refresh_module,
+        "refresh",
+        lambda *_args, **_kwargs: pytest.fail("refresh must not run"),
+    )
+    assert refresh_module.main([
+        "--work-dir", str(tmp_path / "work"),
+        "--out-dir", str(tmp_path / "out"),
+        "--operation-time", "2026-09-19T03:00:00",
+    ]) == 1
+    assert "timezone-aware" in capsys.readouterr().err
+
+
+def test_main_passes_timezone_aware_operation_time(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict = {}
+
+    def fake_refresh(*_args, **kwargs):
+        captured.update(kwargs)
+        return 0
+
+    monkeypatch.setattr(refresh_module, "refresh", fake_refresh)
+    monkeypatch.setattr(
+        refresh_module,
+        "load_prior_flagship_workspace",
+        lambda: None,
+    )
+
+    assert refresh_module.main([
+        "--work-dir", str(tmp_path / "work"),
+        "--out-dir", str(tmp_path / "out"),
+        "--operation-time", "2026-09-19T03:00:00Z",
+    ]) == 0
+    assert captured["operation_time"].isoformat() == "2026-09-19T03:00:00+00:00"
+
+
+def test_same_operation_time_is_byte_identical_across_fresh_cli_processes(
+    tmp_path: Path,
+) -> None:
+    operation_time = "2026-09-19T03:00:00Z"
+    seed_root = tmp_path / "seed"
+    assert _refresh_v3(
+        seed_root,
+        _FakeR2(),
+        operation_time=datetime(2026, 9, 19, 3, 0, tzinfo=timezone.utc),
+    ) == 0
+    seed_manifest = _marker(seed_root)
+    workspace = _workspace_for_marker(seed_root, seed_manifest)
+    workspace_path = tmp_path / "workspace.json"
+    workspace_path.write_text(json.dumps(workspace), encoding="utf-8")
+    repo_root = Path(__file__).resolve().parents[1]
+
+    code = r"""
+import json
+import sys
+from datetime import timezone
+from pathlib import Path
+
+from engine.company_intelligence.event_workspace import (
+    build_revision_index,
+    write_workspace_generation_v3,
+)
+import scripts.refresh_event_workspaces as module
+
+workspace_path = Path(sys.argv[1])
+out_dir = Path(sys.argv[2])
+operation_text = sys.argv[3]
+workspace = json.loads(workspace_path.read_text(encoding="utf-8"))
+
+
+def fake_refresh(_work_dir, *, out_dir, operation_time, **_kwargs):
+    generated_at = operation_time.astimezone(timezone.utc).isoformat(
+        timespec="seconds"
+    ).replace("+00:00", "Z")
+    index = build_revision_index({workspace["event_id"]: workspace})
+    write_workspace_generation_v3(
+        Path(out_dir),
+        {workspace["event_id"]: workspace},
+        revision_index=index,
+        generated_at=generated_at,
+    )
+    return 0
+
+
+module.refresh = fake_refresh
+module.load_prior_flagship_workspace = lambda: None
+raise SystemExit(module.main([
+    "--work-dir", str(out_dir / "work"),
+    "--out-dir", str(out_dir),
+    "--operation-time", operation_text,
+]))
+"""
+
+    def run_once(out_dir: Path) -> dict[str, bytes]:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                code,
+                str(workspace_path),
+                str(out_dir),
+                operation_time,
+            ],
+            cwd=repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert completed.returncode == 0, (
+            completed.stdout + "\n" + completed.stderr
+        )
+        return {
+            str(path.relative_to(out_dir)): path.read_bytes()
+            for path in sorted(out_dir.rglob("*"))
+            if path.is_file()
+        }
+
+    first = run_once(tmp_path / "first")
+    second = run_once(tmp_path / "second")
+    assert first == second

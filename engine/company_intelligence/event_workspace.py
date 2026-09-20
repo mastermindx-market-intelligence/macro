@@ -591,10 +591,13 @@ def build_revision_index_from_legacy(
     """Seed v3 from one verified legacy walk without preserving a bad current envelope.
 
     Every absolute row before *current_generation_id* retains its original
-    workspace receipt and clocks.  A semantic revision carried by the current
-    legacy generation is deliberately reintroduced as the new v3 generation's
-    relative ``self`` row, so its mint clock is truthful rather than copied
-    from a source publication clock.
+    workspace receipt and clocks.  When a fresher source revision arrives
+    during the first v3 publication, verified legacy-current is retained as an
+    absolute historical row before the fresh ``self`` row, so no correction
+    disappears.  Otherwise the fresh snapshot becomes ``self`` only when it
+    introduces a semantic revision beyond the last retained row; an unchanged
+    consecutive source is not fabricated again.  Collapsed legacy clocks use
+    the migration mint without rewriting workspace bytes.
     """
     if not _GENERATION_RE.fullmatch(str(current_generation_id or "")):
         raise WorkspaceError("legacy current_generation_id invalid")
@@ -602,6 +605,7 @@ def build_revision_index_from_legacy(
     if migration_clock is None:
         raise WorkspaceError("legacy migration mint clock invalid")
     events: dict[str, list[dict[str, Any]]] = {}
+    current_rows: dict[str, dict[str, Any]] = {}
     for event_id, raw_revisions in sorted(legacy_revisions.items()):
         if not _EVENT_ID_RE.fullmatch(str(event_id or "")):
             raise WorkspaceError("legacy revision event id is not canonical")
@@ -629,8 +633,6 @@ def build_revision_index_from_legacy(
             ):
                 if revision.get(field) != derived[field]:
                     raise WorkspaceError(f"legacy revision {field} disagrees with workspace")
-            if generation_id == current_generation_id:
-                continue
             row = dict(derived)
             row["workspace_generation_ref"] = generation_id
             workspace_clock = iso_timestamp(workspace.get("generated_at"))
@@ -649,6 +651,9 @@ def build_revision_index_from_legacy(
                 revision.get("workspace_receipt"),
                 name="legacy revision workspace",
             )
+            if generation_id == current_generation_id:
+                current_rows[event_id] = row
+                continue
             if not rows or row["source_sha256"] != rows[-1]["source_sha256"]:
                 rows.append(row)
         if rows:
@@ -659,6 +664,16 @@ def build_revision_index_from_legacy(
             raise WorkspaceError("legacy migration workspace map key must equal event_id")
         row = _revision_row_from_workspace(workspace)
         rows = events.setdefault(event_id, [])
+        current_row = current_rows.get(event_id)
+        if (
+            current_row is not None
+            and current_row["source_sha256"] != row["source_sha256"]
+            and (
+                not rows
+                or current_row["source_sha256"] != rows[-1]["source_sha256"]
+            )
+        ):
+            rows.append(current_row)
         if not rows or row["source_sha256"] != rows[-1]["source_sha256"]:
             rows.append(row)
     index = {

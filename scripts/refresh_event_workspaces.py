@@ -1700,21 +1700,44 @@ def refresh(
     return publish_rc
 
 
+def _parse_operation_time(raw: str) -> datetime:
+    text = str(raw or "").strip()
+    if not text:
+        raise RefreshError("--operation-time is required")
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise RefreshError("--operation-time must be RFC3339") from exc
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise RefreshError("--operation-time must be timezone-aware")
+    return parsed.astimezone(timezone.utc).replace(microsecond=0)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work-dir", type=Path, required=True, help="Unused scratch parent; kept for lane parity")
     parser.add_argument("--out-dir", type=Path, required=True, help="Company Intelligence product prefix")
     parser.add_argument("--terminal-tx-index-url", default=DEFAULT_TX_INDEX_URL)
+    parser.add_argument(
+        "--operation-time",
+        required=True,
+        help=(
+            "Stable RFC3339 timestamp for this logical publication operation; "
+            "reconciliation of the same operation must reuse it."
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     try:
+        operation_time = _parse_operation_time(args.operation_time)
         return refresh(
             args.work_dir,
             tx_index_url=args.terminal_tx_index_url,
             out_dir=args.out_dir,
             dry_run=args.dry_run,
             prior_workspace=load_prior_flagship_workspace,
+            operation_time=operation_time,
         )
     except RefreshError as exc:
         print(f"::error title=event-workspaces::{exc}", flush=True)

@@ -104,6 +104,16 @@ def test_workflow_is_scheduled_off_render_and_handles_only_safe_cas_conflict() -
     assert "python -m scripts.publish_company_theme_exposure_r2" in workflow
     assert 'if [ "$side_rc" -eq 2 ]' in workflow
     assert "timeout-minutes: 25" in workflow
+    assert "actions: read" in workflow
+    assert "GH_TOKEN: ${{ github.token }}" in workflow
+    assert "/actions/runs/$GITHUB_RUN_ID" in workflow
+    assert 'json.load(sys.stdin)["created_at"]' in workflow
+    assert '--operation-time "$OPERATION_TIME"' in workflow
+    assert "$GITHUB_RUN_ATTEMPT" not in workflow
+    root_refresh = workflow.index("python -m scripts.refresh_company_intelligence")
+    operation_clock = workflow.index("/actions/runs/$GITHUB_RUN_ID")
+    workspace_refresh = workflow.index("python -m scripts.refresh_event_workspaces")
+    assert root_refresh < operation_clock < workspace_refresh
 
 
 def test_scheduled_workflow_contains_its_sparse_import_closure() -> None:

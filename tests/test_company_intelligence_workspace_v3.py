@@ -7,8 +7,6 @@ from pathlib import Path
 import pytest
 
 from engine.company_intelligence.contracts import canonical_json_bytes
-from engine.neuralweb import company_intelligence_reader as reader
-
 from engine.company_intelligence.event_workspace import (
     MANIFEST_SCHEMA_V3,
     REVISION_INDEX_SCHEMA_V1,
@@ -21,6 +19,7 @@ from engine.company_intelligence.event_workspace import (
     write_workspace_generation,
     write_workspace_generation_v3,
 )
+from engine.neuralweb import company_intelligence_reader as reader
 
 EVENT_ID = "evt_cik0000320193_2026q3_results"
 
@@ -1120,3 +1119,101 @@ def test_revision_index_rejects_consecutive_duplicate_source_revision(
 
     with pytest.raises(WorkspaceError, match="consecutive"):
         validate_revision_index(revision_index, manifest=manifest)
+
+
+@pytest.mark.parametrize(
+    ("legacy_sources", "fresh_source", "expected_sources", "expect_self"),
+    [
+        (("a", "b"), "c", ("a", "b", "c"), True),
+        (("a", "b"), "b", ("a", "b"), True),
+        (("a", "b"), "a", ("a", "b", "a"), True),
+        (("b",), "c", ("b", "c"), True),
+        (("a", "a"), "b", ("a", "b"), True),
+        (("a", "a"), "a", ("a",), False),
+    ],
+    ids=(
+        "new-correction-after-current",
+        "fresh-equals-current",
+        "source-reverts-after-current",
+        "current-is-chain-root",
+        "duplicate-legacy-current-collapses",
+        "unchanged-duplicate-chain-mints-no-semantic-row",
+    ),
+)
+def test_first_v3_migration_preserves_legacy_current_before_fresh_revision(
+    legacy_sources: tuple[str, ...],
+    fresh_source: str,
+    expected_sources: tuple[str, ...],
+    expect_self: bool,
+) -> None:
+    collapsed_clock = "2026-07-30T20:31:05Z"
+    migration_clock = "2026-09-20T12:00:00Z"
+    revisions: list[dict] = []
+
+    for position, source in enumerate(legacy_sources, start=1):
+        generation_id = str(position) * 24
+        observed_at = (
+            "2026-07-30T20:31:00Z"
+            if position == 1 and len(legacy_sources) > 1
+            else f"2026-09-{17 + position:02d}T20:56:33Z"
+        )
+        workspace = _workspace(
+            source_sha256=source * 64,
+            source_available_at="2026-07-30T20:30:28Z",
+            observed_at=observed_at,
+            state="complete" if position == 1 else "corrected",
+            fact_value=99 + position,
+        )
+        workspace["generation_id"] = generation_id
+        workspace["generated_at"] = collapsed_clock
+        revisions.append({
+            "generation_id": generation_id,
+            "source_sha256": source * 64,
+            "source_available_at": "2026-07-30T20:30:28Z",
+            "observed_at": observed_at,
+            "lifecycle_state": workspace["lifecycle"]["state"],
+            "form": "8-K",
+            "workspace_receipt": {
+                "bytes": 100 + position,
+                "sha256": source * 64,
+            },
+            "workspace": workspace,
+        })
+
+    current_generation_id = revisions[-1]["generation_id"]
+    fresh = _workspace(
+        source_sha256=fresh_source * 64,
+        source_available_at="2026-07-30T20:30:28Z",
+        observed_at="2026-09-19T10:00:00Z",
+        state="corrected",
+        fact_value=110,
+    )
+
+    index = build_revision_index_from_legacy(
+        {EVENT_ID: fresh},
+        {EVENT_ID: revisions},
+        current_generation_id=current_generation_id,
+        migration_generated_at=migration_clock,
+    )
+
+    rows = index["events"][EVENT_ID]
+    assert [row["source_sha256"] for row in rows] == [
+        source * 64 for source in expected_sources
+    ]
+    if expect_self:
+        assert rows[-1]["workspace_generation_ref"] == "self"
+        assert rows[-1]["generated_at"] is None
+        assert rows[-1]["workspace_receipt"] is None
+    else:
+        assert all(row["workspace_generation_ref"] != "self" for row in rows)
+    current_is_distinct_from_prior = (
+        len(legacy_sources) == 1
+        or legacy_sources[-1] != legacy_sources[-2]
+    )
+    if legacy_sources[-1] != fresh_source and current_is_distinct_from_prior:
+        retained_current = rows[-2]
+        assert retained_current["source_sha256"] == legacy_sources[-1] * 64
+        assert retained_current["workspace_generation_ref"] == current_generation_id
+        assert retained_current["workspace_receipt"] == revisions[-1]["workspace_receipt"]
+        assert retained_current["generated_at_basis"] == "V3_MIGRATION_MINT"
+        assert retained_current["generated_at"] == migration_clock
