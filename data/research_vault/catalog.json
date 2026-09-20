@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T22:15:48.357368+00:00",
-  "count": 2527,
+  "generated_at": "2026-09-20T22:46:01.846731+00:00",
+  "count": 2528,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1677,6 +1677,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-esjizqhzftd-1cee92",
+      "title": "Hedge funds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:32Z",
+      "summary_points": [
+        "August Performance & Macro Resilience: Global equities (+2.7%) and commodities (+7.4%) rose despite higher yields, energy prices, and geopolitical tensions; hedge funds averaged +1.7% with macro (+3.3%) and equity hedge (+1.8%) strategies leading.",
+        "Strategic Alpha Opportunity: Elevated market dispersion and rotations favor low net/market neutral equity hedge managers amid sticky inflation, higher rates, and geopolitical risks for alpha generation.",
+        "Credit Spread Compression Risk: Tightened credit spreads limit alpha in credit-sensitive strategies and reduce buffers against sudden widening, constraining strategy viability.",
+        "Crowding & Reversal Vulnerability: Stretched consensus positioning in equity long/short increases crowding risks and sharp reversals/squeezes, while mean-reverting conditions hurt trend-following strategies.",
+        "Event-Driven Tactical Focus: Prioritize merger arbitrage (strong deal activity) over selective distressed/credit arbitrage opportunities amid elevated volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
