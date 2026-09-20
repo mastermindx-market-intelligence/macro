@@ -40,7 +40,7 @@ affects:
   - "macro PR #7456"
   - "macro PR #7463"
 confidence: high
-reversibility: moderate
+reversibility: easy
 decided_by: chairman
 decided_at: 2026-09-19
 review_by: 2026-10-19
