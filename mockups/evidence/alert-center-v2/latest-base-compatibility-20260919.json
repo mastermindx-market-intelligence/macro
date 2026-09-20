@@ -1,14 +1,14 @@
 {
   "schema": "mastermind.alert_center.latest_base_compatibility.v2",
-  "observed_at": "2026-09-20T03:10:00Z",
+  "observed_at": "2026-09-20T03:20:00Z",
   "candidate_source_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
   "latest_protected_main": "4f1cfc00c2f3a5a855ac9f9ed071fd44ef7d4a32",
-  "latest_merge_tree": "9e33cf91e1bea5d5d1ec73e27fe2b9ab09b70416",
+  "latest_merge_tree": "ae48ec5e09fb282ad2adbeb0b958fbd770eb8b79",
   "merge_conflicts": [],
   "protected_movement_on_material_alert_paths": [],
   "base_compatibility": "PASS",
   "semantic_review_classification": "FULL_REREVIEW_REQUIRED",
-  "semantic_review_reason": "Candidate-owned attention semantics changed after the previous reviewed head: stale or unknown act-tier events now render as Earlier priority rather than current Review first, and mobile search geometry changed. Independent exact-head review is required.",
+  "semantic_review_reason": "Candidate-owned attention semantics changed after the prior review: stale or unknown act-tier events now render as Earlier priority rather than current Review first, mobile search geometry changed, and real hover/focus evidence was added. Fresh independent review must bind the exact final head.",
   "skillpack_commit": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
   "candidate_owned_source_blobs": {
     "engine/alert_center_view.py": "8d23d6e1859d583cb0dad51e6559f7feb61236e1",
@@ -18,5 +18,7 @@
     "templates/alert_center.js": "3ffa2873bb30c386aa8cc7523ec94e66187e9d5b",
     "scripts/qa_alert_center_v2.py": "cf17e941df96ac5106124ec5d59407c0f82f3d3e"
   },
-  "production_acceptance": false
+  "production_acceptance": false,
+  "candidate_evidence_commit": "b447158ac834014b9aba9a8c712b1a13555431d0",
+  "contract_delta": "pass: 0 introduced, 0 inherited"
 }

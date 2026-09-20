@@ -8,3 +8,4 @@ capture=8/8 dark-light x EN-ZH x desktop-mobile; 0 console errors; 0 failed resp
 legacy_parity=17 fields; zero differences
 mobile=full-width search restored; first complete alert remains inside 390x844 first viewport
 production_acceptance=false
+contract_delta=0 introduced, 0 inherited against main 4f1cfc00c2f3a5a855ac9f9ed071fd44ef7d4a32

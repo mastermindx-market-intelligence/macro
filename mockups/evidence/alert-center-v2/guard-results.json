@@ -44,5 +44,18 @@
     ],
     "exit_code": 0,
     "output": ""
+  },
+  {
+    "check": "contract-delta",
+    "command": [
+      "python3",
+      "scripts/check_contract_delta.py",
+      "--base",
+      "origin/main"
+    ],
+    "execution_tree": "b447158ac834014b9aba9a8c712b1a13555431d0",
+    "execution_worktree": "thin sparse detached worktree",
+    "exit_code": 0,
+    "output": "contract-delta: 0 introduced, 0 inherited (base 4f1cfc00c2f3)\n"
   }
 ]

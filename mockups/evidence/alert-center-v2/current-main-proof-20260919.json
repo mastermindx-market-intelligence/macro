@@ -1,11 +1,11 @@
 {
   "schema": "mastermind.alert_center.current_main_proof.v4",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T03:10:00Z",
+  "verified_at": "2026-09-20T03:20:00Z",
   "skillpack_commit": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
   "macro_origin_main_observed": "4f1cfc00c2f3a5a855ac9f9ed071fd44ef7d4a32",
   "candidate_source_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
-  "current_merge_tree": "9e33cf91e1bea5d5d1ec73e27fe2b9ab09b70416",
+  "current_merge_tree": "ae48ec5e09fb282ad2adbeb0b958fbd770eb8b79",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
@@ -63,7 +63,7 @@
     "runtime_style": "pass",
     "visual_evidence_current_main": "pass",
     "diff_check": "pass",
-    "contract_delta": "pending_thin_sparse_exact_tree"
+    "contract_delta": "pass: 0 introduced, 0 inherited"
   },
   "source_sha256": {
     "engine/alert_center_view.py": "56d510d82d65c6cffb51e007b02422a09bac8d04aa8abde4df79bc1c7c8b5517",
@@ -79,7 +79,7 @@
     "input-manifest.json": "8370ba1d0abc2ad6ecc42804b89ddecd977dfcc13b992ce200bcfaddb8d252a3",
     "manifest.json": "3f9591d741fadd8f9ea7859506e2f835455fd0913739bac4795e565e4ea0151c",
     "smells.json": "15303a1f034714de504b7be407f6128973bf3732820a39b6219460e460cc1ce9",
-    "guard-results.json": "3a73588398d7613723fe3d28b4f0b914efcbdc2572611cffc2f188615a5b5466",
+    "guard-results.json": "c2f82c85ec5c734458bbaa9fdc6a1311132a283b19cefdba66a5e889b5347cc6",
     "legacy-parity.json": "aa423f4a550892a81c61c548bda773568da1c203effa7a4ecfe73c7bb46e2da7"
   },
   "figma": {
@@ -95,5 +95,6 @@
     "production-route visibility",
     "customer acceptance",
     "trading edge"
-  ]
+  ],
+  "evidence_commit": "b447158ac834014b9aba9a8c712b1a13555431d0"
 }
