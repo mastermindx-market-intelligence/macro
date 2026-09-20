@@ -108,7 +108,22 @@ def main() -> int:
                         )
                         verdict = page.locator(".ud-verdict").first
                         verdict_text = (
-                            verdict.evaluate("(e)=>e.innerText")
+                            verdict.evaluate(
+                                # Use textContent, then walk only the children
+                                # whose classList contains the active locale
+                                # (the page has both .l-en and .l-zh spans
+                                # in the DOM; CSS hides one set per data-lang).
+                                # Returns the rendered phrase for THIS cell
+                                # only — not the union of both locales.
+                                "(e)=>{const lang=document.documentElement.dataset.lang||'en';"
+                                "let out='';for(const c of e.childNodes){"
+                                "if(c.nodeType===3){out+=c.nodeValue;continue;}"
+                                "if(c.classList&&c.classList.contains('l-'+lang)){"
+                                "out+=c.textContent;}else if(!c.classList||"
+                                "(!c.classList.contains('l-en')&&!c.classList.contains('l-zh'))){"
+                                "out+=c.textContent;}}"
+                                "return out.replace(/\\s+/g,' ').trim();}"
+                            )
                             if verdict.count() > 0
                             else ""
                         )
