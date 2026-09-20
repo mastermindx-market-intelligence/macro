@@ -613,8 +613,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .sp-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0}
 .sp-window-controls{display:inline-flex;gap:5px;padding:3px;border:1px solid var(--rvx-hair);border-radius:var(--r-btn,10px);background:color-mix(in srgb,var(--panel2) 68%,transparent)}
 .sp-window-btn,.sp-clear{font:inherit;font-size:11.5px;font-weight:700;color:var(--muted);cursor:pointer;border:1px solid transparent;border-radius:var(--r-ctl,8px);background:transparent;padding:6px 10px}
-.sp-window-btn:hover,.sp-clear:hover{color:var(--text);background:color-mix(in srgb,var(--text) 7%,transparent)}
-.sp-window-btn.on{color:var(--text);border-color:color-mix(in srgb,var(--info) 42%,transparent);background:color-mix(in srgb,var(--info) 14%,transparent)}
+.sp-window-btn.sp-active{color:var(--text);border-color:color-mix(in srgb,var(--info) 42%,transparent);background:color-mix(in srgb,var(--info) 14%,transparent)}
 .sp-clear{border-color:var(--rvx-hair);background:color-mix(in srgb,var(--panel) 72%,transparent)}
 .sp-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-ctl,8px);font-size:10.5px;font-weight:750;color:var(--prov-ink,var(--prov));border:1px solid color-mix(in srgb,var(--prov) 42%,transparent);background:color-mix(in srgb,var(--prov) 13%,transparent)}
 .sp-chip.quiet{color:var(--muted);border-color:var(--rvx-hair);background:color-mix(in srgb,var(--text) 5%,transparent)}
@@ -626,7 +625,6 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .sp-table .sp-sector-head{left:0;z-index:4;text-align:left;padding-left:8px}
 .sp-table td{padding:0}
 .sp-cell{width:43px;height:30px;border-radius:var(--r-ctl,8px);border:1px solid transparent;cursor:pointer;font:700 10.5px/1 var(--rvx-num);font-variant-numeric:tabular-nums;color:var(--text);background:color-mix(in srgb,var(--text) 6%,transparent);transition:transform .1s,border-color .1s,box-shadow .1s}
-.sp-cell:hover,.sp-cell:focus-visible{transform:translateY(-1px);border-color:color-mix(in srgb,var(--info) 58%,transparent);outline:none}
 .sp-cell.hi{background:color-mix(in srgb,var(--up) 25%,var(--panel))}
 .sp-cell.mid{background:color-mix(in srgb,var(--warn) 23%,var(--panel))}
 .sp-cell.lo{background:color-mix(in srgb,var(--down) 23%,var(--panel))}
@@ -647,7 +645,7 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .sp-detail-provenance p{margin:6px 0;max-width:110ch}.sp-clock-grid{display:flex;flex-wrap:wrap;gap:5px 14px}.sp-clock-grid b{color:var(--text);font-weight:650}
 .sp-const-head{display:flex;align-items:center;justify-content:space-between;margin:12px 0 6px}.sp-const-head h4{font-size:13px;margin:0}.sp-const-head span{font:600 11px var(--rvx-num);color:var(--muted)}
 .sp-const-scroll{overflow:auto;max-height:360px;border:1px solid var(--rvx-hair);border-radius:var(--r-btn,10px)}
-.sp-const-scroll table{width:100%;border-collapse:collapse;font-size:11px}.sp-const-scroll th,.sp-const-scroll td{padding:7px 9px;border-bottom:1px solid var(--rvx-hair);text-align:left}.sp-const-scroll th{position:sticky;top:0;background:var(--panel);z-index:1;color:var(--muted);font-size:10px}.sp-const-scroll tr:last-child td{border-bottom:0}.sp-const-scroll a{font-weight:700;color:var(--text);text-decoration:none}.sp-const-scroll a:hover{text-decoration:underline}.sp-member-name{display:block;margin-top:2px;color:var(--muted);font-size:10px;line-height:1.25}.sp-const-scroll .num{text-align:right;font-family:var(--rvx-num)}
+.sp-const-scroll table{width:100%;border-collapse:collapse;font-size:11px}.sp-const-scroll th,.sp-const-scroll td{padding:7px 9px;border-bottom:1px solid var(--rvx-hair);text-align:left}.sp-const-scroll th{position:sticky;top:0;background:var(--panel);z-index:1;color:var(--muted);font-size:10px}.sp-const-scroll tr:last-child td{border-bottom:0}.sp-const-scroll a{font-weight:700;color:var(--text);text-decoration:underline;text-underline-offset:2px}.sp-member-name{display:block;margin-top:2px;color:var(--muted);font-size:10px;line-height:1.25}.sp-const-scroll .num{text-align:right;font-family:var(--rvx-num)}
 html[data-theme="light"] .sp-scroll,html[data-theme="light"] .sp-detail,html[data-theme="light"] .sp-const-scroll{background:var(--panel);border-color:var(--si-edge,var(--line));box-shadow:0 1px 2px color-mix(in srgb,var(--text) 5%,transparent)}
 html[data-theme="light"] .sp-table th,html[data-theme="light"] .sp-const-scroll th{background:var(--panel)}
 @media (max-width:700px){.sp-kpis{grid-template-columns:1fr}.sp-table tbody th{min-width:104px;max-width:132px}.sp-cell{width:39px;height:29px}.sp-detail{padding:11px}.sp-clock-grid{display:grid;grid-template-columns:1fr}}
@@ -1539,67 +1537,6 @@ html[data-theme="light"] .sp-table th,html[data-theme="light"] .sp-const-scroll 
     box-shadow:0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
                0 12px 32px -14px color-mix(in srgb, var(--text) 12%, transparent); }
 
-  /* ── §light-sp — SECTOR PARTICIPATION ladder, light art direction ────────
-     This is NOT the dark ladder with swapped tokens. Dark separates by
-     LUMINANCE: grooves recessed into a graphite tile, unruled rows, an etched
-     light hairline. On paper there is no depth to recess into — an 8%-of-ink
-     groove on white is a smear with no edge, and a full-strength fill inside
-     it reads as highlighter. So light separates by LINE, the mechanism the
-     doctrine's light reference already uses on this page:
-
-       · the track becomes a DRAWN BOX — white panel fill, 1px --si-edge
-         border (doctrine §5.8: "colored segment bars… add a track border"),
-         so an empty track is still a visible cell rather than nothing;
-       · every row gains a hairline BASELINE, turning the ladder into a
-         printed table — this also groups the wrapped EN sector names at 390w,
-         which dark does not need because its rows separate by ink weight;
-       · the 50% spine is INKED (42% of text) rather than etched (30% of a
-         light text over a dark groove) — same spine, opposite polarity;
-       · the withheld track drops the hatch for a DASHED empty cell: 135°
-         hatching on white is the "dirty smudge" failure the doctrine names,
-         while a ruled-but-empty cell is the printed convention for no reading;
-       · stale desaturates the ink instead of dimming luminance — a dimmed bar
-         on white just looks mis-printed, a lighter ink reads as provisional.
-
-     Direction/health inks need no work here: .si-stage already rebinds
-     --up/--warn/--down to the contrast-measured --si-ink-* rungs (and flips
-     them again under zh 红涨绿跌), so the fill colour arrives correct. That
-     rebinding is what this block is deliberately NOT relying on as a design. */
-  /* .si-stage rebinds --up/--down/--warn to the TEXT inks (--si-ink-*). That is
-     correct for glyphs and wrong for a filled bar: --warn mixed 62% into --text
-     prints a muddy brown, not amber — measured in the first light pass of this
-     panel. theme.css's own light direction tokens are already print-grade fills
-     (a deep green / brick red / ochre chosen for white), so capture them at BODY
-     scope, above the rebinding, and let the ladder's fills use those. Page-local
-     names bound to theme values — the sanctioned --pv- and --ms- pattern (design
-     system §2), not a second palette; the zh 红涨绿跌 swap happens on --up/--down
-     themselves in theme.css, so these follow it without a second rule. */
-  html[data-theme="light"] body.page-baskets {
-    --sp-fill-hi:var(--up); --sp-fill-mid:var(--warn); --sp-fill-lo:var(--down); }
-
-  html[data-theme="light"] .si-stage .rvx-sp-track {
-    background:var(--panel);
-    border:1px solid var(--si-edge, var(--line));
-    box-shadow:inset 0 1px 1px color-mix(in srgb, var(--text) 4%, transparent); }
-  html[data-theme="light"] .si-stage .rvx-sp-track::after {
-    background:color-mix(in srgb, var(--text) 42%, transparent); }
-  html[data-theme="light"] .si-stage .rvx-sp-track.none {
-    background:var(--panel); border-style:dashed;
-    border-color:color-mix(in srgb, var(--si-edge, var(--line)) 80%, transparent);
-    box-shadow:none; }
-  html[data-theme="light"] .si-stage .rvx-sp-row {
-    padding-bottom:7px;
-    border-bottom:1px solid color-mix(in srgb, var(--si-edge, var(--line)) 55%, transparent); }
-  html[data-theme="light"] .si-stage .rvx-sp-row:last-child { border-bottom:0; padding-bottom:0; }
-  html[data-theme="light"] .si-stage .rvx-sp-cap { border-bottom:0; padding-bottom:0; }
-  html[data-theme="light"] .si-stage .rvx-sp.stale .rvx-sp-fill { opacity:.72; filter:saturate(.62); }
-  /* translucent tints wash out over white — the state chips get opaque fills so
-     they stay chips and not stains. */
-  html[data-theme="light"] .si-stage .rvx-sp-chip {
-    background:color-mix(in srgb, var(--prov) 11%, var(--panel));
-    border-color:color-mix(in srgb, var(--prov) 48%, var(--panel)); }
-  html[data-theme="light"] .si-stage .rvx-sp-chip.quiet {
-    background:var(--panel2); border-color:var(--si-edge, var(--line)); }
   /* the session tape floats as a container too — its old edge-to-edge flat band was
      the worst of the gradient cutoffs */
   .ftr-tape-strip.visible, .ftr-tape-full.open .ftr-tape-band {
@@ -2525,7 +2462,7 @@ html[data-theme="light"] .sp-table th,html[data-theme="light"] .sp-const-scroll 
     <p class="rvx-sec-sub" id="sp-read"></p>
     <div class="sp-toolbar">
       <div class="sp-window-controls" id="sp-window-controls" role="group" aria-label="Participation calendar window / 参与度日历区间">
-        <button type="button" class="sp-window-btn on" data-sp-window="63" aria-pressed="true"><span class="l-en">3M</span><span class="l-zh">3个月</span></button>
+        <button type="button" class="sp-window-btn sp-active" data-sp-window="63" aria-pressed="true"><span class="l-en">3M</span><span class="l-zh">3个月</span></button>
         <button type="button" class="sp-window-btn" data-sp-window="126" aria-pressed="false"><span class="l-en">6M</span><span class="l-zh">6个月</span></button>
         <button type="button" class="sp-window-btn" data-sp-window="252" aria-pressed="false"><span class="l-en">1Y</span><span class="l-zh">1年</span></button>
       </div>

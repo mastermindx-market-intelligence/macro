@@ -322,7 +322,7 @@ function calendarLabel(sector,session,row,index){
 function renderControls(){
   Array.prototype.forEach.call(controls.querySelectorAll('[data-sp-window]'),function(button){
     var selected=Number(button.getAttribute('data-sp-window'))===state.windowSize;
-    button.classList.toggle('on',selected);
+    button.classList.toggle('sp-active',selected);
     button.setAttribute('aria-pressed',selected?'true':'false');
   });
 }
