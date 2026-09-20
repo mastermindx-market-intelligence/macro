@@ -83,6 +83,11 @@ public:
     # rows are omitted server-side and render only counts + the trial CTA, so
     # the public shell contains no premium ticker payload.
     - /confluence_screener.html
+    # Research-priority list (B-F06-4). Anonymous readers see the list and the
+    # exposure null; signed-in readers overlay holdings client-side. No premium
+    # payload and no per-user server path.
+    - /research_screener.html
+    - /research_screener.css
     # Public acquisition dashboards. macro/start expose the broad market read;
     # macro drill-downs still require registration. us_stocks applies the
     # anonymous=1 / Free=3 / paid=full summary preview in tier_preview.js.

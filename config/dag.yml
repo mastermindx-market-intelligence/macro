@@ -325,6 +325,24 @@ lanes:
           domestic-substitution (onshoring). No composite across themes.
           FENCE: SEPARATE display leg — never fused into fused_obs_z.
           Always exits 0 (tolerant; absent parquet → honest null written).
+      - id: collect_usgs_mcs
+        module: collectors.usgs_mcs
+        note: >
+          MO-B F09-10 USGS Mineral Commodity Summaries ingest (ScienceBase NMIC).
+          Off the render critical path. Nightly step is if:-gated on
+          vars.USGS_MCS_ENABLED; the checker still sees the python -m
+          invocation in the run body. Keyless public-domain annual release.
+          Ingests only the newest T7-shaped edition. Always exits 0.
+          Output: data/usgs_mcs/mcs_rows.parquet (nightly-advanced).
+      - id: build_critical_minerals_supply
+        module: engine.critical_minerals_supply
+        note: >
+          MO-B F09-10 critical-minerals supply-concentration context rollup.
+          Reads data/usgs_mcs/mcs_rows.parquet. Pure in-memory, no network.
+          Produces data/neuralweb/critical_minerals_supply.json and
+          site/basketdata/critical_minerals_supply.json.
+          Display/context only — never fused into fused_obs_z.
+          Always exits 0 (absent parquet → honest null).
       - id: collect_clinicaltrials_themes
         module: collectors.clinicaltrials_themes
         note: >
@@ -649,6 +667,13 @@ lanes:
           so the declaration lands here.
       - id: build_site
         module: scripts.build_site
+      - id: build_research_screener
+        module: scripts.build_research_screener
+        note: >
+          B-F06-4 research-priority screener. AFTER build_site (stock library
+          writes site/stockdata/*.json). Reads security_state.v1 +
+          valuation_scenario.v1, writes site/research_screener.json +
+          site/research_screener.html. Display-tier; research_priority_only.
       - id: build_ticker_pages
         module: scripts.build_ticker_pages
         note: >
@@ -840,6 +865,9 @@ lanes:
         cluster:
           cl_markets:
             - scripts.build_commodities
+            # China physical-premium source→VM→render receipt; runs immediately
+            # after the commodity page and writes only the existing quality plane.
+            - scripts.audit_china_gold_premium --strict-render
             - scripts.build_spr
             - scripts.build_forex
             - scripts.build_bonds
@@ -1792,6 +1820,13 @@ lanes:
   - workflow: .github/workflows/daily.yml
     job: stock_briefs
     steps:
+      - id: fetch_r2_stockdata
+        module: scripts.fetch_r2
+        args: [--dirs, stockdata]
+        note: >
+          Restore the existing R2-only stockdata context before stock-brief
+          generation. Input materialization only; no ranking, admission,
+          publication, or trade authority originates here.
       - id: build_stock_briefs
         module: scripts.build_stock_briefs
       - id: publish_r2_stockdata
@@ -2738,6 +2773,11 @@ lanes:
         note: Policy-Shock W2-F — ARMED/QUIET lever card; non-fatal; site artifact only (PS-R7)
       - id: build_site
         module: scripts.build_site
+      - id: build_research_screener
+        module: scripts.build_research_screener
+        note: >
+          B-F06-4 research-priority screener. AFTER build_site (stock library
+          writes site/stockdata/*.json). Display-tier; research_priority_only.
       - id: build_congress
         module: scripts.build_congress
       # parallel band (scope=all)

@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-18",
+ "asof": "2026-09-19",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -22,7 +22,7 @@
  "n": 3028,
  "n_failed": 0,
  "fail_pct": 0.0,
- "n_flags": 142,
+ "n_flags": 140,
  "universes": [
   {
    "name": "stocks",
@@ -37,7 +37,7 @@
     {
      "name": "ECHO",
      "kind": "zombie",
-     "detail": "dead-registry name advancing 1760d past its 2021-11-22 registry bar; overlap corr -0.139"
+     "detail": "dead-registry name advancing 1761d past its 2021-11-22 registry bar; overlap corr -0.139"
     }
    ]
   },
@@ -46,7 +46,7 @@
    "n": 2783,
    "n_failed": 0,
    "fail_pct": 0.0,
-   "n_flags": 141,
+   "n_flags": 139,
    "skipped": false,
    "note": "",
    "failed": [],
@@ -97,19 +97,9 @@
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
     },
     {
-     "name": "AREN",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-09-11) but no current NASDAQ/NYSE listing"
-    },
-    {
      "name": "ASIX",
      "kind": "registry_mismatch",
      "detail": "same instrument as its dead-registry rows (corr 1.0) \u2014 the registry, not the store, carries foreign/live tape"
-    },
-    {
-     "name": "ATAI",
-     "kind": "delisted_printing",
-     "detail": "fresh bars (2026-09-11) but no current NASDAQ/NYSE listing"
     },
     {
      "name": "ATNI",
@@ -760,7 +750,7 @@
   }
  ],
  "ledger_identity": {
-  "ledger": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/signal_archive/track_record.parquet",
+  "ledger": "/Users/chriswong/actions-runner-2/_work/macro/macro/data/signal_archive/track_record.parquet",
   "declared_duplicates": [],
   "undeclared_candidates": [],
   "ticker_key_migrations": {
@@ -774,7 +764,7 @@
   "zombie": 5,
   "rebirth": 3,
   "registry_mismatch": 128,
-  "delisted_printing": 6,
+  "delisted_printing": 4,
   "member_identity": 0
  },
  "stores": [
@@ -785,8 +775,8 @@
     {
      "ticker": "ECHO",
      "registry_last": "2021-11-22",
-     "store_tip": "2026-09-17",
-     "days_past_death": 1760,
+     "store_tip": "2026-09-18",
+     "days_past_death": 1761,
      "overlap": {
       "n_overlap": 99,
       "ret_corr_full": -0.0318,
@@ -2557,16 +2547,6 @@
      "acked": true
     },
     {
-     "ticker": "AREN",
-     "store_tip": "2026-09-11",
-     "acked": false
-    },
-    {
-     "ticker": "ATAI",
-     "store_tip": "2026-09-11",
-     "acked": false
-    },
-    {
      "ticker": "IMPUY",
      "store_tip": "2026-09-18",
      "acked": true
@@ -2602,10 +2582,7 @@
  ],
  "member_identity_acks": {},
  "unacked_zombies": [],
- "unacked_delisted_printing": [
-  "baskets/ohlcv/AREN",
-  "baskets/ohlcv/ATAI"
- ],
+ "unacked_delisted_printing": [],
  "unacked_member_identity": [],
  "undeclared_ledger_identities": []
 }

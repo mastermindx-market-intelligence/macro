@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NGVT-BULL-20260731",
-  "asof": "2026-09-18",
+  "asof": "2026-09-19",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 34.5,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 0.348,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
+    "horizon_pct_used": 95.6,
     "p1": -0.4348,
     "p2": -0.2174,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 43,
+  "tau": 0.9556
 }

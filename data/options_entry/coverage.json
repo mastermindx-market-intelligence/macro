@@ -1,7 +1,7 @@
 {
   "schema": "options_entry_coverage.v1",
-  "generated_at": "2026-09-19T03:01:37.108308+00:00",
-  "as_of": "2026-09-19",
+  "generated_at": "2026-09-20T11:38:56.100150+00:00",
+  "as_of": "2026-09-20",
   "absent_stores": [],
   "feature_coverage": {
     "n_rows": 419,
@@ -426,7 +426,7 @@
       "cond_hit_share": 0.7721,
       "readiness_forecast": {
         "forecast": "date",
-        "forecast_date": "2026-09-20",
+        "forecast_date": "2026-09-21",
         "basis": "n_cond=0/30 needed; post-W-C cadence=32.627/day \u00d7 cond_hit_share=0.777 \u2192 1 days",
         "post_wc_fires": 2186,
         "post_wc_span_days": 67
@@ -535,38 +535,40 @@
         {
           "source": "options_entry/state.parquet",
           "latest_as_of": "2026-08-13",
-          "age_days_from_today": 37,
+          "age_days_from_today": 38,
           "status": "STALE"
         },
         {
           "source": "options_entry/gate.json",
           "latest_as_of": "2026-09-18 18:37 UTC",
-          "age_days_from_today": 1,
+          "age_days_from_today": 2,
           "status": "FRESH"
         },
         {
           "source": "us_board_ledger/retro_grades.parquet",
           "latest_as_of": "2026-09-10",
-          "age_days_from_today": 9,
+          "age_days_from_today": 10,
           "status": "STALE"
         }
       ]
     },
     {
       "check": "audit_options_accrual_last_run",
-      "generated_at": "2026-09-19T03:01:36.829101+00:00",
+      "generated_at": "2026-09-20T11:38:55.896053+00:00",
       "ok": false,
       "fail_reasons": [
         "CHAINS STALE: latest chain file is 2026-08-13 (25 NYSE session(s) behind last_session=2026-09-18); threshold=1 \u2014 OI snapshot may have been missed",
         "CHAINS SESSION FAILED: session 2026-09-18 has a health-receipt attempt but NO chain parquet was ever written for it \u2014 the accrual captured nothing for the most recently attempted session (see data/polygon_gex_health/2026-09-18.json)"
       ],
-      "warnings": []
+      "warnings": [
+        "OPTIONS FLOW CREDS ABSENT: MASSIVE_S3_ACCESS_KEY_ID / MASSIVE_S3_SECRET_ACCESS_KEY / MASSIVE_S3_ENDPOINT not set \u2014 build_options_flow will no-op silently (F1 from masterplan \u00a71)"
+      ]
     }
   ],
   "_stamp": {
     "audit": "options_entry_coverage.v1",
-    "generated_at_utc": "2026-09-19T03:01:37.108299+00:00",
-    "as_of": "2026-09-19",
+    "generated_at_utc": "2026-09-20T11:38:56.100110+00:00",
+    "as_of": "2026-09-20",
     "absent_stores": []
   }
 }

@@ -1,0 +1,2 @@
+::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (18972 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)
+design-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 18972)
