@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T00:12:26.436219+00:00",
-  "count": 2463,
+  "generated_at": "2026-09-20T00:35:31.676654+00:00",
+  "count": 2464,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -524,6 +524,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2oe1dtd1tzu-639a07",
+      "title": "Go sustainable",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:59Z",
+      "summary_points": [
+        "Geopolitical Energy Imperative: IEA’s $4.5T clean energy investment target by 2030 drives strategic shift amid energy security/affordability crises; diversified sustainable portfolios (equities, bonds, private markets) maintain secular case despite short-term sustainable stock underperformance.",
+        "Physical Enabling Tech Demand: Regulatory tailwinds and public investment fuel robust growth in grid expansion, renewables integration, and related infrastructure (cables/transformers), directly supporting TRIOS themes (AI, Power & Resources, Longevity).",
+        "Active Engagement Frameworks: Equity strategies target issuers with superior climate transition performance; fixed income leverages thematic bonds (green/social), municipal bonds for ESG projects, and active engagement to drive measurable sustainability outcomes.",
+        "Private Market Risk Profile: Climate tech impact investments face leverage, default, concentration, and illiquidity risks; requires active engagement for verifiable social/environmental impact alongside competitive returns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
