@@ -861,8 +861,11 @@ def test_saturation_transition_is_composition_not_position_shapley():
     assert got["status"] == "SURVIVOR_DECOMPOSITION_COMPLETE"
     assert got["decomposition"]["survivor_contracts"] == 1
     assert got["composition"]["model_state_from_saturated"] == 1
+    assert got["composition"]["model_state_from_saturated_abs_mass"] > 0
     assert got["composition"]["model_state_to_saturated"] == 0
+    assert got["composition"]["model_state_to_saturated_abs_mass"] == pytest.approx(0.0)
     assert got["composition"]["unresolved_entries"] == 0
+    assert got["composition"]["known_composition_abs_mass"] > 0
     assert got["composition"]["full_map_composition_resolved"] is False
 
 
