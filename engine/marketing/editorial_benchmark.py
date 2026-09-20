@@ -230,8 +230,12 @@ def _normalise_run(raw: dict[str, Any]) -> dict[str, Any]:
     row["candidate_id"] = candidate_id
     row["decision"] = decision
     row["text"] = text
-    row["first_pass_accepted"] = bool(row.get("first_pass_accepted", False))
-    row["repair_count"] = max(0, int(row.get("repair_count", 0) or 0))
+    first_pass = row.get("first_pass_accepted")
+    row["first_pass_accepted"] = None if first_pass is None else bool(first_pass)
+    repair_count = row.get("repair_count")
+    row["repair_count"] = (
+        None if repair_count is None else max(0, int(repair_count))
+    )
     for field in ("latency_ms", "cost_usd"):
         value = row.get(field)
         row[field] = None if value is None else float(value)
@@ -549,17 +553,25 @@ def grade(
             bool(row["repetitive_framing"]) for row in candidate_ratings
         )
         validator_failures = sum(bool(row["validator_reasons"]) for row in posted)
-        first_pass = sum(bool(row["first_pass_accepted"]) for row in posted)
-        repair_total = sum(int(row["repair_count"]) for row in candidate_runs)
-        latency_total = sum(
+        first_pass_rows = [
+            row for row in posted if row.get("first_pass_accepted") is not None
+        ]
+        first_pass = sum(bool(row["first_pass_accepted"]) for row in first_pass_rows)
+        repair_values = [
+            int(row["repair_count"])
+            for row in candidate_runs if row.get("repair_count") is not None
+        ]
+        repair_total = sum(repair_values) if repair_values else None
+        latency_values = [
             float(row["latency_ms"])
             for row in candidate_runs if row.get("latency_ms") is not None
-        )
+        ]
+        latency_total = sum(latency_values) if latency_values else None
         cost_values = [
             float(row["cost_usd"])
             for row in candidate_runs if row.get("cost_usd") is not None
         ]
-        cost_total = sum(cost_values)
+        cost_total = sum(cost_values) if cost_values else None
 
         content = {
             "rated_outputs": len(candidate_ratings),
@@ -586,22 +598,34 @@ def grade(
             "validator_failure_outputs": validator_failures,
         }
         runtime = {
-            "first_pass_acceptance": _rate(first_pass, len(posted)),
+            "first_pass_acceptance": _rate(first_pass, len(first_pass_rows)),
+            "first_pass_coverage": len(first_pass_rows),
             "repair_count_total": repair_total,
-            "repairs_per_posted_output": (
-                repair_total / len(posted) if posted else None
+            "repair_coverage": len(repair_values),
+            "repairs_per_observed_run": (
+                repair_total / len(repair_values) if repair_values else None
+            ),
+            "repairs_per_accepted": (
+                repair_total / accepted_count
+                if accepted_count and len(repair_values) == len(candidate_runs)
+                else None
             ),
             "latency_ms_total": latency_total,
+            "latency_coverage": len(latency_values),
             "latency_ms_per_output": (
-                latency_total / len(candidate_runs) if candidate_runs else None
+                latency_total / len(latency_values) if latency_values else None
             ),
             "latency_ms_per_accepted": (
-                latency_total / accepted_count if accepted_count else None
+                latency_total / accepted_count
+                if accepted_count and len(latency_values) == len(candidate_runs)
+                else None
             ),
-            "cost_usd_total": cost_total if cost_values else None,
+            "cost_usd_total": cost_total,
             "cost_coverage": len(cost_values),
             "cost_usd_per_accepted": (
-                cost_total / accepted_count if accepted_count and cost_values else None
+                cost_total / accepted_count
+                if accepted_count and len(cost_values) == len(candidate_runs)
+                else None
             ),
             "requested_served_identity_counts": _identity_counts(candidate_runs),
         }
