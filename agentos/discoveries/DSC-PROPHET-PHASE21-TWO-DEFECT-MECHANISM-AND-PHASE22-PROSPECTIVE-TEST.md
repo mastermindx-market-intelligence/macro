@@ -101,6 +101,9 @@ Exact scientific contract:
 ## Holds
 
 - LER-C1 secure private spool remains blocked on its existing credential/proof gate.
+- Q2 real-yield context must use go-forward DFII10 owner clocks; the current rates/liquidity owner
+  explicitly cannot reconstruct historical first-known before that producer existed, so latest-revised
+  FRED history cannot be laundered into prospective decision-time evidence.
 - LER-C3 final prospective reconnect depends on C1.
 - TrialLedger registration is deliberately not attempted while open Tactical R1-B PR #7274 owns
   `data/trial_ledger.jsonl`.
