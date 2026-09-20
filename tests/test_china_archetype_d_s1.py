@@ -69,6 +69,31 @@ def test_archetype_d_six_block_l1_is_not_the_published_default() -> None:
         assert marker not in TPL
 
 
+def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe() -> None:
+    # Borrow the useful interpretation layer, not the destructive six-block shell.
+    for marker in (
+        "{% set _hero_clause = hero_clause(pb_obj, ms) %}",
+        "{% set _stance = posture_lane(_pd.posture if _pd else none) %}",
+        "{% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}",
+        'class="cnx-hero-read"',
+        'class="cnx-row cnx-reason-row',
+        "{{ t('What Changed','最近变化') }}",
+        'href="china_policy_watch.html"',
+        'href="china_news.html"',
+        'href="alerts.html"',
+    ):
+        assert marker in TPL
+
+    # The richer original information architecture remains the page skeleton.
+    for marker in (
+        "ROW 1: What To Do + Upcoming Events",
+        "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature",
+        "ROW 3: Policy Monitor + Connect Flows + Macro News",
+        "ROW 4: Property + AI Brief + Alerts Centre",
+    ):
+        assert marker in TPL
+
+
 def test_index_face_and_deep_racks_remain() -> None:
     assert "MARKET TILES (C · US mx5 combined index face" in TPL
     assert '<div class="cnx-tiles">' in TPL

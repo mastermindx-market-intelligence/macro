@@ -925,6 +925,7 @@
   body.page-china .cnx-card{background:var(--mx5-glass-bg,rgba(16,22,30,.55));border:1px solid var(--mx5-glass-border,rgba(255,255,255,.12));border-radius:18px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.55),0 1.5px 0 rgba(255,255,255,.07) inset;padding:18px 20px;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s;margin-bottom:14px}
   body.page-china .cnx-card[role="button"]{cursor:pointer}
   body.page-china .cnx-card[role="button"]:hover{background:rgba(22,29,38,.62);border-color:rgba(255,255,255,.16);box-shadow:0 6px 24px rgba(0,0,0,.25);transform:translateY(-1px)}
+  body.page-china .cnx-card[role="button"]:focus-visible{outline:2px solid color-mix(in srgb,var(--link) 70%,transparent);outline-offset:2px}
   body.page-china .cnx-ctitle{font-size:11.5px;font-weight:650;letter-spacing:.8px;text-transform:uppercase;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
   /* hero */
   /* z-index:30 lifts the whole hero (and the factor/risk popovers that overflow it)
@@ -1050,6 +1051,41 @@
   body.page-china .cnx-row .tx{flex:1;min-width:0}
   body.page-china .cnx-row .tx b{font-weight:650}
   body.page-china .cnx-row .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
+  /* Selective synthesis: better glance hierarchy and explanations from the
+     retired compression experiment, without replacing the deep dashboard. */
+  body.page-china .cnx-hero-read{display:flex;align-items:flex-start;gap:10px 12px;flex-wrap:wrap;margin:10px 0 2px;max-width:54ch}
+  body.page-china .cnx-hero-read-copy{flex:1 1 260px;font-size:12.5px;line-height:1.48;color:var(--text)}
+  body.page-china .cnx-hero-read-label{display:block;font-size:9.5px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  html[data-lang="zh"] body.page-china .cnx-hero-read-label{letter-spacing:0;text-transform:none}
+  body.page-china .cnx-stance{--c:var(--muted);display:inline-flex;align-items:center;white-space:nowrap;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 36%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--panel))}
+  body.page-china .cnx-stance.st-up{--c:var(--ink-up,var(--up))}
+  body.page-china .cnx-stance.st-down{--c:var(--ink-down,var(--down))}
+  body.page-china .cnx-stance.st-warn{--c:var(--ink-warn,var(--warn))}
+  body.page-china .cnx-freshness{font-size:10px;color:var(--muted);white-space:nowrap;padding-top:5px}
+  body.page-china .cnx-action-lead .sub{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase}
+  html[data-lang="zh"] body.page-china .cnx-action-lead .sub{letter-spacing:0;text-transform:none}
+  body.page-china .cnx-reason-row[data-tip-en]{position:relative;padding-right:28px}
+  body.page-china .cnx-reason-row[data-tip-en]::before{content:"?";position:absolute;right:0;top:7px;width:18px;height:18px;border-radius:var(--r-pill);border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
+  body.page-china .cnx-reason-row[data-tip-en]::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:45;width:min(36ch,78vw);padding:8px 10px;border-radius:var(--r-ctl);font-size:11px;font-weight:450;line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:var(--card-shadow);white-space:normal;text-align:left}
+  html[data-lang="zh"] body.page-china .cnx-reason-row[data-tip-en]::after{content:attr(data-tip-zh)}
+  body.page-china .cnx-reason-row[data-tip-en]:hover::after{display:block}
+  body.page-china .cnx-change-list{display:grid;gap:0}
+  body.page-china .cnx-change-row{display:grid;grid-template-columns:44px minmax(66px,.34fr) minmax(0,1fr);gap:8px;align-items:start;padding:7px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+  body.page-china .cnx-change-row:last-child{border-bottom:none}
+  body.page-china .cnx-change-when{color:var(--muted);font-variant-numeric:tabular-nums;font-size:10.5px}
+  body.page-china .cnx-change-tag{font-weight:650;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.page-china .cnx-change-what{min-width:0;color:var(--text);line-height:1.4}
+  body.page-china .cnx-change-alert .cnx-change-tag{color:var(--ink-warn,var(--warn))}
+  body.page-china .cnx-ctitle-note{margin-left:auto;font-size:9.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+  body.page-china .mx-empty{font-size:12px;color:var(--muted)}
+  body.page-china .mx-empty .empty-why{display:block;font-size:10px;opacity:.85;margin-top:2px}
+  @media (max-width:640px){
+    body.page-china .cnx-change-row{grid-template-columns:42px minmax(0,1fr)}
+    body.page-china .cnx-change-tag{display:none}
+    body.page-china .cnx-hero-read{gap:8px}
+    body.page-china .cnx-estrip{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+    body.page-china .cnx-ev{flex:0 0 72%;scroll-snap-align:start}
+  }
   body.page-china .cnx-kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
   body.page-china .cnx-kv:last-of-type{border-bottom:none}
   body.page-china .cnx-kv .k{color:var(--muted)}
@@ -1740,6 +1776,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   {% set P = property %}
   {% set pb_obj = pb %}
   {% set CN = china_news %}
+  {# Selective synthesis from the retired Archetype-D experiment: preserve the
+     deep dashboard, but reuse its stronger plain-language interpretation helpers. #}
+  {% set _pd = pb_obj.dial if pb_obj else none %}
+  {% set _stance = posture_lane(_pd.posture if _pd else none) %}
+  {% set _stance_tone = posture_tone(_pd.posture if _pd else none) %}
+  {% set _hero_clause = hero_clause(pb_obj, ms) %}
+  {% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}
 
   <div class="cnx-wrap">
 
@@ -1828,6 +1871,16 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       </div>
       <p class="v-thesis cnx-thesis">{{ t(_ms_thesis or 'China A-share market state.', _ms_thesis_zh or '中国A股市场状态。') }}</p>
       <div class="v-flip cnx-flip">{{ t(_ms_flip or '—', _ms_flip_zh or '—') }}</div>
+      <div class="cnx-hero-read">
+        <div class="cnx-hero-read-copy">
+          <span class="cnx-hero-read-label"><span class="l-en">Plain read</span><span class="l-zh">一眼判读</span></span>
+          <span class="l-en">{{ _hero_clause[0] }}</span><span class="l-zh">{{ _hero_clause[1] }}</span>
+        </div>
+        {% if _pd %}<span class="cnx-stance st-{{ _stance_tone }}"><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></span>{% endif %}
+        {% if health %}
+        <span class="cnx-freshness"><span class="l-en">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} feeds fresh</span><span class="l-zh">{{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据新鲜</span></span>
+        {% endif %}
+      </div>
       <div class="cnx-hero-btns">
         {# signals button #}
         {% set _n_bull = (_comps | selectattr('tone', 'equalto', 'pos') | list | length) %}
@@ -2066,20 +2119,22 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   <!-- =============== ROW 1: What To Do + Upcoming Events =============== -->
   <div class="cnx-rack2">
-    {# What To Do card #}
+    {# What To Do card — keep the deep-card interaction, but use the retired
+       experiment's much clearer stance/reason faces at glance level. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
-      <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }}</div>
+      <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }} <span class="cnx-ctitle-note">{{ t('Action lens','操作视角') }}</span></div>
       {% if pb_obj %}
-        {% set _pd = pb_obj.dial %}
-        <div class="cnx-row"><span class="ic">{{ {'DEFENSIVE':'🛡','CAREFUL':'⚠','NEUTRAL':'◐','CONSTRUCTIVE':'✅','AGGRESSIVE':'🚀'}.get(_pd.posture,'◐') }}</span>
-          <div class="tx"><b>{{ t(_pd.posture, {'DEFENSIVE':'防御','CAREFUL':'谨慎','NEUTRAL':'中性','CONSTRUCTIVE':'积极','AGGRESSIVE':'进取'}.get(_pd.posture,'')) }}</b></div></div>
-        {% for sign, r_en, r_zh in (_pd.reasons[:4] if _pd.reasons else []) %}
-        <div class="cnx-row"><span class="ic">{{ '+' if sign == '+' else ('−' if sign == '-' else 'ℹ') }}</span>
-          <div class="tx"><span class="sub">{{ t(r_en, r_zh) }}</span></div></div>
+        <div class="cnx-row cnx-action-lead"><span class="ic" aria-hidden="true">→</span>
+          <div class="tx"><b><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></b>
+            <span class="sub"><span class="l-en">Current posture</span><span class="l-zh">当前操作姿态</span></span></div></div>
+        {% for face in _todo_faces %}
+        <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}"><span class="ic">{{ face.sign }}</span>
+          <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
+            {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div></div>
         {% endfor %}
         {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
       {% else %}
-      <div class="cnx-row"><span class="ic">◐</span><div class="tx"><b>{{ t('Regime data loading…','周期数据加载中…') }}</b></div></div>
+      <div class="cnx-row"><span class="ic" aria-hidden="true">—</span><div class="tx"><b>{{ t('Regime data loading…','周期数据加载中…') }}</b></div></div>
       {% endif %}
     </div>
     {# Upcoming Events card #}
@@ -2295,20 +2350,33 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-foot">{{ t('Mainland money supporting Hong Kong.','内地资金持续支撑香港。') }}</div>
     </div>
 
-    {# Macro News card #}
+    {# What Changed: preserve the Macro News dialog, but orient the glance card
+       around recency/change rather than a raw headline dump. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-news')">
-      <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }}</div>
-      {% if CN and CN.news and CN.news.headlines %}
-        {% for h in CN.news.headlines[:2] %}
-        <div class="cnx-row">
-          <span class="ic">{{ {'pboc_liquidity':'🏦','market':'🏛','policy':'🏛','global':'🌐','company':'📉'}.get((h.channels[:1] or [''])[0], '📰') }}</span>
-          <div class="tx"><b>{{ h.title | truncate(80, true, '…') }}</b>
-            <span class="sub">{{ CN.theme_label.get(h.theme, [h.theme, h.theme]) | first if CN.theme_label else h.theme }} · {{ h.source_name or '' }}</span></div>
+      <div class="cnx-ctitle">{{ t('What Changed','最近变化') }} <span class="cnx-ctitle-note">{{ t('macro news + alerts','宏观新闻 + 警报') }}</span></div>
+      {% if (CN and CN.news and CN.news.headlines) or latest.alerts %}
+      <div class="cnx-change-list">
+        {% if CN and CN.news and CN.news.headlines %}
+          {% for h in CN.news.headlines[:2] %}
+          {% set _tl = CN.theme_label.get(h.theme, [h.theme, h.theme]) if CN.theme_label else [h.theme, h.theme] %}
+          <div class="cnx-change-row">
+            <span class="cnx-change-when">{{ (h.published or h.date or '')[5:10] or '—' }}</span>
+            <span class="cnx-change-tag">{{ t(_tl[0], _tl[1] if _tl|length > 1 else _tl[0]) }}</span>
+            <span class="cnx-change-what"><span class="l-en">{{ (h.title_en or h.title or '') | truncate(92, true, '…') }}</span><span class="l-zh">{{ (h.title_zh or h.title or '') | truncate(92, true, '…') }}</span></span>
+          </div>
+          {% endfor %}
+        {% endif %}
+        {% for a in (latest.alerts or [])[:1] %}
+        <div class="cnx-change-row cnx-change-alert">
+          <span class="cnx-change-when">{{ latest.date[5:10] if latest.date else '—' }}</span>
+          <span class="cnx-change-tag"><span class="l-en">Alert</span><span class="l-zh">警报</span></span>
+          <span class="cnx-change-what"><span class="l-en">{{ a.plain_en or '' }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en or '' }}</span></span>
         </div>
         {% endfor %}
-        <div class="cnx-view-all">{{ (CN.news.n_kept or 0) }} {{ t('of','/') }} {{ (CN.news.n_raw or 0) }} {{ t('stories kept · full feed →','条新闻保留 · 完整新闻流 →') }}</div>
+      </div>
+      {% if CN and CN.news %}<div class="cnx-view-all">{{ (CN.news.n_kept or 0) }} {{ t('of','/') }} {{ (CN.news.n_raw or 0) }} {{ t('stories kept · full feed →','条新闻保留 · 完整新闻流 →') }}</div>{% endif %}
       {% else %}
-      <div style="font-size:12px;color:var(--muted);padding:8px 0">{{ t('No news right now.','暂无新闻。') }}</div>
+      <div class="mx-empty">{{ t('No material macro changes surfaced this session.','本会话暂无重大宏观变化。') }}<span class="empty-why">{{ t('News and alert sources are quiet or have not refreshed yet.','新闻与警报源当前安静，或尚未刷新。') }}</span></div>
       {% endif %}
     </div>
   </div>
@@ -2391,6 +2459,9 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="china_stocks.html">{{ t('A-Share Stocks','A股个股') }}</a>
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
     <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
+    <a href="china_policy_watch.html">{{ t('Policy & Credit','政策与信贷') }}</a>
+    <a href="china_news.html">{{ t('Macro News','宏观新闻') }}</a>
+    <a href="alerts.html">{{ t('Alerts','警报') }}</a>
     <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
     <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
