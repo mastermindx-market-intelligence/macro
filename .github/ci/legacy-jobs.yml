@@ -12268,6 +12268,13 @@ jobs:
       - "tests/test_grade_us_board.py"
       - "tests/test_heal_stage_forward_ledger.py"
       - "tests/test_macro_risk_dialog.py"
+      # Risk Radar integration: direct suite selection plus its real read dependencies.
+      - "tests/test_risk_envelope_radar_integration.py"
+      - "tests/__init__.py"
+      - "templates/risk_envelope_live.js"
+      - "site/risk_envelope_live.js"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
       - "tests/test_opportunity_timeline.py"
       - "tests/test_pick_lab_book.py"
       - "tests/test_pick_lab_cn_runner.py"
@@ -12411,7 +12418,7 @@ jobs:
       # No dependency widened: it renders Jinja templates only — jinja2 is already on
       # the install line above.  Measured 54s against this job's 245s body and 12m cap.
       - name: dashboard.html.j2 rendered-HTML contract (unrun backfill 2026-08-27)
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_us_stocks_s2_compression.py -q
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py -q
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
