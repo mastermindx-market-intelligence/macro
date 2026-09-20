@@ -418,6 +418,23 @@ def test_prophet_discovery_grader_is_explicit_and_not_render_wired():
     # carrier owns that file. The CLI remains an explicit modifying action.
     assert "scripts.grade_prophet_discovery" not in dag
 
+
+def test_prophet_discovery_grader_has_zero_live_publication_or_brain_authority():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    evaluator = (root / "engine/prophet_discovery_grade.py").read_text()
+    runner = (root / "scripts/grade_prophet_discovery.py").read_text()
+    for forbidden in (
+        "site/factordata/hk_standouts.json",
+        "site/factordata/canada_standouts.json",
+        "scripts.build_hk_library",
+        "scripts.build_canada_library",
+    ):
+        assert forbidden not in evaluator
+        assert forbidden not in runner
+
+
 def test_prophet_discovery_cli_runs_both_markets_once(monkeypatch):
     import scripts.grade_prophet_discovery as runner
     called = {"n": 0}
