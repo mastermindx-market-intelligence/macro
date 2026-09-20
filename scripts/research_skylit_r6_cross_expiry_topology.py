@@ -150,6 +150,160 @@ def _distribution_metrics(dist: pd.DataFrame) -> dict[str, Any]:
     }
 
 
+def _persistent_node_spec(
+    prominence_fraction: float | None,
+    match_tolerance_x: float | None,
+    min_expiries: int | None,
+) -> dict[str, Any] | None:
+    values = (prominence_fraction, match_tolerance_x, min_expiries)
+    if all(value is None for value in values):
+        return None
+    if any(value is None for value in values):
+        raise R6Refusal(
+            "persistent-node matching requires prominence_fraction, "
+            "match_tolerance_x and min_expiries together"
+        )
+    prominence = float(prominence_fraction)
+    tolerance = float(match_tolerance_x)
+    minimum = int(min_expiries)
+    if not np.isfinite(prominence) or not 0 < prominence <= 1:
+        raise R6Refusal("node_prominence_fraction must be within (0, 1]")
+    if not np.isfinite(tolerance) or tolerance <= 0:
+        raise R6Refusal("node_match_tolerance_x must be finite and positive")
+    if minimum < 2 or float(min_expiries) != minimum:
+        raise R6Refusal("node_min_expiries must be an integer >= 2")
+    return {
+        "prominence_fraction_of_expiry_max": prominence,
+        "match_tolerance_x": tolerance,
+        "min_consecutive_expiries": minimum,
+    }
+
+
+def _persistent_node_matching(
+    expiry_rows: list[dict[str, Any]],
+    expiry_dist: dict[str, pd.DataFrame],
+    match_spec: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if match_spec is None:
+        return {
+            "status": "NOT_REQUESTED",
+            "spec": None,
+            "candidate_node_count": None,
+            "track_count": None,
+            "persistent_track_count": None,
+            "tracks": [],
+        }
+
+    prominence = float(match_spec["prominence_fraction_of_expiry_max"])
+    tolerance = float(match_spec["match_tolerance_x"])
+    minimum = int(match_spec["min_consecutive_expiries"])
+    tracks: list[dict[str, Any]] = []
+    candidate_total = 0
+
+    for expiry_index, expiry_row in enumerate(expiry_rows):
+        dist = expiry_dist[expiry_row["expiration"]]
+        max_mass = float(dist["gross_abs_exposure"].max())
+        threshold = prominence * max_mass
+        candidates: list[dict[str, Any]] = []
+        for row in dist.itertuples(index=False):
+            if float(row.gross_abs_exposure) + 1e-15 < threshold:
+                continue
+            candidates.append({
+                "expiration": expiry_row["expiration"],
+                "dte": expiry_row["dte"],
+                "tenor_bucket": expiry_row["tenor_bucket"],
+                "strike": float(row.strike),
+                "x": float(row.x),
+                "share": float(row.p),
+                "gross_abs_exposure": float(row.gross_abs_exposure),
+                "signed_net_exposure": float(row.signed_net_exposure),
+            })
+        candidates.sort(key=lambda row: (row["x"], -row["gross_abs_exposure"]))
+        candidate_total += len(candidates)
+
+        eligible_tracks = [
+            idx
+            for idx, track in enumerate(tracks)
+            if track["_last_expiry_index"] == expiry_index - 1
+        ]
+        pairs: list[tuple[float, int, int]] = []
+        for track_idx in eligible_tracks:
+            last_x = float(tracks[track_idx]["nodes"][-1]["x"])
+            for candidate_idx, candidate in enumerate(candidates):
+                distance = abs(last_x - float(candidate["x"]))
+                if distance <= tolerance:
+                    pairs.append((distance, track_idx, candidate_idx))
+        pairs.sort(key=lambda item: (item[0], item[1], item[2]))
+
+        used_tracks: set[int] = set()
+        used_candidates: set[int] = set()
+        for distance, track_idx, candidate_idx in pairs:
+            if track_idx in used_tracks or candidate_idx in used_candidates:
+                continue
+            candidate = dict(candidates[candidate_idx])
+            candidate["match_distance_x"] = float(distance)
+            tracks[track_idx]["nodes"].append(candidate)
+            tracks[track_idx]["_last_expiry_index"] = expiry_index
+            used_tracks.add(track_idx)
+            used_candidates.add(candidate_idx)
+
+        for candidate_idx, candidate in enumerate(candidates):
+            if candidate_idx in used_candidates:
+                continue
+            node = dict(candidate)
+            node["match_distance_x"] = None
+            tracks.append({
+                "_last_expiry_index": expiry_index,
+                "nodes": [node],
+            })
+
+    persistent: list[dict[str, Any]] = []
+    for track_idx, track in enumerate(tracks):
+        nodes = track["nodes"]
+        if len(nodes) < minimum:
+            continue
+        xs = np.array([node["x"] for node in nodes], dtype=float)
+        shares = np.array([node["share"] for node in nodes], dtype=float)
+        gross = np.array([node["gross_abs_exposure"] for node in nodes], dtype=float)
+        match_distances = [
+            float(node["match_distance_x"])
+            for node in nodes
+            if node["match_distance_x"] is not None
+        ]
+        persistent.append({
+            "track_id": int(track_idx),
+            "n_expiries": len(nodes),
+            "first_expiration": nodes[0]["expiration"],
+            "last_expiration": nodes[-1]["expiration"],
+            "x_mean": float(xs.mean()),
+            "x_min": float(xs.min()),
+            "x_max": float(xs.max()),
+            "x_span": float(xs.max() - xs.min()),
+            "mean_node_share": float(shares.mean()),
+            "max_node_share": float(shares.max()),
+            "mean_gross_abs_exposure": float(gross.mean()),
+            "max_match_distance_x": max(match_distances) if match_distances else 0.0,
+            "tenor_buckets": list(dict.fromkeys(node["tenor_bucket"] for node in nodes)),
+            "nodes": nodes,
+        })
+
+    persistent.sort(
+        key=lambda track: (
+            -track["n_expiries"],
+            -track["max_node_share"],
+            track["x_mean"],
+        )
+    )
+    return {
+        "status": "COMPLETE",
+        "spec": match_spec,
+        "candidate_node_count": candidate_total,
+        "track_count": len(tracks),
+        "persistent_track_count": len(persistent),
+        "tracks": persistent,
+    }
+
+
 def _wasserstein_1(a: pd.DataFrame, b: pd.DataFrame) -> float:
     xa = a["x"].to_numpy(float)
     xb = b["x"].to_numpy(float)
@@ -207,6 +361,9 @@ def analyze_state(
     session: str,
     *,
     expected_move_pct: float | None = None,
+    node_prominence_fraction: float | None = None,
+    node_match_tolerance_x: float | None = None,
+    node_min_expiries: int | None = None,
 ) -> dict[str, Any]:
     if not settled_state.get("target_gate_pass"):
         raise R6Refusal("R2 settled state is not source-qualified")
@@ -230,6 +387,16 @@ def analyze_state(
         })
         expiry_rows.append(metrics)
     expiry_rows.sort(key=lambda r: (r["dte"], r["expiration"]))
+    persistent_spec = _persistent_node_spec(
+        node_prominence_fraction,
+        node_match_tolerance_x,
+        node_min_expiries,
+    )
+    persistent_nodes = _persistent_node_matching(
+        expiry_rows,
+        expiry_dist,
+        persistent_spec,
+    )
 
     adjacent: list[dict[str, Any]] = []
     for left, right in zip(expiry_rows, expiry_rows[1:]):
@@ -320,6 +487,7 @@ def analyze_state(
         "by_expiry": expiry_rows,
         "adjacent_expiry_geometry": adjacent,
         "by_tenor": tenor_rows,
+        "persistent_node_matching": persistent_nodes,
         "summary": {
             "n_expirations": len(expiry_rows),
             "dominant_expiration": dominant["expiration"] if dominant else None,
@@ -336,6 +504,7 @@ def analyze_state(
             "cosine_pairs_available": len(cosines),
             "cosine_pairs_refused": cosine_refused,
             "max_adjacent_grid_clipped_mass": max_grid_clip,
+            "persistent_track_count": persistent_nodes["persistent_track_count"],
             "centroid_slope_per_dte": _slope(expiry_rows, "centroid_x"),
             "entropy_slope_per_dte": _slope(expiry_rows, "normalized_entropy"),
             "concentration_slope_per_dte": _slope(expiry_rows, "top_node_share"),
@@ -344,7 +513,7 @@ def analyze_state(
             "Stage 0 describes geometry only; no future market outcomes are read",
             "EM-normalized mode requires an externally qualified expected-move input",
             "cosine uses an explicit fixed coordinate grid and refuses any pair with >1% clipped mass; Wasserstein remains exact on discrete support",
-            "persistent-node matching and expiry-roll prediction are later R6 slices",
+            "persistent-node matching is construction-only and parameter-explicit; expiry-roll prediction is a later R6 slice",
             "signed fields inherit the declared R2 position tier; magnitude fields do not",
         ],
     }
@@ -356,9 +525,19 @@ def run_session(
     *,
     store: str | Path | None = None,
     expected_move_pct: float | None = None,
+    node_prominence_fraction: float | None = None,
+    node_match_tolerance_x: float | None = None,
+    node_min_expiries: int | None = None,
 ) -> dict[str, Any]:
     state = r2.build_settled_state(session, root, store=store)
-    return analyze_state(state, session, expected_move_pct=expected_move_pct)
+    return analyze_state(
+        state,
+        session,
+        expected_move_pct=expected_move_pct,
+        node_prominence_fraction=node_prominence_fraction,
+        node_match_tolerance_x=node_match_tolerance_x,
+        node_min_expiries=node_min_expiries,
+    )
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -373,6 +552,9 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=float,
         help="Optional qualified 1-sigma expected move in percent; omitted => log-moneyness fallback",
     )
+    p.add_argument("--node-prominence-fraction", type=float)
+    p.add_argument("--node-match-tolerance-x", type=float)
+    p.add_argument("--node-min-expiries", type=int)
     return p.parse_args(argv)
 
 
@@ -384,6 +566,9 @@ def main(argv: list[str] | None = None) -> int:
             args.root,
             store=args.store,
             expected_move_pct=args.expected_move_pct,
+            node_prominence_fraction=args.node_prominence_fraction,
+            node_match_tolerance_x=args.node_match_tolerance_x,
+            node_min_expiries=args.node_min_expiries,
         )
     except (r2.R2Refusal, R6Refusal, ValueError) as exc:
         print(json.dumps({"schema": SCHEMA, "status": "REFUSED", "reason": str(exc)}, sort_keys=True))
