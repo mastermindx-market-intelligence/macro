@@ -596,22 +596,105 @@ def test_query_time_refuses_a_chained_three_filing_component():
     assert len(chained) == 2
 
     provider = _lineage_provider()
-    engine = BitemporalMetricQueryEngine(
-        RawFactLedger(tuple(facts)),
-        provider.resolve(_GOLDEN_ENTITY).registry,
-        entities={"AAPL": "0000320193"},
-        lineage_evidence=chained,
-    )
+    registry = provider.resolve(_GOLDEN_ENTITY).registry
+    # A bundle spanning three filings for one logical key is refused outright.
+    with pytest.raises(LineageEvidenceError):
+        BitemporalMetricQueryEngine(
+            RawFactLedger(tuple(facts)),
+            registry,
+            entities={"AAPL": "0000320193"},
+            lineage_evidence=chained,
+        )
+    # And the surviving two-filing bundle still leaves the third unlinked.
     from engine.fundamental_forensics.query import QueryPolicy
 
+    engine = BitemporalMetricQueryEngine(
+        RawFactLedger(tuple(facts)),
+        registry,
+        entities={"AAPL": "0000320193"},
+        lineage_evidence=chained[:1],
+    )
     policy = QueryPolicy(
         source_snapshot_at=_A4_SOURCE,
         recorded_at=_A4_RECORDED,
         selection="latest_known_as_of",
     )
-    roots = engine._effective_roots(facts[0].logical_key, policy)
-    # All three roots would collapse to one label if chaining were allowed.
-    assert len(set(roots.values())) != 1 or not roots
     selection = engine._select_source_group(tuple(facts), policy)
     assert selection.state.value == "not_evaluable"
     assert selection.reason == "unlinked source vintages require an explicit typed revision lineage"
+
+
+def test_forged_taxonomy_uri_is_refused():
+    """Guard 11 believes an attested URI only if policy approves it.
+
+    Two matching but invented namespace URIs are not evidence: the URI must be
+    in TAXONOMY_NAMESPACE_POLICY and must resolve to the prefix the retained
+    concept_qname already carries.
+    """
+    facts = [
+        _synthetic_fact(accession="0001", body="a" * 64, accepted_at="2025-10-31T10:00:00Z"),
+        _synthetic_fact(accession="0002", body="b" * 64, accepted_at="2026-07-31T10:00:00Z"),
+    ]
+    forged = {
+        (fact.source.accession, fact.source_occurrence_key or ""): "http://attacker.example/v99"
+        for fact in facts
+    }
+    assert derive_confirmation_receipts(
+        facts, system_available_at=_A4_AVAILABLE_AT, original_taxonomy_uris=forged
+    ) == ()
+
+    # A real namespace that disagrees with the concept is also refused.
+    wrong_family = {
+        (fact.source.accession, fact.source_occurrence_key or ""): "http://xbrl.sec.gov/dei/2025"
+        for fact in facts
+    }
+    assert derive_confirmation_receipts(
+        facts, system_available_at=_A4_AVAILABLE_AT, original_taxonomy_uris=wrong_family
+    ) == ()
+
+    # The genuine namespace still mints.
+    honest = {
+        (fact.source.accession, fact.source_occurrence_key or ""): "http://fasb.org/us-gaap/2025"
+        for fact in facts
+    }
+    assert len(
+        derive_confirmation_receipts(
+            facts, system_available_at=_A4_AVAILABLE_AT, original_taxonomy_uris=honest
+        )
+    ) == 1
+
+
+def test_forged_uri_is_also_refused_at_admission():
+    """The same forgery cannot be smuggled in on a hand-built bundle."""
+    from engine.fundamental_forensics.query import BitemporalMetricQueryEngine
+
+    facts = [
+        _synthetic_fact(accession="0001", body="a" * 64, accepted_at="2025-10-31T10:00:00Z"),
+        _synthetic_fact(accession="0002", body="b" * 64, accepted_at="2026-07-31T10:00:00Z"),
+    ]
+    honest = {
+        (fact.source.accession, fact.source_occurrence_key or ""): "http://fasb.org/us-gaap/2025"
+        for fact in facts
+    }
+    genuine = derive_confirmation_receipts(
+        facts, system_available_at=_A4_AVAILABLE_AT, original_taxonomy_uris=honest
+    )[0]
+    tampered_evidence = dict(genuine.positive_evidence)
+    tampered_evidence["parent_taxonomy_uri"] = "http://attacker.example/v99"
+    tampered_evidence["child_taxonomy_uri"] = "http://attacker.example/v99"
+    tampered = LineageEvidenceReceipt(
+        parent_occurrence_id=genuine.parent_occurrence_id,
+        child_occurrence_id=genuine.child_occurrence_id,
+        logical_key=genuine.logical_key,
+        source_known_at=genuine.source_known_at,
+        system_available_at=genuine.system_available_at,
+        positive_evidence=tampered_evidence,
+    )
+    registry = _lineage_provider().resolve(_GOLDEN_ENTITY).registry
+    with pytest.raises(LineageEvidenceError):
+        BitemporalMetricQueryEngine(
+            RawFactLedger(tuple(facts)),
+            registry,
+            entities={"AAPL": "0000320193"},
+            lineage_evidence=(tampered,),
+        )

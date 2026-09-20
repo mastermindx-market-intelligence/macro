@@ -129,6 +129,28 @@ def _taxonomy_prefix(concept_qname: str) -> str:
     return concept_qname.split(":", 1)[0]
 
 
+def _approved_taxonomy_uri(uri: Any, concept_qname: str) -> bool:
+    """Whether an attested original taxonomy URI is a real approved namespace.
+
+    Guard 11 asserts a fact about the *source*, and the canonical ledger does
+    not retain the original Clark URI. Equality of two attested strings is
+    therefore not enough on its own: two matching but invented URIs would
+    satisfy it. Bind the attestation to the repository's own
+    ``TAXONOMY_NAMESPACE_POLICY`` instead, and require the prefix that policy
+    assigns to the URI to be the prefix the retained ``concept_qname`` already
+    carries. An invented namespace is not in the policy, and a real namespace
+    that disagrees with the concept is not this fact's taxonomy.
+    """
+    if not isinstance(uri, str) or not uri:
+        return False
+    from .filing_attestation import TAXONOMY_NAMESPACE_POLICY  # local: avoid import cycle
+
+    prefix = TAXONOMY_NAMESPACE_POLICY.get(uri)
+    if prefix is None or prefix not in APPROVED_TAXONOMY_PREFIXES:
+        return False
+    return prefix == _taxonomy_prefix(concept_qname)
+
+
 def _accuracy_tokens(fact: RawFactOccurrence) -> tuple[str | None, str | None]:
     """The exact XBRL accuracy metadata v1 requires to match exactly."""
     return (fact.decimals, fact.precision)
@@ -267,12 +289,18 @@ def evaluate_confirmation(
     if _accuracy_tokens(parent) != _accuracy_tokens(child):
         return REFUSAL_PRECISION_CONSISTENT_UNCONFIRMED
 
-    # Guard 11 — exact original source taxonomy namespace/version.
+    # Guard 11 — exact original source taxonomy namespace/version. Both sides
+    # must carry the same URI, and that URI must be a policy-approved standard
+    # namespace whose prefix is the one this concept actually uses.
     if require_taxonomy_uri:
         if not parent_taxonomy_uri or not child_taxonomy_uri:
             return REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH
         if parent_taxonomy_uri != child_taxonomy_uri:
             return REFUSAL_TAXONOMY_NAMESPACE_VERSION_MISMATCH
+        if not _approved_taxonomy_uri(parent_taxonomy_uri, parent.concept_qname):
+            return REFUSAL_CUSTOM_UNMAPPED_TAXONOMY
+        if not _approved_taxonomy_uri(child_taxonomy_uri, child.concept_qname):
+            return REFUSAL_CUSTOM_UNMAPPED_TAXONOMY
 
     return None
 

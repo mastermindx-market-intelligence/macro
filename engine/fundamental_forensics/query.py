@@ -59,6 +59,7 @@ from .lineage_evidence import (
     MAX_LINEAGE_RECEIPTS,
     LineageEvidenceError,
     LineageEvidenceReceipt,
+    _approved_taxonomy_uri,
     evaluate_confirmation,
 )
 from .raw_ledger import (
@@ -83,6 +84,9 @@ from .raw_ledger import (
 # An empty projection for the overwhelmingly common no-evidence path, so a
 # FIF-3A3 query allocates nothing new.
 _EMPTY_ROOT_MAP: Mapping[str, str] = MappingProxyType({})
+
+# Per-engine memo ceiling for confirmation-unified roots.
+MAX_EFFECTIVE_ROOT_CACHE_ENTRIES = 4096
 
 
 QUERY_SCHEMA = "fundamental_forensics.metric_query/v1"
@@ -5059,12 +5063,48 @@ class BitemporalMetricQueryEngine:
                 raise LineageEvidenceError("lineage evidence references an unknown occurrence")
             if parent.logical_key != receipt.logical_key or child.logical_key != receipt.logical_key:
                 raise LineageEvidenceError("lineage evidence logical_key does not bind its facts")
+            # Re-prove the edge against the ledger now, not only per query. A
+            # bundle assembled without ``derive_confirmation_receipts`` cannot
+            # smuggle in an edge the v1 rule would never have minted.
+            evidence = receipt.positive_evidence or {}
+            if evaluate_confirmation(
+                self._accession_group(parent),
+                self._accession_group(child),
+                parent_taxonomy_uri=evidence.get("parent_taxonomy_uri"),
+                child_taxonomy_uri=evidence.get("child_taxonomy_uri"),
+                require_taxonomy_uri=True,
+            ) is not None:
+                raise LineageEvidenceError("lineage evidence is not a v1 positive for this ledger")
             by_key.setdefault(receipt.logical_key, []).append(receipt)
+        for key, values in by_key.items():
+            accessions: set[str] = set()
+            for receipt in values:
+                for occurrence_id in (receipt.parent_occurrence_id, receipt.child_occurrence_id):
+                    accessions.add(self._event_by_occurrence_id[occurrence_id].source.accession)
+            if len(accessions) > 2:
+                # v1 admits exactly one parent and one child per logical key.
+                # Chained receipts across three filings have no unique parent.
+                raise LineageEvidenceError(
+                    "lineage evidence spans more than two filings for one logical key"
+                )
         return MappingProxyType(
             {
                 key: tuple(sorted(values, key=lambda item: item.receipt_id))
                 for key, values in by_key.items()
             }
+        )
+
+    def _accession_group(
+        self,
+        fact: RawFactOccurrence,
+    ) -> tuple[RawFactOccurrence, ...]:
+        """Every occurrence of this fact's logical key inside its own filing."""
+        key = (fact.source.entity_id, fact.concept_qname, _fact_period_index_key(fact))
+        return tuple(
+            item
+            for item in self._events_by_entity_qname_period.get(key, ())
+            if item.source.accession == fact.source.accession
+            and item.logical_key == fact.logical_key
         )
 
     def applied_lineage_evidence(
@@ -5146,12 +5186,19 @@ class BitemporalMetricQueryEngine:
         # the mint-time receipt because the canonical ledger does not retain the
         # original Clark URI.  Re-prove that the facts the receipt was minted
         # against are still exactly these facts.
+        representative = _canonical_duplicate_representative(child_group)
+        parent_representative = _canonical_duplicate_representative(parent_group)
         parent_uri = evidence.get("parent_taxonomy_uri")
         child_uri = evidence.get("child_taxonomy_uri")
         if not parent_uri or parent_uri != child_uri:
             return False
-        representative = _canonical_duplicate_representative(child_group)
-        parent_representative = _canonical_duplicate_representative(parent_group)
+        # An attested URI is only believed when it is a policy-approved standard
+        # namespace whose prefix matches the concept the ledger still carries.
+        # Two matching but invented URIs are not evidence of anything.
+        if not _approved_taxonomy_uri(parent_uri, parent_representative.concept_qname):
+            return False
+        if not _approved_taxonomy_uri(child_uri, representative.concept_qname):
+            return False
         if parent_representative.occurrence_id != receipt.parent_occurrence_id:
             return False
         if representative.occurrence_id != receipt.child_occurrence_id:
@@ -5253,6 +5300,10 @@ class BitemporalMetricQueryEngine:
             node: label for node, label in resolved.items() if sizes[label] <= 2
         }
         projection = MappingProxyType(resolved)
+        # Bounded even if an engine is pooled and callers vary cutoffs: the
+        # cache is a speed aid, never a correctness input, so evicting is safe.
+        if len(self._effective_root_cache) >= MAX_EFFECTIVE_ROOT_CACHE_ENTRIES:
+            self._effective_root_cache.clear()
         self._effective_root_cache[cache_key] = projection
         return projection
 
