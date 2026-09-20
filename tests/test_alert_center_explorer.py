@@ -1358,3 +1358,90 @@ def test_commodity_complex_regime_abstains_on_headline_asset_or_transition_misma
     briefs = project(list(rows))['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_vector_momentum_trigger_keeps_old_bullish_transition_historical():
+    row = signal('vector-momentum-old', source='vector', type_='momentum_trigger', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 29,
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score +0.88 (bear → bull); ±0.5 is the trigger band.',
+        'detail_zh': '动量评分 +0.88（看空 → 看多）；±0.5 为触发区间。',
+        'edge': 'Lower conviction — the edge weakened after 2021 (ETF era).',
+        'edge_zh': '信心较低 — 该优势在 2021 年（ETF 时代）后减弱。',
+        'link': 'vector.html#momentum',
+        'validation': {'verdict': 'calibrated'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.momentum_trigger'
+    assert brief['attention'] == 'for_awareness'
+    assert 'bear → bull' in brief['implication']
+    assert '+0.88' in brief['implication']
+    assert 'Lower conviction' in brief['limitation']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'edge weakened after 2021' in brief['limitation']
+    assert '29 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck momentum'
+    assert brief['evidence_label'] == 'Open current Vector momentum panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_vector_momentum_bearish_and_neutral_states_are_watch_next():
+    bearish = signal('vector-momentum-bear', source='vector', type_='momentum_trigger', asset='vector')
+    bearish.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Momentum turned Bearish',
+        'detail': 'Momentum score -0.88 (neutral → bear); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+        'validation': {'verdict': 'calibrated'},
+    })
+    neutral = signal('vector-momentum-neutral', source='vector', type_='momentum_trigger', asset='vector')
+    neutral.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Momentum cooled to neutral',
+        'detail': 'Momentum score +0.17 (bull → neutral); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+        'validation': {'verdict': 'calibrated'},
+    })
+    briefs = project([bearish, neutral])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'supported' for row in (bearish, neutral))
+    assert all(briefs[row['alert_id']]['attention'] == 'watch_next' for row in (bearish, neutral))
+    assert 'bearish state' in briefs[bearish['alert_id']]['implication']
+    assert 'neutral state' in briefs[neutral['alert_id']]['implication']
+    assert 'directional trade instruction' in briefs[bearish['alert_id']]['limitation']
+    assert 'current momentum state is no longer bear' in briefs[bearish['alert_id']]['reassessment']
+    assert 'current momentum state is no longer neutral' in briefs[neutral['alert_id']]['reassessment']
+
+
+def test_vector_momentum_trigger_abstains_on_headline_asset_or_score_mismatch():
+    wrong_headline = signal('vector-momentum-head', source='vector', type_='momentum_trigger', asset='vector')
+    wrong_headline.update({
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score -0.88 (neutral → bear); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    wrong_asset = signal('vector-momentum-asset', source='vector', type_='momentum_trigger', asset='BTC')
+    wrong_asset.update({
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score +0.88 (neutral → bull); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    wrong_score = signal('vector-momentum-score', source='vector', type_='momentum_trigger', asset='vector')
+    wrong_score.update({
+        'headline': 'Momentum turned Bullish',
+        'detail': 'Momentum score -0.12 (neutral → bull); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    same = signal('vector-momentum-same', source='vector', type_='momentum_trigger', asset='vector')
+    same.update({
+        'headline': 'Momentum cooled to neutral',
+        'detail': 'Momentum score +0.12 (neutral → neutral); ±0.5 is the trigger band.',
+        'link': 'vector.html#momentum',
+    })
+    rows = (wrong_headline, wrong_asset, wrong_score, same)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)

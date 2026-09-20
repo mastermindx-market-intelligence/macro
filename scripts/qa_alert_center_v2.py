@@ -136,6 +136,18 @@ def main():
             page.screenshot(path=str(out / 'desktop-oi-crowding.png'))
             report['screenshots'].append('desktop-oi-crowding.png')
             report['checks'].append('OI crowding exposes leverage verification without becoming a crash call')
+            vector_momentum_id = next(
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'vector.momentum_trigger')
+            vector_momentum_brief = payload['explorer']['briefs'][vector_momentum_id]
+            page.goto(url + '#view=explore&id=' + vector_momentum_id, wait_until='domcontentloaded')
+            vector_momentum_text = page.locator('#ac-detail').inner_text()
+            assert vector_momentum_brief['limitation'] in vector_momentum_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == vector_momentum_brief['next_action']
+            assert vector_momentum_brief['evidence_label'] in vector_momentum_text
+            page.screenshot(path=str(out / 'desktop-vector-momentum-trigger.png'))
+            report['screenshots'].append('desktop-vector-momentum-trigger.png')
+            report['checks'].append('Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call')
             theme_families = {
                 'themes.reco_change', 'themes.theme_deteriorating',
                 'themes.theme_topping', 'themes.theme_emerging',

@@ -71,6 +71,13 @@ _VECTOR_ALLOCATION_CHANGE = re.compile(
     r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% BTC '
     r'\(momentum × risk grid\)\.$'
 )
+_VECTOR_MOMENTUM_HEADLINE = re.compile(
+    r'^Momentum (?:turned (Bullish|Bearish)|cooled to (neutral))$'
+)
+_VECTOR_MOMENTUM_DETAIL = re.compile(
+    r'^Momentum score ([+-]?[0-9]+(?:\.[0-9]+)?) '
+    r'\((neutral|bull|bear) → (neutral|bull|bear)\); ±0\.5 is the trigger band\.$'
+)
 _ALTDATA_CONVERGENCE = re.compile(
     r'^(.+?) lit up by ([0-9]+) independent alt-data channels: (.+)\.$'
 )
@@ -1108,6 +1115,74 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前比特币杠杆面板',
         })
         return brief
+
+    momentum_headline = _VECTOR_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    momentum_detail = _VECTOR_MOMENTUM_DETAIL.fullmatch(detail)
+    if source == 'vector' and type_ == 'momentum_trigger' and momentum_headline and momentum_detail:
+        turned, cooled = momentum_headline.groups()
+        score_text, previous, current = momentum_detail.groups()
+        headline_state = (
+            'bull' if turned == 'Bullish' else
+            'bear' if turned == 'Bearish' else
+            'neutral' if cooled == 'neutral' else ''
+        )
+        score = float(score_text)
+        score_consistent = (
+            (current == 'bull' and score > 0) or
+            (current == 'bear' and score < 0) or
+            (current == 'neutral' and abs(score) < 0.5)
+        )
+        if (str(row.get('asset') or '') == 'vector' and previous != current and
+                headline_state == current and score_consistent):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current momentum state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前动量状态。'
+            validation_limit = edge or (
+                'The source treats this momentum state as lower-conviction context.')
+            validation_limit_zh = edge_zh or '来源将该动量状态视为较低信心背景。'
+            state_label = {'bull': 'bullish', 'bear': 'bearish', 'neutral': 'neutral'}[current]
+            state_label_zh = {'bull': '看多', 'bear': '看空', 'neutral': '中性'}[current]
+            brief.update({
+                'status': 'supported', 'family': 'vector.momentum_trigger',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source momentum score moved {previous} → {current} at {score_text}, '
+                    f'putting the model in a {state_label} state relative to its ±0.5 trigger band.'),
+                'implication_zh': (
+                    f'来源动量评分在 {score_text} 时由 {previous} 转为 {current}，'
+                    f'相对于 ±0.5 触发区间进入{state_label_zh}状态。'),
+                'limitation': (
+                    validation_limit + ' A momentum-state transition is not a calibrated probability, '
+                    'return forecast, or directional trade instruction; the source itself says the '
+                    'edge weakened after 2021.' + age_limit),
+                'limitation_zh': (
+                    validation_limit_zh + ' 动量状态转换并不是校准概率、收益预测或方向交易指令；'
+                    '来源本身说明该优势在 2021 年后减弱。' + age_limit_zh),
+                'next_action': (
+                    f'Open the current Vector momentum panel and verify the score is still in the '
+                    f'{state_label} state relative to ±0.5, then check whether a newer trigger has '
+                    'superseded this event before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前 Vector 动量面板，确认评分相对于 ±0.5 仍处于{state_label_zh}状态，'
+                    '并检查是否有更新触发取代该事件，再调整敞口。'),
+                'next_action_label': 'Recheck momentum',
+                'next_action_label_zh': '复核动量',
+                'reassessment': (
+                    f'Change the read if the current momentum state is no longer {current}, the '
+                    'score crosses back through the trigger band, or a newer transition supersedes '
+                    'this event.'),
+                'reassessment_zh': (
+                    f'若当前动量状态不再是 {current}、评分重新穿越触发区间，或新的转换取代该事件，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current Vector momentum panel',
+                'evidence_label_zh': '打开当前 Vector 动量面板',
+            })
+            return brief
 
     impulse = _VECTOR_IMPULSE_DOWN.fullmatch(detail)
     if source == 'vector' and type_ == 'impulse_warn_down' and impulse:
