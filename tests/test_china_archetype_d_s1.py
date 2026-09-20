@@ -169,7 +169,7 @@ def test_restored_dashboard_borrows_readability_not_archetype_structure() -> Non
 
 def test_macro_news_keeps_card_but_reads_as_dated_changes() -> None:
     assert "{{ t('Macro News','宏观新闻') }}" in TPL
-    assert "{{ t('Macro News · What Changed','宏观新闻 · 最近变化') }}" in TPL
+    assert "{{ t('What Changed','最近变化') }}" in TPL
     assert "(h.published or h.date or '')[5:10]" in TPL
     assert "h.title_en or h.title" in TPL
     assert "h.title_zh or h.title" in TPL
