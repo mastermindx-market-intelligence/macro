@@ -2397,26 +2397,3 @@ button.mmacc-switch:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in
 @media (max-width:560px){.mmacc-timepair{gap:6px}.mmacc-time{flex:1 1 100%}.mmacc-timesep{display:none}}
 @media (prefers-reduced-motion:reduce){.mmacc-alerts::before,button.mmacc-switch,button.mmacc-switch::after{transition:none}}
 /* end account sheet: alert delivery preferences (B-F08-1a) */
-
-/* Prophet P1 — display-only leader observation shelf */
-.plo{margin:14px 0 16px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:color-mix(in srgb,var(--panel2) 74%,transparent)}
-.plo-hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.plo-hd h3{margin:0;font-size:15px;letter-spacing:-.01em}
-.plo-asof,.plo-summary,.plo-state,.plo-more{font-size:11.5px;color:var(--muted)}
-.plo-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px;padding-bottom:10px;border-bottom:1px solid var(--hair,var(--line))}
-.plo-summary b{font-family:var(--num);font-variant-numeric:tabular-nums;color:var(--text)}
-.plo-authority{font-weight:600}
-.plo-state{padding:10px 0 2px;font-weight:600}
-.plo-rows{display:grid;gap:7px;margin-top:10px}
-.plo-row{display:grid;grid-template-columns:minmax(54px,76px) minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--hair,var(--line));border-left:3px solid color-mix(in srgb,var(--link) 62%,var(--line));border-radius:var(--r-ctl,8px);background:var(--panel)}
-.plo-row[data-state="PULLBACK"]{border-left-color:color-mix(in srgb,var(--warn) 72%,var(--line))}
-.plo-row[data-state="RESET_TURN"]{border-left-color:color-mix(in srgb,var(--ok) 72%,var(--line))}
-.plo-row[data-state="RESUMED"]{border-left-color:color-mix(in srgb,var(--muted) 72%,var(--line))}
-.plo-ticker{font-family:var(--num);font-size:13px;font-weight:800;letter-spacing:.02em}
-.plo-copy{font-size:12px;line-height:1.45;color:var(--text)}
-.plo-zone{font-family:var(--num);font-size:11px;color:var(--muted);white-space:nowrap}
-.plo-more{margin-top:9px;padding-top:8px;border-top:1px dashed var(--hair,var(--line));font-weight:600}
-[data-theme="light"] .plo{background:var(--panel);box-shadow:var(--card-shadow)}
-[data-theme="light"] .plo-row{background:var(--panel2)}
-@media(max-width:620px){.plo{padding:12px}.plo-row{grid-template-columns:62px minmax(0,1fr)}.plo-zone{grid-column:2;white-space:normal}.plo-authority{flex-basis:100%}}
-/* end Prophet P1 leader observation shelf */

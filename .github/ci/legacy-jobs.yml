@@ -7590,6 +7590,13 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # P1 leader-observation closure widening 2026-09-20 (contract-delta):
+      # the existing Prophet serving/build paths now import the leader-pullback
+      # projection through the canonical Turn Organ dependency chain.
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_leader_pullback_coverage.py"
+      - "engine/us_turn_watch.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -11513,6 +11520,13 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # P1 leader-observation closure widening 2026-09-20 (contract-delta):
+      # the existing Prophet serving/build paths now import the leader-pullback
+      # projection through the canonical Turn Organ dependency chain.
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_leader_pullback_coverage.py"
+      - "engine/us_turn_watch.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
