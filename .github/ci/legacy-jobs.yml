@@ -7601,6 +7601,8 @@ jobs:
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests
       - name: research vault serving-API security tests
         run: python -m pytest tests/test_research_api.py -q
+      - name: source-bound report evidence — corpus selector
+        run: python -m pytest tests/test_research_evidence_passages.py -q
 
   biocatalyst-serving:
     if: ${{ false }}
@@ -11216,6 +11218,12 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+      - name: US candidate and plan source-date truth (PR-time gated journey)
+        run: >-
+          python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: stock-brief context health (R2 context must yield a nonempty batch)
+        run: >-
+          python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
       - name: prophet doors incl. Door W (washout-turn entries; fire legs, prereg pins, invariance)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py -q
       - name: prophet arena (frozen challenger policies, closure-replay ruler, ledger lane gate, pick-chain fence)
@@ -12697,6 +12705,8 @@ jobs:
           tests/test_intelligence_workspace_cli.py
           tests/test_intelligence_workspace_performance.py
           tests/test_intelligence_workspace_workspace_layout.py -q
+      - name: source-bound report evidence — Brain projection + CI owner law
+        run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
 
   unrun-macro-panels:
     # commodities / forex / rates / news / policy panels and their calibration guards.
