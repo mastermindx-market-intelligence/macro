@@ -17,6 +17,7 @@ from scripts import research_skylit_r2_exposure_decomposition as r2
 
 SCHEMA = "skylit.r6.cross_expiry_topology_feasibility/v1"
 EXPOSURE_UNIT = getattr(r2, "EXPOSURE_UNIT", "USD dealer-delta change per +1% spot move")
+COSINE_MAX_CLIPPED_MASS = 0.01
 TENOR_BUCKETS = (
     ("0DTE", 0, 0),
     ("1-2DTE", 1, 2),
@@ -46,6 +47,7 @@ def _coordinate_spec(expected_move_pct: float | None) -> dict[str, Any]:
             "grid_min": -4.0,
             "grid_max": 4.0,
             "grid_bins": 160,
+            "cosine_max_clipped_mass": COSINE_MAX_CLIPPED_MASS,
             "em_normalized": True,
         }
     return {
@@ -55,6 +57,7 @@ def _coordinate_spec(expected_move_pct: float | None) -> dict[str, Any]:
         "grid_min": -0.50,
         "grid_max": 0.50,
         "grid_bins": 200,
+        "cosine_max_clipped_mass": COSINE_MAX_CLIPPED_MASS,
         "em_normalized": False,
     }
 
@@ -177,6 +180,11 @@ def _grid_vector(dist: pd.DataFrame, spec: dict[str, Any]) -> tuple[np.ndarray, 
 def _cosine_similarity(a: pd.DataFrame, b: pd.DataFrame, spec: dict[str, Any]) -> tuple[float | None, float, float]:
     va, clip_a = _grid_vector(a, spec)
     vb, clip_b = _grid_vector(b, spec)
+    clip_gate = float(spec.get("cosine_max_clipped_mass", COSINE_MAX_CLIPPED_MASS))
+    # Never let the boundary bins absorb a material tail and then report a
+    # precise-looking cosine. Wasserstein remains exact on the discrete support.
+    if max(clip_a, clip_b) > clip_gate:
+        return None, clip_a, clip_b
     denom = float(np.linalg.norm(va) * np.linalg.norm(vb))
     if denom <= 0:
         return None, clip_a, clip_b
@@ -235,6 +243,12 @@ def analyze_state(
             "right_dte": right["dte"],
             "wasserstein_1_x": _wasserstein_1(a, b),
             "cosine_similarity": cosine,
+            "cosine_available": cosine is not None,
+            "cosine_refusal_reason": (
+                "grid_clipped_mass"
+                if cosine is None and max(clip_a, clip_b) > float(spec["cosine_max_clipped_mass"])
+                else None
+            ),
             "centroid_displacement_x": right["centroid_x"] - left["centroid_x"],
             "dispersion_change_x": right["dispersion_x"] - left["dispersion_x"],
             "signed_regime_agreement": left["signed_regime"] == right["signed_regime"],
@@ -261,6 +275,14 @@ def analyze_state(
     dominant = max(expiry_rows, key=lambda r: r["gross_abs_exposure"]) if expiry_rows else None
     max_w = max((row["wasserstein_1_x"] for row in adjacent), default=None)
     cosines = [row["cosine_similarity"] for row in adjacent if row["cosine_similarity"] is not None]
+    max_grid_clip = max(
+        (
+            max(row["left_grid_clipped_mass"], row["right_grid_clipped_mass"])
+            for row in adjacent
+        ),
+        default=None,
+    )
+    cosine_refused = sum(1 for row in adjacent if row["cosine_similarity"] is None)
     front_back_gap = (
         expiry_rows[-1]["centroid_x"] - expiry_rows[0]["centroid_x"]
         if len(expiry_rows) >= 2
@@ -311,6 +333,9 @@ def analyze_state(
             "median_adjacent_cosine_similarity": (
                 float(np.median(cosines)) if cosines else None
             ),
+            "cosine_pairs_available": len(cosines),
+            "cosine_pairs_refused": cosine_refused,
+            "max_adjacent_grid_clipped_mass": max_grid_clip,
             "centroid_slope_per_dte": _slope(expiry_rows, "centroid_x"),
             "entropy_slope_per_dte": _slope(expiry_rows, "normalized_entropy"),
             "concentration_slope_per_dte": _slope(expiry_rows, "top_node_share"),
@@ -318,7 +343,7 @@ def analyze_state(
         "limitations": [
             "Stage 0 describes geometry only; no future market outcomes are read",
             "EM-normalized mode requires an externally qualified expected-move input",
-            "cosine uses an explicit fixed coordinate grid and reports clipped tail mass",
+            "cosine uses an explicit fixed coordinate grid and refuses any pair with >1% clipped mass; Wasserstein remains exact on discrete support",
             "persistent-node matching and expiry-roll prediction are later R6 slices",
             "signed fields inherit the declared R2 position tier; magnitude fields do not",
         ],
