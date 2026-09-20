@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T10:58:53.478150+00:00",
-  "count": 2494,
+  "generated_at": "2026-09-20T11:29:53.109281+00:00",
+  "count": 2495,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -754,6 +754,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mipxeiwtohj-5e8d98",
+      "title": "Weekly Focus",
+      "institution": "Danske",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:13:36Z",
+      "summary_points": [
+        "Fed's hawkish pivot: Unanimous 25bp hike with dot plot signaling 2024 rate hikes, driven by strong US demand (consumer spending, AI) amid oil >$100/bbl and Middle East war risks.",
+        "Scandinavian central bank policy divergence: Sweden (Riksbank hold, 1.75% expected, Q4 hike risk) and Norway (Norges Bank hold, 4.25%, 50% Q4 hike probability) face inflation risks from energy prices and SEK weakness.",
+        "Oil price/geopolitical risk nexus: Brent >$100/bbl pressures Nordic confidence (Denmark) and fuels upside inflation risks for Sweden/Norway, amplifying central bank policy balancing acts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
