@@ -1,11 +1,13 @@
 {
   "checks": [
     "Now separates earlier high-authority events from fresh watch items",
+    "Every first-glance row has a source-bound next action instead of generic evidence copy",
     "Full-source Bonds evidence is reachable beyond the capped queue",
     "Search AND source filtering, genuine no-results, and reset",
     "Evidence selection has a reloadable canonical-ID permalink",
-    "A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary",
     "Native Escape closes evidence and restores the selected row",
+    "A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary",
+    "A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up",
     "Browser back and malformed legacy hash values do not crash",
     "Dark/light × EN/ZH × desktop/mobile: no overflow and first signal in first viewport",
     "History selection retains the actual firing clock in its permalink"

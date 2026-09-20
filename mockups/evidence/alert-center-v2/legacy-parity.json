@@ -1,9 +1,9 @@
 {
-  "schema": "mastermind.alert_center.legacy_parity.v2",
-  "observed_at": "2026-09-20T02:55:00Z",
+  "schema": "mastermind.alert_center.legacy_parity.v3",
+  "observed_at": "2026-09-20T03:35:00Z",
   "baseline": "origin/main",
-  "baseline_commit": "03dbe8f5d71a878977b3d5e9b2ee112ea37ab1c6",
-  "candidate_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
+  "baseline_commit": "ef9880ea9cbd85284dc8bc61211189dd29849f94",
+  "candidate_commit": "0118300585193a38039ce131b8fdbcc671291d91",
   "board_day": "2026-09-19",
   "baseline_module_sha256": "f71ddcfb509a7f3831f5b2777c893a9af7a233c756369b6d75db4b7b24f8105e",
   "candidate_module_sha256": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
