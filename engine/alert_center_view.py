@@ -73,6 +73,32 @@ _VECTOR_IMPULSE_DOWN = re.compile(
     r'— the options market is repricing risk\. BTC \$([0-9][0-9,]*)\.$'
 )
 
+_INSTRUMENT_RISK_HEADLINE = re.compile(
+    r'^(.+?) risk turned (Elevated|Calm)$'
+)
+_INSTRUMENT_RISK_DETAIL = re.compile(
+    r'^Risk Index (rose through|fell back below) (?:the|its) threshold to '
+    r'([0-9]{1,3})\. (.+)\.$'
+)
+_GEX_FLIP_DETAIL = re.compile(
+    r'^GEX: (spot crossed the gamma flip|net GEX changed sign) '
+    r'\(net ([+-]?(?:[0-9]+bn|n/a)), spot vs flip '
+    r'([+-]?(?:[0-9]+(?:\.[0-9]+)?%|n/a))\)'
+    r'( — measured across [0-9]+ sessions, not overnight: no chain snapshot exists for '
+    r'[0-9]{4}-[0-9]{2}-[0-9]{2}(?:, [0-9]{4}-[0-9]{2}-[0-9]{2})*, '
+    r'so the crossing point inside that span is unobserved)?$'
+)
+_HIDDEN_FRAGILITY_DETAIL = re.compile(
+    r'^(Complacency watch: calm tape starting to mask weakening internals|'
+    r'Hidden fragility: a calm surface \(cheap VIX, contango\) over weakening '
+    r'internals \(thinning breadth, HY widening\) — the classic complacent '
+    r'pre-drawdown setup)$'
+)
+_BREADTH_DIVERGENCE_DETAIL = re.compile(
+    r'^Breadth divergence: index near its 1y high while %>200dma is weak '
+    r'\(([0-9]{1,3})% pctile\) — fewer names carrying the tape$'
+)
+
 
 def _attention(row: dict) -> str:
     """Translate source tier + canonical freshness into page attention only."""
@@ -137,8 +163,9 @@ def build_alert_brief(row: dict) -> dict:
     source, type_ = str(row.get('source') or ''), str(row.get('type') or '')
     detail = str(row.get('detail') or '')
     detail_zh = str(row.get('detail_zh') or detail)
-    edge = str(row.get('edge') or (row.get('validation') or {}).get('note') or '')
-    edge_zh = str(row.get('edge_zh') or (row.get('validation') or {}).get('note_zh') or edge)
+    validation = row.get('validation') if isinstance(row.get('validation'), dict) else {}
+    edge = str(row.get('edge') or validation.get('note') or '')
+    edge_zh = str(row.get('edge_zh') or validation.get('note_zh') or edge)
     age = _age_days(row)
 
     transition = _TRANSITION_DETAIL.fullmatch(detail)
@@ -399,6 +426,193 @@ def build_alert_brief(row: dict) -> dict:
             'reassessment_zh': f'若当前状态不再{state_zh}/加速，或所示周期表现恶化，则改变判断。',
             'evidence_label': 'Open current rotation panel',
             'evidence_label_zh': '打开当前轮动面板',
+        })
+        return brief
+
+    risk_headline = _INSTRUMENT_RISK_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    risk_detail = _INSTRUMENT_RISK_DETAIL.fullmatch(detail)
+    if source in {'commodity', 'forex'} and type_ == 'risk_regime' and risk_headline and risk_detail:
+        subject, named_state = risk_headline.groups()
+        movement, score_text, observed = risk_detail.groups()
+        expected_state = 'Elevated' if movement == 'rose through' else 'Calm'
+        if named_state == expected_state:
+            score = int(score_text)
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                unit = 'day' if age == 1 else 'days'
+                age_limit = f' This event is {age} {unit} old; recheck the current timeline.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前时间线。'
+            if named_state == 'Elevated':
+                implication = (
+                    f'{subject} crossed into its source-defined elevated risk state at '
+                    f'{score}; this warrants closer review of that instrument.')
+                implication_zh = f'{subject} 的来源风险指数升至 {score}，进入偏高状态；应加强对该标的的风险复核。'
+                state_read = 'remains Elevated'
+                state_read_zh = '仍处于偏高状态'
+            else:
+                implication = (
+                    f'{subject} fell back into its source-defined calm risk state at '
+                    f'{score}; measured risk eased, but this is not an all-clear.')
+                implication_zh = f'{subject} 的来源风险指数回落至 {score}，进入平静状态；风险读数下降，但并非全面解除警报。'
+                state_read = 'remains Calm'
+                state_read_zh = '仍处于平静状态'
+            verdict = str(validation.get('verdict') or '')
+            if verdict == 'confirmer':
+                horizon = str(validation.get('horizon') or '').strip()
+                horizon_label = (
+                    f' {horizon[:-1]}-day' if horizon.endswith('d') and horizon[:-1].isdigit()
+                    else f' {horizon}' if horizon else '')
+                evidence_limit = (
+                    f'The source classifies this as a{horizon_label} confirmer; it does not '
+                    'publish a probability, price direction or complete performance statistics '
+                    'in this snapshot.')
+                evidence_limit_zh = '来源将其归类为确认项；该快照未提供概率、价格方向或完整绩效统计。'
+            else:
+                note = str(validation.get('note') or '').strip()
+                evidence_limit = note or (
+                    'This source family is documented, not separately backtested as a timing signal.')
+                evidence_limit_zh = str(validation.get('note_zh') or '').strip() or (
+                    '该来源信号族有据可查，但未作为择时信号单独回测。')
+            source_name = 'commodity' if source == 'commodity' else 'FX'
+            source_name_zh = '商品' if source == 'commodity' else '外汇'
+            brief.update({
+                'status': 'supported', 'family': f'{source}.risk_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication, 'implication_zh': implication_zh,
+                'limitation': (
+                    f'{evidence_limit} The reading is instrument-specific—not a market-wide '
+                    f'probability, return forecast or trade instruction.{age_limit}'),
+                'limitation_zh': (
+                    f'{evidence_limit_zh} 该读数仅针对单一标的，并非全市场概率、收益预测或交易指令。'
+                    f'{age_limit_zh}'),
+                'next_action': (
+                    f'Open the current {source_name} timeline and verify that {subject} '
+                    f'{state_read} before changing exposure.'),
+                'next_action_zh': f'打开当前{source_name_zh}时间线，确认 {subject} {state_read_zh}，再调整敞口。',
+                'next_action_label': f'Recheck {source_name} risk',
+                'next_action_label_zh': f'复核{source_name_zh}风险',
+                'reassessment': (
+                    f'Change the read if the current risk index recrosses its threshold or '
+                    f'the current timeline no longer shows {named_state}.'),
+                'reassessment_zh': f'若当前风险指数重新穿越阈值，或时间线不再显示{"偏高" if named_state == "Elevated" else "平静"}状态，则改变判断。',
+                'evidence_label': f'Open current {source_name} timeline',
+                'evidence_label_zh': f'打开当前{source_name_zh}时间线',
+            })
+            return brief
+
+    gex = _GEX_FLIP_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'gex_flip_cross' and gex:
+        event_kind, net_gex, spot_vs_flip, gap_disclosure = gex.groups()
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable, so current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            unit = 'day' if age == 1 else 'days'
+            age_limit = f' This event is {age} {unit} old; current gamma may have changed.'
+            age_limit_zh = f' 该事件已过去 {age} 天；当前 Gamma 状态可能已经改变。'
+        extra = ' '.join(str(item) for item in validation.get('extra') or [])
+        sample_limit = (
+            ' The validation history is still accruing with a small sample.'
+            if 'n small' in extra.lower() else '')
+        sample_limit_zh = ' 验证历史仍在积累，样本量较小。' if sample_limit else ''
+        gap_limit = (
+            ' The source measured the transition across multiple sessions with missing '
+            'chain snapshots, so the exact crossing time is unobserved.'
+            if gap_disclosure else '')
+        gap_limit_zh = ' 来源跨多个交易日测量该变化，且期间缺少期权链快照，因此无法观测准确穿越时点。' if gap_disclosure else ''
+        brief.update({
+            'status': 'supported', 'family': 'macro.gex_flip_cross',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge or (
+                f'{event_kind} with net GEX {net_gex} and spot-versus-flip {spot_vs_flip}; '
+                'the volatility backdrop changed.'),
+            'implication_zh': edge_zh or (
+                f'{event_kind}；净 GEX 为 {net_gex}，现价相对翻转点为 {spot_vs_flip}，波动背景发生变化。'),
+            'limitation': (
+                'This is a volatility-backdrop confirmer, not a directional call, return '
+                'forecast or proof that the state persisted between firings.'
+                f'{sample_limit}{gap_limit}{age_limit}'),
+            'limitation_zh': (
+                '这是波动背景确认项，并非方向判断、收益预测，也不能证明状态在重复触发之间持续。'
+                f'{sample_limit_zh}{gap_limit_zh}{age_limit_zh}'),
+            'next_action': (
+                'Open the current gamma board and verify net GEX, spot-versus-flip and '
+                'chain-snapshot continuity before changing volatility assumptions.'),
+            'next_action_zh': '打开当前 Gamma 面板，复核净 GEX、现价相对翻转点和期权链快照连续性，再调整波动假设。',
+            'next_action_label': 'Recheck gamma', 'next_action_label_zh': '复核 Gamma',
+            'reassessment': (
+                'Change the read if current net GEX or the spot side of the flip reverses, '
+                'or newer chain evidence contradicts the crossing.'),
+            'reassessment_zh': '若当前净 GEX 或现价相对翻转点的方向反转，或更新期权链证据与该变化矛盾，则改变判断。',
+            'evidence_label': 'Open current gamma board',
+            'evidence_label_zh': '打开当前 Gamma 面板',
+        })
+        return brief
+
+    fragility = _HIDDEN_FRAGILITY_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'hidden_fragility' and fragility:
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck both legs now.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请重新核对两个条件。'
+        brief.update({
+            'status': 'supported', 'family': 'macro.hidden_fragility',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                'The source requires the calm-surface and weakening-internals conjunction; '
+                'low VIX alone is insufficient. This family is documented, not separately '
+                f'backtested as a timing signal; it provides no market-top probability or countdown.{age_limit}'),
+            'limitation_zh': (
+                '来源要求“表面平静”与“内部走弱”同时成立；仅有低 VIX 并不充分。该信号族有据可查，'
+                f'但未作为择时信号单独回测，也不提供市场顶部概率或倒计时。{age_limit_zh}'),
+            'next_action': (
+                'Open the current risk panel and verify both the VIX/contango calm leg and '
+                'the breadth/credit fragility leg before changing gross exposure.'),
+            'next_action_zh': '打开当前风险面板，同时复核 VIX/contango 平静条件与宽度/信用脆弱条件，再调整总敞口。',
+            'next_action_label': 'Recheck fragility',
+            'next_action_label_zh': '复核脆弱性',
+            'reassessment': (
+                'Change the read if either the calm-surface leg or the weakening-internals '
+                'leg disappears in the current panel.'),
+            'reassessment_zh': '若当前面板中的表面平静条件或内部走弱条件任一消失，则改变判断。',
+            'evidence_label': 'Open current risk panel',
+            'evidence_label_zh': '打开当前风险面板',
+        })
+        return brief
+
+    breadth = _BREADTH_DIVERGENCE_DETAIL.fullmatch(detail)
+    if source == 'macro' and type_ == 'breadth_divergence' and breadth:
+        percentile = int(breadth.group(1))
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck current breadth.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前市场宽度。'
+        brief.update({
+            'status': 'supported', 'family': 'macro.breadth_divergence',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                f'The {percentile}% percentile is a descriptive breadth state, not a '
+                'market-top probability or timer. This family is documented, not separately '
+                f'backtested as a timing signal.{age_limit}'),
+            'limitation_zh': (
+                f'{percentile}% 分位是描述性的市场宽度状态，并非市场顶部概率或择时计时器。'
+                f'该信号族有据可查，但未作为择时信号单独回测。{age_limit_zh}'),
+            'next_action': (
+                'Open the current risk panel and verify that the index remains near its '
+                'one-year high while the share above the 200-day average is still weak.'),
+            'next_action_zh': '打开当前风险面板，确认指数仍接近一年高点，且站上 200 日均线的个股占比依然偏弱。',
+            'next_action_label': 'Recheck breadth',
+            'next_action_label_zh': '复核宽度',
+            'reassessment': (
+                'Change the read if breadth recovers materially or the index is no longer '
+                'near the referenced high.'),
+            'reassessment_zh': '若市场宽度明显恢复，或指数不再接近所述高点，则改变判断。',
+            'evidence_label': 'Open current risk panel',
+            'evidence_label_zh': '打开当前风险面板',
         })
         return brief
 

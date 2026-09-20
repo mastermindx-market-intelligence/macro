@@ -87,6 +87,25 @@ def main():
             assert page.locator('#ac-detail .acx-next-action').inner_text() == watch_brief['next_action']
             assert watch_brief['limitation'] in page.locator('#ac-detail').inner_text()
             report['checks'].append('A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up')
+            risk_families = {
+                'commodity.risk_regime', 'forex.risk_regime', 'macro.gex_flip_cross',
+                'macro.hidden_fragility', 'macro.breadth_divergence',
+            }
+            risk_ids = {
+                brief.get('family'): id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') in risk_families
+            }
+            assert set(risk_ids) == risk_families
+            for family in sorted(risk_families):
+                risk_id = risk_ids[family]
+                risk_brief = payload['explorer']['briefs'][risk_id]
+                page.goto(url + '#view=explore&id=' + risk_id, wait_until='domcontentloaded')
+                assert page.locator('#ac-detail').evaluate('(d) => d.open')
+                text = page.locator('#ac-detail').inner_text()
+                assert risk_brief['limitation'] in text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == risk_brief['next_action']
+                assert risk_brief['evidence_label'] in text
+            report['checks'].append('Five next-priority risk families render source-bound limits, actions and evidence destinations')
             page.click('#ac-close')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
             page.click('[data-view="history"]')

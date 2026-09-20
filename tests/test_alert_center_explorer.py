@@ -368,3 +368,116 @@ def test_allocation_brief_preserves_source_localized_implication():
     })
     brief = project([row])['briefs'][row['alert_id']]
     assert brief['implication_zh'] == row['edge_zh']
+
+
+def test_instrument_risk_regime_brief_separates_threshold_state_from_market_forecast():
+    commodity = signal('commodity-risk', source='commodity', type_='risk_regime', asset='copper')
+    commodity.update({
+        'tier': 'watch', 'severity': 'major', 'age_days': 10,
+        'headline': 'Copper risk turned Elevated', 'headline_zh': '铜风险转为升高',
+        'detail': 'Risk Index rose through the threshold to 34. Copper 6.47 $/lb.',
+        'detail_zh': '风险指数上穿阈值至 34。铜 6.47 美元/磅。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'confirmer', 'horizon': '21d', 'n': None},
+    })
+    forex = signal('forex-risk', source='forex', type_='risk_regime', asset='USDCAD')
+    forex.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'USD/CAD risk turned Calm', 'headline_zh': 'USD/CAD 风险转为平静',
+        'detail': 'Risk Index fell back below its threshold to 11. USD/CAD 1.3988.',
+        'detail_zh': '风险指数回落跌破阈值至 11。USD/CAD 1.3988。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented',
+                       'note': 'Conviction is documented, not separately backtested as a timing signal.'},
+    })
+    rows = [commodity, forex]
+    before = deepcopy(rows)
+    result = project(rows)['briefs']
+    assert rows == before
+    copper, fx = result[commodity['alert_id']], result[forex['alert_id']]
+    assert [copper['family'], fx['family']] == [
+        'commodity.risk_regime', 'forex.risk_regime']
+    assert [copper['attention'], fx['attention']] == ['for_awareness', 'watch_next']
+    assert '34' in copper['implication'] and 'instrument-specific' in copper['limitation']
+    assert 'confirmer' in copper['limitation'] and '10 days old' in copper['limitation']
+    assert '11' in fx['implication'] and 'not an all-clear' in fx['implication']
+    assert 'not separately backtested' in fx['limitation']
+    assert [copper['next_action_label'], fx['next_action_label']] == [
+        'Recheck commodity risk', 'Recheck FX risk']
+    assert [copper['next_action_label_zh'], fx['next_action_label_zh']] == [
+        '复核商品风险', '复核外汇风险']
+    assert '商品时间线' in copper['next_action_zh']
+    assert '外汇时间线' in fx['next_action_zh']
+    assert all(result[row['alert_id']]['evidence_scope'] == 'current_panel_not_historical_archive'
+               for row in rows)
+
+
+def test_macro_gex_brief_is_a_volatility_backdrop_not_a_directional_call():
+    row = signal('gex-flip', source='macro', type_='gex_flip_cross', asset='macro')
+    row.update({
+        'tier': 'watch', 'age_days': 3,
+        'detail': 'GEX: net GEX changed sign (net +5bn, spot vs flip +0.2%)',
+        'detail_zh': 'GEX：净 GEX 转变方向（净 +5bn，现价相对翻转点 +0.2%）',
+        'edge': 'Medium — changes the volatility backdrop, not the direction.',
+        'edge_zh': '中 — 改变的是波动背景，而非方向。',
+        'link': 'macro_context.html#board', 'fire_count': 7,
+        'validation': {'verdict': 'confirmer', 'horizon': 'intraday/days',
+                       'extra': [('history', 'accruing (n small)')]},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.gex_flip_cross'
+    assert brief['attention'] == 'for_awareness'
+    assert brief['implication'] == row['edge']
+    assert 'not a directional call' in brief['limitation']
+    assert 'history is still accruing' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck gamma'
+    assert 'net GEX' in brief['next_action'] and 'spot-versus-flip' in brief['next_action']
+
+
+def test_macro_fragility_and_breadth_briefs_expose_non_timer_limits():
+    fragility = signal('fragility', source='macro', type_='hidden_fragility', asset='macro')
+    fragility.update({
+        'tier': 'watch', 'age_days': 3,
+        'detail': 'Complacency watch: calm tape starting to mask weakening internals',
+        'detail_zh': '自满预警：平静走势开始掩盖走弱的内部结构',
+        'edge': "Medium — a calm-over-weak CONTEXT (the conjunction matters, not low VIX alone). Size down, don't chase.",
+        'edge_zh': '中 — 平静掩盖走弱的背景（关键是组合而非单看低VIX）。缩小仓位，不要追高。',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'documented'},
+    })
+    breadth = signal('breadth', source='macro', type_='breadth_divergence', asset='macro')
+    breadth.update({
+        'tier': 'watch', 'age_days': 3,
+        'detail': 'Breadth divergence: index near its 1y high while %>200dma is weak (16% pctile) — fewer names carrying the tape',
+        'detail_zh': '宽度背离：指数接近一年高点但 %>200日均线偏弱（16% 分位）— 抬指数的个股在减少',
+        'edge': 'Medium — fewer names carrying the index; a thinning-tape caution, not a timer.',
+        'edge_zh': '中 — 抬指数的个股在减少；属于宽度变薄的警示，而非择时。',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'documented'},
+    })
+    result = project([fragility, breadth])['briefs']
+    f, b = result[fragility['alert_id']], result[breadth['alert_id']]
+    assert [f['family'], b['family']] == [
+        'macro.hidden_fragility', 'macro.breadth_divergence']
+    assert f['implication'] == fragility['edge'] and b['implication'] == breadth['edge']
+    assert 'conjunction' in f['limitation'] and 'not separately backtested' in f['limitation']
+    assert 'not a market-top probability or timer' in b['limitation']
+    assert '16% percentile' in b['limitation']
+    assert [f['next_action_label'], b['next_action_label']] == [
+        'Recheck fragility', 'Recheck breadth']
+
+
+def test_new_risk_family_copy_abstains_when_the_source_shape_is_unrecognized():
+    rows = [
+        signal('bad-risk', source='commodity', type_='risk_regime', asset='oil'),
+        signal('bad-gex', source='macro', type_='gex_flip_cross', asset='macro'),
+        signal('bad-breadth', source='macro', type_='breadth_divergence', asset='macro'),
+    ]
+    rows[0]['detail'] = 'Risk changed, but the source shape is unknown.'
+    rows[1]['detail'] = 'Dealer gamma changed in an unsupported form.'
+    rows[2]['detail'] = 'Breadth weakened in an unsupported form.'
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
