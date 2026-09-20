@@ -540,7 +540,7 @@ def test_cn_feed_a_session_behind_leaves_the_board_alone(js):
 def test_us_feed_on_the_rendered_session_still_patches(js):
     """Same-session feed is the normal intraday case — it must still win."""
     out = _harness(js.read_text(encoding="utf-8"),
-                   _us_feed(BAKED_SESSION, 44, "MIXED"), "us")
+                   _us_feed(BAKED_SESSION, 44, "MIXED", live=True), "us")
     assert not out.get("error"), out["error"]
     assert out["score"] == "44"
     assert out["word"] == "Mixed"
