@@ -472,11 +472,13 @@ def _participation_context(components: list | None) -> dict:
     }
 
 
-def market_state_display_copy(verdict: str, components: list | None = None) -> dict:
+def market_state_display_copy(
+    verdict: str, components: list | None = None, *, market: str = "us"
+) -> dict:
     """Project truthful glance-tier copy from the canonical verdict plus participation.
 
-    The canonical Market State remains the 0-100 verdict. This helper only prevents a green
-    verdict from being narrated as a broad rally when the already-resolved breadth leg disagrees.
+    The canonical Market State remains the 0-100 verdict. The participation qualifier is
+    intentionally US-only in R1; other market profiles retain their established copy.
     """
     verdict = verdict if verdict in _LABEL else "MIXED"
     participation = _participation_context(components)
@@ -488,7 +490,7 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
         "action_en": _ACTIONS[verdict][0], "action_zh": _ACTIONS[verdict][1],
         "participation": participation,
     }
-    if verdict != "RISK_ON":
+    if market != "us" or verdict != "RISK_ON":
         return out
 
     state = participation["state"]
@@ -1082,7 +1084,7 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
 
         flip_en, flip_zh = _flip_text(comps, verdict, raw_score=raw_score,
                                       radar=radar, overrides=overrides)
-        display_copy = market_state_display_copy(verdict, comps)
+        display_copy = market_state_display_copy(verdict, comps, market=profile.key)
         return {
             "schema": "market_state.v1",
             "asof": latest.get("date"),

@@ -98,3 +98,22 @@ def test_current_61_shape_keeps_score_and_canonical_label_but_projects_selective
     assert snap["display_copy"]["label_en"] == "Risk-on"
     assert snap["display_copy"]["scope_en"] == "Selective risk-on"
     assert snap["headline_en"] == snap["display_copy"]["headline_en"]
+
+
+def test_non_us_profile_does_not_inherit_us_participation_scope():
+    comps = _components(0)
+    profile = ms.MarketProfile(
+        key="cn",
+        indices=(),
+        tape_noun_en="China indices",
+        tape_noun_zh="中国指数",
+        component_readers=tuple((lambda _latest, c=c: c) for c in comps),
+        radar_override=None,
+        overrides=frozenset(),
+    )
+    snap = ms.market_state_snapshot({"date": "2026-09-18", "conditions": {}}, profile=profile)
+
+    assert snap is not None
+    assert snap["verdict"] == "RISK_ON"
+    assert snap["display_copy"]["scope_en"] == "Risk-on"
+    assert snap["headline_en"] == ms._HEADLINES["RISK_ON"][0]
