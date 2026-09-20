@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T21:01:26.895864+00:00",
-  "count": 2523,
+  "generated_at": "2026-09-20T22:46:01.846731+00:00",
+  "count": 2528,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1582,6 +1582,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-yo9yyzfay9f-790d5c",
+      "title": "Bonds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:52Z",
+      "summary_points": [
+        "Fed Policy Mispricing: Markets overprice 75bps of tightening (ECB/US), while Fed delivered 25bps hike; energy spikes (gas >80 EUR/MWh) and contained inflation support yield trends, creating tactical duration extension opportunity in high-quality bonds.",
+        "US Yield Peak & Geopolitics: US 10Y Treasury hit 5.04% (2008 high) due to Fed hawkishness and Middle East conflict; European Bunds at 3.5% with ECB raising deposit rate to 2.5%, but market overestimates ECB tightening.",
+        "Credit Spread Dynamics: Credit spreads widened due to hyperscalers’ debt issuance and private credit spillover (supply-driven), not deteriorating fundamentals; investment grade offers attractive carry amid resilient demand.",
+        "EM Dollar Debt Outperformance: EM US dollar debt (sovereign/corporate) outperforms developed markets amid geopolitical volatility; rated Attractive with positive outlook due to resilience, elevated yields, and supportive fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-iiecjpmycnr-d4c615",
       "title": "Daily Asia",
       "institution": "UBS",
@@ -1598,6 +1618,86 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nf6vhtcz8it-9ffa75",
+      "title": "Eurozone equities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:45Z",
+      "summary_points": [
+        "Earnings Growth Catalyst: Upgraded 2026-2027 Eurozone earnings forecast to 10-15% (vs prior), driven by manufacturing expansion and investment boom (AI/electrification/defense), offsetting near-term headwinds from energy disruptions/higher rates.",
+        "Critical Downside Risk Threshold: Energy disruption scenario targets EuroStoxx 50 at 4,700, representing a material valuation shock; primary risks include energy volatility, AI investment disappointment, and US-EU/China trade wars.",
+        "Valuation Gap Closure Catalyst: US/Asian investor diversification flows closing Europe’s valuation gap with US equities, supported by structural reforms (defense spending, EU savings union) and potential global policy shifts (rate hike reversal/fiscal stimulus)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-hv77u8vrz6v-192585",
+      "title": "Private debt",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:43Z",
+      "summary_points": [
+        "Direct Lending Returns Decline: H1 2026 returns at 3% (vs 4.5% H1 2025), driven by loan portfolio concerns, BDC redemptions, and elevated credit stress necessitating selectivity amid tight spreads.",
+        "Credit Stress Bifurcation: 7.45% of direct loans delinquent (Q2 2026), with heightened stress in smaller borrowers, junior loans, and 2021-22 vintages; defaults rising in lower-middle segment amid AI disruption risks.",
+        "Market Liquidity Pressure: Direct lending volumes down 13% YoY (USD 110bn), BDCs recorded USD 3bn net outflows, and fundraising at USD 42bn (31% below 2025 pace) amid limited loan pricing cushion (499bps origination spreads).",
+        "Private Debt Structural Risks: Lack of control, limited disclosure, blind pool risk, uncertain cash flows, and leverage usage pose critical vulnerabilities for portfolio allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jtewlvpnwsc-fb278b",
+      "title": "China A-shares",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:36Z",
+      "summary_points": [
+        "A-shares Upgrade Drivers: Stronger onshore earnings momentum (AI/industrial upgrading cycle in semiconductors/hardware), policy focus on strategic sectors (advanced manufacturing, tech innovation), and better insulation from consumption weakness drive upgrade to Attractive.",
+        "Two-Speed Growth: Tech/export sectors outperform (industrial production up, exports strong) while domestic demand weakens (retail sales lagging, subdued labor market), with policy prioritizing quality growth over broad stimulus.",
+        "Yield & Geopolitical Appeal: High-dividend A-shares (MSCI China A Onshore High Dividend Index yield 4.1%) offer superior income vs. low bond yields (China 10-yr at 1.7%), enhancing attractiveness amid geopolitical uncertainty and muted demand.",
+        "Policy & Flow Catalysts: SOE reforms, rising payout ratios, and interim dividend increases (banks/materials) signal capital strength, driving rotation into defensive sectors amid tech volatility and AI monetization timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-esjizqhzftd-1cee92",
+      "title": "Hedge funds",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:32Z",
+      "summary_points": [
+        "August Performance & Macro Resilience: Global equities (+2.7%) and commodities (+7.4%) rose despite higher yields, energy prices, and geopolitical tensions; hedge funds averaged +1.7% with macro (+3.3%) and equity hedge (+1.8%) strategies leading.",
+        "Strategic Alpha Opportunity: Elevated market dispersion and rotations favor low net/market neutral equity hedge managers amid sticky inflation, higher rates, and geopolitical risks for alpha generation.",
+        "Credit Spread Compression Risk: Tightened credit spreads limit alpha in credit-sensitive strategies and reduce buffers against sudden widening, constraining strategy viability.",
+        "Crowding & Reversal Vulnerability: Stretched consensus positioning in equity long/short increases crowding risks and sharp reversals/squeezes, while mean-reverting conditions hurt trend-following strategies.",
+        "Event-Driven Tactical Focus: Prioritize merger arbitrage (strong deal activity) over selective distressed/credit arbitrage opportunities amid elevated volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
