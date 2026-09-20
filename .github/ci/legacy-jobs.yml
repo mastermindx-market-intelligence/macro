@@ -2926,6 +2926,7 @@ jobs:
           tests/test_ai_breadth_split.py
           tests/test_vsb_surface.py
           tests/test_ud_b2_w1_vw_fold.py
+          tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_red_first_proof.py
           tests/test_missing_tape.py tests/test_price_basis_flip.py
           tests/test_risk_lead_lag.py tests/test_anticipation.py
