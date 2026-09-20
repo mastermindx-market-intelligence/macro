@@ -231,3 +231,12 @@ Next action: commit this receipt, push the same carrier only if the remote PR he
 - Lane F independently APPROVED Lane A source semantics at exact pushed head `c98d079816dfe3dc3ae3d0192ce76a1bbefe43f9`; fences are green and hosted CI was still running at that approval. The local Lane B registry amendment described above is a new semantic delta and therefore requires a fresh exact-head Lane F review after commit/push.
 
 Next: commit only the A-owned registry/test/Agent OS delta, rerun the real thesis→Theme Tracker→compact consumer path on that exact commit, then guarded-push the same #7526 carrier and request exact-head reacceptance. Keep Lane E and Lane D unreleased until their own owner/reviewer gates clear.
+
+### Exact proof after Lane B registry integration
+
+- Semantic commit: `9e274115cc164d2d4945855370d2c420878e1487`, tree `9041cbdb625d0dc727630ee76085076c4a82012f`.
+- Real producer → Theme Tracker → compact-consumer rebuild on that exact commit compiled 18 theses with zero stale thesis legs and preserved the accepted AI semiconductor behavior: stable `ai_semiconductors.v1` / `memory_storage.v1` identities, WATCH+NEUTRAL remains ARMED, two distinct dated revision prints remain required, and all authority flags remain false.
+- Real-path receipt: `/Volumes/Mastermind/agent-evidence/theme-intelligence-a-integration-and-semantic-repair-20260920/lane-b-registry-realpath-proof-9e274115.json`, SHA-256 `e63f52eb89d83096ee48d36340daeb8225067d1a172b360da155a571cff86c3e`.
+- Exact A+C recomposition on Lane C head `fdd731f18a7634c57cdc83fc80cbe13811ec745e` is conflict-free at tree `652f2d57dcceb341eefbb45230ff1378ba0d8758`; the combined owner suite passed `223 passed, 2 skipped, 1 deselected`.
+- A+C composition receipt: `/Volumes/Mastermind/agent-evidence/theme-intelligence-a-integration-and-semantic-repair-20260920/a-c-composition-9e274-fdd7.json`, SHA-256 `21e91bfe3ff3edd13aa4c8ca0eb5a24a6ed93d8023de9b51734ad7066244dc59`; test-log SHA-256 `cbb05def4aa2bf9c04b41bcd9b44352661a98339d68ac280598b85faf1116557`.
+- These proofs are source/integration evidence only. Lane E is still unreleased, hosted CI must run on the eventual pushed head, and publication/deployed-browser acceptance remains separate.
