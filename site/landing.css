@@ -49,7 +49,16 @@
      the transform — the fix is to opt out of it and stay the one design this
      page was drawn as. A page that grows a real dark skin drops the `only`. */
   color-scheme:only light;
-  --bg:#f7f8fa; --panel:#ffffff; --panel-2:#fbfcfd;
+  /* SIGNED-IN AUTH FIREWALL (2026-09-20).
+     onboard.js legitimately lazy-loads theme.js to reuse the canonical auth broker.
+     theme.js also carries dashboard-only soft-contrast tokens named --bg/--panel;
+     a signed-in user with a dark dashboard preference can therefore inject those
+     higher-specificity tokens after this stylesheet and black out the light-only
+     landing while its --ink stays navy. These two names are the only collisions.
+     Keep their landing values important so auth can load without importing the
+     dashboard's visual theme. This does NOT change or overwrite the saved dashboard
+     preference; it only protects this surface's fixed art direction. */
+  --bg:#f7f8fa !important; --panel:#ffffff !important; --panel-2:#fbfcfd;
   /* STROKE TIERS — border weight is information (DIRECTION §2). Four weights, not one:
      weak = dividers INSIDE a card; hair = the default/subtle card edge; hair-2 = a
      defined edge (inputs, chips, vignettes); strong = emphasis (hover/active/stage). */

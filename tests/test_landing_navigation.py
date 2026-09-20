@@ -1,6 +1,7 @@
 """Landing information-architecture, brand, and disclosure-nav contracts."""
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -103,6 +104,34 @@ def test_navigation_script_supports_keyboard_and_outside_close(path: Path):
 def test_landing_plain_copy_pairs_match():
     assert HTML_PATHS[0].read_bytes() == HTML_PATHS[1].read_bytes()
     assert CSS_PATHS[0].read_bytes() == CSS_PATHS[1].read_bytes()
+
+
+def test_lazy_auth_theme_cannot_override_light_only_landing_materials():
+    """Signed-in auth may load theme.js; its dashboard palette must not recolor landing."""
+    css = CSS_PATHS[0].read_text(encoding="utf-8")
+    onboard = (ROOT / "templates" / "onboard.js").read_text(encoding="utf-8")
+    theme = (ROOT / "templates" / "theme.js").read_text(encoding="utf-8")
+
+    # Pin the real integration seam that caused the blackout: signed-in landing auth
+    # lazy-loads the shared broker, whose dark soft-contrast palette uses these names.
+    assert 's.src = "theme.js"' in onboard
+    assert 'html.soft-contrast[data-theme="dark"]' in theme
+    assert "--bg:#0d1018" in theme
+    assert "--panel:#151820" in theme
+
+    # The landing is intentionally light-only, so its two colliding material tokens
+    # must win even when that shared style is injected later with higher specificity.
+    assert "color-scheme:only light" in css
+    assert "--bg:#f7f8fa !important" in css
+    assert "--panel:#ffffff !important" in css
+
+
+@pytest.mark.parametrize("path", HTML_PATHS)
+def test_landing_css_reference_is_current_content_hash(path: Path):
+    """Immutable CDN/browser caching must not pin pre-fix landing CSS."""
+    expected = hashlib.sha256(CSS_PATHS[0].read_bytes()).hexdigest()[:8]
+    text = path.read_text(encoding="utf-8")
+    assert f'landing.css?v={expected}' in text
 
 
 @pytest.mark.parametrize("path", HTML_PATHS)
