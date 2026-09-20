@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T09:43:38.628526+00:00",
-  "count": 2490,
+  "generated_at": "2026-09-20T09:58:38.623475+00:00",
+  "count": 2491,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1778,6 +1778,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-b76m372gece-6432c6",
+      "title": "Luxury Goods China taking stock",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:30:23Z",
+      "summary_points": [
+        "China Luxury Demand Downgrade: 2027 growth forecast cut to 3% (vs 4%) due to muted sentiment, fiscal tightening, and no property/stock market wealth effect; hard luxury (watches/jewellery) outperforms soft luxury, with HK tourism (+11% YTD) driving resilience.",
+        "Sector-Wide EBIT & Revenue Downgrades: BofA revises 2027-28E revenue -1.1%, EBIT/EBITDA -2-3%, EPS -3-4% vs consensus; EBIT estimates 2pt below consensus (sector avg -2.3% to -1.8%), signaling margin compression risk.",
+        "Critical China Dependency Risk: Sector revenue exposure to Chinese consumers averages 29% (19% Mainland, 10% offshore), with high-exposure names (Moncler, Hermès at 37%) facing elevated policy volatility risk vs low-exposure peers (Pandora at 1%).",
+        "US Consumer Dominance Offset: American consumers drive 2026 revenue growth (+9% cFX), offsetting China’s minimal growth (+1% cFX); Korea (+6% cFX) and Middle East (+6% cFX) rebound to compensate for 2026 losses.",
+        "Pricing Discipline in Gold Jewelry: Chow Sang Sang adjusts gold product prices downward with gold corrections (avoiding discounts), preserving margins amid material cost volatility—critical for luxury jewelry fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 53,
       "language": "en",
       "needs_metadata": false
     },
