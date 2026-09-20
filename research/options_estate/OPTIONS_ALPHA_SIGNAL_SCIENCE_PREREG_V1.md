@@ -82,9 +82,18 @@ Mixed or missing detector versions fail closed.
 
 ### Root/generalization claim
 
-Default claim: **within-root time-forward generalization**.
+The existing registered FS family is **root-disjoint and time-controlled per fold**.
 
-A held-out-root/cross-root claim requires at least two roots and an explicit held-out-root split. A single-root population may fall back only to time-forward evaluation; it may not silently drop root exclusion and keep a cross-root claim.
+Binding rule from the governing Flow-Score amendment:
+
+- group folds jointly by underlying and time block;
+- the same underlying may not appear in both train and validation within one registered verdict fold;
+- time-block separation remains mandatory in addition to root separation;
+- if the eligible population cannot form a root-disjoint fold, the registered verdict is **INSUFFICIENT_ROOT_DIVERSITY / not evaluable**;
+- a single-root population does not gain a time-forward fallback for this existing family;
+- a within-root time-forward analysis may be reported only as a secondary descriptive diagnostic under its own label and cannot substitute for the registered FS verdict.
+
+Changing the family to permit same-root train/validation evaluation would require an explicit new amendment before fitting.
 
 The inherited index-root policy remains in force: index roots are excluded by default, with only the already-registered prior-session OI admission where lawful; 0DTE index remains outside this family. SPY is additionally excluded from model cells under the SPY-excess target because of target degeneracy.
 
@@ -178,7 +187,7 @@ An existing authorized FS/Evaluation writer may then make the smallest code/test
 - fail closed on mixed source or detector version;
 - use canonical trading-session purging/embargo instead of calendar-day distance;
 - keep sessions atomic across splits;
-- remove the single-root “drop root exclusion” cross-root claim;
+- fail closed with insufficient root diversity when the registered root-disjoint fold cannot be formed;
 - make calibrator-fit/eval chronological, disjoint and embargoed;
 - remove the whole-calibration one-class isotonic fallback;
 - separate artifact-health status from statistical-acceptance status.
@@ -225,7 +234,7 @@ Before any fitting operation is admitted, code tests must prove at least:
 - a Friday-to-Monday boundary uses trading-session distance, not three calendar days;
 - overlapping H-session label windows are purged;
 - malformed/missing session dates refuse rather than fall back;
-- a single-root population cannot claim held-out-root generalization;
+- a single-root population returns `INSUFFICIENT_ROOT_DIVERSITY` for the registered FS verdict rather than falling back to same-root train/validation;
 - calibrator-fit rows are strictly earlier than evaluation rows with H-session separation;
 - one-class fit or eval slice returns `CALIBRATION_NOT_EVALUABLE`;
 - no fallback fits isotonic on the union of fit+evaluation rows;
