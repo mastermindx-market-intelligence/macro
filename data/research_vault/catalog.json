@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T18:15:05.138566+00:00",
-  "count": 2515,
+  "generated_at": "2026-09-20T19:00:25.023025+00:00",
+  "count": 2517,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1323,6 +1323,46 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rob9z3tsxfn-624875",
+      "title": "USDJPY",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:24Z",
+      "summary_points": [
+        "BoJ policy nuance: Split vote and balanced messaging limit aggressive tightening; proactive normalization ≠ hawkish shift, keeping USDJPY below 160 sustainably without real rate hikes.",
+        "JPY risk factor: Net-long speculative positioning heightens yen vulnerability to carry trade re-emergence, offsetting BoJ hawkish comments with dovish counterpoints.",
+        "USDJPY volatility range: 8.6% implied volatility implies 150-164 3-month range (160 Dec 2026, 158 2027), critical for positioning and risk management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gwclk3asdbs-014a45",
+      "title": "Bond markets",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:17Z",
+      "summary_points": [
+        "Quality Income Thesis: Investment-grade medium-term corporate bonds (Baa2/BBB+ ratings) in telecom, energy, and financials offer 5.0–5.8% YTM with maturities 2029–2034, combining yield, credit quality, and ESG integration (e.g., NextEra Energy, Siemens Funding).",
+        "Bail-in Risk Exposure: 15 bonds carry \"Senior (bail-in)\" status (e.g., Bank of Montreal, Deutsche Telekom), exposing portfolios to regulatory capital losses during stress events, with 70% investment-grade but high credit risk.",
+        "Cross-Border Value Opportunity: Credit spreads near all-time lows in cross-border bonds enable exploitation of foreign issuer discounts for regional diversification without FX risk, amid tight investment-grade spreads.",
+        "ESG-Driven Income Expansion: Sustainability-linked (SLB) and Green (G) bonds dominate new additions (e.g., Swedbank, BP Capital Markets), offering 4.1–5.6% YTM with ESG alignment, signaling active flow trends.",
+        "Critical Single-Name Risk: Barry Callebaut is the sole issuer with \"Deteriorating\" outlook (high risk flag), requiring immediate portfolio monitoring amid 40+ \"Stable\" major issuers (e.g., Amazon, Deutsche Bank)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 29,
       "language": "en",
       "needs_metadata": false
     },
