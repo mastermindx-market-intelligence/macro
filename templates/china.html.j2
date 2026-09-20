@@ -1758,7 +1758,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
         <span class="l-en">LIVE</span><span class="l-zh">实时</span>
         <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span></span>
-      {% if pb_obj %}<span class="mx5-regime-pill{% if _stance_tone == 'warn' %} rp-yellow{% elif _stance_tone == 'down' %} rp-red{% endif %}"><span class="mx5-dot"></span>{{ t(_stance[0], _stance[1]) }}</span>{% endif %}
       {% if health %}<span class="cnx-live-pill"><span class="l-en">{{ _fresh_ok }}/{{ _fresh_n }} feeds fresh</span><span class="l-zh">{{ _fresh_ok }}/{{ _fresh_n }} 数据新鲜</span></span>{% endif %}
       {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
          Geometry: arc M14,75 A56 → π·56≈175.93 arc-len; needle+numeral rotate around
@@ -1827,11 +1826,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div>
           <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span></div>
           <div class="cnx-sub-line">
-            {# zh names the TIER (偏多/中性/避险), never the colour word — the paint flips 红涨绿跌
-               in zh (risk-off→green), so a literal 红/绿 would contradict it. Matches macro.html. #}
-            <span class="cnx-sub-g"><span class="l-en">GREEN — TREND-FOLLOWING SUPPORTED</span><span class="l-zh">偏多 — 支持趋势跟随</span></span>
-            <span class="cnx-sub-y"><span class="l-en">YELLOW — TRADE WITH CAUTION</span><span class="l-zh">中性 — 谨慎交易</span></span>
-            <span class="cnx-sub-r"><span class="l-en">RED — DEFEND CAPITAL</span><span class="l-zh">避险 — 优先保住本金</span></span>
+            <span class="mx5-regime-pill{% if _stance_tone == 'warn' %} rp-yellow{% elif _stance_tone == 'down' %} rp-red{% endif %}"><span class="mx5-dot"></span>{{ t(_stance[0], _stance[1]) }}</span>
           </div>
         </div>
       </div>
