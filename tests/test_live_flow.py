@@ -2581,7 +2581,11 @@ class TestRunCycleEndToEnd:
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 1
         assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["SPY"]
         assert state["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
             "SPY": "2026-07-02T18:30:00Z",
         }
         assert meta["source_response_at_first"] == "2026-07-02T18:30:00Z"
@@ -2637,6 +2641,7 @@ class TestRunCycleEndToEnd:
         )
         prior_source = "2026-07-02T17:45:00Z"
         prior_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
         feed, heat, meta, state, _ = poller.run_cycle(
             roots=["SPY"],
             session_date=SESSION_DATE,
@@ -2644,6 +2649,7 @@ class TestRunCycleEndToEnd:
             day_state={
                 "source_asof": prior_source,
                 "root_source_receipts": prior_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
             },
             baselines={},
             cfg={
@@ -2663,7 +2669,9 @@ class TestRunCycleEndToEnd:
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 0
         assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
         assert state["root_source_receipts"] == prior_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
         assert meta["source_response_at_first"] is None
         assert meta["source_response_at_last"] is None
 
@@ -2679,8 +2687,13 @@ class TestRunCycleEndToEnd:
         )
 
         assert meta["roots_with_source_payload_names"] == ["QQQ", "SPY"]
+        assert meta["roots_with_ticker_state_names"] == ["QQQ", "SPY"]
         assert state["root_source_receipts"] == {
             "IWM": "2026-07-02T17:40:00Z",
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
+        assert state["root_ticker_receipts"] == {
             "QQQ": "2026-07-02T18:30:00Z",
             "SPY": "2026-07-02T18:30:00Z",
         }
@@ -2694,11 +2707,21 @@ class TestRunCycleEndToEnd:
             lf, "process_batch",
             lambda **kwargs: (_ for _ in ()).throw(RuntimeError("synthetic engine failure")),
         )
-        self._run_real_cycle(
-            monkeypatch, frames, cycle_watermarks=watermarks,
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            frames,
+            cycle_watermarks=watermarks,
+            day_state={
+                "root_ticker_receipts": {"SPY": "2026-07-02T17:30:00Z"},
+            },
         )
         assert watermarks == {
             "SPY": {"ts": "2026-07-02T13:29:00Z", "seq": 999}
+        }
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_ticker_receipts"] == {
+            "SPY": "2026-07-02T17:30:00Z",
         }
 
     def test_market_tide_gross_sums_all_roots_same_minute(self, monkeypatch):

@@ -355,11 +355,11 @@ def _build_root_catalog(
     position = {root: idx for idx, root in enumerate(configured)}
     active = sorted(gross, key=lambda root: (-gross[root], position[root]))
     active_set = set(active)
-    core = [root for root in configured if root not in active_set and root in set(TIER1_ROOTS)]
-    rotating = [root for root in configured if root not in active_set and root not in set(TIER1_ROOTS)]
+    tier1 = set(TIER1_ROOTS)
+    core = [root for root in configured if root not in active_set and root in tier1]
+    rotating = [root for root in configured if root not in active_set and root not in tier1]
     ordered = active + core + rotating
     ranks = {root: idx + 1 for idx, root in enumerate(active)}
-    tier1 = set(TIER1_ROOTS)
 
     return [
         {
@@ -2357,8 +2357,12 @@ def run_cycle(
     fetch_results: dict[str, tuple] = {}
     source_response_times: list[str] = []
     roots_with_source_payload_names: list[str] = []
+    roots_with_ticker_state_names: list[str] = []
     root_source_receipts = _valid_source_receipts(
         day_state.get("root_source_receipts", {})
+    )
+    root_ticker_receipts = _valid_source_receipts(
+        day_state.get("root_ticker_receipts", {})
     )
     with ThreadPoolExecutor(max_workers=max_w) as pool:
         futs = {
@@ -2386,6 +2390,7 @@ def run_cycle(
     # from ``as_completed`` above.
     for root in roots:
         calls_df, puts_df, observed_at = fetch_results.get(root, (None, None, None))
+        named_root: str | None = None
         if calls_df is not None or puts_df is not None:
             normalised = _normalise_root_list([root])
             if normalised:
@@ -2490,6 +2495,12 @@ def run_cycle(
         sweep_clusters_acc  = state_out.get("sweep_clusters", sweep_clusters_acc)
         if candidate_watermark:
             cycle_watermarks[root] = candidate_watermark
+        # A source receipt proves the vendor response arrived.  A ticker-state
+        # receipt additionally proves the engine accepted that response and merged
+        # its accumulators.  Failed processing must never freshen an old drill.
+        if named_root is not None and isinstance(observed_at, str) and observed_at:
+            roots_with_ticker_state_names.append(named_root)
+            root_ticker_receipts[named_root] = observed_at
 
         # Decision completion is later than fetch observation. Durably stage the
         # events before they can enter the capped/retained display feed.
@@ -2700,6 +2711,7 @@ def run_cycle(
         "roots_requested":       len(roots),
         "roots_with_source_payload": len(source_response_times),
         "roots_with_source_payload_names": roots_with_source_payload_names,
+        "roots_with_ticker_state_names": roots_with_ticker_state_names,
         # Compatibility count aliases.  They do not define cadence truth.
         "universe_n":            len(roots),
         "roots_polled":          len(source_response_times),
@@ -2755,6 +2767,8 @@ def run_cycle(
         # Per-root receipts share this session state owner.  Off-cycle and failed
         # roots retain their previous exact source-success clock.
         "root_source_receipts": root_source_receipts,
+        # Updated only after process_batch succeeds and its state is merged.
+        "root_ticker_receipts": root_ticker_receipts,
     }
 
     return feed_payload, heat_payload, meta_payload, updated_state, tide_day_state
@@ -3246,11 +3260,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
         _tickers_out_dir = _out_dir() / "tickers"
         _tickers_out_dir.mkdir(parents=True, exist_ok=True)
         root_receipts = _valid_source_receipts(
-            updated_state.get("root_source_receipts", {})
+            updated_state.get("root_ticker_receipts", {})
         )
         publish_roots = _select_ticker_publish_roots(
             cycle_roots=cycle_roots,
-            successful_roots=meta.get("roots_with_source_payload_names", []),
+            successful_roots=meta.get("roots_with_ticker_state_names", []),
             day_state=tide_day_state,
         )
 
