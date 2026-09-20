@@ -2309,7 +2309,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
     {# Macro News card — preserved; first two rows now read as dated changes rather than icon noise. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-news')">
-      <div class="cnx-ctitle">{{ t('Macro News · What Changed','宏观新闻 · 最近变化') }}</div>
+      <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }}</div>
+      <div class="cnx-lbl">{{ t('What Changed','最近变化') }}</div>
       {% if CN and CN.news and CN.news.headlines %}
         {% for h in CN.news.headlines[:2] %}
         {% set _tl = CN.theme_label.get(h.theme, [h.theme, h.theme]) if CN.theme_label else [h.theme, h.theme] %}
