@@ -1,44 +1,55 @@
 # Lane D Exact-Head Acceptance — Lane F
 
-**Lane F operation:** `theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001`  
-**Lane D operation:** `theme-intelligence-d-entry-and-stock-routing-20260919-sol-001`  
-**Candidate head:** `0ce6bbf54b9c623891274e278a6ff581b602bfef`  
-**Candidate tree:** `85fb619c32fea4e0559d4aa6a0fa1a226966aefc`  
-**Latest protected main reviewed:** `fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2`  
-**Latest integration tree:** `fd12a6f4fa8b32e2c3861a9fd7d6964ae94fb673`  
-**Disposition:** **SEMANTIC PASS / REQUEST_CHANGES ON CARRIER ADMISSION**
+**Lane F operation:** `theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001`
+**Lane D operation:** `theme-intelligence-d-entry-and-stock-routing-20260919-sol-001`
+**Carrier:** Macro Draft/HOLD PR #7508
+**Candidate head:** `4d6e047c34fc86b744aeaca09454470af126085d`
+**Candidate tree:** `d414cba7ead0fc07a766a4287466d54e672a2d36`
+**Latest main reviewed:** `05523caeeabdb124d910988349877285fd6fd2d1`
+**Integration tree:** `91cbd63c11e669f76c1d4e5dce61f402d6995b14`
+**Disposition:** **SEMANTIC PASS / BUILT_NOT_PROVEN**
 
-## Independent result
+## Why this is a fresh review
 
-Lane D's bounded product contract passes independent Lane F evaluation. The exact current-main integration tree compiles and the owning suite reports **55 passed** with five pre-existing temporary Chromium cleanup warnings.
+The prior Lane F review covered `0ce6bbf54b9c623891274e278a6ff581b602bfef`. Lane D later changed `engine/subsector_confluence.py` to publish a flat group `entry_context`, so semantic review reuse was invalid. This assessment reviews the new exact head rather than carrying forward the old PASS.
 
-Real committed-artifact proof preserves the incumbent Board V2 population and order: `entry_open=[(1, AMD),(2, DOCN)]`, `setting_up=[]`.
+## Independent proof
 
-- AMD remains a stock-qualified setup with group `EXTENDED`, confirmation `UNCONFIRMED`, and no invented trigger/zone/invalidation/chase levels on the `setups.json` fallback.
-- ADI remains qualified with `PENDING` confirmation, owner-supplied levels, and separate `EXTENDED` group risk.
-- NVDA is `DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE`; parent Semiconductors `ENTRY-NOW` is group-only context and is not positive stock-entry provenance.
-- `may_rank`, `may_gate`, `may_size`, `may_escalate`, and `may_trade` remain false.
+- Exact-head owner suites: **59 passed**.
+- Agent OS validation: **1,140 records, 0 errors, 51 inherited warnings**.
+- `git diff --check`: PASS.
+- Latest-main movement is path-disjoint across D source, tests and immediate consumers.
+- Conflict-free current-main integration tree: `91cbd63c11e669f76c1d4e5dce61f402d6995b14`.
+- Proof-only integrated owner suites: **59 passed**.
+- Fences run `35506964924`: SUCCESS.
+- Hosted CI `35506965096`: still running at the review observation.
 
-A stale-confluence mutation was run through the actual `GroupContext -> Board V2` path. GroupContext marks the confluence source degraded and the additive member context fails closed to descriptive-only. A repo usage census shows the lower-level `EntryContextSource` is used in production only by `GroupContext`; other direct calls are tests.
+The prior Agent OS carrier blocker is closed.
 
-Protected main moved seven commits beyond the prior integration base with zero Lane D-owned or direct relevant path overlap. A fresh conflict-free integration tree was built and rerun rather than rebasing the source branch.
+## Producer semantics
 
-## Blocking finding — TI-D-AGENTOS-RECORD-001
+The new group projection is additive and descriptive. It preserves:
 
-The committed Lane D handoff has YAML frontmatter, but it is not a valid current Agent OS handoff record. Fences run `35502935108` and CI run `35502935516` report the record is missing required fields including `workstream`, `session`, `model`, `mission`, `state_before`, `changed`, `verified`, `unverified`, `unresolved`, `next_actions`, `do_not_redo`, `danger_areas`, and `ended_because`.
+- entry qualification separately from confirmation;
+- confirmation separately from regime/extension;
+- the owner observation clock and group source reference;
+- explicit context-only framing;
+- `may_rank=false`, `may_gate=false`, `may_size=false`, `may_escalate=false`, and `may_trade=false`.
 
-This is records/admission failure, not a Lane D entry-semantics failure.
+## Freshness boundary
 
-### Smallest accepted repair
+A deliberate stale-observation probe calls the exact production projection with `as_of=2000-01-01` and an historical `entry_now` owner state. The producer returns `QUALIFIED_PENDING_CONFIRMATION` **together with observation clock 2000-01-01**.
 
-The Lane D source writer should repair only:
+Lane F does not classify that as a D producer defect: the object reports the historical observed entry state, preserves its old clock, and grants no current action authority. Freshness belongs in the package's separate health dimension rather than rewriting the historical entry observation.
 
-`agentos/handoffs/THEME-INTELLIGENCE-LANE-D-ENTRY-ROUTING-2026-09-20.md`
+This makes Lane A's clock/health repair a binding integration dependency. Lane A must consume D's owner observation clock and mark stale health before a historical qualified state can be presented as current. Until that shared-consumer repair is accepted, D's end-to-end convergence remains **NOT_PROVEN**.
 
-into the existing Agent OS schema on PR #7508. Do not change product semantics merely to obtain green checks.
+## GitHub review surface
 
-If the repair is records-only, all reviewed semantic blobs remain identical, and current-main movement remains material-path disjoint, Lane F classifies semantic review reuse as **allowed**. Rerun Agent OS validation, fences, and current integration proof; a full semantic rereview is required only if semantic/product or governing material dependency bytes change.
+Lane F attempted to submit a formal GitHub approval, but GitHub rejected it because the connected identity is also PR #7508's author. No bypass was attempted. The semantic result is recorded in PR conversation comment `5749597019` and this independent Lane F receipt.
 
 ## Acceptance boundary
 
-Lane D is `BUILT_NOT_PROVEN`. No merge, deployment, browser proof, production acceptance, rank/gate/size/trade authority, or parent-program completion is claimed. Lane A remains the integration lead.
+Lane D source semantics are **PASS** for this bounded producer contract. The carrier remains Draft/HOLD while hosted CI is unfinished and Lane A's shared freshness/health gate is open.
+
+No merge, deployment, browser proof, entry permission, ranking, sizing, trade authority, or parent Theme Intelligence acceptance is claimed.

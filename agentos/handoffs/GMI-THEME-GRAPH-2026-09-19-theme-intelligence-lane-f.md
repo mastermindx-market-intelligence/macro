@@ -52,9 +52,9 @@ changed:
   - path: research/theme_intelligence_acceptance/corporate_action_basis_result.json
     what: "Recorded US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN with immutable source/bar hashes and explicit universal-history limitations."
   - path: research/theme_intelligence_acceptance/lane_d_exact_head_result.json
-    what: "Recorded Lane D exact-head semantic PASS / carrier REQUEST_CHANGES with current-main integration, real-path entry-context proof, and the single Agent OS admission blocker."
+    what: "Superseded the old 0ce6 review with a fresh 4d6e exact-head semantic PASS, current-main integration proof, clock/freshness boundary, and release-gate state."
   - path: research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md
-    what: "Returned Lane D bounded semantic acceptance, records-only repair requirement, review-reuse law, and release limits to Lane A."
+    what: "Recorded the fresh semantic rereview required by D's new group entry_context source delta and its dependency on Lane A health/freshness integration."
   - path: research/theme_intelligence_acceptance/current_main_fa85fb5_cases.v1.json
     what: "Pinned the exact current-main subject into the existing preregistered acceptance matrix without changing expectations."
   - path: research/theme_intelligence_acceptance/current_main_fa85fb5_result.json
@@ -144,13 +144,16 @@ verified:
   - claim: "Lane A exact head was independently executed and reviewed rather than accepted from its PR prose."
     command: "Detached 23c6e6cc: owner suites; real thematic-state and State-of-Themes builds; direct production _eval_falsifier transition probes; hosted CI log review."
     result: "REQUEST_CHANGES: 112 passed / 1 deselected; original WATCH/PRECIPICE repairs reproduce; observation clock is stamped from build snapshot, ACCELERATING->GLUT-RISK false-negatives, and contract-delta has one introduced owner-scope violation. GitHub review 5260472945."
+  - claim: "Lane D's post-review semantic delta received a fresh exact-head and latest-main integration review."
+    command: "Detached 4d6e047c: owner suites, Agent OS, diff check, historical-clock discriminator; merge-tree with main 05523cae; proof-only integrated owner suites."
+    result: "PASS producer semantics: 59 exact + 59 integrated tests; Agent OS 0 errors; integration tree 91cbd63c11e669f76c1d4e5dce61f402d6995b14; all authority false. End-to-end freshness remains dependent on Lane A health/clock integration. PR comment 5749597019."
 unverified:
   - claim: "The review-hardened final PR head has an independent external code-review PASS."
     what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
   - claim: "Hosted CI executes the Lane F package command."
     what_would_verify: "Lane A or the incumbent CI owner admits one coordinated package-level wiring change and a hosted run proves the pushed exact head."
   - claim: "B and E returned implementations satisfy the full mandatory discriminator matrix."
-    what_would_verify: "Each remaining sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks. Lane A has now returned and is REQUEST_CHANGES on its exact head; Lane D moved materially after its first review and requires fresh semantic review."
+    what_would_verify: "Each remaining sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks. Lane A has returned and is REQUEST_CHANGES; Lane D fresh semantic review is now PASS but package currentness still depends on A health/clock integration."
   - claim: "The two production defects are repaired, merged, published, or correct in a deployed browser."
     what_would_verify: "Incumbent source-owner repair, exact-head acceptance, lawful merge, natural publication, served-byte/browser proof, and Lane A release adjudication."
   - claim: "Prospective detection or return outcomes are mature."
@@ -161,12 +164,12 @@ unresolved:
   - "Current Macro main fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 independently reproduces the same two product defects; current-main freshness is no longer inference-only for this observation."
   - "Lane A PR #7526 resolves RE-RATING as caution/late rather than generic working, but its exact head 23c6e6cccb42fa28fce09b8483802560f0b11998 is REQUEST_CHANGES on observation-clock truth, the ACCELERATING->GLUT-RISK transition matrix, and an introduced CI ownership-scope defect."
   - "Lane C pushed repair head 2208fe40039d356929fac0f96b626edc33d42288 remains REJECTED_FOR_REPAIR on six blockers after closing stale reclaim leakage. Its source worktree is already dirty with the next health repair; Lane F did not touch those bytes."
-  - "Lane D moved from reviewed 0ce6bbf54b9c623891274e278a6ff581b602bfef to 4d6e047c34fc86b744aeaca09454470af126085d with semantic changes in engine/subsector_confluence.py; prior semantic review reuse is invalid and fresh exact-head review is required."
+  - "Lane D 4d6e047c34fc86b744aeaca09454470af126085d is fresh semantic PASS / BUILT_NOT_PROVEN: exact and latest-main integrated owner suites are 59/59, Agent OS is clean, and authority is inert. End-to-end currentness remains dependent on Lane A consuming D's owner observation clock into the separate health/freshness dimension."
   - "B and E remain NOT_YET_PROVEN until pushed immutable returns are evaluated. Lane A has a pushed immutable return and is REQUEST_CHANGES."
   - "Hosted CI, independent review of the repaired exact head, deployment, browser proof, and prospective outcomes remain separate gates."
 next_actions:
   - "Lane A: repair TI-A-CLOCK-001, TI-A-TRANSITION-002, and TI-A-CI-003 on PR #7526 while preserving the accepted WATCH/PRECIPICE/authority repairs; then return a new immutable head for reacceptance."
-  - "Lane F: fresh-review Lane D head 4d6e047c34fc86b744aeaca09454470af126085d because its post-review group entry_context source delta invalidates semantic review reuse."
+  - "Lane F: after Lane A returns an accepted clock/health repair, rerun the D 4d6e producer -> A shared-consumer stale/freshness discriminator before package acceptance."
   - "Lawful independent reviewer: review the final pushed PR #7453 head, including the real Medical Devices and artifact-health discriminators."
   - "Lane A/incumbent CI owner: add or decline one package-level command wiring; do not create six competing CI edits."
   - "Lane F successor: preserve the existing Lane C writer; when it returns the next pushed exact head after 2208fe, re-pin and rerun the evaluator. Re-pin each returned A/B/E head and report accepted/rejected/not-proven separately."
@@ -262,3 +265,15 @@ Three exact-head blockers prevent acceptance:
 Fences `35506191383` are green. The pack-8 Research Screener bake failure is recorded separately and is not attributed to Lane A by this review. Machine receipt: `research/theme_intelligence_acceptance/lane_a_exact_head_result.json`. Assessment: `research/theme_intelligence_acceptance/LANE_A_EXACT_HEAD_ASSESSMENT.md`.
 
 Lane A remains `BUILT_NOT_PROVEN / REQUEST_CHANGES`. No merge, deployment, publication, browser acceptance, or parent-program acceptance follows from this return.
+
+## Lane D fresh-head return
+
+Lane D materially advanced after the first review, so Lane F re-reviewed exact head `4d6e047c34fc86b744aeaca09454470af126085d` / tree `d414cba7ead0fc07a766a4287466d54e672a2d36` rather than reusing the `0ce6bbf` semantic PASS.
+
+The fresh producer delta is **SEMANTIC PASS / BUILT_NOT_PROVEN**. Exact-head and latest-main proof-tree owner suites each report **59 passed**; Agent OS reports **1,140 records / 0 errors**; diff hygiene passes. Current main `05523caeeabdb124d910988349877285fd6fd2d1` is material-path disjoint and composes to conflict-free tree `91cbd63c11e669f76c1d4e5dce61f402d6995b14`. Fences `35506964924` are green; hosted CI `35506965096` remained running at the review observation.
+
+The new flat group `entry_context` preserves qualification, pending confirmation, and regime/extension as separate fields; carries the owner observation clock and source reference; and keeps every rank/gate/size/escalate/trade permission false. A deliberately old owner observation remains a historical qualified state together with its old clock. Lane F accepts that producer behavior because it does not claim current health or action authority.
+
+The package must still prove Lane A consumes that D clock into the separate shared health/freshness dimension. Until A's clock/health repair passes, D-to-A current presentation remains not proven. GitHub will not allow the connected PR-author identity to formally approve its own PR, so the independent semantic result is recorded in PR comment `5749597019` and the Lane F receipts instead of bypassing that restriction.
+
+Machine receipt: `research/theme_intelligence_acceptance/lane_d_exact_head_result.json`. Human assessment: `research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md`. No merge, deployment, browser proof, trade authority, or parent-program acceptance is implied.
