@@ -112,6 +112,23 @@ Binding rules:
 
 A larger arbitrary calendar-day constant is not an acceptable substitute.
 
+## 5A. Model-selection and effective-N contract
+
+The governing FS amendment's model-selection law remains binding.
+
+- Model / hyperparameter selection uses **Combinatorial Purged Cross-Validation (CPCV)** over the registered purged/root-disjoint/time-controlled geometry.
+- A manifest may count CPCV selection paths only if those paths were actually executed under the frozen geometry.
+- The final untouched OOS block participates in no selection path.
+- Replacing CPCV with another selection geometry requires a new preregistration before fitting; silently running ordinary folds while counting combinatorial paths is invalid.
+
+The existing uniqueness/effective-support law also remains binding:
+
+- raw rows and effective N are separate quantities;
+- overlapping label windows remain uniqueness-weighted;
+- same-session / same-underlying dependence remains accounted for;
+- sample floors apply to the registered effective support, not duplicated print count;
+- a manifest field named `effective_n` may not be populated with raw `len(frame)`.
+
 ## 6. Calibration contract
 
 Calibration is chronological and has two distinct slices:
@@ -190,7 +207,9 @@ An existing authorized FS/Evaluation writer may then make the smallest code/test
 - fail closed with insufficient root diversity when the registered root-disjoint fold cannot be formed;
 - make calibrator-fit/eval chronological, disjoint and embargoed;
 - remove the whole-calibration one-class isotonic fallback;
-- separate artifact-health status from statistical-acceptance status.
+- separate artifact-health status from statistical-acceptance status;
+- execute the registered CPCV selection geometry if it is claimed/counts toward trial accounting, otherwise fail closed until a new preregistration changes the geometry;
+- report actual effective N separately from raw row count.
 
 Those repairs do **not** authorize a model fit, calibrator fit, market backtest, scoring enablement or promotion. Fit/evaluation execution requires its own later admitted operation after the repair is reviewed.
 
@@ -235,6 +254,8 @@ Before any fitting operation is admitted, code tests must prove at least:
 - overlapping H-session label windows are purged;
 - malformed/missing session dates refuse rather than fall back;
 - a single-root population returns `INSUFFICIENT_ROOT_DIVERSITY` for the registered FS verdict rather than falling back to same-root train/validation;
+- every reported CPCV selection path is actually executed under the registered purge/root/time geometry and the final OOS block is absent from selection;
+- `effective_n` is not a raw row-count alias, and repeated same-session/same-root prints cannot inflate the registered N floor;
 - calibrator-fit rows are strictly earlier than evaluation rows with H-session separation;
 - one-class fit or eval slice returns `CALIBRATION_NOT_EVALUABLE`;
 - no fallback fits isotonic on the union of fit+evaluation rows;
