@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T10:28:42.517726+00:00",
-  "count": 2492,
+  "generated_at": "2026-09-20T10:43:44.813526+00:00",
+  "count": 2493,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1902,6 +1902,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zalfzcqtxeh-a156ec",
+      "title": "Situation Room Out of bonds, into stocks",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:28:56Z",
+      "summary_points": [
+        "Bond-to-stock flow shift: Equity inflows surge to $62.14bn (largest since June), while US HG bond funds show slowed inflows (+$0.42bn vs prior +$4.74bn) and IG corporates face negative demand (-$0.1bn), signaling a defensive rotation.",
+        "HG/HY allocation structural shift: HG flows now represent 26% of AUM (vs.",
+        "HY’s 13%), indicating a sustained move toward higher-quality assets amid risk aversion and reduced HY volatility.",
+        "Dealer inventory volatility: US IG corporate dealer inventories show intensified net selling (-$0.6bn vs -$4.9bn), yet reduced rate sensitivity (DV01 narrowed to -$7.2mn), highlighting liquidity risks despite active positioning.",
+        "EM flows surge: EM fund flows trend upward since May 2025, driven by EM Local funds, signaling potential portfolio rotation into emerging markets amid shifting global capital allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
