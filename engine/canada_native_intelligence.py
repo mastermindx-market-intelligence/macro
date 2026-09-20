@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Mapping
+from enum import Enum
+from types import MappingProxyType
 from typing import Any
 
 RESIDUAL_MOMENTUM_FAMILY = "ca_residual_momentum"
@@ -21,11 +23,43 @@ RESIDUAL_MOMENTUM_DEFINITION = "ca_residual_momentum_rank_v1"
 C1_OIL_STATUS = "ACCRUING"
 C1_OIL_AUTHORITY = "sector_context_only"
 
-# Masterplan section 11.3: the inherited US anticipation calibration is not a
-# Canada-validated authority component.  It may remain as display/profile
-# context while the Canada-specific measurement accrues, but it cannot become
-# a binding input to a new Canada selection/rank/entry definition.
-ANTICIPATION_US_GATE_DISPOSITION = "SCREEN_SHADOW"
+class InheritedGateDisposition(str, Enum):
+    """Closed Canada disposition vocabulary from masterplan section 11.3."""
+
+    STRUCTURAL_COMMON = "STRUCTURAL_COMMON"
+    MARKET_VALIDATED = "MARKET_VALIDATED"
+    SCREEN_SHADOW = "SCREEN_SHADOW"
+    RETIRE = "RETIRE"
+
+
+# Actual production consumption sites for the inherited US anticipation gate.
+# Both remain display/research context only while Canada-specific evidence accrues.
+ANTICIPATION_PROFILE_CONTEXT_USE = "anticipation.forward_cone_profile_context"
+ANTICIPATION_POTENTIAL_SCORE_USE = "anticipation.name_score_confidence"
+INHERITED_US_GATE_DISPOSITIONS = MappingProxyType({
+    ANTICIPATION_PROFILE_CONTEXT_USE: InheritedGateDisposition.SCREEN_SHADOW,
+    ANTICIPATION_POTENTIAL_SCORE_USE: InheritedGateDisposition.SCREEN_SHADOW,
+})
+
+# Backward-compatible summary used by existing evidence/tests.
+ANTICIPATION_US_GATE_DISPOSITION = InheritedGateDisposition.SCREEN_SHADOW.value
+
+
+def require_inherited_gate_disposition(
+    use: str,
+    expected: InheritedGateDisposition,
+) -> InheritedGateDisposition:
+    """Bind an actual call site to its reviewed disposition or fail closed."""
+    try:
+        actual = INHERITED_US_GATE_DISPOSITIONS[use]
+    except KeyError as exc:
+        raise KeyError(f"unclassified inherited US gate use: {use}") from exc
+    if actual is not expected:
+        raise ValueError(
+            f"inherited US gate use {use} is {actual.value}; "
+            f"expected {expected.value}"
+        )
+    return actual
 
 
 def rank_residual_calls(

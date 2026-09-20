@@ -827,3 +827,56 @@ def test_ca_builder_registers_discovery_from_typed_population_contract():
     assert "freeze_population_contract(" in block
     assert ".prealignment_research" in block
     assert "freeze_evidence(" not in block
+
+
+def test_ca_inherited_us_gate_dispositions_are_closed_and_immutable():
+    from engine import canada_native_intelligence as cni
+
+    assert {item.value for item in cni.InheritedGateDisposition} == {
+        "STRUCTURAL_COMMON", "MARKET_VALIDATED", "SCREEN_SHADOW", "RETIRE",
+    }
+    assert dict(cni.INHERITED_US_GATE_DISPOSITIONS) == {
+        cni.ANTICIPATION_PROFILE_CONTEXT_USE: cni.InheritedGateDisposition.SCREEN_SHADOW,
+        cni.ANTICIPATION_POTENTIAL_SCORE_USE: cni.InheritedGateDisposition.SCREEN_SHADOW,
+    }
+    for use in cni.INHERITED_US_GATE_DISPOSITIONS:
+        assert cni.require_inherited_gate_disposition(
+            use, cni.InheritedGateDisposition.SCREEN_SHADOW,
+        ) is cni.InheritedGateDisposition.SCREEN_SHADOW
+    with pytest.raises(TypeError):
+        cni.INHERITED_US_GATE_DISPOSITIONS["new-use"] = (
+            cni.InheritedGateDisposition.MARKET_VALIDATED
+        )
+    with pytest.raises(KeyError, match="unclassified inherited US gate use"):
+        cni.require_inherited_gate_disposition(
+            "unknown-use", cni.InheritedGateDisposition.SCREEN_SHADOW,
+        )
+    with pytest.raises(ValueError, match="expected MARKET_VALIDATED"):
+        cni.require_inherited_gate_disposition(
+            cni.ANTICIPATION_PROFILE_CONTEXT_USE,
+            cni.InheritedGateDisposition.MARKET_VALIDATED,
+        )
+
+
+def test_ca_builder_binds_actual_anticipation_uses_before_consumption():
+    source = (
+        Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
+    ).read_text()
+
+    profile_audit = source.index(
+        "ca_native_intelligence.ANTICIPATION_PROFILE_CONTEXT_USE"
+    )
+    gate_load = source.index('_load_gate("US")')
+    potential_audit = source.index(
+        "ca_native_intelligence.ANTICIPATION_POTENTIAL_SCORE_USE"
+    )
+    potential_call = source.index("name_score.potential_score(")
+    candidate_freeze = source.index("cand.append(sc)")
+    anticipation_write = source.index('rec["anticipation"] = _ant')
+    entry_read = source.index("entry_signal.assess")
+
+    assert source.count("require_inherited_gate_disposition(") == 2
+    assert profile_audit < gate_load
+    assert potential_audit < potential_call
+    assert candidate_freeze < anticipation_write
+    assert entry_read < potential_call

@@ -37,6 +37,7 @@ from engine.cycles import analyze  # noqa: E402
 from engine.residual_alpha import compute_residual_alpha  # noqa: E402
 from engine.setups import CA_ALPHA_WEIGHT, rank_setups, setup_score  # noqa: E402
 from engine import signal_gate  # noqa: E402 — owner's confluence T1->T4 cascade (layered ON main's alpha/alignment gate)
+from engine import canada_native_intelligence as ca_native_intelligence  # noqa: E402
 from engine.technicals import season_line, seasonality, snapshot  # noqa: E402
 from lib import config, store  # noqa: E402
 from lib.ticker_popularity import attach_latest_volume, latest_volume_map  # noqa: E402
@@ -906,10 +907,24 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
     # calibration may shape display/profile context only; it is not
     # MARKET_VALIDATED for Canada and must not bind the Canada board population,
     # rank, or entry permission.
+    _ca_ant_profile_disposition = ca_native_intelligence.InheritedGateDisposition.RETIRE
+    _ca_ant_potential_disposition = ca_native_intelligence.InheritedGateDisposition.RETIRE
     try:
+        _ca_ant_profile_disposition = (
+            ca_native_intelligence.require_inherited_gate_disposition(
+                ca_native_intelligence.ANTICIPATION_PROFILE_CONTEXT_USE,
+                ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW,
+            )
+        )
+        _ca_ant_potential_disposition = (
+            ca_native_intelligence.require_inherited_gate_disposition(
+                ca_native_intelligence.ANTICIPATION_POTENTIAL_SCORE_USE,
+                ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW,
+            )
+        )
         from engine.anticipation import anticipate as _anticipate, load_gate as _load_gate
         _ant_gate = _load_gate("US")
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001 — unknown/mismatched inherited use retires fail-closed
         _anticipate = None
         _ant_gate = None
     try:
@@ -1004,7 +1019,11 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
         # composite), so the quality axis is simply absent — never read as neutral.
         # forward anticipation cone (close-only) — feeds the risk-shape entry tilt + favourable-cone
         # note in the shared engine; best-effort (skips quietly on thin history).
-        if _anticipate is not None:
+        if (
+            _anticipate is not None
+            and _ca_ant_profile_disposition
+            is ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW
+        ):
             try:
                 _ant = _anticipate(close.dropna(), bench=_tsx_close, asset_class="ca_equity",
                                    gate=_ant_gate)
@@ -1048,8 +1067,15 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
         try:
             rec.setdefault("ticker", ticker)
             _sel_z = ((prof.get("axes") or {}).get("selection") or {}).get("z")
+            _potential_rec = rec
+            if (
+                _ca_ant_potential_disposition
+                is not ca_native_intelligence.InheritedGateDisposition.SCREEN_SHADOW
+                and rec.get("anticipation")
+            ):
+                _potential_rec = {**rec, "anticipation": None}
             rec["conviction"]["potential"] = name_score.potential_score(
-                rec, market="CA", edge_z=_sel_z,
+                _potential_rec, market="CA", edge_z=_sel_z,
                 regime_stress=float((prof.get("risk") or {}).get("macro_stress") or 0.0))
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("CA potential score for %s failed (%s)", ticker, e)
