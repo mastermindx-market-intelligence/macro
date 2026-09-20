@@ -381,6 +381,41 @@ class TestEditorialBenchmark:
         assert report["missing"]["packet_labels"] == len(review["items"])
         assert report["missing"]["output_ratings"] > 0
 
+    def test_unknown_runtime_receipts_stay_unknown_not_false_or_zero(self):
+        from engine.marketing import editorial_benchmark as eb
+
+        packets = [self._packets()[0]]
+        manifest = eb.freeze_packets(packets, seed="one", holdout_fraction=1.0)
+        runs = [{
+            "packet_id": "p-a1", "candidate_id": "baseline",
+            "decision": "post", "text": "$AAPL gained after earnings.",
+            "latency_ms": None, "cost_usd": None,
+            "requested_model": None, "served_provider": None, "served_model": None,
+            "validator_reasons": [],
+        }]
+        review, key = eb.prepare_blinded_review(manifest, runs, seed="r")
+        review_id = review["items"][0]["review_id"]
+        variant = review["items"][0]["variants"][0]["variant"]
+        labels = [{"review_id": review_id, "should_post": True,
+                   "source_sufficient": True}]
+        ratings = [{
+            "review_id": review_id, "variant": variant,
+            "factual_correctness": 5, "usefulness": 4, "naturalness": 4,
+            "repetitive_framing": False, "image_text_consistency": None,
+            "publishable_without_rewrite": True, "critical_fabrication": False,
+        }]
+        runtime = eb.grade(manifest, runs, key, labels, ratings)[
+            "candidates"]["baseline"]["runtime"]
+        assert runtime["first_pass_acceptance"]["d"] == 0
+        assert runtime["first_pass_acceptance"]["rate"] is None
+        assert runtime["first_pass_coverage"] == 0
+        assert runtime["repair_coverage"] == 0
+        assert runtime["repair_count_total"] is None
+        assert runtime["latency_coverage"] == 0
+        assert runtime["latency_ms_per_accepted"] is None
+        assert runtime["cost_coverage"] == 0
+        assert runtime["cost_usd_per_accepted"] is None
+
     def test_benchmark_is_explicitly_non_authoritative_and_offline(self):
         import inspect
         from engine.marketing import editorial_benchmark as eb
