@@ -2378,7 +2378,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {# What Changed: preserve the Macro News dialog, but orient the glance card
        around recency/change rather than a raw headline dump. #}
     <div class="cnx-card">
-      <div class="cnx-ctitle">{{ t('What Changed','最近变化') }} <button type="button" class="cnx-ctitle-note" onclick="cnxOpenDlg('cnx-dlg-news')">{{ t('macro detail ↓','宏观详情 ↓') }}</button></div>
+      <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }} <button type="button" class="cnx-ctitle-note" onclick="cnxOpenDlg('cnx-dlg-news')">{{ t('What changed ↓','最近变化 ↓') }}</button></div>
       {% if (CN and CN.news and CN.news.headlines) or latest.alerts %}
       <div class="cnx-change-list">
         {% if CN and CN.news and CN.news.headlines %}
@@ -2485,8 +2485,6 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <a href="china_heatmap.html">{{ t('Market Heatmap','市场热力图') }}</a>
     <a href="china_intel.html">{{ t('China Intel','中国情报') }}</a>
     <a href="china_policy_watch.html">{{ t('Policy & Credit','政策与信贷') }}</a>
-    <a href="china_news.html">{{ t('Macro News','宏观新闻') }}</a>
-    <a href="alerts.html">{{ t('Alerts','警报') }}</a>
     <a href="china_allocation.html">{{ t('Allocation','仓位策略') }}</a>
     <a href="china_history.html">{{ t('Regime History','周期历史') }}</a>
     <a href="aibrief.html">{{ t('AI Brief','AI简报') }}</a>
