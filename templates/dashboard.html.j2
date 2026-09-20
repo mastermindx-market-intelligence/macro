@@ -16241,7 +16241,7 @@ html[data-theme="light"] :is(
         {% elif _plo.get('status') == 'degraded' %}
         <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
         {% endif %}
-        <div class="plo-rows" data-showmore-rows="3">
+        <div class="plo-rows">
           {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
         </div>
         {% if _plo_gate %}
@@ -20034,7 +20034,7 @@ if (document.readyState === 'loading') {
     if (!(oldBar && oldBar.classList && oldBar.classList.contains('sm-bar'))) oldBar = null;
     var freshGrid = document.createElement('div');
     freshGrid.className = grid.className;
-    freshGrid.setAttribute('data-showmore-rows', grid.getAttribute('data-showmore-rows') || '3');
+    freshGrid.setAttribute('data-showmore-rows', '3');
     freshGrid.innerHTML = grid.innerHTML + html;
     grid.parentNode.insertBefore(freshGrid, grid);
     grid.parentNode.removeChild(grid);

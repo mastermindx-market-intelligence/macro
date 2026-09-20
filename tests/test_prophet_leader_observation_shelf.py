@@ -263,13 +263,13 @@ def test_empty_unavailable_and_degraded_are_visibly_distinct():
     assert len(set(rendered.values())) == 3
 
 
-def test_rendered_shelf_uses_the_incumbent_progressive_density_control():
+def test_anonymous_preview_does_not_emit_an_empty_show_more_control():
     html = _render(_projection())
     soup = BeautifulSoup(html, "html.parser")
     rows = soup.select_one("#us-leader-observations .plo-rows")
 
     assert rows is not None
-    assert rows.get("data-showmore-rows") == "3"
+    assert rows.get("data-showmore-rows") is None
 
 
 def test_paid_hydration_rebuilds_the_leader_grid_before_show_more():
@@ -290,7 +290,7 @@ def test_paid_hydration_rebuilds_the_leader_grid_before_show_more():
         "document.querySelector('#us-leader-observations .plo-rows')",
         "document.createElement('div')",
         "freshGrid.className = grid.className",
-        "freshGrid.setAttribute('data-showmore-rows'",
+        "freshGrid.setAttribute('data-showmore-rows', '3')",
         "freshGrid.innerHTML = grid.innerHTML + html",
         "grid.parentNode.insertBefore(freshGrid, grid)",
         "grid.parentNode.removeChild(grid)",
