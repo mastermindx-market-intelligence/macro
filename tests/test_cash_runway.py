@@ -693,4 +693,7 @@ class TestResolveCashRunway:
         assert result["cik"] is None
         assert result["as_of"] == date(2026, 9, 20).isoformat()
         assert set(result.keys()) == _RESOLVER_KEYS
+        for key in result:
+            if key not in ("schema", "status", "as_of"):
+                assert result[key] is None, f"{key} should be None when the loader import failed"
 
