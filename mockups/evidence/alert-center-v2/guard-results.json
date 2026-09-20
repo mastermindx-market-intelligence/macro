@@ -1,42 +1,53 @@
 [
   {
-    "check": "source-bound-delta-tests",
-    "tested_commit": "3e4c6311bead1eb93359dca0effe8b52ad023750",
+    "check": "full-alert-regression",
+    "tested_commit": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
     "exit_code": 0,
-    "output": "12/12 direct discriminating tests PASS for demand-ahead, FX residual, net-liquidity flip and OI-crowding families."
+    "output": "190 passed, 5 warnings, 0 failures"
+  },
+  {
+    "check": "source-bound-discriminating",
+    "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+    "exit_code": 0,
+    "output": "21/21 PASS"
   },
   {
     "check": "browser-proof",
-    "tested_commit": "3e4c6311bead1eb93359dca0effe8b52ad023750",
+    "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
     "exit_code": 0,
-    "output": "19/19 interaction checks PASS; 14 named screenshots; 0 page errors. Trust QA 14/14 PASS with 10 adversarial screenshots."
+    "output": "22/22 checks PASS; 17 screenshots; 0 page errors"
+  },
+  {
+    "check": "trust-browser-proof",
+    "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+    "exit_code": 0,
+    "output": "14/14 adversarial cases PASS; 10 screenshots"
   },
   {
     "check": "design-system",
     "status": "REVIEW_REUSE_ALLOWED",
-    "reason": "No template/CSS/JS changed after the previously passing design-system receipt."
+    "reason": "No template/CSS/JS changed in source-family wave."
   },
   {
     "check": "runtime-style",
     "status": "REVIEW_REUSE_ALLOWED",
-    "reason": "No runtime-style source changed after the previously passing receipt."
+    "reason": "No runtime style source changed."
   },
   {
     "check": "visual-evidence",
     "status": "REVIEW_REUSE_ALLOWED",
-    "reason": "No material CSS/interaction selector changed; exact-head named browser proof was refreshed."
+    "reason": "No interaction/CSS change; exact-head named browser proof refreshed and prior 24/24 matrix remains applicable."
   },
   {
     "check": "diff",
-    "tested_range": "4166aa7e398c44606390d5b68edd298144244b4a..731272372a55617ca53187e650dbe018725db272",
     "exit_code": 0,
     "output": "git diff --check PASS"
   },
   {
     "check": "latest-base-merge-tree",
-    "candidate_evidence_head": "731272372a55617ca53187e650dbe018725db272",
+    "candidate_evidence_head": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
     "base_commit": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
-    "merge_tree": "6a07fd1290173b2ea7e9d304ef920af0587d133e",
+    "merge_tree": "073522d5709d6256d49dea3131960ae18a56a267",
     "exit_code": 0,
     "output": "conflict-free"
   },
@@ -44,9 +55,9 @@
     "check": "contract-delta",
     "status": "BLOCKED_SHARED_BASE",
     "candidate_owns_blocking_path": false,
-    "current_base": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
+    "base_commit": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
     "hosted_failure_run": 35497424168,
     "hosted_failure_job": 106043451515,
-    "output": "Current protected main contains tests/test_unified_dashboard_b1.py with no legacy-jobs.yml run ownership. Prior hosted contract-delta reported exactly this introduced suite. Do not repair this unrelated shared-CI defect inside Alert Center PR #7022."
+    "output": "Protected main contains tests/test_unified_dashboard_b1.py without legacy-jobs ownership. Do not repair this unrelated shared-CI defect inside Alert Center PR #7022."
   }
 ]

@@ -1,23 +1,25 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v9",
+  "schema": "mastermind.alert_center.current_main_proof.v10",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T08:28:12Z",
+  "verified_at": "2026-09-20T08:37:24Z",
   "skillpack_commit": "23061ab70a7fb79636b7962d9b440a3de23fe016",
   "macro_origin_main_observed": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
-  "candidate_source_commit": "3e4c6311bead1eb93359dca0effe8b52ad023750",
-  "current_merge_tree": "6a07fd1290173b2ea7e9d304ef920af0587d133e",
+  "candidate_source_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+  "current_merge_tree": "073522d5709d6256d49dea3131960ae18a56a267",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
-    "exact_head_source_bound_delta_passed": 12,
-    "exact_head_source_bound_delta_failures": 0,
-    "prior_full_alert_battery": {
-      "source_commit": "16580b1332b88bbd00ddc547b749839de3ddd846",
-      "passed": 178,
+    "full_alert_regression": {
+      "tested_commit": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
+      "passed": 190,
       "warnings": 5,
       "failures": 0
     },
-    "hosted_exact_head": "pending"
+    "source_bound_discriminating": {
+      "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+      "passed": 21,
+      "failures": 0
+    }
   },
   "builder": {
     "legacy_ranked": 60,
@@ -27,17 +29,21 @@
     "total_matched_firings": 1217
   },
   "source_bound": {
-    "signals": 596,
+    "signals": 605,
     "total_shared_signals": 651,
-    "coverage_ratio": 0.915515
+    "coverage_ratio": 0.929339,
+    "family_count": 27
   },
   "source_bound_families": [
     "altdata.convergence",
+    "bonds.rates_vol",
     "commodity.price_shock",
     "commodity.risk_regime",
     "demand.demand_ahead",
+    "forex.momentum",
     "forex.residual_shock",
     "forex.risk_regime",
+    "forex.scenario",
     "macro.breadth_divergence",
     "macro.gex_flip_cross",
     "macro.hidden_fragility",
@@ -63,37 +69,14 @@
     "independent_confirmation_claimed": false
   },
   "browser": {
-    "interaction_checks": 19,
-    "named_screenshots": 14,
+    "interaction_checks": 22,
+    "named_screenshots": 17,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
-    "canonical_capture": {
-      "pages": 1,
-      "states_attempted": 24,
-      "states_captured": 24
-    },
-    "force_states": [
-      {
-        "attribute": null,
-        "kind": "focus",
-        "name": "focus",
-        "spec": "focus:focus(#ac-search)",
-        "value": "#ac-search"
-      },
-      {
-        "attribute": null,
-        "kind": "hover",
-        "name": "hover",
-        "spec": "hover:hover(.acx-row)",
-        "value": ".acx-row"
-      }
-    ],
+    "canonical_interaction_capture": "24/24 prior UI-state capture reusable; no template/CSS/JS changed in this source-family wave",
     "page_errors": 0,
-    "console_errors": 0,
-    "failed_responses": 0,
     "horizontal_overflow": false,
-    "production_acceptance": false,
-    "canonical_capture_reuse": "No template/CSS/JS changed in the source-family expansion after the previously passing 24/24 interaction capture."
+    "production_acceptance": false
   },
   "legacy_parity": {
     "baseline_commit": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
@@ -102,36 +85,37 @@
     "payload_hash_equal": true
   },
   "guards": {
-    "design_system": "prior pass reusable; no template/CSS/JS changed in the source-family expansion",
-    "runtime_style": "prior pass reusable; no runtime style source changed",
-    "visual_evidence": "prior pass reusable; exact-head named browser proof refreshed",
-    "diff_check": "pass on 4166aa7e39..731272372a candidate delta",
-    "contract_delta": "blocked by current protected-main shared defect: tests/test_unified_dashboard_b1.py exists without legacy-jobs wiring; candidate does not own that path"
+    "full_alert_regression": "pass: 190 passed, 5 warnings, 0 failures",
+    "source_bound_discriminating": "pass: 21/21",
+    "design_system": "REVIEW_REUSE_ALLOWED — no template/CSS/JS changed after prior passing UI receipt",
+    "runtime_style": "REVIEW_REUSE_ALLOWED — no runtime-style source changed",
+    "visual_evidence": "exact-head named browser proof refreshed; prior 24/24 focus/hover/rest matrix reusable",
+    "diff_check": "pass",
+    "latest_base_merge_tree": "conflict-free",
+    "contract_delta": "BLOCKED_SHARED_BASE — protected main contains tests/test_unified_dashboard_b1.py without legacy-jobs ownership; candidate does not own either path"
   },
   "source_sha256": {
-    "engine/alert_center_view.py": "9447aa36c4ca8163c3c2cb125d299b712e3fab0d030e9603001ffc5bbb387b9a",
+    "engine/alert_center_view.py": "68d494065bc5893c471f1ebef3d98c25a25429259e7ebb3804ebfb6ca7af104c",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
     "templates/alert_center.css": "0ff5c733bd43364a188e5231bd5931edc3601837d567e5e4fba5b92dcac978a3",
     "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
-    "scripts/qa_alert_center_v2.py": "19b71f96395ce99d09e5cf6d9dff424a6ef5e6bbed88c319bd19f0f1fedce0c5"
+    "scripts/qa_alert_center_v2.py": "d469bc52553e4cf758549c90b8ad59c1e20e564960e95b78be60ce340fc107ee"
   },
   "evidence_sha256": {
-    "browser-proof.json": "063213a21ea4b53a6d9d44c61719c3ac1219026055bb4c355b21969d1f0c3129",
+    "browser-proof.json": "14582113406e7afd679ba5b4c9e153cf3d86892b9cddea7c1fed6f6346bfd18f",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "fc8d88635b710b8b6108da75c2b5973a7e4ad6b7d608f925d0f2f14584733d2b",
+    "input-manifest.json": "f4348c366c381706293e96a1dbe269a733bd310da889d945f141bf91e86a4511",
     "manifest.json": "4ae1fe276073dc8ee49df7a9b60a4d2a3e4cbb4a3ebd9fe6d916c043d4cfd9bd",
-    "smells.json": "693a7a32957cd5b565c02d15a3acae9a5dd8daf951f9ec118eaf412b8e9c515c",
-    "guard-results.json": "203852a6f6f2e171b5416632e1da0b24a1f5a965bfb33947c745c829c591e178",
-    "legacy-parity.json": "ccd3824956029723a2c647b68de5841a65d52c4c23ed026db3378e66238cecd3",
-    "latest-base-compatibility-20260919.json": "49579224c928220c0e3631f6f393bce817938a387a4dd3e8369ffc58c7249f91",
-    "production-baseline-20260920.json": "11a229faf49b5fe40a1478a43bc4da068fa54792255401c3f7cf0134a211b746",
-    "desktop-related-context.png": "bf68c59de6e0029ece6535ed6692eddc8f00e76fb302633d7d81a227cf16e1f0",
-    "desktop-demand-ahead.png": "188edf4407f763c33df92302b84ee25e5de2c026dbe9563dd9e5fd2140f12ecd",
-    "desktop-forex-residual.png": "f01b8c3afa5f2cb90f59bc3b08fa1a760c0c24a48f68bce8c872236c55567d05",
-    "desktop-net-liquidity.png": "fc855b0299edf3a7ac4b0dfd38f554a200b4359ec9e0db1139c6b472752c1028",
-    "desktop-oi-crowding.png": "c7bb6d36367b512b0a5298d032086feb91d93364f2fed18c012b98243dec9673",
-    "targeted-tests.log": "8f10c3b664d79cc5200f41fba56456e8704061b96763b8a8b54760bb038cbb3a"
+    "desktop-demand-ahead.png": "97d06a19ec49657df4a5dfc83913e7870e3aea7649bb3624b2bf2b3dfd0d2fb7",
+    "desktop-forex-residual.png": "5429e123c22aee3d74aebf202d32b9ebd6f8ef0877d683d61bed0e022abcc924",
+    "desktop-net-liquidity.png": "763e4b3153eaa705d375ab931a5c5b805c5f733c2d16d923490bac1744b8617c",
+    "desktop-oi-crowding.png": "b8fb3c2aa60ae748f4c8a20e81089cc8512e3879140fecc3fc624dfe4c02d66b",
+    "desktop-forex-momentum.png": "6de8e4c29fc22ac9d59655fb7721aac240e1236bcb47d69185b78cee5c02bd0f",
+    "desktop-forex-scenario.png": "5073a0d078ae9b84cef0196ede48de33c8282c219a1822ea82084390bc8194db",
+    "desktop-bonds-move.png": "682726f412ba1b2bc358210df612c1d1cd06140efd273aa18ed5d544811feb8b",
+    "targeted-tests.log": "bf4ae091940f73adc4f08035ead625459d4e2ddaab1582d496d1d7694ac3ff59",
+    "full-alert-regression.log": "6fddc57f011955d7e9ea65efdc80c215e9fbb46f0e9fedb6ea9d0c4132439349"
   },
   "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
@@ -147,7 +131,7 @@
     "customer acceptance",
     "trading edge"
   ],
-  "candidate_evidence_commit": "731272372a55617ca53187e650dbe018725db272",
+  "candidate_evidence_commit": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
   "rotation_source_bound_total": {
     "supported_rows": 313,
     "families": {

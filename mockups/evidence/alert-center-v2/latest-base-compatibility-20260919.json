@@ -1,20 +1,20 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v4",
-  "observed_at": "2026-09-20T08:28:12Z",
-  "candidate_source_head": "3e4c6311bead1eb93359dca0effe8b52ad023750",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v5",
+  "observed_at": "2026-09-20T08:37:24Z",
+  "candidate_source_head": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
   "latest_protected_main": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
-  "latest_merge_tree": "6a07fd1290173b2ea7e9d304ef920af0587d133e",
+  "latest_merge_tree": "073522d5709d6256d49dea3131960ae18a56a267",
   "merge_conflicts": [],
   "material_movement": {
-    "candidate_owned_paths_changed_on_main_since_prior_receipt": [],
-    "shared_release_blocker": "Current main contains tests/test_unified_dashboard_b1.py but .github/ci/legacy-jobs.yml does not name it; the hosted contract-delta gate has already reported this unrelated introduced suite."
+    "candidate_owned_alert_paths_changed_on_main": [],
+    "shared_release_blocker": "tests/test_unified_dashboard_b1.py exists on protected main without .github/ci/legacy-jobs.yml ownership"
   },
   "skillpack_commit": "23061ab70a7fb79636b7962d9b440a3de23fe016",
   "classification": "FULL_REREVIEW_REQUIRED",
-  "reason": "Demand-ahead, unexplained-FX, net-liquidity and leverage-crowding families add new source-bound decision workflows after the prior semantic review. Protected-main movement is path-disjoint from candidate-owned alert paths and the current merge tree is conflict-free, but fresh review is required for the new semantics.",
+  "reason": "Demand, FX residual/momentum/scenario, net-liquidity, leverage-crowding and MOVE semantics expand the source-bound decision journey after the prior semantic review. Current protected-main movement is disjoint from candidate-owned alert paths and the immutable merge tree is conflict-free.",
   "production_acceptance": false,
-  "candidate_evidence_head": "731272372a55617ca53187e650dbe018725db272",
+  "candidate_evidence_head": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
   "release_blockers": [
-    "Shared protected-main contract-delta defect: tests/test_unified_dashboard_b1.py is not wired into legacy-jobs.yml."
+    "shared protected-main contract-delta defect outside Alert Center ownership"
   ]
 }
