@@ -1,16 +1,18 @@
 # Prophet HK + Canada shared product design contract — R1
 
-**Status:** `DESIGN_AUTHORITY_APPROVED / EDITABLE_REFERENCE_FROZEN / RIG_AND_INDEPENDENT_REVIEW_PENDING / PRODUCTION_NOT_PROVEN`
+**Status:** `DESIGN_AUTHORITY_APPROVED / EDITABLE_REFERENCE_FROZEN / RIG_IN_REVIEW / PRODUCTION_NOT_PROVEN`
 **Operation:** `prophet-hkca-shared-design-contract-r1-20260920-sol-001`  
 **Parent:** `WS:PROPHET-HK-CA-REVAMP`  
 **Source assignment:** `D_SHARED_PRODUCT_DESIGN_AND_UI(1).md`, V2, September 19, 2026  
-**Protected procedure:** `Mastermind@f4c5d9ef6a49653bd0c4a579ab8b90a8ba7ed907`, Skillpack 1.0.1/bootstrap 1
+**Protected procedure:** `Mastermind@5f62e9f6119cc3e3bc542a793ba96731e063e3a1`, Skillpack 1.0.1/bootstrap 1
 **Macro build base:** `86634cb89ad4e7253b44a049b6e5712406899f90`
-**Current Macro compatibility pin:** `8bd426a67858becff7609bc62956300df3a7385c`
+**Current Macro compatibility pin:** `ad5be0675196666ef37165d73a18fe3730805792`
 
 This contract turns the accepted HK/Canada roster, continuity, card, and state requirements into one bounded product-design handoff for the existing Hong Kong and Canada carriers. It does not change producer truth, rank, thresholds, entitlement, access policy, publication authority, or portfolio action.
 
 The current design authority has approved and frozen the paired Paper reference for bounded R1 implementation on the named B/C carriers. That approval does not make Paper a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
+
+RIG reference `prophet-hkca-shared-r1` is now `in_review` at `research/reference_integrity/prophet-hkca-shared-r1/`, bound to frozen artifact SHA `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1`. Product-regression and visual/taste critic receipts, the design-authority verdict, and `approval.yml` do not yet exist; the reference remains provisional and non-canonical.
 
 ## 1. Authority, carriers, and non-goals
 
