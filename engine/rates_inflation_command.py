@@ -812,35 +812,81 @@ def _render_cuts(implied_cuts_12m: int | float | None) -> dict[str, str]:
 
 
 def _build_rate_path_row(fed_path: dict) -> dict:
-    """Build the rate_path display row."""
+    """Preserve dated pricing and basis in the existing RIC display row.
+
+    Legacy artifacts retain legacy rendering. The qualified method never derives
+    a no-change sentence from its rounded compatibility field.
+    """
+    from copy import deepcopy
+    from math import isfinite
+
+    if fed_path.get('calculation_version') is not None:
+        version = fed_path.get('calculation_version')
+        try:
+            from engine.fed_path import validated_pricing_view
+            fed_path = validated_pricing_view(fed_path)
+        except Exception:  # Optional context cannot take down the RIC board.
+            fed_path = {'calculation_version': version, 'implied': {},
+                'historical_availability_qualified': False,
+                'current_session_freshness': 'not_certified',
+                'pricing_comparison_status': 'consumer_unavailable',
+                'consumer_validation': {'status': 'unavailable', 'reason': 'normalizer_unavailable'},
+                'headline_en': 'Dated pricing comparison unavailable',
+                'headline_zh': '有日期的定价比较不可用',
+                'read_en': 'Pricing interpretation unavailable; no legacy directional fallback.',
+                'read_zh': '定价解释不可用；不回退到旧版方向性断言。',
+                'implied_source_en': None, 'implied_source_zh': None}
     implied = fed_path.get("implied") or {}
     dots = fed_path.get("dots") or []
     gap = fed_path.get("gap") or {}
     implied_cuts_12m = fed_path.get("implied_cuts_12m")
     implied_bp_12m = fed_path.get("implied_bp_12m")
-    path_read = _render_cuts(implied_cuts_12m)
-
-    return {
-        "asof": fed_path.get("asof"),
-        "policy_rate": fed_path.get("policy_rate"),
-        "implied_path": {
-            "m1": implied.get("m1"),
-            "m3": implied.get("m3"),
-            "m6": implied.get("m6"),
-            "m12": implied.get("m12"),
-        },
-        "implied_bp_12m": implied_bp_12m,
-        "implied_cuts_12m": implied_cuts_12m,
-        "path_plain": path_read,
-        "dots": dots,
-        "gap": gap,
-        "headline_en": fed_path.get("headline_en"),
-        "headline_zh": fed_path.get("headline_zh"),
-        "read_en": fed_path.get("read_en"),
-        "read_zh": fed_path.get("read_zh"),
-        "source_en": fed_path.get("implied_source_en", "ZQ fed-funds futures"),
-        "source_zh": fed_path.get("implied_source_zh", "ZQ联邦基金期货"),
+    version = fed_path.get('calculation_version')
+    if version is None:
+        path_read = _render_cuts(implied_cuts_12m)
+    else:
+        path_read = {'en': 'dated comparison unavailable', 'zh': '有日期的比较不可用'}
+        try:
+            bp = float(implied_bp_12m)
+            equivalents = float(fed_path.get('implied_cut_equivalents_12m'))
+            valid = (version == 'fed_path.date_basis.v2'
+                     and fed_path.get('pricing_comparison_status') == 'same_date_frame_reference'
+                     and not isinstance(implied_bp_12m, bool)
+                     and not isinstance(fed_path.get('implied_cut_equivalents_12m'), bool)
+                     and isfinite(bp) and isfinite(equivalents)
+                     and abs(equivalents + bp / 25) <= 0.00001)
+        except (TypeError, ValueError, OverflowError):
+            valid = False
+        if valid:
+            path_read = {
+                'en': (f'{bp:+.1f}bp versus dated EFFR reference; {abs(equivalents):.2f} '
+                       f"×25bp {'cut' if equivalents >= 0 else 'hike'} equivalents, not meeting counts"),
+                'zh': (f'较有日期的 EFFR 参考值 {bp:+.1f}基点；相当于 {abs(equivalents):.2f} 个25基点'
+                       f"{'降息' if equivalents >= 0 else '加息'}幅度，并非会议次数"),
+            }
+    row = {
+        'asof': fed_path.get('asof'), 'policy_rate': fed_path.get('policy_rate'),
+        'implied_path': {key: implied.get(key) for key in ('m1','m3','m6','m12')},
+        'implied_bp_12m': implied_bp_12m, 'implied_cuts_12m': implied_cuts_12m,
+        'path_plain': path_read, 'dots': dots, 'gap': gap,
+        'headline_en': fed_path.get('headline_en'), 'headline_zh': fed_path.get('headline_zh'),
+        'read_en': fed_path.get('read_en'), 'read_zh': fed_path.get('read_zh'),
+        'source_en': fed_path.get('implied_source_en', 'ZQ fed-funds futures'),
+        'source_zh': fed_path.get('implied_source_zh', 'ZQ联邦基金期货'),
     }
+    if version is not None:
+        for key in ('calculation_version', 'horizons_m', 'consumer_validation',
+                    'policy_reference_evidence', 'target_range_evidence',
+                    'path_evidence', 'sofr_path', 'front_quote_context',
+                    'implied_cut_equivalents_12m', 'implied_cut_equivalents_6m',
+                    'cut_count_interpretation', 'pricing_comparison_status',
+                    'policy_reference_asof', 'policy_observation_origin',
+                    'historical_availability_qualified', 'current_session_freshness',
+                    'gap_unavailable_reasons', 'note_en', 'note_zh'):
+            row[key] = fed_path.get(key)
+        row.update(display_only=True, authority=False, can_score=False,
+                   can_rank=False, can_gate=False, can_size=False, can_trade=False)
+    return deepcopy(row)
 
 
 def _build_inflation_row(tx: dict, release_items: list[dict]) -> dict:
@@ -1220,6 +1266,15 @@ def build_board(root=None) -> dict:
     # bond_health.json -> fed_path
     bond_health = _read_json(data_dir / "bonds" / "bond_health.json") or {}
     fed_path = bond_health.get("fed_path") or {}
+    if isinstance(fed_path, dict) and "calculation_version" in fed_path:
+        # All consumers of this input, not only the displayed row, use the same view.
+        version = fed_path.get("calculation_version")
+        try:
+            from engine.fed_path import validated_pricing_view
+            fed_path = validated_pricing_view(fed_path)
+        except Exception:
+            fed_path = {"calculation_version": version,
+                        "pricing_comparison_status": "normalizer_unavailable"}
     main_asof = fed_path.get("asof") or bond_health.get("as_of") or ""
 
     if not fed_path:
