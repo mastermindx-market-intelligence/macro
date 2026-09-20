@@ -143,6 +143,38 @@ class TestRegistryCompleteness:
         assert by_theme["ai_semiconductors"] == "ai_semiconductors.v1"
         assert by_theme["memory_storage"] == "memory_storage.v1"
 
+    def test_cpu_memory_claims_are_product_specific_not_permanent(self, theses):
+        """Lane B claim review must remove unsupported permanent CPU/memory assertions."""
+        by_theme = {t["theme_id"]: t for t in theses}
+        ai = by_theme["ai_semiconductors"]
+        memory = by_theme["memory_storage"]
+
+        def claim_text(thesis):
+            parts = [
+                thesis["variant_perception_en"],
+                thesis["mechanism_en"],
+                thesis["driver"]["description"],
+            ]
+            parts.extend(x["why"] for x in thesis["winner_classes"])
+            parts.extend(x["why"] for x in thesis["loser_classes"])
+            parts.extend(x["rule_en"] for x in thesis["falsifiers"])
+            return " ".join(parts).lower()
+
+        combined = claim_text(ai) + " " + claim_text(memory)
+        for unsupported in (
+            "two producers",
+            "two-supplier",
+            "18-24 months",
+            "being crowded out by gpu capex",
+            "only hbm-capable",
+        ):
+            assert unsupported not in combined, unsupported
+
+        assert "product-specific" in combined
+        assert "cpu-specific" in combined
+        assert "customer capex" in combined
+        assert "supplier/product exposure" in combined
+
 
 # ---------------------------------------------------------------------------
 # 2. Schema validation — required fields and class-level-only guard
