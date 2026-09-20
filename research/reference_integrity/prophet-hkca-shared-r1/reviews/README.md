@@ -1,8 +1,10 @@
 # Independent RIG review commission — `prophet-hkca-shared-r1`
 
-Artifact SHA: `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1`
+Artifact SHA: `e3077bf50c69063f5d80275fa33dd415dae76fa9`
 Route family: `hk_stocks.html + canada_stocks.html`
 Status: `in_review`; no verdict or approval receipt exists.
+
+The earlier pass-1 commissions against artifact `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` are superseded by the accepted Session A Tier-1 copy repair. They are not reusable for this replacement artifact. Fresh critic receipts must bind the SHA above.
 
 Both reviewers judge the frozen result before reading designer rationale. They must differ from
 the author and from each other. Pass 1 receives only the user job, production-before evidence,

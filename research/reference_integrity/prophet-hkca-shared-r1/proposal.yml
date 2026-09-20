@@ -2,7 +2,7 @@ schema: mastermind.rig_proposal.v1
 reference_id: prophet-hkca-shared-r1
 
 proposed_artifact:
-  frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+  frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   paths:
     - research/PROPHET_HK_CANADA_SHARED_PRODUCT_DESIGN_CONTRACT_2026_09_20.md
     - mockups/evidence/prophet-hkca-shared-design-20260920/README.md

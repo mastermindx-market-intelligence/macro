@@ -17,19 +17,19 @@ lineage:
 
 reference_files:
   - path: research/PROPHET_HK_CANADA_SHARED_PRODUCT_DESIGN_CONTRACT_2026_09_20.md
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   - path: mockups/evidence/prophet-hkca-shared-design-20260920/manifest.json
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   - path: mockups/evidence/prophet-hkca-shared-design-20260920/SHA256SUMS
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-1440-dark.png
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-1440-light.png
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-390-dark.png
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
   - path: mockups/evidence/prophet-hkca-shared-design-20260920/contact-sheets/matrix-390-light.png
-    frozen_sha: eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1
+    frozen_sha: e3077bf50c69063f5d80275fa33dd415dae76fa9
 
 files:
   baseline: baseline.yml

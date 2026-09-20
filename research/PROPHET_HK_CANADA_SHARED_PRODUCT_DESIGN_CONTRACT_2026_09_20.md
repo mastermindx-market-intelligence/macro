@@ -1,18 +1,18 @@
 # Prophet HK + Canada shared product design contract — R1
 
-**Status:** `DESIGN_AUTHORITY_REPAIR_COMPLETE / EDITABLE_REFERENCE_REPLACEMENT_FROZEN_ON_THIS_COMMIT / RIG_RESET_REQUIRED / PRODUCTION_NOT_PROVEN`
+**Status:** `DESIGN_AUTHORITY_REPAIR_COMPLETE / EDITABLE_REFERENCE_FROZEN_AT_e3077bf50c / RIG_IN_REVIEW / PRODUCTION_NOT_PROVEN`
 **Operation:** `prophet-hkca-shared-design-contract-r1-20260920-sol-001`  
 **Parent:** `WS:PROPHET-HK-CA-REVAMP`  
 **Source assignment:** `D_SHARED_PRODUCT_DESIGN_AND_UI(1).md`, V2, September 19, 2026  
 **Protected procedure:** `Mastermind@8300950ac10a6c4c9e613ef26da42e67fb5c2dc8`, Skillpack 1.0.1/bootstrap 1
 **Macro build base:** `86634cb89ad4e7253b44a049b6e5712406899f90`
-**Current Macro compatibility pin:** `ba2f4a2a89777a02caae6e9e538302ad3d9c2a3c`
+**Current Macro compatibility pin:** `e84dc749411dd1cba6ef17453761d86fd43fb798`
 
 This contract turns the accepted HK/Canada roster, continuity, card, and state requirements into one bounded product-design handoff for the existing Hong Kong and Canada carriers. It does not change producer truth, rank, thresholds, entitlement, access policy, publication authority, or portfolio action.
 
 The current design authority approved the paired Paper geometry, component anatomy, states, themes, locales, counts, and roster/authority semantics. Session A then accepted those dimensions and required one bounded repair: remove fixture, programme, and source-authority vocabulary from user-facing Tier 1 while preserving every product invariant. The replacement Paper boards and evidence bundle in this commit complete that copy repair. Paper still does not become a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
 
-The prior RIG review target `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` is superseded by the replacement reference bytes in this commit. No product-regression receipt, visual/taste receipt, design-authority RIG verdict, or `approval.yml` has been earned for the replacement. `prophet-hkca-shared-r1` must be rebound to this immutable reference in the succeeding control commit and independently reviewed again; it remains provisional and non-canonical.
+The prior RIG review target `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` is superseded. RIG reference `prophet-hkca-shared-r1` now binds the immutable replacement `e3077bf50c69063f5d80275fa33dd415dae76fa9`. No product-regression receipt, visual/taste receipt, design-authority RIG verdict, or `approval.yml` has been earned for this replacement; it remains provisional and non-canonical until fresh independent review and approval complete.
 
 ## 1. Authority, carriers, and non-goals
 
