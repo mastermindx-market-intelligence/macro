@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T03:12:47.025605+00:00",
-  "count": 2472,
+  "generated_at": "2026-09-20T03:42:58.351660+00:00",
+  "count": 2473,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1412,6 +1412,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 29,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xub0fgs4lsv-b29fa9",
+      "title": "Global Real Estate 2026 BofA Global Real Estate Conference What did we learn",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:30:28Z",
+      "summary_points": [
+        "Secular tailwinds outweigh higher rates: 72% of REIT management teams expect 2027 SS NOI growth >2026, driven by strong demand and declining supply, despite 47% citing higher-for-longer rates as top growth risk.",
+        "AI infrastructure capital surge: Hyperscalers to invest ~$800bn (2024) and ~$1tn (2025) in AI/data center infrastructure, reshaping capital flows and creating real estate opportunities.",
+        "Data center power constraints: Global growth hampered by aging grids and Europe’s underinvestment; Spain mandates 80% renewables for new facilities (€110bn needed for 10GW by 2040), accelerating rural site adoption.",
+        "Fed policy dictates valuations: Fed rates directly impact cap rates/real estate valuations; AI-driven demand (e.g., SF/Seattle offices) outpaces supply but remains early-stage.",
+        "Development risk threshold: Development uneconomic at current rates; requires 200-250 bps spread between return on cost and market cap to justify risk (fundamental valuation metric)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
