@@ -56,10 +56,11 @@
       "zero_dte_index": "exclude"
     },
     "root_generalization": {
-      "default_claim": "within_root_time_forward",
-      "heldout_root_claim_requires": "at_least_two_roots_and_explicit_heldout_root_split",
-      "single_root_fallback": "time_forward_only_no_cross_root_claim",
-      "silent_root_exclusion_drop": false
+      "registered_claim": "root_disjoint_and_time_block_disjoint_per_fold",
+      "same_root_may_appear_in_train_and_validation_same_fold": false,
+      "single_root_population": "INSUFFICIENT_ROOT_DIVERSITY",
+      "root_exclusion_may_be_dropped": false,
+      "within_root_time_forward_diagnostic": "allowed_only_as_secondary_descriptive_diagnostic_not_registered_verdict"
     }
   },
   "temporal_contract": {
@@ -113,7 +114,7 @@
       "make_loader_fail_closed_on_mixed_source_or_detector_version",
       "replace_calendar_day_embargo_with_canonical_trading_session_purging",
       "make_sessions_atomic_across_splits",
-      "remove_single_root_cross_root_fallback_claim",
+      "fail_closed_when_registered_root_disjoint_fold_is_impossible",
       "make_calibration_fit_eval_ordered_disjoint_and_embargoed",
       "remove_whole_calibration_one_class_isotonic_fallback",
       "separate_artifact_health_from_statistical_acceptance_state"
