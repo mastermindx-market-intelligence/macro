@@ -649,5 +649,109 @@
       "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_2026-09-19_held_for_sol.json (31 cells)"
     },
     "rows_note": "W6/W7 + heal merges of 2026-09-19 recorded on the 8 written rows - exactly the PRs named in the 13 appended cells: macro #7110 #7122 #7125 #7126 #7132 #7134 #7362 #7425 and terminal #648; every BUILT_NOT_PROVEN row stays unproven until a signed-in readback; MO-PAID-047 was already BUILT_NOT_PROVEN on main and only gains the terminal#648 note (corrected after Grok h_rec4_rv1 minor 1: the earlier note over-listed PRs that this pass did not write)"
+  },
+  "seat_records_pass_2026_09_20_c": {
+    "recorded_by": "Meta-CEO B seat 026851bd (Fable 5.1)",
+    "ledger_sha_source": "origin/main at e338508d (macro #7451 merge, 2026-09-20T00:40:06Z) = ledger blob 70505eaa (last ledger commit 5b4bbbc9 = #7447 records pass)",
+    "single_writer_note": "append-only in-cell notes on 3 rows already inside Sol's 80-row union; no state moves; no manifest row changes (none of the 12 mirrored rows touched); source heads named in every appended cell; tests/test_mo_b_ledger_reconciliation_2026_09_18.py untouched and green (5 passed); commits 99acab58 (ledger) + 6e5523c8 (this manifest block) + 8baae5bc (#7132 source head corrected to its merge commit e1e8de31 after Grok h_rec5_rv1 MAJOR 1) form one records PR (#7465)",
+    "rows_written": [
+      "MO-DELTA-021",
+      "MO-PAID-059",
+      "MO-PAID-078"
+    ],
+    "held_for_sol": {
+      "why": "same freeze as the _b block: #7390 pins capability_state_c2 for the 80 union rows and byte-freezes the other 50; the 31 cells held out of #7447 are replayed verbatim by this pass's applier and held again, plus 2 new held cells (MO-PAID-062 adjudication_notes: #7127 headroom-panel evidence; MO-DELTA-018 adjudication_notes: W8-1 note on an outside-50 row) - the seat does not edit Sol's pins; Sol re-pins or authorises a follow-up records PR that updates the test constants (SOL_UNHOLD=1 path in the staged applier)",
+      "rows": {
+        "MO-PAID-008": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-032": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "missing_contract_or_proof",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-022": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-026": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-017": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-DELTA-018": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "next_bounded_child",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-062": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-DELTA-038": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": []
+        },
+        "MO-PAID-056": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-052": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-041": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-PAID-055": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "real_consumer",
+            "missing_contract_or_proof"
+          ]
+        },
+        "MO-PAID-011": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-031": {
+          "proposed_state": null,
+          "cells": [
+            "adjudication_notes"
+          ]
+        }
+      },
+      "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_rec3_held_for_sol.json (33 row/cell pairs; proposed states unchanged from the _b block)"
+    },
+    "rows_note": "merges recorded on the 3 written rows - exactly the PRs named in the 5 appended cells: macro #7127 52ecfd96 (covenant headroom panel; MO-DELTA-021), #7132 e1e8de31 (account routes; MO-PAID-078) and #7451 e338508d (W8-1 cash runway; MO-PAID-059); MO-DELTA-021 and MO-PAID-059 are rendered-but-gated behind the render lane red since 09-13 and stay PARTIAL under Sol's pin; every producer stays unproven until a signed-in readback"
   }
 }
