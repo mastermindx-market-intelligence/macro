@@ -559,42 +559,54 @@ def _composition_summary(
         expiry = date.fromisoformat(str(key[1]))
         (known_expired if expiry <= cutoff else unresolved_exit).append(key)
 
-    expired_net = (
-        -float(k0.loc[known_expired, "exposure_gex"].sum())
-        if known_expired
-        else 0.0
+    def exposure_stats(
+        table: pd.DataFrame,
+        keys: list,
+        *,
+        sign: float = 1.0,
+    ) -> tuple[float, float]:
+        if not keys:
+            return 0.0, 0.0
+        values = table.loc[keys, "exposure_gex"].astype(float)
+        return sign * float(values.sum()), float(np.abs(values).sum())
+
+    expired_net, expired_abs = exposure_stats(k0, known_expired, sign=-1.0)
+    unresolved_exit_net, unresolved_exit_abs = exposure_stats(
+        k0, unresolved_exit, sign=-1.0
     )
-    unresolved_exit_net = (
-        -float(k0.loc[unresolved_exit, "exposure_gex"].sum())
-        if unresolved_exit
-        else 0.0
+    unresolved_entry_net, unresolved_entry_abs = exposure_stats(
+        k1, only1_remaining
     )
-    unresolved_entry_net = (
-        float(k1.loc[only1_remaining, "exposure_gex"].sum())
-        if only1_remaining
-        else 0.0
+    to_saturated_net, to_saturated_abs = exposure_stats(
+        k0, to_saturated, sign=-1.0
     )
-    to_saturated_net = (
-        -float(k0.loc[to_saturated, "exposure_gex"].sum())
-        if to_saturated
-        else 0.0
+    from_saturated_net, from_saturated_abs = exposure_stats(
+        k1, from_saturated
     )
-    from_saturated_net = (
-        float(k1.loc[from_saturated, "exposure_gex"].sum())
-        if from_saturated
-        else 0.0
+    known_composition_abs = (
+        expired_abs
+        + to_saturated_abs
+        + from_saturated_abs
     )
+    unresolved_composition_abs = unresolved_exit_abs + unresolved_entry_abs
     return {
         "known_expiry_deaths": len(known_expired),
         "known_expiry_death_net": expired_net,
+        "known_expiry_death_abs_mass": expired_abs,
         "model_state_to_saturated": len(to_saturated),
         "model_state_to_saturated_net": to_saturated_net,
+        "model_state_to_saturated_abs_mass": to_saturated_abs,
         "model_state_from_saturated": len(from_saturated),
         "model_state_from_saturated_net": from_saturated_net,
+        "model_state_from_saturated_abs_mass": from_saturated_abs,
         "unresolved_exits": len(unresolved_exit),
         "unresolved_exit_net": unresolved_exit_net,
+        "unresolved_exit_abs_mass": unresolved_exit_abs,
         "unresolved_entries": int(len(only1_remaining)),
         "unresolved_entry_net": unresolved_entry_net,
+        "unresolved_entry_abs_mass": unresolved_entry_abs,
+        "known_composition_abs_mass": known_composition_abs,
+        "unresolved_composition_abs_mass": unresolved_composition_abs,
         "full_map_composition_resolved": (
             not unresolved_exit
             and not only1_remaining
