@@ -14,63 +14,68 @@ state_before: >
   when a parent or 60-session window remained mixed.
 changed:
   - path: engine/subsector_rotation.py
-    what: "Added bounded completed-session measurement, coverage truth, reason codes, clocks/basis contract, and all-false capability permissions."
+    what: "Added bounded completed-session measurement, coverage truth, reason codes, clocks/basis contract, and all-false capability permissions; repaired internal-gap/stale-tail null semantics and current-session reclaim evidence at 2208fe40039d."
   - path: scripts/build_subsector_rotation.py
-    what: "Added completed-session cutoff, bounded existing-owner loading, fail-closed receipt, and attachment in the actual publisher."
+    what: "Added bounded existing-owner loading, fail-closed receipt, and actual publisher attachment; repaired session admission to reuse lib.nyse_calendar expected_last_session/is_session at 2208fe40039d."
   - path: engine/neuralweb/thematic_state.py
-    what: "Preserved the descriptive leadership observation in the incumbent canonical consumer."
+    what: "Preserved one deduplicated descriptive observation plus compact consumer references; propagates embedded staleness, producer UNAVAILABLE state and failure reasons into existing health; stable evidence_family_id/observation_id prevents repeat renders from masquerading as independent evidence."
   - path: tests/test_subsector_closed_session_leadership.py
     what: "Added measurement discriminators for parent/child separation, short/long disagreement, concentration, stale/sparse/missing data, and failed breakouts."
   - path: tests/test_build_subsector_closed_session_leadership.py
-    what: "Added cutoff, owner-loading, failure-receipt, and actual publisher integration tests."
+    what: "Added cutoff, owner-loading, failure-receipt, attempted-theme identity, and actual publisher integration tests."
   - path: tests/test_thematic_state_leadership_receipt.py
-    what: "Added canonical consumer receipt verification."
+    what: "Added canonical consumer receipt, health propagation, evidence-family identity, repeat-render identity, and deduplication verification."
+  - path: research/theme_graph/lane_c_closed_session_proof_2026-09-18/
+    what: "Committed exact Git-object price manifest, deterministic result bytes, hashes, and method note for the 2026-09-18 47-member / 46-priced closed-session proof."
   - path: agentos/handoffs/THEME-INTELLIGENCE-LANE-C-EARLY-LEADERSHIP-2026-09-19.md
     what: "Recorded the exact Lane C lifecycle, commits, proof, coverage, gates, and Lane A pickup action."
 verified:
-  - claim: "All subsector regressions, including the new measurement discriminators, pass on the rebased implementation."
+  - claim: "All subsector regressions, including repaired session/gap/reclaim discriminators, pass from detached exact head 2208fe40039d."
     command: "python3 -m pytest -q tests/test_subsector*.py"
-    result: "102 passed, 3 skipped."
-  - claim: "The builder and actual ThemeState consumer preserve the additive receipt."
+    result: "103 passed, 3 skipped."
+  - claim: "The builder and actual ThemeState consumer preserve the additive receipt, deduplicate the full observation, and propagate health on product commit 07db23e43d0d."
     command: "python3 -m pytest -q tests/test_thematic_state.py tests/test_thematic_state_leadership_receipt.py tests/test_build_subsector_closed_session_leadership.py"
-    result: "44 passed, 3 skipped."
+    result: "53 passed, 2 skipped."
+  - claim: "The canonical NYSE calendar owner passes beside the repaired consumer."
+    command: "python3 -m pytest -q tests/test_nyse_calendar.py"
+    result: "20 passed."
   - claim: "The existing sector intelligence pages remain valid."
     command: "python3 -m pytest -q tests/test_sector_intelligence_page.py"
     result: "20 passed with exact HEAD sparse redirect stubs materialized for the test."
-  - claim: "The implementation and review carrier are present in the draft review surface."
-    command: "git show --stat d1727e80a8bead258a545ceb6d938286baf64d31 && gh pr view 7455"
-    result: "Implementation committed; draft PR #7455 open."
+  - claim: "The exact historical real-input proof is reproducible from committed carrier bytes."
+    command: "rebuild from source commit 2208fe40039d Git objects using compute_closed_session_leadership; hash committed price_manifest.json and result.json"
+    result: "47 requested / 46 priced / NVEC absent; manifest sha256 f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81; result sha256 435a45de7167f99e07bc44475a2f161c3d81e488862804f5f6a9d28d970008ef; headline metrics reproduce exactly."
 unverified:
   - claim: "Merged and deployed bytes publish the observation in production after a naturally completed session."
     what_would_verify: "Incumbent merge/release, natural publication, deployed-byte comparison, and browser receipt."
   - claim: "The observation has predictive edge or acceptable false-alert economics."
     what_would_verify: "Evaluation/F predeclared baselines, outcome tracking, false-alert tests, and formal promotion."
-  - claim: "The inherited close series has the exact split/dividend basis F will accept."
-    what_would_verify: "Owner/F corporate-action contract review against the exact price reader and correction lineage."
+  - claim: "Every historical or future corporate action remains basis-stable without further owner checks."
+    what_would_verify: "Ongoing owner contract / correction-lineage validation beyond Lane F's accepted US first-vertical adjusted-basis exemplars."
 unresolved:
-  - "Lane A has not yet adopted or mapped the additive observation into its shared consumer contract."
+  - "Lane A has not yet adopted or mapped the additive observation into its shared consumer contract; the three new Lane C suites still need shared CI-manifest ownership on current main."
   - "GMI/F04 has not adjudicated dedicated CPU, accelerator, HBM/DRAM, NAND/SSD, server, storage, or optics identities."
-  - "Independent review is pending; Vercel is rate-limited and inactive merge-queue contexts fail by design."
+  - "Lane F independently reviewed 2208fe40039d and returned REQUEST_CHANGES. Product commit 07db23e43d0d closes Lane C-owned health/dedup/reproducibility findings; exact-head re-review is still required after push."
 next_actions:
-  - "Lane A picks up draft PR #7455 and reconciles leadership_observation plus measurement_receipt without broadening permissions."
+  - "Lane A reconciles leadership_observation plus measurement_receipt and wires the three Lane C suites into existing CI owners without broadening permissions or creating a new job."
   - "Route identity proposals to GMI/F04 and corporate-action/evaluation questions to F."
-  - "After independent review, the incumbent owner may decide merge; release still requires natural deployed/browser proof."
+  - "Lane F re-pins the next pushed exact head; only after accepted shared integration and hosted checks may the incumbent release owner consider merge, followed by natural deployed/browser proof."
 do_not_redo:
   - "Do not copy or activate held persistence/sector-control research from #7064 or #7095."
   - "Do not retune basket/theme scoring, signal gates, sector signals, Prophet, or generated marketdata to make semiconductors bullish."
   - "Do not treat current membership as historical PIT truth or evidence-only cohorts as canonical themes."
 danger_areas:
-  - "Forward-filling stale member tails fabricates zero returns and false persistence."
+  - "Forward-filling internal gaps or stale member tails fabricates zero/bridged returns and false persistence; repaired head 2208fe40039d keeps both null."
   - "A positive short window can coexist with a negative long window and deteriorating acceleration; do not collapse them."
   - "Descriptive leadership is not ranking, entry permission, sizing authority, predictive alpha, or production acceptance."
 ---
 
 # Theme Intelligence Lane C Return — Early Leadership and Subthemes
 
-Prepared: 2026-09-19  
-Operation: `theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001`  
-Integration lead: **Lane A**  
-Review carrier: Macro draft PR **#7455**  
+Prepared: 2026-09-19
+Operation: `theme-intelligence-c-early-leadership-and-subthemes-20260919-sol-001`
+Integration lead: **Lane A**
+Review carrier: Macro draft PR **#7455**
 Branch: `worktree-theme-intelligence-c-early-leadership-20260919-sol-001`
 
 ## Lifecycle state
@@ -80,9 +85,9 @@ Branch: `worktree-theme-intelligence-c-early-leadership-20260919-sol-001`
 | Chairman delivery | ACKED | Live handoff delivered to this Web session |
 | Pickup | COMPLETE | Source law, custody, owners, and collision records reconciled |
 | START | RECORDED | Recorded before the first source mutation |
-| Implementation | COMMITTED | `d1727e80a8bead258a545ceb6d938286baf64d31` |
+| Implementation | COMMITTED | boundary repair `2208fe40039d356929fac0f96b626edc33d42288`; health/dedup/proof repair `07db23e43d0df0b7161c8a51e6d82595ee974bbe` |
 | Review pickup | OPEN | Draft PR #7455 |
-| Independent review | PENDING | No independent approval claimed |
+| Independent review | REQUEST_CHANGES -> REPAIR IMPLEMENTED | Lane F #7453 reviewed 2208; next pushed exact head still owes re-review |
 | Merge | NOT DONE | Draft PR remains open |
 | Deployment | NOT DONE | No release or runtime mutation performed |
 | Production acceptance | NOT DONE | No deployed-byte or browser proof claimed |
@@ -100,7 +105,7 @@ The observation separates:
 - current, stale, unpriced, short-history, and missing-session coverage;
 - relevant volume and 20-session reclaim evidence.
 
-Parent membership is deduplicated by instrument. Current membership is labelled a non-PIT technical window. Unsupported values remain null with reason codes. Stale tails are not forward-filled into fabricated zero returns. Same-day bars are excluded until 16:15 New York time.
+Parent membership is deduplicated by instrument. Current membership is labelled a non-PIT technical window. Unsupported values remain null with reason codes. Internal gaps and stale tails remain unavailable rather than becoming fabricated zero/bridged returns. Completed-session admission reuses the incumbent NYSE calendar owner and its settled-session cutoff rather than a Lane C clock.
 
 Every observation is descriptive/context-only and carries an evidence receipt with source records, observation/input/computation clocks, bar status, membership basis, and all authority flags false: `may_rank`, `may_gate`, `may_size`, `may_escalate`, and `may_trade`.
 
@@ -132,10 +137,10 @@ No generated marketdata, crosswalk, membership history, scoring, signal-gate, se
 ARM is a direct member of `semiscompute`. SNDK is a direct member of both `semismemory` and `hardwarestorage`. Dedicated GPU/accelerator, HBM, DRAM, NAND/SSD, and optics identities are not fabricated here; canonical additions remain with GMI/F04.
 ## Real input-to-output proof
 
-Proof source commit: `d1727e80a8bead258a545ceb6d938286baf64d31`  
-Theme-tree blob: `65b0e9e3f5f938aaf224130f0af14cd6922aafed`  
-Snapshot blob: `534c1be0c68b50e7c05ef81183588ef7c76d7b71`  
-Existing rotation-feed blob: `86175c2c01b806bb4738bae6bc14fd30d56c4223`  
+Proof source commit: `d1727e80a8bead258a545ceb6d938286baf64d31`
+Theme-tree blob: `65b0e9e3f5f938aaf224130f0af14cd6922aafed`
+Snapshot blob: `534c1be0c68b50e7c05ef81183588ef7c76d7b71`
+Existing rotation-feed blob: `86175c2c01b806bb4738bae6bc14fd30d56c4223`
 Bounded price-manifest SHA-256: `7fbd80bc049fdaa934c5d86e3047d1a2b9d9f21f8af68e680280937445b2025c`
 
 The exact bounded proof used closed sessions through 2026-09-18 and 47 explicit Yahoo price records. Parent coverage was 46/47, so the aggregate status correctly remained `PARTIAL`; the bounded proof set did not contain NVEC.
@@ -169,7 +174,7 @@ Collision rulings:
 - Open draft #7023 overlaps only incumbent `tests/test_subsector_rotation.py`; Lane C used dedicated path-disjoint tests.
 - The implementation was rebased onto `ca7533a67670e0393728fda4b1633b56720aa1e0`. A final census found current main `c16823ddc3b99c5764509735df6a96f4e09848fe`; its subsequent changes are confined to the research-vault catalog and earnings route catalog, with no Lane C path overlap.
 
-No independent reviewer has approved this result yet. Draft PR #7455 is the current review pickup surface.
+Lane F independently reviewed `2208fe40039d356929fac0f96b626edc33d42288` and returned REQUEST_CHANGES after accepting the session/gap/reclaim repair. Its six blockers were stale-leadership health, unavailable-producer health, failure-reason health, shared CI ownership for three suites, branch diff whitespace, and real-price proof reproducibility. Product commit `07db23e43d0df0b7161c8a51e6d82595ee974bbe` closes the Lane C-owned health/dedup/proof source findings; the handoff normalization closes the net whitespace defect. Shared CI ownership remains Lane A's integration responsibility. Lane F exact-head re-review is still required after push.
 
 ## Remaining gates and exact next action
 
@@ -177,10 +182,28 @@ Open gates:
 
 1. Lane A must review the additive fields and either adopt them or map them into Lane A's versioned consumer contract without broadening permissions.
 2. GMI/F04 must decide canonical identity and exposure treatment for dedicated CPU, accelerator, HBM/DRAM, NAND/SSD, server, storage, and optics subthemes. The source-native evidence-only cohorts above must not be treated as new canonical themes before that decision.
-3. Evaluation/F must resolve the exact corporate-action basis and predeclare baselines, false-alert tests, and promotion criteria. The implementation currently discloses `OWNER_CLOSE_SERIES_UNVERIFIED` rather than manufacturing certainty.
-4. An independent reviewer must approve the source change. Only then may the incumbent merge/release owner consider merge and natural publication.
+3. Lane F's separate source audit proved the US first-vertical Yahoo/stocks close plane is adjusted across named split/dividend exemplars (`US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN`, receipt SHA-256 `514fc26661b79a8ccc8a3473c6bfbec4449da40e1468a8f63067ee5022c139ac`, #7453 commit `84bbe9be8340c2be8b52a6e8b9ef0e95104570ab`). Broader/future correction lineage and predictive false-alert baselines still remain with their owners.
+4. Lane F must re-review the next exact source head. Only then may the incumbent merge/release owner consider merge and natural publication.
 5. After merge and deployment, the release owner still owes deployed-byte/browser proof from a naturally completed session. A source proof is not production acceptance.
 
 **Exact next action for Lane A:** pick up draft PR #7455 and reconcile `leadership_observation` plus `measurement_receipt` with Lane A's additive consumer contract. Keep every capability permission false; route identity proposals to GMI/F04 and corporate-action/evaluation questions to F. Do not merge until independent review and those interface rulings are recorded.
 
 This child lane stops at the implemented, tested, pushed, source-proven draft-review boundary. It does not claim the parent Theme Intelligence program complete.
+## 2026-09-20 Lane F repair continuation
+
+Lane F review on `2208fe40039d356929fac0f96b626edc33d42288` accepted the calendar/gap/reclaim repairs and returned six release blockers. This continuation preserved the same PR/worktree and did not create a replacement carrier.
+
+Product commit `07db23e43d0df0b7161c8a51e6d82595ee974bbe` (tree `a5f90da1222674a14f68cc36dbe073e6237fd5db`) adds the remaining Lane C-owned repair:
+
+- an embedded leadership observation has its own freshness check and reaches existing `stale_legs`;
+- a producer-level `UNAVAILABLE` receipt is projected only into explicitly attempted themes, and its reason codes reach the same health path;
+- the canonical composed artifact stores one full observation under `subsector_leadership_observations` while each theme carries a compact JSON-pointer reference, so three canonical consumers do not become three independent confirmations;
+- `evidence_family_id` is stable by schema + source group; `observation_id` is stable across repeat renders and changes only with the observation clock;
+- the builder emits `requested_themes`, so a Semiconductors producer failure cannot be silently projected onto unrelated themes;
+- the historical 2026-09-18 proof is now committed as exact manifest/result bytes under `research/theme_graph/lane_c_closed_session_proof_2026-09-18/`.
+
+RED-first health/identity discriminators failed 4/4 before implementation and passed 4/4 afterward. Final owner checks before the continuity commit: `tests/test_subsector*.py` **103 passed, 3 skipped**; ThemeState + receipt + builder **53 passed, 2 skipped**; NYSE calendar **20 passed**; Sector Intelligence page **20 passed** after lawfully materializing the sparse `site/` tree; `py_compile` and worktree `git diff --check` pass; Agent OS **1,140 records, 0 errors, 87 advisory warnings**.
+
+The exact real-input rebuild is source commit `2208fe40039d356929fac0f96b626edc33d42288`, completed session `2026-09-18`, 47 requested semiconductor members, 46 committed Yahoo member tapes, and `NVEC` absent. Manifest SHA-256 is `f1a47938cae47d7709e3c1f052b581efe042757cf2fba1df69c671ddb37cdb81`; deterministic result SHA-256 is `435a45de7167f99e07bc44475a2f161c3d81e488862804f5f6a9d28d970008ef`. Compute/Memory/Lithography/Packaging headline readings reproduce the earlier return exactly.
+
+The only one of Lane F's six release blockers intentionally not owned by this commit is shared hosted-CI registration for the three Lane C suites. Lane A #7526 is the package integration lead and owns shared CI composition; it must wire the suites into existing jobs without creating a new CI plane. Merge, deployment, deployed-byte/browser parity, first-seen/first-visible correction history, and prospective alpha remain unproven.
