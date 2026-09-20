@@ -753,5 +753,25 @@
       "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_rec3_held_for_sol.json (33 row/cell pairs; proposed states unchanged from the _b block)"
     },
     "rows_note": "merges recorded on the 3 written rows - exactly the PRs named in the 5 appended cells: macro #7127 52ecfd96 (covenant headroom panel; MO-DELTA-021), #7132 e1e8de31 (account routes; MO-PAID-078) and #7451 e338508d (W8-1 cash runway; MO-PAID-059); MO-DELTA-021 and MO-PAID-059 are rendered-but-gated behind the render lane red since 09-13 and stay PARTIAL under Sol's pin; every producer stays unproven until a signed-in readback"
+  },
+  "seat_records_pass_2026_09_20_d": {
+    "recorded_by": "Meta-CEO B seat 026851bd (Opus 5)",
+    "ledger_sha_source": "origin/main at 07550eee (2026-09-20) = ledger blob ebe00922 (unchanged since the #7465 records pass)",
+    "single_writer_note": "FREEZE-LAWFUL append-only pass. Exactly 4 cells on 2 rows already inside Sol's 80-row union; only next_bounded_child and adjudication_notes are written; capability_state_c2 and granular_disposition are never assigned, so macro#7390's test_all_80_integration_rows_pin_disposition_and_capability holds by construction; no OUTSIDE-50 row is touched, so test_other_50_rows_are_byte_identical_to_integration_baseline keeps digest b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d; neither row is in the 33-pair held-for-Sol set and neither carries a textual assertion in test_sol_adjudicated_closure_fields_are_not_stale. All four checks were replicated locally against the applied file with pristine origin/main as the positive control.",
+    "why": "Both rows' next_bounded_child contradicted their own real_producer cell on main. MO-DELTA-021 said the headroom child was 'not on HEAD' while engine/covenant_headroom.py is on main; MO-PAID-059 said the XBRL debt-maturity producer had to be built first while that producer plus engine/cash_runway.py are on main.",
+    "rows_written": [
+      "MO-DELTA-021",
+      "MO-PAID-059"
+    ],
+    "source_heads": {
+      "macro#7127": "52ecfd96 (covenant headroom view-model + cs-covenant-room panel)",
+      "macro#7451": "e338508d (W8-1 cash runway engine + ticker block)",
+      "macro#7472": "efa374ea (seven direct _resolve_cash_runway branch tests)"
+    },
+    "open_blockers_named_not_claimed": {
+      "render_lane": "macro#7163 and macro#7215 both OPEN; render since 2026-09-19 is 19 cancelled / 6 failed / 0 successful, so every page-half proof stays owed",
+      "debt_maturity_cache": "data/debt_maturity is empty on main; the drip persist step entered the workflow at af9d8ea2 2026-09-19T07:45:45Z, twelve minutes after that day's run started, so run 35498174229 is the first to carry it"
+    },
+    "rows_note": "No state move is claimed or implied by this pass. The 33 held-for-Sol pairs remain unwritten and the unhold applier remains staged and unrun. The 12 OUTSIDE-50 rows and 7 pin conflicts that macro#7357 and macro#7358 want to edit are raised on macro#7390 for Sol's decision."
   }
 }
