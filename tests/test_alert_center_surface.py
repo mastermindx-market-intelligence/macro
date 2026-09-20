@@ -96,3 +96,12 @@ def test_client_renders_attention_groups_and_takeaway_before_receipts():
     assert "legacyView === 'signals'" in source
     assert "legacyView === 'situations'" in source
     assert "route({view:'explore'" in source
+
+
+def test_client_surfaces_structured_related_observations_without_fake_confirmation():
+    source = (ROOT / 'templates' / 'alert_center.js').read_text()
+    for text in ('Related changes', 'Same explicit subject',
+                 'not independent confirmation', 'situationByAlert',
+                 'relatedAlertId'):
+        assert text in source
+    assert 'acx-related-observation' in source

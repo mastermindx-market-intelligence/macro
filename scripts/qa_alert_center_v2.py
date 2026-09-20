@@ -7,12 +7,20 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import threading
+import unicodedata
 from playwright.sync_api import sync_playwright
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
     def log_message(self, *args):
         pass
+
+
+def plain(text: str) -> str:
+    text = str(text or '').strip()
+    while text and (unicodedata.category(text[0])[0] in 'PS' or text[0].isspace()):
+        text = text[1:]
+    return text.strip()
 
 
 def main():
@@ -145,6 +153,20 @@ def main():
                 assert page.locator('#ac-detail .acx-next-action').inner_text() == rotation_brief['next_action']
                 assert rotation_brief['evidence_label'] in text
             report['checks'].append('Three rotation rollover families render breadth-aware limits and current-panel reassessment')
+            situation = next(s for s in payload['explorer']['situations']
+                             if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
+            situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]
+            primary_id, related_id = situation_ids[:2]
+            page.goto(url + '#view=explore&id=' + primary_id, wait_until='domcontentloaded')
+            related_rows = page.locator('#ac-detail .acx-related-observation')
+            assert related_rows.count() >= 1
+            assert 'not independent confirmation' in page.locator('#ac-detail .acx-related-note').inner_text().lower()
+            related_row = page.locator(f'[data-related-alert-id="{related_id}"]')
+            assert related_row.count() == 1
+            related_row.click()
+            assert related_id in page.url
+            assert plain(by_id[related_id]['headline']) in page.locator('#ac-detail-title').inner_text()
+            report['checks'].append('Situation context links related observations without claiming independent confirmation')
             page.click('#ac-close')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
             page.click('[data-view="history"]')

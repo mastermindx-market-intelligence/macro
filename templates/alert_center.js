@@ -6,8 +6,13 @@
   let data;
   try { data = JSON.parse($('ac-data').textContent); }
   catch (_) { $('ac-stale').hidden = false; $('ac-stale').textContent = document.documentElement.dataset.lang === 'zh' ? '交互证据无法载入，原始来源链接仍可使用。' : 'Interactive evidence could not load. The original source links remain available below.'; return; }
-  const xp = data.explorer || {}, signals = xp.signals || [], history = xp.history || [], briefs = xp.briefs || {};
+  const xp = data.explorer || {}, signals = xp.signals || [], history = xp.history || [], briefs = xp.briefs || {}, situations = xp.situations || [];
   const byId = new Map(signals.map(a => [String(a.alert_id), a]));
+  const situationByAlert = new Map();
+  situations.forEach(situation => (situation.member_ids || []).forEach(id => {
+    const key = String(id);
+    if (byId.has(key) && !situationByAlert.has(key)) situationByAlert.set(key, situation);
+  }));
   const topIds = new Set(data.top_ids || []), views = ['now', 'explore', 'history'];
   const small = window.matchMedia('(max-width:1000px)');
   let limit = 8, returnId = '', state = {}, searchTimer;
@@ -178,6 +183,36 @@
   }
   function section(parent, en, cn) { const s = node('section'); s.append(node('h3', tr(en, cn))); parent.append(s); return s; }
   function pairs(parent, entries) { const dl = node('dl'); entries.forEach(([key, value]) => dl.append(node('dt', key), node('dd', String(value)))); parent.append(dl); }
+  function relatedObservationRow(a) {
+    const brief = briefFor(a), attention = brief.attention || 'for_awareness';
+    const label = attentionLabels[attention] || attentionLabels.for_awareness;
+    const button = node('button', undefined, 'acx-related-observation');
+    button.type = 'button'; button.dataset.relatedAlertId = a.alert_id;
+    button.append(node('span', field(a, 'source_label') + ' · ' + day(a) + ' · ' + tr(...label), 'acx-related-meta'),
+      node('strong', plain(field(a, 'headline')) || tr('Untitled observation', '未命名记录')));
+    const meaning = field(brief, 'implication') || field(a, 'detail');
+    if (meaning) button.append(node('span', meaning, 'acx-related-summary'));
+    button.append(node('span', tr('Open observation →', '打开记录 →'), 'acx-related-action'));
+    button.addEventListener('click', () => select(a.alert_id, false));
+    return button;
+  }
+  function appendRelated(parent, a) {
+    const situation = situationByAlert.get(String(a.alert_id));
+    if (!situation) return;
+    const related = (situation.member_ids || []).map(id => byId.get(String(id)))
+      .filter(row => row && row.alert_id !== a.alert_id);
+    if (!related.length) return;
+    const sec = section(parent, 'Related changes', '相关变化'); sec.classList.add('acx-related');
+    const subject = field(situation, 'subject');
+    const prefix = subject ? subject + ' · ' : '';
+    sec.append(node('p', prefix + tr(
+      'Same explicit subject in the current snapshot; these are related observations, not independent confirmation.',
+      '当前快照中的同一明确对象；以下为相关观测，并非独立确认。'), 'acx-related-note'));
+    const list = node('div', undefined, 'acx-related-list');
+    related.slice(0, 4).forEach(row => list.append(relatedObservationRow(row)));
+    sec.append(list);
+    if (related.length > 4) sec.append(node('p', tr('Showing 4 of ', '显示 4/共 ') + related.length + tr(' related observations.', ' 条相关观测。'), 'acx-related-more'));
+  }
   function inspect(a) {
     const body = $('ac-detail-body'); body.replaceChildren();
     $('ac-share').href = location.href;
@@ -191,6 +226,7 @@
     if (field(brief, 'reassessment')) {
       takeaway.append(node('h3', tr('What would change the read', '什么会改变判断')), node('p', field(brief, 'reassessment')));
     }
+    appendRelated(body, a);
     if (state.evt) {
       const selectedEvents = history.filter(e => e.alert_id === a.alert_id && eventClock(e) === state.evt);
       const selected = section(body, 'Selected historical firing', '选中的历史触发');
@@ -246,8 +282,6 @@
     priority.append(node('p', tr('Attention priority ','关注优先级 ') + (finite(a.priority) ? a.priority : '—') + tr(' · not a trading score',' · 并非交易评分')));
     const names = {conviction:['Source tier','来源等级'], severity:['Severity','严重程度'], recency:['Event recency','事件时间'], cross_asset:['Cross-asset context','跨资产背景']};
     pairs(priority, Object.entries(a.priority_components || {}).map(([k, val]) => [names[k] ? tr(...names[k]) : k, Array.isArray(val) ? val[0] : tr('Not supplied','未提供')]));
-    const related = (xp.situations || []).find(s => s.member_ids.includes(a.alert_id));
-    if (related) { const sec = section(body, 'Related observations', '相关记录'); sec.append(node('p', tr('Same explicit subject, not independent confirmation.','同一明确对象，不代表独立确认。'))); related.member_ids.filter(id => id !== a.alert_id && byId.has(id)).forEach(id => { const b = node('button', plain(field(byId.get(id), 'headline')), 'acx-text-link'); b.type = 'button'; b.addEventListener('click', () => select(id, false)); sec.append(b); }); }
     const h = history.filter(e => e.alert_id === a.alert_id), observed = section(body, 'Observed history', '实际事件历史');
     observed.append(node('p', Math.min(30, h.length) + '/' + (a.fire_count || h.length) + tr(' logged firings shown. Gaps are not continuous activity.',' 次触发记录；记录间隔不代表持续状态。')));
     h.slice(0, 30).forEach(e => { const line = node('div', undefined, 'acx-history-entry'), time = node('time', e.event_ts || e.event_date || e.board_date || tr('Date unknown','日期未知')); if (e.event_ts || e.event_date) time.dateTime = e.event_ts || e.event_date; line.append(time, node('span', plain(field(e, 'headline')))); observed.append(line); });
