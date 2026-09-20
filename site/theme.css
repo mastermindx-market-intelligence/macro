@@ -2486,7 +2486,7 @@ html[data-lang="zh"] .mx-spine-head > span{ letter-spacing:0; text-transform:non
   position:relative; height: var(--mxsp-rail-h);
   background: var(--mxsp-rail-bg);
   border: 1px solid var(--mxsp-rail-brd);
-  border-radius: var(--mxsp-rail-h);
+  border-radius: var(--r-pill,999px);
 }
 /* notches at 25 / 50 / 75 (not labels — just visual ticks cutting through the rail) */
 .mx-spine-rail::before,
@@ -2515,7 +2515,7 @@ html[data-lang="zh"] .mx-spine-anchors{ letter-spacing:0; }
 .mx-spine-mark{
   position:absolute; top:50%;
   width: var(--mxsp-marker-d); height: var(--mxsp-marker-d);
-  border-radius:50%;
+  border-radius:var(--r-pill,999px);
   transform: translate(-50%, -50%);
   background: var(--mxsp-mark-ink, var(--muted));
   z-index:2;
@@ -2524,7 +2524,7 @@ html[data-lang="zh"] .mx-spine-anchors{ letter-spacing:0; }
 .mx-spine-prev{
   position:absolute; top:50%;
   width: 9px; height: 9px;
-  border-radius:50%;
+  border-radius:var(--r-pill,999px);
   transform: translate(-50%, -50%);
   background: var(--panel);
   border: 1.5px solid var(--mxsp-mark-ink, var(--muted));
@@ -2652,3 +2652,259 @@ html[data-theme="light"] .mx-spine{
 .mx-tier-blurred--spec{ filter: blur(5px) saturate(.35); opacity:.42; }
 html[data-theme="dark"]  .mx-tier-blurred--spec{ opacity:.42; }
 /* end locked-content ghost */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .mx-stance — stance ink chip (UD-B1)
+
+   The hero & spine use a single chip class with a derived `--c` setter that
+   downstream rules consume (background, border, ink). Stance ink encoding:
+     act / get-ready   → --ink-ok
+     watch / protect   → --ink-warn
+     stand-aside / ignore → --muted
+     narrowing-pill    → --ink-warn (a derived specialty, not a third category)
+   Three levels, achromatic by default; colour only where it means severity.
+   ════════════════════════════════════════════════════════════════════════════════ */
+.mx-stance{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-label,11px); font-weight:700;
+  padding:4px 11px; border-radius:var(--r-pill,999px);
+  background:color-mix(in srgb, var(--c) 12%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--c) 28%, var(--line));
+  color:color-mix(in srgb, var(--c) 78%, var(--text));
+  line-height:1;
+}
+.mx-stance--ok{ --c: var(--ink-ok); }
+.mx-stance--warn{ --c: var(--ink-warn); }
+.mx-stance--down{ --c: var(--ink-down); }
+.mx-stance--muted{ --c: var(--muted); }
+/* end .mx-stance */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .ud-hero — Unified Macro Dashboard hero (UD-B1, spec §1 / §3 / §5 / §7)
+
+   Verdict hero + score + progress bar + verdict rows + arc gauge (#3/#4/#5/#9/#10)
+   plus the regime spine (#11 quad map subsumed per spec §3) plus spec §6
+   "What changed" / "Drivers" / "Watching" / "Go deeper" blocks. Dark and light
+   are TWO art directions (per CLAUDE.md §Theme art direction): dark = command
+   center with luminance depth and restrained glow; light = research workspace
+   with cool canvas, hairline discipline, shadow instead of glow. Token swap
+   alone is never proof of a light design — the bloom→ring on the subject
+   marker is one of three intentionally differing mechanisms (see spec §5).
+   ════════════════════════════════════════════════════════════════════════════════ */
+body.page-macro #ud-hero{ margin-top:0; }
+body.page-macro .ud-hero-panel{
+  display:flex; flex-direction:column; gap:var(--sp-5,20px);
+}
+body.page-macro .ud-hero-head{
+  display:flex; align-items:center; gap:var(--sp-3,12px);
+  font-family:var(--num,var(--font-mono));
+}
+body.page-macro .ud-eyebrow{
+  font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-2,var(--muted));
+}
+html[data-lang="zh"] body.page-macro .ud-eyebrow{ letter-spacing:0; text-transform:none; }
+body.page-macro .ud-live{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  color:var(--ink-2,var(--muted));
+}
+body.page-macro .ud-live i{
+  width:7px; height:7px; border-radius:var(--r-pill,999px);
+  background:var(--ink-3,var(--muted));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-3,var(--muted)) 18%, transparent);
+}
+body.page-macro .ud-live--green i{ background:var(--up); box-shadow:0 0 0 3px color-mix(in srgb, var(--up) 22%, transparent); }
+body.page-macro .ud-live--yellow i{ background:var(--warn); box-shadow:0 0 0 3px color-mix(in srgb, var(--warn) 22%, transparent); }
+body.page-macro .ud-live--red i{ background:var(--down); box-shadow:0 0 0 3px color-mix(in srgb, var(--down) 22%, transparent); }
+body.page-macro .ud-asof{
+  margin-left:auto;
+  font-size:11px; letter-spacing:.04em; color:var(--ink-3,var(--muted));
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── §1 grid: 660 copy + 316 gauge, space-between ────────────────────── */
+body.page-macro .ud-hero-grid{
+  display:grid; grid-template-columns:minmax(0,1fr) 316px;
+  gap:var(--sp-5,20px) 36px; align-items:start;
+}
+@media (max-width:860px){ body.page-macro .ud-hero-grid{ grid-template-columns:1fr; } }
+
+body.page-macro .ud-verdict{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;
+  font-size:var(--fs-display,46px); font-weight:800; line-height:.95;
+  letter-spacing:-.03em;
+  margin:4px 0 8px;
+}
+html[data-lang="zh"] body.page-macro .ud-verdict{ letter-spacing:0; }
+@media (max-width:390px){ body.page-macro .ud-verdict{ font-size:36px; } }
+body.page-macro .ud-verdict-word--up{ color:var(--ink-up,var(--up)); }
+body.page-macro .ud-verdict-word--down{ color:var(--ink-down,var(--down)); }
+body.page-macro .ud-verdict-word--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-macro .ud-verdict-comma{ font-size:var(--fs-display,46px); font-weight:800; color:var(--ink-1,var(--text)); }
+body.page-macro .ud-verdict-qualifier--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-macro .ud-verdict-qualifier--muted{ color:var(--ink-3,var(--muted)); }
+
+body.page-macro .ud-clause,
+body.page-macro .ud-flip{
+  margin:4px 0 0; max-width:62ch;
+  font-size:var(--fs-md,15px); color:var(--text);
+}
+body.page-macro .ud-flip{ color:var(--ink-2,var(--muted)); font-size:var(--fs-sm,12.5px); }
+
+body.page-macro .ud-meta{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
+}
+body.page-macro .ud-fired-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:var(--fs-label,11px); font-weight:700;
+  padding:4px 11px; border-radius:var(--r-pill,999px);
+  background:color-mix(in srgb, var(--act,var(--down)) 12%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--act,var(--down)) 28%, var(--line));
+  color:color-mix(in srgb, var(--act,var(--down)) 78%, var(--text));
+}
+
+/* ── Gauge column ─────────────────────────────────────────────────────── */
+body.page-macro .ud-hero-gauge{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding:8px 6px 0;
+  border-left:1px solid var(--line);
+  padding-left:var(--sp-4,16px);
+}
+@media (max-width:860px){ body.page-macro .ud-hero-gauge{ border-left:0; padding-left:0; } }
+body.page-macro .ud-score{
+  display:flex; align-items:baseline; gap:6px;
+  font-family:var(--num,var(--font-mono));
+}
+body.page-macro .ud-score-num{ font-size:var(--fs-num-xl,38px); font-weight:800; color:var(--ink-1,var(--text)); line-height:1; font-variant-numeric:tabular-nums; }
+body.page-macro .ud-score-out{ font-size:18px; font-weight:500; color:var(--muted); }
+body.page-macro .ud-score-label{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+html[data-lang="zh"] body.page-macro .ud-score-label{ letter-spacing:0; text-transform:none; }
+
+body.page-macro .ud-prog-wrap{ width:100%; margin-top:10px; }
+body.page-macro .ud-prog{
+  position:relative; height:8px; border-radius:var(--r-ctl,8px);
+  background:var(--tile,var(--panel2));
+}
+body.page-macro .ud-prog-fill{
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--up); border-radius:var(--r-ctl,8px);
+}
+body.page-macro .ud-prog-tick{
+  position:absolute; top:-3px; width:1px; height:14px;
+  background:var(--ink-3,var(--muted)); opacity:.55;
+}
+body.page-macro .ud-prog-pin{
+  position:absolute; top:50%; transform:translate(-50%,-50%);
+  width:3px; height:16px; background:var(--ink-1,var(--text)); border-radius:var(--r-ctl,8px);
+}
+body.page-macro .ud-prog-anchors{
+  display:flex; justify-content:space-between;
+  margin-top:6px; font-size:var(--fs-micro,10px);
+  font-weight:600; color:var(--ink-3,var(--muted));
+  font-family:var(--num,var(--font-mono));
+}
+body.page-macro .ud-prog-mid{ margin:0 auto; }
+html[data-lang="zh"] body.page-macro .ud-prog-anchors{ letter-spacing:0; }
+
+body.page-macro .ud-arc{ width:100%; max-width:220px; height:auto; margin-top:6px; }
+body.page-macro .ud-arc-solid{ transition:stroke-dasharray .35s var(--ease-std,ease); }
+body.page-macro .ud-arc-track{ stroke:var(--line); }
+body.page-macro .ud-arc-stroke{ stroke:var(--up); }
+
+/* ── §3 spine host — namespaced, governed in theme.css ────────────────── */
+body.page-macro .ud-spine-wrap{ margin-top:6px; }
+body.page-macro .ud-spine-foot{
+  margin:8px 0 0;
+  font-size:var(--fs-micro,10px); color:var(--ink-3,var(--muted));
+  font-weight:400; line-height:1.5;
+}
+
+/* ── §6 What changed ──────────────────────────────────────────────────── */
+body.page-macro .ud-changed{ margin-top:4px; }
+body.page-macro .ud-changed .mx-chg-row{ padding:9px 0; }
+
+/* ── §6 Drivers 2×2 ───────────────────────────────────────────────────── */
+body.page-macro .ud-drivers{ margin-top:8px; }
+body.page-macro .ud-driver-grid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--gap-grid,18px);
+}
+@media (max-width:860px){ body.page-macro .ud-driver-grid{ grid-template-columns:1fr; } }
+body.page-macro .ud-driver{
+  padding:14px 16px;
+  display:flex; flex-direction:column; gap:8px;
+}
+body.page-macro .ud-driver-head{ font-size:var(--fs-h3,14px); font-weight:800; color:var(--ink-1,var(--text)); margin:0; }
+body.page-macro .ud-driver-body{ margin:0; font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted)); }
+body.page-macro .ud-driver--locked{ position:relative; padding:0; min-height:90px; overflow:hidden; }
+body.page-macro .ud-driver--locked .mx-tier-blurred--spec{ padding:14px 16px; }
+body.page-macro .ud-driver-lock{
+  position:absolute; inset:auto 0 0 0;
+  padding:6px 16px; font-size:11px; font-weight:700;
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  text-align:center; color:var(--ink-2,var(--muted));
+}
+
+/* ── §6 Watching list — three if→what rows ───────────────────────────── */
+body.page-macro .ud-watching{ margin-top:6px; }
+body.page-macro .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+body.page-macro .ud-watch-item{
+  padding:10px 14px;
+  border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius:var(--r-ctl,8px);
+  background:var(--panel2);
+  font-size:var(--fs-sm,12.5px); color:var(--ink-2,var(--muted));
+  line-height:1.5;
+}
+body.page-macro .ud-watch-item-head{
+  display:block; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px;
+}
+
+/* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
+body.page-macro .ud-deeper{ margin-top:6px; }
+body.page-macro .ud-deeper-rail{
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+body.page-macro .ud-depth{
+  display:inline-flex; align-items:center;
+  padding:6px 12px;
+  font-size:var(--fs-sm,12.5px); font-weight:600;
+  background:var(--panel2); border:1px solid var(--line);
+  border-radius:var(--r-pill,999px); color:var(--text);
+  text-decoration:none;
+  transition:border-color .14s var(--ease-std,ease), background .14s var(--ease-std,ease);
+}
+body.page-macro .ud-depth:hover{
+  border-color:color-mix(in srgb, var(--link) 50%, var(--line));
+  background:color-mix(in srgb, var(--link) 6%, var(--panel2));
+}
+
+/* ── Page footer (spec §6) ────────────────────────────────────────────── */
+body.page-macro .ud-foot{
+  margin-top:8px; padding-top:14px;
+  border-top:1px solid var(--line);
+  font-size:var(--fs-micro,10px); color:var(--ink-3,var(--muted));
+  text-align:center;
+}
+
+/* ── Light theme: depth + bloom→ring + ink rungs (spec §5 row 2/3/8) ──
+   Three mechanisms intentionally differ:
+     • panel surface switches from panel2-tinted to pure panel-white with
+       a 1px ring + soft cast shadow (the canvas stays perceptibly cooler).
+     • the subject marker bloom becomes a 2px ring (a pastel stain on white).
+     • the arc stroke darkens to --up-light for 4.5:1 on white. */
+html[data-theme="light"] body.page-macro .ud-hero-panel{
+  background:var(--panel);
+  box-shadow:0 1px 3px color-mix(in srgb, var(--text) 7%, transparent),
+             0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent);
+}
+html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ────── */
+@media (max-width:390px){
+  body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
+  body.page-macro .ud-verdict{ font-size:36px; }
+  body.page-macro .ud-driver-grid{ gap:var(--sp-3,12px); }
+}
+/* end .ud-hero — UD-B1 §1/§3/§6 */

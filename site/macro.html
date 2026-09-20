@@ -3353,10 +3353,6 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
   
   
 
-
-
-
-
 <section class="ud-hero" id="ud-hero" aria-labelledby="ud-hero-h">
   <div class="panel span12 ud-hero-panel">
 
@@ -3375,11 +3371,9 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
     <div class="ud-hero-grid">
       <div class="ud-hero-copy">
         
-        <div class="ud-verdict">
-          <span class="ud-verdict-word ud-verdict-word--up"
-          >Risk-on</span><span class="ud-verdict-comma l-en">,</span><span class="ud-verdict-qualifier ud-verdict-qualifier--warn"
-          ><span class="l-en">narrowing</span><span class="l-zh">在收窄</span></span>
-        </div>
+        <h1 class="ud-verdict" id="ud-hero-h">
+          <span class="ud-verdict-word ud-verdict-word--up">Risk-on</span><span class="l-zh ud-verdict-word ud-verdict-word--up">风险偏好</span><span class="ud-verdict-comma l-en">,</span><span class="ud-verdict-qualifier ud-verdict-qualifier--warn"><span class="l-en">narrowing</span><span class="l-zh">在收窄</span></span>
+        </h1>
 
         <p class="ud-clause l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</p>
         <p class="ud-clause l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</p>
@@ -3388,16 +3382,16 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
         <p class="ud-flip l-zh">→ 若风险偏好走坏（现 85/100），则转「混合」。</p>
 
         <div class="ud-meta">
-          <span class="mx-stance ud-stance" style="--c:var(--ink-warn)">
+          <span class="mx-stance mx-stance--warn">
             <span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span>
           </span>
-          <span class="ud-fired-chip" data-tip-en="1 alert(s) fired" data-tip-zh="触发 1 项警报">
+          <span class="ud-fired-chip" data-tip-en="1 alert fired" data-tip-zh="触发 1 项警报">
             <span class="l-en">1 fired</span><span class="l-zh">1 项触发</span>
           </span>
         </div>
 
         
-        <div class="ud-callout mx-callout" style="--c:var(--ink-warn)">
+        <div class="ud-callout mx-callout">
           <b class="l-en">Read the dial with care:</b><b class="l-zh">读数注意：</b>
           <span class="l-en"> the dial is the measured blend; one input may rebuild tomorrow — check the as-of stamp.</span>
           <span class="l-zh">仪表读数为测量综合——某项输入次日可能重建，请核对时间戳。</span>
@@ -3407,7 +3401,7 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
       
       <div class="ud-hero-gauge" aria-label="regime score">
         <div class="ud-score">
-          <span class="ud-score-num tnum">61</span><span class="ud-score-out tnum">/100</span>
+          <span class="ud-score-num tnum" data-role="score">61</span><span class="ud-score-out tnum">/100</span>
         </div>
         <div class="ud-score-label">
           <span class="l-en">Regime score</span><span class="l-zh">状态评分</span>
@@ -3432,14 +3426,12 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
 
         
         <svg class="ud-arc" viewBox="0 0 220 130" preserveAspectRatio="xMidYMid meet" role="img"
-             aria-label="score arc gauge">
+             aria-label="regime score arc, value 61 of 100">
           
           <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
-                stroke="var(--line, var(--mxsp-rail-bg, #3a4150))" stroke-width="6" stroke-linecap="round" opacity=".55"/>
-          <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
-                stroke="var(--up, #45b873)" stroke-width="6" stroke-linecap="round"
-                stroke-dasharray="172.47 999"
-                class="ud-arc-solid"/>
+                class="ud-arc-track" stroke-width="6" stroke-linecap="round" opacity=".55"/><path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
+                class="ud-arc-stroke" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="172.47 999"/>
         </svg>
       </div>
     </div>
@@ -3462,7 +3454,7 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
 
         
         <div class="mx-spine-row" data-subject="1" data-stance="protect">
-          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">61</small></div>
+          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><span class="sr-only" aria-label="regime score 61">·</span></div>
           <div class="mx-spine-rail-wrap">
             <div class="mx-spine-rail">
               <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div>
@@ -3471,7 +3463,7 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
           </div>
           <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
         </div>
 
         
@@ -3479,25 +3471,25 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
           <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
           <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></span></div>
         </div>
         <div class="mx-spine-row" data-stance="get-ready">
           <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
           <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-ok)"><span class="l-en">Get ready</span><span class="l-zh">准备行动</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--ok"><span class="l-en">Get ready</span><span class="l-zh">准备行动</span></span></div>
         </div>
         <div class="mx-spine-row" data-stance="stand-aside">
           <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
           <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--muted)"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
         </div>
         <div class="mx-spine-row" data-null="1">
           <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
           <div class="mx-spine-travel"><span class="muted">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--muted)"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
         </div>
       </div>
       <p class="ud-spine-foot">
@@ -3517,7 +3509,7 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
           <span class="mx-chg-name tnum">—</span>
           <span class="mx-chg-what"><span class="l-en">An alert fired.</span><span class="l-zh">一项警报触发。</span>
           </span>
-          <span class="mx-stance" style="--c:var(--ink-warn)">
+          <span class="mx-stance mx-stance--warn">
             <span class="l-en">Watch</span><span class="l-zh">观察</span>
           </span>
           <span class="mx-chg-chev">›</span>
@@ -3533,24 +3525,20 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
 
         <div class="panel ud-driver">
           <b class="ud-driver-head"><span class="l-en">Holding.</span><span class="l-zh">企稳。</span></b>
-          <p class="ud-driver-body l-en">Tape is mixed.</p>
-          <p class="ud-driver-body l-zh">盘面混合。</p>
+          <p class="ud-driver-body l-en">Tape read pending — re-drawn nightly.</p>
+          <p class="ud-driver-body l-zh">盘面读数待更新——每晚重绘。</p>
         </div>
 
         <div class="panel ud-driver">
           <b class="ud-driver-head"><span class="l-en">Cooling, slowly.</span><span class="l-zh">缓慢降温。</span></b>
-          <p class="ud-driver-body l-en">Three reads below — never a fused score.
-          </p>
-          <p class="ud-driver-body l-zh">下方为三项读数——非融合评分。
-          </p>
+          <p class="ud-driver-body l-en">Three reads below — never a fused score.</p>
+          <p class="ud-driver-body l-zh">下方为三项读数——非融合评分。</p>
         </div>
 
         <div class="panel ud-driver">
           <b class="ud-driver-head"><span class="l-en">Narrowing.</span><span class="l-zh">正在收窄。</span></b>
-          <p class="ud-driver-body l-en">Sentiment reads neutral.
-          </p>
-          <p class="ud-driver-body l-zh">情绪判读：中性。
-          </p>
+          <p class="ud-driver-body l-en">Neutral</p>
+          <p class="ud-driver-body l-zh">中性</p>
         </div>
 
         
@@ -3576,16 +3564,16 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
       </div>
       <ul class="ud-watch-list">
         <li class="ud-watch-item">
-          <span class="l-en">If the breadth reading firms up across big stocks …this read moves toward Act, and we would say so here first.</span>
-          <span class="l-zh">若大盘广度走强 …本判读将趋向「可行动」，并率先在本页告知。</span>
+          <span class="ud-watch-item-head l-en">Read being updated — what we are watching re-draws nightly.</span>
+          <span class="ud-watch-item-head l-zh">判读更新中——观察项每晚重新校准。</span>
         </li>
         <li class="ud-watch-item">
-          <span class="l-en">If a fresh regime flip prints …the dial caps at Mixed until it settles, exactly as it does today.</span>
-          <span class="l-zh">若出现新一轮周期翻转 …仪表将临时封顶为「混合」直至企稳，今日已如此。</span>
+          <span class="ud-watch-item-head l-en">Read being updated — what we are watching re-draws nightly.</span>
+          <span class="ud-watch-item-head l-zh">判读更新中——观察项每晚重新校准。</span>
         </li>
         <li class="ud-watch-item">
-          <span class="l-en">If the Rate Path widens its landing spot …the policy lever tile updates before any score change.</span>
-          <span class="l-zh">若利率路径拓宽落点 …政策杠杆区块将先于评分更新。</span>
+          <span class="ud-watch-item-head l-en">Read being updated — what we are watching re-draws nightly.</span>
+          <span class="ud-watch-item-head l-zh">判读更新中——观察项每晚重新校准。</span>
         </li>
       </ul>
       <p class="ud-spine-foot">
@@ -3617,220 +3605,6 @@ body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
 
   </div>
 </section>
-
-<style id="ud-hero-css">
-/* ── Unified Dashboard hero (UD-B1) — page-local; spec §1 grid + §5 theme
-     art directions. Token substitution alone is never proof of a light
-     design: the canvas vs panel step is real (the spec canvas stays
-     perceptibly deeper than the panel), and the subject marker becomes a
-     ring on light, not a bloom (per spec §5 row 2). ─────────────────── */
-body.page-macro #ud-hero{ margin-top:0; }
-body.page-macro .ud-hero-panel{
-  display:flex; flex-direction:column; gap: var(--sp-5, 20px);
-}
-body.page-macro .ud-hero-head{
-  display:flex; align-items:center; gap: var(--sp-3, 12px);
-  font-family:var(--num, var(--font-mono));
-}
-body.page-macro .ud-eyebrow{
-  font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
-  color:var(--ink-2, var(--muted));
-}
-html[data-lang="zh"] body.page-macro .ud-eyebrow{ letter-spacing:0; text-transform:none; }
-body.page-macro .ud-live{
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:11px; font-weight:700; letter-spacing:.04em;
-  color:var(--ink-2, var(--muted));
-}
-body.page-macro .ud-live i{
-  width:7px; height:7px; border-radius:50%; background:var(--ink-3, var(--muted));
-  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-3, var(--muted)) 18%, transparent);
-}
-body.page-macro .ud-live--green i{ background:var(--up, #45b873); box-shadow:0 0 0 3px color-mix(in srgb, var(--up) 22%, transparent); }
-body.page-macro .ud-live--yellow i{ background:var(--warn, #e0a030); box-shadow:0 0 0 3px color-mix(in srgb, var(--warn) 22%, transparent); }
-body.page-macro .ud-live--red i{ background:var(--down, #e06464); box-shadow:0 0 0 3px color-mix(in srgb, var(--down) 22%, transparent); }
-body.page-macro .ud-asof{
-  margin-left:auto;
-  font-size:11px; letter-spacing:.04em; color:var(--ink-3, var(--muted));
-  font-variant-numeric:tabular-nums;
-}
-
-/* ── §1 grid: 660 copy + 316 gauge, space-between ────────────────────── */
-body.page-macro .ud-hero-grid{
-  display:grid; grid-template-columns:minmax(0, 1fr) 316px;
-  gap: var(--sp-5, 20px) 36px; align-items:start;
-}
-@media (max-width: 860px){ body.page-macro .ud-hero-grid{ grid-template-columns:1fr; } }
-
-body.page-macro .ud-verdict{
-  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;
-  font-size: var(--fs-display, 46px); font-weight:800; line-height:.95;
-  letter-spacing:-.03em;
-  margin: 4px 0 8px;
-}
-html[data-lang="zh"] body.page-macro .ud-verdict{ letter-spacing:0; }
-@media (max-width: 390px){ body.page-macro .ud-verdict{ font-size:36px; } }
-body.page-macro .ud-verdict-word--up{ color:var(--ink-up, var(--up)); }
-body.page-macro .ud-verdict-word--down{ color:var(--ink-down, var(--down)); }
-body.page-macro .ud-verdict-word--warn{ color:var(--ink-warn, var(--warn)); }
-body.page-macro .ud-verdict-comma{ font-size: var(--fs-display, 46px); font-weight:800; color:var(--ink-1, var(--text)); }
-body.page-macro .ud-verdict-qualifier--warn{ color:var(--ink-warn, var(--warn)); }
-body.page-macro .ud-verdict-qualifier--muted{ color:var(--ink-3, var(--muted)); }
-
-body.page-macro .ud-clause,
-body.page-macro .ud-flip{
-  margin: 4px 0 0; max-width:62ch;
-  font-size: var(--fs-md, 15px); color:var(--text);
-}
-body.page-macro .ud-flip{ color:var(--ink-2, var(--muted)); font-size: var(--fs-sm, 12.5px); }
-
-body.page-macro .ud-meta{
-  display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
-}
-body.page-macro .ud-fired-chip{
-  display:inline-flex; align-items:center; gap:6px;
-  font-size: var(--fs-label, 11px); font-weight:700;
-  padding:4px 11px; border-radius:999px;
-  background:color-mix(in srgb, var(--act, var(--down)) 12%, var(--panel));
-  border:1px solid color-mix(in srgb, var(--act, var(--down)) 28%, var(--line));
-  color:color-mix(in srgb, var(--act, var(--down)) 78%, var(--text));
-}
-
-/* ── Gauge column ─────────────────────────────────────────────────────── */
-body.page-macro .ud-hero-gauge{
-  display:flex; flex-direction:column; align-items:center; gap:8px;
-  padding: 8px 6px 0;
-  border-left:1px solid var(--line);
-  padding-left: var(--sp-4, 16px);
-}
-@media (max-width: 860px){ body.page-macro .ud-hero-gauge{ border-left:0; padding-left:0; } }
-body.page-macro .ud-score{
-  display:flex; align-items:baseline; gap:6px;
-  font-family:var(--num, var(--font-mono));
-}
-body.page-macro .ud-score-num{ font-size: var(--fs-num-xl, 38px); font-weight:800; color:var(--ink-1, var(--text)); line-height:1; font-variant-numeric:tabular-nums; }
-body.page-macro .ud-score-out{ font-size:18px; font-weight:500; color:var(--muted); }
-body.page-macro .ud-score-label{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
-html[data-lang="zh"] body.page-macro .ud-score-label{ letter-spacing:0; text-transform:none; }
-
-body.page-macro .ud-prog-wrap{ width:100%; margin-top:10px; }
-body.page-macro .ud-prog{
-  position:relative; height:8px; border-radius:4px;
-  background:var(--tile, var(--panel2));
-}
-body.page-macro .ud-prog-fill{
-  position:absolute; top:0; left:0; height:100%;
-  background:var(--up, #45b873); border-radius:4px;
-}
-body.page-macro .ud-prog-tick{
-  position:absolute; top:-3px; width:1px; height:14px;
-  background:var(--ink-3, var(--muted)); opacity:.55;
-}
-body.page-macro .ud-prog-pin{
-  position:absolute; top:50%; transform:translate(-50%, -50%);
-  width:3px; height:16px; background:var(--ink-1, var(--text)); border-radius:1.5px;
-}
-body.page-macro .ud-prog-anchors{
-  display:flex; justify-content:space-between;
-  margin-top:6px; font-size: var(--fs-micro, 10px);
-  font-weight:600; color:var(--ink-3, var(--muted));
-  font-family:var(--num, var(--font-mono));
-}
-body.page-macro .ud-prog-mid{ margin:0 auto; }
-html[data-lang="zh"] body.page-macro .ud-prog-anchors{ letter-spacing:0; }
-
-body.page-macro .ud-arc{ width:100%; max-width:220px; height:auto; margin-top:6px; }
-body.page-macro .ud-arc-solid{ transition:stroke-dasharray .35s var(--ease-std, ease); }
-
-/* ── §3 spine host — namespaced, governed in theme.css ────────────────── */
-body.page-macro .ud-spine-wrap{ margin-top: 6px; }
-body.page-macro .ud-spine-foot{
-  margin: 8px 0 0;
-  font-size: var(--fs-micro, 10px); color:var(--ink-3, var(--muted));
-  font-weight:400; line-height:1.5;
-}
-
-/* ── §6 What changed ──────────────────────────────────────────────────── */
-body.page-macro .ud-changed{ margin-top:4px; }
-body.page-macro .ud-changed .mx-chg-row{ padding:9px 0; }
-
-/* ── §6 Drivers 2×2 ───────────────────────────────────────────────────── */
-body.page-macro .ud-drivers{ margin-top: 8px; }
-body.page-macro .ud-driver-grid{
-  display:grid; grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap: var(--gap-grid, 18px);
-}
-@media (max-width: 860px){ body.page-macro .ud-driver-grid{ grid-template-columns:1fr; } }
-body.page-macro .ud-driver{
-  padding: 14px 16px;
-  display:flex; flex-direction:column; gap:8px;
-}
-body.page-macro .ud-driver-head{ font-size: var(--fs-h3, 14px); font-weight:800; color:var(--ink-1, var(--text)); margin:0; }
-body.page-macro .ud-driver-body{ margin:0; font-size: var(--fs-sm, 12.5px); color:var(--ink-2, var(--muted)); }
-body.page-macro .ud-driver--locked{ position:relative; padding:0; min-height:90px; overflow:hidden; }
-body.page-macro .ud-driver--locked .mx-tier-blurred--spec{ padding: 14px 16px; }
-body.page-macro .ud-driver-lock{
-  position:absolute; inset:auto 0 0 0;
-  padding: 6px 16px; font-size:11px; font-weight:700;
-  background:color-mix(in srgb, var(--panel) 88%, transparent);
-  text-align:center; color:var(--ink-2, var(--muted));
-}
-
-/* ── §6 Watching list — three if→what rows ───────────────────────────── */
-body.page-macro .ud-watching{ margin-top: 6px; }
-body.page-macro .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
-body.page-macro .ud-watch-item{
-  padding: 10px 14px;
-  border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
-  border-radius: var(--r-ctl, 8px);
-  background: var(--panel2);
-  font-size: var(--fs-sm, 12.5px); color:var(--ink-2, var(--muted));
-  line-height:1.5;
-}
-
-/* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
-body.page-macro .ud-deeper{ margin-top: 6px; }
-body.page-macro .ud-deeper-rail{
-  display:flex; flex-wrap:wrap; gap:8px;
-}
-body.page-macro .ud-depth{
-  display:inline-flex; align-items:center;
-  padding: 6px 12px;
-  font-size: var(--fs-sm, 12.5px); font-weight:600;
-  background:var(--panel2); border:1px solid var(--line);
-  border-radius: 999px; color:var(--text);
-  text-decoration:none;
-  transition: border-color .14s var(--ease-std, ease), background .14s var(--ease-std, ease);
-}
-body.page-macro .ud-depth:hover{
-  border-color: color-mix(in srgb, var(--link) 50%, var(--line));
-  background: color-mix(in srgb, var(--link) 6%, var(--panel2));
-}
-
-/* ── Page footer (spec §6) ────────────────────────────────────────────── */
-body.page-macro .ud-foot{
-  margin-top: 8px; padding-top: 14px;
-  border-top:1px solid var(--line);
-  font-size: var(--fs-micro, 10px); color:var(--ink-3, var(--muted));
-  text-align:center;
-}
-
-/* ── Light theme: depth + bloom→ring + ink rungs (spec §5 row 2/3/8) ── */
-html[data-theme="light"] body.page-macro .ud-hero-panel{
-  background:#ffffff;
-  box-shadow: 0 1px 3px rgba(20,30,50,.07);
-}
-html[data-theme="light"] body.page-macro .ud-arc-solid{ stroke:var(--up, #1f9a55); }
-@media (max-width: 860px){
-  body.page-macro .ud-hero-gauge{ border-left:0; }
-}
-
-/* ── Mobile 390 reduction (spec §7) — declarative re-composition ────── */
-@media (max-width: 390px){
-  body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap: var(--sp-4, 16px); }
-  body.page-macro .ud-verdict{ font-size:36px; }
-}
-</style>
 
   <!-- ======================= HEADER ======================= -->
   <div class="panel span12" id="regime-radar">
@@ -17130,24 +16904,6 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span><span class="l-zh">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
           <a class="nbx-item" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
@@ -17157,6 +16913,24 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
               <span class="nbx-src">official</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Sep 16</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
+              <span class="nbx-title"><span class="l-en">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span><span class="l-zh">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 19</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -21048,9 +20822,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-09-20 00:48 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-09-20 02:10 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-09-20 00:48 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-09-20 02:10 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   

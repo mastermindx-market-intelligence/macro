@@ -1,5 +1,5 @@
 {
-  "head": "eb9665b0b2",
+  "head": "686c2d8d3e",
   "branch": "claude/mo-a-unified-dashboard-b1",
   "pr": 7469,
   "source_url": "site/macro.html",
@@ -14,10 +14,10 @@
       "language": "en",
       "spine": {
         "w": 529,
-        "h": 363,
+        "h": 368,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_dark_zh_1440.png",
@@ -27,10 +27,10 @@
       "language": "zh",
       "spine": {
         "w": 468,
-        "h": 363,
+        "h": 368,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
     },
     {
       "file": "dashboard_light_en_1440.png",
@@ -40,10 +40,10 @@
       "language": "en",
       "spine": {
         "w": 529,
-        "h": 363,
+        "h": 368,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_light_zh_1440.png",
@@ -53,10 +53,10 @@
       "language": "zh",
       "spine": {
         "w": 468,
-        "h": 363,
+        "h": 368,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
     },
     {
       "file": "dashboard_dark_en_390.png",
@@ -66,10 +66,10 @@
       "language": "en",
       "spine": {
         "w": 0,
-        "h": 705,
+        "h": 696,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_dark_zh_390.png",
@@ -82,7 +82,7 @@
         "h": 795,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
     },
     {
       "file": "dashboard_light_en_390.png",
@@ -92,10 +92,10 @@
       "language": "en",
       "spine": {
         "w": 0,
-        "h": 705,
+        "h": 696,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n,\nnarrowing"
     },
     {
       "file": "dashboard_light_zh_390.png",
@@ -108,7 +108,7 @@
         "h": 795,
         "rows": 5
       },
-      "verdict_excerpt": ""
+      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
     }
   ]
 }

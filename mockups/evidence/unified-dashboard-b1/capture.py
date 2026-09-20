@@ -5,16 +5,20 @@ Renders site/macro.html (mode=macro, the new hero skeleton) and
 captures full-page screenshots, plus a focused hero crop per cell.
 
 Manifest naming: dashboard_<theme>_<lang>_<viewport>.png
-This head: eb9665b0b2 (items 3-5).
+This head: HEAD_SHA (read live from `git rev-parse HEAD` at run-time; the
+manifest must always reflect the bytes it captured).
 """
-import json, threading, hashlib
+import json, threading, hashlib, subprocess
 from pathlib import Path
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from playwright.sync_api import sync_playwright
 
 ROOT = Path.cwd()
 EVIDENCE = ROOT / "mockups/evidence/unified-dashboard-b1"
-HEAD_SHA = "eb9665b0b2"  # items 3-5 commit
+HEAD_SHA = subprocess.run(
+    ["git", "rev-parse", "--short", "HEAD"],
+    cwd=ROOT, capture_output=True, text=True, check=True,
+).stdout.strip()  # noqa: S603 — read-only `git rev-parse`
 
 
 class QuietHandler(SimpleHTTPRequestHandler):
@@ -102,7 +106,7 @@ def main() -> int:
                             if spine.count() > 0
                             else {"w": 0, "h": 0, "rows": 0}
                         )
-                        verdict = page.locator(".mx-vh").first
+                        verdict = page.locator(".ud-verdict").first
                         verdict_text = (
                             verdict.evaluate("(e)=>e.innerText")
                             if verdict.count() > 0

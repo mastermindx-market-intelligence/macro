@@ -19,7 +19,7 @@ names where every census module lands in the new composition, the disposition cl
 | Ruling | Subject | Verdict |
 |---|---|---|
 | **R1** | Census **#6** (Leadership context strip — "Under the surface: Health Care / Staples / Utilities held …") | **IMPROVE** — folds into spec §6 *Drivers* block (defense-vs-cyclical read becomes one of three driver tiles, not its own strip) |
-| **R2** | Census **#19 / #20** (Markets isle + dialog — 4-tile futures grid + tabbed deep dialog) | **RETAIN** as glance tile row + dialog per spec §4 (`DecisionRow` / `dlg-markets`) |
+| **R2** | Census **#19 / #20** (Markets isle + dialog — 4-tile futures grid + tabbed deep dialog) | **RETAIN** as glance tile row + dialog per spec §4 (component inventory `DecisionRow` / `dlg-markets`); on the page it lands on the §2 spine row (US / HK / China A / Gov bonds / Commodities) |
 | **R3** | Census **#21 + #35** (Risk isle absorbs the volatility-weather chips) | **IMPROVE** — the risk isle keeps its dial + scar chips; the **volatility-weather chips** (`calm / breeze / gust / storm`) fold INTO the risk isle instead of sitting as a sibling stack |
 | **R4** | Census **#29** (Deep context isle — "Where next", three wnx-cards) | **RETAINED** as the **single deep-context surface** — the three wnx-cards stay grouped |
 | **R5** | Census **#44** (dlg-deep-context) | **ABSORBED** into #29 — one surface, not two; the dialog content rolls into the isle body or its disclosure |

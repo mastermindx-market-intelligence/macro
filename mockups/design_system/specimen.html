@@ -663,6 +663,35 @@ body.mobile-sim .wrap{ max-width:390px; }
     <p class="mockup-note l-en" style="margin-top:8px">Locked tier preview — exact spec §11 item 4 recipe: <code>blur(5px) saturate(.35) opacity .42</code>.</p>
     <p class="mockup-note l-zh" style="margin-top:8px">锁定层预览——严格按照规范 §11 第 4 条配方：<code>blur(5px) saturate(.35) opacity .42</code>。</p>
   </div>
+
+  <div class="panel">
+    <div class="mx-sec"><h3 class="l-en">390 reduction — the spine as STACKED CARDS, not a squeezed table</h3><h3 class="l-zh">390 缩约 — 脊柱改为「堆叠卡片」而非压缩表格</h3></div>
+    <p class="mockup-note l-en">Per spec §7, on a 390 viewport the spine table geometry does NOT survive — each row becomes two rows on the card:
+      row 1 = name + stance chip; row 2 = the shared rail + travel figure. The head row hides; the stance column moves into the name row.
+      Numbers survive; table geometry does not.</p>
+    <p class="mockup-note l-zh">依规范 §7，390 视口下表格几何无法保留——每行在卡片上变为两行：第一行 = 名称 + 立场徽章；第二行 = 共享标尺 + 移动数字。表头隐藏；立场列并入名称行。数字保留；表格几何不再。</p>
+    <div class="mobile-sim" style="border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
+      <div class="mx-spine" data-spec="ud-b1-390" style="--mobile:1;">
+        <div class="mx-spine-row" data-subject="1" data-stance="protect">
+          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:72%"></div></div></div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
+        </div>
+        <div class="mx-spine-row" data-stance="watch">
+          <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:61%"></div></div></div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
+        </div>
+        <div class="mx-spine-row" data-null="1">
+          <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div></div>
+          <div class="mx-spine-travel"><span class="muted">—</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="mockup-note l-en" style="margin-top:8px"><em>This panel previews the @media (max-width:640px) reduction that <code>templates/theme.css</code> applies to <code>.mx-spine</code> on a real 390 viewport. Numbers, marker geometry and stance ink survive; the column layout collapses to a single stack.</em></p>
+    <p class="mockup-note l-zh" style="margin-top:8px"><em>此面板预览了 <code>templates/theme.css</code> 在真实 390 视口下通过 <code>@media (max-width:640px)</code> 对 <code>.mx-spine</code> 实施的缩约。数字、标记几何与立场墨色保留；栏布局折叠为单一堆叠。</em></p>
+  </div>
 </section>
 
 <!-- ══ 7 · ARCHETYPE DEVICES ══ -->
