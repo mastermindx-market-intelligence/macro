@@ -2580,6 +2580,10 @@ class TestRunCycleEndToEnd:
         assert meta["fetch_compute_sec"] >= 0
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 1
+        assert meta["roots_with_source_payload_names"] == ["SPY"]
+        assert state["root_source_receipts"] == {
+            "SPY": "2026-07-02T18:30:00Z",
+        }
         assert meta["source_response_at_first"] == "2026-07-02T18:30:00Z"
         assert meta["source_response_at_last"] == "2026-07-02T18:30:00Z"
         assert meta["asof"] == "2026-07-02T18:30:00Z"
@@ -2632,11 +2636,15 @@ class TestRunCycleEndToEnd:
             lambda root, *_args, **_kwargs: (root, None, None),
         )
         prior_source = "2026-07-02T17:45:00Z"
+        prior_receipts = {"SPY": "2026-07-02T17:40:00Z"}
         feed, heat, meta, state, _ = poller.run_cycle(
             roots=["SPY"],
             session_date=SESSION_DATE,
             delta_mode="full_day",
-            day_state={"source_asof": prior_source},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_receipts,
+            },
             baselines={},
             cfg={
                 "max_concurrent": 2,
@@ -2654,8 +2662,28 @@ class TestRunCycleEndToEnd:
         assert state["source_asof"] == prior_source
         assert meta["roots_requested"] == 1
         assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert state["root_source_receipts"] == prior_receipts
         assert meta["source_response_at_first"] is None
         assert meta["source_response_at_last"] is None
+
+    def test_root_source_receipts_update_in_requested_order_and_preserve_prior(self, monkeypatch):
+        prior_receipts = {"IWM": "2026-07-02T17:40:00Z"}
+        _, _, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {
+                "QQQ": self._root_frame("QQQ", "09:30", seq_base=2000),
+                "SPY": self._root_frame("SPY", "09:30", seq_base=1000),
+            },
+            day_state={"root_source_receipts": prior_receipts},
+        )
+
+        assert meta["roots_with_source_payload_names"] == ["QQQ", "SPY"]
+        assert state["root_source_receipts"] == {
+            "IWM": "2026-07-02T17:40:00Z",
+            "QQQ": "2026-07-02T18:30:00Z",
+            "SPY": "2026-07-02T18:30:00Z",
+        }
 
     def test_engine_failure_does_not_advance_root_watermark(self, monkeypatch):
         frames = {
