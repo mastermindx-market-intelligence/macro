@@ -300,3 +300,25 @@ def test_aged_vector_impulse_brief_exposes_decay_and_blind_spot_without_fresh_ur
     assert '2–4 day edge window has elapsed' in brief['limitation']
     assert 'slow or options-calm selloffs' in brief['limitation']
     assert 'current impulse panel' in brief['next_action']
+
+
+
+def test_vector_impulse_window_copy_is_age_aware():
+    def row(alert_id, age):
+        value = signal(alert_id, source='vector', type_='impulse_warn_down', asset='vector')
+        value.update({
+            'tier': 'act', 'age_days': age,
+            'detail': 'DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.',
+            'edge': 'Forward de-risk window; the edge decays in ~2-4 days.',
+            'link': 'vector.html#impulse',
+        })
+        return value
+    fresh, unknown = row('fresh-impulse', 1), row('unknown-impulse', None)
+    result = project([fresh, unknown])['briefs']
+    fresh_brief, unknown_brief = result[fresh['alert_id']], result[unknown['alert_id']]
+    assert fresh_brief['attention'] == 'review_first'
+    assert 'bounded to that short horizon' in fresh_brief['limitation']
+    assert 'has elapsed' not in fresh_brief['limitation']
+    assert unknown_brief['attention'] == 'earlier_priority'
+    assert 'event age is unavailable' in unknown_brief['limitation']
+    assert 'has elapsed' not in unknown_brief['limitation']

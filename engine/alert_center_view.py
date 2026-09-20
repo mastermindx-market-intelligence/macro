@@ -200,28 +200,60 @@ def build_alert_brief(row: dict) -> dict:
 
     impulse = _VECTOR_IMPULSE_DOWN.fullmatch(detail)
     if source == 'vector' and type_ == 'impulse_warn_down' and impulse:
-        age_text = str(age) if age is not None else 'unknown'
+        if age is None:
+            window_limit = (
+                'The source describes a 2–4 day edge window, but event age is unavailable, '
+                'so current validity cannot be established.')
+            window_limit_zh = '来源描述的是 2–4 天优势窗口，但事件时间未知，无法确认当前有效性。'
+            blind_spot = (
+                'The model is blind to slow or options-calm selloffs, so this is not a '
+                'current de-risk instruction.')
+            blind_spot_zh = '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这不是当前减仓指令。'
+            reassessment = (
+                'Restore fresh urgency only if the current panel shows a new precursor '
+                'cross with a new event clock.')
+            reassessment_zh = '仅当当前面板出现带有新事件时间的新前兆突破时，才恢复最新紧迫性。'
+        elif age <= 4:
+            unit = 'day' if age == 1 else 'days'
+            window_limit = (
+                f'The source describes a 2–4 day edge window; this event is {age} {unit} '
+                'old, so any urgency is bounded to that short horizon.')
+            window_limit_zh = f'来源描述的是 2–4 天优势窗口；该事件已过去 {age} 天，紧迫性仅限于这一短期范围。'
+            blind_spot = (
+                'The model is blind to slow or options-calm selloffs, so this is a bounded '
+                'risk-management signal rather than a universal selloff detector.')
+            blind_spot_zh = '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这是有限的风险管理信号，并非通用下跌探测器。'
+            reassessment = (
+                'Reassess if the current panel no longer shows the precursor cross or once '
+                'the short edge window expires.')
+            reassessment_zh = '若当前面板不再显示前兆突破，或短期优势窗口结束，则重新评估。'
+        else:
+            window_limit = (
+                f'The source describes a 2–4 day edge window; at {age} days old, that '
+                '2–4 day edge window has elapsed.')
+            window_limit_zh = f'来源描述的是 2–4 天优势窗口；该事件已过去 {age} 天，窗口已经结束。'
+            blind_spot = (
+                'The model is blind to slow or options-calm selloffs, so this is not a '
+                'current de-risk instruction.')
+            blind_spot_zh = '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这不是当前减仓指令。'
+            reassessment = (
+                'Restore fresh urgency only if the current panel shows a new precursor '
+                'cross with a new event clock.')
+            reassessment_zh = '仅当当前面板出现带有新事件时间的新前兆突破时，才恢复最新紧迫性。'
         brief.update({
             'status': 'supported', 'family': 'vector.impulse_warn_down',
             'change': detail, 'change_zh': detail_zh,
             'implication': edge, 'implication_zh': edge_zh,
-            'limitation': (
-                f'The source describes a 2–4 day edge window; at {age_text} days old, '
-                'that 2–4 day edge window has elapsed. The model is blind to slow or '
-                'options-calm selloffs, so this is not a current de-risk instruction.'),
-            'limitation_zh': (
-                f'来源描述的是 2–4 天的优势窗口；该事件已过去 {age_text} 天，窗口已经结束。'
-                '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这不是当前减仓指令。'),
+            'limitation': f'{window_limit} {blind_spot}',
+            'limitation_zh': f'{window_limit_zh}{blind_spot_zh}',
             'next_action': (
                 'Open the current impulse panel and verify whether a new leading precursor '
                 'cross exists before changing risk.'),
             'next_action_zh': '打开当前脉冲面板，确认是否出现新的领先前兆突破，再调整风险。',
             'next_action_label': 'Recheck impulse',
             'next_action_label_zh': '复核脉冲',
-            'reassessment': (
-                'Restore fresh urgency only if the current panel shows a new precursor '
-                'cross with a new event clock.'),
-            'reassessment_zh': '仅当当前面板出现带有新事件时间的新前兆突破时，才恢复最新紧迫性。',
+            'reassessment': reassessment,
+            'reassessment_zh': reassessment_zh,
             'evidence_label': 'Open current impulse panel',
             'evidence_label_zh': '打开当前脉冲面板',
         })
