@@ -159,6 +159,13 @@ _FOREX_RESIDUAL_DETAIL = re.compile(
     r'\(shock z ([+-][0-9]+(?:\.[0-9]+)?)\) — possible intervention / flow / '
     r'geopolitics\. ([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
 )
+_FOREX_MOMENTUM_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}): Trend turned (up|down)$'
+)
+_FOREX_MOMENTUM_DETAIL = re.compile(
+    r'^Momentum state (neutral|bull|bear) → (bull|bear)\. '
+    r'([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
+)
 
 _DEMAND_AHEAD = re.compile(
     r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
@@ -504,6 +511,80 @@ def build_alert_brief(row: dict) -> dict:
                     '若当前 RoC 再次穿越零轴、持续状态条件失效，或来源不再标记该转向，则改变判断。'),
                 'evidence_label': 'Open current Macro risk panel',
                 'evidence_label_zh': '打开当前宏观风险面板',
+            })
+            return brief
+
+    momentum_headline = _FOREX_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    momentum_detail = _FOREX_MOMENTUM_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'momentum' and momentum_headline and momentum_detail:
+        headline_pair, direction = momentum_headline.groups()
+        from_state, to_state, detail_pair, quote_text = momentum_detail.groups()
+        expected_direction = 'up' if to_state == 'bull' else 'down'
+        asset_pair = detail_pair.replace('/', '')
+        if (headline_pair == detail_pair and expected_direction == direction and
+                asset_pair == str(row.get('asset') or '') and from_state != to_state):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current momentum state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前动量状态。'
+            validation_note = str(validation.get('note') or '')
+            validation_note_zh = str(validation.get('note_zh') or validation_note)
+            if str(validation.get('verdict') or '') == 'documented':
+                evidence_limit = (
+                    ' The source conviction is documented but this family is not separately '
+                    'backtested as a timing signal.')
+                evidence_limit_zh = ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+            else:
+                evidence_limit = (
+                    (' ' + validation_note) if validation_note else
+                    ' This state change is descriptive context, not a calibrated timing signal.')
+                evidence_limit_zh = (
+                    (' ' + validation_note_zh) if validation_note_zh else
+                    ' 该状态变化只是描述性背景，并非校准择时信号。')
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated firings are separate observations and do not prove the state '
+                    'persisted between them.')
+                recurrence_limit_zh = ' 重复触发是独立观测，并不能证明该状态在期间持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'forex.momentum',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports {detail_pair} momentum changed from {from_state} to '
+                    f'{to_state} at {quote_text}, a directional state change to verify against '
+                    'the current FX tape.'),
+                'implication_zh': (
+                    f'来源报告 {detail_pair} 动量从 {from_state} 转为 {to_state}，当时报价 '
+                    f'{quote_text}；这是需要结合当前外汇盘面复核的方向状态变化。'),
+                'limitation': (
+                    'A momentum-state flip describes the source model state; it is not a return '
+                    'forecast, trade instruction, calibrated probability or proof the move will '
+                    'continue.' + evidence_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '动量状态翻转描述的是来源模型状态；它不是收益预测、交易指令、校准概率，也不能证明'
+                    '行情会继续。' + evidence_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {detail_pair} is still in the '
+                    f'{to_state} momentum state, compare the latest quote with {quote_text}, and '
+                    'check whether the state has already reversed before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {detail_pair} 仍处于 {to_state} 动量状态，将最新报价与 '
+                    f'{quote_text} 对比，并检查状态是否已经反转，再调整敞口。'),
+                'next_action_label': 'Recheck FX momentum',
+                'next_action_label_zh': '复核外汇动量',
+                'reassessment': (
+                    f'Change the read if the current momentum state is no longer {to_state}, the '
+                    'source records a new opposite transition, or newer evidence supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前动量状态不再是 {to_state}、来源记录新的反向转换，或更新证据取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
             })
             return brief
 

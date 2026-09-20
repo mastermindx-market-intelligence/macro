@@ -912,3 +912,73 @@ def test_oi_crowding_abstains_on_wrong_headline_or_unsupported_state():
     briefs = project([wrong_headline, bad_state])['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (wrong_headline, bad_state))
     assert all(briefs[row['alert_id']]['family'] is None for row in (wrong_headline, bad_state))
+
+
+def test_forex_momentum_gets_state_change_brief_without_directional_forecast():
+    row = signal('fx-momentum', source='forex', type_='momentum', asset='EURUSD')
+    row.update({
+        'tier': 'context', 'age_days': 2, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'EUR/USD: Trend turned down',
+        'detail': 'Momentum state neutral → bear. EUR/USD 1.1463.',
+        'detail_zh': '动量状态 中性 → 看空。EUR/USD 1.1463。',
+        'link': 'forex.html#timeline',
+        'validation': {
+            'verdict': 'documented',
+            'note': 'Conviction is documented, not separately backtested as a timing signal.',
+        },
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.momentum'
+    assert brief['attention'] == 'for_awareness'
+    assert 'EUR/USD momentum changed from neutral to bear at 1.1463' in brief['implication']
+    assert 'not a return forecast' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert 'do not prove the state persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX momentum'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_forex_momentum_fresh_bull_transition_keeps_context_attention():
+    row = signal('fx-momentum-bull', source='forex', type_='momentum', asset='USDJPY')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'USD/JPY: Trend turned up',
+        'detail': 'Momentum state neutral → bull. USD/JPY 153.4780.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'for_awareness'
+    assert 'neutral to bull' in brief['implication']
+    assert 'calibrated probability' in brief['limitation']
+    assert 'no longer bull' in brief['reassessment']
+
+
+def test_forex_momentum_abstains_on_pair_direction_or_shape_mismatch():
+    wrong_direction = signal('fx-mom-dir', source='forex', type_='momentum', asset='EURUSD')
+    wrong_direction.update({
+        'headline': 'EUR/USD: Trend turned up',
+        'detail': 'Momentum state neutral → bear. EUR/USD 1.1463.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_pair = signal('fx-mom-pair', source='forex', type_='momentum', asset='EURUSD')
+    wrong_pair.update({
+        'headline': 'EUR/USD: Trend turned down',
+        'detail': 'Momentum state neutral → bear. GBP/USD 1.3344.',
+        'link': 'forex.html#timeline',
+    })
+    same_state = signal('fx-mom-same', source='forex', type_='momentum', asset='EURUSD')
+    same_state.update({
+        'headline': 'EUR/USD: Trend turned down',
+        'detail': 'Momentum state bear → bear. EUR/USD 1.1463.',
+        'link': 'forex.html#timeline',
+    })
+    rows = [wrong_direction, wrong_pair, same_state]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)

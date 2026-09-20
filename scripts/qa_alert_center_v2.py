@@ -197,6 +197,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-forex-residual.png'))
             report['screenshots'].append('desktop-forex-residual.png')
             report['checks'].append('FX residual shocks expose attribution work without claiming a causal driver')
+            momentum_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                               if brief.get('family') == 'forex.momentum')
+            momentum_brief = payload['explorer']['briefs'][momentum_id]
+            page.goto(url + '#view=explore&id=' + momentum_id, wait_until='domcontentloaded')
+            momentum_text = page.locator('#ac-detail').inner_text()
+            assert momentum_brief['limitation'] in momentum_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == momentum_brief['next_action']
+            assert momentum_brief['evidence_label'] in momentum_text
+            page.screenshot(path=str(out / 'desktop-forex-momentum.png'))
+            report['screenshots'].append('desktop-forex-momentum.png')
+            report['checks'].append('FX momentum flips expose current-state verification without becoming directional forecasts')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]
