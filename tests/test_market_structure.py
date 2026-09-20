@@ -1156,6 +1156,75 @@ def test_cosine_refuses_when_fixed_grid_clips_material_tail_mass():
     assert got["summary"]["max_adjacent_grid_clipped_mass"] == pytest.approx(0.02)
 
 
+def test_persistent_node_matching_requires_all_parameters_or_none():
+    frame = pd.DataFrame([
+        _r6_row("2026-09-18", 100, 10),
+        _r6_row("2026-09-25", 101, 10),
+    ])
+    state = _r6_state(frame)
+    got = skylit_r6.analyze_state(state, "2026-09-14")
+    assert got["persistent_node_matching"]["status"] == "NOT_REQUESTED"
+    assert got["summary"]["persistent_track_count"] is None
+
+    with pytest.raises(skylit_r6.R6Refusal, match="requires"):
+        skylit_r6.analyze_state(
+            state,
+            "2026-09-14",
+            node_prominence_fraction=0.5,
+        )
+
+
+def test_persistent_node_matching_tracks_prominent_normalized_location_across_expiries():
+    rows = []
+    for exp, strike in [
+        ("2026-09-18", 100),
+        ("2026-09-25", 101),
+        ("2026-10-02", 102),
+    ]:
+        rows.extend([
+            _r6_row(exp, strike, 100),
+            _r6_row(exp, 120, 10),
+        ])
+    got = skylit_r6.analyze_state(
+        _r6_state(pd.DataFrame(rows)),
+        "2026-09-14",
+        node_prominence_fraction=0.50,
+        node_match_tolerance_x=0.02,
+        node_min_expiries=3,
+    )
+    matched = got["persistent_node_matching"]
+    assert matched["status"] == "COMPLETE"
+    assert matched["candidate_node_count"] == 3
+    assert matched["persistent_track_count"] == 1
+    track = matched["tracks"][0]
+    assert track["n_expiries"] == 3
+    assert [node["strike"] for node in track["nodes"]] == [100.0, 101.0, 102.0]
+    assert track["max_match_distance_x"] < 0.02
+    assert got["summary"]["persistent_track_count"] == 1
+
+
+def test_persistent_node_matching_refuses_to_bridge_beyond_declared_tolerance():
+    rows = []
+    for exp, strike in [
+        ("2026-09-18", 100),
+        ("2026-09-25", 101),
+        ("2026-10-02", 102),
+    ]:
+        rows.append(_r6_row(exp, strike, 100))
+    got = skylit_r6.analyze_state(
+        _r6_state(pd.DataFrame(rows)),
+        "2026-09-14",
+        node_prominence_fraction=0.50,
+        node_match_tolerance_x=0.005,
+        node_min_expiries=3,
+    )
+    matched = got["persistent_node_matching"]
+    assert matched["candidate_node_count"] == 3
+    assert matched["track_count"] == 3
+    assert matched["persistent_track_count"] == 0
+    assert matched["tracks"] == []
+
+
 def test_unqualified_r2_state_refuses_before_topology():
     with pytest.raises(skylit_r6.R6Refusal, match="not source-qualified"):
         skylit_r6.analyze_state(_r6_state(pd.DataFrame([_r6_row("2026-09-18", 100, 1)]), gate=False), "2026-09-14")
