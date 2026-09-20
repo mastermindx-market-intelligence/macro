@@ -277,3 +277,16 @@ The new flat group `entry_context` preserves qualification, pending confirmation
 The package must still prove Lane A consumes that D clock into the separate shared health/freshness dimension. Until A's clock/health repair passes, D-to-A current presentation remains not proven. GitHub will not allow the connected PR-author identity to formally approve its own PR, so the independent semantic result is recorded in PR comment `5749597019` and the Lane F receipts instead of bypassing that restriction.
 
 Machine receipt: `research/theme_intelligence_acceptance/lane_d_exact_head_result.json`. Human assessment: `research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md`. No merge, deployment, browser proof, trade authority, or parent-program acceptance is implied.
+
+## 2026-09-20 continuation — Lane A and Lane C reacceptance
+
+Protected procedure was refreshed from Mastermind@40e7b63be296f19ef4153f59781021fb5f0e9e0d (Skillpack 1.0.1 / bootstrap 1) before this modifying continuation.
+
+### Lane C
+PR #7455 head fdd731f18a7634c57cdc83fc80cbe13811ec745e / tree 364800eb95db9c33255a41acaa76fef10b2564e9 is semantic PASS / BUILT_NOT_PROVEN. All six prior Lane C-owned blockers are closed. Independent source checks pass for stale reclaim exclusion, stale/unavailable health propagation, exact proof reproducibility, evidence-family identity, repeat-render identity and authority invariance. Its hosted contract-delta remains red because the three new suites are not registered on that branch; Lane A aaa69397 now owns that registration. Protected main does not contain the Lane C suites, so source release requires an immutable A+C composition rather than treating either PR as independently releasable.
+
+### Lane A
+PR #7526 head aaa69397ccce14fa26f5081fc71e69ee0fcd9ec7 / tree d7564da8053eb8f66efdf53b37b0178cd6a1dcae is semantic PASS / BUILT_NOT_PROVEN. TI-A-CLOCK-001, TI-A-TRANSITION-002 and TI-A-CI-003 are closed. Exact-head and latest-main integrated focused suites both report 121 passed / 1 skipped / 1 deselected. Latest-main integration is conflict-free at e6c6c3800268efb2e24c058b1f377ca78a543500, tree 75a6c2b57e5ad970bdf3542ea8bd2e5c9e65bf8c. Hosted fences and contract-delta are green; overall CI red is attributable to unrelated Basket Detail, Research Screener and stock-dashboard fixture evidence failures.
+
+### Package boundary
+Neither semantic PASS authorizes merge/deployment. Exact next integration dependency is one immutable A+C composition proving the shared CI registration against the actual Lane C test files and preserving all authority false. Lane B/E acceptance and deployed-browser/prospective proof remain separate.

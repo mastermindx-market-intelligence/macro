@@ -221,6 +221,7 @@ def _direct_discriminators(
             "closed_session_leadership": {
                 "schema": "subsector_rotation.closed_session_leadership.v1",
                 "status": "UNAVAILABLE",
+                "requested_themes": ["Semiconductors"],
                 "reason_codes": ["OWNER_INPUT_LOAD_FAILED"],
                 "clocks": {
                     "observation_session": None,
