@@ -1,43 +1,22 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v1",
-  "observed_at": "2026-09-19T13:05:00Z",
-  "candidate_evidence_head": "1b8caa50a1b43a9e2843c0855b8f347900ec2c91",
-  "candidate_source_head": "414263d2e7be3f70a45a565dfb44dc26488d71cb",
-  "previous_proof_base": "a2c0ac0f6cbf32daa8d5115396f07f96f7579c4f",
-  "latest_protected_main": "e338508d91bca30fadf9c0bbac3f154bf02f81de",
-  "latest_merge_tree": "97b08efa5e30508f24c9d5ef9aa1389605b0bb76",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v2",
+  "observed_at": "2026-09-20T03:10:00Z",
+  "candidate_source_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
+  "latest_protected_main": "4f1cfc00c2f3a5a855ac9f9ed071fd44ef7d4a32",
+  "latest_merge_tree": "9e33cf91e1bea5d5d1ec73e27fe2b9ab09b70416",
   "merge_conflicts": [],
-  "material_movement": {
-    ".github/ci/legacy-jobs.yml": {
-      "classification": "path-disjoint cash-runway CI wiring; merge tree preserves both changes",
-      "diff_sha256": "02140e6ca08671f118af9141e3cd923162331381df2440c8c04338978d39eaad"
-    },
-    "templates/theme.css": {
-      "classification": "selector-scoped .dmw-runway rules only; no shared token, Alert Center selector, palette, type or layout change",
-      "diff_sha256": "8c62ac9b4f14d2d9faa7e973f95c9aecc782d164b091aa41e50b326d144bc057"
-    }
-  },
+  "protected_movement_on_material_alert_paths": [],
+  "base_compatibility": "PASS",
+  "semantic_review_classification": "FULL_REREVIEW_REQUIRED",
+  "semantic_review_reason": "Candidate-owned attention semantics changed after the previous reviewed head: stale or unknown act-tier events now render as Earlier priority rather than current Review first, and mobile search geometry changed. Independent exact-head review is required.",
+  "skillpack_commit": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
   "candidate_owned_source_blobs": {
-    "engine/alert_center_view.py": "c57310d333490da902b82286ae221072effff462",
+    "engine/alert_center_view.py": "8d23d6e1859d583cb0dad51e6559f7feb61236e1",
     "engine/alert_triage.py": "ad7c86c19e37aebf6c936f41c4e959e95ccef935",
     "templates/alerts.html.j2": "9d3e867352e7e083aba4203261dcba4da3a2fba9",
-    "templates/alert_center.css": "cd6ca09c4f519ae667fcc695fd24278ef7f0ccd7",
-    "templates/alert_center.js": "4c1adc67a5ed31095f7e799ea6777f86fc16e659",
-    "scripts/qa_alert_center_v2.py": "06f16360eaec5fa736a085763c4de64106b1c3ac"
+    "templates/alert_center.css": "2bb6611740497d8391c0df256dbdf30c9f50dd6c",
+    "templates/alert_center.js": "3ffa2873bb30c386aa8cc7523ec94e66187e9d5b",
+    "scripts/qa_alert_center_v2.py": "cf17e941df96ac5106124ec5d59407c0f82f3d3e"
   },
-  "skillpack": {
-    "implementation_pin": "ac6180d0ca9107daae54f9eea6bd4b8aef92d630",
-    "publication_pin": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
-    "required_blobs_byte_identical": true,
-    "files": [
-      "INDEX.md",
-      "ACTIVE_EXECUTION.md",
-      "RECONCILE_STATE.md",
-      "REVIEW_RETURN.md",
-      "CLOSEOUT.md"
-    ]
-  },
-  "classification": "REVIEW_REUSE_ALLOWED",
-  "reason": "Candidate source/evidence is unchanged; current-main movement is selector/path-disjoint and the immutable current merge tree is conflict-free.",
   "production_acceptance": false
 }

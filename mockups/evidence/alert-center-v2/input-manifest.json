@@ -1,6 +1,6 @@
 {
-  "source_commit": "414263d2e7be3f70a45a565dfb44dc26488d71cb",
-  "generated_utc": "2026-09-20 00:24",
+  "source_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
+  "generated_utc": "2026-09-20 02:40",
   "proof_kind": "local_real_builder_committed_inputs",
   "production_acceptance": false,
   "inputs": [
@@ -82,13 +82,13 @@
   ],
   "candidate_sources": {
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
-    "engine/alert_center_view.py": "29d85dc0f1db2014cb4dda07c688ac7ed49dc236a8056e1455bd0727b6ebf756",
+    "engine/alert_center_view.py": "56d510d82d65c6cffb51e007b02422a09bac8d04aa8abde4df79bc1c7c8b5517",
     "engine/alert_time.py": "321a2414a68a51c6d21f268cb7a26696d596f5242c832e38f2119dfc21642906",
     "scripts/build_site.py": "9cba47448de9420c95d08bd9a5faef2ea8d2c38b71a25f3353ef68773aaa342c",
     "scripts/prove_alert_center_v2.py": "a56df6765faedd922c8d4be22db985ba886162b7879affbb7711c55cef01e526",
     "templates/alerts.html.j2": "30955e1c4a0831b22c61e6e4b5da16db533cddd7a9d36893d739abfd502ab7cf",
-    "templates/alert_center.css": "d09689a4731ca0e4f5752c6b40f3ad548c1cc23c849f60333df4fbac70946195",
-    "templates/alert_center.js": "d42b82a2ddb28deb49fe0014a02d99ed402fd2f08f9e9da42b41ad4ffde4b9ff",
+    "templates/alert_center.css": "2224812555f7f2f81a1957f8ed08f22fde2595c905e93067b8f522b2c63d8557",
+    "templates/alert_center.js": "c229a2d139b57f0578fb8678ed2696c625fde201301927d9e4983025b9f18fdf",
     "templates/theme.css": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
     "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
     "templates/_navlinks.html.j2": "e37bb828e7629be1b00df0c917fa30be4236bc7be89a2ab203a8e386d2c41366",
@@ -102,9 +102,9 @@
   "sources_unchanged_during_build": true,
   "inputs_unchanged_during_build": true,
   "outputs": {
-    "alerts.html": "dcbd3a99da2cb2fc70c976f6a423667f50b55427339b484a53942d0b65fa3538",
-    "factordata/alerts_triage.json": "240637a87059b3a142945b26e356954c81b8ec146b901d21bcca2d655634d29a",
-    "alertsdata/feed.json": "d526e150c8112b8ac382a97140ea565f1b3facc0f36d4fc24848e2daa94f871a"
+    "alerts.html": "3ee959a96d1adf9bf516ba81d41c8d1fe28bda8ee506fafdf8e4adb48093d30d",
+    "factordata/alerts_triage.json": "a232bb349099896a768d5e310cfe40e39a577a03e6ca1e051c65391c43b07874",
+    "alertsdata/feed.json": "d46d32092b4bc8b2df388b62c8bd2d7956eabfbb0790895143a73a5b525068a2"
   },
   "populations": {
     "legacy_ranked": 60,

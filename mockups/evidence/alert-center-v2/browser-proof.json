@@ -1,6 +1,6 @@
 {
   "checks": [
-    "Now shows eight canonical observations grouped by source-derived attention",
+    "Now separates earlier high-authority events from fresh watch items",
     "Full-source Bonds evidence is reachable beyond the capped queue",
     "Search AND source filtering, genuine no-results, and reset",
     "Evidence selection has a reloadable canonical-ID permalink",
@@ -64,7 +64,7 @@
       "name": "mobile-dark-en.png",
       "first_row": {
         "x": 13,
-        "y": 551.75,
+        "y": 600.5,
         "width": 364,
         "height": 208
       }
@@ -73,7 +73,7 @@
       "name": "mobile-dark-zh.png",
       "first_row": {
         "x": 13,
-        "y": 551.75,
+        "y": 600.5,
         "width": 364,
         "height": 168.875
       }
@@ -82,7 +82,7 @@
       "name": "mobile-light-en.png",
       "first_row": {
         "x": 13,
-        "y": 551.75,
+        "y": 600.5,
         "width": 364,
         "height": 208
       }
@@ -91,7 +91,7 @@
       "name": "mobile-light-zh.png",
       "first_row": {
         "x": 13,
-        "y": 551.75,
+        "y": 600.5,
         "width": 364,
         "height": 168.875
       }

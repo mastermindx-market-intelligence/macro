@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-19T12:45:00Z",
+  "generated_at": "2026-09-20T03:05:00Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -24,7 +24,7 @@
             "horizontal_overflow": false
           },
           "mobile": {
-            "document_height_px": 2368,
+            "document_height_px": 2417,
             "elements_wider_than_viewport": 0,
             "horizontal_overflow": false
           }
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 568241,
+        "payload_bytes_total": 4326718,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 14,
@@ -59,7 +59,7 @@
         "source_present": false,
         "todo_placeholder_hit_count": 0,
         "todo_placeholder_hits": [],
-        "visible_word_count": 502
+        "visible_word_count": 509
       },
       "page_id": "macro:alerts",
       "route": "/alerts.html"
@@ -72,10 +72,10 @@
     "resolved_gitdir_or_none": null,
     "resolved_sha_or_none": null,
     "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
-    "site_dir": "/private/tmp/alert-center-final-proof.cwCk00"
+    "site_dir": "/private/tmp/alert-center-mobile-final-proof.9CGkMY"
   },
   "tool": {
     "module_ref": "scripts/capture_page_evidence.py",
-    "version": "1.2.0"
+    "version": "1.3.0"
   }
 }
