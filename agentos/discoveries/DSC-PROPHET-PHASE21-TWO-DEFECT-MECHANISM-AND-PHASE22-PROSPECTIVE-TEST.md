@@ -1,16 +1,34 @@
 ---
 key: PROPHET-PHASE21-TWO-DEFECT-MECHANISM-AND-PHASE22-PROSPECTIVE-TEST
-title: Prophet V3 forensic work supports separate remaining-opportunity and hidden-fragility defects; prospective test frozen
-status: accepted_research_discovery
-program: prophet-us
-affects:
+claim: >
+  The outcome-contaminated V3 forensic evidence supports two distinct mechanisms
+  requiring prospective validation: consumed remaining opportunity at entry and
+  hidden-fragility damage during the hold; existing C2 plus same-cut C4 d2.turn
+  can test the fast-cycle mechanism without minting another detector.
+falsifier: >
+  Re-read the Phase-21 synthesis at SHA256
+  37b5ac78bd93c6d8ebc9b7effb260eb00c0fb77ef8c3259ecd29c231bd124ed6
+  and current Entry Radar C2/C4 source; this discovery is falsified if Phase-21
+  does not preserve the two mechanisms separately, or C4 d2.turn is not a
+  same-cut stratification-only observation on the primary C2 population.
+so_what: >
+  Do not fit another threshold on the 209 V3 development episodes. Preserve the
+  frozen Phase-22 prospective C2 x C4 test, retain all future false starts and
+  losses, and keep rates/breadth as prespecified context interactions rather than
+  promoting them into a Prophet gate.
+kind: architecture
+verified_at: 2026-09-19
+verified_by: >
+  Phase-21 synthesis SHA256 37b5ac78bd93c6d8ebc9b7effb260eb00c0fb77ef8c3259ecd29c231bd124ed6;
+  engine/entry_radar/challengers.py C2/C4 source at macro f95b2cc5807fd850c2378b4ad6e938d0e735d2a0;
+  Phase-22 prereg carrier sol/prophet-phase22-fast-cycle-regime-prereg-20260919.
+scope:
+  - macro
   - WS:PROPHET-US-V4-RECOVERY
   - WS:LIVE-ENTRY-RADAR
   - WS:EVAL-OS-MEASUREMENT-LAW
-confidence: medium
-reversibility: cheap
-decided_by: ceo-sol
-decided_at: 2026-09-19
+  - research/prophet_v4/
+confidence: probable
 ---
 
 ## Discovery
