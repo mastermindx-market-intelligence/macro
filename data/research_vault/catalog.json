@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T13:44:18.502550+00:00",
-  "count": 2502,
+  "generated_at": "2026-09-20T14:14:19.857170+00:00",
+  "count": 2503,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1069,6 +1069,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-gztqgwjhyzn-0492e1",
+      "title": "Strengthen your core",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:51Z",
+      "summary_points": [
+        "Portfolio Allocation Framework: 70-80% equities (US 50%+), 15-50% fixed income, 30% growth themes (AI/Power/Longevity); rebalance to counter geopolitical volatility (US-Iran/Middle East) and Fed rate uncertainty.",
+        "Geopolitical & Policy Triggers: Active US-Iran conflict, Middle East tensions, and oil price volatility directly pressure bond yields; Fed rate expectations necessitate systematic rebalancing to avoid emotional bias.",
+        "Innovation Exposure Gaps: Eurozone AI allocation lags US/North Asia benchmarks; Swiss equity overexposure to healthcare (underexposure to energy/materials) risks missing transformative innovation.",
+        "Risk Management Imperatives: Cautious investors reduce equities, add gold; income seekers blend bonds with satellite assets; alternatives (hedge funds 20-40%, private equity) boost resilience but require illiquidity risk acceptance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
