@@ -14,9 +14,11 @@ state_before: >
   #7187 remained the stacked availability dependency.
 implementation_head: a245d693b9f58a2307805992b0d075d66d692efd
 pull_request: 7457
-stacked_on:
+comparison_base: main
+depends_on:
   pull_request: 7187
-  head: 3501db113f11273281cc72ee2db0addd06eff566
+  head_at_p1_origin: 3501db113f11273281cc72ee2db0addd06eff566
+  reason: source freshness and publication recovery must be accepted before P1 integration
 changed:
   - path: engine/us_leader_pullback_coverage.py
     what: >
@@ -77,7 +79,7 @@ verified:
 current_state: BUILT_NOT_PROVEN
 blockers:
   - >
-    PR #7457 is draft and stacked on #7187. Independent submitted review and
+    PR #7457 is draft, compares to main for CI authority, and remains merge-dependent on #7187. Independent submitted review and
     terminal exact-head CI remain required.
   - >
     #7187 semantic pack 5 is red only on two HK/Canada browser-receipt asset hash
@@ -99,7 +101,7 @@ danger_areas:
   - Absorbing inherited HK/Canada receipt-hash debt into either Prophet carrier.
 next_actions:
   - >
-    Consume #7457 exact-head CI and independent review; repair only attributable
+    Consume #7457 exact-head CI against main and independent review; repair only attributable
     findings on the same carrier.
   - >
     Integrate only after #7187 acceptance, then run authenticated source-serving
