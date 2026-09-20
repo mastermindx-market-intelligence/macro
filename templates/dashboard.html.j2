@@ -2500,7 +2500,17 @@
   {# Ignition Radar strip + "Big Seven" leadership board REMOVED 2026-07-23 (operator ruling — forced Mag-7 call failed; see research/DO_NOT_REBUILD.md §2/§4 and research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md). Engine lanes (mag7_regime, ignition_radar) keep accruing in the background. #}
   {% endif %}
 
-  {% if mode != 'stocks' %}
+  {% if mode == 'macro' %}
+  {# ====== UD-B1 · Unified Macro Dashboard hero (Stage 1, binding) ======
+     Inserts the spec §1 hero skeleton ABOVE every legacy isle. All remaining
+     isles KEEP their current rendering below this block; B2+ migrates them
+     per research/UNIFIED_DASHBOARD_DISPOSITION.md. Binds REAL view-model
+     keys (no illustrative numbers from the spec). The legacy #regime-radar
+     panel that follows is untouched and remains the deep surface for the
+     macro controls (ms-front, six-factor evidence matrix, multi-timeframe
+     tape, flip-context popover, alerts popover, etc.). #}
+  {% include "_unified_dashboard_hero.html.j2" %}
+
   <!-- ======================= HEADER ======================= -->
   <div class="panel span12" id="regime-radar">
   <input type="checkbox" id="ms-alerts-toggle" class="ms-alerts-cb" hidden aria-hidden="true">
