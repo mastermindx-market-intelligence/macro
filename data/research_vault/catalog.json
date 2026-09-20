@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T18:00:02.953815+00:00",
-  "count": 2514,
+  "generated_at": "2026-09-20T18:15:05.138566+00:00",
+  "count": 2515,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -130,6 +130,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qvgq0dgfshs-d5ecff",
+      "title": "MS September FOMC Reaction Further hikes ahead",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T16:54:25Z",
+      "summary_points": [
+        "Fed Neutral Rate Revision: Neutral rate revised to 3.25% (vs 3.06%) driven by inflation and Middle East conflict, supporting two additional 25bp hikes (Dec/Mar 2027) to terminal range 4.25-4.50% - Geopolitical Inflation Transmission: Middle East conflict sustains elevated oil prices, driving commodity-processing margin pass-through to core inflation; Fed now centralizes geopolitics in inflation assessment - Market-Fed Expectation Divergence: Market prices 4.5% terminal rate for 2027 vs Fed median 4.0%, widest gap across horizons (2026–2029/LR), signaling underpriced inflation reversal risk - ECB-Fed Policy Asymmetry: ECB perceived as more sensitive to energy shocks than Fed, causing EUR/USD to track ECB-Fed policy expectations (not real yields), with Euro Area inflation swaps at 3.5% vs US 2.6% - EUR/USD Correlation Shift: Negative EUR/USD/Brent correlation during hostilities onset (Feb-Mar 2026) turned positive post-MoU (Jun-Sep 2026) due to Europe’s net energy import status - Inflation Breadth Persistence: Persistent inflation across PCE components (Exhibit 4) and tightening break evens (Exhibit 5) justify Fed’s hawkish stance, with risk of 1yly CPI spike vs 5y5y containment - October Hike Risk: Markets underprice October 2026 hike probability (50%+ chance), with Fed’s \"removing accommodation\" language increasing risk of earlier tightening beyond initial expectations"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
       "language": "en",
       "needs_metadata": false
     },
