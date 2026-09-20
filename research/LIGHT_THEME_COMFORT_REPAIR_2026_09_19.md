@@ -79,3 +79,20 @@ Release remains pending fresh exact-head CI and actual published asset hashes. N
 - Existing native Chromium probe: 80/80 current-sheet and 80/80 pre-repair-sheet pairs pass, minimum 4.55:1, maximum corresponding-ratio difference zero. Both use the actual soft-contrast boot class and exact emitted compatibility CSS. The four negative cases are preserved rather than erased.
 - 99 template/site pairs match; both JavaScript sources parse; runtime-style ratchet passes. The committed visual-evidence gate passes. Existing normal-render screenshots are retained as the preserved layout/material design reference; the compatibility change is separately bound to the before/after native-browser receipts. No new production screenshot is claimed.
 - Release ownership remains PR #7466. Do not repeat completed screenshot/contrast work unless its source or behavior changes. Next is fresh exact-head CI and canonical asset publication, then public browser proof on all three motivating routes.
+
+
+## Coverage correction — parsed consumers, not string matches
+The final source census parses actual script src attributes and resolves every
+relative path. Of 11,814 generated HTML documents, 11,764 directly load the SAME
+root theme.js, another 30 use the shared theme.css without a direct script, 10
+are redirects, and 10 are independent public/utility/preview surfaces. The
+initial all-pages JS count above was a substring count: it matched the common
+data-base shim's comment. This parsed result explicitly supersedes that claim.
+The independent marketing/utility surfaces are not restyled by this dashboard
+repair, and no source inventory count is a visual acceptance claim. The exact
+paths and classifications are in asset-consumer-census.json.
+
+Current source and material work are complete for PR #7466; do not expand this
+repair into marketing redesigns, archival previews, or other sessions' page
+layout programs. The latest exact-head CI must conclude before release; the
+existing render/pull publisher must publish current hashes before live proof.

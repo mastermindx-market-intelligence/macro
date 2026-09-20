@@ -5,7 +5,7 @@ falsifier: "Inspect the generated HTML inventory and standalone templates: this 
 so_what: "Author neutral materials only in theme.css, emit the matching theme.js through lib.site_assets, retain light-only --card/--ink aliases, and verify cache-versioned delivery. Never hand-maintain a competing runtime palette or import shared layout CSS into standalone pages."
 kind: landmine
 verified_at: 2026-09-19
-verified_by: "Source census at af92792954e1ad8a4812cf0e73a2dc54dac0672a: 281 top-level HTML pages load theme.js; 201 also load theme.css, 80 do not. Existing lib.site_assets emitter and tests/test_site_assets.py verify the exact CSS projection."
+verified_by: "Parsed script/link attributes at cb9b51e021ab4a857c734ed368c26614d735027b: 11764 direct theme.js consumers, 30 CSS-only consumers, 10 redirects, 10 independent surfaces; asset-consumer-census.json records paths. lib.site_assets and tests/test_site_assets.py verify exact CSS projection."
 scope: [macro, templates/theme.css, templates/theme.js, lib/site_assets.py]
 confidence: verified
 ---
@@ -39,3 +39,10 @@ and corresponding fresh/legacy pairs are paint-equivalent. See
 `test_cached_stylesheet_with_new_material_projection_clears_aa` in
 `tests/test_prophet_verb_ink_contrast.py`. This is cache-version compatibility
 proof, not evidence that the public CDN has published the candidate.
+
+
+Coverage correction: the initial substring count over-counted script consumers
+because the common data-base shim mentions theme.js in a comment. The parsed
+script/link inventory above supersedes that count; it is not a claim that every
+route was visually reviewed. Public marketing, operational utilities and preview
+surfaces with independent art direction were not forced into the dashboard skin.
