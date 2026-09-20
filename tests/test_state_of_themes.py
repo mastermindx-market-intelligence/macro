@@ -1152,6 +1152,35 @@ def test_theme_lanes_additive_consumer_contract_preserves_v1_keys(tmp_path):
         assert authority[key] is False
 
 
+def test_consumer_contract_preserves_owner_observation_clock_across_later_rebuild(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+
+    ctx = {
+        "as_of": "2026-09-20",
+        "n_stale_legs": 0,
+        "themes": [{
+            "theme_id": "ai_semiconductors",
+            "lane": "early",
+            "stage_key": "WATCH",
+            "foresight_observation_asof": "2026-09-18",
+            "falsifier_any_fired": False,
+            "falsifier_n_data_missing": 0,
+            "asym_legs_section": [],
+            "evidence_refs": ["site/basketdata/foresight_cascade.json"],
+        }],
+    }
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    payload = _json.loads(out.read_text(encoding="utf-8"))
+    row = payload["theme_context"]["ai_semiconductors"]
+
+    assert row["clocks"]["observation"] == "2026-09-18"
+    assert row["clocks"]["computation"] == "2026-09-20"
+    assert row["watermarks"]["snapshot"] == "2026-09-20"
+    assert row["watermarks"]["inputs"]["foresight"] == "2026-09-18"
+
+
 def test_owner_leadership_survives_thesis_risk_without_authority_escalation(tmp_path):
     import json as _json
     import scripts.build_state_of_themes as sot
