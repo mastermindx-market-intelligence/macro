@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T14:44:26.507251+00:00",
-  "count": 2505,
+  "generated_at": "2026-09-20T15:14:28.674623+00:00",
+  "count": 2506,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1128,6 +1128,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jjndx6sfyjz-1169d4",
+      "title": "Palladium",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:39Z",
+      "summary_points": [
+        "Supply constraints drive near-term price surge: Declining Russian ore grades, South Africa capital discipline, and global mine production cuts (2025/2026) tighten supply; recycling offsets only partially.",
+        "Near-term forecasts raised (Dec 2026 +200, Mar 2027 +100, June 2027 +100).",
+        "Hybrid adoption sustains near-term demand: US/Brazil/Asia hybrid vehicle growth supports autocatalyst demand in 2026, countering long-term electrification headwinds.",
+        "Palladium-platinum discount accelerates substitution: Widening discount improves economics for gasoline vehicles, boosting palladium demand in near-term substitution flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
