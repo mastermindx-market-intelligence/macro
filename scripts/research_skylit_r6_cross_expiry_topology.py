@@ -604,6 +604,10 @@ def analyze_transition(
     day1 = date.fromisoformat(session1)
     if day1 <= day0:
         raise R6Refusal("R6 transition requires session1 after session0")
+    root0 = str(settled_state0.get("root") or "").upper()
+    root1 = str(settled_state1.get("root") or "").upper()
+    if not root0 or root0 != root1:
+        raise R6Refusal("R6 transition requires the same non-empty root in both states")
 
     view0 = analyze_state(
         settled_state0,
