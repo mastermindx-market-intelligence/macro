@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T15:29:31.712913+00:00",
-  "count": 2507,
+  "generated_at": "2026-09-20T15:59:32.750898+00:00",
+  "count": 2509,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -57,6 +57,7 @@
     "Nordea",
     "Northern Trust",
     "Nuveen",
+    "One River",
     "PNC",
     "RBC",
     "Rabobank",
@@ -91,6 +92,45 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-3rsepmo0rbt-e71e6b",
+      "title": "The Fed Behind Us",
+      "institution": "Academy Securities",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T15:19:37Z",
+      "summary_points": [
+        "Houthi-Saudi Energy Disruption Risk: Houthi strikes on Saudi jet fuel facilities indicate systemic energy supply chain risks beyond U.S./Iran conflict, requiring immediate pricing adjustments for external energy exposure.",
+        "Fed Policy & Market Technical Shifts: Unusual Fed T-Report timing, Treasury selling (10-yr yield near 5%), and broken oil/yield correlation signal shifting market sentiment; Japanese Yen breaking 155 is a critical technical trigger.",
+        "Diesel Price Surge as Inflation Catalyst: Daily diesel price spike past \"red circle\" threshold confirms major inflation pressure; U.S.",
+        "export restrictions are ineffective due to domestic price structure (Global Price minus transport/storage), limiting policy impact."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yjaprrcop3y-ca224f",
+      "title": "One River Peters wknd notes 13 Sep 2026",
+      "institution": "One River",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T15:16:58Z",
+      "summary_points": [
+        "EU Policy Shift: Von der Leyen’s banking policy moving deposits to riskier assets, combined with AI safety concerns, could accelerate global financial repression amid AI catastrophe risks (policy, risk factor).",
+        "Bond Market Turn: Slowing economy, high rates, and short bond positioning signal imminent yield decline as market sentiment shifts (technical, fundamentals, flows).",
+        "Japan Recession Data: Lone Star forecasts 9-15% GDP deficit and 10-20% debt surge in 12 months, driving sustained cash stockpiling since 2022 (fundamentals, risk factor)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-dodqs2l8l6c-cfe9a0",
       "title": "European Economics Analyst Euro Area—Introducing Our Nearcast Model for Inflation",
