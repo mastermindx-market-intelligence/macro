@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T11:44:21.144490+00:00",
-  "count": 2496,
+  "generated_at": "2026-09-20T11:59:02.477132+00:00",
+  "count": 2497,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -931,6 +931,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yglbnevd2fv-b60199",
+      "title": "Optimize your leverage",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:17Z",
+      "summary_points": [
+        "US/Eurozone Rate Hikes: Fed raised to 4.00-4.25%, ECB at 2.5% with Dec hike expected; Swiss rate to 0.25% mid-2025 (0.6% inflation), BoJ cautious policy moderates yen rally.",
+        "Strategic Borrowing: Flexible credit lines avoid asset sales; borrow against assets to diversify into less correlated investments, smoothing portfolio fluctuations and reducing debt gradually.",
+        "Leverage Cost-Reward: Borrowing only viable if expected returns exceed costs; amplifies gains/losses for high-risk tolerance; requires robust checks (margin buffers, \"plan B\") and long-term alignment.",
+        "Risk Management: Stress test for margin calls/expenses; avoid liability-asset duration mismatches; use debt to diversify/build resilience while adapting to adverse growth/rate scenarios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
