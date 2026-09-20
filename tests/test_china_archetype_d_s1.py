@@ -122,7 +122,7 @@ def test_hero_freshness_only_spends_space_when_a_feed_is_degraded() -> None:
 def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
     assert "{% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}" in TPL
     assert "{{ t('What To Do','该怎么做') }}</div>" in TPL
-    assert "{{ t('What To Do','该怎么做') }} <span class="cnx-ctitle-note"" not in TPL
+    assert '{{ t(\'What To Do\',\'该怎么做\') }} <span class="cnx-ctitle-note"' not in TPL
     assert "Current posture" not in TPL
     assert "cnx-dlg-playbook" in TPL
 
