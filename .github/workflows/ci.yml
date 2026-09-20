@@ -5085,7 +5085,11 @@ jobs:
             echo "::error title=contract-delta::checkout HEAD does not match GITHUB_SHA" >&2
             exit 1
           fi
-          parents=$(git show -s --format='%P' HEAD)
+          # `actions/checkout` uses fetch-depth: 1 above, so Git marks this merge
+          # commit as a shallow boundary and revision-walking formats such as `%P`
+          # hide its parents. Read the immutable raw commit headers instead; they
+          # retain the exact parent OIDs even before either parent object is fetched.
+          parents=$(git cat-file -p HEAD | sed -n 's/^parent //p')
           set -- $parents
           if [ "$#" -ne 2 ]; then
             echo "::error title=contract-delta::PR checkout is not an exact two-parent tested merge" >&2

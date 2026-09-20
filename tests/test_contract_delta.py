@@ -305,7 +305,8 @@ def test_contract_delta_binds_to_the_exact_tested_merge_parent() -> None:
     resolver_run = resolver.get("run", "")
     assert "git rev-parse HEAD" in resolver_run
     assert "GITHUB_SHA" in resolver_run
-    assert "git show -s --format='%P' HEAD" in resolver_run
+    assert "git cat-file -p HEAD" in resolver_run
+    assert "sed -n 's/^parent //p'" in resolver_run
     assert '"$#" -ne 2' in resolver_run
     assert '"$tested_head" != "$EXPECTED_PR_HEAD"' in resolver_run
     assert 'base_sha=$tested_base' in resolver_run
@@ -356,6 +357,19 @@ def test_contract_delta_merge_resolver_selects_current_tested_base(
 
     _git("merge", "--no-ff", "candidate", "-m", "synthetic tested merge", cwd=repo)
     tested_merge = _git("rev-parse", "HEAD", cwd=repo).strip()
+    # actions/checkout@v4 with fetch-depth: 1 marks the tested merge itself as a
+    # shallow boundary.  Revision-walking commands then hide its parents even
+    # though the raw commit object still carries both `parent` headers.  Reproduce
+    # that hosted topology so this regression cannot accidentally pass only in a
+    # full local clone.
+    (repo / ".git" / "shallow").write_text(tested_merge + "\n", encoding="utf-8")
+    assert _git("show", "-s", "--format=%P", "HEAD", cwd=repo).strip() == ""
+    raw_parents = [
+        line.split(" ", 1)[1]
+        for line in _git("cat-file", "-p", "HEAD", cwd=repo).splitlines()
+        if line.startswith("parent ")
+    ]
+    assert raw_parents == [tested_base, pr_head]
 
     resolver = _step_named(_ci_jobs()["contract-delta"], "resolve the exact tested PR merge base")
     assert resolver is not None
