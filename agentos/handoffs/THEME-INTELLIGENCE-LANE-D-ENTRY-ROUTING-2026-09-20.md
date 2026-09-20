@@ -17,20 +17,23 @@ changed:
   - path: engine/group_context.py
     what: Added fail-closed entry context, Board V2 source parity, and member-qualified entry provenance.
   - path: engine/subsector_confluence.py
-    what: Exposed existing member eligibility/reason owner fields without changing signal policy.
+    what: Exposed existing member eligibility/reason fields plus a flat descriptive group-entry projection compatible with Lane A's consumer whitelist, without changing signal policy.
   - path: scripts/build_stock_board_v2.py
     what: Carried additive entry context through the existing machine consumer without rank/size authority.
   - path: tests/test_stock_board_v2.py
     what: Added source-parity, provenance, stale/null, proxy and policy-invariance discriminators.
   - path: tests/test_subsector_confluence.py
-    what: Pinned the additive member eligibility field on the existing producer.
+    what: Pinned member eligibility plus pending/extended/headwind/neutral group-entry projection and producer wiring.
 verified:
-  - claim: Lane D owning suites pass on the implementation carrier.
+  - claim: Lane D owning suites pass on the current integration implementation.
     command: python3 -m pytest -q tests/test_stock_board_v2.py tests/test_subsector_confluence.py
-    result: 52 passed, 3 skipped.
-  - claim: The exact GitHub synthetic merge was tested successfully.
-    command: pytest on refs/pull/7508/merge
-    result: 52 passed, 3 skipped on immutable merge receipt.
+    result: 56 passed, 3 skipped at source commit 84fbccad48112893b5008751db1bceb53e7e9499.
+  - claim: The prior exact GitHub synthetic merge was tested successfully before the Lane A group-projection delta.
+    command: pytest on the then-current refs/pull/7508/merge
+    result: 52 passed, 3 skipped; a fresh exact-head merge receipt is required after the new source commit is pushed.
+  - claim: Lane D group entry context survives Lane A's actual owner sanitizer without authority.
+    command: apply Lane A _owner_dimension and write_theme_lanes from PR #7526 head 23c6e6cccb42fa28fce09b8483802560f0b11998 to Lane D's T1 + EXTENDED + pending group projection
+    result: LANE_A_D_CONSUMER_COMPAT=PASS; state, band, tier/value, reason codes, source record and clocks survive; authority fields are stripped and parent authority remains false.
   - claim: Real current artifacts preserve Board V2 admission/rank while repairing entry-context truth.
     command: real-artifact GroupContext and Board V2 replay
     result: AMD rank 1 unchanged; ADI rich owner record retained; NVDA descriptive-only with group-only entry context.
@@ -40,11 +43,11 @@ unverified:
   - claim: Deployed browser parity for the integrated user journey.
     what_would_verify: Incumbent publication receipt plus deployed-browser proof.
 unresolved:
-  - PR #7508 still needs source-owner/review release before Lane A may integrate it.
-  - Hosted CI must be re-evaluated after this Agent OS schema repair; prior red included this malformed record plus one infrastructure-unknown fetch.
+  - PR #7508 still needs fresh exact-head hosted CI/fences plus source-owner/review release before Lane A may integrate it.
+  - The previous 416b522f exact-head fences succeeded, but its CI run is superseded by source commit 84fbccad48112893b5008751db1bceb53e7e9499.
 next_actions:
-  - Repair this Agent OS record contract, push the same carrier, and inspect the new exact-head hosted checks.
-  - When source-owner release is truthful, deliver PR #7508 to Lane A PR #7526 for integration.
+  - Push the current source plus this continuity record on the same carrier and inspect the fresh exact-head hosted checks without manual rerun/cancel.
+  - When source-owner release is truthful, return the released exact head to Lane A PR #7526 for integration.
 do_not_redo:
   - Do not create another entry-context reader, queue, store or recommendation plane.
   - Do not rebase only to erase path-disjoint ancestry.
@@ -75,15 +78,15 @@ proof. This lane does not own signal_gate, Prophet rank/size, ThemeState, option
 expert-event identity, queues, schedulers or publication control.
 Latest implementation commit:
 
-8837958fb620fbd6878dbf861d5f0c7d2d98108a
+84fbccad48112893b5008751db1bceb53e7e9499
 
 Implementation tree:
 
-f1afcacab5eca7aedd8184bb650ead42c5826ed8
+3a54e072a631938441e93fa453e504ad275a82fd
 
 Protected Skillpack used for the latest repair:
 
-Mastermind/master @ 0649c214cd8a4e62bb21d8394e4fbce6c3947a07
+Mastermind/master @ 5f62e9f6119cc3e3bc542a793ba96731e063e3a1
 
 ## State before
 
@@ -109,14 +112,16 @@ context may be presented as a qualified setup retains the positive entry-now chi
 A nonqualified member receives neutral "Subsector entry-now (group only)" context and
 does not receive subsectors:entry_now:* in surfaced_by.
 
-Reader contract is now version 4. All rank/gate/size/escalate/trade authority remains
-false.
+Reader contract is version 4. The subsector producer now also exposes a flat,
+descriptive group-level entry_context for Lane A's theme_intelligence.consumer.v1
+whitelist. It preserves qualification, pending confirmation and regime/extension as
+independent fields while all rank/gate/size/escalate/trade authority remains false.
 
 ## Verification
 
-Owning suites on the implementation carrier:
+Owning suites on the current integration implementation:
 
-52 passed, 3 skipped
+56 passed, 3 skipped
 
 The same owning suites on GitHub's immutable synthetic merge
 a672e94265db48e6f3984926b10741a835d03f81
@@ -148,6 +153,16 @@ Live Entry Radar's current owner path remains the runtime/auth-gated
 /live/entry_radar.json; committed absence is represented as UNAVAILABLE, not as
 global non-detection.
 
+
+Lane A compatibility proof at PR #7526 head
+23c6e6cccb42fa28fce09b8483802560f0b11998 used the actual
+scripts.build_state_of_themes._owner_dimension and write_theme_lanes path. A Lane D
+T1 + EXTENDED + pending group projection survived as
+QUALIFIED_PENDING_CONFIRMATION / EXTENDED / T1 with its reason codes, source record
+and observation clock intact; Lane A stripped the embedded authority block and kept
+its own rank/gate/size/escalate/trade authority false. Receipt:
+LANE_A_D_CONSUMER_COMPAT=PASS.
+
 ## What remains unverified
 
 - independent review of PR #7508;
@@ -156,14 +171,18 @@ global non-detection.
 - deployment/publication of the integrated parent product;
 - deployed browser proof on the real user journey.
 
-The current Vercel status on the Lane D head reports a build-rate-limit failure. It is
-not treated as product proof or a Lane D code regression, and no retry was issued.
+The prior 416b522f head proved fences green after the Agent OS schema repair. Its
+CI run is superseded by the later Lane A compatibility source delta and therefore is
+not a release receipt for the current implementation. Fresh exact-head hosted checks
+and independent/source-owner review remain required. Vercel build-rate-limit failures
+are not treated as product proof or a Lane D code regression, and no retry is issued.
 ## Exact next action
 
-Lane A consumes PR #7508's additive mastermind.entry_context.v1 contract into the
-shared Theme Intelligence composition while preserving the all-false authority block.
-Lane E then proves the resulting user route in the deployed browser path. Lane D does
-not independently merge or deploy this held carrier.
+After PR #7508's fresh exact-head CI/fences and source-owner review release clear,
+Lane A consumes the additive member-routing contract plus the flat group entry_context
+projection into the shared Theme Intelligence composition. Lane E then proves the
+resulting user route in the deployed browser path. Lane D does not independently merge
+or deploy this held carrier.
 
 ## Do not redo
 
