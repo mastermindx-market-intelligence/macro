@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T11:29:53.109281+00:00",
-  "count": 2495,
+  "generated_at": "2026-09-20T11:44:21.144490+00:00",
+  "count": 2496,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -910,6 +910,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-anp6389arcb-660087",
+      "title": "UBS 2026 Financial parenting",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:33Z",
+      "summary_points": [
+        "Financial Literacy Gap: OECD PISA 2022 data shows 18% of OECD students lack baseline financial literacy, signaling systemic underpreparedness that directly impacts long-term market participation and client behavior.",
+        "Parental Influence on Gen Z: Gen Z investors are 2.6x more likely to have investing parents (68% vs 30% non-investors) and discuss investing (79% vs 46%), making parental behavior a critical driver of future market flows.",
+        "Money Scripts as Behavioral Risk: Unconscious childhood money beliefs (avoidance, worship, status, vigilance) directly shape adult risk tolerance, market participation, and portfolio construction biases.",
+        "Intergenerational Biases: Financial biases (overconfidence, loss aversion) transmit across generations, requiring explicit behavioral risk management in client portfolio strategies.",
+        "Judgment Over Knowledge: Financial parenting prioritizes teaching critical judgment (questioning assumptions, assessing risks) over rote knowledge, aligning with market shifts where critical thinking trumps information."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
       "language": "en",
       "needs_metadata": false
     },
