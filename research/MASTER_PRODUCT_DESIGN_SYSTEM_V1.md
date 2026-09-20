@@ -499,12 +499,19 @@ D-budget of 6. **macro.html is selected** as the reference: (a) it is the higher
 candidate (20/30 vs 18/30 on the census's 15-dimension scorecard — census §6 table, auditable there) with the estate's best regime hero — the reference builds on
 strength instead of entangling with china's open data-truth defects (regime named two ways,
 policy in both directions — engine-lane work, not design); (b) it is P0 #3 and the estate's
-main anonymous SEO entry — highest reach per pixel; (c) the two pages share the `mx4/mx5`
-idiom family, so the reference transfers to china/hk mechanically as follower migrations —
-china becomes the first Archetype-D consumer and the test that the reference generalizes.
-The reference (`mockups/design_system/macro_reference.html`) compresses 13 L1 sections → 5
-(hero+caveat · what changed · four drivers · watching band · named deep links), every demoted
-module keeping a named landing.
+main anonymous SEO entry — highest reach per pixel. The historical Wave-0 plan expected the
+shared `mx4/mx5` idiom to make China/HK mechanical followers, but that rollout premise is
+**superseded for production** by the Chairman's #7456/#7471 ruling: the restored deep
+`china.html` dashboard is the canonical published product, while the compressed Archetype-D
+China experiment is incubation material unless separately matured and accepted. The macro
+reference therefore does not authorize a China/HK/Canada primary-route migration by analogy.
+Any future regional-primary adoption must satisfy current product/family scope and a fresh RIG
+decision; editable-reference approval alone cannot narrow that scope.
+
+The reference (`mockups/design_system/macro_reference.html`) remains a worked Archetype-D
+design study and compresses 13 L1 sections → 5 (hero+caveat · what changed · four drivers ·
+watching band · named deep links), every demoted module keeping a named landing. Its historical
+design value survives; its rejected China production rollout does not.
 
 **Path for the remaining ~290 registry rows:** the `archetype` field already exists in
 `config/product_experience/page_registry_overrides.yml` (9 rows populated, earlier
@@ -703,22 +710,44 @@ it in production.
 
 ### 17.1 Editable design projection
 
+**Universal material-UI rule.** Material customer-facing visual work begins from a governed
+editable source that projects repository design law. Static screenshots, chat-rendered images,
+generated HTML, or prose may support exploration and evidence, but they are not design authority.
+Every material migration records the exact editable file/document plus frame/node/artboard
+identifiers in its packet, together with the canonical components/tokens it composes and the
+intended state/interaction variants.
+
+Editable-tool governance is **not** canonical-reference approval. The Reference Integrity Gate
+remains the only reference-canonicality gate: a governed Figma/Paper source without the packet's
+valid `RIG-RECEIPT:` is still provisional and cannot by itself support final reference
+conformance. Likewise, an editable reference never narrows route-family, sibling, or atomic
+migration scope established by current product law.
+
 The canonical editable projection is the Figma file **Mastermind Product Design System —
 Canonical**, file key `IKqTiq7jeVBJusBfoHnPsH`. It mirrors repository tokens/components for
 composition and review; it does **not** outrank this document, `docs/DESIGN_DOCTRINE.md`,
-`templates/theme.css`, or the executable specimen. Material reference work records exact
-Figma frame/node identifiers in its migration packet.
+`templates/theme.css`, the executable specimen, or current product rulings. Repository
+law/theme contracts establish primitive authority. A Figma-only primitive is provisional; once
+the repository primitive is accepted, synchronize the governed projection before depending on it
+as migration design input.
 
-Paper may be used as the high-velocity agentic composition/code round-trip surface when its
-MCP is available, but Paper output is governed by the same repository vocabulary and packet
-law. The current governed Paper projection is **Mastermind Product Design System — Agentic Lab**
+Paper may be used as the high-velocity agentic composition/code round-trip surface when its MCP is
+available, but Paper output is governed by the same repository vocabulary and packet law. The
+current governed Paper projection is **Mastermind Product Design System — Agentic Lab**
 (file `01M2WGNCX9475G79JRKJTCM08P`), seeded from the repository vocabulary with dark/light
 theme-prefixed palette tokens plus the shared spacing, radius, typography and breakpoint scales.
 Theme prefixes are deliberate while Paper lacks a repository-equivalent multi-mode token contract;
 they must not be mistaken for a second theme authority. No Paper document, Figma file, generated
-screenshot, or exported code may establish a parallel token root/component registry. A
-design-tool-only primitive is provisional until it is accepted into the repository system and
-editable projection together.
+screenshot, exported code, or design-tool approval may establish a parallel token root, component
+registry, reference-approval plane, or release authority. Generated JSX/code is implementation
+input only.
+
+For stateful material UI, the editable projection defines intended treatment while browser/fixture
+evidence proves the implementation. The migration packet names the Dark/Light × EN/ZH ×
+desktop/mobile cells plus materially distinct data/availability and interaction/overlay states as
+applicable; native hover/focus states require real browser interaction evidence or an existing
+truthful implementation state hook rather than claiming that an editable frame proved runtime
+behavior.
 
 ---
 
