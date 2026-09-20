@@ -1,6 +1,6 @@
 {
-  "source_commit": "bfe0bcca50432a070f90aaa9776580a41ac2a658",
-  "generated_utc": "2026-09-20 09:30",
+  "source_commit": "629c5b575c800b408bc316683806bfb3a391e39d",
+  "generated_utc": "2026-09-20 09:35",
   "proof_kind": "local_real_builder_committed_inputs",
   "production_acceptance": false,
   "inputs": [
@@ -82,7 +82,7 @@
   ],
   "candidate_sources": {
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
-    "engine/alert_center_view.py": "df8e891129ba24ab353edbff9a48a1ba64be06b60184f6fa83470ced262b5e29",
+    "engine/alert_center_view.py": "8515a4f7db818bd2bd2b2f9164ec6860b7068c0fc7164a4b3e9629f5968ab50a",
     "engine/alert_time.py": "321a2414a68a51c6d21f268cb7a26696d596f5242c832e38f2119dfc21642906",
     "scripts/build_site.py": "9cba47448de9420c95d08bd9a5faef2ea8d2c38b71a25f3353ef68773aaa342c",
     "scripts/prove_alert_center_v2.py": "a56df6765faedd922c8d4be22db985ba886162b7879affbb7711c55cef01e526",
@@ -102,9 +102,9 @@
   "sources_unchanged_during_build": true,
   "inputs_unchanged_during_build": true,
   "outputs": {
-    "alerts.html": "40466c65f4a0f121a54b79209c60a94b96c7faf23b1e7052e6c772889e1a4b00",
-    "factordata/alerts_triage.json": "30c75a6eb6043639262ac08549f82e9547693a896dd09ece81425acbae324af8",
-    "alertsdata/feed.json": "e7e29ba298f4a0a4d7591b9161553ba34206112eae16e914e31f226e670654b6"
+    "alerts.html": "2287648c217da30592a9037c973aa7ec9eae64e09662d18d21ad8d21564305b2",
+    "factordata/alerts_triage.json": "61f2d0214f27421e81e620242f5b12c7f2f43877fbe469330b00bd388094c733",
+    "alertsdata/feed.json": "26cebfea3dae633839d557bf3b31bdc1188d3b414bc80aee8ca6ffb952587008"
   },
   "populations": {
     "legacy_ranked": 60,
