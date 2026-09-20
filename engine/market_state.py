@@ -482,6 +482,7 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
     participation = _participation_context(components)
     out = {
         "label_en": _LABEL[verdict][0], "label_zh": _LABEL[verdict][1],
+        "scope_en": _LABEL[verdict][0], "scope_zh": _LABEL[verdict][1],
         "headline_en": _HEADLINES[verdict][0], "headline_zh": _HEADLINES[verdict][1],
         "subline_en": _SUBLINES[verdict][0], "subline_zh": _SUBLINES[verdict][1],
         "action_en": _ACTIONS[verdict][0], "action_zh": _ACTIONS[verdict][1],
@@ -493,7 +494,7 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
     state = participation["state"]
     if state == "broad":
         out.update(
-            label_en="Broad risk-on", label_zh="广泛风险偏好",
+            scope_en="Broad risk-on", scope_zh="广泛风险偏好",
             headline_en=("Broad risk-on — participation confirms the supportive backdrop. "
                          "Trend-following is broadly supported, but individual setups still matter."),
             headline_zh="广泛风险偏好 — 市场参与度确认了偏多背景。大范围顺势交易得到支持，但仍需重视个股入场质量。",
@@ -503,7 +504,7 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
         )
     elif state == "uneven":
         out.update(
-            label_en="Risk-on · uneven participation", label_zh="风险偏好 · 参与不均",
+            scope_en="Risk-on · uneven participation", scope_zh="风险偏好 · 参与不均",
             headline_en=("Risk-on backdrop, uneven participation — the index tape is supportive, "
                          "but breadth is not broad enough for an all-clear. Stay selective."),
             headline_zh="风险偏好，但参与不均 — 指数环境偏多，但广度尚不足以构成全面放行。保持精选。",
@@ -513,7 +514,7 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
         )
     elif state == "narrow":
         out.update(
-            label_en="Selective risk-on", label_zh="选择性风险偏好",
+            scope_en="Selective risk-on", scope_zh="选择性风险偏好",
             headline_en=("Selective risk-on — the backdrop is supportive, but breadth is weak. "
                          "Strength is concentrated rather than market-wide."),
             headline_zh="选择性风险偏好 — 大环境仍有支撑，但市场广度偏弱。强势集中于少数方向，并非全市场普涨。",
@@ -523,7 +524,7 @@ def market_state_display_copy(verdict: str, components: list | None = None) -> d
         )
     else:
         out.update(
-            label_en="Risk-on · participation unverified", label_zh="风险偏好 · 参与未验证",
+            scope_en="Risk-on · participation unverified", scope_zh="风险偏好 · 参与未验证",
             headline_en="Risk-on — the measured backdrop is supportive, but participation is unverified.",
             headline_zh="风险偏好 — 实测背景偏多，但市场参与度尚未验证。",
             subline_en="GREEN — Participation unverified", subline_zh="偏多 — 参与未验证",

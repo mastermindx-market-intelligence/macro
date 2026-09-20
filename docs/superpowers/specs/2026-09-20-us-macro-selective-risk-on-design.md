@@ -21,13 +21,13 @@ These cuts deliberately reuse the Market State band boundaries. They are copy ta
 
 Underlying verdict, score, raw_score, color, caps, flip logic and persisted history remain unchanged.
 
-For RISK_ON only:
+The formal verdict word remains Risk-on because it is the score-band category. R1 adds a separate display scope:
 - broad -> Broad risk-on
 - uneven -> Risk-on · uneven participation
 - narrow -> Selective risk-on
 - unverified -> Risk-on · participation unverified
 
-The headline, subline and What-To-Do copy must carry the same distinction. Narrow participation must explicitly state that green is not a broad buy signal.
+The scope, headline, subline and What-To-Do copy must carry the same distinction. Narrow participation must explicitly state that green is not a broad buy signal. This separation is load-bearing: market backdrop and market participation are related but not the same state.
 
 MIXED and RISK_OFF keep their existing stance language. Their participation context may remain available in the payload but must not upgrade or soften their verdict.
 
@@ -46,9 +46,9 @@ This release changes words, not layout or material styling. Dark/light and EN/ZH
 
 ## Acceptance
 
-1. A 61/RISK_ON snapshot with breadth score 0 remains score 61 and verdict RISK_ON, but renders Selective risk-on.
-2. RISK_ON with breadth >=60 renders Broad risk-on.
-3. Missing breadth renders participation unverified.
+1. A 61/RISK_ON snapshot with breadth score 0 remains score 61 and formal verdict Risk-on, while its visible scope/copy says Selective risk-on.
+2. RISK_ON with breadth >=60 keeps formal verdict Risk-on while scope/copy says Broad risk-on.
+3. Missing breadth keeps the formal verdict and renders participation unverified.
 4. MIXED/RISK_OFF preserve their existing labels and actions.
 5. Static template and intraday patcher consume the same engine-owned copy.
 6. Existing live session-floor behavior remains green.

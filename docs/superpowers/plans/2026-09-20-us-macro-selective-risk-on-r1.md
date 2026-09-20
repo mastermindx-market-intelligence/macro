@@ -54,7 +54,7 @@
 
 **Interfaces:**
 - Consumes market_state_display_copy
-- Live display adds label/headline/subline/action plus participation fields.
+- Live display preserves the canonical verdict label and adds scope/headline/subline/action plus participation fields.
 - Dashboard and live JS prefer projected copy, then fall back to legacy verdict maps.
 
 - [ ] Write failing tests proving payload copy overrides generic Risk-on wording and debounce uses displayed verdict copy.

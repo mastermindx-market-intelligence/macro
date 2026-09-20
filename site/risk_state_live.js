@@ -276,7 +276,8 @@
       var ntl = d.nightly;
       var ntc = ntl.display_copy || {};
       disp = { verdict: ntl.verdict,
-               label_en: ntc.label_en || ntl.label_en, label_zh: ntc.label_zh || ntl.label_zh,
+               label_en: ntl.label_en, label_zh: ntl.label_zh,
+               scope_en: ntc.scope_en || ntl.label_en, scope_zh: ntc.scope_zh || ntl.label_zh,
                color: ntl.color, score: disp.score, raw_score: disp.raw_score,
                headline_en: ntc.headline_en || ntl.headline_en,
                headline_zh: ntc.headline_zh || ntl.headline_zh,
@@ -370,8 +371,8 @@
                   disp.action_zh || ACTION[disp.verdict][1]);
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
-        setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",
-                  (disp.label_zh || disp.label_en || disp.verdict) + " · " + disp.score + "/100");
+        setBL(ws, (disp.scope_en || disp.label_en || disp.verdict) + " · " + disp.score + "/100",
+                  (disp.scope_zh || disp.label_zh || disp.label_en || disp.verdict) + " · " + disp.score + "/100");
       var wicon = document.querySelector("[data-wtd-primary] .mx5-action-icon");
       if (wicon) {
         wicon.classList.remove("mx5-ai-green", "mx5-ai-yellow", "mx5-ai-gray");

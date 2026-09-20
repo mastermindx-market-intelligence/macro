@@ -79,7 +79,7 @@ def test_primary_copy_is_short_and_live_patchable():
     glance = _glance_source()
     assert "Trade small. Stay selective." in glance
     assert "_wtd_copy.get('action_en')" in glance
-    assert "_wtd_copy.get('label_en')" in glance
+    assert "_wtd_copy.get('scope_en')" in glance
     assert "{{ MS.score }}/100" in glance
     assert "data-wtd-primary" in glance
 

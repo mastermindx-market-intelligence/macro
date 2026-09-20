@@ -373,7 +373,8 @@ def build(offline: bool = False) -> dict:
         disp_verdict, disp_source.get("components") or [])
     display = {
         "verdict": disp_verdict,
-        "label_en": disp_copy["label_en"], "label_zh": disp_copy["label_zh"],
+        "label_en": disp_label[0], "label_zh": disp_label[1],
+        "scope_en": disp_copy["scope_en"], "scope_zh": disp_copy["scope_zh"],
         "color": disp_label[2],
         "headline_en": disp_copy["headline_en"], "headline_zh": disp_copy["headline_zh"],
         "subline_en": disp_copy["subline_en"], "subline_zh": disp_copy["subline_zh"],

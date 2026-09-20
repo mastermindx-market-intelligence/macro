@@ -553,7 +553,8 @@ def test_us_feed_on_the_rendered_session_still_patches(js):
 def test_us_display_copy_overrides_generic_risk_on_wording(js):
     feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
     feed["display"].update({
-        "label_en": "Selective risk-on", "label_zh": "选择性风险偏好",
+        "label_en": "Risk-on", "label_zh": "风险偏好",
+        "scope_en": "Selective risk-on", "scope_zh": "选择性风险偏好",
         "headline_en": "Selective risk-on — breadth is weak.",
         "headline_zh": "选择性风险偏好 — 市场广度偏弱。",
         "subline_en": "GREEN — Narrow participation", "subline_zh": "偏多 — 窄幅参与",
@@ -562,7 +563,7 @@ def test_us_display_copy_overrides_generic_risk_on_wording(js):
     })
     out = _harness(js.read_text(encoding="utf-8"), feed, "us")
     assert not out.get("error"), out.get("error")
-    assert out["word"] == "Selective risk-on"
+    assert out["word"] == "Risk-on"
     assert out["thesis"] == feed["display"]["headline_en"]
     assert out["subline"] == feed["display"]["subline_en"]
     assert out["action"] == feed["display"]["action_en"]
@@ -584,10 +585,11 @@ def test_us_stale_debounce_uses_nightly_projected_copy(js):
     }
     out = _harness(js.read_text(encoding="utf-8"), feed, "us")
     assert not out.get("error"), out.get("error")
-    assert out["word"] == "Selective risk-on"
+    assert out["word"] == "Risk-on"
     assert out["thesis"] == projected["headline_en"]
     assert out["subline"] == projected["subline_en"]
     assert out["action"] == projected["action_en"]
+    assert out["action_sub"] == "Selective risk-on · 61/100"
 
 
 @needs_node

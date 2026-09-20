@@ -7421,7 +7421,7 @@ html[data-theme="light"] :is(
             <span class="v-outof">/100</span>
             <div class="mx2-score-label-stack">
               <span class="mx2-score-label">{{ t('Market state','市场状态') }}</span>
-              <p class="v-word" id="ms-word"><span class="l-en">{{ _ms_copy.get('label_en') or MS.label_en }}</span><span class="l-zh">{{ _ms_copy.get('label_zh') or MS.label_zh }}</span><span class="arr">{{ _va }}</span></p>
+              <p class="v-word" id="ms-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh }}</span><span class="arr">{{ _va }}</span></p>
             </div>
             <div class="mx2-score-live-wrap">
               <span class="ms-live" id="ms-live-pill"></span>
@@ -7658,7 +7658,7 @@ html[data-theme="light"] :is(
       <div class="mx5-sc-gauge-row {{ _mx5_sc_cls }}">
         {# Compact semicircle gauge; data-* attrs for risk_state_live.js patchMacro #}
         <svg class="mx5-gauge-svg" viewBox="0 -4 140 101" fill="none"
-             aria-label="{{ _ms_copy.get('label_en') or MS.label_en }} — score {{ _mx5_score }}{% if _mx5_ghost %}; capped from six-signal blend {{ _mx5_raw }}{% endif %}"
+             aria-label="{{ _ms_copy.get('scope_en') or MS.label_en }} — score {{ _mx5_score }}{% if _mx5_ghost %}; capped from six-signal blend {{ _mx5_raw }}{% endif %}"
              data-gauge-arc-len="{{ _mx5_arc_len }}"
              data-gauge-radius="56"
              data-gauge-cx="70" data-gauge-cy="75">
@@ -7714,7 +7714,7 @@ html[data-theme="light"] :is(
         <div>
           <div class="mx5-score-line">
             <span class="mx5-big-score">{{ _mx5_score }}</span>
-            <span class="mx5-verdict-word"><span class="l-en">{{ _ms_copy.get('label_en') or MS.label_en }}</span><span class="l-zh">{{ _ms_copy.get('label_zh') or MS.label_zh or MS.label_en }}</span></span>
+            <span class="mx5-verdict-word"><span class="l-en">{{ MS.label_en }}</span><span class="l-zh">{{ MS.label_zh or MS.label_en }}</span></span>
           </div>
           <div class="mx5-sub-line">
             <span class="l-en">{{ _ms_copy.get('subline_en') or (({'green':'GREEN','yellow':'YELLOW','red':'RED'}.get(MS.color,'—')) ~ ' — ' ~ ({'green':'Trend-following supported','yellow':'Trade with caution','red':'Defend capital first'}.get(MS.color,''))) }}</span>
@@ -8558,8 +8558,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">{{ _wtd_copy.get('action_zh') or {'green':'顺势而为，强势中加仓。','yellow':'缩小仓位，精选标的。','red':'降低风险，保护本金。'}.get(MS.color,'精选标的。') }}</span>
             </div>
             <div class="mx5-action-sub">
-              <span class="l-en">{{ _wtd_copy.get('label_en') or MS.label_en }} &middot; {{ MS.score }}/100</span>
-              <span class="l-zh">{{ _wtd_copy.get('label_zh') or MS.label_zh or MS.label_en }} &middot; {{ MS.score }}/100</span>
+              <span class="l-en">{{ _wtd_copy.get('scope_en') or MS.label_en }} &middot; {{ MS.score }}/100</span>
+              <span class="l-zh">{{ _wtd_copy.get('scope_zh') or MS.label_zh or MS.label_en }} &middot; {{ MS.score }}/100</span>
             </div>
           </div>
         </div>

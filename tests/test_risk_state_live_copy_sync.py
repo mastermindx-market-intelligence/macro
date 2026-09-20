@@ -83,6 +83,6 @@ def test_paired_template_copy_identical():
 def test_dashboard_prefers_engine_projected_display_copy():
     dash = DASH.read_text(encoding="utf-8")
     assert "MS.get('display_copy')" in dash
-    assert "_ms_copy.get('label_en')" in dash
     assert "_ms_copy.get('subline_en')" in dash
+    assert "_wtd_copy.get('scope_en')" in dash
     assert "_wtd_copy.get('action_en')" in dash

@@ -35,7 +35,8 @@ def test_narrow_risk_on_copy_is_selective_not_broad():
     copy = ms.market_state_display_copy("RISK_ON", _components(0))
     assert copy["participation"]["state"] == "narrow"
     assert copy["participation"]["score"] == 0
-    assert copy["label_en"] == "Selective risk-on"
+    assert copy["label_en"] == "Risk-on"
+    assert copy["scope_en"] == "Selective risk-on"
     assert "breadth is weak" in copy["headline_en"]
     assert "Do not" in copy["action_en"]
     assert "broad buy signal" in copy["action_en"]
@@ -44,14 +45,16 @@ def test_narrow_risk_on_copy_is_selective_not_broad():
 def test_uneven_risk_on_copy_names_uneven_participation():
     copy = ms.market_state_display_copy("RISK_ON", _components(50))
     assert copy["participation"]["state"] == "uneven"
-    assert copy["label_en"] == "Risk-on · uneven participation"
+    assert copy["label_en"] == "Risk-on"
+    assert copy["scope_en"] == "Risk-on · uneven participation"
     assert "not broad enough for an all-clear" in copy["headline_en"]
 
 
 def test_broad_risk_on_copy_requires_supportive_breadth():
     copy = ms.market_state_display_copy("RISK_ON", _components(60))
     assert copy["participation"]["state"] == "broad"
-    assert copy["label_en"] == "Broad risk-on"
+    assert copy["label_en"] == "Risk-on"
+    assert copy["scope_en"] == "Broad risk-on"
     assert "participation confirms" in copy["headline_en"]
 
 
@@ -59,7 +62,8 @@ def test_missing_breadth_fails_to_unverified_not_broad():
     copy = ms.market_state_display_copy("RISK_ON", _components(None))
     assert copy["participation"]["state"] == "unverified"
     assert copy["participation"]["score"] is None
-    assert copy["label_en"] == "Risk-on · participation unverified"
+    assert copy["label_en"] == "Risk-on"
+    assert copy["scope_en"] == "Risk-on · participation unverified"
 
 
 @pytest.mark.parametrize("verdict", ["MIXED", "RISK_OFF"])
@@ -89,5 +93,6 @@ def test_current_61_shape_keeps_score_and_canonical_label_but_projects_selective
     assert snap["verdict"] == "RISK_ON"
     assert snap["label_en"] == "Risk-on"
     assert snap["participation"]["state"] == "narrow"
-    assert snap["display_copy"]["label_en"] == "Selective risk-on"
+    assert snap["display_copy"]["label_en"] == "Risk-on"
+    assert snap["display_copy"]["scope_en"] == "Selective risk-on"
     assert snap["headline_en"] == snap["display_copy"]["headline_en"]
