@@ -1,5 +1,5 @@
 {
-  "head": "4f98b80fadbe17cf95296503130776d84da059ce",
+  "head": "ea6ad8ffefe42691e0a11cb71f3daec40aadb974",
   "branch": "claude/mo-a-ud-b2-w1-volweather-fold",
   "pr": "DRAFT",
   "source_url": "site/macro.html",
@@ -7,11 +7,11 @@
   "page_errors": [],
   "r_e_byte_identity": {
     "selector": ".mx5-sc-left (slice from '<div class=\"mx5-sc-left\">' to matching close)",
-    "sha256": "64be53ded234c570043dab4e913d5d0ffc8aed667270e36bbba1b2b3705c68ad",
-    "sha256_short": "64be53ded234",
-    "bytes": 23395,
-    "captured_at_head": "4f98b80fadbe17cf95296503130776d84da059ce",
-    "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. Round-3 DEV-VW-LOCATION: the strip lives in .mx5-sc-vw (a child of .mx5-sc-left), so the R-E gate slice is .mx5-sc-left (the visual unit = dial + scar chips + strip). Captures are committed in the same commit as code+tests+site, so captured_at_head == HEAD."
+    "sha256": "346b194c2cb82100aac7d26efe27c99f2bc3d6629f84db6ffa37cd2053a23358",
+    "sha256_short": "346b194c2cb8",
+    "bytes": 23397,
+    "captured_at_head": "ea6ad8ffefe42691e0a11cb71f3daec40aadb974",
+    "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. R-W1-A-AMENDED: the strip lives in .mx5-sc-vw (a child of .mx5-sc-left), so the R-E gate slice is .mx5-sc-left (dial + scar chips + strip). Capture-last: this manifest is committed in the captures commit; captured_at_head is HEAD at capture time and must be an ancestor of the captures commit."
   },
   "cells": [
     {
