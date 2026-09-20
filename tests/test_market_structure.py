@@ -1131,6 +1131,31 @@ def test_expected_move_coordinate_is_explicit_and_changes_scale():
     assert abs(em["by_expiry"][0]["centroid_x"]) > abs(plain["by_expiry"][0]["centroid_x"])
 
 
+def test_cosine_refuses_when_fixed_grid_clips_material_tail_mass():
+    rows = []
+    # Identical shapes would normally have cosine=1, but 2% of the exposure mass
+    # sits far outside the fallback log-moneyness grid. R6 must refuse the cosine
+    # rather than clip that tail into a boundary bin and report false precision.
+    for exp, scale in [("2026-09-18", 1), ("2026-09-25", 5)]:
+        rows.extend([
+            _r6_row(exp, 30, 2 * scale),
+            _r6_row(exp, 100, 98 * scale),
+        ])
+    got = skylit_r6.analyze_state(_r6_state(pd.DataFrame(rows)), "2026-09-14")
+    pair = got["adjacent_expiry_geometry"][0]
+    assert pair["wasserstein_1_x"] == pytest.approx(0.0, abs=1e-12)
+    assert pair["cosine_similarity"] is None
+    assert pair["cosine_available"] is False
+    assert pair["cosine_refusal_reason"] == "grid_clipped_mass"
+    assert max(
+        pair["left_grid_clipped_mass"],
+        pair["right_grid_clipped_mass"],
+    ) == pytest.approx(0.02)
+    assert got["summary"]["cosine_pairs_available"] == 0
+    assert got["summary"]["cosine_pairs_refused"] == 1
+    assert got["summary"]["max_adjacent_grid_clipped_mass"] == pytest.approx(0.02)
+
+
 def test_unqualified_r2_state_refuses_before_topology():
     with pytest.raises(skylit_r6.R6Refusal, match="not source-qualified"):
         skylit_r6.analyze_state(_r6_state(pd.DataFrame([_r6_row("2026-09-18", 100, 1)]), gate=False), "2026-09-14")
