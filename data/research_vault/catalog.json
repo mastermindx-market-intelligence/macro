@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T09:14:01.421922+00:00",
-  "count": 2489,
+  "generated_at": "2026-09-20T09:43:38.628526+00:00",
+  "count": 2490,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -31,6 +31,7 @@
     "Danske",
     "Deutsche Bank",
     "DoubleLine",
+    "Doubleline",
     "Dragon Capital",
     "Eastspring",
     "Fidelity",
@@ -188,6 +189,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qjr3g82xait-0e7f6f",
+      "title": "September 2026 Week 3",
+      "institution": "Doubleline",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:01:29Z",
+      "summary_points": [
+        "U.S.",
+        "Treasury Yield Curve Steepening: 30Y yield at 5.33% (up from 5.28%), 10Y at 5.00% (up from 4.72%) signals rising long-term rates and inflation/interest rate hike expectations, critical for fixed income positioning.",
+        "U.S.",
+        "Retail Sales Rebound: YoY sales at 6.0% (after low of -19.7%) indicates strengthening consumer demand, a key fundamental for economic outlook and sector allocation.",
+        "U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
