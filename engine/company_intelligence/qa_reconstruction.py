@@ -13,6 +13,8 @@ from hashlib import sha256
 import re
 from typing import Any, Mapping, Sequence
 
+from engine.company_intelligence import qa_source_identity as _si
+
 SCHEMA = "qa_reconstruction.v1"
 SEMANTIC_STATUS = "unresolved"
 TOPIC_AUTHORITY = "none"
@@ -57,6 +59,8 @@ _FAILURE_CODES = frozenset({
     "analyst_speaker_missing",
     "unexpected_non_housekeeping_speaker",
     "management_identity_insufficient",
+    "management_identity_conflict",
+    "speaker_unresolvable",
     "span_replay_failed",
     "question_answer_overlap",
     "orphan_or_duplicate_answer_span",
@@ -108,10 +112,32 @@ def reconstruct_qa(
 
     boundaries = _qualifying_boundaries(segs)
     if not boundaries:
-        return _fail(base, "zero_qa_boundaries", "no Operator segments contain the go-ahead introduction")
+        return _fail(base, "zero_qa_boundaries", "no question-bearing handoff separates a Q&A window")
     if boundaries != sorted(set(boundaries)):
         return _fail(base, "duplicate_or_unordered_boundaries", "qualifying boundaries are not strictly increasing")
     base["qualifying_boundaries"] = list(boundaries)
+
+    # Same-revision participant/title evidence. Roles are read, never inferred.
+    roster = _si.roster(segs)
+    conflicts = _si.role_conflict(segs)
+
+    # Questioner identity is the more fundamental gate, so an unresolved separator
+    # refuses the whole call before any role evidence is considered. This keeps a call
+    # failing for its own source reason instead of whichever exchange is reached first.
+    unresolved = [
+        idx
+        for idx in boundaries
+        if _si.resolve_questioner(segs, idx)["state"] == "unresolved"
+    ]
+    if unresolved:
+        return _fail(
+            {**base, "qualifying_boundaries": list(boundaries)},
+            "speaker_unresolvable",
+            (
+                f"{len(unresolved)} structural separator(s) {unresolved} have no "
+                "source-supported questioner; the call cannot publish canonical Q&A"
+            ),
+        )
 
     exchanges: list[dict[str, Any]] = []
     housekeeping_count = 0
@@ -125,6 +151,8 @@ def reconstruct_qa(
             ordinal=ordinal,
             start=start,
             end=end,
+            roster=roster,
+            conflicts=conflicts,
         )
         if built.get("status") != "ok":
             return _fail(
@@ -195,12 +223,18 @@ def _is_non_management_role(seg: Mapping[str, Any]) -> bool:
     return _role_key(seg) in _NON_MANAGEMENT_ROLES
 
 
-def _is_management(seg: Mapping[str, Any], questioner_name: str = "") -> bool:
+def _is_management(
+    seg: Mapping[str, Any],
+    questioner_name: str = "",
+    roster: Mapping[str, Any] | None = None,
+) -> bool:
     if _is_housekeeping(seg) or _is_verified_questioner(seg, questioner_name):
         return False
     if _is_non_management_role(seg):
         return False
-    return bool(_role_key(seg))
+    if _role_key(seg):
+        return True
+    return bool(roster) and _norm_person(_speaker_name(seg)) in roster
 
 
 def _norm_person(name: str) -> str:
@@ -212,11 +246,13 @@ def _contains_go_ahead(text: str) -> bool:
 
 
 def _qualifying_boundaries(segments: Sequence[Mapping[str, Any]]) -> list[int]:
-    out: list[int] = []
-    for idx, seg in enumerate(segments):
-        if _is_operator(seg) and _contains_go_ahead(_text(seg)):
-            out.append(idx)
-    return out
+    """Structural separators under the frozen source-native law.
+
+    A separator is a question-bearing named handoff followed by a real source turn.
+    Terminal cue phrases carry no admission authority, so alternate Operator dialects
+    are admitted and opening/queue/closing segments still are not.
+    """
+    return _si.structural_separators(segments)
 
 
 def _affiliation_is_truncated(body: str, parsed: str) -> bool:
@@ -301,60 +337,42 @@ def _reconstruct_exchange(
     ordinal: int,
     start: int,
     end: int,
+    roster: Mapping[str, Any] | None = None,
+    conflicts: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
+    roster = dict(roster or {})
     intro = segments[start]
-    parsed = _parse_operator_identity(_text(intro))
-    if parsed is None:
+    resolution = _si.resolve_questioner(segments, start)
+    if resolution["state"] == "unresolved":
+        # The separator is real and still splits windows, but an unresolved questioner
+        # may never mint canonical Q&A. No repair of any kind is attempted.
         return {
             "status": "failed",
             "failure": {
-                "code": "operator_intro_identity_unparsed",
-                "message": f"Operator intro at segment {start} has no unique name/affiliation",
+                "code": "speaker_unresolvable",
+                "message": (
+                    f"separator {start} names {resolution.get('operator_named', '')!r} but the "
+                    f"next source turn speaker {resolution.get('speaker', '')!r} is not "
+                    "source-supported"
+                ),
             },
         }
-
-    first_analyst_idx: int | None = None
-    for idx in range(start + 1, end):
-        seg = segments[idx]
-        if _is_housekeeping(seg):
-            continue
-        if _is_verified_questioner(seg, parsed["name"]):
-            first_analyst_idx = idx
-            break
-        if _is_management(seg, parsed["name"]):
-            continue
-        first_analyst_idx = idx
-        break
-    if first_analyst_idx is None:
+    first_analyst_idx = int(resolution["speaker_index"])
+    if not (start < first_analyst_idx < end):
         return {
             "status": "failed",
             "failure": {
                 "code": "analyst_speaker_missing",
-                "message": f"no analyst speaker after Operator intro {start}",
+                "message": f"no questioner turn inside the window opened at {start}",
             },
         }
-    first_analyst = segments[first_analyst_idx]
-    speaker = _speaker_name(first_analyst)
-    if not speaker:
-        return {
-            "status": "failed",
-            "failure": {
-                "code": "operator_intro_identity_unparsed",
-                "message": f"analyst speaker at segment {first_analyst_idx} is empty",
-            },
-        }
-    if _norm_person(parsed["name"]) != _norm_person(speaker):
-        return {
-            "status": "failed",
-            "failure": {
-                "code": "operator_analyst_name_conflict",
-                "message": (
-                    f"Operator intro name {parsed['name']!r} does not match "
-                    f"first analyst speaker {speaker!r}"
-                ),
-            },
-        }
-    questioner_name = speaker
+    questioner_name = resolution["name"]
+    # Affiliation stays source-supported-or-absent; it never gates identity.
+    parsed = _parse_operator_identity(_text(intro)) or {
+        "name": questioner_name,
+        "affiliation": "",
+        "affiliation_state": "unresolved",
+    }
 
     question_spans: list[dict[str, Any]] = []
     answer_spans: list[dict[str, Any]] = []
@@ -369,13 +387,41 @@ def _reconstruct_exchange(
             kind = "housekeeping"
         elif _is_verified_questioner(seg, questioner_name):
             kind = "question"
-        elif _is_management(seg, questioner_name):
-            if not _speaker_name(seg) or not _role_key(seg):
+        elif _is_management(seg, questioner_name, roster):
+            name = _speaker_name(seg)
+            if not name:
                 return {
                     "status": "failed",
                     "failure": {
                         "code": "management_identity_insufficient",
-                        "message": f"management segment {idx} missing speaker or role",
+                        "message": f"management segment {idx} missing speaker",
+                    },
+                }
+            clash = next(
+                (c for c in (conflicts or []) if _norm_person(c["speaker"]) == _norm_person(name)),
+                None,
+            )
+            if clash is not None:
+                return {
+                    "status": "failed",
+                    "failure": {
+                        "code": "management_identity_conflict",
+                        "message": (
+                            f"segment {idx} role {clash['segment_role']!r} contradicts the "
+                            f"same-revision declared titles {clash['declared_titles']!r} for "
+                            f"{name!r}"
+                        ),
+                    },
+                }
+            if not _role_key(seg) and _norm_person(name) not in roster:
+                return {
+                    "status": "failed",
+                    "failure": {
+                        "code": "management_identity_insufficient",
+                        "message": (
+                            f"management segment {idx} has no segment role and no "
+                            "same-revision title declaration"
+                        ),
                     },
                 }
             kind = "answer"
@@ -390,12 +436,16 @@ def _reconstruct_exchange(
                     },
                 }
             if _norm_person(name) != _norm_person(questioner_name):
+                # A roleless speaker inside a Q&A window who is neither the questioner
+                # nor declared anywhere in this revision has no source-supported
+                # identity, so the window refuses rather than dropping the turn.
                 return {
                     "status": "failed",
                     "failure": {
                         "code": "unexpected_non_housekeeping_speaker",
                         "message": (
-                            f"segment {idx} speaker {name!r} is not the verified questioner"
+                            f"segment {idx} speaker {name!r} is not the verified questioner "
+                            "and has no segment role or same-revision title declaration"
                         ),
                     },
                 }
@@ -457,7 +507,7 @@ def _reconstruct_exchange(
             },
         }
 
-    respondents = _answer_turns(segments, start, end, kinds, answer_spans)
+    respondents = _answer_turns(segments, start, end, kinds, answer_spans, roster)
     owned: list[int] = []
     for turn in respondents:
         owned.extend(turn["span_indexes"])
@@ -508,6 +558,7 @@ def _answer_turns(
     end: int,
     kinds: Mapping[int, str],
     answer_spans: Sequence[Mapping[str, Any]],
+    roster: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """One respondent per management answer-turn, split on speaker/analyst/housekeeping."""
     index_by_seg = {span["segment_index"]: i for i, span in enumerate(answer_spans)}
@@ -528,6 +579,7 @@ def _answer_turns(
         seg = segments[idx]
         name = _speaker_name(seg)
         role = str(seg.get("role") or "")
+        entry = (roster or {}).get(_norm_person(name)) if not role else None
         span_i = index_by_seg[idx]
         if current is None or current["name"] != name:
             close()
@@ -537,6 +589,17 @@ def _answer_turns(
                 "identity_state": "source_supported",
                 "span_indexes": [span_i],
             }
+            if entry is not None:
+                # qa_respondent_identity_evidence.v1 — closed three-key nested contract.
+                current["role"] = entry["role"]
+                current["identity_evidence"] = {
+                    "schema": "qa_respondent_identity_evidence.v1",
+                    "method": "transcript_roster",
+                    "role_source_spans": [
+                        _whole_segment_span(segments[d["segment_index"]], d["segment_index"])
+                        for d in entry["declarations"]
+                    ],
+                }
         else:
             current["span_indexes"].append(span_i)
     close()
