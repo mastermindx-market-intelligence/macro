@@ -551,7 +551,7 @@ def test_us_feed_on_the_rendered_session_still_patches(js):
 @needs_node
 @US_PAGES
 def test_us_display_copy_overrides_generic_risk_on_wording(js):
-    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON", live=True)
     feed["display"].update({
         "label_en": "Risk-on", "label_zh": "风险偏好",
         "scope_en": "Selective risk-on", "scope_zh": "选择性风险偏好",
@@ -568,6 +568,23 @@ def test_us_display_copy_overrides_generic_risk_on_wording(js):
     assert out["subline"] == feed["display"]["subline_en"]
     assert out["action"] == feed["display"]["action_en"]
     assert out["action_sub"] == "Selective risk-on · 61/100"
+
+
+@needs_node
+@US_PAGES
+def test_us_legacy_stale_same_session_without_display_copy_leaves_static_page_alone(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON", live=False)
+    feed["nightly"] = {
+        "verdict": "RISK_ON", "score": 61, "raw_score": 61, "color": "green",
+        "label_en": "Risk-on", "label_zh": "风险偏好",
+    }
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+    assert not out.get("error"), out.get("error")
+    assert out["score"] == str(BAKED_SCORE)
+    assert out["word"] == BAKED_WORD
+    assert out["thesis"] == "Risk-on — the tape"
+    assert out["subline"] == "GREEN — Trend-following supported"
+    assert out["action"] == "Follow the trend. Add on strength."
 
 
 @needs_node

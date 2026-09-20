@@ -263,24 +263,28 @@
       if (offPill) offPill.classList.remove("on");
       return;
     }
-    /* Stale-feed guard: display.verdict is the SERVER-debounced band word — it needs
-       2 consecutive live ticks to flip, so after a nightly band flip it sits stale for
-       a whole closed session (2026-07-16: green "Risk-on" painted over a correctly
-       baked "Mixed" while live AND nightly both said MIXED). When the feed is not live
-       and the debounced word disagrees with the nightly verdict, key the WORD / color /
-       copy off the nightly read instead — the header invariant ("otherwise the page
-       keeps the nightly server-rendered read") — while the score numeral and as-of
-       dates below still patch. */
-    if ((d.stale === true || !d.live_active) && d.nightly && d.nightly.verdict &&
-        disp.verdict !== d.nightly.verdict) {
+    /* Closed/stale-feed guard: the served page is already the canonical nightly
+       render. A pre-deploy or schema-old live artifact must never repaint newer static
+       copy just because it carries the same session date. When the publisher carries
+       the new engine-owned display_copy, use that nightly projection as one coherent
+       block; otherwise leave the served page untouched. This preserves the header
+       invariant ("otherwise the page keeps the nightly server-rendered read") across
+       deploy transitions as well as ordinary nightly band flips. */
+    if ((d.stale === true || !d.live_active) && d.nightly && d.nightly.verdict) {
       var ntl = d.nightly;
       var ntc = ntl.display_copy || {};
+      if (!ntc.headline_en || !ntc.subline_en || !ntc.action_en) {
+        var stalePill = document.getElementById("ms-live-pill");
+        if (stalePill) stalePill.classList.remove("on");
+        return;
+      }
       disp = { verdict: ntl.verdict,
                label_en: ntl.label_en, label_zh: ntl.label_zh,
                scope_en: ntc.scope_en || ntl.label_en, scope_zh: ntc.scope_zh || ntl.label_zh,
-               color: ntl.color, score: disp.score, raw_score: disp.raw_score,
-               headline_en: ntc.headline_en || ntl.headline_en,
-               headline_zh: ntc.headline_zh || ntl.headline_zh,
+               color: ntl.color,
+               score: ntl.score != null ? ntl.score : disp.score,
+               raw_score: ntl.raw_score != null ? ntl.raw_score : disp.raw_score,
+               headline_en: ntc.headline_en, headline_zh: ntc.headline_zh,
                subline_en: ntc.subline_en, subline_zh: ntc.subline_zh,
                action_en: ntc.action_en, action_zh: ntc.action_zh,
                participation: ntc.participation || ntl.participation };
