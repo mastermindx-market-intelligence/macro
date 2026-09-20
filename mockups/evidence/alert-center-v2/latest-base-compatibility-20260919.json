@@ -1,16 +1,20 @@
 {
   "schema": "mastermind.alert_center.latest_base_compatibility.v4",
-  "observed_at": "2026-09-20T08:25:00Z",
-  "candidate_source_head": "34ead81ae062d15636af2af763f3859b523ba7a6",
-  "latest_protected_main": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
-  "latest_merge_tree": "fe72ae39c5762855df9f2be492484e809ae5fac3",
+  "observed_at": "2026-09-20T08:28:12Z",
+  "candidate_source_head": "3e4c6311bead1eb93359dca0effe8b52ad023750",
+  "latest_protected_main": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
+  "latest_merge_tree": "6a07fd1290173b2ea7e9d304ef920af0587d133e",
   "merge_conflicts": [],
   "material_movement": {
-    ".github/ci/legacy-jobs.yml": "main-only CI wiring movement; current immutable merge tree is conflict-free"
+    "candidate_owned_paths_changed_on_main_since_prior_receipt": [],
+    "shared_release_blocker": "Current main contains tests/test_unified_dashboard_b1.py but .github/ci/legacy-jobs.yml does not name it; the hosted contract-delta gate has already reported this unrelated introduced suite."
   },
-  "skillpack_commit": "f3d187976e083f9b102fc49696395b5c1521ebb5",
+  "skillpack_commit": "23061ab70a7fb79636b7962d9b440a3de23fe016",
   "classification": "FULL_REREVIEW_REQUIRED",
-  "reason": "Rotation rollover semantics and structured situation-context navigation materially expand the product journey; fresh exact-head review is required. Current protected-main merge tree is conflict-free and exact evidence-head contract-delta is clean.",
+  "reason": "Demand-ahead, unexplained-FX, net-liquidity and leverage-crowding families add new source-bound decision workflows after the prior semantic review. Protected-main movement is path-disjoint from candidate-owned alert paths and the current merge tree is conflict-free, but fresh review is required for the new semantics.",
   "production_acceptance": false,
-  "candidate_evidence_head": "de2acf8befed352b4305f68f64a5057606b8b734"
+  "candidate_evidence_head": "731272372a55617ca53187e650dbe018725db272",
+  "release_blockers": [
+    "Shared protected-main contract-delta defect: tests/test_unified_dashboard_b1.py is not wired into legacy-jobs.yml."
+  ]
 }

@@ -166,6 +166,19 @@ _FOREX_MOMENTUM_DETAIL = re.compile(
     r'^Momentum state (neutral|bull|bear) → (bull|bear)\. '
     r'([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
 )
+_FOREX_SCENARIO_HEADLINE = re.compile(
+    r'^(Carry-trade unwind|Dollar squeeze|EM outflows|Flight to safety|Risk-on rally|'
+    r'Intervention watch) pattern (now active|no longer active)$'
+)
+_FOREX_SCENARIO_ACTIVE = re.compile(
+    r'^The (carry-trade unwind|dollar squeeze|em outflows|flight to safety|risk-on rally|'
+    r'intervention watch) stress pattern crossed the activation threshold '
+    r'\(([0-9]+)/([0-9]+)\+ legs firing, intensity ([0-9]{1,3})%\)\.$'
+)
+_FOREX_SCENARIO_INACTIVE = re.compile(
+    r'^The (carry-trade unwind|dollar squeeze|em outflows|flight to safety|risk-on rally|'
+    r'intervention watch) stress pattern fell below the activation threshold\.$'
+)
 
 _DEMAND_AHEAD = re.compile(
     r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
@@ -583,6 +596,104 @@ def build_alert_brief(row: dict) -> dict:
                     'source records a new opposite transition, or newer evidence supersedes this event.'),
                 'reassessment_zh': (
                     f'若当前动量状态不再是 {to_state}、来源记录新的反向转换，或更新证据取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    scenario_headline = _FOREX_SCENARIO_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    scenario_active = _FOREX_SCENARIO_ACTIVE.fullmatch(detail)
+    scenario_inactive = _FOREX_SCENARIO_INACTIVE.fullmatch(detail)
+    if source == 'forex' and type_ == 'scenario' and scenario_headline and str(row.get('asset') or '') == 'dollar':
+        scenario_name, state_phrase = scenario_headline.groups()
+        scenario_key = scenario_name.lower()
+        active = state_phrase == 'now active'
+        detail_matches = scenario_active if active else scenario_inactive
+        if detail_matches and detail_matches.group(1) == scenario_key:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current scenario state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前情景状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated activation/deactivation events are separate edges; they do not '
+                    'prove the scenario stayed active between observations.')
+                recurrence_limit_zh = ' 重复激活/解除事件是独立边沿，并不能证明该情景在观测之间持续激活。'
+            validation_limit = (
+                ' The source conviction is documented but this family is not separately '
+                'backtested as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This scenario state is descriptive context, not a calibrated timing signal.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该情景状态只是描述性背景，并非校准择时信号。'
+            )
+            if active:
+                fired_text, minimum_text, intensity_text = detail_matches.groups()[1:]
+                fired, minimum, intensity = int(fired_text), int(minimum_text), int(intensity_text)
+                if fired < minimum or intensity > 100:
+                    return brief
+                implication = (
+                    f'The FX stress radar reports {scenario_name} crossed its activation '
+                    f'threshold with {fired}/{minimum}+ legs firing and {intensity}% intensity.')
+                implication_zh = (
+                    f'外汇压力雷达报告 {scenario_name} 越过激活阈值，{fired}/{minimum}+ 项触发，'
+                    f'强度 {intensity}%。')
+                next_action = (
+                    f'Open the current FX timeline and verify {scenario_name} is still active, '
+                    f'which underlying legs are firing and whether intensity remains near '
+                    f'{intensity}% before changing risk.')
+                next_action_zh = (
+                    f'打开当前外汇时间线，确认 {scenario_name} 仍处于激活状态、哪些底层条件仍在触发，'
+                    f'以及强度是否仍接近 {intensity}%，再调整风险。')
+                reassessment = (
+                    f'Change the read if {scenario_name} falls below its activation threshold, '
+                    'the firing legs materially change, or newer source evidence supersedes the event.')
+                reassessment_zh = (
+                    f'若 {scenario_name} 低于激活阈值、触发条件发生实质变化，或更新来源证据取代该事件，'
+                    '则改变判断。')
+            else:
+                implication = (
+                    f'The FX stress radar reports {scenario_name} fell below its activation '
+                    'threshold; the previously flagged stress configuration is no longer active.')
+                implication_zh = (
+                    f'外汇压力雷达报告 {scenario_name} 已低于激活阈值；此前标记的压力组合不再激活。')
+                next_action = (
+                    f'Open the current FX timeline and verify {scenario_name} remains inactive '
+                    'and that the underlying stress legs have not re-formed before relaxing risk controls.')
+                next_action_zh = (
+                    f'打开当前外汇时间线，确认 {scenario_name} 仍未激活，且底层压力条件尚未重新形成，'
+                    '再放松风险控制。')
+                reassessment = (
+                    f'Change the read if {scenario_name} reactivates or the underlying stress legs '
+                    'again meet the source threshold.')
+                reassessment_zh = (
+                    f'若 {scenario_name} 再次激活，或底层压力条件再次达到来源阈值，则改变判断。')
+            brief.update({
+                'status': 'supported', 'family': 'forex.scenario',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication, 'implication_zh': implication_zh,
+                'limitation': (
+                    'The scenario name is a deterministic stress-radar label, not confirmation '
+                    'that the real-world cause named by the scenario occurred. It is not a trade '
+                    'instruction, return forecast or calibrated probability.' +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '情景名称是确定性的压力雷达标签，并不能确认该情景名称所指的现实原因确实发生。'
+                    '它不是交易指令、收益预测或校准概率。' +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': next_action, 'next_action_zh': next_action_zh,
+                'next_action_label': 'Recheck FX scenario',
+                'next_action_label_zh': '复核外汇情景',
+                'reassessment': reassessment, 'reassessment_zh': reassessment_zh,
                 'evidence_label': 'Open current FX timeline',
                 'evidence_label_zh': '打开当前外汇时间线',
             })

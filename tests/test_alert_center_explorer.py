@@ -982,3 +982,69 @@ def test_forex_momentum_abstains_on_pair_direction_or_shape_mismatch():
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_scenario_active_brief_preserves_threshold_without_claiming_intervention():
+    row = signal('fx-scenario', source='forex', type_='scenario', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 2, 'fire_count': 13, 'continuity_verified': False,
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The intervention watch stress pattern crossed the activation threshold (2/2+ legs firing, intensity 25%).',
+        'detail_zh': '干预关注压力情景超过激活阈值（2/2+项触发，强度25%）。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.scenario'
+    assert brief['attention'] == 'for_awareness'
+    assert '2/2+ legs firing and 25% intensity' in brief['implication']
+    assert 'not confirmation' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert 'do not prove the scenario stayed active' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX scenario'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert 'falls below its activation threshold' in brief['reassessment']
+
+
+def test_forex_scenario_inactive_edge_is_supported_without_relaxing_risk_blindly():
+    row = signal('fx-scenario-off', source='forex', type_='scenario', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Dollar squeeze pattern no longer active',
+        'detail': 'The dollar squeeze stress pattern fell below the activation threshold.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'no longer active' in brief['implication']
+    assert 'verify Dollar squeeze remains inactive' in brief['next_action']
+    assert 'reactivates' in brief['reassessment']
+    assert 'return forecast' in brief['limitation']
+
+
+def test_forex_scenario_abstains_on_impossible_threshold_or_name_mismatch():
+    impossible = signal('fx-scenario-impossible', source='forex', type_='scenario', asset='dollar')
+    impossible.update({
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The intervention watch stress pattern crossed the activation threshold (1/2+ legs firing, intensity 25%).',
+        'link': 'forex.html#timeline',
+    })
+    mismatch = signal('fx-scenario-mismatch', source='forex', type_='scenario', asset='dollar')
+    mismatch.update({
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The dollar squeeze stress pattern crossed the activation threshold (2/2+ legs firing, intensity 25%).',
+        'link': 'forex.html#timeline',
+    })
+    wrong_asset = signal('fx-scenario-asset', source='forex', type_='scenario', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Intervention watch pattern now active',
+        'detail': 'The intervention watch stress pattern crossed the activation threshold (2/2+ legs firing, intensity 25%).',
+        'link': 'forex.html#timeline',
+    })
+    rows = [impossible, mismatch, wrong_asset]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)

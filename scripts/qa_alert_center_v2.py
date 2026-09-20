@@ -208,6 +208,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-forex-momentum.png'))
             report['screenshots'].append('desktop-forex-momentum.png')
             report['checks'].append('FX momentum flips expose current-state verification without becoming directional forecasts')
+            scenario_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                               if brief.get('family') == 'forex.scenario')
+            scenario_brief = payload['explorer']['briefs'][scenario_id]
+            page.goto(url + '#view=explore&id=' + scenario_id, wait_until='domcontentloaded')
+            scenario_text = page.locator('#ac-detail').inner_text()
+            assert scenario_brief['limitation'] in scenario_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == scenario_brief['next_action']
+            assert scenario_brief['evidence_label'] in scenario_text
+            page.screenshot(path=str(out / 'desktop-forex-scenario.png'))
+            report['screenshots'].append('desktop-forex-scenario.png')
+            report['checks'].append('FX scenarios expose threshold-state verification without claiming the named real-world cause')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]
