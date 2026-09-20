@@ -106,6 +106,26 @@ def main():
                 assert page.locator('#ac-detail .acx-next-action').inner_text() == risk_brief['next_action']
                 assert risk_brief['evidence_label'] in text
             report['checks'].append('Five next-priority risk families render source-bound limits, actions and evidence destinations')
+            theme_families = {
+                'themes.reco_change', 'themes.theme_deteriorating',
+                'themes.theme_topping', 'themes.theme_emerging',
+                'themes.leadership_rotation',
+            }
+            theme_ids = {
+                brief.get('family'): id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') in theme_families
+            }
+            assert set(theme_ids) == theme_families
+            for family in sorted(theme_families):
+                theme_id = theme_ids[family]
+                theme_brief = payload['explorer']['briefs'][theme_id]
+                page.goto(url + '#view=explore&id=' + theme_id, wait_until='domcontentloaded')
+                assert page.locator('#ac-detail').evaluate('(d) => d.open')
+                text = page.locator('#ac-detail').inner_text()
+                assert theme_brief['limitation'] in text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == theme_brief['next_action']
+                assert theme_brief['evidence_label'] in text
+            report['checks'].append('Five theme-change families render source-bound model limits, reassessment and current-page actions')
             page.click('#ac-close')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
             page.click('[data-view="history"]')

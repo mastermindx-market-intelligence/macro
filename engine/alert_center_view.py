@@ -99,6 +99,37 @@ _BREADTH_DIVERGENCE_DETAIL = re.compile(
     r'\(([0-9]{1,3})% pctile\) — fewer names carrying the tape$'
 )
 
+_THEME_RECO_CHANGE = re.compile(
+    r'^Theme recommendation for (.+?) changed from ([A-Za-z]+) to ([A-Za-z]+) '
+    r'\(score ([0-9]{1,3}), ([^)]+)\)'
+    r'(?: — held ([0-9]+) consecutive sessions '
+    r'\(constructive flips wait for a second session; risk flips fire immediately\))?\.$',
+    re.IGNORECASE,
+)
+_THEME_DETERIORATING = re.compile(
+    r'^(.+?) broke down into deteriorating — momentum and breadth weakening together\. '
+    r'Recommendation now ([A-Za-z]+)\.$', re.IGNORECASE,
+)
+_THEME_TOPPING = re.compile(
+    r'^(.+?) dropped from dominant to fading as of the ([0-9]{4}-[0-9]{2}-[0-9]{2}) close '
+    r'— momentum cooling at a high\. Historically this read flags elevated pullback risk '
+    r'over the next month, not a confirmed top — leaders inside the theme can keep running\. '
+    r'Recommendation now ([A-Za-z]+)\.$', re.IGNORECASE,
+)
+_THEME_EMERGING = re.compile(
+    r'^(.+?) entered the (?:emerging phase|EMERGING lifecycle) — accelerating relative strength '
+    r'before it is extended \(score ([0-9]{1,3})\)'
+    r'(?: — held ([0-9]+) consecutive sessions '
+    r'\((?:constructive label shifts are debounced|constructive label shifts wait for a second session); '
+    r'risk label shifts fire immediately\))?\.$', re.IGNORECASE,
+)
+_THEME_LEADERSHIP = re.compile(
+    r'^(.+?) took the #1 theme rank \(score ([0-9]{1,3})\), displacing (.+?)'
+    r'(?: — held #1 for ([0-9]+) consecutive sessions with a '
+    r'([0-9]+(?:\.[0-9]+)?)-point margin over #2)?\.$', re.IGNORECASE,
+)
+_THEME_RECO_RANK = {'avoid': 0, 'trim': 1, 'hold': 2, 'accumulate': 3, 'enter': 4}
+
 
 def _attention(row: dict) -> str:
     """Translate source tier + canonical freshness into page attention only."""
@@ -613,6 +644,202 @@ def build_alert_brief(row: dict) -> dict:
             'reassessment_zh': '若市场宽度明显恢复，或指数不再接近所述高点，则改变判断。',
             'evidence_label': 'Open current risk panel',
             'evidence_label_zh': '打开当前风险面板',
+        })
+        return brief
+
+    reco = _THEME_RECO_CHANGE.fullmatch(detail)
+    if source == 'themes' and type_ == 'reco_change' and reco:
+        subject, old_reco, new_reco, score_text, label, held_text = reco.groups()
+        score = int(score_text)
+        old_key, new_key = old_reco.lower(), new_reco.lower()
+        direction = 'upgrade' if _THEME_RECO_RANK.get(new_key, 2) > _THEME_RECO_RANK.get(old_key, 2) else 'downgrade'
+        held = int(held_text) if held_text else None
+        confirmation = f' The constructive change was confirmed for {held} sessions.' if held else ''
+        confirmation_zh = f' 该进取方向变化已连续 {held} 个交易日确认。' if held else ''
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current recommendation.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前建议。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.reco_change',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} moved from {old_reco} to {new_reco} at model score {score} '
+                f'with a {label} lifecycle label.{confirmation}'),
+            'implication_zh': (
+                f'{subject} 的模型建议由{old_reco}变为{new_reco}，模型评分 {score}，'
+                f'生命周期标签为{label}。{confirmation_zh}'),
+            'limitation': (
+                f'The recommendation is a model state, not a trade instruction, position size, '
+                f'probability or expected return. {score} is a model score, not a probability. '
+                'This family is documented, not separately backtested as a timing signal; '
+                'constructive changes are delayed for confirmation while risk-direction changes '
+                f'fire immediately. Re-fired events do not prove persistence.{age_limit}'),
+            'limitation_zh': (
+                f'该建议是模型状态，并非交易指令、仓位、概率或预期收益。{score} 是模型评分，'
+                '不是概率。该信号族有据可查，但未作为择时信号单独回测；进取方向变化需确认，'
+                f'风险方向变化即时触发。重复触发不能证明状态持续。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify {subject} still shows {new_reco}, '
+                f'score {score} and the {label} lifecycle before changing exposure.'),
+            'next_action_zh': f'打开当前主题页面，确认 {subject} 仍显示{new_reco}、评分 {score} 与{label}生命周期，再调整敞口。',
+            'next_action_label': 'Recheck recommendation',
+            'next_action_label_zh': '复核建议',
+            'reassessment': (
+                f'Change the read if the current recommendation no longer shows {new_reco}, '
+                'the lifecycle changes, or the score materially reverses.'),
+            'reassessment_zh': f'若当前建议不再为{new_reco}、生命周期改变或评分明显反转，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    deteriorating = _THEME_DETERIORATING.fullmatch(detail)
+    if source == 'themes' and type_ == 'theme_deteriorating' and deteriorating:
+        subject, recommendation = deteriorating.groups()
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current state.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前状态。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.theme_deteriorating',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} entered the deteriorating lifecycle with momentum and breadth '
+                f'weakening together; the source recommendation is now {recommendation}.'),
+            'implication_zh': f'{subject} 进入走弱生命周期，动量与宽度同步转弱；当前来源建议为{recommendation}。',
+            'limitation': (
+                'The source treats deterioration as an immediate risk-direction event, but '
+                'the page payload supplies no calibrated probability, hit rate or individual-name '
+                'sell list. This family is documented, not separately backtested as a timing '
+                f'signal; repeated firings do not prove persistence.{age_limit}'),
+            'limitation_zh': (
+                '来源将走弱视为即时风险方向事件，但页面载荷未提供校准概率、命中率或个股卖出清单。'
+                f'该信号族有据可查，但未作为择时信号单独回测；重复触发不能证明状态持续。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify both momentum and breadth still weaken '
+                f'together and the recommendation remains {recommendation}.'),
+            'next_action_zh': f'打开当前主题页面，确认动量与宽度仍同步走弱，且建议仍为{recommendation}。',
+            'next_action_label': 'Recheck deterioration',
+            'next_action_label_zh': '复核走弱',
+            'reassessment': (
+                'Change the read if momentum or breadth recovers, the lifecycle exits '
+                'deteriorating, or the recommendation improves.'),
+            'reassessment_zh': '若动量或宽度恢复、生命周期退出走弱，或建议改善，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    topping = _THEME_TOPPING.fullmatch(detail)
+    if source == 'themes' and type_ == 'theme_topping' and topping:
+        subject, asof_date, recommendation = topping.groups()
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck current momentum.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前动量。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.theme_topping',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} moved from dominant to fading at the {asof_date} close. The source '
+                'frames this as elevated basket-level pullback risk over roughly the next month.'),
+            'implication_zh': f'{subject} 在 {asof_date} 收盘时由主导转入退潮；来源将其视为未来约一个月篮子层面回撤风险上升。',
+            'limitation': (
+                f'This is not a confirmed top, calibrated probability or claim that every leader '
+                f'inside the theme must fall; leaders can keep running. Recommendation {recommendation} '
+                f'is a model state, not an instruction or position size.{age_limit}'),
+            'limitation_zh': (
+                f'这并非确认见顶、校准概率，也不表示主题内所有领涨股都会下跌；领涨股仍可能续涨。'
+                f'{recommendation} 是模型建议状态，并非交易指令或仓位。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify {subject} remains fading, momentum is '
+                f'still cooling and the recommendation remains {recommendation}.'),
+            'next_action_zh': f'打开当前主题页面，确认 {subject} 仍处于退潮、动量继续降温且建议仍为{recommendation}。',
+            'next_action_label': 'Recheck pullback risk',
+            'next_action_label_zh': '复核回撤风险',
+            'reassessment': (
+                'Change the read if the theme returns to dominant/leading, momentum reaccelerates '
+                'or the recommendation improves.'),
+            'reassessment_zh': '若主题恢复主导/领先、动量重新加速或建议改善，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    emerging = _THEME_EMERGING.fullmatch(detail)
+    if source == 'themes' and type_ == 'theme_emerging' and emerging:
+        subject, score_text, held_text = emerging.groups()
+        score = int(score_text)
+        held = int(held_text) if held_text else None
+        held_copy = f' and held {held} consecutive sessions' if held else ''
+        held_copy_zh = f'，并连续 {held} 个交易日确认' if held else ''
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current lifecycle.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前生命周期。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.theme_emerging',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} entered the emerging lifecycle at score {score}, with relative '
+                f'strength accelerating before extension{held_copy}.'),
+            'implication_zh': f'{subject} 以评分 {score} 进入新兴生命周期，相对强度在过度延展前加速{held_copy_zh}。',
+            'limitation': (
+                f'The confirmation stabilizes the label; it does not validate future returns. '
+                f'{score} is a model score, not a probability, and this is not a buy list or '
+                f'separately backtested timing signal.{age_limit}'),
+            'limitation_zh': (
+                f'连续确认仅稳定标签，并不验证未来收益。{score} 是模型评分，不是概率；这也不是买入清单'
+                f'或经过单独回测的择时信号。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme page and verify {subject} remains emerging, relative '
+                'strength still accelerates and the theme is not already extended.'),
+            'next_action_zh': f'打开当前主题页面，确认 {subject} 仍处于新兴、相对强度继续加速且尚未过度延展。',
+            'next_action_label': 'Recheck emergence',
+            'next_action_label_zh': '复核新兴状态',
+            'reassessment': (
+                'Change the read if the lifecycle leaves emerging, relative strength stalls '
+                'or extension becomes excessive.'),
+            'reassessment_zh': '若生命周期退出新兴、相对强度停滞或延展过度，则改变判断。',
+            'evidence_label': 'Open current theme page',
+            'evidence_label_zh': '打开当前主题页面',
+        })
+        return brief
+
+    leadership = _THEME_LEADERSHIP.fullmatch(detail)
+    if source == 'themes' and type_ == 'leadership_rotation' and leadership:
+        subject, score_text, old_leader, held_text, margin_text = leadership.groups()
+        score = int(score_text)
+        held = int(held_text) if held_text else None
+        margin = float(margin_text) if margin_text else None
+        confirmation = ''
+        confirmation_zh = ''
+        if held is not None and margin is not None:
+            margin_label = f'{margin:g}'
+            confirmation = f' The lead held for {held} sessions with a {margin_label}-point margin over #2.'
+            confirmation_zh = f' 该领先已持续 {held} 个交易日，并领先第二名 {margin_label} 分。'
+        age_limit = '' if age is None or age <= 2 else f' This event is {age} days old; recheck the current leaderboard.'
+        age_limit_zh = '' if age is None or age <= 2 else f' 该事件已过去 {age} 天；请复核当前排行榜。'
+        brief.update({
+            'status': 'supported', 'family': 'themes.leadership_rotation',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} became the #1 theme at score {score}, displacing {old_leader}.'
+                f'{confirmation}'),
+            'implication_zh': f'{subject} 以评分 {score} 升至主题第一，取代 {old_leader}。{confirmation_zh}',
+            'limitation': (
+                f'Theme rank and score are descriptive model outputs—not expected return, '
+                f'probability, a recommendation or proof of durable leadership. {score} is a '
+                f'model score, not expected return; confirmation filters rank noise but does '
+                f'not establish forward edge.{age_limit}'),
+            'limitation_zh': (
+                f'主题排名与评分是描述性模型输出，并非预期收益、概率、建议或持久领先的证明。'
+                f'{score} 是模型评分，不是预期收益；连续确认只过滤排名噪声，并不建立前瞻优势。{age_limit_zh}'),
+            'next_action': (
+                f'Open the current theme leaderboard and verify {subject} is still #1, its '
+                'margin remains decisive and the underlying score leadership persists.'),
+            'next_action_zh': f'打开当前主题排行榜，确认 {subject} 仍为第一、领先幅度仍具决定性且评分优势持续。',
+            'next_action_label': 'Recheck leadership',
+            'next_action_label_zh': '复核主题领先',
+            'reassessment': (
+                'Change the read if another theme takes #1, the lead margin falls inside '
+                'normal score wobble or the score leadership reverses.'),
+            'reassessment_zh': '若其他主题升至第一、领先幅度回落到正常评分波动内或评分优势反转，则改变判断。',
+            'evidence_label': 'Open current theme leaderboard',
+            'evidence_label_zh': '打开当前主题排行榜',
         })
         return brief
 

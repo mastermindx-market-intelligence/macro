@@ -481,3 +481,117 @@ def test_new_risk_family_copy_abstains_when_the_source_shape_is_unrecognized():
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_theme_change_families_get_source_bound_decision_briefs_without_trade_authority():
+    reco = signal('theme-reco', source='themes', type_='reco_change', asset='ai_infra')
+    reco.update({
+        'tier': 'watch', 'age_days': 3,
+        'headline': '↑ AI Infrastructure: Avoid → Hold',
+        'headline_zh': '↑ AI 基础设施：规避 → 持有',
+        'detail': 'Theme recommendation for AI Infrastructure changed from Avoid to Hold (score 57, neutral).',
+        'detail_zh': 'AI 基础设施 的主题建议由「规避」变为「持有」（评分 57，中性）。',
+        'link': 'sector_central.html#theme-ai_infra', 'fire_count': 4,
+        'validation': {'verdict': 'documented',
+                       'note': 'Conviction is documented, not separately backtested as a timing signal.'},
+    })
+    deteriorating = signal('theme-down', source='themes', type_='theme_deteriorating', asset='managed_care')
+    deteriorating.update({
+        'tier': 'watch', 'age_days': 3,
+        'headline': '🔻 Managed Care & Insurers is deteriorating',
+        'headline_zh': '🔻 管理式医疗与保险 走弱',
+        'detail': 'Managed Care & Insurers broke down into deteriorating — momentum and breadth weakening together. Recommendation now Avoid.',
+        'detail_zh': '管理式医疗与保险 转入「走弱」 — 动量与广度同步转弱，当前建议「规避」。',
+        'link': 'sector_central.html#theme-managed_care', 'fire_count': 4,
+        'validation': {'verdict': 'documented'},
+    })
+    topping = signal('theme-top', source='themes', type_='theme_topping', asset='us_sector_energy')
+    topping.update({
+        'tier': 'watch', 'age_days': 4,
+        'headline': '⚠️ Energy (Equal-Weight): strength fading off the high',
+        'headline_zh': '⚠️ 能源（等权）：高位动能减弱',
+        'detail': 'Energy (Equal-Weight) dropped from dominant to fading as of the 2026-09-16 close — momentum cooling at a high. Historically this read flags elevated pullback risk over the next month, not a confirmed top — leaders inside the theme can keep running. Recommendation now Trim.',
+        'detail_zh': '能源（等权） 自「主导」转入「退潮」（截至 2026-09-16 收盘）— 高位动能降温。历史上该读数指向未来约一个月的回撤风险上升，并非确认见顶 — 主题内的领涨股仍可能续涨。当前建议「减仓」。',
+        'link': 'sector_central.html#theme-us_sector_energy', 'fire_count': 2,
+        'validation': {'verdict': 'documented'},
+    })
+    emerging = signal('theme-emerge', source='themes', type_='theme_emerging', asset='us_sector_utilities')
+    emerging.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': '🌱 Utilities (Equal-Weight) is emerging',
+        'headline_zh': '🌱 公用事业（等权） 进入新兴阶段',
+        'detail': 'Utilities (Equal-Weight) entered the EMERGING lifecycle — accelerating relative strength before it is extended (score 38) — held 2 consecutive sessions (constructive label shifts are debounced; risk label shifts fire immediately).',
+        'detail_zh': '公用事业（等权） 进入「新兴」阶段 — 相对强度加速且尚未过度延展（评分 38），已连续 2 个交易日确认（进取方向去抖，风险方向即时）。',
+        'link': 'sector_central.html#theme-us_sector_utilities',
+        'validation': {'verdict': 'documented'},
+    })
+    leadership = signal('theme-lead', source='themes', type_='leadership_rotation', asset='crypto')
+    leadership.update({
+        'tier': 'watch', 'age_days': 23,
+        'headline': '🔄 New theme leader: Crypto & Digital Assets',
+        'headline_zh': '🔄 新主题领涨：加密与数字资产',
+        'detail': 'Crypto & Digital Assets took the #1 theme rank (score 71), displacing Gold Miners — held #1 for 2 consecutive sessions with a 3-point margin over #2.',
+        'detail_zh': '加密与数字资产 升至主题排名第一（评分 71），取代 黄金矿业 — 已连续 2 个交易日保持第一，领先第二名 3 分。',
+        'link': 'sector_central.html#theme-crypto',
+        'validation': {'verdict': 'documented'},
+    })
+    rows = [reco, deteriorating, topping, emerging, leadership]
+    before = deepcopy(rows)
+    briefs = project(rows)['briefs']
+    assert rows == before
+    values = [briefs[row['alert_id']] for row in rows]
+    assert [brief['family'] for brief in values] == [
+        'themes.reco_change', 'themes.theme_deteriorating', 'themes.theme_topping',
+        'themes.theme_emerging', 'themes.leadership_rotation']
+    assert all(brief['status'] == 'supported' for brief in values)
+    assert [brief['attention'] for brief in values] == [
+        'for_awareness', 'for_awareness', 'for_awareness', 'watch_next', 'for_awareness']
+    assert [brief['next_action_label'] for brief in values] == [
+        'Recheck recommendation', 'Recheck deterioration', 'Recheck pullback risk',
+        'Recheck emergence', 'Recheck leadership']
+    assert 'not a trade instruction' in values[0]['limitation']
+    assert 'momentum and breadth' in values[1]['next_action']
+    assert 'not a confirmed top' in values[2]['limitation']
+    assert 'held 2 consecutive sessions' in values[3]['implication']
+    assert 'not expected return' in values[4]['limitation']
+    assert all(brief['evidence_scope'] == 'current_panel_not_historical_archive'
+               for brief in values)
+
+
+def test_theme_briefs_preserve_asymmetric_confirmation_and_score_boundaries():
+    constructive = signal('theme-constructive', source='themes', type_='reco_change', asset='security')
+    constructive.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Theme recommendation for Security changed from Hold to Accumulate (score 64, emerging) — held 2 consecutive sessions (constructive flips wait for a second session; risk flips fire immediately).',
+        'detail_zh': 'Security 的主题建议由「持有」变为「加仓」（评分 64，新兴），已连续 2 个交易日确认（进取方向需连续确认，风险方向即时）。',
+        'link': 'sector_central.html#theme-security',
+        'validation': {'verdict': 'documented'},
+    })
+    downgrade = signal('theme-risk', source='themes', type_='reco_change', asset='retail')
+    downgrade.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Theme recommendation for Retail changed from Accumulate to Avoid (score 31, deteriorating).',
+        'detail_zh': 'Retail 的主题建议由「加仓」变为「规避」（评分 31，走弱）。',
+        'link': 'sector_central.html#theme-retail',
+        'validation': {'verdict': 'documented'},
+    })
+    c, d = [project([row])['briefs'][row['alert_id']] for row in (constructive, downgrade)]
+    assert 'confirmed for 2 sessions' in c['implication']
+    assert 'constructive changes are delayed for confirmation' in c['limitation']
+    assert 'risk-direction changes fire immediately' in d['limitation']
+    assert '64 is a model score, not a probability' in c['limitation']
+    assert '31 is a model score, not a probability' in d['limitation']
+
+
+def test_theme_family_specific_copy_abstains_on_unsupported_shapes():
+    types = ('reco_change', 'theme_deteriorating', 'theme_topping',
+             'theme_emerging', 'leadership_rotation')
+    rows = []
+    for type_ in types:
+        row = signal(f'bad-{type_}', source='themes', type_=type_, asset='theme')
+        row.update({'detail': f'{type_} changed in an unsupported shape.',
+                    'link': 'sector_central.html#theme-theme'})
+        rows.append(row)
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
