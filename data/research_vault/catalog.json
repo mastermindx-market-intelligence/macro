@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T20:00:30.819657+00:00",
-  "count": 2520,
+  "generated_at": "2026-09-20T20:15:34.459548+00:00",
+  "count": 2521,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1518,6 +1518,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-xutyqe1hfjm-f85411",
+      "title": "Treasury Inflation-Protected Securities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:59Z",
+      "summary_points": [
+        "TIPS Inflation Threshold: Breakeven inflation rate of 2.25-2.5% critical for TIPS outperformance vs nominal Treasuries when CPI exceeds market expectations, driven by persistent energy disruptions and core inflation at 2.4% y/y.",
+        "Fed Policy Structural Support: Inflation above Fed’s 2% target for >5 years sustains TIPS demand via elevated inflation risk premiums, though lower liquidity vs nominal bonds poses stress-period headwinds.",
+        "Scenario Risk Catalyst: Upside hinges on inflation remaining above target (stable real rates); downside risk from growth scare/credit crunch accelerating inflation decline, widening risk premiums and pressuring TIPS."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
