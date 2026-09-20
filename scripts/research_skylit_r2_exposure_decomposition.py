@@ -700,6 +700,21 @@ def analyze_pair(
         state0.get("model_state_frame"),
         state1.get("model_state_frame"),
     )
+    survivor_raw_abs = float(decomposition["raw_survivor_change_abs_mass"])
+    known_discrete_abs = float(composition["known_composition_abs_mass"])
+    unresolved_discrete_abs = float(composition["unresolved_composition_abs_mass"])
+    observed_map_change_abs = (
+        survivor_raw_abs + known_discrete_abs + unresolved_discrete_abs
+    )
+    construction_accounted_abs = survivor_raw_abs + known_discrete_abs
+    composition["observed_map_change_abs_mass"] = observed_map_change_abs
+    composition["construction_accounted_abs_mass"] = construction_accounted_abs
+    composition["construction_accounted_share"] = (
+        construction_accounted_abs / observed_map_change_abs
+        if observed_map_change_abs > 0
+        else None
+    )
+
     base["status"] = "SURVIVOR_DECOMPOSITION_COMPLETE"
     base["decomposition"] = decomposition
     base["composition"] = composition
