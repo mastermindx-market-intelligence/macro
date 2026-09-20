@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TPL = (ROOT / "templates" / "china.html.j2").read_text(encoding="utf-8")
+LIVE_JS = (ROOT / "templates" / "live.js").read_text(encoding="utf-8")
 
 
 def test_deep_dashboard_rows_are_the_published_macro_composition() -> None:
@@ -114,6 +115,16 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "{% set _hi_strip = [] %}" in TPL
     assert "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
+
+
+def test_live_only_index_tiles_show_loading_geometry_until_live_quote_arrives() -> None:
+    for symbol in ("000300.SS", "399006.SZ"):
+        assert f'class="mx5-mkt-price nb-px mx-skel" data-sym="{symbol}"' in TPL
+        assert f'class="mx5-mkt-delta nb-chg mx-skel" data-sym="{symbol}"' in TPL
+    assert 'aria-busy="true"' in TPL
+    # The incumbent quote owner must clear loading state when it owns a real quote.
+    assert 'el.classList.remove("mx-skel");' in LIVE_JS
+    assert 'el.removeAttribute("aria-busy");' in LIVE_JS
 
 
 def test_index_face_and_deep_racks_remain() -> None:
