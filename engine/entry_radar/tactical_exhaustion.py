@@ -490,3 +490,165 @@ def match_controls(
         'matched_controls': matched if available else [],
         'excluded_counts': dict(sorted(excluded.items())),
     }
+
+
+def _exact_positive_path(frame: pd.DataFrame, start: datetime, end: datetime) -> tuple[str, list[tuple[float, ...]]]:
+    """Exact [start,end) five-minute price-evidence path, no sort/fill/bridge."""
+    if not isinstance(frame, pd.DataFrame) or any(c not in frame.columns for c in COLUMNS):
+        return 'invalid', []
+    if not isinstance(frame.index, pd.DatetimeIndex) or frame.index.tz is None or frame.index.hasnans:
+        return 'invalid', []
+    expected = list(pd.date_range(start, end - BAR, freq=BAR)) if end > start else []
+    rows = frame[(frame.index >= start) & (frame.index < end)]
+    if len(rows) != len(expected) or list(rows.index) != expected or rows.index.has_duplicates:
+        return 'missing', []
+    values: list[tuple[float, ...]] = []
+    for _, row in rows.iterrows():
+        parsed = _row_values(row)
+        if parsed is None or parsed[4] <= 0:
+            return 'invalid', []
+        values.append(parsed)
+    return 'ok', values
+
+
+def _touch_order(values: list[tuple[float, ...]], *, entry: float, atr: float, multiple: float) -> str:
+    target = entry + multiple * atr
+    adverse = entry - multiple * atr
+    for o, h, low, _c, _v in values:
+        hit_target = h >= target
+        hit_adverse = low <= adverse
+        if hit_target and hit_adverse:
+            if o >= target:
+                return 'target_first'
+            if o <= adverse:
+                return 'adverse_first'
+            return 'same_bar_ambiguous'
+        if hit_target:
+            return 'target_first'
+        if hit_adverse:
+            return 'adverse_first'
+    return 'neither'
+
+
+def _lod_survival(frame: pd.DataFrame, *, start: datetime, close: datetime, low_anchor: float) -> tuple[str, bool | None]:
+    state, values = _exact_positive_path(frame, start, close)
+    if state != 'ok':
+        return 'unavailable', None
+    return 'available', not any(row[2] < low_anchor for row in values)
+
+
+def measure_event_outcome(
+    stock_frame: pd.DataFrame, benchmark_frame: pd.DataFrame, *, event: dict,
+    session: date, horizon: str, beta: float | None, cost_bps: int,
+    config_bytes: bytes,
+) -> dict:
+    """Measure one frozen v4 long event from its delayed price-reference entry.
+
+    Corrected-history research only.  Missing path evidence censors the requested
+    horizon rather than moving to a later bar.  Benchmark absence leaves the stock
+    outcome measurable but beta residual unknown.  LOD diagnostics use their own
+    through-close evidence and therefore may be unavailable while a shorter fixed
+    horizon remains valid.
+    """
+    if hashlib.sha256(config_bytes).hexdigest() != CONFIG_SHA256:
+        raise ValueError('frozen v4 config identity mismatch')
+    cfg = json.loads(config_bytes)
+    if horizon not in cfg['horizons']:
+        raise ValueError('horizon outside frozen v4 grid')
+    if cost_bps not in cfg['round_trip_cost_bps']:
+        raise ValueError('cost outside frozen v4 grid')
+    if not isinstance(event, dict) or event.get('selector') not in cfg['selectors']:
+        raise ValueError('event outside frozen v4 selectors')
+    for field in ('entry_reference_at', 'candidate_at', 'decision_at'):
+        if field not in event:
+            raise ValueError(f'event missing {field}')
+    entry_at = _aware_iso(event['entry_reference_at'], field='entry_reference_at')
+    candidate_at = _aware_iso(event['candidate_at'], field='candidate_at')
+    decision_at = _aware_iso(event['decision_at'], field='decision_at')
+    start, close = session_window_et(session)
+    session_tz = start.tzinfo
+    entry_at = entry_at.astimezone(session_tz)
+    candidate_at = candidate_at.astimezone(session_tz)
+    decision_at = decision_at.astimezone(session_tz)
+    result = {
+        'schema': 'mastermind.tti.r1b.outcome.v4',
+        'study_id': cfg['study_id'], 'config_sha256': CONFIG_SHA256,
+        'selector': event['selector'], 'anchor_id': event.get('anchor_id'),
+        'session': session.isoformat(), 'horizon': horizon, 'cost_bps': int(cost_bps),
+        'entry_reference_at': _iso(entry_at), 'status': 'censored', 'reason': None,
+        'authority': 'retrospective_research_outcome_only',
+        'historical_availability_proven': False, 'execution_proven': False,
+        'may_rank': False, 'may_alert': False, 'may_size': False, 'may_trade': False,
+        'entry_open': None, 'exit_close': None, 'raw_return': None, 'net_return': None,
+        'benchmark_return': None, 'beta_residual': None, 'net_beta_residual': None,
+        'mfe': None, 'mae': None, 'touch': None,
+        'candidate_delay_atr': None, 'episode_delay_atr': None,
+        'remaining_to_prior_close_atr': None,
+        'lod_status': 'unavailable', 'candidate_lod_status': 'unavailable',
+        'candidate_lod_survives': None, 'episode_lod_status': 'unavailable',
+        'episode_lod_survives': None,
+    }
+    if not is_session(session) or close - start != timedelta(minutes=390):
+        result['reason'] = 'normal_session_required'; return result
+    if entry_at < start or entry_at >= close:
+        result['reason'] = 'entry_outside_session'; return result
+    elapsed = (entry_at - start).total_seconds()
+    if elapsed % int(BAR.total_seconds()) != 0:
+        result['reason'] = 'entry_off_session_grid'; return result
+    latency = int(cfg['execution_latency_minutes'])
+    if entry_at != decision_at + timedelta(minutes=latency):
+        result['reason'] = 'entry_clock_mismatch'; return result
+    if candidate_at > decision_at:
+        result['reason'] = 'candidate_after_decision'; return result
+    atr = event.get('prior_atr'); previous_close = event.get('previous_regular_close')
+    candidate_low = event.get('candidate_low'); episode_low = event.get('episode_low')
+    if not all(_number(x) and float(x) > 0 for x in (atr, previous_close, candidate_low, episode_low)):
+        result['reason'] = 'invalid_event_normalization'; return result
+    atr = float(atr); previous_close=float(previous_close); candidate_low=float(candidate_low); episode_low=float(episode_low)
+    if horizon == 'close':
+        path_end = close
+    else:
+        try:
+            minutes = int(horizon[:-1])
+        except (TypeError, ValueError):
+            raise ValueError('invalid frozen horizon')
+        path_end = entry_at + timedelta(minutes=minutes)
+        if path_end > close:
+            result['reason'] = 'horizon_after_session_close'; return result
+    state, stock_values = _exact_positive_path(stock_frame, entry_at, path_end)
+    if state == 'missing':
+        result['reason'] = 'stock_path_missing_or_ambiguous'; return result
+    if state != 'ok':
+        result['reason'] = 'stock_path_invalid'; return result
+    entry_open = stock_values[0][0]
+    exit_close = stock_values[-1][3]
+    raw = exit_close / entry_open - 1.0
+    cost = int(cost_bps) / 10000.0
+    result.update(status='available', reason=None, entry_open=entry_open, exit_close=exit_close,
+                  raw_return=raw, net_return=raw-cost,
+                  mfe=max(v[1] for v in stock_values)/entry_open-1.0,
+                  mae=min(v[2] for v in stock_values)/entry_open-1.0,
+                  touch=_touch_order(stock_values, entry=entry_open, atr=atr,
+                                     multiple=float(cfg['local_touch_atr'])),
+                  candidate_delay_atr=(entry_open-candidate_low)/atr,
+                  episode_delay_atr=(entry_open-episode_low)/atr,
+                  remaining_to_prior_close_atr=(previous_close-entry_open)/atr)
+    bstate, bvalues = _exact_positive_path(benchmark_frame, entry_at, path_end)
+    if bstate == 'ok':
+        benchmark_return = bvalues[-1][3] / bvalues[0][0] - 1.0
+        result['benchmark_return'] = benchmark_return
+        if beta is not None and _number(beta) and 0 <= float(beta) <= 3:
+            residual = raw - float(beta) * benchmark_return
+            result['beta_residual'] = residual
+            result['net_beta_residual'] = residual - cost
+    cstate, csurvives = _lod_survival(stock_frame, start=candidate_at, close=close,
+                                      low_anchor=candidate_low)
+    estate, esurvives = _lod_survival(stock_frame, start=decision_at, close=close,
+                                      low_anchor=episode_low)
+    result['candidate_lod_status'] = cstate
+    result['candidate_lod_survives'] = csurvives
+    result['episode_lod_status'] = estate
+    result['episode_lod_survives'] = esurvives
+    if cstate == 'available' and estate == 'available':
+        result['lod_status'] = 'available'
+    return result
