@@ -233,6 +233,20 @@ def perf_from_close(close, asof: str | None = None) -> dict | None:
     return out
 
 
+def compute_early_leadership(*args, **kwargs) -> dict:
+    """Closed-session parent/subtheme observation (descriptive, zero authority)."""
+    from engine.subsector_early_leadership import compute_early_leadership as _compute
+
+    return _compute(*args, **kwargs)
+
+
+def unavailable_early_leadership(*args, **kwargs) -> dict:
+    """Explicit degrade receipt for the additive observation."""
+    from engine.subsector_early_leadership import unavailable_early_leadership as _receipt
+
+    return _receipt(*args, **kwargs)
+
+
 def compute_rotation(
     tree: Sequence[Mapping],
     subsector_perf: Mapping[str, Mapping[str, float]],

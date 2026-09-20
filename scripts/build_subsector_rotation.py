@@ -9,6 +9,7 @@ refreshed by ``scripts/fetch_finviz_themes.py``) and writes
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import sys
@@ -235,9 +236,174 @@ def _write_turn_artifacts(site: Path, payload: dict) -> None:
     log.info("turn ledgers: +%d turns, +%d nominations (append-only)", n_t, n_n)
 
 
+def _early_leadership_day(value) -> str | None:
+    return None if value is None else str(value)[:10]
+
+
+def _early_leadership_completed_session(generated_utc: str):
+    from lib.nyse_calendar import expected_last_session
+
+    now = datetime.strptime(generated_utc, "%Y-%m-%d %H:%M").replace(
+        tzinfo=timezone.utc,
+    )
+    return expected_last_session(now)
+
+
+def _early_leadership_index_date(value):
+    date_fn = getattr(value, "date", None)
+    if callable(date_fn):
+        return date_fn()
+    return datetime.fromisoformat(str(value)[:10]).date()
+
+
+def _early_leadership_volume_receipt(volume, meta: dict) -> dict:
+    return {
+        "kind": "US_TIERS/_volume_cache",
+        "raw_tip": _early_leadership_day(meta.get("raw_tip")),
+        "tip": _early_leadership_day(meta.get("tip")),
+        "dropped_all_null_tail_rows": [
+            _early_leadership_day(value)
+            for value in meta.get("dropped_all_null_tail_rows") or []
+        ],
+        "n_columns": int(volume.shape[1]) if volume is not None else 0,
+    }
+
+
+def _attach_early_leadership(
+    payload: dict,
+    tree: list,
+    *,
+    source_tree_sha256: str,
+    generated_utc: str,
+    plane: dict | None = None,
+    volume_bundle: tuple | None = None,
+    completed_through=None,
+) -> dict:
+    """Attach the additive shadow observation without making this build fatal."""
+    try:
+        if plane is None:
+            from engine import group_flow
+
+            plane = group_flow._setup("us")
+        if not plane or plane.get("bench") is None:
+            raise ValueError("group_read_plane_unavailable")
+        closes = plane.get("theme_closes")
+        price_plane = "theme_closes"
+        if closes is None:
+            closes = plane.get("closes")
+            price_plane = "closes_fallback"
+        if closes is None:
+            raise ValueError("group_read_plane_unavailable")
+        if volume_bundle is None:
+            from lib.closes_panel import US_TIERS, merge_close_caches
+
+            volume_bundle = merge_close_caches(US_TIERS, kind="_volume_cache")
+        volume, volume_meta = volume_bundle
+        if completed_through is None:
+            completed_through = _early_leadership_completed_session(generated_utc)
+        provisional_dates = [
+            value
+            for value in closes.index
+            if _early_leadership_index_date(value) > completed_through
+        ]
+        if volume is not None and not volume.empty:
+            volume = volume.reindex(closes.index)
+        price_resolution = plane.get("theme_price_resolution") or {}
+        compact_price_resolution = {
+            key: price_resolution.get(key)
+            for key in (
+                "effective_as_of",
+                "calendar_basis",
+                "requested_n",
+                "resolved_n",
+                "unresolved_n",
+                "chosen_counts",
+                "source_basis",
+                "adjustment_vintage",
+                "authority",
+            )
+            if key in price_resolution
+        }
+        effective_tree_sha = hashlib.sha256(
+            json.dumps(
+                tree,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8")
+        ).hexdigest()
+        observation = plane.get("observation") or {}
+        early = sr.compute_early_leadership(
+            tree,
+            closes,
+            plane["bench"],
+            volume_panel=volume,
+            asof=observation.get("effective_as_of"),
+            provisional_dates=provisional_dates,
+            membership_revision={
+                "source": "data/themes_heatmap/themes_tree.json",
+                "source_sha256": source_tree_sha256,
+                "effective_tree_sha256": effective_tree_sha,
+                "observed_at": generated_utc,
+                "basis": "committed_snapshot_plus_existing_builder_injections",
+            },
+            price_basis=(
+                price_resolution.get("source_basis")
+                or {
+                    "primary_breadth": "closes_cache_UNADJUSTED",
+                    "baskets_extras": "tradj",
+                }
+            ),
+            source_receipts={
+                "group_read_observation": observation,
+                "group_read_price_plane": price_plane,
+                "price_resolution": compact_price_resolution,
+                "volume": _early_leadership_volume_receipt(volume, volume_meta or {}),
+                "session_calendar": {
+                    "owner": "lib.nyse_calendar.expected_last_session",
+                    "completed_through": str(completed_through),
+                    "excluded_provisional_dates": [
+                        _early_leadership_day(value) for value in provisional_dates
+                    ],
+                },
+            },
+        )
+        early["clocks"] = {
+            "observation": early.get("asof"),
+            "availability_utc": None,
+            "availability_reason": "SOURCE_DID_NOT_RECORD",
+            "computation_utc": generated_utc,
+            "publication_utc": None,
+        }
+        payload["early_leadership"] = early
+        return early
+    except Exception as exc:  # noqa: BLE001 — additive, never fatal
+        log.warning("early leadership observation unavailable: %s", exc)
+        reason = (
+            "GROUP_READ_PLANE_UNAVAILABLE"
+            if str(exc) == "group_read_plane_unavailable"
+            else "EARLY_LEADERSHIP_COMPUTE_ERROR"
+        )
+        early = sr.unavailable_early_leadership(
+            reason,
+            source_receipts={"error_type": type(exc).__name__},
+            clocks={
+                "availability_utc": None,
+                "availability_reason": "SOURCE_DID_NOT_RECORD",
+                "computation_utc": generated_utc,
+                "publication_utc": None,
+            },
+        )
+        payload["early_leadership"] = early
+        return early
+
+
 def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict:
     site = site or (config.ROOT / config.load()["storage"]["site_dir"])
-    tree = json.loads(_data("themes_heatmap", "themes_tree.json").read_text())
+    tree_path = _data("themes_heatmap", "themes_tree.json")
+    tree_bytes = tree_path.read_bytes()
+    tree_source_sha256 = hashlib.sha256(tree_bytes).hexdigest()
+    tree = json.loads(tree_bytes)
     snap = json.loads(_data("themes_heatmap", "perf_snapshot.json").read_text())
 
     # RC-R4: synthetic mega-cap node (additive, never fatal — a failed injection
@@ -315,6 +481,13 @@ def build(site: Path | None = None, *, generated_utc: str | None = None) -> dict
             log.warning("sector ETF perf empty — omitting sectors from payload")
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector ETF build failed: %s", e)
+
+    _attach_early_leadership(
+        payload,
+        tree,
+        source_tree_sha256=tree_source_sha256,
+        generated_utc=generated_utc,
+    )
 
     # Turn artifact + append-only PIT ledger (additive, degrade-safe).
     try:
