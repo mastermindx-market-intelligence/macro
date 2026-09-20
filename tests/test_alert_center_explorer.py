@@ -1290,3 +1290,71 @@ def test_bonds_curve_regime_abstains_on_detail_or_asset_mismatch():
     briefs = project([bad_detail, bad_asset])['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (bad_detail, bad_asset))
     assert all(briefs[row['alert_id']]['family'] is None for row in (bad_detail, bad_asset))
+
+
+def test_commodity_complex_regime_keeps_stagflation_as_source_taxonomy():
+    row = signal('complex-stag', source='commodity', type_='complex_regime', asset='complex')
+    row.update({
+        'tier': 'watch', 'age_days': 27,
+        'headline': 'Commodity complex → Stagflation',
+        'detail': 'The dollar × growth quadrant shifted Goldilocks → Stagflation.',
+        'detail_zh': '美元 × 增长象限从 理想增长 切换为 滞胀。',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.complex_regime'
+    assert brief['attention'] == 'for_awareness'
+    assert 'Goldilocks to Stagflation' in brief['implication']
+    assert 'source quadrant label' in brief['limitation']
+    assert 'not proof the economy is in that macro state' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '27 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck commodity regime'
+    assert brief['evidence_label'] == 'Open current commodity timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_commodity_complex_reflation_is_watch_next_with_input_falsifier():
+    row = signal('complex-reflation', source='commodity', type_='complex_regime', asset='complex')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Commodity complex → Reflation',
+        'detail': 'The dollar × growth quadrant shifted Stagflation → Reflation.',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'directional commodity trade' in brief['limitation']
+    assert 'dollar/growth inputs no longer map to that quadrant' in brief['reassessment']
+    assert 'newer transition supersedes this event' in brief['reassessment']
+
+
+def test_commodity_complex_regime_abstains_on_headline_asset_or_transition_mismatch():
+    mismatch = signal('complex-mismatch', source='commodity', type_='complex_regime', asset='complex')
+    mismatch.update({
+        'headline': 'Commodity complex → Goldilocks',
+        'detail': 'The dollar × growth quadrant shifted Goldilocks → Stagflation.',
+        'link': 'commodities.html#timeline',
+    })
+    same = signal('complex-same', source='commodity', type_='complex_regime', asset='complex')
+    same.update({
+        'headline': 'Commodity complex → Stagflation',
+        'detail': 'The dollar × growth quadrant shifted Stagflation → Stagflation.',
+        'link': 'commodities.html#timeline',
+    })
+    wrong_asset = signal('complex-asset', source='commodity', type_='complex_regime', asset='gold')
+    wrong_asset.update({
+        'headline': 'Commodity complex → Stagflation',
+        'detail': 'The dollar × growth quadrant shifted Goldilocks → Stagflation.',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (mismatch, same, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)

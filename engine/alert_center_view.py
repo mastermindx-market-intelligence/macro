@@ -55,6 +55,14 @@ _NET_LIQUIDITY_ROC_FLIP = re.compile(
     r'and held ([1-9][0-9]*)d: ([+-][0-9]+(?:\.[0-9]+)?)bn -> '
     r'([+-][0-9]+(?:\.[0-9]+)?)bn$'
 )
+_COMMODITY_COMPLEX_HEADLINE = re.compile(
+    r'^Commodity complex → (Neutral|Goldilocks|Stagflation|Reflation|Deflation-scare)$'
+)
+_COMMODITY_COMPLEX_DETAIL = re.compile(
+    r'^The dollar × growth quadrant shifted '
+    r'(Neutral|Goldilocks|Stagflation|Reflation|Deflation-scare) → '
+    r'(Neutral|Goldilocks|Stagflation|Reflation|Deflation-scare)\.$'
+)
 _COMMODITY_PRICE_SHOCK = re.compile(
     r'^(Gold|Silver|Copper|Oil) ([0-9][0-9,.]*) (\$/oz|\$/lb|\$/bbl) '
     r'— the acute move is settling\.$'
@@ -1172,6 +1180,73 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前脉冲面板',
         })
         return brief
+
+    complex_headline = _COMMODITY_COMPLEX_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    complex_detail = _COMMODITY_COMPLEX_DETAIL.fullmatch(detail)
+    if source == 'commodity' and type_ == 'complex_regime' and complex_headline and complex_detail:
+        headline_regime = complex_headline.group(1)
+        previous, current = complex_detail.groups()
+        if str(row.get('asset') or '') == 'complex' and headline_regime == current and previous != current:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current commodity regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前大宗商品状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated transitions do not prove the quadrant persisted between observations.')
+                recurrence_limit_zh = ' 重复转换并不能证明该象限在观测之间持续存在。'
+            if str(validation.get('verdict') or '') == 'documented':
+                validation_limit = (
+                    ' Source conviction is documented, but this family is not separately backtested '
+                    'as a timing signal.')
+                validation_limit_zh = ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+            else:
+                validation_limit = (
+                    ' This quadrant is descriptive source context, not a calibrated timing signal.')
+                validation_limit_zh = ' 该象限是描述性来源背景，并非校准择时信号。'
+            brief.update({
+                'status': 'supported', 'family': 'commodity.complex_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar × growth taxonomy moved from {previous} to {current}, '
+                    'changing the commodity-complex context that should be checked against the '
+                    'current dollar and growth inputs.'),
+                'implication_zh': (
+                    f'来源的美元 × 增长分类从 {previous} 切换到 {current}，改变了大宗商品综合体的背景；'
+                    '应结合当前美元与增长输入重新核对。'),
+                'limitation': (
+                    f'“{current}” is the source quadrant label, not proof the economy is in that '
+                    'macro state, not a causal diagnosis, calibrated probability, return forecast '
+                    'or directional commodity trade.' + validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    f'“{current}”是来源象限标签，并不能证明经济正处于该宏观状态，也不是因果诊断、'
+                    '校准概率、收益预测或商品方向交易。' + validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify the complex regime is still '
+                    f'{current}, inspect the current dollar and growth inputs, and check whether a '
+                    'newer quadrant transition has superseded this event.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认综合体状态仍为 {current}，检查最新美元与增长输入，'
+                    '并确认是否已有新的象限转换取代该事件。'),
+                'next_action_label': 'Recheck commodity regime',
+                'next_action_label_zh': '复核商品状态',
+                'reassessment': (
+                    f'Change the read if the current complex regime is no longer {current}, the '
+                    'dollar/growth inputs no longer map to that quadrant, or a newer transition '
+                    'supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前综合体状态不再是 {current}、美元/增长输入不再对应该象限，或新的转换'
+                    '取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
 
     commodity = _COMMODITY_PRICE_SHOCK.fullmatch(detail)
     if source == 'commodity' and type_ == 'price_shock' and commodity:

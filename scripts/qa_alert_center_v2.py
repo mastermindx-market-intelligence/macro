@@ -252,6 +252,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-bonds-curve.png'))
             report['screenshots'].append('desktop-bonds-curve.png')
             report['checks'].append('Curve regimes expose current taxonomy verification without treating macro interpretation as fact')
+            complex_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                              if brief.get('family') == 'commodity.complex_regime')
+            complex_brief = payload['explorer']['briefs'][complex_id]
+            page.goto(url + '#view=explore&id=' + complex_id, wait_until='domcontentloaded')
+            complex_text = page.locator('#ac-detail').inner_text()
+            assert complex_brief['limitation'] in complex_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == complex_brief['next_action']
+            assert complex_brief['evidence_label'] in complex_text
+            page.screenshot(path=str(out / 'desktop-commodity-complex-regime.png'))
+            report['screenshots'].append('desktop-commodity-complex-regime.png')
+            report['checks'].append('Commodity-complex quadrants expose source taxonomy without treating macro labels as economic facts')
             silver_id = next(id_ for id_, row in by_id.items()
                              if row.get('source') == 'commodity' and
                              row.get('type') == 'price_shock' and row.get('asset') == 'silver')
