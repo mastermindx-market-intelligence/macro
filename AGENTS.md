@@ -65,13 +65,23 @@ a committed migration packet exactly and never invent design language — a buil
 that believes the packet is wrong stops and escalates.
 
 For any **material visual change**, do not design directly in production markup or from a
-chat-only render. The migration packet must identify an approved editable source
-(Figma/Paper/approved equivalent) with exact file/document + frame/node/artboard identifiers,
-the canonical components/tokens consumed, and the Dark/Light × EN/ZH × 1440/390 state matrix.
-The editable canvas projects repository law; it never becomes a second token root or component
-registry. Generated/exported code is implementation input, not automatic design authority.
-If a needed primitive is missing, return a DESIGN-SYSTEM GAP to the design lane instead of
-inventing a page-local substitute.
+chat-only render. Begin from a governed editable source (Figma/Paper/approved equivalent) that
+projects repository design law, and record the exact file/document + frame/node/artboard identifiers
+in the migration packet. Editable-source traceability is required but **does not approve a
+reference**: canonical/final reference status still requires the existing Reference Integrity Gate
+(RIG) approval receipt, and editable-tool approval never narrows any route-family or atomic-migration
+scope already required by product law.
+
+The packet must name the canonical components/tokens consumed and the Dark/Light × EN/ZH ×
+desktop/mobile matrix, plus materially distinct data/availability states and interaction/overlay
+states as applicable (including loading, empty, stale, partial, denied, error, corrected, success,
+hover, keyboard focus/focus-visible, pressed/active/selected, expanded/open popover/dialog/menu or
+disclosure, and disabled where supported). Editable frames/component variants define the intended
+treatment; implementation proof remains separate browser/fixture evidence under the existing
+evidence contract. The editable canvas never becomes a second token root or component registry, and
+generated/exported code is implementation input rather than automatic design authority. If a needed
+primitive is missing, return a DESIGN-SYSTEM GAP to the design lane instead of inventing a page-local
+substitute.
 
 ### Theme art direction — required (TP-0, 2026-08-27)
 
