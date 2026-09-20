@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T00:35:31.676654+00:00",
-  "count": 2464,
+  "generated_at": "2026-09-20T00:59:16.851948+00:00",
+  "count": 2465,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -636,6 +636,26 @@
         "Fed's rate hike & market expectations: Fed hikes to 3.75-4% (25bps), median 2026 rate projection 4.1%, but market pricing excessive with upside risks; disinflation and base effects temper long-hike case.",
         "BOE Rate Hike Signals & UK Allocation: BOE signals 25bps hikes in Nov/Feb 2027 amid energy-driven inflation; favor short-to-medium UK high-grade bonds (attractive carry), avoid longest maturities due to fiscal sustainability and AI debt risks.",
         "USDJPY Technicals & BoJ Risk: USDJPY at 156 (-0.5%), forecast 155-160; highly sensitive to Fed/ECB tightening, which risks further yen weakening (157) despite BoJ's 1.25% rate hike."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-iiecjpmycnr-d4c615",
+      "title": "Daily Asia",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:48Z",
+      "summary_points": [
+        "Fed Policy Shift: Post-selloff reversal with 25bps hike, 2-yr yield down 7bps to 4.67%, median 2026 rate at 4.1% (UBS sees Dec hike risk).",
+        "BoE Hawkish Guidance: 3.75% hold signals Nov/Feb 2027 25bps hikes; energy-driven inflation extends tightening cycle.",
+        "Fixed Income Positioning: Prioritize selective duration in high-quality medium-long bonds; avoid longest maturities due to fiscal risks and AI debt concerns.",
+        "Brent Crude Momentum: Robust YTD +71.1% performance signals strong energy price momentum impacting portfolio allocation."
       ],
       "tags": [],
       "tickers": [],
