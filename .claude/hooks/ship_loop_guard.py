@@ -1812,6 +1812,9 @@ def _is_spurious_check(name: str) -> bool:
 #: so on every one of them this context is red BY DESIGN. It is retarget-invalidation
 #: state, not a verdict. `ci-authority/main` stays binding everywhere.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# External Vercel quota failures are not repository proof. Keep this exact-name
+# exclusion mirrored with scripts/merge_on_green.py.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def _is_non_binding_check(name: str) -> bool:
@@ -1837,7 +1840,12 @@ def _is_non_binding_check(name: str) -> bool:
     "widening is a RULING, not a refactor" contract; this adds exactly one name, and
     that name's redness is a documented property of the workflow that emits it.
     """
-    return _is_spurious_check(name) or str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+    check = str(name or "")
+    return (
+        _is_spurious_check(check)
+        or check == VERCEL_STATUS_CONTEXT
+        or check == CI_AUTHORITY_INACTIVE_CONTEXT
+    )
 
 
 def _open_pull(owner: str, repo: str, branch: str) -> dict[str, Any] | None:
