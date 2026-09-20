@@ -1,5 +1,5 @@
 {
-  "head": "f4b739b4f6",
+  "head": "96444fcd1b",
   "branch": "claude/mo-a-ud-b1-r5-followup",
   "pr": "DRAFT-followup",
   "source_url": "site/macro.html",
@@ -10,7 +10,7 @@
     "sha256": "8b835c09ff6f78c18f8b34b90e07fc6378ff22b22cdd8966b6272976393e16cc",
     "sha256_short": "8b835c09ff6f",
     "bytes": 18041,
-    "captured_at_head": "f4b739b4f6",
+    "captured_at_head": "96444fcd1b",
     "note": "Byte-identity gate. The same selector, sliced from site/macro.html at FINAL head, must hash to this value. Any diff fails the R-E gate."
   },
   "cells": [
