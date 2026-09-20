@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T00:59:16.851948+00:00",
-  "count": 2465,
+  "generated_at": "2026-09-20T01:18:22.478269+00:00",
+  "count": 2466,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -76,6 +76,7 @@
     "Std Chartered",
     "TCW",
     "TS Lombard",
+    "Talos",
     "The Market Ear",
     "The Punchline",
     "UBS",
@@ -1393,6 +1394,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 14,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nh52cyyxhnb-f01370",
+      "title": "SOTN 379 On Chain Yield",
+      "institution": "Talos",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T17:35:26Z",
+      "summary_points": [
+        "Stablecoin Market Scale & Yield Competition: Stablecoin market exceeds $290B with $8.6B deposited in Aave v3/Morpho protocols; yields (3.64% avg on USDC) compete directly with traditional benchmarks (e.g., 31bps below 1-yr Treasury), but exhibit 3.3x higher volatility due to DeFi supply/demand dynamics vs Fed-set Treasury rates.",
+        "Tokenized Treasury Risk Profile: Tokenized assets (BUIDL, BENJI) offer yield parity (3.63% APY) with EFFR/SOFR but introduce unique risks—smart contract vulnerabilities, custody failures, and redemption liquidity issues—requiring reevaluation of low-risk yield strategies versus macro/debasement risks of traditional benchmarks.",
+        "Protocol Design Drives Yield Divergence: Morpho (4.44% APY via curator decisions) and Aave (3.64% APY) show 1.59% avg yield spread due to structural differences (isolated vs. shared pools), while USDC-USDT spreads (90 bps) reflect utilization rate disparities, critical for yield optimization and risk allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
