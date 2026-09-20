@@ -1250,3 +1250,13 @@ def test_r5_shock_distribution_refuses_invalid_registration_parameters():
             min_samples=3,
             calendar_api=_R5ShockCalendar,
         )
+
+
+def test_r5_shock_cli_accepts_repeated_year_parquets():
+    args = r5_shocks._parse_args([
+        "--greeks-parquet", "/tmp/2025.parquet",
+        "--greeks-parquet", "/tmp/2026.parquet",
+        "--root", "SPY",
+        "--asof", "2026-09-18",
+    ])
+    assert args.greeks_parquet == ["/tmp/2025.parquet", "/tmp/2026.parquet"]
