@@ -11,8 +11,11 @@ with `mode="macro"` by `scripts/build_site.py`).
 UD-B1's first production composition stacked a second, global/cross-market regime hero above the
 established US macro dashboard. The candidate is visually useful, but the shipped composition adds
 too much prose and vertical space, duplicates the existing regime decision surface, and exposes four
-of five cross-market spine rows as designed-null `BLOCKED_DATA`. It therefore does **not** currently
-clear the replacement bar for decision speed or information density.
+of five cross-market spine rows as designed-null `BLOCKED_DATA`. More importantly, its top score and
+verdict are **not a global composite**: `_unified_dashboard_hero.html.j2` binds the default
+`market_state`, whose default tape is the US `SPY / QQQ / IWM` profile. A US-derived verdict must not
+be relabeled as a global market verdict. It therefore does **not** currently clear the replacement
+bar for decision speed, information density, or semantic truth.
 
 The primary `macro.html` route returns to the established `#regime-radar` composition. UD-B1 source,
 primitives, specs and evidence are retained for redesign; do not delete or rebuild them. B2+ may not
