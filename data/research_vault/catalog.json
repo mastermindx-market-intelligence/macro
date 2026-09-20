@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T16:14:35.558357+00:00",
-  "count": 2509,
+  "generated_at": "2026-09-20T16:29:49.471741+00:00",
+  "count": 2510,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1208,6 +1208,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-r4mvsnecjql-824edf",
+      "title": "Japanese economy",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:28Z",
+      "summary_points": [
+        "BoJ Rate Hike & Inflation Catalyst: BoJ hiked rates 25bps to 1.25% (2 dissenters); underlying inflation (ex-food/energy) hit 2.1% (Aug), triggering two further 25bps hikes to 1.75% by Jan 2027.",
+        "Fiscal Policy Market Threat: Defense spending (3.5% GDP over 10y, +JPY 1T annual) and consumption-tax cuts (JPY 4T annual) risk bond/forex volatility despite stable fiscal fundamentals.",
+        "JGB Yield Structural Risk: 10-yr JGB yield forecast at 2.9% range (post-meeting: 2.98%), with fiscal pressures pushing yields above 3% and terminal rate uncertainty."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
