@@ -1780,3 +1780,82 @@ def test_china_gold_dataos_promoter_apply_stamps_registry_update_date(tmp_path):
 
     payload = yaml.safe_load(registry.read_text())
     assert payload["updated"] == "2026-09-20"
+
+
+def test_china_gold_dataos_promoter_rejects_artifact_path_not_owned_by_dataset_id(
+    tmp_path,
+):
+    import hashlib
+    import json
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    registry.write_text(_dataos_promotion_registry_text())
+    doc = _dataos_promotion_receipt(tmp_path)
+
+    # Swap the receipt paths and hashes so both files genuinely exist and the
+    # current-file SHA checks would otherwise pass. Canonical Data OS ownership,
+    # not merely a valid hash, must bind each dataset id to its own storage path.
+    sge = doc["source_artifacts"][0]
+    global_ref = doc["source_artifacts"][1]
+    sge_path = tmp_path / sge["path"]
+    global_path = tmp_path / global_ref["path"]
+    sge["path"] = "data/gold_china_basis/xaucny_spot.parquet"
+    sge["sha256"] = hashlib.sha256(global_path.read_bytes()).hexdigest()
+    global_ref["path"] = "data/gold_china_basis/sge_au9999.parquet"
+    global_ref["sha256"] = hashlib.sha256(sge_path.read_bytes()).hexdigest()
+    receipt.write_text(json.dumps(doc))
+
+    result = promote.promote(
+        receipt_path=receipt,
+        registry_path=registry,
+        apply=False,
+    )
+
+    assert result["eligible"] is False
+    assert any(
+        "receipt path does not match canonical registry storage" in blocker
+        for blocker in result["blockers"]
+    )
+
+
+def test_china_gold_dataos_promoter_rolls_back_if_source_changes_during_apply(
+    tmp_path,
+    monkeypatch,
+):
+    import json
+
+    import pytest
+
+    from scripts import promote_china_gold_dataos as promote
+
+    receipt = tmp_path / "receipt.json"
+    registry = tmp_path / "dataset_registry.yml"
+    receipt.write_text(json.dumps(_dataos_promotion_receipt(tmp_path)))
+    before = _dataos_promotion_registry_text()
+    registry.write_text(before)
+
+    real_promote_text = promote._promote_text
+
+    def race_source_then_render(text, dataset_ids, *, updated_date):
+        (tmp_path / "data" / "gold_china_basis" / "xaucny_spot.parquet").write_bytes(
+            b"changed-during-promotion"
+        )
+        return real_promote_text(
+            text,
+            dataset_ids,
+            updated_date=updated_date,
+        )
+
+    monkeypatch.setattr(promote, "_promote_text", race_source_then_render)
+
+    with pytest.raises(RuntimeError, match="post-write promotion verification failed"):
+        promote.promote(
+            receipt_path=receipt,
+            registry_path=registry,
+            apply=True,
+        )
+
+    assert registry.read_text() == before

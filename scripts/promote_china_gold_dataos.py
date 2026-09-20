@@ -15,10 +15,14 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
+
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from lib import config
 
@@ -132,6 +136,19 @@ def assess(
     if not str(receipt.get("source_asof") or ""):
         blockers.append("quality receipt source_asof is not bound")
 
+    registry_storage: dict[str, str] = {}
+    for row in registry_payload.get("datasets") or []:
+        if not isinstance(row, dict):
+            continue
+        dataset_id = str(row.get("dataset_id") or "")
+        storage = str(row.get("storage") or "")
+        if (
+            dataset_id in TARGET_DATASET_IDS
+            and dataset_id not in registry_storage
+            and storage
+        ):
+            registry_storage[dataset_id] = storage
+
     artifacts = receipt.get("source_artifacts")
     by_id = {
         str(item.get("dataset_id")): item
@@ -159,8 +176,26 @@ def assess(
         if item.get("selected_asof_present") is not True:
             blockers.append(f"artifact {dataset_id} does not bind the selected row")
 
+        receipt_registry_status = str(item.get("registry_status") or "")
+        if receipt_registry_status not in {"PROPOSED", "PRODUCED"}:
+            blockers.append(
+                f"artifact {dataset_id} receipt registry status is "
+                f"{receipt_registry_status or 'unbound'}"
+            )
+
+        rel_raw = str(item.get("path") or "")
+        canonical_storage = registry_storage.get(dataset_id)
+        if not canonical_storage:
+            blockers.append(
+                f"dataset registry storage is not bound for {dataset_id}"
+            )
+        elif rel_raw != canonical_storage:
+            blockers.append(
+                f"artifact {dataset_id} receipt path does not match canonical "
+                f"registry storage {canonical_storage!r}"
+            )
+
         if repo_root is not None:
-            rel_raw = str(item.get("path") or "")
             rel = Path(rel_raw)
             if not rel_raw or rel.is_absolute() or ".." in rel.parts:
                 blockers.append(
@@ -294,16 +329,36 @@ def promote(
     )
     registry_path.write_text(updated)
 
-    _, verified_payload = _load_registry(registry_path)
-    statuses, duplicates = _registry_statuses(verified_payload)
-    if duplicates:
-        raise RuntimeError(f"post-write registry has duplicate ids: {duplicates}")
-    for dataset_id in TARGET_DATASET_IDS:
-        if statuses.get(dataset_id) != "PRODUCED":
+    try:
+        _, verified_payload = _load_registry(registry_path)
+        post = assess(
+            receipt,
+            verified_payload,
+            repo_root=repo_root,
+            now=effective_now,
+        )
+        if not post["eligible"]:
             raise RuntimeError(
-                f"post-write verification failed for {dataset_id}: "
-                f"{statuses.get(dataset_id)!r}"
+                "post-write promotion verification failed: "
+                + "; ".join(post["blockers"])
             )
+        statuses, duplicates = _registry_statuses(verified_payload)
+        if duplicates:
+            raise RuntimeError(f"post-write registry has duplicate ids: {duplicates}")
+        for dataset_id in TARGET_DATASET_IDS:
+            if statuses.get(dataset_id) != "PRODUCED":
+                raise RuntimeError(
+                    f"post-write verification failed for {dataset_id}: "
+                    f"{statuses.get(dataset_id)!r}"
+                )
+    except Exception:
+        try:
+            registry_path.write_text(registry_text)
+        except OSError as rollback_exc:
+            raise RuntimeError(
+                "promotion verification failed and registry rollback also failed"
+            ) from rollback_exc
+        raise
     result["applied"] = list(result["pending"])
     result["pending"] = []
     result["already_produced"] = list(TARGET_DATASET_IDS)

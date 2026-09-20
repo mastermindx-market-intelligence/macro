@@ -1613,3 +1613,27 @@ def test_gold_basis_refresh_keeps_backfilling_until_thirty_aligned_sessions(monk
         full_history=False,
         today=date(2026, 9, 18),
     ) >= cgb._COLD_START_DAYS
+
+
+def test_generic_backfill_can_run_gold_basis_with_existing_secret_bindings():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / ".github" / "workflows" / "backfill.yml").read_text()
+
+    assert "only:" in text
+    assert 'python -m scripts.collect --full-history --only "${{ github.event.inputs.only }}"' in text
+    assert "TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}" in text
+    assert "POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}" in text
+    assert "MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}" in text
+
+
+def test_gold_basis_backfill_is_main_only_and_skips_unrelated_archive_fetch():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / ".github" / "workflows" / "backfill.yml").read_text()
+
+    assert "gold_china_basis may only run from main" in text
+    assert 'GITHUB_REF_NAME' in text
+    assert "if: github.event.inputs.only != 'gold_china_basis'" in text

@@ -162,7 +162,10 @@ which changes only those two canonical registry rows from `PROPOSED` to `PRODUCE
 registry's top-level `updated` date to the UTC application date, verifies the written statuses, and
 stops. Before writing it independently re-checks the receipt's fresh close-
 proxy method, render/machine agreement, 5-/30-session readiness, selected source timestamp, both
-current artifact files and hashes, current canonical registry states, and a receipt no older than
+current artifact files and hashes, each receipt artifact's path against the canonical registry
+storage owned by its Data OS id, current canonical registry states, and a receipt no older than
 24 hours; the single promotion-ready bit is never trusted by itself and cannot be replayed days
 later. It never commits or pushes Git state and refuses missing/duplicate/non-PROPOSED target rows
-or an unready/stale receipt.
+or an unready/stale receipt. The apply path re-runs the same current-artifact/receipt assessment
+after writing and rolls the registry text back to its exact pre-apply bytes if the source files or
+proof change during the transition.
