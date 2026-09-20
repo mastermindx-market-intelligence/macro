@@ -534,7 +534,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "f8c01489097babcc6e48c6bbf497c8241d7ac12a3e3882a7002a2e9f02a2d1dc"
+        "sha256": "3632fb91374a929409643b9fff3f04118a6064223cf638cac77233ef0a0bdcdf"
       },
       "hk": {
         "degraded_control_cases": 16,
@@ -542,7 +542,7 @@
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
         "primary_cases": 48,
         "screenshots": 8,
-        "sha256": "caea87fc7381178f5981e072ef64cd35627e02789ab3c9350f2c4d61094aa8fc"
+        "sha256": "ac4886d9e829acf1dc9231b4c0ed8f266b8b1cb7ebaab363f4cf529fec1f72b3"
       }
     },
     "claims": {
@@ -562,67 +562,67 @@
     "screenshots": [
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
-        "sha256": "a51d4326e78bcd81fcb0d229f9c29ee5fab18008ea1667b62f7b21ad3f319c52"
+        "sha256": "4b7517fcb68ac76bada88fc6aaf319c7fb05ce4ac633c028ec93688dd697a599"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
-        "sha256": "0c14f192e8fb67162457f283837ded59dd5355a1e7c124db30e969114f23f3c2"
+        "sha256": "5da7919f49872abe6c386d9be4d82c08872313921c5ef8d27d8ce2bf043d2df0"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
-        "sha256": "d08521cde6ffaf3b1e37922e4d370003622065b7d5d547819790042323bbe2ec"
+        "sha256": "98aa04aa98cd187e365bdadf249864cc94e6e02f9ddcb63c84c40a7f66f1272f"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
-        "sha256": "4e030fc62affdd6b3aa3c8530428cbaa4161f5712afcc166b4c81d03ff50b343"
+        "sha256": "3ec92698ffb895a1e0db4cf272cde6a0c578fb26782b38a6ed8ad6fcf74d2ce9"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
-        "sha256": "549be177d9be4802a188954e2d3efdf0110270d29f31c27268cba49a56da1f20"
+        "sha256": "604c93f65278cf92d666ffcbc43a6358482fccfc61e385f0b8668224ff6a27a6"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
-        "sha256": "2d803d72c33356f6e88f57f923c976f6f35a2e51fbe93fc05e1b15ccc6cf9ee0"
+        "sha256": "ea13271ce698edfaa0d68bbd76c7ba8d2edcba62c50d4a6533fa9b25bb1ad18d"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
-        "sha256": "697cb5425e83a5891334a6761d62be6250ee946c1ab19cb89423fd601e88e98c"
+        "sha256": "5d7d96adcf53419a39b0aad1b0b9c2f1f8f559bdc5ac7088ea48935f4ed35365"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
-        "sha256": "4b52d64c034adea85d8b50001b239ff04ffbf306010221c76227a243f8af514d"
+        "sha256": "43953af85bff7bca00559371078a13ec22117aa8883d9c740226a23921078110"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
-        "sha256": "fb30407697251c99fcbf1284be391d107ef29a0579c37666ca0e30c31887073e"
+        "sha256": "6e793cc95d7033f58efec94098199b6a40d0e6408c100b09ca9d998a0e76ab3e"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
-        "sha256": "1a5ff6a72626dc64ea14f2da695cf332d0d26e3a136aba3bf6cfd088a7e22c63"
+        "sha256": "5774dae388352e24bcd0da034035efbee358b10ffb4f0d843f2e7f8e578adc40"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
-        "sha256": "1b18d2c177f084406c24780b45a222b95d25179167107d1b58623f6ba8f510c6"
+        "sha256": "bbab19fdb25073eeb60afc805a50f573ec0ddd3a53937783e7228a0059450ab6"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
-        "sha256": "b5989454c316b7603f2ddbdb06fc9263d6eee5f03d065435e4c33dfb09d2a240"
+        "sha256": "15982e871a4853456373bdddb88e1c5a83296e57541e62ff221a9063029a90fb"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
-        "sha256": "77691a42cb2dc0bf44aa00c2297347aed49bc319d2d2e552b5085b090dc02353"
+        "sha256": "faf745be77d76071c87a381eb5e3fc731488cbc2829fb4bbe4a868659db705f5"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
-        "sha256": "4f6aaff26c8326caac1cffbf67c062100bf0026f48df02de919852486933fd67"
+        "sha256": "c0d6e880ddf51e33435b53f2ebfb90cb80f295bf1a678c7ed639859fa8a24341"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
-        "sha256": "2afc87e90de550fe48e2662c5d735d752b32970529dec87e3f7b5669395ed5b0"
+        "sha256": "60862cebcb1c2da05dbfd037310a2ddfdd08023397b5cf4950f97790536a1db7"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
-        "sha256": "a793e5f817edbf43236053805127d5929fe00050e43b9b121d95db69f08509ac"
+        "sha256": "c57ab22022320740a71b35391b8a239a60e2e469e1c12db5ea9efdc9507e68f4"
       }
     ],
     "totals": {
