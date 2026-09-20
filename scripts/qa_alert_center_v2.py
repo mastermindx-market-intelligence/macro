@@ -148,6 +148,18 @@ def main():
             page.screenshot(path=str(out / 'desktop-vector-momentum-trigger.png'))
             report['screenshots'].append('desktop-vector-momentum-trigger.png')
             report['checks'].append('Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call')
+            structure_id = next(
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'vector.structure_shift')
+            structure_brief = payload['explorer']['briefs'][structure_id]
+            page.goto(url + '#view=explore&id=' + structure_id, wait_until='domcontentloaded')
+            structure_text = page.locator('#ac-detail').inner_text()
+            assert structure_brief['limitation'] in structure_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == structure_brief['next_action']
+            assert structure_brief['evidence_label'] in structure_text
+            page.screenshot(path=str(out / 'desktop-vector-structure-shift.png'))
+            report['screenshots'].append('desktop-vector-structure-shift.png')
+            report['checks'].append('Vector structure shifts expose current-state verification without upgrading lower-conviction context into a trade call')
             theme_families = {
                 'themes.reco_change', 'themes.theme_deteriorating',
                 'themes.theme_topping', 'themes.theme_emerging',

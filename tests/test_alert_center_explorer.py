@@ -1445,3 +1445,89 @@ def test_vector_momentum_trigger_abstains_on_headline_asset_or_score_mismatch():
     briefs = project(list(rows))['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_vector_structure_shift_keeps_old_bullish_transition_historical():
+    row = signal('vector-structure-old', source='vector', type_='structure_shift', asset='vector')
+    row.update({
+        'tier': 'watch', 'age_days': 30,
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now +0.91 (neutral → constructive).',
+        'detail_zh': '结构振荡器现为 +0.91（中性 → 偏多）。',
+        'edge': 'Lower conviction — the edge weakened after 2021 (ETF era).',
+        'edge_zh': '信心较低 — 该优势在 2021 年（ETF 时代）后减弱。',
+        'link': 'vector.html#structure',
+        'validation': {'verdict': 'calibrated'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.structure_shift'
+    assert brief['attention'] == 'for_awareness'
+    assert 'neutral → constructive' in brief['implication']
+    assert '+0.91' in brief['implication']
+    assert 'Lower conviction' in brief['limitation']
+    assert 'not a calibrated probability' in brief['limitation']
+    assert 'edge weakened after 2021' in brief['limitation']
+    assert '30 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck structure'
+    assert brief['evidence_label'] == 'Open current Vector structure panel'
+
+
+def test_fresh_vector_structure_bearish_and_neutral_states_are_watch_next():
+    broken = signal('vector-structure-broken', source='vector', type_='structure_shift', asset='vector')
+    broken.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Structure Shift: Bearish trigger',
+        'detail': 'Structure oscillator now -0.94 (neutral → broken).',
+        'link': 'vector.html#structure',
+        'validation': {'verdict': 'calibrated'},
+    })
+    neutral = signal('vector-structure-neutral', source='vector', type_='structure_shift', asset='vector')
+    neutral.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Structure Shift: neutral',
+        'detail': 'Structure oscillator now +0.04 (constructive → neutral).',
+        'link': 'vector.html#structure',
+        'validation': {'verdict': 'calibrated'},
+    })
+    briefs = project([broken, neutral])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'supported' for row in (broken, neutral))
+    assert all(briefs[row['alert_id']]['attention'] == 'watch_next' for row in (broken, neutral))
+    assert 'broken structure state' in briefs[broken['alert_id']]['implication']
+    assert 'neutral structure state' in briefs[neutral['alert_id']]['implication']
+    assert 'directional trade instruction' in briefs[broken['alert_id']]['limitation']
+    assert 'current structure state is no longer broken' in briefs[broken['alert_id']]['reassessment']
+    assert 'current structure state is no longer neutral' in briefs[neutral['alert_id']]['reassessment']
+
+
+def test_vector_structure_shift_abstains_on_headline_asset_or_score_mismatch():
+    wrong_headline = signal('vector-structure-head', source='vector', type_='structure_shift', asset='vector')
+    wrong_headline.update({
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now -0.94 (neutral → broken).',
+        'link': 'vector.html#structure',
+    })
+    wrong_asset = signal('vector-structure-asset', source='vector', type_='structure_shift', asset='BTC')
+    wrong_asset.update({
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now +0.91 (neutral → constructive).',
+        'link': 'vector.html#structure',
+    })
+    wrong_score = signal('vector-structure-score', source='vector', type_='structure_shift', asset='vector')
+    wrong_score.update({
+        'headline': 'Structure Shift: Bullish trigger',
+        'detail': 'Structure oscillator now -0.12 (neutral → constructive).',
+        'link': 'vector.html#structure',
+    })
+    same = signal('vector-structure-same', source='vector', type_='structure_shift', asset='vector')
+    same.update({
+        'headline': 'Structure Shift: neutral',
+        'detail': 'Structure oscillator now +0.12 (neutral → neutral).',
+        'link': 'vector.html#structure',
+    })
+    rows = (wrong_headline, wrong_asset, wrong_score, same)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)

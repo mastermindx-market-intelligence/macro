@@ -78,6 +78,13 @@ _VECTOR_MOMENTUM_DETAIL = re.compile(
     r'^Momentum score ([+-]?[0-9]+(?:\.[0-9]+)?) '
     r'\((neutral|bull|bear) → (neutral|bull|bear)\); ±0\.5 is the trigger band\.$'
 )
+_VECTOR_STRUCTURE_HEADLINE = re.compile(
+    r'^Structure Shift: (Bullish trigger|Bearish trigger|neutral)$'
+)
+_VECTOR_STRUCTURE_DETAIL = re.compile(
+    r'^Structure oscillator now ([+-]?[0-9]+(?:\.[0-9]+)?) '
+    r'\((neutral|constructive|broken) → (neutral|constructive|broken)\)\.$'
+)
 _ALTDATA_CONVERGENCE = re.compile(
     r'^(.+?) lit up by ([0-9]+) independent alt-data channels: (.+)\.$'
 )
@@ -1181,6 +1188,82 @@ def build_alert_brief(row: dict) -> dict:
                     '则改变判断。'),
                 'evidence_label': 'Open current Vector momentum panel',
                 'evidence_label_zh': '打开当前 Vector 动量面板',
+            })
+            return brief
+
+    structure_headline = _VECTOR_STRUCTURE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    structure_detail = _VECTOR_STRUCTURE_DETAIL.fullmatch(detail)
+    if source == 'vector' and type_ == 'structure_shift' and structure_headline and structure_detail:
+        headline_text = structure_headline.group(1)
+        score_text, previous, current = structure_detail.groups()
+        headline_state = {
+            'Bullish trigger': 'constructive',
+            'Bearish trigger': 'broken',
+            'neutral': 'neutral',
+        }.get(headline_text, '')
+        score = float(score_text)
+        score_consistent = (
+            (current == 'constructive' and score > 0) or
+            (current == 'broken' and score < 0) or
+            (current == 'neutral' and abs(score) < 0.5)
+        )
+        if (str(row.get('asset') or '') == 'vector' and previous != current and
+                headline_state == current and score_consistent):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current structure state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前结构状态。'
+            validation_limit = edge or (
+                'The source treats this structure state as lower-conviction context.')
+            validation_limit_zh = edge_zh or '来源将该结构状态视为较低信心背景。'
+            state_label = {
+                'constructive': 'constructive',
+                'broken': 'broken',
+                'neutral': 'neutral',
+            }[current]
+            state_label_zh = {
+                'constructive': '偏多',
+                'broken': '走坏',
+                'neutral': '中性',
+            }[current]
+            brief.update({
+                'status': 'supported', 'family': 'vector.structure_shift',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source structure oscillator moved {previous} → {current} at {score_text}, '
+                    f'putting the model in a {state_label} structure state.'),
+                'implication_zh': (
+                    f'来源结构振荡器在 {score_text} 时由 {previous} 转为 {current}，'
+                    f'使模型进入{state_label_zh}结构状态。'),
+                'limitation': (
+                    validation_limit + ' A structure-state transition is not a calibrated probability, '
+                    'return forecast, or directional trade instruction; the source itself says the '
+                    'edge weakened after 2021.' + age_limit),
+                'limitation_zh': (
+                    validation_limit_zh + ' 结构状态转换并不是校准概率、收益预测或方向交易指令；'
+                    '来源本身说明该优势在 2021 年后减弱。' + age_limit_zh),
+                'next_action': (
+                    f'Open the current Vector structure panel and verify the oscillator is still in '
+                    f'the {state_label} state, then check whether a newer structure shift has '
+                    'superseded this event before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前 Vector 结构面板，确认振荡器仍处于{state_label_zh}状态，'
+                    '并检查是否有更新结构转换取代该事件，再调整敞口。'),
+                'next_action_label': 'Recheck structure',
+                'next_action_label_zh': '复核结构',
+                'reassessment': (
+                    f'Change the read if the current structure state is no longer {current}, the '
+                    'oscillator crosses back through its neutral zone, or a newer shift supersedes '
+                    'this event.'),
+                'reassessment_zh': (
+                    f'若当前结构状态不再是 {current}、振荡器重新穿越中性区间，或新的结构转换取代该事件，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current Vector structure panel',
+                'evidence_label_zh': '打开当前 Vector 结构面板',
             })
             return brief
 
