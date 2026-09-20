@@ -2353,6 +2353,10 @@ def run_cycle(
     # Fetch in parallel (max_concurrent=2); per-root start_time in time_window mode
     fetch_results: dict[str, tuple] = {}
     source_response_times: list[str] = []
+    roots_with_source_payload_names: list[str] = []
+    root_source_receipts = _valid_source_receipts(
+        day_state.get("root_source_receipts", {})
+    )
     with ThreadPoolExecutor(max_workers=max_w) as pool:
         futs = {
             pool.submit(
@@ -2374,9 +2378,18 @@ def run_cycle(
             requests_count += 2  # two calls per root (call + put)
     _log_rss_phase("post_fetch", cycle_n=cycle_n)
 
-    # Process each root
+    # Process each root in requested order.  Thread completion order is not a
+    # coverage contract, so the named receipt list is derived here rather than
+    # from ``as_completed`` above.
     for root in roots:
         calls_df, puts_df, observed_at = fetch_results.get(root, (None, None, None))
+        if calls_df is not None or puts_df is not None:
+            normalised = _normalise_root_list([root])
+            if normalised:
+                named_root = normalised[0]
+                roots_with_source_payload_names.append(named_root)
+                if isinstance(observed_at, str) and observed_at:
+                    root_source_receipts[named_root] = observed_at
         if calls_df is None and puts_df is None:
             log.debug("poller: skip %s (both legs failed)", root)
             continue
@@ -2683,6 +2696,7 @@ def run_cycle(
         ),
         "roots_requested":       len(roots),
         "roots_with_source_payload": len(source_response_times),
+        "roots_with_source_payload_names": roots_with_source_payload_names,
         # Compatibility count aliases.  They do not define cadence truth.
         "universe_n":            len(roots),
         "roots_polled":          len(source_response_times),
@@ -2735,6 +2749,9 @@ def run_cycle(
         # Retain the newest successful source response across a fully failed
         # cycle so an unchanged cumulative snapshot cannot acquire a fresh age.
         "source_asof":         source_asof,
+        # Per-root receipts share this session state owner.  Off-cycle and failed
+        # roots retain their previous exact source-success clock.
+        "root_source_receipts": root_source_receipts,
     }
 
     return feed_payload, heat_payload, meta_payload, updated_state, tide_day_state
