@@ -41,5 +41,18 @@
     ],
     "exit_code": 0,
     "output": ""
+  },
+  {
+    "check": "contract-delta",
+    "command": [
+      "python3",
+      "scripts/check_contract_delta.py",
+      "--base",
+      "origin/main"
+    ],
+    "tested_commit": "de2acf8befed352b4305f68f64a5057606b8b734",
+    "base_commit": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+    "exit_code": 0,
+    "output": "contract-delta: 0 introduced, 0 inherited (base 75956e5b00f9)\n"
   }
 ]

@@ -1,11 +1,11 @@
 {
   "schema": "mastermind.alert_center.current_main_proof.v9",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T08:15:00Z",
+  "verified_at": "2026-09-20T08:25:00Z",
   "skillpack_commit": "f3d187976e083f9b102fc49696395b5c1521ebb5",
   "macro_origin_main_observed": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
   "candidate_source_commit": "34ead81ae062d15636af2af763f3859b523ba7a6",
-  "current_merge_tree": "9994ec24fd7048f3d09ea89b55c5291cdedd92f4",
+  "current_merge_tree": "fe72ae39c5762855df9f2be492484e809ae5fac3",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
@@ -47,15 +47,6 @@
     "vector.allocation_change",
     "vector.impulse_warn_down"
   ],
-  "rotation_rollover": {
-    "supported_rows": 313,
-    "families": {
-      "rotation.rotation_emerging": 185,
-      "rotation.rotation_fading": 100,
-      "rotation.rotation_turn_down": 14,
-      "rotation.rotation_turn_up": 14
-    }
-  },
   "situation_context": {
     "specific_subject_bundles": 151,
     "browser_navigation_proven": true,
@@ -104,7 +95,7 @@
     "runtime_style": "pass",
     "visual_evidence": "pass",
     "diff_check": "pass",
-    "contract_delta": "pending exact evidence head"
+    "contract_delta": "pass: 0 introduced, 0 inherited (base 75956e5b00f9)"
   },
   "source_sha256": {
     "engine/alert_center_view.py": "89b7f9817efc396be7eb6b3127e795d08b446824dcf7e06d41876a1b0aa05e41",
@@ -120,9 +111,9 @@
     "input-manifest.json": "fde1d83266a51f1e0ac915b54491c13e2e2a521eab087119323a69e5c9444da8",
     "manifest.json": "4ae1fe276073dc8ee49df7a9b60a4d2a3e4cbb4a3ebd9fe6d916c043d4cfd9bd",
     "smells.json": "693a7a32957cd5b565c02d15a3acae9a5dd8daf951f9ec118eaf412b8e9c515c",
-    "guard-results.json": "c84b2f62b50732413cd14d8add59831a732230f66d2f46ed8269eaca9e05401e",
+    "guard-results.json": "819295eafda4c08a96c96914e26a86d0038020cdf7ee03d4f90add7d57f596de",
     "legacy-parity.json": "ccd3824956029723a2c647b68de5841a65d52c4c23ed026db3378e66238cecd3",
-    "latest-base-compatibility-20260919.json": "7913a1ca089a34b9f778fa83e5ee6abadec669d0f615a3b8239a5e076b20d75d",
+    "latest-base-compatibility-20260919.json": "212912cb7320929e220608bd34a2851612da1e328cb8e0acc0e09b6aaabbb595",
     "production-baseline-20260920.json": "11a229faf49b5fe40a1478a43bc4da068fa54792255401c3f7cf0134a211b746",
     "desktop-related-context.png": "145d71b909e8c4b5487bca80a06eb4d30616b9c99ded92182d7f92059dd1f3de"
   },
@@ -139,5 +130,23 @@
     "production-route visibility",
     "customer acceptance",
     "trading edge"
-  ]
+  ],
+  "candidate_evidence_commit": "de2acf8befed352b4305f68f64a5057606b8b734",
+  "rotation_source_bound_total": {
+    "supported_rows": 313,
+    "families": {
+      "rotation.rotation_emerging": 185,
+      "rotation.rotation_fading": 100,
+      "rotation.rotation_turn_down": 14,
+      "rotation.rotation_turn_up": 14
+    }
+  },
+  "rotation_rollover_wave": {
+    "supported_rows": 128,
+    "families": {
+      "rotation.rotation_fading": 100,
+      "rotation.rotation_turn_down": 14,
+      "rotation.rotation_turn_up": 14
+    }
+  }
 }
