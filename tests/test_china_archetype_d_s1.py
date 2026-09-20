@@ -175,6 +175,15 @@ def test_macro_news_keeps_card_but_reads_as_dated_changes() -> None:
     assert "h.title_zh or h.title" in TPL
 
 
+
+def test_upcoming_events_focuses_high_impact_without_removing_calendar_dialog() -> None:
+    assert "{% for c in (event_strip or []) %}{% if c.importance == 'high' %}" in TPL
+    assert "{% for c in _high_ev[:4] %}" in TPL
+    assert "No high-impact prints ahead in the current window." in TPL
+    assert "Full calendar →" in TPL
+    assert "cnx-dlg-events" in TPL
+
+
 def test_deep_footer_keeps_old_landings_and_adds_targeted_new_landings() -> None:
     for href in (
         "china_stocks.html",
