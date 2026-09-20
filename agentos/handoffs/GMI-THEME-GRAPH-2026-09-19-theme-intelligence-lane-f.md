@@ -51,6 +51,10 @@ changed:
     what: "Added a deterministic exact-Git-object audit of Lane C's US adjusted price/volume basis through representative split and dividend-adjustment boundaries."
   - path: research/theme_intelligence_acceptance/corporate_action_basis_result.json
     what: "Recorded US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN with immutable source/bar hashes and explicit universal-history limitations."
+  - path: research/theme_intelligence_acceptance/lane_d_exact_head_result.json
+    what: "Recorded Lane D exact-head semantic PASS / carrier REQUEST_CHANGES with current-main integration, real-path entry-context proof, and the single Agent OS admission blocker."
+  - path: research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md
+    what: "Returned Lane D bounded semantic acceptance, records-only repair requirement, review-reuse law, and release limits to Lane A."
   - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
     what: "Preserved the Lane C REJECTED_FOR_REPAIR receipt."
   - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
@@ -115,13 +119,19 @@ verified:
   - claim: "The US first vertical's inherited close/volume basis is adjusted across representative split and dividend boundaries."
     command: "python3 research/theme_intelligence_acceptance/corporate_action_basis_audit.py --output research/theme_intelligence_acceptance/corporate_action_basis_result.json"
     result: "PASS: NVDA and AVGO split boundaries remain continuous across baskets/stocks/yahoo with volume parity; AAPL and XOM dividend-adjusted close differs from nominal close_price while stocks matches adjusted Yahoo. Verdict US_FIRST_VERTICAL_ADJUSTED_BASIS_PROVEN; receipt SHA-256 514fc26661b79a8ccc8a3473c6bfbec4449da40e1468a8f63067ee5022c139ac."
+  - claim: "The latest Lane F continuation refreshed protected procedure before the Lane D acceptance effect."
+    command: "Read Mastermind protected master INDEX and required execution/reconciliation/review companions from f4c5d9ef6a49653bd0c4a579ab8b90a8ba7ed907."
+    result: "PASS: Skillpack 1.0.1 / mastermind.sol_skillpack.v1 / bootstrap-major 1; all modifying Lane F effects in this continuation followed the same protected pin."
+  - claim: "Lane D exact head passes the bounded entry-context semantics on current-main integration."
+    command: "Integrate Lane D 0ce6bbf54b9c623891274e278a6ff581b602bfef with protected main fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 into tree fd12a6f4fa8b32e2c3861a9fd7d6964ae94fb673; compile; run tests/test_stock_board_v2.py tests/test_subsector_confluence.py; execute real-artifact and stale-confluence discriminators."
+    result: "PASS semantic path: 55 passed; AMD/ADI/NVDA preserve qualified/pending/member-ineligible distinctions, fallback nulls, stale-group fail-close, unchanged Board population/order, and all-false authority. Carrier remains REQUEST_CHANGES because its Agent OS handoff is schema-invalid."
 unverified:
   - claim: "The review-hardened final PR head has an independent external code-review PASS."
     what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
   - claim: "Hosted CI executes the Lane F package command."
     what_would_verify: "Lane A or the incumbent CI owner admits one coordinated package-level wiring change and a hosted run proves the pushed exact head."
-  - claim: "A, B, D, and E returned implementations satisfy the full mandatory discriminator matrix."
-    what_would_verify: "Each sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks."
+  - claim: "A, B, and E returned implementations satisfy the full mandatory discriminator matrix."
+    what_would_verify: "Each remaining sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks. Lane D semantic review is complete on 0ce6bbf54b9c623891274e278a6ff581b602bfef but its carrier remains blocked on Agent OS admission."
   - claim: "The two production defects are repaired, merged, published, or correct in a deployed browser."
     what_would_verify: "Incumbent source-owner repair, exact-head acceptance, lawful merge, natural publication, served-byte/browser proof, and Lane A release adjudication."
   - claim: "Prospective detection or return outcomes are mature."
@@ -130,14 +140,17 @@ unresolved:
   - "PR #7453 remains Draft/HOLD; Lane F does not Ready, merge, deploy, or self-accept it."
   - "Frozen subject 68f80a8edf78966a3a89e1294038654944e9c217 remains REJECTED_CURRENT_SOURCE on two defects represented by three checks."
   - "RE-RATING lane interpretation remains LANE_A_ADJUDICATION_REQUIRED; a clean mutation candidate is held rather than labeled acceptable."
-  - "Lane C pushed repair head 2208fe40039d356929fac0f96b626edc33d42288 remains REJECTED_FOR_REPAIR on six blockers after closing stale reclaim leakage. Its source worktree is already dirty with the next health repair; Lane F did not touch those bytes. A, B, D, and E remain NOT_YET_PROVEN."
+  - "Lane C pushed repair head 2208fe40039d356929fac0f96b626edc33d42288 remains REJECTED_FOR_REPAIR on six blockers after closing stale reclaim leakage. Its source worktree is already dirty with the next health repair; Lane F did not touch those bytes."
+  - "Lane D 0ce6bbf54b9c623891274e278a6ff581b602bfef is semantic PASS / BUILT_NOT_PROVEN but carrier REQUEST_CHANGES: the Agent OS handoff is not schema-admissible and causes fences/semantic CI red. A records-only repair may reuse semantic review if product blobs and material dependencies stay unchanged."
+  - "A, B, and E remain NOT_YET_PROVEN until pushed immutable returns are evaluated."
   - "Hosted CI, independent review of the repaired exact head, deployment, browser proof, and prospective outcomes remain separate gates."
 next_actions:
   - "Lane A: consume the v2 receipts and adjudicate whether RE-RATING 'working' means thesis health only; preserve a separate late/extended entry posture and no entry permission."
   - "Incumbent production owners: repair temporal stage-regression evidence and PRECIPICE classification on their own carriers; return pushed exact heads for reacceptance."
   - "Lawful independent reviewer: review the final pushed PR #7453 head, including the real Medical Devices and artifact-health discriminators."
   - "Lane A/incumbent CI owner: add or decline one package-level command wiring; do not create six competing CI edits."
-  - "Lane F successor: preserve the existing Lane C writer; when it returns the next pushed exact head after 2208fe, re-pin and rerun the evaluator. Re-pin each other returned A-E head and report accepted/rejected/not-proven separately."
+  - "Lane D writer: repair only the Agent OS handoff schema on PR #7508; Lane F then rechecks record admission and current integration identity without redoing semantic review unless material bytes changed."
+  - "Lane F successor: preserve the existing Lane C writer; when it returns the next pushed exact head after 2208fe, re-pin and rerun the evaluator. Re-pin each returned A/B/E head and report accepted/rejected/not-proven separately."
 do_not_redo:
   - "Do not rerun or reinterpret held #7064/#7095 as expected-return evidence."
   - "Do not edit A-E production sources from this evaluator carrier."
@@ -195,3 +208,13 @@ Six blockers remain: stale leadership health not propagated, unavailable produce
 A separate exact-Git-object basis audit closes the generic US split/dividend-basis uncertainty for this first vertical: NVDA/AVGO split-day adjusted returns remain continuous across all three loader rungs with exact volume parity, while AAPL/XOM prove dividend-adjusted `close` against nominal `close_price`. Receipt SHA-256 `514fc26661b79a8ccc8a3473c6bfbec4449da40e1468a8f63067ee5022c139ac`. Universal historical corporate-action correctness and future basis drift remain outside that proof.
 
 The Lane C source worktree is already dirty with the next shared-consumer health repair. Lane F did not edit, stage, reset, commit, or accept those uncommitted bytes. Preserve that writer and reaccept only its next pushed exact head.
+
+## Lane D exact-head continuity
+
+Lane D returned PR #7508 head `0ce6bbf54b9c623891274e278a6ff581b602bfef` / tree `85fb619c32fea4e0559d4aa6a0fa1a226966aefc`. Lane F independently integrated that head with protected main `fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2` into conflict-free tree `fd12a6f4fa8b32e2c3861a9fd7d6964ae94fb673`; the two owning suites report **55 passed**.
+
+The bounded semantic contract passes: candidate and integrated real artifacts preserve Board V2 `entry_open=[AMD,DOCN]`; AMD remains stock-qualified but group-extended and unconfirmed with no invented fallback levels; ADI preserves pending confirmation plus owner levels; NVDA remains descriptive-only/member-ineligible and does not inherit positive group ENTRY-NOW provenance. A stale-confluence mutation through the actual GroupContext path degrades the source and keeps member context descriptive-only. All rank/gate/size/escalate/trade authority remains false.
+
+Lane D is nevertheless **REQUEST_CHANGES** at the carrier level. Its committed Agent OS handoff has noncanonical frontmatter and fails the current required-field contract, which is the candidate-owned cause of fences run `35502935108` and semantic CI run `35502935516` being red. The accepted repair is records-only on that same Lane D handoff. If semantic blobs remain byte-identical and current-base movement remains material-path disjoint, Lane F permits semantic review reuse and requires only Agent OS/fences plus integration reproof.
+
+Machine receipt: `research/theme_intelligence_acceptance/lane_d_exact_head_result.json`. Human assessment: `research/theme_intelligence_acceptance/LANE_D_EXACT_HEAD_ASSESSMENT.md`. No merge, deployment, browser acceptance, or production acceptance is implied.
