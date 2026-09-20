@@ -221,6 +221,12 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css">
 {% if mode != 'stocks' %}{% include "_lazy_heatmap_loader.html.j2" %}{% endif %}
+{# UD-B1 R-L (BLOCKER-1): at ≤640px, remove the server-rendered `open` attribute on
+   .ud-watch-details so the <summary> disclosure row takes over (CSS cannot override
+   the UA `:not([open]) > :not(summary) { display: none }` rule — the DOM state is
+   the only lawful fix). Desktop (>640px) keeps the `open` so the three cards paint
+   at 1440. State selection via JS is permitted; styling stays in CSS. #}
+<script>try{if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -7396,7 +7402,20 @@ html[data-theme="light"] :is(
         {# v-thesis as gradient headline #}
         <p class="v-thesis{{ (' ms-' + MS.color) if market_state else '' }}">{{ t(MS.headline_en, MS.headline_zh) }}</p>
         {% for o in MS.overrides %}<p class="v-override"><span class="ic">⚠</span>{{ t(o.note_en, o.note_zh) }}</p>{% endfor %}
-        {% if MS.flip_en %}<p class="v-flip">{{ t(MS.flip_en, MS.flip_zh) }}</p>{% endif %}
+        {# R-C / R-C FINAL FORM (one-integer law): the live flip clause may
+           quote its own constraint integer — strip GENERICALLY regardless
+           of the value, EN `(now X/100)` and ZH `（现 X/100）` — so the
+           score gauge stays the only visible integer on the page. Jinja does
+           not recognise Python's `r"..."` prefix; escape each backslash. #}
+        {%- set _flip_en_rcc = MS.flip_en or '' -%}
+        {%- set _flip_zh_rcc = MS.flip_zh or '' -%}
+        {%- if _flip_en_rcc -%}
+          {%- set _flip_en_rcc = _flip_en_rcc|regex_replace('\\s*\\(now\\s+\\d+/100\\)', '') -%}
+        {%- endif -%}
+        {%- if _flip_zh_rcc -%}
+          {%- set _flip_zh_rcc = _flip_zh_rcc|regex_replace('（现\\s*\\d+/100）', '') -%}
+        {%- endif -%}
+        {% if _flip_en_rcc or _flip_zh_rcc %}<p class="v-flip">{{ t(_flip_en_rcc, _flip_zh_rcc) }}</p>{% endif %}
         <div class="hero-sub mx2-hero-sub">
           {# COPY-09: TRANSITIONING → plain-word 'shifting' in EN; ZH uses LEX entry 转换中.
              COPY-07: date removed from visible hero-sub (topbar is the canonical page stamp).
@@ -8002,8 +8021,10 @@ html[data-theme="light"] :is(
          still reads correctly if the builder stops prefixing one. #}
       {% set _flip_en = (MS.flip_en | trim) %}
       {% set _flip_en = _flip_en[1:] | trim if _flip_en.startswith('→') else _flip_en %}
+      {% set _flip_en = _flip_en|regex_replace('\\s*\\(now\\s+\\d+/100\\)', '') %}
       {% set _flip_zh = (MS.flip_zh | trim) if MS.flip_zh else '' %}
       {% set _flip_zh = _flip_zh[1:] | trim if _flip_zh.startswith('→') else _flip_zh %}
+      {% set _flip_zh = _flip_zh|regex_replace('（现\\s*\\d+/100）', '') %}
       <div class="mx5-flip">
         <span class="mx5-flip-arrow">&#8594;</span>
         <span class="l-en">{{ _flip_en }}</span>

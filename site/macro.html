@@ -24,6 +24,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,6 +99,8 @@
   };
 })();
 </script>
+
+<script>try{if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
 
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -2784,317 +2787,6 @@ html body.page-macro.mx4-grid > .grid :is(
 }
 </style>
 <style id="risk-envelope-band-css">
-/* ═══════════════════════════════════════════════════════════════════════════════
-   THREE SEPARATE READS — Grey Deer risk-envelope band (macro.html only)
-
-   Page-local scope under body.page-macro. Every value is a token derivation — no
-   new :root family, no hex literal, no new font stack (MASTER_PRODUCT_DESIGN_SYSTEM
-   §2). The page's own --sp-*/--r-*/--ink-*/--hair/--tile locals are already bound to
-   theme values, so dark, light and the zh 红涨绿跌 flip all propagate at paint.
-
-   THE SIGNATURE — the split spine
-   ────────────────────────────────
-   Coherence cannot be a colour: the reserved-hue law gives hue exactly five
-   meanings (direction, health, wayfinding, epistemic tier, lock) and "agreement"
-   is not one of them. So agreement is structural. Each read carries a 3px left
-   rail; when the reads agree the rails butt into ONE continuous spine, and when
-   they disagree the container opens a gap and each rail takes its own row's
-   meaning-ink. One line = one truth. Three marks = three truths.
-
-   Ink assignment, and why the zh flip lands correctly on its own:
-     · trend row  → --ink-up/--ink-down. This IS market direction, so it SHOULD flip
-                    under 红涨绿跌, and it does, globally.
-     · hazard row → --ink-ok/--ink-warn/--ink-act. This IS health/severity, which
-                    never flips (theme.css:378-390 scopes the zh pole remap to the
-                    .rrx/.igx gauges only), so red stays danger for every reader.
-     · null       → --prov-ink, the TEXT-grade provisional rung (theme.css:367-376).
-                    Never --prov, which is fill-grade.
-     · posture    → achromatic. Zero policies means nothing is restricted; there is
-                    no reserved meaning for hue to carry, so it takes none.
-
-   The SETTLED band itself does not animate. Motion law: an animated element must
-   encode a live or ongoing fact, and this artifact is settled. The stillness is
-   deliberate — it reads as "settled" beside the GD-3 live overlay's one earned
-   exception: the live-provisional chip's dot, which reuses theme.css's existing
-   `.dtp-dot` / `@keyframes dtp-pulse` (never a new animation) because it encodes
-   the ONE ongoing fact this band ever carries — "this is ticking right now" — see
-   the "GD-3 live-provisional overlay" block below.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-body.page-macro .gde-band { padding: var(--sp-5) var(--pad) var(--sp-5); }
-
-/* ── header: eyebrow + the section's question + one session stamp ───────────── */
-body.page-macro .gde-head {
-  display: flex; align-items: baseline; justify-content: space-between;
-  flex-wrap: wrap; gap: var(--sp-2) var(--sp-4);
-  padding: 0 0 var(--sp-3); margin: 0 0 var(--sp-4);
-  border-bottom: var(--rule) solid var(--hair-strong);
-}
-body.page-macro .gde-eyebrow {
-  display: block; font-size: var(--fs-label); font-weight: 600;
-  letter-spacing: var(--trk); text-transform: uppercase; color: var(--ink-3);
-}
-html[data-lang="zh"] body.page-macro .gde-eyebrow { letter-spacing: 0; text-transform: none; }
-body.page-macro .gde-h2 {
-  font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em;
-  color: var(--ink-1); margin: 3px 0 0; line-height: 1.3;
-}
-html[data-lang="zh"] body.page-macro .gde-h2 { letter-spacing: 0; }
-/* the ONE as-of stamp for this panel (doctrine §9.6 — per-source clocks live on
-   the rows themselves, and the drawer carries the full table) */
-body.page-macro .gde-stamp {
-  font-size: var(--fs-micro); font-weight: 600; color: var(--ink-3);
-  letter-spacing: .04em; cursor: help; white-space: nowrap;
-}
-
-/* ── the answer: this section's primary question, answered first ────────────── */
-body.page-macro .gde-lead {
-  font-size: var(--fs-md); line-height: 1.55; color: var(--ink-1);
-  margin: 0 0 var(--sp-5); max-width: 78ch;
-}
-body.page-macro .gde-lead b { font-weight: 800; }
-
-/* ── the three reads ────────────────────────────────────────────────────────── */
-/* default (agreeing): zero gap + one shared neutral rail = a single spine */
-body.page-macro .gde-reads { display: grid; gap: 0; }
-/* disagreeing: the spine breaks into three separate, differently-inked marks */
-body.page-macro .gde-reads.is-split { gap: var(--sp-4); }
-
-body.page-macro .gde-read {
-  padding: var(--sp-3) 0 var(--sp-3) var(--sp-4);
-  border-left: 3px solid var(--line);
-  /* grid items default to min-width:auto, so without this the evidence table's
-     min-width pushes the whole row past the viewport instead of scrolling inside
-     .gde-tblwrap — measured as a 516px document at a 390px viewport with the
-     drawer open, which is exactly the overflow the 390 gate forbids */
-  min-width: 0;
-}
-/* The grid is on .gde-row, NOT on .gde-read, so the evidence drawer sits OUTSIDE
-   column sizing. When the drawer was a grid child, opening it let the wide table
-   collapse the clause column and the row re-flowed under the reader's cursor.
-   The clause column is capped at a readable measure rather than stretched, so the
-   "when" column sits immediately after the "why" instead of being stranded at the
-   far edge of a 1440 panel. Three rows, three clocks, one column — which is what
-   makes the three clocks comparable at a glance. */
-body.page-macro .gde-row {
-  display: grid;
-  grid-template-columns: minmax(0, 232px) minmax(0, 58ch) max-content;
-  grid-template-areas:
-    "q      clause clock"
-    "answer clause clock";
-  column-gap: var(--sp-6); row-gap: 2px; align-items: start;
-}
-body.page-macro .gde-reads.is-split .gde-read { border-left-color: var(--gde-c, var(--line)); }
-/* (GD-2R1: the former .gde-read--quiet posture row is gone from the spine entirely —
-   see .gde-policy below. A railed posture row implied it was a party to the
-   agreement the rail encodes, which it is not.) */
-
-body.page-macro .gde-q {
-  grid-area: q; font-size: var(--fs-label); font-weight: 600;
-  letter-spacing: var(--trk); text-transform: uppercase; color: var(--ink-3);
-}
-html[data-lang="zh"] body.page-macro .gde-q { letter-spacing: 0; text-transform: none; }
-
-/* the answer word — 22px/800 keeps it subordinate to the regime hero above
-   (34px score) while still reading as an answer rather than a label */
-body.page-macro .gde-a {
-  grid-area: answer; margin: 1px 0 0;
-  font-size: var(--fs-num-lg); font-weight: 800; line-height: 1.15;
-  letter-spacing: -.01em; color: var(--gde-c, var(--ink-1));
-}
-html[data-lang="zh"] body.page-macro .gde-a { letter-spacing: 0; }
-/* the direction sign — smaller than the word, same ink, so "up" survives the zh
-   hue flip that makes direction and danger share a colour */
-body.page-macro .gde-arr { font-size: .58em; margin-left: .32em; vertical-align: .18em; }
-
-body.page-macro .gde-c {
-  grid-area: clause; margin: 0; align-self: center;
-  font-size: var(--fs-sm); line-height: 1.55; color: var(--ink-2); max-width: 60ch;
-}
-/* the score is a QUOTE of the hero's number, not a second headline (§9.11) */
-body.page-macro .gde-quote {
-  color: var(--ink-1); font-weight: 700; text-decoration: none;
-  border-bottom: 1px dashed var(--hair-strong);
-}
-body.page-macro .gde-quote:hover { border-bottom-color: var(--ink-link, var(--link)); }
-body.page-macro .gde-outof { color: var(--ink-3); font-weight: 400; }
-
-body.page-macro .gde-clock {
-  grid-area: clock; justify-self: start; align-self: center;
-  font-size: var(--fs-micro); color: var(--ink-3); white-space: nowrap;
-}
-/* shown ONLY when coverage is not clean — a caveat that changes how the row's
-   answer should be read belongs beside it, never only behind the drawer */
-body.page-macro .gde-flag { color: var(--ink-warn); white-space: normal; }
-
-/* ── GD-3 live-provisional overlay — same idiom, no new tokens. The live dot
-   reuses theme.css's existing .dtp-dot / @keyframes dtp-pulse (already shared by
-   etfs.html.j2, sector_central.html.j2 and the dashboard's own #dtp-token) rather
-   than inventing a new animation — motion here encodes the SAME "this is ticking
-   right now" fact that idiom already carries elsewhere on the site (etfs.html.j2,
-   sector_central.html.j2, the dashboard's own #dtp-token). Painted/hidden only by
-   risk_envelope_live.js; every rule here is dormant until the `hidden` attribute
-   is removed. ─────────────────────────────────────────────────────────────── */
-body.page-macro .gde-stamp-live {
-  color: var(--ink-ok); display: inline-flex; align-items: center; gap: 5px;
-}
-body.page-macro .gde-live-time { color: var(--ink-3); font-weight: 500; }
-/* pending badge — the SAME warn ink the coverage flag already uses; a candidate
-   shift is a caveat on how to read the row, not a new health verdict */
-body.page-macro .gde-pending { color: var(--ink-warn); }
-body.page-macro .gde-receipt-live { border-top: none; padding-top: 0; margin-top: var(--sp-2); }
-
-/* ── evidence drawer: the only home for source enums, receipts and technicals ── */
-body.page-macro .gde-disc { margin: var(--sp-3) 0 0; min-width: 0; }
-body.page-macro .gde-disc > summary {
-  cursor: pointer; display: inline-block;
-  font-size: var(--fs-sm); font-weight: 600; color: var(--ink-3);
-}
-body.page-macro .gde-disc > summary:hover { color: var(--ink-link, var(--link)); }
-body.page-macro .gde-disc-body {
-  margin: var(--sp-3) 0 0; padding: var(--sp-3) var(--sp-4);
-  background: var(--tile); border: var(--rule) solid var(--hair); border-radius: var(--r-md);
-  min-width: 0;
-}
-body.page-macro .gde-tblwrap { overflow-x: auto; max-width: 100%; }
-body.page-macro .gde-tbl { width: 100%; min-width: 520px; border-collapse: collapse; }
-/* dates and heads scroll rather than wrap — a broken "2026-08-\n18" is harder to
-   read than a scroll, and the container already owns the overflow */
-body.page-macro .gde-tbl th,
-body.page-macro .gde-tbl td.tnum { white-space: nowrap; }
-/* The page centres/right-aligns every non-first cell for numeric columns
-   (dashboard.html.j2:1738). This is an evidence LIST — source names, state words
-   and dates — so every column reads left, like the prose it is. */
-body.page-macro .gde-tbl th,
-body.page-macro .gde-tbl td:not(:first-child):not(.l) { text-align: left; }
-body.page-macro .gde-tbl th {
-  font-size: var(--fs-micro); font-weight: 700; letter-spacing: .08em;
-  text-transform: uppercase; color: var(--ink-3); text-align: left;
-  padding: 0 var(--sp-3) var(--sp-2) 0; border-bottom: var(--rule) solid var(--hair);
-}
-/* tablesort.js enhances every table on the page. A 3-row evidence receipt has
-   nothing meaningful to sort by, so drop the affordance rather than advertise one. */
-body.page-macro .gde-tbl th .sarrow { display: none; }
-body.page-macro .gde-tbl th.th-sort { cursor: default; }
-html[data-lang="zh"] body.page-macro .gde-tbl th { letter-spacing: 0; text-transform: none; }
-body.page-macro .gde-tbl td {
-  font-size: var(--fs-sm); color: var(--ink-2); padding: var(--sp-2) var(--sp-3) var(--sp-2) 0;
-  border-bottom: var(--rule) solid var(--hair); vertical-align: top;
-}
-body.page-macro .gde-tbl tr:last-child td { border-bottom: none; }
-body.page-macro .gde-tbl td.l { color: var(--ink-1); font-weight: 600; }
-/* health ink for a coverage problem — this IS severity, so the hue is earned */
-body.page-macro .gde-warn { color: var(--ink-warn); }
-body.page-macro .gde-req {
-  font-size: var(--fs-micro); color: var(--ink-3); border: var(--rule) solid var(--hair);
-  border-radius: var(--r-sm); padding: 0 5px; margin-left: 4px; white-space: nowrap;
-}
-body.page-macro .gde-disc-h {
-  font-size: var(--fs-label); font-weight: 700; letter-spacing: var(--trk);
-  text-transform: uppercase; color: var(--ink-3); margin: var(--sp-4) 0 var(--sp-2);
-}
-html[data-lang="zh"] body.page-macro .gde-disc-h { letter-spacing: 0; text-transform: none; }
-body.page-macro .gde-conflicts { margin: 0; padding-left: 1.15em; }
-body.page-macro .gde-conflicts li {
-  font-size: var(--fs-sm); color: var(--ink-2); line-height: 1.5; margin-bottom: 3px;
-}
-body.page-macro .gde-conflicts b { color: var(--ink-1); font-weight: 700; }
-/* the machine receipt — never at rest, always here (doctrine §9.7) */
-body.page-macro .gde-receipt {
-  margin: var(--sp-4) 0 0; padding-top: var(--sp-2);
-  border-top: var(--rule) solid var(--hair);
-  font-size: var(--fs-micro); color: var(--ink-3); line-height: 1.6; word-break: break-word;
-}
-
-/* ── capital policy — ORTHOGONAL to the spine (GD-2R1 §0.5) ─────────────────
-   No rail: the rail IS the agreement encoding, and a posture built from zero
-   policies is not a party to that agreement. An inset strip rather than a railed
-   row, so the difference is structural and needs no caption to be understood.   */
-body.page-macro .gde-policy {
-  display: grid;
-  grid-template-columns: minmax(0, 232px) minmax(0, 1fr) max-content;
-  grid-template-areas: "lbl note count" "state note count";
-  column-gap: var(--sp-6); row-gap: 2px; align-items: center;
-  margin: var(--sp-5) 0 0; padding: var(--sp-3) var(--sp-4);
-  background: var(--tile); border: var(--rule) solid var(--hair);
-  border-radius: var(--r-md);
-}
-body.page-macro .gde-policy-lbl {
-  grid-area: lbl; font-size: var(--fs-label); font-weight: 600;
-  letter-spacing: var(--trk); text-transform: uppercase; color: var(--ink-3);
-}
-html[data-lang="zh"] body.page-macro .gde-policy-lbl { letter-spacing: 0; text-transform: none; }
-/* achromatic by construction — zero policies means no reserved meaning for hue */
-body.page-macro .gde-policy-state {
-  grid-area: state; font-size: var(--fs-md); font-weight: 700; color: var(--ink-2);
-}
-body.page-macro .gde-policy-note {
-  grid-area: note; font-size: var(--fs-sm); color: var(--ink-3); max-width: 58ch;
-}
-body.page-macro .gde-policy-count {
-  grid-area: count; justify-self: start; font-size: var(--fs-micro); color: var(--ink-3);
-  white-space: nowrap;
-}
-
-/* ── footer: one descriptive sentence. No stance chip: while zero policies exist
-   this band reports and never instructs (GD-2R1 §0.4).                          */
-body.page-macro .gde-foot {
-  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4);
-  margin: var(--sp-4) 0 0; padding-top: var(--sp-3);
-  border-top: var(--rule) solid var(--hair);
-}
-body.page-macro .gde-note { font-size: var(--fs-sm); color: var(--ink-3); }
-
-/* ── focus: visible, token-derived, both themes ─────────────────────────────── */
-body.page-macro :where(.gde-quote, .gde-disc > summary):focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset: 2px;
-}
-
-/* ── responsive ─────────────────────────────────────────────────────────────── */
-/* ≤980w: the clock leaves its own column and rides under the answer, so the
-   clause keeps a readable measure instead of being squeezed to three words */
-@media (max-width: 980px) {
-  body.page-macro .gde-row {
-    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
-    grid-template-areas:
-      "q      clause"
-      "answer clause"
-      "clock  clause";
-  }
-  body.page-macro .gde-clock { justify-self: start; align-self: start; margin-top: 3px; }
-  body.page-macro .gde-policy {
-    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
-    grid-template-areas: "lbl note" "state note" "count note";
-  }
-}
-/* ≤720w (tablet portrait → phone): one column, deliberate stack. Reading order is
-   question → answer → why → when, which is the order the row is meant to be read
-   in anyway — the desktop grid is the compression, not this. */
-@media (max-width: 720px) {
-  body.page-macro .gde-band { padding: var(--sp-4) var(--sp-4) var(--sp-4); }
-  body.page-macro .gde-read { padding-left: var(--sp-3); }
-  body.page-macro .gde-row {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "q" "answer" "clause" "clock";
-    row-gap: 4px;
-  }
-  body.page-macro .gde-c { align-self: start; max-width: none; }
-  body.page-macro .gde-clock { justify-self: start; margin-top: 2px; }
-  /* the answer word deliberately keeps its 22px on phones: it is the row's answer,
-     and shrinking it below 18px would also drop it under the ink-rung threshold */
-  body.page-macro .gde-lead { font-size: var(--fs-body); margin-bottom: var(--sp-4); }
-  body.page-macro .gde-head { flex-wrap: wrap; }
-  body.page-macro .gde-disc-body { padding: var(--sp-3); }
-  body.page-macro .gde-policy {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "lbl" "state" "note" "count";
-    row-gap: 4px; padding: var(--sp-3);
-  }
-  body.page-macro .gde-policy-note { max-width: none; }
-}
-</style>
-
-<style id="risk-envelope-band-css">
 /* Risk Envelope: compact context inside the existing Risk Radar, never a page panel.
    Dark: subtle luminance inset. Light: quiet structured inset with a hairline, no glow. */
 #dlg-risk .riskdlg-context {
@@ -3160,6 +2852,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
 #dlg-risk #gde-live-sources[hidden] {display:none;}
 </style>
+
 </head>
 <body class="page-macro mx4-grid">
 
@@ -3394,7 +3087,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
-      placeholder="Search any stock — US, China, HK, Canada &amp; more…"
+      placeholder="Search any stock — US, China, HK, Canada & more…"
       data-ph-zh="搜索任意股票 — 美股、A 股、港股、加股等…">
     <div class="nav-sugg"></div>
   </div>
@@ -3444,8 +3137,8 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
         </h1>
         <p class="ud-clause l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</p>
         <p class="ud-clause l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</p>
-        <p class="ud-flip l-en">→ Mixed if risk appetite breaks down (now 85/100).</p>
-        <p class="ud-flip l-zh">→ 若风险偏好走坏（现 85/100），则转「混合」。</p>
+        <p class="ud-flip l-en">→ Mixed if risk appetite breaks down.</p>
+        <p class="ud-flip l-zh">→ 若风险偏好走坏，则转「混合」。</p>
 
         <div class="ud-meta">
           <span class="mx-stance mx-stance--warn">
@@ -3570,11 +3263,11 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
       <div class="mx-sec">
         <h3 class="l-en">What changed since last look</h3><h3 class="l-zh">与上次相比的变化</h3>
         <small class="mx-asof l-en">Each row is one fired condition from the alert log.</small>
-        <small class="mx-asof l-zh">每行对应警报日志中的一次触发。</small>
+        <small class="mx-asof l-zh">每行对应触发日志中的一次触发。</small>
       </div>
         <div class="mx-chg-row">
           <span class="mx-chg-name tnum"><span class="l-en">Recent</span><span class="l-zh">最近</span></span>
-          <span class="mx-chg-what"><span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
+          <span class="mx-chg-what"><span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
           </span>
           <span class="mx-stance mx-stance--warn">
             <span class="l-en">Watch</span><span class="l-zh">观察</span>
@@ -3630,7 +3323,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <details class="ud-watch-details">
+      <details class="ud-watch-details" open>
         <summary class="ud-watch-summary">
           <div class="ud-watch-summary-row">
             <span class="ud-watch-summary-h">
@@ -8454,7 +8147,7 @@ html[data-theme="light"] :is(
         
         <p class="v-thesis ms-green"><span class="l-en">Risk-on — the tape, breadth and cross-asset signals line up. Trend-following and adding on strength is supported.</span><span class="l-zh">风险偏好 — 价格、广度与跨资产信号一致。顺势交易与逢强加仓得到支持。</span></p>
         
-        <p class="v-flip"><span class="l-en">→ Mixed if risk appetite breaks down (now 85/100).</span><span class="l-zh">→ 若风险偏好走坏（现 85/100），则转「混合」。</span></p>
+        <p class="v-flip"><span class="l-en">→ Mixed if risk appetite breaks down.</span><span class="l-zh">→ 若风险偏好走坏，则转「混合」。</span></p>
         <div class="hero-sub mx2-hero-sub">
           
           
@@ -8545,7 +8238,7 @@ html[data-theme="light"] :is(
                   
                   <a class="ms-sig sev-warn" data-ms-dlg="dlg-events" href="#dlg-events">
                     <div class="ms-sig-head"><span class="ms-sig-ico">📅</span><span class="ms-sig-title"><span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
                     <div class="ms-sig-what"><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></div>
                     <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — a volatility window, not a direction call. Size for the noise.</span><span class="l-zh">背景 — 波动窗口而非方向判断。按噪声调整仓位。</span></div>
                   </a>
@@ -8577,7 +8270,7 @@ html[data-theme="light"] :is(
     <div class="mxfs">
       <div class="mxfs-hd">
         <span class="l-en">What could change the regime call</span><span class="l-zh">什么会改变周期判断</span>
-        <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Drawn only from today&#39;s regime-engine readings, shown as-is. Weakest support: the component still supporting the call — slope z — vs its ±— cutoff, margin —. Drift: how the model&#39;s regime probabilities moved over the last 5 sessions. How firmly held: 0–1 = probability behind the label × how much the inputs agree. Conditional context only — nothing here predicts a flip.</span><span class="l-zh">仅取自今日周期引擎的读数，原样展示。最弱支撑：仍支撑当前判断的最弱分量 — 斜率 z —，阈值 ±—（边际 —）。漂移方向：模型周期概率近 5 个交易日的变化。把握程度：0–1 = 标签背后的概率 × 输入一致度。仅为条件性参考 — 并非预测翻转。</span></span></span>
+        <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Drawn only from today's regime-engine readings, shown as-is. Weakest support: the component still supporting the call — slope z — vs its ±— cutoff, margin —. Drift: how the model's regime probabilities moved over the last 5 sessions. How firmly held: 0–1 = probability behind the label × how much the inputs agree. Conditional context only — nothing here predicts a flip.</span><span class="l-zh">仅取自今日周期引擎的读数，原样展示。最弱支撑：仍支撑当前判断的最弱分量 — 斜率 z —，阈值 ±—（边际 —）。漂移方向：模型周期概率近 5 个交易日的变化。把握程度：0–1 = 标签背后的概率 × 输入一致度。仅为条件性参考 — 并非预测翻转。</span></span></span>
         <span class="mxfs-badge"><span class="l-en">Context — not a forecast</span><span class="l-zh">情景参考 — 非预测</span></span>
       </div>
       <div class="mxfs-subtitle"><span class="l-en">About the regime label — not the 0-100 risk score.</span><span class="l-zh">指上方周期标签——并非 0-100 风险评分。</span></div>
@@ -8906,10 +8599,12 @@ html[data-theme="light"] :is(
       
       
       
+      
+      
       <div class="mx5-flip">
         <span class="mx5-flip-arrow">&#8594;</span>
-        <span class="l-en">Mixed if risk appetite breaks down (now 85/100).</span>
-        <span class="l-zh">若风险偏好走坏（现 85/100），则转「混合」。</span>
+        <span class="l-en">Mixed if risk appetite breaks down.</span>
+        <span class="l-zh">若风险偏好走坏，则转「混合」。</span>
       </div>
       
 
@@ -8942,7 +8637,8 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">Risk building &middot; 56</span>
           <span class="l-zh">风险积聚 &middot; 56</span>
-        <span class="gde-button-context" id="gde-button-context" data-gde-stage="FRAGILE"><span class="l-en">Fragile internals</span><span class="l-zh">内部脆弱</span></span></button>
+          <span class="gde-button-context" id="gde-button-context" data-gde-stage="FRAGILE"><span class="l-en">Fragile internals</span><span class="l-zh">内部脆弱</span></span>
+        </button>
         
         
 
@@ -8963,7 +8659,7 @@ html[data-theme="light"] :is(
             <div class="mx5-factor-row">
               <div class="mx5-factor-header">
                 <span class="mx5-factor-name">
-                  <span class="l-en">Trend &amp; technicals</span><span class="l-zh">趋势与技术</span>
+                  <span class="l-en">Trend & technicals</span><span class="l-zh">趋势与技术</span>
                 </span>
                 <span class="mx5-factor-score">62</span>
               </div>
@@ -9005,7 +8701,7 @@ html[data-theme="light"] :is(
             <div class="mx5-factor-row">
               <div class="mx5-factor-header">
                 <span class="mx5-factor-name" style="color:var(--mx5-warn-ink)">
-                  <span class="l-en">Breadth &amp; participation</span><span class="l-zh">广度与参与</span>
+                  <span class="l-en">Breadth & participation</span><span class="l-zh">广度与参与</span>
                 </span>
                 <span class="mx5-factor-score weak">0</span>
               </div>
@@ -9021,7 +8717,7 @@ html[data-theme="light"] :is(
             <div class="mx5-factor-row">
               <div class="mx5-factor-header">
                 <span class="mx5-factor-name">
-                  <span class="l-en">Liquidity &amp; credit</span><span class="l-zh">流动性与信用</span>
+                  <span class="l-en">Liquidity & credit</span><span class="l-zh">流动性与信用</span>
                 </span>
                 <span class="mx5-factor-score">47</span>
               </div>
@@ -10097,67 +9793,6 @@ html[data-theme="light"] :is(
   </script>
   
   </div>
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  
-    
-  
-  
-
-  
-  
-
-
-
-
-
-
-
-  
-  
-
-  
-  
-
-  
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   
   
@@ -12859,7 +12494,7 @@ html[data-theme="light"] :is(
         </span>
         
         <span class="mx5-sector-chip hot">
-          <span class="l-en">Crypto &amp; Digital Assets</span>
+          <span class="l-en">Crypto & Digital Assets</span>
           <span class="l-zh">加密与数字资产</span>
         </span>
         
@@ -12928,7 +12563,7 @@ html[data-theme="light"] :is(
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="Crypto &amp; Digital Assets — heating" data-tip-zh="加密与数字资产 — 升温">
+        <div class="mx5-sector-heat-col" data-tip-en="Crypto & Digital Assets — heating" data-tip-zh="加密与数字资产 — 升温">
           <div class="mx5-sector-heat-bar mx5-shb-hot" style="height:42px;opacity:0.64;"></div>
         </div>
         
@@ -12940,7 +12575,7 @@ html[data-theme="light"] :is(
         
         
         
-        <div class="mx5-sector-heat-col" data-tip-en="AI Software &amp; Platforms — heating" data-tip-zh="AI 软件与平台 — 升温">
+        <div class="mx5-sector-heat-col" data-tip-en="AI Software & Platforms — heating" data-tip-zh="AI 软件与平台 — 升温">
           <div class="mx5-sector-heat-bar mx5-shb-hot" style="height:37px;opacity:0.5700000000000001;"></div>
         </div>
         
@@ -13231,9 +12866,9 @@ html[data-theme="light"] :is(
         
         <span class="mx5-ai-ticker-pill">SPY</span>
         
-        <span class="mx5-ai-ticker-pill">GOOGL</span>
+        <span class="mx5-ai-ticker-pill">XLF</span>
         
-        <span class="mx5-ai-ticker-pill">XHB</span>
+        <span class="mx5-ai-ticker-pill">XOM</span>
         
       </div>
       
@@ -13309,8 +12944,8 @@ html[data-theme="light"] :is(
               <span class="l-zh">重大事件临近 — 双向波动或加大</span>
             </div>
             <div class="mx5-alert-detail">
-              <span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for t…</span>
-              <span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
+              <span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for t…</span>
+              <span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span>
             </div>
           </div>
         </div>
@@ -13463,7 +13098,7 @@ html[data-theme="light"] :is(
         <div class="mx5-dlg-factor-row">
           <div>
             <div class="mx5-dlg-factor-name">
-              <span class="l-en">Trend &amp; technicals</span><span class="l-zh">趋势与技术</span>
+              <span class="l-en">Trend & technicals</span><span class="l-zh">趋势与技术</span>
               
             </div>
             
@@ -13520,7 +13155,7 @@ html[data-theme="light"] :is(
         <div class="mx5-dlg-factor-row weakest">
           <div>
             <div class="mx5-dlg-factor-name">
-              <span class="l-en">Breadth &amp; participation</span><span class="l-zh">广度与参与</span>
+              <span class="l-en">Breadth & participation</span><span class="l-zh">广度与参与</span>
               <span class="v2chip c-warn" style="font-size:9px;padding:1px 5px;margin-left:6px;vertical-align:middle"><span class="l-en">WEAKEST</span><span class="l-zh">最弱</span></span>
             </div>
             
@@ -13539,7 +13174,7 @@ html[data-theme="light"] :is(
         <div class="mx5-dlg-factor-row">
           <div>
             <div class="mx5-dlg-factor-name">
-              <span class="l-en">Liquidity &amp; credit</span><span class="l-zh">流动性与信用</span>
+              <span class="l-en">Liquidity & credit</span><span class="l-zh">流动性与信用</span>
               
             </div>
             
@@ -13582,7 +13217,7 @@ html[data-theme="light"] :is(
             </svg>
           </div>
           <div>
-            <div class="mx5-dlg-weakest-label"><span class="l-en">Watch: Breadth &amp; participation</span><span class="l-zh">关注：广度与参与</span></div>
+            <div class="mx5-dlg-weakest-label"><span class="l-en">Watch: Breadth & participation</span><span class="l-zh">关注：广度与参与</span></div>
             <div class="mx5-dlg-weakest-sub">
               <span class="l-en">Weakest leg at 0/100 — the closest flip-trigger. Confirms what has already turned; does not forecast.</span>
               <span class="l-zh">最弱分项 0/100，最接近翻转触发点。确认已转向信号，不预测未来。</span>
@@ -13604,7 +13239,7 @@ html[data-theme="light"] :is(
           <tbody>
           
           <tr>
-            <td style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">S&amp;P 500</span><span class="l-zh">标普500</span></td>
+            <td style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36))"><span class="l-en">S&P 500</span><span class="l-zh">标普500</span></td>
             
             <td><span class="ms-cell2 flat"><span class="ar">▶</span><span class="rsi">51</span></span></td>
             
@@ -13983,7 +13618,7 @@ html[data-theme="light"] :is(
           
           <div class="mx5-dlg-idx-card">
             <div class="mx5-dlg-idx-ticker">SPY</div>
-            <div class="mx5-dlg-idx-name">S&amp;P 500</div>
+            <div class="mx5-dlg-idx-name">S&P 500</div>
             <div class="mx5-dlg-idx-px nb-px" data-sym="SPY" data-mkt="us" data-bare>761.69</div>
             <div class="mx5-dlg-idx-chg up nb-chg" data-sym="SPY" data-mkt="us">+0.13%</div>
             <div class="mx5-dlg-idx-chips">
@@ -14128,13 +13763,13 @@ html[data-theme="light"] :is(
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr heat">&#9650;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">Crypto &amp; Digital Assets</span><span class="l-zh">加密与数字资产</span></span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">Crypto & Digital Assets</span><span class="l-zh">加密与数字资产</span></span>
               <span class="mx5-dlg-sector-rk">#3</span>
             </div>
             
             <div class="mx5-dlg-sector-row">
               <span class="mx5-dlg-sector-arr heat">&#9650;</span>
-              <span class="mx5-dlg-sector-name"><span class="l-en">AI Software &amp; Platforms</span><span class="l-zh">AI 软件与平台</span></span>
+              <span class="mx5-dlg-sector-name"><span class="l-en">AI Software & Platforms</span><span class="l-zh">AI 软件与平台</span></span>
               <span class="mx5-dlg-sector-rk">#4</span>
             </div>
             
@@ -14311,6 +13946,8 @@ html[data-theme="light"] :is(
           
         </section>
 
+        
+        
 
 
 
@@ -14327,16 +13964,20 @@ html[data-theme="light"] :is(
 
 
 
+  
+  
+  
+  
 
+  
+  
+  
+  
 
-
-
-
-
-
-
-
-
+  
+  
+  
+  
 
 
 
@@ -14351,16 +13992,16 @@ html[data-theme="light"] :is(
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-coherence">
       <span class="l-en">Signals diverge</span><span class="l-zh">信号分歧</span>
-
+      
     </span>
   </div>
   <div class="gde-reads">
     <div class="gde-read" style="--gde-c: var(--ink-up)">
       <span class="gde-q"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
       <strong class="gde-a">
-
+        
         <span class="l-en">Risk-on</span><span class="l-zh">风险偏好</span><span class="gde-arr" aria-hidden="true">▲</span>
-
+        
       </strong>
     </div>
     <div class="gde-read" style="--gde-c: var(--ink-warn)">
@@ -14368,20 +14009,20 @@ html[data-theme="light"] :is(
       <strong class="gde-a"><span class="l-en">Fragile</span><span class="l-zh">脆弱</span></strong>
     </div>
   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
+  
+  
+  
+    
+    
+    
+    
+  
+    
+    
+    
+    
+  
   <p class="gde-causes"><span class="l-en">AI-hardware leaders: damaged · Credit stress: building</span><span class="l-zh">AI硬件龙头：受损 · 信用压力：积聚中</span></p>
   <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
   <script type="application/json" id="gde-context-copy">{"copy": {"ai_leaders": ["AI-hardware leaders", "AI\u786c\u4ef6\u9f99\u5934"], "checking": ["Checking stress", "\u538b\u529b\u5f85\u786e\u8ba4"], "coverage": {"FRESH": ["current session", "\u672c\u4ea4\u6613\u65e5"], "MISSING": ["not available", "\u6682\u65e0\u6570\u636e"], "STALE": ["older read", "\u8f83\u65e9\u8bfb\u6570"]}, "hazard": {"BREAKDOWN": ["Breakdown", "\u5df2\u7834\u4f4d"], "FRAGILE": ["Fragile", "\u8106\u5f31"], "NONE": ["No stress flagged", "\u672a\u89c1\u538b\u529b"], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "hint": {"BREAKDOWN": ["Internal breakdown", "\u5185\u90e8\u7834\u4f4d"], "FRAGILE": ["Fragile internals", "\u5185\u90e8\u8106\u5f31"], "NONE": ["", ""], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "live": ["Live stress", "\u5b9e\u65f6\u538b\u529b"], "live_missing": ["Live update unavailable; settled read shown.", "\u5b9e\u65f6\u66f4\u65b0\u4e0d\u53ef\u7528\uff0c\u663e\u793a\u6536\u76d8\u8bfb\u6570\u3002"], "live_pending": ["Live candidate", "\u5b9e\u65f6\u5f85\u786e\u8ba4"], "older_trend": ["Trend includes older inputs.", "\u8d8b\u52bf\u8bfb\u6570\u542b\u8f83\u65e9\u6570\u636e\u3002"], "partial_hint": ["Partial read", "\u8bfb\u6570\u4e0d\u5168"], "source": ["Tracked source", "\u8ffd\u8e2a\u6765\u6e90"], "source_missing": ["read unavailable", "\u6682\u65e0\u8bfb\u6570"], "source_states": {"BROKEN": ["damaged", "\u53d7\u635f"], "CRACKING": ["weakening", "\u8f6c\u5f31"], "HEALTHY": ["holding up", "\u7ef4\u6301\u7a33\u5b9a"], "WATCH": ["under watch", "\u9700\u5173\u6ce8"], "calm": ["quiet", "\u5e73\u7a33"], "caution": ["building", "\u79ef\u805a\u4e2d"], "elevated": ["elevated", "\u504f\u9ad8"], "risk-off": ["stressed", "\u627f\u538b"], "watch": ["under watch", "\u9700\u5173\u6ce8"]}, "unknown": ["Incomplete read", "\u6570\u636e\u4e0d\u5168"]}, "settled_stage": "FRAGILE"}</script>
@@ -14407,7 +14048,7 @@ html[data-theme="light"] :is(
                 <th><span class="l-en">Freshness</span><span class="l-zh">新鲜度</span></th>
               </tr></thead>
               <tbody>
-
+              
                 <tr>
                   <td class="l"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></td>
                   <td class="tnum">RISK_ON · 61</td>
@@ -14417,7 +14058,7 @@ html[data-theme="light"] :is(
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
-
+              
                 <tr>
                   <td class="l"><span class="l-en">Leadership cohort</span><span class="l-zh">龙头股群体</span></td>
                   <td class="tnum">BROKEN</td>
@@ -14427,37 +14068,37 @@ html[data-theme="light"] :is(
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
-
+              
                 <tr>
                   <td class="l"><span class="l-en">Cross-asset scares</span><span class="l-zh">跨资产风险扫描</span></td>
                   <td class="tnum">caution · 56</td>
                   <td class="tnum">2026-09-18</td>
                   <td>
                     <span class="l-en">This session</span><span class="l-zh">本交易日</span>
-
+                    
                   </td>
                 </tr>
-
+              
               </tbody>
             </table>
           </div>
 
-
+          
           <p class="gde-disc-h"><span class="l-en">Where they disagree</span><span class="l-zh">分歧所在</span></p>
           <ul class="gde-conflicts">
-
+            
             <li>
               <span class="l-en">Market state reads <b>RISK_ON</b> while Leadership cohort reads <b>BROKEN</b>.</span>
               <span class="l-zh">市场状态 读为 <b>RISK_ON</b>，而 龙头股群体 读为 <b>BROKEN</b>。</span>
             </li>
-
+            
             <li>
               <span class="l-en">Market state reads <b>RISK_ON</b> while Cross-asset scares reads <b>caution</b>.</span>
               <span class="l-zh">市场状态 读为 <b>RISK_ON</b>，而 跨资产风险扫描 读为 <b>caution</b>。</span>
             </li>
-
+            
           </ul>
-
+          
 
           <p class="gde-receipt tnum">
             grey-deer-v1-2026-08-19 · bundle 78ec0ad274f00a29 ·
@@ -14467,7 +14108,7 @@ html[data-theme="light"] :is(
             stage_since null (no_episode_lifecycle_in_v0) ·
             engine/risk_envelope.py
           </p>
-
+          
           <div id="gde-live-sources" hidden><p class="gde-disc-h"><span class="l-en">Live source dates</span><span class="l-zh">实时来源日期</span></p><div class="gde-live-source-rows" id="gde-live-source-rows"><span class="l-en"></span><span class="l-zh"></span></div></div>
           <div class="gde-receipt gde-receipt-live" id="gde-live-receipt" hidden></div>
       <p class="gde-policy">
@@ -14480,10 +14121,9 @@ html[data-theme="light"] :is(
 
 
 
-
         
         <section class="riskdlg-drivers">
-          <div class="riskdlg-sec-h"><span class="l-en">What&#39;s driving it?</span><span class="l-zh">原因是什么？</span></div>
+          <div class="riskdlg-sec-h"><span class="l-en">What's driving it?</span><span class="l-zh">原因是什么？</span></div>
           <div class="riskdlg-drv-list">
           
           <div class="riskdlg-drv" data-isle="risk" data-lens-kind="caution" data-tip-en="Leading leg at the 62nd percentile of its trailing 504-session range — higher = more stretched." data-tip-zh="领先因素处于其过去 504 个交易日区间的 62 分位——越高越极端。">
@@ -14594,7 +14234,7 @@ html[data-theme="light"] :is(
           
 
           
-          <div class="riskdlg-drv" data-pressure="moderate" data-lens-kind="caution" data-tip-en="Pressure from abroad: building — Australia&#39;s weakness is the main source" data-tip-zh="海外传导压力：上升 — 澳大利亚疲软为主要来源">
+          <div class="riskdlg-drv" data-pressure="moderate" data-lens-kind="caution" data-tip-en="Pressure from abroad: building — Australia's weakness is the main source" data-tip-zh="海外传导压力：上升 — 澳大利亚疲软为主要来源">
             <span class="rkc-sig-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="10" r="7"/><path d="M5 10h14M12 3a12 12 0 010 14"/><path d="M12 17v4"/></svg></span>
             <div class="rkc-sig-body">
               <div class="rkc-sig-lbl"><span class="l-en">Overseas</span><span class="l-zh">境外</span></div>
@@ -14637,7 +14277,7 @@ html[data-theme="light"] :is(
                 
                 <div class="rlx-row">
                   <span class="rlx-k"><span class="l-en">Right now</span><span class="l-zh">当前</span></span>
-                  <span class="rlx-v"><span class="l-en">Pressure from abroad: building — Australia&#39;s weakness is the main source</span><span class="l-zh">海外传导压力：上升 — 澳大利亚疲软为主要来源</span></span>
+                  <span class="rlx-v"><span class="l-en">Pressure from abroad: building — Australia's weakness is the main source</span><span class="l-zh">海外传导压力：上升 — 澳大利亚疲软为主要来源</span></span>
                 </div>
                 
                 <div class="rlx-row">
@@ -14666,7 +14306,7 @@ html[data-theme="light"] :is(
         <summary><span class="l-en">Tracked overseas markets</span><span class="l-zh">追踪中的海外市场</span></summary>
         <div class="mx5-dlg-eyebrow">
           <span class="l-en">Overseas</span><span class="l-zh">海外</span>
-          <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Context only — does not move the US score. Tiles link to the full International page. Ring = each market&#39;s pullback-risk score (0-100), coloured by band — the odds a fresh drop is brewing, not a grade of today&#39;s trend. The hover card carries the trend read, which can point the other way: a market already deep in a selloff can sit beside a mid ring.</span><span class="l-zh">仅供参考——不影响美国评分。点击卡片可进入完整国际页面。环形为各市场回撤风险评分（0-100），按等级着色——衡量的是新一轮下跌酝酿的可能，而非当前趋势的评级。悬停卡片显示趋势解读，两者方向可能相反：已深度下跌的市场也可能配上中等的环形。</span></span></span>
+          <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Context only — does not move the US score. Tiles link to the full International page. Ring = each market's pullback-risk score (0-100), coloured by band — the odds a fresh drop is brewing, not a grade of today's trend. The hover card carries the trend read, which can point the other way: a market already deep in a selloff can sit beside a mid ring.</span><span class="l-zh">仅供参考——不影响美国评分。点击卡片可进入完整国际页面。环形为各市场回撤风险评分（0-100），按等级着色——衡量的是新一轮下跌酝酿的可能，而非当前趋势的评级。悬停卡片显示趋势解读，两者方向可能相反：已深度下跌的市场也可能配上中等的环形。</span></span></span>
           
         </div>
         
@@ -15913,7 +15553,7 @@ html[data-theme="light"] :is(
             </div>
             
             <div class="rsx-froth-quad">
-              <span class="l-en">Calm &amp; broad</span>
+              <span class="l-en">Calm & broad</span>
               <span class="l-zh">平静且广泛</span>
             </div>
             
@@ -16006,7 +15646,7 @@ html[data-theme="light"] :is(
             
             
             <a class="riskdlg-theme riskdlg-theme-more" href="basket/memory_storage.html">
-              <span class="riskdlg-tn"><span class="l-en">Memory &amp; Storage</span><span class="l-zh">存储与内存</span></span>
+              <span class="riskdlg-tn"><span class="l-en">Memory & Storage</span><span class="l-zh">存储与内存</span></span>
               <span class="riskdlg-tm"><span class="riskdlg-rank">#11</span><span class="riskdlg-rank-delta down"> · ▼2 5d</span></span>
             </a>
             
@@ -16163,7 +15803,7 @@ html[data-theme="light"] :is(
         </div>
 
         <details class="riskdlg-method" id="riskdlg-method">
-          <summary><span class="l-en">Method &amp; track record</span><span class="l-zh">方法与历史记录</span></summary>
+          <summary><span class="l-en">Method & track record</span><span class="l-zh">方法与历史记录</span></summary>
           
           <div class="riskdlg-drv" data-isle="news"
             >
@@ -16417,7 +16057,7 @@ html[data-theme="light"] :is(
         
         <div class="plx-chart-caption">
           
-          <span class="l-en">At end-2026 the market implies 4.09% vs the Fed&#39;s 4.10% median dot (+0bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.89pp).</span>
+          <span class="l-en">At end-2026 the market implies 4.09% vs the Fed's 4.10% median dot (+0bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.89pp).</span>
           
           
           
@@ -16704,7 +16344,7 @@ html[data-theme="light"] :is(
     </span><span class="aib2-kf aib2-kf--good">
       <span class="aib2-kf-k"><span class="l-en">Credit</span><span class="l-zh">信用</span></span><span class="aib2-kf-v"><span class="l-en">Tight</span><span class="l-zh">偏紧</span></span>
     </span><span class="aib2-kf aib2-kf--info">
-      <span class="aib2-kf-k"><span class="l-en">What&#39;s moving markets</span><span class="l-zh">当前主导</span></span><span class="aib2-kf-v"><span class="l-en">Fed repricing</span><span class="l-zh">Fed repricing</span></span>
+      <span class="aib2-kf-k"><span class="l-en">What's moving markets</span><span class="l-zh">当前主导</span></span><span class="aib2-kf-v"><span class="l-en">Fed repricing</span><span class="l-zh">Fed repricing</span></span>
     </span></div><div class="aib2-conf">
     <div class="aib2-conf-bar" role="img"
          data-tip-en="Confidence Low — how firmly the read holds, from the AI synthesis."
@@ -16718,7 +16358,7 @@ html[data-theme="light"] :is(
   <div class="aib2-regime">
     <span class="l-en">The map still says Stagflation, but current growth and inflation signs look like Reflation. Momentum is shifting back toward Stagflation, so the label remains unsettled.
 
-Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected cuts, pushing short rates higher and supporting the dollar backdrop.</span>
+Today's main driver is hawkish Fed repricing. Markets are removing expected cuts, pushing short rates higher and supporting the dollar backdrop.</span>
     <span class="l-zh">宏观图谱仍指向滞胀，但当前增长和通胀信号更像再通胀。动能正重新转向滞胀，因此标签仍未定。
 
 今日主要驱动力是鹰派美联储重新定价。市场正在撤回降息预期，推动短期利率上升，并为美元提供支撑。</span>
@@ -16814,7 +16454,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
                 <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
                 
               </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: GDP (BEA estimate) in 11 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（11 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: GDP (BEA estimate) in 10 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（10 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
             </div>
           </div>
           
@@ -16828,6 +16468,24 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Market Intelligence</span><span class="l-zh">市场情报</span></span><div class="isle-head-line"></div></div>
         
         <div class="nbx-list">
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644556-exxon-raises-2050-global-emissions-forecast-warns-coal-will-push-levels-past-climate-targets?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Guidance</span><span class="l-zh">指引</span></span>
+              <span class="nbx-title"><span class="l-en">Exxon raises 2050 global emissions forecast, warns coal will push levels past climate targets</span><span class="l-zh">Exxon raises 2050 global emissions forecast, warns coal will push levels past climate targets</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
           
           
           
@@ -16851,15 +16509,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644563-google-gemini-ai-model-hacked-three-companies?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644569-key-deals-this-week-spgi-pso-gehc-and-more?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Google says Gemini AI model hacked three companies in security test</span><span class="l-zh">Google says Gemini AI model hacked three companies in security test</span></span>
+              <span class="nbx-title"><span class="l-en">Key deals this week: SPGI, PSO, GEHC, and more</span><span class="l-zh">Key deals this week: SPGI, PSO, GEHC, and more</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16869,7 +16527,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644559-real-estate-stocks-slip-as-fed-hikes-mortgage-rates-continue-to-climb?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644559-real-estate-stocks-slip-as-fed-hikes-mortgage-rates-continue-to-climb?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
               <span class="nbx-title"><span class="l-en">Real estate stocks slip as Fed hikes, mortgage rates continue to climb</span><span class="l-zh">Real estate stocks slip as Fed hikes, mortgage rates continue to climb</span></span>
@@ -16887,28 +16545,10 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644564-spacex-weighting-boost-post-nasdaq-100-rebalancing?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644564-spacex-weighting-boost-post-nasdaq-100-rebalancing?utm_source=feed_news_all&utm_medium=referral&feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
               <span class="nbx-title"><span class="l-en">SpaceX confirmed to get a weighting boost after Nasdaq 100 rebalancing: Bloomberg</span><span class="l-zh">SpaceX confirmed to get a weighting boost after Nasdaq 100 rebalancing: Bloomberg</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644490-insider-trades-crowdstrike-uber-snowflake-among-notable-names?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Insider trades: CrowdStrike, Uber, Snowflake among notable names</span><span class="l-zh">Insider trades: CrowdStrike, Uber, Snowflake among notable names</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -16932,6 +16572,24 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Sep 17</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://finance.yahoo.com/markets/stocks/articles/jim-cramer-says-palantir-technologies-230154955.html" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Analysts</span><span class="l-zh">分析师</span></span>
+              <span class="nbx-title"><span class="l-en">Jim Cramer Says His Palantir Technologies Inc. (NASDAQ:PLTR) Price Target Is $250</span><span class="l-zh">Jim Cramer Says His Palantir Technologies Inc. (NASDAQ:PLTR) Price Target Is $250</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 18</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16980,30 +16638,12 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           <a class="nbx-item" href="https://www.npr.org/2026/09/19/nx-s1-5969816/federal-reserve-interest-rate-inflation-economy" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span><span class="l-zh">Ever wonder how the Fed&#39;s interest rate actually works? We&#39;ve got answers</span></span>
+              <span class="nbx-title"><span class="l-en">Ever wonder how the Fed's interest rate actually works? We've got answers</span><span class="l-zh">Ever wonder how the Fed's interest rate actually works? We've got answers</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Sep 19</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/17/anthropic-shares-3-metrics-to-help-ai-companies-monitor-development.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Anthropic shares 3 metrics to help AI companies monitor pace of development</span><span class="l-zh">Anthropic分享3项指标，帮助AI公司监测发展步伐</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 17</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -17140,8 +16780,8 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
                 
                 
                 <span class="fbm-leg hawk "
-                      data-tip-en="Inflation expectations anchored: &#39;anchored&#39;."
-                      data-tip-zh="通胀预期稳定：&#39;锚定&#39;。">
+                      data-tip-en="Inflation expectations anchored: 'anchored'."
+                      data-tip-zh="通胀预期稳定：'锚定'。">
                   <span class="fbm-dot"></span><span class="l-en">Expectations</span><span class="l-zh">通胀预期</span>
                 </span>
                 
@@ -17152,8 +16792,8 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
                 
                 
                 <span class="fbm-leg ease on"
-                      data-tip-en="Equity radar in &#39;caution&#39; — risk-off pressure historically cools inflation and rate expectations."
-                      data-tip-zh="股票雷达处于&#39;caution&#39;状态——历史上风险规避会压制通胀和加息预期。">
+                      data-tip-en="Equity radar in 'caution' — risk-off pressure historically cools inflation and rate expectations."
+                      data-tip-zh="股票雷达处于'caution'状态——历史上风险规避会压制通胀和加息预期。">
                   <span class="fbm-dot"></span><span class="l-en">Equity risk-off</span><span class="l-zh">股市避险</span>
                 </span>
                 
@@ -17310,7 +16950,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         </div>
         
         <div class="fbm-chart-take">
-          <span class="l-en">At end-2026 the market implies 4.09% vs the Fed&#39;s 4.10% median dot (+0bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.89pp).</span>
+          <span class="l-en">At end-2026 the market implies 4.09% vs the Fed's 4.10% median dot (+0bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+0.89pp).</span>
           <span class="l-zh">在end-2026，市场隐含 4.09% 对比美联储 4.10% 的中位点（+0基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+0.89个百分点）。</span>
         </div>
         
@@ -17478,8 +17118,8 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
         </span>
         <span class="fbm-tip"
-          data-tip-en="Equity radar in &#39;caution&#39; — risk-off pressure historically cools inflation and rate expectations."
-          data-tip-zh="股票雷达处于&#39;caution&#39;状态——历史上风险规避会压制通胀和加息预期。">?</span>
+          data-tip-en="Equity radar in 'caution' — risk-off pressure historically cools inflation and rate expectations."
+          data-tip-zh="股票雷达处于'caution'状态——历史上风险规避会压制通胀和加息预期。">?</span>
       </div>
       
       
@@ -17653,7 +17293,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
 </div></div>
             <div class="sg-pop-expl">
               
-              <div class="sg-pe"><span class="sg-pe-lbl"><span class="l-en">What it is</span><span class="l-zh">这是什么</span></span><span class="sg-pe-txt"><span class="l-en">Is the S&amp;P trading above its 6-month average?</span><span class="l-zh">标普是否高于其半年均价？</span></span></div>
+              <div class="sg-pe"><span class="sg-pe-lbl"><span class="l-en">What it is</span><span class="l-zh">这是什么</span></span><span class="sg-pe-txt"><span class="l-en">Is the S&P trading above its 6-month average?</span><span class="l-zh">标普是否高于其半年均价？</span></span></div>
               
               
               <div class="sg-pe"><span class="sg-pe-lbl"><span class="l-en">Now</span><span class="l-zh">当前</span></span><span class="sg-pe-txt"><span class="l-en">Above trend — buyers still in control</span><span class="l-zh">高于趋势 — 买方仍占主导</span></span></div>
@@ -18585,7 +18225,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         
         <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--ink-1,rgba(255,255,255,.85))">
-          <span class="l-en">breadth thin on both sides — no clear leadership, watch, don&#39;t chase</span><span class="l-zh">两侧参与均偏弱 — 无明确领涨，观望勿追</span>
+          <span class="l-en">breadth thin on both sides — no clear leadership, watch, don't chase</span><span class="l-zh">两侧参与均偏弱 — 无明确领涨，观望勿追</span>
         </div>
         
         
@@ -18719,7 +18359,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
   <div class="sct-rung" style="--sct-c:var(--down,#ef4444)">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg></span>
     <div class="sct-body">
-      <div class="sct-name"><span class="l-en">Crypto &amp; Digital Assets</span><span class="l-zh">加密与数字资产</span></div>
+      <div class="sct-name"><span class="l-en">Crypto & Digital Assets</span><span class="l-zh">加密与数字资产</span></div>
       <div class="sct-sub">
         <span class="sct-rk">#3</span>
         <span class="sct-stance"><span class="l-en">dominant</span><span class="l-zh">dominant</span></span>
@@ -18739,7 +18379,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
   <div class="sct-rung" style="--sct-c:var(--down,#ef4444)">
     <span class="sct-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6 12l6 6 6-6"/></svg></span>
     <div class="sct-body">
-      <div class="sct-name"><span class="l-en">AI Software &amp; Platforms</span><span class="l-zh">AI 软件与平台</span></div>
+      <div class="sct-name"><span class="l-en">AI Software & Platforms</span><span class="l-zh">AI 软件与平台</span></div>
       <div class="sct-sub">
         <span class="sct-rk">#4</span>
         <span class="sct-stance"><span class="l-en">dominant</span><span class="l-zh">dominant</span></span>
@@ -19184,7 +18824,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
   
   <details class="panel span12 fold health-strip health-warn" id="health" style="position:relative">
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
-      <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Every data source this dashboard depends on. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘所依赖的每个数据源。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
+      <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Every data source this dashboard depends on. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today's fetch broke (yesterday's data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘所依赖的每个数据源。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
       <span class="fold-stat">15 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 189 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>
@@ -19405,7 +19045,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: china_filings: all exchanges failed — sse: HTTPConnectionPool(host=&#39;www.cnin</td>
+        <td class="l muted">RuntimeError: china_filings: all exchanges failed — sse: HTTPConnectionPool(host='www.cnin</td>
       </tr>
       
       <tr>
@@ -19603,7 +19243,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: china_trade_detail: monthly index unreachable (HTTPConnectionPool(host=&#39;engl</td>
+        <td class="l muted">RuntimeError: china_trade_detail: monthly index unreachable (HTTPConnectionPool(host='engl</td>
       </tr>
       
       <tr>
@@ -20089,7 +19729,7 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
         
         <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: hk_indices: all HSTECH sources failed — sina: HTTPSConnectionPool(host=&#39;fina</td>
+        <td class="l muted">RuntimeError: hk_indices: all HSTECH sources failed — sina: HTTPSConnectionPool(host='fina</td>
       </tr>
       
       <tr>
@@ -20895,9 +20535,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-09-20 04:35 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-09-20 07:25 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-09-20 04:35 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-09-20 07:25 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
@@ -20997,8 +20637,8 @@ window.__CHART_SWAP__ = {
 
 <script src="risk_state_live.js"></script>
 
-<script src="risk_envelope_live.js?v=47a6eb04" defer></script>
-<script src="release_publications_live.js?v=d9a19340" defer></script>
+<script src="risk_envelope_live.js"></script>
+<script src="release_publications_live.js"></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
    the viewport, and clamp horizontally near the left/right edges. Hover-only,

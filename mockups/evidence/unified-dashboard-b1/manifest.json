@@ -1,10 +1,18 @@
 {
-  "head": "79d14ddf7d",
-  "branch": "claude/mo-a-unified-dashboard-b1",
-  "pr": 7469,
+  "head": "f4b739b4f6",
+  "branch": "claude/mo-a-ud-b1-r5-followup",
+  "pr": "DRAFT-followup",
   "source_url": "site/macro.html",
   "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
   "page_errors": [],
+  "r_e_byte_identity": {
+    "selector": "section#ud-hero",
+    "sha256": "8b835c09ff6f78c18f8b34b90e07fc6378ff22b22cdd8966b6272976393e16cc",
+    "sha256_short": "8b835c09ff6f",
+    "bytes": 18041,
+    "captured_at_head": "f4b739b4f6",
+    "note": "Byte-identity gate. The same selector, sliced from site/macro.html at FINAL head, must hash to this value. Any diff fails the R-E gate."
+  },
   "cells": [
     {
       "file": "dashboard_dark_en_1440.png",
