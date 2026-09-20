@@ -25,12 +25,19 @@ class Snap:
     generation: Gen
 
 
-def ep(eid, state="ACTIVE", terminal_reason=None, superseded_by=None):
+def ep(
+    eid,
+    state="ACTIVE",
+    terminal_reason=None,
+    superseded_by=None,
+    identity_epoch="epoch_0",
+):
     return {
         "schema": "prophet.candidate_episode/v1",
         "episode_id": eid,
         "security_id": "SEC:US-XNAS-AAPL",
         "company_id": "ISS:US-XNAS-AAPL",
+        "identity_epoch": identity_epoch,
         "episode_state": state,
         "terminal_reason": terminal_reason,
         "superseded_by": superseded_by,
@@ -242,3 +249,41 @@ def test_validator_rejects_rehashed_incoherent_maturity():
     _rehash_projection(tampered)
     with pytest.raises(CandidateStateContractError):
         validate_candidate_state_projection(tampered)
+
+
+def test_projection_preserves_b1_identity_epoch_for_b4_keying():
+    out = project_candidate_states(
+        Snap(
+            GEN,
+            Gen(
+                (
+                    ep("pe:epoch0", identity_epoch="epoch_0"),
+                    ep("pe:epoch1", identity_epoch="epoch_1"),
+                )
+            ),
+        ),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+    )
+    got = {row["episode_id"]: row["identity_epoch"] for row in out["rows"]}
+    assert got == {"pe:epoch0": "epoch_0", "pe:epoch1": "epoch_1"}
+
+
+def test_validator_rejects_rehashed_missing_or_empty_identity_epoch():
+    out = project_candidate_states(
+        Snap(GEN, Gen((ep("pe:1", identity_epoch="epoch_0"),))),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+    )
+
+    missing = deepcopy(out)
+    missing["rows"][0].pop("identity_epoch")
+    _rehash_projection(missing)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(missing)
+
+    empty = deepcopy(out)
+    empty["rows"][0]["identity_epoch"] = ""
+    _rehash_projection(empty)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(empty)
