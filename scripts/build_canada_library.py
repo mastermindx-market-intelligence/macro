@@ -982,7 +982,11 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
         )
         from engine.anticipation import anticipate as _anticipate, load_gate as _load_gate
         _ant_gate = _load_gate("US")
-    except Exception:  # noqa: BLE001 — unknown/mismatched inherited use retires fail-closed
+    except Exception as exc:  # noqa: BLE001 — unknown/mismatched use retires fail-closed
+        log.warning(
+            "CA inherited US anticipation disabled (%s) — profile and potential "
+            "uses remain fail-closed", exc,
+        )
         _anticipate = None
         _ant_gate = None
     try:

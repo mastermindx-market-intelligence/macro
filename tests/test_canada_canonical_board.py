@@ -876,6 +876,7 @@ def test_ca_builder_binds_actual_anticipation_uses_before_consumption():
     entry_read = source.index("entry_signal.assess")
 
     assert source.count("require_inherited_gate_disposition(") == 2
+    assert "CA inherited US anticipation disabled" in source
     assert profile_audit < gate_load
     assert potential_audit < potential_call
     assert candidate_freeze < anticipation_write
