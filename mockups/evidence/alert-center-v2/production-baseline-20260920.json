@@ -1,0 +1,34 @@
+{
+  "schema": "mastermind.alert_center.production_baseline.v1",
+  "observed_at": "2026-09-20T06:20:06Z",
+  "route": "https://www.mastermind-x.com/alerts.html",
+  "http_status": 200,
+  "html_sha256": "9fed54d5f079425e1380ccb8b827abb3a65cfc57e324e1b24021acc0a2b56ebe",
+  "html_bytes": 337228,
+  "etag": "\"dljn1jb3qx9x787g\"",
+  "last_modified": "Sat, 19 Sep 2026 22:15:22 GMT",
+  "live_markers": {
+    "old_alert_command_center": true,
+    "market_changes_desk": false,
+    "explore_view": false
+  },
+  "live_capture": {
+    "states_attempted": 8,
+    "states_captured": 8,
+    "console_errors": 0,
+    "failed_responses": 0,
+    "desktop_document_height_px": 11660,
+    "mobile_document_height_px": 22945,
+    "visible_word_count": 4134,
+    "preserved_screenshot": "mockups/evidence/alert-center-v2/production-baseline-dark-en.png",
+    "preserved_screenshot_sha256": "3d15b8d8bacb3e9f2e0ce8dbb8aee76d8803b7accb47e9fb01884f78fabe66d9"
+  },
+  "candidate_comparison": {
+    "candidate_source_commit": "cb26efac05e85cd680229793f62db38869c38e89",
+    "desktop_document_height_px": 2191,
+    "mobile_document_height_px": 2620,
+    "visible_word_count": 718
+  },
+  "capability_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
+  "acceptance_rule": "HTTP 200, workflow success or a render commit is insufficient; the live route must expose the exact action-led journey and exact markers."
+}

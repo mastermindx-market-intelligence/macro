@@ -1,9 +1,9 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v3",
-  "observed_at": "2026-09-20T05:00:00Z",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v4",
+  "observed_at": "2026-09-20T06:20:06Z",
   "candidate_source_commit": "cb26efac05e85cd680229793f62db38869c38e89",
-  "latest_protected_main": "9a481ef520e397853c9f5a8edd120cfff528ce16",
-  "latest_merge_tree": "a2e8ff41df09923fe08fecfb86743aa6e2a2ef35",
+  "latest_protected_main": "b24bfa533a61b4a4c8dbf1305fcdc3811c490fcd",
+  "latest_merge_tree": "37a6b886dd966cc677d803c3dc9fd84e30a2cea2",
   "merge_conflicts": [],
   "protected_movement_on_material_alert_paths": [
     {
@@ -15,7 +15,7 @@
   ],
   "base_compatibility": "PASS",
   "semantic_review_classification": "FULL_REREVIEW_REQUIRED",
-  "semantic_review_reason": "Source-bound family behavior expanded and review fixes changed impulse and rotation takeaway semantics. Fresh independent review must bind the exact final head.",
+  "semantic_review_reason": "Source-bound family behavior and age-aware takeaway semantics changed materially after the last remote head; fresh independent review must bind the final pushed head.",
   "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
   "candidate_owned_source_blobs": {
     "engine/alert_center_view.py": "fb10fab3d536c502e09c23e8db3f6bd84a85672a",
@@ -26,6 +26,7 @@
     "scripts/qa_alert_center_v2.py": "ebc38cc986685b8dcb66f42aa1a6d7adef1e9ae3"
   },
   "production_acceptance": false,
-  "candidate_evidence_commit": null,
-  "contract_delta": "pending exact evidence commit"
+  "candidate_evidence_commit": "4d4d725567f0ffbc41ab906dc3138d11d35d200d",
+  "contract_delta": "pass: 0 introduced, 0 inherited; execution tree 4d4d725567f0; base 9a481ef520e3",
+  "protected_movement_since_contract_base_on_material_alert_paths": []
 }
