@@ -55,9 +55,12 @@ The experiment starts only after ALL of the following are durable:
 3. the current C2 event's same-cut C4 snapshot is preserved through that existing path
    by an owner-approved transport/read-model receipt **without mutating the immutable
    C2 event identity**;
-4. this exact prereg/config hash is registered in the existing TrialLedger before the
+4. the real-yield owner supplies a go-forward DFII10 observation with a source-qualified
+   availability/known clock; latest-revised historical FRED rows without first-known
+   evidence remain unavailable for Q2;
+5. this exact prereg/config hash is registered in the existing TrialLedger before the
    first target outcome is opened;
-5. a `live_forward_start` / experiment epoch is recorded. Nothing earlier may later be
+6. a `live_forward_start` / experiment epoch is recorded. Nothing earlier may later be
    relabelled prospective.
 
 Current source does not satisfy item 3: C4 is present in the live payload but is not a
@@ -95,6 +98,16 @@ Decision-time context:
 - **breadth divergence:** RSP/SPY close-to-close relative return over the five completed
   sessions ending at T-1;
 - IWM/SPY and XLI/SPY are fixed diagnostics only.
+
+Real-yield owner law:
+- use the existing Global Liquidity Transmission / canonical rates owner only when its
+  DFII10 component carries the relevant reference date plus conservative availability
+  clock and a go-forward `first_known_at`/equivalent owner receipt;
+- the owner explicitly states historical first-known is not reconstructable before that
+  producer existed. Therefore **no pre-producer DFII10 row may be backfilled into Q2 from
+  the current latest-revised FRED parquet**, even when the economic observation date is old;
+- a future owner-approved first-available/vintage source could supersede this null, but
+  only prospectively or under a separately frozen amendment before target outcomes.
 
 Primary context cells:
 - `HIDDEN_FRAGILITY`: 10y real-yield impulse > 0 **and** RSP/SPY prior-5 < 0;
@@ -184,7 +197,8 @@ owns `data/trial_ledger.jsonl`. Collision resolution and prefix preservation pre
 - QLedger/Evaluation OS own grading.
 - B3 owns lifecycle/emergence/maturity projection.
 - B4 will own deterministic present Entry Availability when built.
-- Rates source owner supplies real-yield observations/clocks.
+- Global Liquidity Transmission / canonical rates owner supplies go-forward DFII10
+  reference/availability/first-known clocks; pre-producer first-known history remains unavailable.
 - market-data owner supplies SPY/RSP/IWM/XLI completed-session prices.
 - D5/catalyst/thesis evidence stays orthogonal and all authority false in this experiment.
 
@@ -212,6 +226,8 @@ Repair or abandon this experiment before outcomes if:
 - C4 context cannot be bound to the exact immutable C2 event/decision cut;
 - C4 is recomputed with later bars rather than preserved at event time;
 - a same-session rate/close leaks into the decision-time regime state;
+- a latest-revised/pre-producer DFII10 row is treated as historically known without the
+  accepted first-known/availability receipt;
 - missing context becomes zero/false/calm;
 - C2 event identity or outcome changes because context is attached;
 - the TrialLedger family collides with an existing registered family;
