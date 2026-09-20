@@ -2012,3 +2012,165 @@ def test_proposal_review_mixed_legacy_clock_public_paths(status, cutoff, monkeyp
         assert review["proposal"]["adjudicated_at"] is None
         assert review["proposal"]["ratified_by"] is None
     assert json.dumps(view.__dict__, sort_keys=True) == before
+
+
+# Independent historical report: consumes already-produced neighborhood documents.
+def _change_report_module():
+    import importlib.util
+    assert importlib.util.find_spec("engine.theme_graph.change_report"), "historical change report is missing"
+    from engine.theme_graph import change_report
+    return change_report
+
+
+def _change_documents():
+    local = "ltheme:finviz:memory"
+    nodes = [_ont_node(local, "local_theme", name="Memory Chips")]
+    nodes += [_ont_node("co:us:" + x, "company", name=x) for x in "ABC"]
+    edges = [_ont_edge("a", "MEMBER_OF", "co:us:A", local, valid_to="2026-05-01"),
+             _ont_edge("b", "MEMBER_OF", "co:us:B", local),
+             _ont_edge("c", "MEMBER_OF", "co:us:C", local, valid_from="2026-05-01")]
+    view = _OntologyStore(nodes=nodes, edges=edges)
+    return [compose_neighborhood(view, node_id=local, asof=day,
+        knowledge_cutoff="2026-06-01", rights_resolver=_ont_rights)
+        for day in ("2026-04-01", "2026-06-01")]
+
+
+def _report(before=None, after=None):
+    if before is None: before, after = _change_documents()
+    result = _change_report_module().build_change_report(before, after)
+    from referencing import Registry, Resource
+    ns = json.loads((ROOT / "contracts/theme_graph/ontology_neighborhood.v1.schema.json").read_text())
+    schema = json.loads((ROOT / "contracts/theme_graph/ontology_change_report.v1.schema.json").read_text())
+    registry = Registry().with_resource(ns["$id"], Resource.from_contents(ns))
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(result)
+    return result
+
+
+def test_gmi_change_report_names_membership_changes_and_preserves_evidence():
+    result = _report()
+    assert result["comparison_basis"] == "EFFECTIVE_DATE_CHANGE"
+    assert result["summary"]["memberships_added"] == result["summary"]["memberships_removed"] == 1
+    rows = {x["peer_node_id"]: x for x in result["relation_changes"]}
+    assert rows["co:us:A"]["change"] == "REMOVED"
+    assert rows["co:us:A"]["before"][0]["evidence_refs"] == ["ev:test"]
+    assert rows["co:us:C"]["after"][0]["peer"]["name_en"] == "C"
+    assert "co:us:B" not in rows and result["mapping_changed"] is False
+    assert result["authority_ceiling"] == "research_internal_only"
+
+
+def test_gmi_change_report_evidence_updates_are_not_membership_turnover():
+    import copy
+    before, _ = _change_documents(); after = copy.deepcopy(before)
+    after["knowledge_cutoff"] = "2026-07-01"
+    after["relations"][0]["evidence_refs"] = ["ev:later-correction"]
+    result = _report(before, after)
+    assert result["comparison_basis"] == "KNOWLEDGE_REVISION"
+    assert result["summary"]["memberships_added"] == result["summary"]["memberships_removed"] == 0
+    assert result["relation_changes"][0]["change"] == "UPDATED"
+    assert "evidence_refs" in result["relation_changes"][0]["changed_fields"]
+
+
+@pytest.mark.parametrize("missing,expected", [("baseline", "BASELINE_UNAVAILABLE"),
+    ("target", "TARGET_UNAVAILABLE"), ("both", "BOTH_UNAVAILABLE")])
+def test_gmi_change_report_unavailable_is_not_zero_membership(missing, expected):
+    before, after = _change_documents()
+    absent = compose_neighborhood(_OntologyStore(), node_id=before["node_id"], asof="2026-01-01")
+    if missing in ("baseline", "both"): before = absent
+    if missing in ("target", "both"): after = absent
+    result = _report(before, after)
+    assert result["availability"]["state"] == expected
+    assert result["summary"] is None and result["relation_changes"] == []
+    assert result["mapping_changed"] is None
+
+
+@pytest.mark.parametrize("basis", ["IDENTICAL_CLOCKS", "BOTH_CLOCKS_CHANGED"])
+def test_gmi_change_report_clock_labels_and_no_input_mutation(basis):
+    import copy
+    before, after = _change_documents()
+    if basis == "IDENTICAL_CLOCKS": after = copy.deepcopy(before)
+    else: after["knowledge_cutoff"] = "2026-07-01"
+    saved = json.dumps([before, after], sort_keys=True)
+    result = _report(before, after)
+    assert result["comparison_basis"] == basis
+    assert len(result["input_digests"]["baseline"]) == 64
+    result["baseline"]["subject"]["name_en"] = "changed output"
+    assert json.dumps([before, after], sort_keys=True) == saved
+    assert "not capital flows" in " ".join(result["limitations"])
+
+
+@pytest.mark.parametrize("damage", ["schema", "identity", "calendar", "unknown_field"])
+def test_gmi_change_report_refuses_invalid_or_mismatched_inputs(damage):
+    before, after = _change_documents()
+    if damage == "schema": after["schema"] = "other/v1"
+    elif damage == "identity": after["node_id"] = "ltheme:finviz:other"
+    elif damage == "calendar": after["asof"] = "2026-02-31"
+    else: after["hidden_score"] = 100
+    with pytest.raises(ValueError): _report(before, after)
+
+
+def test_gmi_change_report_keeps_distinct_evidence_rows_and_stable_order():
+    import copy
+    before, after = _change_documents()
+    additional = copy.deepcopy(after["relations"][0]); additional["edge_id"] = "second-proof"
+    after["relations"].append(additional)
+    first = _report(before, after); after["relations"].reverse()
+    second = _report(before, after)
+    assert first["relation_changes"] == second["relation_changes"]
+    updated = next(x for x in first["relation_changes"] if x["change"] == "UPDATED")
+    assert len(updated["after"]) == 2
+
+
+def test_gmi_change_report_markdown_escapes_untrusted_labels():
+    before, after = _change_documents(); after["subject"]["name_en"] = "<script>alert(1)</script>|[x]"
+    result = _report(before, after)
+    text = _change_report_module().render_markdown(result)
+    assert "<script>" not in text and "co:us:A" in text and "co:us:C" in text
+
+
+def test_gmi_change_report_cli_real_input_output_and_input_protection(tmp_path, capsys):
+    import importlib.util
+    assert importlib.util.find_spec("scripts.explain_theme_changes"), "change-report CLI missing"
+    from scripts import explain_theme_changes as cli
+    before, after = _change_documents()
+    baseline, target = tmp_path / "before.json", tmp_path / "after.json"
+    baseline.write_text(json.dumps(before)); target.write_text(json.dumps(after))
+    args = ["--baseline", str(baseline), "--target", str(target)]
+    assert cli.main(args) == 0
+    assert json.loads(capsys.readouterr().out)["summary"]["memberships_added"] == 1
+    assert cli.main(args + ["--format", "markdown"]) == 0
+    assert "MEMBER_OF" in capsys.readouterr().out
+    original = baseline.read_bytes()
+    assert cli.main(args + ["--out", str(baseline)]) == 2
+    assert baseline.read_bytes() == original
+    assert json.loads(capsys.readouterr().err)["code"] == "CHANGE_REPORT_UNAVAILABLE"
+
+
+def test_gmi_change_report_decision_change_does_not_invent_a_mapping():
+    view = _review_view(status="ratified", present=False)
+    before, after = [compose_neighborhood(view, node_id=_REVIEW_LOCAL, asof="2026-06-01",
+        knowledge_cutoff=cutoff, rights_resolver=_ont_rights) for cutoff in ("2026-02-01", "2026-02-03")]
+    result = _report(before, after)
+    assert result["proposal_changes"][0]["before"][0]["status"] == "proposed"
+    assert result["proposal_changes"][0]["after"][0]["status"] == "ratified"
+    assert result["summary"]["proposals_updated"] == 1
+    assert result["relation_changes"] == [] and result["mapping_changed"] is False
+    assert result["curation_changed"] is True
+
+
+def test_gmi_change_report_subject_revision_is_not_membership_change():
+    import copy
+    before, _ = _change_documents(); after = copy.deepcopy(before)
+    after["knowledge_cutoff"] = "2026-07-01"; after["subject"]["status"] = "retired"
+    result = _report(before, after)
+    assert result["subject_changed_fields"] == ["status"]
+    assert result["comparison_basis"] == "KNOWLEDGE_REVISION"
+    assert not any(result["summary"].values())
+
+
+def test_gmi_change_report_human_brief_names_subject_correction():
+    import copy
+    before, _ = _change_documents(); after = copy.deepcopy(before)
+    after["subject"]["status"] = "retired"; after["knowledge_cutoff"] = "2026-07-01"
+    report = _report(before, after)
+    text = _change_report_module().render_markdown(report)
+    assert "status: canonical → retired" in text
