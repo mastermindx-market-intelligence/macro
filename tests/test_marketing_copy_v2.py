@@ -4127,3 +4127,125 @@ class TestVoiceCardDistinctness:
                   if "STACKED FACT LIST" in str(
                       (self._cards().get(d) or {}).get("voice_notes") or "")]
         assert others == [], others
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MX-X recovery B1: one compiled item-level editorial contract projection.
+# The projection must expose what the writer was actually given, including
+# explicit unknowns for source/media state that this owner cannot lawfully infer.
+# ─────────────────────────────────────────────────────────────────────────────
+class TestEditorialBriefProjection:
+    @staticmethod
+    def _payload(*, shape="stack", media_context=None, source_as_of="2026-09-19"):
+        ctx = {
+            "account": "kelly",
+            "type": "macro",
+            "shape": shape,
+            "angle": "macro_read",
+            "as_of": "2026-09-20",
+            "signal_date": "2026-09-18",
+            "source_as_of": source_as_of,
+            "top_facts": [
+                {
+                    "id": "print_jobless_claims",
+                    "text": "Jobless claims fell to 199k.",
+                    "numbers": ["199k"],
+                    "count": {"numerator": 199, "denominator": 1},
+                },
+                {
+                    "id": "gdpnow",
+                    "text": "GDPNow held at 5.8%.",
+                    "numbers": ["5.8%"],
+                },
+            ],
+            "numbers_whitelist": ["199k", "5.8%"],
+            "win_rate_str": "61%",
+        }
+        if media_context is not None:
+            ctx["media_context"] = media_context
+        card = {
+            "name": "Kelly",
+            "voice": "mechanism-first macro desk",
+            "example_lines": ["alpha", "beta", "gamma", "delta"],
+        }
+        return cw._v2_item_payload(
+            ctx,
+            persona_card=card,
+            codex_by_account={},
+            memory_by_account={},
+        )
+
+    def test_compiled_brief_has_revision_digest_and_existing_evidence(self):
+        import hashlib
+        import json
+
+        payload = self._payload(
+            media_context={"state": "image_present", "kind": "chart", "path": "/secret"}
+        )
+        brief = payload["editorial_brief"]
+        assert brief["revision"] == cw.EDITORIAL_BRIEF_REVISION
+        assert brief["medium"] == "x"
+        assert brief["audience"] == "market professionals"
+        assert brief["beat"] == "macro_read"
+        assert brief["takeaway"] == "Jobless claims fell to 199k."
+        assert brief["claims"] == [
+            {
+                "claim_ref": "print_jobless_claims",
+                "text": "Jobless claims fell to 199k.",
+                "count": {"numerator": 199, "denominator": 1},
+            },
+            {"claim_ref": "gdpnow", "text": "GDPNow held at 5.8%."},
+        ]
+        assert brief["display_values"] == ["199k", "5.8%"]
+        assert brief["clocks"] == {
+            "observation_date": "2026-09-20",
+            "source_date": "2026-09-19",
+            "plan_public_date": "2026-09-18",
+        }
+        # The writer gets state/kind only. Local paths/URLs are never projected.
+        assert brief["media"] == {
+            "state": "image_present",
+            "kind": "chart",
+            "required": False,
+        }
+        assert brief["uncertainty"] == {"base_rate": "61%"}
+        assert brief["positive_examples"] == ["alpha", "beta", "gamma"]
+        assert "no_fabricated_facts" in brief["prohibitions"]
+        assert "no_performed_first_person" in brief["prohibitions"]
+        assert "no_questions" in brief["prohibitions"]
+
+        canonical = dict(brief)
+        digest = canonical.pop("digest")
+        expected = hashlib.sha256(
+            json.dumps(canonical, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        assert digest == expected
+
+    def test_missing_source_and_media_stay_explicit_unknown_not_inferred(self):
+        payload = self._payload(shape="caption", media_context=None, source_as_of=None)
+        brief = payload["editorial_brief"]
+        assert brief["clocks"]["source_date"] is None
+        assert brief["clocks"]["plan_public_date"] == "2026-09-18"
+        assert brief["media"] == {"state": "unknown", "required": True}
+        assert "image_present" not in json.dumps(brief["media"])
+
+    def test_contract_receipt_is_additive_on_pass_and_drop(self):
+        payload = self._payload(media_context={"state": "text_only"})
+        receipt = {
+            "revision": payload["editorial_brief"]["revision"],
+            "digest": payload["editorial_brief"]["digest"],
+        }
+        for result in (
+            {"mode": "llm", "text": "copy"},
+            {"mode": "dropped", "stage": "validate", "reasons": ["bad"]},
+        ):
+            stamped = cw._attach_editorial_contract(result, payload)
+            assert stamped["editorial_contract"] == receipt
+            assert stamped["mode"] == result["mode"]
+
+    def test_live_v2_writer_attaches_the_contract_receipt(self):
+        import inspect
+
+        src = inspect.getsource(cw.write_posts_llm_v2)
+        assert "_attach_editorial_contract(" in src
