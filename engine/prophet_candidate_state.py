@@ -315,6 +315,7 @@ def _row(
     episode_id = _text(episode.get("episode_id"), "episode_id")
     security_id = _text(episode.get("security_id"), "security_id")
     company_id = _text(episode.get("company_id"), "company_id")
+    identity_epoch = _text(episode.get("identity_epoch"), "identity_epoch")
 
     return {
         "schema": ROW_SCHEMA,
@@ -322,6 +323,7 @@ def _row(
         "episode_id": episode_id,
         "security_id": security_id,
         "company_id": company_id,
+        "identity_epoch": identity_epoch,
         "candidate_generation_id": generation_id,
         "episode_lifecycle": _lifecycle(episode),
         "emergence_state": _emergence(emergence),
@@ -484,6 +486,7 @@ def validate_candidate_state_projection(
             "episode_id",
             "security_id",
             "company_id",
+            "identity_epoch",
             "candidate_generation_id",
             "episode_lifecycle",
             "emergence_state",
@@ -511,6 +514,7 @@ def validate_candidate_state_projection(
 
         _text(row.get("security_id"), "security_id")
         _text(row.get("company_id"), "company_id")
+        _text(row.get("identity_epoch"), "identity_epoch")
         _validate_lifecycle_projection(row.get("episode_lifecycle"))
         _validate_emergence_projection(row.get("emergence_state"))
         _validate_maturity_projection(row.get("maturity_state"))
