@@ -156,7 +156,7 @@ def test_restored_dashboard_borrows_readability_not_archetype_structure() -> Non
     assert "{% set _stance = posture_lane(" in TPL
     assert "{% set _hero_clause = hero_clause(" in TPL
     assert "{% set _todo_faces = reason_faces(" in TPL
-    assert 'class="cnx-stance-pill st-{{ _stance_tone }}"' in TPL
+    assert 'class="mx5-regime-pill{% if _stance_tone == \'warn\' %} rp-yellow{% elif _stance_tone == \'down\' %} rp-red{% endif %}"' in TPL
     assert "Full playbook & evidence →" in TPL
     for marker in (
         "ROW 1: What To Do + Upcoming Events",
@@ -169,8 +169,8 @@ def test_restored_dashboard_borrows_readability_not_archetype_structure() -> Non
 
 def test_macro_news_keeps_card_but_reads_as_dated_changes() -> None:
     assert "{{ t('Macro News','宏观新闻') }}" in TPL
-    assert "{{ t('WHAT CHANGED','最近变化') }}" in TPL
-    assert 'class="when"' in TPL
+    assert "{{ t('Macro News · What Changed','宏观新闻 · 最近变化') }}" in TPL
+    assert "(h.published or h.date or '')[5:10]" in TPL
     assert "h.title_en or h.title" in TPL
     assert "h.title_zh or h.title" in TPL
 
