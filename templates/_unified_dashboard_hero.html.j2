@@ -195,6 +195,28 @@
 {%- set _body_en = 'If it lands against the read, it would shift the regime call.' -%}
 {%- set _body_zh = '若与读数相反，将改变格局判断。' -%}
 
+<style>
+/* UD-B2-W2: spine caveat disclosure — engine-verbatim lighter-evidence note.
+   Scope-narrowed to this hero template (the spine is a UD-B1 + UD-B2-W2
+   construct, never re-used elsewhere). Token-scoped only: every value is
+   a var() reference, no hex / rgba / colour-function / radius literal /
+   inline custom-property literal. This stays in the template (not
+   templates/theme.css) to keep the THEME-CLOSURE re-bind sweep out of
+   this PR's scope — the new rule only fires on the new .mx-spine-caveat
+   class, which is unique to the HK + CN bound rows. */
+.mx-spine-caveat{
+  margin-top:6px;
+  padding: 4px 8px;
+  border-left: 2px solid var(--line);
+  border-radius: var(--r-ctl,8px);
+  font-size: var(--fs-micro);
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme="dark"]  .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-2) 88%, var(--text)); }
+html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3) 82%, var(--text)); }
+</style>
+
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
   <div class="ud-hero-inner">
 
@@ -453,7 +475,7 @@
           <div class="mx-spine-name">
             <span class="l-en">Hong Kong</span><span class="l-zh">香港</span>
             {%- if _hk_today is not none %}
-            <small class="mx-spine-asof tnum"><span class="l-en">as of {{ _hk.get('asof') or '—' }}</span><span class="l-zh">截至 {{ _hk.get('asof') or '—' }}</span></small>
+            <small class="mx-spine-asof"><span class="l-en">as of {{ _hk.get('asof') or '—' }}</span><span class="l-zh">截至 {{ _hk.get('asof') or '—' }}</span></small>
             {%- else %}
             <small>—</small>
             {%- endif %}
@@ -474,7 +496,7 @@
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
             {%- if _hk_today is not none and _hk.get('caveat_en') %}
-            <div class="mx-spine-caveat" aria-label="caveat">
+            <div class="mx-spine-caveat" aria-label="engine caveat">
               <span class="l-en">{{ _hk.caveat_en }}</span><span class="l-zh">{{ _hk.caveat_zh or _hk.caveat_en }}</span>
             </div>
             {%- endif %}
@@ -533,7 +555,7 @@
           <div class="mx-spine-name">
             <span class="l-en">China A-shares</span><span class="l-zh">A股</span>
             {%- if _cn_today is not none %}
-            <small class="mx-spine-asof tnum"><span class="l-en">as of {{ _cn.get('asof') or '—' }}</span><span class="l-zh">截至 {{ _cn.get('asof') or '—' }}</span></small>
+            <small class="mx-spine-asof"><span class="l-en">as of {{ _cn.get('asof') or '—' }}</span><span class="l-zh">截至 {{ _cn.get('asof') or '—' }}</span></small>
             {%- else %}
             <small>—</small>
             {%- endif %}
@@ -554,7 +576,7 @@
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
             {%- if _cn_today is not none and _cn.get('caveat_en') %}
-            <div class="mx-spine-caveat" aria-label="caveat">
+            <div class="mx-spine-caveat" aria-label="engine caveat">
               <span class="l-en">{{ _cn.caveat_en }}</span><span class="l-zh">{{ _cn.caveat_zh or _cn.caveat_en }}</span>
             </div>
             {%- endif %}

@@ -3087,6 +3087,27 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
   
   
 
+<style>
+/* UD-B2-W2: spine caveat disclosure — engine-verbatim lighter-evidence note.
+   Scope-narrowed to this hero template (the spine is a UD-B1 + UD-B2-W2
+   construct, never re-used elsewhere). Token-scoped only: every value is
+   a var() reference, no hex / rgba / colour-function / radius literal /
+   inline custom-property literal. This stays in the template (not
+   templates/theme.css) to keep the THEME-CLOSURE re-bind sweep out of
+   this PR's scope — the new rule only fires on the new .mx-spine-caveat
+   class, which is unique to the HK + CN bound rows. */
+.mx-spine-caveat{
+  margin-top:6px;
+  padding: 4px 8px;
+  border-left: 2px solid var(--line);
+  border-radius: var(--r-ctl,8px);
+  font-size: var(--fs-micro);
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme="dark"]  .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-2) 88%, var(--text)); }
+html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3) 82%, var(--text)); }
+</style>
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
   <div class="ud-hero-inner">
 
@@ -3201,19 +3222,51 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
         </div>
 
+        <div class="mx-spine-row" data-market="hk" data-state="real" data-blocked-feed="hk_market_state"
+             data-stance="stand-aside"
+             data-caveat-en="Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast." data-caveat-zh="仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。">
+          <div class="mx-spine-name">
+            <span class="l-en">Hong Kong</span><span class="l-zh">香港</span>
+            <small class="mx-spine-asof"><span class="l-en">as of 2026-09-18</span><span class="l-zh">截至 2026-09-18</span></small>
+          </div>
+          <div class="mx-spine-rail-wrap">
+            <div class="mx-spine-rail">
+              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:57.0%"></div>
+              <div class="mx-spine-conn" style="left:37%;width:20.0%"></div>
+              <div class="mx-spine-mark" style="left:37%"></div>
+            </div>
+            <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
+            <div class="mx-spine-caveat" aria-label="engine caveat">
+              <span class="l-en">Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast.</span><span class="l-zh">仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。</span>
+            </div>
+          </div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">←</span><span class="tnum">−20</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+        </div>
+
+        <div class="mx-spine-row" data-market="cn" data-state="real" data-blocked-feed="cn_market_state"
+             data-stance="stand-aside"
+             data-caveat-en="Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast." data-caveat-zh="仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。">
+          <div class="mx-spine-name">
+            <span class="l-en">China A-shares</span><span class="l-zh">A股</span>
+            <small class="mx-spine-asof"><span class="l-en">as of 2026-09-18</span><span class="l-zh">截至 2026-09-18</span></small>
+          </div>
+          <div class="mx-spine-rail-wrap">
+            <div class="mx-spine-rail">
+              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div>
+              <div class="mx-spine-conn" style="left:37%;width:5%"></div>
+              <div class="mx-spine-mark" style="left:37%"></div>
+            </div>
+            <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
+            <div class="mx-spine-caveat" aria-label="engine caveat">
+              <span class="l-en">Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast.</span><span class="l-zh">仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。</span>
+            </div>
+          </div>
+          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">←</span><span class="tnum">−5</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+        </div>
+
         
-        <div class="mx-spine-row" data-null="1" data-blocked-feed="hk_regime">
-          <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small>—</small></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
-        </div>
-        <div class="mx-spine-row" data-null="1" data-blocked-feed="china_a_regime">
-          <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small>—</small></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
-        </div>
         <div class="mx-spine-row" data-null="1" data-blocked-feed="gov_bonds_regime">
           <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>

@@ -1283,8 +1283,11 @@ def _store_path(root=None, market_key: str | None = None):
 def persist(snap: dict | None, root=None, now=None, market_key: str | None = None) -> None:
     """Write the canonical market-state snapshot. With `market_key=None` or
     "us" the US path data/market_state/latest.json is used unchanged. Any other
-    `market_key` (e.g. "hk", "cn") writes to data/<key>_market_state/latest.json —
-    NEVER the US latest.json. The freshness stamp against the NYSE calendar is
+    `market_key` lands at the per-market path resolved by `_store_path` —
+    "hk" → data/hk_market_state/latest.json, "cn" → data/china_market_state/latest.json
+    (the existing convention from build_china.py:1888), any other key uses
+    data/<key>_market_state/latest.json. The US latest.json is NEVER overwritten
+    by a non-US persist. The freshness stamp against the NYSE calendar is
     kept US-only by design: HK/CN home lanes own their own staleness discipline
     and the macro spine consumes a display-only caveat stamp.
 

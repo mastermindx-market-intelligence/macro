@@ -1,0 +1,13 @@
+{
+  "score": 37,
+  "raw_score": 37,
+  "capped": false,
+  "verdict": "RISK_OFF",
+  "label_en": "Risk-off",
+  "label_zh": "避险",
+  "asof": "2026-09-18",
+  "caveat_en": "Display-only and lighter than the US read: China has no leading Risk Radar, no VIX term structure (QVIX + margin froth stand in), no HY credit spread, and the downturn gauges are uncalibrated. It reads what has already turned — context, not a forecast.",
+  "caveat_zh": "仅供展示，较美股版更轻量：A股没有领先的风险雷达、没有 VIX 期限结构（以 QVIX 与融资拥挤替代）、没有高收益信用利差，且下行指标未经校准。它读取的是已经转向的信号 — 是背景，而非预测。",
+  "display_only": true,
+  "market": "cn"
+}

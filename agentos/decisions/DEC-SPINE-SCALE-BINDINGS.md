@@ -13,8 +13,9 @@ answer: >
   {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true}.
 
   Bind the CN row to CN_PROFILE market_state.score (same blender, same weights,
-  same cuts) via data/cn_market_state/latest.json → vm["cn_market_state"] with
-  the same contract.
+  same cuts) via data/china_market_state/latest.json (the existing
+  convention used by build_china.py:1888 for the CN score_log) →
+  vm["cn_market_state"] with the same contract.
 
   Government bonds and Commodities rows STAY DESIGNED-NULL — this is the ratified
   product state, not a deferral. Their slugs (gov_bonds_regime, commodities_regime)
@@ -94,7 +95,7 @@ evidence:
   - "templates/_unified_dashboard_hero.html.j2:415-505 — HK row bound to vm[hk_market_state]; CN row bound to vm[cn_market_state]"
   - "research/UNIFIED_DASHBOARD_DISPOSITION.md:58-61 — rows 19b/19c updated to BOUND with ratified source named; 19d/19e stay BLOCKED_DATA"
   - "research/UNIFIED_DASHBOARD_SPEC.md:3:105-129 — one-scale five-markets spine contract"
-  - "research/spine_scale_analysis/analysis.out.md — the seat's adjudication; rank-1 recommendations ratified"
+  - "research/spine_scale_analysis/analysis.out.md — the seat's adjudication; rank-1 recommendations ratified (host-path canonical: ~/lanes/ext/lanes/spine_scale_analysis/analysis.out.md, since the analysis lives outside the repo)"
   - "research/spine_scale_analysis/analysis.out.md §HK Candidate 1 — same blender, lighter evidence (no VIX term, no HY, uncalibrated stress, no overrides)"
   - "research/spine_scale_analysis/analysis.out.md §CN Candidate 1 — same blender, lighter evidence (QVIX, no HY, PBoC overlay, uncalibrated downturn)"
   - "research/spine_scale_analysis/analysis.out.md §GOV BONDS / §COMMODITIES — rejected (no commensurable scalar; spec designed Commodities as null)"
