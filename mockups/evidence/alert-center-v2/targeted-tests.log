@@ -1,4 +1,8 @@
-........................................................................ [ 36%]
-........................................................................ [ 73%]
-.....................................................                    [100%]
-197 passed, 1 deselected in 10.43s
+Alert Center action-led current-main battery
+source_commit=414263d2e7be3f70a45a565dfb44dc26488d71cb
+command=python3 -m pytest -q tests/test_alert_time_contract.py tests/test_alert_triage.py tests/test_alert_coverage_recurrence.py tests/test_act_now_board_assembler.py tests/test_alert_center_explorer.py tests/test_alert_center_surface.py --disable-warnings
+result=151 passed, 5 warnings in 9.19s
+browser=9/9 checks passed; 9 screenshots; 0 page errors
+adversarial=14/14 checks passed; 10 screenshots
+capture=8/8 dark-light x EN-ZH x desktop-mobile; 0 console errors; 0 failed responses
+production_acceptance=false

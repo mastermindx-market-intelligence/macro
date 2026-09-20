@@ -1,9 +1,10 @@
 {
   "checks": [
-    "Now initially shows eight canonical ranked observations",
+    "Now shows eight canonical observations grouped by source-derived attention",
     "Full-source Bonds evidence is reachable beyond the capped queue",
     "Search AND source filtering, genuine no-results, and reset",
     "Evidence selection has a reloadable canonical-ID permalink",
+    "A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary",
     "Native Escape closes evidence and restores the selected row",
     "Browser back and malformed legacy hash values do not crash",
     "Dark/light × EN/ZH × desktop/mobile: no overflow and first signal in first viewport",
@@ -26,73 +27,73 @@
     {
       "name": "desktop-dark-en.png",
       "first_row": {
-        "x": 41,
-        "y": 551.75,
-        "width": 934,
-        "height": 82
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
       }
     },
     {
       "name": "desktop-dark-zh.png",
       "first_row": {
-        "x": 41,
-        "y": 551.75,
-        "width": 934,
-        "height": 82
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
       }
     },
     {
       "name": "desktop-light-en.png",
       "first_row": {
-        "x": 41,
-        "y": 551.75,
-        "width": 934,
-        "height": 82
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
       }
     },
     {
       "name": "desktop-light-zh.png",
       "first_row": {
-        "x": 41,
-        "y": 551.75,
-        "width": 934,
-        "height": 82
+        "x": 171,
+        "y": 652.5,
+        "width": 1098,
+        "height": 139.3125
       }
     },
     {
       "name": "mobile-dark-en.png",
       "first_row": {
         "x": 13,
-        "y": 667,
+        "y": 551.75,
         "width": 364,
-        "height": 120
+        "height": 208
       }
     },
     {
       "name": "mobile-dark-zh.png",
       "first_row": {
         "x": 13,
-        "y": 629.5,
+        "y": 551.75,
         "width": 364,
-        "height": 99
+        "height": 168.875
       }
     },
     {
       "name": "mobile-light-en.png",
       "first_row": {
         "x": 13,
-        "y": 667,
+        "y": 551.75,
         "width": 364,
-        "height": 120
+        "height": 208
       }
     },
     {
       "name": "mobile-light-zh.png",
       "first_row": {
         "x": 13,
-        "y": 629.5,
+        "y": 551.75,
         "width": 364,
-        "height": 99
+        "height": 168.875
       }
     }
   ],

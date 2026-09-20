@@ -1,26 +1,20 @@
 {
-  "operation": "MMX-ALERT-CENTER-V2-ASTRA-20260908",
-  "file_key": "QO3CthsB5KzPVKdgfcVPMI",
-  "pages": {
-    "desktop_components": "0:1",
-    "evidence_responsive": "7:32",
-    "audit_comparison": "7:33"
+  "operation": "macro-alert-source-bound-native-figma-20260914-sol-001",
+  "file_key": "r1hSkfDg4vGzjWRySgrHE1",
+  "file_name": "MastermindX — Macro Alert Center — Market Changes Desk",
+  "primary_nodes": {
+    "desktop_dark": "6:2",
+    "desktop_light": "6:116",
+    "retained_source_desktop": "6:153",
+    "risk_inspector": "8:64",
+    "mobile_dark": "12:232",
+    "mobile_light": "12:344",
+    "retained_source_mobile": "12:456",
+    "risk_mobile_inspector": "13:300",
+    "handoff": "19:2"
   },
-  "frames": {
-    "desktop_ship_candidate": "2:3",
-    "original_concept_audit": "8:32"
-  },
-  "components": {
-    "signal_row": "5:23"
-  },
-  "collections": {
-    "dark_source_tokens": "VariableCollectionId:3:3"
-  },
-  "limitations": [
-    "One variable mode per collection reported by Figma; no second mode claimed"
-  ],
+  "role": "approved action-led design reference; runtime authority remains the repository implementation",
+  "modified_this_turn": false,
   "production_acceptance": false,
-  "tool_gate": "STARTER_PLAN_MCP_CALL_LIMIT_EXHAUSTED",
-  "last_attempt": "Auto Layout conversion refused; not claimed applied",
-  "resume": "Read existing canvas before further edits; complete mobile/light/evidence/partial/empty states on the same file"
+  "continuation": "Preserve this file; do not create another Alert Center Figma file."
 }
