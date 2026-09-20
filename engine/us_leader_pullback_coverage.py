@@ -179,6 +179,50 @@ _PROPHET_ROW_FIELDS: tuple[str, ...] = (
     "pullback_age",
 )
 
+# #7243 freezes the scientific population/freshness source law upstream.  The
+# Prophet projection consumes only a closed, ticker-free receipt from that law:
+# raw member lists (for example source_contract.missing_store) belong to the
+# protected source artifact, never to the public/index projection.
+PROPHET_SOURCE_CONTRACT_SCHEMA = "us_turn_watch.source_contract.v1"
+_PROPHET_SAFE_COVERAGE_FIELDS: tuple[str, ...] = (
+    "universe",
+    "graded",
+    "skipped_short_history",
+    "min_bars",
+    "cross_section_names",
+    "states_published",
+    "state_counts",
+    "null_counts",
+    "context_states",
+    "universe_limit",
+    "publishable",
+)
+_PROPHET_SAFE_SOURCE_CONTRACT_FIELDS: tuple[str, ...] = (
+    "schema",
+    "pass",
+    "universe_id",
+    "selection_era",
+    "population_count",
+    "tickers_sha256",
+    "source_commit",
+    "selected_count",
+    "universe_limit",
+    "missing_store_count",
+    "graded",
+    "selection_era_minimum_graded",
+    "session_counts",
+    "modal_session",
+    "modal_count",
+    "strict_majority",
+    "benchmark_session",
+    "benchmark_covers_session",
+    "freshness_reference",
+    "expected_completed_session",
+    "completed_session_lag",
+    "max_completed_session_lag",
+    "freshness_ok",
+)
+
 
 def _source_relation(source_session: str | None,
                      reference_session: str | None) -> str:
@@ -192,8 +236,32 @@ def _source_relation(source_session: str | None,
     return "behind" if source < reference else "ahead_conflict"
 
 
+def _ticker_free_coverage(raw: Any) -> dict[str, Any]:
+    """Closed aggregate source receipt safe for Prophet/public projection.
+
+    Coverage is an upstream owner payload and can legitimately grow owner-detail
+    fields.  Copying it wholesale would let a future member/ticker census cross
+    the premium/index boundary.  Keep only aggregate fields the observation shelf
+    needs, and project the #7243 source contract through its own closed field set.
+    """
+    coverage = raw if isinstance(raw, Mapping) else {}
+    out = {
+        key: deepcopy(coverage.get(key))
+        for key in _PROPHET_SAFE_COVERAGE_FIELDS
+        if key in coverage
+    }
+    contract = coverage.get("source_contract")
+    if isinstance(contract, Mapping):
+        out["source_contract"] = {
+            key: deepcopy(contract.get(key))
+            for key in _PROPHET_SAFE_SOURCE_CONTRACT_FIELDS
+            if key in contract
+        }
+    return out
+
+
 def _projection_source(payload: Mapping[str, Any] | None) -> dict[str, Any]:
-    """Copy source-level provenance only — never the ticker-keyed state map."""
+    """Copy ticker-free source provenance only — never owner member rosters."""
     doc = payload if isinstance(payload, Mapping) else {}
     source: dict[str, Any] = {}
     for key in (
@@ -206,7 +274,6 @@ def _projection_source(payload: Mapping[str, Any] | None) -> dict[str, Any]:
         "construction_era",
         "indicator_source",
         "authority",
-        "coverage",
         "disclosure",
         "disclosure_zh",
         "organ_disclosure",
@@ -214,6 +281,8 @@ def _projection_source(payload: Mapping[str, Any] | None) -> dict[str, Any]:
     ):
         if key in doc:
             source[key] = deepcopy(doc.get(key))
+    if "coverage" in doc:
+        source["coverage"] = _ticker_free_coverage(doc.get("coverage"))
     return source
 
 
@@ -267,6 +336,25 @@ def project_prophet_observations(
     if payload.get("authority") != AUTHORITY:
         return _unavailable_projection(
             "authority_drift", payload, reference_session=reference_session
+        )
+
+    # P1 is downstream of #7243's scientific source contract.  Refuse an old
+    # pre-contract artifact, a failed source qualification, or a run the owner
+    # marked non-publishable.  Keeping a stale last-good source artifact on disk
+    # must not silently turn into a current leader shelf after the source law moves.
+    coverage = payload.get("coverage")
+    source_contract = coverage.get("source_contract") if isinstance(coverage, Mapping) else None
+    if not isinstance(source_contract, Mapping):
+        return _unavailable_projection(
+            "source_contract_missing", payload, reference_session=reference_session
+        )
+    if source_contract.get("schema") != PROPHET_SOURCE_CONTRACT_SCHEMA:
+        return _unavailable_projection(
+            "source_contract_schema_mismatch", payload, reference_session=reference_session
+        )
+    if source_contract.get("pass") is not True or coverage.get("publishable") is not True:
+        return _unavailable_projection(
+            "source_contract_failed", payload, reference_session=reference_session
         )
 
     states = payload.get("states")

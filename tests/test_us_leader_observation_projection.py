@@ -64,6 +64,20 @@ def _artifact(*, states: dict | None = None, session: str | None = ASOF,
             "state_counts": state_counts,
             "null_counts": {"insufficient history": null_count} if null_count else {},
             "publishable": True,
+            "source_contract": {
+                "schema": "us_turn_watch.source_contract.v1",
+                "pass": True,
+                "universe_id": "us-turn-watch:test-v1",
+                "population_count": len(states),
+                "missing_store_count": 0,
+                "missing_store": [],
+                "modal_session": session,
+                "benchmark_session": session,
+                "expected_completed_session": session,
+                "completed_session_lag": 0,
+                "max_completed_session_lag": 0,
+                "freshness_ok": True,
+            },
         },
         "states": states,
     }
@@ -202,6 +216,39 @@ def test_loader_distinguishes_absent_unreadable_and_valid_empty(tmp_path: Path):
     assert (empty["status"], empty["reason_code"]) == (
         "empty", "no_active_states"
     )
+
+
+def test_projection_requires_accepted_source_contract():
+    missing = _artifact()
+    missing["coverage"].pop("source_contract")
+    projection = cov.project_prophet_observations(missing, reference_session=ASOF)
+    assert (projection["status"], projection["reason_code"]) == (
+        "unavailable", "source_contract_missing"
+    )
+    assert projection["rows"] == []
+
+    failed = _artifact()
+    failed["coverage"]["source_contract"]["pass"] = False
+    projection = cov.project_prophet_observations(failed, reference_session=ASOF)
+    assert (projection["status"], projection["reason_code"]) == (
+        "unavailable", "source_contract_failed"
+    )
+    assert projection["rows"] == []
+
+
+def test_source_projection_never_copies_member_level_source_detail():
+    artifact = _artifact()
+    artifact["coverage"]["source_contract"].update({
+        "missing_store_count": 1,
+        "missing_store": ["SHOULD_NOT_ENTER_PROPHET_INDEX"],
+    })
+    projection = cov.project_prophet_observations(artifact, reference_session=ASOF)
+    summary = cov.prophet_observation_summary(projection)
+
+    contract = summary["source"]["coverage"]["source_contract"]
+    assert contract["missing_store_count"] == 1
+    assert "missing_store" not in contract
+    assert "SHOULD_NOT_ENTER_PROPHET_INDEX" not in json.dumps(summary, sort_keys=True)
 
 
 def test_summary_never_contains_the_roster():
