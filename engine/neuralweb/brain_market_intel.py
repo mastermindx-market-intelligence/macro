@@ -69,6 +69,7 @@ reading is hashed or persisted here — these functions write nothing.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -1303,6 +1304,102 @@ def _load_evidence_document(doc_id: str):
         return None
 
 
+_RIO_AUTHORITY = "descriptive_research_only"
+
+
+def _rio_projection(state: str, summary_points=None) -> dict:
+    """One bounded Brain projection; private RIO bytes never leave the store."""
+    return {
+        "state": state,
+        "authority": _RIO_AUTHORITY,
+        "summary_points": list(summary_points or []),
+    }
+
+
+def _research_intelligence_projection(
+    report_id: str,
+    *,
+    stored_body_sha256: str,
+    include_summary: bool,
+) -> dict:
+    """Load the latest private RIO through its incumbent strict-store owner.
+
+    The caller must already have cleared report identity, catalog existence, and
+    quota preflight. Freshness binds W2's exact analyzed-body hash to the exact
+    body already loaded by the Research Vault consumer; the PDF fingerprint is
+    deliberately not accepted here.
+    """
+    current_body_sha = _sha256_or_empty(stored_body_sha256)
+    if not current_body_sha:
+        return _rio_projection("unavailable")
+
+    try:
+        from engine.research_vault.r2_store import build_store  # noqa: PLC0415
+        from engine import research_intelligence as rio_mod  # noqa: PLC0415
+    except Exception:  # noqa: BLE001 — optional private layer must fail soft
+        return _rio_projection("unavailable")
+
+    try:
+        store = build_store()
+    except Exception:  # noqa: BLE001
+        return _rio_projection("unavailable")
+    if store is None:
+        return _rio_projection("unavailable")
+
+    try:
+        stored = rio_mod.load_latest_research_intelligence(store, report_id)
+    except rio_mod.ResearchIntelligenceInvalid:
+        return _rio_projection("invalid")
+    except rio_mod.ResearchIntelligenceStoreError:
+        return _rio_projection("unavailable")
+    except Exception:  # noqa: BLE001 — unexpected store failure remains fail-soft
+        return _rio_projection("unavailable")
+
+    if stored is None:
+        return _rio_projection("missing")
+
+    source_sha = _sha256_or_empty(
+        getattr(stored, "source_content_sha256", None)
+    )
+    if not source_sha:
+        return _rio_projection("invalid")
+    if source_sha != current_body_sha:
+        return _rio_projection("stale")
+    if not include_summary:
+        return _rio_projection("available")
+
+    try:
+        rows = rio_mod.summary_points(stored.rio)
+    except Exception:  # noqa: BLE001 — malformed/private projection refuses closed
+        return _rio_projection("invalid")
+    if not isinstance(rows, list):
+        return _rio_projection("invalid")
+
+    # W2 owns the rights-safe projection. This is only a narrow boundary check
+    # against accidental future widening of that projection before Brain emits it.
+    for row in rows:
+        if not isinstance(row, dict):
+            return _rio_projection("invalid")
+        if row.get("source_document_id") != report_id:
+            return _rio_projection("invalid")
+        if row.get("source_content_sha256") != source_sha:
+            return _rio_projection("invalid")
+        if row.get("authority") != _RIO_AUTHORITY:
+            return _rio_projection("invalid")
+        visibility = row.get("text_visibility")
+        text = row.get("text")
+        if visibility == "derived_summary":
+            if not isinstance(text, str) or not text.strip():
+                return _rio_projection("invalid")
+        elif visibility == "private_rio_only":
+            if text != "":
+                return _rio_projection("invalid")
+        else:
+            return _rio_projection("invalid")
+
+    return _rio_projection("available", rows)
+
+
 def _select_evidence(document, query: str) -> dict:
     """Run the corpus owner's deterministic selector; fail to body_unavailable."""
     try:
@@ -1966,6 +2063,7 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
 
     quota: dict | None = None
     evidence: dict | None = None
+    research_intelligence = _rio_projection("unavailable")
     pending_evidence_charge = False
     matched_without_usable_text = False
     if evidence_requested:
@@ -1984,6 +2082,11 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         binding = evidence.get("source_binding") or {}
         binding_ok = bool(
             binding.get("content_sha256") and binding.get("stored_body_sha256"))
+        research_intelligence = _research_intelligence_projection(
+            rid,
+            stored_body_sha256=_sha256_or_empty(binding.get("stored_body_sha256")),
+            include_summary=False,
+        )
         candidate_body, candidate_truncated = _evidence_body(evidence)
         if status == "matched" and (not binding_ok or not candidate_body):
             evidence["status"] = "body_unavailable"
@@ -2002,7 +2105,18 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         else:
             body_text, truncated = "", False
     else:
-        body_raw = str((document or {}).get("body") or "")
+        raw_body_value = (document or {}).get("body") if isinstance(document, dict) else None
+        stored_body_sha256 = (
+            hashlib.sha256(raw_body_value.encode("utf-8")).hexdigest()
+            if isinstance(raw_body_value, str)
+            else ""
+        )
+        research_intelligence = _research_intelligence_projection(
+            rid,
+            stored_body_sha256=stored_body_sha256,
+            include_summary=True,
+        )
+        body_raw = str(raw_body_value or "")
         if body_raw.strip():
             allowed, info = _charge_report_view(uid, now)
             if not allowed:
@@ -2058,6 +2172,7 @@ def _research_report(root: Path, report_id, *, query="", user_ctx,
         ),
         "quota": quota,
         "evidence": evidence,
+        "research_intelligence": research_intelligence,
         "note": note,
     }
 
@@ -2363,7 +2478,11 @@ RESEARCH_TOOL_SCHEMA: dict = {
         "'what does this note argue?', pass an empty query to open the note "
         "generically. Pass the exact question only for a specific factual "
         "request, to return a query-centered supporting passage with a source "
-        "fingerprint and an 'Open source' link. "
+        "fingerprint and an 'Open source' link. Generic report responses may "
+        "also carry a rights-safe Research Intelligence synthesis from the same "
+        "stored body, explicitly marked descriptive_research_only. For a specific "
+        "evidence question, Research Intelligence contributes STATE ONLY and must "
+        "never substitute for a missing literal source passage. "
         "Text actually served is metered hourly for PRO members, so call it for "
         "the one report that matters, not for every hit; no matching passage or "
         "unavailable body is not charged. Attribute it to its institution, quote "
