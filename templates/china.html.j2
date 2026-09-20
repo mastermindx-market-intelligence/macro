@@ -1083,8 +1083,6 @@
     body.page-china .cnx-change-row{grid-template-columns:42px minmax(0,1fr)}
     body.page-china .cnx-change-tag{display:none}
     body.page-china .cnx-hero-read{gap:8px}
-    body.page-china .cnx-estrip{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
-    body.page-china .cnx-ev{flex:0 0 72%;scroll-snap-align:start}
   }
   body.page-china .cnx-kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
   body.page-china .cnx-kv:last-of-type{border-bottom:none}
@@ -1105,6 +1103,10 @@
   body.page-china .cnx-ev .edot{width:9px;height:9px;border-radius:50%;margin:0 auto 5px}
   body.page-china .cnx-ev .en{font-size:11.5px;font-weight:650;margin:2px 0}
   body.page-china .cnx-ev .ed{font-size:10px;color:var(--muted)}
+  @media (max-width:640px){
+    body.page-china .cnx-estrip{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+    body.page-china .cnx-estrip > .cnx-ev{flex:0 0 72%;scroll-snap-align:start}
+  }
   body.page-china .cnx-ev .imp{font-size:9px;font-weight:700;letter-spacing:.6px;border-radius:4px;padding:1px 6px}
   body.page-china .cnx-imp.high{background:rgba(224,100,100,.2);color:#eda8a8}
   body.page-china .cnx-imp.med{background:rgba(224,160,48,.16);color:var(--ink-warn, var(--warn))}
