@@ -1945,3 +1945,172 @@ def test_runtime_renders_the_real_bridge_government_fact_block_for_an_irdm_selec
     assert "P00032" in bridge_html
     assert "$18,416,666.66" in bridge_html
     assert "Government fact" in bridge_html or "政府事实" in bridge_html
+
+
+# Keyboard regressions reproduced on the production mobile procurement page.
+# Execute the shipped interaction functions; the fixture only models DOM focus/visibility.
+@needs_node
+@pytest.mark.parametrize("case", [
+    "focus_wrap", "dismiss_preserves_query", "mobile_search_shortcut",
+    "nested_source_dismissal", "desktop_resize", "desktop_search_escape",
+    "empty_panel", "chinese_panel_label", "external_focus", "native_form_labels",
+])
+def test_mobile_panel_keyboard_regressions(tmp_path: Path, case: str) -> None:
+    runtime = _page_runtime_js()
+    start = runtime.index("  // One active mobile panel;")
+    end = runtime.index("  function rowKeys(", start)
+    functions = runtime[start:end]
+    for name in ("openEvidenceDrawer", "closeDrawer"):
+        functions += next(line for line in runtime.splitlines() if line.startswith("  function " + name + "(")) + "\n"
+    bootstrap = r"""
+const assert = require('node:assert/strict');
+const elements = {}, classes = new WeakMap();
+let LANG = 'en';
+const document = {activeElement:null, body:{style:{overflow:'auto'}}};
+const window = {innerWidth:390, getComputedStyle:el=>({visibility:el.visibility||'visible'})};
+function el(id, parent) {
+  const attrs = {}, node = {id, parent, hidden:false, disabled:false, isConnected:true,
+    inert:false, tagName:'BUTTON', children:[], value:'', textContent:'', innerHTML:'',
+    getAttribute:key=>Object.hasOwn(attrs,key)?attrs[key]:null,
+    setAttribute:(key,value)=>{attrs[key]=String(value)},
+    removeAttribute:key=>{delete attrs[key]},
+    contains:target=>target===node||node.children.some(child=>child.contains(target)),
+    querySelectorAll:()=>node.children,
+    getClientRects:()=>{
+      if(node.hidden||!node.isConnected||node.visibility==='hidden')return [];
+      if(parent&&!parent.getClientRects().length)return [];
+      if((id==='filterPane'||id==='inspectorPane')&&window.innerWidth<=980&&!node.classList.contains('mobile-sheet'))return [];
+      if((id==='filterOpen'||id==='inspectorOpen')&&window.innerWidth>980)return [];
+      return [{}];
+    },
+    focus:()=>{if(node.getClientRects().length&&!node.inert&&!(parent&&parent.inert))document.activeElement=node}
+  };
+  const names = new Set(); classes.set(node,names);
+  node.classList={add:name=>names.add(name),remove:name=>names.delete(name),contains:name=>names.has(name)};
+  if(parent)parent.children.push(node);elements[id]=node;return node;
+}
+for(const id of ['filterOpen','inspectorOpen','workspaceUnlock','queueList','drawerBackdrop','drawerTitle','drawerBody'])el(id);
+const filters=el('filterPane'), inspector=el('inspectorPane'), drawer=el('evidenceDrawer');drawer.hidden=true;
+for(const id of ['deskSearch','agencyFilter','exportViewCsv','hiddenFilter','savedViewName','savedViewSelect','alertType'])el(id,filters);
+elements.hiddenFilter.hidden=true;elements.deskSearch.tagName='INPUT';
+for(const id of ['savedViewName','savedViewSelect','alertType'])elements[id].setAttribute('tabindex','-1');
+el('inspectSource',inspector);
+for(const id of ['drawerClose','sourceLink','collapsedSource'])el(id,drawer);
+elements.collapsedSource.hidden=true;
+let state={drawer:false,q:''},lastFocus=null,filterRuns=0;
+function $(id){return elements[id]}
+function tr(en,zh){return LANG==='zh'?zh:en}
+function obj(value){return !!value&&typeof value==='object'&&!Array.isArray(value)}
+function text(value,fallback){return value==null||value===''?fallback:String(value)}
+function applyFilters(){filterRuns++}
+function key(name,props){return Object.assign({key:name,target:document.activeElement,defaultPrevented:false,
+  preventDefault(){this.defaultPrevented=true},stopPropagation(){this.stopped=true}},props||{})}
+elements.filterOpen.focus();
+"""
+    cases = {
+        "focus_wrap": r"""
+openMobileFilters();assert.equal(document.activeElement.id,'deskSearch');
+assert.equal(filters.getAttribute('role'),'dialog');assert.equal(filters.getAttribute('aria-modal'),'true');
+assert.equal(document.body.style.overflow,'hidden');
+pageKeys(key('Tab',{shiftKey:true}));assert.equal(document.activeElement.id,'exportViewCsv');
+pageKeys(key('Tab'));assert.equal(document.activeElement.id,'deskSearch');
+""",
+        "dismiss_preserves_query": r"""
+state.q='LDOS';elements.deskSearch.value='LDOS';openMobileFilters();
+let escape=key('Escape');deskSearchKey.call(elements.deskSearch,escape);pageKeys(escape);
+assert.equal(state.q,'LDOS');assert.equal(elements.deskSearch.value,'LDOS');
+assert.equal(document.activeElement.id,'filterOpen');assert.equal(filters.getAttribute('role'),null);
+assert.equal(elements.filterOpen.getAttribute('aria-expanded'),'false');assert.equal(elements.drawerBackdrop.hidden,true);
+assert.equal(document.body.style.overflow,'auto');assert.equal(filterRuns,0);
+""",
+        "mobile_search_shortcut": r"""
+pageKeys(key('/',{ctrlKey:true}));assert.equal(mobileSheet,null);
+pageKeys(key('/'));assert.equal(mobileSheet.pane.id,'filterPane');assert.equal(document.activeElement.id,'deskSearch');
+let slash=key('/');pageKeys(slash);assert.equal(slash.defaultPrevented,false);
+""",
+        "nested_source_dismissal": r"""
+elements.inspectorOpen.focus();openMobileInspector();elements.inspectSource.focus();
+openEvidenceDrawer({html:'source',focus:elements.inspectSource});assert.equal(document.activeElement.id,'drawerClose');
+assert.equal(inspector.inert,true);assert.equal(elements.drawerBackdrop.classList.contains('above-mobile-sheet'),true);
+pageKeys(key('Tab',{shiftKey:true}));assert.equal(document.activeElement.id,'sourceLink');
+pageKeys(key('Escape'));assert.equal(state.drawer,false);assert.equal(mobileSheet.pane.id,'inspectorPane');
+assert.equal(inspector.inert,false);assert.equal(elements.drawerBackdrop.hidden,false);assert.equal(elements.drawerBackdrop.classList.contains('above-mobile-sheet'),false);
+assert.equal(document.activeElement.id,'inspectSource');assert.equal(document.body.style.overflow,'hidden');
+pageKeys(key('Escape'));assert.equal(mobileSheet,null);assert.equal(document.activeElement.id,'inspectorOpen');
+assert.equal(document.body.style.overflow,'auto');
+""",
+        "desktop_resize": r"""
+openMobileFilters();window.innerWidth=1440;resizeSheets();
+assert.equal(mobileSheet,null);assert.equal(filters.classList.contains('mobile-sheet'),false);
+assert.equal(filters.getAttribute('aria-modal'),null);assert.equal(elements.drawerBackdrop.hidden,true);
+assert.equal(document.body.style.overflow,'auto');assert.equal(document.activeElement.id,'deskSearch');
+""",
+        "desktop_search_escape": r"""
+window.innerWidth=1440;elements.deskSearch.focus();elements.deskSearch.value='LMT';state.q='LMT';
+let escape=key('Escape');deskSearchKey.call(elements.deskSearch,escape);pageKeys(escape);
+assert.equal(state.q,'');assert.equal(elements.deskSearch.value,'');assert.equal(filterRuns,1);
+assert.equal(document.activeElement.id,'deskSearch');
+""",
+        "empty_panel": r"""
+inspector.children=[];elements.inspectorOpen.focus();openMobileInspector();
+assert.equal(document.activeElement.id,'inspectorPane');let tab=key('Tab');pageKeys(tab);
+assert.equal(tab.defaultPrevented,true);assert.equal(document.activeElement.id,'inspectorPane');
+pageKeys(key('Escape'));assert.equal(document.activeElement.id,'inspectorOpen');
+""",
+        "chinese_panel_label": r"""
+LANG='zh';openMobileFilters();assert.equal(filters.getAttribute('aria-label'),'政府采购筛选');
+closeSheets();elements.inspectorOpen.focus();openMobileInspector();assert.equal(inspector.getAttribute('aria-label'),'记录详情');
+""",
+        "native_form_labels": r"""
+const options=['opportunity','award_change','recompete'].map(value=>({value,textContent:''}));
+elements.alertType.options=options;elements.alertType.value='award_change';elements.deskSearch.value='LDOS';
+LANG='zh';localizeFormControls();
+assert.equal(elements.deskSearch.getAttribute('placeholder'),'公告、机构或股票代码');
+assert.equal(elements.savedViewName.getAttribute('placeholder'),'为此视图命名');
+assert.deepEqual(options.map(o=>o.textContent),['机会变化','授标 / 行动变化','推导到期观察']);
+assert.equal(elements.alertType.value,'award_change');assert.equal(elements.deskSearch.value,'LDOS');
+LANG='en';localizeFormControls();
+assert.equal(options[0].textContent,'Opportunity change');assert.equal(elements.deskSearch.getAttribute('placeholder'),'Notice, agency or ticker');
+assert.equal(elements.alertType.value,'award_change');
+""",
+        "external_focus": r"""
+openMobileFilters();elements.workspaceUnlock.focus();guardOverlayFocus({target:elements.workspaceUnlock});
+assert.equal(document.activeElement.id,'deskSearch');closeSheets();
+guardOverlayFocus({target:elements.workspaceUnlock});assert.equal(document.activeElement.id,'filterOpen');
+""",
+    }
+    script = tmp_path / (case + ".js")
+    script.write_text(bootstrap + functions + cases[case], encoding="utf-8")
+    result = subprocess.run(["node", str(script)], capture_output=True, text=True, timeout=20)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_mobile_panel_handlers_are_on_the_real_user_path() -> None:
+    for source in (TEMPLATE, SITE):
+        assert "$('filterOpen').addEventListener('click',openMobileFilters)" in source
+        assert "document.addEventListener('keydown',pageKeys)" in source
+        assert "document.addEventListener('focusin',guardOverlayFocus)" in source
+        assert "window.addEventListener('resize',resizeSheets)" in source
+        assert "$('drawerBackdrop').addEventListener('click',closeTopOverlay)" in source
+        assert "$('deskSearch').addEventListener('keydown',deskSearchKey)" in source
+
+
+def test_native_select_labels_never_use_dual_language_spans() -> None:
+    for source in (TEMPLATE, SITE):
+        for option in re.findall(r"<option\b[^>]*>(.*?)</option>", source, re.S):
+            assert '<span class="l-' not in option
+            assert "{{ t(" not in option
+        assert "function boot(first){localizeFormControls();" in source
+
+
+def test_source_drawer_stacking_is_above_mobile_parent() -> None:
+    import hashlib
+    for source in (TEMPLATE,):
+        sheet = int(re.search(r"\.mobile-sheet\{[^}]*z-index:(\d+)", source).group(1))
+        drawer = int(re.search(r"\.evidence-drawer\{z-index:(\d+)", source).group(1))
+        backdrop = int(re.search(r"\.drawer-backdrop\.above-mobile-sheet\{z-index:(\d+)", source).group(1))
+        assert sheet < backdrop < drawer
+    refs = re.findall(r"assets/css/([a-f0-9]{8})\.css\?v=\1", SITE)
+    css_files = [ROOT / "site/assets/css" / f"{digest}.css" for digest in refs]
+    css = next(path for path in css_files if ".drawer-backdrop.above-mobile-sheet" in path.read_text())
+    assert hashlib.sha256(css.read_bytes()).hexdigest()[:8] == css.stem
