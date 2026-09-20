@@ -9204,7 +9204,9 @@ def chat(
     # resolution gate.  It deliberately precedes quota/provider work and keeps
     # resolved source bytes outside `context`, thread persistence, and response logs.
     source_attachment = None
-    if company_source_span is not None:
+    # MO-PAID-031 grounding is a CLOSED list. Exact-source attachments belong to
+    # normal chat and must not be resolved/read or appended in Research Mode.
+    if mode != "research" and company_source_span is not None:
         source_attachment = _resolve_company_source_attachment(
             company_source_span, user_id, root, terminal_data_dir / "tx"
         )
@@ -9716,7 +9718,9 @@ def chat_stream(
         return
 
     source_attachment = None
-    if company_source_span is not None:
+    # MO-PAID-031 grounding is a CLOSED list. Exact-source attachments belong to
+    # normal chat and must not be resolved/read or appended in Research Mode.
+    if mode != "research" and company_source_span is not None:
         source_attachment = _resolve_company_source_attachment(
             company_source_span, user_id, root, terminal_data_dir / "tx"
         )
