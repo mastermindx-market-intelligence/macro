@@ -8,6 +8,7 @@
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
+{% from "_risk_envelope_band.html.j2" import risk_button_context %}
 {% macro help(en, zh='') -%}
 <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -8037,6 +8038,7 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">{{ _mx5_risk_lbl[0] }}{% if _mx5_radar_top > 0 %} &middot; {{ _mx5_radar_top }}{% endif %}</span>
           <span class="l-zh">{{ _mx5_risk_lbl[1] }}{% if _mx5_radar_top > 0 %} &middot; {{ _mx5_radar_top }}{% endif %}</span>
+          {{ risk_button_context(risk_envelope|default(none)) }}
         </button>
         {% else %}
         {# Fallback: risk not elevated, no ignition data — neutral Risk Detail #}
@@ -8049,6 +8051,7 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">Risk Detail</span>
           <span class="l-zh">风险详情</span>
+          {{ risk_button_context(risk_envelope|default(none)) }}
         </button>
         {% endif %}
         {# no down-caret: this button opens a modal dialog, not a popover-below

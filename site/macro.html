@@ -170,6 +170,20 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
 #dlg-risk .gde-disc > summary::before {content:"+";}
 #dlg-risk .gde-disc[open] > summary::before {content:"−";}
 
+/* The existing button carries a separate stress caveat, never a changed radar score. */
+#mx5BtnRisk {max-width:100%; flex-wrap:wrap;}
+#mx5BtnRisk .gde-button-context {border-left:1px solid var(--line); padding-left:6px; white-space:normal;}
+.gde-button-context[data-gde-stage="FRAGILE"] {color:var(--ink-warn);}
+.gde-button-context[data-gde-stage="TRANSMITTING"], .gde-button-context[data-gde-stage="BREAKDOWN"] {color:var(--ink-act);}
+#mx5BtnRisk .gde-button-context[hidden], #dlg-risk .gde-live-reading[hidden], #dlg-risk .gde-input-caveat[hidden] {display:none;}
+#dlg-risk .gde-causes {margin:8px 0 0; font-size:var(--fs-sm); line-height:1.45; color:var(--ink-1);}
+#dlg-risk .gde-input-caveat {margin:4px 0 0; font-size:var(--fs-label); color:var(--ink-warn);}
+#dlg-risk .gde-live-reading {display:flex; gap:4px 10px; flex-wrap:wrap; margin-top:8px; font-size:var(--fs-sm); line-height:1.4;}
+#dlg-risk .gde-live-reading strong {font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-live-reading > span {color:var(--ink-2);}
+
+#dlg-risk .gde-live-source-rows {white-space:pre-line; font-size:var(--fs-label); line-height:1.6; overflow-wrap:anywhere;}
+#dlg-risk #gde-live-sources[hidden] {display:none;}
 </style>
 </head>
 <body class="page-macro mx4-grid">
@@ -956,7 +970,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
           </svg>
           <span class="l-en">Risk building &middot; 56</span>
           <span class="l-zh">风险积聚 &middot; 56</span>
-        </button>
+        <span class="gde-button-context" id="gde-button-context" data-gde-stage="FRAGILE"><span class="l-en">Fragile internals</span><span class="l-zh">内部脆弱</span></span></button>
         
         
 
@@ -6003,15 +6017,34 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
     </div>
   </div>
 
-  <p class="gde-context-line"><span class="l-en">The trend is positive, but underlying stress remains.</span><span class="l-zh">趋势向好，但内部压力仍在。</span></p>
 
+
+
+
+
+
+
+
+
+
+
+
+
+  <p class="gde-causes"><span class="l-en">AI-hardware leaders: damaged · Credit stress: building</span><span class="l-zh">AI硬件龙头：受损 · 信用压力：积聚中</span></p>
+  <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
+  <script type="application/json" id="gde-context-copy">{"copy": {"ai_leaders": ["AI-hardware leaders", "AI\u786c\u4ef6\u9f99\u5934"], "checking": ["Checking stress", "\u538b\u529b\u5f85\u786e\u8ba4"], "coverage": {"FRESH": ["current session", "\u672c\u4ea4\u6613\u65e5"], "MISSING": ["not available", "\u6682\u65e0\u6570\u636e"], "STALE": ["older read", "\u8f83\u65e9\u8bfb\u6570"]}, "hazard": {"BREAKDOWN": ["Breakdown", "\u5df2\u7834\u4f4d"], "FRAGILE": ["Fragile", "\u8106\u5f31"], "NONE": ["No stress flagged", "\u672a\u89c1\u538b\u529b"], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "hint": {"BREAKDOWN": ["Internal breakdown", "\u5185\u90e8\u7834\u4f4d"], "FRAGILE": ["Fragile internals", "\u5185\u90e8\u8106\u5f31"], "NONE": ["", ""], "TRANSMITTING": ["Stress spreading", "\u538b\u529b\u6269\u6563"]}, "live": ["Live stress", "\u5b9e\u65f6\u538b\u529b"], "live_missing": ["Live update unavailable; settled read shown.", "\u5b9e\u65f6\u66f4\u65b0\u4e0d\u53ef\u7528\uff0c\u663e\u793a\u6536\u76d8\u8bfb\u6570\u3002"], "live_pending": ["Live candidate", "\u5b9e\u65f6\u5f85\u786e\u8ba4"], "older_trend": ["Trend includes older inputs.", "\u8d8b\u52bf\u8bfb\u6570\u542b\u8f83\u65e9\u6570\u636e\u3002"], "partial_hint": ["Partial read", "\u8bfb\u6570\u4e0d\u5168"], "source": ["Tracked source", "\u8ffd\u8e2a\u6765\u6e90"], "source_missing": ["read unavailable", "\u6682\u65e0\u8bfb\u6570"], "source_states": {"BROKEN": ["damaged", "\u53d7\u635f"], "CRACKING": ["weakening", "\u8f6c\u5f31"], "HEALTHY": ["holding up", "\u7ef4\u6301\u7a33\u5b9a"], "WATCH": ["under watch", "\u9700\u5173\u6ce8"], "calm": ["quiet", "\u5e73\u7a33"], "caution": ["building", "\u79ef\u805a\u4e2d"], "elevated": ["elevated", "\u504f\u9ad8"], "risk-off": ["stressed", "\u627f\u538b"], "watch": ["under watch", "\u9700\u5173\u6ce8"]}, "unknown": ["Incomplete read", "\u6570\u636e\u4e0d\u5168"]}, "settled_stage": "FRAGILE"}</script>
   <div class="gde-meta">
     <span class="gde-stamp"><span class="l-en">Settled</span><span class="l-zh">收盘</span> 2026-09-18</span>
     <span class="gde-stamp gde-stamp-live" id="gde-live-chip" hidden><span class="l-en">Live · provisional</span><span class="l-zh">实时 · 临时</span><span class="gde-live-time"></span></span>
     <span class="gde-pending" id="gde-pending-chip" hidden><span class="l-en"></span><span class="l-zh"></span></span>
   </div>
+  <div class="gde-live-reading" id="gde-live-reading" hidden aria-live="polite">
+    <strong id="gde-live-stage"><span class="l-en"></span><span class="l-zh"></span></strong>
+    <span id="gde-live-cause"><span class="l-en"></span><span class="l-zh"></span></span>
+  </div>
+  <p class="gde-input-caveat" id="gde-live-fallback" hidden><span class="l-en">Live update unavailable; settled read shown.</span><span class="l-zh">实时更新不可用，显示收盘读数。</span></p>
   <details class="gde-disc">
-    <summary><span class="l-en">Evidence · 3 sources</span><span class="l-zh">依据 · 3 个来源</span></summary>
+    <summary><span class="l-en">Settled evidence · 3 sources</span><span class="l-zh">收盘依据 · 3 个来源</span></summary>
     <div class="gde-disc-body">
           <div class="gde-tblwrap">
             <table class="gde-tbl">
@@ -6083,6 +6116,7 @@ html[data-theme="light"] #dlg-risk .riskdlg-context {
             engine/risk_envelope.py
           </p>
 
+          <div id="gde-live-sources" hidden><p class="gde-disc-h"><span class="l-en">Live source dates</span><span class="l-zh">实时来源日期</span></p><div class="gde-live-source-rows" id="gde-live-source-rows"><span class="l-en"></span><span class="l-zh"></span></div></div>
           <div class="gde-receipt gde-receipt-live" id="gde-live-receipt" hidden></div>
       <p class="gde-policy">
         <span class="l-en">Capital controls: none active. Separate from the market readings.</span>
@@ -12629,7 +12663,7 @@ window.__CHART_SWAP__ = {
 
 <script src="risk_state_live.js?v=4b630b78" defer></script>
 
-<script src="risk_envelope_live.js?v=fb77161f" defer></script>
+<script src="risk_envelope_live.js?v=47a6eb04" defer></script>
 <script src="release_publications_live.js?v=d9a19340" defer></script>
 <script>
 /* Keep .help tooltips on-screen: flip below the icon when it's near the top of
