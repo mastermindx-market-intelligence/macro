@@ -78,7 +78,10 @@ def test_quiet_policy_copy_does_not_consume_a_glance_row():
 def test_primary_copy_is_short_and_live_patchable():
     glance = _glance_source()
     assert "Trade small. Stay selective." in glance
-    assert "{{ MS.label_en }} &middot; {{ MS.score }}/100" in glance
+    assert "_wtd_copy.get('action_en')" in glance
+    assert "_wtd_copy.get('label_en')" in glance
+    assert "{{ MS.score }}/100" in glance
+    assert "data-wtd-primary" in glance
 
 
 def test_glance_uses_the_dashboard_typography_without_alert_labels():

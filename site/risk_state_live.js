@@ -274,8 +274,15 @@
     if ((d.stale === true || !d.live_active) && d.nightly && d.nightly.verdict &&
         disp.verdict !== d.nightly.verdict) {
       var ntl = d.nightly;
-      disp = { verdict: ntl.verdict, label_en: ntl.label_en, label_zh: ntl.label_zh,
-               color: ntl.color, score: disp.score, raw_score: disp.raw_score };
+      var ntc = ntl.display_copy || {};
+      disp = { verdict: ntl.verdict,
+               label_en: ntc.label_en || ntl.label_en, label_zh: ntc.label_zh || ntl.label_zh,
+               color: ntl.color, score: disp.score, raw_score: disp.raw_score,
+               headline_en: ntc.headline_en || ntl.headline_en,
+               headline_zh: ntc.headline_zh || ntl.headline_zh,
+               subline_en: ntc.subline_en, subline_zh: ntc.subline_zh,
+               action_en: ntc.action_en, action_zh: ntc.action_zh,
+               participation: ntc.participation || ntl.participation };
     }
     if (bakedLabelEn === null) {
       var b0 = document.querySelector(".mx5-verdict-word .l-en");
@@ -323,9 +330,11 @@
     var col = COLOR[disp.verdict];
     if (col && HEADLINE[disp.verdict]) {
       var th = document.querySelector(".mx5-thesis");
-      if (th) setBL(th, HEADLINE[disp.verdict][0], HEADLINE[disp.verdict][1]);
+      if (th) setBL(th, disp.headline_en || HEADLINE[disp.verdict][0],
+                       disp.headline_zh || HEADLINE[disp.verdict][1]);
       var sub = document.querySelector(".mx5-sub-line");
-      if (sub) setBL(sub, SUBLINE[disp.verdict][0], SUBLINE[disp.verdict][1]);
+      if (sub) setBL(sub, disp.subline_en || SUBLINE[disp.verdict][0],
+                         disp.subline_zh || SUBLINE[disp.verdict][1]);
       var gsvgA = document.querySelector(".mx5-gauge-svg");
       if (gsvgA && disp.score != null)
         gsvgA.setAttribute("aria-label", (disp.label_en || disp.verdict) + " — score " + disp.score);
@@ -357,7 +366,8 @@
       /* What To Do primary row — concise action plus verdict/score context. */
       var wl = document.querySelector("[data-wtd-primary] .mx5-action-label");
       if (wl && ACTION[disp.verdict])
-        setBL(wl, ACTION[disp.verdict][0], ACTION[disp.verdict][1]);
+        setBL(wl, disp.action_en || ACTION[disp.verdict][0],
+                  disp.action_zh || ACTION[disp.verdict][1]);
       var ws = document.querySelector("[data-wtd-primary] .mx5-action-sub");
       if (ws && disp.score != null)
         setBL(ws, (disp.label_en || disp.verdict) + " · " + disp.score + "/100",

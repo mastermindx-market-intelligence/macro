@@ -212,6 +212,8 @@ def _verdict_block(ms: dict | None) -> dict:
         "verdict": ms.get("verdict"), "score": ms.get("score"), "raw_score": ms.get("raw_score"),
         "color": ms.get("color"), "label_en": ms.get("label_en"), "label_zh": ms.get("label_zh"),
         "headline_en": ms.get("headline_en"), "headline_zh": ms.get("headline_zh"),
+        "participation": ms.get("participation") or {},
+        "display_copy": ms.get("display_copy") or {},
         "radar": {k: (ms.get("radar") or {}).get(k)
                   for k in ("state", "state_ungated", "top_score", "label_en", "label_zh",
                             "context_gate", "amp", "ceiling")},
@@ -366,9 +368,17 @@ def build(offline: bool = False) -> dict:
     disp_label = {"RISK_ON": ("Risk-on", "风险偏好", "green"),
                   "MIXED": ("Mixed", "混合", "yellow"),
                   "RISK_OFF": ("Risk-off", "避险", "red")}.get(disp_verdict, ("—", "—", "yellow"))
+    disp_source = ((live_ms if live_active and live_ms else nightly_ms) or live_ms or {})
+    disp_copy = market_state.market_state_display_copy(
+        disp_verdict, disp_source.get("components") or [])
     display = {
         "verdict": disp_verdict,
-        "label_en": disp_label[0], "label_zh": disp_label[1], "color": disp_label[2],
+        "label_en": disp_copy["label_en"], "label_zh": disp_copy["label_zh"],
+        "color": disp_label[2],
+        "headline_en": disp_copy["headline_en"], "headline_zh": disp_copy["headline_zh"],
+        "subline_en": disp_copy["subline_en"], "subline_zh": disp_copy["subline_zh"],
+        "action_en": disp_copy["action_en"], "action_zh": disp_copy["action_zh"],
+        "participation": disp_copy["participation"], "display_copy": disp_copy,
         "score": (live_blk.get("score") if live_active
                   else (nightly_blk.get("score") if nightly_blk.get("score") is not None
                         else live_blk.get("score"))),

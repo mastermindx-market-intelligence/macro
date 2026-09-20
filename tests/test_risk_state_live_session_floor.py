@@ -46,6 +46,7 @@ import pandas as pd
 import pytest
 
 from engine import live_overlay
+from engine import market_state as ms
 from scripts import build_risk_state as brs
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -129,6 +130,9 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         var bigEl   = reg(".mx5-big-score", new El("", "mx5-big-score", "{BAKED_SCORE}"));
         var vwEl    = reg(".mx5-verdict-word", new El("", "mx5-verdict-word", {BAKED_WORD!r}));
         var thesis  = reg(".mx5-thesis", new El("", "mx5-thesis", "Risk-on — the tape"));
+        var subline = reg(".mx5-sub-line", new El("", "mx5-sub-line", "GREEN — Trend-following supported"));
+        var actionLabel = reg("[data-wtd-primary] .mx5-action-label", new El("", "mx5-action-label", "Follow the trend. Add on strength."));
+        var actionSub = reg("[data-wtd-primary] .mx5-action-sub", new El("", "mx5-action-sub", "Risk-on · 66/100"));
         var pill    = reg("#ms-live-pill", new El("ms-live-pill", "on"));
         reg("#ms-date", new El("ms-date", "", "{BAKED_SESSION}"));
         reg("#regime-asof", new El("regime-asof", "", "{BAKED_SESSION}"));
@@ -141,6 +145,9 @@ def _harness(js_src: str, feed: dict, page: str) -> dict:
         out.score = String(scoreEl.textContent);
         out.big   = String(bigEl.textContent);
         out.thesis = (thesis.children[0] || {}).textContent || thesis.textContent;
+        out.subline = (subline.children[0] || {}).textContent || subline.textContent;
+        out.action = (actionLabel.children[0] || {}).textContent || actionLabel.textContent;
+        out.action_sub = (actionSub.children[0] || {}).textContent || actionSub.textContent;
         out.pill_on = pill.hasClass("on");
         """
     else:
@@ -475,6 +482,21 @@ def _cn_feed(nightly_asof: str, score: int, verdict: str, *, live=False, built=N
     return f
 
 
+def test_us_verdict_block_carries_engine_display_copy():
+    projected = ms.market_state_display_copy("RISK_ON", [
+        {"key": "breadth", "score": 0, "weight": ms.WEIGHTS["breadth"],
+         "label_en": "Breadth & participation", "label_zh": "广度与参与"}
+    ])
+    block = brs._verdict_block({
+        "verdict": "RISK_ON", "score": 61, "raw_score": 61, "color": "green",
+        "label_en": "Risk-on", "label_zh": "风险偏好",
+        "headline_en": projected["headline_en"], "headline_zh": projected["headline_zh"],
+        "display_copy": projected, "participation": projected["participation"],
+    })
+    assert block["display_copy"] == projected
+    assert block["participation"]["state"] == "narrow"
+
+
 # ── the regression itself ───────────────────────────────────────────────────
 
 @needs_node
@@ -524,6 +546,48 @@ def test_us_feed_on_the_rendered_session_still_patches(js):
     assert out["word"] == "Mixed"
     assert out["chart_last"]["s"] == 44, "same-session patch must carry the chart with it"
     assert out["chart_last"]["v"] == "Mixed"
+
+
+@needs_node
+@US_PAGES
+def test_us_display_copy_overrides_generic_risk_on_wording(js):
+    feed = _us_feed(BAKED_SESSION, 61, "RISK_ON")
+    feed["display"].update({
+        "label_en": "Selective risk-on", "label_zh": "选择性风险偏好",
+        "headline_en": "Selective risk-on — breadth is weak.",
+        "headline_zh": "选择性风险偏好 — 市场广度偏弱。",
+        "subline_en": "GREEN — Narrow participation", "subline_zh": "偏多 — 窄幅参与",
+        "action_en": "Focus on confirmed leaders. Do not treat green as a broad buy signal.",
+        "action_zh": "聚焦已确认的强势方向；不要把绿色解读为全市场买入信号。",
+    })
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+    assert not out.get("error"), out.get("error")
+    assert out["word"] == "Selective risk-on"
+    assert out["thesis"] == feed["display"]["headline_en"]
+    assert out["subline"] == feed["display"]["subline_en"]
+    assert out["action"] == feed["display"]["action_en"]
+    assert out["action_sub"] == "Selective risk-on · 61/100"
+
+
+@needs_node
+@US_PAGES
+def test_us_stale_debounce_uses_nightly_projected_copy(js):
+    feed = _us_feed(BAKED_SESSION, 61, "MIXED", live=False)
+    projected = ms.market_state_display_copy("RISK_ON", [
+        {"key": "breadth", "score": 0, "weight": ms.WEIGHTS["breadth"],
+         "label_en": "Breadth & participation", "label_zh": "广度与参与"}
+    ])
+    feed["nightly"] = {
+        "verdict": "RISK_ON", "score": 61, "raw_score": 61, "color": "green",
+        "label_en": "Risk-on", "label_zh": "风险偏好",
+        "display_copy": projected, "participation": projected["participation"],
+    }
+    out = _harness(js.read_text(encoding="utf-8"), feed, "us")
+    assert not out.get("error"), out.get("error")
+    assert out["word"] == "Selective risk-on"
+    assert out["thesis"] == projected["headline_en"]
+    assert out["subline"] == projected["subline_en"]
+    assert out["action"] == projected["action_en"]
 
 
 @needs_node

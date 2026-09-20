@@ -78,3 +78,11 @@ def test_paired_template_copy_identical():
         "templates/risk_state_live.js and site/risk_state_live.js must be byte-identical "
         "(run: python -m scripts.check_template_site_sync --fix)"
     )
+
+
+def test_dashboard_prefers_engine_projected_display_copy():
+    dash = DASH.read_text(encoding="utf-8")
+    assert "MS.get('display_copy')" in dash
+    assert "_ms_copy.get('label_en')" in dash
+    assert "_ms_copy.get('subline_en')" in dash
+    assert "_wtd_copy.get('action_en')" in dash
