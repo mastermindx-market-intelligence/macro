@@ -215,3 +215,32 @@ def test_summary_never_contains_the_roster():
     encoded = json.dumps(summary, sort_keys=True)
     for ticker in ("AAA", "BBB", "CCC", "ZZZ"):
         assert ticker not in encoded
+
+def test_casefold_duplicate_ticker_is_named_invalid_not_emitted_twice():
+    artifact = _artifact(states={
+        "abc": _row("LEADER"),
+        "ABC": _row("PULLBACK"),
+    })
+
+    projection = cov.project_prophet_observations(
+        artifact, reference_session=ASOF
+    )
+
+    assert projection["status"] == "degraded"
+    assert projection["reason_code"] == "invalid_rows"
+    assert projection["counts"]["invalid"] == 1
+    assert projection["counts"]["active"] == 1
+    assert [row["ticker"] for row in projection["rows"]] == ["ABC"]
+
+
+def test_summary_is_detached_from_the_full_projection():
+    projection = cov.project_prophet_observations(
+        _artifact(), reference_session=ASOF
+    )
+    summary = cov.prophet_observation_summary(projection)
+
+    summary["counts"]["by_state"]["LEADER"] = 999
+    summary["source"]["coverage"]["states_published"] = 999
+
+    assert projection["counts"]["by_state"]["LEADER"] == 1
+    assert projection["source"]["coverage"]["states_published"] == 5

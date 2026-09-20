@@ -16241,7 +16241,7 @@ html[data-theme="light"] :is(
         {% elif _plo.get('status') == 'degraded' %}
         <div class="plo-state"><span class="l-en">Some source rows could not be classified.</span><span class="l-zh">部分来源条目无法分类。</span></div>
         {% endif %}
-        <div class="plo-rows">
+        <div class="plo-rows" data-showmore-rows="3">
           {% with rows=(_plo.get('rows') or []) %}{% include "_us_leader_observation_rows.html.j2" %}{% endwith %}
         </div>
         {% if _plo_gate %}
@@ -20026,8 +20026,24 @@ if (document.readyState === 'loading') {
     for (var i = 0; i < notes.length; i++) notes[i].remove();
   }
 
+  function hydrateLeaderObservations(html){
+    if (!html) return;
+    var grid = document.querySelector('#us-leader-observations .plo-rows');
+    if (!grid) return;
+    var oldBar = grid.nextElementSibling;
+    if (!(oldBar && oldBar.classList && oldBar.classList.contains('sm-bar'))) oldBar = null;
+    var freshGrid = document.createElement('div');
+    freshGrid.className = grid.className;
+    freshGrid.setAttribute('data-showmore-rows', grid.getAttribute('data-showmore-rows') || '3');
+    freshGrid.innerHTML = grid.innerHTML + html;
+    grid.parentNode.insertBefore(freshGrid, grid);
+    grid.parentNode.removeChild(grid);
+    if (oldBar && oldBar.parentNode) oldBar.parentNode.removeChild(oldBar);
+    if (window.initShowMore) window.initShowMore();
+  }
+
   function hydratePanels(payload){
-    appendTo('#us-leader-observations .plo-rows', payload.leader_observations_html);
+    hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
     appendTo('#us-standouts .topsetups.leaders-strip .ts-tbl tbody', payload.leaders_html);
     appendTo('#us-standouts .pbr-l', payload.ran_html);

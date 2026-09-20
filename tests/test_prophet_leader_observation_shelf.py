@@ -263,15 +263,44 @@ def test_empty_unavailable_and_degraded_are_visibly_distinct():
     assert len(set(rendered.values())) == 3
 
 
-def test_hydration_uses_the_existing_payload_and_does_not_touch_plan_or_candidate_grids():
+def test_rendered_shelf_uses_the_incumbent_progressive_density_control():
+    html = _render(_projection())
+    soup = BeautifulSoup(html, "html.parser")
+    rows = soup.select_one("#us-leader-observations .plo-rows")
+
+    assert rows is not None
+    assert rows.get("data-showmore-rows") == "3"
+
+
+def test_paid_hydration_rebuilds_the_leader_grid_before_show_more():
     source = (Path(__file__).resolve().parent.parent
               / "templates" / "dashboard.html.j2").read_text()
+
+    assert "function hydrateLeaderObservations(html)" in source
     assert (
         "appendTo('#us-leader-observations .plo-rows', "
         "payload.leader_observations_html)"
-    ) in source
+    ) not in source
+    assert "hydrateLeaderObservations(payload.leader_observations_html);" in source
+
+    helper = source.split("function hydrateLeaderObservations(html)", 1)[1].split(
+        "function hydratePanels(payload)", 1
+    )[0]
+    for token in (
+        "document.querySelector('#us-leader-observations .plo-rows')",
+        "document.createElement('div')",
+        "freshGrid.className = grid.className",
+        "freshGrid.setAttribute('data-showmore-rows'",
+        "freshGrid.innerHTML = grid.innerHTML + html",
+        "grid.parentNode.insertBefore(freshGrid, grid)",
+        "grid.parentNode.removeChild(grid)",
+        "oldBar.parentNode.removeChild(oldBar)",
+        "window.initShowMore",
+    ):
+        assert token in helper
+
     assert "payload.leader_observations_html" not in source.split(
         "function hydrate(payload)"
     )[1].split("var lifeGrid")[1], (
-        "leader rows must hydrate in hydratePanels(), before candidate/plan grids"
+        "leader rows must hydrate before candidate/plan grids"
     )

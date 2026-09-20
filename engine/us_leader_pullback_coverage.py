@@ -74,6 +74,7 @@ import json
 import logging
 import time
 from collections import Counter
+from copy import deepcopy
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -212,10 +213,7 @@ def _projection_source(payload: Mapping[str, Any] | None) -> dict[str, Any]:
         "benchmark",
     ):
         if key in doc:
-            value = doc.get(key)
-            if isinstance(value, Mapping):
-                value = dict(value)
-            source[key] = value
+            source[key] = deepcopy(doc.get(key))
     return source
 
 
@@ -285,6 +283,7 @@ def project_prophet_observations(
     nulled = 0
     malformed = 0
     unknown = 0
+    seen_tickers: set[str] = set()
 
     for raw_ticker, raw_row in states.items():
         if not isinstance(raw_ticker, str) or not raw_ticker.strip():
@@ -294,6 +293,10 @@ def project_prophet_observations(
         if not isinstance(raw_row, Mapping):
             malformed += 1
             continue
+        if ticker in seen_tickers:
+            malformed += 1
+            continue
+        seen_tickers.add(ticker)
 
         state = raw_row.get("state")
         if state is None:
@@ -380,7 +383,7 @@ def prophet_observation_summary(
 ) -> dict[str, Any]:
     """Return the ticker-free machine receipt safe for the Prophet index."""
     return {
-        key: (dict(value) if isinstance(value, Mapping) else value)
+        key: deepcopy(value)
         for key, value in projection.items()
         if key in {
             "schema",
