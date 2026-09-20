@@ -28,13 +28,13 @@ The last lawfully published campaign checkpoint before the incident is:
 
 `0b467285660be0834ecf3d96a33655b2b19a0848`.
 
-At the prereg source pin `4e7761e42435622ad8ba181ba617e2a4bae6f015`, the current three campaign artifacts are still byte-identical Git blobs to the September 3 broad commit:
+At the prereg source pin `4e7761e42435622ad8ba181ba617e2a4bae6f015`, the three campaign artifacts were still byte-identical Git blobs to the September 3 broad commit:
 
 - campaigns blob `c581121767ca51bf20a8917d1a5a394f9db701d9`;
 - outcomes blob `a67be30ab30255e62fa01d22f11f8e65417a160d`;
 - checkpoint blob `c697a71d2d2d958301897a2135af98d97d140aa7`.
 
-No later canonical campaign writer has superseded the incident generation.
+That is a **preregistration observation**, not a forever-current activation requirement. The immutable incident identity is the bound September 3 prefix generation. A later healthy owner-native writer may lawfully append rows and publish a new checkpoint, which necessarily changes whole-file Git blobs.
 
 ## 2. What is valid and what is not
 
@@ -133,6 +133,21 @@ uniquely binds the quarantined byte sequence in the immutable append-only incide
 
 A later activation may additionally materialize per-row semantic identities for diagnostics, but it must not create another authoritative outcome ledger merely to store the quarantine list.
 
+### Action-time append-only identity law
+
+Activation checks the incident **prefixes**, not equality of the entire current files to the preregistration Git blobs.
+
+At action time:
+
+- the current campaign file must contain at least 8,385 rows and its first 8,385 rows must match incident campaign prefix SHA-256 `0c242957703d4a3a0031f0bf7322195c6d41f665391380e30626aea31bf95514`;
+- the current outcome file must contain at least 28,423 rows and its first 28,423 rows must match incident outcome prefix SHA-256 `bfde356d4e54265164840e46f06e391afbed3c35449cda4786013eb95f432160`;
+- the lawful outcome prefix rows 1–24,578 must still match `183c5f5bfc3a5f394c463b527ed2588314e21b9e5a3288fab881f64cd68db75e`;
+- therefore the quarantined rows 24,579–28,423 are the same raw incident bytes;
+- any later rows must be strict append-only extensions and pass the ordinary campaign/outcome owner receipt laws;
+- a current file shorter than the incident generation, any mutation/reorder within either incident prefix, or any shifted quarantine boundary refuses activation.
+
+A healthy post-recovery whole-file Git blob is expected to differ after lawful append. That difference alone is not an incident mismatch.
+
 ## 6. Correction semantics
 
 After a reviewed owner-native implementation activates this policy, the system must distinguish **physical history** from **effective evidence**.
@@ -176,13 +191,14 @@ Activation must create an owner-native **new correction/checkpoint receipt** tha
 
 - this exact correction policy/manifest identity;
 - current physical campaign/outcome prefixes;
+- the immutable incident campaign/outcome prefix identities;
 - quarantined raw prefix identity;
 - quarantined count;
 - effective admitted count;
 - current canonical source prefixes;
 - all-false authority.
 
-It must not overwrite or edit `ocp_e3255025e9e8d98b72c3e9ec`.
+It must not overwrite or edit `ocp_e3255025e9e8d98b72c3e9ec`. The current owner-native checkpoint may lawfully be different from the preregistration checkpoint blob after append-only recovery; action-time validity comes from the frozen incident prefixes plus ordinary current-owner receipt validation, not whole-file blob equality to September 3.
 
 ## 9. Interaction with #7265 deterministic replay
 
@@ -206,7 +222,7 @@ This prereg is inactive until **all** of the following clear:
 2. Macro #7263 shared publisher recovery is protected and a real publication loop is proven;
 3. Macro #7193 broad-writer exclusion is protected and a natural Asia publication proves OIP owner roots are not swept;
 4. the existing campaign owner implements and reviews correction-manifest admission/effective-view semantics;
-5. the exact lawful/incident identities still match at action time;
+5. the exact lawful/incident **prefix** identities still match at action time, while lawful append-only extensions after the incident remain allowed;
 6. one normal nightly proves corrected effective history, checkpoint publication and protected-main readback.
 
 The correction implementation **may not start while #7265 remains the active writer on the campaign engine/tests**.
@@ -228,6 +244,8 @@ It must not:
 
 Incident identity must come from a reviewed versioned correction manifest/policy.
 
+The implementation must not use the preregistration `current_*` whole-file blobs as action-time equality predicates. Those source-pin observations are diagnostic evidence only; action-time admission is prefix-bound and append-aware.
+
 ## 12. Authority
 
 Quarantined rows are:
@@ -245,10 +263,12 @@ This correction cannot score, rank, gate, size, issue, trade, publish probabilit
 Before activation, the implementation must prove at least:
 
 - exact lawful prefix validates unchanged;
-- exact incident suffix is quarantined only when every bound incident identity matches;
-- one mutated byte in the incident prefix refuses activation;
-- one shifted start/end row refuses activation;
-- missing/extra incident row refuses activation;
+- exact incident suffix is quarantined only when every bound incident **prefix** identity matches;
+- the exact 28,423-row incident outcome prefix plus one valid appended outcome is accepted even though the whole-file Git blob changes;
+- the exact 8,385-row incident campaign prefix plus valid appended campaign revisions is accepted even though the whole-file Git blob changes;
+- one mutated byte in either incident prefix refuses activation;
+- one shifted start/end quarantine row refuses activation;
+- a current campaign/outcome file shorter than the incident generation refuses activation;
 - campaign revisions remain admitted;
 - quarantined outcome keys remain occupied and cannot be regenerated;
 - later unrelated valid outcomes can append normally;
