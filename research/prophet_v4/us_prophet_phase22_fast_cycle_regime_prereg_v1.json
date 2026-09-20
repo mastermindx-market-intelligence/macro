@@ -29,6 +29,7 @@
       "LER_C1_PRIVATE_TRANSPORT_ACCEPTED",
       "LER_C3_REAL_EVENT_TO_FORWARD_PARQUET_TO_QLEDGER_PROVEN",
       "C4_SAME_CUT_CONTEXT_DURABLY_BOUND_TO_C2_EVENT_WITHOUT_MUTATING_EVENT_ID",
+      "GO_FORWARD_DFII10_KNOWN_AT_SOURCE_QUALIFIED",
       "TRIAL_LEDGER_REGISTRATION_RECEIPT_PRECEDES_FIRST_TARGET_OUTCOME_READ",
       "PROSPECTIVE_EPOCH_RECORDED"
     ]
@@ -75,7 +76,18 @@
     "mixed_or_missing": "diagnostic_only",
     "forbid_same_session_close_as_decision_input": true,
     "real_yield_same_session_requires_historical_availability_receipt": true,
-    "estimand": "Q1_contrast_hidden_fragility - Q1_contrast_relief_broadening"
+    "estimand": "Q1_contrast_hidden_fragility - Q1_contrast_relief_broadening",
+    "real_yield_owner": {
+      "owner": "Global Liquidity Transmission / canonical rates owner",
+      "source_id": "DFII10",
+      "required": [
+        "reference_date",
+        "available_date",
+        "go_forward_first_known_at_or_equivalent_owner_receipt"
+      ],
+      "historical_first_known_before_owner_exists": "UNAVAILABLE",
+      "forbid_latest_revised_historical_backfill": true
+    }
   },
   "maturity_mechanism": {
     "owner": "B3",
@@ -126,7 +138,7 @@
     "grading": "Evaluation OS / QLedger / Entry Radar W5",
     "maturity": "B3 candidate state",
     "entry_availability": "B4 when built",
-    "rates": "canonical rates source owner",
+    "rates": "Global Liquidity Transmission / canonical rates owner (go-forward DFII10 clocks only until a lawful historical first-known source exists)",
     "breadth_prices": "canonical market-data owner"
   },
   "non_goals": [
@@ -144,6 +156,7 @@
     "C4_context_is_live_payload_context_not_yet_durable_W5_event_context",
     "LER_C1_external_credential_gate",
     "LER_C3_prospective_consumer_waiting_on_secure_source",
-    "TrialLedger_path_collision_with_PR_7274"
+    "TrialLedger_path_collision_with_PR_7274",
+    "DFII10_HISTORICAL_FIRST_KNOWN_NOT_RECONSTRUCTABLE_BEFORE_EXISTING_OWNER"
   ]
 }
