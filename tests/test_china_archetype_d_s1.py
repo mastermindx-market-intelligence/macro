@@ -149,3 +149,42 @@ def test_no_network_render_disables_live_news_fetches(monkeypatch) -> None:
     monkeypatch.delenv("RENDER_NO_DRIP")
     monkeypatch.setenv("CHINA_FAST_RENDER", "1")
     assert china_news.enabled() is False
+
+
+def test_restored_dashboard_borrows_readability_not_archetype_structure() -> None:
+    """New readability helpers may improve the old dashboard without replacing its deep rows."""
+    assert "{% set _stance = posture_lane(" in TPL
+    assert "{% set _hero_clause = hero_clause(" in TPL
+    assert "{% set _todo_faces = reason_faces(" in TPL
+    assert 'class="cnx-stance-pill st-{{ _stance_tone }}"' in TPL
+    assert "Full playbook & evidence →" in TPL
+    for marker in (
+        "ROW 1: What To Do + Upcoming Events",
+        "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature",
+        "ROW 3: Policy Monitor + Connect Flows + Macro News",
+        "ROW 4: Property + AI Brief + Alerts Centre",
+    ):
+        assert marker in TPL
+
+
+def test_macro_news_keeps_card_but_reads_as_dated_changes() -> None:
+    assert "{{ t('Macro News','宏观新闻') }}" in TPL
+    assert "{{ t('WHAT CHANGED','最近变化') }}" in TPL
+    assert 'class="when"' in TPL
+    assert "h.title_en or h.title" in TPL
+    assert "h.title_zh or h.title" in TPL
+
+
+def test_deep_footer_keeps_old_landings_and_adds_targeted_new_landings() -> None:
+    for href in (
+        "china_stocks.html",
+        "china_heatmap.html",
+        "china_intel.html",
+        "china_allocation.html",
+        "china_history.html",
+        "aibrief.html",
+        "china_policy_watch.html",
+        "china_news.html",
+        "alerts.html",
+    ):
+        assert f'href="{href}"' in TPL
