@@ -484,3 +484,96 @@ class TestPruneDayStates:
         monkeypatch.setattr(lf.config, "data_dir", lambda: tmp_path)
         (tmp_path / "live_flow_state").mkdir()
         lf._prune_day_states("2026-07-16", {"state_retention_days": "not-a-number"})
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Intraday root coverage catalog (Terminal issue #681)
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestRootCatalog:
+    def test_orders_activity_then_core_then_rotating(self):
+        lf = _import_poller()
+        catalog = lf._build_root_catalog(
+            configured_roots=["SPY", "TLT", "AMD", "PLTR"],
+            cycle_roots=["SPY", "AMD"],
+            successful_roots=["AMD", "SPY"],
+            receipts={
+                "SPY": "2026-09-20T14:00:00Z",
+                "AMD": "2026-09-20T14:01:00Z",
+            },
+            day_state={
+                "root_gross_today": {"AMD": 200.0, "SPY": 100.0},
+                "root_minutes": {"AMD": {"10:00": {}}, "SPY": {"10:00": {}}},
+                "root_strikes": {},
+            },
+        )
+
+        assert [row["root"] for row in catalog] == ["AMD", "SPY", "TLT", "PLTR"]
+        assert catalog[0] == {
+            "root": "AMD",
+            "tier": "rotating",
+            "scheduled_this_cycle": True,
+            "source_ok_this_cycle": True,
+            "last_source_success": "2026-09-20T14:01:00Z",
+            "has_session_data": True,
+            "activity_rank": 1,
+        }
+        assert catalog[1]["activity_rank"] == 2
+        assert catalog[2]["tier"] == "core"
+        assert catalog[2]["scheduled_this_cycle"] is False
+        assert catalog[3]["tier"] == "rotating"
+        assert catalog[3]["last_source_success"] is None
+        assert catalog[3]["activity_rank"] is None
+
+    def test_deduplicates_configured_roots_without_losing_first_position(self):
+        lf = _import_poller()
+        catalog = lf._build_root_catalog(
+            configured_roots=["spy", "SPY", "AMD"],
+            cycle_roots=[],
+            successful_roots=[],
+            receipts={},
+            day_state={},
+        )
+        assert [row["root"] for row in catalog] == ["SPY", "AMD"]
+
+    def test_ignores_malformed_receipts(self):
+        lf = _import_poller()
+        catalog = lf._build_root_catalog(
+            configured_roots=["SPY", "AMD"],
+            cycle_roots=[],
+            successful_roots=[],
+            receipts={"SPY": 123, "AMD": ""},
+            day_state={},
+        )
+        assert [row["last_source_success"] for row in catalog] == [None, None]
+
+
+class TestTickerPublishRoots:
+    def test_quiet_root_beyond_old_top40_is_selected_when_real_data_exists(self):
+        lf = _import_poller()
+        roots = [f"T{i:02d}" for i in range(41)] + ["AMD"]
+        day_state = {
+            "root_minutes": {"AMD": {"11:00": {}}},
+            "root_strikes": {},
+        }
+        assert lf._select_ticker_publish_roots(roots, ["AMD"], day_state) == ["AMD"]
+
+    def test_excludes_failed_and_empty_roots(self):
+        lf = _import_poller()
+        day_state = {
+            "root_minutes": {"AMD": {"11:00": {}}},
+            "root_strikes": {},
+        }
+        assert lf._select_ticker_publish_roots(
+            ["AMD", "PLTR"], ["PLTR"], day_state
+        ) == []
+
+    def test_preserves_cycle_order_and_deduplicates(self):
+        lf = _import_poller()
+        day_state = {
+            "root_minutes": {"AMD": {"11:00": {}}, "SPY": {"11:00": {}}},
+            "root_strikes": {},
+        }
+        assert lf._select_ticker_publish_roots(
+            ["AMD", "SPY", "AMD"], ["SPY", "AMD", "AMD"], day_state
+        ) == ["AMD", "SPY"]

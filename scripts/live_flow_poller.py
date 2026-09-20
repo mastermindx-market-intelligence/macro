@@ -268,6 +268,126 @@ def _select_cycle_roots(
     return cycle_roots, bucket_idx
 
 
+# ── Intraday root coverage catalog (Terminal issue #681) ─────────────────────
+_ROOT_TOKEN = re.compile(r"^[A-Z][A-Z0-9.\-]{0,9}$")
+
+
+def _normalise_root_list(values) -> list[str]:
+    """Return safe uppercase roots in first-seen order."""
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values or []:
+        if not isinstance(value, str):
+            continue
+        root = value.strip().upper()
+        if not _ROOT_TOKEN.fullmatch(root) or root in seen:
+            continue
+        seen.add(root)
+        out.append(root)
+    return out
+
+
+def _valid_source_receipts(receipts) -> dict[str, str]:
+    """Keep only normalized roots with non-empty UTC ISO receipts."""
+    if not isinstance(receipts, dict):
+        return {}
+    out: dict[str, str] = {}
+    for raw_root, raw_ts in receipts.items():
+        roots = _normalise_root_list([raw_root])
+        if not roots or not isinstance(raw_ts, str) or not raw_ts.strip():
+            continue
+        ts = raw_ts.strip()
+        try:
+            parsed = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if parsed.tzinfo is None or parsed.utcoffset() != timedelta(0):
+            continue
+        out[roots[0]] = parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    return out
+
+
+def _roots_with_ticker_data(day_state: dict) -> set[str]:
+    """Roots with real accumulated minute or strike rows."""
+    if not isinstance(day_state, dict):
+        return set()
+    out: set[str] = set()
+    for field in ("root_minutes", "root_strikes"):
+        values = day_state.get(field)
+        if not isinstance(values, dict):
+            continue
+        for raw_root, rows in values.items():
+            roots = _normalise_root_list([raw_root])
+            if roots and bool(rows):
+                out.add(roots[0])
+    return out
+
+
+def _select_ticker_publish_roots(
+    cycle_roots: list[str],
+    successful_roots: list[str],
+    day_state: dict,
+) -> list[str]:
+    """Current-cycle roots eligible for a non-empty ticker artifact."""
+    successful = set(_normalise_root_list(successful_roots))
+    data_roots = _roots_with_ticker_data(day_state)
+    return [
+        root for root in _normalise_root_list(cycle_roots)
+        if root in successful and root in data_roots
+    ]
+
+
+def _build_root_catalog(
+    configured_roots: list[str],
+    cycle_roots: list[str],
+    successful_roots: list[str],
+    receipts: dict,
+    day_state: dict,
+) -> list[dict]:
+    """Build deterministic display-only coverage rows for live_flow.meta/v2."""
+    configured = _normalise_root_list(configured_roots)
+    cycle = set(_normalise_root_list(cycle_roots))
+    successful = set(_normalise_root_list(successful_roots))
+    valid_receipts = _valid_source_receipts(receipts)
+    data_roots = _roots_with_ticker_data(day_state)
+
+    raw_gross = day_state.get("root_gross_today", {}) if isinstance(day_state, dict) else {}
+    gross: dict[str, float] = {}
+    if isinstance(raw_gross, dict):
+        for raw_root, raw_value in raw_gross.items():
+            roots = _normalise_root_list([raw_root])
+            if not roots or isinstance(raw_value, bool):
+                continue
+            try:
+                value = float(raw_value)
+            except (TypeError, ValueError):
+                continue
+            if math.isfinite(value) and value > 0 and roots[0] in configured:
+                gross[roots[0]] = value
+
+    position = {root: idx for idx, root in enumerate(configured)}
+    active = sorted(gross, key=lambda root: (-gross[root], position[root]))
+    active_set = set(active)
+    core = [root for root in configured if root not in active_set and root in set(TIER1_ROOTS)]
+    rotating = [root for root in configured if root not in active_set and root not in set(TIER1_ROOTS)]
+    ordered = active + core + rotating
+    ranks = {root: idx + 1 for idx, root in enumerate(active)}
+    tier1 = set(TIER1_ROOTS)
+
+    return [
+        {
+            "root": root,
+            "tier": "core" if root in tier1 else "rotating",
+            "scheduled_this_cycle": root in cycle,
+            "source_ok_this_cycle": root in successful,
+            "last_source_success": valid_receipts.get(root),
+            "has_session_data": root in data_roots,
+            "activity_rank": ranks.get(root),
+        }
+        for root in ordered
+    ]
+
+
 # ── Task 3: pinned-publish helper ─────────────────────────────────────────────
 
 def _pinned_publish_enabled() -> bool:
