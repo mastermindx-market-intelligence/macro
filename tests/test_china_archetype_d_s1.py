@@ -81,7 +81,8 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         'class="cnx-lens"',
         'onclick="cnxToggleLens(this,event)"',
         "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}",
-        "{{ t('What Changed','最近变化') }}",
+        "{{ t('Macro News','宏观新闻') }}",
+        "{{ t('What changed ↓','最近变化 ↓') }}",
         '<a class="cnx-change-row" href="china_news.html">',
         '<a class="cnx-change-row cnx-change-alert" href="alerts.html">',
         'href="china_policy_watch.html"',
@@ -120,6 +121,13 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
     assert "{% set _hi_strip = [] %}" in TPL
     assert "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}" in TPL
     assert "ROW 1: What To Do + Upcoming Events" in TPL
+
+
+def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
+    links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
+    assert 'href="china_policy_watch.html"' in links
+    assert 'href="china_news.html"' not in links
+    assert 'href="alerts.html"' not in links
 
 
 def test_live_only_index_tiles_show_loading_geometry_until_live_quote_arrives() -> None:
