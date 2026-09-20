@@ -914,6 +914,80 @@ def test_oi_crowding_abstains_on_wrong_headline_or_unsupported_state():
     assert all(briefs[row['alert_id']]['family'] is None for row in (wrong_headline, bad_state))
 
 
+def test_vector_market_mode_gets_state_context_without_trade_or_cause_claims():
+    row = signal('market-mode', source='vector', type_='market_mode', asset='vector')
+    row.update({
+        'tier': 'context', 'age_days': 3, 'fire_count': 2, 'continuity_verified': False,
+        'headline': 'Market mode changed to Tactical',
+        'detail': 'Trend efficiency shifted the regime Strategic → Tactical.',
+        'detail_zh': '趋势效率使周期从 战略 转为 战术。',
+        'link': 'vector.html#allocation',
+        'validation': {
+            'verdict': 'documented',
+            'note': 'Conviction is documented, not separately backtested as a timing signal.',
+        },
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.market_mode'
+    assert brief['attention'] == 'for_awareness'
+    assert 'moved from Strategic to Tactical' in brief['implication']
+    assert 'at least one condition required for Strategic mode no longer holds' in brief['implication']
+    assert 'does not prove both trend efficiency and risk deteriorated' in brief['limitation']
+    assert 'not a directional return forecast' in brief['limitation']
+    assert 'does not separately backtest it as a timing signal' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert '2 recorded transitions' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck market mode'
+    assert brief['evidence_label'] == 'Open current Vector allocation panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_vector_market_mode_supports_reverse_transition_without_promising_persistence():
+    row = signal('market-mode-strategic', source='vector', type_='market_mode', asset='vector')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Market mode changed to Strategic',
+        'detail': 'Trend efficiency shifted the regime Tactical → Strategic.',
+        'link': 'vector.html#allocation',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'moved from Tactical to Strategic' in brief['implication']
+    assert 'current inputs now satisfy the source Strategic gate' in brief['implication']
+    assert 'does not guarantee the trend will persist' in brief['limitation']
+    assert 'verify market mode is still Strategic' in brief['next_action']
+    assert 'current mode is no longer Strategic' in brief['reassessment']
+
+
+def test_vector_market_mode_abstains_on_same_state_headline_or_asset_mismatch():
+    same = signal('market-mode-same', source='vector', type_='market_mode', asset='vector')
+    same.update({
+        'headline': 'Market mode changed to Tactical',
+        'detail': 'Trend efficiency shifted the regime Tactical → Tactical.',
+        'link': 'vector.html#allocation',
+    })
+    mismatched = signal('market-mode-head', source='vector', type_='market_mode', asset='vector')
+    mismatched.update({
+        'headline': 'Market mode changed to Strategic',
+        'detail': 'Trend efficiency shifted the regime Strategic → Tactical.',
+        'link': 'vector.html#allocation',
+    })
+    wrong_asset = signal('market-mode-asset', source='vector', type_='market_mode', asset='BTC')
+    wrong_asset.update({
+        'headline': 'Market mode changed to Tactical',
+        'detail': 'Trend efficiency shifted the regime Strategic → Tactical.',
+        'link': 'vector.html#allocation',
+    })
+    rows = (same, mismatched, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
 def test_forex_smile_regime_gets_taxonomy_brief_without_macro_outcome_claims():
     row = signal('fx-smile', source='forex', type_='smile_regime', asset='dollar')
     row.update({

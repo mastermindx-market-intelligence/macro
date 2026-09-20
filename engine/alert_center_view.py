@@ -123,6 +123,12 @@ _VECTOR_OI_CROWDING = re.compile(
     r'^Open interest crossed into (elevated|stretched) \(funding-independent\)\. '
     r'Leverage fuel loading, not a crash call\.(?: BTC \$([0-9][0-9,]*)\.)?$'
 )
+_VECTOR_MARKET_MODE_HEADLINE = re.compile(
+    r'^Market mode changed to (Strategic|Tactical)$'
+)
+_VECTOR_MARKET_MODE_DETAIL = re.compile(
+    r'^Trend efficiency shifted the regime (Strategic|Tactical) → (Strategic|Tactical)\.$'
+)
 
 _INSTRUMENT_RISK_HEADLINE = re.compile(
     r'^(.+?) risk turned (Elevated|Calm)$'
@@ -1291,6 +1297,90 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前比特币杠杆面板',
         })
         return brief
+
+    market_mode_headline = _VECTOR_MARKET_MODE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    market_mode_detail = _VECTOR_MARKET_MODE_DETAIL.fullmatch(detail)
+    if source == 'vector' and type_ == 'market_mode' and market_mode_headline and market_mode_detail:
+        headline_state = market_mode_headline.group(1)
+        previous, current = market_mode_detail.groups()
+        if (str(row.get('asset') or '') == 'vector' and previous != current and
+                headline_state == current):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current market mode.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前市场模式。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded transitions do not prove the mode persisted between '
+                    'observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录转换并不能证明该模式在观测之间持续存在。')
+            if current == 'Tactical':
+                implication = (
+                    'The source trend-efficiency/risk classifier moved from Strategic to Tactical '
+                    'after its confirmation rule; at least one condition required for Strategic '
+                    'mode no longer holds.')
+                implication_zh = (
+                    '来源的趋势效率/风险分类器在确认规则后从“战略”转为“战术”；'
+                    '战略模式所需的至少一个条件已不再满足。')
+                input_limit = (
+                    'Tactical does not prove both trend efficiency and risk deteriorated; it is the '
+                    'complement of the source Strategic gate, so either condition can break.')
+                input_limit_zh = (
+                    '“战术”并不证明趋势效率与风险同时恶化；它是来源“战略”门槛的补集，任一条件失效即可触发。')
+            else:
+                implication = (
+                    'The source trend-efficiency/risk classifier moved from Tactical to Strategic '
+                    'after its confirmation rule; the current inputs now satisfy the source '
+                    'Strategic gate.')
+                implication_zh = (
+                    '来源的趋势效率/风险分类器在确认规则后从“战术”转为“战略”；'
+                    '当前输入已满足来源的战略门槛。')
+                input_limit = (
+                    'Strategic does not guarantee the trend will persist or that every risk measure '
+                    'is benign; it only describes this source classifier.')
+                input_limit_zh = (
+                    '“战略”并不能保证趋势持续，也不表示所有风险指标都温和；它只描述该来源分类器。')
+            brief.update({
+                'status': 'supported', 'family': 'vector.market_mode',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': implication, 'implication_zh': implication_zh,
+                'limitation': (
+                    input_limit + ' Market mode is context, not a directional return forecast, '
+                    'sell/buy instruction or calibrated probability. The source documents this '
+                    f'family but does not separately backtest it as a timing signal.{age_limit}'
+                    f'{recurrence_limit}'),
+                'limitation_zh': (
+                    input_limit_zh + ' 市场模式只是背景，并非方向性收益预测、买卖指令或校准概率。'
+                    '来源记录了该信号族，但没有将其作为择时信号单独回测。'
+                    f'{age_limit_zh}{recurrence_limit_zh}'),
+                'next_action': (
+                    f'Open the current Vector allocation panel and verify market mode is still '
+                    f'{current}; inspect current trend efficiency, Risk Index and model allocation '
+                    'before changing position size.'),
+                'next_action_zh': (
+                    f'打开当前 Vector 配置面板，确认市场模式仍为 {current}；检查当前趋势效率、'
+                    '风险指数与模型配置后再调整仓位规模。'),
+                'next_action_label': 'Recheck market mode',
+                'next_action_label_zh': '复核市场模式',
+                'reassessment': (
+                    f'Change the read if the current mode is no longer {current}, the underlying '
+                    'trend-efficiency/risk inputs no longer support that state, or a newer transition '
+                    'supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前模式不再是 {current}、底层趋势效率/风险输入不再支持该状态，或更新转换'
+                    '取代该事件，则改变判断。'),
+                'evidence_label': 'Open current Vector allocation panel',
+                'evidence_label_zh': '打开当前 Vector 配置面板',
+            })
+            return brief
 
     momentum_headline = _VECTOR_MOMENTUM_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
     momentum_detail = _VECTOR_MOMENTUM_DETAIL.fullmatch(detail)

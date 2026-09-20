@@ -136,6 +136,18 @@ def main():
             page.screenshot(path=str(out / 'desktop-oi-crowding.png'))
             report['screenshots'].append('desktop-oi-crowding.png')
             report['checks'].append('OI crowding exposes leverage verification without becoming a crash call')
+            market_mode_id = next(
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'vector.market_mode')
+            market_mode_brief = payload['explorer']['briefs'][market_mode_id]
+            page.goto(url + '#view=explore&id=' + market_mode_id, wait_until='domcontentloaded')
+            market_mode_text = page.locator('#ac-detail').inner_text()
+            assert market_mode_brief['limitation'] in market_mode_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == market_mode_brief['next_action']
+            assert market_mode_brief['evidence_label'] in market_mode_text
+            page.screenshot(path=str(out / 'desktop-vector-market-mode.png'))
+            report['screenshots'].append('desktop-vector-market-mode.png')
+            report['checks'].append('Vector market mode exposes trend-efficiency/risk state without becoming a directional trade call')
             vector_momentum_id = next(
                 id_ for id_, brief in payload['explorer']['briefs'].items()
                 if brief.get('family') == 'vector.momentum_trigger')
