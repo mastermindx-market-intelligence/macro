@@ -7747,7 +7747,8 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 /* graph slot collapses when no history is present — no fake chart (house law) */
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
-#dlg-sentiment .vsb-vw-row{grid-template-columns:26px minmax(110px,1.3fr) 1fr 54px;gap:12px;}
+/* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
+   lives inside #sx-risk-v2 and inherits the isle's tokens via .sx-vw-row.) */
 .sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--sg-wx-c,var(--muted));}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
@@ -7791,8 +7792,6 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 @media(max-width:430px){
   .sg-hero-num{font-size:34px;}
-  #dlg-sentiment .vsb-vw-row{grid-template-columns:24px 1fr 48px;}
-  #dlg-sentiment .vsb-vw-row .sg-pos-wrap{display:none;}
   .sg-split-row{grid-template-columns:minmax(80px,auto) 1fr 38px;gap:8px;}
   .row-pop .sg-dial{width:120px;height:68px;}
 }
@@ -12733,6 +12732,9 @@ html[data-theme="light"] :is(
 
 
 
+
+
+
 <div class="sx-vw-strip sx-vw-strip--risk-isle" data-sx-vw-strip>
   <div class="sx-vw-eyebrow">
     <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
@@ -12745,20 +12747,23 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx-vw-row" data-sx-vw-chip="vix_level" style="--sg-wx-c:var(--up,#22c55e)">
+  
+  <div class="sx-vw-row sx-vw-row--calm" data-sx-vw-chip="vix_level" data-tier="calm">
     <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">VIX level</span><span class="l-zh">VIX 水平</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">Volatility level</span><span class="l-zh">波动率水平</span>
+      </div>
       
       <div class="sx-vw-read">
-        <span class="l-en">Volatility is low by recent standards. · lower than 86% of days</span>
-        <span class="l-zh">近期波动率偏低。 · 低于历史 86% 的交易日</span>
+        <span class="l-en">Volatility is low by recent standards.</span>
+        <span class="l-zh">近期波动率偏低。</span>
       </div>
       
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       
-      15.3
+      <span class="l-en">calm</span><span class="l-zh">平静</span>
       
     </div>
   </div>
@@ -12771,20 +12776,23 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx-vw-row" data-sx-vw-chip="vix_velocity" style="--sg-wx-c:var(--info,#4d8ef5)">
+  
+  <div class="sx-vw-row sx-vw-row--quiet" data-sx-vw-chip="vix_velocity" data-tier="quiet">
     <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">VIX velocity (5d change)</span><span class="l-zh">VIX 速度（5日变动）</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">5-day volatility change</span><span class="l-zh">5 日波动率变化</span>
+      </div>
       
       <div class="sx-vw-read">
-        <span class="l-en">Volatility change is within normal daily variation. · lower than 61% of days</span>
-        <span class="l-zh">波动率变化处于正常日常波动范围内。 · 低于历史 61% 的交易日</span>
+        <span class="l-en">Volatility change is within normal daily variation.</span>
+        <span class="l-zh">波动率变化处于正常日常波动范围内。</span>
       </div>
       
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       
-      -0.5
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
       
     </div>
   </div>
@@ -12797,72 +12805,23 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx-vw-row" data-sx-vw-chip="term_slope" style="--sg-wx-c:var(--up,#22c55e)">
-    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-    <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">VIX term slope (9D / 3M)</span><span class="l-zh">VIX 期限斜率（9D / 3M）</span></div>
-      
-      <div class="sx-vw-read">
-        <span class="l-en">Term structure is normal — vol market shows no unusual stress. · lower than 67% of days</span>
-        <span class="l-zh">期限结构正常，波动率市场无异常压力。 · 低于历史 67% 的交易日</span>
-      </div>
-      
-    </div>
-    <div class="sx-vw-val">
-      
-      0.722
-      
-    </div>
-  </div>
   
-  
-  
-  
-  
-  
-  
-  
-  
-  <div class="sx-vw-row" data-sx-vw-chip="vvix_vix" style="--sg-wx-c:var(--up,#22c55e)">
-    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
-    <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">VVIX / VIX divergence</span><span class="l-zh">VVIX / VIX 背离</span></div>
-      
-      <div class="sx-vw-read">
-        <span class="l-en">Implied vol-of-vol is within normal range. · lower than 89% of days</span>
-        <span class="l-zh">隐含波动率的波动率处于正常区间。 · 低于历史 89% 的交易日</span>
-      </div>
-      
-    </div>
-    <div class="sx-vw-val">
-      
-      5.681
-      
-    </div>
-  </div>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <div class="sx-vw-row" data-sx-vw-chip="vix1d" style="--sg-wx-c:var(--info,#4d8ef5)">
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="term_slope" data-tier="normal">
     <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">VIX1D (intraday vol demand)</span><span class="l-zh">VIX1D（盘中波动需求）</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">Term structure</span><span class="l-zh">期限结构</span>
+      </div>
       
       <div class="sx-vw-read">
-        <span class="l-en">Very short-term vol demand is normal. · higher than 54% of days</span>
-        <span class="l-zh">超短期波动需求处于正常水平。 · 高于历史 54% 的交易日</span>
+        <span class="l-en">Term structure is normal — vol market shows no unusual stress.</span>
+        <span class="l-zh">期限结构正常，波动率市场无异常压力。</span>
       </div>
       
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       
-      13.12
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
       
     </div>
   </div>
@@ -12875,20 +12834,23 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx-vw-row" data-sx-vw-chip="cor1m" style="--sg-wx-c:var(--info,#4d8ef5)">
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="vvix_vix" data-tier="normal">
     <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">COR1M (1-month implied correlation)</span><span class="l-zh">COR1M（1个月隐含相关性）</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">Vol-of-vol balance</span><span class="l-zh">波动率的波动</span>
+      </div>
       
       <div class="sx-vw-read">
-        <span class="l-en">How much stocks move together is within the normal range. · lower than 55% of days</span>
-        <span class="l-zh">股票的同步程度处于正常区间。 · 低于历史 55% 的交易日</span>
+        <span class="l-en">Implied vol-of-vol is within normal range.</span>
+        <span class="l-zh">隐含波动率的波动率处于正常区间。</span>
       </div>
       
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       
-      10.79
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
       
     </div>
   </div>
@@ -12901,20 +12863,23 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx-vw-row" data-sx-vw-chip="cor3m" style="--sg-wx-c:var(--up,#22c55e)">
-    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="vix1d" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">COR3M (3-month implied correlation)</span><span class="l-zh">COR3M（3个月隐含相关性）</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">Intraday volatility demand</span><span class="l-zh">盘中波动需求</span>
+      </div>
       
       <div class="sx-vw-read">
-        <span class="l-en">Expected co-movement among stocks over the next quarter is normal. · lower than 71% of days</span>
-        <span class="l-zh">预期未来一季度股票间的联动程度处于正常区间。 · 低于历史 71% 的交易日</span>
+        <span class="l-en">Very short-term vol demand is normal.</span>
+        <span class="l-zh">超短期波动需求处于正常水平。</span>
       </div>
       
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       
-      11.58
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
       
     </div>
   </div>
@@ -12927,20 +12892,81 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx-vw-row" data-sx-vw-chip="dspx" style="--sg-wx-c:var(--up,#22c55e)">
-    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg></div>
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="cor1m" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">DSPX (single-stock vol vs index)</span><span class="l-zh">DSPX（个股波动 vs 指数）</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">1-month stock correlation</span><span class="l-zh">1 个月股票联动</span>
+      </div>
       
       <div class="sx-vw-read">
-        <span class="l-en">Single-stock vol is subdued relative to index vol — stocks are moving in lockstep. · lower than 75% of days</span>
-        <span class="l-zh">个股波动率相对指数偏低，个股走势趋于同步。 · 低于历史 75% 的交易日</span>
+        <span class="l-en">How much stocks move together is within the normal range.</span>
+        <span class="l-zh">股票的同步程度处于正常区间。</span>
       </div>
       
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       
-      32.91
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--normal" data-sx-vw-chip="cor3m" data-tier="normal">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">3-month stock correlation</span><span class="l-zh">3 个月股票联动</span>
+      </div>
+      
+      <div class="sx-vw-read">
+        <span class="l-en">Expected co-movement among stocks over the next quarter is normal.</span>
+        <span class="l-zh">预期未来一季度股票间的联动程度处于正常区间。</span>
+      </div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
+      
+    </div>
+  </div>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div class="sx-vw-row sx-vw-row--low" data-sx-vw-chip="dspx" data-tier="low">
+    <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
+    <div class="sx-vw-mid">
+      <div class="sx-vw-name">
+        <span class="l-en">Single-stock volatility</span><span class="l-zh">个股波动率</span>
+      </div>
+      
+      <div class="sx-vw-read">
+        <span class="l-en">Single-stock vol is subdued relative to index vol — stocks are moving in lockstep.</span>
+        <span class="l-zh">个股波动率相对指数偏低，个股走势趋于同步。</span>
+      </div>
+      
+    </div>
+    <div class="sx-vw-tier">
+      
+      <span class="l-en">breeze</span><span class="l-zh">微风</span>
       
     </div>
   </div>
@@ -13086,9 +13112,9 @@ html[data-theme="light"] :is(
         
         <span class="mx5-ai-ticker-pill">SPY</span>
         
-        <span class="mx5-ai-ticker-pill">QQQ</span>
-        
         <span class="mx5-ai-ticker-pill">XLF</span>
+        
+        <span class="mx5-ai-ticker-pill">QQQ</span>
         
         <span class="mx5-ai-ticker-pill">XHB</span>
         
@@ -16767,15 +16793,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644577-big-tech-s-300b-ai-guarantees-raise-hidden-risk-for-investors?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://finance.yahoo.com/markets/stocks/articles/john-ternuss-first-iphone-launch-125000640.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Big Tech’s $300B AI guarantees raise hidden risk for investors</span><span class="l-zh">Big Tech’s $300B AI guarantees raise hidden risk for investors</span></span>
+              <span class="nbx-theme"><span class="l-en">Analysts</span><span class="l-zh">分析师</span></span>
+              <span class="nbx-title"><span class="l-en">John Ternus&#39;s First iPhone Launch Prompted a Bank of America Price Target Cut. Is Apple Stock a Buy?</span><span class="l-zh">John Ternus&#39;s First iPhone Launch Prompted a Bank of America Price Target Cut. Is Apple Stock a Buy?</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 20</span>
+              <span class="nbx-date">Sep 19</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -16803,10 +16829,10 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4644573-trump-polls-to-rebrand-ai?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644577-big-tech-s-300b-ai-guarantees-raise-hidden-risk-for-investors?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Trump polls to rebrand AI</span><span class="l-zh">Trump polls to rebrand AI</span></span>
+              <span class="nbx-title"><span class="l-en">Big Tech’s $300B AI guarantees raise hidden risk for investors</span><span class="l-zh">Big Tech’s $300B AI guarantees raise hidden risk for investors</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -16839,10 +16865,10 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.marketwatch.com/story/china-is-chasing-spacex-and-setting-its-sights-on-the-global-space-economy-3b9e37ff?mod=mw_rss_topstories" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4644579-polymarket-s-rapid-growth-raises-fraud-compliance-concerns?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
-              <span class="nbx-title"><span class="l-en">China is chasing SpaceX and setting its sights on the global space economy</span><span class="l-zh">China is chasing SpaceX and setting its sights on the global space economy</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Polymarket’s rapid growth raises fraud, compliance concerns</span><span class="l-zh">Polymarket’s rapid growth raises fraud, compliance concerns</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
@@ -16857,15 +16883,15 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
           
           
           
-          <a class="nbx-item" href="https://www.npr.org/2026/09/17/nx-s1-5971226/the-federal-reserve-raises-interest-rates-by-a-quarter-percentage-point" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.marketwatch.com/story/china-is-chasing-spacex-and-setting-its-sights-on-the-global-space-economy-3b9e37ff?mod=mw_rss_topstories" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
-              <span class="nbx-title"><span class="l-en">The Federal Reserve raises interest rates by a quarter percentage point</span><span class="l-zh">美联储将利率上调25个基点</span></span>
+              <span class="nbx-theme"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="nbx-title"><span class="l-en">China is chasing SpaceX and setting its sights on the global space economy</span><span class="l-zh">China is chasing SpaceX and setting its sights on the global space economy</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 17</span>
+              <span class="nbx-date">Sep 20</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -20499,9 +20525,9 @@ Today&#39;s main driver is hawkish Fed repricing. Markets are removing expected 
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-09-20 13:16 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-09-20 14:31 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-09-20 13:16 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-09-20 14:31 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
