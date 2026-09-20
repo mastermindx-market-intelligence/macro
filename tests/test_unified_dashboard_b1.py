@@ -1,30 +1,26 @@
-"""Tests for the UD-B1 Unified Macro Dashboard hero skeleton (round 5).
+"""Tests for the retained UD-B1 Unified Macro Dashboard candidate.
 
-The hero (templates/_unified_dashboard_hero.html.j2) is included from
-templates/dashboard.html.j2 only when `mode == "macro"`. These tests pin the
-binding contract against the REAL engine contracts (R-A, R-H):
+As of the 2026-09-20 primary-route override, the candidate partial remains in
+source for redesign but is not mounted by templates/dashboard.html.j2. These
+tests continue to pin its component-level bindings against the REAL engine
+contracts (R-A, R-H):
   • event_calendar._event publishes label / label_zh
   • alerts.alert_view publishes message / message_zh
   • fear_greed.compute_fear_greed() publishes label_en / label_zh / dial
   • risk_envelope.compose() publishes provenance.sources[].label_en/label_zh
 
 Fixtures are built by calling the real engine view functions — NOT by
-inventing keys — so the tests fail RED-first if the engine contract ever
-shifts in a way the template doesn't track.
-
-Round 5 (R-H): two lawful fixture forms ONLY:
-  (a) Call the real engine view function on a minimal real input.
-  (b) Assert on the BUILT site/macro.html: after python3 scripts/build_site.py
-      at this tree, the page carries the published keys (label_en/label_zh,
-      confluence_en, provenance.sources, ms_history).
-At least one built-page assertion per driver is required.
+inventing keys — so the retained candidate cannot silently drift while it is
+off-route. Primary-route deployment is pinned separately in
+`tests/test_dashboard_template_render.py` and by the built-page absence check
+at the end of this module.
 
 Also pinned: one-integer law (the score prints ONCE), no banned machine-text
-vocab ("alert(s) fired" etc), live dot uses health tokens (R-D), spine
-rows that lack real regime data render as designed-null (R-B), the flip
-clause drops the "now X/100" parenthetical so the gauge stays the only
-visible integer (R-C), and the spine month-ago anchor uses ms_history
-(R-G — never a same-day cap delta).
+vocab ("alert(s) fired" etc), live dot uses health tokens (R-D), spine rows
+that lack real regime data render as designed-null (R-B), the flip clause
+drops the "now X/100" parenthetical so the gauge stays the only visible
+integer (R-C), and the spine month-ago anchor uses ms_history (R-G — never a
+same-day cap delta).
 """
 from __future__ import annotations
 
@@ -753,66 +749,18 @@ def test_no_contradictory_640_spine_rules():
 
 
 # --------------------------------------------------------------------------- #
-# R-H lawful fixture form (b): BUILT-PAGE assertion for each driver.
-# The page must surface the same published key the template asserts against.
+# Primary-route proof: the retained candidate must stay off the built macro page.
 # --------------------------------------------------------------------------- #
 
-def test_built_page_carries_mtf_confluence_en_from_published_indices():
-    """R-H (b): after the site is built, the hero driver 1 must print the
-    mtf.indices[0].confluence_en the live page already shows elsewhere.
-    Recorded vm slice — the published shape comes from data/latest.json's
-    mtf.indices array."""
-    site_macro = SITE / "macro.html"
-    if not site_macro.exists():
-        # Site not built yet at this tree; skip the built-page assertion.
-        return
-    html = site_macro.read_text(encoding="utf-8")
-    # Grep the BUILT page for any confluence_en-style token in the hero
-    # driver 1 area (Up/Down/Mixed). When ms_history is long enough and the
-    # mt leg published, the hero carries the same word the page renders
-    # elsewhere on the same page.
-    confluence_aliases = ("Uptrend", "Downtrend", "Mixed", "Rally", "Cooling")
-    found = [w for w in confluence_aliases if w in html]
-    assert found, (
-        "built page must carry at least one mtf.indices[].confluence_en word "
-        "in the hero driver area (R-H lawful fixture form (b))"
-    )
-
-
-def test_built_page_carries_risk_envelope_provenance_sources_label():
-    """R-H (b): after the site is built, the hero driver 2 must print one of
-    the risk_envelope.provenance.sources[].label_en words (e.g. 'Market state',
-    'Leadership cohort', 'Cross-asset scares'). The Grey Deer band lists them
-    at lines ~10180-10200; the hero must surface the same source label."""
+def test_built_macro_page_keeps_unified_candidate_off_primary_route():
+    """A regenerated site/macro.html must not reintroduce the stacked UD-B1 hero."""
     site_macro = SITE / "macro.html"
     if not site_macro.exists():
         return
     html = site_macro.read_text(encoding="utf-8")
-    candidate_labels = (
-        "Market state", "Leadership cohort", "Cross-asset scares",
-        "Hazard summary", "Trend",
+    assert 'id="ud-hero"' not in html, (
+        "built macro page reintroduced the held UD-B1 hero above the current dashboard"
     )
-    found = [w for w in candidate_labels if w in html]
-    assert found, (
-        "built page must carry at least one risk_envelope.provenance.sources[].label_en "
-        "in the hero driver 2 area (R-H lawful fixture form (b))"
-    )
-
-
-def test_built_page_carries_fear_greed_label_en():
-    """R-H (b): after the site is built, the hero driver 3 must print the
-    fear_greed.label_en (e.g. 'Greed in the read', 'Fear in the read', etc.).
-    The same label_en the fear_greed engine publishes elsewhere on the page."""
-    site_macro = SITE / "macro.html"
-    if not site_macro.exists():
-        return
-    html = site_macro.read_text(encoding="utf-8")
-    candidate_labels = (
-        "Greed in the read", "Fear in the read", "Greed", "Fear", "Neutral",
-        "Extreme Fear", "Extreme Greed",
-    )
-    found = [w for w in candidate_labels if w in html]
-    assert found, (
-        "built page must carry at least one fear_greed.label_en word in the "
-        "hero driver 3 area (R-H lawful fixture form (b))"
+    assert 'id="regime-radar"' in html, (
+        "built macro page must retain the established #regime-radar decision surface"
     )

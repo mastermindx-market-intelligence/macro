@@ -2502,15 +2502,11 @@
   {% endif %}
 
   {% if mode == 'macro' %}
-  {# ====== UD-B1 · Unified Macro Dashboard hero (Stage 1, binding) ======
-     Inserts the spec §1 hero skeleton ABOVE every legacy isle. All remaining
-     isles KEEP their current rendering below this block; B2+ migrates them
-     per research/UNIFIED_DASHBOARD_DISPOSITION.md. Binds REAL view-model
-     keys (no illustrative numbers from the spec). The legacy #regime-radar
-     panel that follows is untouched and remains the deep surface for the
-     macro controls (ms-front, six-factor evidence matrix, multi-timeframe
-     tape, flip-context popover, alerts popover, etc.). #}
-  {% include "_unified_dashboard_hero.html.j2" %}
+  {# UD-B1 is retained as an off-route design candidate, not mounted on the
+     primary US macro dashboard. The existing #regime-radar remains the
+     canonical top-of-page decision surface until a successor demonstrably
+     improves decision speed and information density. See the 2026-09-20
+     primary-route override in research/UNIFIED_DASHBOARD_DISPOSITION.md. #}
 
   <!-- ======================= HEADER ======================= -->
   <div class="panel span12" id="regime-radar">

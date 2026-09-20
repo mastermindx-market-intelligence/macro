@@ -1457,4 +1457,15 @@ entries:
       adding the
     source: 'PR #4961; pinned by `tests/test_forensic_detector_crosspin.py` §7 `test_accruals_has_no_moat_sensor_and_that_gap_is_still_open` and by `NON_MOAT_DETECTOR_IDS` in test 1 (2026-08-07)'
 
+  - id: BL-G121
+    match:
+      any_of:
+        - 'unified.{0,30}macro.{0,30}dashboard'
+    reason: >
+      **SUSPENDED / DESIGN-CANDIDATE ONLY — Chairman ruling
+      2026-09-20.** The first production composition stacked a second
+      global/cross-market regime surface above the existing macro
+      dashboard, increased p
+    source: '`research/UNIFIED_DASHBOARD_DISPOSITION.md` § Primary-route override — 2026-09-20'
+
 # --- END GENERATED FROM DO_NOT_REBUILD.md ---
