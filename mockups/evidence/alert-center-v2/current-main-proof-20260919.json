@@ -1,27 +1,36 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v4",
+  "schema": "mastermind.alert_center.current_main_proof.v5",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T03:20:00Z",
-  "skillpack_commit": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
-  "macro_origin_main_observed": "4f1cfc00c2f3a5a855ac9f9ed071fd44ef7d4a32",
-  "candidate_source_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
-  "current_merge_tree": "ae48ec5e09fb282ad2adbeb0b958fbd770eb8b79",
+  "verified_at": "2026-09-20T05:00:00Z",
+  "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
+  "macro_origin_main_observed": "9a481ef520e397853c9f5a8edd120cfff528ce16",
+  "candidate_source_commit": "cb26efac05e85cd680229793f62db38869c38e89",
+  "current_merge_tree": "a2e8ff41df09923fe08fecfb86743aa6e2a2ef35",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
-    "passed": 152,
+    "passed": 158,
     "warnings": 5,
     "failures": 0
   },
   "builder": {
     "legacy_ranked": 60,
-    "shared_signals": 670,
-    "specific_subject_bundles": 156,
+    "shared_signals": 651,
+    "specific_subject_bundles": 151,
     "published_firings": 1000,
-    "total_matched_firings": 1279
+    "total_matched_firings": 1217
   },
+  "source_bound_families": [
+    "macro.transition_state_change",
+    "macro.risk_state_elevated",
+    "vector.impulse_warn_down",
+    "commodity.price_shock",
+    "vector.allocation_change",
+    "altdata.convergence",
+    "rotation.rotation_emerging"
+  ],
   "browser": {
-    "interaction_checks": 9,
+    "interaction_checks": 11,
     "named_screenshots": 9,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
@@ -53,7 +62,7 @@
     "production_acceptance": false
   },
   "legacy_parity": {
-    "baseline_commit": "03dbe8f5d71a878977b3d5e9b2ee112ea37ab1c6",
+    "baseline_commit": "9a481ef520e397853c9f5a8edd120cfff528ce16",
     "fields_compared": 17,
     "differences": [],
     "payload_hash_equal": true
@@ -63,30 +72,32 @@
     "runtime_style": "pass",
     "visual_evidence_current_main": "pass",
     "diff_check": "pass",
-    "contract_delta": "pass: 0 introduced, 0 inherited"
+    "contract_delta": "pending exact evidence commit"
   },
   "source_sha256": {
-    "engine/alert_center_view.py": "56d510d82d65c6cffb51e007b02422a09bac8d04aa8abde4df79bc1c7c8b5517",
+    "engine/alert_center_view.py": "3fdeb00983100ea8cb5619d5427f9c5e86c15156ca89905ccddf80bae254434a",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
-    "templates/alerts.html.j2": "30955e1c4a0831b22c61e6e4b5da16db533cddd7a9d36893d739abfd502ab7cf",
+    "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
     "templates/alert_center.css": "2224812555f7f2f81a1957f8ed08f22fde2595c905e93067b8f522b2c63d8557",
     "templates/alert_center.js": "c229a2d139b57f0578fb8678ed2696c625fde201301927d9e4983025b9f18fdf",
-    "scripts/qa_alert_center_v2.py": "573dc6b588239e29be2f5717bfc0baad3c5e9b4f467be85bfa7bb75f00689ea4"
+    "scripts/qa_alert_center_v2.py": "f9b64c901ad8d321decdf1d1b7b362ae5583537ebe3a68acddf8e82dec08175c"
   },
   "evidence_sha256": {
-    "browser-proof.json": "61a8de4ddab7ca1126b0c965e31887263c24b61e86aa44a2927f9a08365e7830",
+    "browser-proof.json": "cd974786615bb528c1ecd160de0728eb10a8e025772cbd66be1749c5bf2da9c5",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "8370ba1d0abc2ad6ecc42804b89ddecd977dfcc13b992ce200bcfaddb8d252a3",
-    "manifest.json": "3f9591d741fadd8f9ea7859506e2f835455fd0913739bac4795e565e4ea0151c",
-    "smells.json": "15303a1f034714de504b7be407f6128973bf3732820a39b6219460e460cc1ce9",
-    "guard-results.json": "c2f82c85ec5c734458bbaa9fdc6a1311132a283b19cefdba66a5e889b5347cc6",
-    "legacy-parity.json": "aa423f4a550892a81c61c548bda773568da1c203effa7a4ecfe73c7bb46e2da7"
+    "input-manifest.json": "84d1fa93547b23aae77903e8bf64c2bce64a11575a6b0dc7bccc2e2d10e05af7",
+    "manifest.json": "1f71f7bf464bcfe8286e83e2a8a04aef1ddc06ee1166f2aaa652688fd2929d63",
+    "smells.json": "de6439c544e859f64b5c0eba521c94d2f2f0d7206686fcd10723e689e4cdef03",
+    "guard-results.json": "cf43728b7566dd17e0e5f13b55abd50f63efe877dca544a4917a31ea9ce3f9aa",
+    "legacy-parity.json": "b7382b86031a19a6559007e19143ddc9e7024342b7211b66debba38d543fa776",
+    "targeted-tests.log": "a679acfff54c519c91b1a181cb741c403bf408436fc49fd1ee3460bf6ce49d10"
   },
   "figma": {
     "file_key": "r1hSkfDg4vGzjWRySgrHE1",
     "modified_this_turn": false,
     "runtime_authority": false
   },
+  "review_state": "FULL_REREVIEW_REQUIRED",
   "release_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
   "what_this_does_not_prove": [
     "independent review",
@@ -95,6 +106,5 @@
     "production-route visibility",
     "customer acceptance",
     "trading edge"
-  ],
-  "evidence_commit": "b447158ac834014b9aba9a8c712b1a13555431d0"
+  ]
 }

@@ -1,24 +1,31 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v2",
-  "observed_at": "2026-09-20T03:20:00Z",
-  "candidate_source_commit": "0358ec65e4176681cd228a03463e7f6aca7e39af",
-  "latest_protected_main": "4f1cfc00c2f3a5a855ac9f9ed071fd44ef7d4a32",
-  "latest_merge_tree": "ae48ec5e09fb282ad2adbeb0b958fbd770eb8b79",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v3",
+  "observed_at": "2026-09-20T05:00:00Z",
+  "candidate_source_commit": "cb26efac05e85cd680229793f62db38869c38e89",
+  "latest_protected_main": "9a481ef520e397853c9f5a8edd120cfff528ce16",
+  "latest_merge_tree": "a2e8ff41df09923fe08fecfb86743aa6e2a2ef35",
   "merge_conflicts": [],
-  "protected_movement_on_material_alert_paths": [],
+  "protected_movement_on_material_alert_paths": [
+    {
+      ".github/ci/legacy-jobs.yml": "path-disjoint CI manifest movement; merge tree preserves both changes"
+    },
+    {
+      "templates/theme.css": "selector-scoped .mx-spine addition; no Alert Center selector or shared token mutation"
+    }
+  ],
   "base_compatibility": "PASS",
   "semantic_review_classification": "FULL_REREVIEW_REQUIRED",
-  "semantic_review_reason": "Candidate-owned attention semantics changed after the prior review: stale or unknown act-tier events now render as Earlier priority rather than current Review first, mobile search geometry changed, and real hover/focus evidence was added. Fresh independent review must bind the exact final head.",
-  "skillpack_commit": "9e796168b467c17d9853f139c4e4a6ccdf3a3a87",
+  "semantic_review_reason": "Source-bound family behavior expanded and review fixes changed impulse and rotation takeaway semantics. Fresh independent review must bind the exact final head.",
+  "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
   "candidate_owned_source_blobs": {
-    "engine/alert_center_view.py": "8d23d6e1859d583cb0dad51e6559f7feb61236e1",
+    "engine/alert_center_view.py": "fb10fab3d536c502e09c23e8db3f6bd84a85672a",
     "engine/alert_triage.py": "ad7c86c19e37aebf6c936f41c4e959e95ccef935",
-    "templates/alerts.html.j2": "9d3e867352e7e083aba4203261dcba4da3a2fba9",
+    "templates/alerts.html.j2": "821e1ff16317f2f9d540351db4a3809faa48748f",
     "templates/alert_center.css": "2bb6611740497d8391c0df256dbdf30c9f50dd6c",
     "templates/alert_center.js": "3ffa2873bb30c386aa8cc7523ec94e66187e9d5b",
-    "scripts/qa_alert_center_v2.py": "cf17e941df96ac5106124ec5d59407c0f82f3d3e"
+    "scripts/qa_alert_center_v2.py": "ebc38cc986685b8dcb66f42aa1a6d7adef1e9ae3"
   },
   "production_acceptance": false,
-  "candidate_evidence_commit": "b447158ac834014b9aba9a8c712b1a13555431d0",
-  "contract_delta": "pass: 0 introduced, 0 inherited"
+  "candidate_evidence_commit": null,
+  "contract_delta": "pending exact evidence commit"
 }

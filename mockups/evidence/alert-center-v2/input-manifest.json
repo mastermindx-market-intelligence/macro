@@ -1,6 +1,6 @@
 {
-  "source_commit": "d79a799e867b9bb18d552f07ab3922c9bf0f8767",
-  "generated_utc": "2026-09-20 04:00",
+  "source_commit": "cb26efac05e85cd680229793f62db38869c38e89",
+  "generated_utc": "2026-09-20 06:06",
   "proof_kind": "local_real_builder_committed_inputs",
   "production_acceptance": false,
   "inputs": [
@@ -82,11 +82,11 @@
   ],
   "candidate_sources": {
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
-    "engine/alert_center_view.py": "82a02b9db8b4ae6a5d4fadc7be67f8b48e836aeac446d6a415fa7c75e8cbf920",
+    "engine/alert_center_view.py": "3fdeb00983100ea8cb5619d5427f9c5e86c15156ca89905ccddf80bae254434a",
     "engine/alert_time.py": "321a2414a68a51c6d21f268cb7a26696d596f5242c832e38f2119dfc21642906",
     "scripts/build_site.py": "9cba47448de9420c95d08bd9a5faef2ea8d2c38b71a25f3353ef68773aaa342c",
     "scripts/prove_alert_center_v2.py": "a56df6765faedd922c8d4be22db985ba886162b7879affbb7711c55cef01e526",
-    "templates/alerts.html.j2": "30955e1c4a0831b22c61e6e4b5da16db533cddd7a9d36893d739abfd502ab7cf",
+    "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
     "templates/alert_center.css": "2224812555f7f2f81a1957f8ed08f22fde2595c905e93067b8f522b2c63d8557",
     "templates/alert_center.js": "c229a2d139b57f0578fb8678ed2696c625fde201301927d9e4983025b9f18fdf",
     "templates/theme.css": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
@@ -102,9 +102,9 @@
   "sources_unchanged_during_build": true,
   "inputs_unchanged_during_build": true,
   "outputs": {
-    "alerts.html": "c8dfe9e2fb421841bd2cb526c6014f37b83aefb651540c86bc4182a0f6884dd1",
-    "factordata/alerts_triage.json": "2b6af087b8a83dbe5663befa00af8e34059a07a9fe744c5db0958a426d407d82",
-    "alertsdata/feed.json": "beea350352c81ebf01ca8741afdff11692e0c7bd1df874504e584c285c6ccd52"
+    "alerts.html": "157a7e761f570f71b6ddeb74ff72ad5d7258431494ec03e8d18fb0987747b995",
+    "factordata/alerts_triage.json": "394aad270c082bf59e32b45c0a29b3955865273a26f59b51239e8824d4b9db58",
+    "alertsdata/feed.json": "40810b4fb26b32a6612da609e48647f074d2b9344fe45b9262dca02aa33bede0"
   },
   "populations": {
     "legacy_ranked": 60,
