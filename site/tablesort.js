@@ -93,14 +93,24 @@
     if (rows.length >= 12) addFilter(table);
   }
 
+  var filterInputs = [];
+  function refreshFilterCopy() {
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    filterInputs.forEach(function (input) {
+      input.placeholder = zh ? '筛选…' : 'Filter…';
+      input.setAttribute('aria-label', zh ? '筛选表格行' : 'Filter table rows');
+    });
+  }
+  document.addEventListener('langchange', refreshFilterCopy);
+
   function addFilter(table) {
     var rows = dataRows(table);
     var wrap = document.createElement('div');
     wrap.className = 'tbl-filter';
     var input = document.createElement('input');
     input.type = 'search';
-    input.placeholder = 'Filter…';
-    input.setAttribute('aria-label', 'Filter table rows');
+    filterInputs.push(input);
+    refreshFilterCopy();
     var cnt = document.createElement('span');
     cnt.className = 'cnt';
     wrap.appendChild(input); wrap.appendChild(cnt);
