@@ -1,23 +1,23 @@
 {
   "schema": "mastermind.alert_center.current_main_proof.v10",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T08:37:24Z",
+  "verified_at": "2026-09-20T08:44:25Z",
   "skillpack_commit": "23061ab70a7fb79636b7962d9b440a3de23fe016",
   "macro_origin_main_observed": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
-  "candidate_source_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
-  "current_merge_tree": "073522d5709d6256d49dea3131960ae18a56a267",
+  "candidate_source_commit": "a5cc3d4cba5c3d7c2568c538aee1cbd2aa7f3d75",
+  "current_merge_tree": "03a24330d0ff411b2ff845051d17b42ea4d322c0",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
     "full_alert_regression": {
-      "tested_commit": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
-      "passed": 190,
+      "tested_commit": "f253ec1f8ebe6362aa169d7f80484b8f41b72bd2",
+      "passed": 195,
       "warnings": 5,
       "failures": 0
     },
     "source_bound_discriminating": {
-      "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
-      "passed": 21,
+      "tested_commit": "a5cc3d4cba5c3d7c2568c538aee1cbd2aa7f3d75",
+      "passed": 26,
       "failures": 0
     }
   },
@@ -29,13 +29,14 @@
     "total_matched_firings": 1217
   },
   "source_bound": {
-    "signals": 605,
+    "signals": 608,
     "total_shared_signals": 651,
-    "coverage_ratio": 0.929339,
-    "family_count": 27
+    "coverage_ratio": 0.933948,
+    "family_count": 28
   },
   "source_bound_families": [
     "altdata.convergence",
+    "bonds.curve_regime",
     "bonds.rates_vol",
     "commodity.price_shock",
     "commodity.risk_regime",
@@ -69,8 +70,8 @@
     "independent_confirmation_claimed": false
   },
   "browser": {
-    "interaction_checks": 22,
-    "named_screenshots": 17,
+    "interaction_checks": 24,
+    "named_screenshots": 19,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
     "canonical_interaction_capture": "24/24 prior UI-state capture reusable; no template/CSS/JS changed in this source-family wave",
@@ -85,8 +86,8 @@
     "payload_hash_equal": true
   },
   "guards": {
-    "full_alert_regression": "pass: 190 passed, 5 warnings, 0 failures",
-    "source_bound_discriminating": "pass: 21/21",
+    "full_alert_regression": "pass: 195 passed, 5 warnings, 0 failures",
+    "source_bound_discriminating": "pass: 26/26",
     "design_system": "REVIEW_REUSE_ALLOWED — no template/CSS/JS changed after prior passing UI receipt",
     "runtime_style": "REVIEW_REUSE_ALLOWED — no runtime-style source changed",
     "visual_evidence": "exact-head named browser proof refreshed; prior 24/24 focus/hover/rest matrix reusable",
@@ -95,27 +96,29 @@
     "contract_delta": "BLOCKED_SHARED_BASE — protected main contains tests/test_unified_dashboard_b1.py without legacy-jobs ownership; candidate does not own either path"
   },
   "source_sha256": {
-    "engine/alert_center_view.py": "68d494065bc5893c471f1ebef3d98c25a25429259e7ebb3804ebfb6ca7af104c",
+    "engine/alert_center_view.py": "dda2c7ea0d4cd2fc9a26cd1daf58ad3feebcaf9a599aa64596891e0e5e2d7132",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
     "templates/alert_center.css": "0ff5c733bd43364a188e5231bd5931edc3601837d567e5e4fba5b92dcac978a3",
     "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
-    "scripts/qa_alert_center_v2.py": "d469bc52553e4cf758549c90b8ad59c1e20e564960e95b78be60ce340fc107ee"
+    "scripts/qa_alert_center_v2.py": "5ac23dbd53771e58c7e391d51db9ace76f50807753fa7be69c8b1512917a5ff3"
   },
   "evidence_sha256": {
-    "browser-proof.json": "14582113406e7afd679ba5b4c9e153cf3d86892b9cddea7c1fed6f6346bfd18f",
+    "browser-proof.json": "c885080dbecaf4ea6c5bd8c19175174b0391ea099fb549cc810c750c016ad6d0",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "f4348c366c381706293e96a1dbe269a733bd310da889d945f141bf91e86a4511",
+    "input-manifest.json": "6de0de85ad7b6c41635af19cdc5878622338dcf25c33796e2bddd3157c8e5526",
     "manifest.json": "4ae1fe276073dc8ee49df7a9b60a4d2a3e4cbb4a3ebd9fe6d916c043d4cfd9bd",
-    "desktop-demand-ahead.png": "97d06a19ec49657df4a5dfc83913e7870e3aea7649bb3624b2bf2b3dfd0d2fb7",
-    "desktop-forex-residual.png": "5429e123c22aee3d74aebf202d32b9ebd6f8ef0877d683d61bed0e022abcc924",
-    "desktop-net-liquidity.png": "763e4b3153eaa705d375ab931a5c5b805c5f733c2d16d923490bac1744b8617c",
-    "desktop-oi-crowding.png": "b8fb3c2aa60ae748f4c8a20e81089cc8512e3879140fecc3fc624dfe4c02d66b",
-    "desktop-forex-momentum.png": "6de8e4c29fc22ac9d59655fb7721aac240e1236bcb47d69185b78cee5c02bd0f",
-    "desktop-forex-scenario.png": "5073a0d078ae9b84cef0196ede48de33c8282c219a1822ea82084390bc8194db",
-    "desktop-bonds-move.png": "682726f412ba1b2bc358210df612c1d1cd06140efd273aa18ed5d544811feb8b",
-    "targeted-tests.log": "bf4ae091940f73adc4f08035ead625459d4e2ddaab1582d496d1d7694ac3ff59",
-    "full-alert-regression.log": "6fddc57f011955d7e9ea65efdc80c215e9fbb46f0e9fedb6ea9d0c4132439349"
+    "desktop-demand-ahead.png": "783e18c37a7ed764a97f3a10bfc1940ef246c2df4619b6ed3046670bd20881a8",
+    "desktop-forex-residual.png": "55dedc2b1fe36422aa1b95b6aa5e622c361fe8a8e7cfb3af358e382597758959",
+    "desktop-net-liquidity.png": "df2461ee3feddc718e452b862f17b47b3d479e23ace3d86bd75879e7fa2f32dc",
+    "desktop-oi-crowding.png": "33cab696ec8a73b1d73a9d4413cabf08fa3387b251171ab339593def8684e394",
+    "desktop-forex-momentum.png": "1c358ed01f829db78d2f699a2d4882da44d0bcd4286e1c95da5f219850b967e7",
+    "desktop-forex-scenario.png": "1ef5440890bb1a485402ab41f0e248254d305fc9f9a0a9a9d108ee3ede9e8cb7",
+    "desktop-bonds-move.png": "ca0fb46a27e317f46235ab1e0be48be0b9b41b76fc7e5da3fcdb24a846e35489",
+    "desktop-bonds-curve.png": "8e06697f92caa24c0bb32ebcd82e49f9e96feb4ae4cb96dbca236964acdc922f",
+    "desktop-silver-shock.png": "a07834d8d54cc24697188e3517d5cc7349db791ee9be615db6f92d5ba5c75034",
+    "targeted-tests.log": "f934395d09b95c877fedeb2b814b2a9f5bea7ebaf1ec980a4cf207bd8611ec26",
+    "full-alert-regression.log": "e7e1917862f7f577d8fda452b692baf8a89b4406f6f024c0228cee651e050d2f"
   },
   "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
@@ -131,7 +134,7 @@
     "customer acceptance",
     "trading edge"
   ],
-  "candidate_evidence_commit": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
+  "candidate_evidence_commit": "f253ec1f8ebe6362aa169d7f80484b8f41b72bd2",
   "rotation_source_bound_total": {
     "supported_rows": 313,
     "families": {

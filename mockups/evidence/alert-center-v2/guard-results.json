@@ -1,25 +1,25 @@
 [
   {
     "check": "full-alert-regression",
-    "tested_commit": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
+    "tested_commit": "f253ec1f8ebe6362aa169d7f80484b8f41b72bd2",
     "exit_code": 0,
-    "output": "190 passed, 5 warnings, 0 failures"
+    "output": "195 passed, 5 warnings, 0 failures"
   },
   {
     "check": "source-bound-discriminating",
-    "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+    "tested_commit": "a5cc3d4cba5c3d7c2568c538aee1cbd2aa7f3d75",
     "exit_code": 0,
-    "output": "21/21 PASS"
+    "output": "26/26 PASS"
   },
   {
     "check": "browser-proof",
-    "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+    "tested_commit": "a5cc3d4cba5c3d7c2568c538aee1cbd2aa7f3d75",
     "exit_code": 0,
-    "output": "22/22 checks PASS; 17 screenshots; 0 page errors"
+    "output": "24/24 checks PASS; 19 screenshots; 0 page errors"
   },
   {
     "check": "trust-browser-proof",
-    "tested_commit": "92d7889d9e629ba770c209f8772fc18cd18e6c34",
+    "tested_commit": "a5cc3d4cba5c3d7c2568c538aee1cbd2aa7f3d75",
     "exit_code": 0,
     "output": "14/14 adversarial cases PASS; 10 screenshots"
   },
@@ -45,9 +45,9 @@
   },
   {
     "check": "latest-base-merge-tree",
-    "candidate_evidence_head": "b1d77228b5b684fd09d0742f15edb8bccb896ad1",
+    "candidate_evidence_head": "f253ec1f8ebe6362aa169d7f80484b8f41b72bd2",
     "base_commit": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
-    "merge_tree": "073522d5709d6256d49dea3131960ae18a56a267",
+    "merge_tree": "03a24330d0ff411b2ff845051d17b42ea4d322c0",
     "exit_code": 0,
     "output": "conflict-free"
   },
