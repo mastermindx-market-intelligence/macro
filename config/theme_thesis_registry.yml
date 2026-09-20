@@ -9,7 +9,11 @@
 #   driver            — {type, description}
 #   winner_classes    — CLASS-level beneficiaries [{class, why}]
 #   loser_classes     — AVOID-framed, CLASS-level [{class, why}]
-#   falsifiers        — [{id, rule_en, check: {kind, source_artifact, field, op, threshold, window_d} | null, qualitative}]
+#   falsifiers        — machine checks may add consecutive_prints,
+#                       prior_stage_in, watch_prior_stage_in,
+#                       watch_deterioration_field, and watch_deterioration_in.
+#                       History checks consume the dated producer tape plus
+#                       the current projection, never page-render repetitions.
 #   evidence_refs     — existing artifact paths (display-only witnesses)
 #
 # FENCES (R-TIL-1):
@@ -21,10 +25,10 @@
 # Curation sources: data/baskets/membership.json thesis fields,
 # site/basketdata/foresight_cascade.json stage+rationale, research/ docs.
 #
-# Version: 1 (2026-07-09, TIL W1 PR-C)
+# Version: 2 (2026-09-19, Lane A semantic repair)
 
-version: 1
-date: "2026-07-09"
+version: 2
+date: "2026-09-19"
 note: >
   All 18 canonical themes covered. Falsifiers use machine-checkable checks against
   existing artifacts (foresight_cascade, theme_state) where data exists; the rest
@@ -92,29 +96,34 @@ theses:
     falsifiers:
       - id: ai_semi_f1
         rule_en: >
-          If revision_breadth for ai_semiconductors turns negative (net earnings
-          downgrades exceed upgrades), the thesis that AI demand is above-cycle
-          durable is weakening — watch for two consecutive negative breadth prints.
+          If revision_breadth for ai_semiconductors is below -0.05 on two
+          distinct dated producer prints, net earnings downgrades exceed upgrades
+          persistently and the above-cycle demand thesis is weakening.
         check:
-          kind: threshold
+          kind: consecutive_threshold
           source_artifact: site/basketdata/foresight_cascade.json
           field: revision_breadth
           op: lt
           threshold: -0.05
           window_d: 60
+          consecutive_prints: 2
         qualitative: false
       - id: ai_semi_f2
         rule_en: >
-          If foresight stage degrades from RE-RATING to GLUT-RISK or WATCH,
-          the above-cycle demand narrative is broken (supply caught up or
-          demand pulled forward).
+          If foresight moves from RE-RATING to GLUT-RISK, or to WATCH while the
+          independently observed bottleneck band turns LOOSE, supply caught up
+          or demand was pulled forward and the above-cycle narrative is broken.
         check:
           kind: stage_regression
           source_artifact: site/basketdata/foresight_cascade.json
           field: stage
           op: in
           threshold: ["GLUT-RISK", "WATCH"]
-          window_d: null
+          prior_stage_in: ["RE-RATING", "BROADENING", "PRECIPICE", "WATCH"]
+          watch_prior_stage_in: ["RE-RATING"]
+          watch_deterioration_field: bottleneck_band
+          watch_deterioration_in: ["LOOSE"]
+          window_d: 60
         qualitative: false
       - id: ai_semi_f3
         rule_en: >
@@ -186,15 +195,17 @@ theses:
     falsifiers:
       - id: mem_f1
         rule_en: >
-          If revision_breadth for memory_storage turns negative two consecutive prints,
-          the HBM margin thesis is weakening — capacity may be catching demand.
+          If revision_breadth for memory_storage is negative on two distinct
+          dated producer prints, the HBM margin thesis is weakening — capacity
+          may be catching demand.
         check:
-          kind: threshold
+          kind: consecutive_threshold
           source_artifact: site/basketdata/foresight_cascade.json
           field: revision_breadth
           op: lt
           threshold: 0.0
           window_d: 60
+          consecutive_prints: 2
         qualitative: false
       - id: mem_f2
         rule_en: >

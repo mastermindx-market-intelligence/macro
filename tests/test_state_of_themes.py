@@ -1077,6 +1077,138 @@ def test_theme_lanes_side_write_never_raises_on_bad_ctx(tmp_path):
     assert payload["lanes"] == {}   # neither row had a valid (id, lane) pair
 
 
+def test_precipice_alone_is_early_not_crowded():
+    import scripts.build_state_of_themes as sot
+    assert sot._classify_lane("PRECIPICE", False, {}, None) == "early"
+
+
+def test_precipice_with_independent_crowding_is_caution():
+    import scripts.build_state_of_themes as sot
+    legs = {"crowding_hazard": {"band": "high"}}
+    assert sot._classify_lane("PRECIPICE", False, legs, None) == "caution"
+
+
+def test_precipice_with_real_falsifier_is_review():
+    import scripts.build_state_of_themes as sot
+    assert sot._classify_lane("PRECIPICE", True, {}, "hidden-opportunity") == "review"
+
+
+def test_mature_and_glut_stages_are_caution_with_bilingual_label():
+    import scripts.build_state_of_themes as sot
+    assert all(sot._classify_lane(stage, False, {}, None) == "caution" for stage in ("RE-RATING", "GLUT-RISK"))
+    assert sot._STAGE_EN["GLUT-RISK"] == "Glut risk"
+    assert sot._STAGE_ZH["GLUT-RISK"] == "过剩风险"
+
+
+def test_lifecycle_places_precipice_before_broadening_and_glut_after_rerating():
+    import scripts.build_state_of_themes as sot
+    order = sot._LIFECYCLE_ORDER
+    assert order.index("PRECIPICE") < order.index("BROADENING")
+    assert order.index("RE-RATING") < order.index("GLUT-RISK")
+
+
+def test_theme_lanes_additive_consumer_contract_preserves_v1_keys(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+
+    ctx = {
+        "as_of": "2026-09-18",
+        "n_stale_legs": 0,
+        "themes": [{
+            "theme_id": "ai_semiconductors",
+            "lane": "review",
+            "stage_key": "PRECIPICE",
+            "falsifier_any_fired": True,
+            "falsifier_n_data_missing": 0,
+            "div_label_en": "Hidden opportunity",
+            "evidence_refs": ["site/basketdata/foresight_cascade.json"],
+            "asym_legs_section": [{
+                "id": "crowding_hazard", "band": "null",
+            }],
+        }],
+    }
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    payload = _json.loads(out.read_text(encoding="utf-8"))
+
+    # Existing consumer contract remains byte-shape compatible at its old keys.
+    assert payload["schema"] == "theme_lanes.v1"
+    assert payload["lanes"] == {"ai_semiconductors": "review"}
+    assert "basket_lanes" in payload and "theme_baskets" in payload
+
+    # New information is additive and keeps dimensions independent.
+    assert payload["consumer_contract_schema"] == "theme_intelligence.consumer.v1"
+    row = payload["theme_context"]["ai_semiconductors"]
+    dims = row["dimensions"]
+    assert dims["leadership"]["state"] == "UNAVAILABLE"
+    assert dims["thesis"]["state"] == "INVALIDATED"
+    assert dims["crowding"]["state"] == "UNKNOWN"
+    assert dims["entry"]["state"] == "UNAVAILABLE"
+
+    authority = row["authority"]
+    assert authority["is_context_only"] is True
+    assert authority["display_only"] is True
+    for key in ("may_rank", "may_gate", "may_size", "may_escalate", "may_trade"):
+        assert authority[key] is False
+
+
+def test_owner_leadership_survives_thesis_risk_without_authority_escalation(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+    ctx = {
+        "as_of": "2026-09-18",
+        "n_stale_legs": 0,
+        "themes": [{
+            "theme_id": "ai_semiconductors",
+            "lane": "review",
+            "stage_key": "RE-RATING",
+            "falsifier_any_fired": True,
+            "falsifier_n_data_missing": 0,
+            "leadership_context": {
+                "state": "DETECTED",
+                "label": "fresh leadership campaign",
+                "reason_codes": ["C_OWNER_AUTHORIZED"],
+                "may_rank": True,
+            },
+            "entry_context": None,
+            "asym_legs_section": [],
+            "evidence_refs": [],
+        }],
+    }
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    payload = _json.loads(out.read_text(encoding="utf-8"))
+    row = payload["theme_context"]["ai_semiconductors"]
+    assert row["dimensions"]["leadership"]["state"] == "DETECTED"
+    assert row["dimensions"]["thesis"]["state"] == "INVALIDATED"
+    assert "may_rank" not in row["dimensions"]["leadership"]
+    assert row["authority"]["may_rank"] is False
+
+
+def test_contract_missing_thesis_input_is_not_zero_or_invalidated(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+    ctx = {
+        "as_of": "2026-09-18",
+        "n_stale_legs": 1,
+        "themes": [{
+            "theme_id": "memory_storage",
+            "lane": "working",
+            "stage_key": "BROADENING",
+            "falsifier_any_fired": False,
+            "falsifier_n_data_missing": 1,
+            "asym_legs_section": [],
+            "evidence_refs": [],
+        }],
+    }
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    payload = _json.loads(out.read_text(encoding="utf-8"))
+    thesis = payload["theme_context"]["memory_storage"]["dimensions"]["thesis"]
+    assert thesis["state"] == "UNCONFIRMED"
+    assert thesis["state"] != "INVALIDATED"
+
+
 # ---------------------------------------------------------------------------
 # Naming: the page must keep the nav's promise (PR-A1)
 # ---------------------------------------------------------------------------

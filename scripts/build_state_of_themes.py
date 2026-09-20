@@ -296,28 +296,31 @@ def _asym_leg_entry(leg_id: str, band: str | None) -> tuple[str, str, str]:
 # Stage sort order for column sort (higher = more actionable)
 _STAGE_SORT = {
     "WATCH": 1,
-    "BROADENING": 3,
-    "RE-RATING": 4,
+    "CORRECTING": 2,
+    "RE-RATING": 3,
+    "BROADENING": 4,
     "PRECIPICE": 5,
     "ACCELERATING": 6,
-    "CORRECTING": 2,
+    "GLUT-RISK": 0,
 }
 
 _STAGE_EN = {
     "WATCH": "Watch",
+    "PRECIPICE": "Early thesis",
     "BROADENING": "Broadening",
     "RE-RATING": "Re-rating",
-    "PRECIPICE": "Precipice",
     "ACCELERATING": "Accelerating",
+    "GLUT-RISK": "Glut risk",
     "CORRECTING": "Correcting",
 }
 
 _STAGE_ZH = {
     "WATCH": "观察中",
+    "PRECIPICE": "早期论点",
     "BROADENING": "扩张中",
     "RE-RATING": "重估值",
-    "PRECIPICE": "临界点",
     "ACCELERATING": "加速中",
+    "GLUT-RISK": "过剩风险",
     "CORRECTING": "回调中",
 }
 
@@ -349,6 +352,18 @@ _LANE_ORDER = ["working", "early", "caution", "review", "quiet"]
 # no re-derivation) so a theme's lane on the Portfolio brief and on this page can
 # never disagree. Lane values are exactly the 5-lane vocabulary in _LANE_ORDER.
 THEME_LANES_SCHEMA = "theme_lanes.v1"
+THEME_INTELLIGENCE_CONSUMER_SCHEMA = "theme_intelligence.consumer.v1"
+
+_CONSUMER_AUTHORITY = {
+    "is_context_only": True,
+    "display_only": True,
+    "not_a_signal": True,
+    "may_rank": False,
+    "may_gate": False,
+    "may_size": False,
+    "may_escalate": False,
+    "may_trade": False,
+}
 
 _LANE_META: dict[str, dict[str, str]] = {
     "working": {
@@ -411,7 +426,7 @@ _LANE_META: dict[str, dict[str, str]] = {
 # Lifecycle order for the stage ribbon (early → hot → turning). Independent of
 # _STAGE_SORT (which ranks actionability); this ribbon reads as a life-story.
 _LIFECYCLE_ORDER = [
-    "WATCH", "BROADENING", "RE-RATING", "ACCELERATING", "PRECIPICE", "CORRECTING",
+    "WATCH", "PRECIPICE", "BROADENING", "RE-RATING", "ACCELERATING", "GLUT-RISK", "CORRECTING",
 ]
 
 
@@ -429,10 +444,12 @@ def _classify_lane(
         return "review"
     crw = legs.get("crowding_hazard") if isinstance(legs, dict) else None
     crw_band = crw.get("band") if isinstance(crw, dict) else None
-    if stage_key in ("CORRECTING", "PRECIPICE") or crw_band == "high" \
+    if stage_key in ("CORRECTING", "RE-RATING", "GLUT-RISK") or crw_band == "high" \
             or div_quadrant == "crowded-and-fading":
         return "caution"
-    if stage_key in ("BROADENING", "RE-RATING", "ACCELERATING"):
+    if stage_key == "PRECIPICE":
+        return "early"
+    if stage_key in ("BROADENING", "ACCELERATING"):
         return "working"
     if div_quadrant == "hidden-opportunity":
         return "early"
@@ -876,6 +893,7 @@ def compose(root: Path) -> dict[str, Any]:
         any_fired = fals_summary.get("any_fired", False)
         n_fired = fals_summary.get("n_fired", 0)
         n_armed = fals_summary.get("n_armed", 0)
+        n_data_missing = fals_summary.get("n_data_missing", 0)
         n_total = n_fired + n_armed + fals_summary.get("n_qualitative", 0) + fals_summary.get("n_data_missing", 0)
         if n_total > 0:
             falsifier_label = f"{n_fired}/{n_total} fired"
@@ -1237,6 +1255,7 @@ def compose(root: Path) -> dict[str, Any]:
             "stage_sort": stage_sort,
             "legs_ordered": legs_ordered,
             "falsifier_any_fired": any_fired,
+            "falsifier_n_data_missing": n_data_missing,
             "falsifier_label": falsifier_label,
             "falsifier_label_en": falsifier_label_en,
             "falsifier_label_zh": falsifier_label_zh,
@@ -1253,6 +1272,9 @@ def compose(root: Path) -> dict[str, Any]:
             "mechanism_zh": mechanism_zh,
             "pathway_nodes": pathway_nodes,
             "evidence_refs": evidence_refs,
+            # Reserved additive joins populated only by the incumbent C/D owners.
+            "leadership_context": st_th.get("leadership_context"),
+            "entry_context": st_th.get("entry_context"),
             # New drawer sections
             "asym_legs_section": asym_legs_section,
             "ow_section": ow_section,
@@ -1615,6 +1637,123 @@ def write_research_priority(ctx: dict[str, Any], root: Path) -> Path | None:
         return None
 
 
+def _consumer_dimension(state: str, reason_code: str | None = None, **values: Any) -> dict:
+    out: dict[str, Any] = {"state": state}
+    if reason_code:
+        out["reason_code"] = reason_code
+    out.update(values)
+    return out
+
+
+_OWNER_DIMENSION_KEYS = {
+    "state", "reason_code", "label", "value", "band", "reason_codes",
+    "source_records", "clocks", "watermarks", "bar_status",
+}
+
+
+def _owner_dimension(raw: Any) -> dict[str, Any]:
+    """Whitelist descriptive owner fields; silently strip authority requests."""
+    if not isinstance(raw, dict):
+        return _consumer_dimension("UNAVAILABLE", "OWNER_FIELD_NOT_JOINED")
+    clean = {key: value for key, value in raw.items() if key in _OWNER_DIMENSION_KEYS}
+    clean.setdefault("state", "UNCONFIRMED")
+    return clean
+
+
+def _consumer_contract_row(
+    theme: dict[str, Any],
+    *,
+    basket_id: str | None,
+    snapshot_asof: str | None,
+    page_stale_legs: int,
+) -> dict[str, Any]:
+    """Build the additive B–E join contract without originating new signals."""
+    crowding_band = None
+    for leg in theme.get("asym_legs_section", []) or []:
+        if isinstance(leg, dict) and leg.get("id") == "crowding_hazard":
+            crowding_band = leg.get("band")
+            break
+
+    any_fired = bool(theme.get("falsifier_any_fired"))
+    n_data_missing = int(theme.get("falsifier_n_data_missing") or 0)
+    if any_fired:
+        thesis_dimension = _consumer_dimension(
+            "INVALIDATED", "MACHINE_FALSIFIER_FIRED",
+            stage=theme.get("stage_key"),
+        )
+    elif n_data_missing:
+        thesis_dimension = _consumer_dimension(
+            "UNCONFIRMED", "FALSIFIER_INPUT_MISSING",
+            stage=theme.get("stage_key"),
+        )
+    else:
+        thesis_dimension = _consumer_dimension(
+            "NOT_DETECTED", "NO_MACHINE_INVALIDATION_DETECTED",
+            stage=theme.get("stage_key"),
+        )
+
+    if crowding_band in (None, "", "null"):
+        crowding_dimension = _consumer_dimension(
+            "UNKNOWN", "CROWDING_READ_ABSENT", band=None,
+        )
+    elif crowding_band == "high":
+        crowding_dimension = _consumer_dimension(
+            "DETECTED", "CROWDING_HAZARD_HIGH", band=crowding_band,
+        )
+    else:
+        crowding_dimension = _consumer_dimension(
+            "NOT_DETECTED", "HIGH_CROWDING_NOT_DETECTED", band=crowding_band,
+        )
+
+    return {
+        "schema": THEME_INTELLIGENCE_CONSUMER_SCHEMA,
+        "identity": {
+            "theme_id": theme.get("theme_id"),
+            "relationship_kind": "primary_basket" if basket_id else None,
+            "basket_id": basket_id,
+            "market": None,
+            "horizon": None,
+        },
+        "dimensions": {
+            "leadership": _owner_dimension(theme.get("leadership_context")),
+            "thesis": thesis_dimension,
+            "crowding": crowding_dimension,
+            "entry": _owner_dimension(theme.get("entry_context")),
+            "health": _consumer_dimension(
+                "STALE" if page_stale_legs else "UNCONFIRMED",
+                "PAGE_HAS_STALE_LEGS" if page_stale_legs
+                else "PER_THEME_HEALTH_NOT_JOINED",
+                page_stale_legs=page_stale_legs,
+            ),
+        },
+        "specialist_context": {
+            "lane": theme.get("lane"),
+            "stage": theme.get("stage_key"),
+            "divergence": theme.get("div_label_en"),
+            "reason_codes": [
+                f"LANE_{str(theme.get('lane') or 'unknown').upper()}",
+                f"STAGE_{str(theme.get('stage_key') or 'unknown').upper()}",
+            ],
+        },
+        "source_records": list(theme.get("evidence_refs", []) or []),
+        "independent_evidence_families": [],
+        "clocks": {
+            "observation": snapshot_asof,
+            "availability": None,
+            "computation": None,
+            "publication": None,
+        },
+        "watermarks": {"snapshot": snapshot_asof, "inputs": {}},
+        "bar_status": {"closed": None, "provisional": None},
+        "correction_lineage": {
+            "supersedes": None,
+            "first_observed": None,
+            "first_displayed": None,
+        },
+        "authority": dict(_CONSUMER_AUTHORITY),
+    }
+
+
 def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
     """Write the theme_lanes.v1 side-artifact from an already-composed ctx.
 
@@ -1644,6 +1783,7 @@ def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
         lanes: dict[str, str] = {}
         basket_lanes: dict[str, str] = {}
         theme_baskets: dict[str, str | None] = {}
+        theme_context: dict[str, dict[str, Any]] = {}
         for th in ctx.get("themes", []) or []:
             tid = th.get("theme_id")
             lane = th.get("lane")
@@ -1652,6 +1792,12 @@ def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
             tid = str(tid)
             bid = primary.get(tid)
             theme_baskets[tid] = bid  # None → honest "no basket counterpart"
+            theme_context[tid] = _consumer_contract_row(
+                th,
+                basket_id=bid,
+                snapshot_asof=ctx.get("as_of"),
+                page_stale_legs=int(ctx.get("n_stale_legs") or 0),
+            )
             if lane in _LANE_ORDER:
                 lanes[tid] = lane
                 if bid:
@@ -1662,6 +1808,8 @@ def write_theme_lanes(ctx: dict[str, Any], root: Path) -> Path | None:
             "lanes": lanes,
             "basket_lanes": basket_lanes,
             "theme_baskets": theme_baskets,
+            "consumer_contract_schema": THEME_INTELLIGENCE_CONSUMER_SCHEMA,
+            "theme_context": theme_context,
         }
         out = root / "site" / "basketdata" / "theme_lanes.json"
         out.parent.mkdir(parents=True, exist_ok=True)
