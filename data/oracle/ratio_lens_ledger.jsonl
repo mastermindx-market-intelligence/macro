@@ -573,3 +573,6 @@
 {"date": "2026-09-19", "pair_id": "ailogic_vs_legacy", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.02239, "leg_den_ret_1w": -0.033606, "state": "TRENDING", "kind": "basket"}
 {"date": "2026-09-19", "pair_id": "cyber_vs_software", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.130966, "leg_den_ret_1w": 0.007126, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-09-19", "pair_id": "power_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.026106, "leg_den_ret_1w": 0.02239, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-09-19", "pair_id": "smh_vs_qqq", "event": "state_transition", "state_from": "NO_ANCHOR", "state": "BASING", "z252": 0.952, "z63": -0.425, "pct_3y": 91.7, "kind": "etf"}
+{"date": "2026-09-19", "pair_id": "sox_vs_qqq", "event": "state_transition", "state_from": "NO_ANCHOR", "state": "BASING", "z252": 0.913, "z63": -0.524, "pct_3y": 91.0, "kind": "etf"}
+{"date": "2026-09-19", "pair_id": "smh_vs_rsp", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.007832, "leg_den_ret_1w": -0.01208, "state": "NO_ANCHOR", "kind": "etf"}

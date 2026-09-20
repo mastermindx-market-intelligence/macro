@@ -493,3 +493,148 @@ def test_corrupt_graded_row_dropped_not_whole_market(tmp_path):
     assert alerts["n"] == 5
     assert alerts["tp"] == 5
     assert alerts["hit_rate"] == pytest.approx(1.0)
+
+# Fixed-protocol issued-probability audit (display only, not model promotion).
+def _prob_rows(n=5, p=.2, base=.1, outcome=False):
+    rows = []
+    for i in range(n):
+        row = _row("caution", "credit", 100 + i, "tn_watch")
+        row["asof"] = (date(2026, 6, 1) + timedelta(days=i)).isoformat()
+        row["logged_at"] = row["asof"] + "T21:00:00+00:00"
+        row["graded"]["graded_at"] = "2026-08-01T12:00:00+00:00"
+        row["drawdown_prob"] = {"measure": sc._PROBABILITY_TARGET}
+        for h in ("h5", "h10", "h21"):
+            row["drawdown_prob"][h] = p
+            row["drawdown_prob"]["base_" + h] = base
+            row["graded"]["hit"][h]["dd5"] = outcome
+        rows.append(row)
+    return rows
+
+
+def _audit(rows):
+    return sc.probability_audit(rows, today=date(2026, 9, 20))
+
+
+def test_probability_oracle_and_no_input_mutation():
+    from copy import deepcopy
+    rows = _prob_rows(); before = deepcopy(rows); audit = _audit(rows)
+    h = audit["horizons"]["h21"]
+    assert (h["n"], h["mean_forecast"], h["observed_rate"], h["brier"]) == (5, .2, 0., .04)
+    assert (h["paired_n"], h["paired_model_brier"], h["paired_base_brier"], h["paired_brier_delta"]) == (5, .04, .01, .03)
+    assert rows == before and audit["current_model_validated"] is False
+
+
+@pytest.mark.parametrize("n", [0, 1, 4])
+def test_probability_small_sample_is_not_zero(n):
+    h = _audit(_prob_rows(n))["horizons"]["h5"]
+    assert h["n"] == n
+    for key in ("mean_forecast", "observed_rate", "brier", "paired_brier_delta"):
+        assert h[key] is None
+
+
+@pytest.mark.parametrize("bad", [None, True, False, "0.2", -.1, 1.1, float("nan"), float("inf"), 10**400])
+def test_probability_rejects_invalid_numbers_per_horizon(bad):
+    rows = _prob_rows(); rows[0]["drawdown_prob"]["h5"] = bad
+    a = _audit(rows)["horizons"]
+    assert a["h5"]["n"] == 4 and a["h5"]["excluded"] == {"invalid_probability": 1}
+    assert a["h21"]["n"] == 5
+
+
+def test_probability_matched_baseline_never_uses_different_rows():
+    rows = _prob_rows(6)
+    rows[-1]["drawdown_prob"].update(h21=.9, base_h21=None)
+    h = _audit(rows)["horizons"]["h21"]
+    assert h["n"] == 6 and h["paired_n"] == 5 and h["missing_baseline_n"] == 1
+    assert h["brier"] == pytest.approx(1.01 / 6, abs=1e-6)
+    assert h["paired_model_brier"] == .04 and h["paired_brier_delta"] == .03
+    for r in rows: r["drawdown_prob"].pop("base_h5")
+    h = _audit(rows)["horizons"]["h5"]
+    assert h["n"] == 6 and h["paired_n"] == 0 and h["paired_base_brier"] is None
+
+
+@pytest.mark.parametrize("field,value", [
+    ("asof", "2026-02-30"), ("asof", "2026-09-21"), ("asof", "20260601"),
+    ("logged_at", "2026-06-01T21:00:00"), ("logged_at", "2026-08-02T00:00:00Z"),
+    ("logged_at", None), ("graded_at", "2026-09-21T00:00:00Z"),
+    ("graded_at", "2026-05-01T00:00:00Z"), ("graded_at", "bad"),
+])
+def test_probability_excludes_unusable_dates_and_receipts(field, value):
+    rows = _prob_rows()
+    target = rows[0]["graded"] if field == "graded_at" else rows[0]
+    target[field] = value
+    for h in _audit(rows)["horizons"].values():
+        assert h["n"] == 4 and h["excluded_n"] == 1
+
+
+def test_probability_duplicate_conflict_is_order_independent():
+    from copy import deepcopy
+    rows = _prob_rows(); rows.append(deepcopy(rows[0]))
+    h = _audit(rows)["horizons"]["h21"]
+    assert h["n"] == 5 and h["excluded"] == {"identical_duplicate": 1}
+    rows[-1]["drawdown_prob"]["h21"] = .8
+    h = _audit(rows)["horizons"]["h21"]
+    assert h["n"] == 4 and h["excluded"] == {"conflicting_duplicate_date": 2}
+    assert _audit(rows) == _audit(list(reversed(rows)))
+
+
+def test_probability_requires_boolean_not_rounded_drawdown():
+    rows = _prob_rows(); rows[0]["graded"]["hit"]["h5"]["dd5"] = "false"
+    assert _audit(rows)["horizons"]["h5"]["n"] == 4
+
+
+@pytest.mark.parametrize("value", [None, "other instrument", ">=8% SPY pullback"])
+def test_probability_does_not_mix_targets(value):
+    rows = _prob_rows(); rows[0]["drawdown_prob"]["measure"] = value
+    assert _audit(rows)["horizons"]["h21"]["excluded"] == {"unmatched_target": 1}
+
+
+def test_probability_bins_have_disjoint_closed_endpoint():
+    rows = _prob_rows(7)
+    for r, p in zip(rows, [0, .099, .1, .2, .4, .6, 1.]):
+        r["drawdown_prob"]["h21"] = p
+    bins = _audit(rows)["horizons"]["h21"]["bins"]
+    assert [b["n"] for b in bins] == [2, 1, 1, 1, 2]
+    assert all(b["observed_rate"] is None for b in bins)
+
+
+def test_probability_existing_producer_uses_same_rows_without_advancing_ledger(tmp_path):
+    import hashlib
+    rows = _prob_rows(); p = tmp_path / "data/risk_radar/forward_log.jsonl"
+    _write_jsonl(p, rows); before = hashlib.sha256(p.read_bytes()).hexdigest()
+    result = sc.build(tmp_path, today=date(2026, 9, 20))
+    assert result["markets"]["us"]["probability_audit"] == _audit(rows)
+    assert "probability_audit" not in result["markets"]["cn"]
+    assert result["markets"]["us"]["windows"]["full"] == sc._window(rows, [])
+    assert hashlib.sha256(p.read_bytes()).hexdigest() == before
+    assert not (tmp_path / "site/riskdata/scorecard.json").exists()
+
+
+def test_probability_corrupt_and_ungraded_rows_are_accounted():
+    a = _audit([None, 3, {"asof": "2026-06-01", "drawdown_prob": {"measure": sc._PROBABILITY_TARGET}}])
+    assert a["horizons"]["h21"]["excluded"] == {"invalid_row": 2, "ungraded": 1}
+
+
+@pytest.mark.parametrize("event_count", [0, 1, 5])
+def test_probability_event_coverage_is_not_validation(event_count):
+    rows = _prob_rows()
+    for r in rows[:event_count]:
+        for h in ("h5", "h10", "h21"): r["graded"]["hit"][h]["dd5"] = True
+    result = _audit(rows)
+    assert result["horizons"]["h21"]["both_outcomes_present"] is (0 < event_count < 5)
+    assert result["current_model_validated"] is False
+    assert result["publication_timing_verified"] is False
+    assert result["sample_unit"] == "overlapping_daily_forecast"
+
+
+def test_probability_denominators_account_for_every_parsed_row():
+    from copy import deepcopy
+    rows = _prob_rows(7); rows.append(deepcopy(rows[0])); rows.append(None)
+    rows[1]["graded"] = None
+    rows[2]["graded"]["hit"]["h5"]["dd5"] = 1
+    rows[3]["drawdown_prob"]["h10"] = None
+    rows[4]["drawdown_prob"].pop("base_h21")
+    a = _audit(rows)
+    for h in a["horizons"].values():
+        assert h["n"] + h["excluded_n"] == len(rows)
+        assert h["paired_n"] + h["missing_baseline_n"] == h["n"]
+        assert sum(b["n"] for b in h["bins"]) == h["n"]

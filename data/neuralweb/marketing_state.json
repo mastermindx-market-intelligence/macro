@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 271,
+    "opportunity_queue_depth": 272,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 271,
-      "scored": 389,
+      "open": 272,
+      "scored": 390,
       "newest": [
         {
           "id": "radar-earnings-ABVX-2026-09-19",
           "problem_or_desire": "$ABVX: earnings 2026-09-21 after hours",
           "expected_value": 0.5,
-          "score": 0.379108,
+          "score": 0.265346,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-earnings-AZO-2026-09-19",
           "problem_or_desire": "$AZO: earnings 2026-09-22 pre-market",
           "expected_value": 0.5,
-          "score": 0.379108,
+          "score": 0.265346,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-earnings-KBH-2026-09-19",
           "problem_or_desire": "$KBH: earnings 2026-09-22 after hours",
           "expected_value": 0.5,
-          "score": 0.379108,
+          "score": 0.265346,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1184,
-      "receipts": 1184,
+      "total": 1199,
+      "receipts": 1199,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-09-19-90229199b2",
+          "id": "pub-ob-2026-09-19-c7fbd8e6cc",
           "channel": "x",
           "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-09-19T06:38:27Z"
+          "published_at": "2026-09-19T21:42:53Z"
         },
         {
-          "id": "pub-ob-2026-09-19-bb12fe33d8",
+          "id": "pub-ob-2026-09-19-0864a772cd",
+          "channel": "x",
+          "account": "mastermind_news",
+          "status": "clean",
+          "published_at": "2026-09-19T19:37:59Z"
+        },
+        {
+          "id": "pub-ob-2026-09-19-69758e932a",
           "channel": "x",
           "account": "flagship",
           "status": "clean",
-          "published_at": "2026-09-19T06:38:27Z"
-        },
-        {
-          "id": "pub-ob-2026-09-18-3d43625163",
-          "channel": "x",
-          "account": "founder",
-          "status": "clean",
-          "published_at": "2026-09-19T04:22:36Z"
+          "published_at": "2026-09-19T19:37:59Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 12,
-    "signal_posts": 0,
-    "charts": 90,
+    "total_posts": 11,
+    "signal_posts": 3,
+    "charts": 92,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-09-19"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-09-19T09:35:01Z",
-  "inputs_hash": "sha256:0ff3b28f8a5ed58b73f1636dda20e4f0367bc747fce04411170ba01c2e4c0839",
+  "produced_at": "2026-09-19T21:56:14Z",
+  "inputs_hash": "sha256:7332c237f69a9228b401553ac93d6c7662caea621152ebdba36eb51d565d333c",
   "tier": "display"
 }
