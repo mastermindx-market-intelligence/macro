@@ -1,0 +1,473 @@
+{
+  "schema": "mastermind.prophet_hkca_editable_design_evidence.v1",
+  "as_of": "2026-09-20",
+  "status": "DESIGN_AUTHORITY_APPROVED / RIG_AND_INDEPENDENT_REVIEW_PENDING / PRODUCTION_NOT_PROVEN",
+  "paper": {
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "file_name": "Mastermind Product Design System — Agentic Lab",
+    "page_id": "p-2-1",
+    "page_name": "Prophet · HK + Canada",
+    "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-2-1",
+    "server_version": "0.5.9",
+    "token_content_hash": "5ae876bc",
+    "node_count": 3102,
+    "artboard_count": 22
+  },
+  "coverage": {
+    "primary_matrix_expected": 16,
+    "primary_matrix_observed": 16,
+    "targeted_state_artboards": 2,
+    "stress_artboards": 2,
+    "markets": [
+      "hk",
+      "ca"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "primary_widths": [
+      1440,
+      390
+    ],
+    "targeted_widths": [
+      320
+    ]
+  },
+  "review": {
+    "spacing": "PASS",
+    "typography": "PASS",
+    "contrast": "PASS",
+    "alignment": "PASS",
+    "artboard_fit": "PASS",
+    "responsive_recomposition": "PASS",
+    "no_horizontal_overflow_390_320": "PASS",
+    "notes": "Forced states prove intended presentation only; production routes and natural publications remain separate proof gates."
+  },
+  "shared_contract_node_id": "1F-1",
+  "superseded_shell_node_id": "9N-1",
+  "artboards": [
+    {
+      "node_id": "3KI-1",
+      "name": "50 · Targeted States + Interaction · Dark · EN · 1440",
+      "kind": "state",
+      "market": "shared",
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": null,
+      "screenshot_size": [
+        1440,
+        1839
+      ],
+      "screenshot_sha256": "6efbbbb32bd1ac0ba75e843227ae8373caf3820b96f53047d1b586b950fd4c37",
+      "screenshot_path": "screenshots/50-targeted-states-interaction-dark-en-1440.png",
+      "jsx_sha256": "084f41ad7b98aec5b6c726e64b1dfce3ce45748f990c39b46d24a667f3f1f279",
+      "jsx_path": "jsx/50-targeted-states-interaction-dark-en-1440.jsx.txt"
+    },
+    {
+      "node_id": "3PM-1",
+      "name": "51 · Targeted States + Interaction · Light · EN · 1440",
+      "kind": "state",
+      "market": "shared",
+      "theme": "light",
+      "locale": "en",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": null,
+      "screenshot_size": [
+        1440,
+        1839
+      ],
+      "screenshot_sha256": "8da4651ac8ee843e69479cf6e99b5b78aeb1103eaa60200b1e8a2c36065a0dad",
+      "screenshot_path": "screenshots/51-targeted-states-interaction-light-en-1440.png",
+      "jsx_sha256": "e2ec3772230a4d16b48a6c052cd38d1aa1c85c6d5136f3efcca344470d69c1b8",
+      "jsx_path": "jsx/51-targeted-states-interaction-light-en-1440.jsx.txt"
+    },
+    {
+      "node_id": "55-1",
+      "name": "20 · Hong Kong · Daily Workspace · Dark · EN · 1440",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "11c2515838e2de0534954617b6126a9b7e663f532d24d740b3e3e6a303628b3c",
+      "screenshot_path": "screenshots/20-hong-kong-daily-workspace-dark-en-1440.png",
+      "jsx_sha256": "32a4eb22eb4267d59cd0a055e0ad156a35ba126ea08d9c072b8cd5e98aff7b00",
+      "jsx_path": "jsx/20-hong-kong-daily-workspace-dark-en-1440.jsx.txt"
+    },
+    {
+      "node_id": "28U-1",
+      "name": "30 · Hong Kong · Daily Workspace · Dark · EN · 390",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        339,
+        2000
+      ],
+      "screenshot_sha256": "10dda222969d39d07c36a6a59774f303a7748d3e3f7196a2d90048572336bdc4",
+      "screenshot_path": "screenshots/30-hong-kong-daily-workspace-dark-en-390.png",
+      "jsx_sha256": "eb7c022b7da73afa6defc2296cfe5bf7bf5368bc01de9c6ec27f2945c4ac3923",
+      "jsx_path": "jsx/30-hong-kong-daily-workspace-dark-en-390.jsx.txt"
+    },
+    {
+      "node_id": "24V-1",
+      "name": "24 · Hong Kong · Daily Workspace · Light · EN · 1440",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "light",
+      "locale": "en",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "abb215c9920f7e16839a6b67a5142b688cb6a9432cc25a9a7f48e02a013d3259",
+      "screenshot_path": "screenshots/24-hong-kong-daily-workspace-light-en-1440.png",
+      "jsx_sha256": "bd49c579c0f82654831a21bbdfe2389be1edbfd3cd5609926586566175098de5",
+      "jsx_path": "jsx/24-hong-kong-daily-workspace-light-en-1440.jsx.txt"
+    },
+    {
+      "node_id": "1MN-1",
+      "name": "22 · Canada · Daily Workspace · Dark · EN · 1440",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "a54fb48353017dcd4b49e12992fb2d44b72bf8eb887a4959d449be26166034a6",
+      "screenshot_path": "screenshots/22-canada-daily-workspace-dark-en-1440.png",
+      "jsx_sha256": "cbe5d4ab875cfac3e2e55b87d9c3e919455eacad41c08a0659fd159bb0abd264",
+      "jsx_path": "jsx/22-canada-daily-workspace-dark-en-1440.jsx.txt"
+    },
+    {
+      "node_id": "2CT-1",
+      "name": "31 · Canada · Daily Workspace · Dark · EN · 390",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "dark",
+      "locale": "en",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        330,
+        2000
+      ],
+      "screenshot_sha256": "cd344739390937e4607eaa50e91237811ecaec5dba59c5e65c317d550861208b",
+      "screenshot_path": "screenshots/31-canada-daily-workspace-dark-en-390.png",
+      "jsx_sha256": "6d1d72839afa69d14348be452357714d57c2ba44e3f9f4375ef8ce79b1dfc3b9",
+      "jsx_path": "jsx/31-canada-daily-workspace-dark-en-390.jsx.txt"
+    },
+    {
+      "node_id": "2GS-1",
+      "name": "32 · Hong Kong · Daily Workspace · Light · EN · 390",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "light",
+      "locale": "en",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        339,
+        2000
+      ],
+      "screenshot_sha256": "74b81286a3a81e7bfb3599bfbbd5f0c52eb07ffbc853aa0eea3a8bd2a936847d",
+      "screenshot_path": "screenshots/32-hong-kong-daily-workspace-light-en-390.png",
+      "jsx_sha256": "44906b82a40fb6dbf971b835519ac564a70250f8e5c89f76b20309a15ba23933",
+      "jsx_path": "jsx/32-hong-kong-daily-workspace-light-en-390.jsx.txt"
+    },
+    {
+      "node_id": "2KR-1",
+      "name": "33 · Canada · Daily Workspace · Light · EN · 390",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "light",
+      "locale": "en",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        330,
+        2000
+      ],
+      "screenshot_sha256": "2069dfe9908771e4b0d74cc0c07b1489620942e23e9c2d701ba51c248821a99f",
+      "screenshot_path": "screenshots/33-canada-daily-workspace-light-en-390.png",
+      "jsx_sha256": "f0a0b0d550ecea4bd1db3165f8367eceb307fbaf87fba38aac640b9b24acb741",
+      "jsx_path": "jsx/33-canada-daily-workspace-light-en-390.jsx.txt"
+    },
+    {
+      "node_id": "20W-1",
+      "name": "23 · Canada · Daily Workspace · Light · EN · 1440",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "light",
+      "locale": "en",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "43f2d232ad0a27c1491f5fbb0398af3d888108970f2477629aca227f004153a1",
+      "screenshot_path": "screenshots/23-canada-daily-workspace-light-en-1440.png",
+      "jsx_sha256": "6ee866a405050a66c12c363f758ddc3119a013d3d9f72192ec9c58ddd2885916",
+      "jsx_path": "jsx/23-canada-daily-workspace-light-en-1440.jsx.txt"
+    },
+    {
+      "node_id": "2OQ-1",
+      "name": "40 · Hong Kong · Daily Workspace · Dark · ZH · 1440",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "d87ea29c869a5ef4139df4d8e13a2cf8113830b5be04bc55f102d2dc50e1c5ad",
+      "screenshot_path": "screenshots/40-hong-kong-daily-workspace-dark-zh-1440.png",
+      "jsx_sha256": "584b70a700c515c36f002a607f2cb47f647c47f9a486dc5349eed29c3e92fe85",
+      "jsx_path": "jsx/40-hong-kong-daily-workspace-dark-zh-1440.jsx.txt"
+    },
+    {
+      "node_id": "34M-1",
+      "name": "44 · Hong Kong · Daily Workspace · Dark · ZH · 390",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        343,
+        2000
+      ],
+      "screenshot_sha256": "8b4b40c7ef42701935355743dfad1398b3836283b362f143ae1182a819ae6dfd",
+      "screenshot_path": "screenshots/44-hong-kong-daily-workspace-dark-zh-390.png",
+      "jsx_sha256": "d2e8922f6bf08b6f0e6b2c675c14e7c93d582e782d1950d7b190caaf26296051",
+      "jsx_path": "jsx/44-hong-kong-daily-workspace-dark-zh-390.jsx.txt"
+    },
+    {
+      "node_id": "2SP-1",
+      "name": "41 · Hong Kong · Daily Workspace · Light · ZH · 1440",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "52c1035a8d6e015988d6df5d615033396ba7d8ec16cdd28e15e7a77786a571ad",
+      "screenshot_path": "screenshots/41-hong-kong-daily-workspace-light-zh-1440.png",
+      "jsx_sha256": "c21ec44a2ec0d0e04a37eaad4801fd253dc04c05599c65f29ff21eabdf6b6d44",
+      "jsx_path": "jsx/41-hong-kong-daily-workspace-light-zh-1440.jsx.txt"
+    },
+    {
+      "node_id": "2WO-1",
+      "name": "42 · Canada · Daily Workspace · Dark · ZH · 1440",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "d5724897b4553acbacb97c51e6e5689572aeda9eabe0e4a2097a6cc6ef997de7",
+      "screenshot_path": "screenshots/42-canada-daily-workspace-dark-zh-1440.png",
+      "jsx_sha256": "3df5863fb917e612b711576d59677a3e10a3a28f6c3a40955a1ab96fb9e31de1",
+      "jsx_path": "jsx/42-canada-daily-workspace-dark-zh-1440.jsx.txt"
+    },
+    {
+      "node_id": "3CK-1",
+      "name": "46 · Canada · Daily Workspace · Dark · ZH · 390",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        357,
+        2000
+      ],
+      "screenshot_sha256": "f6a6cf9243724c8948f675ade1ccb8987017558c23688a80d3529477484ac080",
+      "screenshot_path": "screenshots/46-canada-daily-workspace-dark-zh-390.png",
+      "jsx_sha256": "aab2b24fe28b07a11eb39ac55488ab221390cccd289fa43f33eb99f4b4ac7c88",
+      "jsx_path": "jsx/46-canada-daily-workspace-dark-zh-390.jsx.txt"
+    },
+    {
+      "node_id": "38L-1",
+      "name": "45 · Hong Kong · Daily Workspace · Light · ZH · 390",
+      "kind": "primary",
+      "market": "hk",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        343,
+        2000
+      ],
+      "screenshot_sha256": "9b049ef3b88af4416f123e0a50d6ff580aeb07fa2169db16762c15a0f940d03f",
+      "screenshot_path": "screenshots/45-hong-kong-daily-workspace-light-zh-390.png",
+      "jsx_sha256": "b6df4c02469f91d417ad38bcfee8a837a080e1a821a1383b2b7f1dbb5420631b",
+      "jsx_path": "jsx/45-hong-kong-daily-workspace-light-zh-390.jsx.txt"
+    },
+    {
+      "node_id": "3GJ-1",
+      "name": "47 · Canada · Daily Workspace · Light · ZH · 390",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 390,
+      "declared_width": 390,
+      "declared_height": null,
+      "screenshot_size": [
+        357,
+        2000
+      ],
+      "screenshot_sha256": "ef55b94833deab6918e4b43291112f3b0501a063d904a3d8a77074c67c421db4",
+      "screenshot_path": "screenshots/47-canada-daily-workspace-light-zh-390.png",
+      "jsx_sha256": "3d586f3873c2d53e180579a25b9a5dd12bfeb70add86c18b4a07791a344f7a5c",
+      "jsx_path": "jsx/47-canada-daily-workspace-light-zh-390.jsx.txt"
+    },
+    {
+      "node_id": "3UN-1",
+      "name": "52 · 320 Stress · Canada · Light · ZH · Expanded",
+      "kind": "stress",
+      "market": "ca",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 320,
+      "declared_width": 320,
+      "declared_height": null,
+      "screenshot_size": [
+        269,
+        2000
+      ],
+      "screenshot_sha256": "e6bb50e9861760160ffbfe7c8d6a34d111b2af567a8e9c94b92b0c2d16836835",
+      "screenshot_path": "screenshots/52-320-stress-canada-light-zh-expanded.png",
+      "jsx_sha256": "7656ca271e2bc3a1f75e1097a14236c5cde471e4e54f810e85f493056598287e",
+      "jsx_path": "jsx/52-320-stress-canada-light-zh-expanded.jsx.txt"
+    },
+    {
+      "node_id": "30N-1",
+      "name": "43 · Canada · Daily Workspace · Light · ZH · 1440",
+      "kind": "primary",
+      "market": "ca",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 1440,
+      "declared_width": 1440,
+      "declared_height": 1200,
+      "screenshot_size": [
+        1440,
+        1200
+      ],
+      "screenshot_sha256": "5bbb4f3834acc3f28b37e051f1df6eedcb7609b51f258538c34460a64ae783dc",
+      "screenshot_path": "screenshots/43-canada-daily-workspace-light-zh-1440.png",
+      "jsx_sha256": "f721337b74a341d7935a16b4a12843523d789d52f43a7e95e1ca0c846bbb1502",
+      "jsx_path": "jsx/43-canada-daily-workspace-light-zh-1440.jsx.txt"
+    },
+    {
+      "node_id": "3YW-1",
+      "name": "53 · 320 Stress · Hong Kong · Light · ZH · Expanded",
+      "kind": "stress",
+      "market": "hk",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": 320,
+      "declared_width": 320,
+      "declared_height": null,
+      "screenshot_size": [
+        267,
+        2000
+      ],
+      "screenshot_sha256": "5de464947b6ff9774313941f6adbf08dc5380010a557b91a57bed868dbe1966e",
+      "screenshot_path": "screenshots/53-320-stress-hong-kong-light-zh-expanded.png",
+      "jsx_sha256": "55906fbf03101c8b3c7f0290416e25d47f29c0ecad593fa5fb13b14ca2bf6f9d",
+      "jsx_path": "jsx/53-320-stress-hong-kong-light-zh-expanded.jsx.txt"
+    }
+  ],
+  "contact_sheets": [
+    {
+      "name": "matrix-1440-dark",
+      "path": "contact-sheets/matrix-1440-dark.png",
+      "sha256": "61c3f7c14ecf3af52cdd85e85c4dcde250bc730ca88347fa9f018fb23a9f8785",
+      "size": [
+        1420,
+        1270
+      ]
+    },
+    {
+      "name": "matrix-1440-light",
+      "path": "contact-sheets/matrix-1440-light.png",
+      "sha256": "16b2e36ba7c7e93442e329e353ad12a213728a641511766970720f3226063125",
+      "size": [
+        1420,
+        1270
+      ]
+    },
+    {
+      "name": "matrix-390-dark",
+      "path": "contact-sheets/matrix-390-dark.png",
+      "sha256": "d8ebab8302814e82a77aa586f73794e1a74df453774be1b5bef99459148eb2a3",
+      "size": [
+        540,
+        3196
+      ]
+    },
+    {
+      "name": "matrix-390-light",
+      "path": "contact-sheets/matrix-390-light.png",
+      "sha256": "a267bbdc009221461da126993f6f7149878ef01e36456765b708f23ff352eacf",
+      "size": [
+        540,
+        3196
+      ]
+    }
+  ]
+}

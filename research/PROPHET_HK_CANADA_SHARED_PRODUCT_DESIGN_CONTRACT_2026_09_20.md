@@ -1,15 +1,16 @@
 # Prophet HK + Canada shared product design contract — R1
 
-**Status:** `DESIGN_AUTHORITY_REVIEWED / REFERENCE_REWORK_REQUIRED / IMPLEMENTATION_CONTRACT_DRAFT`
+**Status:** `DESIGN_AUTHORITY_APPROVED / EDITABLE_REFERENCE_FROZEN / RIG_AND_INDEPENDENT_REVIEW_PENDING / PRODUCTION_NOT_PROVEN`
 **Operation:** `prophet-hkca-shared-design-contract-r1-20260920-sol-001`  
 **Parent:** `WS:PROPHET-HK-CA-REVAMP`  
 **Source assignment:** `D_SHARED_PRODUCT_DESIGN_AND_UI(1).md`, V2, September 19, 2026  
-**Protected procedure:** `Mastermind@f3d187976e083f9b102fc49696395b5c1521ebb5`, Skillpack 1.0.1/bootstrap 1  
-**Macro base:** `86634cb89ad4e7253b44a049b6e5712406899f90`
+**Protected procedure:** `Mastermind@f4c5d9ef6a49653bd0c4a579ab8b90a8ba7ed907`, Skillpack 1.0.1/bootstrap 1
+**Macro build base:** `86634cb89ad4e7253b44a049b6e5712406899f90`
+**Current Macro compatibility pin:** `8bd426a67858becff7609bc62956300df3a7385c`
 
 This contract turns the accepted HK/Canada roster, continuity, card, and state requirements into one bounded product-design handoff for the existing Hong Kong and Canada carriers. It does not change producer truth, rank, thresholds, entitlement, access policy, publication authority, or portfolio action.
 
-The visual reference remains provisional until the current design authority approves it and the implementation is proven on both production routes. This document is executable implementation law for the named B/C lanes only after that approval; until then, it is the exact review target and gap register.
+The current design authority has approved and frozen the paired Paper reference for bounded R1 implementation on the named B/C carriers. That approval does not make Paper a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
 
 ## 1. Authority, carriers, and non-goals
 
@@ -51,69 +52,81 @@ Reuse the existing repository vocabulary:
 
 A missing primitive is a `DESIGN-SYSTEM GAP`, not permission for B or C to invent a route-local fork.
 
-## 3. Editable source trace
+## 3. Approved editable source trace
 
-Governed Paper projection:
+The approved implementation projection is the governed Paper file:
 
 - file: `Mastermind Product Design System — Agentic Lab`;
 - file id: `01M2WGNCX9475G79JRKJTCM08P`;
 - page: `Prophet · HK + Canada`;
 - page id: `p-2-1`;
-- token content hash observed at recovery: `d61e4858`;
-- artboard `1F-1`: `10 · Shared Contract · Dark · EN`;
-- artboard `55-1`: `20 · Hong Kong · Daily Workspace · Dark · EN · 1440`;
-- artboard `9N-1`: `21 · Canada · Daily Workspace · Light · EN · 1440`.
+- Paper MCP server observed: `0.5.9`;
+- final token content hash: `5ae876bc`;
+- final page inventory: `3,102` nodes / `22` artboards.
 
-Observed file state: 291 nodes and three 1440px artboards. Paper MCP server `0.5.9`
-returns `WEEKLY_LIMIT` for tree reads and editing. A fresh read-only public-browser render was
-captured at 3× device scale on September 20, 2026 and all three artboards were visually reviewed.
-That render proves the pixel projection only; exact node provenance, editable variants, and
-reference approval remain unverified.
+The shared contract is artboard `1F-1`. The prior incomplete Canada shell remains only as the
+explicitly named superseded audit artifact `9N-1`; B/C must not implement from it.
 
-### 3.1 Design-authority review — `REWORK_REQUIRED`
+Exact primary implementation artboards:
 
-The current visual reference is **not approved for R1 implementation**. The useful direction is
-preserved, but the pair is materially incomplete against the assignment and sixteen-cell bar.
+| Market | Locale | Theme | 1440 | 390 |
+|---|---|---|---|---|
+| Hong Kong | EN | dark | `55-1` | `28U-1` |
+| Hong Kong | EN | light | `24V-1` | `2GS-1` |
+| Hong Kong | ZH | dark | `2OQ-1` | `34M-1` |
+| Hong Kong | ZH | light | `2SP-1` | `38L-1` |
+| Canada | EN | dark | `1MN-1` | `2CT-1` |
+| Canada | EN | light | `20W-1` | `2KR-1` |
+| Canada | ZH | dark | `2WO-1` | `3CK-1` |
+| Canada | ZH | light | `30N-1` | `3GJ-1` |
 
-What stands:
+Targeted variants:
 
-- The shared contract separates Current, Research, Changed, and Record, and distinguishes current
-  authority from a non-actionable historical row.
-- The Hong Kong board communicates `39 current names / 2 live`, exposes Top versus All, Grid/Table,
-  search, stage totals, and owner-native cards with why-shown, timing, price, and evidence.
-- The Canada header truthfully says Branch-B screen, `17 current names`, `Top Picks 0`, and no
-  confirmed entry instead of fabricating scarcity or action.
+- dark roster/access/history/interaction matrix: `3KI-1`;
+- light roster/access/history/interaction matrix: `3PM-1`;
+- Canada 320px ZH long-name + expanded-evidence stress: `3UN-1`;
+- Hong Kong 320px ZH long-name + expanded-evidence stress: `3YW-1`.
 
-Blocking gaps:
+The exact committed evidence bundle is:
 
-1. Canada is only a header and Top/All toggle shell. It lacks search, Grid/Table, stage/watch counts,
-   current cards, reasons, timing, evidence, recent changes, record, and designed degraded states.
-2. Only three desktop artboards exist: shared dark EN, HK dark EN, and Canada light EN. The required
-   market × locale × theme × width matrix has no ZH, no 390/320, and no opposite-theme market pairs.
-3. No complete interaction or permission-state variants are shown for keyboard focus, expanded
-   evidence, loading, stale, source failure, unauthenticated, expired entitlement, or filter-empty.
-4. Exact approved component-variant and node/version identifiers cannot be handed to B/C while the
-   editable tree remains quota-blocked.
+`mockups/evidence/prophet-hkca-shared-design-20260920/`
 
-Ordered remediation:
+Its `manifest.json` SHA-256 is
+`99ca807425b929dd411814671fb558992b9bf20b324a8e7a721b5cbb2ed313ad`.
+It binds each accepted artboard to a screenshot digest and a Paper `get_jsx`
+`inline-styles` snapshot digest; `SHA256SUMS` binds every committed evidence byte.
 
-1. Complete Canada to semantic parity with HK while preserving its screen and watch-only authority.
-2. Compose deliberate HK-light and Canada-dark treatments, then EN/ZH 390 variants for both markets.
-3. Add one governed state/interaction board covering the required failure, permission, history, and
-   input modalities without inventing another evidence plane.
-4. Re-open the editable tree, record exact approved node/version identifiers, and capture the primary
-   sixteen cells plus targeted 320/history/permission evidence before releasing R1 source work.
+### 3.1 Design-authority disposition — `APPROVED_FOR_BOUNDED_IMPLEMENTATION`
 
-This R1 reference gap does not block lawful R0 truth/roster restoration using already accepted
-styling. B/C must not begin the new R1 visual migration from these provisional boards.
+The design authority reviewed every accepted board after mutation, including both themes,
+both languages, both primary widths, both market-specific 320px long-name cases, and the
+state/interaction matrices. The review passed spacing, typography, contrast, alignment,
+artboard fit, deliberate responsive recomposition, and no horizontal overflow at 390/320.
 
-Draft Figma projection named in `#7394`:
+The accepted product decisions are:
 
-- file key: `IKqTiq7jeVBJusBfoHnPsH`.
+- Hong Kong truthfully exposes all `39` current owner-visible names and an explicit two-name
+  Top subset without making the subset appear to be the whole board.
+- Canada truthfully exposes all `17` current screen/watch names, prints `Top Picks 0`, and
+  preserves Branch-B screen authority rather than inventing official picks or entry permission.
+- Grid/Table, search, stage, recently changed, research attention, and evidence/record share
+  one information architecture and card grammar across both themes and languages.
+- Mobile is a deliberate single-column recomposition rather than squeezed desktop geometry.
+- Chinese copy is native-shaped, wraps rather than clips, and carries no raw English state names.
+- Historical rows remain visibly non-actionable; missing history never becomes an inferred exit.
+- State designs distinguish singleton, Top-empty/All-nonempty, valid zero, watch-only, blocked,
+  stale, source failure, unauthenticated, entitlement expired, filter empty, incomplete history,
+  correction, expanded, focus-visible, disabled/locked, and recovered.
 
-`#7394` remains draft and change-requested at the source observation. The Figma file key is not
-an approved Prophet reference, and exact Prophet node/version identifiers were not verified in
-this lane. B/C must not implement from the key alone.
+This approval authorizes B/C to implement against the exact artboards above after their normal
+source-custody and shared-partial gates clear. It does **not** grant repository-global canonical
+reference status, satisfy the Reference Integrity Gate, substitute for Session H independent
+review, or authorize merge, deployment, access-policy change, rank/signal change, or publication.
+A forced state proves intended presentation only unless the real producer/runtime emitted it.
+
+The Figma file `IKqTiq7jeVBJusBfoHnPsH` remains a secondary design-system projection and is not
+the implementation source for this paired reference. Paper is the preferred governed web-design
+surface for this lane; repository tokens/components remain the authority it projects.
 
 ## 4. Daily user job
 
@@ -314,39 +327,49 @@ Refreshing a failed source and clearing filters are separate actions.
 
 ## 13. Evidence matrix
 
-Primary visual acceptance is exactly sixteen cells:
+The editable design now covers all sixteen primary cells:
 
 ```text
-2 markets × EN/ZH × dark/light × 1440/390
+2 markets × EN/ZH × dark/light × 1440/390 = 16/16
 ```
 
-Add targeted evidence rather than a huge Cartesian expansion:
+It also covers two market-specific 320px ZH long-name/expanded-detail cases and paired dark/light
+state/interaction boards. The committed evidence bundle and manifest named in §3 are the source for
+all visual implementation references; chat images and the superseded shell are not source.
 
-- 320px long-name and expanded-detail checks for both markets;
-- populated, singleton, Top-empty/All-nonempty, valid-zero, watch-only, blocked;
-- stale, source-failed, unauthenticated, entitlement-expired, filter-empty;
-- incomplete-history and recent-transition rows;
-- hover, keyboard focus, expanded/open, disabled/locked where supported;
-- Grid/Table/filter identity and order round trips;
-- dark/light contrast and no horizontal page overflow.
+Covered design states include populated, singleton, Top-empty/All-nonempty, valid zero, watch-only,
+blocked, stale, source-failed, unauthenticated, entitlement-expired, filter-empty, incomplete history,
+recent change, correction, focus-visible, expanded/open, disabled/locked, touch dismissal, and
+fresh→stale→failed→recovered transition treatment.
 
-Evidence uses the real inherited card DOM and real controls, not isolated decorative boxes.
-A forced state proves presentation only unless the actual producer path emitted it. New semantics
-require successor evidence; old P0B screenshots may not be relabelled as a new run.
+Implementation still owes real-path proof for:
 
-Production acceptance also requires two successive natural market publications so continuity,
+- the inherited production card DOM and real controls rather than Paper nodes;
+- Grid/Table/search/stage/filter identity and deterministic-order round trips;
+- native keyboard, touch, Escape/focus-return, and popover/navigation behavior;
+- loading skeletons and live quote/layout stability;
+- access-policy enforcement and absence of hidden paid identities in delivered bytes;
+- actual producer-emitted stale/failure/correction states where available;
+- no horizontal page overflow at 390 and targeted 320 in a browser;
+- dark/light contrast on the painted production surfaces;
+- publisher template/site mirror parity and successor evidence.
+
+A forced Paper state proves intended presentation only unless the real producer path emitted it.
+New semantics require successor evidence; old P0B screenshots may not be relabelled as a new browser
+run. Production acceptance also requires two successive natural market publications so continuity,
 transition, correction, and exit behaviour are observed rather than inferred.
 
 ## 14. Implementation order
 
-1. Session D obtains design-authority approval of the paired reference or records exact gaps.
+1. **COMPLETE — Session D:** paired Paper reference approved, frozen, and evidence-bound at the exact
+   artboard IDs in §3.
 2. The shared-card incumbent grants or denies an exact lease for any required partial change.
 3. B implements the HK route on `#7163` without seizing Canada or shared paths.
 4. C implements the Canada route on `#7018` without weakening Branch-B screen semantics.
 5. Each lane captures its own successor evidence and returns exact head/tree/test receipts.
-
-6. A integrates compatible heads and owns deployment/publication sequencing.
-7. H reviews the immutable integrated result against this contract and the sixteen-cell matrix.
+6. Session H / the current independent-review owner adjudicates the immutable design and integrated
+   implementation; Reference Integrity remains a release gate where applicable.
+7. A integrates compatible heads and owns deployment/publication sequencing.
 8. Natural publications establish continuity proof before parent acceptance.
 
 Urgent R0 restoration may continue in the existing accepted style. R1 does not block a truthful
@@ -364,19 +387,24 @@ Stop the affected lane and return to Session D/A when:
 - Canada would be presented as validated official picks;
 - the market has no verified Plans owner;
 - implementation requires a new auth, lifecycle, ledger, candidate, or publication plane;
-- the provisional Paper/Figma projection disagrees with repository design law.
+- the frozen Paper implementation reference or secondary Figma projection disagrees with repository design law.
 
 ## 16. Acceptance boundary
 
-This document is complete as a design contract only when:
+Session D's **design-contract outcome is complete and frozen** at the Paper/evidence identities in
+§3: the current design authority reviewed the editable reference; exact implementation artboards,
+measurements, copy, state transitions, screenshot receipts, and JSX digests are durable; the
+shared-card writer boundary and B/C carriers remain explicit.
 
-- the current design authority has reviewed the actual editable reference;
-- exact approved editable node/version identifiers replace provisional identifiers;
-- B/C acknowledge the field, variant, measurement, copy, and state contract;
-- the shared-card writer boundary is explicit;
-- implementation and evidence paths are named;
-- all unresolved gaps have an owner and stop condition.
+The following are deliberately **not** claimed by that result:
 
-The product outcome is not complete when this document, a Figma/Paper file, a CSS patch, or CI
-alone exists. Completion requires the real HK and Canada routes to implement the design, preserve
-truth and access boundaries, and pass browser plus natural-publication proof.
+- repository-global canonical/RIG approval;
+- independent Session H acceptance;
+- implementation by either market carrier;
+- browser, access-policy, publisher-mirror, deployment, or natural-publication proof;
+- completion of the parent HK/Canada Prophet upgrade.
+
+The product outcome is not complete when this document, a Paper/Figma file, a CSS patch, or CI alone
+exists. Completion requires the real HK and Canada routes to implement the design, preserve truth and
+access boundaries, pass independent and browser review, and establish continuity across two natural
+publications. B/C may consume this frozen design now, but merge/release remains gated by those owners.
