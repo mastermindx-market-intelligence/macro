@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/theme_graph/ontology_neighborhood.v1.schema.json",
+  "title": "GMI exact ontology neighborhood v1",
+  "description": "Read-only internal projection of exact Theme Graph truth plus clearly separated probation context. It grants no curation, mapping, ranking, selection, trade, public-emission or ThemeState authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "authority_ceiling", "availability", "node_id", "asof",
+    "knowledge_cutoff", "subject", "relations", "proposals", "canonical_mapping",
+    "curation", "counts", "ordering", "limitations"
+  ],
+  "properties": {
+    "schema": {"const": "gmi.theme_ontology_neighborhood/v1"},
+    "authority_ceiling": {"const": "research_internal_only"},
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason"],
+      "properties": {
+        "state": {"enum": ["OK", "SUBJECT_NOT_FOUND"]},
+        "reason": {"type": ["string", "null"]}
+      }
+    },
+    "node_id": {"type": "string", "minLength": 1},
+    "asof": {"$ref": "#/$defs/date"},
+    "knowledge_cutoff": {"$ref": "#/$defs/date"},
+    "subject": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/node"}]},
+    "relations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/relation"}
+    },
+    "proposals": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/proposal"}
+    },
+    "canonical_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "theme_node_ids"],
+      "properties": {
+        "state": {"enum": ["MAPPED", "UNMAPPED", "SUBJECT_IS_CANONICAL", "NOT_APPLICABLE"]},
+        "theme_node_ids": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^theme:"},
+          "uniqueItems": true
+        }
+      }
+    },
+    "curation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "proposal_ids", "counts"],
+      "properties": {
+        "state": {
+          "enum": [
+            "NONE", "PROPOSED", "REJECTED", "MIXED",
+            "RATIFIED_NOT_MATERIALIZED", "RATIFIED_PARTIALLY_MATERIALIZED",
+            "RATIFIED_AND_MATERIALIZED"
+          ]
+        },
+        "proposal_ids": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
+          "uniqueItems": true
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["proposed", "ratified", "rejected"],
+          "properties": {
+            "proposed": {"type": "integer", "minimum": 0},
+            "ratified": {"type": "integer", "minimum": 0},
+            "rejected": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relations", "proposals", "future_beliefs_excluded"],
+      "properties": {
+        "relations": {"type": "integer", "minimum": 0},
+        "proposals": {"type": "integer", "minimum": 0},
+        "future_beliefs_excluded": {"type": "integer", "minimum": 0}
+      }
+    },
+    "ordering": {"const": "type,direction,peer_node_id,edge_id; never score"},
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+  },
+  "$defs": {
+    "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_id", "kind", "name_en", "name_zh", "market_scope", "tier", "status",
+        "merged_into", "external_ids", "source_meta", "provenance"
+      ],
+      "properties": {
+        "node_id": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "minLength": 1},
+        "name_en": {"type": ["string", "null"]},
+        "name_zh": {"type": ["string", "null"]},
+        "market_scope": {"type": "string"},
+        "tier": {"type": ["string", "null"]},
+        "status": {"type": "string"},
+        "merged_into": {"type": ["string", "null"]},
+        "external_ids": {"type": "object"},
+        "source_meta": {"type": ["object", "null"]},
+        "provenance": {"type": "string"}
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "rights_class", "public_display_allowed"],
+      "properties": {
+        "family": {"type": "string", "minLength": 1},
+        "rights_class": {"type": "string", "minLength": 1},
+        "public_display_allowed": {"type": "boolean"}
+      }
+    },
+    "relation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_id", "type", "direction", "peer_node_id", "peer", "valid_from",
+        "valid_to", "evidence_time", "belief_time", "source_class", "date_provenance",
+        "evidence_refs", "confidence_basis", "truth_status", "rights"
+      ],
+      "properties": {
+        "edge_id": {"type": "string", "minLength": 1},
+        "type": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["INCOMING", "OUTGOING", "SELF"]},
+        "peer_node_id": {"type": "string", "minLength": 1},
+        "peer": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/node"}]},
+        "valid_from": {"$ref": "#/$defs/date"},
+        "valid_to": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/date"}]},
+        "evidence_time": {"$ref": "#/$defs/date"},
+        "belief_time": {"$ref": "#/$defs/date"},
+        "source_class": {"type": "string"},
+        "date_provenance": {"type": "string"},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "confidence_basis": {"type": "string"},
+        "truth_status": {"const": "GRAPH_TRUTH"},
+        "rights": {"type": "array", "items": {"$ref": "#/$defs/rights"}}
+      }
+    },
+    "proposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposal_id", "kind", "subject", "evidence", "evidence_refs", "proposed_by",
+        "created", "status", "ratified_by", "note", "truth_status"
+      ],
+      "properties": {
+        "proposal_id": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
+        "kind": {"type": "string"},
+        "subject": {"type": "object"},
+        "evidence": {"type": "object"},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        "proposed_by": {"type": "string"},
+        "created": {"type": "string", "minLength": 1},
+        "status": {"enum": ["proposed", "ratified", "rejected"]},
+        "ratified_by": {"type": ["string", "null"]},
+        "note": {"type": ["string", "null"]},
+        "truth_status": {"const": "PROPOSAL_ONLY"}
+      }
+    }
+  }
+}

@@ -31,6 +31,8 @@ Fixture-only: tmp stores, tmp trees, no network, and nothing writes under ``data
 from __future__ import annotations
 
 import json
+
+import jsonschema
 from pathlib import Path
 
 import pandas as pd
@@ -39,6 +41,7 @@ import yaml
 
 from engine.theme_graph import (capability, identity, local_sources, materialize,
                                 probation, rights, store)
+from engine.theme_graph.ontology import compose_neighborhood
 from lib import config
 from scripts import check_theme_graph_contracts as guard
 
@@ -1136,3 +1139,294 @@ def test_load_supergroups_handles_missing_dir_and_torn_receipt(tmp_path):
     rdir.mkdir()
     (rdir / "20260101T000000Z.json").write_text("{torn", encoding="utf-8")
     assert local_sources.load_supergroups(rdir) == {}
+
+# ---------------------------------------------------------------------------
+# D2D exact ontology-neighborhood reader — graph truth + probation context
+# ---------------------------------------------------------------------------
+
+_ONTOLOGY_SCHEMA = json.loads(
+    (ROOT / "contracts" / "theme_graph" / "ontology_neighborhood.v1.schema.json").read_text()
+)
+
+def _ont_node(node_id: str, kind: str, *, name: str | None = None) -> dict:
+    return {
+        "node_id": node_id,
+        "kind": kind,
+        "name_en": name,
+        "name_zh": None,
+        "market_scope": "global",
+        "tier": "theme" if kind == "theme" else None,
+        "status": "canonical",
+        "merged_into": None,
+        "birth_date": "2026-01-01",
+        "retire_date": None,
+        "identity_epoch": 1,
+        "external_ids": "{}",
+        "provenance": "test",
+        "computed_at": "2026-01-01T00:00:00Z",
+        "engine_version": "theme_graph.v1",
+        "source_meta": None,
+    }
+
+
+def _ont_edge(
+    edge_id: str,
+    type_: str,
+    src: str,
+    dst: str,
+    *,
+    valid_from: str = "2026-01-01",
+    valid_to: str | None = None,
+    belief_time: str = "2026-01-01",
+    computed_at: str = "2026-01-01T00:00:00Z",
+) -> dict:
+    return {
+        "edge_id": edge_id,
+        "type": type_,
+        "src": src,
+        "dst": dst,
+        "valid_from": valid_from,
+        "valid_to": valid_to,
+        "evidence_time": valid_from,
+        "belief_time": belief_time,
+        "era": "observed",
+        "source_class": "curated",
+        "date_provenance": "curated_changelog",
+        "evidence_refs": ["ev:test"],
+        "confidence_basis": "test.v1",
+        "computed_at": computed_at,
+        "engine_version": "theme_graph.v1",
+    }
+
+
+def _ont_proposal(
+    proposal_id: str,
+    subject: dict,
+    *,
+    status: str = "proposed",
+    ratified_by: str | None = None,
+    created: str = "2026-02-01T00:00:00Z",
+) -> dict:
+    return {
+        "proposal_id": proposal_id,
+        "kind": "mapping",
+        "subject": subject,
+        "evidence": {"overlap": 9},
+        "evidence_refs": ["research/example.json"],
+        "proposed_by": "overlap_stats",
+        "created": created,
+        "status": status,
+        "ratified_by": ratified_by,
+        "note": "_ont_proposal only",
+    }
+
+
+class _OntologyStore:
+    def __init__(self, *, nodes=(), edges=(), proposals=()):
+        self._nodes = list(nodes)
+        self._edges = list(edges)
+        self._proposals = list(proposals)
+
+    def read_nodes(self):
+        return list(self._nodes)
+
+    def read_edges(self):
+        return list(self._edges)
+
+    def read_proposals(self):
+        return list(self._proposals)
+
+
+def _ont_rights(node_id: str) -> dict | None:
+    if node_id.startswith("ltheme:finviz:"):
+        return {
+            "family": "finviz",
+            "rights_class": "internal_computation_only",
+            "public_display_allowed": False,
+        }
+    return None
+
+
+def _ont_compose(store: _OntologyStore, node_id: str, *, cutoff: str = "2026-06-01") -> dict:
+    result = compose_neighborhood(
+        store,
+        node_id=node_id,
+        asof="2026-06-01",
+        knowledge_cutoff=cutoff,
+        rights_resolver=_ont_rights,
+    )
+    jsonschema.validate(result, _ONTOLOGY_SCHEMA)
+    return result
+
+
+def test_ontology_belief_cutoff_is_applied_before_latest_belief_and_valid_time() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        edges=[
+            _ont_edge("e1", "EXPRESSES", local, theme),
+            _ont_edge(
+                "e1",
+                "EXPRESSES",
+                local,
+                theme,
+                valid_to="2026-05-01",
+                belief_time="2026-08-01",
+                computed_at="2026-08-01T00:00:00Z",
+            ),
+        ],
+    )
+
+    before_close_was_known = _ont_compose(store, local, cutoff="2026-07-01")
+    after_close_was_known = _ont_compose(store, local, cutoff="2026-09-01")
+
+    assert [r["edge_id"] for r in before_close_was_known["relations"]] == ["e1"]
+    assert before_close_was_known["canonical_mapping"] == {
+        "state": "MAPPED",
+        "theme_node_ids": [theme],
+    }
+    assert after_close_was_known["relations"] == []
+    assert after_close_was_known["canonical_mapping"] == {
+        "state": "UNMAPPED",
+        "theme_node_ids": [],
+    }
+
+
+def test_ontology_datetime_inputs_normalize_to_date_only_clocks() -> None:
+    import datetime as dt
+
+    local = "ltheme:finviz:ai"
+    result = compose_neighborhood(
+        _OntologyStore(nodes=[_ont_node(local, "local_theme")]),
+        node_id=local,
+        asof=dt.datetime(2026, 6, 1, 14, 30),
+        knowledge_cutoff=dt.datetime(2026, 6, 1, 23, 59),
+        rights_resolver=_ont_rights,
+    )
+
+    jsonschema.validate(result, _ONTOLOGY_SCHEMA)
+    assert result["asof"] == "2026-06-01"
+    assert result["knowledge_cutoff"] == "2026-06-01"
+
+
+def test_ontology_proposed_mapping_is_visible_but_never_graph_truth() -> None:
+    basket = "basket:baskets:utilities"
+    local = "ltheme:finviz:utilities"
+    store = _OntologyStore(
+        nodes=[_ont_node(basket, "basket"), _ont_node(local, "local_theme")],
+        proposals=[_ont_proposal("prop:1111111111111111", {"basket": basket, "local_theme": local})],
+    )
+
+    result = _ont_compose(store, local)
+
+    assert result["availability"] == {"state": "OK", "reason": None}
+    assert result["relations"] == []
+    assert result["canonical_mapping"]["state"] == "UNMAPPED"
+    assert result["curation"] == {
+        "state": "PROPOSED",
+        "proposal_ids": ["prop:1111111111111111"],
+        "counts": {"proposed": 1, "ratified": 0, "rejected": 0},
+    }
+    assert result["proposals"][0]["truth_status"] == "PROPOSAL_ONLY"
+
+
+def test_ontology_ratified_proposal_without_edge_is_explicitly_not_materialized() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        proposals=[
+            _ont_proposal(
+                "prop:2222222222222222",
+                {"local_theme": local, "canonical_theme": theme},
+                status="ratified",
+                ratified_by="curator:test",
+            )
+        ],
+    )
+
+    result = _ont_compose(store, local)
+
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+    assert result["canonical_mapping"]["state"] == "UNMAPPED"
+    assert result["relations"] == []
+
+
+def test_ontology_graph_mapping_is_truth_even_when_a_proposal_also_exists() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        edges=[_ont_edge("e1", "EXPRESSES", local, theme)],
+        proposals=[_ont_proposal("prop:3333333333333333", {"local_theme": local})],
+    )
+
+    result = _ont_compose(store, local)
+
+    assert result["canonical_mapping"]["state"] == "MAPPED"
+    assert result["relations"][0]["truth_status"] == "GRAPH_TRUTH"
+    assert result["relations"][0]["rights"] == [_ont_rights(local)]
+    assert result["curation"]["state"] == "PROPOSED"
+
+
+
+def test_ontology_ratified_mapping_is_materialized_only_for_its_exact_theme_target() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    other = "theme:defense_aerospace"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme"), _ont_node(other, "theme")],
+        edges=[_ont_edge("e1", "EXPRESSES", local, theme)],
+        proposals=[
+            _ont_proposal(
+                "prop:4444444444444444",
+                {"local_theme": local, "canonical_theme": other},
+                status="ratified",
+                ratified_by="curator:test",
+            )
+        ],
+    )
+
+    result = _ont_compose(store, local)
+
+    assert result["canonical_mapping"]["theme_node_ids"] == [theme]
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+def test_ontology_lookup_is_exact_id_only_and_never_fuzzy_matches_a_label() -> None:
+    local = _ont_node("ltheme:finviz:ai", "local_theme", name="AI")
+    result = _ont_compose(_OntologyStore(nodes=[local]), "AI")
+
+    assert result["availability"] == {
+        "state": "SUBJECT_NOT_FOUND",
+        "reason": "exact node_id is absent",
+    }
+    assert result["subject"] is None
+    assert result["relations"] == []
+
+
+def test_ontology_relations_are_stably_ordered_by_semantics_and_ids_not_scores() -> None:
+    subject = "theme:ai"
+    store = _OntologyStore(
+        nodes=[
+            _ont_node(subject, "theme"),
+            _ont_node("ltheme:finviz:z", "local_theme"),
+            _ont_node("ltheme:finviz:a", "local_theme"),
+        ],
+        edges=[
+            _ont_edge("e-z", "EXPRESSES", "ltheme:finviz:z", subject),
+            _ont_edge("e-a", "EXPRESSES", "ltheme:finviz:a", subject),
+        ],
+    )
+
+    result = _ont_compose(store, subject)
+
+    assert [r["peer_node_id"] for r in result["relations"]] == [
+        "ltheme:finviz:a",
+        "ltheme:finviz:z",
+    ]
+    assert result["ordering"] == "type,direction,peer_node_id,edge_id; never score"
+    assert result["canonical_mapping"] == {
+        "state": "SUBJECT_IS_CANONICAL",
+        "theme_node_ids": [subject],
+    }
