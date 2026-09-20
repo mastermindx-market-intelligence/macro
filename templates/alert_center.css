@@ -179,8 +179,8 @@ body.page-alerts{margin:0;padding:var(--sp-6,24px);background:var(--bg);color:va
   .page-alerts .acx-layout{margin-top:var(--sp-2,8px)}
   .page-alerts .acx-section-head{padding:var(--sp-3,12px) var(--sp-4,16px)}
   .page-alerts .acx-section-head p{display:none}
-  .page-alerts .acx-filters{grid-template-columns:minmax(0,1fr) 105px 82px;gap:var(--sp-1,4px);padding:0 var(--sp-4,16px) var(--sp-2,8px)}
-  .page-alerts .acx-search{grid-column:auto!important}
+  .page-alerts .acx-filters{grid-template-columns:minmax(0,1fr) auto;gap:var(--sp-1,4px);padding:0 var(--sp-4,16px) var(--sp-2,8px)}
+  .page-alerts .acx-search{grid-column:1/-1!important}
   .page-alerts .acx-more-filters{min-width:0}
   .page-alerts .acx-more-filters>summary{padding-inline:var(--sp-2,8px);text-align:center}
   .page-alerts .acx-attention-head{padding:var(--sp-2,8px) var(--sp-4,16px)}
