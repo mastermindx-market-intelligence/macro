@@ -1050,19 +1050,6 @@
   body.page-china .cnx-row .tx{flex:1;min-width:0}
   body.page-china .cnx-row .tx b{font-weight:650}
   body.page-china .cnx-row .sub{display:block;font-size:10.5px;color:var(--muted);margin-top:1px}
-  body.page-china .cnx-stance-pill{
-    display:inline-flex;align-items:center;max-width:100%;padding:3px 9px;
-    border-radius:var(--mx5-radius-pill);border:1px solid color-mix(in srgb,var(--c,var(--muted)) 34%,transparent);
-    background:color-mix(in srgb,var(--c,var(--muted)) 10%,var(--panel));color:var(--c,var(--muted));
-    font-size:10.5px;font-weight:700;letter-spacing:.01em;line-height:1.35;vertical-align:middle}
-  body.page-china .cnx-stance-pill.st-up{--c:var(--ink-up,var(--up))}
-  body.page-china .cnx-stance-pill.st-down{--c:var(--ink-down,var(--down))}
-  body.page-china .cnx-stance-pill.st-warn{--c:var(--ink-warn,var(--warn))}
-  body.page-china .cnx-fresh-pill{opacity:1}
-  body.page-china .cnx-row.mx-empty .sub{color:var(--muted)}
-  body.page-china .cnx-row .empty-why{display:block;font-size:10px;color:var(--muted);opacity:.82;margin-top:2px}
-  body.page-china .cnx-row .when{flex:0 0 42px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:10.5px;padding-top:1px}
-  body.page-china .cnx-ctitle-note{margin-left:auto;font-size:10px;color:var(--muted);letter-spacing:.06em;font-weight:600}
   body.page-china .cnx-kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
   body.page-china .cnx-kv:last-of-type{border-bottom:none}
   body.page-china .cnx-kv .k{color:var(--muted)}
@@ -1771,8 +1758,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
         <span class="l-en">LIVE</span><span class="l-zh">实时</span>
         <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span></span>
-      {% if pb_obj %}<span class="cnx-stance-pill st-{{ _stance_tone }}">{{ t(_stance[0], _stance[1]) }}</span>{% endif %}
-      {% if health %}<span class="cnx-live-pill cnx-fresh-pill"><span class="l-en">{{ _fresh_ok }}/{{ _fresh_n }} feeds fresh</span><span class="l-zh">{{ _fresh_ok }}/{{ _fresh_n }} 数据新鲜</span></span>{% endif %}
+      {% if pb_obj %}<span class="mx5-regime-pill{% if _stance_tone == 'warn' %} rp-yellow{% elif _stance_tone == 'down' %} rp-red{% endif %}"><span class="mx5-dot"></span>{{ t(_stance[0], _stance[1]) }}</span>{% endif %}
+      {% if health %}<span class="cnx-live-pill"><span class="l-en">{{ _fresh_ok }}/{{ _fresh_n }} feeds fresh</span><span class="l-zh">{{ _fresh_ok }}/{{ _fresh_n }} 数据新鲜</span></span>{% endif %}
       {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
          Geometry: arc M14,75 A56 → π·56≈175.93 arc-len; needle+numeral rotate around
          (70,75). data-gauge-* attrs let china_risk_state_live.js patch geometry without
@@ -2093,15 +2080,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }}</div>
       {% if pb_obj %}
         <div class="cnx-row">
-          <div class="tx"><span class="cnx-stance-pill st-{{ _stance_tone }}">{{ t(_stance[0], _stance[1]) }}</span></div>
+          <div class="tx"><span class="mx5-regime-pill{% if _stance_tone == 'warn' %} rp-yellow{% elif _stance_tone == 'down' %} rp-red{% endif %}"><span class="mx5-dot"></span>{{ t(_stance[0], _stance[1]) }}</span></div>
         </div>
         {% for face in _todo_faces %}
-        <div class="cnx-row{% if face.empty %} mx-empty{% endif %}">
+        <div class="cnx-row">
           <span class="ic">{{ face.sign }}</span>
-          <div class="tx">
-            <span class="sub">{{ t(face.en, face.zh) }}</span>
-            {% if face.empty %}<span class="empty-why">{{ t(face.tip_en, face.tip_zh) }}</span>{% endif %}
-          </div>
+          <div class="tx"><span class="sub">{{ t(face.en, face.zh) }}</span></div>
         </div>
         {% endfor %}
         {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
@@ -2325,16 +2309,15 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
     {# Macro News card — preserved; first two rows now read as dated changes rather than icon noise. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-news')">
-      <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }}<span class="cnx-ctitle-note">{{ t('WHAT CHANGED','最近变化') }}</span></div>
+      <div class="cnx-ctitle">{{ t('Macro News · What Changed','宏观新闻 · 最近变化') }}</div>
       {% if CN and CN.news and CN.news.headlines %}
         {% for h in CN.news.headlines[:2] %}
         {% set _tl = CN.theme_label.get(h.theme, [h.theme, h.theme]) if CN.theme_label else [h.theme, h.theme] %}
         {% set _hen = h.title_en or h.title %}
         {% set _hzh = h.title_zh or h.title %}
         <div class="cnx-row">
-          <span class="when">{{ (h.published or h.date or '')[5:10] or '—' }}</span>
           <div class="tx"><b><span class="l-en">{{ _hen | truncate(80, true, '…') }}</span><span class="l-zh">{{ _hzh | truncate(80, true, '…') }}</span></b>
-            <span class="sub">{{ t(_tl[0], _tl[1] if _tl|length > 1 else _tl[0]) }}{% if h.source_name %} · {{ h.source_name }}{% endif %}</span></div>
+            <span class="sub">{{ (h.published or h.date or '')[5:10] or '—' }} · {{ t(_tl[0], _tl[1] if _tl|length > 1 else _tl[0]) }}{% if h.source_name %} · {{ h.source_name }}{% endif %}</span></div>
         </div>
         {% endfor %}
         <div class="cnx-view-all">{{ (CN.news.n_kept or 0) }} {{ t('of','/') }} {{ (CN.news.n_raw or 0) }} {{ t('stories kept · full feed →','条新闻保留 · 完整新闻流 →') }}</div>
