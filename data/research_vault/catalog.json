@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T16:36:22.277783+00:00",
-  "count": 2510,
+  "generated_at": "2026-09-20T17:00:03.745385+00:00",
+  "count": 2512,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-eb0kmkgp2hq-ad8357",
+      "title": "MS Sunday Start A Fed in Motion",
+      "institution": "Morgan Stanley",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T16:54:31Z",
+      "summary_points": [
+        "Fed Policy Consensus: Market prices 25bp hike, but FOMC dot plot signals only one more hike (not regime shift); balance sheet reforms may moderate pace, keeping hikes below market expectations.",
+        "Inflation Trajectory Risk: Energy supply disruptions slow disinflation, driving Fed’s \"timelier\" tightening; dissenters (June dot plot) confirm ongoing pressure despite slow disinflation.",
+        "Key Data Catalysts: Taiwan export orders surge 64% YoY (Aug), Euro consumer confidence drops to -16.0 (Sep), Hungary NBH holds rate (vs. cut expectations) with December cuts likely.",
+        "South Africa Policy Shift: 25bp SARB hike expected amid supply shocks; oil prices to revise CPI, creating policy/risk factor for emerging markets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-3rsepmo0rbt-e71e6b",
       "title": "The Fed Behind Us",
@@ -1227,6 +1247,24 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-z3xrjwrslpy-d21010",
+      "title": "Should investors pay more attention to cash",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:26Z",
+      "summary_points": [
+        "Fed Policy Uncertainty: Fed hiked rates to 3.75-4% (25bps), Chair called move \"dose of accommodation\"; projections show stickier inflation, stronger growth, median 2026 rate at 4.1% (vs. prior), with some projecting third hike in 2027—highlighting risk of overestimating rate hikes.",
+        "Cash Allocation Framework: Optimize liquidity (2-5 years withdrawals), segment cash into everyday/core/investment buckets, and phase excess into diversified portfolios (stocks/bonds) to balance returns vs. timing risk and avoid emotional market timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
