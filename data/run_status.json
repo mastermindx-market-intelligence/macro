@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-09-19T15:05:37.425304+00:00",
+  "last_run": "2026-09-19T19:15:06.646186+00:00",
   "sources": {
     "cot": {
       "source": "cot",
@@ -13,7 +13,7 @@
       ],
       "probed_at": null,
       "elapsed_sec": 15.2,
-      "checked_at": "2026-09-19T15:05:37.426185+00:00"
+      "checked_at": "2026-09-19T19:15:06.646226+00:00"
     },
     "fred": {
       "source": "fred",
@@ -212,7 +212,7 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 0.0,
-      "checked_at": "2026-09-19T15:05:37.425611+00:00"
+      "checked_at": "2026-09-19T19:15:06.646205+00:00"
     },
     "sentiment_aaii": {
       "source": "sentiment_aaii",
@@ -223,7 +223,7 @@
       "notes": [],
       "probed_at": null,
       "elapsed_sec": 3.6,
-      "checked_at": "2026-09-19T15:05:37.425621+00:00"
+      "checked_at": "2026-09-19T19:15:06.646212+00:00"
     },
     "sector_flows": {
       "source": "sector_flows",
@@ -255,8 +255,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 7.3,
-      "checked_at": "2026-09-19T15:05:37.425714+00:00"
+      "elapsed_sec": 7.1,
+      "checked_at": "2026-09-19T19:15:06.646217+00:00"
     },
     "coinmetrics": {
       "source": "coinmetrics",
@@ -468,8 +468,8 @@
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 172.4,
-      "checked_at": "2026-09-19T15:05:37.425724+00:00"
+      "elapsed_sec": 168.8,
+      "checked_at": "2026-09-19T19:15:06.646222+00:00"
     },
     "china_universe": {
       "source": "china_universe",
@@ -3369,7 +3369,7 @@
       "last_obs": "2022-02-01",
       "cadence_days": 12,
       "age_days": 1691,
-      "detected_at": "2026-09-19T13:40:25.368067+00:00"
+      "detected_at": "2026-09-19T19:15:06.641977+00:00"
     },
     {
       "group": "cot",
@@ -3377,7 +3377,7 @@
       "last_obs": "2013-11-05",
       "cadence_days": 12,
       "age_days": 4701,
-      "detected_at": "2026-09-19T13:40:25.368081+00:00"
+      "detected_at": "2026-09-19T19:15:06.641984+00:00"
     },
     {
       "group": "fred",
@@ -3803,6 +3803,6 @@
         "state": "fresh"
       }
     },
-    "asof": "2026-09-19 12:04:37.773692+00:00"
+    "asof": "2026-09-19 21:52:07.028078+00:00"
   }
 }
