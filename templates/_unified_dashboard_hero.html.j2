@@ -562,22 +562,20 @@
        Designed-null fallback surfaces the same shape.
 
        Spec §7 row 5: at 390, three full cards collapse into ONE DISCLOSURE ROW
-       carrying title + count `3` + chevron + a one-line preview of the first
-       condition. The structure uses a plain <div> wrapper (NOT <details>) —
-       a closed <details> relied on browser-level semantics to hide its
-       non-summary children, which prevented the desktop layout from
-       rendering the watching items at all. The new <div> wrapper hands the
-       visibility decision to CSS only: at desktop the summary row is hidden
-       and the list paints; at 390 the summary row paints (with the one-line
-       preview) and the list is hidden. R-J, round 6. #}
+       (the <summary>) carrying title + count `3` + chevron + a one-line preview
+       of the first condition. The full list lives inside the <details> wrapper
+       for tap-open. At DESKTOP the <details> is forced OPEN via CSS
+       (.ud-watch-details:not([open]) .ud-watch-list selector with specificity
+       higher than the UA `details:not([open]) > :not(summary) { display: none }`),
+       so the three cards always paint at 1440. R-J, round 7. #}
     <div class="ud-watching">
       <div class="mx-sec">
         <h3 class="l-en">What we’re watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <div class="ud-watch-section">
-        <div class="ud-watch-summary" role="group" aria-label="Watching conditions summary">
+      <details class="ud-watch-details">
+        <summary class="ud-watch-summary">
           <div class="ud-watch-summary-row">
             <span class="ud-watch-summary-h">
               <span class="l-en">{{ _w_en[0] }}</span><span class="l-zh">{{ _w_zh[0] }}</span>
@@ -587,7 +585,7 @@
           </div>
           <span class="ud-watch-summary-preview l-en">{{ _body_en }}</span>
           <span class="ud-watch-summary-preview l-zh">{{ _body_zh }}</span>
-        </div>
+        </summary>
         <ul class="ud-watch-list">
           {%- for i in range(3) %}
           <li class="ud-watch-item">
@@ -598,7 +596,7 @@
           </li>
           {%- endfor %}
         </ul>
-      </div>
+      </details>
       <p class="ud-spine-foot">
         <span class="l-en">Windows, not certainties — re-drawn nightly.</span>
         <span class="l-zh">是窗口，不是定论——每晚重新校准。</span>

@@ -2912,8 +2912,16 @@ html[data-lang="zh"] body.page-macro .ud-watch-item-head.l-zh{ display:block; }
 html[data-lang="zh"] body.page-macro .ud-watch-item-body.l-zh{ display:block; }
 /* Each .ud-watch-item is a flex row carrying head + body cells. */
 body.page-macro .ud-watch-item{ display:flex; flex-direction:column; gap:2px; }
-/* Desktop: full list visible, summary row hidden. */
+/* Desktop: full list visible (force-open via specificity that beats the UA
+   `details:not([open]) > :not(summary) { display: none }` rule — this selector
+   has (0,3,3) vs the UA's (0,2,2)), summary row hidden, <details> marker
+   hidden so the summary doesn't render its disclosure triangle at 1440. R-J
+   round 7 — the wrapper is now <details><summary>…</summary><ul>…</ul></details>
+   for tap-open semantics at 390, but desktop forces the list open via CSS. */
+body.page-macro .ud-watch-details:not([open]) .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
 body.page-macro .ud-watch-summary{ display:none; }
+body.page-macro .ud-watch-details > summary::-webkit-details-marker{ display:none; }
+body.page-macro .ud-watch-details > summary{ list-style:none; }
 body.page-macro .ud-driver-count{ display:none; }
 
 /* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
@@ -3028,19 +3036,20 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
      edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
   body.page-macro .ud-driver-count{ display:inline-flex; }
 
-  /* Watching → single disclosure row. The .ud-watch-summary is the row that
-     always shows at 390 (title + count + chevron + one-line preview of the
-     first condition); the full list collapses because the section is now a
-     plain <div> wrapper, not a <details> element, so CSS alone owns the
-     visibility (R-J round 6 — the prior <details> relied on browser-level
-     semantics to hide non-summary children, which killed the desktop list). */
-  body.page-macro .ud-watch-list{ display:none; }
+  /* Watching → single disclosure row (the <summary>) carries title + count +
+     chevron + one-line preview of the first condition. The full list lives
+     inside the <details> wrapper and is hidden by default at 390; tapping the
+     summary opens <details> and reveals the list via .ud-watch-details[open].
+     R-J round 7 — desktop forces the list open via specificity. */
+  body.page-macro .ud-watch-item{ display:none; }
+  body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
   body.page-macro .ud-watch-summary{
     display:flex; flex-direction:column; align-items:stretch; gap:6px;
     padding:10px 14px;
     border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
     border-radius:var(--r-ctl,8px);
     background:var(--panel2);
+    cursor:pointer;
   }
   body.page-macro .ud-watch-summary-row{
     display:flex; align-items:center; gap:10px;
