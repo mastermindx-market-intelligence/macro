@@ -654,6 +654,10 @@ def is_spurious_check(name: str) -> bool:
 #: ``ci-authority/main`` stays binding. Do not widen this to the active
 #: context, and do not fold it into :func:`is_spurious_check`.
 CI_AUTHORITY_INACTIVE_CONTEXT = "ci-authority/codex/merge-queue-pilot"
+# Vercel is not part of the repository-owned proof contract. The connected legacy
+# project currently posts a failing status for every commit when its build-rate
+# quota is exhausted; that external quota state must not be attributed to PR code.
+VERCEL_STATUS_CONTEXT = "Vercel"
 
 
 def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
@@ -673,11 +677,12 @@ def is_non_binding_check(name: str, *, base_ref: str = "main") -> bool:
     Call this from a gate; do not re-spell the inactive literal at the call
     site — that is how ``decide_verdict`` and ``failing_check_names`` drifted.
     """
-    if is_spurious_check(str(name or "")):
+    check = str(name or "")
+    if is_spurious_check(check) or check == VERCEL_STATUS_CONTEXT:
         return True
     return (
         str(base_ref or "main") == "main"
-        and str(name or "") == CI_AUTHORITY_INACTIVE_CONTEXT
+        and check == CI_AUTHORITY_INACTIVE_CONTEXT
     )
 
 
