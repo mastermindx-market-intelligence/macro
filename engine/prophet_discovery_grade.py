@@ -447,10 +447,21 @@ def summarize_board_admission_bridge(
     brd = brd[brd["_date"].notna()].copy()
     brd["_date"] = brd["_date"].map(lambda x: pd.Timestamp(x).normalize())
     brd["_ticker"] = brd["ticker"].astype(str)
-    brd = brd[(brd["_date"] >= start) & (brd["_date"] <= end)]
     brd = brd.sort_values(["_date", "_ticker"], kind="stable")
     brd = brd.drop_duplicates(subset=["_date", "_ticker"], keep="first")
-    first_board = brd.drop_duplicates(subset=["_ticker"], keep="first")
+
+    # Find the first positive record in the available canonical ledger before
+    # applying the discovery window. Otherwise a name positively recorded
+    # pre-window can be falsely relabeled as a new in-window admission when it
+    # appears again. This still does not prove first-ever admission because the
+    # historical ledger itself is incomplete; _HISTORY_LIMITS carries that
+    # qualification into the receipt.
+    first_observed_board = brd.drop_duplicates(subset=["_ticker"], keep="first")
+    pre_window = first_observed_board[first_observed_board["_date"] < start]
+    first_board = first_observed_board[
+        (first_observed_board["_date"] >= start)
+        & (first_observed_board["_date"] <= end)
+    ].copy()
 
     first_disc = (
         disc.groupby("_ticker", sort=False)["_session"].min()
@@ -487,6 +498,8 @@ def summarize_board_admission_bridge(
         "available": True,
         "metric_semantics": "board_admission_not_eventual_winner",
         "window": {"from": str(start.date()), "to": str(end.date())},
+        "first_admission_basis": "first_positive_board_record_in_available_ledger",
+        "n_pre_window_positive_board_records_excluded": int(len(pre_window)),
         "n_first_board_admissions": n,
         "n_prior_discovered": int(prior),
         "n_same_day_only": int(same_day),
@@ -569,39 +582,70 @@ def summarize_rank_races(
     for (_date, _definition), group in pairs.groupby(
         ["_date", "_definition"], sort=False
     ):
-        pops = pd.to_numeric(group["population_n"], errors="coerce").dropna().unique()
-        if len(pops) != 1:
+        population_values = pd.to_numeric(
+            group["population_n"], errors="coerce"
+        )
+        if (
+            bool(population_values.isna().any())
+            or not bool(np.isfinite(population_values).all())
+            or population_values.nunique(dropna=False) != 1
+        ):
             return _rank_race_unavailable(
                 "rank_pair_population_contract_violation"
             )
-        population_n = float(pops[0])
+        population_n = float(population_values.iloc[0])
         if (
-            not np.isfinite(population_n)
-            or population_n != int(population_n)
+            population_n != int(population_n)
             or int(population_n) != len(group)
         ):
             return _rank_race_unavailable(
                 "rank_pair_population_contract_violation"
             )
-        for column in (
-            "incumbent_rank", "challenger_rank", "challenger_offlist_n"
+
+        for column, allow_missing in (
+            ("incumbent_rank", False),
+            ("challenger_rank", True),
         ):
             supplied = group[column].notna()
             numeric = pd.to_numeric(group[column], errors="coerce")
-            if bool((supplied & ~np.isfinite(numeric)).any()):
+            invalid = supplied & (
+                numeric.isna()
+                | ~np.isfinite(numeric)
+                | (numeric <= 0)
+                | (numeric != np.floor(numeric))
+            )
+            if (not allow_missing and not bool(supplied.all())) or bool(invalid.any()):
                 return _rank_race_unavailable(
                     "rank_pair_population_contract_violation"
                 )
-        stored_cov = pd.to_numeric(
+
+        offlist = pd.to_numeric(
+            group["challenger_offlist_n"], errors="coerce"
+        )
+        if (
+            bool(offlist.isna().any())
+            or not bool(np.isfinite(offlist).all())
+            or bool((offlist < 0).any())
+            or bool((offlist != np.floor(offlist)).any())
+            or offlist.nunique(dropna=False) != 1
+        ):
+            return _rank_race_unavailable(
+                "rank_pair_population_contract_violation"
+            )
+
+        coverage = pd.to_numeric(
             group["challenger_coverage"], errors="coerce"
-        ).dropna().unique()
+        )
         observed_cov = float(
             pd.to_numeric(group["challenger_rank"], errors="coerce").notna().sum()
             / len(group)
         )
         if (
-            len(stored_cov) != 1
-            or abs(float(stored_cov[0]) - observed_cov) > 1e-6
+            bool(coverage.isna().any())
+            or not bool(np.isfinite(coverage).all())
+            or bool(((coverage < 0) | (coverage > 1)).any())
+            or coverage.nunique(dropna=False) != 1
+            or abs(float(coverage.iloc[0]) - observed_cov) > 1e-6
         ):
             return _rank_race_unavailable(
                 "rank_pair_population_contract_violation"
@@ -843,4 +887,17 @@ def grade_market(market: str) -> dict[str, Any]:
 
 
 def grade_all() -> dict[str, dict[str, Any]]:
-    return {market: grade_market(market) for market in MARKETS}
+    """Grade both markets while preserving truthful per-market effects."""
+    results: dict[str, dict[str, Any]] = {}
+    for market in MARKETS:
+        try:
+            results[market] = grade_market(market)
+        except Exception as exc:  # noqa: BLE001 — receipt must expose partial effects
+            results[market] = {
+                "market": market,
+                "available": False,
+                "state": "ERROR",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+    return results

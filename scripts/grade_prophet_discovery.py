@@ -25,7 +25,11 @@ def main() -> int:
         print(json.dumps(result, sort_keys=True, default=str))
         return 1
     print(json.dumps(result, sort_keys=True, default=str))
-    return 0
+    has_market_error = any(
+        isinstance(receipt, dict) and receipt.get("state") == "ERROR"
+        for receipt in result.values()
+    )
+    return 1 if has_market_error else 0
 
 
 if __name__ == "__main__":

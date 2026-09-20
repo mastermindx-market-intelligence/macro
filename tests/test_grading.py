@@ -448,6 +448,56 @@ def test_prophet_discovery_cli_reports_structured_failure(monkeypatch, capsys):
     }
 
 
+def test_prophet_discovery_grade_all_preserves_success_receipt_when_other_market_fails(
+    monkeypatch,
+):
+    from engine import prophet_discovery_grade as pdg
+
+    calls = []
+
+    def grade_market(market):
+        calls.append(market)
+        if market == "HK":
+            return {"market": "HK", "available": True, "state": "UPDATED", "n_rows": 7}
+        raise RuntimeError("CA source continuity violated")
+
+    monkeypatch.setattr(pdg, "grade_market", grade_market)
+    result = pdg.grade_all()
+
+    assert calls == ["HK", "CA"]
+    assert result["HK"] == {
+        "market": "HK", "available": True, "state": "UPDATED", "n_rows": 7,
+    }
+    assert result["CA"] == {
+        "market": "CA",
+        "available": False,
+        "state": "ERROR",
+        "error_type": "RuntimeError",
+        "error": "CA source continuity violated",
+    }
+
+
+def test_prophet_discovery_cli_returns_nonzero_with_partial_market_receipt(
+    monkeypatch, capsys,
+):
+    import scripts.grade_prophet_discovery as runner
+
+    result = {
+        "HK": {"market": "HK", "available": True, "state": "UPDATED", "n_rows": 7},
+        "CA": {
+            "market": "CA",
+            "available": False,
+            "state": "ERROR",
+            "error_type": "RuntimeError",
+            "error": "CA source continuity violated",
+        },
+    }
+    monkeypatch.setattr(runner.prophet_discovery_grade, "grade_all", lambda: result)
+
+    assert runner.main() == 1
+    assert json.loads(capsys.readouterr().out) == result
+
+
 def test_prophet_discovery_summary_reports_only_canonical_measured_metrics():
     from engine import prophet_discovery_grade as pdg
 
@@ -671,6 +721,33 @@ def test_prophet_discovery_board_admission_bridge_separates_prior_same_day_and_m
     assert s["exit_reason_supported"] is False
 
 
+def test_prophet_discovery_board_admission_bridge_excludes_pre_window_positive_records():
+    from engine import prophet_discovery_grade as pdg
+
+    discovery = pd.DataFrame([
+        {"session_date": "2026-01-01", "security_ref_raw": "OLD.HK"},
+        {"session_date": "2026-01-01", "security_ref_raw": "NEW.HK"},
+        {"session_date": "2026-01-05", "security_ref_raw": "TAIL.HK"},
+    ])
+    board = pd.DataFrame([
+        # OLD is positively recorded before the discovery window. Its Jan-03
+        # reappearance cannot be relabeled as a first admission.
+        {"date": "2025-12-31", "ticker": "OLD.HK"},
+        {"date": "2026-01-03", "ticker": "OLD.HK"},
+        {"date": "2026-01-04", "ticker": "NEW.HK"},
+        # Post-window first records remain outside the denominator.
+        {"date": "2026-01-06", "ticker": "TAIL.HK"},
+    ])
+
+    s = pdg.summarize_board_admission_bridge(discovery, board)
+    assert s["available"] is True
+    assert s["n_first_board_admissions"] == 1
+    assert s["n_prior_discovered"] == 1
+    assert s["prior_discovery_recall_rate"] == pytest.approx(1.0)
+    assert s["n_pre_window_positive_board_records_excluded"] == 1
+    assert s["first_admission_basis"] == "first_positive_board_record_in_available_ledger"
+
+
 def test_prophet_discovery_board_admission_bridge_degrades_without_board_store():
     from engine import prophet_discovery_grade as pdg
 
@@ -868,6 +945,43 @@ def test_prophet_rank_race_refuses_non_finite_persisted_inputs(column, bad_value
     assert summary["available"] is False
     assert summary["reason"] == "rank_pair_population_contract_violation"
     assert summary["metric_semantics"] == "same_population_same_outcomes_shadow_rank_race"
+
+
+@pytest.mark.parametrize(
+    ("column", "bad_value"),
+    [
+        ("population_n", None),
+        ("challenger_coverage", None),
+        ("challenger_offlist_n", None),
+        ("challenger_offlist_n", -1),
+        ("challenger_offlist_n", 0.5),
+        ("challenger_offlist_n", 1),
+    ],
+)
+def test_prophet_rank_race_refuses_partial_or_invalid_group_metadata(
+    column, bad_value,
+):
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    pairs[column] = pairs[column].astype(object)
+    pairs.loc[pairs.index[0], column] = bad_value
+
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is False
+    assert summary["reason"] == "rank_pair_population_contract_violation"
+
+
+def test_prophet_rank_race_refuses_missing_incumbent_rank():
+    from engine import prophet_discovery_grade as pdg
+
+    pairs, outcomes = _rank_race_fixture()
+    pairs["incumbent_rank"] = pairs["incumbent_rank"].astype(float)
+    pairs.loc[pairs.index[0], "incumbent_rank"] = np.nan
+
+    summary = pdg.summarize_rank_races(pairs, outcomes)
+    assert summary["available"] is False
+    assert summary["reason"] == "rank_pair_population_contract_violation"
 
 
 def test_prophet_rank_race_store_absence_is_explicit(tmp_path, monkeypatch):
