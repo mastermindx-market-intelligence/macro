@@ -1,7 +1,7 @@
 {
   "schema": "options_entry_coverage.v1",
-  "generated_at": "2026-09-19T19:23:02.448402+00:00",
-  "as_of": "2026-09-19",
+  "generated_at": "2026-09-20T08:42:56.831134+00:00",
+  "as_of": "2026-09-20",
   "absent_stores": [],
   "feature_coverage": {
     "n_rows": 419,
@@ -426,7 +426,7 @@
       "cond_hit_share": 0.7721,
       "readiness_forecast": {
         "forecast": "date",
-        "forecast_date": "2026-09-20",
+        "forecast_date": "2026-09-21",
         "basis": "n_cond=0/30 needed; post-W-C cadence=32.627/day \u00d7 cond_hit_share=0.777 \u2192 1 days",
         "post_wc_fires": 2186,
         "post_wc_span_days": 67
@@ -535,26 +535,26 @@
         {
           "source": "options_entry/state.parquet",
           "latest_as_of": "2026-08-13",
-          "age_days_from_today": 37,
+          "age_days_from_today": 38,
           "status": "STALE"
         },
         {
           "source": "options_entry/gate.json",
           "latest_as_of": "2026-09-18 18:37 UTC",
-          "age_days_from_today": 1,
+          "age_days_from_today": 2,
           "status": "FRESH"
         },
         {
           "source": "us_board_ledger/retro_grades.parquet",
           "latest_as_of": "2026-09-10",
-          "age_days_from_today": 9,
+          "age_days_from_today": 10,
           "status": "STALE"
         }
       ]
     },
     {
       "check": "audit_options_accrual_last_run",
-      "generated_at": "2026-09-19T19:23:02.348632+00:00",
+      "generated_at": "2026-09-20T08:42:56.537428+00:00",
       "ok": false,
       "fail_reasons": [
         "CHAINS STALE: latest chain file is 2026-08-13 (25 NYSE session(s) behind last_session=2026-09-18); threshold=1 \u2014 OI snapshot may have been missed",
@@ -567,8 +567,8 @@
   ],
   "_stamp": {
     "audit": "options_entry_coverage.v1",
-    "generated_at_utc": "2026-09-19T19:23:02.448393+00:00",
-    "as_of": "2026-09-19",
+    "generated_at_utc": "2026-09-20T08:42:56.831122+00:00",
+    "as_of": "2026-09-20",
     "absent_stores": []
   }
 }
