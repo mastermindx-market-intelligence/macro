@@ -213,13 +213,36 @@
 
 {# ── Wave B2 W1 (UD-B2-W1): vol-weather sub-row. Folded into the Risk isle
    (sx-risk-v2) per seat ruling R3 (research/UNIFIED_DASHBOARD_DISPOSITION.md
-   rows 21+35). The sub-row inherits the isle's tokens (--isle-color,
-   --line/--ink-2/--up/--warn/--down/--info/--panel). Calm ≤35 / breeze ≤60 /
-   gust ≤82 / storm >82 — band thresholds are unchanged. The strip renders only
-   when vm['vol_weather'] is present; absent VM means no strip, no warning. -#}
+   rows 21+35). Plain-word glance tier: each row names the metric in plain
+   language (no internal VIX/COR/DSPX shorthand) and renders one tier word
+   (calm / breeze / gust / storm) on the right. The tier word comes straight
+   from vm['vol_weather'].chips[].band — the engine already classifies; the
+   template does not re-classify from percentiles. No raw values, no
+   "higher/lower than N%" integers on the glance tier (one-integer law;
+   the hero already owns N/100). Color is class-driven (data-tier), not
+   inline style, so theme.css owns material decisions. -#}
 {% macro sx_vw_strip(scope_class) -%}
 {% set _vw_chips_all = vol_weather.get('chips') or [] %}
 {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
+{% set _vw_plain_name = {
+  'vix_level':   ('Volatility level',           '波动率水平'),
+  'vix_velocity':('5-day volatility change',    '5 日波动率变化'),
+  'term_slope':  ('Term structure',             '期限结构'),
+  'vvix_vix':    ('Vol-of-vol balance',         '波动率的波动'),
+  'vix1d':       ('Intraday volatility demand', '盘中波动需求'),
+  'cor1m':       ('1-month stock correlation',  '1 个月股票联动'),
+  'cor3m':       ('3-month stock correlation',  '3 个月股票联动'),
+  'dspx':        ('Single-stock volatility',    '个股波动率'),
+} %}
+{% set _vw_band_word = {
+  'calm':     ('calm',     '平静'),
+  'quiet':    ('breeze',   '微风'),
+  'low':      ('breeze',   '微风'),
+  'normal':   ('breeze',   '微风'),
+  'elevated': ('gust',     '疾风'),
+  'extreme':  ('storm',    '风暴'),
+} %}
+{% set _vw_band_idx = {'calm': 0, 'quiet': 1, 'low': 1, 'normal': 1, 'elevated': 2, 'extreme': 3} %}
 {% set _vw_map = {} %}
 {% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
 <div class="sx-vw-strip {{ scope_class }}" data-sx-vw-strip>
@@ -230,28 +253,31 @@
   {% set _chip = _vw_map.get(key) %}
   {% if _chip %}
   {% set _chip_fresh = _chip.get('freshness') %}
-  {% set _chip_pctile = _chip.get('pctile') %}
-  {# weather tier from percentile: calm ≤35, breeze ≤60, gust ≤82, storm >82 #}
-  {% set _wx_tier = (0 if _chip_pctile is none else (3 if _chip_pctile > 82 else (2 if _chip_pctile > 60 else (1 if _chip_pctile > 35 else 0)))) %}
-  {% set _wx_col = ('var(--muted)' if _chip_fresh in ('young','missing') else ('var(--down,#ef4444)' if _wx_tier >= 3 else ('var(--warn,#f59e0b)' if _wx_tier == 2 else ('var(--info,#4d8ef5)' if _wx_tier == 1 else 'var(--up,#22c55e)')))) %}
-  <div class="sx-vw-row" data-sx-vw-chip="{{ key }}" style="--sg-wx-c:{{ _wx_col }}">
-    <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier) }}</div>
+  {% set _chip_band = (_chip.get('band') or 'normal') %}
+  {% set _wx_tier_idx = _vw_band_idx.get(_chip_band, 1) %}
+  {% set _wx_word_pair = _vw_band_word.get(_chip_band, ('breeze', '微风')) %}
+  {% set _name_pair = _vw_plain_name.get(key) %}
+  {% set _chip_tier = 'sx-vw-row--young' if _chip_fresh in ('young','missing') else ('sx-vw-row--' ~ _chip_band) %}
+  <div class="sx-vw-row {{ _chip_tier }}" data-sx-vw-chip="{{ key }}" data-tier="{{ 'young' if _chip_fresh in ('young','missing') else _chip_band }}">
+    <div class="sg-wx" aria-hidden="true">{{ sg_weather_glyph(_wx_tier_idx) }}</div>
     <div class="sx-vw-mid">
-      <div class="sx-vw-name"><span class="l-en">{{ _chip.get('name_en') or key }}</span><span class="l-zh">{{ _chip.get('name_zh') or _chip.get('name_en') or key }}</span></div>
+      <div class="sx-vw-name">
+        <span class="l-en">{{ _name_pair[0] if _name_pair else key }}</span><span class="l-zh">{{ _name_pair[1] if _name_pair else key }}</span>
+      </div>
       {% if _chip_fresh in ('young', 'missing') %}
       <div class="sx-vw-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
       {% else %}
       <div class="sx-vw-read">
-        <span class="l-en">{{ _chip.get('plain_en') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} · {% if _chip_pctile >= 50 %}higher than {{ _chip_pctile }}% of days{% else %}lower than {{ 100 - _chip_pctile }}% of days{% endif %}{% endif %}</span>
-        <span class="l-zh">{{ _chip.get('plain_zh') or _chip.get('state') or '' }}{% if _chip_pctile is not none %} · {% if _chip_pctile >= 50 %}高于历史 {{ _chip_pctile }}% 的交易日{% else %}低于历史 {{ 100 - _chip_pctile }}% 的交易日{% endif %}{% endif %}</span>
+        <span class="l-en">{{ _chip.get('plain_en') or _wx_word_pair[0] | capitalize }}</span>
+        <span class="l-zh">{{ _chip.get('plain_zh') or _wx_word_pair[1] }}</span>
       </div>
       {% endif %}
     </div>
-    <div class="sx-vw-val">
+    <div class="sx-vw-tier">
       {% if _chip_fresh in ('young', 'missing') %}
-      <span class="sx-vw-val-na">—</span>
+      <span class="l-en">—</span><span class="l-zh">—</span>
       {% else %}
-      {{ _chip.get('value') if _chip.get('value') is not none else '—' }}
+      <span class="l-en">{{ _wx_word_pair[0] }}</span><span class="l-zh">{{ _wx_word_pair[1] }}</span>
       {% endif %}
     </div>
   </div>
@@ -6941,7 +6967,8 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 /* graph slot collapses when no history is present — no fake chart (house law) */
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
-#dlg-sentiment .vsb-vw-row{grid-template-columns:26px minmax(110px,1.3fr) 1fr 54px;gap:12px;}
+/* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
+   lives inside #sx-risk-v2 and inherits the isle's tokens via .sx-vw-row.) */
 .sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--sg-wx-c,var(--muted));}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
@@ -6985,8 +7012,6 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 @media(max-width:430px){
   .sg-hero-num{font-size:34px;}
-  #dlg-sentiment .vsb-vw-row{grid-template-columns:24px 1fr 48px;}
-  #dlg-sentiment .vsb-vw-row .sg-pos-wrap{display:none;}
   .sg-split-row{grid-template-columns:minmax(80px,auto) 1fr 38px;gap:8px;}
   .row-pop .sg-dial{width:120px;height:68px;}
 }

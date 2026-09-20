@@ -138,16 +138,21 @@ def main() -> int:
                             continue
 
                         # Vol-weather strip measurements — the sub-row must be
-                        # inside the isle, present, and non-empty.
+                        # inside the isle, present, and non-empty. Eyebrow is
+                        # read as separate EN/ZH spans (no textContent
+                        # concatenation — each language is its own receipt).
                         strip = page.locator("#sx-risk-v2 .sx-vw-strip").first
                         strip_metrics = (
                             strip.evaluate(
-                                "(e)=>({w:e.clientWidth,h:e.clientHeight,"
-                                "rows:e.querySelectorAll('[data-sx-vw-chip]').length,"
-                                "eyebrow:(e.querySelector('.sx-vw-eyebrow')||{}).textContent||''})"
+                                """(e)=>{const eb=e.querySelector('.sx-vw-eyebrow');
+                                const en=eb?(eb.querySelector('.l-en')||{}).textContent||'':'';
+                                const zh=eb?(eb.querySelector('.l-zh')||{}).textContent||'':'';
+                                return {w:e.clientWidth,h:e.clientHeight,
+                                  rows:e.querySelectorAll('[data-sx-vw-chip]').length,
+                                  eyebrow_en:en,eyebrow_zh:zh};}"""
                             )
                             if strip.count() > 0
-                            else {"w": 0, "h": 0, "rows": 0, "eyebrow": ""}
+                            else {"w": 0, "h": 0, "rows": 0, "eyebrow_en": "", "eyebrow_zh": ""}
                         )
                         records.append(
                             {
