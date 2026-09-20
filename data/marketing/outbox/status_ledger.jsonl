@@ -7185,3 +7185,5 @@
 {"id":"ob-2026-09-20-378e5a2835","from":"approved","to":"quarantined","at":"2026-09-20T21:01:05Z","actor":"publisher","note":"frame repeat (skeleton jaccard=0.68) of ob-2026-09-20-f472dbc3f5 posted today; same template, different ticker","receipt":null}
 {"id":"ob-2026-09-20-bd2cf0f3a2","from":"approved","to":"posting","at":"2026-09-20T21:01:05Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-20-bd2cf0f3a2","from":"posting","to":"posted","at":"2026-09-20T21:01:06Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6ab04992ca3da654435a3e74","external_url":null,"at":"2026-09-20T21:00:57Z","booked_at":"2026-09-20T21:32:57Z"}}
+{"id":"ob-2026-09-20-854f81f68f","from":"queued","to":"approved","at":"2026-09-20T23:12:14Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
+{"id":"ob-2026-09-20-854f81f68f","from":"approved","to":"quarantined","at":"2026-09-20T23:12:15Z","actor":"publisher","note":"clock: stale_session_claim:2026-09-16!=2026-09-18 (copy names Wednesday's tape)","receipt":null}
