@@ -7,7 +7,7 @@
       "--mode",
       "enforce-added",
       "--diff-file",
-      "/tmp/alert-theme-wave-candidate.diff"
+      "/tmp/alert-center-final-candidate.diff"
     ],
     "exit_code": 0,
     "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (18945 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 18945)\n"
@@ -22,23 +22,12 @@
     "output": "runtime style injection guard OK (196 .js files scanned, 44 injecting, 89 total hits — all within frozen allowances)\n"
   },
   {
-    "check": "visual-evidence-branch",
+    "check": "visual-evidence-current-main",
     "command": [
       "python3",
       "scripts/check_ui_visual_evidence.py",
       "--diff-file",
-      "/tmp/alert-theme-wave-candidate.diff"
-    ],
-    "exit_code": 0,
-    "output": ""
-  },
-  {
-    "check": "visual-evidence-current-main",
-    "command": [
-      "python3",
-      "origin/main:scripts/check_ui_visual_evidence.py",
-      "--diff-file",
-      "/tmp/alert-theme-wave-candidate.diff"
+      "/tmp/alert-center-final-candidate.diff"
     ],
     "exit_code": 0,
     "output": ""
@@ -48,7 +37,6 @@
     "command": [
       "git",
       "diff",
-      "--cached",
       "--check"
     ],
     "exit_code": 0,

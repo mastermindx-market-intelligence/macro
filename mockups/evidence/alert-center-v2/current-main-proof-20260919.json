@@ -1,15 +1,15 @@
 {
-  "schema": "mastermind.alert_center.current_main_proof.v8",
+  "schema": "mastermind.alert_center.current_main_proof.v9",
   "operation": "alert-center-v2-current-main-rescue-20260919-sol-001",
-  "verified_at": "2026-09-20T06:54:38Z",
-  "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
-  "macro_origin_main_observed": "e8695877fb83b71db450ce498d8a15147da328fc",
-  "candidate_source_commit": "0edde533e6a40e1633194bb965cbd9f937b34957",
-  "current_merge_tree": "c39e40609a46f096f8cdbdcf91d90d790552809a",
+  "verified_at": "2026-09-20T08:15:00Z",
+  "skillpack_commit": "f3d187976e083f9b102fc49696395b5c1521ebb5",
+  "macro_origin_main_observed": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+  "candidate_source_commit": "34ead81ae062d15636af2af763f3859b523ba7a6",
+  "current_merge_tree": "9994ec24fd7048f3d09ea89b55c5291cdedd92f4",
   "integration_carrier": "claude/alert-center-v2-astra-20260908",
   "local_worktree_branch": "sol/alert-center-v2-rescue-20260919",
   "tests": {
-    "passed": 165,
+    "passed": 169,
     "warnings": 5,
     "failures": 0
   },
@@ -21,11 +21,9 @@
     "total_matched_firings": 1217
   },
   "source_bound": {
-    "signals": 448,
+    "signals": 576,
     "total_shared_signals": 651,
-    "coverage_ratio": 0.688172,
-    "theme_change_signals": 102,
-    "theme_change_total": 102
+    "coverage_ratio": 0.884793
   },
   "source_bound_families": [
     "altdata.convergence",
@@ -38,6 +36,9 @@
     "macro.risk_state_elevated",
     "macro.transition_state_change",
     "rotation.rotation_emerging",
+    "rotation.rotation_fading",
+    "rotation.rotation_turn_down",
+    "rotation.rotation_turn_up",
     "themes.leadership_rotation",
     "themes.reco_change",
     "themes.theme_deteriorating",
@@ -46,9 +47,23 @@
     "vector.allocation_change",
     "vector.impulse_warn_down"
   ],
+  "rotation_rollover": {
+    "supported_rows": 313,
+    "families": {
+      "rotation.rotation_emerging": 185,
+      "rotation.rotation_fading": 100,
+      "rotation.rotation_turn_down": 14,
+      "rotation.rotation_turn_up": 14
+    }
+  },
+  "situation_context": {
+    "specific_subject_bundles": 151,
+    "browser_navigation_proven": true,
+    "independent_confirmation_claimed": false
+  },
   "browser": {
-    "interaction_checks": 13,
-    "named_screenshots": 9,
+    "interaction_checks": 15,
+    "named_screenshots": 10,
     "adversarial_checks": 14,
     "adversarial_screenshots": 10,
     "canonical_capture": {
@@ -79,7 +94,7 @@
     "production_acceptance": false
   },
   "legacy_parity": {
-    "baseline_commit": "e8695877fb83b71db450ce498d8a15147da328fc",
+    "baseline_commit": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
     "fields_compared": 17,
     "differences": [],
     "payload_hash_equal": true
@@ -87,42 +102,39 @@
   "guards": {
     "design_system": "pass",
     "runtime_style": "pass",
-    "visual_evidence_branch": "pass",
-    "visual_evidence_current_main": "pass",
+    "visual_evidence": "pass",
     "diff_check": "pass",
-    "contract_delta": "pending exact evidence commit"
+    "contract_delta": "pending exact evidence head"
   },
   "source_sha256": {
-    "engine/alert_center_view.py": "70bc228f2b3ae266b1872cb6c23108987601e02706eb6c069d88c2dfde8843ba",
+    "engine/alert_center_view.py": "89b7f9817efc396be7eb6b3127e795d08b446824dcf7e06d41876a1b0aa05e41",
     "engine/alert_triage.py": "871ab5b4cad75e619e959b20571f95c5fc12b1f4e380d117a71c4840266d9d95",
     "templates/alerts.html.j2": "6d79dbcba96598ab8563c844fe98dfdd9ec94e973fa70f6cfde48786ff37db8d",
-    "templates/alert_center.css": "2224812555f7f2f81a1957f8ed08f22fde2595c905e93067b8f522b2c63d8557",
-    "templates/alert_center.js": "c229a2d139b57f0578fb8678ed2696c625fde201301927d9e4983025b9f18fdf",
-    "scripts/qa_alert_center_v2.py": "4e59cff630d71d336618616c25ab4087337a2cfe638b55aa35f1438c2e7949da"
+    "templates/alert_center.css": "0ff5c733bd43364a188e5231bd5931edc3601837d567e5e4fba5b92dcac978a3",
+    "templates/alert_center.js": "2a3eb08c91851eca935ddb9999c184e514937f01692b28911e2c9b7acdf811ea",
+    "scripts/qa_alert_center_v2.py": "e2b3e1684f95b4ddf8a0669a4eb54626d4150a008359bb12c8b4b4c9f410f968"
   },
   "evidence_sha256": {
-    "browser-proof.json": "eb4d392b53069eea96474e13b4fe6c74974a4c324c92826f94825e39ae165d2a",
+    "browser-proof.json": "9a0faf63fe514fa5b724e7c7c420d66f92ee839d066a956c759dd07b654cdcdb",
     "trust-browser-proof.json": "5822272dbf162c8f5a7aa15e63a91ece18278cfe91621cf21d235e32a361f730",
-    "input-manifest.json": "704b4bfbabfee254f62808aebea7fe1e3e7af9b1b79b1ab03e8a12be6a34f8af",
-    "manifest.json": "c0d72be5a990a9feaec9109205111fa60f96449703325bb44e70ae286eb8484f",
-    "smells.json": "5a8569d05b1ceff23d11fe77121ed34ff37c38d6d6124815c3bf7d048240d922",
-    "guard-results.json": "1796be97072084c7e396dfafbd41b224da33a6562780c53278aa021413209cf5",
-    "legacy-parity.json": "d581d9a327e43ecf8b244586472805b1fd78b91e6a0e7dd9f81356753eee5cd2",
-    "targeted-tests.log": "bd2fe51dcd0eced3624cb287ba8cd4416a085905f792f630f13368456c27603d",
-    "production-baseline-20260920.json": "d9e9fd04baf1882f46bb307f99e3daa39344971291fff8b7570fd161c8552542",
-    "production-baseline-dark-en.png": "3d15b8d8bacb3e9f2e0ce8dbb8aee76d8803b7accb47e9fb01884f78fabe66d9"
+    "input-manifest.json": "fde1d83266a51f1e0ac915b54491c13e2e2a521eab087119323a69e5c9444da8",
+    "manifest.json": "4ae1fe276073dc8ee49df7a9b60a4d2a3e4cbb4a3ebd9fe6d916c043d4cfd9bd",
+    "smells.json": "693a7a32957cd5b565c02d15a3acae9a5dd8daf951f9ec118eaf412b8e9c515c",
+    "guard-results.json": "c84b2f62b50732413cd14d8add59831a732230f66d2f46ed8269eaca9e05401e",
+    "legacy-parity.json": "ccd3824956029723a2c647b68de5841a65d52c4c23ed026db3378e66238cecd3",
+    "latest-base-compatibility-20260919.json": "7913a1ca089a34b9f778fa83e5ee6abadec669d0f615a3b8239a5e076b20d75d",
+    "production-baseline-20260920.json": "11a229faf49b5fe40a1478a43bc4da068fa54792255401c3f7cf0134a211b746",
+    "desktop-related-context.png": "145d71b909e8c4b5487bca80a06eb4d30616b9c99ded92182d7f92059dd1f3de"
   },
   "production_baseline": "mockups/evidence/alert-center-v2/production-baseline-20260920.json",
   "figma": {
     "file_key": "r1hSkfDg4vGzjWRySgrHE1",
-    "modified_this_turn": false,
-    "runtime_authority": false
+    "runtime_authority": false,
+    "modified_this_turn": false
   },
   "review_state": "FULL_REREVIEW_REQUIRED",
   "release_state": "BUILT_NOT_PROVEN_IN_PRODUCTION",
   "what_this_does_not_prove": [
-    "independent review",
-    "merge",
     "deployment",
     "production-route visibility",
     "customer acceptance",

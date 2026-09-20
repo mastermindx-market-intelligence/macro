@@ -10,11 +10,14 @@
     "A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up",
     "Five next-priority risk families render source-bound limits, actions and evidence destinations",
     "Five theme-change families render source-bound model limits, reassessment and current-page actions",
+    "Three rotation rollover families render breadth-aware limits and current-panel reassessment",
+    "Situation context links related observations without claiming independent confirmation",
     "Browser back and malformed legacy hash values do not crash",
     "Dark/light × EN/ZH × desktop/mobile: no overflow and first signal in first viewport",
     "History selection retains the actual firing clock in its permalink"
   ],
   "screenshots": [
+    "desktop-related-context.png",
     "desktop-dark-en.png",
     "desktop-dark-zh.png",
     "desktop-light-en.png",

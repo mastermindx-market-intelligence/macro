@@ -1,13 +1,15 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v3",
-  "observed_at": "2026-09-20T06:54:38Z",
-  "candidate_source_head": "0edde533e6a40e1633194bb965cbd9f937b34957",
-  "latest_protected_main": "e8695877fb83b71db450ce498d8a15147da328fc",
-  "latest_merge_tree": "c39e40609a46f096f8cdbdcf91d90d790552809a",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v4",
+  "observed_at": "2026-09-20T08:15:00Z",
+  "candidate_source_head": "34ead81ae062d15636af2af763f3859b523ba7a6",
+  "latest_protected_main": "75956e5b00f99b860e9e97dde36f46ef04ecc72b",
+  "latest_merge_tree": "9994ec24fd7048f3d09ea89b55c5291cdedd92f4",
   "merge_conflicts": [],
-  "material_movement": {},
-  "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
+  "material_movement": {
+    ".github/ci/legacy-jobs.yml": "main-only CI wiring movement; current immutable merge tree is conflict-free"
+  },
+  "skillpack_commit": "f3d187976e083f9b102fc49696395b5c1521ebb5",
   "classification": "FULL_REREVIEW_REQUIRED",
-  "reason": "Theme-change semantics and exact browser evidence materially expanded; fresh exact-head review is required. Current protected-main merge tree is conflict-free.",
+  "reason": "Rotation rollover semantics and structured situation-context navigation materially expand the product journey; fresh exact-head review is required. Current protected-main merge tree is conflict-free.",
   "production_acceptance": false
 }
