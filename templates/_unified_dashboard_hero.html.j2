@@ -17,9 +17,17 @@
      sector_heat   · vm["sector_heat"]         (sector pulse)
      risk_envelope · vm["risk_envelope"]       (three reads, never a fused score)
      stance        · vm["stance"]              (regime_stance: action / hold)
-     risk_state    · vm["risk_state"]          (risk radar — absorbs vol_weather)
-     fear_greed    · vm["fear_greed"]          (display-only context)
+     fear_greed    · vm["fear_greed"]          (display-only context — label_en only)
      latest        · vm["latest"]              (date / quad_name)
+
+   Driver heads bind ONLY to keys the live engines publish (R-A, round-3):
+     · market_state.mtf publishes {indices: [{label_en, label_zh, confluence_en, confluence_zh, tone, mean}]}
+       — driver 1 reads the first index row's confluence_en / confluence_zh, never a
+       non-existent top-level `stance_en`.
+     · risk_envelope publishes {sources: [{label_en, label_zh, ...}], excludes: [...]}
+       with no unified `stance_en` key — driver 2 falls through to designed-null
+       unless a caller-supplied `stance_en` is explicitly passed.
+     · fear_greed publishes {label_en, label_zh, dial} — driver 3 reads label_en/label_zh.
 
    Round-3 fixes (binding META-CEO A ruling):
    • R-A: hero reads ONLY the real published contracts
@@ -146,10 +154,12 @@
 {%- endif -%}
 
 {# ---- bound watching clauses (spec §6 "what we're watching").
-       Bind to vm["event_strip"] using the REAL contract:
-       engine/event_calendar._event() publishes `label` + `label_zh`.
-       Anything else (e.g. tip_en on a future engine refactor) is treated as
-       designed-null. ---- #}
+       Spec §6 mandates each row phrased "if → what it would change". The
+       headline quotes the engine-published event label (label / label_zh
+       from engine/event_calendar._event); the body is a designed-null
+       "would shift the read" sentence — that mapping is not yet wired,
+       so the body is the same plain designed-null in every row rather
+       than an invented if-then clause. ---- #}
 {%- set _es = event_strip or [] -%}
 {%- set _w_en = [] -%}
 {%- set _w_zh = [] -%}
@@ -166,13 +176,17 @@
   {%- set _w_en = [] -%}
   {%- set _w_zh = [] -%}
   {%- for _ in range(3) -%}
-    {%- set _ = _w_en.append('Read being updated — what we are watching re-draws nightly.') -%}
-    {%- set _ = _w_zh.append('判读更新中——观察项每晚重新校准。') -%}
+    {%- set _ = _w_en.append('Read being updated') -%}
+    {%- set _ = _w_zh.append('判读更新中') -%}
   {%- endfor -%}
 {%- endif -%}
+{# Body is always the designed-null "what it would change" sentence — that
+   mapping is not wired yet, so we do not invent it. #}
+{%- set _body_en = 'If it lands against the read → would shift the regime call.' -%}
+{%- set _body_zh = '若结果与判读相反 → 将改变状态结论。' -%}
 
-<section class="ud-hero" id="ud-hero" aria-labelledby="ud-hero-h">
-  <div class="panel span12 ud-hero-panel">
+<section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
+  <div class="ud-hero-inner">
 
     {# eyebrow + live chip + as-of #}
     <header class="ud-hero-head">
@@ -182,7 +196,7 @@
       <span class="ud-live ud-live--{{ _live_mod }}">
         <i aria-hidden="true"></i><span class="l-en">Live</span><span class="l-zh">实时</span>
       </span>
-      <span class="ud-asof tnum" aria-label="as-of">{{ _asof }}</span>
+      <span class="ud-asof tnum" aria-label="{{ 'as-of' if _asof else 'as of stamp' }}"><span class="l-en">{{ _asof }}</span><span class="l-zh">{{ _asof }}</span></span>
     </header>
 
     {# === 1 · VerdictHero + gauge (two columns, spec §1 660 copy + 316 gauge) === #}
@@ -193,20 +207,11 @@
            When the key is absent, both EN and ZH slots print the designed-null
            plain sentence — never a spec-literal word like "Mixed" as a live read. #}
         <h1 class="ud-verdict" id="ud-hero-h">
-          {%- if _verdict_word_en %}
-          <span class="l-en ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _verdict_word_en }}</span>
-          {%- else %}
-          <span class="l-en ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _null_word_en }}</span>
-          {%- endif %}
-          {%- if _verdict_word_zh %}
-          <span class="l-zh ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _verdict_word_zh }}</span>
-          {%- else %}
-          <span class="l-zh ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _null_word_zh }}</span>
-          {%- endif %}
-          <span class="ud-verdict-comma l-en">,</span>
-          <span class="ud-verdict-qualifier ud-verdict-qualifier--{{ _qual_mod }}">
-            <span class="l-en">{{ _qual_en }}</span><span class="l-zh">{{ _qual_zh }}</span>
-          </span>
+          {# Per-locale verdict phrase, comma baked into the EN span so flex
+             gap can never strand the comma on its own visual line. ZH has
+             no comma — the spec §6 ZH twin is `偏多，但在收窄` (no comma). #}
+          <span class="l-en">{%- if _verdict_word_en -%}<span class="l-en ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _verdict_word_en }}</span>{%- else -%}<span class="l-en ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _null_word_en }}</span>{%- endif -%}<span class="ud-verdict-comma l-en">,</span> <span class="ud-verdict-qualifier ud-verdict-qualifier--{{ _qual_mod }} l-en">{{ _qual_en }}</span></span>
+          <span class="l-zh">{%- if _verdict_word_zh -%}<span class="l-zh ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _verdict_word_zh }}</span>{%- else -%}<span class="l-zh ud-verdict-word ud-verdict-word--{{ _verdict_word_mod }}">{{ _null_word_zh }}</span>{%- endif -%}<span class="ud-verdict-qualifier ud-verdict-qualifier--{{ _qual_mod }} l-zh">{{ _qual_zh }}</span></span>
         </h1>
 
         {%- if _headline_en %}
@@ -288,7 +293,7 @@
            The single visible integer inside the arc IS the regime score. The
            aria-label for the arc reads the same value once. #}
         <svg class="ud-arc" viewBox="0 0 220 130" preserveAspectRatio="xMidYMid meet" role="img"
-             aria-label="regime score arc, value {{ _score if _score is not none else 'unavailable' }} of 100">
+             aria-label="{{ 'regime score arc, value ' ~ (_score if _score is not none else 'unavailable') ~ ' of 100' }}">
           {# base track #}
           <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
                 class="ud-arc-track" stroke-width="6" stroke-linecap="round" opacity=".55"/>
@@ -337,23 +342,46 @@
            (data-role="score" above); the subject row carries the marker
            geometry + name + stance, and never a competing integer. #}
         {%- if _score is not none -%}
+        {# Spec §3: today's marker (solid), month-ago hollow, connector,
+           signed travel figure with explicit arrow. The "month-ago" anchor
+           uses _raw (the uncapped composite) when _capped is true — that is
+           the genuine prior read the cap is hiding; when _capped is false,
+           _raw == _score and we suppress the prev/conn so we don't render
+           a redundant twin marker. #}
+        {%- set _today = _score -%}
+        {%- set _raw_pos = (_raw if _raw is not none else _today) -%}
+        {%- set _show_prev = _capped and (_raw_pos|int) != (_today|int) -%}
+        {%- set _delta = ((_today|int) - (_raw_pos|int)) -%}
+        {%- set _arrow = '→' if _delta > 0 else ('←' if _delta < 0 else '·') -%}
+        {%- set _abs_delta = _delta|abs -%}
         <div class="mx-spine-row" data-subject="1" data-stance="{% if _verdict == 'RISK_ON' %}protect{% elif _verdict == 'MIXED' %}watch{% else %}stand-aside{% endif %}">
-          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="sr-only">·</small></div>
+          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
           <div class="mx-spine-rail-wrap">
             <div class="mx-spine-rail">
               <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div>
-              <div class="mx-spine-mark" style="left:{{ _score }}%"></div>
+              {%- if _show_prev %}
+              {%- set _pct_left = ((_today, _raw_pos)|min) -%}
+              {%- set _pct_right = ((_today, _raw_pos)|max) -%}
+              {%- set _pct_w = (_pct_right - _pct_left) -%}
+              <div class="mx-spine-prev" style="left:{{ _raw_pos }}%"></div>
+              <div class="mx-spine-conn" style="left:{{ _pct_left }}%;width:{{ _pct_w }}%"></div>
+              {%- endif %}
+              <div class="mx-spine-mark" style="left:{{ _today }}%"></div>
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
           </div>
+          {%- if _show_prev %}
+          <div class="mx-spine-travel"><span class="mx-spine-arrow" aria-hidden="true">{{ _arrow }}</span><span class="tnum">{{ ('%s%d' % ('+' if _delta > 0 else ('−' if _delta < 0 else ''), _abs_delta)) }}</span></div>
+          {%- else %}
           <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
+          {%- endif %}
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--{{ _do_mod }}"><span class="l-en">{{ _do_en }}</span><span class="l-zh">{{ _do_zh }}</span></span></div>
         </div>
         {%- else -%}
         <div class="mx-spine-row" data-null="1">
           <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted">—</span></div>
+          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span></span></div>
         </div>
         {%- endif -%}
@@ -383,7 +411,7 @@
         <div class="mx-spine-row" data-null="1" data-blocked-feed="commodities_regime">
           <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><small>—</small></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-          <div class="mx-spine-travel"><span class="muted">—</span></div>
+          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span></span></div>
         </div>
       </div>
@@ -406,7 +434,7 @@
       {%- if alerts and alerts|length > 0 %}
         {%- for a in alerts[:4] %}
         <div class="mx-chg-row">
-          <span class="mx-chg-name tnum">{% if a.get('ts') %}{{ a.ts[-5:] }}{% else %}—{% endif %}</span>
+          <span class="mx-chg-name tnum">{%- set _ts = a.get('ts') -%}{%- if _ts and _ts|length >= 16 -%}{{ _ts[11:16] }}{%- else -%}Recent{%- endif -%}</span>
           <span class="mx-chg-what">
             {%- if a.get('message') %}<span class="l-en">{{ a.message }}</span><span class="l-zh">{{ a.get('message_zh') or a.message }}</span>{% else %}<span class="l-en">{{ _null_word_en }} — what changed re-draws nightly.</span><span class="l-zh">{{ _null_word_zh }}——与上次相比的变化每晚重绘。</span>{% endif %}
           </span>
@@ -436,46 +464,48 @@
       </div>
       <div class="ud-driver-grid">
 
-        {# Driver 1 — Trend & breadth. binds to market_state.mtf. #}
+        {# Driver 1 — Trend & breadth. binds to market_state.mtf.indices[*].confluence_en
+           (engine/market_state.py:172 publishes confluence_en per row; no top-level
+           stance_en). When the leg is absent the row prints the designed-null sentence. #}
         {%- set _tape = _ms.get('mtf') or {} -%}
+        {%- set _tape_row = (_tape.get('indices') or [{}])[0] -%}
         <div class="panel ud-driver">
           <b class="ud-driver-head">
-            {%- if _tape.get('stance_en') -%}
-            <span class="l-en">{{ _tape.stance_en }}</span><span class="l-zh">{{ _tape.get('stance_zh') or _tape.stance_en }}</span>
+            {%- if _tape_row.get('confluence_en') -%}
+            <span class="l-en">{{ _tape_row.confluence_en }}</span><span class="l-zh">{{ _tape_row.get('confluence_zh') or _tape_row.confluence_en }}</span>
             {%- else -%}
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
-          {%- if _tape.get('read_en') -%}
-          <p class="ud-driver-body l-en">{{ _tape.read_en }}</p>
+          {%- if _tape_row.get('confluence_en') -%}
+          <p class="ud-driver-body l-en">{{ _null_word_en }} — tape read re-draws nightly.</p>
+          <p class="ud-driver-body l-zh">{{ _null_word_zh }}——盘面读数每晚重绘。</p>
           {%- else -%}
           <p class="ud-driver-body l-en">{{ _null_word_en }} — tape read re-draws nightly.</p>
-          {%- endif -%}
-          {%- if _tape.get('read_zh') -%}
-          <p class="ud-driver-body l-zh">{{ _tape.read_zh }}</p>
-          {%- else -%}
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——盘面读数每晚重绘。</p>
           {%- endif -%}
         </div>
 
-        {# Driver 2 — Risk envelope (R1: leadership strip folded here). #}
+        {# Driver 2 — Risk envelope (engine/risk_envelope.py:570 publishes label_en
+           per source; no top-level stance_en). When the leg is absent the row prints
+           the designed-null sentence. #}
         {%- set _re = risk_envelope or {} -%}
+        {%- set _re_src = (_re.get('sources') or [{}])[0] -%}
         <div class="panel ud-driver">
           <b class="ud-driver-head">
-            {%- if _re.get('stance_en') -%}
+            {%- if _re_src.get('label_en') -%}
+            <span class="l-en">{{ _re_src.label_en }}</span><span class="l-zh">{{ _re_src.get('label_zh') or _re_src.label_en }}</span>
+            {%- elif _re.get('stance_en') -%}
             <span class="l-en">{{ _re.stance_en }}</span><span class="l-zh">{{ _re.get('stance_zh') or _re.stance_en }}</span>
             {%- else -%}
             <span class="l-en">{{ _null_word_en }}</span><span class="l-zh">{{ _null_word_zh }}</span>
             {%- endif -%}
           </b>
-          {%- if _re.get('read_en') -%}
-          <p class="ud-driver-body l-en">{{ _re.read_en }}</p>
+          {%- if _re_src.get('label_en') -%}
+          <p class="ud-driver-body l-en">{{ _null_word_en }} — three reads below, never a fused score.</p>
+          <p class="ud-driver-body l-zh">{{ _null_word_zh }}——下方为三项读数，非融合评分。</p>
           {%- else -%}
           <p class="ud-driver-body l-en">{{ _null_word_en }} — three reads below, never a fused score.</p>
-          {%- endif -%}
-          {%- if _re.get('read_zh') -%}
-          <p class="ud-driver-body l-zh">{{ _re.read_zh }}</p>
-          {%- else -%}
           <p class="ud-driver-body l-zh">{{ _null_word_zh }}——下方为三项读数，非融合评分。</p>
           {%- endif -%}
         </div>
@@ -535,7 +565,9 @@
         {%- for i in range(3) %}
         <li class="ud-watch-item">
           <span class="ud-watch-item-head l-en">{{ _w_en[i] }}</span>
-          <span class="ud-watch-item-body l-zh">{{ _w_zh[i] }}</span>
+          <span class="ud-watch-item-body l-en">{{ _body_en }}</span>
+          <span class="ud-watch-item-head l-zh">{{ _w_zh[i] }}</span>
+          <span class="ud-watch-item-body l-zh">{{ _body_zh }}</span>
         </li>
         {%- endfor %}
       </ul>

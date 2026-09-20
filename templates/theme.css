@@ -2773,11 +2773,19 @@ body.page-macro .ud-hero-grid{
 @media (max-width:860px){ body.page-macro .ud-hero-grid{ grid-template-columns:1fr; } }
 
 body.page-macro .ud-verdict{
-  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:0 10px;
   font-size:var(--fs-display,46px); font-weight:800; line-height:.95;
   letter-spacing:-.03em;
   margin:4px 0 8px;
 }
+body.page-macro .ud-verdict > .l-en,
+body.page-macro .ud-verdict > .l-zh{
+  /* Per-locale phrase is its own flex item; the comma + qualifier are inline
+     within it so the gap can never strand the comma on its own line. */
+  display:inline-flex; align-items:baseline; gap:0;
+}
+body.page-macro .ud-verdict-comma{ font-weight:800; color:var(--ink-1,var(--text)); }
+html[data-lang="zh"] body.page-macro .ud-verdict-comma{ display:none; }
 html[data-lang="zh"] body.page-macro .ud-verdict{ letter-spacing:0; }
 @media (max-width:390px){ body.page-macro .ud-verdict{ font-size:36px; } }
 body.page-macro .ud-verdict-word--up{ color:var(--ink-up,var(--up)); }
@@ -2954,5 +2962,42 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
   body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap:var(--sp-4,16px); }
   body.page-macro .ud-verdict{ font-size:36px; }
   body.page-macro .ud-driver-grid{ gap:var(--sp-3,12px); }
+}
+/* ── Mobile 640 reduction — spine as stacked cards (spec §7 row 1) ────
+   Stance chip joins the name on row 1; the rail + travel form row 2;
+   column heads hide. The .mockup-spine-390 wrapper class also forces the
+   640 layout at any viewport so the specimen page previews the floor. */
+@media (max-width:640px){
+  body.page-macro .mx-spine-head{ display:none; }
+  body.page-macro .mx-spine-row{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "name stance"
+      "rail  rail"
+      "travel travel";
+    gap:6px 10px;
+    padding:12px 4px;
+  }
+  body.page-macro .mx-spine-row[data-null="1"]{ grid-template-areas:"name stance" "rail rail"; }
+  body.page-macro .mx-spine-name{ grid-area:name; }
+  body.page-macro .mx-spine-rail-wrap{ grid-area:rail; }
+  body.page-macro .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
+  body.page-macro .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
+  /* Display the same in the specimen via .mockup-spine-390 wrapper class. */
+  .mockup-spine-390 .mx-spine-head{ display:none; }
+  .mockup-spine-390 .mx-spine-row{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "name stance"
+      "rail  rail"
+      "travel travel";
+    gap:6px 10px;
+    padding:12px 4px;
+  }
+  .mockup-spine-390 .mx-spine-row[data-null="1"]{ grid-template-areas:"name stance" "rail rail"; }
+  .mockup-spine-390 .mx-spine-name{ grid-area:name; }
+  .mockup-spine-390 .mx-spine-rail-wrap{ grid-area:rail; }
+  .mockup-spine-390 .mx-spine-travel{ grid-area:travel; justify-content:flex-end; }
+  .mockup-spine-390 .mx-spine-stance{ grid-area:stance; justify-content:flex-end; }
 }
 /* end .ud-hero — UD-B1 §1/§3/§6 */

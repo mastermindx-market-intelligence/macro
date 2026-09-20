@@ -101,7 +101,7 @@ silently dropped; no module is relocated or removed without a seat ruling.
 ## Stage 1 implementation notes (binding for B1)
 
 - **Hero binding** uses real engine view-model keys: `vm["market_state"]` (census #3 / #4 / #5 / #9 / #10) and the regime spine (#11 quad map subsumed per spec §3).
-- **What changed / Drivers / Watching** bind to `vm["alerts"]`, `vm["event_strip"]`, `vm["sector_heat"]`, `vm["risk_state"]`, and `vm["vol_weather"]` (absorbed into the risk isle, R3).
+- **What changed / Drivers / Watching** bind to `vm["alerts"]`, `vm["event_strip"]`, `vm["sector_heat"]`, and `vm["vol_weather"]` (absorbed into the risk isle, R3). The hero template does NOT read `vm["risk_state"]` — that key was a comment-only claim in earlier drafts and has been removed.
 - **All remaining isles** KEEP their current rendering below the new hero in B1 — B2+ migrates them per the table above.
 - **Glance copy** ships spec §6 EN+ZH verbatim — every user-facing string is a plain sentence in both languages; one-integer law applied (no competing integers; the score 62 prints once, with 71 only as the caveat).
 - **No falsifier language** is shipped in any of the new copy (per doctrine; see spec §6).

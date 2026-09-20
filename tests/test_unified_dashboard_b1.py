@@ -170,6 +170,41 @@ def test_hero_driver_head_uses_vm_leg_when_present():
     assert "CUSTOM-FG-STANCE." in html
 
 
+def test_hero_driver_mtf_reads_confluence_en_from_indices():
+    """R-A: market_state.mtf publishes {indices: [{confluence_en, confluence_zh, ...}]}.
+    The hero driver 1 must read confluence_en from indices[0], NOT a non-existent
+    top-level stance_en. The test fixture pre-fix injected a top-level stance_en
+    — that path is gone; confluence_en from indices[0] is the real contract."""
+    vm = _real_vm()
+    vm["market_state"]["mtf"] = {
+        "indices": [
+            {"ticker": "SPX", "label_en": "S&P 500", "label_zh": "标普 500",
+             "confluence_en": "Uptrend", "confluence_zh": "上升趋势", "tone": "good"},
+        ],
+    }
+    html = _render_macro_with_hero(vm)
+    assert "Uptrend" in html, (
+        "driver 1 must read mtf.indices[0].confluence_en (engine contract)"
+    )
+    assert "上升趋势" in html, (
+        "driver 1 must read mtf.indices[0].confluence_zh (engine contract)"
+    )
+
+
+def test_hero_driver_risk_envelope_designed_null_when_no_source():
+    """R-A: risk_envelope publishes {sources: [{label_en, label_zh}, ...]} with
+    no top-level stance_en. When sources is empty (the macro vm does not wire
+    risk_envelope yet), driver 2 must fall through to the designed-null sentence
+    — never an invented spec literal."""
+    vm = _real_vm()
+    vm["risk_envelope"] = {}  # empty
+    html = _render_macro_with_hero(vm)
+    # Designed-null row in driver 2
+    assert html.count("Read being updated") >= 3, (
+        "driver 2 must surface designed-null when risk_envelope is empty"
+    )
+
+
 # --------------------------------------------------------------------------- #
 # ZH verdict word renders (was set but never printed pre-fix) + l-en on EN (R-A)
 # --------------------------------------------------------------------------- #
@@ -362,6 +397,30 @@ def test_hero_stance_uses_class_modifiers_not_inline_custom_property():
 
 
 # --------------------------------------------------------------------------- #
+# 390 reduction: hero section is the span12 grid item (BLOCKER-2 closed).
+# Pre-fix the inner .panel.span12 was a child of a non-grid-item <section>, so
+# at 390 the section occupied 1/12 of the page width. Now the section itself
+# carries span12 — the inner content panel stays inside.
+# --------------------------------------------------------------------------- #
+
+def test_hero_section_is_span12_grid_item():
+    """The hero must occupy a full grid row at every viewport (incl. 390).
+    Pre-fix the section had no span12; the inner panel was the grid item, but
+    at 390 (when the outer .grid still carries 12 columns on narrow screens)
+    the section collapsed to a single column. The fix: span12 moves to the
+    section itself."""
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
+    # The hero section must carry span12.
+    assert 'class="ud-hero panel span12' in src, (
+        "hero section must be the span12 grid item (BLOCKER-2 fix)"
+    )
+    # The inner .panel.span12 wrapper must NOT exist (we removed it).
+    assert 'class="panel span12 ud-hero-panel"' not in src, (
+        "hero must not carry a redundant inner panel.span12 wrapper"
+    )
+
+
+# --------------------------------------------------------------------------- #
 # Spine: only US stocks carries a real rail; HK/China A/Bonds/Commodities
 # are designed-null (R-B — macro vm does not yet publish their regime data).
 # --------------------------------------------------------------------------- #
@@ -376,9 +435,16 @@ def test_spine_only_us_stocks_has_marker_other_rows_designed_null():
     assert us_marker_count == 1, (
         f"only US stocks should carry a spine marker; got {us_marker_count}"
     )
-    # The four supporting rows are designed-null — no hardcoded specimen stances.
-    assert "Watch — don’t chase" in html or "Watch — don't chase" not in html
-    # The hardcoded specimen stances for non-US rows must NOT appear.
+    # The four supporting rows are designed-null — no hardcoded specimen stances
+    # (the "Watch — don't chase" stance chip on the hero stance is OK at most once).
+    # When the hero stance is 'Watch — don't chase' (the default _real_vm stance
+    # = shift), the spine supporting rows must still not carry that stance chip.
+    # We assert: at most ONE 'Watch — don't chase' in the entire HTML.
+    assert html.count("Watch — don't chase") <= 1, (
+        "spine supporting rows must not duplicate the hero stance chip"
+    )
+    # The hardcoded specimen stances for non-US rows must NOT appear in the spine
+    # more than once (the hero stance chip itself may carry one of these once).
     for forbidden in ("Get ready", "Protect gains", "Stand aside"):
         # Each may appear ONCE (in the hero stance chip driven by vm["stance"]),
         # but NOT multiple times across the spine.
@@ -391,6 +457,33 @@ def test_spine_only_us_stocks_has_marker_other_rows_designed_null():
     spine_null_count = html.count("Read being updated")
     assert spine_null_count >= 4, (
         "spine supporting rows must surface the designed-null sentence"
+    )
+
+
+def test_spine_us_stocks_has_spec_section3_geometry():
+    """Spec §3: today's marker + month-ago hollow + connector + signed travel.
+    When market_state.capped=True (the real read here), the prev/conn markers
+    must render so the row carries the signature geometry, not just an em-dash."""
+    html = _render_macro_with_hero(_real_vm())
+    # spec §3 primitive: today marker
+    assert 'mx-spine-mark' in html, "spec §3: today's solid marker must render"
+    # spec §3 primitive: month-ago hollow (rendered when capped=True)
+    assert 'mx-spine-prev' in html, (
+        "spec §3: month-ago hollow marker must render when capped=True"
+    )
+    # spec §3 primitive: connector between them
+    assert 'mx-spine-conn' in html, (
+        "spec §3: thin connector between prev + today markers must render"
+    )
+    # spec §3 primitive: signed travel figure with arrow (← or →)
+    assert 'mx-spine-arrow' in html, (
+        "spec §3: travel figure must render with explicit arrow (no 红涨绿跌 flip)"
+    )
+    # The em-dash stub that pre-fix used in the travel column must NOT render.
+    # Travel is a real signed number when prev/conn render.
+    assert html.count("mx-spine-travel") == 5, (
+        f"every spine row must have its own mx-spine-travel; got "
+        f"{html.count('mx-spine-travel')}"
     )
 
 
