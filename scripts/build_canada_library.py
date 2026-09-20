@@ -809,6 +809,64 @@ def _write_canada_standouts(board: dict, site: Path) -> None:
         json.dumps(board, separators=(",", ":"), default=str))
 
 
+def _register_ca_shadow_challengers(
+    *, board: dict, candidates: list, align_map: dict, entry_signals: dict,
+) -> None:
+    """Register independent CA rank/discovery shadows after public persistence.
+
+    Lane-A rank registration depends only on the incumbent calls supplied later by
+    ``build_canada.py``.  Lane-B discovery additionally needs the frozen research
+    population.  A Lane-B contract failure therefore must not suppress Lane A.
+    """
+    try:
+        from engine import (
+            board_shadow,
+            canada_discovery_challenger,
+            canada_native_intelligence,
+        )
+    except Exception as exc:  # noqa: BLE001 — additive shadow research only
+        log.warning(
+            "CA shadow modules unavailable (%s) — published board and render "
+            "continue unchanged", exc,
+        )
+        return
+
+    try:
+        board_shadow.register_challenger(
+            "CA",
+            canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION,
+            rank_fn=canada_native_intelligence.rank_residual_calls,
+        )
+    except Exception as exc:  # noqa: BLE001 — Lane A is zero-authority research
+        log.warning(
+            "CA native rank-challenger registration failed (%s) — discovery "
+            "registration remains independently eligible", exc,
+        )
+
+    try:
+        populations = canada_discovery_challenger.freeze_population_contract(
+            official_board=board,
+            candidates=candidates,
+            align_map=align_map,
+            entry_signals=entry_signals,
+        )
+
+        def discovery_fn(asof_arg: str) -> list[dict]:
+            return canada_discovery_challenger.build_candidates(
+                populations.prealignment_research, asof_arg,
+            )
+
+        board_shadow.register_challenger(
+            "CA", canada_discovery_challenger.DEFINITION,
+            discovery_fn=discovery_fn,
+        )
+    except Exception as exc:  # noqa: BLE001 — Lane B is zero-authority research
+        log.warning(
+            "CA discovery-challenger registration failed (%s) — native rank race, "
+            "published board, and render continue unchanged", exc,
+        )
+
+
 def _build_canonical_board(cand: list, as_of, align_map: dict, sig_verdict: dict,
                            profiles: dict, entry_sig: dict, risk_sig: dict,
                            eligible: int, disp_regime: dict | None,
@@ -1257,49 +1315,14 @@ def main(alpha: dict | None = None, overlay: dict | None = None) -> dict | None:
                                        overlay)
         _write_canada_standouts(board, site)
 
-        # CA-DISCOVERY-SHADOW: preserve the FULL pre-alignment scored research
-        # population in the existing zero-authority Lane-B substrate. Registration
-        # happens strictly AFTER canada_standouts.json is serialized, and the
-        # challenger freezes only ticker/alignment/owner-entry state — never score,
-        # rank, board_pos, Featured, or the published board object.
-        try:
-            from engine import (
-                board_shadow,
-                canada_discovery_challenger,
-                canada_native_intelligence,
-            )
-
-            _ca_populations = canada_discovery_challenger.freeze_population_contract(
-                official_board=board,
-                candidates=cand,
-                align_map=align_map,
-                entry_signals=entry_sig,
-            )
-
-            def _ca_discovery_fn(_asof_arg: str) -> list[dict]:
-                return canada_discovery_challenger.build_candidates(
-                    _ca_populations.prealignment_research, _asof_arg,
-                )
-
-            # CA-NATIVE-INTEL / CA-RANK-RACE: one typed ACCRUING name family,
-            # evaluated on EXACTLY the incumbent buy+watch calls that the
-            # existing CA shadow writer receives later in build_canada.py.
-            # No C1 oil-to-name score, no family fusion, no official-pick
-            # authority, and no conservative score are introduced here.
-            board_shadow.register_challenger(
-                "CA",
-                canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION,
-                rank_fn=canada_native_intelligence.rank_residual_calls,
-            )
-            board_shadow.register_challenger(
-                "CA", canada_discovery_challenger.DEFINITION,
-                discovery_fn=_ca_discovery_fn,
-            )
-        except Exception as _ca_disc_ex:  # noqa: BLE001 — additive shadow research only
-            log.warning(
-                "CA discovery-challenger registration failed (%s) — published board "
-                "and render continue unchanged", _ca_disc_ex,
-            )
+        # Register both zero-authority shadow races strictly AFTER the official
+        # artifact is serialized.  The helper isolates Lane A from Lane B failures.
+        _register_ca_shadow_challengers(
+            board=board,
+            candidates=cand,
+            align_map=align_map,
+            entry_signals=entry_sig,
+        )
 
         log.info("wrote canada_standouts.json (%d buy of %d eligible / %d universe)",
                  len(board["buy"]), eligible, len(cand))

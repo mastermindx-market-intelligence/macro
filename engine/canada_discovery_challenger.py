@@ -91,7 +91,10 @@ def freeze_official_screen(
         return OfficialScreenPopulation(PopulationStatus.UNAVAILABLE, ())
     if not isinstance(official_board, Mapping):
         raise TypeError("official Canada screen must be a mapping")
-    if "buy" not in official_board and "watch" not in official_board:
+    # A valid zero requires both producer lanes to be explicitly computed as empty.
+    # A missing/null lane is unavailable evidence, not proof that the lane had zero rows.
+    if any(lane not in official_board or official_board.get(lane) is None
+           for lane in ("buy", "watch")):
         return OfficialScreenPopulation(PopulationStatus.UNAVAILABLE, ())
 
     members: list[OfficialScreenMember] = []

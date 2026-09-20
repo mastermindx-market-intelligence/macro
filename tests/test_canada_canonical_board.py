@@ -568,13 +568,15 @@ def test_ca_discovery_registration_is_after_artifact_persist_and_before_return()
     from pathlib import Path
     source = (Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py").read_text()
     persist = source.index("_write_canada_standouts(board, site)")
-    register = source.index("board_shadow.register_challenger(", persist)
+    register = source.index("_register_ca_shadow_challengers(", persist)
     return_board = source.index("    return board", register)
-    assert '"CA"' in source[register:register + 240]
     assert persist < register < return_board
-    block = source[persist:return_board]
+
+    helper = source.index("def _register_ca_shadow_challengers(")
+    helper_end = source.index("\ndef _build_canonical_board", helper)
+    block = source[helper:helper_end]
     assert "canada_discovery_challenger.freeze_population_contract" in block
-    assert "_ca_populations.prealignment_research" in block
+    assert "populations.prealignment_research" in block
     assert "canada_discovery_challenger.build_candidates" in block
 
 
@@ -706,17 +708,15 @@ def test_ca_builder_registers_native_rank_race_after_publication():
         Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
     ).read_text()
     persist = source.index("_write_canada_standouts(board, site)")
-    native = source.index(
-        "canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION",
-        persist,
-    )
-    discovery = source.index(
-        "canada_discovery_challenger.DEFINITION",
-        persist,
-    )
-    return_board = source.index("    return board", discovery)
-    assert persist < native < return_board
-    assert persist < discovery < return_board
+    register = source.index("_register_ca_shadow_challengers(", persist)
+    return_board = source.index("    return board", register)
+    assert persist < register < return_board
+
+    helper = source.index("def _register_ca_shadow_challengers(")
+    helper_end = source.index("\ndef _build_canonical_board", helper)
+    block = source[helper:helper_end]
+    assert "canada_native_intelligence.RESIDUAL_MOMENTUM_DEFINITION" in block
+    assert "canada_discovery_challenger.DEFINITION" in block
 
 
 
@@ -820,9 +820,9 @@ def test_ca_builder_registers_discovery_from_typed_population_contract():
     source = (
         Path(__file__).resolve().parents[1] / "scripts" / "build_canada_library.py"
     ).read_text()
-    persist = source.index("_write_canada_standouts(board, site)")
-    return_board = source.index("    return board", persist)
-    block = source[persist:return_board]
+    helper = source.index("def _register_ca_shadow_challengers(")
+    helper_end = source.index("\ndef _build_canonical_board", helper)
+    block = source[helper:helper_end]
 
     assert "freeze_population_contract(" in block
     assert ".prealignment_research" in block
@@ -880,3 +880,56 @@ def test_ca_builder_binds_actual_anticipation_uses_before_consumption():
     assert potential_audit < potential_call
     assert candidate_freeze < anticipation_write
     assert entry_read < potential_call
+
+
+def test_ca_official_population_requires_both_computed_lanes_for_zero():
+    from engine import canada_discovery_challenger as cadc
+
+    missing_watch = cadc.freeze_official_screen({"buy": []})
+    null_buy = cadc.freeze_official_screen({"buy": None, "watch": []})
+    partial_watch = cadc.freeze_official_screen({
+        "buy": None,
+        "watch": [{"ticker": "WATCH.TO"}],
+    })
+
+    assert missing_watch == cadc.OfficialScreenPopulation(
+        cadc.PopulationStatus.UNAVAILABLE, (),
+    )
+    assert null_buy == cadc.OfficialScreenPopulation(
+        cadc.PopulationStatus.UNAVAILABLE, (),
+    )
+    assert partial_watch == cadc.OfficialScreenPopulation(
+        cadc.PopulationStatus.UNAVAILABLE, (),
+    )
+
+    explicit_zero = cadc.freeze_official_screen({"buy": [], "watch": []})
+    assert explicit_zero.status == cadc.PopulationStatus.OBSERVED_ZERO
+
+
+def test_ca_discovery_contract_failure_does_not_disable_native_rank_race(monkeypatch):
+    from engine import board_shadow as bs
+    from engine import canada_discovery_challenger as cadc
+    from engine import canada_native_intelligence as cni
+    from scripts import build_canada_library as bcal
+
+    registrations = []
+
+    def record_register(market, definition, **kwargs):
+        registrations.append((market, definition, tuple(sorted(kwargs))))
+
+    monkeypatch.setattr(bs, "register_challenger", record_register)
+    monkeypatch.setattr(
+        cadc, "freeze_population_contract",
+        lambda **_kwargs: (_ for _ in ()).throw(ValueError("discovery unavailable")),
+    )
+
+    bcal._register_ca_shadow_challengers(
+        board={"buy": [], "watch": []},
+        candidates=[],
+        align_map={},
+        entry_signals={},
+    )
+
+    assert registrations == [
+        ("CA", cni.RESIDUAL_MOMENTUM_DEFINITION, ("rank_fn",)),
+    ]
