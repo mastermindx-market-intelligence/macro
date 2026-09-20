@@ -3173,7 +3173,7 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
         card("rep", "◇", "Research Reports", "研究报告", "Reports", "报告", rep, "Read the latest research", "阅读最新研究", "reports.html"),
         card("btc crypto", "◈", "Crypto Cockpit", "加密驾驶舱", "Crypto", "加密", crypto, "Market state, flows & allocation", "市场状态、资金流与资产配置", "crypto.html"),
         card("btc", "₿", "Bitcoin Vector", "比特币向量", "Bitcoin", "比特币", btc, "Risk, momentum & allocation", "风险、动量与配置", "vector.html"),
-        card("bd", "≋", "Bonds & Bond Health", "债券与债券健康", "Bonds", "债券", bd, "Curve, credit & cycle clock", "曲线、信用与周期时钟", "bonds.html"),
+        card("bd", "≋", "Bonds & Bond Health", "债券与债券健康", "Bonds", "债券", bd, "Yield curve & credit", "收益率曲线与信用", "bonds.html"),
         card("com", "◆", "Commodity Vector", "大宗商品向量", "Commodities", "商品", com, "Allocation & market shocks", "配置与市场冲击", "commodities.html"),
         card("fx", "↔", "Forex Vector", "外汇向量", "Forex", "外汇", fx, "Dollar & currency regime", "美元与货币周期", "forex.html"),
     ]

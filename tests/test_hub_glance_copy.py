@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+from html import unescape
+import re
+
+import pytest
 
 from scripts import build_vector
 
@@ -94,16 +98,41 @@ def test_committed_start_artifact_matches_the_glance_contract() -> None:
     html = start.read_text(encoding="utf-8")
     for required in (
         "Latest market snapshot", "最新市场快照", "Explore",
-        "Momentum positive", "Risk on", "Bond health",
+        "Bond health",
         "Read the latest research", "Market state, flows & allocation",
-        "偏好：黄金, 白银", "全球再通胀 · 风险偏好",
     ):
         assert required in html
     for banned in (
         "Live · <span class=\"hub-clock\"", "livepulse", "setInterval(tick",
-        "Mom 0.39", "Risk ON · 16", "Health 89 · late",
         "Next un-lock", "class allocation", "research desk",
         "Dollar-smile currency board", "Allocation & shock detection",
         "🚀", "🏛️", "💱",
     ):
         assert banned not in html
+
+    # The artifact follows current inputs; do not freeze one day's risk state.
+    assert re.search(r"Risk (?:on|off)</span>", html)
+    assert re.search(r"Momentum (?:positive|negative|flat|unavailable)</span>", html)
+    assert not re.search(r">(?:Mom -?\d|Risk (?:ON|OFF) · \d|Health \d)", html)
+
+
+def _feature_cta(html: str, href: str, lang: str) -> str:
+    for card in re.finditer(r'<a\b([^>]*)>(.*?)</a>', html, re.S):
+        attrs = card.group(1)
+        classes = re.search(r'class="([^"]*)"', attrs)
+        if not classes or "card" not in classes.group(1).split():
+            continue
+        if not re.search(r'href="' + re.escape(href) + r'"', attrs):
+            continue
+        labels = re.findall(r'<span class="l-' + lang + r'">([^<]*)</span>', card.group(2))
+        assert labels, (href, lang)
+        return unescape(labels[-1])
+    raise AssertionError(f"Feature card missing: {href}")
+
+
+@pytest.mark.parametrize("href", ["sector_central_china.html", "bonds.html"])
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_feature_cta_artifact_matches_the_source(href: str, lang: str) -> None:
+    produced = build_vector._g_vectors(_vm(), {}, {}, {}, {}, {}, {}, {})
+    artifact = (Path(__file__).resolve().parents[1] / "site" / "start.html").read_text()
+    assert _feature_cta(artifact, href, lang) == _feature_cta(produced, href, lang)
