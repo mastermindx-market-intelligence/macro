@@ -442,3 +442,70 @@ def test_optional_live_strip_never_invents_data_for_snapshot_only_view():
     assert "if(!pb) return '';" in fn
     assert "fetch('../live/basket_pulse.json'" in src
     assert "fetch('../basketdata/turn_watch.json'" in src
+
+# UI-only continuation: producer values stay intact; missing is not a negative verdict.
+def _timing_cards(payload):
+    import json
+    import subprocess
+    src = _src('basket_detail.html.j2')
+    assert 'function timingCardsHtml(' in src
+    helper = src[src.index('function timingCardsHtml('):src.index('// Native details is the state owner.')]
+    setup = "const esc=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));const L=(en,zh)=>'<span class=\"l-en\">'+en+'</span><span class=\"l-zh\">'+zh+'</span>';const cssv=s=>s;"
+    return subprocess.check_output(['node', '-e', setup + helper + '\nconsole.log(timingCardsHtml(' + json.dumps(payload) + '));'], text=True)
+
+
+def test_basket_timing_cards_use_source_language_labels():
+    html = _timing_cards({'bull_age': {'in_bull': False, 'days': 0, 'approx_months': 0},
+                         'overbought': {'band': 'neutral', 'band_zh': '中性'},
+                         'clean_entry': {'flag': False, 'reasons': ['RSI room']},
+                         'rollover_risk': {'band': 'high', 'band_zh': '高', 'reasons': ['decelerating', 'below 50d']}})
+    assert 'No uptrend' in html and '非上升趋势' in html and '0mo' not in html
+    assert '<span class="l-en">neutral</span><span class="l-zh">中性</span>' in html
+    assert '<span class="l-en">high</span><span class="l-zh">高</span>' in html
+    assert 'RSI仍有空间' in html and '动量减速' in html and '低于50日均线' in html
+
+
+def test_basket_timing_missing_evidence_stays_unknown_and_neutral():
+    for empty in ({}, None, [], {'bull_age': [], 'clean_entry': {'flag': 'false'}}):
+        html = _timing_cards(empty)
+        assert html.count('<div class="v">—</div>') == 4
+        assert html.count('data-basket-tone="muted"') == 4
+        assert 'data-basket-tone="up"' not in html and 'data-basket-tone="down"' not in html
+        assert '<span class="l-en">No</span>' not in html
+
+
+def test_basket_timing_age_and_text_keep_precision_and_escape_markup():
+    html = _timing_cards({'bull_age': {'in_bull': True, 'approx_months': 0.4, 'days': 8},
+                         'overbought': {'band': '<img src=x>', 'band_zh': '<坏标签>'},
+                         'clean_entry': {'flag': True, 'reasons': ['<script>alert(1)</script>', {}]}})
+    assert 'Under 1 month' in html and '不足1个月' in html and '8 days' in html
+    assert '<img src=x>' not in html and '&lt;img src=x&gt;' in html
+    assert '<script>' not in html and '[object Object]' not in html
+
+
+def test_basket_score_native_state_survives_render_and_reinjection():
+    src = _src('basket_detail.html.j2')
+    assert src.count('const scoreUi=basketScoreState(app);') == 2
+    assert src.count('restoreBasketScoreState(app,scoreUi);') == 2
+    assert 'detail.open=state.open;' in src
+    assert 'summary.focus({preventScroll:true})' in src
+    roots = ('basket', 'basket_china', 'basket_hk', 'basket_canada', 'basket_intl')
+    pages = [p for d in roots for p in (TMPL_DIR.parent/'site'/d).glob('*.html')]
+    assert len(pages) >= 121
+    helper = src[src.index('// Timing cards'):src.index('\nfunction render(){')]
+    for p in pages:
+        html = p.read_text()
+        assert helper in html, p
+        assert html.count('restoreBasketScoreState(app,scoreUi);') == 2, p
+
+
+def test_basket_flow_metrics_wrap_together_instead_of_vertical_slivers():
+    src = _src('basket_detail.html.j2')
+    assert 'class="basket-flow-cards"' in src
+    assert 'class="basket-flow-metrics"' in src
+    assert '.basket-flow-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))' in src
+    assert '@media(max-width:720px){.basket-flow-cards{grid-template-columns:minmax(0,1fr)}' in src
+    block = src[src.index('<style data-basket-flow-layout>'):src.index('</style>',src.index('<style data-basket-flow-layout>'))+8]
+    for d in ('basket','basket_china','basket_hk','basket_canada','basket_intl'):
+        for page in (TMPL_DIR.parent/'site'/d).glob('*.html'):
+            assert block in page.read_text(), page

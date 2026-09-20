@@ -39,11 +39,24 @@ try:
        # Sorting reconstructs #app; render must restore score details exactly once.
        page.locator('#hold th[data-s="recommend"]').click()
        detail=page.locator('details.ftr-anatomy-disclosure');assert detail.count()==1,label
-       detail.locator('summary').click();assert detail.locator('.ftr-anatomy-card').is_visible(),label
+       assert detail.get_attribute('open') is not None and detail.locator('.ftr-anatomy-card').is_visible(),(label,'sort collapsed score details')
+       detail.locator('summary').click();assert detail.get_attribute('open') is None
+       page.locator('#hold th[data-s="recommend"]').click();assert page.locator('details.ftr-anatomy-disclosure').get_attribute('open') is None,(label,'sort reopened closed details')
+       detail=page.locator('details.ftr-anatomy-disclosure');detail.locator('summary').click()
        assert page.locator('.ftr-live-strip').count()==0,(label,'invented live data')
        assert page.locator('#hold tbody tr').count()>0,label
        assert page.evaluate('document.documentElement.scrollWidth-document.documentElement.clientWidth')<=1,label
        assert not errors,(label,errors)
+       cards=page.locator('[data-basket-texture]');assert cards.count()==4,(label,'Timing cards missing')
+       values=cards.locator('.v').all_inner_texts()
+       if route.startswith('basket_china'):
+        assert values==(['非上升趋势','中性','否','高'] if lang=='zh' else ['No uptrend','neutral','No','high']),(label,values)
+       else:
+        assert values==(['5.4个月','偏高','否','低'] if lang=='zh' else ['5.4 months','elevated','No','low']),(label,values)
+       flow=page.locator('.basket-flow-metrics>.sbx');assert flow.count()==3
+       widths=flow.evaluate_all('es=>es.map(e=>e.getBoundingClientRect().width)');assert min(widths)>=80,(label,'cramped flow metrics',widths)
+       flow.first.scroll_into_view_if_needed();page.screenshot(path=str(out/(label+'-flow.png')))
+       cards.first.scroll_into_view_if_needed()
        page.screenshot(path=str(out/(label+'.png')))
       result={'cell':label,'http':response.status,'optional_statuses':sorted({r['status'] for r in responses}),'score_details':detail.count(),'page_errors':errors,'html_sha256':hashlib.sha256(response.body()).hexdigest(),'passed':True};results.append(result);print(json.dumps(result),flush=True);page.close()
   b.close()

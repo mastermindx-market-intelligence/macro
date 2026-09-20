@@ -39,6 +39,16 @@
 
 <link rel="preload" as="style" href="../product-nav-icons.css?v=093ad1ea">
 <link rel="preload" as="style" href="../navigation-refresh.css?v=fed6efba">
+<style data-basket-flow-layout>
+[data-basket-tone="up"]{--c:var(--up)}
+[data-basket-tone="down"]{--c:var(--down)}
+[data-basket-tone="warn"]{--c:var(--warn)}
+[data-basket-tone="muted"]{--c:var(--muted)}
+.basket-flow-cards{margin-top:13px;display:grid;grid-template-columns:minmax(230px,2fr) minmax(0,3fr);gap:10px;align-items:stretch}
+.basket-flow-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-width:0}
+.basket-flow-metrics>.sbx{min-width:0;overflow-wrap:anywhere}
+@media(max-width:720px){.basket-flow-cards{grid-template-columns:minmax(0,1fr)}}
+</style>
 </head>
 <body>
 
@@ -490,16 +500,18 @@ function mtfTapeHtml(th){
         <span style="position:absolute;left:${pos}%;top:-3px;width:3px;height:14px;background:${vc};border-radius:2px;transform:translateX(-1px)"></span></div>`:'';
     const flcol=fl.cmf>0.05?cssv('--up'):fl.cmf<-0.05?cssv('--down'):cssv('--muted');
     const whcol=wh.accumulation>=75?cssv('--up'):wh.accumulation>=50?cssv('--up'):wh.accumulation>=35?cssv('--warn'):cssv('--down');
-    h+=`<div style="margin-top:13px;display:flex;gap:10px;flex-wrap:wrap;align-items:stretch">
-      <div class="tx" style="--c:${vc};flex:2;min-width:230px">
+    h+=`<div class="basket-flow-cards">
+      <div class="tx" data-basket-tone="${(VH_COLOR[vh.state]||'--muted').slice(2)}">
         <div class="k">🕳️ ${L('Volatility black hole','波动黑洞')} <span style="color:${vc};font-weight:700">${esc((vh.state||'').replace(/_/g,' '))}</span></div>
         <div class="v" style="font-size:13px">${L(esc(vh.label_en||''),esc(vh.label_zh||vh.label_en||''))}</div>
         ${posbar}
         <div class="d">${vh.bandwidth_pctile!=null?L('squeeze '+Math.round(vh.bandwidth_pctile*100)+'%ile','压缩 '+Math.round(vh.bandwidth_pctile*100)+'分位'):''}${vh.realized_vol_pctile!=null?' · '+L('realized-vol '+Math.round(vh.realized_vol_pctile*100)+'%ile','实现波动 '+Math.round(vh.realized_vol_pctile*100)+'分位'):''}</div>
       </div>
+      <div class="basket-flow-metrics">
       <div class="sbx" style="flex:1"><div class="v" style="color:${whcol};font-size:18px">${wh.accumulation==null?'—':wh.accumulation}</div><div class="k">🐋 ${L('whale acc.','巨鲸吸筹')}<br><span style="color:${whcol}">${L(esc(wh.label_en||''),esc(wh.label_zh||''))}</span>${wh.trend_5d!=null?` <span class="${cls(wh.trend_5d)}">${wh.trend_5d>0?'▲':'▼'}</span>`:''}</div></div>
       <div class="sbx" style="flex:1"><div class="v" style="color:${flcol};font-size:18px">${fl.cmf==null?'—':(fl.cmf>0?'+':'')+fl.cmf}</div><div class="k">${L('net flow','净流向')}<br><span style="color:${flcol}">${L(esc(fl.label_en||''),esc(fl.label_zh||''))}</span></div></div>
       <div class="sbx" style="flex:1"><div class="v" style="font-size:15px">${fl.dollar_vol_surge!=null?fl.dollar_vol_surge+'×':'—'}</div><div class="k">${L('vol surge','量能脉冲')}<br>${L('vs 63d median','对比63日中位')}</div></div>
+      </div>
     </div>`;
     if(cov.coverage_pct!=null) h+=`<div class="muted sm" style="margin-top:7px">${L('Flow coverage','资金流覆盖')}: ${cov.n_with_volume||0}/${cov.n_live||0} ${L('members with volume','成分股有成交量')} (${Math.round(cov.coverage_pct*100)}%)</div>`;
     if(t.danny_caveat) h+=`<div class="disc" style="margin-top:4px">${L(esc(t.danny_caveat.en||''),esc(t.danny_caveat.zh||''))}</div>`;
@@ -1089,7 +1101,57 @@ function stkGR(sym){
 }
 /* ── GR1:READ:END ── */
 
+// Timing cards use the producer's labels; missing evidence never becomes a verdict.
+function timingCardsHtml(textures){
+  const record=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+  const tx=record(textures), ba=record(tx.bull_age), ob=record(tx.overbought), ce=record(tx.clean_entry), rr=record(tx.rollover_risk);
+  const finite=v=>typeof v==='number'&&Number.isFinite(v);
+  const words=(en,zh)=>typeof en==='string'&&en.trim()?L(esc(en),esc(typeof zh==='string'&&zh.trim()?zh:en)):'—';
+  const zhLabels={neutral:'中性',elevated:'偏高',overbought:'超买',oversold:'超卖',high:'高',low:'低',young:'初期',building:'上升中',mature:'成熟',aging:'老化',downtrend:'下行'};
+  const label=(en,zh)=>words(en,zh||(Object.prototype.hasOwnProperty.call(zhLabels,en)?zhLabels[en]:en));
+  const reasonsZh={'accelerating':'动量加速','not extended':'涨幅未过度延伸','RSI room':'RSI仍有空间','breadth supportive':'广度支持','above 200d trend':'位于200日趋势上方','shallow pullback':'浅幅回调','momentum rolling over':'动量转弱','decelerating':'动量减速','breadth weakening':'广度转弱','more new lows':'新低增多','below 50d':'低于50日均线','rolling off the high':'自高位回落'};
+  const reasons=(en,zh)=>{
+    if(!Array.isArray(en)) return '';
+    return en.map((r,i)=>{
+      if(typeof r!=='string'||!r.trim()) return '';
+      let translated=Array.isArray(zh)&&typeof zh[i]==='string'?zh[i]:null;
+      if(!translated&&Object.prototype.hasOwnProperty.call(reasonsZh,r)) translated=reasonsZh[r];
+      if(!translated){const m=r.match(/^extended \(RS (\d+)%ile\)$/);if(m) translated='涨幅偏高（相对强弱第'+m[1]+'百分位）';}
+      return words(r,translated||r);
+    }).filter(Boolean).join(' · ');
+  };
+  let age='—',ageDetail=[];
+  if(ba.in_bull===false){age=L('No uptrend','非上升趋势');ageDetail.push(L('Downtrend','下行趋势'));}
+  else if(ba.in_bull===true){
+    if(finite(ba.approx_months)&&ba.approx_months>=0) age=ba.approx_months<1?L('Under 1 month','不足1个月'):L(ba.approx_months+(ba.approx_months===1?' month':' months'),ba.approx_months+'个月');
+    if(finite(ba.days)&&ba.days>=0) ageDetail.push(L(ba.days+(ba.days===1?' day':' days'),ba.days+'天'));
+    if(ba.stage) ageDetail.push(label(ba.stage,ba.stage_zh));
+  }
+  if(finite(ba.drawdown_from_peak)) ageDetail.push(L((ba.drawdown_from_peak*100).toFixed(1)+'% from peak','距峰值 '+(ba.drawdown_from_peak*100).toFixed(1)+'%'));
+  const obDetail='RSI '+(finite(ob.rsi)?ob.rsi:'—')+' · '+L('RS percentile','相对强弱百分位')+' '+(finite(ob.rs_pctile)?Math.round(ob.rs_pctile*100):'—');
+  const clean=ce.flag===true?L('Yes','是'):ce.flag===false?L('No','否'):'—';
+  const card=(key,color,en,zh,value,detail)=>`<div class="tx" data-basket-texture="${key}" data-basket-tone="${color.slice(2)}"><div class="k">${L(en,zh)}</div><div class="v">${value}</div><div class="d">${detail}</div></div>`;
+  return `<h2><span class="idx">01</span>${L('Timing &amp; risk','择时与风险')}</h2><div class="cards">`
+    +card('bull_age',(ba.in_bull===true?'--up':ba.in_bull===false?'--down':'--muted'),'Uptrend age','上升趋势时长',age,ageDetail.join(' · '))
+    +card('overbought',(finite(ob.value)&&ob.value>=0.6?'--down':finite(ob.value)&&ob.value>=0.35?'--warn':'--muted'),'Overbought','超买度',label(ob.band,ob.band_zh),obDetail)
+    +card('clean_entry',(ce.flag===true?'--up':'--muted'),'Clean entry','干净入场',clean,reasons(ce.reasons,ce.reasons_zh))
+    +card('rollover_risk',(rr.band==='high'?'--down':rr.band==='elevated'?'--warn':rr.band==='low'?'--up':'--muted'),'Roll-over risk','回落风险',label(rr.band,rr.band_zh),reasons(rr.reasons,rr.reasons_zh))+'</div>';
+}
+// Native details is the state owner. Carry only its open/focus state across DOM refreshes.
+function basketScoreState(app){
+  const detail=app&&app.querySelector('details.ftr-anatomy-disclosure');
+  return detail?{open:detail.open,focused:detail.querySelector('summary')===document.activeElement}:null;
+}
+function restoreBasketScoreState(app,state){
+  const detail=state&&app&&app.querySelector('details.ftr-anatomy-disclosure');
+  if(!detail) return;
+  detail.open=state.open;
+  if(state.focused){const summary=detail.querySelector('summary');if(summary) summary.focus({preventScroll:true});}
+}
+
 function render(){
+  const app=document.getElementById('app');
+  const scoreUi=basketScoreState(app);
   const d=DETAIL, b=d.basket||{}, th=d.theme||{}, tx=th.textures||{};
   const SB=d.stock_base||'';   // per-stock link base ('' for markets with no per-stock page → plain ticker)
   const stk=(sym)=> SB ? `<a class="tk" href="${SB}${encodeURIComponent(sym)}">${esc(sym)}</a>` : `<span class="tk">${esc(sym)}</span>`;
@@ -1183,16 +1245,8 @@ function render(){
   // ---- consolidated index: multi-timeframe technicals + vol-hole / whale / flow ----
   h+=mtfTapeHtml(th);
 
-  // ---- advanced textures ----
-  const ba=tx.bull_age||{}, ob=tx.overbought||{}, ce=tx.clean_entry||{}, rr=tx.rollover_risk||{};
-  const txcard=(c,k,kz,vhtml,d,dz)=>`<div class="tx" style="--c:${c}"><div class="k">${L(k,kz)}</div><div class="v">${vhtml}</div><div class="d">${L(d,dz)}</div></div>`;
-  h+=`<h2><span class="idx">01</span>${L('Timing &amp; risk','择时与风险')}</h2>
-  <div class="cards">
-    ${txcard(ba.in_bull?cssv('--up'):cssv('--down'),'Bull-market age','牛市时长', ba.days!=null?(ba.approx_months+'mo'):'—', (ba.in_bull?('in uptrend '+ba.days+'d · '+(ba.stage||'')):'in a downtrend')+' · '+(ba.drawdown_from_peak!=null?(Math.round(ba.drawdown_from_peak*1000)/10+'% from peak'):''), '')}
-    ${txcard(ob.value>=0.6?cssv('--down'):ob.value>=0.35?cssv('--warn'):cssv('--muted'),'Overbought','超买度', (ob.band||'—'), 'RSI '+(ob.rsi!=null?ob.rsi:'—')+' · RS '+(ob.rs_pctile!=null?Math.round(ob.rs_pctile*100)+'%ile':'—'), '')}
-    ${txcard(ce.flag?cssv('--up'):cssv('--muted'),'Clean entry','干净入场', ce.flag?L('YES','是'):L('no','否'), (ce.reasons||[]).join(' · '), '')}
-    ${txcard(rr.band==='high'?cssv('--down'):rr.band==='elevated'?cssv('--warn'):cssv('--up'),'Roll-over risk','回落风险', (rr.band||'—'), (rr.reasons||[]).join(' · '), '')}
-  </div>`;
+  // ---- translated Timing & risk, with explicit missing evidence ----
+  h+=timingCardsHtml(tx);
 
   // ---- distance to label change (engine flip_distance; display-only fragility meter) ----
   h+=flipDistanceHtml(th);
@@ -1356,6 +1410,7 @@ function render(){
   document.querySelectorAll('#hold th[data-s]').forEach(th2=>th2.onclick=()=>sortHold(th2.dataset.s));
   // Snapshot score details do not depend on optional authenticated live reads.
   if(window._ftrTryInject) window._ftrTryInject();
+  restoreBasketScoreState(app,scoreUi);
 }
 let _sort={col:'recommend',dir:-1};
 function sortHold(col){
@@ -1600,6 +1655,7 @@ function injectFtrWidgets(pulse, turnWatch){
   // Inject live strip after the hero panel in #app
   var app=document.getElementById('app');
   if(!app) return;
+  const scoreUi=basketScoreState(app);
   // Remove old injections to avoid duplicates
   var oldStrip=app.querySelector('.ftr-live-strip');
   if(oldStrip) oldStrip.remove();
@@ -1654,6 +1710,7 @@ function injectFtrWidgets(pulse, turnWatch){
     anatEl.innerHTML='<details class="ftr-anatomy-disclosure"><summary>'+L('How this score is built','评分如何构成')+'</summary>'+anatomyPanelHtml(th2)+'</details>';
     app.insertBefore(anatEl, scoreH2);
   }
+  restoreBasketScoreState(app,scoreUi);
 }
 
 // Fetch pulse (basket_detail lives under site/basket/ so use ../ prefix)
