@@ -950,7 +950,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
-        run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py -q
+        run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
 
   trial-budgets:
     if: ${{ false }}
