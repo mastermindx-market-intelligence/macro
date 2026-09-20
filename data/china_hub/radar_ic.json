@@ -1,8 +1,8 @@
 {
   "schema": "china_radar_ic.v1",
-  "as_of": "2026-09-19",
-  "generated_at": "2026-09-19T12:37:40.078795+00:00",
-  "n_events": 41,
+  "as_of": "2026-09-20",
+  "generated_at": "2026-09-20T12:24:18.988608+00:00",
+  "n_events": 42,
   "n_matured": 37,
   "ic_all": -0.068,
   "note": "ACCRUING / DORMANT \u2014 horizon=5d, 37 matured sector events. Daily-HAC: 0 dated cross-sections so far (need \u22656 each with \u226510 events). Pooled IC=-0.068 is PROVISIONAL (overlap-inflated; not used by governor). Governor stays at trust=1.0 until the HAC gate clears. CONTEXT-ONLY \u2014 never a trade signal.",
