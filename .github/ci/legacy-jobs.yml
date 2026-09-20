@@ -1715,6 +1715,21 @@ jobs:
       - "engine/commodity_inputs.py"
       - "engine/commodity_signals.py"
       - "engine/commodity_strategies.py"
+      # China physical-gold premium core + production-path quality receipt
+      # are independently merge-gated here.
+      - "engine/china_gold_premium.py"
+      - "scripts/audit_china_gold_premium.py"
+      - "scripts/promote_china_gold_dataos.py"
+      - "tests/test_china_gold_premium_engine_contract.py"
+      # The audit/promotion proof reads the canonical Data OS registry through
+      # lib.dataos.registry; keep conviction-profile's exclusive closure honest.
+      - "config/dataset_registry.yml"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"
       - "engine/confluence_tiers.py"
@@ -1839,6 +1854,12 @@ jobs:
           tests/test_valuation_assumptions.py
           tests/test_valuation_event_bridge.py
           tests/test_china_archetype_d_s1.py -q
+      # Gold China-premium core is a code contract, not merely a render/data
+      # check. The full builder/template matrix remains on unrun-macro-panels;
+      # this hermetic subset prevents the calculation or rights gate from
+      # merging dark on ordinary code PRs.
+      - name: China physical-gold premium — calculation, alignment, entitlement
+        run: python -m pytest tests/test_china_gold_premium_engine_contract.py -q
       # W7B F06-5 (MO-PAID-020) ticker<->CIK collision census (MO-B). The
       # classifier is a pure function over list-of-dict records (no pandas at
       # module top per R5); the live-data test pins invariants only and prints
@@ -2898,6 +2919,7 @@ jobs:
           tests/test_commodity_confluence.py
           tests/test_commodity_cycle_state.py
           tests/test_commodity_coverage_matrix.py
+          tests/test_china_gold_premium.py
           tests/test_fear_euphoria.py tests/test_froth_fragility.py
           tests/test_vol_velocity.py tests/test_fear_greed_honesty.py
           tests/test_archive_context_snapshots.py
@@ -14735,6 +14757,10 @@ jobs:
       - config/issuer_group_allowlist.yml
       - lib/__init__.py
       - lib/config.py
+      # Dataset-registry proof for the China-gold source IDs imports the display
+      # engine and its canonical store reader. Keep this exclusive scope honest.
+      - lib/store.py
+      - engine/china_gold_premium.py
       - lib/delisted_symbols.py
       - lib/ticker_aliases.py
       - scripts/build_security_master.py
