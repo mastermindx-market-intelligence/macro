@@ -510,6 +510,13 @@ class TestCashRunwayWiring:
         assert guard < footer
 
 
+_RESOLVER_KEYS = {
+    "schema", "status", "cik", "cash_usd", "cash_display",
+    "ocf_usd", "capex_usd", "free_cash_flow_usd", "monthly_burn_usd",
+    "runway_months", "runway_display", "near_term_cover_pct", "period", "as_of",
+}
+
+
 class TestResolveCashRunway:
     """Seven direct unit tests for _resolve_cash_runway (Grok h_7451_rv1 minor 1)."""
 
@@ -538,6 +545,7 @@ class TestResolveCashRunway:
         result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
 
         assert result["status"] == "unresolved"
+        assert result["schema"] == "cash_runway.v1"
         assert result["cik"] is None
         assert result["as_of"] == cr_asof.isoformat()
         assert set(result.keys()) == {
@@ -559,7 +567,9 @@ class TestResolveCashRunway:
         result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
 
         assert result["status"] == "not_loaded"
+        assert result["schema"] == "cash_runway.v1"
         assert result["cik"] == "0000320193"
+        assert result["as_of"] == cr_asof.isoformat()
         assert set(result.keys()) == {
             "schema", "status", "cik", "cash_usd", "cash_display",
             "ocf_usd", "capex_usd", "free_cash_flow_usd", "monthly_burn_usd",
@@ -651,7 +661,13 @@ class TestResolveCashRunway:
         result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
 
         assert result["status"] == "not_loaded"
+        assert result["schema"] == "cash_runway.v1"
         assert result["cik"] is None
+        assert result["as_of"] == cr_asof.isoformat()
+        assert set(result.keys()) == _RESOLVER_KEYS
+        for key in result:
+            if key not in ("schema", "status", "as_of"):
+                assert result[key] is None, f"{key} should be None on the fault path"
         out = capsys.readouterr().out
         assert "::warning title=stock-library cash-runway producer fault::" in out
         assert "AAPL" in out
@@ -673,4 +689,8 @@ class TestResolveCashRunway:
 
         assert result["status"] == "not_loaded"
         assert result["status"] != "not_applicable"
+        assert result["schema"] == "cash_runway.v1"
+        assert result["cik"] is None
+        assert result["as_of"] == date(2026, 9, 20).isoformat()
+        assert set(result.keys()) == _RESOLVER_KEYS
 
