@@ -1,36 +1,11 @@
 """tests/test_live_flow_tiering.py — tests for FC-R6/R7/R8 + Task 3 additions.
 
 Tests:
-  1.  max_concurrent: env override via LIVE_FLOW_MAX_CONCURRENT
-  2.  max_concurrent: config fallback when env absent
-  3.  max_concurrent: default=2 when neither env nor config present
-  4.  max_concurrent: invalid env value falls back to config
-  5.  two_tier_enabled: False by default
-  6.  two_tier_enabled: True when LIVE_FLOW_TWO_TIER=1
-  7.  two_tier_enabled: False for other env values
-  8.  select_cycle_roots: two-tier OFF returns all roots unchanged
-  9.  select_cycle_roots: two-tier ON splits tier1 vs tier2 correctly
-  10. select_cycle_roots: tier2 round-robins across cycles
-  11. select_cycle_roots: all roots in tier1 → returns tier1 only, no crash
-  12. pinned_publish_enabled: ON by default
-  13. pinned_publish_enabled: OFF when env=0
-  14. pinned_publish roots: added to publish set when missing from top-40
-  15. pinned_publish roots: already in top-40 → not duplicated
-  16. write_daily_summary: correct schema and fields
-  17. write_daily_summary: nightly-idempotent (second call overwrites cleanly)
-  18. write_daily_summary: handles empty day_state gracefully
-  19. write_daily_summary: prem_z computed when baseline present
-  20. write_daily_summary: prem_z is None when baseline absent
-  21. daily_summary_enabled: False by default (MUST_FIX-2 gate coverage)
-  22. daily_summary_enabled: True when LIVE_FLOW_DAILY_SUMMARY=1
-  23. daily_summary_enabled: False for other env values
-  24. select_prunable_day_states: keeps newest N sessions, selects older
-  25. select_prunable_day_states: current session never selected
-  26. select_prunable_day_states: fewer files than window → nothing selected
-  27. select_prunable_day_states: non-matching / invalid-date names never selected
-  28. select_prunable_day_states: crash-residue .tmp.json follows same date rule
-  29. select_prunable_day_states: keep_days clamped to >= 1
-  30. prune_day_states: deletes only out-of-window files on disk (INERT wrapper)
+- concurrency and two-tier cadence guards;
+- daily summary and day-state retention;
+- deterministic intraday root catalog construction;
+- current-cycle ticker artifact eligibility;
+- production universe expansion with the concurrency ceiling unchanged.
 """
 from __future__ import annotations
 
@@ -41,6 +16,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import yaml
 
 
 # ── helpers to import the module cleanly ─────────────────────────────────────
@@ -171,48 +147,7 @@ class TestSelectCycleRoots:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 10–13. pinned-publish
-# ─────────────────────────────────────────────────────────────────────────────
-
-class TestPinnedPublish:
-    def test_enabled_by_default(self, monkeypatch):
-        """Pinned publish is ON by default."""
-        lf = _import_poller()
-        monkeypatch.delenv(lf.PINNED_PUBLISH_ENV, raising=False)
-        assert lf._pinned_publish_enabled() is True
-
-    def test_disabled_when_env_zero(self, monkeypatch):
-        """Set LIVE_FLOW_PINNED_PUBLISH=0 to disable."""
-        lf = _import_poller()
-        monkeypatch.setenv(lf.PINNED_PUBLISH_ENV, "0")
-        assert lf._pinned_publish_enabled() is False
-
-    def test_pinned_roots_added_when_missing_from_top40(self, monkeypatch):
-        """Pinned roots present in rg_dict but not top-40 are appended."""
-        lf = _import_poller()
-        monkeypatch.delenv(lf.PINNED_PUBLISH_ENV, raising=False)
-        # Build rg_dict: pinned root NVDA has tiny premium, won't be in top-2
-        rg_dict = {"TICK01": 1_000_000, "TICK02": 900_000, "NVDA": 100}
-        top40_set = {"TICK01", "TICK02"}  # NVDA absent
-        pinned_extra = [r for r in lf.PINNED_PUBLISH_ROOTS
-                        if r.upper() not in top40_set and r.upper() in rg_dict]
-        assert "NVDA" in pinned_extra
-
-    def test_pinned_roots_not_duplicated(self, monkeypatch):
-        """Pinned roots already in top-40 are not added again."""
-        lf = _import_poller()
-        monkeypatch.delenv(lf.PINNED_PUBLISH_ENV, raising=False)
-        # SPY is in PINNED_PUBLISH_ROOTS and is also in top40_set
-        rg_dict = {"SPY": 10_000_000}
-        top40_set = {"SPY"}
-        pinned_extra = [r for r in lf.PINNED_PUBLISH_ROOTS
-                        if r.upper() not in top40_set and r.upper() in rg_dict]
-        assert "SPY" not in pinned_extra
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 14–18. write_daily_summary (FC-R8)
-# ─────────────────────────────────────────────────────────────────────────────
+# write_daily_summary (FC-R8)
 
 class TestWriteDailySummary:
     """Tests for the end-of-session daily summary writer."""
@@ -547,6 +482,26 @@ class TestRootCatalog:
         )
         assert [row["last_source_success"] for row in catalog] == [None, None]
 
+    def test_attaches_full_catalog_without_overwriting_cycle_counts(self):
+        lf = _import_poller()
+        meta = {
+            "roots_requested": 2,
+            "roots_with_source_payload_names": ["SPY"],
+        }
+        result = lf._attach_root_catalog(
+            meta=meta,
+            configured_roots=["SPY", "TLT", "AMD", "PLTR"],
+            cycle_roots=["SPY", "AMD"],
+            receipts={"SPY": "2026-09-20T14:00:00Z"},
+            day_state={"root_minutes": {"SPY": {"10:00": {}}}},
+        )
+        assert result is meta
+        assert result["roots_requested"] == 2
+        assert result["roots_configured"] == 4
+        assert [row["root"] for row in result["root_catalog"]] == [
+            "SPY", "TLT", "AMD", "PLTR",
+        ]
+
 
 class TestTickerPublishRoots:
     def test_quiet_root_beyond_old_top40_is_selected_when_real_data_exists(self):
@@ -577,3 +532,19 @@ class TestTickerPublishRoots:
         assert lf._select_ticker_publish_roots(
             ["AMD", "SPY", "AMD"], ["SPY", "AMD", "AMD"], day_state
         ) == ["AMD", "SPY"]
+
+    def test_does_not_freshen_prior_data_after_current_source_failure(self):
+        lf = _import_poller()
+        day_state = {
+            "root_minutes": {"AMD": {"11:00": {}}},
+            "root_strikes": {},
+        }
+        assert lf._select_ticker_publish_roots(["AMD"], [], day_state) == []
+
+
+class TestProductionLiveFlowConfig:
+    def test_bounded_universe_expands_without_raising_concurrency(self):
+        repo_root = Path(__file__).resolve().parent.parent
+        cfg = yaml.safe_load((repo_root / "config.yml").read_text())["live_flow"]
+        assert cfg["top_names"] == 128
+        assert cfg["max_concurrent"] == 2

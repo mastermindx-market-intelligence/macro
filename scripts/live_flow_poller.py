@@ -7,7 +7,7 @@ Config block 'live_flow:' in config.yml:
   cadence_sec:    120     # minimum interval between cycle starts (poll floor)
   max_concurrent: 2       # HARD LAW — T1 backfill shares the 8-request cap
   etf_anchors:    [...]   # defaults to build_tape_flow's 21 + DIA
-  top_names:      100     # resolved from gex_symbols() after anchors
+  top_names:      128     # bounded rotating names after ETF anchors
   etf_floor:      1000000 # $ gross premium floor for ETF anchors
   name_floor:     250000  # $ gross premium floor for single names
   retention_hours: 24     # trailing window for feed events
@@ -30,7 +30,7 @@ NEVER raise max_concurrent above 2 without explicit Fable adjudication.
 New R2 objects emitted each cycle (live_flow/ prefix):
   tide_current.json       — market tide (NCP/NPP/gross/vol cumulative minutes + sectors)
   dte_tide_current.json   — DTE-bucket tide (5 buckets)
-  tickers/{ROOT}.json     — per-root drill (top ~40 by day gross premium)
+  tickers/{ROOT}.json     — per-root drill for successful roots with session data
   tide/{DATE}.json        — dated archive of tide_current (same bytes; OIP W0 T-lane)
   dte_tide/{DATE}.json    — dated archive of dte_tide_current (same bytes)
   {tide,dte_tide}/dates.json — sessions index per family (see scripts/build_flow_archive.py)
@@ -107,9 +107,6 @@ OPTIONS_CONTEXT_CAPTURE_TARGET_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_SSH_TARGET"
 OPTIONS_CONTEXT_CAPTURE_KEY_ENV = "MARKET_MEMORY_OPTIONS_CONTEXT_SSH_KEY"
 _OPTIONS_CONTEXT_DISPATCHER = None
 
-# Top tickers to publish per cycle (by day gross premium)
-TOP_TICKERS_N = 40
-
 # Day-state size guard: warn if exceeds this byte threshold
 DAY_STATE_SIZE_WARN_BYTES = 50 * 1024 * 1024  # 50 MB
 
@@ -143,16 +140,6 @@ TIER1_ROOTS = [
     # Mag7
     "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     # Memory storage (flow continuity names)
-    "MU", "WDC", "STX", "SNDK",
-]
-
-# Task 3: pinned always-publish roots (Mag7 + memory + ETF majors).
-# When LIVE_FLOW_PINNED_PUBLISH=1 (DEFAULT ON), these roots are included in the
-# published ticker JSON even if they fall outside the top-40 by gross premium.
-PINNED_PUBLISH_ENV = "LIVE_FLOW_PINNED_PUBLISH"
-PINNED_PUBLISH_ROOTS = [
-    "SPY", "QQQ", "SMH",
-    "AAPL", "MSFT", "NVDA", "AMZN", "GOOGL", "META", "TSLA",
     "MU", "WDC", "STX", "SNDK",
 ]
 
@@ -388,11 +375,27 @@ def _build_root_catalog(
     ]
 
 
-# ── Task 3: pinned-publish helper ─────────────────────────────────────────────
-
-def _pinned_publish_enabled() -> bool:
-    """True by default; set LIVE_FLOW_PINNED_PUBLISH=0 to disable."""
-    return os.environ.get(PINNED_PUBLISH_ENV, "1").strip() != "0"
+def _attach_root_catalog(
+    meta: dict,
+    configured_roots: list[str],
+    cycle_roots: list[str],
+    receipts: dict,
+    day_state: dict,
+) -> dict:
+    """Attach the full configured coverage catalog without changing cycle counts."""
+    successful = meta.get("roots_with_source_payload_names", [])
+    if not isinstance(successful, list):
+        successful = []
+    catalog = _build_root_catalog(
+        configured_roots=configured_roots,
+        cycle_roots=cycle_roots,
+        successful_roots=successful,
+        receipts=receipts,
+        day_state=day_state,
+    )
+    meta["roots_configured"] = len(catalog)
+    meta["root_catalog"] = catalog
+    return meta
 
 
 # ── output paths ─────────────────────────────────────────────────────────────
@@ -1060,7 +1063,7 @@ def _resolve_universe(cfg: dict) -> list[str]:
         "KRE", "SMH", "XBI", "ARKK", "DIA",
     ]
     anchors = [a.upper() for a in (cfg.get("etf_anchors") or default_anchors)]
-    top_n   = int(cfg.get("top_names", 100))
+    top_n   = int(cfg.get("top_names", 128))
 
     seen: dict[str, None] = {}
     for t in anchors:
@@ -3152,6 +3155,13 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             # Publication durability gets its own build clock instead of making
             # an unchanged source snapshot appear fresh.
             meta["built_at"] = committed_asof
+            _attach_root_catalog(
+                meta=meta,
+                configured_roots=roots,
+                cycle_roots=cycle_roots,
+                receipts=updated_state.get("root_source_receipts", {}),
+                day_state=tide_day_state,
+            )
         except Exception as e:  # noqa: BLE001
             log.error("poller: cycle #%d unhandled error: %s", cycle_n, e, exc_info=True)
             # Restore the last durable transaction. If it owns a pending event WAL,
@@ -3226,32 +3236,37 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0912, PLR0915
             except Exception as arch_err:  # noqa: BLE001
                 log.warning("poller: dated tide archive staging failed: %s", arch_err)
 
-        # Build ticker JSONs for top ~40 roots by gross premium + pinned roots (Task 3).
+        # Build one current artifact for every successfully polled root that has
+        # real accumulated drill state.  Session activity ranks presentation; it
+        # no longer gates availability.
         ns_map  = _load_names_sectors()
         rg_dict = tide_day_state.get("root_gross_today", {})
-        top_roots_by_gross = sorted(rg_dict.items(), key=lambda kv: kv[1], reverse=True)
         ticker_count = 0
         ticker_paths: list[tuple[Path, str]] = []  # (local_path, r2_key)
         _tickers_out_dir = _out_dir() / "tickers"
         _tickers_out_dir.mkdir(parents=True, exist_ok=True)
-
-        # Task 3: pinned-publish roots guarantee — Mag7 + memory + SPY/QQQ/SMH are
-        # always included in the published set even if they fall outside the top-40.
-        # Default ON (LIVE_FLOW_PINNED_PUBLISH=1); set =0 to disable.
-        top40_set = {r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]}
-        if _pinned_publish_enabled():
-            pinned_extra = [r for r in PINNED_PUBLISH_ROOTS
-                            if r.upper() not in top40_set and r.upper() in rg_dict]
-            publish_roots = [r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]] + pinned_extra
-        else:
-            publish_roots = [r for r, _ in top_roots_by_gross[:TOP_TICKERS_N]]
+        root_receipts = _valid_source_receipts(
+            updated_state.get("root_source_receipts", {})
+        )
+        publish_roots = _select_ticker_publish_roots(
+            cycle_roots=cycle_roots,
+            successful_roots=meta.get("roots_with_source_payload_names", []),
+            day_state=tide_day_state,
+        )
 
         for tick_root in publish_roots:
             try:
+                root_asof = root_receipts.get(tick_root)
+                if root_asof is None:
+                    log.warning(
+                        "poller: skip ticker JSON for %s (successful root has no receipt)",
+                        tick_root,
+                    )
+                    continue
                 tk_payload = lf_mod.build_ticker_json(
                     root=tick_root,
                     session_date=session_date,
-                    asof=meta.get("asof", feed.get("asof", "")),
+                    asof=root_asof,
                     day_state=tide_day_state,
                     root_gross_today=rg_dict,
                     baselines=baselines,
