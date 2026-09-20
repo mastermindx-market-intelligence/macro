@@ -67,6 +67,13 @@ def test_garbled_board_is_loud():
     assert v and "unparseable" in v[0]
 
 
+def test_section_score_parser_accepts_measured_score_attribute():
+    html = guard.FIX_COHERENT_MIXED.replace(
+        'id="ms-score">56', 'id="ms-score" data-measured-score="56">56'
+    )
+    assert guard.check_text("measured-attr", html) == []
+
+
 def test_macro_path_cannot_lag_settled_board_date():
     html = """
     <span id="regime-asof">2026-09-14</span>
