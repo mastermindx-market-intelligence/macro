@@ -1353,6 +1353,8 @@ function render(){
   document.getElementById('app').innerHTML=h;
   // sortable holdings
   document.querySelectorAll('#hold th[data-s]').forEach(th2=>th2.onclick=()=>sortHold(th2.dataset.s));
+  // Snapshot score details do not depend on optional authenticated live reads.
+  if(window._ftrTryInject) window._ftrTryInject();
 }
 let _sort={col:'recommend',dir:-1};
 function sortHold(col){
@@ -1658,6 +1660,8 @@ var _pulse=null, _tw=null;
 function tryInject(){injectFtrWidgets(_pulse,_tw);}
 // Expose so boot() can re-inject after XM re-render (Fix: XM re-render wipes #app.innerHTML)
 window._ftrTryInject = tryInject;
+// Also cover scripts executed after the initial page render.
+tryInject();
 fetch('../live/basket_pulse.json',{cache:'no-cache'})
   .then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(d){_pulse=d;tryInject();}).catch(function(){});
 fetch('../basketdata/turn_watch.json',{cache:'no-cache'})

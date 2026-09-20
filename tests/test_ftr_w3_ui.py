@@ -413,3 +413,32 @@ class TestFtrW3BasketsRender:
         assert "basket_pulse.json" in html
         assert "sector_pulse.json" not in html
         assert "turn_watch.json" not in html
+
+
+def test_basket_score_details_are_owned_by_every_page_render():
+    src = _src("basket_detail.html.j2")
+    tail = src[src.index("document.querySelectorAll('#hold th[data-s]')"):src.index("let _sort=")]
+    assert "if(window._ftrTryInject) window._ftrTryInject();" in tail
+    # The initial snapshot and subsequent sort renders must not wait for a
+    # successful member-only optional fetch to expose already-public inputs.
+    assert "window._ftrTryInject = tryInject;\n// Also cover scripts executed after the initial page render.\ntryInject();" in src
+
+
+def test_all_basket_artifacts_preserve_the_snapshot_initialization_hook():
+    root = TMPL_DIR.parent
+    pages = [p for d in ("basket", "basket_china", "basket_hk", "basket_canada", "basket_intl")
+             for p in (root / "site" / d).glob("*.html")]
+    assert len(pages) >= 121
+    for page in pages:
+        src = page.read_text(encoding="utf-8")
+        tail = src[src.index("document.querySelectorAll('#hold th[data-s]')"):src.index("let _sort=")]
+        assert "if(window._ftrTryInject) window._ftrTryInject();" in tail, page
+        assert "window._ftrTryInject = tryInject;\n// Also cover scripts executed after the initial page render.\ntryInject();" in src, page
+
+
+def test_optional_live_strip_never_invents_data_for_snapshot_only_view():
+    src = _src("basket_detail.html.j2")
+    fn = src[src.index("function liveStripHtml"):src.index("// ── Fetch + inject") ]
+    assert "if(!pb) return '';" in fn
+    assert "fetch('../live/basket_pulse.json'" in src
+    assert "fetch('../basketdata/turn_watch.json'" in src
