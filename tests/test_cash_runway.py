@@ -509,3 +509,168 @@ class TestCashRunwayWiring:
         guard = src.index("cash_runway and cash_runway.status != 'not_applicable'")
         assert guard < footer
 
+
+class TestResolveCashRunway:
+    """Seven direct unit tests for _resolve_cash_runway (Grok h_7451_rv1 minor 1)."""
+
+    def test_resolve_cash_runway_not_applicable_for_crypto_and_etf(self, monkeypatch):
+        """Crypto ticker and ETF sector short-circuit to not_applicable without calling the loader."""
+        import scripts.build_stock_library as bsl
+
+        def fake_loader(ticker):
+            raise AssertionError("loader must not be called")
+
+        monkeypatch.setattr(bsl, "_dm_load", fake_loader)
+
+        result = bsl._resolve_cash_runway("BTC-USD", "Technology", date(2026, 9, 20), None)
+        assert result == {"schema": "cash_runway.v1", "status": "not_applicable"}
+
+        result = bsl._resolve_cash_runway("SPY", "ETF / macro", date(2026, 9, 20), None)
+        assert result == {"schema": "cash_runway.v1", "status": "not_applicable"}
+
+    def test_resolve_cash_runway_unresolved_shape(self, monkeypatch):
+        """When the loader finds no CIK the status is unresolved with a 14-key shape."""
+        import scripts.build_stock_library as bsl
+
+        monkeypatch.setattr(bsl, "_dm_load", lambda t: (None, None, "unresolved"))
+
+        cr_asof = date(2026, 9, 20)
+        result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
+
+        assert result["status"] == "unresolved"
+        assert result["cik"] is None
+        assert result["as_of"] == cr_asof.isoformat()
+        assert set(result.keys()) == {
+            "schema", "status", "cik", "cash_usd", "cash_display",
+            "ocf_usd", "capex_usd", "free_cash_flow_usd", "monthly_burn_usd",
+            "runway_months", "runway_display", "near_term_cover_pct", "period", "as_of",
+        }
+        for key in result:
+            if key not in ("schema", "status", "as_of"):
+                assert result[key] is None, f"{key} should be None"
+
+    def test_resolve_cash_runway_not_loaded_keeps_cik(self, monkeypatch):
+        """When the loader resolves a CIK but has no cache the status is not_loaded and CIK is preserved."""
+        import scripts.build_stock_library as bsl
+
+        monkeypatch.setattr(bsl, "_dm_load", lambda t: ("0000320193", None, "not_loaded"))
+
+        cr_asof = date(2026, 9, 20)
+        result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
+
+        assert result["status"] == "not_loaded"
+        assert result["cik"] == "0000320193"
+        assert set(result.keys()) == {
+            "schema", "status", "cik", "cash_usd", "cash_display",
+            "ocf_usd", "capex_usd", "free_cash_flow_usd", "monthly_burn_usd",
+            "runway_months", "runway_display", "near_term_cover_pct", "period", "as_of",
+        }
+
+    def test_resolve_cash_runway_confirmed_no_filings_calls_extract_with_none(
+        self, monkeypatch
+    ):
+        """Confirmed no filings passes None as facts to the extract function, preserving CIK."""
+        import engine.cash_runway as cr_mod
+        import scripts.build_stock_library as bsl
+
+        recorded_args = {}
+
+        sentinel = {"schema": "cash_runway.v1", "status": "sentinel_no_filings"}
+
+        def fake_extract(facts, cik=None, as_of=None, ladder=None):
+            recorded_args["facts"] = facts
+            recorded_args["cik"] = cik
+            recorded_args["as_of"] = as_of
+            recorded_args["ladder"] = ladder
+            return sentinel
+
+        # Swap the function in the engine.cash_runway module itself so that when
+        # _resolve_cash_runway does its local "from engine.cash_runway import
+        # extract_cash_runway as _cr_extract", the name resolves to our fake.
+        original_extract = cr_mod.extract_cash_runway
+        cr_mod.extract_cash_runway = fake_extract
+        monkeypatch.setattr(bsl, "_dm_load", lambda t: ("0000320193", None, "confirmed_no_filings"))
+
+        try:
+            cr_asof = date(2026, 9, 20)
+            result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
+
+            assert result is sentinel
+            assert recorded_args["facts"] is None
+            assert recorded_args["cik"] == "0000320193"
+            assert recorded_args["as_of"] == cr_asof
+            assert recorded_args["ladder"] is None
+        finally:
+            cr_mod.extract_cash_runway = original_extract
+
+    def test_resolve_cash_runway_loaded_passes_facts_and_ladder(self, monkeypatch):
+        """Loaded state passes the facts dictionary and ladder sentinel to the extract function."""
+        import engine.cash_runway as cr_mod
+        import scripts.build_stock_library as bsl
+
+        recorded_args = {}
+        facts_marker = {"facts": "marker"}
+        ladder_sentinel = object()
+
+        sentinel = {"schema": "cash_runway.v1", "status": "loaded_sentinel"}
+
+        def fake_extract(facts, cik=None, as_of=None, ladder=None):
+            recorded_args["facts"] = facts
+            recorded_args["cik"] = cik
+            recorded_args["as_of"] = as_of
+            recorded_args["ladder"] = ladder
+            return sentinel
+
+        original_extract = cr_mod.extract_cash_runway
+        cr_mod.extract_cash_runway = fake_extract
+        monkeypatch.setattr(
+            bsl, "_dm_load", lambda t: ("0000320193", facts_marker, "loaded")
+        )
+
+        try:
+            cr_asof = date(2026, 9, 20)
+            result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, ladder_sentinel)
+
+            assert result["status"] == "loaded_sentinel"
+            assert recorded_args["facts"] is facts_marker
+            assert recorded_args["cik"] == "0000320193"
+            assert recorded_args["as_of"] == cr_asof
+            assert recorded_args["ladder"] is ladder_sentinel
+        finally:
+            cr_mod.extract_cash_runway = original_extract
+
+    def test_resolve_cash_runway_loader_fault_degrades_to_not_loaded_with_warning(
+        self, monkeypatch, capsys
+    ):
+        """A loader RuntimeError degrades to not_loaded with a warning and no CIK."""
+        import scripts.build_stock_library as bsl
+
+        monkeypatch.setattr(bsl, "_dm_load", lambda t: (_ for _ in ()).throw(RuntimeError("boom")))
+
+        cr_asof = date(2026, 9, 20)
+        result = bsl._resolve_cash_runway("AAPL", "Technology", cr_asof, None)
+
+        assert result["status"] == "not_loaded"
+        assert result["cik"] is None
+        out = capsys.readouterr().out
+        assert "::warning title=stock-library cash-runway producer fault::" in out
+        assert "AAPL" in out
+
+    def test_resolve_cash_runway_import_failure_degrades_to_not_loaded(self, monkeypatch):
+        """A None loader (import failure) degrades to not_loaded, never not_applicable.
+
+        A candidate SEC filer must never silently degrade to not_applicable,
+        which is reserved for structural non-filers (crypto tickers, ETF/macro
+        sectors).  When the loader itself is None the module-level import
+        failed; the ticker is still a real filer identity, so the degraded
+        state must be not_loaded.
+        """
+        import scripts.build_stock_library as bsl
+
+        monkeypatch.setattr(bsl, "_dm_load", None)
+
+        result = bsl._resolve_cash_runway("AAPL", "Technology", date(2026, 9, 20), None)
+
+        assert result["status"] == "not_loaded"
+        assert result["status"] != "not_applicable"
+
