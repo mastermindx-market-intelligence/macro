@@ -24,7 +24,7 @@
   </header>
   <section class="acx-brief" aria-label="Evidence briefing">
     {% if partial %}<div><strong>{{ t('Partial evidence', '证据不完整') }}</strong><p>{{ t('Missing evidence is not a quiet market', '证据缺失不代表市场平静') }}. {{ t('Review what is available; inspect coverage below.', '可查看现有记录，并检查下方的数据覆盖。') }} <span data-missing-sources>{{ (coverage.blocking or [])|join(', ') }}{% if coverage.backdrop_missing %} · {{ t('Market backdrop unavailable', '市场背景暂不可用') }}{% endif %}</span></p></div>
-    {% else %}<div><strong>{{ t('Review first. Watch next. Keep the evidence close.', '优先查看，持续关注，证据随手可查。') }}</strong><p>{{ t('Attention, evidential weight and predictive edge stay separate.', '关注级别、证据权重与预测优势保持分离。') }}</p></div>{% endif %}
+    {% else %}<div><strong>{{ t('Review fresh changes. Recheck earlier priorities. Watch what may develop.', '查看最新变化，复核较早重点，关注可能的发展。') }}</strong><p>{{ t('Attention, recency, evidential weight and predictive edge stay separate.', '关注级别、时效、证据权重与预测优势保持分离。') }}</p></div>{% endif %}
     <a href="#coverage" class="acx-text-link">{{ t('Check coverage', '查看覆盖') }} <span aria-hidden="true">→</span></a>
   </section>
   <p class="acx-stale" id="ac-stale" role="status" hidden></p>

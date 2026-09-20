@@ -84,6 +84,8 @@ def test_action_led_monitor_contract_replaces_the_generic_four_tab_shell():
     assert 'data-view="signals"' not in html
     assert 'acx-context-strip' in html
     assert 'acx-context"' not in html
+    assert 'Review fresh changes. Recheck earlier priorities. Watch what may develop.' in html
+    assert 'Attention, recency, evidential weight and predictive edge stay separate.' in html
 
 
 def test_client_renders_attention_groups_and_takeaway_before_receipts():
