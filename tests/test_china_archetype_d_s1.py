@@ -86,6 +86,8 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}",
         "{{ t('Macro News','宏观新闻') }}",
         "{{ t('What changed ↓','最近变化 ↓') }}",
+        "{% set _chg_news_n = 1 if latest.alerts else 2 %}",
+        "{% for h in CN.news.headlines[:_chg_news_n] %}",
         '<a class="cnx-change-row" href="china_news.html">',
         '<a class="cnx-change-row cnx-change-alert" href="alerts.html">',
         'href="china_policy_watch.html"',
