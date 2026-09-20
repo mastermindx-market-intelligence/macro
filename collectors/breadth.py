@@ -113,11 +113,15 @@ def _w1_decimal_window_stats(
     valid_count = 0
     window_decimal = Decimal(window)
 
-    # A binary float round-trips through at most 17 significant decimal digits.
-    # 50 digits leaves ample headroom for a 20-value exact sum without depending
-    # on the process-global Decimal context.
+    # Accepted values are positive finite IEEE-754 doubles. Their shortest
+    # round-tripping decimal strings can span roughly 5e-324..1.8e308. A
+    # rolling sum must retain the tiny terms even while a huge term is present,
+    # otherwise subtracting the huge term later fabricates a zero remainder.
+    # 800 significant digits safely covers the full exponent span plus all
+    # coefficient digits for this bounded 20-value sum, without mutating the
+    # process-global Decimal context.
     with localcontext() as context:
-        context.prec = 50
+        context.prec = 800
         for position, value in enumerate(series):
             decimal_value: Decimal | None = None
             if pd.notna(value):

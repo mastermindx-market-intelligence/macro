@@ -494,6 +494,44 @@ def test_huge_finite_constant_window_remains_eligible_equal_and_zero_distance():
         assert out.attrs["members"][symbol]["distance_bps"][-1] == 0.0
 
 
+def test_decimal_window_retains_tiny_values_after_huge_value_rolls_out():
+    """Rolling exactness must survive the full finite-float exponent span."""
+    days = _sessions(21)
+    syms = [f"T{i}" for i in range(5)]
+    values = [1e308] + [1e-300] * 20
+    closes = _wide(syms, days, lambda ticker, i: values[i])
+    out = _adapter().compute_sector_participation_20(closes, _members(syms))
+    last = out.iloc[-1]
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 0
+    assert last["Technology|pct_above_20"] == 0.0
+    for symbol in syms:
+        assert out.attrs["members"][symbol]["states"][-1] == "B"
+        assert out.attrs["members"][symbol]["distance_bps"][-1] == 0.0
+
+
+def test_decimal_window_retains_smallest_subnormal_after_max_float_rolls_out():
+    """The exact sum survives the complete accepted IEEE-754 finite range."""
+    days = _sessions(21)
+    syms = [f"T{i}" for i in range(5)]
+    smallest = np.nextafter(0.0, 1.0)
+    values = [np.finfo(float).max] + [smallest] * 20
+    closes = _wide(syms, days, lambda ticker, i: values[i])
+    out = _adapter().compute_sector_participation_20(closes, _members(syms))
+    containing_huge = out.iloc[-2]
+    last = out.iloc[-1]
+    assert containing_huge["Technology|eligible_20"] == 5
+    assert containing_huge["Technology|above_20"] == 0
+    assert last["Technology|eligible_20"] == 5
+    assert last["Technology|above_20"] == 0
+    assert last["Technology|pct_above_20"] == 0.0
+    for symbol in syms:
+        evidence = out.attrs["members"][symbol]
+        assert evidence["states"][-2:] == ["B", "B"]
+        assert np.isfinite(evidence["distance_bps"][-2])
+        assert evidence["distance_bps"][-1] == 0.0
+
+
 def test_five_rising_five_falling_is_50pct_a02():
     days = _sessions(20)
     syms = [f"U{i}" for i in range(5)] + [f"D{i}" for i in range(5)]
