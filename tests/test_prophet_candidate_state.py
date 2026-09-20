@@ -14,6 +14,12 @@ from engine.prophet_candidate_state import (
 GEN = "peg:" + "a" * 64
 
 
+def cid(label, identity_epoch="epoch_0"):
+    token = label.removeprefix("pe:")
+    digest = token.encode("utf-8").hex().ljust(24, "0")[:24]
+    return f"pe:SEC:US-XNAS-AAPL:{identity_epoch}:sa:{digest}:1"
+
+
 @dataclass(frozen=True)
 class Gen:
     episodes: tuple
@@ -32,6 +38,8 @@ def ep(
     superseded_by=None,
     identity_epoch="epoch_0",
 ):
+    if not str(eid).startswith("pe:SEC:"):
+        eid = cid(str(eid), identity_epoch)
     return {
         "schema": "prophet.candidate_episode/v1",
         "episode_id": eid,
@@ -60,12 +68,12 @@ def test_lifecycle_mapping_preserves_source_truth_and_supersession_precedence():
         generated_at="2026-09-18T01:00:00Z",
     )
     got = {r["episode_id"]: r["episode_lifecycle"] for r in out["rows"]}
-    assert got["pe:1"]["state"] == "SUPERSEDED"
-    assert got["pe:1"]["source_state"] == "ACTIVE"
-    assert got["pe:1"]["superseded_by"] == "pe:9"
-    assert got["pe:2"]["state"] == "RETRACTED"
-    assert got["pe:3"]["state"] == "CLOSED" and got["pe:3"]["source_state"] == "RESOLVED"
-    assert got["pe:4"]["state"] == "CLOSED" and got["pe:4"]["source_state"] == "EXPIRED"
+    assert got[cid("1")]["state"] == "SUPERSEDED"
+    assert got[cid("1")]["source_state"] == "ACTIVE"
+    assert got[cid("1")]["superseded_by"] == "pe:9"
+    assert got[cid("2")]["state"] == "RETRACTED"
+    assert got[cid("3")]["state"] == "CLOSED" and got[cid("3")]["source_state"] == "RESOLVED"
+    assert got[cid("4")]["state"] == "CLOSED" and got[cid("4")]["source_state"] == "EXPIRED"
 
 
 def test_maturity_maps_only_explicit_incumbent_stage_words():
@@ -78,18 +86,18 @@ def test_maturity_maps_only_explicit_incumbent_stage_words():
         market_session="2026-09-17",
         generated_at="2026-09-18T01:00:00Z",
         maturity_stage_by_episode={
-            "pe:1": "EARLY",
-            "pe:2": "CONFIRMING",
-            "pe:3": "CONFIRMED",
-            "pe:4": "topping",
+            cid("1"): "EARLY",
+            cid("2"): "CONFIRMING",
+            cid("3"): "CONFIRMED",
+            cid("4"): "topping",
         },
     )
     got = {r["episode_id"]: r["maturity_state"] for r in out["rows"]}
-    assert got["pe:1"]["state"] == "PRE_CONFIRMATION"
-    assert got["pe:2"]["state"] == "EARLY_CONFIRMATION"
-    assert got["pe:3"]["state"] == "CONFIRMED"
-    assert got["pe:4"]["state"] == "UNESTIMABLE"
-    assert got["pe:4"]["source_token"] == "topping"
+    assert got[cid("1")]["state"] == "PRE_CONFIRMATION"
+    assert got[cid("2")]["state"] == "EARLY_CONFIRMATION"
+    assert got[cid("3")]["state"] == "CONFIRMED"
+    assert got[cid("4")]["state"] == "UNESTIMABLE"
+    assert got[cid("4")]["source_token"] == "topping"
 
 
 def test_legacy_live_forming_does_not_manufacture_b3_emergence():
@@ -99,7 +107,7 @@ def test_legacy_live_forming_does_not_manufacture_b3_emergence():
         market_session="2026-09-17",
         generated_at="2026-09-18T01:00:00Z",
         emergence_by_episode={
-            "pe:1": {
+            cid("1"): {
                 "state": "UNESTIMABLE",
                 "source_system": "prophet_live",
                 "source_token": "forming",
@@ -142,7 +150,7 @@ def test_projection_is_deterministic_sorted_and_has_no_authority():
         generated_at="2026-09-18T01:00:00Z",
     )
     assert one == two
-    assert [r["episode_id"] for r in one["rows"]] == ["pe:a", "pe:z"]
+    assert [r["episode_id"] for r in one["rows"]] == [cid("a"), cid("z")]
     assert not any(one["authority"].values())
     assert all(not any(r["authority"].values()) for r in one["rows"])
     validate_candidate_state_projection(one)
@@ -202,7 +210,7 @@ def test_validator_rejects_rehashed_trigger_without_source_provenance():
         market_session="2026-09-17",
         generated_at="2026-09-18T01:00:00Z",
         emergence_by_episode={
-            "pe:1": {
+            cid("1"): {
                 "state": "TRIGGERED",
                 "reason": None,
                 "source_system": "turn_watch",
@@ -242,7 +250,7 @@ def test_validator_rejects_rehashed_incoherent_maturity():
         Snap(GEN, Gen((ep("pe:1"),))),
         market_session="2026-09-17",
         generated_at="2026-09-18T01:00:00Z",
-        maturity_stage_by_episode={"pe:1": "EARLY"},
+        maturity_stage_by_episode={cid("1"): "EARLY"},
     )
     tampered = deepcopy(out)
     tampered["rows"][0]["maturity_state"]["state"] = "MATURE"
@@ -266,7 +274,7 @@ def test_projection_preserves_b1_identity_epoch_for_b4_keying():
         generated_at="2026-09-18T01:00:00Z",
     )
     got = {row["episode_id"]: row["identity_epoch"] for row in out["rows"]}
-    assert got == {"pe:epoch0": "epoch_0", "pe:epoch1": "epoch_1"}
+    assert got == {cid("epoch0", "epoch_0"): "epoch_0", cid("epoch1", "epoch_1"): "epoch_1"}
 
 
 def test_validator_rejects_rehashed_missing_or_empty_identity_epoch():
@@ -287,3 +295,15 @@ def test_validator_rejects_rehashed_missing_or_empty_identity_epoch():
     _rehash_projection(empty)
     with pytest.raises(CandidateStateContractError):
         validate_candidate_state_projection(empty)
+
+def test_validator_rejects_rehashed_identity_epoch_mismatch_with_b1_episode_id():
+    out = project_candidate_states(
+        Snap(GEN, Gen((ep("pe:1", identity_epoch="epoch_0"),))),
+        market_session="2026-09-17",
+        generated_at="2026-09-18T01:00:00Z",
+    )
+    tampered = deepcopy(out)
+    tampered["rows"][0]["identity_epoch"] = "epoch_999"
+    _rehash_projection(tampered)
+    with pytest.raises(CandidateStateContractError):
+        validate_candidate_state_projection(tampered)

@@ -11,6 +11,8 @@ from hashlib import sha256
 import json
 import re
 
+from engine.us_candidate_episode import EpisodeContractError, _parse_episode_id as _parse_b1_episode_id
+
 ROW_SCHEMA = "prophet.candidate_state/v1"
 PROJECTION_SCHEMA = "prophet.candidate_state_projection/v1"
 DEFINITION_ERA = "candidate-state-v1-2026-09-18"
@@ -512,9 +514,22 @@ def validate_candidate_state_projection(
             raise CandidateStateContractError("duplicate episode_id")
         seen.add(episode_id)
 
-        _text(row.get("security_id"), "security_id")
+        security_id = _text(row.get("security_id"), "security_id")
         _text(row.get("company_id"), "company_id")
-        _text(row.get("identity_epoch"), "identity_epoch")
+        identity_epoch = _text(row.get("identity_epoch"), "identity_epoch")
+        try:
+            episode_security_id, episode_identity_epoch, _, _ = _parse_b1_episode_id(episode_id)
+        except EpisodeContractError as exc:
+            raise CandidateStateContractError(
+                "episode_id is not a canonical B1 candidate episode identifier"
+            ) from exc
+        if (
+            episode_security_id != security_id
+            or episode_identity_epoch != identity_epoch
+        ):
+            raise CandidateStateContractError(
+                "candidate identity does not match canonical B1 episode identity"
+            )
         _validate_lifecycle_projection(row.get("episode_lifecycle"))
         _validate_emergence_projection(row.get("emergence_state"))
         _validate_maturity_projection(row.get("maturity_state"))
