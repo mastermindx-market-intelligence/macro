@@ -20,6 +20,55 @@
     "expected_fired": false,
     "reason": "Current-state membership is not proof of degradation from RE-RATING."
   },
+  "real_precipice": {
+    "theme_id": "medical_devices",
+    "current_stage": "PRECIPICE",
+    "expected_any_fired": false,
+    "expected_crowding_band": "med",
+    "expected_divergence": null,
+    "expected_lane": "early",
+    "reason": "PRECIPICE is the early edge-remaining state. Without a fired falsifier, high crowding, or crowded-and-fading evidence, the real served theme must remain early even when its crowding band is medium and divergence is absent."
+  },
+  "artifact_health": {
+    "required_clock_fields": {
+      "foresight": [
+        "asof"
+      ],
+      "theme_state": [
+        "as_of",
+        "generated_at"
+      ],
+      "theme_thesis": [
+        "as_of",
+        "generated_at"
+      ],
+      "theme_asymmetry": [
+        "as_of",
+        "generated_at"
+      ]
+    },
+    "state_mirror_paths": [
+      "data/neuralweb/theme_state.json",
+      "site/neuralwebdata/theme_state.json"
+    ],
+    "stale_null_case": {
+      "theme_id": "ag_fertilizer",
+      "leg_id": "bottleneck_tightness",
+      "expected_stale": true,
+      "expected_value": null,
+      "expected_band": null
+    },
+    "minimum_top_level_stale_legs": 1,
+    "reason": "Observation and generation clocks remain source-typed; mirrored ThemeState bytes must not mix generations; stale/null evidence must remain stale/null rather than becoming zero, low risk, or confirmation."
+  },
+  "contract_gates": {
+    "rerating_lane_interpretation": {
+      "state": "LANE_A_ADJUDICATION_REQUIRED",
+      "fixture_expected_lane": "working",
+      "owner_semantics": "late; await dislocation; do not chase",
+      "question": "Does working describe thesis health only, or does it also communicate entry posture? An accepted contract must preserve late/extended posture and cannot grant member entry permission."
+    }
+  },
   "lane_matrix": [
     {
       "id": "fired_dominates_precipice",

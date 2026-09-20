@@ -16,6 +16,7 @@ import re
 import subprocess
 import sys
 from copy import deepcopy
+from functools import lru_cache
 from pathlib import Path
 from types import ModuleType
 from typing import Any, Callable, Mapping
@@ -23,7 +24,7 @@ from typing import Any, Callable, Mapping
 import yaml
 
 
-SCHEMA = "theme_intelligence.acceptance_result.v1"
+SCHEMA = "theme_intelligence.acceptance_result.v2"
 OPERATION_KEY = "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001"
 
 INPUT_PATHS = (
@@ -31,7 +32,9 @@ INPUT_PATHS = (
     "engine/neuralweb/theme_thesis.py",
     "config/theme_thesis_registry.yml",
     "site/basketdata/foresight_cascade.json",
+    "site/neuralwebdata/theme_state.json",
     "site/neuralwebdata/theme_thesis.json",
+    "site/neuralwebdata/theme_asymmetry.json",
     "site/basketdata/theme_lanes.json",
     "site/state_of_themes.html",
     "data/neuralweb/theme_state.json",
@@ -75,6 +78,7 @@ def _git(root: Path, *args: str) -> bytes:
     return proc.stdout
 
 
+@lru_cache(maxsize=None)
 def _resolve_subject(root: Path, subject: str) -> tuple[str, str]:
     commit = _git(root, "rev-parse", f"{subject}^{{commit}}").decode().strip()
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
@@ -83,10 +87,12 @@ def _resolve_subject(root: Path, subject: str) -> tuple[str, str]:
     return commit, tree
 
 
+@lru_cache(maxsize=None)
 def _git_bytes(root: Path, commit: str, path: str) -> bytes:
     return _git(root, "show", f"{commit}:{path}")
 
 
+@lru_cache(maxsize=None)
 def _blob_id(root: Path, commit: str, path: str) -> str:
     return _git(root, "rev-parse", f"{commit}:{path}").decode().strip()
 
@@ -245,8 +251,9 @@ def evaluate(
 ) -> dict[str, Any]:
     """Evaluate one immutable subject and return a deterministic result object.
 
-    ``mutation`` is used only by the executable adversarial specification. It changes
-    in-memory evaluator observations; it never changes repository bytes.
+    ``mutation`` changes evaluator observations in memory only. It never changes
+    repository bytes. Git-object reads are cached within the process because every
+    mutation evaluates the same immutable generation.
     """
     root = Path(repo_root).resolve()
     cases_file = Path(cases_path).resolve()
@@ -260,40 +267,57 @@ def evaluate(
     lane_classifier: Callable[[str, bool, dict[str, Any], str | None], str] = getattr(
         tracker, "_classify_lane"
     )
+    strip_stage: Callable[[str | None], str] = getattr(tracker, "_strip_tier_suffix")
     eval_falsifier = getattr(thesis_engine, "_eval_falsifier")
 
-    registry = _yaml_bytes(raw["config/theme_thesis_registry.yml"], "config/theme_thesis_registry.yml")
+    registry = _yaml_bytes(
+        raw["config/theme_thesis_registry.yml"], "config/theme_thesis_registry.yml"
+    )
     if not isinstance(registry, dict):
         raise AcceptanceHarnessError("theme thesis registry is not an object")
-    watch_case = cases["watch_invalidation"]
-    theme_id = str(watch_case["theme_id"])
-    falsifier_id = str(watch_case["falsifier_id"])
-    thesis = _find_dict(registry.get("theses"), "theme_id", theme_id, "registry thesis")
-    falsifier = _find_dict(thesis.get("falsifiers"), "id", falsifier_id, "registry falsifier")
-    check = falsifier.get("check")
-    if not isinstance(check, dict):
-        raise AcceptanceHarnessError(f"{falsifier_id} has no machine-checkable check")
 
     foresight_payload = _json_bytes(
-        raw["site/basketdata/foresight_cascade.json"], "site/basketdata/foresight_cascade.json"
+        raw["site/basketdata/foresight_cascade.json"],
+        "site/basketdata/foresight_cascade.json",
     )
-    state_payload = _json_bytes(raw["data/neuralweb/theme_state.json"], "data/neuralweb/theme_state.json")
+    data_state_payload = _json_bytes(
+        raw["data/neuralweb/theme_state.json"], "data/neuralweb/theme_state.json"
+    )
+    site_state_payload = _json_bytes(
+        raw["site/neuralwebdata/theme_state.json"],
+        "site/neuralwebdata/theme_state.json",
+    )
     thesis_payload = _json_bytes(
-        raw["site/neuralwebdata/theme_thesis.json"], "site/neuralwebdata/theme_thesis.json"
+        raw["site/neuralwebdata/theme_thesis.json"],
+        "site/neuralwebdata/theme_thesis.json",
+    )
+    asymmetry_payload = _json_bytes(
+        raw["site/neuralwebdata/theme_asymmetry.json"],
+        "site/neuralwebdata/theme_asymmetry.json",
     )
     lanes_payload = _json_bytes(
         raw["site/basketdata/theme_lanes.json"], "site/basketdata/theme_lanes.json"
     )
     html = raw["site/state_of_themes.html"].decode("utf-8")
 
-    if not isinstance(foresight_payload, dict) or not isinstance(foresight_payload.get("themes"), list):
+    if not isinstance(foresight_payload, dict) or not isinstance(
+        foresight_payload.get("themes"), list
+    ):
         raise AcceptanceHarnessError("foresight projection has no themes list")
-    if not isinstance(state_payload, dict) or not isinstance(state_payload.get("themes"), list):
-        raise AcceptanceHarnessError("theme state artifact has no themes list")
+    for label, payload in (
+        ("data ThemeState", data_state_payload),
+        ("served ThemeState", site_state_payload),
+        ("theme asymmetry", asymmetry_payload),
+    ):
+        if not isinstance(payload, dict) or not isinstance(payload.get("themes"), list):
+            raise AcceptanceHarnessError(f"{label} artifact has no themes list")
+    if not isinstance(lanes_payload, dict) or not isinstance(lanes_payload.get("lanes"), dict):
+        raise AcceptanceHarnessError("theme lanes projection has no lanes object")
+
     foresight_rows = foresight_payload["themes"]
-    state_rows = state_payload["themes"]
-    foresight_row = _find_dict(foresight_rows, "theme", theme_id, "foresight theme")
-    state_row = _find_dict(state_rows, "theme_id", theme_id, "theme state")
+    state_rows = site_state_payload["themes"]
+    asymmetry_rows = asymmetry_payload["themes"]
+    thesis_rows = _theme_thesis_rows(thesis_payload)
     foresight_index = {
         str(row["theme"]): row
         for row in foresight_rows
@@ -305,6 +329,21 @@ def evaluate(
         if isinstance(row, dict) and row.get("theme_id")
     }
 
+    # WATCH without transition evidence — real evaluator plus committed projection/card.
+    watch_case = cases["watch_invalidation"]
+    theme_id = str(watch_case["theme_id"])
+    falsifier_id = str(watch_case["falsifier_id"])
+    thesis = _find_dict(registry.get("theses"), "theme_id", theme_id, "registry thesis")
+    falsifier = _find_dict(thesis.get("falsifiers"), "id", falsifier_id, "registry falsifier")
+    check = falsifier.get("check")
+    if not isinstance(check, dict):
+        raise AcceptanceHarnessError(f"{falsifier_id} has no machine-checkable check")
+
+    foresight_row = _find_dict(foresight_rows, "theme", theme_id, "foresight theme")
+    state_row = _find_dict(state_rows, "theme_id", theme_id, "theme state")
+    watch_asymmetry = _find_dict(
+        asymmetry_rows, "theme_id", theme_id, "theme asymmetry"
+    )
     production_watch = eval_falsifier(falsifier, foresight_index, state_index, theme_id)
     actual_watch_fired = bool(
         mut.get("watch_actual_fired_override", production_watch.get("fired", False))
@@ -321,6 +360,7 @@ def evaluate(
         watch_reasons.append("STAGE_REGRESSION_HAS_NO_TEMPORAL_INPUT")
     watch_ok = not watch_reasons
 
+    # Closed semantic priority matrix over the real production classifier.
     lane_overrides = dict(mut.get("lane_overrides") or {})
     lane_rows: list[dict[str, Any]] = []
     failed_case_ids: list[str] = []
@@ -351,21 +391,18 @@ def evaluate(
             }
         )
 
-    published_thesis = _find_dict(
-        _theme_thesis_rows(thesis_payload), "theme_id", theme_id, "published thesis"
-    )
+    published_thesis = _find_dict(thesis_rows, "theme_id", theme_id, "published thesis")
     published_falsifier = _find_dict(
         published_thesis.get("falsifiers"), "id", falsifier_id, "published falsifier"
     )
-    published_fired = bool(mut.get("published_fired_override", published_falsifier.get("fired")))
+    published_fired = bool(
+        mut.get("published_fired_override", published_falsifier.get("fired"))
+    )
     published_state = str(
         mut.get("published_state_override", published_falsifier.get("state"))
     )
     published_lane = str(
-        mut.get(
-            "published_lane_override",
-            (lanes_payload.get("lanes") or {}).get(theme_id),
-        )
+        mut.get("published_lane_override", lanes_payload["lanes"].get(theme_id))
     )
     html_lane = str(mut.get("html_lane_override", _extract_html_lane(html, theme_id)))
     current_stage = str(foresight_row.get("stage"))
@@ -373,35 +410,176 @@ def evaluate(
     divergence_row = state_row.get("divergence_board")
     if isinstance(divergence_row, dict):
         divergence = divergence_row.get("quadrant")
-    source_lane = lane_classifier(current_stage, published_fired, {}, divergence)
+    watch_legs = watch_asymmetry.get("legs")
+    if not isinstance(watch_legs, dict):
+        raise AcceptanceHarnessError(f"theme asymmetry for {theme_id!r} has no legs object")
+    source_lane = lane_classifier(
+        strip_stage(current_stage), published_fired, watch_legs, divergence
+    )
     if "current_source_lane_override" in mut:
         source_lane = str(mut["current_source_lane_override"])
 
     path_assertions = {
         "foresight_stage_matches_case": current_stage == watch_case["current_stage"],
         "production_matches_published_fired": actual_watch_fired == published_fired,
-        "published_state_matches_fired": published_state == ("FIRED" if published_fired else "ARMED"),
+        "published_state_matches_fired": published_state
+        == ("FIRED" if published_fired else "ARMED"),
         "classifier_matches_lane_artifact": source_lane == published_lane,
         "lane_artifact_matches_served_card": published_lane == html_lane,
     }
     path_ok = all(path_assertions.values())
 
+    # The actual clean-PRECIPICE incident must traverse the renderer's real inputs.
+    real_case = cases["real_precipice"]
+    real_theme_id = str(real_case["theme_id"])
+    real_foresight = _find_dict(
+        foresight_rows, "theme", real_theme_id, "real PRECIPICE foresight theme"
+    )
+    real_state = _find_dict(
+        state_rows, "theme_id", real_theme_id, "real PRECIPICE ThemeState"
+    )
+    real_thesis = _find_dict(
+        thesis_rows, "theme_id", real_theme_id, "real PRECIPICE thesis"
+    )
+    real_asymmetry = _find_dict(
+        asymmetry_rows, "theme_id", real_theme_id, "real PRECIPICE asymmetry"
+    )
+    real_legs = real_asymmetry.get("legs")
+    if not isinstance(real_legs, dict):
+        raise AcceptanceHarnessError(
+            f"theme asymmetry for {real_theme_id!r} has no legs object"
+        )
+    real_stage_raw = str((real_state.get("foresight") or {}).get("stage") or "")
+    real_stage = strip_stage(real_stage_raw)
+    real_any_fired = bool(
+        (real_thesis.get("falsifier_summary") or {}).get("any_fired", False)
+    )
+    real_crowding = real_legs.get("crowding_hazard")
+    real_crowding_band = (
+        real_crowding.get("band") if isinstance(real_crowding, dict) else None
+    )
+    real_divergence = None
+    real_divergence_row = real_state.get("divergence_board")
+    if isinstance(real_divergence_row, dict):
+        real_divergence = real_divergence_row.get("quadrant")
+    real_classifier_lane = lane_classifier(
+        real_stage, real_any_fired, real_legs, real_divergence
+    )
+    real_artifact_lane = str(lanes_payload["lanes"].get(real_theme_id))
+    real_html_lane = _extract_html_lane(html, real_theme_id)
+    real_classifier_lane = str(
+        mut.get("real_precipice_classifier_lane_override", real_classifier_lane)
+    )
+    real_artifact_lane = str(
+        mut.get("real_precipice_artifact_lane_override", real_artifact_lane)
+    )
+    real_html_lane = str(
+        mut.get("real_precipice_html_lane_override", real_html_lane)
+    )
+    expected_real_lane = str(real_case["expected_lane"])
+    real_assertions = {
+        "stage_matches_case": real_stage == real_case["current_stage"],
+        "foresight_and_state_stage_match": strip_stage(str(real_foresight.get("stage")))
+        == real_stage,
+        "any_fired_matches_case": real_any_fired
+        == bool(real_case["expected_any_fired"]),
+        "crowding_band_matches_case": real_crowding_band
+        == real_case["expected_crowding_band"],
+        "divergence_matches_case": real_divergence == real_case["expected_divergence"],
+        "classifier_matches_expected_lane": real_classifier_lane == expected_real_lane,
+        "lane_artifact_matches_expected_lane": real_artifact_lane == expected_real_lane,
+        "served_card_matches_expected_lane": real_html_lane == expected_real_lane,
+        "classifier_matches_lane_artifact": real_classifier_lane == real_artifact_lane,
+        "lane_artifact_matches_served_card": real_artifact_lane == real_html_lane,
+    }
+    real_path_ok = all(real_assertions.values())
+
+    # Artifact-health checks preserve clock vocabulary, generation identity, and nulls.
+    health_case = cases["artifact_health"]
+    clock_sources = {
+        "foresight": foresight_payload,
+        "theme_state": site_state_payload,
+        "theme_thesis": thesis_payload,
+        "theme_asymmetry": asymmetry_payload,
+    }
+    clock_overrides = dict(mut.get("artifact_clock_overrides") or {})
+    clock_values: dict[str, dict[str, Any]] = {}
+    health_assertions: dict[str, bool] = {}
+    for source_name, required_fields in health_case["required_clock_fields"].items():
+        payload = clock_sources.get(source_name)
+        if not isinstance(payload, dict):
+            raise AcceptanceHarnessError(f"unknown artifact clock source {source_name!r}")
+        source_overrides = dict(clock_overrides.get(source_name) or {})
+        observed: dict[str, Any] = {}
+        for field in required_fields:
+            value = source_overrides[field] if field in source_overrides else payload.get(field)
+            observed[field] = value
+            health_assertions[f"clock.{source_name}.{field}"] = (
+                isinstance(value, str) and bool(value.strip())
+            )
+        clock_values[source_name] = observed
+
+    mirror_match = (
+        raw["data/neuralweb/theme_state.json"]
+        == raw["site/neuralwebdata/theme_state.json"]
+    )
+    if "state_mirror_match_override" in mut:
+        mirror_match = bool(mut["state_mirror_match_override"])
+    health_assertions["theme_state.data_site_bytes_match"] = mirror_match
+
+    stale_case = health_case["stale_null_case"]
+    stale_theme = _find_dict(
+        asymmetry_rows,
+        "theme_id",
+        str(stale_case["theme_id"]),
+        "stale/null theme asymmetry",
+    )
+    stale_legs = stale_theme.get("legs")
+    if not isinstance(stale_legs, dict):
+        raise AcceptanceHarnessError("stale/null theme asymmetry has no legs object")
+    stale_leg = stale_legs.get(str(stale_case["leg_id"]))
+    if not isinstance(stale_leg, dict):
+        raise AcceptanceHarnessError("registered stale/null asymmetry leg is absent")
+    stale_observed = {
+        "stale": stale_leg.get("stale"),
+        "value": stale_leg.get("value"),
+        "band": stale_leg.get("band"),
+    }
+    stale_observed.update(dict(mut.get("stale_null_override") or {}))
+    health_assertions["stale_null.stale_preserved"] = (
+        stale_observed["stale"] is stale_case["expected_stale"]
+    )
+    health_assertions["stale_null.value_preserved"] = (
+        stale_observed["value"] is stale_case["expected_value"]
+    )
+    health_assertions["stale_null.band_preserved"] = (
+        stale_observed["band"] is stale_case["expected_band"]
+    )
+    health_assertions["stale_null.not_numeric_zero"] = stale_observed["value"] is None
+    top_level_stale_legs = asymmetry_payload.get("stale_legs")
+    health_assertions["stale_legs.typed_nonempty"] = (
+        isinstance(top_level_stale_legs, list)
+        and len(top_level_stale_legs)
+        >= int(health_case["minimum_top_level_stale_legs"])
+        and all(isinstance(row, str) and bool(row.strip()) for row in top_level_stale_legs)
+    )
+    artifact_health_ok = all(health_assertions.values())
+
     authority_expected = dict(cases["authority_expected"])
-    source_authority = deepcopy(getattr(thesis_engine, "AUTHORITY_BLOCK"))
-    published_authority = deepcopy(published_thesis.get("authority") or {})
-    for key, value in dict(mut.get("authority_overrides") or {}).items():
-        source_authority[key] = value
-        published_authority[key] = value
+    authority_surfaces: dict[str, dict[str, Any]] = {
+        "source": deepcopy(getattr(thesis_engine, "AUTHORITY_BLOCK")),
+        "published": deepcopy(published_thesis.get("authority") or {}),
+        "theme_state": deepcopy(site_state_payload.get("authority") or {}),
+        "theme_asymmetry": deepcopy(asymmetry_payload.get("authority") or {}),
+    }
+    for surface in authority_surfaces.values():
+        for key, value in dict(mut.get("authority_overrides") or {}).items():
+            surface[key] = value
     authority_assertions = {
-        f"source.{key}": source_authority.get(key) == expected
+        f"{surface_name}.{key}": surface.get(key) == expected
+        for surface_name, surface in authority_surfaces.items()
         for key, expected in authority_expected.items()
     }
-    authority_assertions.update(
-        {
-            f"published.{key}": published_authority.get(key) == expected
-            for key, expected in authority_expected.items()
-        }
-    )
     authority_ok = all(authority_assertions.values())
 
     checks: dict[str, dict[str, Any]] = {
@@ -428,6 +606,46 @@ def evaluate(
             "failed_case_ids": failed_case_ids,
             "cases": lane_rows,
         },
+        "real_precipice_path": {
+            "status": _status(real_path_ok),
+            "theme_id": real_theme_id,
+            "assertions": real_assertions,
+            "expected": {
+                "stage": real_case["current_stage"],
+                "any_fired": bool(real_case["expected_any_fired"]),
+                "crowding_band": real_case["expected_crowding_band"],
+                "divergence": real_case["expected_divergence"],
+                "lane": expected_real_lane,
+            },
+            "actual": {
+                "foresight_stage_raw": real_foresight.get("stage"),
+                "theme_state_stage_raw": real_stage_raw,
+                "stage": real_stage,
+                "any_fired": real_any_fired,
+                "crowding_band": real_crowding_band,
+                "divergence": real_divergence,
+                "classifier_lane": real_classifier_lane,
+                "artifact_lane": real_artifact_lane,
+                "served_card_lane": real_html_lane,
+            },
+        },
+        "artifact_health": {
+            "status": _status(artifact_health_ok),
+            "assertions": health_assertions,
+            "clocks": clock_values,
+            "state_mirror": {
+                "paths": health_case["state_mirror_paths"],
+                "matches": mirror_match,
+                "data_sha256": _sha256(raw["data/neuralweb/theme_state.json"]),
+                "site_sha256": _sha256(raw["site/neuralwebdata/theme_state.json"]),
+            },
+            "stale_null_case": {
+                "theme_id": stale_case["theme_id"],
+                "leg_id": stale_case["leg_id"],
+                "observed": stale_observed,
+                "top_level_stale_legs": top_level_stale_legs,
+            },
+        },
         "published_path_consistency": {
             "status": _status(path_ok),
             "assertions": path_assertions,
@@ -439,21 +657,43 @@ def evaluate(
             "artifact_lane": published_lane,
             "served_card_lane": html_lane,
             "artifact_as_of": {
-                "theme_thesis": published_thesis.get("as_of"),
-                "foresight": foresight_payload.get("as_of") or foresight_payload.get("generated_at"),
-                "theme_state": state_payload.get("as_of") or state_payload.get("generated_at"),
+                "theme_thesis": thesis_payload.get("as_of"),
+                "foresight": foresight_payload.get("asof"),
+                "theme_state": site_state_payload.get("as_of"),
+                "theme_asymmetry": asymmetry_payload.get("as_of"),
             },
         },
         "authority_invariance": {
             "status": _status(authority_ok),
             "assertions": authority_assertions,
             "expected": authority_expected,
-            "source": {key: source_authority.get(key) for key in authority_expected},
-            "published": {key: published_authority.get(key) for key in authority_expected},
+            "source": {
+                key: authority_surfaces["source"].get(key) for key in authority_expected
+            },
+            "published": {
+                key: authority_surfaces["published"].get(key)
+                for key in authority_expected
+            },
+            "surfaces": {
+                surface_name: {key: surface.get(key) for key in authority_expected}
+                for surface_name, surface in authority_surfaces.items()
+            },
         },
     }
     failed_checks = [name for name, row in checks.items() if row["status"] != "PASS"]
-    product_verdict = "ACCEPTABLE_SOURCE_SEMANTICS" if not failed_checks else "REJECTED_CURRENT_SOURCE"
+    contract_gates = deepcopy(dict(cases.get("contract_gates") or {}))
+    resolved_states = {"ACCEPTED", "CLOSED", "RESOLVED"}
+    open_contract_gates = [
+        name
+        for name, gate in contract_gates.items()
+        if not isinstance(gate, dict) or str(gate.get("state")) not in resolved_states
+    ]
+    if failed_checks:
+        product_verdict = "REJECTED_CURRENT_SOURCE"
+    elif open_contract_gates:
+        product_verdict = "SOURCE_DEFECTS_CLEARED_CONTRACT_GATE_OPEN"
+    else:
+        product_verdict = "ACCEPTABLE_SOURCE_SEMANTICS"
 
     return {
         "schema": SCHEMA,
@@ -462,6 +702,8 @@ def evaluate(
         "inputs": inputs,
         "checks": checks,
         "failed_checks": failed_checks,
+        "contract_gates": contract_gates,
+        "open_contract_gates": open_contract_gates,
         "product_verdict": product_verdict,
         "release_state": "HOLD_FOR_LANE_A_AND_LAWFUL_RELEASE_OWNER",
         "production_proof": "NOT_PROVEN",
@@ -479,6 +721,9 @@ def _repaired_baseline_mutation() -> dict[str, Any]:
         "published_lane_override": "early",
         "html_lane_override": "early",
         "lane_overrides": {"clean_precipice_is_early": "early"},
+        "real_precipice_classifier_lane_override": "early",
+        "real_precipice_artifact_lane_override": "early",
+        "real_precipice_html_lane_override": "early",
     }
 
 
@@ -540,8 +785,8 @@ def run_mutation_suite(
         }
     )
 
-    mutation = {}
-    mutation["published_state_override"] = "ARMED"
+    mutation = _repaired_baseline_mutation()
+    mutation["published_state_override"] = "FIRED"
     result = evaluate(repo_root, subject, cases_path, mutation=mutation)
     rows.append(
         {
@@ -568,15 +813,82 @@ def run_mutation_suite(
     result = evaluate(repo_root, subject, cases_path, mutation=mutation)
     rows.append(
         {
-            "id": "clean_precipice_repair_discriminator",
-            "expected_effect": "the preregistered bounded semantic repair must clear all source checks",
+            "id": "known_defect_repair_candidate",
+            "expected_effect": (
+                "the bounded repair must clear known checks while remaining held on "
+                "Lane A's unresolved RE-RATING contract"
+            ),
             "observed_product_verdict": result["product_verdict"],
-            "killed": result["product_verdict"] == "ACCEPTABLE_SOURCE_SEMANTICS",
+            "observed_failed_checks": result["failed_checks"],
+            "killed": not result["failed_checks"]
+            and result["product_verdict"]
+            == "SOURCE_DEFECTS_CLEARED_CONTRACT_GATE_OPEN",
+        }
+    )
+
+    mutation = _repaired_baseline_mutation()
+    mutation.update(
+        {
+            "real_precipice_classifier_lane_override": "quiet",
+            "real_precipice_artifact_lane_override": "quiet",
+            "real_precipice_html_lane_override": "quiet",
+        }
+    )
+    result = evaluate(repo_root, subject, cases_path, mutation=mutation)
+    rows.append(
+        {
+            "id": "partial_precipice_repair_only",
+            "expected_effect": (
+                "a synthetic-only repair that leaves the real Medical Devices path quiet "
+                "must fail"
+            ),
+            "observed_status": result["checks"]["real_precipice_path"]["status"],
+            "killed": result["checks"]["real_precipice_path"]["status"] == "FAIL",
+        }
+    )
+
+    mutation = _repaired_baseline_mutation()
+    mutation["artifact_clock_overrides"] = {"foresight": {"asof": None}}
+    result = evaluate(repo_root, subject, cases_path, mutation=mutation)
+    rows.append(
+        {
+            "id": "foresight_asof_dropped",
+            "expected_effect": "dropping the source-native Foresight clock must fail health",
+            "observed_status": result["checks"]["artifact_health"]["status"],
+            "killed": result["checks"]["artifact_health"]["status"] == "FAIL",
+        }
+    )
+
+    mutation = _repaired_baseline_mutation()
+    mutation["stale_null_override"] = {
+        "stale": False,
+        "value": 0.0,
+        "band": "low",
+    }
+    result = evaluate(repo_root, subject, cases_path, mutation=mutation)
+    rows.append(
+        {
+            "id": "stale_null_coerced_to_low_zero",
+            "expected_effect": "stale/null evidence coerced to zero/low must fail health",
+            "observed_status": result["checks"]["artifact_health"]["status"],
+            "killed": result["checks"]["artifact_health"]["status"] == "FAIL",
+        }
+    )
+
+    mutation = _repaired_baseline_mutation()
+    mutation["state_mirror_match_override"] = False
+    result = evaluate(repo_root, subject, cases_path, mutation=mutation)
+    rows.append(
+        {
+            "id": "theme_state_mixed_generation",
+            "expected_effect": "mixed data/site ThemeState generations must fail health",
+            "observed_status": result["checks"]["artifact_health"]["status"],
+            "killed": result["checks"]["artifact_health"]["status"] == "FAIL",
         }
     )
 
     return {
-        "schema": "theme_intelligence.acceptance_mutations.v1",
+        "schema": "theme_intelligence.acceptance_mutations.v2",
         "operation_key": OPERATION_KEY,
         "subject": _resolve_subject(Path(repo_root).resolve(), subject)[0],
         "mutations": rows,
@@ -584,7 +896,6 @@ def run_mutation_suite(
         "n_killed": sum(1 for row in rows if row["killed"]),
         "status": "PASS" if all(row["killed"] for row in rows) else "FAIL",
     }
-
 
 def _write_json(path: Path | None, payload: Mapping[str, Any]) -> None:
     text = json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False) + "\n"

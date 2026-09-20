@@ -1,6 +1,67 @@
 {
   "browser_deployment_parity": "NOT_PROVEN",
   "checks": {
+    "artifact_health": {
+      "assertions": {
+        "clock.foresight.asof": true,
+        "clock.theme_asymmetry.as_of": true,
+        "clock.theme_asymmetry.generated_at": true,
+        "clock.theme_state.as_of": true,
+        "clock.theme_state.generated_at": true,
+        "clock.theme_thesis.as_of": true,
+        "clock.theme_thesis.generated_at": true,
+        "stale_legs.typed_nonempty": true,
+        "stale_null.band_preserved": true,
+        "stale_null.not_numeric_zero": true,
+        "stale_null.stale_preserved": true,
+        "stale_null.value_preserved": true,
+        "theme_state.data_site_bytes_match": true
+      },
+      "clocks": {
+        "foresight": {
+          "asof": "2026-09-18"
+        },
+        "theme_asymmetry": {
+          "as_of": "2026-09-18",
+          "generated_at": "2026-09-18T18:59:31Z"
+        },
+        "theme_state": {
+          "as_of": "2026-09-18",
+          "generated_at": "2026-09-18T18:59:30Z"
+        },
+        "theme_thesis": {
+          "as_of": "2026-09-18",
+          "generated_at": "2026-09-18T18:59:31Z"
+        }
+      },
+      "stale_null_case": {
+        "leg_id": "bottleneck_tightness",
+        "observed": {
+          "band": null,
+          "stale": true,
+          "value": null
+        },
+        "theme_id": "ag_fertilizer",
+        "top_level_stale_legs": [
+          "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
+          "divergence_log[defense_aerospace]: stale (as_of=2026-08-29)",
+          "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
+          "divergence_log[copper_steel_electrify]: stale (as_of=2026-09-12)",
+          "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
+          "finnhub_recs: parquet absent — per-member revision dispersion unavailable"
+        ]
+      },
+      "state_mirror": {
+        "data_sha256": "f70b5f420d0eee1a7c3994b0bda450a19070fe6e2d38066783360138f4529e3a",
+        "matches": true,
+        "paths": [
+          "data/neuralweb/theme_state.json",
+          "site/neuralwebdata/theme_state.json"
+        ],
+        "site_sha256": "f70b5f420d0eee1a7c3994b0bda450a19070fe6e2d38066783360138f4529e3a"
+      },
+      "status": "PASS"
+    },
     "authority_invariance": {
       "assertions": {
         "published.display_only": true,
@@ -16,7 +77,21 @@
         "source.may_gate": true,
         "source.may_rank": true,
         "source.may_size": true,
-        "source.not_a_signal": true
+        "source.not_a_signal": true,
+        "theme_asymmetry.display_only": true,
+        "theme_asymmetry.is_context_only": true,
+        "theme_asymmetry.may_escalate": true,
+        "theme_asymmetry.may_gate": true,
+        "theme_asymmetry.may_rank": true,
+        "theme_asymmetry.may_size": true,
+        "theme_asymmetry.not_a_signal": true,
+        "theme_state.display_only": true,
+        "theme_state.is_context_only": true,
+        "theme_state.may_escalate": true,
+        "theme_state.may_gate": true,
+        "theme_state.may_rank": true,
+        "theme_state.may_size": true,
+        "theme_state.not_a_signal": true
       },
       "expected": {
         "display_only": true,
@@ -45,7 +120,45 @@
         "may_size": false,
         "not_a_signal": true
       },
-      "status": "PASS"
+      "status": "PASS",
+      "surfaces": {
+        "published": {
+          "display_only": true,
+          "is_context_only": true,
+          "may_escalate": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "not_a_signal": true
+        },
+        "source": {
+          "display_only": true,
+          "is_context_only": true,
+          "may_escalate": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "not_a_signal": true
+        },
+        "theme_asymmetry": {
+          "display_only": true,
+          "is_context_only": true,
+          "may_escalate": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "not_a_signal": true
+        },
+        "theme_state": {
+          "display_only": true,
+          "is_context_only": true,
+          "may_escalate": false,
+          "may_gate": false,
+          "may_rank": false,
+          "may_size": false,
+          "not_a_signal": true
+        }
+      }
     },
     "lane_matrix": {
       "cases": [
@@ -160,7 +273,8 @@
     },
     "published_path_consistency": {
       "artifact_as_of": {
-        "foresight": null,
+        "foresight": "2026-09-18",
+        "theme_asymmetry": "2026-09-18",
         "theme_state": "2026-09-18",
         "theme_thesis": "2026-09-18"
       },
@@ -179,6 +293,40 @@
       "published_fired": true,
       "served_card_lane": "review",
       "status": "PASS"
+    },
+    "real_precipice_path": {
+      "actual": {
+        "any_fired": false,
+        "artifact_lane": "caution",
+        "classifier_lane": "caution",
+        "crowding_band": "med",
+        "divergence": null,
+        "foresight_stage_raw": "PRECIPICE (fingerprint)",
+        "served_card_lane": "caution",
+        "stage": "PRECIPICE",
+        "theme_state_stage_raw": "PRECIPICE (fingerprint)"
+      },
+      "assertions": {
+        "any_fired_matches_case": true,
+        "classifier_matches_expected_lane": false,
+        "classifier_matches_lane_artifact": true,
+        "crowding_band_matches_case": true,
+        "divergence_matches_case": true,
+        "foresight_and_state_stage_match": true,
+        "lane_artifact_matches_expected_lane": false,
+        "lane_artifact_matches_served_card": true,
+        "served_card_matches_expected_lane": false,
+        "stage_matches_case": true
+      },
+      "expected": {
+        "any_fired": false,
+        "crowding_band": "med",
+        "divergence": null,
+        "lane": "early",
+        "stage": "PRECIPICE"
+      },
+      "status": "FAIL",
+      "theme_id": "medical_devices"
     },
     "watch_invalidation": {
       "actual_fired": true,
@@ -205,9 +353,18 @@
       "transition_contract_present": false
     }
   },
+  "contract_gates": {
+    "rerating_lane_interpretation": {
+      "fixture_expected_lane": "working",
+      "owner_semantics": "late; await dislocation; do not chase",
+      "question": "Does working describe thesis health only, or does it also communicate entry posture? An accepted contract must preserve late/extended posture and cannot grant member entry permission.",
+      "state": "LANE_A_ADJUDICATION_REQUIRED"
+    }
+  },
   "failed_checks": [
     "watch_invalidation",
-    "lane_matrix"
+    "lane_matrix",
+    "real_precipice_path"
   ],
   "inputs": {
     "config/theme_thesis_registry.yml": {
@@ -242,6 +399,16 @@
       "git_blob": "ec7837bcd91a8e1b990e9a687abb513a326cac0d",
       "sha256": "5813a41f79eac91ad4b21f2f9955bbeb5dedcc35f139a4a0dfe11bd51ffe410b"
     },
+    "site/neuralwebdata/theme_asymmetry.json": {
+      "bytes": 75764,
+      "git_blob": "9f55da5cf4d6689f5bac9a02870532c2b567f38c",
+      "sha256": "ad1711f095391057bc87f79ee80625cba2e40b429551af464727eff96097d522"
+    },
+    "site/neuralwebdata/theme_state.json": {
+      "bytes": 38888,
+      "git_blob": "f1a889c726d66d05a876b135f56afc5cd9dacdb6",
+      "sha256": "f70b5f420d0eee1a7c3994b0bda450a19070fe6e2d38066783360138f4529e3a"
+    },
     "site/neuralwebdata/theme_thesis.json": {
       "bytes": 88323,
       "git_blob": "f00b2b3b808706a26e69c31a8667aff94bd6d15e",
@@ -253,12 +420,15 @@
       "sha256": "b3ca241a9242ca169502e8bbf9e2965cf63cae401b27ea811ed12fcaf72ca3ce"
     }
   },
+  "open_contract_gates": [
+    "rerating_lane_interpretation"
+  ],
   "operation_key": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
   "product_verdict": "REJECTED_CURRENT_SOURCE",
   "production_proof": "NOT_PROVEN",
   "prospective_outcomes": "UNKNOWN_NOT_MATURED",
   "release_state": "HOLD_FOR_LANE_A_AND_LAWFUL_RELEASE_OWNER",
-  "schema": "theme_intelligence.acceptance_result.v1",
+  "schema": "theme_intelligence.acceptance_result.v2",
   "subject": {
     "commit": "68f80a8edf78966a3a89e1294038654944e9c217",
     "tree": "43d6f5a79c1c5654abd3380951f0c11072d2b83b"

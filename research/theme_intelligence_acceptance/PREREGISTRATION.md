@@ -23,6 +23,8 @@ The source subject above is the only input generation for the first vertical. Th
 - `config/theme_thesis_registry.yml`
 - `site/basketdata/foresight_cascade.json`
 - `site/neuralwebdata/theme_thesis.json`
+- `site/neuralwebdata/theme_state.json`
+- `site/neuralwebdata/theme_asymmetry.json`
 - `site/basketdata/theme_lanes.json`
 - `site/state_of_themes.html`
 - `data/neuralweb/theme_state.json`
@@ -102,7 +104,11 @@ The acceptance specification must kill at least these false-green mutations:
 3. allow fired falsifiers to lose priority to an early label;
 4. ignore independently high crowding on PRECIPICE;
 5. count a published artifact/card mismatch as acceptable;
-6. allow any rank/gate/size/escalate authority flag to become true.
+6. allow any rank/gate/size/escalate authority flag to become true;
+7. repair only the synthetic PRECIPICE row while the real Medical Devices path falls to quiet;
+8. drop the Foresight `asof` clock while calling artifact health complete;
+9. coerce a stale/null leg to numeric zero and a low-risk band;
+10. accept mixed `data/` and served `site/` ThemeState generations.
 
 The mutation run operates on evaluator inputs or temporary source copies only. It never edits A–E production files or commits generated product data.
 
@@ -113,3 +119,29 @@ The mutation run operates on evaluator inputs or temporary source copies only. I
 - Lane A coordinates repair disposition and shared-contract integration.
 - The lawful source/release owner decides merge, deployment, browser proof, and product acceptance.
 - Unknown or unmatured prospective outcomes remain unknown.
+
+## 9. Independent-review hardening amendment — 2026-09-20
+
+**Review-hardening procedure pin:** Mastermind `b75a491db408892dfe6fe7c4bb9d40cfad8efcb3`
+**Fit/search change:** none (`0 / 0` remains controlling)
+
+External review found that the original synthetic clean-PRECIPICE row could be
+false-greened without proving the real renderer path. This structural amendment does
+not change the frozen subject, inspect outcomes, tune a threshold, or authorize a
+production repair. It adds two immutable served-owner inputs and requires the real
+Medical Devices observation (`PRECIPICE`, no fired falsifier, medium crowding, no
+divergence) to traverse production classifier → lane artifact → served card. A repair
+that merely removes PRECIPICE from the caution branch but leaves this real case quiet
+is rejected.
+
+The active stale/partial row is now executable rather than prose-only: raw `asof`,
+`as_of`, and `generated_at` fields stay distinct and typed; the `data/` and served
+`site/` ThemeState copies must be byte-identical; and an actual stale/null asymmetry
+leg must remain stale/null rather than zero or confirmation.
+
+The existing `RE-RATING → working` matrix row remains frozen as a fixture, but the
+shared product interpretation is explicitly `LANE_A_ADJUDICATION_REQUIRED`: the
+incumbent Foresight owner also describes RE-RATING as late / await dislocation / do
+not chase. Until Lane A and the semantic owner decide whether “working” means thesis
+health only and preserve a separate entry posture, a repaired in-memory candidate may
+clear the two known defects but may not be labeled fully acceptable source semantics.

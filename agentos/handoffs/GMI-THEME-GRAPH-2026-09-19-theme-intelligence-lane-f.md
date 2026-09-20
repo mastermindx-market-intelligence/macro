@@ -4,149 +4,149 @@ session: web/theme-intelligence-f-evaluation-and-independent-acceptance-20260919
 model: sol
 ended_because: ci_handoff
 mission: >
-  Build the disjoint Lane F incident and adversarial acceptance harness, freeze its
-  evaluation registration before implementation, reproduce the two current semantic
-  defects from immutable real-path source/artifact bytes, and return exact evidence to
-  Lane A without editing A-E production sources or self-authorizing release.
+  Build and independently harden the disjoint Lane F incident/adversarial acceptance
+  harness, reproduce the two current Theme Intelligence semantic defects from one
+  immutable production generation, verify returned sibling exact heads, and return
+  compact evidence to Lane A without editing A-E production sources or self-authorizing
+  release.
 state_before: >
-  The Chairman-delivered Lane F packet was prepared but unassigned. Protected Macro
-  source had the PRECIPICE-to-caution classifier and the ai_semi_f2 current-WATCH
-  false-invalidation path; no Lane F branch, PR, harness, registration, or execution
-  receipt existed. A-C had live dirty worktrees; E appeared later; no sibling had
-  returned a remote exact head for independent acceptance.
+  PR #7453 head b0129d26307f54e1cfd6cf88c3115c3e0393a806 had the first evaluator and Lane C
+  exact-head rejection, but independent review proved its clean-PRECIPICE check could
+  false-green a synthetic fixture without traversing the real Medical Devices renderer
+  inputs. It also omitted active stale/null artifact-health enforcement, mislabeled a
+  frozen-subject receipt as current-main, and could call a repaired candidate acceptable
+  while Lane A's RE-RATING interpretation remained unresolved.
 changed:
   - path: research/theme_intelligence_acceptance/PREREGISTRATION.md
-    what: "Frozen the zero-fit source-acceptance design, metrics separation, false-alert budget, mandatory discriminators, and release boundaries before implementation."
+    what: "Preserved the zero-fit freeze and added the independent-review hardening amendment: real Medical Devices path, native clocks, stale/null preservation, mixed-generation refusal, and the open RE-RATING contract gate."
   - path: research/theme_intelligence_acceptance/incident_cases.v1.json
-    what: "Registered the WATCH/invalidation case, ten-case mixed-state lane matrix, and authority expectations."
+    what: "Added the immutable Medical Devices PRECIPICE case, artifact-health cases, and explicit Lane A RE-RATING adjudication gate while preserving the original ten-case priority matrix."
   - path: research/theme_intelligence_acceptance/harness.py
-    what: "Implemented immutable Git-subject loading, real production-function invocation, input-to-served-card checks, authority checks, deterministic receipts, and mutation execution."
+    what: "Expanded the evaluator to ten immutable inputs, the actual ThemeState/asymmetry renderer path, typed clock and stale/null checks, data/site generation equality, eleven discriminators, cached immutable Git reads, and a contract-held repair-candidate verdict."
   - path: research/theme_intelligence_acceptance/acceptance_spec.py
-    what: "Implemented the executable specification and seven adversarial/positive discriminators without creating a dark pytest suite or shared CI edit."
-  - path: research/theme_intelligence_acceptance/current_main_result.json
-    what: "Recorded the deterministic frozen-source verdict and exact input manifests."
+    what: "Upgraded the executable specification to require the real Medical Devices failure, artifact-health PASS, ten-input manifest, three failed checks representing two defects, eleven killed mutations, and an unresolved RE-RATING gate."
+  - path: research/theme_intelligence_acceptance/frozen_subject_result.json
+    what: "Renamed the misleading current-main receipt and recorded the deterministic v2 frozen-subject rejection with exact real-path and artifact-health evidence."
   - path: research/theme_intelligence_acceptance/mutation_results.json
-    what: "Recorded seven of seven mutations/discriminators killed."
+    what: "Recorded eleven of eleven false-green mutations/discriminators killed."
   - path: research/theme_intelligence_acceptance/acceptance_spec_result.json
-    what: "Recorded the executable-specification PASS receipt."
+    what: "Recorded the v2 executable-specification PASS receipt and open contract gate."
   - path: research/theme_intelligence_acceptance/lane_c_cases.v1.json
-    what: "Froze Lane C exact-head identity, positive controls, repair blockers, dark-test paths, and authority expectations."
+    what: "Preserved the previously frozen Lane C exact-head controls and blockers."
   - path: research/theme_intelligence_acceptance/lane_c_acceptance.py
-    what: "Implemented read-only exact-head checks for Lane C source behavior, shared-consumer health, repository admission, provenance, and regression suites."
+    what: "Preserved the read-only Lane C exact-head evaluator."
   - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
-    what: "Recorded the byte-reproducible Lane C REJECTED_FOR_REPAIR receipt."
+    what: "Preserved the Lane C REJECTED_FOR_REPAIR receipt."
   - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
-    what: "Returned Lane C positive evidence, eight repair blockers, remaining gates, and exact repair-and-return requirements to Lane A."
+    what: "Preserved the Lane C repair return to Lane A."
   - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-19-theme-intelligence-lane-f.md
-    what: "Returned Lane F state and exact gates to Lane A."
+    what: "Replaced the stale seven-mutation checkpoint with this review-hardened Lane F return."
 verified:
-  - claim: "The preregistration was committed before evaluator implementation."
-    command: "git log --oneline 68f80a8edf78966a3a89e1294038654944e9c217..800cdcfe159a4deb0eac109420b0878eeadf45f8"
-    result: "PASS: preregistration 7e3b2353e73494cbb23412b16e6edb1ac546667a precedes implementation 800cdcfe159a4deb0eac109420b0878eeadf45f8."
-  - claim: "The evaluator reads the real production functions and eight immutable source/artifact/card inputs from one Git subject."
+  - claim: "Protected procedure was refreshed before modification."
+    command: "Read Mastermind protected master docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, and REVIEW_RETURN from b75a491db408892dfe6fe7c4bb9d40cfad8efcb3."
+    result: "PASS: mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap-major 1; all procedure reads came from the same protected commit."
+  - claim: "The review-hardening assertions were proven RED before implementation."
+    command: "python3 research/theme_intelligence_acceptance/acceptance_spec.py after cases/spec amendment and before harness amendment"
+    result: "EXPECTED RED: exit 1; baseline still exposed only watch_invalidation and lane_matrix, so the required real_precipice_path check was absent."
+  - claim: "The v2 executable specification passes against the immutable frozen subject."
     command: "python3 research/theme_intelligence_acceptance/acceptance_spec.py"
-    result: "PASS: subject 68f80a8edf78966a3a89e1294038654944e9c217; eight input blob/SHA-256 manifests; checkout production modules byte-match the subject."
-  - claim: "Current source is rejected on exactly the two preregistered semantic defects."
-    command: "jq '{failed_checks,product_verdict,checks}' research/theme_intelligence_acceptance/current_main_result.json"
-    result: "PASS: REJECTED_CURRENT_SOURCE; WATCH without transition evidence fired ai_semi_f2, and clean PRECIPICE alone mapped to caution; 9/10 remaining lane cases pass."
-  - claim: "The current real path reproduces from Foresight input through production semantics, shared artifacts, and the served card."
-    command: "jq '.checks.published_path_consistency' research/theme_intelligence_acceptance/current_main_result.json"
-    result: "PASS: WATCH -> FIRED -> review in production result, theme_thesis projection, theme_lanes projection, classifier, and committed state_of_themes card. This is committed-byte proof, not deployed-browser proof."
-  - claim: "Authority remained context/display only."
-    command: "jq '.checks.authority_invariance' research/theme_intelligence_acceptance/current_main_result.json"
-    result: "PASS: source and published may_rank/may_gate/may_size/may_escalate remain false."
-  - claim: "The adversarial harness discriminates false greens and the bounded intended repair."
+    result: "PASS: REJECTED_CURRENT_SOURCE; three failed checks map to two defects; artifact health passes; 11/11 mutations killed; RE-RATING remains LANE_A_ADJUDICATION_REQUIRED."
+  - claim: "The evaluator now reads ten exact Git-object inputs and the renderer's actual state/asymmetry path."
+    command: "jq '{inputs:(.inputs|keys),real_precipice:.checks.real_precipice_path,artifact_health:.checks.artifact_health}' research/theme_intelligence_acceptance/frozen_subject_result.json"
+    result: "PASS: data and served ThemeState bytes match; Medical Devices is PRECIPICE, no fired falsifier, crowding=med, divergence=null, and production classifier/artifact/card all consistently but incorrectly emit caution instead of early."
+  - claim: "Native clocks and typed stale/null evidence are enforced."
+    command: "jq '.checks.artifact_health' research/theme_intelligence_acceptance/frozen_subject_result.json"
+    result: "PASS: Foresight asof, ThemeState/thesis/asymmetry as_of+generated_at, typed stale_legs, and ag_fertilizer stale/null bottleneck leg are preserved; null is not numeric zero."
+  - claim: "The mutation suite kills synthetic-only repair, clock loss, null coercion, and mixed generations in addition to the original attacks."
     command: "python3 research/theme_intelligence_acceptance/harness.py --mutations"
-    result: "PASS: 7/7 discriminated, including missing transition basis, fired/crowding priority removal, artifact/card mismatch, published state/fired mismatch, authority escalation, and clean-PRECIPICE repair."
-  - claim: "Committed result artifacts reproduce byte-for-byte."
-    command: "Regenerate all three receipts to a temporary directory and cmp each against the committed file."
-    result: "PASS; SHA-256 current_main=db260d359455d08ae72f69573770196b8a435154f83f6165f51cf765e5744a12, mutations=33338c39d337388ca704922b98dd684963b58239fcd48f3c53ac85fa441d4cc4, spec=055106eba35f3ee49818282c514438fdd2c9ca9741a2664cad02d381f1fb113c."
-  - claim: "The product-pass gate fails honestly on the rejected subject while harness execution itself succeeds."
+    result: "PASS: 11/11 killed; the full known-defect repair candidate clears source checks but remains SOURCE_DEFECTS_CLEARED_CONTRACT_GATE_OPEN."
+  - claim: "Committed receipts reproduce byte-for-byte."
+    command: "Regenerate frozen subject, mutations, and executable-spec receipts to /tmp and cmp each against the committed file."
+    result: "PASS: SHA-256 frozen_subject=b560a710ffef04065a7929bc62389b35636e1afddce3ea3869c693b78369784c, mutations=d4e6e7f887fd343ecd26fe4b1d53fe625bfcc5c76e91c7fd5461c3925201cc21, spec=8f22890429420c24380b00f1e1112fa019e168993be109a5c6db2079a7aff79c."
+  - claim: "The product-pass gate still rejects the frozen source."
     command: "python3 research/theme_intelligence_acceptance/harness.py --require-product-pass"
-    result: "PASS: exit 1 as intended for REJECTED_CURRENT_SOURCE."
-  - claim: "No new unregistered multiple-testing harness or dark test suite was introduced."
+    result: "PASS: exit 1 as required; evaluator success is not product acceptance."
+  - claim: "No parallel testing/control plane or dark suite was introduced."
     command: "python3 scripts/check_trial_registration.py && python3 scripts/audit_unrun_tests.py"
-    result: "PASS: no new unregistered harness; unrun-test census exits 0. Lane A still owns the one shared CI-wiring decision."
-  - claim: "The carrier changes no production source or generated product data."
-    command: "git diff --name-only 68f80a8edf78966a3a89e1294038654944e9c217..800cdcfe159a4deb0eac109420b0878eeadf45f8"
-    result: "PASS: only research/theme_intelligence_acceptance paths."
-  - claim: "Lane C exact head was independently checked and rejected for repair without touching its source carrier."
-    command: "python3 research/theme_intelligence_acceptance/lane_c_acceptance.py --candidate-root <detached-48156a43-checkout> --run-suites"
-    result: "PASS as evaluator: seven positive controls reproduced; eight preregistered repair blockers reproduced; candidate verdict REJECTED_FOR_REPAIR; receipt SHA-256 a3079a57207ae310e886fda10633b2ebd24c1336c022e892b19590e27898c871."
+    result: "PASS: no new unregistered multiple-testing harness and zero strictly dark suites; inherited stale-baseline warnings remain outside this lane."
+  - claim: "Changed Python and repository diff are syntactically clean."
+    command: "python3 -m compileall -q research/theme_intelligence_acceptance && git diff --check"
+    result: "PASS."
+  - claim: "The carrier still changes no A-E production source or generated product data."
+    command: "git diff --name-only b0129d26307f54e1cfd6cf88c3115c3e0393a806"
+    result: "PASS: only Lane F research/evidence plus this Agent OS handoff; current_main_result is renamed, not replaced by a second result plane."
+  - claim: "Lane C exact head remains independently rejected without source-carrier mutation."
+    command: "Inspect preserved lane_c_exact_head_result.json and LANE_C_EXACT_HEAD_ASSESSMENT.md."
+    result: "PASS as continuity: exact head 48156a43dfe0166ab658a99625f5b72dbd029eb4 remains REJECTED_FOR_REPAIR on eight blockers."
 unverified:
+  - claim: "The review-hardened final PR head has an independent external code-review PASS."
+    what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
+  - claim: "Hosted CI executes the Lane F package command."
+    what_would_verify: "Lane A or the incumbent CI owner admits one coordinated package-level wiring change and a hosted run proves the pushed exact head."
   - claim: "A, B, D, and E returned implementations satisfy the full mandatory discriminator matrix."
-    what_would_verify: "Each remaining sibling must return a pushed exact head; Lane F must run exact-head real-path and mutation checks on that head."
-  - claim: "The evaluator implementation has an independent external code-review PASS."
-    what_would_verify: "A read-only reviewer must review the final exact head; current evidence is executable specification plus adversarial self-tests, not independent reviewer identity."
-  - claim: "Hosted CI executes the Lane F command."
-    what_would_verify: "Lane A/incumbent CI owner admits one package-level wiring change and a hosted run tests the exact head."
-  - claim: "The source repair is merged, deployed, or correct in the live browser."
-    what_would_verify: "Lawful merge, natural publication, served-byte/browser proof, and independent acceptance after repair."
+    what_would_verify: "Each sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks."
+  - claim: "The two production defects are repaired, merged, published, or correct in a deployed browser."
+    what_would_verify: "Incumbent source-owner repair, exact-head acceptance, lawful merge, natural publication, served-byte/browser proof, and Lane A release adjudication."
   - claim: "Prospective detection or return outcomes are mature."
-    what_would_verify: "Forward accrual under the preregistered clocks and existing Evaluation/promotion owner."
+    what_would_verify: "Forward accrual under preregistered clocks and the existing Evaluation/promotion owner."
 unresolved:
-  - "PR #7453 remains Draft/HOLD and must not be readied or merged by Lane F."
-  - "Current frozen subject verdict is REJECTED_CURRENT_SOURCE; repair disposition belongs to Lane A and incumbent source owners."
-  - "Lane C exact head 48156a43dfe0166ab658a99625f5b72dbd029eb4 is REJECTED_FOR_REPAIR on eight blockers; its positive computation tests do not authorize merge."
-  - "Full mandatory discriminator coverage remains NOT_YET_PROVEN for A, B, D, and E and for Lane C correction/history, evidence-family, corporate-action, deployed-byte, and prospective gates."
-  - "Hosted CI wiring and independent external review remain open gates."
+  - "PR #7453 remains Draft/HOLD; Lane F does not Ready, merge, deploy, or self-accept it."
+  - "Frozen subject 68f80a8edf78966a3a89e1294038654944e9c217 remains REJECTED_CURRENT_SOURCE on two defects represented by three checks."
+  - "RE-RATING lane interpretation remains LANE_A_ADJUDICATION_REQUIRED; a clean mutation candidate is held rather than labeled acceptable."
+  - "Lane C exact head remains REJECTED_FOR_REPAIR; A, B, D, and E remain NOT_YET_PROVEN."
+  - "Hosted CI, independent review of the repaired exact head, deployment, browser proof, and prospective outcomes remain separate gates."
 next_actions:
-  - "Lane A: consume PR #7453 and its four exact receipts; route the two current-source defects and Lane C's eight repair blockers through existing owners without copying Lane F into production."
-  - "Lane C/incumbent source owner: repair stale reclaim and shared-consumer health, return a valid clean handoff, and commit exact real-price manifest/result bytes; then request exact-head reacceptance."
-  - "Lane A/incumbent CI owner: add or decline the single package-level command wiring; do not create six competing manifest edits."
-  - "Lane F successor: when each A-E remote exact head exists, re-pin it, run the relevant mandatory discriminators and real input -> producer -> shared consumer -> served route checks, and return accepted/rejected/not-proven per lane."
-  - "Lawful reviewer: independently review the final Lane F exact head before any merge adjudication."
+  - "Lane A: consume the v2 receipts and adjudicate whether RE-RATING 'working' means thesis health only; preserve a separate late/extended entry posture and no entry permission."
+  - "Incumbent production owners: repair temporal stage-regression evidence and PRECIPICE classification on their own carriers; return pushed exact heads for reacceptance."
+  - "Lawful independent reviewer: review the final pushed PR #7453 head, including the real Medical Devices and artifact-health discriminators."
+  - "Lane A/incumbent CI owner: add or decline one package-level command wiring; do not create six competing CI edits."
+  - "Lane F successor: re-pin each returned A-E head, run applicable mandatory discriminators, and report accepted/rejected/not-proven separately."
 do_not_redo:
   - "Do not rerun or reinterpret held #7064/#7095 as expected-return evidence."
   - "Do not edit A-E production sources from this evaluator carrier."
   - "Do not replace GMI, ThemeState, MarketOntology, Evaluation, forward graders, or existing ledgers with a reviewer-built store or engine."
-  - "Do not convert REJECTED_CURRENT_SOURCE into a claim that the harness failed; the explicit product-pass gate is supposed to exit 1."
+  - "Do not restore the misleading current_main_result filename; this receipt evaluates a frozen subject."
+  - "Do not convert REJECTED_CURRENT_SOURCE or the product-gate exit 1 into a harness failure."
   - "Do not claim deployment, browser parity, prospective edge, merge, or acceptance from committed-byte reproduction."
 danger_areas:
-  - "A repair that merely returns ARMED for WATCH but still lacks temporal transition evidence is a false green and is killed by the harness."
-  - "A clean-PRECIPICE repair must preserve fired-falsifier and independently high-crowding priority."
-  - "Repeated renders must not be counted as distinct observations when later lanes add first-seen history."
-  - "A shared artifact/card mismatch or any authority escalation must remain release-blocking."
+  - "A repair that returns ARMED for WATCH without distinct prior-stage evidence remains a false green."
+  - "A synthetic-only PRECIPICE repair can leave the real medium-crowding/no-divergence Medical Devices path quiet; the v2 harness kills that mutation."
+  - "Foresight uses source-native asof; dropping it or collapsing clocks is release-blocking."
+  - "Stale/null evidence must not become zero/low/confirmation, and data/site ThemeState generations must not diverge."
+  - "A shared artifact/card mismatch or any authority escalation remains release-blocking."
 ---
 
-# Theme Intelligence Lane F — Evaluation and Independent Acceptance return
+# Theme Intelligence Lane F — review-hardened return
 
 ## Lifecycle and carrier
 
-- Delivery: Chairman supplied the Lane F packet to this concrete Web CEO session.
-- Pickup: complete.
-- START: exact Macro base `68f80a8edf78966a3a89e1294038654944e9c217` / tree `43d6f5a79c1c5654abd3380951f0c11072d2b83b`.
-- Preregistration freeze: `7e3b2353e73494cbb23412b16e6edb1ac546667a` / tree `dd564a8e185b65afe2d81e59f37d71372b797679`.
-- Implementation: `800cdcfe159a4deb0eac109420b0878eeadf45f8` / tree `92e01f6c394f5a90832518a420319b0794e112b8`.
-- Shared carrier: Draft/HOLD PR #7453.
-- Merge: not performed.
-- Deployment/publication: not performed.
-- Browser proof: not performed.
-- Product acceptance: current subject rejected; Lane C exact head rejected for repair; A, B, D, and E not yet proven.
+- Delivery and pickup: complete under the Chairman's live assignment.
+- Original frozen source: Macro `68f80a8edf78966a3a89e1294038654944e9c217` / tree `43d6f5a79c1c5654abd3380951f0c11072d2b83b`.
+- Preregistration freeze: `7e3b2353e73494cbb23412b16e6edb1ac546667a`.
+- Review-hardening pickup head: `b0129d26307f54e1cfd6cf88c3115c3e0393a806` / tree `dc18742f186ca812c64d7d1529c30180c25e04f7`.
+- Shared carrier: Draft/HOLD Macro PR #7453.
+- Merge, deployment, publication, browser proof, and product acceptance: not performed.
 
 ## Capability delta
 
-Lane F now has a deterministic, source-independent acceptance capability that binds immutable Git subjects, calls real production functions, verifies committed input/artifact/card bytes, and separates evaluator success from product acceptance. It emits reproducible evidence for the current semantic incident and for returned sibling exact heads while preserving all production and authority boundaries.
+Lane F now binds the two known defects to real production functions and the actual renderer inputs, not only a copied or synthetic matrix. The evaluator reads ten immutable Git-object inputs, proves the AI Semiconductors WATCH false invalidation, proves Medical Devices traverses `PRECIPICE + no fired falsifier + medium crowding + no divergence` to the incorrect `caution` card, preserves native clocks and typed stale/null evidence, refuses mixed ThemeState generations, and kills eleven false-green mutations.
+
+The executable evaluator is accepted as a bounded research capability. The product source is not accepted.
 
 ## Current exact verdict
 
-The frozen subject is internally reproducible but semantically rejected:
+The frozen subject remains `REJECTED_CURRENT_SOURCE`:
 
-1. `ai_semi_f2` fires on current `WATCH` even though the check has no prior-stage/history input proving degradation from `RE-RATING`.
-2. clean `PRECIPICE` maps to `caution`; the other nine preregistered lane-priority cases pass.
-3. the real published path consistently carries the first defect through `theme_thesis`, `theme_lanes`, and the committed `state_of_themes.html` card as `review`.
-4. rank/gate/size/escalate authority remains false.
+1. `ai_semi_f2` fires from current `WATCH` without prior-stage/transition evidence.
+2. clean `PRECIPICE` is forced to `caution` in the closed matrix.
+3. the actual Medical Devices classifier, lane artifact, and served card consistently reproduce that same defect as `caution` rather than `early`.
 
-This proves the incident and the evaluator, not a production repair or predictive edge.
+Artifact health and all authority invariants pass. A fully repaired in-memory candidate clears the known checks but remains `SOURCE_DEFECTS_CLEARED_CONTRACT_GATE_OPEN` until Lane A resolves the RE-RATING product interpretation.
 
 ## Return to Lane A
 
-Lane A should use PR #7453 as the Lane F evidence carrier, reconcile the two repair findings with its own source ownership, and retain the current holds until exact-head checks, one coordinated CI admission, external review, lawful merge/publication, and browser proof are complete. Lane F should resume exact-head acceptance as sibling carriers return; no sibling had a pushed exact head at this checkpoint.
+Use PR #7453 as Lane F's single evidence carrier. Route the two production repairs through incumbent owners, adjudicate RE-RATING without collapsing thesis health into entry permission, obtain one coordinated CI admission and a fresh independent review of the pushed exact head, and retain Draft/HOLD until all separate release gates are proven.
 
-## Lane C exact-head return
+## Lane C continuity
 
-Lane C returned exact head `48156a43dfe0166ab658a99625f5b72dbd029eb4` / tree `22f65ea49693890b40f7d2fcfd2fc10d7c2bf1a2`. Lane F reproduced its positive bounded computation evidence—102/3, 44/3, and 20-test suites, parent/subtheme separation, and all-false permissions—but rejected the head for repair.
-
-The exact blockers are stale reclaim evidence, missing stale/unavailable health propagation into ThemeState, three dark new test suites, an Agent OS-unparseable handoff, eight diff-check failures, and a non-reproducible 47-record real-price proof. Correction-safe first-seen history, repeat-render identity, duplicate evidence-family identity, corporate-action correctness, deployed/browser parity, and prospective outcomes remain not proven.
-
-Machine receipt: `research/theme_intelligence_acceptance/lane_c_exact_head_result.json` (SHA-256 `a3079a57207ae310e886fda10633b2ebd24c1336c022e892b19590e27898c871`). Lane C must return a repaired exact head before reacceptance; Lane A retains integration and CI coordination.
+Lane C exact head `48156a43dfe0166ab658a99625f5b72dbd029eb4` remains `REJECTED_FOR_REPAIR`. Its previously reproduced positive controls and eight blockers are unchanged; correction/history, duplicate-family, corporate-action, deployed-byte, and prospective gates remain not proven.

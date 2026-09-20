@@ -41,16 +41,41 @@
       "observed_status": "FAIL"
     },
     {
-      "expected_effect": "the preregistered bounded semantic repair must clear all source checks",
-      "id": "clean_precipice_repair_discriminator",
+      "expected_effect": "the bounded repair must clear known checks while remaining held on Lane A's unresolved RE-RATING contract",
+      "id": "known_defect_repair_candidate",
       "killed": true,
-      "observed_product_verdict": "ACCEPTABLE_SOURCE_SEMANTICS"
+      "observed_failed_checks": [],
+      "observed_product_verdict": "SOURCE_DEFECTS_CLEARED_CONTRACT_GATE_OPEN"
+    },
+    {
+      "expected_effect": "a synthetic-only repair that leaves the real Medical Devices path quiet must fail",
+      "id": "partial_precipice_repair_only",
+      "killed": true,
+      "observed_status": "FAIL"
+    },
+    {
+      "expected_effect": "dropping the source-native Foresight clock must fail health",
+      "id": "foresight_asof_dropped",
+      "killed": true,
+      "observed_status": "FAIL"
+    },
+    {
+      "expected_effect": "stale/null evidence coerced to zero/low must fail health",
+      "id": "stale_null_coerced_to_low_zero",
+      "killed": true,
+      "observed_status": "FAIL"
+    },
+    {
+      "expected_effect": "mixed data/site ThemeState generations must fail health",
+      "id": "theme_state_mixed_generation",
+      "killed": true,
+      "observed_status": "FAIL"
     }
   ],
-  "n_killed": 7,
-  "n_mutations": 7,
+  "n_killed": 11,
+  "n_mutations": 11,
   "operation_key": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
-  "schema": "theme_intelligence.acceptance_mutations.v1",
+  "schema": "theme_intelligence.acceptance_mutations.v2",
   "status": "PASS",
   "subject": "68f80a8edf78966a3a89e1294038654944e9c217"
 }
