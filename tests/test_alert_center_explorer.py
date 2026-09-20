@@ -224,3 +224,79 @@ def test_unknown_recency_never_impersonates_a_current_review_first_alert():
     row = signal('unknown-age')
     row.update({'tier': 'act', 'priority': 100, 'age_days': None, 'board_date': None})
     assert project([row])['briefs'][row['alert_id']]['attention'] == 'earlier_priority'
+
+
+
+def test_fresh_watch_families_get_source_bound_decision_briefs_without_new_authority():
+    rows = []
+    commodity = signal('commodity-watch', source='commodity', type_='price_shock', asset='oil')
+    commodity.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'Oil 95.47 $/bbl — the acute move is settling.',
+        'detail_zh': '原油 95.47 美元/桶 — 剧烈波动正在平息。',
+        'link': 'commodities.html#timeline', 'fire_count': 2,
+        'validation': {'verdict': 'documented', 'note': 'Not separately backtested as a timing signal.'},
+    })
+    allocation = signal('allocation-watch', source='vector', type_='allocation_change', asset='vector')
+    allocation.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'Optimal strategy moved 41% → 43% BTC (momentum × risk grid).',
+        'detail_zh': '最优策略从 41% 调整为 43% BTC（动量 × 风险网格）。',
+        'edge': 'Strategy output — beat buy-and-hold in backtest.',
+        'link': 'vector.html#allocation', 'fire_count': 7,
+        'validation': {'verdict': 'calibrated', 'note': 'Strategy output — beat buy-and-hold in backtest.'},
+    })
+    convergence = signal('convergence-watch', source='altdata', type_='convergence', asset='EXE')
+    convergence.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'EXE lit up by 2 independent alt-data channels: Material 8-K cluster, Special situation.',
+        'detail_zh': 'EXE 被 2 个独立替代数据渠道同时触发：重大8-K集群、特殊事件。',
+        'link': 'alt_data.html#convergence', 'fire_count': 2,
+        'validation': {'verdict': 'documented', 'note': 'Not separately backtested as a timing signal.'},
+    })
+    rotation = signal('rotation-watch', source='rotation', type_='rotation_emerging', asset='consumerfarmdirect')
+    rotation.update({
+        'tier': 'watch', 'age_days': 1, 'priority': 48,
+        'detail': 'Farm-Direct just turned improving & accelerating (1W +1.7%, 1M -4.3%, 3M -3.8%; accel +2.0). An early rotate-in candidate — context, not a buy list.',
+        'detail_zh': 'Farm-Direct 刚转为改善且加速（1周 +1.7%，1月 -4.3%，3月 -3.8%；加速 +2.0）。早期轮入候选 — 仅作参考，非买入清单。',
+        'link': 'subsector_rotation.html#rotation-app', 'fire_count': 2,
+        'validation': {'verdict': 'documented', 'note': 'Not separately backtested as a timing signal.'},
+    })
+    rows.extend((commodity, allocation, convergence, rotation))
+    before = deepcopy(rows)
+    result = project(rows)
+    assert rows == before
+    briefs = [result['briefs'][row['alert_id']] for row in rows]
+    assert [brief['family'] for brief in briefs] == [
+        'commodity.price_shock', 'vector.allocation_change',
+        'altdata.convergence', 'rotation.rotation_emerging']
+    assert all(brief['status'] == 'supported' for brief in briefs)
+    assert all(brief['attention'] == 'watch_next' for brief in briefs)
+    assert [brief['next_action_label'] for brief in briefs] == [
+        'Recheck oil', 'Open allocation', 'Inspect channels', 'Check rotation']
+    assert 'does not establish direction' in briefs[0]['limitation']
+    assert 'historical backtest' in briefs[1]['limitation']
+    assert 'channel count is not a probability' in briefs[2]['limitation']
+    assert 'not a buy list' in briefs[3]['limitation']
+    assert all(brief['evidence_scope'] == 'current_panel_not_historical_archive' for brief in briefs)
+
+
+def test_aged_vector_impulse_brief_exposes_decay_and_blind_spot_without_fresh_urgency():
+    row = signal('vector-impulse', source='vector', type_='impulse_warn_down', asset='vector')
+    row.update({
+        'tier': 'act', 'severity': 'critical', 'priority': 76, 'age_days': 16,
+        'detail': 'DVOL intraday-range spike (unusually large versus its own history) — the options market is repricing risk. BTC $81,264.',
+        'detail_zh': 'DVOL 日内波幅激增（相对自身历史异常偏大）— 期权市场正在重新定价风险。BTC 81,264 美元。',
+        'edge': 'Forward de-risk window from a verified LEADING precursor cross (impulse radar). Holdout-validated, leak-free; act early — the edge decays in ~2-4 days. BLIND to slow/options-calm flushes.',
+        'edge_zh': '来自经验证的领先前兆突破的前瞻减仓窗口（脉冲雷达）。已通过留出样本、无前视；优势在约 2-4 天内衰减。对缓慢/期权平静式下跌无效。',
+        'link': 'vector.html#impulse',
+        'validation': {'verdict': 'calibrated', 'note': 'Holdout-validated leading precursor.'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'vector.impulse_warn_down'
+    assert brief['attention'] == 'earlier_priority'
+    assert brief['next_action_label'] == 'Recheck impulse'
+    assert '2–4 day edge window has elapsed' in brief['limitation']
+    assert 'slow or options-calm selloffs' in brief['limitation']
+    assert 'current impulse panel' in brief['next_action']

@@ -50,6 +50,25 @@ _TRANSITION_DETAIL = re.compile(
 _RISK_DETAIL = re.compile(
     r'^Equity risk-state crossed into ([A-Z][A-Z _-]+) \((\d{1,3})/100\) — (.+?); (.+)$'
 )
+_COMMODITY_PRICE_SHOCK = re.compile(
+    r'^Oil ([0-9][0-9,.]*) \$/bbl — the acute move is settling\.$'
+)
+_VECTOR_ALLOCATION_CHANGE = re.compile(
+    r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% BTC '
+    r'\(momentum × risk grid\)\.$'
+)
+_ALTDATA_CONVERGENCE = re.compile(
+    r'^(.+?) lit up by ([0-9]+) independent alt-data channels: (.+)\.$'
+)
+_ROTATION_EMERGING = re.compile(
+    r'^(.+?) just turned improving & accelerating \((.+?); accel '
+    r'([+-]?[0-9]+(?:\.[0-9]+)?)\)\. An early rotate-in candidate '
+    r'— context, not a buy list\.$'
+)
+_VECTOR_IMPULSE_DOWN = re.compile(
+    r'^DVOL intraday-range spike \(unusually large versus its own history\) '
+    r'— the options market is repricing risk\. BTC \$([0-9][0-9,]*)\.$'
+)
 
 
 def _attention(row: dict) -> str:
@@ -177,6 +196,163 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label': 'Open current Risk Envelope',
             'evidence_label_zh': '打开当前风险框架',
         })
+        return brief
+
+    impulse = _VECTOR_IMPULSE_DOWN.fullmatch(detail)
+    if source == 'vector' and type_ == 'impulse_warn_down' and impulse:
+        age_text = str(age) if age is not None else 'unknown'
+        brief.update({
+            'status': 'supported', 'family': 'vector.impulse_warn_down',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': edge_zh,
+            'limitation': (
+                f'The source describes a 2–4 day edge window; at {age_text} days old, '
+                'that 2–4 day edge window has elapsed. The model is blind to slow or '
+                'options-calm selloffs, so this is not a current de-risk instruction.'),
+            'limitation_zh': (
+                f'来源描述的是 2–4 天的优势窗口；该事件已过去 {age_text} 天，窗口已经结束。'
+                '该模型无法识别缓慢下跌或期权市场平静的抛售，因此这不是当前减仓指令。'),
+            'next_action': (
+                'Open the current impulse panel and verify whether a new leading precursor '
+                'cross exists before changing risk.'),
+            'next_action_zh': '打开当前脉冲面板，确认是否出现新的领先前兆突破，再调整风险。',
+            'next_action_label': 'Recheck impulse',
+            'next_action_label_zh': '复核脉冲',
+            'reassessment': (
+                'Restore fresh urgency only if the current panel shows a new precursor '
+                'cross with a new event clock.'),
+            'reassessment_zh': '仅当当前面板出现带有新事件时间的新前兆突破时，才恢复最新紧迫性。',
+            'evidence_label': 'Open current impulse panel',
+            'evidence_label_zh': '打开当前脉冲面板',
+        })
+        return brief
+
+    commodity = _COMMODITY_PRICE_SHOCK.fullmatch(detail)
+    if source == 'commodity' and type_ == 'price_shock' and commodity:
+        brief.update({
+            'status': 'supported', 'family': 'commodity.price_shock',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                'The acute oil move is losing intensity, which may reduce immediate '
+                'shock pressure without establishing the next price direction.'),
+            'implication_zh': '原油急剧波动正在减弱，短期冲击压力可能下降，但下一价格方向仍未确定。',
+            'limitation': (
+                'The source says the shock is settling; it does not establish direction, '
+                'a durable regime, or a separately backtested timing edge. Re-fired '
+                'observations do not prove continuous stabilization.'),
+            'limitation_zh': (
+                '来源仅表示冲击正在平息；这不能确定方向、持久状态或经过单独回测的择时优势。'
+                '重复触发也不能证明稳定状态持续存在。'),
+            'next_action': (
+                'Open the current commodity timeline and confirm whether the shock is '
+                'still settling before changing oil-sensitive exposure.'),
+            'next_action_zh': '打开当前商品时间线，确认冲击是否仍在平息，再调整原油敏感敞口。',
+            'next_action_label': 'Recheck oil', 'next_action_label_zh': '复核原油',
+            'reassessment': (
+                'Change the read if the current timeline shows renewed acceleration, '
+                'a new shock direction, or the stabilization state has disappeared.'),
+            'reassessment_zh': '若当前时间线显示冲击重新加速、方向改变或稳定状态消失，则改变判断。',
+            'evidence_label': 'Open current commodity timeline',
+            'evidence_label_zh': '打开当前商品时间线',
+        })
+        return brief
+
+    allocation = _VECTOR_ALLOCATION_CHANGE.fullmatch(detail)
+    if source == 'vector' and type_ == 'allocation_change' and allocation:
+        old_weight, new_weight = allocation.group(1), allocation.group(2)
+        brief.update({
+            'status': 'supported', 'family': 'vector.allocation_change',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': edge, 'implication_zh': (
+                '这是策略模型的配置输出；历史回测曾跑赢买入并持有。'),
+            'limitation': (
+                f'The {old_weight}% → {new_weight}% change is a model allocation output. '
+                'Its historical backtest does not guarantee future returns, and repeated '
+                'firings do not prove the allocation stayed unchanged between observations.'),
+            'limitation_zh': (
+                f'{old_weight}% → {new_weight}% 是模型配置输出。历史回测不能保证未来收益，'
+                '重复触发也不能证明两次观测之间的配置保持不变。'),
+            'next_action': (
+                'Open the current allocation panel and compare the current BTC weight and '
+                'momentum/risk inputs before changing exposure.'),
+            'next_action_zh': '打开当前配置面板，比较最新 BTC 权重与动量/风险输入，再调整敞口。',
+            'next_action_label': 'Open allocation',
+            'next_action_label_zh': '打开配置',
+            'reassessment': (
+                f'Reassess if the current panel no longer shows {new_weight}% BTC or the '
+                'momentum/risk grid reverses direction.'),
+            'reassessment_zh': f'若当前面板不再显示 {new_weight}% BTC，或动量/风险网格反转，则重新评估。',
+            'evidence_label': 'Open current allocation panel',
+            'evidence_label_zh': '打开当前配置面板',
+        })
+        return brief
+
+    convergence = _ALTDATA_CONVERGENCE.fullmatch(detail)
+    if source == 'altdata' and type_ == 'convergence' and convergence:
+        asset, channel_count, channel_names = convergence.groups()
+        brief.update({
+            'status': 'supported', 'family': 'altdata.convergence',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'The source reports {channel_count} alt-data channels converging on '
+                f'{asset}; this is a research lead, not confirmation.'),
+            'implication_zh': f'来源报告 {channel_count} 个替代数据渠道同时指向 {asset}；这是研究线索，不是确认。',
+            'limitation': (
+                'The channel count is not a probability, expected return, or proof of '
+                'independent economic causes. This family is not separately backtested '
+                'as a timing signal, and repeated firings do not prove persistence.'),
+            'limitation_zh': (
+                '渠道数量不是概率、预期收益，也不能证明存在独立的经济原因。该信号族未作为择时信号'
+                '单独回测，重复触发也不能证明状态持续。'),
+            'next_action': (
+                f'Open the current convergence panel, inspect the named channels '
+                f'({channel_names}) and their source timestamps, then decide whether '
+                f'{asset} merits deeper research.'),
+            'next_action_zh': f'打开当前汇聚面板，检查相关渠道及来源时间，再决定是否深入研究 {asset}。',
+            'next_action_label': 'Inspect channels',
+            'next_action_label_zh': '检查渠道',
+            'reassessment': (
+                'Change the read if the channels disappear, collapse to one underlying '
+                'event, or newer source evidence contradicts the convergence.'),
+            'reassessment_zh': '若渠道消失、实际来自同一底层事件，或更新证据与汇聚结论矛盾，则改变判断。',
+            'evidence_label': 'Open current convergence panel',
+            'evidence_label_zh': '打开当前汇聚面板',
+        })
+        return brief
+
+    rotation = _ROTATION_EMERGING.fullmatch(detail)
+    if source == 'rotation' and type_ == 'rotation_emerging' and rotation:
+        subject, horizons, acceleration = rotation.groups()
+        brief.update({
+            'status': 'supported', 'family': 'rotation.rotation_emerging',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': (
+                f'{subject} has moved into improving and accelerating status '
+                f'({horizons}; acceleration {acceleration}), making it an early '
+                'research candidate.'),
+            'implication_zh': f'{subject} 转为改善且加速状态，是一个早期研究候选。',
+            'limitation': (
+                'This is explicitly context, not a buy list or a separately backtested '
+                'timing signal. Positive one-week momentum can coexist with negative '
+                'one- and three-month returns, and repeated firings do not prove persistence.'),
+            'limitation_zh': (
+                '这明确只是背景，不是买入清单，也不是经过单独回测的择时信号。单周动量为正时，'
+                '一个月和三个月收益仍可能为负；重复触发也不能证明状态持续。'),
+            'next_action': (
+                'Open the current rotation panel and confirm the subgroup still ranks '
+                'improving and accelerating before promoting it to a research candidate.'),
+            'next_action_zh': '打开当前轮动面板，确认该子行业仍处于改善且加速状态，再将其列为研究候选。',
+            'next_action_label': 'Check rotation',
+            'next_action_label_zh': '检查轮动',
+            'reassessment': (
+                'Change the read if the current status loses its improving/accelerating '
+                'classification or longer-horizon relative strength keeps deteriorating.'),
+            'reassessment_zh': '若当前状态不再改善/加速，或较长期相对强度继续恶化，则改变判断。',
+            'evidence_label': 'Open current rotation panel',
+            'evidence_label_zh': '打开当前轮动面板',
+        })
+        return brief
+
     return brief
 
 

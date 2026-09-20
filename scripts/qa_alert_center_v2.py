@@ -41,6 +41,14 @@ def main():
             assert page.locator('#ac-results').get_by_text('Earlier priority', exact=True).count() == 1
             assert page.locator('#ac-results').get_by_text('Watch next', exact=True).count() == 1
             report['checks'].append('Now separates earlier high-authority events from fresh watch items')
+            top_ids = [row['alert_id'] for row in payload['alerts'][:8]]
+            top_briefs = [payload['explorer']['briefs'][id_] for id_ in top_ids]
+            assert all(brief['status'] == 'supported' for brief in top_briefs)
+            expected_actions = [brief['next_action_label'] + ' →' for brief in top_briefs]
+            visible_actions = page.locator('#ac-results .acx-row-action').evaluate_all(
+                '(rows) => rows.map(row => row.textContent.trim())')
+            assert visible_actions == expected_actions
+            report['checks'].append('Every first-glance row has a source-bound next action instead of generic evidence copy')
             page.select_option('#ac-source', 'bonds')
             ids = page.locator('#ac-results .acx-row').evaluate_all('(rows) => rows.map(r => r.dataset.alertId)')
             assert ids and all(by_id[id_]['source'] == 'bonds' for id_ in ids)
@@ -68,6 +76,13 @@ def main():
             assert page.locator('#ac-detail .acx-next-action').inner_text() == supported['next_action']
             assert 'current source panel' in page.locator('#ac-detail').inner_text().lower()
             report['checks'].append('A real Macro alert renders a source-bound takeaway, limitation, next action and current-panel boundary')
+            watch_id = top_ids[3]
+            watch_brief = payload['explorer']['briefs'][watch_id]
+            page.goto(url + '#view=explore&id=' + watch_id, wait_until='domcontentloaded')
+            assert page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == watch_brief['next_action']
+            assert watch_brief['limitation'] in page.locator('#ac-detail').inner_text()
+            report['checks'].append('A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up')
             page.keyboard.press('Escape')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
             assert page.locator(':focus').get_attribute('data-alert-id') == selected
