@@ -45,10 +45,6 @@
     migration may claim reference conformance as final acceptance. Gate §0.1's "reviewer
     compares against the reference" is therefore conditional on the reference having earned
     canonical status — conformance to an unapproved reference proves nothing.
-13. **Editable-source trace (2026-09-19):** the packet names an editable design source and
-    exact identifiers for material visual work, plus the component/token delta and responsive/
-    theme/language state matrix. A chat-rendered image or generated implementation with no
-    editable source may support exploration, but cannot satisfy final reference conformance.
 
 ---
 
@@ -65,14 +61,25 @@ A builder that believes the packet is wrong stops and escalates to the design au
 packet is amended (or a dissent recorded) — the builder never improvises. This is the
 spawn-handoff law applied to migration: quality travels in the packet, not by pointer.
 
-**Editable-reference law (2026-09-19).** A static screenshot, generated HTML render, chat image,
-or prose description is evidence/reference material, not by itself an editable design source.
-Every material migration must name the editable source used to compose it (Figma, Paper, or a
-later approved equivalent), the exact file/document plus frame/node/artboard identifiers, and
-the canonical components/tokens it consumes. The editable tool is a **projection of repository
-design law**, never a competing token root or component registry. Exported/generated code is an
-implementation input only; it does not silently promote new visual vocabulary. If the required
-primitive does not exist, the builder returns the gap to design authority rather than drawing a
+**Editable-reference law (2026-09-19; reconciled 2026-09-20).** A static screenshot,
+generated HTML render, chat image, or prose description is evidence/reference material, not by
+itself an editable design source. Every material migration must name the governed editable source
+used to compose it (Figma, Paper, or a later approved equivalent), the exact file/document plus
+frame/node/artboard identifiers, and the canonical components/tokens it consumes.
+
+Editable traceability is **necessary but not sufficient** for reference authority. Figma/Paper
+governance approves a tool/projection boundary; it does not approve a reference. The existing
+Reference Integrity Gate remains the canonicality gate: only a reference with a valid
+`RIG-RECEIPT:` may be treated as canonical/final or support final reference-conformance claims.
+Likewise, an editable source never narrows route-family, sibling-page, or atomic-migration scope
+already required by current product law.
+
+The editable tool is a **one-way projection of repository design law**, never a competing token
+root, component registry, approval plane, or release authority. Repository law/theme contracts
+establish whether a primitive exists. A tool-only primitive is provisional; after repository
+acceptance, synchronize the governed projection before relying on that primitive as migration
+design input. Exported/generated code is implementation input only. If the required primitive does
+not exist, the builder returns a DESIGN-SYSTEM GAP to design authority rather than drawing a
 page-local substitute.
 
 ## §2 The migration packet (template — every field mandatory)
@@ -85,17 +92,31 @@ page-local substitute.
                          a `RIG-RECEIPT: <reference-id>` line naming its approved
                          Reference Integrity artifact (RIG V1 §12; checker-enforced —
                          a packet citing an unapproved reference cannot merge)
-3A EDITABLE SOURCE       tool + exact file/document identifier + frame/node/artboard ids;
-                         name the design-system library/file consumed and record whether this
-                         is a fresh composition, an approved reference projection, or a
-                         no-visual-change migration. A screenshot/chat render alone is invalid.
-3B COMPONENT DELTA       every component/token used comes from the canonical vocabulary;
-                         missing primitive → DESIGN-SYSTEM GAP + owning design lane. Builders
-                         may not mint page-local substitutes. Any approved new primitive must
-                         land in the repository system and editable library in the same wave.
-3C STATE MATRIX          Dark + Light × EN + ZH × desktop + mobile, plus loading / empty /
-                         stale / partial / denied / error / corrected / success as applicable;
-                         identify the editable frames that prove each materially distinct case.
+3A EDITABLE SOURCE       governed tool + exact file/document identifier + frame/node/artboard
+                         ids; name the design-system library/file consumed and record whether
+                         this is a fresh composition, a governed projection of the cited
+                         reference, or a no-visual-change migration. A screenshot/chat render
+                         alone is invalid. Tool governance does not replace the RIG-RECEIPT in
+                         field 3 and grants no canonical-reference status.
+3B COMPONENT DELTA       every component/token used comes from the canonical repository
+                         vocabulary; missing primitive → DESIGN-SYSTEM GAP + owning design
+                         lane. Builders may not mint page-local substitutes. Repository law
+                         establishes primitive authority; a tool-only primitive is provisional.
+                         Synchronize the governed editable projection after repository acceptance
+                         and before relying on that primitive as migration design input.
+3C STATE + INTERACTION   Dark + Light × EN + ZH × desktop + mobile, plus materially distinct
+   MATRIX                data/availability states as applicable (loading / empty / stale /
+                         partial / denied / error / corrected / success) and materially distinct
+                         interaction/overlay states as applicable (hover; keyboard focus /
+                         focus-visible; pressed / active / selected; expanded/open popover,
+                         dialog, menu or disclosure; disabled; component-specific variants).
+                         Record editable frame/component-variant ids that define intended visual
+                         treatment. Separately name browser/fixture evidence required in field 11
+                         to prove the implementation. Editable frames do not prove runtime/data
+                         emission. Existing evidence tooling remains the capture/receipt owner;
+                         use real browser interaction for native pseudo-states and existing
+                         state hooks/forced-state capture only where they truthfully represent
+                         the implemented state.
 4  PRIMARY QUESTION      one sentence (registry `primary_user_question`)
 5  PRIMITIVES TO REUSE   the §11 components this page composes (explicit list)
 6  MODULE DISPOSITIONS   table: current module → RETAIN / COMPRESS / MERGE-INTO <x> /
@@ -249,9 +270,13 @@ on Sol §J.9. Items 4 and 5 have their mockup gate satisfied by
 `mockups/design_system/{today_reference,utility_reference}.html` (this lane); the BUILDS still wait
 on DS-PR-0.*
 
-**P1 — immediately post-launch:** `china.html` + `hk.html` (D-archetype followers of the macro
-reference — the reference generalizing IS the test of Wave 0), `news`/`alerts` (G — the G
-reference ships with the first of these, satisfying first-of-archetype), `watchlist`
+**P1 — immediately post-launch:** regional-primary D adoption is **not** implied by the
+Wave-0 macro reference. Chairman ruling #7456/#7471 makes the restored deep `china.html`
+dashboard the canonical production default; the compressed Archetype-D China experiment remains
+incubation material unless separately matured and accepted. Any future macro/China/HK/Canada
+primary-route D migration must be freshly scoped by current product law and cannot be authorized by
+an editable reference alone. Continue with `news`/`alerts` (G — the G reference ships with the
+first of these, satisfying first-of-archetype), `watchlist`
 (**pending the IA §10.4 Sol ruling** — its archetype home follows the ruling),
 `confluence_screener` + heatmaps (B), `research_vault` (F — its migration is the F reference),
 `products/*` polish (H-product), sector_central pair (C/E — the E reference ships with the
