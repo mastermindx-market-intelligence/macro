@@ -444,6 +444,94 @@ _LABEL = {"RISK_ON": ("Risk-on", "风险偏好"), "MIXED": ("Mixed", "混合"), 
 _COLOR = {"RISK_ON": "green", "MIXED": "yellow", "RISK_OFF": "red"}
 _VERDICT_ORDER = ["RISK_OFF", "MIXED", "RISK_ON"]
 
+_SUBLINES = {
+    "RISK_ON": ("GREEN — Trend-following supported", "偏多 — 顺势而为受支撑"),
+    "MIXED": ("YELLOW — Trade with caution", "谨慎操作"),
+    "RISK_OFF": ("RED — Defend capital first", "优先保住本金"),
+}
+_ACTIONS = {
+    "RISK_ON": ("Follow the trend. Add on strength.", "顺势而为，强势中加仓。"),
+    "MIXED": ("Trade small. Stay selective.", "缩小仓位，精选标的。"),
+    "RISK_OFF": ("Reduce risk. Protect capital.", "降低风险，保护本金。"),
+}
+
+
+def _participation_context(components: list | None) -> dict:
+    """Display-only breadth scope. It never changes score, verdict, sizing, or signal authority."""
+    breadth = next((c for c in (components or []) if (c or {}).get("key") == "breadth"), None)
+    score = _num((breadth or {}).get("score"))
+    if score is None:
+        state = "unverified"
+        score_out = None
+    else:
+        score_out = int(round(score))
+        state = "broad" if score >= 60 else ("uneven" if score >= 42 else "narrow")
+    return {
+        "state": state, "score": score_out, "source": "breadth_component",
+        "authority": "display_only",
+    }
+
+
+def market_state_display_copy(verdict: str, components: list | None = None) -> dict:
+    """Project truthful glance-tier copy from the canonical verdict plus participation.
+
+    The canonical Market State remains the 0-100 verdict. This helper only prevents a green
+    verdict from being narrated as a broad rally when the already-resolved breadth leg disagrees.
+    """
+    verdict = verdict if verdict in _LABEL else "MIXED"
+    participation = _participation_context(components)
+    out = {
+        "label_en": _LABEL[verdict][0], "label_zh": _LABEL[verdict][1],
+        "headline_en": _HEADLINES[verdict][0], "headline_zh": _HEADLINES[verdict][1],
+        "subline_en": _SUBLINES[verdict][0], "subline_zh": _SUBLINES[verdict][1],
+        "action_en": _ACTIONS[verdict][0], "action_zh": _ACTIONS[verdict][1],
+        "participation": participation,
+    }
+    if verdict != "RISK_ON":
+        return out
+
+    state = participation["state"]
+    if state == "broad":
+        out.update(
+            label_en="Broad risk-on", label_zh="广泛风险偏好",
+            headline_en=("Broad risk-on — participation confirms the supportive backdrop. "
+                         "Trend-following is broadly supported, but individual setups still matter."),
+            headline_zh="广泛风险偏好 — 市场参与度确认了偏多背景。大范围顺势交易得到支持，但仍需重视个股入场质量。",
+            subline_en="GREEN — Broad participation", subline_zh="偏多 — 广度确认",
+            action_en="Follow strength broadly, but still respect entry quality.",
+            action_zh="可广泛顺势，但仍要看入场质量。",
+        )
+    elif state == "uneven":
+        out.update(
+            label_en="Risk-on · uneven participation", label_zh="风险偏好 · 参与不均",
+            headline_en=("Risk-on backdrop, uneven participation — the index tape is supportive, "
+                         "but breadth is not broad enough for an all-clear. Stay selective."),
+            headline_zh="风险偏好，但参与不均 — 指数环境偏多，但广度尚不足以构成全面放行。保持精选。",
+            subline_en="GREEN — Uneven participation", subline_zh="偏多 — 参与不均",
+            action_en="Stay selective. Add only where participation and setup agree.",
+            action_zh="保持精选；仅在参与度与入场条件一致时加仓。",
+        )
+    elif state == "narrow":
+        out.update(
+            label_en="Selective risk-on", label_zh="选择性风险偏好",
+            headline_en=("Selective risk-on — the backdrop is supportive, but breadth is weak. "
+                         "Strength is concentrated rather than market-wide."),
+            headline_zh="选择性风险偏好 — 大环境仍有支撑，但市场广度偏弱。强势集中于少数方向，并非全市场普涨。",
+            subline_en="GREEN — Narrow participation", subline_zh="偏多 — 窄幅参与",
+            action_en="Focus on confirmed leaders. Do not treat green as a broad buy signal.",
+            action_zh="聚焦已确认的强势方向；不要把绿色解读为全市场买入信号。",
+        )
+    else:
+        out.update(
+            label_en="Risk-on · participation unverified", label_zh="风险偏好 · 参与未验证",
+            headline_en="Risk-on — the measured backdrop is supportive, but participation is unverified.",
+            headline_zh="风险偏好 — 实测背景偏多，但市场参与度尚未验证。",
+            subline_en="GREEN — Participation unverified", subline_zh="偏多 — 参与未验证",
+            action_en="Stay selective until participation is available.",
+            action_zh="在参与度恢复可见前保持精选。",
+        )
+    return out
+
 
 def _verdict_from_score(score: int) -> str:
     if score >= 60:
@@ -992,6 +1080,7 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
 
         flip_en, flip_zh = _flip_text(comps, verdict, raw_score=raw_score,
                                       radar=radar, overrides=overrides)
+        display_copy = market_state_display_copy(verdict, comps)
         return {
             "schema": "market_state.v1",
             "asof": latest.get("date"),
@@ -1008,7 +1097,9 @@ def market_state_snapshot(latest: dict, frame=None, alerts: list | None = None,
             "color": _COLOR[verdict],
             "label_en": _LABEL[verdict][0], "label_zh": _LABEL[verdict][1],
             "posture_en": _POSTURE[verdict][0], "posture_zh": _POSTURE[verdict][1],
-            "headline_en": _HEADLINES[verdict][0], "headline_zh": _HEADLINES[verdict][1],
+            "headline_en": display_copy["headline_en"], "headline_zh": display_copy["headline_zh"],
+            "participation": display_copy["participation"],
+            "display_copy": display_copy,
             "components": comps,
             "mtf": tape,
             "overrides": overrides,
