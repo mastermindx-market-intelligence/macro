@@ -6615,7 +6615,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: FTR tape-surface template guards
-        run: python -m pytest tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py -q
+        run: python -m pytest tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py tests/test_basket_detail_glance_copy.py -q
 
   live-flow-ops:
     if: ${{ false }}
