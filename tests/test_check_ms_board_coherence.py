@@ -74,6 +74,25 @@ def test_section_score_parser_accepts_measured_score_attribute():
     assert guard.check_text("measured-attr", html) == []
 
 
+def test_styled_live_thesis_class_still_catches_cross_band_contradiction():
+    html = guard._board(
+        "Risk-on", 61,
+        "Risk-off — stress is elevated; defend capital first.",
+        "", "→ Mixed if risk appetite breaks down."
+    ).replace('class="v-thesis"', 'class="v-thesis ms-green"')
+    v = guard.check_text("styled-thesis", html)
+    assert any(line.startswith("(c)") for line in v), v
+
+
+def test_selective_risk_on_thesis_is_still_coherent_with_formal_risk_on_band():
+    html = guard._board(
+        "Risk-on", 61,
+        "Selective risk-on — the backdrop is supportive, but breadth is weak.",
+        "", "→ Mixed if risk appetite breaks down."
+    ).replace('class="v-thesis"', 'class="v-thesis ms-green"')
+    assert guard.check_text("selective-risk-on", html) == []
+
+
 def test_macro_path_cannot_lag_settled_board_date():
     html = """
     <span id="regime-asof">2026-09-14</span>
@@ -121,6 +140,13 @@ def test_headline_prefixes_match_engine():
     label_of = {k: v[0] for k, v in ms._LABEL.items()}
     for verdict, (head_en, _zh) in ms._HEADLINES.items():
         assert head_en.startswith(guard.HEADLINE_PREFIX[label_of[verdict]])
+
+    # US participation-qualified RISK_ON copy remains semantically inside the
+    # same formal band; pin every R1 copy family to the guard's allowlist.
+    for breadth in (None, 0, 50, 60):
+        comps = [] if breadth is None else [{"key": "breadth", "score": breadth}]
+        head = ms.market_state_display_copy("RISK_ON", comps)["headline_en"]
+        assert head.startswith(guard.HEADLINE_ALLOWED_PREFIX["Risk-on"])
 
 
 def test_note_strings_match_engine():
