@@ -448,6 +448,53 @@ def test_prophet_discovery_cli_runs_both_markets_once(monkeypatch):
     assert called["n"] == 1
 
 
+def test_prophet_discovery_cli_market_scope_calls_only_selected_market(monkeypatch, capsys):
+    import scripts.grade_prophet_discovery as runner
+
+    calls = []
+    monkeypatch.setattr(
+        runner.prophet_discovery_grade,
+        "grade_all",
+        lambda: pytest.fail("market-scoped invocation must not grade sibling market"),
+    )
+
+    def grade_market(market):
+        calls.append(market)
+        return {"market": market, "available": True, "state": "UPDATED", "n_rows": 7}
+
+    monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
+
+    assert runner.main(["--market", "HK"]) == 0
+    assert calls == ["HK"]
+    assert json.loads(capsys.readouterr().out) == {
+        "HK": {"market": "HK", "available": True, "state": "UPDATED", "n_rows": 7}
+    }
+
+
+def test_prophet_discovery_cli_market_scope_preserves_error_receipt(monkeypatch, capsys):
+    import scripts.grade_prophet_discovery as runner
+
+    calls = []
+
+    def grade_market(market):
+        calls.append(market)
+        raise RuntimeError("HK source continuity violated")
+
+    monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
+
+    assert runner.main(["--market", "HK"]) == 1
+    assert calls == ["HK"]
+    assert json.loads(capsys.readouterr().out) == {
+        "HK": {
+            "market": "HK",
+            "available": False,
+            "state": "ERROR",
+            "error_type": "RuntimeError",
+            "error": "HK source continuity violated",
+        }
+    }
+
+
 def test_prophet_discovery_cli_reports_structured_failure(monkeypatch, capsys):
     import scripts.grade_prophet_discovery as runner
 
