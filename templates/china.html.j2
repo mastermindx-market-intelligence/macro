@@ -1054,8 +1054,6 @@
      retired compression experiment, without replacing the deep dashboard. */
   body.page-china .cnx-hero-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
   body.page-china .cnx-live-freshness{margin-left:3px;opacity:.78}
-  body.page-china .cnx-action-lead .sub{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase}
-  html[data-lang="zh"] body.page-china .cnx-action-lead .sub{letter-spacing:0;text-transform:none}
   body.page-china .cnx-reason-row{position:relative}
   body.page-china .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
   body.page-china .cnx-lens::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:45;width:min(36ch,78vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:11px;font-weight:450;line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:var(--card-shadow);white-space:normal;text-align:left}
@@ -2135,11 +2133,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     {# What To Do card — keep the deep-card interaction, but use the retired
        experiment's much clearer stance/reason faces at glance level. #}
     <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-playbook')">
-      <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }} <span class="cnx-ctitle-note">{{ t('Action lens','操作视角') }}</span></div>
+      <div class="cnx-ctitle">{{ t('What To Do','该怎么做') }}</div>
       {% if pb_obj %}
         <div class="cnx-row cnx-action-lead"><span class="ic" aria-hidden="true">→</span>
-          <div class="tx"><b><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></b>
-            <span class="sub"><span class="l-en">Current posture</span><span class="l-zh">当前操作姿态</span></span></div></div>
+          <div class="tx"><b><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></b></div></div>
         {% for face in _todo_shown %}
         <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
           <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
