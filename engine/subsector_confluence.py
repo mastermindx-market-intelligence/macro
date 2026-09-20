@@ -264,8 +264,10 @@ def score_group(key: str, label: str, sector: str, tickers: list[str],
                 "stock_weight": (mv or {}).get("weight") or 0.0,
                 "stock_ticks": (mv or {}).get("ticks"),
                 "stock_bars_to_cross": (mv or {}).get("bars_to_cross"),
+                "stock_eligible": (None if mv is None else bool(mv.get("eligible"))),
                 "stock_buyable": signal_gate.is_buyable(mv),
                 "stock_state": (mv or {}).get("state"),
+                "stock_reason": (mv or {}).get("reason"),
             })
         members_detail.sort(key=lambda m: (-(m["stock_weight"] or 0.0),
                                            -(m["vs_basket"] if m["vs_basket"] is not None else -999)))

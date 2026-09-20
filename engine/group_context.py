@@ -25,12 +25,15 @@ page changes shape, update the contract here, not scattered call sites.
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
+
+from engine import signal_gate
 
 try:  # keep importable even if lib.config is unavailable in an odd harness
     from lib import config
@@ -41,6 +44,27 @@ except Exception:  # noqa: BLE001
 
 log = logging.getLogger("group_context")
 
+ENTRY_CONTEXT_SCHEMA = "mastermind.entry_context.v1"
+ENTRY_CONTEXT_STALE_DAYS = 4
+STANDOUTS_REF = "site/factordata/us_standouts.json"
+RADAR_REF = "site/live/entry_radar.json"
+CONFLUENCE_REF = "site/marketdata/subsector_confluence.json"
+AUTHORITY_BLOCK: dict[str, bool] = {
+    "may_rank": False,
+    "may_gate": False,
+    "may_size": False,
+    "may_escalate": False,
+    "may_trade": False,
+}
+ENTRY_CONTEXT_PERMISSIONS: dict[str, bool] = {
+    "may_describe": True,
+    "may_link": True,
+    **AUTHORITY_BLOCK,
+}
+_ENTRY_LANES = ("buy", "watch", "leaders", "ran", "laggards", "candidate_pool")
+_ENTRY_ID_KEYS = ("source_setup_id", "setup_id", "candidate_id", "entry_id")
+_ENTRY_EXPIRY_KEYS = ("expires_at", "valid_until", "ttl_until", "expiry")
+
 # --------------------------------------------------------------------------- #
 #  READER CONTRACT — the ONE place the coupling to the cycle pages is declared. #
 #  Each entry: the artifact path (relative to site/) + the minimal fields we    #
@@ -49,7 +73,7 @@ log = logging.getLogger("group_context")
 #  against a new artifact is visible downstream.                                #
 # --------------------------------------------------------------------------- #
 READER_CONTRACT = {
-    "version": 1,
+    "version": 3,
     "sources": {
         "sector_central": {
             "path": "site/sectordata/sector_central.json",
@@ -62,9 +86,15 @@ READER_CONTRACT = {
         "subsector_confluence": {
             "path": "site/marketdata/subsector_confluence.json",
             "join": "row.ticker → subsectors[].members[].ticker",
-            "fields": ["as_of", "subsectors[].key", "subsectors[].label",
+            "fields": ["as_of", "weighting", "generated_utc",
+                       "subsectors[].key", "subsectors[].label",
                        "subsectors[].class", "subsectors[].entry.tier",
-                       "subsectors[].regime.state", "subsectors[].members[].ticker"],
+                       "subsectors[].entry.buyable", "subsectors[].regime.state",
+                       "subsectors[].members[].ticker",
+                       "subsectors[].members[].stock_tier",
+                       "subsectors[].members[].stock_eligible",
+                       "subsectors[].members[].stock_buyable",
+                       "subsectors[].members[].stock_reason"],
             "weight": 0.25,
         },
         "index_leadership": {
@@ -89,6 +119,16 @@ READER_CONTRACT = {
                        "theme_intel.themes[].label", "theme_intel.themes[].reco"],
             "weight": 0.10,
         },
+    },
+    "entry_context": {
+        "schema": ENTRY_CONTEXT_SCHEMA,
+        "mode": "owner_artifact_rebuild",
+        "sources": [
+            "site/factordata/us_standouts.json",
+            "site/live/entry_radar.json",
+            "site/marketdata/subsector_confluence.json",
+        ],
+        "authority": "context_only",
     },
 }
 
@@ -180,8 +220,13 @@ class GroupContext:
     STALE_DAYS = 4  # a rotation read older than this is flagged (weekend-tolerant)
 
     def __init__(self, site: Path | None = None) -> None:
-        base = (site or (_ROOT / "site")).parent if site and site.name != "site" else _ROOT
+        if site is None:
+            base = _ROOT
+        else:
+            explicit = Path(site)
+            base = explicit.parent if explicit.name == "site" else explicit
         self._root = base
+        self._entry_source = EntryContextSource.from_site(self._root / "site")
         self._sources: dict[str, _Source] = {}
         self._sector_by_name: dict[str, dict] = {}
         self._sub_by_ticker: dict[str, list[dict]] = {}
@@ -217,11 +262,23 @@ class GroupContext:
                 self._sector_by_name[nm] = s
 
     def _index_subsector_confluence(self, data: dict) -> None:
-        for s in data.get("subsectors", []) or []:
-            for m in s.get("members", []) or []:
-                t = m.get("ticker")
-                if t:
-                    self._sub_by_ticker.setdefault(t.upper(), []).append(s)
+        for raw_group in data.get("subsectors", []) or []:
+            if not isinstance(raw_group, dict):
+                continue
+            group = dict(raw_group)
+            group.setdefault("as_of", data.get("as_of"))
+            group.setdefault("weighting", data.get("weighting"))
+            group.setdefault("generated_utc", data.get("generated_utc"))
+            group.setdefault("market", "US")
+            group.setdefault("timeframe", "1D")
+            group.setdefault("session", "EOD")
+            group.setdefault("horizon", "daily")
+            for member in group.get("members", []) or []:
+                if not isinstance(member, dict):
+                    continue
+                ticker = member.get("ticker")
+                if ticker:
+                    self._sub_by_ticker.setdefault(ticker.upper(), []).append(group)
 
     def _index_index_leadership(self, data: dict) -> None:
         tabs = data.get("tabs") or {}
@@ -282,6 +339,36 @@ class GroupContext:
     def contract_version(self) -> int:
         return int(READER_CONTRACT["version"])
 
+    def entry_context_contract(self) -> dict:
+        """The additive, authority-inert member-routing contract used by Board V2."""
+        return self._entry_source.contract()
+
+    def _entry_context_for_member(self, ticker: str, group: dict, member: dict) -> dict:
+        eligibility_raw = member.get("stock_eligible")
+        member_gate = {
+            "tier_cascade": member.get("stock_tier"),
+            "weight": member.get("stock_weight"),
+            "ticks": member.get("stock_ticks"),
+            "bars_to_cross": member.get("stock_bars_to_cross"),
+            "state": member.get("stock_state"),
+            "reason": member.get("stock_reason"),
+            "eligible": (None if eligibility_raw is None else bool(eligibility_raw)),
+        }
+        relationship = member.get("relationship_kind")
+        if not relationship:
+            relationship = "PROXY" if member.get("proxy") else "DIRECT_MEMBER"
+        group_key = str(group.get("key") or "")
+        return self._entry_source.for_member(
+            ticker=ticker,
+            member_gate=member_gate,
+            member_buyable=bool(member.get("stock_buyable")),
+            member_eligible=(None if eligibility_raw is None else bool(eligibility_raw)),
+            group=group,
+            stock_route=f"stock.html#{ticker}",
+            group_route=f"subsector/{group_key}.html" if group_key else "subsectors.html",
+            relationship_kind=str(relationship),
+        )
+
     # ---- per-name resolution --------------------------------------------- #
     def for_name(self, ticker: str, sector: str | None = None) -> dict:
         """Resolve rotation context for one name.
@@ -328,9 +415,27 @@ class GroupContext:
         # 2) SUBSECTOR CONFLUENCE — class + entry tier + regime state (join on ticker)
         sub_row = _best_subsector(self._sub_by_ticker.get(tkr))
         sub_key = None
+        entry_context = self._entry_source.for_member(
+            ticker=tkr,
+            member_gate={},
+            member_buyable=False,
+            group={"source_ref": CONFLUENCE_REF},
+            stock_route=f"stock.html#{tkr}",
+            group_route="subsectors.html",
+            relationship_kind="UNKNOWN",
+        )
         conf_src = self._sources.get("subsector_confluence")
         if sub_row is not None:
             sub_key = sub_row.get("key")
+            for member in sub_row.get("members", []) or []:
+                if not isinstance(member, dict):
+                    continue
+                if str(member.get("ticker") or "").upper() == tkr:
+                    # Rebuild from the current owner fields. Embedded context is not
+                    # trusted as authority because an older/foreign producer could
+                    # otherwise smuggle rank/gate/trade permissions into this reader.
+                    entry_context = self._entry_context_for_member(tkr, sub_row, member)
+                    break
             cls = sub_row.get("class")
             reg = ((sub_row.get("regime") or {}).get("state") or "").upper()
             contrib = _CLASS_SCORE.get(cls, 0.0) + _REGIME_TILT.get(reg, 0.0)
@@ -452,6 +557,7 @@ class GroupContext:
             "surfaced_by": surfaced,
             "components": comps,
             "passport": passport,
+            "entry_context": entry_context,
         }
 
 
@@ -522,4 +628,596 @@ def _dedup(items: list, key) -> list:
     return out
 
 
-__all__ = ["GroupContext", "READER_CONTRACT"]
+# The entry adapter is intentionally colocated with the incumbent group consumer:
+# one reader, one contract, no parallel intake or publication plane.
+
+@dataclass(frozen=True, slots=True)
+class _EntrySourceRow:
+    row: dict[str, Any]
+    lane: str
+    index: int
+    ref: str
+
+
+class EntryContextSource:
+    """Tolerant adapter over stock-setup and Live Entry Radar artifacts."""
+
+    def __init__(self, *, standouts: Mapping[str, Any] | None,
+                 radar: Mapping[str, Any] | None, now: date,
+                 standouts_error: str | None = None,
+                 radar_error: str | None = None) -> None:
+        self._standouts = dict(standouts) if isinstance(standouts, Mapping) else None
+        self._radar = dict(radar) if isinstance(radar, Mapping) else None
+        self._now = now
+        self._standouts_error = standouts_error
+        self._radar_error = radar_error
+        standouts_doc = self._standouts or {}
+        radar_doc = self._radar or {}
+        radar_pack = (radar_doc.get("pack")
+                      if isinstance(radar_doc.get("pack"), Mapping) else {})
+        self._standouts_observed_at = _first(standouts_doc, "as_of", "asof")
+        self._standouts_available_at = _first(standouts_doc, "available_at")
+        self._standouts_computed_at = _first(standouts_doc, "generated_utc", "computed_at")
+        self._standouts_published_at = _first(standouts_doc, "published_at")
+        self._standouts_as_of = _first(
+            {
+                "observation": self._standouts_observed_at,
+                "availability": self._standouts_available_at,
+                "computation": self._standouts_computed_at,
+                "publication": self._standouts_published_at,
+            },
+            "observation", "availability", "computation", "publication",
+        )
+        self._radar_observed_at = (_first(radar_doc, "session")
+                                   or _first(radar_pack, "as_of"))
+        self._radar_available_at = _first(radar_doc, "available_at")
+        self._radar_computed_at = _first(radar_doc, "asof", "generated_utc", "computed_at")
+        self._radar_published_at = _first(radar_doc, "published_at")
+        self._radar_as_of = _first(
+            {
+                "computation": self._radar_computed_at,
+                "observation": self._radar_observed_at,
+                "availability": self._radar_available_at,
+                "publication": self._radar_published_at,
+            },
+            "computation", "observation", "availability", "publication",
+        )
+        self._standouts_age = _age_days(self._standouts_as_of, now)
+        self._radar_age = _age_days(self._radar_as_of, now)
+        self._stock_rows = self._index_stock_rows()
+        self._radar_rows = self._index_radar_rows()
+
+    @classmethod
+    def from_documents(cls, *, standouts: Mapping[str, Any] | None,
+                       radar: Mapping[str, Any] | None,
+                       now: date | datetime | None = None) -> "EntryContextSource":
+        return cls(standouts=standouts, radar=radar, now=_as_date(now))
+
+    @classmethod
+    def from_site(cls, site: Path, *,
+                  now: date | datetime | None = None) -> "EntryContextSource":
+        site = Path(site)
+        standouts, standouts_error = _read_json(
+            site / "factordata" / "us_standouts.json")
+        radar, radar_error = _read_json(site / "live" / "entry_radar.json")
+        return cls(standouts=standouts, radar=radar, now=_as_date(now),
+                   standouts_error=standouts_error, radar_error=radar_error)
+
+    def contract(self) -> dict[str, Any]:
+        """Versioned consumer receipt; never a signal or ThemeState producer."""
+        return {
+            "schema": ENTRY_CONTEXT_SCHEMA,
+            "context_only": True,
+            "permissions": dict(ENTRY_CONTEXT_PERMISSIONS),
+            "authority": dict(AUTHORITY_BLOCK),
+            "unattached_member_semantics": {
+                "state": "DESCRIPTIVE_ONLY",
+                "reason": "no_current_stock_setup_record_and_member_gate_not_qualified",
+                "absence_scope": STANDOUTS_REF,
+                "global_absence": False,
+            },
+            "sources": {
+                "stock_setup": self._artifact_status(
+                    self._standouts, STANDOUTS_REF, self._standouts_as_of,
+                    self._standouts_age, self._standouts_error),
+                "live_entry_radar": self._artifact_status(
+                    self._radar, RADAR_REF, self._radar_as_of,
+                    self._radar_age, self._radar_error),
+            },
+        }
+
+    def for_member(self, *, ticker: str,
+                   member_gate: Mapping[str, Any] | None,
+                   member_buyable: bool, group: Mapping[str, Any],
+                   stock_route: str, group_route: str,
+                   relationship_kind: str = "DIRECT_MEMBER",
+                   member_eligible: bool | None = None) -> dict[str, Any]:
+        symbol = str(ticker or "").upper()
+        relationship = _relationship_kind(relationship_kind)
+        gate = dict(member_gate or {})
+        group = dict(group or {})
+        src = self._stock_rows.get(symbol)
+        availability = self._setup_availability(src)
+        setup_signal = dict((src.row.get("signal") or {})) if src else {}
+        entry_signal = dict((src.row.get("entry_signal") or {})) if src else {}
+        expiry = self._expiry(src, availability, setup_signal, entry_signal)
+        setup_q = self._setup_qualification(
+            src, availability, setup_signal, expiry["state"])
+        member_q = "QUALIFIED" if member_buyable else "NOT_QUALIFIED"
+        eligibility_raw = (gate.get("eligible")
+                           if member_eligible is None else member_eligible)
+        member_eligibility = (
+            "UNKNOWN" if eligibility_raw is None
+            else "QUALIFIED" if bool(eligibility_raw)
+            else "NOT_QUALIFIED"
+        )
+        confirmation = _confirmation(
+            setup_signal, entry_signal, expiry["state"], setup_q)
+        group_entry = dict(group.get("entry") or {})
+        group_regime = dict(group.get("regime") or {})
+        group_state = str(group_regime.get("state") or "UNKNOWN").upper()
+        headwind = bool(group_regime.get("headwind"))
+        extended = group_state == "EXTENDED"
+        group_confirmation = _confirmation(
+            group_entry, {}, "ACTIVE",
+            "QUALIFIED" if group_entry.get("buyable") else "UNKNOWN")
+        levels = {
+            "trigger": (_first(entry_signal, "trigger")
+                        or _first(entry_signal.get("timing") or {}, "next_trigger")),
+            "zone": copy.deepcopy(entry_signal.get("buy_zone")),
+            "invalidation": _first(entry_signal, "invalidation", "stop"),
+            "chase_above": entry_signal.get("chase_above"),
+        }
+        routing = _routing_state(
+            member_q=member_q, setup_q=setup_q,
+            availability=availability, expiry_state=expiry["state"],
+            confirmation=confirmation, headwind=headwind, extended=extended,
+            relationship=relationship)
+        setup_id = _explicit(src.row if src else {}, _ENTRY_ID_KEYS)
+        stock_setup = {
+            "availability": availability,
+            "scope": STANDOUTS_REF,
+            "global_absence": False if availability == "NOT_IN_SNAPSHOT" else None,
+            "source_lane": src.lane if src else None,
+            "source_ref": src.ref if src else STANDOUTS_REF,
+            "source_setup_id": setup_id,
+            "source_setup_id_reason": (
+                None if setup_id is not None else
+                "owner_record_has_no_id" if src else "owner_record_not_in_snapshot"),
+            "as_of": self._standouts_as_of,
+            "age_days": self._standouts_age,
+            "status": entry_signal.get("status") if src else None,
+            "tier": setup_signal.get("tier_cascade") if src else None,
+            "reason": setup_signal.get("reason") if src else None,
+        }
+        return {
+            "schema": ENTRY_CONTEXT_SCHEMA,
+            "context_only": True,
+            "instrument": {
+                "id": symbol,
+                "kind": {
+                    "DIRECT_MEMBER": "DIRECT_INSTRUMENT",
+                    "PROXY": "PROXY_INSTRUMENT",
+                }.get(relationship, "UNKNOWN_INSTRUMENT"),
+                "market": "US",
+            },
+            "relationship": {
+                "kind": relationship,
+                "availability": ("AVAILABLE" if group.get("key")
+                                 else "NOT_IN_SNAPSHOT"),
+                "absence_scope": group.get("source_ref") or CONFLUENCE_REF,
+                "global_absence": False if not group.get("key") else None,
+                "group_id": group.get("key"),
+                "group_kind": group.get("kind"),
+                "group_label": group.get("label"),
+            },
+            "observation": {
+                "market": group.get("market") or "US",
+                "timeframe": group.get("timeframe") or "1D",
+                "session": group.get("session") or "EOD",
+                "horizon": group.get("horizon") or "daily",
+                "weighting": group.get("weighting"),
+            },
+            "qualification": {
+                "member_eligibility": member_eligibility,
+                "member_gate": member_q,
+                "stock_setup": setup_q,
+                "member_tier": gate.get("tier_cascade"),
+                "member_reason": gate.get("reason"),
+                "basis": "member_signal_gate_and_existing_stock_setup",
+                "inherited_from_group": False,
+            },
+            "confirmation": {
+                "state": confirmation,
+                "group_state": group_confirmation,
+                "basis": "owner_fields_only",
+            },
+            "group_context": {
+                "entry_tier": group_entry.get("tier"),
+                "entry_buyable": bool(group_entry.get("buyable")),
+                "regime_state": group_state,
+                "headwind": headwind,
+                "extended": extended,
+                "as_of": group.get("as_of"),
+            },
+            "stock_setup": stock_setup,
+            "lineage": self._lineage(src),
+            "levels": levels,
+            "expiry": expiry,
+            "prophet": self._prophet(src),
+            "live_entry_radar": self._radar_context(symbol),
+            "clocks": {
+                "stock_setup": _clock_set(
+                    observation=self._standouts_observed_at,
+                    availability=self._standouts_available_at,
+                    computation=self._standouts_computed_at,
+                    publication=self._standouts_published_at,
+                    owner="artifact",
+                ),
+                "group": _clock_set(
+                    observation=group.get("as_of"),
+                    availability=group.get("available_at"),
+                    computation=group.get("generated_utc") or group.get("computed_at"),
+                    publication=group.get("published_at"),
+                    owner="record",
+                ),
+                "live_entry_radar": _clock_set(
+                    observation=self._radar_observed_at,
+                    availability=self._radar_available_at,
+                    computation=self._radar_computed_at,
+                    publication=self._radar_published_at,
+                    owner="artifact",
+                ),
+            },
+            "routes": {"instrument": stock_route, "group": group_route},
+            "routing": routing,
+            "permissions": dict(ENTRY_CONTEXT_PERMISSIONS),
+            "authority": dict(AUTHORITY_BLOCK),
+        }
+
+    def _index_stock_rows(self) -> dict[str, _EntrySourceRow]:
+        out: dict[str, _EntrySourceRow] = {}
+        if self._standouts is None:
+            return out
+        for lane in _ENTRY_LANES:
+            rows = self._standouts.get(lane)
+            if not isinstance(rows, list):
+                continue
+            for index, row in enumerate(rows):
+                if not isinstance(row, Mapping):
+                    continue
+                ticker = str(row.get("ticker") or "").upper()
+                if ticker and ticker not in out:
+                    out[ticker] = _EntrySourceRow(
+                        dict(row), lane, index,
+                        f"{STANDOUTS_REF}#/{lane}/{index}")
+        return out
+
+    def _index_radar_rows(self) -> dict[str, dict[str, Any]]:
+        out: dict[str, dict[str, Any]] = {}
+        if self._radar is None:
+            return out
+        for row in self._radar.get("names") or []:
+            if not isinstance(row, Mapping):
+                continue
+            ticker = str(row.get("ticker") or "").upper()
+            if ticker:
+                out[ticker] = dict(row)
+        return out
+
+    def _setup_availability(self, src: _EntrySourceRow | None) -> str:
+        if self._standouts is None:
+            return "UNAVAILABLE"
+        if src is None:
+            return "NOT_IN_SNAPSHOT"
+        if self._standouts_age is not None and self._standouts_age > ENTRY_CONTEXT_STALE_DAYS:
+            return "STALE"
+        return "AVAILABLE"
+
+    def _expiry(self, src: _EntrySourceRow | None, availability: str,
+                signal: Mapping[str, Any],
+                entry_signal: Mapping[str, Any]) -> dict[str, Any]:
+        expires_at = None
+        if src is not None:
+            expires_at = _explicit(src.row, _ENTRY_EXPIRY_KEYS)
+            expires_at = expires_at or _explicit(signal, _ENTRY_EXPIRY_KEYS)
+            expires_at = expires_at or _explicit(entry_signal, _ENTRY_EXPIRY_KEYS)
+        expired = _expired_by_owner(signal, entry_signal, expires_at, self._now)
+        if expired:
+            state = "EXPIRED"
+        elif availability == "STALE":
+            state = "STALE"
+        elif src is not None and signal_gate.is_buyable(dict(signal)):
+            state = "ACTIVE"
+        else:
+            state = "UNKNOWN"
+        return {
+            "state": state,
+            "expires_at": expires_at,
+            "expires_at_reason": (
+                None if expires_at is not None
+                else "owner_record_has_no_absolute_expiry"),
+            "freshness_basis": {
+                "ticks": signal.get("ticks"),
+                "fresh_bars": signal.get("fresh_bars"),
+                "fresh_bars_knowable": signal.get("fresh_bars_knowable"),
+                "near_miss_reason": signal.get("near_miss_reason"),
+            },
+        }
+
+    @staticmethod
+    def _setup_qualification(src: _EntrySourceRow | None, availability: str,
+                             signal: Mapping[str, Any], expiry_state: str) -> str:
+        if src is None or availability in {"UNAVAILABLE", "NOT_IN_SNAPSHOT"}:
+            return "UNKNOWN"
+        if expiry_state == "EXPIRED":
+            return "EXPIRED"
+        if availability == "STALE":
+            return "STALE"
+        return ("QUALIFIED" if signal_gate.is_buyable(dict(signal))
+                else "NOT_QUALIFIED")
+
+    @staticmethod
+    def _lineage(src: _EntrySourceRow | None) -> dict[str, Any]:
+        if src is None:
+            return {
+                "state": "UNAVAILABLE",
+                "source_revision": None,
+                "correction_of": None,
+                "supersedes": None,
+                "source_content_sha256": None,
+                "reason": "owner_record_not_in_snapshot",
+            }
+        row = src.row
+        source_revision = _first(row, "revision_seq", "revision")
+        correction_of = _first(row, "correction_of")
+        supersedes = _first(row, "supersedes")
+        source_hash = _first(row, "content_sha256", "source_receipt")
+        present = any(value is not None for value in (
+            source_revision, correction_of, supersedes, source_hash))
+        return {
+            "state": "AVAILABLE" if present else "UNAVAILABLE",
+            "source_revision": source_revision,
+            "correction_of": correction_of,
+            "supersedes": supersedes,
+            "source_content_sha256": source_hash,
+            "reason": None if present else "owner_record_has_no_correction_lineage",
+        }
+
+    def _prophet(self, src: _EntrySourceRow | None) -> dict[str, Any]:
+        row = dict((src.row.get("prophet") or {})) if src else {}
+        return {
+            "availability": "AVAILABLE" if row else "UNAVAILABLE",
+            "version": row.get("version"),
+            "score": row.get("score"),
+            "score_kind": row.get("score_kind"),
+            "score_authority": row.get("score_authority"),
+            "source_ref": src.ref if src and row else None,
+            "context_only": True,
+        }
+
+    def _radar_context(self, ticker: str) -> dict[str, Any]:
+        row = self._radar_rows.get(ticker)
+        availability = (
+            "UNAVAILABLE" if self._radar is None
+            else "STALE" if (
+                self._radar_age is not None
+                and self._radar_age > ENTRY_CONTEXT_STALE_DAYS
+            )
+            else "NOT_DETECTED" if row is None
+            else "AVAILABLE")
+        episodes: list[str] = []
+        if row:
+            for item in row.get("research_priority") or []:
+                if isinstance(item, Mapping) and item.get("episode_id"):
+                    episodes.append(str(item["episode_id"]))
+        return {
+            "availability": availability,
+            "scope": RADAR_REF,
+            "as_of": self._radar_as_of,
+            "state": row.get("state") if row else None,
+            "reasons": list(row.get("reasons") or []) if row else [],
+            "episode_refs": episodes,
+            "context_only": True,
+        }
+
+    @staticmethod
+    def _artifact_status(doc: Mapping[str, Any] | None, ref: str,
+                         as_of: Any, age_days: int | None,
+                         error: str | None) -> dict[str, Any]:
+        if doc is None:
+            state = "UNAVAILABLE"
+        elif age_days is not None and age_days > ENTRY_CONTEXT_STALE_DAYS:
+            state = "STALE"
+        else:
+            state = "AVAILABLE"
+        return {
+            "state": state,
+            "ref": ref,
+            "as_of": as_of,
+            "age_days": age_days,
+            "error": error,
+        }
+
+
+def _relationship_kind(value: Any) -> str:
+    normalized = str(value or "").strip().upper()
+    if normalized in {"DIRECT_MEMBER", "PROXY"}:
+        return normalized
+    return "UNKNOWN"
+
+
+def _clock(value: Any, *, reason: str) -> dict[str, Any]:
+    return {"value": value, "reason": None if value is not None else reason}
+
+
+def _clock_set(*, observation: Any, availability: Any, computation: Any,
+               publication: Any, owner: str) -> dict[str, Any]:
+    prefix = f"owner_{owner}_has_no"
+    return {
+        "observation": _clock(
+            observation, reason=f"{prefix}_observation_clock"),
+        "availability": _clock(
+            availability, reason=f"{prefix}_availability_clock"),
+        "computation": _clock(
+            computation, reason=f"{prefix}_computation_clock"),
+        "publication": _clock(
+            publication, reason=f"{prefix}_publication_clock"),
+    }
+
+
+def _routing_state(*, member_q: str, setup_q: str, availability: str,
+                   expiry_state: str, confirmation: str,
+                   headwind: bool, extended: bool,
+                   relationship: str) -> dict[str, Any]:
+    if expiry_state == "EXPIRED" or setup_q == "EXPIRED":
+        state = "EXPIRED"
+    elif availability == "STALE" or setup_q == "STALE":
+        state = "DESCRIPTIVE_ONLY_SETUP_STALE"
+    elif availability in {"UNAVAILABLE", "NOT_IN_SNAPSHOT"}:
+        state = "DESCRIPTIVE_ONLY_SETUP_UNAVAILABLE"
+    elif member_q != "QUALIFIED":
+        state = "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE"
+    elif setup_q != "QUALIFIED":
+        state = "DESCRIPTIVE_ONLY_SETUP_INELIGIBLE"
+    elif relationship == "PROXY":
+        state = "DESCRIPTIVE_ONLY_PROXY"
+    elif relationship != "DIRECT_MEMBER":
+        state = "DESCRIPTIVE_ONLY_RELATIONSHIP_UNKNOWN"
+    elif headwind:
+        state = "QUALIFIED_GROUP_HEADWIND"
+    elif confirmation == "PENDING" and extended:
+        state = "QUALIFIED_PENDING_CONFIRMATION_EXTENDED"
+    elif confirmation == "PENDING":
+        state = "QUALIFIED_PENDING_CONFIRMATION"
+    elif extended:
+        state = "QUALIFIED_GROUP_EXTENDED"
+    else:
+        state = "QUALIFIED"
+    buy_states = {
+        "QUALIFIED",
+        "QUALIFIED_PENDING_CONFIRMATION",
+        "QUALIFIED_PENDING_CONFIRMATION_EXTENDED",
+        "QUALIFIED_GROUP_EXTENDED",
+    }
+    return {
+        "state": state,
+        "may_navigate": True,
+        "may_present_as_qualified_setup": state in buy_states,
+        "may_present_as_headwind_warning": state == "QUALIFIED_GROUP_HEADWIND",
+        "rank_effect": "NONE",
+        "size_effect": "NONE",
+    }
+
+
+def _confirmation(signal: Mapping[str, Any], entry_signal: Mapping[str, Any],
+                  expiry_state: str, qualification: str) -> str:
+    if expiry_state == "EXPIRED" or qualification == "EXPIRED":
+        return "EXPIRED"
+    if qualification == "STALE":
+        return "STALE"
+    if qualification == "NOT_QUALIFIED":
+        return "NOT_APPLICABLE"
+    if qualification != "QUALIFIED":
+        return "UNKNOWN"
+    last = signal.get("last") if isinstance(signal.get("last"), Mapping) else {}
+    if last.get("confirmed_date"):
+        return "CONFIRMED"
+    pending = (
+        str(signal.get("sub") or "").lower() == "pending"
+        or str(last.get("quality") or "").lower() == "pending"
+        or bool(signal.get("provisional"))
+        or bool(signal.get("tier_observation_provisional"))
+        or str(entry_signal.get("status") or "")
+        in {"await_confluence", "buy_soon", "watch"}
+        or "pending confirmation" in str(signal.get("reason") or "").lower()
+        or "confirmation pending" in str(signal.get("reason") or "").lower()
+    )
+    if pending:
+        return "PENDING"
+    return "UNCONFIRMED"
+
+
+def _expired_by_owner(signal: Mapping[str, Any],
+                      entry_signal: Mapping[str, Any],
+                      expires_at: Any, now: date) -> bool:
+    if str(signal.get("near_miss_reason") or "") == "freshness_expired":
+        return True
+    reason = str(signal.get("reason") or "").lower()
+    if "no longer a fresh entry" in reason or "expired" in reason:
+        return True
+    if str(entry_signal.get("status") or "").lower() == "expired":
+        return True
+    expiry_date = _parse_date(expires_at)
+    return bool(expiry_date is not None and expiry_date < now)
+
+
+def _explicit(row: Mapping[str, Any], keys: tuple[str, ...]) -> Any:
+    for key in keys:
+        value = row.get(key)
+        if value is None:
+            continue
+        if isinstance(value, Mapping):
+            nested = _first(value, "at", "date", "value", "expires_at")
+            if nested is not None:
+                return nested
+        else:
+            return value
+    return None
+
+
+def _first(row: Mapping[str, Any], *keys: str) -> Any:
+    if not isinstance(row, Mapping):
+        return None
+    for key in keys:
+        value = row.get(key)
+        if value is not None:
+            return value
+    return None
+
+
+def _read_json(path: Path) -> tuple[dict[str, Any] | None, str | None]:
+    try:
+        if not path.is_file():
+            return None, "missing"
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(raw, Mapping):
+            return None, "invalid_root"
+        return dict(raw), None
+    except (OSError, ValueError, TypeError) as exc:
+        return None, f"read_error:{type(exc).__name__}"
+
+
+def _as_date(value: date | datetime | None) -> date:
+    if value is None:
+        return datetime.now(timezone.utc).date()
+    if isinstance(value, datetime):
+        return value.date()
+    return value
+
+
+def _parse_date(value: Any) -> date | None:
+    if value is None:
+        return None
+    try:
+        return datetime.fromisoformat(str(value)[:10]).date()
+    except (TypeError, ValueError):
+        return None
+
+
+def _age_days(value: Any, now: date) -> int | None:
+    parsed = _parse_date(value)
+    if parsed is None:
+        return None
+    return (now - parsed).days
+
+
+
+__all__ = [
+    "AUTHORITY_BLOCK",
+    "ENTRY_CONTEXT_PERMISSIONS",
+    "ENTRY_CONTEXT_SCHEMA",
+    "EntryContextSource",
+    "GroupContext",
+    "READER_CONTRACT",
+]

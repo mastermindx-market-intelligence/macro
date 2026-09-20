@@ -391,6 +391,7 @@ def _build_row(row: dict, ctx: dict, lane: str, when: dict, what: dict,
         "group_state": ctx.get("state"),
         "chips": chips,
         "surfaced_by": ctx.get("surfaced_by") or [],
+        "entry_context": ctx.get("entry_context"),
         # --- gate detail (audit / template) ---
         "what": what,
         "when": {k: when[k] for k in
@@ -575,6 +576,7 @@ def compute(site=None) -> dict:
         "knobs_basis": "prior",          # calibrate via US-2's ledger (US_BOARD_MEASUREMENT.md)
         "reader_contract": {"version": READER_CONTRACT["version"],
                             "sources": list(READER_CONTRACT["sources"])},
+        "entry_context_contract": gc.entry_context_contract(),
         "rotation_coverage": gc.source_passport(),
         "board_passport": _passport("dual-gate+rotation-priority", "cross-sectional",
                                     None, len(cands)),

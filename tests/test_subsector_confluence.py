@@ -120,7 +120,7 @@ def test_score_group_real_subsector_semiconductors():
     assert "_candle" in g and not g["_candle"]["close"].dropna().empty
     # every member carries its own gate verdict shape
     for m in g["members"]:
-        assert "stock_tier" in m and "stock_buyable" in m
+        assert "stock_tier" in m and "stock_eligible" in m and "stock_buyable" in m
 
 
 # ----------------------------------------------------- China 同花顺 (THS) desk ----

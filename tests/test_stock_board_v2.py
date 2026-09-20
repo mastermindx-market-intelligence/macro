@@ -10,12 +10,16 @@ Covers the two load-bearing contracts:
     a hard gate), and the sparse event bonus entering as OR/max (not an average).
 """
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
 
 import engine.group_context as gcmod
-from engine.group_context import GroupContext, READER_CONTRACT
+from engine.group_context import (
+    AUTHORITY_BLOCK, ENTRY_CONTEXT_SCHEMA, EntryContextSource,
+    GroupContext, READER_CONTRACT,
+)
 from scripts import build_stock_board_v2 as v2
 
 
@@ -386,3 +390,543 @@ class TestW4ReflexivityTemplateIntegration:
         assert "overlay" in sig.parameters, (
             "render() must accept overlay kwarg (wired by build_reflexivity_overlay._rerender_v2_preview)"
         )
+
+
+def test_group_context_unattached_member_absence_is_snapshot_scoped(tmp_path):
+    import datetime
+    today = datetime.date.today().isoformat()
+    site = tmp_path / "site"
+    (site / "marketdata").mkdir(parents=True)
+    (site / "factordata").mkdir(parents=True)
+    (site / "marketdata" / "subsector_confluence.json").write_text(json.dumps({
+        "as_of": today, "weighting": "equal", "subsectors": [],
+    }))
+    (site / "factordata" / "us_standouts.json").write_text(json.dumps({
+        "as_of": today, "buy": [],
+    }))
+    ctx = GroupContext(site=site).for_name("ARM", "Technology")
+    entry = ctx["entry_context"]
+    assert entry["instrument"]["id"] == "ARM"
+    assert entry["relationship"]["availability"] == "NOT_IN_SNAPSHOT"
+    assert entry["relationship"]["absence_scope"] == (
+        "site/marketdata/subsector_confluence.json")
+    assert entry["relationship"]["global_absence"] is False
+    assert entry["relationship"]["group_id"] is None
+    assert entry["routing"]["may_present_as_qualified_setup"] is False
+    assert entry["routes"]["group"] == "subsectors.html"
+
+
+def test_group_context_synthesizes_entry_contract_from_existing_owner_artifacts(tmp_path):
+    """The machine consumer must not depend on the contested publisher port."""
+    import datetime
+    today = datetime.date.today().isoformat()
+    site = tmp_path / "site"
+    (site / "marketdata").mkdir(parents=True)
+    (site / "factordata").mkdir(parents=True)
+    (site / "live").mkdir(parents=True)
+    (site / "marketdata" / "subsector_confluence.json").write_text(json.dumps({
+        "as_of": today, "weighting": "equal", "subsectors": [{
+            "key": "semiconductors", "kind": "subsector",
+            "label": "Semiconductors", "class": "entry_now", "as_of": today,
+            "entry": {
+                "tier": "T1", "buyable": True, "sub": "pending",
+                "reason": "buy fired; forward confirmation pending",
+            },
+            "regime": {
+                "state": "EXTENDED", "side": "avoid",
+                "headwind": False, "tailwind": False,
+            },
+            "members": [{
+                "ticker": "NVDA", "stock_tier": "T1", "stock_weight": 0.9,
+                "stock_ticks": 1, "stock_bars_to_cross": None,
+                "stock_buyable": True, "stock_state": "long-bias",
+            }],
+        }],
+    }))
+    signal = _rich_row(ticker="NVDA")["signal"]
+    signal["sub"] = "pending"
+    signal["reason"] = "buy fired; forward confirmation pending"
+    signal["last"] = {"quality": "pending", "confirmed_date": None}
+    standouts_row = _rich_row(ticker="NVDA")
+    standouts_row["signal"] = signal
+    standouts_row["entry_signal"] = {
+        "status": "partial", "buy_zone": {"low": 100.0, "high": 105.0},
+        "stop": 95.0, "timing": {"next_trigger": "hold above 105"},
+    }
+    (site / "factordata" / "us_standouts.json").write_text(json.dumps({
+        "as_of": today, "buy": [standouts_row],
+    }))
+    (site / "live" / "entry_radar.json").write_text(json.dumps({
+        "schema": "entry_radar.live/v1", "asof": today + "T15:00:00Z",
+        "session": today, "names": [],
+    }))
+
+    gc = GroupContext(site=site)
+    ctx = gc.for_name("NVDA", "Technology")
+    entry = ctx["entry_context"]
+    assert entry["schema"] == "mastermind.entry_context.v1"
+    assert entry["qualification"]["member_gate"] == "QUALIFIED"
+    assert entry["qualification"]["stock_setup"] == "QUALIFIED"
+    assert entry["group_context"]["extended"] is True
+    assert entry["confirmation"]["state"] == "PENDING"
+    assert entry["routing"]["state"] == "QUALIFIED_PENDING_CONFIRMATION_EXTENDED"
+    assert entry["routes"] == {
+        "instrument": "stock.html#NVDA",
+        "group": "subsector/semiconductors.html",
+    }
+    assert entry["levels"]["zone"] == {"low": 100.0, "high": 105.0}
+    assert entry["levels"]["invalidation"] == 95.0
+    assert entry["permissions"]["may_link"] is True
+    assert not any(entry["authority"].values())
+    assert gc.entry_context_contract()["schema"] == "mastermind.entry_context.v1"
+
+
+def test_entry_context_reaches_board_consumer_without_changing_leadership(tmp_path):
+    """Lane D context is copied through GroupContext and Board V2, never into ranking math."""
+    import datetime
+    today = datetime.date.today().isoformat()
+    md = tmp_path / "site" / "marketdata"
+    md.mkdir(parents=True)
+    base_group = {
+        "key": "semiconductors", "label": "Semiconductors", "class": "entry_now",
+        "entry": {"tier": "T1"}, "regime": {"state": "EXTENDED"},
+        "members": [{"ticker": "NVDA"}],
+    }
+    (md / "subsector_confluence.json").write_text(json.dumps(
+        {"as_of": today, "subsectors": [base_group]}))
+    plain = gcmod.GroupContext(site=tmp_path / "site").for_name("NVDA", "Technology")
+
+    base_group["members"][0]["entry_context"] = {
+        "schema": "mastermind.entry_context.v1",
+        "authority": {"may_rank": True, "may_gate": True, "may_size": True,
+                      "may_escalate": True, "may_trade": True},
+        "routing": {"state": "QUALIFIED_PENDING_CONFIRMATION_EXTENDED",
+                    "may_present_as_qualified_setup": True},
+    }
+    (md / "subsector_confluence.json").write_text(json.dumps(
+        {"as_of": today, "subsectors": [base_group]}))
+    enriched = gcmod.GroupContext(site=tmp_path / "site").for_name("NVDA", "Technology")
+    assert enriched["entry_context"]["schema"] == "mastermind.entry_context.v1"
+    assert not any(enriched["entry_context"]["authority"].values())
+    assert enriched["entry_context"]["routing"]["may_present_as_qualified_setup"] is False
+    assert enriched["leadership"] == plain["leadership"]
+    assert enriched["components"] == plain["components"]
+
+    row = _rich_row(ticker="NVDA")
+    baseline_row = v2._build_row(
+        row, plain, "entry_open", v2._when_gate(row),
+        v2._what_gate(row, plain["leadership"]), None, 0.8)
+    board_row = v2._build_row(
+        row, enriched, "entry_open", v2._when_gate(row),
+        v2._what_gate(row, enriched["leadership"]), None, 0.8)
+    assert board_row["entry_context"] == enriched["entry_context"]
+    assert "entry_context" not in board_row["when"]
+    assert {k: v for k, v in board_row.items() if k != "entry_context"} == {
+        k: v for k, v in baseline_row.items() if k != "entry_context"
+    }
+
+# ---------------------------------------------------------------------------
+# Lane D entry-context contract: qualified stock routing is independent of the
+# parent group and carries no rank, gate, size, escalation, or trade authority.
+# ---------------------------------------------------------------------------
+NOW = date(2026, 9, 19)
+
+
+def _standouts(*, as_of: str = "2026-09-18") -> dict:
+    return {
+        "as_of": as_of,
+        "buy": [{
+            "ticker": "AAA",
+            "signal": {
+                "eligible": True,
+                "tier_cascade": "T1",
+                "sub": "pending",
+                "reason": "buy fired; forward confirmation pending",
+                "last": {
+                    "quality": "pending",
+                    "signal_date": "2026-09-18",
+                    "confirmed_date": None,
+                },
+                "ticks": 1,
+                "fresh_bars": 1,
+                "near_miss_reason": None,
+            },
+            "entry_signal": {
+                "status": "partial",
+                "urgency": "now",
+                "headline": "Partial entry — half size now",
+                "buy_zone": {"low": 99.0, "high": 101.0, "pct_from_spot": -1.0},
+                "stop": 95.0,
+                "chase_above": 103.0,
+                "timing": {"next_trigger": "weekly turn confirms"},
+            },
+            "prophet": {
+                "version": "us_prophet_v3",
+                "score": 61.2,
+                "score_kind": "unfitted equal-weight evidence-family vote",
+            },
+        }],
+        "watch": [],
+        "leaders": [],
+        "laggards": [],
+        "ran": [],
+    }
+
+
+def _radar() -> dict:
+    return {
+        "schema": "entry_radar.live_payload/v1",
+        "asof": "2026-09-19T15:00:00Z",
+        "names": [{
+            "ticker": "AAA",
+            "state": "evaluated",
+            "reasons": [],
+            "research_priority": [{"episode_id": "ep-aaa", "state": "ACCRUING"}],
+            "lanes": {"c1": [{"condition_met": True}]},
+        }],
+    }
+
+
+def _source(*, as_of: str = "2026-09-18") -> EntryContextSource:
+    return EntryContextSource.from_documents(
+        standouts=_standouts(as_of=as_of),
+        radar=_radar(),
+        now=NOW,
+    )
+
+
+def _group(*, state: str = "EXTENDED", buyable: bool = True,
+           pending: bool = True, headwind: bool = False) -> dict:
+    return {
+        "key": "semiconductors",
+        "kind": "subsector",
+        "label": "Semiconductors",
+        "as_of": "2026-09-18",
+        "entry": {
+            "tier": "T1" if buyable else None,
+            "buyable": buyable,
+            "eligible": buyable,
+            "sub": "pending" if pending else None,
+            "reason": "buy fired; forward confirmation pending" if pending else "confirmed",
+        },
+        "regime": {
+            "state": state,
+            "headwind": headwind,
+            "tailwind": not headwind and state != "EXTENDED",
+        },
+    }
+
+
+def _member_gate(*, buyable: bool = True, expired: bool = False) -> dict:
+    return {
+        "eligible": buyable and not expired,
+        "tier_cascade": "T1" if buyable and not expired else None,
+        "sub": "pending" if buyable and not expired else None,
+        "reason": ("held but risen for many days — no longer a fresh entry"
+                   if expired else "buy fired; forward confirmation pending"),
+        "near_miss_reason": "freshness_expired" if expired else None,
+        "ticks": 1 if not expired else 4,
+        "fresh_bars": 1 if not expired else 12,
+        "last": {"quality": "pending", "confirmed_date": None},
+    }
+
+
+def _context(source: EntryContextSource, *, member_buyable: bool = True,
+             member_eligible: bool | None = None,
+             member_gate: dict | None = None, group: dict | None = None,
+             ticker: str = "AAA") -> dict:
+    return source.for_member(
+        ticker=ticker,
+        member_gate=member_gate or _member_gate(buyable=member_buyable),
+        member_buyable=member_buyable,
+        member_eligible=member_eligible,
+        group=group or _group(),
+        stock_route=f"stock.html#{ticker}",
+        group_route="subsector/semiconductors.html",
+        relationship_kind="DIRECT_MEMBER",
+    )
+
+
+def test_group_t1_extended_pending_preserves_independent_dimensions_and_exact_levels():
+    ctx = _context(_source())
+    assert ctx["schema"] == ENTRY_CONTEXT_SCHEMA
+    assert ctx["authority"] == AUTHORITY_BLOCK
+    assert ctx["qualification"]["member_gate"] == "QUALIFIED"
+    assert ctx["qualification"]["stock_setup"] == "QUALIFIED"
+    assert ctx["confirmation"]["state"] == "PENDING"
+    assert ctx["confirmation"]["group_state"] == "PENDING"
+    assert ctx["observation"] == {
+        "market": "US", "timeframe": "1D", "session": "EOD",
+        "horizon": "daily", "weighting": None,
+    }
+    assert ctx["group_context"]["entry_tier"] == "T1"
+    assert ctx["group_context"]["extended"] is True
+    assert ctx["group_context"]["headwind"] is False
+    assert ctx["levels"]["zone"] == {"low": 99.0, "high": 101.0, "pct_from_spot": -1.0}
+    assert ctx["levels"]["trigger"] == "weekly turn confirms"
+    assert ctx["levels"]["invalidation"] == 95.0
+    assert ctx["levels"]["chase_above"] == 103.0
+    assert ctx["expiry"]["expires_at"] is None
+    assert ctx["expiry"]["expires_at_reason"] == "owner_record_has_no_absolute_expiry"
+    assert ctx["routing"]["state"] == "QUALIFIED_PENDING_CONFIRMATION_EXTENDED"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is True
+    assert ctx["routes"] == {
+        "instrument": "stock.html#AAA",
+        "group": "subsector/semiconductors.html",
+    }
+
+
+def test_group_eligible_member_ineligible_never_inherits_stock_authority():
+    ctx = _context(_source(), member_buyable=False, member_gate=_member_gate(buyable=False),
+                   group=_group(buyable=True))
+    assert ctx["qualification"]["member_gate"] == "NOT_QUALIFIED"
+    assert ctx["qualification"]["stock_setup"] == "QUALIFIED"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+    assert not any(ctx["authority"].values())
+
+
+def test_group_forward_confirmation_pending_owner_phrase_is_pending():
+    group = _group()
+    group["entry"].pop("sub", None)
+    group["entry"]["reason"] = "buy fired; forward confirmation pending"
+    ctx = _context(_source(), group=group)
+    assert ctx["confirmation"]["group_state"] == "PENDING"
+
+
+def test_member_eligible_group_headwind_is_warning_not_buy():
+    ctx = _context(_source(), group=_group(state="TOPPING", headwind=True))
+    assert ctx["qualification"]["member_gate"] == "QUALIFIED"
+    assert ctx["qualification"]["stock_setup"] == "QUALIFIED"
+    assert ctx["group_context"]["headwind"] is True
+    assert ctx["routing"]["state"] == "QUALIFIED_GROUP_HEADWIND"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+    assert ctx["routing"]["may_present_as_headwind_warning"] is True
+
+
+def test_absent_ticker_is_scoped_snapshot_absence_not_global_absence():
+    ctx = _context(_source(), ticker="ARM")
+    assert ctx["stock_setup"]["availability"] == "NOT_IN_SNAPSHOT"
+    assert ctx["stock_setup"]["scope"] == "site/factordata/us_standouts.json"
+    assert ctx["stock_setup"]["global_absence"] is False
+    assert ctx["qualification"]["stock_setup"] == "UNKNOWN"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_SETUP_UNAVAILABLE"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+
+
+def test_stale_stock_setup_is_not_current_opportunity():
+    ctx = _context(_source(as_of="2026-09-01"))
+    assert ctx["stock_setup"]["availability"] == "STALE"
+    assert ctx["expiry"]["state"] == "STALE"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_SETUP_STALE"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+
+
+def test_source_tier_expiry_stays_expired_and_does_not_invent_expiry_date():
+    docs = _standouts()
+    row = docs["buy"][0]
+    row["signal"]["eligible"] = False
+    row["signal"]["tier_cascade"] = None
+    row["signal"]["near_miss_reason"] = "freshness_expired"
+    row["signal"]["reason"] = "held but risen for many days — no longer a fresh entry"
+    source = EntryContextSource.from_documents(standouts=docs, radar=_radar(), now=NOW)
+    ctx = _context(source, member_buyable=False, member_gate=_member_gate(expired=True))
+    assert ctx["expiry"]["state"] == "EXPIRED"
+    assert ctx["expiry"]["expires_at"] is None
+    assert ctx["qualification"]["stock_setup"] == "EXPIRED"
+    assert ctx["routing"]["state"] == "EXPIRED"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+
+
+def test_missing_levels_remain_null():
+    docs = _standouts()
+    docs["buy"][0]["entry_signal"] = {"status": "buy_now", "timing": {}}
+    source = EntryContextSource.from_documents(standouts=docs, radar=None, now=NOW)
+    ctx = _context(source)
+    assert ctx["levels"] == {
+        "trigger": None,
+        "zone": None,
+        "invalidation": None,
+        "chase_above": None,
+    }
+    assert ctx["live_entry_radar"]["availability"] == "UNAVAILABLE"
+
+
+def test_permissions_setup_identity_and_correction_lineage_are_explicit():
+    docs = _standouts()
+    row = docs["buy"][0]
+    row.update({
+        "source_setup_id": "setup-aaa",
+        "id": "generic-row-id-must-not-win",
+        "revision_seq": 4,
+        "correction_of": "setup-aaa-r3",
+        "content_sha256": "sha256:" + "a" * 64,
+    })
+    source = EntryContextSource.from_documents(standouts=docs, radar=_radar(), now=NOW)
+    ctx = _context(source)
+    assert ctx["permissions"] == {
+        "may_describe": True, "may_link": True,
+        "may_rank": False, "may_gate": False, "may_size": False,
+        "may_escalate": False, "may_trade": False,
+    }
+    assert ctx["stock_setup"]["source_setup_id"] == "setup-aaa"
+    assert ctx["lineage"] == {
+        "state": "AVAILABLE",
+        "source_revision": 4,
+        "correction_of": "setup-aaa-r3",
+        "supersedes": None,
+        "source_content_sha256": "sha256:" + "a" * 64,
+        "reason": None,
+    }
+
+
+def test_generic_row_id_is_not_promoted_to_setup_identity():
+    docs = _standouts()
+    docs["buy"][0]["id"] = "generic-row-id"
+    source = EntryContextSource.from_documents(standouts=docs, radar=_radar(), now=NOW)
+    ctx = _context(source)
+    assert ctx["stock_setup"]["source_setup_id"] is None
+    assert ctx["stock_setup"]["source_setup_id_reason"] == "owner_record_has_no_id"
+
+
+def test_clocks_keep_observation_computation_availability_and_publication_distinct():
+    docs = _standouts()
+    docs["generated_utc"] = "2026-09-19T00:15:00Z"
+    radar = _radar()
+    radar["session"] = "2026-09-19"
+    source = EntryContextSource.from_documents(standouts=docs, radar=radar, now=NOW)
+    group = _group()
+    group["generated_utc"] = "2026-09-19T00:20:00Z"
+    ctx = _context(source, group=group)
+    assert ctx["clocks"]["stock_setup"] == {
+        "observation": {"value": "2026-09-18", "reason": None},
+        "availability": {"value": None, "reason": "owner_artifact_has_no_availability_clock"},
+        "computation": {"value": "2026-09-19T00:15:00Z", "reason": None},
+        "publication": {"value": None, "reason": "owner_artifact_has_no_publication_clock"},
+    }
+    assert ctx["clocks"]["group"] == {
+        "observation": {"value": "2026-09-18", "reason": None},
+        "availability": {"value": None, "reason": "owner_record_has_no_availability_clock"},
+        "computation": {"value": "2026-09-19T00:20:00Z", "reason": None},
+        "publication": {"value": None, "reason": "owner_record_has_no_publication_clock"},
+    }
+    assert ctx["clocks"]["live_entry_radar"] == {
+        "observation": {"value": "2026-09-19", "reason": None},
+        "availability": {"value": None, "reason": "owner_artifact_has_no_availability_clock"},
+        "computation": {"value": "2026-09-19T15:00:00Z", "reason": None},
+        "publication": {"value": None, "reason": "owner_artifact_has_no_publication_clock"},
+    }
+
+
+def test_proxy_relationship_is_not_labeled_as_direct_instrument():
+    source = _source()
+    ctx = source.for_member(
+        ticker="AAA", member_gate=_member_gate(), member_buyable=True,
+        group=_group(), stock_route="stock.html#AAA",
+        group_route="subsector/semiconductors.html", relationship_kind="PROXY",
+    )
+    assert ctx["instrument"]["kind"] == "PROXY_INSTRUMENT"
+    assert ctx["relationship"]["kind"] == "PROXY"
+
+
+def test_proxy_relationship_cannot_be_presented_as_qualified_stock_setup():
+    source = _source()
+    ctx = source.for_member(
+        ticker="AAA", member_gate=_member_gate(), member_buyable=True,
+        member_eligible=True, group=_group(), stock_route="stock.html#AAA",
+        group_route="subsector/semiconductors.html", relationship_kind="PROXY",
+    )
+    assert ctx["relationship"]["kind"] == "PROXY"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_PROXY"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+    assert not any(ctx["authority"].values())
+
+
+def test_unknown_relationship_is_unknown_instrument_and_never_buyable():
+    source = _source()
+    ctx = source.for_member(
+        ticker="AAA", member_gate=_member_gate(), member_buyable=True,
+        member_eligible=True, group=_group(), stock_route="stock.html#AAA",
+        group_route="subsector/semiconductors.html", relationship_kind="UNKNOWN",
+    )
+    assert ctx["instrument"]["kind"] == "UNKNOWN_INSTRUMENT"
+    assert ctx["relationship"]["kind"] == "UNKNOWN"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_RELATIONSHIP_UNKNOWN"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+
+
+def test_member_eligibility_is_preserved_separately_from_fresh_buyability():
+    ctx = _context(
+        _source(), member_buyable=False, member_eligible=True,
+        member_gate=_member_gate(buyable=False),
+    )
+    assert ctx["qualification"]["member_eligibility"] == "QUALIFIED"
+    assert ctx["qualification"]["member_gate"] == "NOT_QUALIFIED"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+
+
+def test_nonqualified_setup_pending_phrase_is_not_pending_confirmation():
+    docs = _standouts()
+    row = docs["buy"][0]
+    row["signal"]["eligible"] = False
+    row["signal"]["tier_cascade"] = None
+    row["signal"]["sub"] = "pending"
+    row["signal"]["reason"] = "buy fired; forward confirmation pending"
+    source = EntryContextSource.from_documents(standouts=docs, radar=_radar(), now=NOW)
+    ctx = _context(source, member_buyable=True, member_eligible=True)
+    assert ctx["qualification"]["stock_setup"] == "NOT_QUALIFIED"
+    assert ctx["confirmation"]["state"] == "NOT_APPLICABLE"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_SETUP_INELIGIBLE"
+
+
+def test_stale_radar_without_name_does_not_claim_not_detected():
+    radar = {
+        "schema": "entry_radar.live_payload/v1",
+        "asof": "2026-09-01T15:00:00Z",
+        "session": "2026-09-01",
+        "names": [],
+    }
+    source = EntryContextSource.from_documents(
+        standouts=_standouts(), radar=radar, now=NOW)
+    ctx = _context(source)
+    assert ctx["live_entry_radar"]["availability"] == "STALE"
+    assert ctx["live_entry_radar"]["state"] is None
+
+
+def test_group_context_rebuilds_owner_context_instead_of_trusting_embedded_authority(tmp_path):
+    site = tmp_path / "site"
+    (site / "marketdata").mkdir(parents=True)
+    (site / "factordata").mkdir(parents=True)
+    group = _group()
+    group["members"] = [{
+        "ticker": "AAA",
+        "stock_tier": None,
+        "stock_weight": 0.0,
+        "stock_ticks": 4,
+        "stock_bars_to_cross": None,
+        "stock_eligible": True,
+        "stock_buyable": False,
+        "stock_state": "watch",
+        "entry_context": {
+            "schema": ENTRY_CONTEXT_SCHEMA,
+            "authority": {
+                "may_rank": True, "may_gate": True, "may_size": True,
+                "may_escalate": True, "may_trade": True,
+            },
+            "routing": {
+                "state": "QUALIFIED",
+                "may_present_as_qualified_setup": True,
+            },
+        },
+    }]
+    (site / "marketdata" / "subsector_confluence.json").write_text(json.dumps({
+        "as_of": "2026-09-18", "subsectors": [group],
+    }))
+    (site / "factordata" / "us_standouts.json").write_text(json.dumps(_standouts()))
+    ctx = GroupContext(site=site).for_name("AAA", "Technology")["entry_context"]
+    assert ctx["qualification"]["member_eligibility"] == "QUALIFIED"
+    assert ctx["qualification"]["member_gate"] == "NOT_QUALIFIED"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False
+    assert not any(ctx["authority"].values())
