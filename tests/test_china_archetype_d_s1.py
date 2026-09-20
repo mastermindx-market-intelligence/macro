@@ -100,6 +100,8 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
     # grow into a second standalone hero block and make the restored page wordier.
     assert 'class="cnx-hero-read"' not in TPL
     assert 'class="cnx-live-freshness"' in TPL
+    assert 'class="cnx-stance' not in TPL
+    assert "{% if _health_n and _health_ok < _health_n %}" in TPL
 
     # The richer original information architecture remains the page skeleton.
     for marker in (
@@ -109,6 +111,12 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "ROW 4: Property + AI Brief + Alerts Centre",
     ):
         assert marker in TPL
+
+
+def test_hero_freshness_only_spends_space_when_a_feed_is_degraded() -> None:
+    assert "{% set _health_n = health | length if health else 0 %}" in TPL
+    assert "{% set _health_ok = health | selectattr('status','equalto','ok') | list | length if health else 0 %}" in TPL
+    assert "{% if _health_n and _health_ok < _health_n %}" in TPL
 
 
 def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
