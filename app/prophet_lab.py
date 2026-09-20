@@ -391,6 +391,60 @@ def hub_prophet(request: Request) -> Response:
 __all__ = ["router", "require_site_full_user"]
 
 
+def _candidate_state_for_snapshot(snapshot: Any, episode_id: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Project B3 from the same immutable B1 snapshot used by the research view.
+
+    This is request-scoped composition only: it writes no state, mints no episode,
+    and cannot strengthen B4 or any trading authority.
+    """
+    from datetime import datetime, timezone
+    from engine.prophet_candidate_state import project_candidate_states
+    from engine.prophet_candidate_state_sources import (
+        emergence_inputs, load_radar_fact_index,
+    )
+    from lib.nyse_calendar import expected_last_session
+
+    receipt = getattr(snapshot.generation, "receipt", None)
+    recorded_at = receipt.get("recorded_at") if isinstance(receipt, Mapping) else None
+    if not isinstance(recorded_at, str) or not recorded_at.endswith("Z"):
+        raise IntelligenceVectorContractError("B1 reconciliation clock unavailable for B3")
+    try:
+        recorded_clock = datetime.fromisoformat(recorded_at[:-1] + "+00:00")
+    except ValueError as exc:
+        raise IntelligenceVectorContractError("B1 reconciliation clock invalid for B3") from exc
+    if recorded_clock.tzinfo is None or recorded_clock.utcoffset() != timezone.utc.utcoffset(recorded_clock):
+        raise IntelligenceVectorContractError("B1 reconciliation clock is not UTC")
+
+    radar_path = _env_path(
+        "PROPHET_LAB_ENTRY_RADAR_FORWARD_PATH",
+        _REPO_ROOT / "data" / "entry_radar" / "forward.parquet",
+    )
+    if radar_path is None:
+        raise IntelligenceVectorContractError("Entry Radar forward source path unavailable")
+    radar = load_radar_fact_index(radar_path)
+    emergence, degraded = emergence_inputs(snapshot, radar=radar)
+    projection = project_candidate_states(
+        snapshot,
+        market_session=expected_last_session(recorded_clock).isoformat(),
+        generated_at=recorded_at,
+        emergence_by_episode=emergence,
+        maturity_stage_by_episode={},
+    )
+    matches = [row for row in projection["rows"] if row.get("episode_id") == episode_id]
+    if len(matches) != 1:
+        raise IntelligenceVectorContractError("B3 projection did not resolve exact B1 episode")
+    context = {
+        "candidate_generation_id": projection["candidate_generation_id"],
+        "projection_id": projection["projection_id"],
+        "market_session": projection["market_session"],
+        "generated_at": projection["generated_at"],
+        "definition_era": projection["definition_era"],
+        "emergence_degraded_reasons": list(degraded.get(episode_id, ())),
+        "authority": dict(projection["authority"]),
+    }
+    return dict(matches[0]), context
+
+
 @router.get("/api/prophet/lab/v1/episodes/{episode_id}/research-view")
 def episode_research_view_v1(
     episode_id: str,
@@ -456,8 +510,17 @@ def episode_research_view_v1(
         if (expected_generation is not None and
                 payload["episode_ref"]["generation_id"] != expected_generation):
             return _response({"error": "prophet_episode_generation_changed"}, status_code=409)
+        candidate_state = candidate_state_context = None
+        if snapshot is not None:
+            candidate_state, candidate_state_context = _candidate_state_for_snapshot(
+                snapshot, episode_id
+            )
         if format == "json":
-            return _response(build_earnings_view(payload, language=language))
+            view = build_earnings_view(payload, language=language)
+            if candidate_state is not None:
+                view["candidate_state"] = candidate_state
+                view["candidate_state_context"] = candidate_state_context
+            return _response(view)
         style_hash = b64encode(sha256(STYLE.encode("utf-8")).digest()).decode("ascii")
         headers = dict(_PRIVATE_HEADERS)
         headers["Content-Security-Policy"] = (

@@ -108,6 +108,37 @@ def client(monkeypatch):
 
 def url(): return f"/api/prophet/lab/v1/episodes/{_D5_EPISODE_ID}/research-view"
 
+
+def _b3_snapshot(*, entry_status=None):
+    from engine.us_candidate_episode import (
+        CandidateEpisodeStoreSnapshot, ValidatedCandidateEpisodeGeneration,
+    )
+
+    source = _d5_snapshot()
+    episode = deepcopy(source.generation.episodes[0])
+    episode.update({
+        "episode_state": "ACTIVE",
+        "terminal_reason": None,
+        "superseded_by": None,
+        "correction_state": "current",
+    })
+    if entry_status is not None:
+        episode["entry_status"] = entry_status
+    return CandidateEpisodeStoreSnapshot(
+        generation_id=source.generation_id,
+        generation=ValidatedCandidateEpisodeGeneration(
+            path=source.generation.path,
+            events=source.generation.events,
+            suppressions=source.generation.suppressions,
+            episodes=(episode,),
+            receipt={
+                "schema": "prophet.candidate_episode_reconcile_receipt/v1",
+                "recorded_at": "2026-07-31T23:00:00Z",
+                "source_counts": {"turn_watch": {"mapped": 0}},
+            },
+        ),
+    )
+
 def private(response):
     assert response.headers["cache-control"] == "private, no-store"
     assert response.headers["vary"] == "Authorization"
@@ -507,3 +538,47 @@ def test_stale_research_generation_pin_refuses_before_d5_source_build(client, mo
     private(response)
     assert response.json()["error"] == "prophet_episode_generation_changed"
     assert build_calls == []
+
+
+def test_pinned_research_view_projects_b3_from_same_b1_snapshot_without_b4(monkeypatch, client, tmp_path):
+    c, _ = client
+    snapshot = _b3_snapshot(entry_status="buy_now")
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _root: snapshot)
+    monkeypatch.setenv("PROPHET_LAB_ENTRY_RADAR_FORWARD_PATH", str(tmp_path / "missing-radar.parquet"))
+
+    response = c.get(url(), params={"expected_generation": snapshot.generation_id})
+
+    assert response.status_code == 200
+    private(response)
+    body = response.json()
+    state = body["candidate_state"]
+    assert state["schema"] == "prophet.candidate_state/v1"
+    assert state["episode_id"] == _D5_EPISODE_ID
+    assert state["candidate_generation_id"] == snapshot.generation_id
+    assert state["episode_lifecycle"]["state"] == "ACTIVE"
+    assert state["emergence_state"]["state"] == "UNESTIMABLE"
+    assert state["emergence_state"]["reason"] == "SOURCE_RELATION_UNRESOLVED"
+    assert state["maturity_state"]["state"] == "UNESTIMABLE"
+    assert state["entry_availability"] == {
+        "state": "UNAVAILABLE_DATA", "reason": "B4_NOT_AVAILABLE",
+    }
+    assert not any(state["authority"].values())
+    assert body["episode_ref"]["generation_id"] == state["candidate_generation_id"]
+    assert body["candidate_state_context"]["candidate_generation_id"] == snapshot.generation_id
+    assert body["candidate_state_context"]["projection_id"].startswith("pcs:")
+
+
+def test_pinned_research_view_does_not_depend_on_a_second_candidate_state_store(monkeypatch, client, tmp_path):
+    c, _ = client
+    snapshot = _b3_snapshot()
+    monkeypatch.setattr(api, "load_candidate_episode_store_snapshot", lambda _root: snapshot)
+    poison = tmp_path / "candidate-state.json"
+    poison.write_text("DO_NOT_READ_FROM_SECOND_STORE", encoding="utf-8")
+    monkeypatch.setenv("PROPHET_LAB_CANDIDATE_STATE_PATH", str(poison))
+    monkeypatch.setenv("PROPHET_LAB_ENTRY_RADAR_FORWARD_PATH", str(tmp_path / "missing-radar.parquet"))
+
+    response = c.get(url(), params={"expected_generation": snapshot.generation_id})
+
+    assert response.status_code == 200
+    assert response.json()["candidate_state"]["candidate_generation_id"] == snapshot.generation_id
+    assert "DO_NOT_READ_FROM_SECOND_STORE" not in response.text
