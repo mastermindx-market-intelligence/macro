@@ -79,6 +79,7 @@ from scripts.ci_scope_dependencies import (  # noqa: E402
 
 
 PACK_JOB_ID = "ci-pack"
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
 DISABLED_IF = "${{ false }}"
 ALLOWED_JOB_KEYS = {
     "gate",
@@ -1294,26 +1295,74 @@ def _job_diff_match(job: LegacyJob, changed: Iterable[str]) -> tuple[str, str] |
     return None
 
 
+def _global_invalidator_paths(
+    changed: Iterable[str],
+    *,
+    bounded_manifest_delta: bool = False,
+) -> list[str]:
+    """Return changed paths that make per-job scope unknowable.
+
+    legacy-jobs.yml remains a global invalidator by default. The only
+    exception is caller-supplied positive evidence that its semantic delta is
+    bounded to existing logical jobs. The exact path is
+    exempted before glob matching so the broader .github/ci/** rule keeps
+    every other CI-manifest/control file fail-closed.
+    """
+    return [
+        path
+        for path in changed
+        if not (
+            bounded_manifest_delta
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and _matches_any(GLOBAL_INVALIDATORS, path)
+    ]
+
+
 def select_jobs(
-    jobs: Iterable[LegacyJob], changed: list[str] | None
+    jobs: Iterable[LegacyJob],
+    changed: list[str] | None,
+    *,
+    manifest_changed_job_ids: Iterable[str] | None = None,
 ) -> tuple[list[LegacyJob], str]:
-    """Pick the jobs a diff can actually affect, erring toward running more."""
+    """Pick the jobs a diff can actually affect, erring toward running more.
+
+    manifest_changed_job_ids is tri-state. None means there is no positive
+    proof that a legacy-manifest edit is bounded, so the historical full-suite
+    invalidation remains. A tuple (including empty for a semantic no-op) means
+    the higher-level planner compared exact base and candidate manifests and
+    proved the semantic delta is limited to existing logical jobs. Every job
+    named by that proof is forced into the selection.
+    """
     jobs = list(jobs)
     if changed is None:
         return jobs, "full suite: changed-file set unavailable"
-    invalidators = [path for path in changed if _matches_any(GLOBAL_INVALIDATORS, path)]
+    bounded_manifest = manifest_changed_job_ids is not None
+    invalidators = _global_invalidator_paths(
+        changed,
+        bounded_manifest_delta=bounded_manifest,
+    )
     if invalidators:
         return jobs, f"full suite: global invalidator changed ({invalidators[0]})"
+    forced_job_ids = set(manifest_changed_job_ids or ())
     scoped_jobs = [job for job in jobs if job.is_scoped]
     unowned = [
         path for path in changed
-        if not any(_job_diff_match(job, [path]) for job in scoped_jobs)
+        if not (
+            bounded_manifest
+            and path == LEGACY_MANIFEST_PATH
+        )
+        and not any(_job_diff_match(job, [path]) for job in scoped_jobs)
         and not _matches_any(PASSIVE_UNOWNED_PATTERNS, path)
     ]
     selected = [
         job
         for job in jobs
-        if not job.is_scoped or _job_diff_match(job, changed)
+        if (
+            not job.is_scoped
+            or _job_diff_match(job, changed)
+            or job.job_id in forced_job_ids
+        )
     ]
     unscoped = sum(1 for job in jobs if not job.is_scoped)
     reason = (
@@ -1325,6 +1374,14 @@ def select_jobs(
         reason += (
             f"; {len(unowned)} unowned path(s) did not widen "
             f"({unowned[0]})"
+        )
+    if bounded_manifest and LEGACY_MANIFEST_PATH in changed:
+        forced_present = sum(
+            1 for job in selected if job.job_id in forced_job_ids
+        )
+        reason += (
+            "; bounded manifest job delta "
+            f"changed {forced_present} selected job(s)"
         )
     return selected, reason
 
@@ -1338,6 +1395,121 @@ def _workflow_jobs(path: Path) -> dict[str, dict[str, Any]]:
         raise ManifestError(f"{path} must contain a jobs mapping")
     return payload["jobs"]
 
+
+def _classify_bounded_manifest_job_delta(
+    base_document: object,
+    candidate_document: object,
+) -> tuple[str, ...] | None:
+    """Return exactly the existing jobs whose manifest semantics changed.
+
+    This proves the legacy manifest edit is job-local rather than globally
+    semantic. The candidate manifest has already passed load_legacy_jobs
+    validation before this classifier is consulted. We still fail closed when
+    the YAML document shape changes, any non-jobs top-level semantic changes,
+    an incumbent job is removed/renamed/reordered, or a job moves between the
+    code/data gate planes. Those cases preserve the historical full-suite
+    invalidation. Additive jobs are admitted because candidate validation plus
+    forced selection proves their complete new execution surface.
+
+    Within one existing job, any candidate-local change is bounded to that job:
+    commands, setup dependencies, paths/scope, timeout, proof IDs and step
+    structure cannot change what an unchanged sibling job means. The changed
+    job is forced into the candidate plan regardless of its new path scope, so
+    narrowing its own declaration cannot hide the job on the PR that makes the
+    change.
+    """
+    if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
+        return None
+    if set(base_document) != set(candidate_document):
+        return None
+    for key in base_document:
+        if key != "jobs" and base_document[key] != candidate_document[key]:
+            return None
+
+    base_jobs = base_document.get("jobs")
+    candidate_jobs = candidate_document.get("jobs")
+    if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
+        return None
+    base_order = list(base_jobs)
+    candidate_order = list(candidate_jobs)
+    if any(job_id not in candidate_jobs for job_id in base_order):
+        # Deletion/rename removes a proof surface and remains full-suite.
+        return None
+    if [job_id for job_id in candidate_order if job_id in base_jobs] != base_order:
+        # Reordering existing jobs changes ordinal/partition semantics. Additive
+        # jobs may be inserted anywhere, but incumbent relative order is frozen.
+        return None
+
+    changed_job_ids: list[str] = []
+    for job_id in candidate_order:
+        after = candidate_jobs[job_id]
+        if job_id not in base_jobs:
+            # The loader validates every ordinary candidate job before this
+            # classifier. PACK_JOB_ID is a synthetic-fixture compatibility hole
+            # in that loader and is therefore never eligible for bounded add.
+            if job_id == PACK_JOB_ID or not isinstance(after, dict):
+                return None
+            changed_job_ids.append(str(job_id))
+            continue
+        before = base_jobs[job_id]
+        if before == after:
+            continue
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            return None
+        # Moving a job between code and post-nightly data proof planes changes
+        # which authority workflow can execute it. Preserve the full-suite
+        # invalidator rather than treating that as an ordinary job-local edit.
+        if before.get("gate", "code") != after.get("gate", "code"):
+            return None
+        changed_job_ids.append(str(job_id))
+    return tuple(changed_job_ids)
+
+
+def _safe_manifest_changed_job_ids(
+    workflow: Path,
+    changed_from: str | None,
+    *,
+    repo_root: Path | None = None,
+) -> tuple[str, ...] | None:
+    """Prove a job-local manifest delta from exact base/candidate YAML bytes.
+
+    Any inability to bind the repository path, exact 40-hex base commit, base
+    object, UTF-8 bytes or YAML structure returns None and therefore keeps the
+    historical full-suite invalidation. The candidate itself is validated
+    separately through load_legacy_jobs before this proof is used.
+    """
+    if changed_from is None or not re.fullmatch(r"[0-9a-f]{40}", changed_from):
+        return None
+    if repo_root is None:
+        try:
+            from scripts.audit_unrun_tests import ROOT as audit_repository_root
+        except (ImportError, OSError, RuntimeError, SyntaxError):
+            return None
+        root = Path(audit_repository_root).resolve()
+    else:
+        root = repo_root.resolve()
+    try:
+        relative = workflow.resolve().relative_to(root).as_posix()
+    except (OSError, ValueError):
+        return None
+    if relative != LEGACY_MANIFEST_PATH:
+        return None
+    try:
+        base = subprocess.run(
+            ["git", "-C", str(root), "show", f"{changed_from}:{LEGACY_MANIFEST_PATH}"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+        candidate = workflow.read_text(encoding="utf-8")
+        base_document = yaml.safe_load(base)
+        candidate_document = yaml.safe_load(candidate)
+    except (OSError, UnicodeError, subprocess.CalledProcessError, yaml.YAMLError):
+        return None
+    return _classify_bounded_manifest_job_delta(
+        base_document,
+        candidate_document,
+    )
 
 def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     """Estimate work well enough to avoid putting both giant suites together."""
@@ -1811,6 +1983,7 @@ def build_plan(
     changed_from: str | None,
     scope_mode: str,
     pack_count: int = 12,
+    manifest_changed_job_ids: Iterable[str] | None = None,
     workflow_run_id: str | None = None,
     workflow: str | None = None,
     event: str | None = None,
@@ -1830,7 +2003,11 @@ def build_plan(
     # one is not merely useless — it spends a minute deriving ownership that
     # select_jobs is about to discard.
     invalidated = bool(
-        changed and any(_matches_any(GLOBAL_INVALIDATORS, path) for path in changed)
+        changed
+        and _global_invalidator_paths(
+            changed,
+            bounded_manifest_delta=manifest_changed_job_ids is not None,
+        )
     )
     scope_summary = "scope inference not needed"
     if (
@@ -1841,7 +2018,11 @@ def build_plan(
     ):
         jobs, scope_summary = infer_job_scopes(jobs)
 
-    eligible, reason = select_jobs(jobs, changed)
+    eligible, reason = select_jobs(
+        jobs,
+        changed,
+        manifest_changed_job_ids=manifest_changed_job_ids,
+    )
     predicted_job_ids = tuple(job.job_id for job in eligible)
     if scope_mode == "off" and changed_from:
         eligible = jobs
@@ -2030,12 +2211,19 @@ def plan_from_workflow(
         changed = resolve_changed_files(
             changed_from, explicit_file=changed_files_file
         )
+        manifest_changed_job_ids: tuple[str, ...] | None = None
+        if changed and LEGACY_MANIFEST_PATH in changed:
+            manifest_changed_job_ids = _safe_manifest_changed_job_ids(
+                workflow,
+                changed_from,
+            )
         return build_plan(
             legacy,
             changed,
             changed_from=changed_from,
             scope_mode=scope_mode,
             pack_count=pack_count,
+            manifest_changed_job_ids=manifest_changed_job_ids,
             workflow_run_id=workflow_run_id,
             workflow=workflow_name,
             event=event,
