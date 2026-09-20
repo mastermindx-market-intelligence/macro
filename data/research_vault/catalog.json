@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T15:14:28.674623+00:00",
-  "count": 2506,
+  "generated_at": "2026-09-20T15:29:31.712913+00:00",
+  "count": 2507,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1148,6 +1148,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tqf3g8jusrd-f2b69d",
+      "title": "Asia Pacific equities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:35Z",
+      "summary_points": [
+        "Fiscal Interventions Drive Resilience: ASEAN markets rose 4.4% despite oil price hikes due to subsidies, price controls, and inventory restocking (Malaysia: 108+ days, Thailand: 108 days), contrasting with March's 8% drop.",
+        "Indonesia's Fiscal Deficit Amplifies Risk: Indonesia faces disproportionate fiscal strain from oil spikes (USD 100 vs $80 = IDR 200tr, 0.7% GDP), with financials more impacted than equity markets, unlike net exporters like Malaysia.",
+        "Philippines' Consumption Vulnerability: Philippines most exposed to oil-driven inflation (6.1% y/y), with sustained 20% oil rise raising CPI by 0.6pp and limited fiscal capacity causing severe pass-through to consumption sectors.",
+        "Sector-Specific Oil Sensitivity: Thailand's tourism/consumer sectors face near-term drag from oil prices, while tech/energy/financials remain resilient; Philippines' industrials/financials resilient but consumption weakens."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
