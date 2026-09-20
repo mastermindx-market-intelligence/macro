@@ -36,6 +36,7 @@ Both axes of the rename are exercised, and neither may be dropped:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
@@ -460,3 +461,37 @@ def test_lifetime_predicate_matches_theme_js(rel: str) -> None:
     assert "p.tier === 'unlimited' || p.source === 'comp'" in theme, (
         "theme.js lifetime predicate moved — re-derive the onboard.js copy"
     )
+
+
+@pytest.mark.parametrize("rel", REL_ONBOARD)
+def test_light_only_landing_isolated_from_lazy_auth_theme(rel: str) -> None:
+    """Auth may load the shared dashboard theme, but the marketing landing stays light."""
+    src = (ROOT / rel).read_text(encoding="utf-8")
+
+    light_only = _extract_fn(src, "lightOnlyHost")
+    assert 'link[href*="landing.css"]' in light_only
+    assert "!hostThemed()" in light_only
+
+    restore = _extract_fn(src, "restoreLightOnlyHostTheme")
+    assert 'classList.remove("soft-contrast")' in restore
+    assert 'setAttribute("data-theme", "light")' in restore
+
+    # Server preference sync in theme.js calls setTheme()/setThemeAuto(), which
+    # dispatch themechange. The landing consumes that event without rewriting the
+    # saved preference, so a signed-in dark-dashboard user cannot black out home.
+    assert 'window.addEventListener("themechange", restoreLightOnlyHostTheme);' in src
+    auth = _extract_fn(src, "ensureAuthBroker")
+    assert 's.src = "theme.js"' in auth
+    assert "restoreLightOnlyHostTheme();" in auth
+
+    choice = _extract_fn(src, "applyThemeChoice")
+    assert 'localStorage.setItem("theme", pref)' in choice
+    assert "restoreLightOnlyHostTheme();" in choice
+
+
+@pytest.mark.parametrize("path", ("templates/index.html", "site/index.html"))
+def test_landing_onboard_reference_tracks_current_content_hash(path: str) -> None:
+    """onboard.js is immutable at the edge, so the repair must ship a fresh URL."""
+    expected = hashlib.sha256((ROOT / "templates" / "onboard.js").read_bytes()).hexdigest()[:8]
+    html = (ROOT / path).read_text(encoding="utf-8")
+    assert f'onboard.js?v={expected}' in html
