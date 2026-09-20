@@ -1,4 +1,0 @@
-{
-  "expected_code": "malformed_workspace",
-  "input": "not-a-workspace-object"
-}

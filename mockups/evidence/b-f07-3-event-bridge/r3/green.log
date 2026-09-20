@@ -1,4 +1,0 @@
-Interpreter: /Library/Frameworks/Python.framework/Versions/3.12/bin/python3 3.12.10 9.1.1
-Command: PATH="/Library/Frameworks/Python.framework/Versions/3.12/bin:$PATH" python3 -m pytest tests/test_valuation_event_bridge.py -q -p no:cacheprovider --basetemp .heal-7134/pytest-green
-............................                                             [100%]
-28 passed in 2.58s

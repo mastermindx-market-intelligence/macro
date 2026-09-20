@@ -40,7 +40,13 @@ changed:
   - path: research/theme_intelligence_acceptance/lane_c_recheck_result.json
     what: "Recorded the corrected latest-head evaluator PASS with Lane C still REJECTED_FOR_REPAIR on seven blockers."
   - path: research/theme_intelligence_acceptance/LANE_C_LATEST_HEAD_RECHECK.md
-    what: "Returned the latest-head positive evidence, seven blockers, closed Agent OS parse finding, dirty-writer collision note, and exact continuation."
+    what: "Preserved the d649 latest-head recheck as superseded evidence."
+  - path: research/theme_intelligence_acceptance/lane_c_2208_cases.v1.json
+    what: "Preregistered Lane C head 2208fe before reacceptance, expecting stale reclaim closed and six independent blockers to remain."
+  - path: research/theme_intelligence_acceptance/lane_c_2208_result.json
+    what: "Recorded exact-head evaluator PASS with Lane C still REJECTED_FOR_REPAIR on six blockers."
+  - path: research/theme_intelligence_acceptance/LANE_C_2208_RECHECK.md
+    what: "Returned the accepted stale-reclaim/calendar delta, six remaining blockers, exact tests, CI distinction, and continuation."
   - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
     what: "Preserved the Lane C REJECTED_FOR_REPAIR receipt."
   - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
@@ -82,7 +88,7 @@ verified:
     command: "git diff --name-only b0129d26307f54e1cfd6cf88c3115c3e0393a806"
     result: "PASS: only Lane F research/evidence plus this Agent OS handoff; current_main_result is renamed, not replaced by a second result plane."
   - claim: "The latest Lane F continuation re-pinned protected procedure before modifying evaluator evidence."
-    command: "Read Mastermind protected master docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, and REVIEW_RETURN from 23061ab70a7fb79636b7962d9b440a3de23fe016."
+    command: "Read Mastermind protected master docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, and REVIEW_RETURN from bceb5e1593b1dd7e9e34c3bccbceb02e6ccd5a26."
     result: "PASS: mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap-major 1; the same protected commit supplied every loaded skill."
   - claim: "The concurrent Lane F hardening head was independently re-executed before this continuation."
     command: "On detached 0cadc84b6640eef2c964bc07552b30b10507633a: compileall; acceptance_spec.py; harness.py --mutations; harness.py --require-product-pass; check_trial_registration.py; git diff --check."
@@ -96,6 +102,12 @@ verified:
   - claim: "Current protected-main movement is path-disjoint from Lane F owned files."
     command: "Compare Macro cd64f6dd896dbd78830d0d9d51998c5c9e44f584..78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c against PR #7453 owned paths."
     result: "PASS: main was 112 commits ahead at the comparison and had zero Lane F owned-path overlap; the final two commits after the prior comparison were Grey Deer/Risk Radar paths only. This is bounded compatibility evidence, not final merge or release proof."
+  - claim: "Lane C repair head 2208fe was independently reaccepted from a detached clean checkout."
+    command: "python3 research/theme_intelligence_acceptance/lane_c_acceptance.py --candidate-root <clean detached 2208fe checkout> --cases research/theme_intelligence_acceptance/lane_c_2208_cases.v1.json --run-suites"
+    result: "PASS as evaluator: stale reclaim leakage closed; 103 passed / 3 skipped subsector, 45 passed / 3 skipped ThemeState/builder, 20 passed sector-page; exactly six preregistered blockers remain; result SHA-256 d73781dba1d28f35ae3e9afabe3d6cbf4d8274b398c4fd422e9a0762902768ec."
+  - claim: "Lane C exact-head hosted semantic execution completed independently of the contract-delta failure."
+    command: "GitHub Actions run 35499134338 on 2208fe40039d356929fac0f96b626edc33d42288."
+    result: "PASS for all twelve semantic packs; overall CI red is contract-delta on the three unwired Lane C suites plus unrelated tests/test_unified_dashboard_b1.py."
 unverified:
   - claim: "The review-hardened final PR head has an independent external code-review PASS."
     what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
@@ -111,14 +123,14 @@ unresolved:
   - "PR #7453 remains Draft/HOLD; Lane F does not Ready, merge, deploy, or self-accept it."
   - "Frozen subject 68f80a8edf78966a3a89e1294038654944e9c217 remains REJECTED_CURRENT_SOURCE on two defects represented by three checks."
   - "RE-RATING lane interpretation remains LANE_A_ADJUDICATION_REQUIRED; a clean mutation candidate is held rather than labeled acceptable."
-  - "Lane C latest committed head d6495be43dfabe67ef6cc2a3627c3923d510583e remains REJECTED_FOR_REPAIR on seven blockers. Its original source worktree also has uncommitted repair bytes; Lane F did not touch or treat them as a candidate. A, B, D, and E remain NOT_YET_PROVEN."
+  - "Lane C pushed repair head 2208fe40039d356929fac0f96b626edc33d42288 remains REJECTED_FOR_REPAIR on six blockers after closing stale reclaim leakage. Its source worktree is already dirty with the next health repair; Lane F did not touch those bytes. A, B, D, and E remain NOT_YET_PROVEN."
   - "Hosted CI, independent review of the repaired exact head, deployment, browser proof, and prospective outcomes remain separate gates."
 next_actions:
   - "Lane A: consume the v2 receipts and adjudicate whether RE-RATING 'working' means thesis health only; preserve a separate late/extended entry posture and no entry permission."
   - "Incumbent production owners: repair temporal stage-regression evidence and PRECIPICE classification on their own carriers; return pushed exact heads for reacceptance."
   - "Lawful independent reviewer: review the final pushed PR #7453 head, including the real Medical Devices and artifact-health discriminators."
   - "Lane A/incumbent CI owner: add or decline one package-level command wiring; do not create six competing CI edits."
-  - "Lane F successor: preserve the existing Lane C writer; when it returns a pushed exact head, re-pin and rerun the latest-head evaluator. Re-pin each other returned A-E head and report accepted/rejected/not-proven separately."
+  - "Lane F successor: preserve the existing Lane C writer; when it returns the next pushed exact head after 2208fe, re-pin and rerun the evaluator. Re-pin each other returned A-E head and report accepted/rejected/not-proven separately."
 do_not_redo:
   - "Do not rerun or reinterpret held #7064/#7095 as expected-return evidence."
   - "Do not edit A-E production sources from this evaluator carrier."
@@ -167,10 +179,10 @@ Use PR #7453 as Lane F's single evidence carrier. Route the two production repai
 
 ## Lane C latest-head continuity
 
-Lane C latest committed head `d6495be43dfabe67ef6cc2a3627c3923d510583e` / tree `6e90955346c2c4dc47b562f3566ac767547d49c2` remains `REJECTED_FOR_REPAIR`.
+Lane C pushed repair head `2208fe40039d356929fac0f96b626edc33d42288` / tree `29a774e0254d3224526466cbf0bf216fb5718b4a` remains `REJECTED_FOR_REPAIR`, but the stale-reclaim blocker is now closed.
 
-The latest recheck closes only the old Agent OS parse blocker: validation is now 1,140 records with zero errors. Seven blockers remain: stale reclaim leakage, stale leadership health not propagated, unavailable producer receipt lost, producer failure reason lost, three new suites unwired in hosted CI, eight trailing-whitespace diff-hygiene errors, and unreproducible real-price proof bytes.
+Exact reacceptance passes as evaluator with 103 passed / 3 skipped subsector tests, 45 passed / 3 skipped ThemeState/builder tests, 20 passed sector-page tests, Agent OS 0 errors, mixed parent/subtheme separation, and all-false authority. The repair also uses the incumbent NYSE calendar settle/holiday boundary and keeps internal missing bars null. `lane_c_2208_result.json` SHA-256 is `d73781dba1d28f35ae3e9afabe3d6cbf4d8274b398c4fd422e9a0762902768ec`.
 
-The exact recheck preserves 102 passed / 3 skipped subsector tests, 44 passed / 3 skipped ThemeState/builder tests, 20 passed sector-page tests, mixed parent/subtheme separation, and all-false authority. `lane_c_recheck_result.json` SHA-256 is `2b8d5513eea0ee25233e3a659f5cdb50d0f09c50ae81dbc4fed4ef4d99b499a4`.
+Six blockers remain: stale leadership health not propagated, unavailable producer receipt lost, producer failure reason lost, three new suites unwired in hosted CI, eight trailing-whitespace diff-hygiene errors, and unreproducible real-price proof bytes. Hosted semantic packs all pass; contract-delta remains red on those three suites plus unrelated `tests/test_unified_dashboard_b1.py`.
 
-At recheck time the original Lane C worktree was dirty in `engine/neuralweb/thematic_state.py` and `tests/test_thematic_state_leadership_receipt.py`, with uncommitted work toward deduplicated observation references. Lane F did not edit, stage, reset, commit, or accept those bytes. Wait for that existing writer to return a pushed exact head before reacceptance.
+The Lane C source worktree is already dirty with the next shared-consumer health repair. Lane F did not edit, stage, reset, commit, or accept those uncommitted bytes. Preserve that writer and reaccept only its next pushed exact head.
