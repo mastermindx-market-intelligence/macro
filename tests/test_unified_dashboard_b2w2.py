@@ -737,10 +737,28 @@ def test_build_site_helper_is_not_named_intl_ms_view():
 
 
 def test_committed_hk_cn_latest_json_is_persist_output():
-    """R-W2-11 / R-W2-12: committed HK/CN latest.json must be persist()
-    output — compact JSON (no indent), labels from engine._LABEL, never
-    the previous leg's re-originated 趋险 map."""
-    from engine.market_state import _LABEL
+    """R-W2-11 / R-W2-12: committed HK/CN latest.json must be
+    persist(snapshot(profile)) output — the engine's own field set and
+    key order — not a re-typed {score, verdict, labels} subset dumped
+    through persist(). Compact JSON (no indent), labels from engine._LABEL,
+    never the previous leg's re-originated 趋险 map."""
+    from engine.market_state import _LABEL, market_state_snapshot
+    from engine.market_state_hk import HK_PROFILE
+
+    probe = market_state_snapshot(_hk_input(), frame=None, alerts=[],
+                                  profile=HK_PROFILE)
+    assert probe is not None
+    canonical_keys = list(probe.keys())
+    # snapshot() places "market" immediately before the caveats
+    # (engine/market_state.py market_state_snapshot return dict).
+    assert canonical_keys.index("market") < canonical_keys.index("caveat_en")
+    blender_fields = (
+        "score_ceiling", "score_caps", "score_gap", "radar",
+        "components", "mtf", "overrides", "flip_en", "flip_zh",
+        "alerts_count", "input_vintages", "stale_inputs",
+        "degraded_components",
+    )
+
     for rel, key in (
         ("data/hk_market_state/latest.json", "hk"),
         ("data/china_market_state/latest.json", "cn"),
@@ -750,6 +768,7 @@ def test_committed_hk_cn_latest_json_is_persist_output():
             pytest.skip(f"{rel} absent in this checkout")
         raw = path.read_text()
         snap = json.loads(raw)
+        keys = list(snap.keys())
         assert snap.get("market") == key
         verdict = snap["verdict"]
         assert snap["label_en"] == _LABEL[verdict][0]
@@ -759,6 +778,25 @@ def test_committed_hk_cn_latest_json_is_persist_output():
         # with no indent. A pretty-printed file is the old hand-typed splice.
         assert "\n  " not in raw, (
             f"{rel} is pretty-printed; persist() writes compact JSON"
+        )
+        missing = [k for k in blender_fields if k not in snap]
+        assert not missing, (
+            f"{rel} is a re-typed subset, not snapshot() output; "
+            f"missing blender fields {missing}. keys={keys}"
+        )
+        for k in canonical_keys:
+            assert k in snap, (
+                f"{rel} missing snapshot() field {k!r}; keys={keys}"
+            )
+        assert keys.index("market") < keys.index("caveat_en"), (
+            f"{rel} must place 'market' before the caveats the way "
+            f"market_state_snapshot() emits them; keys={keys}"
+        )
+        # persist() writer identity: compact json.dumps of the snap.
+        rewritten = json.dumps(snap, ensure_ascii=False, default=str)
+        assert raw == rewritten, (
+            f"{rel} is not persist() writer output "
+            f"(json.dumps(..., ensure_ascii=False, default=str))"
         )
 
 
@@ -815,17 +853,43 @@ def test_spine_slice_aria_labels_are_plain_caveat_sentences(intl_root):
     assert "engine caveat" not in slice_
     assert 'aria-label="engine caveat"' not in html
     # Each bound row's disclosure aria-label is the actual caveat sentence
-    # (as-of prefix + engine caveat), in both locales.
+    # (as-of prefix + engine caveat), in both locales — on the attribute,
+    # not merely as visible disclosure text (a non-sentence aria-label
+    # would still pass if we only searched the row body).
     hk_row = _hk_row(slice_)
     cn_row = _cn_row(slice_)
+
+    def _disc(asof, caveat, *, zh: bool) -> str:
+        if not asof:
+            return caveat
+        return (f"截至 {asof}。{caveat}" if zh
+                else f"As of {asof}. {caveat}")
+
+    hk_en = _disc(hk.get("asof"), hk["caveat_en"], zh=False)
+    hk_zh = _disc(hk.get("asof"), hk["caveat_zh"], zh=True)
+    cn_en = _disc(cn.get("asof"), cn["caveat_en"], zh=False)
+    cn_zh = _disc(cn.get("asof"), cn["caveat_zh"], zh=True)
+    assert f'aria-label="{hk_en}"' in hk_row, (
+        f"HK EN aria-label must be the full disclosure sentence; "
+        f"expected aria-label={hk_en!r} in {hk_row[-500:]!r}"
+    )
+    assert f'aria-label="{hk_zh}"' in hk_row, (
+        f"HK ZH aria-label must be the full disclosure sentence; "
+        f"expected aria-label={hk_zh!r} in {hk_row[-500:]!r}"
+    )
+    assert f'aria-label="{cn_en}"' in cn_row, (
+        f"CN EN aria-label must be the full disclosure sentence; "
+        f"expected aria-label={cn_en!r} in {cn_row[-500:]!r}"
+    )
+    assert f'aria-label="{cn_zh}"' in cn_row, (
+        f"CN ZH aria-label must be the full disclosure sentence; "
+        f"expected aria-label={cn_zh!r} in {cn_row[-500:]!r}"
+    )
+    # Visible disclosure still carries the caveat sentences.
     assert hk["caveat_en"] in hk_row
     assert hk["caveat_zh"] in hk_row
-    assert f'aria-label="{hk["caveat_en"]}"' in hk_row or hk["caveat_en"] in hk_row
     assert cn["caveat_en"] in cn_row
     assert cn["caveat_zh"] in cn_row
-    # EN/ZH aria-labels exist on the disclosure spans.
-    assert hk_row.count("aria-label=") >= 2
-    assert cn_row.count("aria-label=") >= 2
 
 
 def test_spine_slice_asof_lives_in_disclosure_not_name_cell(intl_root):
