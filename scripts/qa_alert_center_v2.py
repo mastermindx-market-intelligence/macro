@@ -243,6 +243,18 @@ def main():
             page.screenshot(path=str(out / 'desktop-forex-smile-regime.png'))
             report['screenshots'].append('desktop-forex-smile-regime.png')
             report['checks'].append('Dollar-smile regimes expose source taxonomy and current inputs without claiming macro outcomes')
+            triple_red_id = next(
+                id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') == 'forex.triple_red')
+            triple_red_brief = payload['explorer']['briefs'][triple_red_id]
+            page.goto(url + '#view=explore&id=' + triple_red_id, wait_until='domcontentloaded')
+            triple_red_text = page.locator('#ac-detail').inner_text()
+            assert triple_red_brief['limitation'] in triple_red_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == triple_red_brief['next_action']
+            assert triple_red_brief['evidence_label'] in triple_red_text
+            page.screenshot(path=str(out / 'desktop-forex-triple-red.png'))
+            report['screenshots'].append('desktop-forex-triple-red.png')
+            report['checks'].append('Triple-red co-movement exposes cross-asset stress verification without claiming forced deleveraging as the cause')
             scenario_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
                                if brief.get('family') == 'forex.scenario')
             scenario_brief = payload['explorer']['briefs'][scenario_id]

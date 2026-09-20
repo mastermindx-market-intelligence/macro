@@ -219,6 +219,17 @@ _FOREX_SMILE_ZONE = {
 _FOREX_SMILE_DETAIL = re.compile(
     r'^The dollar-smile quadrant \(dollar direction × risk\) shifted (.+?) → (.+?)\.$'
 )
+_FOREX_TRIPLE_RED_ACTIVE_HEADLINE = 'Triple-red: USD, equities, and Treasuries all declining'
+_FOREX_TRIPLE_RED_ACTIVE_DETAIL = (
+    'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) '
+    'have all fallen over the past month. This is a potential stress-selling signal '
+    '— watch for forced deleveraging.'
+)
+_FOREX_TRIPLE_RED_CLEAR_HEADLINE = 'Triple-red cleared: safe-haven function may be restoring'
+_FOREX_TRIPLE_RED_CLEAR_DETAIL = (
+    'The dollar, equities, and Treasuries are no longer all declining together. '
+    'The acute co-movement stress has eased.'
+)
 _BONDS_MOVE_HEADLINE = re.compile(
     r'^Rates volatility \(MOVE\) → (calm|normal|elevated|crisis)$'
 )
@@ -863,6 +874,95 @@ def build_alert_brief(row: dict) -> dict:
                 'evidence_label_zh': '打开当前外汇时间线',
             })
             return brief
+
+    triple_headline = _plain(row.get('headline') or '')
+    triple_active = (
+        triple_headline == _FOREX_TRIPLE_RED_ACTIVE_HEADLINE and
+        detail == _FOREX_TRIPLE_RED_ACTIVE_DETAIL
+    )
+    triple_clear = (
+        triple_headline == _FOREX_TRIPLE_RED_CLEAR_HEADLINE and
+        detail == _FOREX_TRIPLE_RED_CLEAR_DETAIL
+    )
+    if (source == 'forex' and type_ == 'triple_red' and
+            str(row.get('asset') or '') == 'dollar' and (triple_active or triple_clear)):
+        age_limit = ''
+        age_limit_zh = ''
+        if age is None:
+            age_limit = ' Event age is unavailable; current validity cannot be established.'
+            age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+        elif age > 2:
+            age_limit = f' This event is {age} days old; recheck the current cross-asset state.'
+            age_limit_zh = f' 该事件已过去 {age} 天；请复核当前跨资产状态。'
+        recurrence_limit = ''
+        recurrence_limit_zh = ''
+        if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+            recurrence_limit = (
+                ' Repeated firings are observations, not proof this co-movement persisted '
+                'between them.')
+            recurrence_limit_zh = ' 重复触发只是观测，并不能证明该共振状态在观测之间持续存在。'
+        documented_limit = (
+            ' Source conviction is documented, but this family is not separately backtested '
+            'as a timing signal.'
+            if str(validation.get('verdict') or '') == 'documented'
+            else ' This co-movement state is context, not a calibrated timing signal.'
+        )
+        documented_limit_zh = (
+            ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+            if str(validation.get('verdict') or '') == 'documented'
+            else ' 该共振状态只是背景，并非校准择时信号。'
+        )
+        if triple_active:
+            implication = (
+                'The source observed USD, S&P 500 and Treasury prices all falling over the '
+                'past month, a cross-asset stress configuration worth checking for signs of '
+                'forced selling.')
+            implication_zh = (
+                '来源观察到美元、标普500与美债价格过去一月同步下跌；这是值得检查是否存在强制卖出的'
+                '跨资产压力组合。')
+            limitation = (
+                'Joint declines do not establish forced deleveraging as the cause, prove the '
+                'dollar has permanently lost safe-haven behavior, predict the next market move, '
+                'or provide a directional trade instruction.')
+            limitation_zh = (
+                '同步下跌并不能证明强制去杠杆就是原因，也不能证明美元永久失去避险属性、预测下一步行情'
+                '或构成方向交易指令。')
+            reassessment = (
+                'Change the read if any of USD, equities or Treasury prices stop declining '
+                'together on the current source window, or the source marks triple-red cleared.')
+            reassessment_zh = (
+                '若当前来源窗口中美元、股市或美债价格不再同步下跌，或来源标记三重下跌已解除，则改变判断。')
+        else:
+            implication = (
+                'The source no longer sees USD, equities and Treasury prices all declining '
+                'together, so the acute triple-red co-movement has eased.')
+            implication_zh = '来源不再看到美元、股市与美债价格同步下跌，因此急性三重下跌共振已经缓解。'
+            limitation = (
+                'A cleared triple-red state does not prove safe-haven behavior is fully restored, '
+                'system stress is absent, or risk assets are safe to add.')
+            limitation_zh = (
+                '三重下跌解除并不能证明避险属性已完全恢复、系统压力已经消失，或风险资产可以安全加仓。')
+            reassessment = (
+                'Change the read if all three legs return to simultaneous declines or the '
+                'source reactivates triple-red.')
+            reassessment_zh = '若三项资产重新同步下跌，或来源再次激活三重下跌，则改变判断。'
+        brief.update({
+            'status': 'supported', 'family': 'forex.triple_red',
+            'change': detail, 'change_zh': detail_zh,
+            'implication': implication, 'implication_zh': implication_zh,
+            'limitation': limitation + documented_limit + age_limit + recurrence_limit,
+            'limitation_zh': limitation_zh + documented_limit_zh + age_limit_zh + recurrence_limit_zh,
+            'next_action': (
+                'Open the current FX timeline and verify the latest one-month direction of USD, '
+                'S&P 500 and Treasury prices before changing risk.'),
+            'next_action_zh': '打开当前外汇时间线，核对美元、标普500与美债价格最新一个月方向，再调整风险。',
+            'next_action_label': 'Recheck triple-red',
+            'next_action_label_zh': '复核三重下跌',
+            'reassessment': reassessment, 'reassessment_zh': reassessment_zh,
+            'evidence_label': 'Open current FX timeline',
+            'evidence_label_zh': '打开当前外汇时间线',
+        })
+        return brief
 
     scenario_headline = _FOREX_SCENARIO_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
     scenario_active = _FOREX_SCENARIO_ACTIVE.fullmatch(detail)

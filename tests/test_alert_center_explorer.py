@@ -1531,3 +1531,73 @@ def test_vector_structure_shift_abstains_on_headline_asset_or_score_mismatch():
     briefs = project(list(rows))['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_forex_triple_red_active_keeps_forced_deleveraging_as_hypothesis():
+    row = signal('triple-red-active', source='forex', type_='triple_red', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 3, 'fire_count': 22, 'continuity_verified': False,
+        'headline': 'Triple-red: USD, equities, and Treasuries all declining',
+        'detail': 'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) have all fallen over the past month. This is a potential stress-selling signal — watch for forced deleveraging.',
+        'detail_zh': '美元未发挥避险功能：美元、标普500及美债（价格）过去一月均下跌。警惕强制去杠杆风险。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.triple_red'
+    assert brief['attention'] == 'for_awareness'
+    assert 'USD, S&P 500 and Treasury prices all falling' in brief['implication']
+    assert 'do not establish forced deleveraging as the cause' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert 'not proof this co-movement persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck triple-red'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+
+
+def test_forex_triple_red_cleared_does_not_claim_system_safety():
+    row = signal('triple-red-clear', source='forex', type_='triple_red', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'headline': 'Triple-red cleared: safe-haven function may be restoring',
+        'detail': 'The dollar, equities, and Treasuries are no longer all declining together. The acute co-movement stress has eased.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.triple_red'
+    assert brief['attention'] == 'for_awareness'
+    assert 'acute triple-red co-movement has eased' in brief['implication']
+    assert 'does not prove safe-haven behavior is fully restored' in brief['limitation']
+    assert 'risk assets are safe to add' in brief['limitation']
+    assert 'return to simultaneous declines' in brief['reassessment']
+    assert brief['next_action_label'] == 'Recheck triple-red'
+
+
+def test_forex_triple_red_abstains_on_asset_headline_or_detail_mismatch():
+    wrong_asset = signal('triple-red-asset', source='forex', type_='triple_red', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Triple-red: USD, equities, and Treasuries all declining',
+        'detail': 'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) have all fallen over the past month. This is a potential stress-selling signal — watch for forced deleveraging.',
+        'link': 'forex.html#timeline',
+    })
+    mixed = signal('triple-red-mixed', source='forex', type_='triple_red', asset='dollar')
+    mixed.update({
+        'headline': 'Triple-red cleared: safe-haven function may be restoring',
+        'detail': 'The dollar is not acting as a safe haven: USD, S&P 500, and Treasuries (prices) have all fallen over the past month. This is a potential stress-selling signal — watch for forced deleveraging.',
+        'link': 'forex.html#timeline',
+    })
+    malformed = signal('triple-red-malformed', source='forex', type_='triple_red', asset='dollar')
+    malformed.update({
+        'headline': 'Triple-red: USD, equities, and Treasuries all declining',
+        'detail': 'All three assets fell so forced deleveraging is confirmed.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (wrong_asset, mixed, malformed)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
