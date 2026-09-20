@@ -205,19 +205,19 @@ def _nodes_as_known(
         computed_date = _clock_date(computed, "computed_at")
         if computed_date > knowledge_cutoff:
             continue
-        retire = row.get("retire_date")
-        effective = (
-            _parse_date(retire, "retire_date")
-            if not _is_null(retire)
-            else computed_date
-        )
-        if effective > asof:
-            continue
         candidate = (str(computed), index, row)
         if node_id not in latest or candidate[:2] > latest[node_id][:2]:
             latest[node_id] = candidate
 
     for node_id, (_computed, _index, lifecycle) in latest.items():
+        retire = lifecycle.get("retire_date")
+        effective = (
+            _parse_date(retire, "retire_date")
+            if not _is_null(retire)
+            else _clock_date(lifecycle.get("computed_at"), "computed_at")
+        )
+        if effective > asof:
+            continue
         row = dict(visible[node_id])
         row["status"] = lifecycle.get("status")
         row["retire_date"] = lifecycle.get("retire_date")

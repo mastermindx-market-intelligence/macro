@@ -1686,3 +1686,27 @@ def test_probation_decision_clock_contract_is_fail_closed() -> None:
     assert any("still proposed" in error for error in probation.validate(impossible))
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(impossible, schema)
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("asof,cutoff,expected", [
+    ("2026-06-01", "2026-04-15", "retired"),
+    ("2026-06-01", "2026-06-01", "canonical"),
+    ("2026-07-01", "2026-06-01", "retired"),
+    ("2026-02-01", "2026-06-01", "canonical"),
+])
+def test_latest_lifecycle_belief_precedes_effective_time(reverse, asof, cutoff, expected):
+    """A postponed retirement must not resurrect the superseded correction."""
+    local, theme = "ltheme:finviz:ai", "theme:ai_semiconductors"
+    rows = [_ont_lifecycle(node, retire_date=retire, computed_at=computed)
+            for node in (local, theme) for retire, computed in [
+                ("2026-03-01", "2026-04-01T00:00:00Z"),
+                ("2026-07-01", "2026-05-01T00:00:00Z")]]
+    view = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        edges=[_ont_edge("e-map", "EXPRESSES", local, theme)],
+        lifecycle=list(reversed(rows)) if reverse else rows)
+    result = compose_neighborhood(view, node_id=local, asof=asof,
+        knowledge_cutoff=cutoff, rights_resolver=_ont_rights)
+    assert result["subject"]["status"] == expected
+    assert result["relations"][0]["peer"]["status"] == expected
