@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-19T20:39:42.557532+00:00",
+  "as_of": "2026-09-20T01:09:57.811383+00:00",
   "posts_seen": 24,
   "seen_total": 213,
-  "evaluated": 1,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-09-18-presidential-message-on-the-79th-birthday-of-the-united-states-air-force",
-      "importance": 5,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

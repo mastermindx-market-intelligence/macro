@@ -2215,6 +2215,7 @@ jobs:
       - "engine/cross_asset.py"
       - "engine/cycles.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -2878,6 +2879,10 @@ jobs:
       # ok/empty/unavailable contract — the same dependency set this step already
       # installs. Theme Tracker's owning job unrun-subsector-themes is gate: data, so
       # the suite is named here on the census step instead. No new job.
+      # tests/test_cash_runway.py (packet B-F09-3 second slice / W8-1, contract-delta
+      # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
+      # engine.cash_runway is a pure module under this job's engine/*.py glob and the
+      # Jinja render tests reuse templates/_debt_maturity.html.j2. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -2886,6 +2891,7 @@ jobs:
           tests/test_stock_dashboard_first_frame_data.py
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
+          tests/test_cash_runway.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
@@ -4351,7 +4357,7 @@ jobs:
         #    exercises that degraded branch instead of the shipped one.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: neural-web core suite (mastermind context + confluence + spine query + ask brain + world state + R5 macro context + ADB-W1 brief context + ADB-W2 forward calendar + Analyst OS P0 + W2)
-        run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
+        run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
 
   cn-standout-audit:
     if: ${{ false }}
@@ -7645,6 +7651,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -8268,6 +8275,7 @@ jobs:
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -9946,7 +9954,7 @@ jobs:
       # pyyaml — PIL is imported transitively but blocking it leaves them 6-passed and
       # 1-passed, so it is optional, and it is not on this install line.
       - name: vector page organs — decision authority, catalyst, forward-risk, Kelly, gated timeline
-        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py -q
+        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py -q
       - name: DSR / override-registry trial budget (dof charged must equal dof declared)
         run: python -m pytest tests/test_btc_vector_w1.py tests/test_deflated_sharpe.py -q
       - name: settled-close tape — the basket pulse the closing-bell lane publishes
@@ -10458,7 +10466,7 @@ jobs:
       - name: waves 9E/9F — shadow context packets + prophet annotation boundary
         run: python -m pytest tests/test_government_revenue_shadow_context.py tests/test_government_revenue_prophet_annotation.py -q
       - name: workspace / dossier / briefcase UI contracts
-        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py -q
+        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
       # D3 temporal contract: typed rail states (producer) + the Change Tape
       # clock/diff/successor renders (node harness, same runner requirement as
       # the UI suite above, whose _run_runtime it imports).
@@ -11111,7 +11119,7 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: falsifier-register bans + chat plain-word projection
         # B-HEAL-SKIP-ONLY-UK-POLICY-1 2026-09-13: tests/test_uk_policy_brain.py's jinja2 half rides here (outcome-spine's venv has no jinja2; skip-only gate red on main since 4b2f97f1)
-        run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py tests/test_uk_policy_brain.py -q
+        run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_watch_glance_copy.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py tests/test_uk_policy_brain.py -q
       - name: regime-label honesty + sizing-pill null parity + forward cycle framing
         run: python -m pytest tests/test_regime_label_honesty.py tests/test_regime_sizing_disclosure_parity.py tests/test_cycle_forward_framing.py tests/test_quad_dark_day_disclosure.py -q
 
@@ -11607,6 +11615,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -12265,6 +12274,13 @@ jobs:
       - "tests/test_grade_us_board.py"
       - "tests/test_heal_stage_forward_ledger.py"
       - "tests/test_macro_risk_dialog.py"
+      # Risk Radar integration: direct suite selection plus its real read dependencies.
+      - "tests/test_risk_envelope_radar_integration.py"
+      - "tests/__init__.py"
+      - "templates/risk_envelope_live.js"
+      - "site/risk_envelope_live.js"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
       - "tests/test_opportunity_timeline.py"
       - "tests/test_pick_lab_book.py"
       - "tests/test_pick_lab_cn_runner.py"
@@ -12408,7 +12424,7 @@ jobs:
       # No dependency widened: it renders Jinja templates only — jinja2 is already on
       # the install line above.  Measured 54s against this job's 245s body and 12m cap.
       - name: dashboard.html.j2 rendered-HTML contract (unrun backfill 2026-08-27)
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_us_stocks_s2_compression.py -q
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py -q
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
@@ -13659,6 +13675,7 @@ jobs:
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"

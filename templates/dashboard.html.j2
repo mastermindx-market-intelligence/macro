@@ -8500,13 +8500,6 @@ html[data-theme="light"] :is(
   {% endif %}
   </div>{# /#regime-radar panel #}
 
-  {# ── THREE SEPARATE READS — Grey Deer settled risk envelope (macro mode only).
-       Sits immediately under the regime hero: the hero answers "what regime am I
-       in", this band answers the different question "do the reads agree", which
-       the page previously buried in a prose aside. Renders nothing when the
-       artifact is absent. ── #}
-  {% if mode != 'stocks' %}{% include "_risk_envelope_band.html.j2" %}{% endif %}
-
   {# ── V2 ROW-LEDGER SECTIONS (macro mode only) ── #}
   {% if mode != 'stocks' %}
   {% set MS2 = market_state %}
@@ -12565,6 +12558,9 @@ html[data-theme="light"] :is(
           <div class="riskdlg-stance">{{ t('Nothing to chase right now — watch.','当前无需追高 — 观望。') }}</div>
           {% endif %}
         </section>
+
+        {# Same engine, same Risk Radar entry point; no standalone envelope panel. #}
+        {% include "_risk_envelope_band.html.j2" %}
 
 {% set _rk_rd = MS.radar if (MS.radar is defined and MS.radar) else none %}
         {% if _rk_rd and _rk_rd.state %}
@@ -17772,7 +17768,7 @@ window.__CHART_SWAP__ = {
    live.js is __mmLiveInit-guarded so this second include was a no-op — dropped. #}
 <script src="risk_state_live.js"></script>
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
-   include itself (_risk_envelope_band.html.j2, mode != 'stocks' above). #}
+   include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
 {% if mode != 'stocks' %}<script src="risk_envelope_live.js"></script>{% endif %}
 <script src="release_publications_live.js"></script>
 <script>
