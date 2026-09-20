@@ -1704,10 +1704,11 @@ def test_ric_null_code_class_is_not_dead_css():
     assert "var(--fig)" not in style
 
 
-def test_hub_template_links_to_research_implications_anchor():
+def test_hub_template_keeps_research_implications_off_the_internal_route():
     hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
-    hrefs = re.findall(r'href="measurement\.html#ric-section"', hub)
-    assert len(hrefs) == 1
+    assert 'href="measurement.html#ric-section"' not in hub
+    assert '<a class="card rid"' not in hub
+    assert '<div class="card rid" role="note">' in hub
 
 
 def _render_hub(research_implications=None) -> str:
