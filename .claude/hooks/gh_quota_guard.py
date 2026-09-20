@@ -117,6 +117,17 @@ PROBE_TIMEOUT_S = 20
 #: shape this guard exists to stop.
 PROOF_WORKFLOWS = ("ci.yml", "fences.yml", "integration-baseline.yml")
 
+#: Shape 8 (2026-09-20). These two workflow-dispatch lanes are both heavyweight
+#: M2 consumers. The physical M2 is the capacity boundary; its GitHub labels are
+#: logical slots, not independent machines. Refuse only agent-issued main
+#: dispatches while one of the measured conflicting M2 lanes is already live.
+HEAVY_M2_MANUAL_WORKFLOWS = frozenset({"asia-close.yml", "research-ingest.yml"})
+M2_CAPACITY_CONFLICT_WORKFLOWS = frozenset({
+    "daily.yml",
+    "asia-close.yml",
+    "research-ingest.yml",
+})
+
 #: Lanes whose runs a session may NOT cancel (shape 6). These are the lanes that
 #: advance data or publish the site: killing one costs a session of ledger the next
 #: night cannot re-derive, and the loss is invisible to every staleness instrument
@@ -436,6 +447,78 @@ def live_proof_reason(workflow: str):
     )
 
 
+
+def m2_capacity_runs():
+    """Recent Actions runs on main for the physical-M2 admission check.
+
+    ONE REST call, and only after the command has already matched an exact heavy
+    manual dispatch. None means unknown -> allow. This is anti-waste admission,
+    not a scheduler, queue, retry owner, or production-health oracle.
+    """
+    try:
+        proc = subprocess.run(
+            ["gh", "api",
+             "repos/{owner}/{repo}/actions/runs?branch=main&per_page=100"],
+            capture_output=True, timeout=PROBE_TIMEOUT_S,
+        )
+    except Exception as exc:
+        warn(f"could not probe physical-M2 run occupancy ({exc.__class__.__name__})")
+        return None
+    if proc.returncode != 0:
+        detail = proc.stderr.decode("utf-8", errors="replace").strip()[:200]
+        warn(f"`gh api` failed for physical-M2 occupancy "
+             f"(exit {proc.returncode}): {detail}")
+        return None
+    try:
+        data = json.loads(proc.stdout.decode("utf-8", errors="replace") or "{}")
+    except Exception:
+        warn("unparseable Actions-runs output for physical-M2 occupancy")
+        return None
+    if not isinstance(data, dict):
+        warn("unexpected Actions-runs shape for physical-M2 occupancy")
+        return None
+    runs = data.get("workflow_runs")
+    return runs if isinstance(runs, list) else None
+
+
+def live_m2_capacity_reason(target_workflow: str):
+    """Deny reason when another measured heavyweight M2 lane is already live."""
+    runs = m2_capacity_runs()
+    if runs is None:
+        return None
+
+    candidates = []
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        workflow = os.path.basename(str(run.get("path") or ""))
+        status = str(run.get("status") or "")
+        if workflow not in M2_CAPACITY_CONFLICT_WORKFLOWS or status == "completed":
+            continue
+        candidates.append((str(run.get("created_at") or ""), workflow, run))
+
+    for _stamp, incumbent, run in sorted(candidates, reverse=True):
+        status = str(run.get("status") or "?")
+        age = age_minutes(run.get("created_at"))
+        if status == "queued" and age is not None and age > ORPHANED_QUEUE_MINUTES:
+            continue
+        run_id = run.get("id") or "<id>"
+        url = run.get("html_url") or ""
+        aged = f"{age:.0f} min" if age is not None else "unknown age"
+        return (
+            f"M2 PHYSICAL HOST BUSY: do not dispatch `{target_workflow}` while "
+            f"`{incumbent}` run {run_id} is {status} on main ({aged}). {url}\n\n"
+            "The M2 runner labels are logical slots on one physical machine. "
+            "On 2026-09-20 a scheduled daily run overlapped manual asia-close and "
+            "research-ingest dispatches; the cancelled build_china step then left "
+            "a PID-1 survivor executing while the job had already advanced to commit. "
+            "This guard prevents that measured amplification before another runner "
+            "is acquired. It does not queue, retry, cancel, or reroute anything.\n\n"
+            "Let the live production lane conclude, or use a separately accepted "
+            "alternate-host route when that workflow explicitly supports one."
+        )
+    return None
+
 def allow(context: str | None = None):
     """Exit ALLOW. With `context`, attach it so the session actually reads it.
 
@@ -469,8 +552,8 @@ def check(raw: str, cwd=None):
     """Return a deny reason, or None to allow.
 
     `cwd` is the invoking checkout as the harness reports it. No rule here reads
-    it today — every shape is decided from the command string plus, for shape 4,
-    one bounded `gh run list` probe — but the parameter is part of the hook's
+    it today — every shape is decided from the command string plus bounded GitHub
+    reads for the exact probe shapes — but the parameter is part of the hook's
     call signature and is kept so a future checkout-scoped rule needs no change
     at the `main()` seam.
     """
@@ -531,6 +614,19 @@ def check(raw: str, cwd=None):
         if ref is not None and ref not in MAIN_REFS:
             continue
         reason = live_proof_reason(workflow)
+        if reason:
+            return reason
+
+    # 8. Manual heavyweight M2 dispatch while the physical host is already
+    # occupied by another measured heavyweight lane. One bounded REST read only
+    # after an exact workflow-run match; probe failure remains fail-open.
+    for m in WORKFLOW_RUN_RE.finditer(cmd):
+        workflow, ref = dispatch_target(m.group("args"))
+        if workflow not in HEAVY_M2_MANUAL_WORKFLOWS:
+            continue
+        if ref is not None and ref not in MAIN_REFS:
+            continue
+        reason = live_m2_capacity_reason(workflow)
         if reason:
             return reason
 
