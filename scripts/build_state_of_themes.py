@@ -1647,17 +1647,116 @@ def _consumer_dimension(state: str, reason_code: str | None = None, **values: An
 
 _OWNER_DIMENSION_KEYS = {
     "state", "reason_code", "label", "value", "band", "reason_codes",
-    "source_records", "clocks", "watermarks", "bar_status",
+    "source_records", "clocks", "watermarks", "bar_status", "correction_lineage",
 }
+_EVIDENCE_RECORD_KEYS = {
+    "ref", "artifact", "source_family", "evidence_family", "source_record_id",
+    "observation_id", "parent_identity", "observation_session", "input_hash",
+    "source_input_hash", "observed_at", "available_at",
+}
+_CORRECTION_LINEAGE_KEYS = {"first_observed", "first_displayed", "supersedes"}
+
+
+def _sanitize_source_records(raw: Any) -> list[dict[str, Any]]:
+    """Keep provenance identity only; source records cannot smuggle authority."""
+    if not isinstance(raw, list):
+        return []
+    clean_records: list[dict[str, Any]] = []
+    for record in raw:
+        if isinstance(record, str) and record.strip():
+            clean_records.append({"ref": record.strip()})
+            continue
+        if not isinstance(record, dict):
+            continue
+        clean = {
+            key: value for key, value in record.items()
+            if key in _EVIDENCE_RECORD_KEYS
+        }
+        if clean:
+            clean_records.append(clean)
+    return clean_records
+
+
+def _sanitize_correction_lineage(raw: Any) -> dict[str, Any] | None:
+    """Preserve owner clocks without inventing or rewriting first-seen history."""
+    if not isinstance(raw, dict):
+        return None
+    clean = {
+        key: value for key, value in raw.items()
+        if key in _CORRECTION_LINEAGE_KEYS
+    }
+    return clean or None
 
 
 def _owner_dimension(raw: Any) -> dict[str, Any]:
     """Whitelist descriptive owner fields; silently strip authority requests."""
     if not isinstance(raw, dict):
         return _consumer_dimension("UNAVAILABLE", "OWNER_FIELD_NOT_JOINED")
-    clean = {key: value for key, value in raw.items() if key in _OWNER_DIMENSION_KEYS}
+    clean: dict[str, Any] = {}
+    for key, value in raw.items():
+        if key not in _OWNER_DIMENSION_KEYS:
+            continue
+        if key == "source_records":
+            clean[key] = _sanitize_source_records(value)
+        elif key == "correction_lineage":
+            lineage = _sanitize_correction_lineage(value)
+            if lineage is not None:
+                clean[key] = lineage
+        else:
+            clean[key] = value
     clean.setdefault("state", "UNCONFIRMED")
     return clean
+
+
+def _consumer_evidence_identity(
+    *dimensions: dict[str, Any],
+) -> tuple[dict[str, Any], list[str]]:
+    """Preserve shared owner observation identity; never infer independence.
+
+    A repeated projection of one source observation must retain one identical
+    family/session/input identity. Records without the minimum owner identity
+    stay unavailable and cannot contribute an independent confirmation family.
+    """
+    unique: dict[str, dict[str, Any]] = {}
+    families: set[str] = set()
+    for dimension in dimensions:
+        if not isinstance(dimension, dict):
+            continue
+        for record in dimension.get("source_records", []) or []:
+            if not isinstance(record, dict):
+                continue
+            family = record.get("source_family") or record.get("evidence_family")
+            parent = record.get("parent_identity")
+            session = record.get("observation_session")
+            input_hash = record.get("input_hash") or record.get("source_input_hash")
+            if not all((family, parent, session, input_hash)):
+                continue
+            identity = {
+                "source_family": family,
+                "parent_identity": parent,
+                "observation_session": session,
+                "input_hash": input_hash,
+            }
+            for key in ("observation_id", "source_record_id"):
+                if record.get(key) is not None:
+                    identity[key] = record.get(key)
+            identity_key = json.dumps(
+                identity, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            )
+            unique[identity_key] = identity
+            families.add(str(family))
+    records = [unique[key] for key in sorted(unique)]
+    if not records:
+        return {
+            "available": False,
+            "reason_code": "OWNER_IDENTITY_NOT_JOINED",
+            "records": [],
+        }, []
+    return {
+        "available": True,
+        "reason_code": None,
+        "records": records,
+    }, sorted(families)
 
 
 def _consumer_contract_row(
@@ -1705,6 +1804,12 @@ def _consumer_contract_row(
             "NOT_DETECTED", "HIGH_CROWDING_NOT_DETECTED", band=crowding_band,
         )
 
+    leadership_dimension = _owner_dimension(theme.get("leadership_context"))
+    entry_dimension = _owner_dimension(theme.get("entry_context"))
+    evidence_identity, independent_evidence_families = _consumer_evidence_identity(
+        leadership_dimension, entry_dimension,
+    )
+
     return {
         "schema": THEME_INTELLIGENCE_CONSUMER_SCHEMA,
         "identity": {
@@ -1715,10 +1820,10 @@ def _consumer_contract_row(
             "horizon": None,
         },
         "dimensions": {
-            "leadership": _owner_dimension(theme.get("leadership_context")),
+            "leadership": leadership_dimension,
             "thesis": thesis_dimension,
             "crowding": crowding_dimension,
-            "entry": _owner_dimension(theme.get("entry_context")),
+            "entry": entry_dimension,
             "health": _consumer_dimension(
                 "STALE" if page_stale_legs else "UNCONFIRMED",
                 "PAGE_HAS_STALE_LEGS" if page_stale_legs
@@ -1736,7 +1841,8 @@ def _consumer_contract_row(
             ],
         },
         "source_records": list(theme.get("evidence_refs", []) or []),
-        "independent_evidence_families": [],
+        "evidence_identity": evidence_identity,
+        "independent_evidence_families": independent_evidence_families,
         "clocks": {
             "observation": snapshot_asof,
             "availability": None,

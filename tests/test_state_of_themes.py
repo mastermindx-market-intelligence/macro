@@ -1209,6 +1209,118 @@ def test_contract_missing_thesis_input_is_not_zero_or_invalidated(tmp_path):
     assert thesis["state"] != "INVALIDATED"
 
 
+def test_consumer_evidence_identity_fails_closed_when_owner_identity_is_missing(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+    ctx = {
+        "as_of": "2026-09-18",
+        "n_stale_legs": 0,
+        "themes": [{
+            "theme_id": "ai_semiconductors",
+            "lane": "early",
+            "stage_key": "WATCH",
+            "falsifier_any_fired": False,
+            "falsifier_n_data_missing": 0,
+            "leadership_context": {
+                "state": "DETECTED",
+                "label": "fresh leadership campaign",
+                "source_records": [{"ref": "Semiconductors@2026-09-18"}],
+            },
+            "asym_legs_section": [],
+            "evidence_refs": [],
+        }],
+    }
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    row = _json.loads(out.read_text(encoding="utf-8"))["theme_context"]["ai_semiconductors"]
+    assert row["independent_evidence_families"] == []
+    assert row["evidence_identity"]["available"] is False
+    assert row["evidence_identity"]["reason_code"] == "OWNER_IDENTITY_NOT_JOINED"
+
+
+def test_consumer_preserves_one_shared_observation_identity_without_cloning_authority(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+    source_record = {
+        "source_family": "subsector_closed_session_leadership",
+        "parent_identity": "Semiconductors",
+        "observation_session": "2026-09-18",
+        "observation_id": "Semiconductors|2026-09-18",
+        "input_hash": "sha256:shared-input",
+        "may_trade": True,
+    }
+    lineage = {
+        "first_observed": "2026-09-18T20:05:00Z",
+        "first_displayed": "2026-09-18T20:10:00Z",
+        "supersedes": None,
+    }
+    themes = []
+    for theme_id in ("ai_semiconductors", "memory_storage"):
+        themes.append({
+            "theme_id": theme_id,
+            "lane": "early",
+            "stage_key": "WATCH",
+            "falsifier_any_fired": False,
+            "falsifier_n_data_missing": 0,
+            "leadership_context": {
+                "state": "DETECTED",
+                "label": "same Semiconductors closed-session observation",
+                "source_records": [source_record],
+                "correction_lineage": lineage,
+                "may_rank": True,
+            },
+            "asym_legs_section": [],
+            "evidence_refs": [],
+        })
+    ctx = {"as_of": "2026-09-18", "n_stale_legs": 0, "themes": themes}
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    payload = _json.loads(out.read_text(encoding="utf-8"))
+
+    rows = [payload["theme_context"][tid] for tid in ("ai_semiconductors", "memory_storage")]
+    identities = [row["evidence_identity"]["records"] for row in rows]
+    assert identities[0] == identities[1]
+    assert len(identities[0]) == 1
+    assert identities[0][0]["source_family"] == "subsector_closed_session_leadership"
+    assert identities[0][0]["observation_id"] == "Semiconductors|2026-09-18"
+    assert all(row["independent_evidence_families"] == ["subsector_closed_session_leadership"]
+               for row in rows)
+    for row in rows:
+        leadership = row["dimensions"]["leadership"]
+        assert "may_rank" not in leadership
+        assert "may_trade" not in leadership["source_records"][0]
+        assert leadership["correction_lineage"] == lineage
+        assert all(row["authority"][key] is False
+                   for key in ("may_rank", "may_gate", "may_size", "may_escalate", "may_trade"))
+
+
+def test_rerating_caution_is_not_thesis_invalidation_or_entry_permission(tmp_path):
+    import json as _json
+    import scripts.build_state_of_themes as sot
+    lane = sot._classify_lane("RE-RATING", False, {}, None)
+    ctx = {
+        "as_of": "2026-09-18",
+        "n_stale_legs": 0,
+        "themes": [{
+            "theme_id": "ai_semiconductors",
+            "lane": lane,
+            "stage_key": "RE-RATING",
+            "falsifier_any_fired": False,
+            "falsifier_n_data_missing": 0,
+            "asym_legs_section": [],
+            "evidence_refs": [],
+        }],
+    }
+    (tmp_path / "site" / "basketdata").mkdir(parents=True, exist_ok=True)
+    out = sot.write_theme_lanes(ctx, tmp_path)
+    row = _json.loads(out.read_text(encoding="utf-8"))["theme_context"]["ai_semiconductors"]
+    assert lane == "caution"
+    assert row["dimensions"]["thesis"]["state"] == "NOT_DETECTED"
+    assert row["dimensions"]["entry"]["state"] == "UNAVAILABLE"
+    assert all(row["authority"][key] is False
+               for key in ("may_rank", "may_gate", "may_size", "may_escalate", "may_trade"))
+
+
 # ---------------------------------------------------------------------------
 # Naming: the page must keep the nav's promise (PR-A1)
 # ---------------------------------------------------------------------------

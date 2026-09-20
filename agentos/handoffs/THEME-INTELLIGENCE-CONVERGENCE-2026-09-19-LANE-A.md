@@ -180,3 +180,15 @@ reconciliation. Six green summaries do not constitute parent-program acceptance.
 - `theme_lanes.v1` is preserved; additive `theme_intelligence.consumer.v1` reports thesis `NOT_DETECTED`, leadership/entry `UNAVAILABLE`, health `STALE` when page stale legs exist, and all rank/gate/size/escalate/trade permissions false.
 - Generated render files are proof only and are not part of this source carrier; generated HTML currently contains pre-existing trailing whitespace, so source hygiene must be checked only on owned source/test/handoff paths.
 - Publication/browser proof remains a separate incumbent-owner gate; until that exists the parent is `BUILT_NOT_PROVEN`.
+
+## 2026-09-20 Lane F preregistration closure
+
+- Lane F PR #7453 requires one shared observation identity to survive cross-theme projection and forbids treating a missing identity as multiple independent confirmations.
+- The additive consumer contract now sanitizes owner source records, strips nested authority requests, preserves owner-provided `source_family + parent_identity + observation_session + input_hash` identity, and deduplicates exact observation identities.
+- Without that minimum identity the contract emits `evidence_identity.available=false`, reason `OWNER_IDENTITY_NOT_JOINED`, and an empty `independent_evidence_families` list. It does not invent an identity or a history store.
+- Owner-provided `first_observed`, `first_displayed`, and `supersedes` correction lineage is preserved verbatim inside its specialist dimension and not promoted to authority.
+- Shared-observation discriminator: two theme projections of the same Semiconductors owner record retain one identical observation identity/family while nested `may_rank`/`may_trade` are stripped.
+- Mature-stage discriminator: real `RE-RATING` themes remain lane `caution` while thesis is `NOT_DETECTED`, entry is `UNAVAILABLE`, and all authority flags remain false.
+- Current-main integration pin `0fb1196a192243a0ff2677af7ff31b261c565bf9`: 188 focused thesis/Theme Tracker/Portfolio tests passed, Agent OS validated with 0 errors, and real builders completed.
+- Real output at that pin: AI Semiconductors = `WATCH / early / NOT_DETECTED / no falsifier fired`; Medical Devices = `PRECIPICE / early / NOT_DETECTED / no falsifier fired`; GLP-1 Obesity and Space/Satellite = `RE-RATING / caution / NOT_DETECTED`.
+- Hosted PR #7526 contract-delta identified one required CI-scope widening: `unrun-subsector-themes.paths` must include `site/basketdata/foresight_cascade.json`. The current manifest itself specifies that widening is the safe response to a newly reached import path. Open PRs #7064/#7095 touch disjoint manifest hunks.
