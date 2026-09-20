@@ -758,6 +758,120 @@ def test_sparse_underlying_price_cannot_anchor_an_entire_qualified_board():
     assert state["target_gate_pass"] is False
 
 
+def test_zero_iv_source_saturation_is_classified_without_inventing_a_vol():
+    chain = _chain()
+    chain["delta"] = [0.50, -1.0]
+    chain["vega"] = [0.10, 0.0]
+    chain["theta"] = [-0.02, 0.0]
+    chain.loc[1, "implied_vol"] = 0.0
+    api = SimpleNamespace(
+        resolve_thetadata_store=lambda **kwargs: "/store",
+        chain=lambda s, root, store=None: chain,
+        oi_for_date=lambda s, root, store=None: _oi(s),
+    )
+    state = r2.build_settled_state(
+        "2026-09-14",
+        "SPY",
+        store_api=api,
+        calendar_api=Calendar,
+        greeks_fn=fake_greeks,
+    )
+    assert state["iv_contract_rate"] == pytest.approx(0.5)
+    assert state["model_state_classified_rate"] == pytest.approx(1.0)
+    assert state["model_input_contract_rate"] == pytest.approx(1.0)
+    assert state["saturated_zero_curvature_contract_rate"] == pytest.approx(0.5)
+    assert state["unresolved_model_input_contract_rate"] == pytest.approx(0.0)
+    assert state["target_gate_pass"] is True
+
+    # The saturated contract is classified for coverage but is NOT given a fake
+    # volatility or admitted to the continuous-IV Shapley frame.
+    assert len(state["frame"]) == 1
+    assert state["frame"]["right"].tolist() == ["C"]
+    states = dict(
+        zip(
+            state["model_state_frame"]["right"],
+            state["model_state_frame"]["model_state"],
+        )
+    )
+    assert states == {
+        "C": r2.MODEL_STATE_IV,
+        "P": r2.MODEL_STATE_SATURATED,
+    }
+
+
+def test_zero_or_missing_iv_without_saturation_evidence_remains_unresolved():
+    for bad_iv, bad_delta, bad_vega in [
+        (0.0, -0.70, 0.0),
+        (0.0, -1.0, 0.01),
+        (np.nan, -1.0, 0.0),
+    ]:
+        chain = _chain()
+        chain["delta"] = [0.50, bad_delta]
+        chain["vega"] = [0.10, bad_vega]
+        chain["theta"] = [-0.02, 0.0]
+        chain.loc[1, "implied_vol"] = bad_iv
+        api = SimpleNamespace(
+            resolve_thetadata_store=lambda **kwargs: "/store",
+            chain=lambda s, root, store=None, frame=chain: frame,
+            oi_for_date=lambda s, root, store=None: _oi(s),
+        )
+        state = r2.build_settled_state(
+            "2026-09-14",
+            "SPY",
+            store_api=api,
+            calendar_api=Calendar,
+            greeks_fn=fake_greeks,
+        )
+        assert state["model_state_classified_rate"] == pytest.approx(0.5)
+        assert state["saturated_zero_curvature_contracts"] == 0
+        assert state["unresolved_model_input_contract_rate"] == pytest.approx(0.5)
+        assert state["target_gate_pass"] is False
+
+
+def test_saturation_transition_is_composition_not_position_shapley():
+    def chain_for(session, root, store=None):
+        frame = _chain(prior=(100, 200))
+        frame["delta"] = [0.50, -0.50]
+        frame["vega"] = [0.10, 0.10]
+        frame["theta"] = [-0.02, -0.02]
+        if session == "2026-09-14":
+            frame.loc[1, "implied_vol"] = 0.0
+            frame.loc[1, "delta"] = -1.0
+            frame.loc[1, "vega"] = 0.0
+            frame.loc[1, "theta"] = 0.0
+        return frame
+
+    api = SimpleNamespace(
+        resolve_thetadata_store=lambda **kwargs: "/store",
+        chain=chain_for,
+        oi_for_date=lambda session, root, store=None: (
+            _oi(session, values=(110, 190))
+            if session == "2026-09-15"
+            else _oi(session, values=(120, 180))
+        ),
+    )
+    got = r2.analyze_pair(
+        "2026-09-14",
+        "2026-09-15",
+        "SPY",
+        store_api=api,
+        calendar_api=Calendar,
+        greeks_fn=fake_greeks,
+    )
+    assert got["status"] == "SURVIVOR_DECOMPOSITION_COMPLETE"
+    assert got["decomposition"]["survivor_contracts"] == 1
+    assert got["composition"]["model_state_from_saturated"] == 1
+    assert got["composition"]["model_state_from_saturated_abs_mass"] > 0
+    assert got["composition"]["model_state_to_saturated"] == 0
+    assert got["composition"]["model_state_to_saturated_abs_mass"] == pytest.approx(0.0)
+    assert got["composition"]["unresolved_entries"] == 0
+    assert got["composition"]["known_composition_abs_mass"] > 0
+    assert got["composition"]["observed_map_change_abs_mass"] > 0
+    assert got["composition"]["construction_accounted_abs_mass"] > 0
+    assert 0 < got["composition"]["construction_accounted_share"] <= 1
+    assert got["composition"]["full_map_composition_resolved"] is False
+
+
 def test_missing_iv_cannot_disappear_from_the_coverage_denominator():
     broken = _chain()
     broken.loc[1, "implied_vol"] = np.nan
