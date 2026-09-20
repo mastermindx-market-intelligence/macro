@@ -105,11 +105,11 @@ def _patch_reads(monkeypatch, tables: dict):
 
 def test_political_netflow(monkeypatch):
     congress = pd.DataFrame([
-        {"Ticker": "AAA", "TransactionDate": "2026-06-10", "Transaction": "Purchase",
+        {"Ticker": "AAA", "TransactionDate": "2026-06-10", "ReportDate": "2026-06-13", "Transaction": "Purchase",
          "Representative": "Rep A", "BioGuideID": "A1", "Party": "R", "Range": "$1,001 - $15,000"},
-        {"Ticker": "AAA", "TransactionDate": "2026-06-11", "Transaction": "Purchase",
+        {"Ticker": "AAA", "TransactionDate": "2026-06-11", "ReportDate": "2026-06-13", "Transaction": "Purchase",
          "Representative": "Rep B", "BioGuideID": "B2", "Party": "D", "Range": "$15,001 - $50,000"},
-        {"Ticker": "AAA", "TransactionDate": "2026-06-12", "Transaction": "Sale",
+        {"Ticker": "AAA", "TransactionDate": "2026-06-12", "ReportDate": "2026-06-13", "Transaction": "Sale",
          "Representative": "Rep C", "BioGuideID": "C3", "Party": "R", "Range": "$1,001 - $15,000"},
     ])
     _patch_reads(monkeypatch, {"congress": congress})
@@ -117,7 +117,8 @@ def test_political_netflow(monkeypatch):
     top = res["buys"][0]
     assert top["ticker"] == "AAA"
     assert top["buys"] == 2 and top["sells"] == 1 and top["net"] == 1
-    assert top["members"] == 3
+    assert top["members"] == 2
+    assert top["sell_members"] == 1 and top["participants"] == 3
     assert top["est_usd"] > 0
 
 
@@ -468,3 +469,120 @@ def test_edgar_parse():
     assert A._parse({"_source": {}}, "x") is None
     noticker = A._parse({"_id": "x:y.htm", "_source": {"display_names": ["Some LLC"], "form": "8-K"}}, "q")
     assert noticker["ticker"] is None and noticker["company"] == "Some LLC"
+
+
+# ------------------------------------------------ sponsorship / PIT repairs
+def test_insider_collector_replays_overlap_and_full_history(monkeypatch):
+    monkeypatch.setattr(config, "load", lambda: {"quiver": {
+        "insider_catchup_days": 2, "insider_backfill_days": 3}})
+    monkeypatch.setattr(config, "secret", lambda key: "test-key")
+    adapter = quiver.InsidersAdapter()
+    calls = []
+
+    def fake_get(endpoint, params=None):
+        calls.append(dict(params or {}))
+        return [{"Ticker": "AAA", "Date": "2026-09-01", "Name": str(len(calls)),
+                 "TransactionCode": "P", "Shares": 1, "fileDate": "2026-09-02"}]
+
+    monkeypatch.setattr(adapter, "_get", fake_get)
+    monkeypatch.setattr(adapter, "_merge", lambda df: (len(df), len(df)))
+    adapter.fetch(full_history=False)
+    assert len(calls) == 3                         # latest + two overlap days
+    assert "date" not in calls[0]
+    assert all("date" in c and c.get("page_size") == 1000 for c in calls[1:])
+
+    calls.clear()
+    adapter.fetch(full_history=True)
+    assert len(calls) == 4                         # latest + three configured backfill days
+
+
+def test_political_netflow_uses_public_report_date_and_dedups_house(monkeypatch):
+    monkeypatch.setattr(altdata, "_now", lambda: pd.Timestamp("2026-08-25"))
+    congress = pd.DataFrame([{
+        "Ticker": "INTC", "TransactionDate": "2026-07-24", "ReportDate": "2026-08-21",
+        "Transaction": "Purchase", "Representative": "Nancy Pelosi", "BioGuideID": "P000197",
+        "Party": "D", "House": "Representatives", "Range": "$500,001 - $1,000,000",
+        "Description": "PURCHASED 10,000 SHARES.",
+    }])
+    # Same economic trade on the narrower House endpoint: must not be unioned/double-counted.
+    house = pd.DataFrame([{
+        "Ticker": "INTC", "Date": "2026-07-24", "Transaction": "Purchase",
+        "Representative": "Nancy Pelosi", "BioGuideID": "P000197", "Party": "D",
+        "Range": "$500,001 - $1,000,000", "_first_seen": "2026-08-22T00:00:00Z",
+    }])
+    _patch_reads(monkeypatch, {"congress": congress, "house": house})
+    out = altdata.political_netflow(window_days=7, top=1)
+    row = out["by_ticker"]["INTC"]
+    assert row["buys"] == 1 and row["members"] == 1
+    assert row["events"][0]["filed"] == "2026-08-21"
+    assert row["events"][0]["transaction_date"] == "2026-07-24"
+    assert row["events"][0]["actor"] == "Nancy Pelosi"
+    assert row["events"][0]["amount_mid"] == pytest.approx(750000.5)
+
+
+def test_political_netflow_rejects_future_disclosure(monkeypatch):
+    monkeypatch.setattr(altdata, "_now", lambda: pd.Timestamp("2026-08-25"))
+    congress = pd.DataFrame([{
+        "Ticker": "INTC", "TransactionDate": "2026-08-20", "ReportDate": "2026-08-30",
+        "Transaction": "Purchase", "Representative": "Rep X", "BioGuideID": "X1",
+        "Party": "I", "Range": "$1,001 - $15,000",
+    }])
+    _patch_reads(monkeypatch, {"congress": congress})
+    assert altdata.political_netflow(window_days=90)["by_ticker"] == {}
+
+
+def test_insider_netflow_keeps_named_distinct_people_outside_top_cap(monkeypatch):
+    monkeypatch.setattr(altdata, "_now", lambda: pd.Timestamp("2026-08-25"))
+    insiders = pd.DataFrame([
+        {"Ticker": "INTC", "Date": "2026-08-11", "Name": "Lip-Bu Tan",
+         "TransactionCode": "P", "Shares": 105263, "PricePerShare": 95,
+         "fileDate": "2026-08-14", "officerTitle": "Chief Executive Officer",
+         "isOfficer": "True", "isDirector": "False", "directOrIndirectOwnership": "I"},
+        {"Ticker": "INTC", "Date": "2026-08-12", "Name": "Lip-Bu Tan",
+         "TransactionCode": "P", "Shares": 100, "PricePerShare": 95,
+         "fileDate": "2026-08-14", "officerTitle": "Chief Executive Officer",
+         "isOfficer": True, "isDirector": True, "directOrIndirectOwnership": "I"},
+        {"Ticker": "BIGN", "Date": "2026-08-11", "Name": "Other CEO",
+         "TransactionCode": "P", "Shares": 200000, "PricePerShare": 100,
+         "fileDate": "2026-08-14", "officerTitle": "CEO", "isOfficer": True},
+    ])
+    _patch_reads(monkeypatch, {"insiders": insiders})
+    out = altdata.insider_netflow(window_days=90, top=1)
+    assert out["buys"][0]["ticker"] == "BIGN"       # display leaderboard remains bounded
+    intc = out["by_ticker"]["INTC"]                  # machine substrate does not truncate
+    assert intc["buyers"] == 1 and intc["buy_trades"] == 2
+    assert intc["events"][0]["actor"] == "Lip-Bu Tan"
+    assert intc["events"][0]["role"] == "Chief Executive Officer"
+    assert intc["events"][0]["filed"] == "2026-08-14"
+    assert intc["events"][0]["usd"] == pytest.approx(9_999_985)
+    assert intc["events"][0]["is_officer"] is True
+    assert intc["events"][0]["is_director"] is False
+
+
+
+def test_political_cluster_counts_net_buying_members_not_all_participants(monkeypatch):
+    monkeypatch.setattr(altdata, "_now", lambda: pd.Timestamp("2026-08-25"))
+    congress = pd.DataFrame([
+        # One member makes three buys; two other members sell. Raw trade net is +1,
+        # but member breadth is 1 buyer vs 2 sellers, so this is NOT a buy cluster.
+        {"Ticker": "AAA", "TransactionDate": "2026-08-01", "ReportDate": "2026-08-10",
+         "Transaction": "Purchase", "Representative": "Rep A", "BioGuideID": "A1",
+         "Party": "D", "Range": "$1,001 - $15,000", "Description": "stock"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-02", "ReportDate": "2026-08-10",
+         "Transaction": "Purchase", "Representative": "Rep A", "BioGuideID": "A1",
+         "Party": "D", "Range": "$1,001 - $15,000", "Description": "call 1"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-03", "ReportDate": "2026-08-10",
+         "Transaction": "Purchase", "Representative": "Rep A", "BioGuideID": "A1",
+         "Party": "D", "Range": "$1,001 - $15,000", "Description": "call 2"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-04", "ReportDate": "2026-08-10",
+         "Transaction": "Sale", "Representative": "Rep B", "BioGuideID": "B1",
+         "Party": "R", "Range": "$1,001 - $15,000"},
+        {"Ticker": "AAA", "TransactionDate": "2026-08-05", "ReportDate": "2026-08-10",
+         "Transaction": "Sale", "Representative": "Rep C", "BioGuideID": "C1",
+         "Party": "R", "Range": "$1,001 - $15,000"},
+    ])
+    _patch_reads(monkeypatch, {"congress": congress})
+    row = altdata.political_netflow(window_days=90, top=20)["by_ticker"]["AAA"]
+    assert row["buys"] == 3 and row["sells"] == 2
+    assert row["members"] == 1 and row["sell_members"] == 2
+    assert row["participants"] == 3 and row["net"] == -1

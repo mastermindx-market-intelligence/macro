@@ -681,7 +681,9 @@
       <div class="et"><span class="tk">{{ d.ticker }}</span>{{ ihmp(d.ticker, d.price) }}
         <span class="chip src">{{ (dd.source or '')|replace('_',' ')|e }}</span>
         {% if dd.off_desk %}<span class="chip good">{{ t('off-desk','非台内') }}</span>{% endif %}
-        <span class="dscore">{{ ((dd.disc_score or 0)*100)|round|int }}</span></div>
+        {% if dd.get('ranking_eligible', true) %}
+        <span class="dscore">{{ ((dd.disc_score or 0)*100)|round|int }}</span>
+        {% else %}<span class="chip" data-tip-en="Measuring only — not used in Command ranking" data-tip-zh="仅测量 —— 不参与 Command 排名">{{ t('measuring','测量中') }}</span>{% endif %}</div>
       <div class="rd" style="margin-top:8px">{{ dd.reason|e }}</div>
       {# prettify the machine slugs — raw `github_momentum` is banned at glance tier #}
       {% if dd.channels %}<div class="dchan">{{ ic('pulse') }} <span class="ch">{{ dd.channels|map('replace','_',' ')|join(' · ')|e }}</span></div>{% endif %}

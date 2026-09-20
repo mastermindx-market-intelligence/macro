@@ -46,7 +46,7 @@ _ALT_FIELDS = ("signal_score", "conviction", "action", "direction", "source",
 # extra context columns from by_ticker.v2 (when no scored mastermind row exists)
 _BT_FIELDS = ("channels", "weighted_score", "convergence_score", "trump_linked",
               "affiliated", "congress_net", "gov_contract_usd_30d", "insider_net_usd",
-              "dpi_lean", "wsb_mentions", "trump_side")
+              "dpi_lean", "wsb_mentions", "trump_side", "sponsorship")
 
 
 def _alt_for(t: str, mm_index: dict, bt: dict) -> dict | None:
@@ -55,13 +55,18 @@ def _alt_for(t: str, mm_index: dict, bt: dict) -> dict | None:
     sig = mm_index.get(t)
     if sig:
         out = {k: sig.get(k) for k in _ALT_FIELDS if sig.get(k) is not None}
+        # Scoring owns the directional read; by_ticker may still carry richer deterministic
+        # filing evidence that must not disappear merely because this ticker is scored.
+        sponsorship = (bt.get(t) or {}).get("sponsorship")
+        if sponsorship:
+            out["sponsorship"] = sponsorship
         out["scored"] = True
         return out
     rec = bt.get(t)
-    # only a REAL signal — at least one active convergence channel. Many by_ticker.v2
-    # rows carry a lone context metric (e.g. a congress position) with no channel; those
-    # are not an alt-data signal and must not surface as one.
-    if rec and (rec.get("channels") or rec.get("convergence_score")):
+    # Active channels are a directional alt-data signal. Named sponsorship is admitted
+    # even with zero channels as NEUTRAL context: the filing fact should be visible without
+    # inventing a vote. Lone anonymous metrics (e.g. a congress position) still stay hidden.
+    if rec and (rec.get("channels") or rec.get("convergence_score") or rec.get("sponsorship")):
         out = {k: rec.get(k) for k in _BT_FIELDS if rec.get(k) is not None}
         out["scored"] = False
         out.setdefault("action", "WATCH")

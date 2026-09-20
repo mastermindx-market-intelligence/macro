@@ -202,6 +202,107 @@ _ROLE_OFFICER, _ROLE_DIRECTOR, _ROLE_TENPCT = 1.0, 0.6, 0.4
 # leading feeds (radar_quiet up to ~0.9) so they surface in Discovery but never out-rank a lead.
 _INSIDER_CAP = 0.45
 
+_TOP_OFFICER_ROLES = (
+    (("CHIEF EXEC", "CEO"), "CEO", 1.00),
+    (("CHIEF FIN", "CFO"), "CFO", 0.95),
+    (("FOUNDER",), "Founder", 0.92),
+    (("CHAIR",), "Chair", 0.90),
+    (("PRESIDENT",), "President", 0.82),
+)
+
+
+def _top_role(title: object) -> tuple[str, float] | None:
+    up = str(title or "").upper()
+    for needles, label, weight in _TOP_OFFICER_ROLES:
+        if any(n in up for n in needles):
+            return label, weight
+    return None
+
+
+def scan_top_officer_buys(insiders, today: date | None = None, recent_days: int = 45,
+                          min_usd: float = 2.5e5) -> list[dict]:
+    """Fresh, named CEO/CFO/founder/chair/president open-market buys.
+
+    This is a CONTEXT/DISCOVERY sensor, not a new alpha weight.  It exists because a
+    single unusually large senior-officer purchase can be economically meaningful while
+    the older cluster sensor requires >=3 buyers and the quarterly SEC bulk panel lags.
+    Publication time (``fileDate`` / ``_first_seen``), never transaction date, controls
+    admission.  The score is capped at the existing insider display tier.
+    """
+    out: list[dict] = []
+    try:
+        import pandas as pd
+        if insiders is None or getattr(insiders, "empty", True):
+            return out
+        df = insiders.copy()
+        if "Ticker" not in df or "TransactionCode" not in df:
+            return out
+        public_ts = pd.Series(pd.NaT, index=df.index, dtype="datetime64[ns]")
+        for col in ("fileDate", "_first_seen", "Date"):
+            if col in df:
+                parsed = pd.to_datetime(df[col], errors="coerce", utc=True, format="mixed").dt.tz_convert(None)
+                public_ts = public_ts.fillna(parsed)
+        if public_ts.notna().sum() == 0:
+            return out
+        df["public_ts"] = public_ts
+        df["trans_ts"] = pd.to_datetime(df.get("Date"), errors="coerce", utc=True, format="mixed").dt.tz_convert(None)
+        df["shares_num"] = pd.to_numeric(df.get("Shares"), errors="coerce")
+        df["price_num"] = pd.to_numeric(df.get("PricePerShare"), errors="coerce")
+        df["trade_usd"] = (df["shares_num"] * df["price_num"]).abs()
+        df = df[(df["TransactionCode"].astype(str).str.upper() == "P")
+                & df["public_ts"].notna() & (df["trade_usd"] >= float(min_usd))]
+        keys = [c for c in ("Ticker", "Date", "Name", "TransactionCode", "Shares") if c in df]
+        if keys:
+            df = df.drop_duplicates(subset=keys, keep="first")
+        asof = today or date.today()
+        for r in df.itertuples(index=False):
+            role = _top_role(getattr(r, "officerTitle", None))
+            if role is None:
+                continue
+            role_label, role_weight = role
+            t = str(getattr(r, "Ticker", "")).upper().strip()
+            if not _TICKER_OK.match(t) or t in _JUNK_TICKERS:
+                continue
+            pub = pd.Timestamp(getattr(r, "public_ts"))
+            age = (asof - pub.date()).days
+            if age < 0 or age > int(recent_days):
+                continue
+            usd = float(getattr(r, "trade_usd"))
+            freshness = _clamp01(1.0 - age / max(1.0, float(recent_days)))
+            value_strength = _clamp01(math.log1p(usd) / math.log1p(10_000_000.0))
+            strength = round(0.55 * value_strength + 0.30 * freshness + 0.15 * role_weight, 3)
+            actor_v = getattr(r, "Name", None)
+            actor = None if pd.isna(actor_v) else (str(actor_v).strip() or None)
+            title_v = getattr(r, "officerTitle", None)
+            title = None if pd.isna(title_v) else (str(title_v).strip() or None)
+            trans = getattr(r, "trans_ts")
+            out.append({
+                "ticker": t, "source": "top_officer_buy",
+                # MEASURING: visible + forward-graded now, but cannot alter Hub ranking
+                # until its own source-level evidence earns promotion.
+                "ranking_eligible": False, "qualification_status": "measuring",
+                "disc_score": round(min(_INSIDER_CAP, strength), 3),
+                "event_strength": strength, "actor": actor,
+                "role_label": role_label, "title": title,
+                "usd": round(usd, 0),
+                "shares": float(getattr(r, "shares_num")) if pd.notna(getattr(r, "shares_num")) else None,
+                "price": round(float(getattr(r, "price_num")), 4) if pd.notna(getattr(r, "price_num")) else None,
+                "filing_date": pub.date().isoformat(),
+                "trans_date": pd.Timestamp(trans).date().isoformat() if pd.notna(trans) else None,
+                "age_days": age,
+                "accession": (None if pd.isna(getattr(r, "accession", None))
+                              else str(getattr(r, "accession")).strip()),
+                "source_url": (None if pd.isna(getattr(r, "source_url", None))
+                               else str(getattr(r, "source_url")).strip()),
+                "provenance_class": (None if pd.isna(getattr(r, "provenance_class", None))
+                                     else str(getattr(r, "provenance_class")).strip()),
+                "reason": f"{role_label} open-market buy ${usd:,.0f} · filed {pub.date().isoformat()}",
+            })
+        out.sort(key=lambda d: (d["disc_score"], d["event_strength"], d["usd"]), reverse=True)
+    except Exception as e:  # noqa: BLE001
+        log.debug("top-officer insider scan failed (%s)", e)
+    return out
+
 
 def scan_insider_clusters(panel, recent_days: int = 90, min_buyers: int = 3,
                           min_usd: float = 2.5e5) -> list[dict]:
@@ -490,7 +591,7 @@ def _load_recon_gate() -> dict | None:
 # --------------------------------------------------------------------------- #
 def build(radar_tickers: list | None, obligations=None, insider=None,
           bundle_universe: set | None = None, today: date | None = None,
-          ownership=None, ownership_gate=None,
+          fresh_insiders=None, ownership=None, ownership_gate=None,
           index_changes=None, recon_gate=None) -> dict:
     """Scan the leading feeds and return discovery candidates keyed by ticker, each tagged
     off_desk (not already in the hub's bundle universe) or on_desk (a corroborating boost).
@@ -499,12 +600,13 @@ def build(radar_tickers: list | None, obligations=None, insider=None,
     universe = {(t or "").upper() for t in (bundle_universe or set())}
     quiet = scan_radar_quiet(radar_tickers)
     fed = scan_federal_velocity(obligations)
+    fresh = scan_top_officer_buys(fresh_insiders, today=today)
     ins = scan_insider_clusters(insider)
     act = scan_activist_ownership(ownership, ownership_gate, today)
     recon = scan_index_reconstitution(index_changes, recon_gate, today)
 
     by_ticker: dict[str, dict] = {}
-    for c in quiet + fed + ins + act + recon:
+    for c in quiet + fed + fresh + ins + act + recon:
         t = c["ticker"]
         if not t:
             continue
@@ -519,7 +621,7 @@ def build(radar_tickers: list | None, obligations=None, insider=None,
     # it over raw buyer count so a broad, officer-led, high-conviction cluster beats a wider but
     # shallower one for the bounded off-desk injection slots.
     def _mag(d):
-        return (d.get("cluster_strength") or d.get("opp_buyers") or d.get("recent_usd")
+        return (d.get("event_strength") or d.get("cluster_strength") or d.get("opp_buyers") or d.get("recent_usd")
                 or d.get("n_channels") or d.get("n_13d") or 0)
     cands = sorted(by_ticker.values(), key=lambda d: (d["disc_score"], _mag(d)), reverse=True)
     off_desk = [c for c in cands if c["off_desk"]]
@@ -531,10 +633,22 @@ def build(radar_tickers: list | None, obligations=None, insider=None,
         "off_desk": off_desk,
         "n": len(cands), "n_off_desk": len(off_desk),
         "sources": {"radar_quiet": len(quiet), "federal_velocity": len(fed),
-                    "insider_cluster": len(ins), "activist_ownership": len(act),
+                    "top_officer_buy": len(fresh), "insider_cluster": len(ins),
+                    "activist_ownership": len(act),
                     "index_reconstitution": len(recon)},
     }
 
+
+
+
+def _read_fresh_insiders():
+    try:
+        import pandas as pd
+        p = config.data_dir() / "sec_insider" / "live_form4.parquet"
+        return pd.read_parquet(p) if p.exists() else None
+    except Exception as e:  # noqa: BLE001
+        log.debug("fresh official Form-4 tape read failed (%s)", e)
+        return None
 
 def _read_obligations():
     try:
@@ -557,5 +671,6 @@ def load_and_build(bundle_universe: set | None = None, today: date | None = None
     except Exception as e:  # noqa: BLE001
         log.warning("intel_discovery: radar read failed (%s)", e)
     return build(radar, _read_obligations(), _read_insider_panel(), bundle_universe, today,
+                 fresh_insiders=_read_fresh_insiders(),
                  ownership=_read_ownership_regime(), ownership_gate=_load_activist_gate(),
                  index_changes=_read_recent_index_changes(today), recon_gate=_load_recon_gate())

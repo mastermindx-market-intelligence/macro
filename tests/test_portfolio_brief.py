@@ -773,3 +773,26 @@ def test_endpoint_503_missing_ctx(monkeypatch, tmp_path):
     assert r.status_code == 503, r.text
     assert r.json()["detail"]["error"] == "ctx_unavailable"
     m.app.dependency_overrides.clear()
+
+
+
+def test_named_sponsorship_disclosures_render_neutral_filing_facts():
+    ctx = _ctx()
+    ctx["tickers"]["NVDA"]["congress"] = [{
+        "side": "buy", "filed": "2026-07-22", "tx_date": "2026-07-21",
+        "chamber": "house", "party": "D", "actor": "Rep Person",
+        "amount_range": "$500,001 - $1,000,000", "amount_mid": 750000.5,
+        "description": "PURCHASED SHARES",
+    }]
+    ctx["tickers"]["NVDA"]["insider"] = {
+        "buyers": 1, "sellers": 2, "net_mn": -5.0, "bps": -0.1,
+        "events": [{"actor": "CEO Person", "role": "Chief Executive Officer",
+                    "side": "buy", "usd": 9_999_985, "filed": "2026-07-22"}],
+    }
+    brief = compose_brief(ctx, [{"ticker": "NVDA"}], TODAY, GENERATED_AT)
+    filings = next(s for s in brief["sections"] if s["key"] == "filings")
+    english = [ln["en"] for ln in filings["lines"]]
+    assert any("Congress disclosure: Rep Person" in line for line in english)
+    assert any("$500,001 - $1,000,000" in line for line in english)
+    assert any("Insider filing: CEO Person (Chief Executive Officer)" in line for line in english)
+    assert any("$9,999,985" in line for line in english)
