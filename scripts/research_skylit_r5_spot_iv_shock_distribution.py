@@ -282,7 +282,12 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description="Research-only R5 PIT spot/IV shock-distribution constructor"
     )
-    p.add_argument("--greeks-parquet", required=True)
+    p.add_argument(
+        "--greeks-parquet",
+        action="append",
+        required=True,
+        help="Greeks parquet path; repeat for every year needed by the trailing window",
+    )
     p.add_argument("--root", required=True)
     p.add_argument("--asof", required=True)
     p.add_argument("--window-sessions", type=int, default=252)
@@ -293,7 +298,11 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     try:
-        frame = pd.read_parquet(Path(args.greeks_parquet))
+        paths = [Path(value) for value in args.greeks_parquet]
+        if len({str(path.resolve()) for path in paths}) != len(paths):
+            raise R5ShockRefusal("duplicate --greeks-parquet path")
+        frames = [pd.read_parquet(path) for path in paths]
+        frame = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
         result = build_distribution(
             frame,
             asof=args.asof,
