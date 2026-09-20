@@ -153,7 +153,7 @@
       "additionalProperties": false,
       "required": [
         "proposal_id", "kind", "subject", "evidence", "evidence_refs", "proposed_by",
-        "created", "status", "ratified_by", "note", "truth_status"
+        "created", "status", "ratified_by", "adjudicated_at", "note", "truth_status"
       ],
       "properties": {
         "proposal_id": {"type": "string", "pattern": "^prop:[0-9a-f]{16}$"},
@@ -165,6 +165,7 @@
         "created": {"type": "string", "minLength": 1},
         "status": {"enum": ["proposed", "ratified", "rejected"]},
         "ratified_by": {"type": ["string", "null"]},
+        "adjudicated_at": {"type": ["string", "null"]},
         "note": {"type": ["string", "null"]},
         "truth_status": {"const": "PROPOSAL_ONLY"}
       }

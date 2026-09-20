@@ -1206,6 +1206,7 @@ def _ont_proposal(
     status: str = "proposed",
     ratified_by: str | None = None,
     created: str = "2026-02-01T00:00:00Z",
+    adjudicated_at: str | None = None,
 ) -> dict:
     return {
         "proposal_id": proposal_id,
@@ -1217,15 +1218,21 @@ def _ont_proposal(
         "created": created,
         "status": status,
         "ratified_by": ratified_by,
+        "adjudicated_at": (
+            adjudicated_at
+            if adjudicated_at is not None
+            else ("2026-02-02T00:00:00Z" if status != "proposed" else None)
+        ),
         "note": "_ont_proposal only",
     }
 
 
 class _OntologyStore:
-    def __init__(self, *, nodes=(), edges=(), proposals=()):
+    def __init__(self, *, nodes=(), edges=(), proposals=(), lifecycle=()):
         self._nodes = list(nodes)
         self._edges = list(edges)
         self._proposals = list(proposals)
+        self._lifecycle = list(lifecycle)
 
     def read_nodes(self):
         return list(self._nodes)
@@ -1235,6 +1242,9 @@ class _OntologyStore:
 
     def read_proposals(self):
         return list(self._proposals)
+
+    def read_node_lifecycle(self):
+        return list(self._lifecycle)
 
 
 def _ont_rights(node_id: str) -> dict | None:
@@ -1430,3 +1440,249 @@ def test_ontology_relations_are_stably_ordered_by_semantics_and_ids_not_scores()
         "state": "SUBJECT_IS_CANONICAL",
         "theme_node_ids": [subject],
     }
+
+
+def _ont_lifecycle(
+    node_id: str,
+    *,
+    status: str = "retired",
+    retire_date: str | None = "2026-07-01",
+    computed_at: str = "2026-08-01T00:00:00Z",
+) -> dict:
+    return {
+        "schema": "gmi.node_lifecycle/v1",
+        "node_id": node_id,
+        "status": status,
+        "retire_date": retire_date,
+        "merged_into": None,
+        "reason": "identity_break",
+        "evidence": "test",
+        "ratified_by": "curator:test",
+        "computed_at": computed_at,
+        "engine_version": "theme_graph.v1",
+    }
+
+
+def test_ontology_future_proposals_and_adjudications_obey_knowledge_cutoff() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        proposals=[
+            _ont_proposal(
+                "prop:5555555555555555",
+                {"local_theme": local, "canonical_theme": theme},
+                created="2026-08-01T00:00:00Z",
+            ),
+            _ont_proposal(
+                "prop:6666666666666666",
+                {"local_theme": local, "canonical_theme": theme},
+                status="ratified",
+                ratified_by="curator:test",
+                created="2026-01-01T00:00:00Z",
+                adjudicated_at="2026-08-01T00:00:00Z",
+            ),
+        ],
+    )
+
+    before = _ont_compose(store, local, cutoff="2026-06-01")
+
+    assert [row["proposal_id"] for row in before["proposals"]] == [
+        "prop:6666666666666666"
+    ]
+    assert before["proposals"][0]["status"] == "proposed"
+    assert before["proposals"][0]["ratified_by"] is None
+    assert before["proposals"][0]["adjudicated_at"] is None
+    assert before["proposals"][0]["note"] is None
+    assert before["curation"] == {
+        "state": "PROPOSED",
+        "proposal_ids": ["prop:6666666666666666"],
+        "counts": {"proposed": 1, "ratified": 0, "rejected": 0},
+    }
+
+    after = _ont_compose(store, local, cutoff="2026-09-01")
+
+    assert [row["proposal_id"] for row in after["proposals"]] == [
+        "prop:6666666666666666",
+        "prop:5555555555555555",
+    ]
+    decided = next(
+        row for row in after["proposals"]
+        if row["proposal_id"] == "prop:6666666666666666"
+    )
+    assert decided["status"] == "ratified"
+    assert decided["ratified_by"] == "curator:test"
+    assert decided["adjudicated_at"] == "2026-08-01T00:00:00Z"
+    assert after["curation"]["counts"] == {
+        "proposed": 1,
+        "ratified": 1,
+        "rejected": 0,
+    }
+
+
+def test_ontology_canonical_subject_requires_exact_live_mapping_relation() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        proposals=[
+            _ont_proposal(
+                "prop:7777777777777777",
+                {"local_theme": local, "canonical_theme": theme},
+                status="ratified",
+                ratified_by="curator:test",
+            )
+        ],
+    )
+
+    result = _ont_compose(store, theme)
+
+    assert result["relations"] == []
+    assert result["curation"]["state"] == "RATIFIED_NOT_MATERIALIZED"
+
+
+def test_ontology_exact_live_mapping_materializes_from_both_query_sides() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        edges=[_ont_edge("e-map", "EXPRESSES", local, theme)],
+        proposals=[
+            _ont_proposal(
+                "prop:8888888888888888",
+                {"local_theme": local, "canonical_theme": theme},
+                status="ratified",
+                ratified_by="curator:test",
+            )
+        ],
+    )
+
+    from_local = _ont_compose(store, local)
+    from_theme = _ont_compose(store, theme)
+
+    assert from_local["curation"]["state"] == "RATIFIED_AND_MATERIALIZED"
+    assert from_theme["curation"]["state"] == "RATIFIED_AND_MATERIALIZED"
+
+
+def test_repository_store_reads_raw_nodes_and_full_lifecycle(monkeypatch) -> None:
+    from engine.theme_graph.ontology import RepositoryStore
+
+    calls: list[tuple[str, bool]] = []
+
+    def fake_nodes(*, current: bool = False):
+        calls.append(("nodes", current))
+        return []
+
+    def fake_lifecycle(*, latest: bool = True):
+        calls.append(("lifecycle", latest))
+        return []
+
+    monkeypatch.setattr(store, "read_nodes", fake_nodes)
+    monkeypatch.setattr(store, "read_node_lifecycle", fake_lifecycle)
+
+    repository = RepositoryStore()
+    assert repository.read_nodes() == []
+    assert repository.read_node_lifecycle() == []
+    assert calls == [("nodes", False), ("lifecycle", False)]
+
+
+def test_ontology_subject_visibility_obeys_birth_and_knowledge_clocks() -> None:
+    local = _ont_node("ltheme:finviz:ai", "local_theme")
+    local["birth_date"] = "2026-07-01"
+    local["computed_at"] = "2026-08-01T00:00:00Z"
+    store_view = _OntologyStore(nodes=[local])
+
+    before_birth = compose_neighborhood(
+        store_view,
+        node_id=local["node_id"],
+        asof="2026-06-01",
+        knowledge_cutoff="2026-09-01",
+        rights_resolver=_ont_rights,
+    )
+    before_known = compose_neighborhood(
+        store_view,
+        node_id=local["node_id"],
+        asof="2026-09-01",
+        knowledge_cutoff="2026-07-01",
+        rights_resolver=_ont_rights,
+    )
+    visible = compose_neighborhood(
+        store_view,
+        node_id=local["node_id"],
+        asof="2026-09-01",
+        knowledge_cutoff="2026-09-01",
+        rights_resolver=_ont_rights,
+    )
+    assert before_birth["availability"]["state"] == "SUBJECT_NOT_FOUND"
+    assert before_known["availability"]["state"] == "SUBJECT_NOT_FOUND"
+    assert visible["availability"]["state"] == "OK"
+
+
+def test_ontology_lifecycle_overlay_obeys_effective_and_knowledge_clocks() -> None:
+    local = "ltheme:finviz:ai"
+    theme = "theme:ai_semiconductors"
+    store_view = _OntologyStore(
+        nodes=[_ont_node(local, "local_theme"), _ont_node(theme, "theme")],
+        edges=[_ont_edge("e-map", "EXPRESSES", local, theme)],
+        lifecycle=[_ont_lifecycle(local), _ont_lifecycle(theme)],
+    )
+
+    before_effective = compose_neighborhood(
+        store_view,
+        node_id=local,
+        asof="2026-06-01",
+        knowledge_cutoff="2026-09-01",
+        rights_resolver=_ont_rights,
+    )
+    before_known = compose_neighborhood(
+        store_view,
+        node_id=local,
+        asof="2026-07-15",
+        knowledge_cutoff="2026-07-15",
+        rights_resolver=_ont_rights,
+    )
+    visible = compose_neighborhood(
+        store_view,
+        node_id=local,
+        asof="2026-07-15",
+        knowledge_cutoff="2026-09-01",
+        rights_resolver=_ont_rights,
+    )
+
+    assert before_effective["subject"]["status"] == "canonical"
+    assert before_effective["relations"][0]["peer"]["status"] == "canonical"
+    assert before_known["subject"]["status"] == "canonical"
+    assert before_known["relations"][0]["peer"]["status"] == "canonical"
+    assert visible["subject"]["status"] == "retired"
+    assert visible["relations"][0]["peer"]["status"] == "retired"
+
+
+def test_probation_decision_clock_contract_is_fail_closed() -> None:
+    schema = json.loads(
+        (ROOT / "contracts" / "theme_graph" / "probation_proposal.v1.schema.json")
+        .read_text()
+    )
+    proposed = probation.make_proposal(
+        kind="mapping",
+        subject={"basket": "basket:baskets:defense", "local_theme": "ltheme:finviz:defense"},
+        proposed_by="overlap_stats",
+        created="2026-01-01T00:00:00Z",
+    )
+    ratified = dict(
+        proposed,
+        status="ratified",
+        ratified_by="curator:test",
+    )
+
+    assert any("adjudicated_at" in error for error in probation.validate(ratified))
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(ratified, schema)
+
+    ratified["adjudicated_at"] = "2026-01-02T00:00:00Z"
+    assert probation.validate(ratified) == []
+    jsonschema.validate(ratified, schema)
+
+    impossible = dict(proposed, adjudicated_at="2026-01-02T00:00:00Z")
+    assert any("still proposed" in error for error in probation.validate(impossible))
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate(impossible, schema)

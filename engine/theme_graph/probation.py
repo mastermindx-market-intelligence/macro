@@ -41,13 +41,22 @@ STATUSES: frozenset[str] = frozenset({"proposed", "ratified", "rejected"})
 
 ROW_FIELDS: tuple[str, ...] = (
     "proposal_id", "kind", "subject", "evidence", "evidence_refs", "proposed_by",
-    "created", "status", "ratified_by", "note",
+    "created", "status", "ratified_by", "adjudicated_at", "note",
 )
 
 
 def utc_now_stamp() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace(
         "+00:00", "Z")
+
+
+def _parse_stamp(value: object, field: str) -> datetime:
+    text = str(value or "").strip()
+    normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+    try:
+        return datetime.fromisoformat(normalized)
+    except ValueError as exc:
+        raise ValueError(f"{field} must be an ISO-8601 timestamp") from exc
 
 
 def proposal_id(kind: str, subject: dict) -> str:
@@ -78,6 +87,7 @@ def make_proposal(*, kind: str, subject: dict, evidence: dict | None = None,
         # Written as PROPOSED, always. A proposer cannot mint a ratified row.
         "status": "proposed",
         "ratified_by": None,
+        "adjudicated_at": None,
         "note": note,
     }
 
@@ -85,19 +95,47 @@ def make_proposal(*, kind: str, subject: dict, evidence: dict | None = None,
 def validate(row: dict) -> list[str]:
     """Structural problems with one row, empty when it is well-formed."""
     out: list[str] = []
-    for f in ("proposal_id", "kind", "proposed_by", "created", "status"):
-        if not str(row.get(f) or "").strip():
-            out.append(f"missing {f}")
+    for field in ("proposal_id", "kind", "proposed_by", "created", "status"):
+        if not str(row.get(field) or "").strip():
+            out.append(f"missing {field}")
     if row.get("kind") and row["kind"] not in PROPOSAL_KINDS:
         out.append(f"kind {row['kind']!r} outside {sorted(PROPOSAL_KINDS)}")
     if row.get("proposed_by") and row["proposed_by"] not in PROPOSED_BY:
-        out.append(f"proposed_by {row['proposed_by']!r} outside {sorted(PROPOSED_BY)}")
-    if row.get("status") and row["status"] not in STATUSES:
-        out.append(f"status {row['status']!r} outside {sorted(STATUSES)}")
-    if row.get("status") == "ratified" and not str(row.get("ratified_by") or "").strip():
+        out.append(
+            f"proposed_by {row['proposed_by']!r} outside {sorted(PROPOSED_BY)}"
+        )
+    status = str(row.get("status") or "")
+    if status and status not in STATUSES:
+        out.append(f"status {status!r} outside {sorted(STATUSES)}")
+    ratified_by = str(row.get("ratified_by") or "").strip()
+    adjudicated_at = str(row.get("adjudicated_at") or "").strip()
+    if status == "ratified" and not ratified_by:
         out.append("status=ratified with no ratified_by — ratification names its author")
-    if row.get("status") != "ratified" and str(row.get("ratified_by") or "").strip():
+    if status != "ratified" and ratified_by:
         out.append("ratified_by set on a row that is not ratified")
+    if status in {"ratified", "rejected"} and not adjudicated_at:
+        out.append(f"status={status} with no adjudicated_at — decisions name their clock")
+    if status == "proposed" and adjudicated_at:
+        out.append("adjudicated_at set on a row that is still proposed")
+
+    created_clock = None
+    if str(row.get("created") or "").strip():
+        try:
+            created_clock = _parse_stamp(row.get("created"), "created")
+        except ValueError as exc:
+            out.append(str(exc))
+    adjudicated_clock = None
+    if adjudicated_at:
+        try:
+            adjudicated_clock = _parse_stamp(adjudicated_at, "adjudicated_at")
+        except ValueError as exc:
+            out.append(str(exc))
+    if (
+        created_clock is not None
+        and adjudicated_clock is not None
+        and adjudicated_clock < created_clock
+    ):
+        out.append("adjudicated_at predates created")
     return out
 
 
@@ -124,7 +162,8 @@ def read_proposals(path: Path) -> list[dict]:
 def ratified(rows: list[dict]) -> list[dict]:
     """The rows a build may act on. Everything else is a suggestion, not a fact."""
     return [r for r in rows if str(r.get("status")) == "ratified"
-            and str(r.get("ratified_by") or "").strip()]
+            and str(r.get("ratified_by") or "").strip()
+            and str(r.get("adjudicated_at") or "").strip()]
 
 
 def append_proposals(rows: list[dict], path: Path) -> tuple[int, int]:

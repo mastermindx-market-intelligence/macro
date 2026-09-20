@@ -23,6 +23,8 @@ ORDERING = "type,direction,peer_node_id,edge_id; never score"
 class StoreView(Protocol):
     def read_nodes(self) -> Any: ...
 
+    def read_node_lifecycle(self) -> Any: ...
+
     def read_edges(self) -> Any: ...
 
     def read_proposals(self) -> Any: ...
@@ -32,7 +34,10 @@ class RepositoryStore:
     """Read-only adapter over the canonical Theme Graph owners."""
 
     def read_nodes(self) -> Any:
-        return store.read_nodes(current=True)
+        return store.read_nodes(current=False)
+
+    def read_node_lifecycle(self) -> Any:
+        return store.read_node_lifecycle(latest=False)
 
     def read_edges(self) -> Any:
         # Dual-clock selection must see the append-only belief history.
@@ -134,6 +139,19 @@ def _parse_date(value: Any, field: str) -> dt.date:
         raise ValueError(f"{field} must be YYYY-MM-DD, got {text!r}") from exc
 
 
+def _clock_date(value: Any, field: str) -> dt.date:
+    if isinstance(value, dt.datetime):
+        return value.date()
+    if isinstance(value, dt.date):
+        return value
+    text = str(value or "").strip()
+    normalized = text[:-1] + "+00:00" if text.endswith("Z") else text
+    try:
+        return dt.datetime.fromisoformat(normalized).date()
+    except ValueError:
+        return _parse_date(text, field)
+
+
 def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "node_id": str(row.get("node_id") or ""),
@@ -150,6 +168,62 @@ def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
         "source_meta": _json_object(row.get("source_meta")),
         "provenance": str(row.get("provenance") or ""),
     }
+
+
+def _nodes_as_known(
+    node_rows: Sequence[Mapping[str, Any]],
+    lifecycle_rows: Sequence[Mapping[str, Any]],
+    *,
+    asof: dt.date,
+    knowledge_cutoff: dt.date,
+) -> dict[str, dict[str, Any]]:
+    visible: dict[str, dict[str, Any]] = {}
+    for original in node_rows:
+        row = dict(original)
+        node_id = str(row.get("node_id") or "")
+        if not node_id:
+            continue
+        computed = row.get("computed_at")
+        if not _is_null(computed) and _clock_date(
+            computed, "computed_at"
+        ) > knowledge_cutoff:
+            continue
+        birth = row.get("birth_date")
+        if not _is_null(birth) and _parse_date(birth, "birth_date") > asof:
+            continue
+        visible[node_id] = row
+
+    latest: dict[str, tuple[str, int, dict[str, Any]]] = {}
+    for index, original in enumerate(lifecycle_rows):
+        row = dict(original)
+        node_id = str(row.get("node_id") or "")
+        if node_id not in visible:
+            continue
+        computed = row.get("computed_at")
+        if _is_null(computed):
+            continue
+        computed_date = _clock_date(computed, "computed_at")
+        if computed_date > knowledge_cutoff:
+            continue
+        retire = row.get("retire_date")
+        effective = (
+            _parse_date(retire, "retire_date")
+            if not _is_null(retire)
+            else computed_date
+        )
+        if effective > asof:
+            continue
+        candidate = (str(computed), index, row)
+        if node_id not in latest or candidate[:2] > latest[node_id][:2]:
+            latest[node_id] = candidate
+
+    for node_id, (_computed, _index, lifecycle) in latest.items():
+        row = dict(visible[node_id])
+        row["status"] = lifecycle.get("status")
+        row["retire_date"] = lifecycle.get("retire_date")
+        row["merged_into"] = lifecycle.get("merged_into")
+        visible[node_id] = row
+    return visible
 
 
 def _contains_exact(value: Any, node_id: str) -> bool:
@@ -298,30 +372,56 @@ def _proposal_projection(row: Mapping[str, Any]) -> dict[str, Any]:
         "ratified_by": (
             None if _is_null(row.get("ratified_by")) else str(row.get("ratified_by"))
         ),
+        "adjudicated_at": (
+            None
+            if _is_null(row.get("adjudicated_at"))
+            else str(row.get("adjudicated_at"))
+        ),
         "note": None if _is_null(row.get("note")) else str(row.get("note")),
         "truth_status": "PROPOSAL_ONLY",
     }
 
 
-def _subject_strings(value: Any) -> set[str]:
-    value = _clean(value)
-    if isinstance(value, Mapping):
-        out: set[str] = set()
-        for item in value.values():
-            out.update(_subject_strings(item))
-        return out
-    if isinstance(value, list):
-        out: set[str] = set()
-        for item in value:
-            out.update(_subject_strings(item))
-        return out
-    return {value} if isinstance(value, str) else set()
+def _proposal_as_known(
+    row: Mapping[str, Any], knowledge_cutoff: dt.date
+) -> dict[str, Any] | None:
+    known = dict(row)
+    created = _clock_date(known.get("created"), "created")
+    if created > knowledge_cutoff:
+        return None
+    status = str(known.get("status") or "")
+    if status in {"ratified", "rejected"}:
+        adjudicated = _clock_date(known.get("adjudicated_at"), "adjudicated_at")
+        if adjudicated > knowledge_cutoff:
+            known["status"] = "proposed"
+            known["ratified_by"] = None
+            known["adjudicated_at"] = None
+            known["note"] = None
+    return known
+
+
+def _proposal_mapping_edge(
+    row: Mapping[str, Any],
+) -> tuple[str, str, str] | None:
+    if str(row.get("kind") or "") != "mapping":
+        return None
+    subject = row.get("subject")
+    if not isinstance(subject, Mapping):
+        return None
+    local = str(subject.get("local_theme") or "")
+    canonical = str(subject.get("canonical_theme") or "")
+    basket = str(subject.get("basket") or "")
+    if local and canonical:
+        return ("EXPRESSES", local, canonical)
+    if basket and local:
+        return ("EXPRESSES", basket, local)
+    return None
 
 
 def _curation_summary(
     proposals: Sequence[Mapping[str, Any]],
     *,
-    canonical_theme_ids: Sequence[str],
+    live_rows: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
     counts = {"proposed": 0, "ratified": 0, "rejected": 0}
     for row in proposals:
@@ -329,11 +429,19 @@ def _curation_summary(
         if status in counts:
             counts[status] += 1
     if counts["ratified"]:
-        mapped = set(canonical_theme_ids)
-        ratified = [row for row in proposals if str(row.get("status")) == "ratified"]
+        live_relations = {
+            (
+                str(row.get("type") or ""),
+                str(row.get("src") or ""),
+                str(row.get("dst") or ""),
+            )
+            for row in live_rows
+        }
+        ratified = [
+            row for row in proposals if str(row.get("status")) == "ratified"
+        ]
         materialized = sum(
-            bool(mapped & {item for item in _subject_strings(row.get("subject")) if item.startswith("theme:")})
-            for row in ratified
+            _proposal_mapping_edge(row) in live_relations for row in ratified
         )
         if materialized == len(ratified):
             state = "RATIFIED_AND_MATERIALIZED"
@@ -351,7 +459,9 @@ def _curation_summary(
         state = "NONE"
     return {
         "state": state,
-        "proposal_ids": sorted(str(row.get("proposal_id") or "") for row in proposals),
+        "proposal_ids": sorted(
+            str(row.get("proposal_id") or "") for row in proposals
+        ),
         "counts": counts,
     }
 
@@ -376,7 +486,13 @@ def compose_neighborhood(
     )
 
     nodes = _records(store_view.read_nodes())
-    node_map = {str(row.get("node_id") or ""): row for row in nodes if row.get("node_id")}
+    lifecycle_reader = getattr(store_view, "read_node_lifecycle", None)
+    lifecycle = (
+        _records(lifecycle_reader()) if callable(lifecycle_reader) else []
+    )
+    node_map = _nodes_as_known(
+        nodes, lifecycle, asof=asof_date, knowledge_cutoff=cutoff_date
+    )
     subject_row = node_map.get(exact_id)
 
     raw_edges = _records(store_view.read_edges())
@@ -386,6 +502,8 @@ def compose_neighborhood(
         asof=asof_date,
         knowledge_cutoff=cutoff_date,
     )
+    if subject_row is None:
+        live_rows = []
     relations = [
         _relation_projection(
             row,
@@ -409,12 +527,15 @@ def compose_neighborhood(
     for row in raw_proposals:
         if not _contains_exact(row.get("subject"), exact_id):
             continue
+        known_row = _proposal_as_known(row, cutoff_date)
+        if known_row is None:
+            continue
         errors = probation.validate(row)
         if errors:
             raise ValueError(
                 f"malformed relevant probation proposal {row.get('proposal_id')!r}: {errors}"
             )
-        relevant_proposals.append(row)
+        relevant_proposals.append(known_row)
     proposal_rows = [_proposal_projection(row) for row in relevant_proposals]
     proposal_rows.sort(key=lambda row: (row["created"], row["proposal_id"]))
 
@@ -443,7 +564,7 @@ def compose_neighborhood(
     }
     curation = _curation_summary(
         proposal_rows,
-        canonical_theme_ids=canonical_ids,
+        live_rows=live_rows,
     )
     availability = (
         {"state": "OK", "reason": None}
