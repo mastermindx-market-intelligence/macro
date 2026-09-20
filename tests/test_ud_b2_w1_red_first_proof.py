@@ -1,14 +1,19 @@
 """RED-first proof for the UD-B2-W1 vol-weather fold.
 
-The fold's central claim: `data-sx-vw-strip` (and its `data-sx-vw-chip` rows)
-now live INSIDE `#sx-risk-v2` as a sub-row. Before the fold (pre-fold main),
-the chips lived inside `#dlg-sentiment` as `#vsb-vol-weather-section`.
+The fold's central claim (R-W1-A-AMENDED): `data-sx-vw-strip` (and its
+`data-sx-vw-chip` rows) live INSIDE `.mx5-sc-left`. Before the fold
+(pre-fold main), the chips lived inside `#dlg-sentiment` as
+`#vsb-vol-weather-section`.
 
-This test is RED-first evidence: when we read site/macro.html from PRE-FOLD
-main (the parent of the fold commit, c22864f80967e77e6e42cd926ef00f11f7197d06),
-the fold claim MUST FAIL — the pre-fold page has no `data-sx-vw-strip` inside
-the risk isle, and still carries the old `#vsb-vol-weather-section` inside
-`#dlg-sentiment`.
+TestUDB2W1RedFirst reads site/macro.html from PRE-FOLD main (PR base
+c22864f80967e77e6e42cd926ef00f11f7197d06) and checks we identified the
+right parent (old dialog section still present, new strip markers absent).
+
+TestUDB2W1FoldPresenceFailsOnPreFold imports the FOLD presence helpers
+and runs them against that pre-fold HTML — they MUST raise, because the
+fold has not happened yet. That is the RED-first proof the ruling names
+(a positive fold assertion failing on pre-fold main, not a negative
+assert that would pass on any page).
 
 Run with: PYTHONPATH=. python -m pytest -q tests/test_ud_b2_w1_red_first_proof.py
 """
@@ -24,9 +29,9 @@ import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Pre-fold main = parent of the round-2 fold commit. The fold moved chips
-# from #dlg-sentiment into #sx-risk-v2; pre-fold, the chips only existed
-# inside the dialog.
+# Pre-fold main = PR merge-base (parent of the first fold commit). The fold
+# moved chips from #dlg-sentiment into .mx5-sc-left; pre-fold, the chips
+# only existed inside the dialog.
 PRE_FOLD_HEAD = "c22864f80967e77e6e42cd926ef00f11f7197d06"
 
 
@@ -180,65 +185,30 @@ class TestUDB2W1RedFirst:
         )
 
 
-class TestUDB2W1FoldClaimsFailOnPreFold:
-    """RED-first proof, opposite direction: the fold's POSITIVE claims must
-    FAIL when run against pre-fold main. These tests read pre-fold main via
-    `git show` and assert the fold IS true — they MUST fail because the
-    fold has not happened yet on pre-fold main.
-
-    Run from the worktree at the FINAL head; these tests will fail if you
-    mistakenly point them at pre-fold main, which is exactly the RED-first
-    guarantee the ruling demands.
+class TestUDB2W1FoldPresenceFailsOnPreFold:
+    """RED-first proof: the fold's POSITIVE presence helpers must RAISE
+    when pointed at pre-fold main's site/macro.html. These are not
+    negative asserts (those pass on any page that lacks the strip). They
+    call the same helpers the fold suite uses, so a FAIL of those helpers
+    is the fold claim failing on the pre-fold page.
     """
 
-    def test_pre_fold_has_no_mx5_sc_vw_host(self):
-        """Pre-fold main: there is no <div class="mx5-sc-vw"> host on the
-        page — the fold introduced it as the new home for the vol-weather
-        strip (DEV-VW-LOCATION, round-3). The fold claim "strip lives in
-        mx5-sc-vw" MUST FAIL on pre-fold main."""
-        macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
-        assert '<div class="mx5-sc-vw"' not in macro_html, (
-            "RED-first PROOF (OPPOSITE): pre-fold main must NOT have the "
-            "mx5-sc-vw host — that host is a fold-time addition. If this "
-            "fails, the pre-fold head was misidentified."
-        )
+    def test_vw_host_slice_raises_on_pre_fold_html(self):
+        from tests.test_ud_b2_w1_vw_fold import _vw_host_slice
 
-    def test_pre_fold_has_no_sx_vw_strip_on_page(self):
-        """Pre-fold main: no <div data-sx-vw-strip> anywhere on the page —
-        the fold introduced this marker. The fold claim "strip lives on
-        the page under data-sx-vw-strip" MUST FAIL on pre-fold main."""
         macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
-        assert "data-sx-vw-strip" not in macro_html, (
-            "RED-first PROOF (OPPOSITE): pre-fold main must NOT have "
-            "data-sx-vw-strip on the page — that marker is a fold-time "
-            "addition. If this fails, the pre-fold head was misidentified."
-        )
+        with pytest.raises((ValueError, AssertionError)):
+            _vw_host_slice(macro_html)
 
-    def test_pre_fold_has_no_sx_vw_chip_rows(self):
-        """Pre-fold main: no data-sx-vw-chip= rows on the page — the fold
-        introduced these row markers. The fold claim "chips appear once
-        per VM chip under data-sx-vw-chip=" MUST FAIL on pre-fold main."""
-        macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
-        assert "data-sx-vw-chip=" not in macro_html, (
-            "RED-first PROOF (OPPOSITE): pre-fold main must NOT have any "
-            "data-sx-vw-chip= rows — those are fold-time additions. If "
-            "this fails, the pre-fold head was misidentified."
-        )
+    def test_mx5_sc_left_strip_presence_raises_on_pre_fold_html(self):
+        from tests.test_ud_b2_w1_vw_fold import _slice_from_sentinel
 
-    def test_pre_fold_still_has_old_dialog_vol_weather_section(self):
-        """Pre-fold main: #vsb-vol-weather-section still lives inside
-        #dlg-sentiment. The fold moves chips OUT of the dialog; pre-fold
-        must still have the old dialog section. This is the OPPOSITE of
-        the fold's positive claim that the dialog no longer carries the
-        duplicate section — on pre-fold, the duplicate IS still there."""
         macro_html = _git_show("site/macro.html", PRE_FOLD_HEAD)
-        assert 'id="vsb-vol-weather-section"' in macro_html, (
-            "RED-first PROOF (OPPOSITE): pre-fold main MUST still carry "
-            "the old #vsb-vol-weather-section inside #dlg-sentiment. If "
-            "this fails, the pre-fold head was misidentified."
-        )
-        assert 'data-vsb-chip="' in macro_html, (
-            "RED-first PROOF (OPPOSITE): pre-fold main MUST still carry "
-            "old data-vsb-chip= dialog-row markers. If this fails, the "
-            "pre-fold head was misidentified."
-        )
+        with pytest.raises((ValueError, AssertionError)):
+            sc_left = _slice_from_sentinel(macro_html, '<div class="mx5-sc-left">')
+            assert "data-sx-vw-strip" in sc_left, (
+                "fold presence claim: strip inside .mx5-sc-left"
+            )
+            assert macro_html.count("data-sx-vw-strip") == 1, (
+                "fold presence claim: strip rendered once"
+            )

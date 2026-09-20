@@ -1,26 +1,20 @@
-"""UD-B2-W1 — Vol-weather chips folded into the Risk isle (R3 of disposition).
+"""UD-B2-W1 — Vol-weather chips folded into the visible risk surface.
 
 Engine-true assertions (per R-H law): bind to vm['vol_weather'] as produced by
 scripts/build_site.py:_vol_weather_view() (file-backed JSON; never hand-typed
 shapes). The macro.html fixture under site/macro.html IS the engine output —
 rendered by scripts/build_site.py from the assembled vm. We slice it the way
 the R-E pattern does (sentinel + matching-close depth count) and assert the
-chips live inside the dial + scar chip "isle" (the mx5 scorecard's left
-column) and are absent from #dlg-sentiment.
+chips live inside the dial + scar chip surface (the mx5 scorecard's left
+column, .mx5-sc-left) and are absent from #dlg-sentiment.
 
-Round-3 deviation (DEV-VW-LOCATION): the round-1 ruling said the strip must
-render INSIDE #sx-risk-v2 as a sub-row BELOW the dial + scar chips. The
-dial (svg.mx5-gauge-svg) and scar chips (#mx5BtnRisk) live in the mx5
-scorecard (mx5-sc-left), NOT inside #sx-risk-v2 — moving them into
-#sx-risk-v2 would break the mx5 scorecard's central UI. Round-3
-implementation moved the strip call out of #sx-risk-v2 and into
-mx5-sc-left (host: .mx5-sc-vw) so the strip renders visually directly
-below the dial + scar chips, satisfying the reviewer's visual goal
-("dial + scar chips + weather sub-row in one isle"). The stub face
-(.sxg-face-risk-hidden) inside #sx-risk-v2 stays visible per R-W1-A.
+R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy container
+(display:none!important on the macro route, including the .mx4-grid
+carve-out). The RATIFIED host is .mx5-sc-left. The RISK/风险 + Credit
+Stress stub face was removed so the strip and the risk read appear once.
 
 Spec: research/UNIFIED_DASHBOARD_DISPOSITION.md row 21 (risk isle IMPROVE R3)
-and row 35 (vol-weather chips IMPROVE R3 — absorbed into the risk isle).
+and row 35 (vol-weather chips IMPROVE R3 — absorbed into the risk surface).
 """
 from __future__ import annotations
 
@@ -177,13 +171,12 @@ class TestUDB2W1VwFold:
     """The vol-weather chips now live inside the risk isle (R3 fold)."""
 
     def test_chips_present_inside_risk_isle(self, vol_weather, macro_html):
-        # Round-3: strip lives in the mx5 scorecard's left column (.mx5-sc-vw),
-        # NOT inside #sx-risk-v2 — see DEV-VW-LOCATION. The "risk isle" here
-        # is the visual unit (dial + scar chips + weather sub-row).
+        # R-W1-A-AMENDED: strip lives in the mx5 scorecard's left column
+        # (.mx5-sc-vw inside .mx5-sc-left). #sx-risk-v2 is not the host.
         host = _vw_host_slice(macro_html)
         assert "data-sx-vw-strip" in host, (
-            "Vol-weather sub-row (data-sx-vw-strip) must live inside the risk "
-            "isle's mx5-sc-vw host (DEV-VW-LOCATION)"
+            "Vol-weather sub-row (data-sx-vw-strip) must live inside the "
+            "mx5-sc-vw host in .mx5-sc-left (R-W1-A-AMENDED)"
         )
         # Every chip key in the real VM must appear inside the host slice
         keys = [c["key"] for c in vol_weather["chips"]]
@@ -344,72 +337,109 @@ class TestUDB2W1VwFold:
             )
 
     def test_isle_dial_face_remains_visible_after_fold(self, macro_html):
-        """R-W1-A: the dial + scar chips must stay visible after the fold.
-        The .sxg-face inside #sx-risk-v2 must NOT be display:none (the
-        round-2 rule retired display:none!important on this selector).
+        """R-W1-A-AMENDED: the dial + scar chips stay visible on the
+        ratified host (.mx5-sc-left). #sx-risk-v2's face is
+        display:none!important BY DESIGN on the macro route.
         """
-        # The CSS rule "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face
-        # {display:none!important;}" must NOT be present in the rendered CSS.
-        css_text = (ROOT / "site" / "theme.css").read_text()
+        sentinel = '<div class="mx5-sc-left">'
+        sc_left = _slice_from_sentinel(macro_html, sentinel)
+        assert "mx5-gauge-svg" in sc_left or "mx5-gauge" in sc_left, (
+            "mx5-sc-left must carry the dial (the visible risk surface)"
+        )
+        assert "mx5BtnRisk" in sc_left, (
+            "mx5-sc-left must carry the scar-chip risk button"
+        )
+        # Face hide rule lives in the page's inline <style> (dashboard.html.j2).
         assert (
-            "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important}"
-            not in css_text
-            and "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none !important}"
-            not in css_text
+            "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}"
+            in macro_html
+            or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important}"
+            in macro_html
+            or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none !important}"
+            in macro_html
         ), (
-            "Round-2 retired the display:none!important on the risk face; "
-            "theme.css must not reintroduce it (R-W1-A)"
-        )
-        # And the .sxg-face element must appear inside the rendered risk isle.
-        sentinel = '<div class="sx" id="sx-risk-v2"'
-        isle = _slice_from_sentinel(macro_html, sentinel)
-        assert "sxg-face" in isle, (
-            "Risk isle must carry the .sxg-face (dial + scar chips surface)"
-        )
-        # And it must NOT be collapsed (min-height:0 on the card would hide it).
-        assert (
-            "#sx-risk-v2:not([data-open]){" not in css_text
-            and "#sx-risk-v2:not([data-open]) {" not in css_text
-        ) or "min-height:0" not in css_text.split("#sx-risk-v2:not([data-open])", 1)[-1].split("}", 1)[0], (
-            "Round-2 retired the #sx-risk-v2:not([data-open]) collapse; "
-            "the card must not collapse its face when not expanded"
+            "R-W1-A-AMENDED: #sx-risk-v2 face is display:none!important "
+            "BY DESIGN on the macro route, including the .mx4-grid carve-out"
         )
 
     def test_strip_lives_below_dial_and_scar_chips_in_mx5_scorecard(self, macro_html):
-        """R-W1-A round-3: the strip renders as a sub-row INSIDE the mx5
-        scorecard's left column, BELOW the dial (svg.mx5-gauge-svg) and
-        the scar chips (#mx5BtnRisk). This is what makes them one visual
-        unit. The host element (.mx5-sc-vw) lives inside .mx5-sc-left.
+        """The strip renders as a sub-row INSIDE the mx5 scorecard's left
+        column, BELOW the dial and the scar chips. The host (.mx5-sc-vw)
+        lives inside .mx5-sc-left.
         """
-        # The host slice must contain BOTH the strip and the dial/scar chip
-        # markers OR — since they may not all be in the same depth-1 slice —
-        # at least the strip + a structurally-equivalent signal that the
-        # strip is in the mx5 scorecard's left column.
         sentinel = '<div class="mx5-sc-left">'
         sc_left = _slice_from_sentinel(macro_html, sentinel)
         assert "mx5-sc-vw" in sc_left, (
-            "mx5-sc-left must contain the vol-weather host (.mx5-sc-vw) — "
-            "DEV-VW-LOCATION moves the strip into the mx5 scorecard"
+            "mx5-sc-left must contain the vol-weather host (.mx5-sc-vw)"
         )
         assert "data-sx-vw-strip" in sc_left, (
             "mx5-sc-left must contain the vol-weather strip itself"
         )
 
-    def test_strip_absent_from_sx_risk_v2_slice(self, macro_html):
-        """Round-3 DEV-VW-LOCATION: the strip does NOT live inside #sx-risk-v2
-        anymore. The stub face inside #sx-risk-v2 stays (R-W1-A "isle's
-        existing face must remain fully visible") but the strip moved out
-        to render visually with the dial + scar chips. The reviewer's
-        visual goal — "dial + scar chips + weather sub-row in one isle" —
-        requires this move.
+    def test_strip_present_once_inside_mx5_sc_left(self, macro_html):
+        """R-W1-A-AMENDED: presence-assert on the .mx5-sc-left slice
+        (replaces test_strip_absent_from_sx_risk_v2_slice). The strip
+        lives inside .mx5-sc-left and is rendered once on the whole page.
         """
-        sentinel = '<div class="sx" id="sx-risk-v2"'
-        isle = _slice_from_sentinel(macro_html, sentinel)
-        assert "data-sx-vw-strip" not in isle, (
-            "Round-3 DEV-VW-LOCATION: strip lives in mx5-sc-vw, NOT inside "
-            "#sx-risk-v2. The stub face (.sxg-face-risk-hidden) inside "
-            "#sx-risk-v2 stays visible (R-W1-A)."
+        sentinel = '<div class="mx5-sc-left">'
+        sc_left = _slice_from_sentinel(macro_html, sentinel)
+        assert "data-sx-vw-strip" in sc_left, (
+            "Vol-weather strip must live inside the .mx5-sc-left slice "
+            "(R-W1-A-AMENDED ratified host)"
         )
+        assert macro_html.count("data-sx-vw-strip") == 1, (
+            "Vol-weather strip must render exactly once on the whole page; "
+            f"got {macro_html.count('data-sx-vw-strip')}"
+        )
+
+    def test_no_vw_or_risk_stub_class_outside_mx5_sc_left(self, macro_html):
+        """The strip and the risk read appear ONCE, inside the scorecard.
+        After removing the .mx5-sc-left slice, no vw/risk-stub class remains.
+        """
+        sentinel = '<div class="mx5-sc-left">'
+        sc_left = _slice_from_sentinel(macro_html, sentinel)
+        remainder = macro_html.replace(sc_left, "", 1)
+        for needle in (
+            "data-sx-vw-strip",
+            'class="mx5-sc-vw"',
+            "sxg-face-risk-hidden",
+        ):
+            assert needle not in remainder, (
+                f"{needle!r} must not appear outside .mx5-sc-left "
+                f"(leftover RISK sibling / duplicate strip)"
+            )
+        # Class tokens in HTML class attributes (not CSS comments / selectors).
+        assert not re.search(r'class="[^"]*\bsx-vw-strip\b', remainder), (
+            "sx-vw-strip class must not appear on any element outside .mx5-sc-left"
+        )
+
+    def test_glance_cor1m_and_cor3m_labels_are_distinct(self, macro_html):
+        """Glance rows 6/7 (cor1m / cor3m) must not share one label.
+        Labels come from the engine's own names, not invented copy.
+        """
+        host = _vw_host_slice(macro_html)
+        glance = _slice_vol_weather_strip(host)
+        def _name_for(key: str) -> str:
+            m = re.search(
+                rf'data-sx-vw-chip="{re.escape(key)}".*?'
+                rf'<div class="sx-vw-name">\s*'
+                rf'<span class="l-en">(?P<en>[^<]*)</span>'
+                rf'<span class="l-zh">(?P<zh>[^<]*)</span>',
+                glance,
+                re.DOTALL,
+            )
+            assert m, f"glance row for {key} not found"
+            return f"{m.group('en')}|{m.group('zh')}"
+        cor1m = _name_for("cor1m")
+        cor3m = _name_for("cor3m")
+        assert cor1m != cor3m, (
+            f"cor1m and cor3m glance labels must be distinct; both are {cor1m!r}"
+        )
+        # Engine's own labels (engine/vol_velocity.py _chip_cor1m/_chip_cor3m).
+        assert "How much stocks move together" in cor1m
+        assert "3-month implied correlation" in cor3m
+        assert "3个月隐含相关性" in cor3m
+
 
     def test_ok_chip_with_extreme_band_shows_storm_tier(self, vol_weather, macro_html):
         """An extreme-band chip must render the 'storm' / '风暴' tier word

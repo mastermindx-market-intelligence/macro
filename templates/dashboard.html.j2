@@ -234,7 +234,7 @@
   'vvix_vix':    ('How much traders expect next',    '交易员对未来的预期'),
   'vix1d':       ('Overnight price swings',          '隔夜价格波动'),
   'cor1m':       ('How much stocks move together',   '股票同步程度'),
-  'cor3m':       ('How much stocks move together',   '股票同步程度'),
+  'cor3m':       ('3-month implied correlation',     '3个月隐含相关性'),
   'dspx':        ('Stock-by-stock swings',           '个股走势分散度'),
 } %}
 {% set _vw_band_word = {
@@ -4054,6 +4054,14 @@ body.page-macro.mx4-grid .mx4-rack{
 
 /* Show face in grid view (.mx4-grid is permanent in macro mode) */
 body.page-macro.mx4-grid .sxg-face{display:flex;}
+/* R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+   container on the macro route. Its face is display:none!important
+   BY DESIGN, including the .mx4-grid carve-out that would otherwise
+   flex-show .sxg-face. The visible risk surface is .mx5-sc-left. */
+body.page-macro #sx-risk-v2,
+body.page-macro.mx4-grid #sx-risk-v2{display:none!important;}
+body.page-macro #sx-risk-v2 .sxg-face,
+body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
 
 /* ── Card spans (desktop ≥1100px) ───────────────────────────── */
 /* v5 layout:
@@ -4100,11 +4108,10 @@ body.page-macro.mx4-grid .sxg-face{display:flex;}
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
-/* ── Risk card: face and weather sub-row coexist inside the isle
-   (UD-B2-W1 R3 — vol-weather fold). The dial + scar chips stay
-   visible in grid view AND the vol-weather strip is a sub-row
-   directly below them. The dial opens the risk dialog; the
-   strip's own glyphs and tier words are not interactive. */
+/* ── Risk card: the visible risk surface is the mx5 scorecard
+   (.mx5-sc-left). #sx-risk-v2 is an invisible legacy container
+   (R-W1-A-AMENDED). The vol-weather strip is a sub-row of
+   .mx5-sc-left, below the dial + scar chips. */
 
 /* ── Sibling dim on expansion (graft 5, reuse v3 dim) ────────── */
 /* v3 already dims via has-open-island / many-open on body;
@@ -4275,15 +4282,10 @@ body.page-macro .sxg-deep-chip:hover{border-color:var(--link);color:var(--ink-li
 }
 
 /* ── In grid view the sx-tray behaves as normal (expands in-flow at 1/-1) ── */
-/* sx-risk-v2 keeps its full card chrome in grid view (UD-B2-W1 R3): the dial
-   + scar chips face is the visible card, the vol-weather sub-row sits directly
-   below it, and the card opens the risk dialog when clicked. The .sx element
-   does NOT collapse when not expanded — it carries the dial + weather strip
-   as the user-facing glance surface. When opened (data-open) it spans 1/-1
-   at order:-1 top of rack showing the full island. */
 /* sx-risk-v2 sx-sum{display:none} — removed (sx-sum rows retired v5.1) */
-/* Collapse rules retired by UD-B2-W1 R3 — the risk isle now lives as a full
-   card with its face + weather sub-row both visible in grid view. */
+/* R-W1-A-AMENDED: #sx-risk-v2 is display:none!important on the macro
+   route (see the hide rule next to .mx4-grid .sxg-face). Empty card
+   chrome must not paint a leftover Risk sibling under the scorecard. */
 
 /* ── grid-only utility: visible only in mx4-grid, hidden in ledger ── */
 body.page-macro .mx4-grid-only{display:none;}
@@ -4293,10 +4295,8 @@ body.page-macro.mx4-grid .mx4-grid-only{display:block;}
 body.page-macro .mx4-verdict-band{display:none!important;}
 
 /* ── In grid view: sx-evidence face = WHAT TO DO card (v5); popover button opens island ── */
-/* sx-risk-v2 face still hidden; its tray opens from the rack as before */
 /* sx-evidence face is now visible in grid view as the WTD card — override the hide rule */
 body.page-macro.mx4-grid #sx-evidence .sxg-face{display:flex!important;}
-/* sx-risk-v2 face already hidden via existing rule body.page-macro.mx4-grid #sx-risk-v2 .sxg-face */
 
 /* ══════════════════════════════════════════════════════════
    S2 — EVIDENCE face full content
@@ -6969,7 +6969,7 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
 /* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
-   lives inside #sx-risk-v2 and inherits the isle's tokens via .sx-vw-row.) */
+   lives inside .mx5-sc-left and inherits tokens via .sx-vw-row.) */
 .sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
@@ -8206,14 +8206,10 @@ html[data-theme="light"] :is(
 
       </div>{# /mx5-btn-row #}
 
-      {# ── UD-B2-W1 R3 (round-3): vol-weather sub-row sits DIRECTLY BELOW the dial
-         + scar chips, as a sub-row INSIDE the mx5 scorecard's left column. The
-         round-1 ruling said "INSIDE #sx-risk-v2" but the latest reviewer (visual
-         goal: "dial + scar chips + weather sub-row in one isle") requires the
-         strip to render visually with the dial + scar chips — moving the strip
-         here satisfies both the visual goal and avoids breaking the mx5 scorecard
-         (which would lose its central dial if we moved it into #sx-risk-v2).
-         The stub face inside #sx-risk-v2 stays visible per R-W1-A. #}
+      {# ── UD-B2-W1 (R-W1-A-AMENDED 2026-09-20): vol-weather sub-row sits
+         DIRECTLY BELOW the dial + scar chips, as a sub-row INSIDE the mx5
+         scorecard's left column (.mx5-sc-left). #sx-risk-v2 is an invisible
+         legacy container — do not host the strip there. #}
       {% if vol_weather is defined and vol_weather %}
       <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
         {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
@@ -11549,64 +11545,13 @@ html[data-theme="light"] :is(
   </div>{# /sx-markets-v2 #}
 
   {# ── 4. RISK row + tray (Stage B) ── #}
-  {# Requires: market_state (MS.radar), latest.risk_radar (if present), froth_fragility, fear_euphoria, fear_greed #}
+  {# R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+     container. The RISK/风险 + Credit Stress stub face was removed so
+     the strip and the risk read appear once, inside .mx5-sc-left. The
+     empty wrapper stays for any hash/JS that still names the id; CSS
+     sets display:none!important on the macro route. #}
   {% if market_state %}
-  {% set _rdr = market_state.radar if market_state.radar is defined else {} %}
-  {% set _rdr_state = _rdr.state if _rdr else 'unknown' %}
-  {% set _rdr_score = _rdr.top_score if _rdr else none %}
-  {% set _rdr_col = 'var(--down)' if _rdr_state == 'risk-off' else ('var(--orange,var(--warn))' if _rdr_state in ('elevated','caution') else 'var(--up)') %}
-  <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)">
-    {# RISK face — opens the risk dialog (S1: wires to dialog; full redesign in S3) #}
-    {% set _rdr_label_en = _rdr.label_en if (_rdr.label_en is defined and _rdr.label_en) else _rdr_state %}
-    {% set _rdr_label_zh = (_rdr.label_zh if (_rdr.label_zh is defined and _rdr.label_zh) else none) or _rdr_label_en %}
-    <div class="sxg-face sxg-face-risk-hidden" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-risk');}">
-      <div class="sxg-face-eyebrow"><span class="l-en">Risk</span><span class="l-zh">风险</span></div>
-      <div class="sxg-face-stance" style="color:{{ _rdr_col }}">
-        {# COPY-01: use _rdr_label_en/_rdr_label_zh (set above at glance) for parity #}
-        <span class="l-en">{{ _rdr_label_en | title }}</span>
-        <span class="l-zh">{{ _rdr_label_zh }}</span>
-      </div>
-      {% if _rdr_score is not none %}
-      <div class="sxg-face-sub"><span class="l-en">Intensity {{ _rdr_score }}/100</span><span class="l-zh">强度 {{ _rdr_score }}/100</span></div>
-      {% endif %}
-      {# W4 EVW: high-impact event ≤2 trading days out — context chip (display-only, RIC-R3). #}
-      {# engine/risk_radar.py is untouched; this chip is rendered-only calendar context. #}
-      {% if evw_snap is defined and evw_snap and evw_snap.get('available') %}
-      {% set _evw_td_cpi = evw_snap.get('td_to_cpi') %}
-      {% set _evw_td_fomc = evw_snap.get('td_to_fomc') %}
-      {% set _evw_td_nfp = evw_snap.get('td_to_nfp') %}
-      {% set _evw_td_ppi = evw_snap.get('td_to_ppi') %}
-      {% set _evw_near = (
-          (_evw_td_cpi is not none and _evw_td_cpi <= 2) or
-          (_evw_td_fomc is not none and _evw_td_fomc <= 2) or
-          (_evw_td_nfp is not none and _evw_td_nfp <= 2) or
-          (_evw_td_ppi is not none and _evw_td_ppi <= 2)
-      ) %}
-      {% if _evw_near %}
-      {% set _evw_what_en = 'CPI' if (_evw_td_cpi is not none and _evw_td_cpi <= 2) else ('Fed decision' if (_evw_td_fomc is not none and _evw_td_fomc <= 2) else ('Payrolls' if (_evw_td_nfp is not none and _evw_td_nfp <= 2) else 'PPI')) %}
-      {% set _evw_what_zh = '消费者物价' if (_evw_td_cpi is not none and _evw_td_cpi <= 2) else ('美联储决议' if (_evw_td_fomc is not none and _evw_td_fomc <= 2) else ('非农就业' if (_evw_td_nfp is not none and _evw_td_nfp <= 2) else '生产者物价')) %}
-      {% set _evw_days_en = 'today' if ((_evw_td_cpi == 0 or _evw_td_fomc == 0 or _evw_td_nfp == 0 or _evw_td_ppi == 0)) else ('tomorrow' if ((_evw_td_cpi == 1 or _evw_td_fomc == 1 or _evw_td_nfp == 1 or _evw_td_ppi == 1)) else 'in 2 days') %}
-      {% set _evw_days_zh = '今日' if ((_evw_td_cpi == 0 or _evw_td_fomc == 0 or _evw_td_nfp == 0 or _evw_td_ppi == 0)) else ('明日' if ((_evw_td_cpi == 1 or _evw_td_fomc == 1 or _evw_td_nfp == 1 or _evw_td_ppi == 1)) else '2日后') %}
-      <div style="margin-top:5px;font-size:10.5px;color:var(--ink-warn, var(--warn,#f59e0b));line-height:1.4">
-        <span class="l-en">{{ _evw_what_en }} {{ _evw_days_en }} — expect elevated tape noise.</span>
-        <span class="l-zh">{{ _evw_what_zh }}{{ _evw_days_zh }}发布 — 市场噪音可能放大。</span>
-      </div>
-      {% endif %}
-      {% endif %}
-    </div>
-    {# ── UD-B2-W1 R3 (round-3 deviation): the vol-weather strip renders
-       DIRECTLY BELOW the dial + scar chips, as a sub-row inside the mx5
-       scorecard's left column (see mx5-sc-vw above mx5-sc-left's close).
-       The stub face here (.sxg-face-risk-hidden) stays visible per R-W1-A
-       ("the isle's existing face must remain fully visible") and serves
-       as the disclosure-tier entry — click it to open the Risk dialog.
-       R-W1-A literal "INSIDE #sx-risk-v2" is honoured in spirit (the strip
-       is part of the risk "isle" visual unit) but the rendering location
-       moved out of #sx-risk-v2 because moving the dial + scar chips in
-       would break the mx5 scorecard; the reviewer's stated visual goal
-       ("dial + scar chips + weather sub-row in one isle") requires the
-       strip to render visually with the dial + scar chips. #}
-  </div>{# /sx-risk-v2 #}
+  <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)"></div>{# /sx-risk-v2 #}
   {% endif %}{# /market_state #}
 
   {# ── 5. POLICY row + tray (Stage B) ── #}
@@ -14714,7 +14659,7 @@ html[data-theme="light"] :is(
         {% endif %}
 
         {# VSB W3: Volatility weather strip — REMOVED 2026-09-20 (UD-B2-W1 fold).
-           The chips now live as a sub-row inside the Risk isle (#sx-risk-v2);
+           The chips now live as a sub-row inside .mx5-sc-left;
            the dialog no longer carries the duplicate section. #}
 
         {# VSB W4: AI names vs the rest #}

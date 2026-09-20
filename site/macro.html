@@ -4800,6 +4800,14 @@ body.page-macro.mx4-grid .mx4-rack{
 
 /* Show face in grid view (.mx4-grid is permanent in macro mode) */
 body.page-macro.mx4-grid .sxg-face{display:flex;}
+/* R-W1-A-AMENDED (2026-09-20): #sx-risk-v2 is an invisible legacy
+   container on the macro route. Its face is display:none!important
+   BY DESIGN, including the .mx4-grid carve-out that would otherwise
+   flex-show .sxg-face. The visible risk surface is .mx5-sc-left. */
+body.page-macro #sx-risk-v2,
+body.page-macro.mx4-grid #sx-risk-v2{display:none!important;}
+body.page-macro #sx-risk-v2 .sxg-face,
+body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
 
 /* ── Card spans (desktop ≥1100px) ───────────────────────────── */
 /* v5 layout:
@@ -4846,11 +4854,10 @@ body.page-macro.mx4-grid .sxg-face{display:flex;}
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
-/* ── Risk card: face and weather sub-row coexist inside the isle
-   (UD-B2-W1 R3 — vol-weather fold). The dial + scar chips stay
-   visible in grid view AND the vol-weather strip is a sub-row
-   directly below them. The dial opens the risk dialog; the
-   strip's own glyphs and tier words are not interactive. */
+/* ── Risk card: the visible risk surface is the mx5 scorecard
+   (.mx5-sc-left). #sx-risk-v2 is an invisible legacy container
+   (R-W1-A-AMENDED). The vol-weather strip is a sub-row of
+   .mx5-sc-left, below the dial + scar chips. */
 
 /* ── Sibling dim on expansion (graft 5, reuse v3 dim) ────────── */
 /* v3 already dims via has-open-island / many-open on body;
@@ -5021,15 +5028,10 @@ body.page-macro .sxg-deep-chip:hover{border-color:var(--link);color:var(--ink-li
 }
 
 /* ── In grid view the sx-tray behaves as normal (expands in-flow at 1/-1) ── */
-/* sx-risk-v2 keeps its full card chrome in grid view (UD-B2-W1 R3): the dial
-   + scar chips face is the visible card, the vol-weather sub-row sits directly
-   below it, and the card opens the risk dialog when clicked. The .sx element
-   does NOT collapse when not expanded — it carries the dial + weather strip
-   as the user-facing glance surface. When opened (data-open) it spans 1/-1
-   at order:-1 top of rack showing the full island. */
 /* sx-risk-v2 sx-sum{display:none} — removed (sx-sum rows retired v5.1) */
-/* Collapse rules retired by UD-B2-W1 R3 — the risk isle now lives as a full
-   card with its face + weather sub-row both visible in grid view. */
+/* R-W1-A-AMENDED: #sx-risk-v2 is display:none!important on the macro
+   route (see the hide rule next to .mx4-grid .sxg-face). Empty card
+   chrome must not paint a leftover Risk sibling under the scorecard. */
 
 /* ── grid-only utility: visible only in mx4-grid, hidden in ledger ── */
 body.page-macro .mx4-grid-only{display:none;}
@@ -5039,10 +5041,8 @@ body.page-macro.mx4-grid .mx4-grid-only{display:block;}
 body.page-macro .mx4-verdict-band{display:none!important;}
 
 /* ── In grid view: sx-evidence face = WHAT TO DO card (v5); popover button opens island ── */
-/* sx-risk-v2 face still hidden; its tray opens from the rack as before */
 /* sx-evidence face is now visible in grid view as the WTD card — override the hide rule */
 body.page-macro.mx4-grid #sx-evidence .sxg-face{display:flex!important;}
-/* sx-risk-v2 face already hidden via existing rule body.page-macro.mx4-grid #sx-risk-v2 .sxg-face */
 
 /* ══════════════════════════════════════════════════════════
    S2 — EVIDENCE face full content
@@ -7715,7 +7715,7 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 
 /* — Volatility weather: per-row glyph + percentile position bar — */
 /* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
-   lives inside #sx-risk-v2 and inherits the isle's tokens via .sx-vw-row.) */
+   lives inside .mx5-sc-left and inherits tokens via .sx-vw-row.) */
 .sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
@@ -8888,7 +8888,7 @@ html[data-theme="light"] :is(
     <div class="sg-wx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h9a2.5 2.5 0 1 0-2.4-3.2"/><path d="M4 13h13a2.5 2.5 0 1 1-2.4 3.2"/><path d="M4 17h7"/></svg></div>
     <div class="sx-vw-mid">
       <div class="sx-vw-name">
-        <span class="l-en">How much stocks move together</span><span class="l-zh">股票同步程度</span>
+        <span class="l-en">3-month implied correlation</span><span class="l-zh">3个月隐含相关性</span>
       </div>
       
       <div class="sx-vw-read" aria-hidden="true"></div>
@@ -11776,26 +11776,7 @@ html[data-theme="light"] :is(
   
   
   
-  <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)">
-    
-    
-    
-    <div class="sxg-face sxg-face-risk-hidden" role="button" tabindex="0" aria-haspopup="dialog" onclick="mx5OpenDlg('dlg-risk')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();mx5OpenDlg('dlg-risk');}">
-      <div class="sxg-face-eyebrow"><span class="l-en">Risk</span><span class="l-zh">风险</span></div>
-      <div class="sxg-face-stance" style="color:var(--orange,var(--warn))">
-        
-        <span class="l-en">Credit Stress</span>
-        <span class="l-zh">信用压力</span>
-      </div>
-      
-      <div class="sxg-face-sub"><span class="l-en">Intensity 56/100</span><span class="l-zh">强度 56/100</span></div>
-      
-      
-      
-      
-    </div>
-    
-  </div>
+  <div class="sx" id="sx-risk-v2" style="--isle-color:var(--isle-risk)"></div>
   
 
   

@@ -321,13 +321,12 @@ def _render(ctx: dict) -> str:
 class TestVSBSurfaceBothPayloads:
     """Scenario (i): both vol_weather and breadth_split present.
 
-    UD-B2-W1 (R3): the vol-weather chips no longer render inside
-    #dlg-sentiment. They now live as a sub-row inside the Risk isle
-    (#sx-risk-v2) — see test_ud_b2_w1_vw_fold.py for the engine-true
-    fold tests. This class keeps the surface-render assertions
-    (plain text, pctile phrasing, breadth_split surface) on the new
-    location: vol-weather text and chip markers must still appear on
-    the page, but inside the isle slice, with the new scoped markers.
+    UD-B2-W1 (R-W1-A-AMENDED): the vol-weather chips no longer render
+    inside #dlg-sentiment. They now live as a sub-row inside the mx5
+    scorecard left column (.mx5-sc-left / .mx5-sc-vw) — see
+    test_ud_b2_w1_vw_fold.py for the engine-true fold tests. This class
+    keeps the surface-render assertions (plain text, pctile phrasing,
+    breadth_split surface) on the new location.
     """
 
     def test_vol_weather_subrow_present_in_risk_isle(self):
@@ -367,9 +366,9 @@ class TestVSBSurfaceBothPayloads:
         from the glance tier — they belonged to the dialog's scoreboard row
         and have been demoted/removed entirely.
 
-        Round-3 DEV-VW-LOCATION: the strip renders inside the mx5 scorecard's
-        left column (.mx5-sc-vw host), NOT inside #sx-risk-v2 — slice that
-        host to inspect the strip's glance tier.
+        R-W1-A-AMENDED: the strip renders inside the mx5 scorecard's
+        left column (.mx5-sc-vw host). Slice that host to inspect the
+        strip's glance tier.
         """
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()

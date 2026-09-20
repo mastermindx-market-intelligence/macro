@@ -7,13 +7,12 @@ chips + vol-weather sub-row) focused crop per cell — the fold lands in
 this column, so the .mx5-sc-left slice is the byte-identity gate and
 the visual target.
 
-Round-3 DEV-VW-LOCATION: the strip moved out of #sx-risk-v2 and into
-.mx5-sc-vw (host inside .mx5-sc-left). The R-E gate slice is now
-.mx5-sc-left (the visual unit = dial + scar chips + strip), and the
-manifest names the same SHA for `head` and `captured_at_head` because
-the captures commit IS the final head (no separate captures-only commit,
-per R-W1-E's "git diff <capture>..HEAD -- templates/ mockups/.../ EMPTY"
-requirement: between capture head and final head, NOTHING changes).
+R-W1-A-AMENDED (2026-09-20): the strip lives in .mx5-sc-vw (host inside
+.mx5-sc-left). The R-E gate slice is .mx5-sc-left (the visual unit =
+dial + scar chips + strip). Capture-last: code+tests+site are committed
+first, then this script runs, then the PNGs + manifest are committed
+LAST so `git diff <capture sha>..HEAD -- templates/ mockups/evidence/
+unified-dashboard-b2w1/` is empty when capture sha == HEAD.
 
 Manifest naming: risk_isle_<theme>_<lang>_<viewport>.png (legacy name kept;
 the "isle" is the visual unit — dial + scar chips + strip — not the literal
@@ -47,9 +46,9 @@ def sha256(s: str) -> str:
 def _slice_risk_isle(macro_text: str) -> str:
     """Extract the .mx5-sc-left slice from site/macro.html for the R-E gate.
 
-    Round-3 DEV-VW-LOCATION: the strip lives inside .mx5-sc-vw (a child of
-    .mx5-sc-left), so the "risk isle" — the visual unit containing dial +
-    scar chips + vol-weather sub-row — IS .mx5-sc-left. We slice from
+    R-W1-A-AMENDED: the strip lives inside .mx5-sc-vw (a child of
+    .mx5-sc-left), so the visual unit containing dial + scar chips +
+    vol-weather sub-row IS .mx5-sc-left. We slice from
     '<div class="mx5-sc-left">' to its matching </div> at depth 0.
     """
     sentinel = '<div class="mx5-sc-left">'
@@ -217,11 +216,12 @@ def main() -> int:
             "captured_at_head": HEAD_SHA,
             "note": ("Byte-identity gate. The same slice, extracted from "
                      "site/macro.html at FINAL head, must hash to this value. "
-                     "Round-3 DEV-VW-LOCATION: the strip lives in .mx5-sc-vw "
-                     "(a child of .mx5-sc-left), so the R-E gate slice is "
-                     ".mx5-sc-left (the visual unit = dial + scar chips + "
-                     "strip). Captures are committed in the same commit as "
-                     "code+tests+site, so captured_at_head == HEAD."),
+                     "R-W1-A-AMENDED: the strip lives in .mx5-sc-vw (a child "
+                     "of .mx5-sc-left), so the R-E gate slice is .mx5-sc-left "
+                     "(dial + scar chips + strip). Capture-last: this "
+                     "manifest is committed in the captures commit; "
+                     "captured_at_head is HEAD at capture time and must be "
+                     "an ancestor of the captures commit."),
         },
         "cells": records,
     }
