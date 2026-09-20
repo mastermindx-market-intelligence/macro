@@ -416,6 +416,45 @@ class TestEditorialBenchmark:
         assert runtime["cost_coverage"] == 0
         assert runtime["cost_usd_per_accepted"] is None
 
+    def test_committed_b2_capture_is_frozen_and_source_backed(self):
+        import json
+        from pathlib import Path
+        from engine.marketing import editorial_benchmark as eb
+
+        root = Path(__file__).resolve().parents[1]
+        docket = root / "research" / "marketing_dockets"
+        manifest = json.loads((
+            docket / "MX_X_B2_EDITORIAL_BENCHMARK_MANIFEST_2026-09-19.json"
+        ).read_text(encoding="utf-8"))
+        runs = json.loads((
+            docket / "MX_X_B2_INCUMBENT_BASELINE_RUN_2026-09-19.json"
+        ).read_text(encoding="utf-8"))
+
+        assert manifest["manifest_id"] == "18293e3ba3bfcb2127d04907"
+        assert manifest["packet_digest"] == (
+            "bfc9d8212f7b64cadb068c06896290573ba5bda806b8951d91c6d488c656fe71"
+        )
+        assert len(manifest["packets"]) == 8
+        assert all(row["split"] == "holdout" for row in manifest["packets"])
+        assert len(runs) == 8
+        assert {row["packet_id"] for row in runs} == {
+            row["packet_id"] for row in manifest["packets"]
+        }
+        source_pin = "macro@25153e3027bfe71c85cedf05da75101c0da215af:"
+        assert all(
+            any(str(ref).startswith(source_pin) for ref in row.get("source_refs", []))
+            for row in manifest["packets"]
+        )
+        assert any(
+            row["image"]["state"] == "unverified_plan_reference"
+            for row in manifest["packets"]
+        )
+        assert not any(row["image"]["present"] for row in manifest["packets"])
+        review, key = eb.prepare_blinded_review(
+            manifest, runs, seed="mx-x-b2-review-v1")
+        assert len(review["items"]) == 8
+        assert key["candidate_ids"] == ["incumbent_current_plan"]
+
     def test_benchmark_is_explicitly_non_authoritative_and_offline(self):
         import inspect
         from engine.marketing import editorial_benchmark as eb
