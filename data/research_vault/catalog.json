@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-19T23:57:21.044774+00:00",
-  "count": 2462,
+  "generated_at": "2026-09-20T00:12:26.436219+00:00",
+  "count": 2463,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -439,6 +439,25 @@
         "Structural Demand Shifts: AI infrastructure, electrification, and energy transition drive sustained long-term demand for industrial metals (e.g., copper), with constrained supply and projected deficits supporting positive outlook despite near-term tariff volatility.",
         "Energy Market Hedge Utility: Energy exposure effectively hedges supply uncertainty (Middle East risks, shipping normalization) and inflation spillovers, with robust demand underpinning medium-term gains amid Chinese import strength.",
         "Active Catalyst Positioning: Portfolio managers should dynamically allocate across precious metals, energy, industrial metals, and agriculture to capture near-term catalysts (El Niño, AI-linked demand) while navigating geopolitical volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wxscncdv00q-d14faa",
+      "title": "Opportunities emerging in fixed income",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:50Z",
+      "summary_points": [
+        "Tactical Duration Shift: Medium-to-long duration high-quality bonds (income, price upside if growth slows) and EM bonds (diversified returns, yield cushion) critical for low-rate jurisdictions like Switzerland.",
+        "Duration Risk Mitigation: Caution on longest maturities due to fiscal sustainability concerns and AI-driven debt issuance; prioritize shorter maturities to reduce sensitivity.",
+        "Swiss Diversification Imperative: Combine Swiss corporate bonds with global fixed income/EM bonds/equity income; Swiss dividend equities (3.1% yield, strong balance sheets) provide resilient income amid downturns."
       ],
       "tags": [],
       "tickers": [],
