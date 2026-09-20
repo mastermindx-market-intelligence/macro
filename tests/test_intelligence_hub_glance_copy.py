@@ -85,3 +85,43 @@ def test_committed_page_matches_plain_language_contract() -> None:
         assert required in html
     for banned in ("Validated confluence buy", "UNGRADED · n=0", "pre-registered significance bar", ">proven<", "⚡"):
         assert banned not in html
+
+
+def test_structured_watch_condition_renders_human_text_only() -> None:
+    html = _macro("watchcopy", "{{ watchcopy({'text': 'Revenue falls below expectations.', 'text_zh': '营收低于预期。', 'check': {'kind': 'rel_return', 'threshold': -0.05}}) }}")
+    assert 'Revenue falls below expectations.' in html
+    assert '营收低于预期。' in html
+    assert 'rel_return' not in html and 'threshold' not in html
+
+
+def test_watch_condition_keeps_legacy_text_and_escapes_markup() -> None:
+    html = _macro("watchcopy", "{{ watchcopy('A legacy condition') }}")
+    assert 'A legacy condition' in html
+    html = _macro("watchcopy", "{{ watchcopy({'text': '<img src=x onerror=alert(1)>'}) }}")
+    assert '<img ' not in html
+    assert '&lt;img' in html
+
+
+def test_watch_condition_never_stringifies_invalid_shapes() -> None:
+    for value in ("none", "42", "[]", "{'check': {'kind': 'rel_return'}}", "{'text': {'unexpected': 1}}"):
+        html = _macro("watchcopy", "{{ watchcopy(" + value + ") }}")
+        assert 'Review condition unavailable' in html
+        assert '复核条件暂缺' in html
+        assert 'rel_return' not in html and 'unexpected' not in html
+
+
+def test_mobile_command_rows_have_a_full_width_explanation() -> None:
+    src = TEMPLATE.read_text(encoding="utf-8")
+    assert 'class="led-metrics"' in src and 'class="led-analysis"' in src
+    assert '.led-row > .led-analysis{grid-column:2 / -1;grid-row:2;' in src
+    assert '{{ watchcopy(d.falsifier) }}' in src
+    assert '{{ d.falsifier|e }}' not in src
+
+
+def test_generated_watch_conditions_have_no_serialized_check() -> None:
+    html = SITE.read_text(encoding="utf-8")
+    watches = re.findall(r'<div class="watch">(.*?)</div>', html, re.S)
+    assert watches
+    for watch in watches:
+        assert 'subject_ticker' not in watch and 'horizon_d' not in watch
+        assert '&#39;text&#39;' not in watch and '&#39;check&#39;' not in watch

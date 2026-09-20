@@ -85,6 +85,11 @@
 {% macro entrybadge(eg) -%}
 {% if eg %}{% if eg.get('buyable') %}<span class="chip en-buy" data-tip-en="Multiple entry checks agree. Review the setup before acting.{% if eg.get('tier') %} Technical tier: {{ eg.tier }}.{% endif %}" data-tip-zh="多项入场条件一致。采取行动前请先复核该设置。{% if eg.get('tier') %}技术层级：{{ eg.tier }}。{% endif %}"><span class="l-en">ready to review</span><span class="l-zh">可复核</span></span>{% endif %}{% endif %}
 {%- endmacro %}
+{% macro watchcopy(value) -%}
+{%- set en = value.get('text', '') if value is mapping else value if value is string else '' -%}
+{%- set zh = value.get('text_zh', '') if value is mapping else '' -%}
+<div class="watch">{% if en is string and en|trim %}<span class="l-en">Watching: <b>{{ en|e }}</b></span><span class="l-zh">关注: <b>{{ (zh if zh is string and zh|trim else en)|e }}</b></span>{% else %}<span class="l-en">Review condition unavailable</span><span class="l-zh">复核条件暂缺</span>{% endif %}</div>
+{%- endmacro %}
 {#- price-trajectory state. Only the shape words live here — the off-high and
     relative-strength figures already arrive inside edge_drivers, so printing them
     twice in one row was the same fact wearing two hats. -#}
@@ -512,6 +517,14 @@
     .sp::before{ left:9px; }
   }
 
+  @media(max-width:620px){
+    .led-row{grid-template-columns:22px minmax(0,1fr) auto;gap:8px 11px;align-items:start;}
+    .led-row > .sp{grid-column:1;grid-row:1 / span 2;}
+    .led-row > .id{grid-column:2;grid-row:1;}
+    .led-row > .led-metrics{grid-column:3;grid-row:1;}
+    .led-row > .led-analysis{grid-column:2 / -1;grid-row:2;min-width:0;overflow-wrap:anywhere;}
+  }
+
   /* ── track record: the plain read, with the study panel folded beneath ── */
   .trh{ display:grid; gap:11px; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); }
   .trc{ padding:12px 14px 13px; }
@@ -752,14 +765,14 @@
         <div class="tkline"><span class="tk">{{ d.ticker }}</span>{{ ihmp(d.ticker, d.price) }}</div>
         {% if d.name and d.name != d.ticker %}<div class="nm">{{ d.name|e }}</div>{% endif %}
       </div>
-      <div><div class="score">{{ d.opportunity_score|round|int }}</div>
+      <div class="led-metrics"><div class="score">{{ d.opportunity_score|round|int }}</div>
         <div class="rmv">{{ ((d.edge_remaining or 0)*100)|round|int }}%</div></div>
       <div class="mtxc">{{ matrix(d.directions, d.composite_conviction, d.n_confirm) }}</div>
-      <div>
+      <div class="led-analysis">
         <div class="cline">{{ stage(d.stage) }}{{ entrybadge(d.entry_gate) }}{{ tstate(d.trajectory) }}{{ flags(d.flags) }}
           {%- if d.leading_gap and d.leading_gap>0 %}<span class="chip info">{{ t('leads by','领先') }} +{{ d.leading_gap }}</span>{% endif %}</div>
         {{ drivers(d.edge_drivers) }}
-        {% if d.falsifier %}<div class="watch">{{ t('Watching', '关注') }}: <b>{{ d.falsifier|e }}</b></div>{% endif %}
+        {% if d.falsifier %}{{ watchcopy(d.falsifier) }}{% endif %}
       </div>
     </div>{% endfor %}
   </div>
