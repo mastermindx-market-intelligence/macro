@@ -1,0 +1,151 @@
+{
+  "matrix": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "verify_shots/UD-B2-W2/spine_dark_en_desktop.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 385.5
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "verify_shots/UD-B2-W2/spine_dark_en_mobile.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 41,
+        "y": 816.4375,
+        "width": 308,
+        "height": 822.75
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "verify_shots/UD-B2-W2/spine_dark_zh_desktop.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 371
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "verify_shots/UD-B2-W2/spine_dark_zh_mobile.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 41,
+        "y": 710.40625,
+        "width": 308,
+        "height": 772
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "verify_shots/UD-B2-W2/spine_light_en_desktop.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 385.5
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "verify_shots/UD-B2-W2/spine_light_en_mobile.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 41,
+        "y": 816.4375,
+        "width": 308,
+        "height": 822.75
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "file": "verify_shots/UD-B2-W2/spine_light_zh_desktop.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 63,
+        "y": 472.0625,
+        "width": 1314,
+        "height": 371
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "file": "verify_shots/UD-B2-W2/spine_light_zh_mobile.png",
+      "slice_sha256": "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "slice_bytes": 8919,
+      "bounding_box": {
+        "x": 41,
+        "y": 710.40625,
+        "width": 308,
+        "height": 772
+      }
+    }
+  ],
+  "slice_sha_pairs": {
+    "dark_en": [
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb"
+    ],
+    "dark_zh": [
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb"
+    ],
+    "light_en": [
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb"
+    ],
+    "light_zh": [
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb",
+      "f109133fef4c6211f5b533cd1a8d92c31195373e772d8675abffab09284342bb"
+    ]
+  },
+  "all_distinct": false
+}
