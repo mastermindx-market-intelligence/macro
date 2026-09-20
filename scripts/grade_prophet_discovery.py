@@ -23,15 +23,31 @@ def _parser() -> argparse.ArgumentParser:
         choices=prophet_discovery_grade.MARKETS,
         help="Grade only the market whose producer just persisted.",
     )
+    parser.add_argument(
+        "--source-asof",
+        help=(
+            "Require a healthy producer discovery receipt for this exact owner session "
+            "(YYYY-MM-DD). Valid only with --market."
+        ),
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    args = _parser().parse_args([] if argv is None else argv)
+    parser = _parser()
+    args = parser.parse_args([] if argv is None else argv)
+    if args.source_asof and not args.market:
+        parser.error("--source-asof requires --market")
 
     if args.market:
         try:
-            receipt = prophet_discovery_grade.grade_market(args.market)
+            if args.source_asof:
+                receipt = prophet_discovery_grade.grade_market(
+                    args.market,
+                    expected_source_asof=args.source_asof,
+                )
+            else:
+                receipt = prophet_discovery_grade.grade_market(args.market)
         except Exception as exc:  # noqa: BLE001 — preserve market-scoped failure
             receipt = {
                 "market": args.market,

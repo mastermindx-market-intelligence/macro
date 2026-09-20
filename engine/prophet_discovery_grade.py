@@ -888,11 +888,137 @@ def evaluate_rank_races(market: str) -> dict[str, Any]:
     return summarize_rank_races(pairs, outcomes)
 
 
-def grade_market(market: str) -> dict[str, Any]:
+def _discovery_source_receipt(market: str) -> dict[str, Any]:
+    m = str(market or "").upper()
+    path = board_shadow._discovery_receipt_path(m)
+    artifact = f"{board_shadow.STORE_DIR}/{m.lower()}_discovery_receipt.json"
+    if not path.exists():
+        return {
+            "artifact": artifact,
+            "available": False,
+            "healthy": False,
+            "reason": "receipt_absent",
+            "as_of": None,
+            "registry_state": None,
+            "definitions": [],
+            "challenger_failures": [],
+            "stamped_at": None,
+        }
+    try:
+        payload = json.loads(path.read_text())
+    except Exception as exc:
+        return {
+            "artifact": artifact,
+            "available": False,
+            "healthy": False,
+            "reason": f"receipt_unreadable:{type(exc).__name__}",
+            "as_of": None,
+            "registry_state": None,
+            "definitions": [],
+            "challenger_failures": [],
+            "stamped_at": None,
+        }
+    if not isinstance(payload, dict):
+        return {
+            "artifact": artifact,
+            "available": False,
+            "healthy": False,
+            "reason": "receipt_not_mapping",
+            "as_of": None,
+            "registry_state": None,
+            "definitions": [],
+            "challenger_failures": [],
+            "stamped_at": None,
+        }
+
+    raw_asof = payload.get("as_of")
+    try:
+        as_of = (
+            str(pd.Timestamp(raw_asof).date())
+            if raw_asof not in (None, "") else None
+        )
+    except Exception:
+        as_of = None
+    registry_state = (
+        str(payload.get("registry_state"))
+        if payload.get("registry_state") not in (None, "") else None
+    )
+    definitions_raw = payload.get("definitions")
+    failures_raw = payload.get("challenger_failures")
+    definitions = (
+        [str(value) for value in definitions_raw]
+        if isinstance(definitions_raw, list) else []
+    )
+    challenger_failures = (
+        list(failures_raw) if isinstance(failures_raw, list) else []
+    )
+
+    reason = None
+    if str(payload.get("market") or "").upper() != m:
+        reason = "market_mismatch"
+    elif as_of is None:
+        reason = "receipt_missing_asof"
+    elif not isinstance(definitions_raw, list):
+        reason = "receipt_invalid_definitions"
+    elif not isinstance(failures_raw, list):
+        reason = "receipt_invalid_failures"
+    elif not (registry_state or "").startswith("wrote_n_rows n="):
+        reason = "registry_not_successful"
+    elif challenger_failures:
+        reason = "challenger_failures"
+
+    return {
+        "artifact": artifact,
+        "available": True,
+        "healthy": reason is None,
+        "reason": reason,
+        "as_of": as_of,
+        "registry_state": registry_state,
+        "definitions": definitions,
+        "challenger_failures": challenger_failures,
+        "stamped_at": payload.get("stamped_at"),
+    }
+
+
+def _require_source_receipt_asof(
+    market: str,
+    receipt: dict[str, Any],
+    expected_source_asof: str,
+) -> str:
+    try:
+        expected = str(pd.Timestamp(expected_source_asof).date())
+    except Exception as exc:
+        raise ValueError(
+            f"invalid expected source as_of {expected_source_asof!r}"
+        ) from exc
+    if not receipt.get("available"):
+        raise RuntimeError(
+            f"{market} source receipt unavailable: {receipt.get('reason')}"
+        )
+    if receipt.get("as_of") != expected:
+        raise RuntimeError(
+            f"{market} source receipt as_of mismatch: "
+            f"expected {expected}, observed {receipt.get('as_of')}"
+        )
+    if not receipt.get("healthy"):
+        raise RuntimeError(
+            f"{market} source receipt unhealthy: {receipt.get('reason')}"
+        )
+    return expected
+
+
+def grade_market(
+    market: str,
+    *,
+    expected_source_asof: str | None = None,
+) -> dict[str, Any]:
     """Refresh one market's derived outcome store from its append-only discovery source."""
     m = str(market or "").upper()
     if m not in MARKETS:
         raise ValueError(f"unsupported market {market!r}")
+    source_receipt = _discovery_source_receipt(m)
+    if expected_source_asof is not None:
+        _require_source_receipt_asof(m, source_receipt, expected_source_asof)
     source_path = board_shadow._lane_b_path(m)
     out_path = _outcome_path(m)
     source_artifact = f"{board_shadow.STORE_DIR}/{m.lower()}_discovery.parquet"
@@ -914,6 +1040,7 @@ def grade_market(market: str) -> dict[str, Any]:
             "outcome_cohort_digest": None,
             "cohort_parity": None,
             "source_contract": "lane_b_append_only_keep_first",
+            "source_receipt": source_receipt,
         }
     try:
         source = pd.read_parquet(source_path)
@@ -983,6 +1110,7 @@ def grade_market(market: str) -> dict[str, Any]:
         "outcome_cohort_digest": outcome_cohort_digest,
         "cohort_parity": cohort_parity,
         "source_contract": "lane_b_append_only_keep_first",
+        "source_receipt": source_receipt,
         "terminal_clean8_21": terminal8,
         "terminal_clean15_126": terminal15,
         "candidate_metrics": summarize_outcomes(fresh),

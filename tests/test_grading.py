@@ -367,6 +367,81 @@ def test_prophet_discovery_store_upserts_maturation_without_duplicate(tmp_path, 
     pd.testing.assert_frame_equal(before, after)
 
 
+def test_prophet_discovery_grade_market_reports_current_source_receipt(
+    tmp_path, monkeypatch
+):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    src = tmp_path / "prophet_shadow"
+    src.mkdir(parents=True)
+    sig = "2026-01-12"
+    _discovery_rows("ABC.TO", session_date=sig, market="CA").to_parquet(
+        src / "ca_discovery.parquet", index=False
+    )
+    (src / "ca_discovery_receipt.json").write_text(json.dumps({
+        "market": "CA",
+        "as_of": sig,
+        "registry_state": "wrote_n_rows n=1",
+        "written": 1,
+        "definitions": ["ca_discovery_v1"],
+        "challenger_failures": [],
+        "stamped_at": "2026-01-12T23:00:00+00:00",
+    }))
+
+    close = _trend(180)
+    monkeypatch.setattr(pdg.board_ledger, "_name_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_bench_close", lambda *_a, **_k: close)
+    monkeypatch.setattr(pdg.board_ledger, "_is_suspended", lambda *_a, **_k: False)
+
+    receipt = pdg.grade_market("CA", expected_source_asof=sig)
+    assert receipt["source_receipt"]["available"] is True
+    assert receipt["source_receipt"]["healthy"] is True
+    assert receipt["source_receipt"]["as_of"] == sig
+    assert receipt["source_receipt"]["registry_state"] == "wrote_n_rows n=1"
+    assert receipt["source_receipt"]["challenger_failures"] == []
+
+
+@pytest.mark.parametrize(
+    ("receipt_asof", "registry_state", "failures", "match"),
+    [
+        ("2026-01-11", "wrote_n_rows n=1", [], "source receipt as_of mismatch"),
+        (
+            "2026-01-12",
+            "wrote_n_rows n=0",
+            [{"definition": "ca_discovery_v1", "error": "producer failed"}],
+            "source receipt unhealthy",
+        ),
+    ],
+)
+def test_prophet_discovery_expected_source_receipt_fails_closed(
+    receipt_asof, registry_state, failures, match, tmp_path, monkeypatch
+):
+    from engine import prophet_discovery_grade as pdg
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    src = tmp_path / "prophet_shadow"
+    src.mkdir(parents=True)
+    _discovery_rows("ABC.TO", session_date="2026-01-12", market="CA").to_parquet(
+        src / "ca_discovery.parquet", index=False
+    )
+    (src / "ca_discovery_receipt.json").write_text(json.dumps({
+        "market": "CA",
+        "as_of": receipt_asof,
+        "registry_state": registry_state,
+        "written": 0,
+        "definitions": ["ca_discovery_v1"],
+        "challenger_failures": failures,
+        "stamped_at": "2026-01-12T23:00:00+00:00",
+    }))
+
+    with pytest.raises(RuntimeError, match=match):
+        pdg.grade_market("CA", expected_source_asof="2026-01-12")
+    assert not (src / "ca_discovery_outcomes.parquet").exists()
+
+
 @pytest.mark.parametrize("mutation", ["rewrite_metadata", "delete_identity"])
 def test_prophet_discovery_replay_refuses_source_revision_or_deletion(
     mutation, tmp_path, monkeypatch
@@ -493,6 +568,24 @@ def test_prophet_discovery_cli_market_scope_preserves_error_receipt(monkeypatch,
             "error": "HK source continuity violated",
         }
     }
+
+
+def test_prophet_discovery_cli_source_asof_is_forwarded_to_selected_market(
+    monkeypatch, capsys
+):
+    import scripts.grade_prophet_discovery as runner
+
+    calls = []
+
+    def grade_market(market, *, expected_source_asof=None):
+        calls.append((market, expected_source_asof))
+        return {"market": market, "available": True, "state": "UNCHANGED", "n_rows": 3}
+
+    monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
+
+    assert runner.main(["--market", "CA", "--source-asof", "2026-01-12"]) == 0
+    assert calls == [("CA", "2026-01-12")]
+    assert json.loads(capsys.readouterr().out)["CA"]["state"] == "UNCHANGED"
 
 
 def test_prophet_discovery_cli_reports_structured_failure(monkeypatch, capsys):
