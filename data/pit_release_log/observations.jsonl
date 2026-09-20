@@ -26705,3 +26705,6 @@
 {"series": "BOPTIMP", "group": "fred", "fetch_ts": "2026-09-19T14:56:49.983577+00:00", "last_obs_date": "2026-07-01"}
 {"series": "IR", "group": "fred", "fetch_ts": "2026-09-19T14:56:49.984939+00:00", "last_obs_date": "2026-08-01"}
 {"series": "IQ", "group": "fred", "fetch_ts": "2026-09-19T14:56:49.986106+00:00", "last_obs_date": "2026-08-01"}
+{"series": "fundamentals", "group": "fundamentals", "fetch_ts": "2026-09-19T19:12:02.634970+00:00", "last_obs_date": "2026-09-19"}
+{"series": "stock_fundamentals", "group": "stock_fundamentals", "fetch_ts": "2026-09-19T19:14:51.458769+00:00", "last_obs_date": "2026-09-19"}
+{"series": "cot", "group": "cot", "fetch_ts": "2026-09-19T19:15:06.645088+00:00", "last_obs_date": "2026-09-15"}

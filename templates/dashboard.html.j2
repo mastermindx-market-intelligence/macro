@@ -8,6 +8,7 @@
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_prophet_receipts.html.j2" as pvr %}
 {% import "_decision_card.html.j2" as dc %}
+{% from "_risk_envelope_band.html.j2" import risk_button_context %}
 {% macro help(en, zh='') -%}
 <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
 {%- endmacro %}
@@ -2500,7 +2501,17 @@
   {# Ignition Radar strip + "Big Seven" leadership board REMOVED 2026-07-23 (operator ruling — forced Mag-7 call failed; see research/DO_NOT_REBUILD.md §2/§4 and research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md). Engine lanes (mag7_regime, ignition_radar) keep accruing in the background. #}
   {% endif %}
 
-  {% if mode != 'stocks' %}
+  {% if mode == 'macro' %}
+  {# ====== UD-B1 · Unified Macro Dashboard hero (Stage 1, binding) ======
+     Inserts the spec §1 hero skeleton ABOVE every legacy isle. All remaining
+     isles KEEP their current rendering below this block; B2+ migrates them
+     per research/UNIFIED_DASHBOARD_DISPOSITION.md. Binds REAL view-model
+     keys (no illustrative numbers from the spec). The legacy #regime-radar
+     panel that follows is untouched and remains the deep surface for the
+     macro controls (ms-front, six-factor evidence matrix, multi-timeframe
+     tape, flip-context popover, alerts popover, etc.). #}
+  {% include "_unified_dashboard_hero.html.j2" %}
+
   <!-- ======================= HEADER ======================= -->
   <div class="panel span12" id="regime-radar">
   <input type="checkbox" id="ms-alerts-toggle" class="ms-alerts-cb" hidden aria-hidden="true">
@@ -8037,6 +8048,7 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">{{ _mx5_risk_lbl[0] }}{% if _mx5_radar_top > 0 %} &middot; {{ _mx5_radar_top }}{% endif %}</span>
           <span class="l-zh">{{ _mx5_risk_lbl[1] }}{% if _mx5_radar_top > 0 %} &middot; {{ _mx5_radar_top }}{% endif %}</span>
+          {{ risk_button_context(risk_envelope|default(none)) }}
         </button>
         {% else %}
         {# Fallback: risk not elevated, no ignition data — neutral Risk Detail #}
@@ -8049,6 +8061,7 @@ html[data-theme="light"] :is(
           </svg>
           <span class="l-en">Risk Detail</span>
           <span class="l-zh">风险详情</span>
+          {{ risk_button_context(risk_envelope|default(none)) }}
         </button>
         {% endif %}
         {# no down-caret: this button opens a modal dialog, not a popover-below
@@ -8499,13 +8512,6 @@ html[data-theme="light"] :is(
   </script>
   {% endif %}
   </div>{# /#regime-radar panel #}
-
-  {# ── THREE SEPARATE READS — Grey Deer settled risk envelope (macro mode only).
-       Sits immediately under the regime hero: the hero answers "what regime am I
-       in", this band answers the different question "do the reads agree", which
-       the page previously buried in a prose aside. Renders nothing when the
-       artifact is absent. ── #}
-  {% if mode != 'stocks' %}{% include "_risk_envelope_band.html.j2" %}{% endif %}
 
   {# ── V2 ROW-LEDGER SECTIONS (macro mode only) ── #}
   {% if mode != 'stocks' %}
@@ -12565,6 +12571,9 @@ html[data-theme="light"] :is(
           <div class="riskdlg-stance">{{ t('Nothing to chase right now — watch.','当前无需追高 — 观望。') }}</div>
           {% endif %}
         </section>
+
+        {# Same engine, same Risk Radar entry point; no standalone envelope panel. #}
+        {% include "_risk_envelope_band.html.j2" %}
 
 {% set _rk_rd = MS.radar if (MS.radar is defined and MS.radar) else none %}
         {% if _rk_rd and _rk_rd.state %}
@@ -17770,7 +17779,7 @@ window.__CHART_SWAP__ = {
    live.js is __mmLiveInit-guarded so this second include was a no-op — dropped. #}
 <script src="risk_state_live.js"></script>
 {# GD-3: live-provisional Risk Envelope overlay — same mode gate as the band
-   include itself (_risk_envelope_band.html.j2, mode != 'stocks' above). #}
+   include inside the existing #dlg-risk dialog (_risk_envelope_band.html.j2). #}
 {% if mode != 'stocks' %}<script src="risk_envelope_live.js"></script>{% endif %}
 <script src="release_publications_live.js"></script>
 <script>
