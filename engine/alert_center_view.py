@@ -180,6 +180,23 @@ _FOREX_SCENARIO_INACTIVE = re.compile(
     r'^The (carry-trade unwind|dollar squeeze|em outflows|flight to safety|risk-on rally|'
     r'intervention watch) stress pattern fell below the activation threshold\.$'
 )
+_FOREX_SMILE_HEADLINE = re.compile(
+    r'^Dollar regime → (World stressed|US booming|Calm growth|US wobble|In between)$'
+)
+_FOREX_SMILE_REGIMES = (
+    'Risk-off haven bid', 'US growth premium', 'Global reflation',
+    'US-specific stress', 'Neutral',
+)
+_FOREX_SMILE_ZONE = {
+    'Risk-off haven bid': 'World stressed',
+    'US growth premium': 'US booming',
+    'Global reflation': 'Calm growth',
+    'US-specific stress': 'US wobble',
+    'Neutral': 'In between',
+}
+_FOREX_SMILE_DETAIL = re.compile(
+    r'^The dollar-smile quadrant \(dollar direction × risk\) shifted (.+?) → (.+?)\.$'
+)
 _BONDS_MOVE_HEADLINE = re.compile(
     r'^Rates volatility \(MOVE\) → (calm|normal|elevated|crisis)$'
 )
@@ -749,6 +766,79 @@ def build_alert_brief(row: dict) -> dict:
                     '该事件，则改变判断。'),
                 'evidence_label': 'Open current Bonds timeline',
                 'evidence_label_zh': '打开当前债券时间线',
+            })
+            return brief
+
+    smile_headline = _FOREX_SMILE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    smile_detail = _FOREX_SMILE_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'smile_regime' and smile_headline and smile_detail:
+        zone = smile_headline.group(1)
+        previous, current = smile_detail.groups()
+        if (str(row.get('asset') or '') == 'dollar' and
+                previous in _FOREX_SMILE_REGIMES and current in _FOREX_SMILE_REGIMES and
+                _FOREX_SMILE_ZONE[current] == zone and previous != current):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current dollar-smile regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前美元微笑状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated transition events do not prove the regime persisted between observations.')
+                recurrence_limit_zh = ' 重复转换事件并不能证明该状态在观测之间持续存在。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested as '
+                'a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This regime classification is descriptive context, not a calibrated timing signal.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该状态分类只是描述性背景，并非校准择时信号。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.smile_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar-smile model moved from {previous} to {current}, placing the '
+                    f'current quadrant in its “{zone}” presentation zone. Recheck the underlying '
+                    'dollar-direction and risk inputs before using that context.'),
+                'implication_zh': (
+                    f'来源的美元微笑模型从 {previous} 切换到 {current}，当前位于“{zone}”展示区间。'
+                    '使用该背景前应复核美元方向与风险输入。'),
+                'limitation': (
+                    'The dollar-smile regime is a source taxonomy built from dollar direction and '
+                    'risk conditions. Its plain-language zone label is not proof of a growth outcome, '
+                    'risk outcome, recession path, causal driver, or directional trade.' +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '美元微笑状态是基于美元方向与风险条件的来源分类。其通俗区间标签并不能证明增长结果、'
+                    '风险结果、衰退路径、因果驱动或交易方向。' +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify the dollar-smile regime is still '
+                    f'{current}, inspect the current dollar-direction and risk inputs, and check '
+                    'whether a newer transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认美元微笑状态仍为 {current}，检查当前美元方向与风险输入，'
+                    '并确认是否已有更新转换取代该事件。'),
+                'next_action_label': 'Recheck dollar regime',
+                'next_action_label_zh': '复核美元状态',
+                'reassessment': (
+                    f'Change the read if the current smile regime is no longer {current}, the '
+                    'underlying dollar/risk inputs no longer fit that quadrant, or a newer '
+                    'transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前美元微笑状态不再是 {current}、底层美元/风险输入不再符合该象限，或新的转换'
+                    '取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
             })
             return brief
 

@@ -208,6 +208,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-forex-momentum.png'))
             report['screenshots'].append('desktop-forex-momentum.png')
             report['checks'].append('FX momentum flips expose current-state verification without becoming directional forecasts')
+            smile_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                            if brief.get('family') == 'forex.smile_regime')
+            smile_brief = payload['explorer']['briefs'][smile_id]
+            page.goto(url + '#view=explore&id=' + smile_id, wait_until='domcontentloaded')
+            smile_text = page.locator('#ac-detail').inner_text()
+            assert smile_brief['limitation'] in smile_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == smile_brief['next_action']
+            assert smile_brief['evidence_label'] in smile_text
+            page.screenshot(path=str(out / 'desktop-forex-smile-regime.png'))
+            report['screenshots'].append('desktop-forex-smile-regime.png')
+            report['checks'].append('Dollar-smile regimes expose source taxonomy and current inputs without claiming macro outcomes')
             scenario_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
                                if brief.get('family') == 'forex.scenario')
             scenario_brief = payload['explorer']['briefs'][scenario_id]

@@ -914,6 +914,73 @@ def test_oi_crowding_abstains_on_wrong_headline_or_unsupported_state():
     assert all(briefs[row['alert_id']]['family'] is None for row in (wrong_headline, bad_state))
 
 
+def test_forex_smile_regime_gets_taxonomy_brief_without_macro_outcome_claims():
+    row = signal('fx-smile', source='forex', type_='smile_regime', asset='dollar')
+    row.update({
+        'tier': 'watch', 'age_days': 19,
+        'headline': 'Dollar regime → Calm growth',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted US growth premium → Global reflation.',
+        'detail_zh': '美元微笑象限（美元方向 × 风险）从 US growth premium 转为 Global reflation。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.smile_regime'
+    assert brief['attention'] == 'for_awareness'
+    assert 'US growth premium to Global reflation' in brief['implication']
+    assert '“Calm growth”' in brief['implication']
+    assert 'not proof of a growth outcome' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '19 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck dollar regime'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_forex_smile_regime_is_watch_next_and_has_input_falsifier():
+    row = signal('fx-smile-fresh', source='forex', type_='smile_regime', asset='dollar')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Dollar regime → US booming',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → US growth premium.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'dollar/risk inputs no longer fit that quadrant' in brief['reassessment']
+    assert 'newer transition supersedes this event' in brief['reassessment']
+
+
+def test_forex_smile_regime_abstains_on_zone_mismatch_or_nontransition():
+    mismatch = signal('fx-smile-mismatch', source='forex', type_='smile_regime', asset='dollar')
+    mismatch.update({
+        'headline': 'Dollar regime → World stressed',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → Global reflation.',
+        'link': 'forex.html#timeline',
+    })
+    same = signal('fx-smile-same', source='forex', type_='smile_regime', asset='dollar')
+    same.update({
+        'headline': 'Dollar regime → In between',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → Neutral.',
+        'link': 'forex.html#timeline',
+    })
+    wrong_asset = signal('fx-smile-asset', source='forex', type_='smile_regime', asset='EURUSD')
+    wrong_asset.update({
+        'headline': 'Dollar regime → Calm growth',
+        'detail': 'The dollar-smile quadrant (dollar direction × risk) shifted Neutral → Global reflation.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (mismatch, same, wrong_asset)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
 def test_forex_momentum_gets_state_change_brief_without_directional_forecast():
     row = signal('fx-momentum', source='forex', type_='momentum', asset='EURUSD')
     row.update({
