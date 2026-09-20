@@ -58,9 +58,12 @@ def _daily_state(frame: pd.DataFrame, session: str) -> dict[str, Any] | None:
     term_rows: list[dict[str, Any]] = []
     for expiration, group in rows.groupby("expiration", sort=False):
         try:
-            exp_day = pd.Timestamp(expiration).date()
+            exp_stamp = pd.Timestamp(expiration)
         except Exception:
             continue
+        if pd.isna(exp_stamp):
+            continue
+        exp_day = exp_stamp.date()
         dte = (exp_day - session_day).days
         if dte < 0:
             continue
