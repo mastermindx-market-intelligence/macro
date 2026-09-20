@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T22:01:06.635806+00:00",
-  "count": 2526,
+  "generated_at": "2026-09-20T22:15:48.357368+00:00",
+  "count": 2527,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1657,6 +1657,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jtewlvpnwsc-fb278b",
+      "title": "China A-shares",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:48:36Z",
+      "summary_points": [
+        "A-shares Upgrade Drivers: Stronger onshore earnings momentum (AI/industrial upgrading cycle in semiconductors/hardware), policy focus on strategic sectors (advanced manufacturing, tech innovation), and better insulation from consumption weakness drive upgrade to Attractive.",
+        "Two-Speed Growth: Tech/export sectors outperform (industrial production up, exports strong) while domestic demand weakens (retail sales lagging, subdued labor market), with policy prioritizing quality growth over broad stimulus.",
+        "Yield & Geopolitical Appeal: High-dividend A-shares (MSCI China A Onshore High Dividend Index yield 4.1%) offer superior income vs. low bond yields (China 10-yr at 1.7%), enhancing attractiveness amid geopolitical uncertainty and muted demand.",
+        "Policy & Flow Catalysts: SOE reforms, rising payout ratios, and interim dividend increases (banks/materials) signal capital strength, driving rotation into defensive sectors amid tech volatility and AI monetization timing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
