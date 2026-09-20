@@ -17,8 +17,8 @@ import pytest
 
 import engine.group_context as gcmod
 from engine.group_context import (
-    AUTHORITY_BLOCK, ENTRY_CONTEXT_SCHEMA, EntryContextSource,
-    GroupContext, READER_CONTRACT,
+    AUTHORITY_BLOCK, ENTRY_CONTEXT_SCHEMA, SETUPS_REF, STANDOUTS_REF,
+    EntryContextSource, GroupContext, READER_CONTRACT,
 )
 from scripts import build_stock_board_v2 as v2
 
@@ -478,7 +478,71 @@ def test_group_context_synthesizes_entry_contract_from_existing_owner_artifacts(
     assert entry["levels"]["invalidation"] == 95.0
     assert entry["permissions"]["may_link"] is True
     assert not any(entry["authority"].values())
+    assert any(
+        chip["label"] == "Subsector ENTRY-NOW: Semiconductors"
+        and chip["tone"] == "pos"
+        for chip in ctx["chips"]
+    )
+    assert "subsectors:entry_now:Semiconductors" in ctx["surfaced_by"]
     assert gc.entry_context_contract()["schema"] == "mastermind.entry_context.v1"
+
+
+def test_group_entry_chip_is_group_only_for_nonqualified_member(tmp_path):
+    import datetime
+    today = datetime.date.today().isoformat()
+    site = tmp_path / "site"
+    (site / "marketdata").mkdir(parents=True)
+    (site / "factordata").mkdir(parents=True)
+    (site / "marketdata" / "subsector_confluence.json").write_text(json.dumps({
+        "as_of": today,
+        "subsectors": [{
+            "key": "semiconductors",
+            "kind": "subsector",
+            "label": "Semiconductors",
+            "class": "entry_now",
+            "as_of": today,
+            "entry": {"tier": "T1", "buyable": True},
+            "regime": {"state": "EXTENDED", "headwind": False, "tailwind": False},
+            "members": [{
+                "ticker": "NVDA",
+                "stock_tier": None,
+                "stock_weight": 0.0,
+                "stock_ticks": 10,
+                "stock_bars_to_cross": None,
+                "stock_eligible": False,
+                "stock_buyable": False,
+                "stock_state": "short-bias",
+                "stock_reason": "flat: sell",
+            }],
+        }],
+    }))
+    row = _rich_row(ticker="NVDA")
+    row["signal"].update({
+        "eligible": False,
+        "tier_cascade": None,
+        "sub": None,
+        "reason": "flat: sell",
+    })
+    row["entry_signal"] = {"status": "await_confluence"}
+    (site / "factordata" / "us_standouts.json").write_text(json.dumps({
+        "as_of": today, "watch": [row],
+    }))
+
+    ctx = GroupContext(site=site).for_name("NVDA", "Technology")
+    entry = ctx["entry_context"]
+    assert entry["routing"]["may_present_as_qualified_setup"] is False
+    assert entry["routing"]["state"] == "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE"
+    assert not any(
+        chip["label"] == "Subsector ENTRY-NOW: Semiconductors"
+        and chip["tone"] == "pos"
+        for chip in ctx["chips"]
+    )
+    assert {
+        "label": "Subsector entry-now (group only): Semiconductors",
+        "tone": "neutral",
+        "src": "subsectors",
+    } in ctx["chips"]
+    assert "subsectors:entry_now:Semiconductors" not in ctx["surfaced_by"]
 
 
 def test_entry_context_reaches_board_consumer_without_changing_leadership(tmp_path):
@@ -930,3 +994,85 @@ def test_group_context_rebuilds_owner_context_instead_of_trusting_embedded_autho
     assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE"
     assert ctx["routing"]["may_present_as_qualified_setup"] is False
     assert not any(ctx["authority"].values())
+
+
+def _setups(*, as_of: str = "2026-09-18") -> dict:
+    return {
+        "as_of": as_of,
+        "buy": [{
+            "ticker": "AAA",
+            "sector": "Information Technology",
+            "signal": {
+                "eligible": True,
+                "tier_cascade": "T1",
+                "ticks": 1,
+                "bars_to_cross": None,
+                "provisional": False,
+            },
+        }],
+        "laggards": [],
+    }
+
+
+def _standouts_without(ticker: str) -> dict:
+    docs = _standouts()
+    for lane in ("buy", "watch", "leaders", "laggards", "ran"):
+        docs[lane] = [
+            row for row in docs.get(lane, [])
+            if row.get("ticker") != ticker
+        ]
+    return docs
+
+
+def test_setups_fallback_restores_existing_owner_setup_without_inventing_levels():
+    source = EntryContextSource.from_documents(
+        standouts=_standouts_without("AAA"),
+        setups=_setups(),
+        radar=_radar(),
+        now=NOW,
+    )
+    ctx = _context(source)
+    assert ctx["qualification"]["stock_setup"] == "QUALIFIED"
+    assert ctx["stock_setup"]["availability"] == "AVAILABLE"
+    assert ctx["stock_setup"]["scope"] == SETUPS_REF
+    assert ctx["stock_setup"]["source_ref"] == f"{SETUPS_REF}#/buy/0"
+    assert ctx["stock_setup"]["searched_scopes"] == [STANDOUTS_REF, SETUPS_REF]
+    assert ctx["stock_setup"]["tier"] == "T1"
+    assert ctx["levels"] == {
+        "trigger": None,
+        "zone": None,
+        "invalidation": None,
+        "chase_above": None,
+    }
+    assert ctx["confirmation"]["state"] == "UNCONFIRMED"
+    assert ctx["routing"]["state"] == "QUALIFIED_GROUP_EXTENDED"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is True
+
+
+def test_rich_standouts_record_precedes_setups_fallback_for_same_ticker():
+    source = EntryContextSource.from_documents(
+        standouts=_standouts(),
+        setups=_setups(),
+        radar=_radar(),
+        now=NOW,
+    )
+    ctx = _context(source)
+    assert ctx["stock_setup"]["source_ref"] == f"{STANDOUTS_REF}#/buy/0"
+    assert ctx["levels"]["zone"] == {
+        "low": 99.0, "high": 101.0, "pct_from_spot": -1.0,
+    }
+    assert ctx["levels"]["invalidation"] == 95.0
+
+
+def test_stale_setups_fallback_remains_descriptive_only():
+    source = EntryContextSource.from_documents(
+        standouts=_standouts_without("AAA"),
+        setups=_setups(as_of="2026-09-01"),
+        radar=_radar(),
+        now=NOW,
+    )
+    ctx = _context(source)
+    assert ctx["stock_setup"]["availability"] == "STALE"
+    assert ctx["qualification"]["stock_setup"] == "STALE"
+    assert ctx["routing"]["state"] == "DESCRIPTIVE_ONLY_SETUP_STALE"
+    assert ctx["routing"]["may_present_as_qualified_setup"] is False

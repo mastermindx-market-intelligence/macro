@@ -47,6 +47,7 @@ log = logging.getLogger("group_context")
 ENTRY_CONTEXT_SCHEMA = "mastermind.entry_context.v1"
 ENTRY_CONTEXT_STALE_DAYS = 4
 STANDOUTS_REF = "site/factordata/us_standouts.json"
+SETUPS_REF = "site/factordata/setups.json"
 RADAR_REF = "site/live/entry_radar.json"
 CONFLUENCE_REF = "site/marketdata/subsector_confluence.json"
 AUTHORITY_BLOCK: dict[str, bool] = {
@@ -73,7 +74,7 @@ _ENTRY_EXPIRY_KEYS = ("expires_at", "valid_until", "ttl_until", "expiry")
 #  against a new artifact is visible downstream.                                #
 # --------------------------------------------------------------------------- #
 READER_CONTRACT = {
-    "version": 3,
+    "version": 4,
     "sources": {
         "sector_central": {
             "path": "site/sectordata/sector_central.json",
@@ -125,6 +126,7 @@ READER_CONTRACT = {
         "mode": "owner_artifact_rebuild",
         "sources": [
             "site/factordata/us_standouts.json",
+            "site/factordata/setups.json",
             "site/live/entry_radar.json",
             "site/marketdata/subsector_confluence.json",
         ],
@@ -444,9 +446,26 @@ class GroupContext:
             weights["subsector_confluence"] = specs["subsector_confluence"]["weight"]
             covered += 1
             if cls == "entry_now":
-                chips.append({"label": f"Subsector ENTRY-NOW: {sub_row.get('label')}",
-                              "tone": "pos", "src": "subsectors"})
-                surfaced.append(f"subsectors:entry_now:{sub_row.get('label')}")
+                may_present = bool(
+                    (entry_context.get("routing") or {}).get(
+                        "may_present_as_qualified_setup"))
+                if may_present:
+                    chips.append({
+                        "label": f"Subsector ENTRY-NOW: {sub_row.get('label')}",
+                        "tone": "pos",
+                        "src": "subsectors",
+                    })
+                    surfaced.append(
+                        f"subsectors:entry_now:{sub_row.get('label')}")
+                else:
+                    chips.append({
+                        "label": (
+                            "Subsector entry-now (group only): "
+                            f"{sub_row.get('label')}"
+                        ),
+                        "tone": "neutral",
+                        "src": "subsectors",
+                    })
             elif cls == "headwind":
                 chips.append({"label": f"Subsector headwind: {sub_row.get('label')}",
                               "tone": "neg", "src": "subsectors"})
@@ -644,14 +663,19 @@ class EntryContextSource:
 
     def __init__(self, *, standouts: Mapping[str, Any] | None,
                  radar: Mapping[str, Any] | None, now: date,
+                 setups: Mapping[str, Any] | None = None,
                  standouts_error: str | None = None,
+                 setups_error: str | None = None,
                  radar_error: str | None = None) -> None:
         self._standouts = dict(standouts) if isinstance(standouts, Mapping) else None
+        self._setups = dict(setups) if isinstance(setups, Mapping) else None
         self._radar = dict(radar) if isinstance(radar, Mapping) else None
         self._now = now
         self._standouts_error = standouts_error
+        self._setups_error = setups_error
         self._radar_error = radar_error
         standouts_doc = self._standouts or {}
+        setups_doc = self._setups or {}
         radar_doc = self._radar or {}
         radar_pack = (radar_doc.get("pack")
                       if isinstance(radar_doc.get("pack"), Mapping) else {})
@@ -665,6 +689,19 @@ class EntryContextSource:
                 "availability": self._standouts_available_at,
                 "computation": self._standouts_computed_at,
                 "publication": self._standouts_published_at,
+            },
+            "observation", "availability", "computation", "publication",
+        )
+        self._setups_observed_at = _first(setups_doc, "as_of", "asof")
+        self._setups_available_at = _first(setups_doc, "available_at")
+        self._setups_computed_at = _first(setups_doc, "generated_utc", "computed_at")
+        self._setups_published_at = _first(setups_doc, "published_at")
+        self._setups_as_of = _first(
+            {
+                "observation": self._setups_observed_at,
+                "availability": self._setups_available_at,
+                "computation": self._setups_computed_at,
+                "publication": self._setups_published_at,
             },
             "observation", "availability", "computation", "publication",
         )
@@ -683,6 +720,7 @@ class EntryContextSource:
             "computation", "observation", "availability", "publication",
         )
         self._standouts_age = _age_days(self._standouts_as_of, now)
+        self._setups_age = _age_days(self._setups_as_of, now)
         self._radar_age = _age_days(self._radar_as_of, now)
         self._stock_rows = self._index_stock_rows()
         self._radar_rows = self._index_radar_rows()
@@ -690,8 +728,10 @@ class EntryContextSource:
     @classmethod
     def from_documents(cls, *, standouts: Mapping[str, Any] | None,
                        radar: Mapping[str, Any] | None,
+                       setups: Mapping[str, Any] | None = None,
                        now: date | datetime | None = None) -> "EntryContextSource":
-        return cls(standouts=standouts, radar=radar, now=_as_date(now))
+        return cls(
+            standouts=standouts, setups=setups, radar=radar, now=_as_date(now))
 
     @classmethod
     def from_site(cls, site: Path, *,
@@ -699,9 +739,12 @@ class EntryContextSource:
         site = Path(site)
         standouts, standouts_error = _read_json(
             site / "factordata" / "us_standouts.json")
+        setups, setups_error = _read_json(site / "factordata" / "setups.json")
         radar, radar_error = _read_json(site / "live" / "entry_radar.json")
-        return cls(standouts=standouts, radar=radar, now=_as_date(now),
-                   standouts_error=standouts_error, radar_error=radar_error)
+        return cls(
+            standouts=standouts, setups=setups, radar=radar, now=_as_date(now),
+            standouts_error=standouts_error, setups_error=setups_error,
+            radar_error=radar_error)
 
     def contract(self) -> dict[str, Any]:
         """Versioned consumer receipt; never a signal or ThemeState producer."""
@@ -714,12 +757,11 @@ class EntryContextSource:
                 "state": "DESCRIPTIVE_ONLY",
                 "reason": "no_current_stock_setup_record_and_member_gate_not_qualified",
                 "absence_scope": STANDOUTS_REF,
+                "searched_scopes": [STANDOUTS_REF, SETUPS_REF],
                 "global_absence": False,
             },
             "sources": {
-                "stock_setup": self._artifact_status(
-                    self._standouts, STANDOUTS_REF, self._standouts_as_of,
-                    self._standouts_age, self._standouts_error),
+                "stock_setup": self._stock_setup_contract_status(),
                 "live_entry_radar": self._artifact_status(
                     self._radar, RADAR_REF, self._radar_as_of,
                     self._radar_age, self._radar_error),
@@ -774,18 +816,21 @@ class EntryContextSource:
             confirmation=confirmation, headwind=headwind, extended=extended,
             relationship=relationship)
         setup_id = _explicit(src.row if src else {}, _ENTRY_ID_KEYS)
+        source_meta = self._stock_source_meta(src)
+        source_scope = source_meta["ref"]
         stock_setup = {
             "availability": availability,
-            "scope": STANDOUTS_REF,
+            "scope": source_scope,
+            "searched_scopes": [STANDOUTS_REF, SETUPS_REF],
             "global_absence": False if availability == "NOT_IN_SNAPSHOT" else None,
             "source_lane": src.lane if src else None,
-            "source_ref": src.ref if src else STANDOUTS_REF,
+            "source_ref": src.ref if src else source_scope,
             "source_setup_id": setup_id,
             "source_setup_id_reason": (
                 None if setup_id is not None else
                 "owner_record_has_no_id" if src else "owner_record_not_in_snapshot"),
-            "as_of": self._standouts_as_of,
-            "age_days": self._standouts_age,
+            "as_of": source_meta["as_of"],
+            "age_days": source_meta["age_days"],
             "status": entry_signal.get("status") if src else None,
             "tier": setup_signal.get("tier_cascade") if src else None,
             "reason": setup_signal.get("reason") if src else None,
@@ -848,10 +893,10 @@ class EntryContextSource:
             "live_entry_radar": self._radar_context(symbol),
             "clocks": {
                 "stock_setup": _clock_set(
-                    observation=self._standouts_observed_at,
-                    availability=self._standouts_available_at,
-                    computation=self._standouts_computed_at,
-                    publication=self._standouts_published_at,
+                    observation=source_meta["observation"],
+                    availability=source_meta["availability"],
+                    computation=source_meta["computation"],
+                    publication=source_meta["publication"],
                     owner="artifact",
                 ),
                 "group": _clock_set(
@@ -877,20 +922,25 @@ class EntryContextSource:
 
     def _index_stock_rows(self) -> dict[str, _EntrySourceRow]:
         out: dict[str, _EntrySourceRow] = {}
-        if self._standouts is None:
-            return out
-        for lane in _ENTRY_LANES:
-            rows = self._standouts.get(lane)
-            if not isinstance(rows, list):
+        # Match Buy Board V2 precedence: the richer standouts row wins when both
+        # owner artifacts contain a ticker; setups.json fills setups-only names.
+        for doc, ref in (
+            (self._standouts, STANDOUTS_REF),
+            (self._setups, SETUPS_REF),
+        ):
+            if doc is None:
                 continue
-            for index, row in enumerate(rows):
-                if not isinstance(row, Mapping):
+            for lane in _ENTRY_LANES:
+                rows = doc.get(lane)
+                if not isinstance(rows, list):
                     continue
-                ticker = str(row.get("ticker") or "").upper()
-                if ticker and ticker not in out:
-                    out[ticker] = _EntrySourceRow(
-                        dict(row), lane, index,
-                        f"{STANDOUTS_REF}#/{lane}/{index}")
+                for index, row in enumerate(rows):
+                    if not isinstance(row, Mapping):
+                        continue
+                    ticker = str(row.get("ticker") or "").upper()
+                    if ticker and ticker not in out:
+                        out[ticker] = _EntrySourceRow(
+                            dict(row), lane, index, f"{ref}#/{lane}/{index}")
         return out
 
     def _index_radar_rows(self) -> dict[str, dict[str, Any]]:
@@ -906,13 +956,65 @@ class EntryContextSource:
         return out
 
     def _setup_availability(self, src: _EntrySourceRow | None) -> str:
-        if self._standouts is None:
+        if self._standouts is None and self._setups is None:
             return "UNAVAILABLE"
         if src is None:
             return "NOT_IN_SNAPSHOT"
-        if self._standouts_age is not None and self._standouts_age > ENTRY_CONTEXT_STALE_DAYS:
+        age_days = self._stock_source_meta(src)["age_days"]
+        if age_days is not None and age_days > ENTRY_CONTEXT_STALE_DAYS:
             return "STALE"
         return "AVAILABLE"
+
+    def _stock_source_meta(self, src: _EntrySourceRow | None) -> dict[str, Any]:
+        if src is not None and src.ref.startswith(SETUPS_REF):
+            return {
+                "ref": SETUPS_REF,
+                "as_of": self._setups_as_of,
+                "age_days": self._setups_age,
+                "observation": self._setups_observed_at,
+                "availability": self._setups_available_at,
+                "computation": self._setups_computed_at,
+                "publication": self._setups_published_at,
+            }
+        if self._standouts is not None:
+            return {
+                "ref": STANDOUTS_REF,
+                "as_of": self._standouts_as_of,
+                "age_days": self._standouts_age,
+                "observation": self._standouts_observed_at,
+                "availability": self._standouts_available_at,
+                "computation": self._standouts_computed_at,
+                "publication": self._standouts_published_at,
+            }
+        return {
+            "ref": SETUPS_REF,
+            "as_of": self._setups_as_of,
+            "age_days": self._setups_age,
+            "observation": self._setups_observed_at,
+            "availability": self._setups_available_at,
+            "computation": self._setups_computed_at,
+            "publication": self._setups_published_at,
+        }
+
+    def _stock_setup_contract_status(self) -> dict[str, Any]:
+        standouts = self._artifact_status(
+            self._standouts, STANDOUTS_REF, self._standouts_as_of,
+            self._standouts_age, self._standouts_error)
+        setups = self._artifact_status(
+            self._setups, SETUPS_REF, self._setups_as_of,
+            self._setups_age, self._setups_error)
+        states = {standouts["state"], setups["state"]}
+        if "AVAILABLE" in states:
+            state = "AVAILABLE"
+        elif "STALE" in states:
+            state = "STALE"
+        else:
+            state = "UNAVAILABLE"
+        return {
+            "state": state,
+            "refs": [STANDOUTS_REF, SETUPS_REF],
+            "sources": {"standouts": standouts, "setups": setups},
+        }
 
     def _expiry(self, src: _EntrySourceRow | None, availability: str,
                 signal: Mapping[str, Any],
