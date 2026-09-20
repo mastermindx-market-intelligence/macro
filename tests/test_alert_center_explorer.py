@@ -1165,3 +1165,61 @@ def test_commodity_stabilizing_shock_abstains_on_asset_or_unit_mismatch():
     rows = [wrong_asset, wrong_unit, unsupported]
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+
+
+def test_bonds_curve_regime_brief_attributes_macro_interpretation_to_source():
+    row = signal('curve-bear-flat', source='bonds', type_='curve_regime', asset='curve')
+    row.update({
+        'tier': 'watch', 'age_days': 19, 'fire_count': 4, 'continuity_verified': False,
+        'headline': 'Curve regime → Bear flattener',
+        'detail': 'The Treasury-curve move turned bear flattener — short rates rising faster than long — a hawkish Fed; classic late-cycle tightening.',
+        'link': 'bonds.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'bonds.curve_regime'
+    assert brief['attention'] == 'for_awareness'
+    assert 'source classifies the Treasury move as bear flattener' in brief['implication']
+    assert 'source interpretation, not proof of Fed motive' in brief['limitation']
+    assert '19 days old' in brief['limitation']
+    assert 'do not prove the classification persisted' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck curve'
+
+
+def test_bonds_curve_regime_fresh_bull_steepener_is_watch_next_not_trade_call():
+    row = signal('curve-bull-steep', source='bonds', type_='curve_regime', asset='curve')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'headline': 'Curve regime → Bull steepener',
+        'detail': 'The Treasury-curve move turned bull steepener — short rates falling faster than long — the market is pricing Fed cuts.',
+        'link': 'bonds.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'source classifies the Treasury move as bull steepener' in brief['implication']
+    assert 'not proof of Fed motive' in brief['limitation']
+    assert 'directional trade' in brief['limitation']
+    assert 'current curve is no longer bull steepener' in brief['reassessment']
+
+
+def test_bonds_curve_regime_abstains_on_detail_or_asset_mismatch():
+    bad_detail = signal('curve-detail', source='bonds', type_='curve_regime', asset='curve')
+    bad_detail.update({
+        'headline': 'Curve regime → Bear flattener',
+        'detail': 'The Treasury curve changed for an unsupported reason.',
+        'link': 'bonds.html#timeline',
+    })
+    bad_asset = signal('curve-asset', source='bonds', type_='curve_regime', asset='rates')
+    bad_asset.update({
+        'headline': 'Curve regime → Bull steepener',
+        'detail': 'The Treasury-curve move turned bull steepener — short rates falling faster than long — the market is pricing Fed cuts.',
+        'link': 'bonds.html#timeline',
+    })
+    briefs = project([bad_detail, bad_asset])['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (bad_detail, bad_asset))
+    assert all(briefs[row['alert_id']]['family'] is None for row in (bad_detail, bad_asset))

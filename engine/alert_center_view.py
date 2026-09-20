@@ -187,6 +187,15 @@ _BONDS_MOVE_DETAIL = re.compile(
     r"^The MOVE index crossed into the (calm|normal|elevated|crisis) band at ([0-9]+)\. "
     r"A MOVE spike is the bond market's systemic-stress thermometer\.$"
 )
+_BONDS_CURVE_HEADLINE = re.compile(
+    r'^Curve regime → (Bull steepener|Bull flattener|Bear steepener|Bear flattener)$'
+)
+_BONDS_CURVE_DESCRIPTIONS = {
+    'Bull steepener': 'short rates falling faster than long — the market is pricing Fed cuts',
+    'Bull flattener': 'long rates falling faster than short — growth/inflation fears pulling the long end',
+    'Bear steepener': 'long rates rising faster than short — reflation / term-premium / fiscal repricing',
+    'Bear flattener': 'short rates rising faster than long — a hawkish Fed; classic late-cycle tightening',
+}
 
 _DEMAND_AHEAD = re.compile(
     r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
@@ -675,6 +684,69 @@ def build_alert_brief(row: dict) -> dict:
                 'reassessment_zh': (
                     f'若 MOVE 离开 {headline_band} 区间、利率波动状态再次变化，或更新的信用/融资证据'
                     '实质改变背景，则改变判断。'),
+                'evidence_label': 'Open current Bonds timeline',
+                'evidence_label_zh': '打开当前债券时间线',
+            })
+            return brief
+
+    curve_headline = _BONDS_CURVE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    if source == 'bonds' and type_ == 'curve_regime' and curve_headline:
+        curve_label = curve_headline.group(1)
+        expected_detail = (
+            f'The Treasury-curve move turned {curve_label.lower()} — '
+            f'{_BONDS_CURVE_DESCRIPTIONS[curve_label]}.')
+        if str(row.get('asset') or '') == 'curve' and detail == expected_detail:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current curve regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前收益率曲线状态。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated regime-transition events do not prove the classification persisted '
+                    'between observations.')
+                recurrence_limit_zh = ' 重复状态转换事件并不能证明该分类在观测之间持续存在。'
+            descriptor = _BONDS_CURVE_DESCRIPTIONS[curve_label]
+            brief.update({
+                'status': 'supported', 'family': 'bonds.curve_regime',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source classifies the Treasury move as {curve_label.lower()}: '
+                    f'{descriptor}. Verify that classification against the current curve before '
+                    'using it in macro risk decisions.'),
+                'implication_zh': (
+                    f'来源将国债曲线走势分类为 {curve_label}。应结合当前收益率曲线复核该分类，'
+                    '再用于宏观风险判断。'),
+                'limitation': (
+                    'The curve-regime taxonomy describes relative short- and long-rate moves. '
+                    'Its macro explanation is a source interpretation, not proof of Fed motive, '
+                    'growth outcome, recession timing, or a directional trade. This family is not '
+                    'separately backtested as a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '曲线状态分类描述的是短端与长端利率的相对变化。其宏观解释是来源的解释，并不能证明'
+                    '美联储动机、增长结果、衰退时点或交易方向；该信号族未作为择时信号单独回测。'
+                    + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Bonds timeline and verify the curve is still classified as '
+                    f'{curve_label.lower()}, inspect the underlying short- versus long-rate move, '
+                    'and check whether a newer transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前债券时间线，确认曲线仍被分类为 {curve_label}，检查短端相对长端的实际变化，'
+                    '并确认是否已有更新的转换取代该事件。'),
+                'next_action_label': 'Recheck curve',
+                'next_action_label_zh': '复核曲线',
+                'reassessment': (
+                    f'Change the read if the current curve is no longer {curve_label.lower()}, '
+                    'the underlying rate moves no longer fit the taxonomy, or a newer regime '
+                    'transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前曲线不再是 {curve_label}、底层利率变化不再符合该分类，或新的状态转换取代'
+                    '该事件，则改变判断。'),
                 'evidence_label': 'Open current Bonds timeline',
                 'evidence_label_zh': '打开当前债券时间线',
             })

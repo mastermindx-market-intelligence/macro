@@ -230,6 +230,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-bonds-move.png'))
             report['screenshots'].append('desktop-bonds-move.png')
             report['checks'].append('MOVE band changes expose current stress verification without equating calm with safety')
+            curve_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                            if brief.get('family') == 'bonds.curve_regime')
+            curve_brief = payload['explorer']['briefs'][curve_id]
+            page.goto(url + '#view=explore&id=' + curve_id, wait_until='domcontentloaded')
+            curve_text = page.locator('#ac-detail').inner_text()
+            assert curve_brief['limitation'] in curve_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == curve_brief['next_action']
+            assert curve_brief['evidence_label'] in curve_text
+            page.screenshot(path=str(out / 'desktop-bonds-curve.png'))
+            report['screenshots'].append('desktop-bonds-curve.png')
+            report['checks'].append('Curve regimes expose current taxonomy verification without treating macro interpretation as fact')
             silver_id = next(id_ for id_, row in by_id.items()
                              if row.get('source') == 'commodity' and
                              row.get('type') == 'price_shock' and row.get('asset') == 'silver')
