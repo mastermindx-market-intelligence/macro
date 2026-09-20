@@ -1,26 +1,26 @@
 {
   "schema": "china_intel.analogs.v1",
   "is_context_only": true,
-  "generated_utc": "2026-09-16T12:36:29Z",
-  "as_of": "2026-09-16",
+  "generated_utc": "2026-09-19T12:37:35Z",
+  "as_of": "2026-09-18",
   "coverage": {
     "start": "2006-03-30",
-    "end": "2026-09-16",
-    "n_candidate_days": 5340
+    "end": "2026-09-18",
+    "n_candidate_days": 5342
   },
   "query": {
-    "date": "2026-09-16",
+    "date": "2026-09-18",
     "quad": "Q4",
     "quad_name": "Growth-scare",
     "liquidity": "contracting",
     "cycle": "mid",
-    "growth_z": -1.1554,
-    "inflation_z": -1.1746
+    "growth_z": -1.1549,
+    "inflation_z": -1.1741
   },
   "analogs": [
     {
       "date": "2023-05-16",
-      "distance": 0.115,
+      "distance": 0.1149,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
@@ -37,16 +37,16 @@
       }
     },
     {
-      "date": "2008-10-29",
+      "date": "2008-11-18",
       "distance": 0.1246,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.083849,
-        "h60": 0.131611,
-        "h120": 0.308707
+        "h20": -0.020357,
+        "h60": 0.114172,
+        "h120": 0.282732
       },
       "fwd_csi300": null
     },
@@ -65,21 +65,21 @@
       "fwd_csi300": null
     },
     {
-      "date": "2022-12-20",
+      "date": "2022-12-02",
       "distance": 0.1445,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.0545,
-        "h60": 0.068709,
-        "h120": 0.041335
+        "h20": -0.030121,
+        "h60": 0.022562,
+        "h120": 0.006403
       },
       "fwd_csi300": {
-        "h20": 0.081419,
-        "h60": 0.050399,
-        "h120": 0.014022
+        "h20": -0.013832,
+        "h60": 0.02501,
+        "h120": -0.024956
       }
     },
     {
@@ -155,91 +155,91 @@
       }
     },
     {
-      "date": "2019-08-20",
-      "distance": 0.9197,
+      "date": "2019-08-21",
+      "distance": 0.9196,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.040467,
-        "h60": 0.00806,
-        "h120": 0.051065
+        "h20": 0.041776,
+        "h60": 0.000641,
+        "h120": 0.043969
       },
       "fwd_csi300": {
-        "h20": 0.037046,
-        "h60": 0.027722,
-        "h120": 0.083713
+        "h20": 0.03647,
+        "h60": 0.014953,
+        "h120": 0.079686
       }
     },
     {
-      "date": "2024-08-14",
-      "distance": 0.964,
+      "date": "2024-08-15",
+      "distance": 0.9639,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "contracting",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": -0.057299,
-        "h60": 0.144251,
-        "h120": 0.152547
+        "h20": -0.062827,
+        "h60": 0.150176,
+        "h120": 0.151602
       },
       "fwd_csi300": {
-        "h20": -0.049627,
-        "h60": 0.169624,
-        "h120": 0.168385
+        "h20": -0.05485,
+        "h60": 0.173978,
+        "h120": 0.164818
       }
     },
     {
-      "date": "2008-12-29",
+      "date": "2012-08-16",
       "distance": 1.0077,
       "quad": "Q4",
       "quad_name": "Growth-scare",
       "liquidity": "expanding",
       "cycle": "mid",
       "fwd_shcomp": {
-        "h20": 0.135088,
-        "h60": 0.280047,
-        "h120": 0.49542
+        "h20": 0.004226,
+        "h60": -0.048521,
+        "h120": 0.125289
+      },
+      "fwd_csi300": {
+        "h20": 0.001276,
+        "h60": -0.063262,
+        "h120": 0.137779
+      }
+    },
+    {
+      "date": "2009-01-23",
+      "distance": 1.0077,
+      "quad": "Q4",
+      "quad_name": "Growth-scare",
+      "liquidity": "expanding",
+      "cycle": "mid",
+      "fwd_shcomp": {
+        "h20": 0.03984,
+        "h60": 0.177096,
+        "h120": 0.516713
       },
       "fwd_csi300": null
-    },
-    {
-      "date": "2012-08-14",
-      "distance": 1.0077,
-      "quad": "Q4",
-      "quad_name": "Growth-scare",
-      "liquidity": "expanding",
-      "cycle": "mid",
-      "fwd_shcomp": {
-        "h20": 0.003584,
-        "h60": -0.030439,
-        "h120": 0.133493
-      },
-      "fwd_csi300": {
-        "h20": -0.002963,
-        "h60": -0.048938,
-        "h120": 0.142368
-      }
     }
   ],
   "fan": {
     "h20": {
       "p25": -0.042493,
-      "median": 0.0138,
-      "p75": 0.043975,
+      "median": -0.01866,
+      "p75": 0.027738,
       "n": 12
     },
     "h60": {
-      "p25": 0.003722,
-      "median": 0.046185,
-      "p75": 0.134771,
+      "p25": -0.001842,
+      "median": 0.030911,
+      "p75": 0.123173,
       "n": 12
     },
     "h120": {
-      "p25": 0.018966,
-      "median": 0.076687,
-      "p75": 0.168621,
+      "p25": 0.014355,
+      "median": 0.073139,
+      "p75": 0.167912,
       "n": 12
     }
   },

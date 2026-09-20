@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-16T15:41:01.961515+00:00",
-  "as_of": "2026-09-16",
-  "n_open": 95919,
-  "n_graded_today": 1,
-  "n_blocked_by_coverage": 41526,
-  "n_ungradeable": 12,
-  "n_already_graded": 124948,
+  "generated_at": "2026-09-19T19:22:58.090394+00:00",
+  "as_of": "2026-09-19",
+  "n_open": 103904,
+  "n_graded_today": 292,
+  "n_blocked_by_coverage": 44045,
+  "n_ungradeable": 14,
+  "n_already_graded": 134147,
   "clock_unresolvable_claims": {
     "n": 18,
     "by_reason": {
@@ -29,7 +29,7 @@
     "grader_quiet_days": 0
   },
   "regime_stamp_backfill": {
-    "n_claims": 95938,
+    "n_claims": 103923,
     "n_backfilled": 0,
     "n_unstamped": 6673,
     "n_precoverage": 4361

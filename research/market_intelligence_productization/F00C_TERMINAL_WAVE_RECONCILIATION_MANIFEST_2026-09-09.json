@@ -114,8 +114,8 @@
         "terminal/app/api/event-impact/route.ts",
         "terminal/components/EventImpactPanel.tsx"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in event-impact journey. Event->position mapping is already shipped; do not build a second mapping path.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-036",
@@ -130,15 +130,15 @@
         "terminal/app/api/portfolio/route.ts",
         "terminal/components/PortfolioView.tsx"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "HOLD liquidity on a macro ticker-keyed thickness field in stockdata/<TICKER>.json (producer-owned); no Terminal-side invention",
+      "residual": "The concentration, industry-weight and company-size-weight readouts are built, but the macro stockdata artifact has no liquidity-thickness field and the route hard-codes the liquidity value as unread."
     },
     {
       "id": "MO-PAID-046",
       "family": "F11-RESEARCH-WORKSPACE",
-      "acceptance_test": "a user creates/revises a Thesis via UI; revisions are new rows carrying amended_from; no in-place edit possible",
-      "disposition": "NOT_SATISFIED",
-      "capability_state_c2": "PARTIAL",
+      "acceptance_test": "a user creates/revises a Thesis via UI; revisions are new rows carrying previous_version; no in-place edit possible",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
       "terminal_pr": 520,
       "merge_sha": "8255f48246c47bd92f52e8705aa52161bf39b1a8",
       "producer_paths": [
@@ -147,8 +147,8 @@
         "terminal/components/workspaces/ThesisWorkspace.tsx",
         "supabase/migrations/0012_thesis_objects.sql"
       ],
-      "next_bounded_child": "ONE child: reconcile the revision vocabulary — either carry an amended_from reference on the version row, or amend this acceptance sentence to name the shipped previous_version link. Nothing else about this row is open.",
-      "residual": "The shipped store supersedes by a previous_version link on an immutable version row; the token amended_from appears nowhere in the Terminal tree, so the acceptance sentence is not literally satisfied."
+      "next_bounded_child": "Vocabulary is previous_version (do not add amended_from). Residual is live signed-in create/revise proof. #577 is a different child.",
+      "residual": "Signed-in create/revise proof outstanding. The shipped store supersedes by a previous_version link on an immutable version row — that IS the accepted vocabulary (Sol: never regresses to amended_from); Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-051",
@@ -164,8 +164,8 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0014_tenancy_foundation.sql"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in owner/member create+read journey. Tenancy schema/routes are shipped (#514 plus audit heal #585); do not create a second team model.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-053",
@@ -180,8 +180,8 @@
         "terminal/components/workspaces/ThesisWorkspace.tsx",
         "terminal/app/api/theses/route.ts"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in RMS lens journey. The seven views and Thesis object store are already shipped; do not create a second research-management store.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-081",
@@ -212,8 +212,8 @@
         "terminal/app/api/teams/[id]/members/route.ts",
         "terminal/lib/tenantScope.ts"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in role-contrast journey. Role model and route enforcement are already shipped; no second permission model.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-083",
@@ -227,8 +227,8 @@
         "terminal/lib/teams.ts",
         "supabase/migrations/0015_team_roles_invitations.sql"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in workspace-vs-personal persistence journey. #584 is merged; do not duplicate the settings table or route.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger. Producer note: the ledger names terminal#584 (dd7c6dec, workspace-settings persistence, merged 2026-09-18) on top of this packet's #514 tenancy foundation; the manifest keeps its 2026-09-09 producer pin (Terminal master db69d072) and the ledger cell carries both."
     },
     {
       "id": "MO-PAID-086",
@@ -242,8 +242,8 @@
         "terminal/app/api/account/export/route.ts",
         "terminal/lib/accountExport.ts"
       ],
-      "next_bounded_child": "",
-      "residual": null
+      "next_bounded_child": "Proof-only: signed-in export download. Route, serializer and account-settings UI are already shipped; do not create a second export plane.",
+      "residual": "Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     },
     {
       "id": "MO-PAID-087",
@@ -265,15 +265,15 @@
       "id": "MO-DELTA-014",
       "family": "F08-PORTFOLIO-ALERTS",
       "acceptance_test": "per-user Sharpe/Sortino/beta/concentration over A1A/A1B holdings",
-      "disposition": "NOT_SATISFIED",
-      "capability_state_c2": "PARTIAL",
+      "disposition": "SATISFIED",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
       "terminal_pr": 524,
       "merge_sha": "efcd98aaf4f432692ea1841655bf24c0045bbd02",
       "producer_paths": [
         "terminal/lib/portfolioRisk.ts"
       ],
-      "next_bounded_child": "The absorption into the MO-PAID-036 child is spent, because 036 closed on the concentration, factor and liquidity readout. ONE child remains here: per-user Sharpe, Sortino and beta over the same canonical holdings.",
-      "residual": "No Sharpe, Sortino or beta is computed over a user's own holdings anywhere in the Terminal tree; only the concentration quarter of the acceptance sentence shipped."
+      "next_bounded_child": "Proof-only: signed-in risk-history journey. Sharpe/Sortino/beta and concentration are already shipped; liquidity belongs to MO-PAID-036, not this row.",
+      "residual": "Signed-in risk-history proof remaining (Sol F00C convergence 2026-09-19, #7335 comment 5739279644: '014 -> BUILT_NOT_PROVEN with only signed-in risk-history proof remaining; liquidity stays on 036'). Built by terminal#524 (efcd98aa) + terminal#578 (598b1a04); this manifest mirrors the ledger."
     },
     {
       "id": "MO-DELTA-042",
@@ -286,8 +286,472 @@
       "producer_paths": [
         "terminal/lib/eventImpact.ts"
       ],
-      "next_bounded_child": "ONE child: add the F08 §9 invalidation element to the shipped event-object schema, so an event states the condition that would void it alongside direction, mechanism and timeframe — carried on this row because MO-PAID-028's own sentence is now met and its child is empty.",
-      "residual": "The shipped event object carries direction, mechanism and timeframe but no invalidation field, and only the earnings calendar keys by ticker, so the two other published calendars stay unjoinable. That invalidation element was part of the ONE child MO-PAID-028 carried at the base; MO-PAID-028's sentence is met and its child is empty, so this row now owns the child that would ship it."
+      "next_bounded_child": "Proof-only: signed-in /api/event-impact + /portfolio readback. Schema/mapping/invalidation are already shipped; do not create a second event-impact object.",
+      "residual": "Signed-in /api/event-impact + /portfolio readback proof outstanding. Schema, mapping and the F08 §9 invalidation element are already shipped (terminal#522 68b0d00a + terminal#576 45a0e78e per the ledger); Live signed-in proof outstanding — Sol F00C single-writer convergence 2026-09-19 (#7335, comment 5739279644): the row is BUILT_NOT_PROVEN until the ledger's next bounded child (the proof-only journey) is captured; this manifest mirrors the ledger."
     }
-  ]
+  ],
+  "single_writer_convergence_2026_09_19": {
+    "operation": "marketontology-f00c-single-writer-convergence-20260919-sol-001",
+    "integration_base_sha": "5332d876e75837c158c6f42a2862734451bb7158",
+    "csv_commit": "e6ea08107305a95b4eda41782c304206b1cb8439",
+    "test_commit": "6bdd406959fb2873906ccaea0341fba93415e9f7",
+    "source_pr_heads": {
+      "7011": "89a1be5fc111f703472820d47973ba6840b9ddea",
+      "7014": "9c2950d2bcd16dc790b47d655d43842e5ef69d92",
+      "7335": "074670d9789fc41b399f18ad5c35199afee12cc9",
+      "7340": "89eea5595fc7fd1e96a8bf052f041437585d83fe",
+      "7343": "a7b9f945e34c1de460874c47282370edefcfff37",
+      "7348": "d26cfaa41f15d81679b05fa9faa624c045d6f298",
+      "7349": "879ccef3c85f537955d177cb2ea1917437d1a7d8",
+      "7353": "4b7f7aa2ccd993bd71ccc4a4815ab34a94f46c6b"
+    },
+    "precedence": [
+      "protected main baseline",
+      "#7335 broad reconciliation",
+      "#7340 W5-F",
+      "#7343 W5-H supersedes shared W5-F evidence",
+      "#7348 recurring-brief delta",
+      "#7349 W5-J1",
+      "#7353 W5-J2",
+      "#7014 unique MO-DELTA-017 only",
+      "Sol exact-row adjudications"
+    ],
+    "union_row_count": 80,
+    "union_row_ids": [
+      "MO-DELTA-001",
+      "MO-DELTA-002",
+      "MO-DELTA-003",
+      "MO-DELTA-004",
+      "MO-DELTA-005",
+      "MO-DELTA-006",
+      "MO-DELTA-007",
+      "MO-DELTA-008",
+      "MO-DELTA-009",
+      "MO-DELTA-010",
+      "MO-DELTA-011",
+      "MO-DELTA-012",
+      "MO-DELTA-014",
+      "MO-DELTA-015",
+      "MO-DELTA-016",
+      "MO-DELTA-017",
+      "MO-DELTA-019",
+      "MO-DELTA-021",
+      "MO-DELTA-023",
+      "MO-DELTA-026",
+      "MO-DELTA-029",
+      "MO-DELTA-031",
+      "MO-DELTA-032",
+      "MO-DELTA-033",
+      "MO-DELTA-034",
+      "MO-DELTA-035",
+      "MO-DELTA-040",
+      "MO-DELTA-042",
+      "MO-PAID-001",
+      "MO-PAID-002",
+      "MO-PAID-003",
+      "MO-PAID-004",
+      "MO-PAID-005",
+      "MO-PAID-006",
+      "MO-PAID-007",
+      "MO-PAID-008",
+      "MO-PAID-010",
+      "MO-PAID-012",
+      "MO-PAID-013",
+      "MO-PAID-014",
+      "MO-PAID-015",
+      "MO-PAID-016",
+      "MO-PAID-017",
+      "MO-PAID-019",
+      "MO-PAID-020",
+      "MO-PAID-021",
+      "MO-PAID-023",
+      "MO-PAID-025",
+      "MO-PAID-027",
+      "MO-PAID-028",
+      "MO-PAID-032",
+      "MO-PAID-034",
+      "MO-PAID-035",
+      "MO-PAID-036",
+      "MO-PAID-037",
+      "MO-PAID-039",
+      "MO-PAID-046",
+      "MO-PAID-047",
+      "MO-PAID-051",
+      "MO-PAID-053",
+      "MO-PAID-054",
+      "MO-PAID-057",
+      "MO-PAID-058",
+      "MO-PAID-059",
+      "MO-PAID-060",
+      "MO-PAID-064",
+      "MO-PAID-067",
+      "MO-PAID-069",
+      "MO-PAID-070",
+      "MO-PAID-073",
+      "MO-PAID-074",
+      "MO-PAID-075",
+      "MO-PAID-076",
+      "MO-PAID-077",
+      "MO-PAID-078",
+      "MO-PAID-082",
+      "MO-PAID-083",
+      "MO-PAID-085",
+      "MO-PAID-086",
+      "MO-PAID-088"
+    ],
+    "overlap_row_count": 23,
+    "overlap_row_ids": [
+      "MO-DELTA-001",
+      "MO-DELTA-007",
+      "MO-DELTA-009",
+      "MO-DELTA-011",
+      "MO-DELTA-014",
+      "MO-DELTA-035",
+      "MO-PAID-002",
+      "MO-PAID-004",
+      "MO-PAID-010",
+      "MO-PAID-012",
+      "MO-PAID-013",
+      "MO-PAID-014",
+      "MO-PAID-017",
+      "MO-PAID-020",
+      "MO-PAID-021",
+      "MO-PAID-027",
+      "MO-PAID-039",
+      "MO-PAID-046",
+      "MO-PAID-057",
+      "MO-PAID-073",
+      "MO-PAID-074",
+      "MO-PAID-077",
+      "MO-PAID-088"
+    ],
+    "outside_union_row_count": 50,
+    "outside_union_sha256": "b2e30e3b42b932d62c0a2781a87c6a527bdce05ed9e9003171add0f36b3abb7d",
+    "capability_state_vocabulary": [
+      "NOT_BUILT",
+      "SPEC_ONLY",
+      "PARTIAL",
+      "BUILT_NOT_PROVEN",
+      "PROVEN_LIVE"
+    ],
+    "schema_rulings": {
+      "MO-PAID-023": "F00C vocabulary is frozen; production gate_off/dark behavior is encoded as BUILT_NOT_PROVEN plus explicit activation/proof fields until #7351 is proven.",
+      "MO-PAID-046": "Immutable thesis lineage vocabulary is previous_version. amended_from is rejected and must not be reintroduced."
+    },
+    "accepted_proof_moves": {
+      "MO-PAID-034": "PROVEN_LIVE canonical qbus machine path",
+      "MO-DELTA-029": "PROVEN_LIVE coverage-matrix capability only",
+      "MO-PAID-067": "PROVEN_LIVE incumbent build_site -> capital-policy projection path",
+      "MO-DELTA-011": "PROVEN_LIVE public glossary",
+      "MO-DELTA-014": "BUILT_NOT_PROVEN #524+#578; signed-in proof owed",
+      "MO-PAID-058": "BUILT_NOT_PROVEN paid/free support queue routing; signed-in PRO proof owed",
+      "MO-PAID-088": "PROVEN_LIVE Help FAQs + dated changelog",
+      "MO-DELTA-019": "PROVEN_LIVE HY/IG credit window",
+      "MO-PAID-060": "PROVEN_LIVE HY/IG credit window",
+      "MO-PAID-032": "PARTIAL intake/inbox shipped; cadence producer absent",
+      "MO-PAID-020": "PROVEN_LIVE second issuer security_state",
+      "MO-PAID-021": "PROVEN_LIVE second-issuer B1B cockpit",
+      "MO-PAID-007": "PROVEN_LIVE policy lifecycle",
+      "MO-DELTA-042": "BUILT_NOT_PROVEN event->positions object plus invalidation shipped; signed-in proof owed",
+      "MO-PAID-028": "BUILT_NOT_PROVEN routed EventImpactPanel shipped; signed-in proof owed",
+      "MO-PAID-053": "BUILT_NOT_PROVEN seven RMS lenses over Thesis objects shipped; signed-in proof owed",
+      "MO-PAID-051": "BUILT_NOT_PROVEN tenancy routes shipped; signed-in create/read proof owed",
+      "MO-PAID-082": "BUILT_NOT_PROVEN role enforcement shipped; signed-in role-contrast proof owed",
+      "MO-PAID-083": "BUILT_NOT_PROVEN workspace settings route/UI merged in #584; signed-in persistence proof owed",
+      "MO-PAID-086": "BUILT_NOT_PROVEN export route/UI shipped; signed-in download proof owed"
+    },
+    "absorbed_sibling_prs": [
+      7011,
+      7014,
+      7340,
+      7343,
+      7348,
+      7349,
+      7353
+    ],
+    "close_only_after_readback": true,
+    "what_must_not_be_redone": [
+      "Do not merge sibling F00C CSV writers independently after this fold.",
+      "Do not recreate a direct post-build_site capital-structure page-builder for MO-PAID-067; the incumbent path is live.",
+      "Do not add amended_from as a second thesis lineage column.",
+      "Do not require a Europe UI for MO-PAID-034; its acceptance is the qbus machine join surface.",
+      "Do not create a second support destination for MO-PAID-058."
+    ],
+    "initial_union_csv_commit": "e6ea08107305a95b4eda41782c304206b1cb8439",
+    "latest_records_truth_commit": "9990a43619581d3cadd6dd3c3f8c1c9ee2a38ca6",
+    "initial_widened_test_commit": "6bdd406959fb2873906ccaea0341fba93415e9f7",
+    "latest_regression_commit": "3c91e8899874838b56e153d574f7aa79c71bb2de",
+    "terminal_truth_refresh_2026_09_19": {
+      "terminal_master_sha": "dd7c6dec712a5b7f40d371e3b83827c694dd8f90",
+      "merged_prs": {
+        "514": "cff58ee8d4a25143b72d45191aa405b1ac88d697",
+        "520": "8255f48246c47bd92f52e8705aa52161bf39b1a8",
+        "522": "68b0d00a8ffe4145786c0e2aa9775e44a279ad80",
+        "527": "68bbe8ea6dce9dbffa868572eba0ade903c7c357",
+        "529": "6b983e1e26f4b424681d7762439d244d9884d8e0",
+        "576": "45a0e78e01377502399761626899458f9d08ffd9",
+        "584": "dd7c6dec712a5b7f40d371e3b83827c694dd8f90",
+        "585": "4abadddd2200af86a6fe20081295de110a48568b"
+      },
+      "reconciled_rows": {
+        "MO-PAID-007": "removed stale claim that MO-DELTA-032 is SPEC_ONLY; both point to the same live lifecycle owner",
+        "MO-DELTA-042": "BUILT_NOT_PROVEN; #522 event object + #576 invalidation; signed-in routed proof owed",
+        "MO-PAID-028": "BUILT_NOT_PROVEN; EventImpactPanel/API consumer shipped; signed-in event->positions proof owed",
+        "MO-PAID-053": "BUILT_NOT_PROVEN; RMS lens rail over Thesis objects shipped; signed-in proof owed",
+        "MO-PAID-051": "BUILT_NOT_PROVEN; team/member routes shipped; signed-in create/read proof owed",
+        "MO-PAID-082": "BUILT_NOT_PROVEN; role enforcement shipped; signed-in role-contrast proof owed",
+        "MO-PAID-083": "BUILT_NOT_PROVEN; #584 settings route/SectionTeam merged; signed-in workspace-vs-personal persistence proof owed",
+        "MO-PAID-086": "BUILT_NOT_PROVEN; export route/lib/SectionAccount consumer shipped; signed-in export download proof owed"
+      }
+    }
+  },
+  "seat_records_pass_2026_09_19": {
+    "by": "Meta-CEO B seat 026851bd",
+    "why": "#7335 (Sol single-writer F00C integration, merged af617506) rewrote ledger children/states; tests/test_f00c_terminal_reconciliation.py requires the manifest to mirror the ledger (child ownership is a ledger fact). Manifest fields next_bounded_child / capability_state_c2 / acceptance_test mirrored from the ledger; residual set where a SATISFIED row now carries a proof-only child.",
+    "rows": [
+      "MO-PAID-028",
+      "MO-PAID-046",
+      "MO-PAID-051",
+      "MO-PAID-053",
+      "MO-PAID-082",
+      "MO-PAID-083",
+      "MO-PAID-086",
+      "MO-DELTA-014",
+      "MO-DELTA-042"
+    ],
+    "ledger_sha_source": "origin/main after af617506",
+    "rows_note": "MO-DELTA-014 disposition NOT_SATISFIED->SATISFIED with residual (Sol ruling; ledger BUILT_NOT_PROVEN); MO-PAID-046 and MO-PAID-083 ledger real_producer cells gained the manifest producer sha in an append inside the cell (see PR body); no other ledger byte changed.",
+    "round2": "2026-09-19 ~12:00Z after Grok review h_f00c_rec_rv1: MO-DELTA-042 and MO-PAID-046 residuals rewritten to the signed-in-proof form (their old text claimed an unshipped invalidation field / a not-literally-satisfied sentence, contradicting the mirrored child); five unrelated seat draft records removed from the PR."
+  },
+  "post_merge_corrections_2026_09_19": [
+    {
+      "operation": "marketontology-f00c-postmerge-mo-paid-039-20260919-sol-001",
+      "baseline_main_sha": "af617506e59c258c5786bab926a34b35b9ab2deb",
+      "source_pr": 7353,
+      "source_head_sha": "d1b4005ddf994d5636f5bed033db3ce2b553eda0",
+      "row_id": "MO-PAID-039",
+      "capability_state_c2": "BUILT_NOT_PROVEN",
+      "ruling": "measurement.html is intentionally internal/admin-only and is rendered nightly; the live defect is the public Intelligence Hub link to the blocked public route, not a missing measurement builder",
+      "verified_source": [
+        "app/deploy/Caddyfile @never_site contains /measurement.html",
+        "tests/test_admin_research_tools.py pins admin-only /research-tools boundary",
+        ".github/workflows/daily.yml invokes scripts/ci/daily_engine_regional_desk_builders.sh",
+        "scripts/ci/daily_engine_regional_desk_builders.sh runs brun measurement -> scripts.build_measurement",
+        "templates/intelligence_hub.html.j2 links to measurement.html#ric-section"
+      ],
+      "production_observation": "public GET https://www.mastermind-x.com/measurement.html returned 404 on 2026-09-19, consistent with @never_site",
+      "residual": "authenticated admin Calibration Lab implication-card proof plus F10 owner repair of the public link; no second builder"
+    }
+  ],
+  "seat_records_pass_2026_09_19_b": {
+    "recorded_by": "Meta-CEO B seat 026851bd (Fable 5.1)",
+    "ledger_sha_source": "origin/main after 102abb1b (#7390 Sol) = d11573a3bc3d (ledger blob 09089cf6 identical at merge-base a4de32ca and at d11573a3)",
+    "single_writer_note": "append-only in-cell notes on 8 rows already inside Sol's 80-row union; no state moves; no manifest row changes (none of the 12 mirrored rows touched); source heads named in every appended cell",
+    "rows_written": [
+      "MO-DELTA-010",
+      "MO-PAID-034",
+      "MO-PAID-020",
+      "MO-DELTA-029",
+      "MO-PAID-064",
+      "MO-PAID-047",
+      "MO-PAID-078",
+      "MO-DELTA-011"
+    ],
+    "held_for_sol": {
+      "why": "tests/test_mo_b_ledger_reconciliation_2026_09_18.py (#7390) pins capability_state_c2 for all 80 union rows and byte-freezes the other 50 rows (OUTSIDE_UNION_SHA256); the cells below move a pinned state or touch a frozen row, several of them per Sol's own #7357/#7358 subset receipts (10:02-10:07Z) - the seat does not edit Sol's pins; Sol re-pins or authorises a follow-up records PR that updates the test constants",
+      "rows": {
+        "MO-PAID-008": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-032": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "missing_contract_or_proof",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-022": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-026": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-017": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-DELTA-018": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "next_bounded_child"
+          ]
+        },
+        "MO-PAID-062": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-038": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": []
+        },
+        "MO-PAID-056": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-052": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-041": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-PAID-055": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "real_consumer",
+            "missing_contract_or_proof"
+          ]
+        },
+        "MO-PAID-011": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-031": {
+          "proposed_state": null,
+          "cells": [
+            "adjudication_notes"
+          ]
+        }
+      },
+      "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_2026-09-19_held_for_sol.json (31 cells)"
+    },
+    "rows_note": "W6/W7 + heal merges of 2026-09-19 recorded on the 8 written rows - exactly the PRs named in the 13 appended cells: macro #7110 #7122 #7125 #7126 #7132 #7134 #7362 #7425 and terminal #648; every BUILT_NOT_PROVEN row stays unproven until a signed-in readback; MO-PAID-047 was already BUILT_NOT_PROVEN on main and only gains the terminal#648 note (corrected after Grok h_rec4_rv1 minor 1: the earlier note over-listed PRs that this pass did not write)"
+  },
+  "seat_records_pass_2026_09_20_c": {
+    "recorded_by": "Meta-CEO B seat 026851bd (Fable 5.1)",
+    "ledger_sha_source": "origin/main at e338508d (macro #7451 merge, 2026-09-20T00:40:06Z) = ledger blob 70505eaa (last ledger commit 5b4bbbc9 = #7447 records pass)",
+    "single_writer_note": "append-only in-cell notes on 3 rows already inside Sol's 80-row union; no state moves; no manifest row changes (none of the 12 mirrored rows touched); source heads named in every appended cell; tests/test_mo_b_ledger_reconciliation_2026_09_18.py untouched and green (5 passed); commits 99acab58 (ledger) + 6e5523c8 (this manifest block) + 8baae5bc (#7132 source head corrected to its merge commit e1e8de31 after Grok h_rec5_rv1 MAJOR 1) form one records PR (#7465)",
+    "rows_written": [
+      "MO-DELTA-021",
+      "MO-PAID-059",
+      "MO-PAID-078"
+    ],
+    "held_for_sol": {
+      "why": "same freeze as the _b block: #7390 pins capability_state_c2 for the 80 union rows and byte-freezes the other 50; the 31 cells held out of #7447 are replayed verbatim by this pass's applier and held again, plus 2 new held cells (MO-PAID-062 adjudication_notes: #7127 headroom-panel evidence; MO-DELTA-018 adjudication_notes: W8-1 note on an outside-50 row) - the seat does not edit Sol's pins; Sol re-pins or authorises a follow-up records PR that updates the test constants (SOL_UNHOLD=1 path in the staged applier)",
+      "rows": {
+        "MO-PAID-008": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-032": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "missing_contract_or_proof",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-022": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-026": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-017": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-DELTA-018": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "next_bounded_child",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-062": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-DELTA-038": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": []
+        },
+        "MO-PAID-056": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-PAID-052": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer"
+          ]
+        },
+        "MO-DELTA-041": {
+          "proposed_state": "PARTIAL",
+          "cells": []
+        },
+        "MO-PAID-055": {
+          "proposed_state": "BUILT_NOT_PROVEN",
+          "cells": [
+            "real_producer",
+            "real_consumer",
+            "missing_contract_or_proof"
+          ]
+        },
+        "MO-PAID-011": {
+          "proposed_state": "PARTIAL",
+          "cells": [
+            "real_producer",
+            "adjudication_notes"
+          ]
+        },
+        "MO-PAID-031": {
+          "proposed_state": null,
+          "cells": [
+            "adjudication_notes"
+          ]
+        }
+      },
+      "staged_cells_file": "handoff kit orch/fabric/RECORDS_PASS_rec3_held_for_sol.json (33 row/cell pairs; proposed states unchanged from the _b block)"
+    },
+    "rows_note": "merges recorded on the 3 written rows - exactly the PRs named in the 5 appended cells: macro #7127 52ecfd96 (covenant headroom panel; MO-DELTA-021), #7132 e1e8de31 (account routes; MO-PAID-078) and #7451 e338508d (W8-1 cash runway; MO-PAID-059); MO-DELTA-021 and MO-PAID-059 are rendered-but-gated behind the render lane red since 09-13 and stay PARTIAL under Sol's pin; every producer stays unproven until a signed-in readback"
+  }
 }

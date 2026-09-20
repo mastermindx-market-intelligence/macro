@@ -3059,7 +3059,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "always() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
-        "needs.trusted-ci.result == 'success')"
+        "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
     )
     run_text = "\n".join(
         str(step.get("run", "")) for step in pack["steps"] if isinstance(step, dict)
@@ -3777,6 +3777,19 @@ def test_d5_route_closure_keeps_affected_curated_jobs_selecting_dependencies() -
             )
             match = PACK._job_diff_match(job, [dependency])
             assert match and match[1] == "declared", (job_id, dependency, match)
+
+
+def test_unrun_picks_boards_owns_macro_risk_dialog_locale_token_source() -> None:
+    """The risk-dialog suite reads the shipped token source, so its job owns it."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["unrun-picks-boards"]
+
+    assert job.exclusive is True
+    assert "site/theme.css" in job.paths
+    selected, reason = PACK.select_jobs([job], ["site/theme.css"])
+    assert [item.job_id for item in selected] == [job.job_id], reason
+    match = PACK._job_diff_match(job, ["site/theme.css"])
+    assert match and match[1] == "declared", match
 
 
 def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:

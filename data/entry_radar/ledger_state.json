@@ -11,8 +11,8 @@
     "rejected": 0
   },
   "schema": "entry_radar.w5_ledger_state/v1",
-  "session": "2026-09-16",
+  "session": "2026-09-18",
   "spool_dir": null,
   "state": "WAITING_FOR_LIVE_SOURCE",
-  "updated_at": "2026-09-16T09:29:47.864148+00:00"
+  "updated_at": "2026-09-18T18:52:38.067506+00:00"
 }

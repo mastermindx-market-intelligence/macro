@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-16T15:57:43.108593+00:00",
+  "generated_at": "2026-09-19T15:28:50.768403+00:00",
   "families": {
     "narrative_source_call": {
       "n_claims": 335,
@@ -9,18 +9,19 @@
       "state": "ACCRUING"
     },
     "narrative_flare_state": {
-      "n_claims": 12,
+      "n_claims": 14,
       "n_resolved": 0,
       "hit_rate": null,
       "accruing": true,
       "state": "ACCRUING",
       "excess_by_horizon_td": {
         "21": {
-          "n": 1,
+          "n": 2,
           "excess_values": [
-            0.068706
+            0.068706,
+            0.051348
           ],
-          "mean_excess": 0.068706
+          "mean_excess": 0.060027
         },
         "63": {
           "n": 0,
@@ -28,11 +29,11 @@
           "mean_excess": null
         }
       },
-      "excess_n_matured": 1
+      "excess_n_matured": 2
     }
   },
   "source_registry_n": 2,
-  "source_registry_total_calls": 11049,
+  "source_registry_total_calls": 13028,
   "authority": {
     "tier": "display",
     "may_rank": false,

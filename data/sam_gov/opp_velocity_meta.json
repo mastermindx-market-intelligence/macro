@@ -1,15 +1,15 @@
 {
   "as_of": {
-    "critical_minerals": "2026-09-16",
-    "semicap_equipment": "2026-09-16",
-    "ai_semiconductors": "2026-09-16",
-    "defense": "2026-09-16",
-    "space_economy": "2026-09-16",
-    "quantum_computing": "2026-09-16",
-    "power_grid": "2026-09-16",
-    "data_center_power": "2026-09-16",
-    "ai_infra": "2026-09-16",
-    "ai_software": "2026-09-16",
-    "cybersecurity": "2026-09-16"
+    "critical_minerals": "2026-09-19",
+    "semicap_equipment": "2026-09-19",
+    "ai_semiconductors": "2026-09-19",
+    "defense": "2026-09-19",
+    "space_economy": "2026-09-19",
+    "quantum_computing": "2026-09-19",
+    "power_grid": "2026-09-19",
+    "data_center_power": "2026-09-19",
+    "ai_infra": "2026-09-19",
+    "ai_software": "2026-09-19",
+    "cybersecurity": "2026-09-19"
   }
 }

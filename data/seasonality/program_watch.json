@@ -1,9 +1,9 @@
 {
-  "asof": "2026-09-15",
+  "asof": "2026-09-18",
   "counts": {
     "fired": 2,
-    "unavailable": 1,
-    "waiting": 1
+    "unavailable": 0,
+    "waiting": 2
   },
   "schema": "seasonality.program_watch.v1",
   "tripwires": [
@@ -100,23 +100,23 @@
             "state": "closed"
           },
           {
-            "detail": ".github/workflows/daily.yml: build_prophet found=True, build_stock_seasonality found=False",
+            "detail": ".github/workflows/daily.yml: build_prophet first at line 2256; scripts/ci/daily_engine_regional_desk_builders.sh: build_stock_seasonality at line 203, inside the workflow step anchored at .github/workflows/daily.yml:3156 — prophet-first is a documented decision: config/dag.yml carries seasonality_one_night_lag_accepted (one-night lag accepted; complete-year window family changes only at rollover)",
             "key": "daily_workflow_runs_prophet_before_seasonality",
             "prompt": ".github/workflows/daily.yml runs build_prophet before build_stock_seasonality, so the Prophet lane can never read the night's fresh seasonality artifacts. Decide explicitly: either reorder the nightly, or document why the one-night lag is correct — and mirror whichever it is into config/dag.yml.",
-            "state": "unavailable"
+            "state": "closed"
           }
         ],
-        "n_closed": 2,
+        "n_closed": 3,
         "n_open": 0,
-        "n_unavailable": 1,
+        "n_unavailable": 0,
         "open": []
       },
       "handoff_doc": "research/BIOPHARMA_SEASONALITY_INTELLIGENCE_CONTINUATION_HANDOFF_2026-08-07.md",
-      "headline": "1 of 3 deferred follow-up(s) could not be checked in this checkout.",
+      "headline": "All deferred seasonality follow-ups are closed.",
       "key": "deferred_followups",
-      "operator_prompt": "Re-run the seasonality program watch in a complete checkout — some follow-up inputs were unreadable.",
-      "state": "unavailable",
-      "why": "An unreadable input is not a closed follow-up."
+      "operator_prompt": "No open seasonality follow-ups. Nothing to do — this line exists so a regression re-fires it.",
+      "state": "waiting",
+      "why": "Nothing here needs the operator. Kept in the watch so a regression re-fires it."
     }
   ]
 }
