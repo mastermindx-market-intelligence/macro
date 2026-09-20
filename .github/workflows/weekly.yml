@@ -213,8 +213,10 @@ jobs:
         # -> typed miss, 0 rows, exit 0.
         # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Reuse the incumbent repo service-role secret already consumed by
+          # production Supabase jobs. The producer's SUPABASE_URL has a reviewed
+          # project default, so do not inject an absent secret as an empty string.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
         run: python -m scripts.build_recurring_briefs --cadence weekly_saturday || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: rebuild stock-search libraries (resilient — guarantees the analyzers ship)
