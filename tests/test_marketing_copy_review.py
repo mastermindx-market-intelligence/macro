@@ -221,3 +221,175 @@ def test_llm_lane_is_off_without_the_env_gate(monkeypatch):
 def test_review_never_raises_on_junk():
     assert review_batch([]) ["batch"] == []
     assert review_batch([{"id": "A"}, {"id": "B"}, {"id": "C"}])["mode"] == "mechanical"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# B2 held-out editorial benchmark — evaluation only, never a publish/learning gate
+# ─────────────────────────────────────────────────────────────────────────────
+
+class TestEditorialBenchmark:
+    @staticmethod
+    def _packets():
+        return [
+            {
+                "packet_id": "p-a1", "family": "AAPL:event-earnings",
+                "kind": "event", "account": "flagship", "ticker": "AAPL",
+                "source_state": "complete",
+                "observation_clock": "2026-09-18T20:00:00Z",
+                "source_clock": "2026-09-18T20:00:00Z",
+                "facts": {"move_pct": 4.2, "event": "earnings"},
+                "image": {"present": False, "digest": None},
+            },
+            {
+                "packet_id": "p-a2", "family": "AAPL:event-earnings",
+                "kind": "event", "account": "flagship", "ticker": "AAPL",
+                "source_state": "partial",
+                "observation_clock": "2026-09-19T14:00:00Z",
+                "source_clock": "2026-09-19T13:59:00Z",
+                "facts": {"move_pct": None, "event": "followthrough"},
+                "image": {"present": False, "digest": None},
+            },
+            {
+                "packet_id": "p-m1", "family": "macro:cpi-2026-09",
+                "kind": "macro", "account": "founder", "ticker": None,
+                "source_state": "complete",
+                "observation_clock": "2026-09-17T12:30:00Z",
+                "source_clock": "2026-09-17T12:30:00Z",
+                "facts": {"cpi_yoy": 2.8, "consensus": 3.0},
+                "image": {"present": True, "digest": "sha256:chart-m1"},
+            },
+            {
+                "packet_id": "p-q1", "family": "MSFT:chart-weekly",
+                "kind": "chart", "account": "flagship", "ticker": "MSFT",
+                "source_state": "unknown",
+                "observation_clock": "2026-09-19T20:00:00Z",
+                "source_clock": None, "facts": {},
+                "image": {"present": False, "digest": None, "required": True},
+            },
+        ]
+
+    @staticmethod
+    def _runs(packet_ids):
+        rows = []
+        for candidate in ("baseline", "candidate"):
+            for packet_id in packet_ids:
+                if packet_id == "p-q1":
+                    rows.append({
+                        "packet_id": packet_id, "candidate_id": candidate,
+                        "decision": "no_post", "text": "",
+                        "first_pass_accepted": True, "repair_count": 0,
+                        "latency_ms": 40 if candidate == "baseline" else 25,
+                        "cost_usd": 0.0, "requested_model": "hidden-request",
+                        "served_provider": "hidden-provider", "served_model": "hidden-model",
+                        "validator_reasons": [],
+                    })
+                    continue
+                text = {
+                    ("baseline", "p-a1"): "$AAPL into the week. Up 4.2%.",
+                    ("baseline", "p-a2"): "$AAPL into the week. Followthrough still unclear.",
+                    ("baseline", "p-m1"): "CPI 2.8% vs 3.0% consensus. The miss is visible in the chart.",
+                    ("candidate", "p-a1"): "$AAPL gained 4.2% after earnings. The move changed the range.",
+                    ("candidate", "p-a2"): "Followthrough is unresolved because the move is missing.",
+                    ("candidate", "p-m1"): "CPI printed 2.8% against 3.0% consensus. The chart shows the gap.",
+                }[(candidate, packet_id)]
+                rows.append({
+                    "packet_id": packet_id, "candidate_id": candidate,
+                    "decision": "post", "text": text,
+                    "first_pass_accepted": candidate == "candidate",
+                    "repair_count": 1 if candidate == "baseline" else 0,
+                    "latency_ms": 120 if candidate == "baseline" else 80,
+                    "cost_usd": 0.02 if candidate == "baseline" else 0.01,
+                    "requested_model": "hidden-request",
+                    "served_provider": "hidden-provider", "served_model": "hidden-model",
+                    "validator_reasons": [],
+                })
+        return rows
+
+    def test_split_is_family_grouped_and_independent_of_outputs(self):
+        from engine.marketing import editorial_benchmark as eb
+
+        m1 = eb.freeze_packets(self._packets(), seed="b2-test", holdout_fraction=0.5)
+        m2 = eb.freeze_packets(list(reversed(self._packets())),
+                               seed="b2-test", holdout_fraction=0.5)
+        assert m1["packet_digest"] == m2["packet_digest"]
+        split_by_family = {}
+        for row in m1["packets"]:
+            split_by_family.setdefault(row["family"], set()).add(row["split"])
+        assert all(len(splits) == 1 for splits in split_by_family.values())
+        assert {row["split"] for row in m1["packets"]} == {"train", "holdout"}
+
+    def test_blind_bundle_hides_candidate_and_runtime_identity(self):
+        from engine.marketing import editorial_benchmark as eb
+
+        manifest = eb.freeze_packets(self._packets(), seed="b2-blind",
+                                     holdout_fraction=0.5)
+        runs = self._runs([row["packet_id"] for row in manifest["packets"]])
+        review, key = eb.prepare_blinded_review(manifest, runs, seed="review-seed")
+        encoded = __import__("json").dumps(review, sort_keys=True)
+        for forbidden in ("candidate_id", "served_model", "served_provider",
+                          "requested_model", "baseline", "candidate"):
+            assert forbidden not in encoded
+        assert key["assignments"]
+        assert {row["candidate_id"] for row in key["assignments"]} == {
+            "baseline", "candidate"}
+
+    def test_unknown_and_no_post_stay_in_the_denominator(self):
+        from engine.marketing import editorial_benchmark as eb
+
+        manifest = eb.freeze_packets(self._packets(), seed="all-holdout",
+                                     holdout_fraction=1.0)
+        assert len(manifest["packets"]) == 4
+        runs = self._runs([row["packet_id"] for row in manifest["packets"]])
+        review, key = eb.prepare_blinded_review(manifest, runs, seed="r")
+        packet_labels = [
+            {"review_id": row["review_id"], "should_post": row["packet"]["packet_id"] != "p-q1",
+             "source_sufficient": row["packet"]["packet_id"] != "p-q1"}
+            for row in review["items"]
+        ]
+        ratings = []
+        for item in review["items"]:
+            for variant in item["variants"]:
+                if variant["decision"] != "post":
+                    continue
+                ratings.append({
+                    "review_id": item["review_id"], "variant": variant["variant"],
+                    "factual_correctness": 5, "usefulness": 4, "naturalness": 4,
+                    "repetitive_framing": False,
+                    "image_text_consistency": 5 if item["packet"]["image"]["present"] else None,
+                    "publishable_without_rewrite": True,
+                    "critical_fabrication": False,
+                })
+        report = eb.grade(manifest, runs, key, packet_labels, ratings)
+        for candidate in ("baseline", "candidate"):
+            c = report["candidates"][candidate]
+            assert c["denominators"]["holdout_packets"] == 4
+            assert c["selection"]["correct_abstain"] == 1
+            assert c["selection"]["missing_or_error"] == 0
+            assert c["content"]["critical_fabrications"] == 0
+            assert c["runtime"]["latency_ms_per_accepted"] is not None
+            assert c["runtime"]["cost_usd_per_accepted"] is not None
+
+    def test_missing_ratings_are_reported_not_dropped(self):
+        from engine.marketing import editorial_benchmark as eb
+
+        manifest = eb.freeze_packets(self._packets(), seed="all-holdout",
+                                     holdout_fraction=1.0)
+        runs = self._runs([row["packet_id"] for row in manifest["packets"]])
+        review, key = eb.prepare_blinded_review(manifest, runs, seed="r")
+        report = eb.grade(manifest, runs, key, [], [])
+        assert report["state"] == "partial"
+        assert report["missing"]["packet_labels"] == len(review["items"])
+        assert report["missing"]["output_ratings"] > 0
+
+    def test_benchmark_is_explicitly_non_authoritative_and_offline(self):
+        import inspect
+        from engine.marketing import editorial_benchmark as eb
+
+        assert eb.GATES_NOTHING is True
+        assert eb.CALLS_MODELS is False
+        source = inspect.getsource(eb)
+        for forbidden in (
+            "llm_auth", "make_call(", "enqueue(", "approve_outbox",
+            "marketing_publisher", "labels.record", "learned_rules",
+        ):
+            assert forbidden not in source
