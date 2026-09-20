@@ -2559,8 +2559,8 @@ def _flip_confirmation_view() -> dict | None:
 
 
 def _sector_heat_view() -> dict | None:
-    """Compact sector-heat strip for the macro.html dashboard: up to 4 heating themes
-    and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
+    """Compact sector-heat strip for the macro.html dashboard: up to 4 producer-declared
+    heating themes and up to 4 cooling/broken themes, plus a fixed-ID/current-data software-to-hardware
     rotation lane for the risk dialog; each links straight to basket/<id>.html.
     DISPLAY-ONLY — data comes from engine.sector_pulse.build_pulse('us') at build time.
     Returns None (never raises) so the strip is simply hidden when pulse is unavailable."""
@@ -2570,7 +2570,19 @@ def _sector_heat_view() -> dict | None:
         if not pulse:
             return None
         themes = pulse.get("themes") or []
-        heating = [t for t in themes if t.get("heat") in ("heating", "hot")][:4]
+        by_id = {t.get("id"): t for t in themes if t.get("id")}
+        # sector_pulse deliberately separates acceleration (heating) from an
+        # incumbent top-quartile state (hot). The homepage used to merge both
+        # labels and then slice by trailing rank, so already-hot Crypto / AI
+        # Software could suppress an actually accelerating AI Semiconductors
+        # theme. Consume the producer-owned heating roster first; when reading a
+        # legacy/mocked pulse without that top-level list, fall back only to rows
+        # whose own tier is literally heating (never hot).
+        producer_heating = pulse.get("heating")
+        if isinstance(producer_heating, list):
+            heating = [by_id[theme_id] for theme_id in producer_heating if theme_id in by_id][:4]
+        else:
+            heating = [t for t in themes if t.get("heat") == "heating"][:4]
         cooling = [t for t in themes if t.get("heat") in ("cooling", "broken")][:4]
         def _row(t):
             return {
@@ -2600,7 +2612,6 @@ def _sector_heat_view() -> dict | None:
             "semicap_equipment": ("Semicap Equipment", "半导体设备"),
             "memory_storage": ("Memory & Storage", "存储与内存"),
         }
-        by_id = {t.get("id"): t for t in themes if t.get("id")}
         rotation = []
         for theme_id in rotation_order:
             t = by_id.get(theme_id)
