@@ -1,28 +1,13 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v5",
-  "observed_at": "2026-09-20T06:45:00Z",
-  "candidate_source_commit": "a67fe15f7a31fa825061b268f3dc6fd4a9ce4e64",
-  "latest_protected_main": "83746deb2f3f4ce2de6ef4e683d66e9337087e38",
-  "latest_merge_tree": "3c41cf3c67cf2cb58d3d4ee29e4b9c58e6c5d38f",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v3",
+  "observed_at": "2026-09-20T06:54:38Z",
+  "candidate_source_head": "0edde533e6a40e1633194bb965cbd9f937b34957",
+  "latest_protected_main": "e8695877fb83b71db450ce498d8a15147da328fc",
+  "latest_merge_tree": "c39e40609a46f096f8cdbdcf91d90d790552809a",
   "merge_conflicts": [],
-  "protected_movement_on_material_alert_paths": [
-    {
-      ".github/ci/legacy-jobs.yml": "path-disjoint CI manifest movement; merge tree preserves both changes"
-    }
-  ],
-  "base_compatibility": "PASS",
-  "semantic_review_classification": "FULL_REREVIEW_REQUIRED",
-  "semantic_review_reason": "Five additional risk families gained source-bound implications, limitations and actions; fresh independent review must bind the final pushed head.",
+  "material_movement": {},
   "skillpack_commit": "b75a491db408892dfe6fe7c4bb9d40cfad8efcb3",
-  "candidate_owned_source_blobs": {
-    "engine/alert_center_view.py": "28d67319cfc73e5ac327a8e69b8b11c2f19018fd",
-    "engine/alert_triage.py": "ad7c86c19e37aebf6c936f41c4e959e95ccef935",
-    "templates/alerts.html.j2": "821e1ff16317f2f9d540351db4a3809faa48748f",
-    "templates/alert_center.css": "2bb6611740497d8391c0df256dbdf30c9f50dd6c",
-    "templates/alert_center.js": "3ffa2873bb30c386aa8cc7523ec94e66187e9d5b",
-    "scripts/qa_alert_center_v2.py": "b5977708bea64957f863abdb91704786b120130b"
-  },
-  "production_acceptance": false,
-  "candidate_evidence_commit": null,
-  "contract_delta": "pending exact evidence commit"
+  "classification": "FULL_REREVIEW_REQUIRED",
+  "reason": "Theme-change semantics and exact browser evidence materially expanded; fresh exact-head review is required. Current protected-main merge tree is conflict-free.",
+  "production_acceptance": false
 }
