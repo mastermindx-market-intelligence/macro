@@ -5702,6 +5702,11 @@ def main() -> int:
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"),
                       autoescape=True)
     env.filters["min"] = lambda seq: min(seq)
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     from engine import i18n
     from lib.seo import SITE_BASE as _SITE_BASE
     env.globals.update(td=i18n.td, tr=i18n.tr, t_pctile=i18n.t_pctile, zip=zip,
