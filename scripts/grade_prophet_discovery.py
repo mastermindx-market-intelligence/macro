@@ -38,16 +38,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args([] if argv is None else argv)
     if args.source_asof and not args.market:
         parser.error("--source-asof requires --market")
+    if args.market and not args.source_asof:
+        parser.error("--market requires --source-asof")
 
     if args.market:
         try:
-            if args.source_asof:
-                receipt = prophet_discovery_grade.grade_market(
-                    args.market,
-                    expected_source_asof=args.source_asof,
-                )
-            else:
-                receipt = prophet_discovery_grade.grade_market(args.market)
+            receipt = prophet_discovery_grade.grade_market(
+                args.market,
+                expected_source_asof=args.source_asof,
+            )
         except Exception as exc:  # noqa: BLE001 — preserve market-scoped failure
             receipt = {
                 "market": args.market,

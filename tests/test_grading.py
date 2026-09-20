@@ -533,14 +533,14 @@ def test_prophet_discovery_cli_market_scope_calls_only_selected_market(monkeypat
         lambda: pytest.fail("market-scoped invocation must not grade sibling market"),
     )
 
-    def grade_market(market):
-        calls.append(market)
+    def grade_market(market, *, expected_source_asof=None):
+        calls.append((market, expected_source_asof))
         return {"market": market, "available": True, "state": "UPDATED", "n_rows": 7}
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
 
-    assert runner.main(["--market", "HK"]) == 0
-    assert calls == ["HK"]
+    assert runner.main(["--market", "HK", "--source-asof", "2026-01-12"]) == 0
+    assert calls == [("HK", "2026-01-12")]
     assert json.loads(capsys.readouterr().out) == {
         "HK": {"market": "HK", "available": True, "state": "UPDATED", "n_rows": 7}
     }
@@ -551,14 +551,14 @@ def test_prophet_discovery_cli_market_scope_preserves_error_receipt(monkeypatch,
 
     calls = []
 
-    def grade_market(market):
-        calls.append(market)
+    def grade_market(market, *, expected_source_asof=None):
+        calls.append((market, expected_source_asof))
         raise RuntimeError("HK source continuity violated")
 
     monkeypatch.setattr(runner.prophet_discovery_grade, "grade_market", grade_market)
 
-    assert runner.main(["--market", "HK"]) == 1
-    assert calls == ["HK"]
+    assert runner.main(["--market", "HK", "--source-asof", "2026-01-12"]) == 1
+    assert calls == [("HK", "2026-01-12")]
     assert json.loads(capsys.readouterr().out) == {
         "HK": {
             "market": "HK",
@@ -568,6 +568,14 @@ def test_prophet_discovery_cli_market_scope_preserves_error_receipt(monkeypatch,
             "error": "HK source continuity violated",
         }
     }
+
+
+def test_prophet_discovery_cli_market_scope_requires_source_asof():
+    import scripts.grade_prophet_discovery as runner
+
+    with pytest.raises(SystemExit) as exc:
+        runner.main(["--market", "HK"])
+    assert exc.value.code == 2
 
 
 def test_prophet_discovery_cli_source_asof_is_forwarded_to_selected_market(
