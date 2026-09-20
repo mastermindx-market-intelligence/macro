@@ -11,6 +11,7 @@
     "Five next-priority risk families render source-bound limits, actions and evidence destinations",
     "Net-liquidity flips expose current-state sizing work without becoming timing signals",
     "OI crowding exposes leverage verification without becoming a crash call",
+    "Vector momentum transitions expose current-state verification without upgrading lower-conviction context into a trade call",
     "Five theme-change families render source-bound model limits, reassessment and current-page actions",
     "Three rotation rollover families render breadth-aware limits and current-panel reassessment",
     "Demand-ahead variants render an expectations-gap workflow without becoming buy signals",
@@ -30,6 +31,7 @@
   "screenshots": [
     "desktop-net-liquidity.png",
     "desktop-oi-crowding.png",
+    "desktop-vector-momentum-trigger.png",
     "desktop-demand-ahead.png",
     "desktop-forex-residual.png",
     "desktop-forex-momentum.png",
