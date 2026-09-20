@@ -245,6 +245,21 @@ def test_licensed_daily_window_refuses_in_range_non_session_row(monkeypatch):
         _adapter().licensed_daily_window("AAPL", start, end)
 
 
+def test_licensed_daily_window_refuses_in_range_non_midnight_eastern_timestamp(monkeypatch):
+    days = _sessions(2)
+    one_am_et = (pd.Timestamp(days[0])
+                 .tz_localize("America/New_York")
+                 + pd.Timedelta(hours=1))
+    one_am_ms = int(one_am_et.tz_convert("UTC").timestamp() * 1000)
+    rows = [_agg_row(one_am_ms, 100.0), _agg_row(_ts_ms(days[1]), 101.0)]
+    payload = _payload("AAPL", rows)
+    monkeypatch.setattr(bmod.config, "secret", lambda name: "fake-key")
+    monkeypatch.setattr(
+        bmod.BreadthAdapter, "http_get", lambda *args, **kwargs: _FakeResponse(payload))
+    with pytest.raises(bmod.LicensedSourceError, match="midnight US/Eastern"):
+        _adapter().licensed_daily_window("AAPL", days[0], days[-1])
+
+
 # --------------------------------------------------------------------------- #
 # R3 (Sol 1789096018.269229): qualify the RETURNED envelope, not just the request.
 # --------------------------------------------------------------------------- #
@@ -358,7 +373,10 @@ def test_licensed_daily_window_drops_out_of_window_rows_R3(monkeypatch):
     days = _sessions(5)
     in_window = days[-3:]
     stray = days[0]  # outside the requested [start, end]
-    rows = [_agg_row(_ts_ms(stray), 1.0)] + [_agg_row(_ts_ms(d), 100.0) for d in in_window]
+    stray_one_am = (pd.Timestamp(stray).tz_localize("America/New_York")
+                    + pd.Timedelta(hours=1))
+    stray_ms = int(stray_one_am.tz_convert("UTC").timestamp() * 1000)
+    rows = [_agg_row(stray_ms, 1.0)] + [_agg_row(_ts_ms(d), 100.0) for d in in_window]
     payload = _payload("AAPL", rows)
     _fake_key(monkeypatch)
     monkeypatch.setattr(bmod.BreadthAdapter, "http_get", lambda self, url, **kw: _FakeResponse(payload))

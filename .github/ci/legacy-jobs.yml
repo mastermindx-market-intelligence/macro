@@ -1253,6 +1253,9 @@ jobs:
       - "lib/numeric.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      # W1 shared package/validation authority is imported by the Sector Central
+      # build path exercised by this curated conviction-profile owner.
+      - "lib/sector_participation.py"
       - "lib/procutil.py"
       - "lib/seo.py"
       - "lib/store.py"

@@ -849,8 +849,9 @@ class BreadthAdapter(Adapter):
                 raise LicensedSourceError(
                     f"{ticker}: licensed result row carried an invalid timestamp", member_state="I")
             try:
-                session = (pd.Timestamp(ts, unit="ms", tz="UTC")
-                           .tz_convert("America/New_York").normalize().tz_localize(None))
+                stamp_et = pd.Timestamp(ts, unit="ms", tz="UTC").tz_convert("America/New_York")
+                midnight_et = stamp_et.normalize()
+                session = midnight_et.tz_localize(None)
             except (TypeError, ValueError, OverflowError) as exc:
                 raise LicensedSourceError(
                     f"{ticker}: licensed result timestamp could not be qualified", member_state="I") from exc
@@ -858,10 +859,15 @@ class BreadthAdapter(Adapter):
             # An unexpected row is never accepted into the evidence set. Vendor APIs
             # can return a boundary row outside the requested interval; ignoring it is
             # safe because it contributes to neither the requested denominator nor a
-            # missing/invalid classification. An in-range non-session contradicts the
-            # qualified NYSE-session response contract and is refused below.
+            # missing/invalid classification. Shape qualification is intentionally
+            # after this bound check so an irrelevant boundary row cannot poison the
+            # requested evidence set.
             if session < lo or session > hi:
                 continue
+            if stamp_et != midnight_et:
+                raise LicensedSourceError(
+                    f"{ticker}: licensed daily aggregate timestamp must be midnight US/Eastern",
+                    member_state="I")
             if session not in expected_set:
                 raise LicensedSourceError(
                     f"{ticker}: licensed response carried an in-range non-session row "
