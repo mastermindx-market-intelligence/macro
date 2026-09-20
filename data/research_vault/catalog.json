@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T13:29:15.111059+00:00",
-  "count": 2501,
+  "generated_at": "2026-09-20T13:44:18.502550+00:00",
+  "count": 2502,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1045,6 +1045,25 @@
         "AI Market Scale: $3.1tr market by 2030 (30% CAGR), $1.2tr AI capex (33% YoY rise), driven by inference demand (2/3 of AI compute) and structural shifts in energy/healthcare.",
         "Power Grid Catalyst: $500bn grid infrastructure investment by 2026 ($3tr by 2030), with near-term catalysts including US midterm resolution and Q3 results driving electrical equipment demand.",
         "Longevity Growth Engine: Global longevity market to expand from $5.3tr (2023) to $8tr by 2030, fueled by 12% annual revenue growth in obesity drugs from late-stage trials and regulatory events."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ljicgz8fa0m-3ce64c",
+      "title": "Put cash to work",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:54Z",
+      "summary_points": [
+        "Cash Performance Anchor: US stocks outperformed cash in 97% of 10-year periods (1945–2023), necessitating investment of excess cash into diversified 60/40 portfolios to avoid negative after-inflation returns.",
+        "Cash Erosion Risk: Holding large cash balances erodes purchasing power; phasing excess cash into equities/bonds/alternatives reduces market timing risk and delivers superior long-term outcomes versus cash.",
+        "Segmented Cash Framework: Allocate cash into three tiers—everyday (6–12m), core liquidity (1–3y), investment cash (up to 5y)—using tailored instruments to balance liquidity, risk, and returns for known expense timing."
       ],
       "tags": [],
       "tickers": [],
