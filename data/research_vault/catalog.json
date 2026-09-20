@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T04:43:13.421239+00:00",
-  "count": 2476,
+  "generated_at": "2026-09-20T04:58:13.008351+00:00",
+  "count": 2477,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -108,6 +108,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7jiurukmgfm-eb732a",
+      "title": "GS Crook Thoughts from the Floor Connecting You to GS 19 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T04:05:17Z",
+      "summary_points": [
+        "Fed Policy Shift & Volatility Regime Change: Fed prioritizes price stability with reduced transparency (Warsh), creating higher volatility (30-70% priced meetings) and asymmetric risk for rate-sensitive assets.",
+        "Oil Spike Risk to $125+ & Geopolitical Catalysts: Middle East tensions (Hormuz conflict, Saudi-Houthi) threaten oil supply, pushing prices to $125+ and triggering energy volatility; European storage at 70% amplifies risk.",
+        "AI-Fiscal Collision & Yield Pressure: AI demand + government debt issuance (US debt-to-GDP rising to 120%) drives hump-shaped yield curve, upward term premium, and long-term yield pressure.",
+        "Central Bank Policy Response to Energy Prices: ECB likely to wait until December for rate hikes; TTF gas at ~100 EUR/MWh needed to trigger sequential hikes amid severe scenario (TTF 130 EUR/MWh).",
+        "Geopolitical-Driven Energy Volatility: Sustained Mideast infrastructure damage (crude fields, refineries) could depress supply by $20/barrel, with Gulf production damage and dark fleet activity elevating risk premiums."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 20,
       "language": "en",
       "needs_metadata": false
     },
