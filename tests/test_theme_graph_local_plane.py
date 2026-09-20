@@ -1779,3 +1779,189 @@ def test_ontology_legacy_clock_forms_remain_compatible(clock):
     result = compose_neighborhood(_OntologyStore(nodes=[node]), node_id=local,
         asof="2026-06-01", knowledge_cutoff="2026-06-01", rights_resolver=_ont_rights)
     assert result["availability"]["state"] == "OK"
+
+
+_REVIEW_ID = "prop:aaaaaaaaaaaaaaaa"
+_REVIEW_LOCAL = "ltheme:finviz:ai"
+_REVIEW_THEME = "theme:ai_semiconductors"
+
+
+def _review_proposal(view, *, cutoff="2026-06-01", asof="2026-06-01", proposal_id=_REVIEW_ID):
+    from engine.theme_graph import ontology
+    from referencing import Registry, Resource
+    composer = getattr(ontology, "compose_proposal_review", None)
+    assert callable(composer), "exact-proposal review consumer is missing"
+    result = composer(view, proposal_id=proposal_id, asof=asof,
+                      knowledge_cutoff=cutoff, rights_resolver=_ont_rights)
+    neighborhood = json.loads((ROOT / "contracts/theme_graph/ontology_neighborhood.v1.schema.json").read_text())
+    schema = json.loads((ROOT / "contracts/theme_graph/ontology_proposal_review.v1.schema.json").read_text())
+    registry = Registry().with_resource(neighborhood["$id"], Resource.from_contents(neighborhood))
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(result)
+    return result
+
+
+def _review_view(*, status="proposed", present=False):
+    proposal = _ont_proposal(_REVIEW_ID,
+        {"local_theme": _REVIEW_LOCAL, "canonical_theme": _REVIEW_THEME},
+        status=status, ratified_by="curator:test" if status == "ratified" else None)
+    return _OntologyStore(nodes=[_ont_node(_REVIEW_LOCAL, "local_theme"),
+        _ont_node(_REVIEW_THEME, "theme")], proposals=[proposal],
+        edges=[_ont_edge("exact-map", "EXPRESSES", _REVIEW_LOCAL, _REVIEW_THEME)] if present else [])
+
+
+@pytest.mark.parametrize("status", ["proposed", "ratified", "rejected"])
+@pytest.mark.parametrize("present", [False, True])
+def test_proposal_review_separates_decision_from_exact_graph_relation(status, present):
+    view = _review_view(status=status, present=present)
+    before = json.dumps(view.__dict__, sort_keys=True)
+    result = _review_proposal(view)
+    assert result["availability"]["state"] == "OK"
+    assert result["proposal"]["status"] == status
+    assert result["proposal"]["truth_status"] == "PROPOSAL_ONLY"
+    assert result["proposal"]["evidence"] == {"overlap": 9}
+    assert result["relation"]["state"] == ("RELATION_PRESENT" if present else "RELATION_ABSENT")
+    assert result["relation"]["edge_ids"] == (["exact-map"] if present else [])
+    assert [x["node_id"] for x in result["endpoints"]] == [_REVIEW_LOCAL, _REVIEW_THEME]
+    assert result["authority_ceiling"] == "research_internal_only"
+    assert json.dumps(view.__dict__, sort_keys=True) == before
+
+
+def test_proposal_review_missing_and_future_are_indistinguishable():
+    missing = _review_proposal(_OntologyStore())
+    view = _review_view()
+    view._proposals[0]["created"] = "2026-06-01T23:30:00-02:00"
+    assert _review_proposal(view) == missing
+    assert missing["availability"]["state"] == "PROPOSAL_NOT_FOUND"
+    assert missing["proposal"] is None
+    assert missing["endpoints"] == []
+
+
+@pytest.mark.parametrize("status", ["ratified", "rejected"])
+def test_proposal_review_hides_later_decision(status):
+    view = _review_view(status=status)
+    view._proposals[0]["adjudicated_at"] = "2026-06-01T23:30:00-02:00"
+    result = _review_proposal(view)
+    assert result["proposal"]["status"] == "proposed"
+    assert result["proposal"]["ratified_by"] is None
+    assert result["proposal"]["adjudicated_at"] is None
+    assert result["proposal"]["note"] is None
+
+
+def test_proposal_review_duplicate_visible_identity_fails_closed():
+    view = _review_view()
+    view._proposals.append(dict(view._proposals[0]))
+    with pytest.raises(ValueError, match="duplicate"):
+        _review_proposal(view)
+
+
+@pytest.mark.parametrize("subject", [
+    {"local_theme": _REVIEW_LOCAL, "canonical_theme": _REVIEW_THEME, "basket": "basket:baskets:ai"},
+    {"local_theme": "AI", "canonical_theme": _REVIEW_THEME},
+    {"unowned_label": "AI"},
+])
+def test_proposal_review_unsupported_subject_is_not_inferred(subject):
+    view = _review_view(); view._proposals[0]["subject"] = subject
+    result = _review_proposal(view)
+    assert result["relation"]["state"] == "UNSUPPORTED_SUBJECT"
+    assert result["endpoints"] == []
+
+
+@pytest.mark.parametrize("mode", ["target_missing", "target_future", "edge_future", "edge_closed", "wrong_type", "wrong_target"])
+def test_proposal_review_requires_both_visible_endpoints_and_exact_live_edge(mode):
+    view = _review_view(present=True)
+    if mode == "target_missing": view._nodes.pop()
+    elif mode == "target_future": view._nodes[-1]["computed_at"] = "2026-07-01T00:00:00Z"
+    elif mode == "edge_future": view._edges[0]["belief_time"] = "2026-07-01"
+    elif mode == "edge_closed": view._edges[0]["valid_to"] = "2026-05-01"
+    elif mode == "wrong_type": view._edges[0]["type"] = "MEMBER_OF"
+    else: view._edges[0]["dst"] = "theme:another"
+    result = _review_proposal(view)
+    expected = "ENDPOINT_UNAVAILABLE" if mode.startswith("target_") else "RELATION_ABSENT"
+    assert result["relation"]["state"] == expected
+    assert result["relation"]["edge_ids"] == []
+
+
+def test_proposal_review_basket_mapping_keeps_source_rights():
+    basket = "basket:baskets:ai"
+    view = _review_view()
+    view._proposals[0]["subject"] = {"basket": basket, "local_theme": _REVIEW_LOCAL}
+    view._nodes.append(_ont_node(basket, "basket"))
+    view._edges = [_ont_edge("basket-map", "EXPRESSES", basket, _REVIEW_LOCAL)]
+    result = _review_proposal(view)
+    assert result["relation"]["source_node_id"] == basket
+    assert result["relation"]["target_node_id"] == _REVIEW_LOCAL
+    assert result["relation"]["edge_ids"] == ["basket-map"]
+    assert result["endpoints"][0]["relations"][0]["rights"][0]["public_display_allowed"] is False
+
+
+@pytest.mark.parametrize("bad_id", ["AI", " prop:aaaaaaaaaaaaaaaa", "prop:AAAAAAAAAAAAAAAA"])
+def test_proposal_review_requires_exact_proposal_identity(bad_id):
+    with pytest.raises(ValueError, match="proposal_id"):
+        _review_proposal(_review_view(), proposal_id=bad_id)
+
+
+def test_proposal_review_cli_dispatches_without_changing_node_mode(monkeypatch, capsys):
+    from scripts import query_theme_ontology as cli
+    view = _review_view()
+    monkeypatch.setattr(cli, "RepositoryStore", lambda: view)
+    assert cli.main(["--proposal-id", _REVIEW_ID, "--asof", "2026-06-01"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["schema"] == "gmi.theme_ontology_proposal_review/v1"
+    assert result["proposal_id"] == _REVIEW_ID
+    assert cli.main(["--node-id", _REVIEW_LOCAL, "--asof", "2026-06-01"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result == compose_neighborhood(view, node_id=_REVIEW_LOCAL, asof="2026-06-01")
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["--node-id", _REVIEW_LOCAL, "--proposal-id", _REVIEW_ID, "--asof", "2026-06-01"])
+    assert exc.value.code == 2
+
+
+def test_proposal_review_rejects_malformed_selected_row():
+    view = _review_view(status="ratified")
+    view._proposals[0]["ratified_by"] = None
+    with pytest.raises(ValueError, match="malformed"):
+        _review_proposal(view)
+
+
+def test_proposal_review_reads_each_owner_once_for_both_endpoints():
+    from types import SimpleNamespace
+    view = _review_view(present=True)
+    calls = {}
+    def once(name):
+        def read():
+            calls[name] = calls.get(name, 0) + 1
+            assert calls[name] == 1, f"reread owner table {name}"
+            return getattr(view, name)()
+        return read
+    names = ("read_nodes", "read_edges", "read_node_lifecycle", "read_proposals")
+    snapshot_source = SimpleNamespace(**{name: once(name) for name in names})
+    assert _review_proposal(snapshot_source)["relation"]["state"] == "RELATION_PRESENT"
+    assert calls == dict.fromkeys(names, 1)
+
+
+def test_proposal_review_unsupported_kind_retains_unresolved_evidence():
+    view = _review_view()
+    view._proposals[0]["kind"] = "key_rename"
+    result = _review_proposal(view)
+    assert result["proposal"]["kind"] == "key_rename"
+    assert result["proposal"]["truth_status"] == "PROPOSAL_ONLY"
+    assert result["relation"]["state"] == "UNSUPPORTED_SUBJECT"
+    assert result["endpoints"] == []
+
+
+def test_proposal_review_default_rights_resolver_reaches_real_edges(monkeypatch, capsys):
+    from engine.theme_graph import ontology
+    from scripts import query_theme_ontology as cli
+    calls = []
+    def canonical_resolver(node_id):
+        calls.append(node_id)
+        return _ont_rights(node_id)
+    monkeypatch.setattr(ontology, "_default_rights_resolver", canonical_resolver)
+    view = _review_view(present=True)
+    result = ontology.compose_proposal_review(view, proposal_id=_REVIEW_ID, asof="2026-06-01")
+    assert result["relation"]["state"] == "RELATION_PRESENT"
+    assert _REVIEW_LOCAL in calls
+    assert result["endpoints"][0]["relations"][0]["rights"][0]["public_display_allowed"] is False
+    monkeypatch.setattr(cli, "RepositoryStore", lambda: view)
+    assert cli.main(["--proposal-id", _REVIEW_ID, "--asof", "2026-06-01"]) == 0
+    assert json.loads(capsys.readouterr().out)["relation"]["state"] == "RELATION_PRESENT"

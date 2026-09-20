@@ -605,3 +605,95 @@ def compose_neighborhood(
             "no ranking, scoring, selection, trade, or ThemeState authority",
         ],
     }
+
+
+def compose_proposal_review(
+    store_view: StoreView,
+    *,
+    proposal_id: str,
+    asof: str | dt.date,
+    knowledge_cutoff: str | dt.date | None = None,
+    rights_resolver: Callable[[str], dict[str, Any] | None] | None = None,
+) -> dict[str, Any]:
+    """Inspect one existing proposal; never adjudicate it or manufacture an edge."""
+    import re
+    from types import SimpleNamespace
+
+    if rights_resolver is None:
+        rights_resolver = _default_rights_resolver
+    if not isinstance(proposal_id, str) or not re.fullmatch(r"prop:[0-9a-f]{16}", proposal_id):
+        raise ValueError("proposal_id must be an exact prop: identifier")
+    asof_date = _parse_date(asof, "asof")
+    cutoff = _parse_date(knowledge_cutoff, "knowledge_cutoff") if knowledge_cutoff is not None else asof_date
+    result: dict[str, Any] = {
+        "schema": "gmi.theme_ontology_proposal_review/v1",
+        "authority_ceiling": AUTHORITY_CEILING,
+        "proposal_id": proposal_id,
+        "asof": asof_date.isoformat(),
+        "knowledge_cutoff": cutoff.isoformat(),
+        "availability": {"state": "PROPOSAL_NOT_FOUND", "reason": "exact proposal is unavailable at the cutoff"},
+        "proposal": None,
+        "relation": {"state": "NOT_EVALUATED", "type": None,
+                     "source_node_id": None, "target_node_id": None, "edge_ids": []},
+        "endpoints": [],
+        "limitations": [
+            "read-only evidence review; no adjudication or graph write",
+            "proposal status and relation presence are independent facts",
+            "overlap evidence is not proof of semantic expression",
+            "endpoint rights are current registry receipts, not historical authorization",
+            "unsupported subjects remain unresolved; no label inference",
+        ],
+    }
+    proposals = _records(store_view.read_proposals())
+    visible = []
+    for row in proposals:
+        if row.get("proposal_id") != proposal_id:
+            continue
+        known = _proposal_as_known(row, cutoff)
+        if known is not None:
+            visible.append((row, known))
+    if len(visible) > 1:
+        raise ValueError(f"duplicate visible proposal_id {proposal_id!r}")
+    if not visible:
+        return result
+    original, known = visible[0]
+    errors = probation.validate(original)
+    if errors:
+        raise ValueError(f"malformed proposal {proposal_id!r}: {errors}")
+    result["availability"] = {"state": "OK", "reason": None}
+    result["proposal"] = _proposal_projection(known)
+    subject = known.get("subject")
+    prefixes = {"basket": "basket:", "local_theme": "ltheme:", "canonical_theme": "theme:"}
+    supported = (
+        known.get("kind") == "mapping" and isinstance(subject, Mapping)
+        and set(subject) in ({"basket", "local_theme"}, {"local_theme", "canonical_theme"})
+        and all(isinstance(value, str) and value.startswith(prefixes[key])
+                and len(value) > len(prefixes[key]) and not any(c.isspace() for c in value)
+                for key, value in subject.items())
+    )
+    if not supported:
+        result["relation"]["state"] = "UNSUPPORTED_SUBJECT"
+        return result
+    pair = _proposal_mapping_edge(known)
+    assert pair is not None  # Exact supported shapes above; never a label resolver.
+    relation_type, source_id, target_id = pair
+    result["relation"].update(type=relation_type, source_node_id=source_id, target_node_id=target_id)
+    # One request-local view of each owner table, not a new store or cache.
+    nodes = _records(store_view.read_nodes())
+    edges = _records(store_view.read_edges())
+    lifecycle_reader = getattr(store_view, "read_node_lifecycle", None)
+    lifecycle = _records(lifecycle_reader()) if callable(lifecycle_reader) else []
+    snapshot = SimpleNamespace(read_nodes=lambda: nodes, read_edges=lambda: edges,
+                              read_node_lifecycle=lambda: lifecycle, read_proposals=lambda: proposals)
+    result["endpoints"] = [compose_neighborhood(snapshot, node_id=node_id,
+        asof=asof_date, knowledge_cutoff=cutoff, rights_resolver=rights_resolver)
+        for node_id in (source_id, target_id)]
+    if any(endpoint["availability"]["state"] != "OK" for endpoint in result["endpoints"]):
+        result["relation"]["state"] = "ENDPOINT_UNAVAILABLE"
+        return result
+    matches = sorted({row["edge_id"] for row in result["endpoints"][0]["relations"]
+        if row["type"] == relation_type and row["direction"] == "OUTGOING"
+        and row["peer_node_id"] == target_id})
+    result["relation"]["edge_ids"] = matches
+    result["relation"]["state"] = "RELATION_PRESENT" if matches else "RELATION_ABSENT"
+    return result

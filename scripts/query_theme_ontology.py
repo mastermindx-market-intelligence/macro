@@ -3,6 +3,7 @@
 Run:
   python -m scripts.query_theme_ontology --node-id <exact-id> --asof YYYY-MM-DD
       [--knowledge-cutoff YYYY-MM-DD] [--out path.json]
+  Replace --node-id with --proposal-id to inspect one proposal and its exact endpoints.
 """
 from __future__ import annotations
 
@@ -13,12 +14,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine.theme_graph.ontology import RepositoryStore, compose_neighborhood  # noqa: E402
+from engine.theme_graph.ontology import (  # noqa: E402
+    RepositoryStore, compose_neighborhood, compose_proposal_review,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--node-id", required=True, help="exact graph node_id; no label search")
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument("--node-id", help="exact graph node_id; no label search")
+    target.add_argument("--proposal-id", help="exact probation proposal_id; read-only evidence review")
     parser.add_argument("--asof", required=True, help="effective date (YYYY-MM-DD)")
     parser.add_argument(
         "--knowledge-cutoff",
@@ -27,9 +32,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", help="optional JSON output path; stdout otherwise")
     args = parser.parse_args(argv)
     try:
-        result = compose_neighborhood(
+        query = compose_proposal_review if args.proposal_id else compose_neighborhood
+        identity = {"proposal_id": args.proposal_id} if args.proposal_id else {"node_id": args.node_id}
+        result = query(
             RepositoryStore(),
-            node_id=args.node_id,
+            **identity,
             asof=args.asof,
             knowledge_cutoff=args.knowledge_cutoff,
         )
