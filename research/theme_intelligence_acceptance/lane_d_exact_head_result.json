@@ -1,0 +1,36 @@
+{
+  "schema": "theme_intelligence.lane_d_acceptance_result.v1",
+  "lane_f_operation": "theme-intelligence-f-evaluation-and-independent-acceptance-20260919-sol-001",
+  "candidate_operation": "theme-intelligence-d-entry-and-stock-routing-20260919-sol-001",
+  "candidate_head": "0ce6bbf54b9c623891274e278a6ff581b602bfef",
+  "candidate_tree": "85fb619c32fea4e0559d4aa6a0fa1a226966aefc",
+  "latest_main": "fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2",
+  "latest_integration_tree": "fd12a6f4fa8b32e2c3861a9fd7d6964ae94fb673",
+  "local_proof_commit": "30c5bdf932a0983a854576bebbecbb090f9247ce",
+  "semantic_verdict": "PASS_FOR_BOUNDED_LANE_D_CONTRACT",
+  "carrier_verdict": "REQUEST_CHANGES",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "tests": "55 passed, 5 pre-existing cleanup warnings",
+  "real_path": {
+    "entry_open": [[1, "AMD"], [2, "DOCN"]],
+    "setting_up": [],
+    "AMD": "QUALIFIED_GROUP_EXTENDED / UNCONFIRMED / fallback levels null",
+    "ADI": "QUALIFIED_PENDING_CONFIRMATION_EXTENDED / owner levels preserved",
+    "NVDA": "DESCRIPTIVE_ONLY_MEMBER_INELIGIBLE / no positive group-entry provenance",
+    "stale_group": "real GroupContext path fails closed",
+    "authority": "may_rank/may_gate/may_size/may_escalate/may_trade all false"
+  },
+  "blocker": {
+    "id": "TI-D-AGENTOS-RECORD-001",
+    "path": "agentos/handoffs/THEME-INTELLIGENCE-LANE-D-ENTRY-ROUTING-2026-09-20.md",
+    "reason": "current Agent OS validator reports 13 required handoff fields missing",
+    "fences_run": 35502935108,
+    "ci_run": 35502935516,
+    "repair": "records-only Agent OS schema repair on PR #7508; product semantics unchanged"
+  },
+  "review_reuse_after_records_only_repair": "ALLOWED_IF_SEMANTIC_BLOBS_UNCHANGED_AND_CURRENT_BASE_REMAINS_MATERIAL_PATH_DISJOINT",
+  "merge": "NOT_AUTHORIZED",
+  "deployment": "NOT_PERFORMED",
+  "browser_proof": "NOT_PROVEN",
+  "exact_next_action": "Lane D writer repairs the handoff only; Lane F rechecks Agent OS admission and integration identity; Lane A remains integration lead."
+}
