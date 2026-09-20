@@ -142,6 +142,15 @@ _THEME_EMERGING = re.compile(
     r'\((?:constructive label shifts are debounced|constructive label shifts wait for a second session); '
     r'risk label shifts fire immediately\))?\.$', re.IGNORECASE,
 )
+_FOREX_RESIDUAL_HEADLINE = re.compile(
+    r"^([A-Z]{3}/[A-Z]{3}): Unusual move the dollar and rates don't explain \((up|down)\)$"
+)
+_FOREX_RESIDUAL_DETAIL = re.compile(
+    r'^([A-Z]{3}) moved beyond what the dollar \+ rates explain '
+    r'\(shock z ([+-][0-9]+(?:\.[0-9]+)?)\) — possible intervention / flow / '
+    r'geopolitics\. ([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
+)
+
 _DEMAND_AHEAD = re.compile(
     r"^([a-z0-9_]+) \(([+-]?[0-9]+(?:\.[0-9]+)?)% YoY\) is running ahead of "
     r"([A-Z0-9.\-]+)'s analyst revisions — a forward-demand signal not yet fully in "
@@ -405,6 +414,63 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前风险框架',
         })
         return brief
+
+    residual_headline = _FOREX_RESIDUAL_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    residual_detail = _FOREX_RESIDUAL_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'residual_shock' and residual_headline and residual_detail:
+        headline_pair, direction = residual_headline.groups()
+        currency, z_text, detail_pair, price_text = residual_detail.groups()
+        pair_asset = detail_pair.replace('/', '')
+        z_value = float(z_text)
+        expected_direction = 'up' if z_value > 0 else 'down' if z_value < 0 else ''
+        pair_currencies = set(detail_pair.split('/'))
+        if (headline_pair == detail_pair and pair_asset == str(row.get('asset') or '') and
+                currency in pair_currencies and direction == expected_direction):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current residual before using it.'
+                age_limit_zh = f' 该事件已过去 {age} 天；使用前请复核当前残差。'
+            brief.update({
+                'status': 'supported', 'family': 'forex.residual_shock',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar/rates model reports a {z_text} z-score residual in '
+                    f'{detail_pair} at {price_text}, flagging an unexplained FX move that '
+                    'requires attribution.'),
+                'implication_zh': (
+                    f'来源的美元/利率模型报告 {detail_pair} 在 {price_text} 出现 {z_text} 的 z 分数残差，'
+                    '提示一项需要进一步归因的异常外汇波动。'),
+                'limitation': (
+                    'A model residual says the named factors did not explain the observed move; '
+                    'it does not identify intervention, flows or geopolitics as the cause. The '
+                    'z-score is not a probability or return forecast, and this family is documented '
+                    f'but not separately backtested as a timing signal.{age_limit}'),
+                'limitation_zh': (
+                    '模型残差只表示所列因素未能解释该波动；它不能把原因确定为干预、资金流或地缘政治。'
+                    'z 分数不是概率或收益预测，且该信号族虽有记录，但未作为择时信号单独回测。'
+                    f'{age_limit_zh}'),
+                'next_action': (
+                    f'Open the current FX timeline and verify the {detail_pair} residual, pair '
+                    f'price, broad-dollar and rates inputs, and source clocks before investigating '
+                    f'local {currency} catalysts or changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，核对 {detail_pair} 残差、汇率、广义美元与利率输入及来源时间，'
+                    f'再调查 {currency} 的本地催化因素或调整敞口。'),
+                'next_action_label': 'Investigate FX residual',
+                'next_action_label_zh': '调查外汇残差',
+                'reassessment': (
+                    'Change the read if the residual normalizes, the dollar/rates model explains '
+                    'the move, or newer source evidence identifies the driver.'),
+                'reassessment_zh': (
+                    '若残差恢复正常、美元/利率模型可以解释该波动，或更新的来源证据识别出驱动因素，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
 
     demand = _DEMAND_AHEAD.fullmatch(detail)
     if source == 'demand' and type_ == 'demand_ahead' and demand:

@@ -730,3 +730,67 @@ def test_demand_ahead_abstains_on_malformed_or_ticker_mismatched_shapes():
     briefs = project([malformed, mismatch])['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in (malformed, mismatch))
     assert all(briefs[row['alert_id']]['family'] is None for row in (malformed, mismatch))
+
+
+def test_forex_residual_shock_gets_unexplained_move_brief_without_false_attribution():
+    row = signal('fx-residual', source='forex', type_='residual_shock', asset='USDCNH')
+    row.update({
+        'tier': 'context', 'age_days': 2,
+        'headline': "USD/CNH: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'CNH moved beyond what the dollar + rates explain (shock z +1.6) — possible intervention / flow / geopolitics. USD/CNH 6.6560.',
+        'detail_zh': 'CNH 走势超出美元+利率可解释范围（冲击 z +1.6）— 可能为干预/资金流/地缘。USD/CNH 6.6560。',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.residual_shock'
+    assert brief['attention'] == 'for_awareness'
+    assert '+1.6 z-score residual' in brief['implication']
+    assert 'USD/CNH' in brief['implication']
+    assert 'does not identify intervention, flows or geopolitics as the cause' in brief['limitation']
+    assert 'not a probability or return forecast' in brief['limitation']
+    assert brief['next_action_label'] == 'Investigate FX residual'
+    assert brief['evidence_label'] == 'Open current FX timeline'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_forex_residual_shock_discloses_staleness_and_normalization_falsifier():
+    row = signal('fx-residual-old', source='forex', type_='residual_shock', asset='USDJPY')
+    row.update({
+        'tier': 'context', 'age_days': 12,
+        'headline': "USD/JPY: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'JPY moved beyond what the dollar + rates explain (shock z +2.6) — possible intervention / flow / geopolitics. USD/JPY 153.8550.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert '12 days old' in brief['limitation']
+    assert 'residual normalizes' in brief['reassessment']
+    assert 'dollar/rates model explains the move' in brief['reassessment']
+    assert 'newer source evidence identifies the driver' in brief['reassessment']
+
+
+def test_forex_residual_shock_abstains_on_pair_direction_or_shape_mismatch():
+    mismatch_pair = signal('fx-pair', source='forex', type_='residual_shock', asset='USDCNH')
+    mismatch_pair.update({
+        'headline': "USD/CNH: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'CNH moved beyond what the dollar + rates explain (shock z +1.6) — possible intervention / flow / geopolitics. EUR/USD 1.1470.',
+        'link': 'forex.html#timeline',
+    })
+    mismatch_direction = signal('fx-direction', source='forex', type_='residual_shock', asset='EURUSD')
+    mismatch_direction.update({
+        'headline': "EUR/USD: Unusual move the dollar and rates don't explain (up)",
+        'detail': 'EUR moved beyond what the dollar + rates explain (shock z -2.3) — possible intervention / flow / geopolitics. EUR/USD 1.1470.',
+        'link': 'forex.html#timeline',
+    })
+    malformed = signal('fx-malformed', source='forex', type_='residual_shock', asset='EURUSD')
+    malformed.update({'headline': 'EUR/USD residual changed', 'detail': 'Unsupported residual shape.',
+                      'link': 'forex.html#timeline'})
+    rows = [mismatch_pair, mismatch_direction, malformed]
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)

@@ -164,6 +164,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-demand-ahead.png'))
             report['screenshots'].append('desktop-demand-ahead.png')
             report['checks'].append('Demand-ahead variants render an expectations-gap workflow without becoming buy signals')
+            residual_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                               if brief.get('family') == 'forex.residual_shock')
+            residual_brief = payload['explorer']['briefs'][residual_id]
+            page.goto(url + '#view=explore&id=' + residual_id, wait_until='domcontentloaded')
+            residual_text = page.locator('#ac-detail').inner_text()
+            assert residual_brief['limitation'] in residual_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == residual_brief['next_action']
+            assert residual_brief['evidence_label'] in residual_text
+            page.screenshot(path=str(out / 'desktop-forex-residual.png'))
+            report['screenshots'].append('desktop-forex-residual.png')
+            report['checks'].append('FX residual shocks expose attribution work without claiming a causal driver')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]
