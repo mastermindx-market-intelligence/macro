@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T02:12:45.054360+00:00",
-  "count": 2469,
+  "generated_at": "2026-09-20T02:42:42.305806+00:00",
+  "count": 2470,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1286,6 +1286,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 22,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ctl9gp833wr-87fe8f",
+      "title": "Global Emerging Markets Weekly Don’t hyperventilate about hyperscalers",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-18T18:31:47Z",
+      "summary_points": [
+        "Hyperscaler Credit Risk Overstated: Market evidence shows limited EM credit risk from hyperscaler surge; supply absorbed, demand driven by global factors, not credit supply.",
+        "EM Credit Fundamentals Robust: Upgrades outpacing downgrades, fiscal/balance sheet improvements, and resilience to shocks (Middle East, oil, China).",
+        "EM BBB Relative Value: EM BBBs trade ~4bps wider than US Corp BBBs, highlighting undervaluation in emerging market credit vs.",
+        "US corporates.",
+        "Kenya Election Fragmentation: Opposition split post-Odinga's death; Ruto leads at 24%, Sifuna surges to 15%; election timing (Aug 10 vote) critical for political risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 45,
       "language": "en",
       "needs_metadata": false
     },
