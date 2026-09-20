@@ -120,14 +120,16 @@ def test_no_network_render_guard_covers_render_and_fast_modes(monkeypatch) -> No
 
 
 def test_no_network_render_never_calls_eastmoney_leaderboard(monkeypatch) -> None:
-    import requests
+    import sys
+
     from scripts import build_china
 
-    def _network_forbidden(*args, **kwargs):
-        raise AssertionError("render lane attempted an Eastmoney HTTP call")
+    class _NetworkForbidden:
+        def __getattr__(self, name):
+            raise AssertionError(f"render lane attempted requests.{name}")
 
     monkeypatch.setenv("CHINA_FAST_RENDER", "1")
-    monkeypatch.setattr(requests, "get", _network_forbidden)
+    monkeypatch.setitem(sys.modules, "requests", _NetworkForbidden())
     assert build_china._leaderboard() is None
 
 
