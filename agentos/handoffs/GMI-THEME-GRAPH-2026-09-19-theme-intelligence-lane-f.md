@@ -61,6 +61,10 @@ changed:
     what: "Recorded a clean current-main execution reproducing the same two product defects while artifact-health and authority checks pass."
   - path: research/theme_intelligence_acceptance/current_main_fa85fb5_mutations.json
     what: "Recorded all eleven current-main false-green mutations killed."
+  - path: research/theme_intelligence_acceptance/lane_a_exact_head_result.json
+    what: "Recorded Lane A exact-head REQUEST_CHANGES with independent real-build, transition-matrix, clock-truth and hosted-CI evidence."
+  - path: research/theme_intelligence_acceptance/LANE_A_EXACT_HEAD_ASSESSMENT.md
+    what: "Returned the three bounded Lane A blockers and preserved accepted WATCH/PRECIPICE/authority deltas for repair."
   - path: research/theme_intelligence_acceptance/lane_c_exact_head_result.json
     what: "Preserved the Lane C REJECTED_FOR_REPAIR receipt."
   - path: research/theme_intelligence_acceptance/LANE_C_EXACT_HEAD_ASSESSMENT.md
@@ -68,6 +72,9 @@ changed:
   - path: agentos/handoffs/GMI-THEME-GRAPH-2026-09-19-theme-intelligence-lane-f.md
     what: "Replaced the stale seven-mutation checkpoint with this review-hardened Lane F return."
 verified:
+  - claim: "The current Lane A independent-review effect refreshed protected procedure before modification."
+    command: "Read Mastermind protected master INDEX plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, and REVIEW_RETURN from 5f62e9f6119cc3e3bc542a793ba96731e063e3a1."
+    result: "PASS: Skillpack 1.0.1 / mastermind.sol_skillpack.v1 / bootstrap-major 1; every loaded procedure came from the same protected commit."
   - claim: "Protected procedure was refreshed before modification."
     command: "Read Mastermind protected master docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, and REVIEW_RETURN from b75a491db408892dfe6fe7c4bb9d40cfad8efcb3."
     result: "PASS: mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap-major 1; all procedure reads came from the same protected commit."
@@ -134,13 +141,16 @@ verified:
   - claim: "The review-hardened evaluator independently reproduces the frozen defects on clean current Macro main."
     command: "Run harness.py on detached macro@fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 / tree 9806d988f5d1e025dc3780dea348b82bd8630bfd using current_main_fa85fb5_cases.v1.json; then run --mutations and --require-product-pass."
     result: "PASS as evaluator: baseline exit 0 with REJECTED_CURRENT_SOURCE on watch_invalidation, lane_matrix and real_precipice_path; artifact_health PASS; 11/11 mutations killed; product gate exit 1 as required. Exact receipt SHA-256 locally: cases c84f2eddd4ccc65049e5eb44fd8646fcdd05057a303052040481f071f9d56ec8, result 027c44e3560760f51deaad6efefa20eb7c307a58074adf6ffa7a293180d7e824, mutations df89a6ee6e42692fbc58ecb6a715ffafe4c8ea826ba6c0459092d7e8ba265407."
+  - claim: "Lane A exact head was independently executed and reviewed rather than accepted from its PR prose."
+    command: "Detached 23c6e6cc: owner suites; real thematic-state and State-of-Themes builds; direct production _eval_falsifier transition probes; hosted CI log review."
+    result: "REQUEST_CHANGES: 112 passed / 1 deselected; original WATCH/PRECIPICE repairs reproduce; observation clock is stamped from build snapshot, ACCELERATING->GLUT-RISK false-negatives, and contract-delta has one introduced owner-scope violation. GitHub review 5260472945."
 unverified:
   - claim: "The review-hardened final PR head has an independent external code-review PASS."
     what_would_verify: "A reviewer who did not author this repair must inspect the pushed exact head and return PASS or REQUEST_CHANGES. The earlier external review was consumed as repair input, not recycled as acceptance of new bytes."
   - claim: "Hosted CI executes the Lane F package command."
     what_would_verify: "Lane A or the incumbent CI owner admits one coordinated package-level wiring change and a hosted run proves the pushed exact head."
-  - claim: "A, B, and E returned implementations satisfy the full mandatory discriminator matrix."
-    what_would_verify: "Each remaining sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks. Lane D semantic review is complete on 0ce6bbf54b9c623891274e278a6ff581b602bfef but its carrier remains blocked on Agent OS admission."
+  - claim: "B and E returned implementations satisfy the full mandatory discriminator matrix."
+    what_would_verify: "Each remaining sibling returns a pushed exact head and Lane F runs the applicable real-path/mutation checks. Lane A has now returned and is REQUEST_CHANGES on its exact head; Lane D moved materially after its first review and requires fresh semantic review."
   - claim: "The two production defects are repaired, merged, published, or correct in a deployed browser."
     what_would_verify: "Incumbent source-owner repair, exact-head acceptance, lawful merge, natural publication, served-byte/browser proof, and Lane A release adjudication."
   - claim: "Prospective detection or return outcomes are mature."
@@ -149,17 +159,16 @@ unresolved:
   - "PR #7453 remains Draft/HOLD; Lane F does not Ready, merge, deploy, or self-accept it."
   - "Frozen subject 68f80a8edf78966a3a89e1294038654944e9c217 remains REJECTED_CURRENT_SOURCE on two defects represented by three checks."
   - "Current Macro main fa85fb5de1c5a2afdb3a2425ebcbf8c4f2f389e2 independently reproduces the same two product defects; current-main freshness is no longer inference-only for this observation."
-  - "RE-RATING lane interpretation remains LANE_A_ADJUDICATION_REQUIRED; a clean mutation candidate is held rather than labeled acceptable."
+  - "Lane A PR #7526 resolves RE-RATING as caution/late rather than generic working, but its exact head 23c6e6cccb42fa28fce09b8483802560f0b11998 is REQUEST_CHANGES on observation-clock truth, the ACCELERATING->GLUT-RISK transition matrix, and an introduced CI ownership-scope defect."
   - "Lane C pushed repair head 2208fe40039d356929fac0f96b626edc33d42288 remains REJECTED_FOR_REPAIR on six blockers after closing stale reclaim leakage. Its source worktree is already dirty with the next health repair; Lane F did not touch those bytes."
-  - "Lane D 0ce6bbf54b9c623891274e278a6ff581b602bfef is semantic PASS / BUILT_NOT_PROVEN but carrier REQUEST_CHANGES: the Agent OS handoff is not schema-admissible and causes fences/semantic CI red. A records-only repair may reuse semantic review if product blobs and material dependencies stay unchanged."
-  - "A, B, and E remain NOT_YET_PROVEN until pushed immutable returns are evaluated."
+  - "Lane D moved from reviewed 0ce6bbf54b9c623891274e278a6ff581b602bfef to 4d6e047c34fc86b744aeaca09454470af126085d with semantic changes in engine/subsector_confluence.py; prior semantic review reuse is invalid and fresh exact-head review is required."
+  - "B and E remain NOT_YET_PROVEN until pushed immutable returns are evaluated. Lane A has a pushed immutable return and is REQUEST_CHANGES."
   - "Hosted CI, independent review of the repaired exact head, deployment, browser proof, and prospective outcomes remain separate gates."
 next_actions:
-  - "Lane A: consume the v2 receipts and adjudicate whether RE-RATING 'working' means thesis health only; preserve a separate late/extended entry posture and no entry permission."
-  - "Incumbent production owners: repair temporal stage-regression evidence and PRECIPICE classification on their own carriers; return pushed exact heads for reacceptance."
+  - "Lane A: repair TI-A-CLOCK-001, TI-A-TRANSITION-002, and TI-A-CI-003 on PR #7526 while preserving the accepted WATCH/PRECIPICE/authority repairs; then return a new immutable head for reacceptance."
+  - "Lane F: fresh-review Lane D head 4d6e047c34fc86b744aeaca09454470af126085d because its post-review group entry_context source delta invalidates semantic review reuse."
   - "Lawful independent reviewer: review the final pushed PR #7453 head, including the real Medical Devices and artifact-health discriminators."
   - "Lane A/incumbent CI owner: add or decline one package-level command wiring; do not create six competing CI edits."
-  - "Lane D writer: repair only the Agent OS handoff schema on PR #7508; Lane F then rechecks record admission and current integration identity without redoing semantic review unless material bytes changed."
   - "Lane F successor: preserve the existing Lane C writer; when it returns the next pushed exact head after 2208fe, re-pin and rerun the evaluator. Re-pin each returned A/B/E head and report accepted/rejected/not-proven separately."
 do_not_redo:
   - "Do not rerun or reinterpret held #7064/#7095 as expected-return evidence."
@@ -237,3 +246,19 @@ Lane F executed the review-hardened evaluator against clean protected Macro main
 The result remains `REJECTED_CURRENT_SOURCE`: AI Semiconductors still fires `ai_semi_f2` from current WATCH without prior-stage transition evidence, and Medical Devices still traverses `PRECIPICE + no fired falsifier + medium crowding + null divergence` to `caution` in the production classifier, lane artifact, and served card rather than expected `early`. Artifact health passes, all authority remains inert, all 11 false-green mutations are killed, and `--require-product-pass` exits 1 as required.
 
 Committed receipts: `current_main_fa85fb5_cases.v1.json`, `current_main_fa85fb5_result.json`, and `current_main_fa85fb5_mutations.json`. This proves current source state at that exact commit; it is not merge, deployment, browser, or prospective-outcome proof.
+
+## Lane A exact-head return
+
+Lane A returned Draft/HOLD PR #7526 at `23c6e6cccb42fa28fce09b8483802560f0b11998` / tree `332c73d175704b859efc36f71e1bc1ef0323e8aa`. Lane F independently executed the owning suites and real producer-to-card build, then submitted GitHub review `5260472945` as **REQUEST_CHANGES**.
+
+Accepted delta: the original incident is materially repaired in the candidate. Current WATCH + NEUTRAL no longer fires `ai_semi_f2`; the real AI card is `early` with `data-fired=0`; clean Medical Devices PRECIPICE is `early`; distinct dated observations and same-date correction supersession are implemented; all rank/gate/size/escalate/trade authority remains false. Focused owner suites report **112 passed, 1 deselected**.
+
+Three exact-head blockers prevent acceptance:
+
+1. **TI-A-CLOCK-001:** the additive consumer sets `clocks.observation` from the build/snapshot `as_of`. On the real weekend build, Foresight remains observed at 2026-09-18 while the consumer reports observation 2026-09-20. Owner observation, snapshot, computation, availability, and publication clocks must remain separate.
+2. **TI-A-TRANSITION-002:** `ACCELERATING -> GLUT-RISK` returns `ARMED / REQUIRED_PREDECESSOR_NOT_PRESENT`, while BROADENING/WATCH -> GLUT-RISK fire. This is inconsistent with Lane A's own lifecycle ordering and requires an explicit full transition-matrix contract.
+3. **TI-A-CI-003:** hosted run `35506191551` has one candidate-introduced contract-delta because `unrun-subsector-themes` now imports `site/basketdata/foresight_cascade.json` outside its declared path scope. Widen the existing owner scope; do not create a new CI job.
+
+Fences `35506191383` are green. The pack-8 Research Screener bake failure is recorded separately and is not attributed to Lane A by this review. Machine receipt: `research/theme_intelligence_acceptance/lane_a_exact_head_result.json`. Assessment: `research/theme_intelligence_acceptance/LANE_A_EXACT_HEAD_ASSESSMENT.md`.
+
+Lane A remains `BUILT_NOT_PROVEN / REQUEST_CHANGES`. No merge, deployment, publication, browser acceptance, or parent-program acceptance follows from this return.
