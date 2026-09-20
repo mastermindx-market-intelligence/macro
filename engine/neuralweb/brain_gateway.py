@@ -9385,7 +9385,9 @@ def chat(
     # 4b. Vision (W6c): Pro-gated (operator decision) — Free/Trial answer text-only.
     # An image turn is served by a claude vision model (in-lane Haiku when a key exists,
     # else the Pro lane's Opus via OAuth), with OAuth-token failover across them.
-    image_blocks = _image_blocks(images)
+    # MO-PAID-031 is a closed grounding corpus. User-supplied images belong to
+    # normal chat/vision and must not be resolved or sent to Research Mode.
+    image_blocks = [] if mode == "research" else _image_blocks(images)
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
         image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
@@ -9412,7 +9414,7 @@ def chat(
         resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
         if resolved_tid:
             effective_thread_id = resolved_tid
-            if thread_id:  # loading history from an existing thread
+            if thread_id and mode != "research":  # research corpus excludes prior chat history
                 thread_history = _load_thread_history(resolved_tid)
 
     # Use server thread history when available; fall back to client-sent history
@@ -9433,8 +9435,11 @@ def chat(
 
     # Trusted server thread history rides as-is; UNTRUSTED client history is screened
     # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
-    raw_history = thread_history if thread_history else _screen_client_history(history or [])
-    active_history = _filter_client_history(raw_history[-24:])  # cap 12 turns + filter
+    if mode == "research":
+        active_history = []
+    else:
+        raw_history = thread_history if thread_history else _screen_client_history(history or [])
+        active_history = _filter_client_history(raw_history[-24:])  # cap 12 turns + filter
 
     # 5b. Instant-fact serve (W5 Contract I). One minimal model call over the resolved
     #     quote. ANY failure inside — quote unresolved, no as-of, provider error, empty
@@ -9876,7 +9881,9 @@ def chat_stream(
     # Image turns are served by a claude vision model (in-lane Haiku when a key exists,
     # else Pro's Opus via OAuth) with token failover. Resolved before the meta event so
     # the reported model serves the turn.
-    image_blocks = _image_blocks(images)
+    # MO-PAID-031 is a closed grounding corpus. User-supplied images belong to
+    # normal chat/vision and must not be resolved or sent to Research Mode.
+    image_blocks = [] if mode == "research" else _image_blocks(images)
     turn_providers = providers
     if image_blocks and not _unlimited_allowed(user_email) and _get_allowance(tier, status, "pro", root).get("limit", 0) == 0:
         image_blocks = []  # not Pro-eligible → drop attachments (unlimited operators keep vision)
@@ -9898,7 +9905,7 @@ def chat_stream(
         resolved_tid = _ensure_thread(thread_id, user_id, lane, title=clean_msg)
         if resolved_tid:
             effective_thread_id = resolved_tid
-            if thread_id:
+            if thread_id and mode != "research":
                 thread_history = _load_thread_history(resolved_tid)
             # Persist the USER turn now, not after the stream. A turn survives its
             # connection (app/brain_runs.py), so a client that reloads mid-answer
@@ -9926,8 +9933,11 @@ def chat_stream(
 
     # Trusted server thread history rides as-is; UNTRUSTED client history is screened
     # (drop forged assistant turns + probe-carrying replays) — see _screen_client_history.
-    raw_history = thread_history if thread_history else _screen_client_history(history or [])
-    active_history = _filter_client_history_stream(raw_history[-24:])
+    if mode == "research":
+        active_history = []
+    else:
+        raw_history = thread_history if thread_history else _screen_client_history(history or [])
+        active_history = _filter_client_history_stream(raw_history[-24:])
 
     # 5. Meta event (always first)
     meta_event = {
