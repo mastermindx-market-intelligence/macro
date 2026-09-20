@@ -20,14 +20,16 @@
      fear_greed    · vm["fear_greed"]          (display-only context — label_en only)
      latest        · vm["latest"]              (date / quad_name)
 
-   Driver heads bind ONLY to keys the live engines publish (R-A, round-3):
+   Driver heads bind ONLY to keys the live engines publish (R-A, R-K):
      · market_state.mtf publishes {indices: [{label_en, label_zh, confluence_en, confluence_zh, tone, mean}]}
        — driver 1 reads the first index row’s confluence_en / confluence_zh, never a
-       non-existent top-level `stance_en`.
-     · risk_envelope publishes {sources: [{label_en, label_zh, ...}], excludes: [...]}
-       with no unified `stance_en` key — driver 2 falls through to designed-null
-       unless a caller-supplied `stance_en` is explicitly passed.
-     · fear_greed publishes {label_en, label_zh, dial} — driver 3 reads label_en/label_zh.
+       non-existent top-level `stance_en`. When the page elsewhere renders MS2.mtf.indices,
+       the hero carries the same leg so the two reads agree (R-K, round 6).
+     · risk_envelope publishes {provenance: {sources: [{label_en, label_zh, ...}]}, excludes: [...]}
+       with no unified `stance_en` key — driver 2 reads provenance.sources[0] and falls
+       through to designed-null unless that leg is populated (R-K, round 6).
+     · fear_greed publishes {label_en, label_zh, dial} — driver 3 prefers label_en/label_zh
+       over any caller-supplied `stance_en` (R-K, round 6).
 
    Round-3 fixes (binding META-CEO A ruling):
    • R-A: hero reads ONLY the real published contracts
@@ -145,13 +147,15 @@
 
 {# Plain-language alerts chip sentence (R-A, min-1 plain-language law).
    A bare "1 alert fired" is count + verb machine text; replace with a real
-   plain sentence that reads identically as visible copy and tooltip copy. #}
+   plain sentence. The ZH side drops the "警报" machine-text token (the
+   English side already does — "fired conditions", never "alerts fired")
+   so both locales land on the same domain noun ("condition" / "条件"). #}
 {%- if _alerts_ct == 1 -%}
   {%- set _alerts_chip_en = 'One fired condition today.' -%}
-  {%- set _alerts_chip_zh = '今日有一条警报触发。' -%}
+  {%- set _alerts_chip_zh = '今日有一条触发。' -%}
 {%- elif _alerts_ct > 1 -%}
   {%- set _alerts_chip_en = _alerts_ct ~ ' fired conditions today.' -%}
-  {%- set _alerts_chip_zh = '今日有 ' ~ _alerts_ct ~ ' 条警报触发。' -%}
+  {%- set _alerts_chip_zh = '今日有 ' ~ _alerts_ct ~ ' 条触发。' -%}
 {%- endif -%}
 
 {# ---- bound watching clauses (spec §6 "what we’re watching").
@@ -559,22 +563,31 @@
 
        Spec §7 row 5: at 390, three full cards collapse into ONE DISCLOSURE ROW
        carrying title + count `3` + chevron + a one-line preview of the first
-       condition. The full list lives inside a <details> the user can tap to
-       expand; the desktop layout keeps the full list visible by default. #}
+       condition. The structure uses a plain <div> wrapper (NOT <details>) —
+       a closed <details> relied on browser-level semantics to hide its
+       non-summary children, which prevented the desktop layout from
+       rendering the watching items at all. The new <div> wrapper hands the
+       visibility decision to CSS only: at desktop the summary row is hidden
+       and the list paints; at 390 the summary row paints (with the one-line
+       preview) and the list is hidden. R-J, round 6. #}
     <div class="ud-watching">
       <div class="mx-sec">
         <h3 class="l-en">What we’re watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <details class="ud-watch-details">
-        <summary class="ud-watch-summary">
-          <span class="ud-watch-summary-h">
-            <span class="l-en">{{ _w_en[0] }}</span><span class="l-zh">{{ _w_zh[0] }}</span>
-          </span>
-          <span class="ud-watch-summary-ct tnum">3 <span class="l-en">conditions</span><span class="l-zh">项</span></span>
-          <span class="ud-watch-summary-chev" aria-hidden="true">›</span>
-        </summary>
+      <div class="ud-watch-section">
+        <div class="ud-watch-summary" role="group" aria-label="Watching conditions summary">
+          <div class="ud-watch-summary-row">
+            <span class="ud-watch-summary-h">
+              <span class="l-en">{{ _w_en[0] }}</span><span class="l-zh">{{ _w_zh[0] }}</span>
+            </span>
+            <span class="ud-watch-summary-ct tnum">3 <span class="l-en">conditions</span><span class="l-zh">项</span></span>
+            <span class="ud-watch-summary-chev" aria-hidden="true">›</span>
+          </div>
+          <span class="ud-watch-summary-preview l-en">{{ _body_en }}</span>
+          <span class="ud-watch-summary-preview l-zh">{{ _body_zh }}</span>
+        </div>
         <ul class="ud-watch-list">
           {%- for i in range(3) %}
           <li class="ud-watch-item">
@@ -585,7 +598,7 @@
           </li>
           {%- endfor %}
         </ul>
-      </details>
+      </div>
       <p class="ud-spine-foot">
         <span class="l-en">Windows, not certainties — re-drawn nightly.</span>
         <span class="l-zh">是窗口，不是定论——每晚重新校准。</span>

@@ -3030,18 +3030,20 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
 
   /* Watching → single disclosure row. The .ud-watch-summary is the row that
      always shows at 390 (title + count + chevron + one-line preview of the
-     first condition); the <details> wraps the full 3-item list for tap-open. */
-  body.page-macro .ud-watch-list{
-    flex-direction:column; gap:6px;
-  }
-  body.page-macro .ud-watch-item{ display:none; }
-  body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
+     first condition); the full list collapses because the section is now a
+     plain <div> wrapper, not a <details> element, so CSS alone owns the
+     visibility (R-J round 6 — the prior <details> relied on browser-level
+     semantics to hide non-summary children, which killed the desktop list). */
+  body.page-macro .ud-watch-list{ display:none; }
   body.page-macro .ud-watch-summary{
-    display:flex; align-items:center; gap:10px;
+    display:flex; flex-direction:column; align-items:stretch; gap:6px;
     padding:10px 14px;
     border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
     border-radius:var(--r-ctl,8px);
     background:var(--panel2);
+  }
+  body.page-macro .ud-watch-summary-row{
+    display:flex; align-items:center; gap:10px;
   }
   body.page-macro .ud-watch-summary-h{ flex:1; font-weight:700; color:var(--ink-1,var(--text)); }
   body.page-macro .ud-watch-summary-ct{
@@ -3050,6 +3052,10 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
   }
   body.page-macro .ud-watch-summary-chev{
     color:var(--ink-2,var(--muted)); font-size:18px;
+  }
+  body.page-macro .ud-watch-summary-preview{
+    font-size:var(--fs-sm,12.5px); line-height:1.5;
+    color:var(--ink-2,var(--muted));
   }
 }
 /* end .ud-hero — UD-B1 §1/§3/§6 */
