@@ -1054,10 +1054,6 @@
      retired compression experiment, without replacing the deep dashboard. */
   body.page-china .cnx-hero-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px}
   body.page-china .cnx-live-freshness{margin-left:3px;opacity:.78}
-  body.page-china .cnx-stance{--c:var(--muted);display:inline-flex;align-items:center;white-space:nowrap;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill,999px);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 36%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--panel))}
-  body.page-china .cnx-stance.st-up{--c:var(--ink-up,var(--up))}
-  body.page-china .cnx-stance.st-down{--c:var(--ink-down,var(--down))}
-  body.page-china .cnx-stance.st-warn{--c:var(--ink-warn,var(--warn))}
   body.page-china .cnx-action-lead .sub{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase}
   html[data-lang="zh"] body.page-china .cnx-action-lead .sub{letter-spacing:0;text-transform:none}
   body.page-china .cnx-reason-row{position:relative}
@@ -1080,7 +1076,6 @@
     body.page-china .cnx-change-row{grid-template-columns:42px minmax(0,1fr)}
     body.page-china .cnx-change-tag{display:none}
     body.page-china .cnx-live-freshness{display:none}
-    body.page-china .cnx-score-line .cnx-stance{display:none}
   }
   body.page-china .cnx-kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12.5px}
   body.page-china .cnx-kv:last-of-type{border-bottom:none}
@@ -1801,9 +1796,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
      deep dashboard, but reuse its stronger plain-language interpretation helpers. #}
   {% set _pd = pb_obj.dial if pb_obj else none %}
   {% set _stance = posture_lane(_pd.posture if _pd else none) %}
-  {% set _stance_tone = posture_tone(_pd.posture if _pd else none) %}
   {% set _hero_clause = hero_clause(pb_obj, ms) %}
   {% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}
+  {% set _health_n = health | length if health else 0 %}
+  {% set _health_ok = health | selectattr('status','equalto','ok') | list | length if health else 0 %}
   {% set _todo_actual = _todo_faces | rejectattr('empty') | list %}
   {% set _todo_shown = _todo_actual[:2] if _todo_actual else _todo_faces[:1] %}
 
@@ -1818,7 +1814,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span class="l-en">LIVE</span><span class="l-zh">实时</span>
           <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
-          {% if health %}<span class="cnx-live-freshness"><span class="l-en">· {{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} feeds</span><span class="l-zh">· {{ health | selectattr('status','equalto','ok') | list | length }}/{{ health | length }} 数据源</span></span>{% endif %}
+          {% if _health_n and _health_ok < _health_n %}<span class="cnx-live-freshness"><span class="l-en">· {{ _health_ok }}/{{ _health_n }} feeds</span><span class="l-zh">· {{ _health_ok }}/{{ _health_n }} 数据源</span></span>{% endif %}
         </span>
       </div>
       {# ── A · US mx5 semicircle gauge (ported from dashboard.html.j2 6556–6631) ──
@@ -1886,7 +1882,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
            wrapper via .cnx-big-score/.cnx-verdict/.cnx-sub-line rules (--up/--down), so these
            DIRECTION reads flip in zh (risk-off → green), matching the gauge, tiles and path. #}
         <div>
-          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span>{% if _pd %}<span class="cnx-stance st-{{ _stance_tone }}"><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></span>{% endif %}</div>
+          <div class="cnx-score-line"><span id="ms-score" class="cnx-big-score">{{ _ms_score }}</span><span id="ms-word" class="cnx-verdict">{{ t(_ms_label, _ms_label_zh) }} <span class="arr">▶</span></span></div>
           <div class="cnx-sub-line">
             {# zh names the TIER (偏多/中性/避险), never the colour word — the paint flips 红涨绿跌
                in zh (risk-off→green), so a literal 红/绿 would contradict it. Matches macro.html. #}
