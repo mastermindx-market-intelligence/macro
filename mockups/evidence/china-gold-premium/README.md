@@ -38,3 +38,18 @@ No live SGE/LBMA benchmark data is claimed here. Available-state inputs are fixt
 - non-empty chart paths, correct zero-line behavior, zero browser errors, and contained desktop/mobile geometry.
 
 Eight interaction screenshots accompany the machine receipt.
+
+## Hover and keyboard-focus proof
+
+The exact-head interaction manifest `interaction-manifest.json` is bound to
+`f7077e1f464af674a92e306e168a5679a211f38d` and captures **24/24** cells for the
+open-data-table fixture across dark/light × EN/ZH × desktop/mobile:
+
+- REST;
+- real browser hover on `.cgp-btn`;
+- real browser focus on `.cgp-data-scroll`.
+
+The focus fixture opens the component's native `<details>` disclosure before capture; it does
+not synthesize market data or substitute a different component. The original `manifest.json`
+remains the broader intraday/unavailable/no-compatible-history state corpus, while the exact-head
+interaction manifest is the blocking changed-CSS receipt referenced by `EVIDENCE.yml`.

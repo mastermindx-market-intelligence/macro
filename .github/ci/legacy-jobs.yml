@@ -1721,6 +1721,15 @@ jobs:
       - "scripts/audit_china_gold_premium.py"
       - "scripts/promote_china_gold_dataos.py"
       - "tests/test_china_gold_premium_engine_contract.py"
+      # The audit/promotion proof reads the canonical Data OS registry through
+      # lib.dataos.registry; keep conviction-profile's exclusive closure honest.
+      - "config/dataset_registry.yml"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"
       - "engine/confluence_tiers.py"
