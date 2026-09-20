@@ -77,7 +77,12 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "{% set _todo_faces = reason_faces(_pd.reasons if _pd else none) %}",
         'class="cnx-hero-read"',
         'class="cnx-row cnx-reason-row',
+        'class="cnx-lens"',
+        'onclick="cnxToggleLens(this,event)"',
+        "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}",
         "{{ t('What Changed','最近变化') }}",
+        '<a class="cnx-change-row" href="china_news.html">',
+        '<a class="cnx-change-row cnx-change-alert" href="alerts.html">',
         'href="china_policy_watch.html"',
         'href="china_news.html"',
         'href="alerts.html"',
@@ -92,6 +97,22 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         "ROW 4: Property + AI Brief + Alerts Centre",
     ):
         assert marker in TPL
+
+
+def test_synthesized_reason_receipts_are_keyboard_and_tap_reachable() -> None:
+    assert 'class="cnx-lens"' in TPL
+    assert 'aria-expanded="false"' in TPL
+    assert 'onclick="cnxToggleLens(this,event)"' in TPL
+    assert "window.cnxToggleLens=cnxToggleLens;" in TPL
+    assert "window.cnxCloseLenses=cnxCloseLenses;" in TPL
+    assert '.cnx-card[role="button"]' in TPL
+    assert "e.preventDefault();card.click();" in TPL
+
+
+def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> None:
+    assert "{% set _hi_strip = [] %}" in TPL
+    assert "{% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}" in TPL
+    assert "ROW 1: What To Do + Upcoming Events" in TPL
 
 
 def test_index_face_and_deep_racks_remain() -> None:

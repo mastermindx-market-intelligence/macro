@@ -1057,26 +1057,35 @@
   body.page-china .cnx-hero-read-copy{flex:1 1 260px;font-size:12.5px;line-height:1.48;color:var(--text)}
   body.page-china .cnx-hero-read-label{display:block;font-size:9.5px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
   html[data-lang="zh"] body.page-china .cnx-hero-read-label{letter-spacing:0;text-transform:none}
-  body.page-china .cnx-stance{--c:var(--muted);display:inline-flex;align-items:center;white-space:nowrap;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 36%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--panel))}
+  body.page-china .cnx-stance{--c:var(--muted);display:inline-flex;align-items:center;white-space:nowrap;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:var(--r-pill,999px);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 36%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--panel))}
   body.page-china .cnx-stance.st-up{--c:var(--ink-up,var(--up))}
   body.page-china .cnx-stance.st-down{--c:var(--ink-down,var(--down))}
   body.page-china .cnx-stance.st-warn{--c:var(--ink-warn,var(--warn))}
   body.page-china .cnx-freshness{font-size:10px;color:var(--muted);white-space:nowrap;padding-top:5px}
   body.page-china .cnx-action-lead .sub{font-size:9.5px;letter-spacing:.04em;text-transform:uppercase}
   html[data-lang="zh"] body.page-china .cnx-action-lead .sub{letter-spacing:0;text-transform:none}
-  body.page-china .cnx-reason-row[data-tip-en]{position:relative;padding-right:28px}
-  body.page-china .cnx-reason-row[data-tip-en]::before{content:"?";position:absolute;right:0;top:7px;width:18px;height:18px;border-radius:var(--r-pill);border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1}
-  body.page-china .cnx-reason-row[data-tip-en]::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:45;width:min(36ch,78vw);padding:8px 10px;border-radius:var(--r-ctl);font-size:11px;font-weight:450;line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:var(--card-shadow);white-space:normal;text-align:left}
-  html[data-lang="zh"] body.page-china .cnx-reason-row[data-tip-en]::after{content:attr(data-tip-zh)}
-  body.page-china .cnx-reason-row[data-tip-en]:hover::after{display:block}
+  body.page-china .cnx-reason-row{position:relative}
+  body.page-china .cnx-lens{flex:none;width:26px;height:26px;margin-left:auto;border-radius:var(--r-pill,999px);border:1px solid var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:700;cursor:help;line-height:1;position:relative}
+  body.page-china .cnx-lens:hover{color:var(--text);border-color:color-mix(in srgb,var(--link) 45%,var(--line))}
+  body.page-china .cnx-lens:focus-visible{outline:2px solid color-mix(in srgb,var(--link) 70%,transparent);outline-offset:2px}
+  body.page-china .cnx-lens::after{content:attr(data-tip-en);display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:45;width:min(36ch,78vw);padding:8px 10px;border-radius:var(--r-ctl,8px);font-size:11px;font-weight:450;line-height:1.45;color:var(--text);background:var(--panel);border:1px solid var(--line);box-shadow:var(--card-shadow);white-space:normal;text-align:left}
+  html[data-lang="zh"] body.page-china .cnx-lens::after{content:attr(data-tip-zh)}
+  body.page-china .cnx-lens:hover::after,
+  body.page-china .cnx-lens:focus-visible::after,
+  body.page-china .cnx-lens.cnx-tip-open::after{display:block}
   body.page-china .cnx-change-list{display:grid;gap:0}
-  body.page-china .cnx-change-row{display:grid;grid-template-columns:44px minmax(66px,.34fr) minmax(0,1fr);gap:8px;align-items:start;padding:7px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+  body.page-china .cnx-change-row{display:grid;grid-template-columns:44px minmax(66px,.34fr) minmax(0,1fr);gap:8px;align-items:start;padding:7px 4px;margin:0 -4px;border-bottom:1px solid var(--line);border-radius:var(--r-ctl,8px);font-size:11.5px;text-decoration:none;color:inherit}
+  body.page-china a.cnx-change-row:hover{background:color-mix(in srgb,var(--link) 7%,transparent)}
+  body.page-china a.cnx-change-row:focus-visible{outline:2px solid color-mix(in srgb,var(--link) 70%,transparent);outline-offset:1px}
   body.page-china .cnx-change-row:last-child{border-bottom:none}
   body.page-china .cnx-change-when{color:var(--muted);font-variant-numeric:tabular-nums;font-size:10.5px}
   body.page-china .cnx-change-tag{font-weight:650;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   body.page-china .cnx-change-what{min-width:0;color:var(--text);line-height:1.4}
   body.page-china .cnx-change-alert .cnx-change-tag{color:var(--ink-warn,var(--warn))}
   body.page-china .cnx-ctitle-note{margin-left:auto;font-size:9.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+  body.page-china button.cnx-ctitle-note{border:0;background:none;padding:2px 0;font-family:var(--font-ui,inherit);cursor:pointer}
+  body.page-china button.cnx-ctitle-note:hover{color:var(--ink-link,var(--link))}
+  body.page-china button.cnx-ctitle-note:focus-visible{outline:2px solid color-mix(in srgb,var(--link) 70%,transparent);outline-offset:2px}
   body.page-china .mx-empty{font-size:12px;color:var(--muted)}
   body.page-china .mx-empty .empty-why{display:block;font-size:10px;opacity:.85;margin-top:2px}
   @media (max-width:640px){
@@ -1119,7 +1128,7 @@
   body.page-china .cnx-heat i.c{background:var(--down)}
   body.page-china .cnx-heat i.c2{background:var(--down);opacity:.45}
   body.page-china .cnx-heat i.n{background:rgba(255,255,255,.12)}
-  body.page-china .cnx-view-all{font-size:11px;color:var(--ink-link, var(--link));text-align:right;margin-top:8px}
+  body.page-china .cnx-view-all{display:block;font-size:11px;color:var(--ink-link, var(--link));text-align:right;margin-top:8px;text-decoration:none}
   /* top-stocks card */
   body.page-china .cnx-stk{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
   body.page-china .cnx-stk .tkr{flex:0 0 auto}
@@ -2130,9 +2139,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           <div class="tx"><b><span class="l-en">{{ _stance[0] }}</span><span class="l-zh">{{ _stance[1] }}</span></b>
             <span class="sub"><span class="l-en">Current posture</span><span class="l-zh">当前操作姿态</span></span></div></div>
         {% for face in _todo_faces %}
-        <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}"><span class="ic">{{ face.sign }}</span>
+        <div class="cnx-row cnx-reason-row{% if face.empty %} mx-empty{% endif %}"><span class="ic">{{ face.sign }}</span>
           <div class="tx"><span class="sub"><span class="l-en">{{ face.en }}</span><span class="l-zh">{{ face.zh }}</span></span>
-            {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div></div>
+            {% if face.empty %}<span class="empty-why"><span class="l-en">{{ face.tip_en }}</span><span class="l-zh">{{ face.tip_zh }}</span></span>{% endif %}</div>
+          <button type="button" class="cnx-lens" aria-expanded="false" aria-label="{{ t('Why this read','为什么') }}" data-tip-en="{{ face.tip_en | e }}" data-tip-zh="{{ face.tip_zh | e }}" onclick="cnxToggleLens(this,event)">?</button></div>
         {% endfor %}
         {% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span><div class="tx"><b><span class="l-en">{{ imminent.en }}</span><span class="l-zh">{{ imminent.zh }}</span></b><span class="sub">{{ t('Highest-impact print soon','近期最重要数据') }}</span></div></div>{% endif %}
       {% else %}
@@ -2145,7 +2155,10 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% set _high_ev = [] %}
       {% for c in (calendar or []) %}{% if c.importance == 'high' %}{% set _ = _high_ev.append(c) %}{% endif %}{% endfor %}
       {% if _high_ev %}<div style="font-size:11.5px;color:var(--muted)">{{ _high_ev | length }} {{ t('high-impact print ahead','项高影响数据待发') }}</div>{% endif %}
-      {% set _ev_shown = (event_strip or [])[:4] %}
+      {% set _hi_strip = [] %}
+      {% for c in (event_strip or []) %}{% if c.importance == 'high' %}{% set _ = _hi_strip.append(c) %}{% endif %}{% endfor %}
+      {% set _ev_pool = _hi_strip if _hi_strip else (event_strip or []) %}
+      {% set _ev_shown = _ev_pool[:4] %}
       {% if _ev_shown %}
       <div class="cnx-estrip">
         {% for c in _ev_shown %}
@@ -2157,7 +2170,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         </div>
         {% endfor %}
       </div>
-      {% if (event_strip or []) | length > _ev_shown | length %}<div class="cnx-view-all">{{ _ev_shown | length }} {{ t('of','/') }} {{ (event_strip or []) | length }} {{ t('shown · full calendar →','项已显示 · 完整日历 →') }}</div>{% endif %}
+      {% if _ev_pool | length > _ev_shown | length %}<div class="cnx-view-all">{{ _ev_shown | length }} {{ t('of','/') }} {{ _ev_pool | length }} {{ t('shown · full calendar →','项已显示 · 完整日历 →') }}</div>{% endif %}
       {% else %}
       <div class="mx-empty">{{ t('No scheduled macro events surfaced for this window.','当前窗口暂无已排期宏观事件。') }}<span class="empty-why">{{ t('The calendar is quiet or has not refreshed yet.','日历当前安静，或尚未刷新。') }}</span></div>
       {% endif %}
@@ -2360,29 +2373,29 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
     {# What Changed: preserve the Macro News dialog, but orient the glance card
        around recency/change rather than a raw headline dump. #}
-    <div class="cnx-card" role="button" tabindex="0" onclick="cnxOpenDlg('cnx-dlg-news')">
-      <div class="cnx-ctitle">{{ t('What Changed','最近变化') }} <span class="cnx-ctitle-note">{{ t('macro news + alerts','宏观新闻 + 警报') }}</span></div>
+    <div class="cnx-card">
+      <div class="cnx-ctitle">{{ t('What Changed','最近变化') }} <button type="button" class="cnx-ctitle-note" onclick="cnxOpenDlg('cnx-dlg-news')">{{ t('macro detail ↓','宏观详情 ↓') }}</button></div>
       {% if (CN and CN.news and CN.news.headlines) or latest.alerts %}
       <div class="cnx-change-list">
         {% if CN and CN.news and CN.news.headlines %}
           {% for h in CN.news.headlines[:2] %}
           {% set _tl = CN.theme_label.get(h.theme, [h.theme, h.theme]) if CN.theme_label else [h.theme, h.theme] %}
-          <div class="cnx-change-row">
+          <a class="cnx-change-row" href="china_news.html">
             <span class="cnx-change-when">{{ (h.published or h.date or '')[5:10] or '—' }}</span>
             <span class="cnx-change-tag">{{ t(_tl[0], _tl[1] if _tl|length > 1 else _tl[0]) }}</span>
             <span class="cnx-change-what"><span class="l-en">{{ (h.title_en or h.title or '') | truncate(92, true, '…') }}</span><span class="l-zh">{{ (h.title_zh or h.title or '') | truncate(92, true, '…') }}</span></span>
-          </div>
+          </a>
           {% endfor %}
         {% endif %}
         {% for a in (latest.alerts or [])[:1] %}
-        <div class="cnx-change-row cnx-change-alert">
+        <a class="cnx-change-row cnx-change-alert" href="alerts.html">
           <span class="cnx-change-when">{{ latest.date[5:10] if latest.date else '—' }}</span>
           <span class="cnx-change-tag"><span class="l-en">Alert</span><span class="l-zh">警报</span></span>
           <span class="cnx-change-what"><span class="l-en">{{ a.plain_en or '' }}</span><span class="l-zh">{{ a.plain_zh or a.plain_en or '' }}</span></span>
-        </div>
+        </a>
         {% endfor %}
       </div>
-      {% if CN and CN.news %}<div class="cnx-view-all">{{ (CN.news.n_kept or 0) }} {{ t('of','/') }} {{ (CN.news.n_raw or 0) }} {{ t('stories kept · full feed →','条新闻保留 · 完整新闻流 →') }}</div>{% endif %}
+      {% if CN and CN.news %}<a class="cnx-view-all" href="china_news.html">{{ (CN.news.n_kept or 0) }} {{ t('of','/') }} {{ (CN.news.n_raw or 0) }} {{ t('stories kept · full feed →','条新闻保留 · 完整新闻流 →') }}</a>{% endif %}
       {% else %}
       <div class="mx-empty">{{ t('No material macro changes surfaced this session.','本会话暂无重大宏观变化。') }}<span class="empty-why">{{ t('News and alert sources are quiet or have not refreshed yet.','新闻与警报源当前安静，或尚未刷新。') }}</span></div>
       {% endif %}
@@ -4655,6 +4668,17 @@ window.__CHART_SWAP__ = {
   function cnxClosePops(){
     document.querySelectorAll('.cnx-pop.open').forEach(function(p){p.classList.remove('open');});
   }
+  function cnxCloseLenses(){
+    document.querySelectorAll('.cnx-lens.cnx-tip-open').forEach(function(btn){
+      btn.classList.remove('cnx-tip-open');btn.setAttribute('aria-expanded','false');
+    });
+  }
+  function cnxToggleLens(btn,ev){
+    if(ev){ev.preventDefault();ev.stopPropagation();}
+    var was=btn.classList.contains('cnx-tip-open');
+    cnxCloseLenses();
+    if(!was){btn.classList.add('cnx-tip-open');btn.setAttribute('aria-expanded','true');}
+  }
   function cnxToggleHm(ev){
     if(ev){ev.stopPropagation();}
     var w=document.getElementById('cnx-hm');
@@ -4668,17 +4692,32 @@ window.__CHART_SWAP__ = {
     if(el&&el.classList.contains('cnx-dlg'))cnxOpenDlg(h);
     else if(el)el.scrollIntoView({behavior:'smooth'});
   }
+  /* Existing clickable cards are div[role=button]; make their keyboard contract real
+     without rewriting the established card markup. Nested links/buttons keep their own behavior. */
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    var card=e.target.closest&&e.target.closest('.cnx-card[role="button"]');
+    if(!card||e.target.closest('a,button,input,select,textarea'))return;
+    e.preventDefault();card.click();
+  });
   /* close dialog on Escape key */
   /* Escape: if the fullscreen heatmap overlay is open, let ITS own handler close it
      (don't also close the Markets dialog underneath). */
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(document.querySelector('.hm-ov'))return;cnxCloseDlg();}});
-  /* close popovers on outside click */
-  document.addEventListener('click',function(){cnxClosePops();});
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    if(document.querySelector('.hm-ov'))return;
+    if(document.querySelector('.cnx-lens.cnx-tip-open')){cnxCloseLenses();return;}
+    cnxCloseDlg();
+  });
+  /* close glance popovers/lenses on outside click */
+  document.addEventListener('click',function(){cnxClosePops();cnxCloseLenses();});
   /* expose on window for onclick= attrs */
   window.cnxOpenDlg=cnxOpenDlg;
   window.cnxCloseDlg=cnxCloseDlg;
   window.cnxTogglePop=cnxTogglePop;
   window.cnxClosePops=cnxClosePops;
+  window.cnxToggleLens=cnxToggleLens;
+  window.cnxCloseLenses=cnxCloseLenses;
   window.cnxToggleHm=cnxToggleHm;
   cnxResolveHash();
   window.addEventListener('hashchange',cnxResolveHash);
