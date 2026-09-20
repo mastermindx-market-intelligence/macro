@@ -71,6 +71,15 @@ def _greek_method_metadata(greeks_fn: Callable | None) -> dict[str, Any]:
         "dividend_yield": None,
         "vol_counterfactual": "sticky_strike",
         "position_tier": POSITION_TIER,
+        "model_state_classifier": {
+            "iv_recomputable": "finite implied_vol > 0",
+            "saturated_zero_curvature": {
+                "finite_abs_iv_max": SATURATED_IV_ABS_MAX,
+                "abs_delta_min": SATURATED_DELTA_MIN,
+                "abs_vega_max": SATURATED_ZERO_GREEK_TOL,
+                "abs_theta_max": SATURATED_ZERO_GREEK_TOL,
+            },
+        },
     }
 
 
