@@ -14,6 +14,9 @@ rationale: >
   too aggressively before the replacement had reached equivalent product depth.
   Restoring the deep composition preserves the richer user job while keeping the
   newer concept available for later development instead of deleting its history.
+  The Chairman further clarified on 2026-09-20 that a full design wipe is only
+  acceptable when the replacement is demonstrably and substantially better; the
+  default improvement method is selective synthesis into the stronger incumbent.
 alternatives:
   - option: Keep Archetype-D as the production default and iterate forward.
     why_not: >
@@ -29,6 +32,7 @@ evidence:
   - "macro PR #7463, merge 01896d6da34d67df45056dd82795be6c8cbf187e: made site-only China rerenders truly offline and committed the restored site/china.html artifact so VPS publication no longer depends on the clogged render lane."
   - "Production proof after #7463: /opt/macro/site/china.html and /opt/macro/site.served/china.html were byte-identical SHA-256 dfbdb24da50683e0275ecd4b9660b8258aed84ddce039f842f4431bf28d449a1; cache-busted https://www.mastermind-x.com/china.html returned HTTP 200 with the same SHA and the deep ROW 4, Market Sentiment, Policy Monitor, Connect Flows and Macro News present while Archetype-D Four Drivers/L1-4 markers were absent."
   - "Headless Chrome DOM proof after merge independently confirmed the deep markers and absence of the Archetype-D production markers."
+  - "Chairman clarification, 2026-09-20: keep and integrate the genuinely better parts of a new design into the stronger incumbent; a destructive design wipe is allowed only when the replacement is substantially better overall."
 affects:
   - "templates/china.html.j2"
   - "site/china.html"
@@ -89,7 +93,8 @@ A future proposal to make Archetype-D (or a derivative compression) the producti
 default requires a new explicit product decision. Before that decision, it must
 demonstrate at minimum:
 
-1. parity or improvement on the user jobs currently served by the deep dashboard;
+1. a demonstrated **substantial overall improvement**, not mere parity, on the user
+   jobs currently served by the deep dashboard;
 2. no silent loss of major intelligence surfaces or drill-down workflows;
 3. current-data correctness and null/degradation behavior;
 4. production-path browser evidence in both supported themes/languages and key
@@ -97,7 +102,12 @@ demonstrate at minimum:
 5. a migration plan that preserves the old production surface until the replacement
    is accepted.
 
-A clean implementation, screenshots, or green CI alone do not satisfy that gate.
+A clean implementation, screenshots, green CI, or a visually cleaner shell alone do
+not satisfy that gate. Comparative proof must show that the replacement is materially
+better overall in usefulness, information architecture, clarity, space efficiency,
+interaction quality, and retained analytical depth. If only some elements are better,
+those elements should be selectively integrated into the incumbent instead of
+authorizing a wholesale replacement.
 
 ## Do not redo
 
