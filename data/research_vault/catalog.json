@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T12:44:10.300005+00:00",
-  "count": 2499,
+  "generated_at": "2026-09-20T12:53:46.954495+00:00",
+  "count": 2500,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -990,6 +990,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-g8bwnwzqplk-c4eb26",
+      "title": "Transformational Innovation Opportunities (TRIO)",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:56:09Z",
+      "summary_points": [
+        "Tech Cycle Resilience Amid Rate Hikes: Earnings growth (not rate magnitude) drives tech performance; 2023-24 mirrors 2016-17 (robust earnings + gradual hikes), not 2022 (sharp hikes + earnings drop).",
+        "Favor high-quality semiconductors, \"Magnificent 7,\" infrastructure software; avoid overvalued neocloud providers.",
+        "Fed Hike Historical Impact: First Fed rate hike rarely triggers bear markets; US equities averaged 10.8% 12-month return post-hike start (1954–present), with no historical bear market following initial hikes.",
+        "Rate Hike Speed & Yield Thresholds: Monthly 10-yr yield increase <29bps correlates with positive equity returns; exceeding 30bps triggers negative returns.",
+        "Tech capex sustainability hinges on returns exceeding funding costs; long-term yield spikes risk spread compression."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
