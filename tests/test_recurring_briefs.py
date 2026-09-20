@@ -1507,7 +1507,11 @@ def test_daily_step_sits_after_briefing_and_thesis_monitor():
     assert i_brief < i_mon < i_ours
     assert "python -m scripts.build_recurring_briefs --cadence daily_after_us_close" in text
     assert "RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}" in text
-    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" in text
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}" in text
+    ours = text[text.find("recurring briefs producer"):]
+    ours = ours[: ours.find("\n      - name: ")]
+    assert "SUPABASE_URL: ${{ secrets.SUPABASE_URL }}" not in ours
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" not in ours
 
 
 def test_weekly_step_sits_after_brief_producers():
@@ -1518,6 +1522,11 @@ def test_weekly_step_sits_after_brief_producers():
     assert i_brief < i_ours
     assert "python -m scripts.build_recurring_briefs --cadence weekly_saturday" in text
     assert "RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}" in text
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}" in text
+    ours = text[text.find("recurring briefs producer"):]
+    ours = ours[: ours.find("\n      - name: ")]
+    assert "SUPABASE_URL: ${{ secrets.SUPABASE_URL }}" not in ours
+    assert "SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" not in ours
 
 
 def test_gating_mirrors_thesis_monitor():
