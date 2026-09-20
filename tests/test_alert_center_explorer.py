@@ -794,3 +794,59 @@ def test_forex_residual_shock_abstains_on_pair_direction_or_shape_mismatch():
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+def test_net_liquidity_flip_gets_source_bound_context_without_timing_claim():
+    row = signal('net-liq-contract', source='macro', type_='net_liquidity_roc_flip', asset='macro')
+    row.update({
+        'tier': 'watch', 'age_days': 4, 'fire_count': 4, 'continuity_verified': False,
+        'detail': 'Net liquidity 4-week RoC flipped negative (contracting) and held 2d: +41bn -> -65bn',
+        'detail_zh': '净流动性 4 周 RoC 转为负值（收缩）并持续 2 天：+41bn -> -65bn',
+        'edge': "Medium — a documented tail/headwind, but the liquidity edge weakened post-2021 (ETF era). Lean on it, don't trade it.",
+        'edge_zh': '中 — 有据可查的顺／逆风，但流动性优势在 2021 年后（ETF 时代）减弱。据此微调，而非直接交易。',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'no_edge', 'note': 'No validated forward edge.'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.net_liquidity_roc_flip'
+    assert brief['attention'] == 'for_awareness'
+    assert 'contracting' in brief['implication'] and 'headwind' in brief['implication']
+    assert 'no statistically validated forward SPY edge' in brief['limitation']
+    assert '4 days old' in brief['limitation']
+    assert '4 recorded firings do not prove' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck liquidity'
+    assert brief['evidence_label'] == 'Open current Macro risk panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_fresh_positive_net_liquidity_flip_is_watch_next_but_not_a_probability():
+    row = signal('net-liq-expand', source='macro', type_='net_liquidity_roc_flip', asset='macro')
+    row.update({
+        'tier': 'watch', 'age_days': 1,
+        'detail': 'Net liquidity 4-week RoC flipped positive (expanding) and held 2d: -41bn -> +65bn',
+        'link': 'macro.html#dlg-risk',
+        'validation': {'verdict': 'no_edge'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['attention'] == 'watch_next'
+    assert 'expanding' in brief['implication'] and 'tailwind' in brief['implication']
+    assert 'timing signal' in brief['limitation']
+    assert 'crosses back through zero' in brief['reassessment']
+
+
+def test_net_liquidity_flip_abstains_when_detail_does_not_prove_a_sign_flip():
+    rows = []
+    for id_, detail in (
+        ('same-side', 'Net liquidity 4-week RoC flipped positive (expanding) and held 2d: +41bn -> +65bn'),
+        ('wrong-side', 'Net liquidity 4-week RoC flipped negative (contracting) and held 2d: +41bn -> +65bn'),
+        ('malformed', 'Net liquidity flipped negative in an unsupported shape'),
+    ):
+        row = signal(id_, source='macro', type_='net_liquidity_roc_flip', asset='macro')
+        row.update({'tier': 'watch', 'detail': detail, 'link': 'macro.html#dlg-risk'})
+        rows.append(row)
+    briefs = project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)

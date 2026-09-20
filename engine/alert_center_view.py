@@ -50,6 +50,11 @@ _TRANSITION_DETAIL = re.compile(
 _RISK_DETAIL = re.compile(
     r'^Equity risk-state crossed into ([A-Z][A-Z _-]+) \((\d{1,3})/100\) — (.+?); (.+)$'
 )
+_NET_LIQUIDITY_ROC_FLIP = re.compile(
+    r'^Net liquidity 4-week RoC flipped (positive \(expanding\)|negative \(contracting\)) '
+    r'and held ([1-9][0-9]*)d: ([+-][0-9]+(?:\.[0-9]+)?)bn -> '
+    r'([+-][0-9]+(?:\.[0-9]+)?)bn$'
+)
 _COMMODITY_PRICE_SHOCK = re.compile(
     r'^Oil ([0-9][0-9,.]*) \$/bbl — the acute move is settling\.$'
 )
@@ -414,6 +419,89 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前风险框架',
         })
         return brief
+
+    liquidity = _NET_LIQUIDITY_ROC_FLIP.fullmatch(detail)
+    if source == 'macro' and type_ == 'net_liquidity_roc_flip' and liquidity:
+        direction, held_text, before_text, current_text = liquidity.groups()
+        held_days = int(held_text)
+        before_value = float(before_text)
+        current_value = float(current_text)
+        expanding = direction.startswith('positive')
+        sign_flip = ((expanding and before_value <= 0 < current_value) or
+                     (not expanding and before_value >= 0 > current_value))
+        if sign_flip:
+            direction_word = 'expanding' if expanding else 'contracting'
+            context_word = 'tailwind' if expanding else 'headwind'
+            direction_zh = '扩张' if expanding else '收缩'
+            context_zh = '顺风' if expanding else '逆风'
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current liquidity state.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前流动性状态。'
+            verdict = str(validation.get('verdict') or '')
+            if verdict == 'no_edge':
+                validation_limit = (
+                    ' The current rule scorecard reports no statistically validated forward SPY '
+                    'edge (FDR q>0.10), so this is risk context rather than a timing signal.')
+                validation_limit_zh = (
+                    ' 当前规则评分卡未发现统计上经过验证的标普前瞻优势（FDR q>0.10），'
+                    '因此这只是风险背景，而非择时信号。')
+            elif verdict == 'underpowered':
+                validation_limit = (
+                    ' The current rule scorecard is underpowered, so it cannot support a '
+                    'predictive timing claim.')
+                validation_limit_zh = ' 当前规则评分卡样本不足，不能支持预测性择时结论。'
+            else:
+                validation_limit = (
+                    ' This relationship is context, not a calibrated probability or standalone '
+                    'timing signal.')
+                validation_limit_zh = ' 该关系只是背景，并非校准概率或独立择时信号。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded firings do not prove the condition persisted between '
+                    'observations.')
+                recurrence_limit_zh = f' {fire_count} 次记录触发并不能证明该状态在观测之间持续存在。'
+            brief.update({
+                'status': 'supported', 'family': 'macro.net_liquidity_roc_flip',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source reports four-week net-liquidity momentum flipped to '
+                    f'{direction_word} and held {held_days} days, making liquidity a macro '
+                    f'{context_word} to recheck when sizing risk.'),
+                'implication_zh': (
+                    f'来源报告 4 周净流动性动量转为{direction_zh}并持续 {held_days} 天，'
+                    f'使流动性成为调整风险规模时需要复核的宏观{context_zh}。'),
+                'limitation': (
+                    (edge or 'Net liquidity is contextual evidence, not a trade instruction.') +
+                    validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    (edge_zh or '净流动性只是背景证据，并非交易指令。') +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Macro risk panel and verify the four-week net-liquidity '
+                    f'RoC is still {direction_word}, the latest print remains on the same side of '
+                    'zero, and the source still flags the condition before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前宏观风险面板，确认 4 周净流动性 RoC 仍为{direction_zh}、最新读数仍在'
+                    '零轴同一侧，且来源仍在标记该状态，再调整敞口。'),
+                'next_action_label': 'Recheck liquidity',
+                'next_action_label_zh': '复核流动性',
+                'reassessment': (
+                    'Change the read if the current RoC crosses back through zero, the held-state '
+                    'condition breaks, or the source no longer flags the flip.'),
+                'reassessment_zh': (
+                    '若当前 RoC 再次穿越零轴、持续状态条件失效，或来源不再标记该转向，则改变判断。'),
+                'evidence_label': 'Open current Macro risk panel',
+                'evidence_label_zh': '打开当前宏观风险面板',
+            })
+            return brief
 
     residual_headline = _FOREX_RESIDUAL_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
     residual_detail = _FOREX_RESIDUAL_DETAIL.fullmatch(detail)

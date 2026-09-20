@@ -114,6 +114,17 @@ def main():
                 assert page.locator('#ac-detail .acx-next-action').inner_text() == risk_brief['next_action']
                 assert risk_brief['evidence_label'] in text
             report['checks'].append('Five next-priority risk families render source-bound limits, actions and evidence destinations')
+            liquidity_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                if brief.get('family') == 'macro.net_liquidity_roc_flip')
+            liquidity_brief = payload['explorer']['briefs'][liquidity_id]
+            page.goto(url + '#view=explore&id=' + liquidity_id, wait_until='domcontentloaded')
+            liquidity_text = page.locator('#ac-detail').inner_text()
+            assert liquidity_brief['limitation'] in liquidity_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == liquidity_brief['next_action']
+            assert liquidity_brief['evidence_label'] in liquidity_text
+            page.screenshot(path=str(out / 'desktop-net-liquidity.png'))
+            report['screenshots'].append('desktop-net-liquidity.png')
+            report['checks'].append('Net-liquidity flips expose current-state sizing work without becoming timing signals')
             theme_families = {
                 'themes.reco_change', 'themes.theme_deteriorating',
                 'themes.theme_topping', 'themes.theme_emerging',
