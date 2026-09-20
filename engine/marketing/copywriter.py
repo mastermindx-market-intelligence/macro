@@ -7719,7 +7719,7 @@ def _anti_exemplar_block() -> str:
 # reads.
 V2_PAYLOAD_CONTRACT_KEYS: tuple[str, ...] = (
     "account", "persona", "kind", "shape", "shape_contract", "number_budget",
-    "angle",
+    "angle", "editorial_brief",
     "cashtag", "cashtags", "facts", "entry", "t1", "t2", "invalidation",
     "win_rate", "numbers_whitelist", "pack", "lead_with", "sibling_texts",
     "franchise", "codex",
@@ -7749,6 +7749,9 @@ _V2_PAYLOAD_CONTRACT_BLOCK = (
     "half of this figure and is never higher than it, so where the two differ, "
     "this is the one that counts.\n"
     "- angle: the job this post does. Write that job.\n"
+    "- editorial_brief: deterministic projection of this item's existing fields; "
+    "revision/digest identify the exact brief. Missing source or media state "
+    "stays null/unknown rather than being guessed.\n"
     "- cashtag / cashtags: the tickers this post is about. If a cashtag is "
     "present it must appear in the post, spelled exactly as given.\n"
     "- facts / facts[].text: what our engine actually computed, already in "
@@ -8511,6 +8514,101 @@ def reset_writer_stats() -> None:
 #: to carry.
 _PAYLOAD_WHITELIST_MAX = 24
 
+EDITORIAL_BRIEF_REVISION = "marketing.editorial_brief.v1"
+_EDITORIAL_BRIEF_MEDIA_STATES = frozenset({"image_present", "text_only", "unknown"})
+_EDITORIAL_BRIEF_PROHIBITIONS: tuple[str, ...] = (
+    "no_fabricated_facts",
+    "no_unwhitelisted_numbers",
+    "no_performed_first_person",
+    "no_questions",
+    "no_unbacked_image_assumption",
+)
+
+
+def _optional_text(value: object) -> str | None:
+    text = str(value or "").strip()
+    return text or None
+
+
+def _compile_editorial_brief(
+    ctx: dict,
+    *,
+    persona_card: dict | None,
+    number_budget: int,
+) -> dict:
+    """Compact deterministic projection of fields the v2 writer already owns."""
+    claims: list[dict[str, Any]] = []
+    for fact in (ctx.get("top_facts") or [])[:3]:
+        if not isinstance(fact, dict):
+            continue
+        text = _optional_text(fact.get("text"))
+        if not text:
+            continue
+        row: dict[str, Any] = {
+            "claim_ref": _optional_text(fact.get("id")),
+            "text": text,
+        }
+        if isinstance(fact.get("count"), dict):
+            row["count"] = dict(fact["count"])
+        claims.append(row)
+
+    media_raw = ctx.get("media_context")
+    media_raw = media_raw if isinstance(media_raw, dict) else {}
+    media_state = str(media_raw.get("state") or "unknown").strip().lower()
+    if media_state not in _EDITORIAL_BRIEF_MEDIA_STATES:
+        media_state = "unknown"
+    media: dict[str, Any] = {
+        "state": media_state,
+        "required": str(ctx.get("shape") or DEFAULT_SHAPE) == "caption",
+    }
+    media_kind = _optional_text(media_raw.get("kind"))
+    if media_kind:
+        media["kind"] = media_kind
+
+    examples = [
+        str(line).strip()
+        for line in ((persona_card or {}).get("example_lines") or [])
+        if str(line).strip()
+    ][:3]
+    win_rate = _optional_text(ctx.get("win_rate_str"))
+    shape = str(ctx.get("shape") or DEFAULT_SHAPE)
+    brief: dict[str, Any] = {
+        "revision": EDITORIAL_BRIEF_REVISION,
+        "medium": "x",
+        "audience": "market professionals",
+        "beat": _optional_text(ctx.get("angle")) or _optional_text(ctx.get("type")),
+        "takeaway": claims[0]["text"] if claims else None,
+        "claims": claims,
+        "display_values": list(ctx.get("numbers_whitelist") or [])[:_PAYLOAD_WHITELIST_MAX],
+        "clocks": {
+            "observation_date": _optional_text(ctx.get("as_of")),
+            "source_date": _optional_text(ctx.get("source_as_of")),
+            "plan_public_date": _optional_text(ctx.get("signal_date")),
+        },
+        "media": media,
+        "uncertainty": {"base_rate": win_rate} if win_rate else None,
+        "positive_examples": examples,
+        "prohibitions": list(_EDITORIAL_BRIEF_PROHIBITIONS),
+        "format": {"shape": shape, "number_budget": int(number_budget)},
+    }
+    brief["digest"] = hashlib.sha256(
+        json.dumps(brief, sort_keys=True, separators=(",", ":"),
+                   ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    return brief
+
+
+def _attach_editorial_contract(result: dict, payload: dict) -> dict:
+    """Attach only the immutable compiled-contract identity to a writer result."""
+    out = dict(result or {})
+    brief = payload.get("editorial_brief") if isinstance(payload, dict) else None
+    if isinstance(brief, dict) and brief.get("revision") and brief.get("digest"):
+        out["editorial_contract"] = {
+            "revision": str(brief["revision"]),
+            "digest": str(brief["digest"]),
+        }
+    return out
+
 
 def _v2_item_payload(
     ctx: dict,
@@ -8526,6 +8624,7 @@ def _v2_item_payload(
     prose agree by construction.
     """
     shape = str(ctx.get("shape") or DEFAULT_SHAPE)
+    number_budget = number_budget_for(kind=str(ctx.get("type") or ""), shape=shape)
     facts_out: list[dict] = []
     for f in (ctx.get("top_facts") or [])[:3]:
         row: dict[str, Any] = {"text": f.get("text")}
@@ -8548,9 +8647,10 @@ def _v2_item_payload(
         # earnings post is allowed four whatever its shape says). The gate does
         # not move — `number_budget_for` is unchanged and is the single source
         # of truth for BOTH sides now. The writer is simply told what it is.
-        "number_budget": number_budget_for(kind=str(ctx.get("type") or ""),
-                                           shape=shape),
+        "number_budget": number_budget,
         "angle": ctx.get("angle") or None,
+        "editorial_brief": _compile_editorial_brief(
+            ctx, persona_card=persona_card, number_budget=number_budget),
         "cashtag": ctx.get("cashtag") or None,
         "cashtags": ctx.get("cashtags") or None,
         "facts": facts_out,
@@ -8943,6 +9043,7 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
 
     def _one(idx: int) -> dict:
         ctx = contexts[idx]
+        payload: dict = {}
         try:
             persona_id = str(ctx.get("account", ""))
             persona_raw = (personas_cfg.get(persona_id)
@@ -8968,17 +9069,23 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
             # present on the repair turn too (which restates only violations)
             # and sits beside the house defaults it is allowed to override.
             system_prompt = _prompt_for(persona_id, persona_card)
-            return _v2_write_one(
-                ctx, payload, providers=providers, system_prompt=system_prompt,
-                max_tokens=max_tokens, cfg=cfg,
-                recent=list(recent_seed.get(str(ctx.get("account", "")) or "", [])),
+            return _attach_editorial_contract(
+                _v2_write_one(
+                    ctx, payload, providers=providers, system_prompt=system_prompt,
+                    max_tokens=max_tokens, cfg=cfg,
+                    recent=list(recent_seed.get(str(ctx.get("account", "")) or "", [])),
+                ),
+                payload,
             )
         except Exception as exc:  # noqa: BLE001 — ONE item's failure, ONE drop
             log.warning("copywriter v2: item %d raised (%s: %s) — dropped",
                         idx, type(exc).__name__, exc)
-            return {"mode": "dropped",
-                    "reasons": [f"writer_exception:{type(exc).__name__}"],
-                    "stage": "provider"}
+            return _attach_editorial_contract(
+                {"mode": "dropped",
+                 "reasons": [f"writer_exception:{type(exc).__name__}"],
+                 "stage": "provider"},
+                payload,
+            )
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         for i, res in enumerate(pool.map(_one, range(len(contexts)))):
