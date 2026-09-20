@@ -3035,12 +3035,16 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
   /* Driver counter chip — `1 / 3` badge that floats over the strip's right
      edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
   body.page-macro .ud-driver-count{ display:inline-flex; }
+}
+/* end .ud-hero — UD-B1 §1/§3/§6 */
 
-  /* Watching → single disclosure row (the <summary>) carries title + count +
-     chevron + one-line preview of the first condition. The full list lives
-     inside the <details> wrapper and is hidden by default at 390; tapping the
-     summary opens <details> and reveals the list via .ud-watch-details[open].
-     R-J round 7 — desktop forces the list open via specificity. */
+/* ── Mobile ≤640px watching disclosure (R-L BLOCKER-1 fix) ─────────────
+   At ≤640px the inline state JS in templates/dashboard.html.j2 removes the
+   `open` attribute on .ud-watch-details so the <summary> disclosure row takes
+   over. The summary chrome shows by default; the list is hidden until the
+   user taps the disclosure row (the UA `:not([open])` rule handles that —
+   CSS cannot override it, which is why the DOM state is the lawful fix). */
+@media (max-width:640px){
   body.page-macro .ud-watch-item{ display:none; }
   body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
   body.page-macro .ud-watch-summary{
@@ -3067,4 +3071,3 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
     color:var(--ink-2,var(--muted));
   }
 }
-/* end .ud-hero — UD-B1 §1/§3/§6 */
