@@ -20,9 +20,9 @@ This extends the existing `live_flow` plane. It is not a second collector, sched
 
 ### Existing transport and state
 
-Extend `live_flow.meta/v2` with an optional `root_catalog` array. The existing `meta` f-param and R2 object remain the transport. Persist `root_source_receipts` inside the existing session day-state. Each key is a normalized root and each value is the exact UTC observation timestamp of the latest cycle in which at least one source leg returned a payload. Failed and off-cycle roots retain their prior receipt.
+Extend `live_flow.meta/v2` with an optional `root_catalog` array. The existing `meta` f-param and R2 object remain the transport. Persist two bounded receipt maps inside the existing session day-state. `root_source_receipts` records the exact UTC observation timestamp of the latest cycle in which at least one source leg returned a payload. `root_ticker_receipts` advances only after `process_batch` succeeds and the root's accumulators are merged. Failed and off-cycle roots retain their prior receipt.
 
-`run_cycle()` adds `roots_with_source_payload_names`, ordered by the requested root list, alongside the existing count. This is descriptive source evidence, not a score.
+`run_cycle()` adds ordered `roots_with_source_payload_names` and `roots_with_ticker_state_names`. The first is descriptive source evidence; the second proves the root's drill state accepted that source response. Neither is a score.
 
 ### Root catalog contract
 
@@ -53,9 +53,9 @@ Ordering is deterministic: active roots by descending gross premium, remaining c
 
 ### Per-root publication
 
-Top-40 is no longer an availability gate. Stage a ticker artifact for each root that was scheduled in this cycle, appears in `roots_with_source_payload_names`, and has accumulated minute or strike data. Preserve cycle order and deduplicate. Do not fabricate empty roots. Do not rewrite source-failed roots with a fresh timestamp. Off-cycle artifacts remain at their previous bytes until their bucket runs again.
+Top-40 is no longer an availability gate. Stage a ticker artifact for each root that was scheduled in this cycle, appears in `roots_with_ticker_state_names`, and has accumulated minute or strike data. Preserve cycle order and deduplicate. Do not fabricate empty roots. Do not rewrite source-failed or engine-failed roots with a fresh timestamp. Off-cycle artifacts remain at their previous bytes until their bucket runs again.
 
-Each payload uses that root's own `last_source_success`, not a timestamp inherited from a different root.
+Each payload uses that root's own `root_ticker_receipts` timestamp, not a timestamp inherited from a different root and not a source receipt whose processing later failed.
 
 ### Bounded expansion
 
@@ -66,7 +66,7 @@ Raise `live_flow.top_names` from 100 to 128, matching the existing bounded chain
 - Missing receipt state degrades to an empty map.
 - Malformed prior receipt entries are ignored, not coerced.
 - A fully failed cycle retains prior receipts and prior `source_asof`.
-- A partial cycle updates only successful roots.
+- A partial cycle updates source receipts for returned payloads and ticker receipts only for roots whose engine state merged successfully.
 - A configured root may have `last_source_success=null`; that is an honest awaiting-refresh state.
 - A root with a receipt but no minute/strike rows remains discoverable but gets no fabricated ticker artifact.
 - Catalog metadata never enters scoring, sizing, gating, or trade authority.

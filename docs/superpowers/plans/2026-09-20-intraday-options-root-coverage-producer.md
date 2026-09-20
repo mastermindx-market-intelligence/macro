@@ -110,7 +110,7 @@ git commit -m "feat(options): define live root coverage catalog"
 
 **Interfaces:**
 - Consumes: current fetch-result map and existing session `day_state`.
-- Produces: `meta["roots_with_source_payload_names"]` and `updated_state["root_source_receipts"]`.
+- Produces: ordered source-success and ticker-state-success names plus their separate receipt maps.
 
 - [ ] **Step 1: Write failing run-cycle tests**
 
@@ -139,7 +139,7 @@ Expected: FAIL on missing fields.
 
 - [ ] **Step 3: Implement receipt persistence**
 
-Copy only valid prior receipt entries, derive ordered successful roots from `fetch_results` after all futures complete, update their exact observed timestamps, add the ordered names to meta, and persist the receipt map in `updated_state`. Existing source-clock behavior remains untouched.
+Copy only valid prior receipt entries, derive ordered source-success roots from `fetch_results`, and update their source receipts. After `process_batch` succeeds and state merges, update the distinct ticker-state names and receipts. Existing source-clock behavior remains untouched, and an engine failure must retain the prior ticker receipt.
 
 - [ ] **Step 4: Run receipt and clock tests GREEN**
 
@@ -185,7 +185,7 @@ Expected: FAIL because `top_names` is 100 and the main contract is not wired.
 
 - [ ] **Step 3: Wire the main loop**
 
-After `run_cycle()` and durable state save, build the catalog from full `roots`, exact `cycle_roots`, ordered success names, persisted receipts and accumulated session state. Set `meta["root_catalog"]` and `meta["roots_configured"]` before writing `meta.json`. Replace top-40/pinned selection with `_select_ticker_publish_roots(...)`. Pass each root's receipt as the ticker payload `asof`. Remove the obsolete top-40/pinned gate constants and tests if they have no remaining consumer.
+After `run_cycle()` and durable state save, build the catalog from full `roots`, exact `cycle_roots`, ordered source-success names, persisted source receipts and accumulated session state. Set `meta["root_catalog"]` and `meta["roots_configured"]` before writing `meta.json`. Replace top-40/pinned selection with `_select_ticker_publish_roots(...)` driven by ticker-state-success names. Pass each root's ticker-state receipt as the ticker payload `asof`. Remove the obsolete top-40/pinned gate constants and tests if they have no remaining consumer.
 
 - [ ] **Step 4: Raise the bounded universe**
 
