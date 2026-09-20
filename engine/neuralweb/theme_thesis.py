@@ -412,11 +412,33 @@ def _eval_falsifier(
                 "evidence": {"corrections_superseded": corrections},
             }
 
-        prior = next(
-            (row for row in reversed(prior_rows)
-             if _strip_stage(row.get("stage")) != current_stage),
-            None,
-        )
+        prior = None
+        prior_stage = None
+        for row in reversed(prior_rows):
+            raw_prior_stage = row.get("stage")
+            if not isinstance(raw_prior_stage, str) or not raw_prior_stage.strip():
+                return {
+                    "id": fid,
+                    "rule_en": rule_en,
+                    "state": STATE_DATA_MISSING,
+                    "fired": False,
+                    "reason_code": "PRIOR_STAGE_MISSING",
+                    "detail": (
+                        "historical predecessor stage is null/missing in source; "
+                        "transition evidence cannot be inferred"
+                    ),
+                    "evidence": {
+                        "prior_as_of": row.get("asof"),
+                        "prior_stage": None,
+                        "current_stage": current_stage,
+                        "corrections_superseded": corrections,
+                    },
+                }
+            normalized_prior_stage = _strip_stage(raw_prior_stage)
+            if normalized_prior_stage != current_stage:
+                prior = row
+                prior_stage = normalized_prior_stage
+                break
         if prior is None:
             return {
                 "id": fid,
@@ -427,7 +449,6 @@ def _eval_falsifier(
                 "detail": "no predecessor to the current stage run was found",
                 "evidence": {"corrections_superseded": corrections},
             }
-        prior_stage = _strip_stage(prior.get("stage"))
         allowed_source = (
             check.get("watch_prior_stage_in")
             if current_stage == "WATCH" and check.get("watch_prior_stage_in") is not None

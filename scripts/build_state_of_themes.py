@@ -746,6 +746,10 @@ def compose(root: Path) -> dict[str, Any]:
     options_witness = _load_json(bkd / "options_witness.json")
     clinical_pipeline = _load_json(bkd / "clinical_pipeline.json")
     trade_flows = _load_json(bkd / "trade_flows.json")
+    foresight_cascade = _load_json(bkd / "foresight_cascade.json")
+    _foresight_observation_asof = (foresight_cascade or {}).get("asof")
+    if not isinstance(_foresight_observation_asof, str) or not _foresight_observation_asof.strip():
+        _foresight_observation_asof = None
 
     # ── Build options-witness index by theme_id ──
     ow_by_id: dict[str, dict] = {}
@@ -1253,6 +1257,11 @@ def compose(root: Path) -> dict[str, Any]:
             "stage_label_en": stage_label_en,
             "stage_label_zh": stage_label_zh,
             "stage_sort": stage_sort,
+            "foresight_observation_asof": (
+                _foresight_observation_asof
+                if foresight.get("source") == "site/basketdata/foresight_cascade.json"
+                else None
+            ),
             "legs_ordered": legs_ordered,
             "falsifier_any_fired": any_fired,
             "falsifier_n_data_missing": n_data_missing,
@@ -1738,12 +1747,17 @@ def _consumer_contract_row(
         "source_records": list(theme.get("evidence_refs", []) or []),
         "independent_evidence_families": [],
         "clocks": {
-            "observation": snapshot_asof,
+            "observation": theme.get("foresight_observation_asof"),
             "availability": None,
-            "computation": None,
+            "computation": snapshot_asof,
             "publication": None,
         },
-        "watermarks": {"snapshot": snapshot_asof, "inputs": {}},
+        "watermarks": {
+            "snapshot": snapshot_asof,
+            "inputs": {
+                "foresight": theme.get("foresight_observation_asof"),
+            },
+        },
         "bar_status": {"closed": None, "provisional": None},
         "correction_lineage": {
             "supersedes": None,

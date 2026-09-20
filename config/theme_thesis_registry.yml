@@ -119,7 +119,7 @@ theses:
           field: stage
           op: in
           threshold: ["GLUT-RISK", "WATCH"]
-          prior_stage_in: ["RE-RATING", "BROADENING", "PRECIPICE", "WATCH"]
+          prior_stage_in: ["RE-RATING", "ACCELERATING", "BROADENING", "PRECIPICE", "WATCH"]
           watch_prior_stage_in: ["RE-RATING"]
           watch_deterioration_field: bottleneck_band
           watch_deterioration_in: ["LOOSE"]

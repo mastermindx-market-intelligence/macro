@@ -440,7 +440,7 @@ class TestFalsifierEvaluation:
                 "field": "stage",
                 "op": "in",
                 "threshold": ["GLUT-RISK", "WATCH"],
-                "prior_stage_in": ["RE-RATING", "BROADENING", "PRECIPICE", "WATCH"],
+                "prior_stage_in": ["RE-RATING", "ACCELERATING", "BROADENING", "PRECIPICE", "WATCH"],
                 "watch_prior_stage_in": ["RE-RATING"],
                 "watch_deterioration_field": "bottleneck_band",
                 "watch_deterioration_in": ["LOOSE"],
@@ -580,6 +580,53 @@ class TestFalsifierEvaluation:
             foresight_history=[], evaluation_as_of="2026-09-16",
         )
         assert result["state"] == evaluator.STATE_DATA_MISSING
+
+    @pytest.mark.parametrize(
+        "prior_stage",
+        ["RE-RATING", "ACCELERATING", "BROADENING", "PRECIPICE", "WATCH"],
+    )
+    def test_glut_risk_accepts_each_named_predecessor(self, evaluator, prior_stage):
+        spec = self._stage_regression_spec()
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="GLUT-RISK", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[self._history_row("2026-09-01", stage=prior_stage)],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_FIRED
+        assert result["reason_code"] == "STAGE_REGRESSION_WITH_ECONOMIC_DETERIORATION"
+        assert result["evidence"]["prior_stage"] == prior_stage
+
+    @pytest.mark.parametrize("bad_stage", [None, "", "   ", 7])
+    def test_stage_regression_missing_historical_stage_is_data_missing(
+        self, evaluator, bad_stage
+    ):
+        spec = self._stage_regression_spec()
+        prior = self._history_row("2026-09-01", stage="WATCH")
+        if bad_stage is None:
+            prior.pop("stage", None)
+        else:
+            prior["stage"] = bad_stage
+        foresight = self._make_foresight(
+            "ai_semiconductors", stage="GLUT-RISK", bottleneck_band="LOOSE",
+        )
+        result = evaluator._eval_falsifier(
+            spec,
+            foresight,
+            {},
+            "ai_semiconductors",
+            foresight_history=[prior],
+            evaluation_as_of="2026-09-16",
+        )
+        assert result["state"] == evaluator.STATE_DATA_MISSING
+        assert result["fired"] is False
+        assert result["reason_code"] == "PRIOR_STAGE_MISSING"
+        assert result["evidence"]["prior_stage"] is None
 
     def test_stage_regression_requires_named_predecessor(self, evaluator):
         spec = self._stage_regression_spec()
