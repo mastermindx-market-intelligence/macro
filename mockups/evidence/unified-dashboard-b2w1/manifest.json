@@ -1,5 +1,5 @@
 {
-  "head": "ea6ad8ffefe42691e0a11cb71f3daec40aadb974",
+  "head": "cb4ed1c0ea12d6973c20dc56906287685ecf8fc7",
   "branch": "claude/mo-a-ud-b2-w1-volweather-fold",
   "pr": "DRAFT",
   "source_url": "site/macro.html",
@@ -10,7 +10,7 @@
     "sha256": "346b194c2cb82100aac7d26efe27c99f2bc3d6629f84db6ffa37cd2053a23358",
     "sha256_short": "346b194c2cb8",
     "bytes": 23397,
-    "captured_at_head": "ea6ad8ffefe42691e0a11cb71f3daec40aadb974",
+    "captured_at_head": "cb4ed1c0ea12d6973c20dc56906287685ecf8fc7",
     "note": "Byte-identity gate. The same slice, extracted from site/macro.html at FINAL head, must hash to this value. R-W1-A-AMENDED: the strip lives in .mx5-sc-vw (a child of .mx5-sc-left), so the R-E gate slice is .mx5-sc-left (dial + scar chips + strip). Capture-last: this manifest is committed in the captures commit; captured_at_head is HEAD at capture time and must be an ancestor of the captures commit."
   },
   "cells": [
