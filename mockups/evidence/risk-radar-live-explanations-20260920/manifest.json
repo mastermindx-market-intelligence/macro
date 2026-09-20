@@ -1,0 +1,788 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [
+      {
+        "attribute": null,
+        "kind": "class",
+        "name": "radar_open",
+        "spec": "radar_open:.open",
+        "value": "open"
+      },
+      {
+        "attribute": null,
+        "kind": "focus",
+        "name": "radar_focus",
+        "spec": "radar_focus:focus(#dlg-risk .gde-disc > summary)",
+        "value": "#dlg-risk .gde-disc > summary"
+      }
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-20T04:47:44Z",
+  "honesty": {
+    "access": "Rest cells are anonymous local page observations. Modal and focus cells use an isolated local member-access fixture. No credentials; not authenticated production.",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "force_states": "Adapter opens the existing modal in an isolated local fixture and uses real keyboard focus and Enter. No production-access or natural-event claim.",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879664806",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/release_publications.json",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live.js?v=3cb38601",
+          "text": "WebSocket connection to 'ws://127.0.0.1:53254/ws/tape' failed: Error during WebSocket handshake: Unexpected response code: 404"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/api/brain/me",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879672487",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879680152",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879687776",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879695386",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879702650",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879710254",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        },
+        {
+          "source_url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879717569",
+          "text": "Failed to load resource: the server responded with a status of 404 (File not found)"
+        }
+      ],
+      "failed_responses": [
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879664806"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/release_publications.json"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/api/brain/me"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879667355"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879669801"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879672487"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879675107"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879677619"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879680152"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879682682"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879685232"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879687776"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879690162"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879692812"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879695386"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879697792"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879700183"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879702650"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879705260"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879707770"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879710254"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879712690"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879715047"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879717569"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879719999"
+        },
+        {
+          "status": 404,
+          "url": "http://127.0.0.1:53254/live/risk_envelope.json?t=1789879722456"
+        }
+      ],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": false,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 2203,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 4299,
+            "elements_wider_than_viewport": 192,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 2,
+        "document_height_px": 2203,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 0,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "light",
+          "viewport": "desktop"
+        },
+        "panel_count": 29,
+        "payload_bytes_total": 1637615,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 49,
+        "screenshot_completion": 1.0,
+        "section_count": 0,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 488
+      },
+      "page_id": "macro.html",
+      "registry_route": "macro.html",
+      "route": "macro.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 423829,
+          "captured": true,
+          "file": "fa8a2c8dccee9930.png",
+          "force_state": null,
+          "height": 2203,
+          "locale": "en",
+          "sha256": "fa8a2c8dccee9930cda016f266a13629b6efb86ff83f02d61b661de94c2a1bd7",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 201186,
+          "captured": true,
+          "file": "53afe74578bb46dd--radar_open.png",
+          "force_state": "radar_open",
+          "height": 900,
+          "locale": "en",
+          "sha256": "53afe74578bb46dd2e78a9fe68f19edaf0064683f63c5ff5740a90a10acdd256",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 201228,
+          "captured": true,
+          "file": "ed1a16cab7794c16--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 900,
+          "locale": "en",
+          "sha256": "ed1a16cab7794c16235473d8d406a02b31e2ede3d095d006a1a520ce3ddddec5",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 612694,
+          "captured": true,
+          "file": "45f2aa14ae1b05c1.png",
+          "force_state": null,
+          "height": 2203,
+          "locale": "en",
+          "sha256": "45f2aa14ae1b05c1c1f10641aadf728b5e74720cae5a6c9ea1f32295c73e21a4",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 205657,
+          "captured": true,
+          "file": "9a999051195075a3--radar_open.png",
+          "force_state": "radar_open",
+          "height": 900,
+          "locale": "en",
+          "sha256": "9a999051195075a301b46e7c3fb8dc268be1d9cedac6a8655fc76e98de0ad131",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 205619,
+          "captured": true,
+          "file": "0ce6df8d3614fb0a--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 900,
+          "locale": "en",
+          "sha256": "0ce6df8d3614fb0adbf06c7557e5b9fa627c5fffa6e966ce7f7505dd68b8b30a",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 414621,
+          "captured": true,
+          "file": "6225ad735470a20f.png",
+          "force_state": null,
+          "height": 2158,
+          "locale": "zh",
+          "sha256": "6225ad735470a20f1fb3327d14278e3a3b31e5c5836a63242aa9abd71e353cec",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 197347,
+          "captured": true,
+          "file": "acdf74b31a50d73c--radar_open.png",
+          "force_state": "radar_open",
+          "height": 900,
+          "locale": "zh",
+          "sha256": "acdf74b31a50d73c0e4171ddebbbd2f1ed27edcaeb99c6ba367d09eddf581bf9",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 197351,
+          "captured": true,
+          "file": "b1147cfded5e0514--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 900,
+          "locale": "zh",
+          "sha256": "b1147cfded5e0514aa661944c37b92ee5303592381dd3617fb310525f133d3b4",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 588117,
+          "captured": true,
+          "file": "4d738e602a082b54.png",
+          "force_state": null,
+          "height": 2158,
+          "locale": "zh",
+          "sha256": "4d738e602a082b548e6bd759e8800901d5e1a0d3883ae9c8fce0ecbb00c65a7b",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 206125,
+          "captured": true,
+          "file": "fb0d217af099cc74--radar_open.png",
+          "force_state": "radar_open",
+          "height": 900,
+          "locale": "zh",
+          "sha256": "fb0d217af099cc746bf96b4b972a3622d7230d02f392f7e189b60993fde14439",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 206137,
+          "captured": true,
+          "file": "add092f165a40ede--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 900,
+          "locale": "zh",
+          "sha256": "add092f165a40ede6e5f9d8c046c1231535dc2d12cb87b7fe011a991d6a05580",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 350072,
+          "captured": true,
+          "file": "d0eef151bf031cff.png",
+          "force_state": null,
+          "height": 4299,
+          "locale": "en",
+          "sha256": "d0eef151bf031cff04980989db04e0b3fede2a5895fb00cccc72efd05decc480",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 77601,
+          "captured": true,
+          "file": "9c4f4ae38e42df5f--radar_open.png",
+          "force_state": "radar_open",
+          "height": 844,
+          "locale": "en",
+          "sha256": "9c4f4ae38e42df5f95054d5a936c8f19a2bca110f75b723b0834ca0cf6b6a382",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 77647,
+          "captured": true,
+          "file": "6b5396819a6980b0--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 844,
+          "locale": "en",
+          "sha256": "6b5396819a6980b0617c49acfbcb6a160436b753f0e95e3f9deaefda70f53e5b",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 446878,
+          "captured": true,
+          "file": "ebf4ce0d530a616d.png",
+          "force_state": null,
+          "height": 4299,
+          "locale": "en",
+          "sha256": "ebf4ce0d530a616d988ecc94708b659d6edfaf9c23b9d22727ed502ff7a4a228",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 82130,
+          "captured": true,
+          "file": "99c901a8263df0de--radar_open.png",
+          "force_state": "radar_open",
+          "height": 844,
+          "locale": "en",
+          "sha256": "99c901a8263df0decefdd63b991d1cb110b3bd0120df515d6461020a91587153",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 82086,
+          "captured": true,
+          "file": "e5295d1d44b73915--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 844,
+          "locale": "en",
+          "sha256": "e5295d1d44b73915b59267aa4382130a60f8d3fbab2ad588963e405793acf3f9",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 341641,
+          "captured": true,
+          "file": "8a31dbd0922abf10.png",
+          "force_state": null,
+          "height": 4013,
+          "locale": "zh",
+          "sha256": "8a31dbd0922abf100aba1352470eaa50f66115a14cf09f70801137a6589f8852",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 83034,
+          "captured": true,
+          "file": "7f43f50419e85fbe--radar_open.png",
+          "force_state": "radar_open",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "7f43f50419e85fbe92594942d9eb757d079b64625a788110dae34ed0e2dfc9bf",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 83095,
+          "captured": true,
+          "file": "ac9318b85d1f966d--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "ac9318b85d1f966dda03a358127a8dbcdbdb5ebdaa20e1dc33bf128d3bd42859",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 427528,
+          "captured": true,
+          "file": "b7ff802b77c2ede9.png",
+          "force_state": null,
+          "height": 4013,
+          "locale": "zh",
+          "sha256": "b7ff802b77c2ede98924c1b2e4bfc277e68f1579c60cba6a78da644acedec1af",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_open",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 86757,
+          "captured": true,
+          "file": "7e6ba000ec0ade1b--radar_open.png",
+          "force_state": "radar_open",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "7e6ba000ec0ade1be463e5bcac05716f2b1ae37c6e03ab7a306f946ce4ffd3e3",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "radar_focus",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 86773,
+          "captured": true,
+          "file": "c876075380919132--radar_focus.png",
+          "force_state": "radar_focus",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "c87607538091913220e66698e28e335ee0d83f6bc83e54ba9f40ef3d225223eb",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390,
+          "capture_tool_module_sha256": "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+        }
+      ],
+      "page_tree_sha": "2fad87db73cbd2e47d8b32b40f659e54d2808dd5"
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "macro.html"
+    ],
+    "max_pages": 30,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "/Volumes/Mastermind/agent-evidence/risk-radar-explanations-live-20260920/page_registry.json",
+    "registry_rows": 330,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": "http://127.0.0.1:53254",
+    "kind": "base_url",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "unavailable: a live origin does not disclose the commit it is serving",
+    "site_dir": null
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": [
+      "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+      "411e875d6148bd92866a8a0a607af684ebccccbb2d41c6d6e12a89dc328932c4"
+    ],
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0",
+    "adapter_ref": "mockups/evidence/risk-radar-live-explanations-20260920/capture_adapter.py"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 24,
+    "states_captured": 24
+  }
+}

@@ -376,3 +376,29 @@ def test_validate_registry_returns_and_never_exits() -> None:
     to both a test and a catalog builder."""
     out = validate_registry(Registry([contract("a", owner="")]))
     assert isinstance(out, list) and all(isinstance(v, str) for v in out)
+
+
+def test_china_gold_source_contracts_are_proposed_until_natural_nightly_acceptance() -> None:
+    """The source-plane ids may be durable before their first live store, but not PRODUCED.
+
+    This lets closeout promote the exact same ids after a natural nightly without making
+    today's registry lie about artifacts that have not landed yet.
+    """
+    registry = load_registry()
+    sge = registry.get("commodity.gold.sge_au9999.close")
+    global_ref = registry.get("commodity.gold.xaucny.close_ref")
+
+    assert sge is not None
+    assert global_ref is not None
+    for item in (sge, global_ref):
+        assert item.status is DatasetStatus.PROPOSED
+        assert item.owner == "macro-dashboard"
+        assert item.producer == "collectors/china_gold_basis.py::ChinaGoldBasisAdapter"
+        assert item.storage.startswith("data/gold_china_basis/")
+        assert item.storage.endswith(".parquet")
+        assert item.temporal_profile is TemporalProfile.SNAPSHOT_SERIES
+        assert item.conflict_policy is ConflictPolicy.PRIMARY_ONLY
+        assert item.code_consumers == ("engine/china_gold_premium.py",)
+
+    assert sge.schema["rmb_per_g"]["unit"] == "CNY_per_gram"
+    assert global_ref.schema["cny_per_oz"]["unit"] == "CNY_per_troy_ounce"

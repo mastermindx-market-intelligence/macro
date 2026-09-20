@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UPS-BULL-20260825",
-  "asof": "2026-09-17",
+  "asof": "2026-09-19",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 13.0,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.234,
+    "dist_to_stop_r": -1.737,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 51.1,
-    "p1": -1.4892,
-    "p2": -0.7446,
+    "horizon_pct_used": 55.6,
+    "p1": -1.8244,
+    "p2": -0.9122,
     "p3": null,
-    "move_r": -2.234,
+    "move_r": -2.737,
     "mfe_r": 0.263,
     "mae_r": -2.868
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 23,
-  "tau": 0.5111
+  "days_elapsed": 25,
+  "tau": 0.5556
 }

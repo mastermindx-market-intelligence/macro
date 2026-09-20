@@ -153,6 +153,12 @@ STALE_DISCOVERY_DAYS = 90
 STALE_WORKSTREAM_DAYS = 30
 DEFAULT_CLAIM_HOURS = 12
 
+# A default CEO read should close cheap local truth gaps without reviving the 276-worktree
+# >120s failure mode that made the original scan opt-in.  Four bounded status calls cost at
+# most 20s at the timeout ceiling; larger hosts retain the explicit force flag.
+STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT = 4
+UNCOMMITTED_STATUS_TIMEOUT_SECONDS = 5.0
+
 
 class Problem:
     """One validation finding.  ``hard`` findings fail the run; warnings do not."""
@@ -1447,7 +1453,9 @@ def load_p0(degraded: Degraded) -> dict[str, str] | None:
     return out
 
 
-def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
+def scan_worktrees(
+    degraded: Degraded, *, deep: bool = False, auto_small: bool = False
+) -> dict[str, Any]:
     """Live checkout occupancy, via ``scripts/audit_stranded_work.py``.
 
     REUSED, not reimplemented: that module already knows how to read
@@ -1455,11 +1463,12 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
     status, and it had zero callers.  Only its pure local-git helpers are used — its
     ``main()`` does a ``git fetch``, which is a network call and is never invoked here.
 
-    ``deep`` adds the per-worktree uncommitted-source scan and is OFF by default because
-    it costs one ``git status`` per checkout: measured 276 live worktrees on this host,
-    most carrying a multi-GB ``data/`` tree, which put a plain ``brief`` past 120s. A CEO
-    command nobody waits for is a CEO command nobody runs, so the expensive half is
-    opt-in and its absence is stated rather than silently skipped.
+    ``deep`` forces the per-worktree uncommitted-source scan.  ``auto_small`` lets the
+    nightly status compiler perform that scan automatically only when the live set is small
+    enough to stay bounded.  The CEO brief deliberately leaves ``auto_small`` false so this
+    truth repair cannot consume its frozen 30-second read budget.  Each status call also has
+    its own timeout; a failed observation degrades loudly rather than becoming indistinguishable
+    from a clean tree.
     """
     try:
         # The repo-root pin is at module scope (see `_ROOT`), so `scripts` resolves here.
@@ -1475,19 +1484,33 @@ def scan_worktrees(degraded: Degraded, *, deep: bool = False) -> dict[str, Any]:
                      "worktree occupancy unknown")
         return {"count": 0, "branches": [], "uncommitted": []}
     uncommitted: list[dict[str, Any]] = []
-    if deep:
+    scan_uncommitted = deep or (auto_small and len(branches) <= STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT)
+    if scan_uncommitted:
         for branch in sorted(branches):
             try:
-                dirty = stranded.dirty_source_paths(branches[branch])
-            except Exception:
+                dirty = stranded.dirty_source_paths(
+                    branches[branch], timeout=UNCOMMITTED_STATUS_TIMEOUT_SECONDS
+                )
+            except Exception as exc:
+                degraded.add(
+                    f"uncommitted-work scan failed for {branch!r} "
+                    f"({exc.__class__.__name__}) — source status unknown"
+                )
                 continue
             if dirty:
                 uncommitted.append({"branch": branch, "source_files": len(dirty)})
     else:
-        degraded.add(
-            f"uncommitted-work scan skipped over {len(branches)} worktrees "
-            "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
-        )
+        if auto_small:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                f"(nightly auto limit {STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT}; "
+                "one bounded `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
+        else:
+            degraded.add(
+                f"uncommitted-work scan skipped over {len(branches)} worktrees "
+                "(one `git status` each) — re-run with --scan-uncommitted for stranded work"
+            )
     return {
         "count": len(branches),
         "branches": sorted(branches),
@@ -2192,7 +2215,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 
     builds = load_active_builds(degraded, Path(args.active_builds) if args.active_builds else None)
     p0_status = load_p0(degraded)
-    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted)
+    worktrees = scan_worktrees(degraded, deep=args.scan_uncommitted, auto_small=True)
 
     state = build_state(store, now=now, degraded=degraded, builds=builds,
                         p0_status=p0_status, worktrees=worktrees)
@@ -4115,7 +4138,7 @@ def main(argv: list[str] | None = None) -> int:
     p_status.add_argument("--md-out", help="AGENT_OS_STATE.md path override")
     p_status.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_status.add_argument("--scan-uncommitted", action="store_true",
-                          help="also scan every worktree for uncommitted source work")
+                          help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_status.add_argument("--dry-run", action="store_true",
                           help="print the JSON, write nothing")
     p_status.set_defaults(func=cmd_status)
@@ -4128,7 +4151,7 @@ def main(argv: list[str] | None = None) -> int:
     p_brief.add_argument("--json", action="store_true", help="emit ceo_brief.v1")
     p_brief.add_argument("--now", help="freeze the clock (ISO-8601) — reproducibility")
     p_brief.add_argument("--scan-uncommitted", action="store_true",
-                         help="also scan every worktree for uncommitted source work")
+                         help="force uncommitted-source scan even above the bounded nightly-status auto-scan limit")
     p_brief.add_argument("--no-remember", action="store_true",
                          help="do not record this invocation as the last check-in")
     p_brief.set_defaults(func=cmd_brief)

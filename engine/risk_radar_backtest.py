@@ -168,20 +168,29 @@ def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
                    alert_from: str = "elevated", lo=None) -> dict:
     """Precision / recall / F1 / fire-rate of the ALERT state (>= alert_from) vs a forward
     >= dd SPY drawdown within H bd, under `calib`. The do-no-harm objective for recalibration."""
+    if type(H) is not int or H <= 0:
+        raise ValueError("H must be a positive integer number of future observations")
     from engine.risk_radar import subscore_series, leading_signals
     subs = subscore_series(leading_signals(), calib)
     if subs is None or subs.empty:
         return {"f1": None}
     spy = _spy().reindex(subs.index).ffill()
     fdd = pd.Series({d: (spy.iloc[i + 1:i + 1 + H].min() / spy.iloc[i] - 1.0)
-                     if i + 1 < len(spy) else np.nan
+                     if i + H < len(spy) else np.nan
                      for i, d in enumerate(spy.index)})
     label = (fdd <= -dd)
     state = state_series(subs, calib)
     alert = state.map(lambda s: _ORDER.index(s) >= _ORDER.index(alert_from))
-    common = alert.index.intersection(label.dropna().index)
+    # Thresholding NaN creates False, not a missing label. Select complete
+    # outcomes BEFORE that conversion can turn the unfinished tail into evidence.
+    population = alert.index.intersection(fdd.index)
     if lo is not None:
-        common = common[common >= pd.Timestamp(lo)]
+        population = population[population >= pd.Timestamp(lo)]
+    common = population.intersection(fdd.dropna().index)
+    unscored = len(population) - len(common)
+    if not len(common):
+        return {"precision": None, "recall": None, "f1": None, "fire_rate": None,
+                "n_alert": 0, "n_days": 0, "n_unscored": int(unscored)}
     a = alert.reindex(common).fillna(False); y = label.reindex(common).fillna(False)
     tp = int((a & y).sum()); fp = int((a & ~y).sum()); fn = int((~a & y).sum())
     prec = tp / (tp + fp) if (tp + fp) else None
@@ -190,7 +199,7 @@ def state_accuracy(calib: dict, *, onsets=None, dd: float = 0.05, H: int = 21,
     return {"precision": None if prec is None else round(prec, 3),
             "recall": None if rec is None else round(rec, 3),
             "f1": round(f1, 3), "fire_rate": round(float(a.mean()), 4),
-            "n_alert": int(a.sum()), "n_days": int(len(common))}
+            "n_alert": int(a.sum()), "n_days": int(len(common)), "n_unscored": int(unscored)}
 
 
 def compare_calib(proposed: dict, base: dict | None = None, *, dd: float = 0.05, H: int = 21) -> dict:
@@ -209,9 +218,14 @@ def compare_calib(proposed: dict, base: dict | None = None, *, dd: float = 0.05,
     legs_ok = all((rep.get(leg, {}).get("lift_2020") or 0) >= 1.0
                   for leg, lc in proposed.get("legs", {}).items()
                   if (lc.get("lift_2020") or 0) >= 1.2)
+    scores = [out[label][window].get("f1")
+              for label in ("base", "proposed") for window in ("full", "y2020")]
+    ready = all(type(score) in (int, float) and np.isfinite(score) and 0 <= score <= 1
+                for score in scores)
     bf = out["base"]["full"]["f1"] or 0; pf = out["proposed"]["full"]["f1"] or 0
     b20 = out["base"]["y2020"]["f1"] or 0; p20 = out["proposed"]["y2020"]["f1"] or 0
-    improves = (pf >= bf - 1e-9) and (p20 >= b20 - 1e-9) and legs_ok and (pf + p20) > (bf + b20)
+    improves = ready and (pf >= bf - 1e-9) and (p20 >= b20 - 1e-9) and legs_ok and (pf + p20) > (bf + b20)
+    out["comparison_ready"] = bool(ready)
     out["legs_ok"] = legs_ok
     out["improves"] = bool(improves)
     return out

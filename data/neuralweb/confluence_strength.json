@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.confluence_strength.v1",
   "artifact_id": "confluence-strength",
-  "asof": "2026-09-14",
+  "asof": "2026-09-17",
   "tier": "display",
   "is_context_only": true,
   "display_only": true,
@@ -3791,6 +3791,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "BX",
+      "as_of": "2026-07-13",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "CME",
       "as_of": "2026-07-13",
       "direction": 1,
@@ -3808,6 +3821,19 @@
       "as_of": "2026-07-13",
       "direction": 1,
       "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CME",
+      "as_of": "2026-07-13",
+      "direction": 1,
+      "horizon": "63.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -15507,6 +15533,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ADM",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "AGI",
       "as_of": "2026-08-13",
       "direction": 1,
@@ -15551,10 +15590,11 @@
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "21.0",
-      "n_confirming_raw": 2,
-      "n_independent_confirming": 2.0,
+      "n_confirming_raw": 3,
+      "n_independent_confirming": 3.0,
       "engines": [
         "intel_hub",
+        "radar",
         "us_board"
       ],
       "regime_bucket": "Q3"
@@ -15564,6 +15604,19 @@
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "BLK",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -15586,10 +15639,36 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "CF",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "CHTR",
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CHTR",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -15638,6 +15717,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "EOG",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "EXPD",
       "as_of": "2026-08-13",
       "direction": 1,
@@ -15651,10 +15743,36 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "EXPD",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "FDS",
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "FDS",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -15694,6 +15812,19 @@
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "GOLD",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -15811,6 +15942,19 @@
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "HPE",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16240,6 +16384,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ROST",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "SMCI",
       "as_of": "2026-08-13",
       "direction": -1,
@@ -16270,6 +16427,19 @@
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "SYF",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16376,10 +16546,36 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "TPR",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "TRV",
       "as_of": "2026-08-13",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "TRV",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16402,7 +16598,46 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "TTWO",
+      "as_of": "2026-08-13",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
+        "intel_hub"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "BG",
+      "as_of": "2026-08-14",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "BG",
+      "as_of": "2026-08-14",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "RKLB",
       "as_of": "2026-08-14",
       "direction": 1,
       "horizon": "5.0",
@@ -16418,7 +16653,7 @@
       "subject": "RKLB",
       "as_of": "2026-08-14",
       "direction": 1,
-      "horizon": "5.0",
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16481,6 +16716,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "CLSK",
+      "as_of": "2026-08-17",
+      "direction": -1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "FANG",
       "as_of": "2026-08-17",
       "direction": 1,
@@ -16498,6 +16746,19 @@
       "as_of": "2026-08-17",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "FORM",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16546,6 +16807,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "GOOGL",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "HRL",
       "as_of": "2026-08-17",
       "direction": 1,
@@ -16563,6 +16837,19 @@
       "as_of": "2026-08-17",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "IRDM",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16624,6 +16911,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "LUNR",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "MCO",
       "as_of": "2026-08-17",
       "direction": 1,
@@ -16641,6 +16941,19 @@
       "as_of": "2026-08-17",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "MDA",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -16689,6 +17002,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "MSFT",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "NVO",
       "as_of": "2026-08-17",
       "direction": -1,
@@ -16728,10 +17054,37 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "PG",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "PL",
       "as_of": "2026-08-17",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 3,
+      "n_independent_confirming": 3.0,
+      "engines": [
+        "intel_hub",
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "PL",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 3,
       "n_independent_confirming": 3.0,
       "engines": [
@@ -16768,6 +17121,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "QLYS",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "SYF",
       "as_of": "2026-08-17",
       "direction": 1,
@@ -16794,6 +17160,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "TEAM",
+      "as_of": "2026-08-17",
+      "direction": -1,
+      "horizon": "21.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "TGT",
       "as_of": "2026-08-17",
       "direction": 1,
@@ -16811,6 +17190,19 @@
       "as_of": "2026-08-17",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "TMUS",
+      "as_of": "2026-08-17",
+      "direction": 1,
+      "horizon": "21.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -19719,6 +20111,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ADM",
+      "as_of": "2026-09-03",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "CEG",
       "as_of": "2026-09-03",
       "direction": -1,
@@ -19953,6 +20358,19 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ACM",
+      "as_of": "2026-09-04",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "ADBE",
       "as_of": "2026-09-04",
       "direction": -1,
@@ -19966,6 +20384,20 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ADM",
+      "as_of": "2026-09-04",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 3,
+      "n_independent_confirming": 3.0,
+      "engines": [
+        "radar",
+        "stock_desk",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "AEP",
       "as_of": "2026-09-04",
       "direction": 1,
@@ -19975,6 +20407,32 @@
       "engines": [
         "radar",
         "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "BF-B",
+      "as_of": "2026-09-04",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CDE",
+      "as_of": "2026-09-04",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
       ],
       "regime_bucket": "Q3"
     },
@@ -20039,6 +20497,19 @@
       "n_independent_confirming": 2.0,
       "engines": [
         "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "GWW",
+      "as_of": "2026-09-04",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "altdata",
         "us_board"
       ],
       "regime_bucket": "Q3"
@@ -20266,6 +20737,240 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "ADM",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "AEP",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "AN",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "stock_desk",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CL",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CLSK",
+      "as_of": "2026-09-08",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "F",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "GM",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "NVDA",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "ROST",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "TTD",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "VRT",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "VST",
+      "as_of": "2026-09-08",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "ADBE",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CEG",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "CHD",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "FORM",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "GDX",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
+        "thematic_desk"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "HOOD",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "HSY",
       "as_of": "2026-09-09",
       "direction": 1,
@@ -20274,6 +20979,19 @@
       "n_independent_confirming": 2.0,
       "engines": [
         "altdata",
+        "track_record"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "MRK",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "radar",
         "track_record"
       ],
       "regime_bucket": "Q3"
@@ -20292,15 +21010,80 @@
       "regime_bucket": "Q3"
     },
     {
-      "subject": "MRK",
+      "subject": "MSTR",
       "as_of": "2026-09-09",
-      "direction": 1,
-      "horizon": "63.0",
+      "direction": -1,
+      "horizon": "5.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
         "radar",
-        "track_record"
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "NOW",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "NVDA",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "PLTR",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "QCOM",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "RTX",
+      "as_of": "2026-09-09",
+      "direction": -1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "intel_hub",
+        "radar"
       ],
       "regime_bucket": "Q3"
     },
@@ -21579,10 +22362,36 @@
       "regime_bucket": "Q3"
     },
     {
+      "subject": "CTVA",
+      "as_of": "2026-08-31",
+      "direction": 1,
+      "horizon": "10.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
       "subject": "KMI",
       "as_of": "2026-08-31",
       "direction": 1,
       "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "KMI",
+      "as_of": "2026-08-31",
+      "direction": 1,
+      "horizon": "10.0",
       "n_confirming_raw": 2,
       "n_independent_confirming": 2.0,
       "engines": [
@@ -21603,6 +22412,45 @@
         "us_board"
       ],
       "regime_bucket": "Q3"
+    },
+    {
+      "subject": "KMI",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "QCOM",
+      "as_of": "2026-09-09",
+      "direction": 1,
+      "horizon": "5.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "track_record",
+        "us_board"
+      ],
+      "regime_bucket": "Q3"
+    },
+    {
+      "subject": "non_ai_software",
+      "as_of": "2026-09-17",
+      "direction": 1,
+      "horizon": "63.0",
+      "n_confirming_raw": 2,
+      "n_independent_confirming": 2.0,
+      "engines": [
+        "desk:narrative_brain",
+        "desk:radar"
+      ],
+      "regime_bucket": "Q3"
     }
   ],
   "redundancy_discount": {
@@ -21614,6 +22462,6 @@
     "confluence_strength: no clusters in lobes block — no discount"
   ],
   "produced_by": "engine/neuralweb/confluence_strength.py",
-  "produced_at": "2026-09-17T09:23:30Z",
+  "produced_at": "2026-09-18T18:39:16Z",
   "authority_check": []
 }

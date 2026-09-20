@@ -1229,6 +1229,54 @@
       "at": "2026-09-17T22:13:06.593848+00:00",
       "activated": false,
       "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=50506": {
+      "id": "wh-2026-09-18-president-trump-extends-most-favored-nation-pricing-to-every-medicaid-program-in",
+      "at": "2026-09-18T19:36:04.579753+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50510": {
+      "id": "wh-2026-09-18-what-they-are-saying-president-trump-delivers-historic-victories-for-americas-hu",
+      "at": "2026-09-18T19:36:16.739825+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50534": {
+      "id": "wh-2026-09-18-fact-sheet-president-donald-j-trump-further-enhances-program-integrity-and-inter",
+      "at": "2026-09-18T22:34:50.093976+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50541": {
+      "id": "wh-2026-09-18-enhancing-program-integrity-and-integrity-and-interagency-coordination-in-the-ad",
+      "at": "2026-09-18T22:35:00.630228+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50538": {
+      "id": "wh-2026-09-18-congressional-bill-h-r-5334-signed-into-law",
+      "at": "2026-09-18T22:35:27.009633+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50532": {
+      "id": "wh-2026-09-18-restriction-on-entry-of-certain-nonimmigrant-workers-faad",
+      "at": "2026-09-18T22:35:59.657384+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50524": {
+      "id": "wh-2026-09-18-fact-sheet-president-donald-j-trump-announces-lower-drug-prices-for-all-50-state",
+      "at": "2026-09-18T22:36:11.273995+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=50546": {
+      "id": "wh-2026-09-18-presidential-message-on-the-79th-birthday-of-the-united-states-air-force",
+      "at": "2026-09-19T20:39:42.556309+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

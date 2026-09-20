@@ -1,8 +1,8 @@
 {
   "schema": "china_masterminds.latest.v2",
   "n": 3,
-  "built": "2026-09-16 12:30 UTC",
-  "asof": "2026-09-16",
+  "built": "2026-09-19 12:31 UTC",
+  "asof": "2026-09-18",
   "stale_after_min": 1440,
   "cards": [
     {
@@ -11,84 +11,84 @@
       "cagr": 6.99,
       "sharpe": 1.35,
       "maxdd": -6.2,
-      "asof": "2026-09-16",
-      "gross_now": 0.56,
+      "asof": "2026-09-18",
+      "gross_now": 0.62,
       "alloc": [
         {
           "asset": "510880.SS",
           "label_en": "SSE Dividend",
           "label_zh": "\u4e0a\u8bc1\u7ea2\u5229",
-          "weight": 27.3
+          "weight": 27.7
         },
         {
           "asset": "511010.SS",
           "label_en": "China 5y Govt Bond",
           "label_zh": "5\u5e74\u56fd\u503a",
-          "weight": 27.3
+          "weight": 27.7
         },
         {
           "asset": "518880.SS",
           "label_en": "Gold (onshore)",
           "label_zh": "\u9ec4\u91d1",
-          "weight": 1.7
+          "weight": 6.8
         }
       ]
     },
     {
       "key": "cnmm_moderate",
       "name": "China Mastermind \u2014 Moderate",
-      "cagr": 10.11,
+      "cagr": 10.1,
       "sharpe": 1.17,
       "maxdd": -12.1,
-      "asof": "2026-09-16",
-      "gross_now": 1.11,
+      "asof": "2026-09-18",
+      "gross_now": 1.2,
       "alloc": [
         {
           "asset": "510880.SS",
           "label_en": "SSE Dividend",
           "label_zh": "\u4e0a\u8bc1\u7ea2\u5229",
-          "weight": 53.8
+          "weight": 54.4
         },
         {
           "asset": "511010.SS",
           "label_en": "China 5y Govt Bond",
           "label_zh": "5\u5e74\u56fd\u503a",
-          "weight": 53.8
+          "weight": 54.4
         },
         {
           "asset": "518880.SS",
           "label_en": "Gold (onshore)",
           "label_zh": "\u9ec4\u91d1",
-          "weight": 3.0
+          "weight": 11.6
         }
       ]
     },
     {
       "key": "cnmm_aggressive",
       "name": "China Mastermind \u2014 Aggressive",
-      "cagr": 14.25,
+      "cagr": 14.24,
       "sharpe": 1.1,
       "maxdd": -22.3,
-      "asof": "2026-09-16",
+      "asof": "2026-09-18",
       "gross_now": 1.8,
       "alloc": [
-        {
-          "asset": "510880.SS",
-          "label_en": "SSE Dividend",
-          "label_zh": "\u4e0a\u8bc1\u7ea2\u5229",
-          "weight": 88.1
-        },
         {
           "asset": "511010.SS",
           "label_en": "China 5y Govt Bond",
           "label_zh": "5\u5e74\u56fd\u503a",
-          "weight": 88.1
+          "weight": 87.0
+        },
+        {
+          "asset": "510880.SS",
+          "label_en": "SSE Dividend",
+          "label_zh": "\u4e0a\u8bc1\u7ea2\u5229",
+          "weight": 78.2
         },
         {
           "asset": "518880.SS",
           "label_en": "Gold (onshore)",
           "label_zh": "\u9ec4\u91d1",
-          "weight": 3.9
+          "weight": 14.8
         }
       ]
     }

@@ -1278,6 +1278,63 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      - "collectors/federal_register.py"
+      - "engine/activist.py"
+      - "engine/capital_structure/event_spine.py"
+      - "engine/policy_calendar.py"
+      - "engine/special_arb.py"
+      - "engine/special_situations.py"
+      - "engine/special_situations_premium.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/source_identity.py"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_projection.schema.json"
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "contracts/capital_structure_event.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "engine/_text_scrub.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      # B-F07-3 event bridge reader/resolver 2026-09-19 (contract-delta)
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/spine_paths.py"
+      - "engine/chronicle/__init__.py"
+      - "engine/chronicle/adapters.py"
+      - "engine/chronicle/earnings_calls.py"
+      - "engine/chronicle/schema.py"
+      - "engine/chronicle/spine.py"
+      - "engine/chronicle/state_log.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_qual.py"
+      - "engine/neuralweb/analyst_doctrine.py"
+      - "engine/neuralweb/ask_brain.py"
+      - "engine/neuralweb/chat_plain_words.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/neuralweb/cortex.py"
+      - "engine/neuralweb/doctrine.py"
+      - "engine/neuralweb/earnings_context_reader.py"
+      - "engine/neuralweb/metabolism.py"
+      - "engine/neuralweb/query.py"
+      - "engine/neuralweb/reflexes.py"
+      - "engine/prophet_integrity.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/research_vault/sidecar.py"
+      - "engine/research_vault/slugs.py"
+      - "engine/seasonality/contracts.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "tests/test_capital_structure_event_spine.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "templates/_valuation_scenario.html.j2"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
@@ -1286,6 +1343,20 @@ jobs:
       - "tests/test_valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "tests/test_valuation_assumptions.py"
+      # W7B F06-5 (MO-PAID-020): ticker<->CIK collision census + ONE bounded renderer repair admitted and shipped (H1 — raw-token leak in Evidence & receipts panel). The pure classifiers live in engine/market_ontology/ticker_cik_census.py (no pandas import at module top); the CLI lives in scripts/ticker_cik_collision_census.py (parquet I/O here, never in the engine); the suite is RED-first with synthetic fixtures per class plus a live-data invariant test that pins only invariants (C1 (a)-(e) == 0; every current store symbol either resolves or fails with a closed-enum class) and prints dated receipt lines.
+      - "engine/market_ontology/ticker_cik_census.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "scripts/ticker_cik_collision_census.py"
+      - "tests/test_ticker_cik_collision_census.py"
+      - "research/market_intelligence_productization/MARKET_ONTOLOGY_F06_5_TICKER_CIK_COLLISION_CENSUS_2026-09-13.md"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "tests/test_valuation_event_bridge.py"
       # china S1 archetype test wired into conviction-profile (Meta-CEO A ruling
       # W7A_7054_A_CURE round 1, C2) — same china partial as
       # test_china_special_situations_gate, gate:code HTML structure/copy pin.
@@ -1644,6 +1715,21 @@ jobs:
       - "engine/commodity_inputs.py"
       - "engine/commodity_signals.py"
       - "engine/commodity_strategies.py"
+      # China physical-gold premium core + production-path quality receipt
+      # are independently merge-gated here.
+      - "engine/china_gold_premium.py"
+      - "scripts/audit_china_gold_premium.py"
+      - "scripts/promote_china_gold_dataos.py"
+      - "tests/test_china_gold_premium_engine_contract.py"
+      # The audit/promotion proof reads the canonical Data OS registry through
+      # lib.dataos.registry; keep conviction-profile's exclusive closure honest.
+      - "config/dataset_registry.yml"
+      - "lib/dataos/__init__.py"
+      - "lib/dataos/nulls.py"
+      - "lib/dataos/price.py"
+      - "lib/dataos/quality.py"
+      - "lib/dataos/registry.py"
+      - "lib/dataos/temporal.py"
       - "engine/composite_score.py"
       - "engine/confluence_latch.py"
       - "engine/confluence_tiers.py"
@@ -1691,7 +1777,10 @@ jobs:
         #     import engine.cycles, so this job's line had never needed it. Missing it is a
         #     COLLECTION error (pytest exit 2), which fails the whole step rather than one
         #     test — measured on this PR's first run (ci-pack-11, job 96210580631).
-        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema
+        # B-F07-3 round 7 widening 2026-09-19 (contract-delta): event_versions_io
+        # reads committed parquet; pandas needs pyarrow. Do not add requests —
+        # the valuation producer must stay collector-free in this venv.
+        run: pip install pytest pandas numpy markupsafe jinja2 pyyaml jsonschema pyarrow
       - name: conviction profile honesty invariants + dossier reason codes
         run: python -m pytest tests/test_stock_score.py tests/test_stock_dossier.py -q
       # P1 unrun backfill 2026-08-19: tests/test_analyzer_i18n_percentile.py (#5980) was named
@@ -1763,7 +1852,26 @@ jobs:
           python -m pytest
           tests/test_valuation_scenario.py
           tests/test_valuation_assumptions.py
+          tests/test_valuation_event_bridge.py
           tests/test_china_archetype_d_s1.py -q
+      # Gold China-premium core is a code contract, not merely a render/data
+      # check. The full builder/template matrix remains on unrun-macro-panels;
+      # this hermetic subset prevents the calculation or rights gate from
+      # merging dark on ordinary code PRs.
+      - name: China physical-gold premium — calculation, alignment, entitlement
+        run: python -m pytest tests/test_china_gold_premium_engine_contract.py -q
+      # W7B F06-5 (MO-PAID-020) ticker<->CIK collision census (MO-B). The
+      # classifier is a pure function over list-of-dict records (no pandas at
+      # module top per R5); the live-data test pins invariants only and prints
+      # dated receipt lines; the C5 renderer-robustness test projects the two
+      # committed security_state goldens through build_security_state and
+      # asserts no unmapped-identity warnings + no raw-token leakage. Hermetic:
+      # tmp_path fixtures + the committed data/reference/*.parquet when
+      # present; the live-data test skips with a named reason otherwise. Own
+      # step per this job's precedent — a step is the masking unit (run_ci_pack
+      # returns on the first non-zero step).
+      - name: ticker<->CIK collision census + C5 renderer robustness (W7B F06-5)
+        run: python -m pytest tests/test_ticker_cik_collision_census.py -q
 
   chronicle-suite:
     if: ${{ false }}
@@ -2057,6 +2165,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -2124,6 +2236,7 @@ jobs:
       - "engine/cross_asset.py"
       - "engine/cycles.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -2437,6 +2550,7 @@ jobs:
       - "site/canadabasketdata/**"
       - "site/chinabasketdata/**"
       - "site/coming-soon.html"
+      - "site/live/quotes.json"
       - "site/darkpool_eod.json"
       - "site/data/**"
       - "site/factordata/**"
@@ -2455,6 +2569,12 @@ jobs:
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
+      # MO-B F01-1 morning edition (am_edition.v1) 2026-09-19 (contract-delta)
+      - "templates/am_edition.html.j2"
+      - "scripts/build_am_edition.py"
+      - "scripts/capture_am_edition_evidence.py"
+      - "tests/test_am_edition_page.py"
+      - "tests/test_am_edition_producer.py"
       # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
       # source-bound help directory now also validates the public
       # glossary page against this template.
@@ -2595,6 +2715,8 @@ jobs:
         run: python -m pytest tests/test_build_options_prophet.py -q
       - name: private operator-reviewed Options Issue Desk (R6.2-A)
         run: python -m pytest tests/test_options_issue_desk.py tests/test_options_issue_desk_api.py -q
+      - name: morning edition page + producer (MO-B F01-1)
+        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py -q
 
   cycle-grading-stats:
     if: ${{ false }}
@@ -2778,6 +2900,10 @@ jobs:
       # ok/empty/unavailable contract — the same dependency set this step already
       # installs. Theme Tracker's owning job unrun-subsector-themes is gate: data, so
       # the suite is named here on the census step instead. No new job.
+      # tests/test_cash_runway.py (packet B-F09-3 second slice / W8-1, contract-delta
+      # 2026-09-19) rides this step for the same reason as test_debt_maturity.py:
+      # engine.cash_runway is a pure module under this job's engine/*.py glob and the
+      # Jinja render tests reuse templates/_debt_maturity.html.j2. No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -2786,12 +2912,14 @@ jobs:
           tests/test_stock_dashboard_first_frame_data.py
           tests/test_stock_dashboard_css.py
           tests/test_debt_maturity.py
+          tests/test_cash_runway.py
           tests/test_hk_v37_composer.py
           tests/test_commodity_signals.py
           tests/test_commodity_index.py
           tests/test_commodity_confluence.py
           tests/test_commodity_cycle_state.py
           tests/test_commodity_coverage_matrix.py
+          tests/test_china_gold_premium.py
           tests/test_fear_euphoria.py tests/test_froth_fragility.py
           tests/test_vol_velocity.py tests/test_fear_greed_honesty.py
           tests/test_archive_context_snapshots.py
@@ -3505,6 +3633,29 @@ jobs:
           tests/test_covenant_terms.py
           tests/test_compile_capital_structure_covenant_terms.py -q
 
+  covenant-headroom:
+    if: ${{ false }}
+    gate: code
+    # B-F09-13 (MO-PAID-062 slice 2): zero-authority covenant headroom
+    # view-model for the one extracted issuer. Pure engine + closed-set
+    # defenses (REFUSALS, COVENANT_METRIC_MAP, _NO_EXTRAPOLATION_KEYS,
+    # _ZERO_AUTHORITY_KEYS). This legacy job is disabled by `if: ${{ false }}`;
+    # the trusted executor packs run the test on pull requests instead. Same
+    # tmp_path fixture discipline as board-shadow-substrate: no committed
+    # data/site moves.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        # contract-delta 2026-09-19 (seat main update d6c4277c): lib/config.py on main imports yaml at
+        # module import (ModuleNotFoundError: No module named 'yaml' at lib/config.py:8 on ci-pack-10);
+        # pyyaml added to this job's own install line, nothing else changed.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
+      - name: covenant headroom engine — closed refusal set, zero authority, no extrapolation
+        run: python -m pytest tests/test_covenant_headroom.py -q
+
   stock-seasonality:
     if: ${{ false }}
     gate: data
@@ -3637,7 +3788,7 @@ jobs:
         # with Draft202012Validator, which is a COLLECTION-time import — without it
         # the step dies at exit 2 having asserted nothing, which reads as a lane
         # failure rather than as the missing dep it is.
-        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema
+        run: pip install pytest pandas pyarrow requests beautifulsoup4 lxml pyyaml jsonschema jinja2
       - name: china native interaction + sell-side collector tests (W1 CNH)
         run: python -m pytest tests/test_china_irm_collector.py tests/test_china_einteraction_collector.py tests/test_china_reports_collector.py tests/test_china_holder_counts_collector.py -q
       # China Alpha Intelligence P1 (#6050): institutional-visit tape, derived
@@ -3661,7 +3812,7 @@ jobs:
       # above: the only suite pinning the non-China producer that joins the ONE event
       # system (keep-FIRST, typed nulls, deterministic event_key, scoring isolation).
       - name: europe policy/geo PIT event-bus tests (F02 MO-PAID-034)
-        run: python -m pytest tests/test_europe_news_intel.py -q
+        run: python -m pytest tests/test_europe_news_intel.py tests/test_europe_news_panel.py -q
       # The fail-closed full-A TuShare spine (#5116). Same WIRING LAW as every step
       # above, and the same shape of hole: the suite was named by NO run: step when
       # it merged, so the spine's fail-closed contract — the manifest schema, the
@@ -3981,6 +4132,16 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "collectors/edgar_8k.py"
+      - "collectors/edgar_dilution.py"
+      - "collectors/sec_capital_structure.py"
+      - "contracts/capital_structure_document_term_observation.schema.json"
+      - "contracts/capital_structure_ingestion_health.schema.json"
+      - "contracts/capital_structure_projection.schema.json"
+      - "contracts/capital_structure_retrieval_queue_receipt.schema.json"
+      - "contracts/capital_structure_source_manifest.schema.json"
+      - "scripts/compile_capital_structure_events.py"
       - "contracts/evidence_foundation/vocabulary.v1.json"
       - "contracts/evidence_foundation/reference.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -4218,7 +4379,7 @@ jobs:
         #    exercises that degraded branch instead of the shipped one.
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
       - name: neural-web core suite (mastermind context + confluence + spine query + ask brain + world state + R5 macro context + ADB-W1 brief context + ADB-W2 forward calendar + Analyst OS P0 + W2)
-        run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
+        run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
 
   cn-standout-audit:
     if: ${{ false }}
@@ -5429,6 +5590,29 @@ jobs:
       - name: append-only law mutation + negative controls
         run: python -m pytest tests/test_append_only_assertions.py -q
 
+  research-screener:
+    if: ${{ false }}
+    gate: code
+    # B-F06-4 research-priority screener. Pure compiler + Jinja producer +
+    # template. No data/ or nightly artifact required. Paths cover the three
+    # packet owners so a change to any of them selects this job; no waiver.
+    paths:
+      - engine/research_screener.py
+      - scripts/build_research_screener.py
+      - templates/research_screener.html.j2
+      - templates/research_screener.css
+      - tests/test_research_screener.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jinja2 markupsafe
+      - name: research screener unit tests
+        run: python -m pytest tests/test_research_screener.py -q
+
   leader-radar-unit:
     if: ${{ false }}
     gate: code
@@ -5831,6 +6015,16 @@ jobs:
     # .claude/hooks/ could otherwise skip the job that owns its contract.
     paths:
       - ".claude/hooks/**"
+      # The execution continuation law lives on four surfaces at once and is proven by
+      # cross-surface parity, so an edit to ANY of them has to re-run that proof. Path
+      # inference cannot reach them: the suite reads them as data, by relative path,
+      # not by import. A law corrected on three surfaces and left stale on the fourth
+      # is the exact failure DEC:HOLD-PARKS-SHIP-NOT-DIALOGUE was filed for.
+      - CLAUDE.md
+      - AGENTS.md
+      - ".cursor/rules/**"
+      - agentos/decisions/DEC-EXECUTION-CONTINUATION-INVARIANTS.md
+      - tests/test_execution_continuation_law.py
       - scripts/agentos.py
       - scripts/ci_authority.py
       - scripts/ci_authority_paths.py
@@ -5844,11 +6038,20 @@ jobs:
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
       - tests/test_f00c_terminal_reconciliation.py
+      - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
       - tests/test_f01_fx_commodity_source_rights.py
       - agentos/discoveries/DSC-COMMODITY-AND-FX-PRICE-SPINE-YAHOO-VENDOR-TERMS-ARE-RECORDED-ADVERSE.md
       - research/market_intelligence_productization/F01_FX_COMMODITY_SOURCE_RIGHTS_AND_DEPTH_2026-09.md
       - research/market_intelligence_productization/F01_FX_DISLOCATION_CHARTER_2026-09.md
       - tests/test_f02_owner_map_receipts.py
+      # W9B_REC_NS: the Supabase namespace note that tests/test_w9b_rec_ns.py reads from
+      # disk and pins (existence, anchors 0013/0023/0024/0026, no PAT/key/20-letter-shaped
+      # credential token, no standalone BUILT). Declared for the same reason as the
+      # records lanes above — an edit touching only this note must select the job that
+      # runs the suite pinning it, so the pin fires pre-merge on the PR instead of
+      # post-merge on main. A declaration only ever widens this job's scope.
+      - tests/test_w9b_rec_ns.py
+      - research/market_intelligence_productization/W9_W9B_REC_NS_2026-09-13.md
       # B-REC-B5-1 (round 3 FIX-1, widened in round 4): every record read from disk by the
       # three suites this job's last step runs — test_b_rec2_wave_boundary_records.py,
       # test_b_rec3_wave_boundary_records.py and test_f00c_terminal_reconciliation.py.
@@ -5900,7 +6103,7 @@ jobs:
         run: pip install pytest pyyaml
       - name: self-mod-fence selftest (all four cases proven)
         run: python3 scripts/check_self_mod_fence.py --selftest
-      - name: ship-loop guard contract (dirt, branch namespace, render scoping)
+      - name: ship-loop guard contract (dirt, branch namespace, render scoping, continuation law)
         # The Stop hook that enforces commit->merge->render->live had NO CI at all,
         # which is how its render precondition shipped scoped to the whole session
         # range: on a shared main that sweeps in concurrent sessions' templates/
@@ -5917,7 +6120,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -5998,7 +6201,7 @@ jobs:
           python -m pytest tests/test_agentos_schema.py tests/test_agentos_status.py \
             tests/test_agentos_compile.py tests/test_f01_fx_commodity_source_rights.py tests/test_f02_owner_map_receipts.py \
             tests/test_b_rec2_wave_boundary_records.py tests/test_b_rec3_wave_boundary_records.py \
-            tests/test_f00c_terminal_reconciliation.py -q
+            tests/test_f00c_terminal_reconciliation.py tests/test_mo_b_ledger_reconciliation_2026_09_18.py tests/test_w9b_rec_ns.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -6412,7 +6615,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest jinja2
       - name: FTR tape-surface template guards
-        run: python -m pytest tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py -q
+        run: python -m pytest tests/test_ftr_w1_template_markup.py tests/test_ftr_w3_ui.py tests/test_basket_detail_glance_copy.py -q
 
   live-flow-ops:
     if: ${{ false }}
@@ -6482,6 +6685,7 @@ jobs:
       - "tests/test_sanctions_map_engine.py"
       - "tests/test_sanctions_map_nav.py"
       - "tests/test_sanctions_map_page.py"
+      - "tests/test_sanctions_map_event_pins.py"
       - "tests/test_worldmap_base.py"
     timeout-minutes: 10
     runs-on: ubuntu-latest
@@ -6491,9 +6695,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps
-        run: pip install pytest pandas numpy pyyaml jinja2 requests
+        # W7-2 sanctions-map public-news layer 2026-09-19 (contract-delta): engine.europe_news_intel reads
+        # data/europe_news_vector/events.parquet with pandas, so this job needs the pyarrow engine (seat fix, ci-pack-5 red at 2d5fdc60).
+        run: pip install pytest pandas numpy pyyaml jinja2 requests pyarrow
       - name: sanctions map engine + page + nav + worldmap + OFAC collector
-        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py -q
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py -q
 
   itr-turn-rotation:
     if: ${{ false }}
@@ -6834,13 +7040,14 @@ jobs:
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
       - name: CCW-W4 credit desk vm tests
-        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py -v
+        run: python -m pytest tests/test_bonds_corp_credit_vm.py tests/test_bonds_divergence_gate.py tests/test_bonds_glance_copy.py -v
     # T10 moved to unrun-macro-panels (gate: data). That job already installs
     # pandas/numpy/pyarrow/jinja2/plotly; T10's verdict can flip on a nightly
     # data commit, so it must not live on this gate: code job.
     paths:
       - "tests/test_bonds_corp_credit_vm.py"
       - "tests/test_bonds_divergence_gate.py"
+      - "tests/test_bonds_glance_copy.py"
       - "scripts/build_bonds.py"
       - "templates/bonds.html.j2"
       - "lib/macro_suite_view.py"
@@ -7029,12 +7236,39 @@ jobs:
     #                             client-sent user id is ignored), validation, the
     #                             user_metadata MERGE, the email_prefs lang mirror, and the
     #                             honest partial/total failure statuses.
+    #   test_alert_prefs.py     — B-F08-1a alert delivery preferences (email opt-in,
+    #                             category subset, IANA tz, quiet hours): storage-shape
+    #                             validation via lib.user_prefs.normalize_value, the
+    #                             quiet_hours wire sentinel "off" reaching the writer as
+    #                             None (never the literal string), GET /api/account/prefs
+    #                             readback with unset/categories_available, no site/data
+    #                             filesystem writes, and the account.js JS-source
+    #                             contract for the new alert-prefs group (same
+    #                             no-browser-harness idiom as test_shared_pref_atomics.py).
     #   test_account_team_fields.py — GET /api/account teams field: RLS-scoped
     #                             PostgREST read (caller token on Authorization,
     #                             never the service-role key), own-row filter,
     #                             empty membership vs unavailable, truncation,
     #                             fail-closed network/non-2xx, hostile no-fallback
     #                             when token or user_id is missing.
+    #   test_account_actions.py — the FOUR account-panel actions (app/account_actions.py):
+    #                             POST /api/account/{password,email,signout-everywhere,delete},
+    #                             which templates/account.js had been calling with no handler
+    #                             anywhere in app/ (and cross-origin at that, so every control
+    #                             on the panel was dead). Guards: the caller's own token is the
+    #                             only credential that acts (never the service-role key, never
+    #                             /auth/v1/admin/*), the deletion route is an INTAKE that files
+    #                             one RLS-scoped row and can never report a receipt the store
+    #                             did not echo, the 409 read-back, the bounded/rate-limited
+    #                             upstream, a plain EN+ZH sentence on every non-2xx, and the
+    #                             no-dead-handler contract — every api('/api/account…') call in
+    #                             the panel resolves to a registered route and every rendered
+    #                             data-act has an onClick case. Driven through the raw ASGI
+    #                             callable, so this job's install line needs no httpx.
+    #   tests/js/account_get_token.test.mjs — Node replica of getToken() on www:
+    #                             MDXAuth.client() is a Promise (theme.js getSupabaseClient);
+    #                             getToken must await it then auth.getSession(), and a
+    #                             rejecting client must yield null rather than throw.
     #   test_shared_pref_atomics.py — the SAME user_metadata keys, from the browser side:
     #                             templates/theme.js must write the top-level `theme` /
     #                             `theme_auto` / `lang` atomics and never the nested `prefs`
@@ -7066,9 +7300,13 @@ jobs:
       - name: billing + lifecycle email tests (app/billing_emails.py)
         run: python -m pytest tests/test_billing_emails.py -v
       - name: account preference tests (app/account_prefs.py)
-        run: python -m pytest tests/test_account_prefs.py -v
+        run: python -m pytest tests/test_account_prefs.py tests/test_alert_prefs.py -v
       - name: account team-membership tests (lib/team_membership.py)
         run: python -m pytest tests/test_account_team_fields.py -v
+      - name: account actions (app/account_actions.py)
+        run: python -m pytest tests/test_account_actions.py -v
+      - name: account getToken client identity (templates/account.js)
+        run: node --test tests/js/account_get_token.test.mjs
       - name: shared preference atomics contract (templates/theme.js)
         run: python -m pytest tests/test_shared_pref_atomics.py -v
       - name: billing webhook spine regression (app/billing.py::_handle_event)
@@ -7386,6 +7624,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Enumerated, not globbed — the checker
@@ -7432,6 +7674,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -7996,6 +8239,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/security_state.py"
@@ -8051,6 +8298,7 @@ jobs:
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -8853,7 +9101,7 @@ jobs:
         #   wire_story — D1 one event, one post; its docstring already names this lane
         #   wire_volume — a dark desk PARKS; no account takes an unbounded firehose
         # Verified in a clean pytest+pyyaml+jinja2 venv: 1006 passed, 0 skipped.
-        run: python -m pytest tests/test_marketing_ad_central.py tests/test_marketing_allies.py tests/test_marketing_anchor_law.py tests/test_marketing_attribution.py tests/test_marketing_breaking_card.py tests/test_marketing_card_ticker_agreement.py tests/test_marketing_cold_read.py tests/test_marketing_copy_review.py tests/test_marketing_earnings_call_lane.py tests/test_marketing_emitted_kind_ownership.py tests/test_marketing_lane_rerun.py tests/test_marketing_links.py tests/test_marketing_macro_print_tier.py tests/test_marketing_mover_stance.py tests/test_marketing_next_review.py tests/test_marketing_rejections.py tests/test_marketing_relay_hygiene.py tests/test_marketing_reply_elements.py tests/test_marketing_reply_pacing.py tests/test_marketing_reply_register.py tests/test_marketing_reply_shape.py tests/test_marketing_reply_targets.py tests/test_marketing_rewrite.py tests/test_marketing_source_authority.py tests/test_marketing_tape_reaction_basket.py tests/test_marketing_telemetry.py tests/test_marketing_wire_dehandle.py tests/test_marketing_wire_single_statement.py tests/test_marketing_wire_story.py tests/test_marketing_wire_volume.py -q
+        run: python -m pytest tests/test_marketing_ad_central.py tests/test_marketing_allies.py tests/test_marketing_anchor_law.py tests/test_marketing_attribution.py tests/test_marketing_breaking_card.py tests/test_marketing_card_ticker_agreement.py tests/test_marketing_cold_read.py tests/test_marketing_copy_review.py tests/test_marketing_earnings_call_lane.py tests/test_marketing_earnings_call_projection.py tests/test_marketing_emitted_kind_ownership.py tests/test_marketing_lane_rerun.py tests/test_marketing_links.py tests/test_marketing_macro_print_tier.py tests/test_marketing_mover_stance.py tests/test_marketing_next_review.py tests/test_marketing_rejections.py tests/test_marketing_relay_hygiene.py tests/test_marketing_reply_elements.py tests/test_marketing_reply_pacing.py tests/test_marketing_reply_register.py tests/test_marketing_reply_shape.py tests/test_marketing_reply_targets.py tests/test_marketing_rewrite.py tests/test_marketing_source_authority.py tests/test_marketing_tape_reaction_basket.py tests/test_marketing_telemetry.py tests/test_marketing_wire_dehandle.py tests/test_marketing_wire_single_statement.py tests/test_marketing_wire_story.py tests/test_marketing_wire_volume.py -q
       - name: reply-target register validates (config/reply_targets.yml)
         # The register is operator-curated, so a bad handle or an unknown tier is
         # an editing mistake, not a code change. Runs as its own step so a
@@ -9729,7 +9977,7 @@ jobs:
       # pyyaml — PIL is imported transitively but blocking it leaves them 6-passed and
       # 1-passed, so it is optional, and it is not on this install line.
       - name: vector page organs — decision authority, catalyst, forward-risk, Kelly, gated timeline
-        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py -q
+        run: python -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py -q
       - name: DSR / override-registry trial budget (dof charged must equal dof declared)
         run: python -m pytest tests/test_btc_vector_w1.py tests/test_deflated_sharpe.py -q
       - name: settled-close tape — the basket pulse the closing-bell lane publishes
@@ -10047,6 +10295,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       - "tests/test_dod_budget_live.py"
       - "tests/test_fms_notifications.py"
       - "tests/test_fms_ui.py"
@@ -10239,7 +10489,7 @@ jobs:
       - name: waves 9E/9F — shadow context packets + prophet annotation boundary
         run: python -m pytest tests/test_government_revenue_shadow_context.py tests/test_government_revenue_prophet_annotation.py -q
       - name: workspace / dossier / briefcase UI contracts
-        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py -q
+        run: python -m pytest tests/test_government_revenue_ui.py tests/test_government_revenue_dossier_ui.py tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_glance_copy.py -q
       # D3 temporal contract: typed rail states (producer) + the Change Tape
       # clock/diff/successor renders (node harness, same runner requirement as
       # the UI suite above, whose _run_runtime it imports).
@@ -10892,7 +11142,7 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: falsifier-register bans + chat plain-word projection
         # B-HEAL-SKIP-ONLY-UK-POLICY-1 2026-09-13: tests/test_uk_policy_brain.py's jinja2 half rides here (outcome-spine's venv has no jinja2; skip-only gate red on main since 4b2f97f1)
-        run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py tests/test_uk_policy_brain.py -q
+        run: python -m pytest tests/test_front_facing_register.py tests/test_policy_watch_register.py tests/test_policy_watch_ui.py tests/test_policy_watch_glance_copy.py tests/test_policy_lifecycle.py tests/test_chat_plain_words.py tests/test_uk_policy_brain.py -q
       - name: regime-label honesty + sizing-pill null parity + forward cycle framing
         run: python -m pytest tests/test_regime_label_honesty.py tests/test_regime_sizing_disclosure_parity.py tests/test_cycle_forward_framing.py tests/test_quad_dark_day_disclosure.py -q
 
@@ -10981,6 +11231,12 @@ jobs:
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
         run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
+      # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
+      # existing CODE-gated turn/organ lane: the source adapter consumes canonical
+      # generation-local TURN WATCH facts, while Radar identity remains fail-closed
+      # and B4/ranking/trading authority stay absent. No new job or runner is added.
+      - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
+        run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
@@ -10988,6 +11244,11 @@ jobs:
         # test_mtf_upturn.py, found while auditing the desk (2026-08-09, 36 tests, green on
         # the base that registered it). test_us_turn_watch.py is enumerated at birth.
         run: python -m pytest tests/test_us_turn_watch.py tests/test_us_basket_turn.py -q
+      # V4 B2-0 records-only evidence regression. This must be owned by
+      # an existing merge-binding CODE gate, not only by the data-gated
+      # anticipation lane. No new job/runner/control plane is introduced.
+      - name: b2-0 disposition matrix (B-15..B-19 lineage, PIT replay, mutation guards, red-condition discriminators)
+        run: python -m pytest tests/test_prophet_b2_disposition.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -11289,6 +11550,22 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "engine/capital_structure/__init__.py"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/capital_structure/event_spine.py"
+      - "engine/capital_structure/ingestion_health.py"
+      - "engine/capital_structure/projection.py"
+      - "engine/capital_structure/sec_discovery_clock.py"
+      - "engine/capital_structure/source_identity.py"
+      - "engine/capital_structure/source_ledger_io.py"
+      - "engine/capital_structure/source_store.py"
+      - "scripts/compile_capital_structure_events.py"
+      # B-F07-3 event bridge reader/resolver 2026-09-19 (contract-delta)
+      - "engine/capital_structure/event_versions_io.py"
+      - "engine/capital_structure/spine_paths.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): build_site.py's
       # guarded macro-suite hook imports the page builder, which carries the
       # workspace contract/registry pair. Checker-named files only; the
@@ -11320,6 +11597,10 @@ jobs:
       - "engine/ird_velocity.py"
       - "engine/rri_shadow.py"
       - "scripts/build_international_macro.py"
+      # W7-1 / #7362 closure widening 2026-09-19 (contract-delta): the
+      # international macro builder now lazily imports the Europe official-press
+      # panel, so this job's exclusive scope must name that module.
+      - "engine/europe_news_intel.py"
       # B1A closure widening 2026-08-24 (contract-delta): the security_state producer stage in build_stock_library lazily imports the company-intelligence reader chain and Data OS identity.
       - "engine/company_intelligence/__init__.py"
       - "engine/company_intelligence/contracts.py"
@@ -11362,6 +11643,7 @@ jobs:
       - "engine/ai_desk_scorer.py"
       - "engine/alert_triage.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       # engine/alert_triage.py imports engine/alert_time.py (the Alert Center
       # three-clock / ET board-day contract, Wave 7 2026-08-20), so this curated
       # scope's import closure reaches it. Declared here because a curated
@@ -12020,6 +12302,13 @@ jobs:
       - "tests/test_grade_us_board.py"
       - "tests/test_heal_stage_forward_ledger.py"
       - "tests/test_macro_risk_dialog.py"
+      # Risk Radar integration: direct suite selection plus its real read dependencies.
+      - "tests/test_risk_envelope_radar_integration.py"
+      - "tests/__init__.py"
+      - "templates/risk_envelope_live.js"
+      - "site/risk_envelope_live.js"
+      - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_envelope_band.css.j2"
       - "tests/test_opportunity_timeline.py"
       - "tests/test_pick_lab_book.py"
       - "tests/test_pick_lab_cn_runner.py"
@@ -12163,7 +12452,7 @@ jobs:
       # No dependency widened: it renders Jinja templates only — jinja2 is already on
       # the install line above.  Measured 54s against this job's 245s body and 12m cap.
       - name: dashboard.html.j2 rendered-HTML contract (unrun backfill 2026-08-27)
-        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_us_stocks_s2_compression.py -q
+        run: python -m pytest tests/test_dashboard_template_render.py tests/test_macro_risk_dialog.py tests/test_risk_envelope_radar_integration.py tests/test_us_stocks_s2_compression.py -q
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
@@ -13354,6 +13643,10 @@ jobs:
       - "engine/valuation_scenario.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
+      # B-F07-3 closure widening 2026-09-19 (contract-delta)
+      - "engine/valuation_event_bridge.py"
+      # B-F07-3 event bridge closure widening 2026-09-19 (contract-delta)
+      - "scripts/compile_capital_structure_events.py"
       # B1A closure widening 2026-08-24 (contract-delta): build_stock_library's security_state stage extends this job's walked closure.
       - "engine/security_state.py"
       - "engine/theme_graph/__init__.py"
@@ -13410,6 +13703,7 @@ jobs:
       - "engine/cn_newswires.py"
       - "engine/codex_provider.py"
       - "engine/debt_maturity.py"
+      - "engine/cash_runway.py"
       - "engine/desk_ledger.py"
       - "engine/desk_scorer.py"
       - "engine/earnings_qual.py"
@@ -14469,6 +14763,10 @@ jobs:
       - config/issuer_group_allowlist.yml
       - lib/__init__.py
       - lib/config.py
+      # Dataset-registry proof for the China-gold source IDs imports the display
+      # engine and its canonical store reader. Keep this exclusive scope honest.
+      - lib/store.py
+      - engine/china_gold_premium.py
       - lib/delisted_symbols.py
       - lib/ticker_aliases.py
       - scripts/build_security_master.py
@@ -14871,3 +15169,51 @@ jobs:
         run: python -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py -q
       - name: Market OS macro suite hub — discoverability, ordering, honest absence
         run: python -m pytest tests/test_macro_monetary_hub.py -q
+
+  market-ontology-f09-usgs-mcs:
+    if: ${{ false }}
+    gate: code
+    # MO-B F09-10 (MO-DELTA-029 child): USGS Mineral Commodity Summaries
+    # collector + critical-minerals supply-concentration projection.
+    # Records-only / disabled (if: false). Kept so the pack registration
+    # records the job; the if: false is the suite contract for disabled jobs.
+    paths:
+      - "config/usgs_mcs_sources.yml"
+      - "collectors/usgs_mcs.py"
+      - "engine/critical_minerals_supply.py"
+      - "tests/test_usgs_mcs.py"
+      - "tests/fixtures/usgs_mcs/**"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: install test deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: USGS MCS collector + critical-minerals supply projection
+        run: python -m pytest tests/test_usgs_mcs.py -q
+
+  recurring-briefs:
+    # F11 packet B-F11-7b (MO-PAID-032): one nightly/weekly step writes each
+    # subscription its brief or an honest miss. Pure functions + CLI; tests
+    # use a fake client (no network). Named by this run: step (no waiver).
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
+    gate: code
+    paths:
+      - .github/ci/legacy-jobs.yml
+      - .github/workflows/daily.yml
+      - .github/workflows/weekly.yml
+      - engine/recurring_briefs.py
+      - scripts/build_recurring_briefs.py
+      - tests/test_recurring_briefs.py
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install recurring-briefs test dependencies
+        run: pip install pytest
+      - name: recurring briefs producer — slot, body, classify, idempotency (F11 B-F11-7b)
+        run: python -m pytest tests/test_recurring_briefs.py -q

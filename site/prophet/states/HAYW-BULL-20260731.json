@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HAYW-BULL-20260731",
-  "asof": "2026-09-17",
+  "asof": "2026-09-19",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
   "management_confidence": 31.6,
@@ -10,21 +10,21 @@
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
-    "validity": 1.1,
+    "validity": 1.9,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 50.0,
     "overlay": 61.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.077,
+    "dist_to_stop_r": 0.096,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 91.1,
-    "p1": -0.6155,
-    "p2": -0.3078,
+    "horizon_pct_used": 95.6,
+    "p1": -0.6028,
+    "p2": -0.3014,
     "p3": null,
-    "move_r": -0.923,
+    "move_r": -0.904,
     "mfe_r": 0.0,
     "mae_r": -0.981
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 41,
-  "tau": 0.9111
+  "days_elapsed": 43,
+  "tau": 0.9556
 }
