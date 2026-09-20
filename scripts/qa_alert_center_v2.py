@@ -161,6 +161,8 @@ def main():
             related_rows = page.locator('#ac-detail .acx-related-observation')
             assert related_rows.count() >= 1
             assert 'not independent confirmation' in page.locator('#ac-detail .acx-related-note').inner_text().lower()
+            page.screenshot(path=str(out / 'desktop-related-context.png'))
+            report['screenshots'].append('desktop-related-context.png')
             related_row = page.locator(f'[data-related-alert-id="{related_id}"]')
             assert related_row.count() == 1
             related_row.click()
