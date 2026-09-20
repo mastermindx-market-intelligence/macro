@@ -156,12 +156,16 @@ def validate_rio(
         "authority": "descriptive_research_only",
     }
 
-    for raw in value.get("claims") if isinstance(value.get("claims"), list) else []:
+    raw_claims = value.get("claims")
+    # Analysis references positions in the submitted array. Silently dropping a
+    # malformed row could attach an assertion to a different surviving claim.
+    # Structural gaps must fail before the separate grounding/remapping stage.
+    for index, raw in enumerate(raw_claims if isinstance(raw_claims, list) else []):
         if not isinstance(raw, dict):
-            continue
+            raise ValueError(f"claims[{index}] must be an object")
         statement = _text(raw.get("statement"), 1800)
         if not statement:
-            continue
+            raise ValueError(f"claims[{index}].statement must be nonempty")
         normalized["claims"].append({
             "statement": statement,
             "evidence": _evidence(raw.get("evidence")),
