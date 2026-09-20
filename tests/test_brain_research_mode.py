@@ -99,7 +99,8 @@ def _make_research_root(tmp_path: pathlib.Path, *, with_briefing: bool = True) -
 
 
 def _research_chat(tmp_path, reply_text: str, message: str = "What is the capital of France?",
-                   user_jwt: str = "", *, with_briefing: bool = True):
+                   user_jwt: str = "", company_source_span: dict | None = None, *,
+                   with_briefing: bool = True):
     """Drive gw.chat(mode='research') with the gateway's loop replaced by a double."""
     root = _make_research_root(tmp_path, with_briefing=with_briefing)
 
@@ -120,6 +121,7 @@ def _research_chat(tmp_path, reply_text: str, message: str = "What is the capita
                                 mode="research",
                                 root=root,
                                 user_jwt=user_jwt,
+                                company_source_span=company_source_span,
                             )
 
 
@@ -146,6 +148,33 @@ def test_outside_coverage_returns_exact_null_form(tmp_path):
     assert ".json" not in reply
     assert "falsifier" not in reply.lower()
     assert "证伪" not in reply
+
+
+def test_research_mode_does_not_resolve_exact_source_attachment(tmp_path):
+    """MO-PAID-031 closed corpus: company_source_span is not a research input."""
+    with patch.object(
+        gw,
+        "_resolve_company_source_attachment",
+        side_effect=AssertionError("research mode must not resolve exact-source attachments"),
+    ) as resolver:
+        result = _research_chat(
+            tmp_path,
+            "The daily briefing says the US session was mixed and breadth was thin.",
+            message="How did the US session look?",
+            company_source_span={"forbidden": "exact-source"},
+        )
+    resolver.assert_not_called()
+    assert "Daily briefing" in result["reply"]
+    assert CEILING_EN in result["reply"]
+
+
+def test_research_mode_exact_source_gate_covers_chat_and_stream():
+    """Both public entrypoints must fail closed before resolving company_source_span."""
+    import inspect
+
+    guard = 'if mode != "research" and company_source_span is not None:'
+    assert guard in inspect.getsource(gw.chat)
+    assert guard in inspect.getsource(gw.chat_stream)
 
 
 def test_uncited_answer_replaced_by_null_form(tmp_path):
