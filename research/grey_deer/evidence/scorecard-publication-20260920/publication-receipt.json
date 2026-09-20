@@ -1,0 +1,31 @@
+{
+  "base": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
+  "producer_sha256": "546e8c7369be61b34bee47e8ac83ba9b2c5c1b296885c414ab0a79139c1fa49b",
+  "input_sha256": {
+    "data/risk_radar/forward_log.jsonl": "612c4ecb5cfe1d794b42953ca0d0c8c9d5f43a294e7b03e60d10f74e5fc468a6",
+    "data/risk_radar/recovery_log.jsonl": "335c377b16e8ac9532650c706f839988f2bd4ce8f7fcd85121e94f0986a4852d",
+    "data/risk_radar/review_log.jsonl": "d64b6206da7b59600be20f9e6c5ad7448f761279ef25ec8e6e0da95b198dd1f1",
+    "data/risk_radar_intl/au_forward_log.jsonl": "64d56b0e5c8c1b7a802413808a5a6c636ed73290ce05282fd8a73f79ad982b8c",
+    "data/risk_radar_intl/ca_forward_log.jsonl": "e4c1d8a98ed88869366acf39708fd1cfe45fff546dbee16f8d5ee4d460f01629",
+    "data/risk_radar_intl/cn_forward_log.jsonl": "6db5eee0ac0bc8a233c581547c1a521ea7826c621cf4ab0d15c236be77cdb3da",
+    "data/risk_radar_intl/ez_forward_log.jsonl": "cabfcfeebf25c84186f41c8bc3bbc9324c8d01afe8b4568941fa13d4b413ae41",
+    "data/risk_radar_intl/gb_forward_log.jsonl": "0bf8f19c0808a1ca42b34c3bcd65f84a0e3d88b98502e71b9b05562e2a9ddcd8",
+    "data/risk_radar_intl/hk_forward_log.jsonl": "12f2561be09cf9a72449a0a4c85ab996dfee026d86d4639d5bf6792bd741e79f",
+    "data/risk_radar_intl/in_forward_log.jsonl": "3f05e7f5d40002e89f5dfab5757a3f69daad12e0884831cf6c1687b9e7b47e37",
+    "data/risk_radar_intl/jp_forward_log.jsonl": "74033352809452399de97a64ab5b5792517b50336493397880d742791ac314e6",
+    "data/risk_radar_intl/kr_forward_log.jsonl": "69996236e9c376fbee8148216419d6a94efb0adf2a7627e32ff51b208f582eed",
+    "data/risk_radar_intl/tw_forward_log.jsonl": "d136642780f0875e0dccf21a4e47979e184df6455900b7868ad95096a68896fa"
+  },
+  "old_data_sha256": "f009068ae51c3538084e1c490e7a49559be01129e3b138414a3420e4e29253cb",
+  "old_site_sha256": "f009068ae51c3538084e1c490e7a49559be01129e3b138414a3420e4e29253cb",
+  "legacy_windows_unchanged": true,
+  "producer": "engine.risk_radar_scorecard.write(root=worktree)",
+  "producer_called_once": true,
+  "output_sha256": "f652d941f873ade54efa1b6c298a2951da3eaf3ad7eab23477a9d9ff35ea9ce6",
+  "generated_at": "2026-09-20T08:31:56+00:00",
+  "real_consumer": "engine.market_state._rr_scorecard_track(us)",
+  "real_consumer_preserves_audit": true,
+  "ledger_hashes_unchanged": true,
+  "new_probability_table": false,
+  "deployed": false
+}
