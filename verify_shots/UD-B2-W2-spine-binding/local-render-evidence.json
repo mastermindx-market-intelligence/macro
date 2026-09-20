@@ -1,0 +1,32 @@
+{
+  "asof": "2026-09-20",
+  "rendered_via": "jinja2 sandbox render with HK_PROFILE/CN_PROFILE-shaped vm entries",
+  "hk_row": {
+    "market": "hk",
+    "data_state": "real",
+    "data_blocked_feed": "hk_market_state",
+    "data_stance": "watch",
+    "marker_left_pct": "55",
+    "caveat_en": "Lighter evidence — Display-only (HK: no VIX term, no HY; uncalibrated downturn).",
+    "caveat_zh": "证据较轻 — 仅供展示（港股：无 VIX 项、无高收益债；下行未校准）。",
+    "disclosure_present": true,
+    "travel_figure": "+4"
+  },
+  "cn_row": {
+    "market": "cn",
+    "data_state": "real",
+    "data_blocked_feed": "cn_market_state",
+    "data_stance": "stand-aside",
+    "marker_left_pct": "43",
+    "caveat_en": "Lighter evidence — Display-only (CN: QVIX, no HY; PBoC overlay; uncalibrated downturn).",
+    "caveat_zh": "证据较轻 — 仅供展示（A股：QVIX、无高收益债；央行流动性叠加；下行未校准）。",
+    "disclosure_present": true,
+    "travel_figure": "−6"
+  },
+  "all_spine_slugs_in_order": [
+    "hk_market_state",
+    "cn_market_state",
+    "gov_bonds_regime",
+    "commodities_regime"
+  ]
+}
