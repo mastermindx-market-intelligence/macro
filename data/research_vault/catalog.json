@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T19:30:33.152022+00:00",
-  "count": 2519,
+  "generated_at": "2026-09-20T20:00:30.819657+00:00",
+  "count": 2520,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1499,6 +1499,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-809r9lyrce6-004733",
+      "title": "Chinese equities",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:49:24Z",
+      "summary_points": [
+        "A-shares outperform H-shares on fundamentals: A-shares show 29.4% YoY earnings growth (vs H-shares' domestic consumption focus), 9.8% revenue growth (accelerating from 5.1% in 1Q), and expanding gross margins (20.11%, +22bps seq, +123bps YoY), driven by AI infrastructure, tech exposure, and shareholder returns.",
+        "AI semiconductor sector leads growth: AI-exposed semiconductor companies (foundries, chip designers, OSAT) report 30-40% revenue growth and 20-30%+ earnings growth (1H26), supported by extended AI capex; key picks include Naura, JIET, Montage, with visibility through 2H26-2027.",
+        "US-China tensions dominate risk profile: 12/15 stocks cite US-China tensions (tech, auto, finance) as critical risk, compounded by China’s slower recovery (banks, insurers) and sector-specific vulnerabilities (e.g., SMIC’s semiconductor access, BYD’s EV competition)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
       "language": "en",
       "needs_metadata": false
     },
