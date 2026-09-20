@@ -368,6 +368,7 @@ def _market_entry(
                                "ungraded_backlog": 0, "awaiting_maturity": 0,
                                "backlog_cutoff_bd": None, "graded_n": 0},
                 "windows": {"full": _window([], []), "y1": _window([], [])},
+                **({"probability_audit": probability_audit([], today)} if market == "us" else {}),
             }
 
         monitoring = _monitoring(all_rows, today=today)
@@ -392,6 +393,7 @@ def _market_entry(
                 "full": _window(graded, recovery_graded),
                 "y1": _window(y1_graded, y1_recovery),
             },
+            **({"probability_audit": probability_audit(all_rows, today)} if market == "us" else {}),
         }
     except Exception as e:  # noqa: BLE001
         log.warning("scorecard _market_entry(%s) failed: %s", market, e)
@@ -487,3 +489,129 @@ def write(root=None) -> dict:
     except Exception as e:  # noqa: BLE001
         log.warning("risk_radar_scorecard.write failed: %s", e)
         return {}
+
+# Issued-probability diagnostics. Display-only; never a forecast or promotion gate.
+# Protocol: research/grey_deer/RISK_RADAR_PROBABILITY_AUDIT_PREREG_2026-09-20.md.
+_PROBABILITY_BINS = ((0., .1), (.1, .2), (.2, .4), (.4, .6), (.6, 1.))
+_PROBABILITY_TARGET = ">=5% SPY pullback (empirical 2006-2026; rises with intensity + conjunction)"
+
+
+def _probability_number(value: Any) -> bool:
+    import math
+    try:
+        return type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1
+    except (OverflowError, TypeError):
+        return False
+
+
+def _probability_date(value: Any):
+    from datetime import date
+    try:
+        parsed = date.fromisoformat(value)
+        return parsed if parsed.isoformat() == value else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _probability_clock(value: Any):
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed.astimezone(timezone.utc) if parsed.utcoffset() is not None else None
+    except (AttributeError, TypeError, ValueError, OverflowError):
+        return None
+
+
+def probability_audit(rows: list, today=None) -> dict:
+    """Score issued US odds against recorded boolean outcomes; no ledger I/O.
+
+    Daily windows overlap. Receipt chronology does not establish first-publication
+    timing or a homogeneous model version. This is not out-of-sample validation.
+    """
+    from collections import Counter, defaultdict
+    from datetime import date
+    reference = today or date.today()
+    common = Counter()
+    dated = defaultdict(list)
+    for row in rows:
+        if not isinstance(row, dict):
+            common["invalid_row"] += 1
+            continue
+        day = _probability_date(row.get("asof"))
+        if day is None or day > reference:
+            common["invalid_or_future_date"] += 1
+            continue
+        dated[day].append(row)
+    unique = []
+    for day, group in sorted(dated.items()):
+        try:
+            same = len({json.dumps(r, sort_keys=True, separators=(",", ":")) for r in group}) == 1
+        except (TypeError, ValueError):
+            same = False
+        if not same:
+            common["conflicting_duplicate_date"] += len(group)
+            continue
+        common["identical_duplicate"] += len(group) - 1
+        unique.append((day, group[0]))
+    valid = []
+    for day, row in unique:
+        odds, grade = row.get("drawdown_prob"), row.get("graded")
+        if not isinstance(odds, dict) or odds.get("measure") != _PROBABILITY_TARGET:
+            common["unmatched_target"] += 1
+            continue
+        if not isinstance(grade, dict):
+            common["ungraded"] += 1
+            continue
+        issued = _probability_clock(row.get("logged_at"))
+        graded = _probability_clock(grade.get("graded_at"))
+        if (issued is None or graded is None or issued > graded or
+                day > issued.date() or graded.date() > reference):
+            common["invalid_or_future_receipt"] += 1
+            continue
+        valid.append((day.isoformat(), odds, grade))
+    def average(values):
+        return round(sum(values) / len(values), 6) if len(values) >= _MIN_N else None
+    horizons = {}
+    for horizon in ("h5", "h10", "h21"):
+        excluded, sample = common.copy(), []
+        for day, odds, grade in valid:
+            p = odds.get(horizon)
+            hit = grade.get("hit")
+            outcome = hit.get(horizon) if isinstance(hit, dict) else None
+            y = outcome.get("dd5") if isinstance(outcome, dict) else None
+            if not _probability_number(p):
+                excluded["invalid_probability"] += 1
+            elif type(y) is not bool:
+                excluded["missing_boolean_outcome"] += 1
+            else:
+                sample.append((day, p, int(y), odds.get("base_" + horizon)))
+        pairs = [s for s in sample if _probability_number(s[3])]
+        bins = []
+        for low, high in _PROBABILITY_BINS:
+            group = [s for s in sample if low <= s[1] < high or (high == 1 and s[1] == 1)]
+            bins.append({"lower": low, "upper": high, "upper_inclusive": high == 1,
+                         "n": len(group), "mean_forecast": average([s[1] for s in group]),
+                         "observed_rate": average([s[2] for s in group])})
+        horizons[horizon] = {
+            "n": len(sample), "excluded_n": sum(excluded.values()),
+            "excluded": dict(sorted((k, v) for k, v in excluded.items() if v)),
+            "from": sample[0][0] if sample else None, "through": sample[-1][0] if sample else None,
+            "events": sum(s[2] for s in sample),
+            "both_outcomes_present": 0 < sum(s[2] for s in sample) < len(sample),
+            "mean_forecast": average([s[1] for s in sample]),
+            "observed_rate": average([s[2] for s in sample]),
+            "brier": average([(s[1] - s[2]) ** 2 for s in sample]),
+            "paired_n": len(pairs), "missing_baseline_n": len(sample) - len(pairs),
+            "paired_model_brier": average([(s[1] - s[2]) ** 2 for s in pairs]),
+            "paired_base_brier": average([(s[3] - s[2]) ** 2 for s in pairs]),
+            "paired_brier_delta": average([(s[1] - s[2]) ** 2 - (s[3] - s[2]) ** 2 for s in pairs]),
+            "bins": bins,
+        }
+    return {
+        "definition": "us_issued_probability_audit.v1", "as_of": reference.isoformat(),
+        "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
+        "input_rows": len(rows), "min_display_n": _MIN_N, "horizons": horizons,
+        "status": "descriptive_only", "sample_unit": "overlapping_daily_forecast",
+        "publication_timing_verified": False, "current_model_validated": False,
+        "note_en": "Historical issued odds, not a test of today's model. Daily windows overlap; publication timing is unverified.",
+        "note_zh": "历史发布概率，并非当前模型验证。每日窗口重叠；首发时点未经核实。",
+    }

@@ -14,16 +14,17 @@ was generated on the run_date — the binding clock is the artifact's
 ``generated_at``, so ``weekly_saturday`` does not false-degrade every Saturday.
 Same rule lets a daily nightly that crosses UTC midnight pass.
 
-Dry-run still writes nothing (frozen-spec item 2). It DOES print what it
-would write (planned/duplicate counts and one line per row), and surfaces
-write failures the same way the thesis monitor does.
+Dry-run still writes nothing (frozen-spec item 2). It prints aggregate
+counts plus one privacy-safe row summary (slot/state only) per planned row;
+target names, IDs and body text never enter workflow logs. Read failures and
+write failures are surfaced explicitly.
 """
 from __future__ import annotations
 
 import argparse
 import os
 import sys
-from datetime import date, datetime, timezone
+from datetime import date
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -34,27 +35,13 @@ from engine import recurring_briefs as rb  # noqa: E402
 
 def _parse_run_date(raw: str | None) -> date:
     if not raw:
-        return datetime.now(timezone.utc).date()
+        return rb.owner_run_date()
     return date.fromisoformat(raw)
 
 
 def _row_summary(row: dict) -> str:
-    body = row.get("body") or {}
-    sub_id = str(row.get("subscription_id") or "?")[:8]
-    target_name = (
-        ((body.get("target") or {}).get("name") or "?")
-        if isinstance(body.get("target"), dict)
-        else "?"
-    )
-    sentences = body.get("market_read") or []
-    head = sentences[0]["sentence_en"] if sentences and isinstance(sentences[0], dict) else ""
-    head = head.replace("\n", " ")
-    return (
-        f"-- subscription {sub_id}... "
-        f"slot {row.get('slot_asof')} state {row.get('state')} "
-        f"reason={row.get('degraded_reason') or '-'} "
-        f"target={target_name!r} | {head[:90]}"
-    )
+    """Privacy-safe dry-run summary: never log subscription/target/body content."""
+    return f"-- planned row slot {row.get('slot_asof')} state {row.get('state')}"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -99,6 +86,15 @@ def main(argv: list[str] | None = None) -> int:
         run_date=run_date,
     )
 
+    if result.skipped_non_session:
+        line = (
+            f"recurring briefs: not due — no US cash-equity session on "
+            f"{run_date.isoformat()} (cadence={args.cadence})"
+        )
+        print(line, flush=True)
+        print(f"::notice title=recurring-briefs::{line}", flush=True)
+        return 0
+
     slot = result.slot.isoformat() if result.slot else run_date.isoformat()
     line = (
         f"recurring briefs: {result.subscription_n} subscriptions, "
@@ -107,9 +103,24 @@ def main(argv: list[str] | None = None) -> int:
     print(line, flush=True)
     print(f"::notice title=recurring-briefs::{line}", flush=True)
 
-    # H7: dry-run prints what it would write — planned/duplicate counts plus
-    # one summary line per row the producer would write. Writes remain off
-    # (frozen-spec item 2). The R6 summary line and ::notice above stay.
+    if result.subscription_read_state == "unavailable":
+        error_class = result.subscription_read_error or "unknown"
+        print(
+            f"::warning title=recurring-briefs-subscription-read-unavailable::"
+            f"subscription read unavailable ({error_class}); "
+            f"no target objects were read and no rows were written",
+            flush=True,
+        )
+    elif result.read_unavailable > 0:
+        print(
+            f"::warning title=recurring-briefs-target-read-unavailable::"
+            f"{result.read_unavailable} target read(s) unavailable; "
+            f"honest degraded rows written without inferring deletion",
+            flush=True,
+        )
+
+    # H7: dry-run prints aggregate counts plus one privacy-safe slot/state
+    # line per planned row. Writes remain off (frozen-spec item 2).
     if dry_run:
         print(
             f"recurring briefs (dry-run): {result.planned_n} planned, "

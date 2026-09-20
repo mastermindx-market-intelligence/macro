@@ -618,8 +618,9 @@ def test_collapse_tie_on_same_belief_and_computed_at_is_deterministic():
     assert json.dumps(to_json(m1)) == json.dumps(to_json(m2))
     assert [c["company_node_id"] for c in m1.themes[0].companies] == ["co:us:B"]
     law = (
-        "max belief_time <= asof per edge_id (null belief_time never eligible); "
-        "ties on computed_at then src then dst"
+        "max belief_time <= knowledge_cutoff per edge_id "
+        "(null belief_time never eligible); ties on computed_at then src then dst; "
+        "then valid_from <= asof < valid_to"
     )
     assert m1.provenance["belief_collapse"] == law
     const = _schema()["properties"]["provenance"]["properties"]["belief_collapse"]["const"]
@@ -912,3 +913,63 @@ def test_theme_level_rights_refusal_omits_clock_abstentions():
     dumped = json.dumps(to_json(m))
     assert "co:us:A" not in dumped
     jsonschema.validate(to_json(m), _schema())
+
+
+# D2C independent knowledge/effective clock acceptance
+
+def _closing_history():
+    return [
+        edge("e-clock", "MEMBER_OF", "co:us:A", "ltheme:finviz:x",
+             valid_from="2026-07-08", valid_to=None,
+             belief_time="2026-07-10", computed_at="2026-07-10T00:00:00Z"),
+        edge("e-clock", "MEMBER_OF", "co:us:A", "ltheme:finviz:x",
+             valid_from="2026-07-08", valid_to="2026-08-15",
+             belief_time="2026-08-20", computed_at="2026-08-20T00:00:00Z"),
+    ]
+
+
+def test_independent_knowledge_cutoff_keeps_open_belief_before_closure_is_known():
+    m = _compose(FakeStore(_closing_history()), _spec(["ltheme:finviz:x"]),
+                 asof="2026-08-25", knowledge_cutoff="2026-08-14")
+    assert m.themes[0].state == "OK"
+    assert [c["company_node_id"] for c in m.themes[0].companies] == ["co:us:A"]
+    assert m.knowledge_cutoff == datetime.date(2026, 8, 14)
+
+
+def test_independent_knowledge_cutoff_applies_closure_after_it_is_known():
+    m = _compose(FakeStore(_closing_history()), _spec(["ltheme:finviz:x"]),
+                 asof="2026-08-25", knowledge_cutoff="2026-08-21")
+    assert m.themes[0].state == "NO_THEME_EDGES"
+
+
+def test_independent_knowledge_cutoff_reports_future_belief_without_leaking_it():
+    m = _compose(FakeStore(_closing_history()), _spec(["ltheme:finviz:x"]),
+                 asof="2026-08-25", knowledge_cutoff="2026-08-14")
+    abstentions = [a for a in m.themes[0].abstentions
+                   if a["code"] == "BELIEF_AFTER_KNOWLEDGE_CUTOFF"]
+    assert len(abstentions) == 1
+    assert abstentions[0]["subject_id"] == "e-clock"
+
+
+def test_knowledge_cutoff_defaults_to_effective_asof_and_is_in_contract():
+    m = _compose(FakeStore(_closing_history()), _spec(["ltheme:finviz:x"]),
+                 asof="2026-08-16")
+    payload = to_json(m)
+    assert m.knowledge_cutoff == m.asof == datetime.date(2026, 8, 16)
+    assert payload["knowledge_cutoff"] == "2026-08-16"
+    jsonschema.validate(payload, _schema())
+
+
+def test_reappearance_obeys_independent_knowledge_cutoff():
+    rows = _closing_history() + [
+        edge("e-reopen", "MEMBER_OF", "co:us:A", "ltheme:finviz:x",
+             valid_from="2026-09-01", valid_to=None,
+             belief_time="2026-09-05", computed_at="2026-09-05T00:00:00Z"),
+    ]
+    before = _compose(FakeStore(rows), _spec(["ltheme:finviz:x"]),
+                      asof="2026-09-10", knowledge_cutoff="2026-09-03")
+    after = _compose(FakeStore(rows), _spec(["ltheme:finviz:x"]),
+                     asof="2026-09-10", knowledge_cutoff="2026-09-06")
+    assert before.themes[0].state == "NO_THEME_EDGES"
+    assert after.themes[0].state == "OK"
+    assert [c["company_node_id"] for c in after.themes[0].companies] == ["co:us:A"]

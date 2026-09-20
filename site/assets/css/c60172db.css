@@ -1,0 +1,51 @@
+
+/* Risk Envelope: compact context inside the existing Risk Radar, never a page panel.
+   Dark: subtle luminance inset. Light: quiet structured inset with a hairline, no glow. */
+#dlg-risk .riskdlg-context {
+  margin-top:12px; padding:12px 16px;
+  border:1px solid var(--line); border-radius:var(--r-card);
+  background:var(--panel2); color:var(--ink-2);
+}
+html[data-theme="light"] #dlg-risk .riskdlg-context {
+  background:color-mix(in srgb,var(--panel2) 60%,var(--panel));
+  box-shadow:none;
+}
+#dlg-risk .gde-head {display:flex; align-items:baseline; justify-content:space-between; gap:8px; flex-wrap:wrap;}
+#dlg-risk .gde-head h3 {margin:0; font-size:var(--fs-sm); font-weight:650; color:var(--ink-1);}
+#dlg-risk .gde-coherence {font-size:var(--fs-label); color:var(--ink-2);}
+#dlg-risk .gde-reads {display:flex; gap:20px; flex-wrap:wrap; margin-top:8px;}
+#dlg-risk .gde-read {display:flex; align-items:baseline; gap:8px;}
+#dlg-risk .gde-q {font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-a {font-size:var(--fs-md); font-weight:650; color:var(--gde-c);}
+#dlg-risk .gde-arr {font-size:var(--fs-label); margin-left:4px;}
+#dlg-risk .gde-context-line {margin:8px 0 0; font-size:var(--fs-sm); line-height:1.45;}
+#dlg-risk .gde-meta {display:flex; flex-wrap:wrap; gap:8px 12px; margin-top:8px; font-size:var(--fs-label); color:var(--ink-3);}
+#dlg-risk .gde-meta [hidden], #dlg-risk .gde-receipt[hidden] {display:none;}
+#dlg-risk .gde-stamp-live, #dlg-risk .gde-pending {color:var(--ink-2);}
+#dlg-risk .gde-disc {margin-top:4px;}
+#dlg-risk .gde-disc > summary {cursor:pointer; min-height:40px; align-content:center; font-size:var(--fs-label); color:var(--ink-2);}
+#dlg-risk .gde-disc > summary:focus-visible {outline:2px solid var(--link); outline-offset:2px; border-radius:var(--r-ctl);}
+#dlg-risk .gde-disc-body {padding-top:8px; border-top:1px solid var(--line);}
+#dlg-risk .gde-tblwrap {max-width:100%; overflow-x:auto;}
+#dlg-risk .gde-tbl {width:100%; border-collapse:collapse; font-size:var(--fs-label);}
+#dlg-risk .gde-tbl th, #dlg-risk .gde-tbl td {padding:8px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top;}
+#dlg-risk .gde-tbl th {color:var(--ink-2); font-weight:600;}
+#dlg-risk .gde-tbl td {color:var(--ink-1);}
+#dlg-risk .gde-warn {color:var(--ink-warn);}
+#dlg-risk .gde-req {color:var(--ink-3);}
+#dlg-risk .gde-disc-h {font-size:var(--fs-sm); font-weight:600; margin:12px 0 4px;}
+#dlg-risk .gde-conflicts {padding-left:16px; margin:0; font-size:var(--fs-label); line-height:1.5;}
+#dlg-risk .gde-receipt, #dlg-risk .gde-policy {font-size:var(--fs-label); line-height:1.5; color:var(--ink-3); overflow-wrap:anywhere; margin:8px 0 0;}
+@media(max-width:640px) {
+  #dlg-risk .riskdlg-context {padding:12px;}
+  #dlg-risk .gde-reads {gap:8px 16px;}
+  #dlg-risk .gde-tbl {min-width:460px;}
+}
+
+/* The legacy band must not impose its rails or large spacing inside Risk Radar. */
+#dlg-risk .gde-head {border:0; padding:0; margin:0;}
+#dlg-risk .gde-read {border:0; padding:0; margin:0;}
+#dlg-risk .gde-disc > summary {display:flex; gap:6px; align-items:center; padding:0;}
+#dlg-risk .gde-disc > summary::before {content:"+";}
+#dlg-risk .gde-disc[open] > summary::before {content:"−";}
+

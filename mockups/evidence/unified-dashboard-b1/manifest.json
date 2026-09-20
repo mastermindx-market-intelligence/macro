@@ -1,0 +1,114 @@
+{
+  "head": "79d14ddf7d",
+  "branch": "claude/mo-a-unified-dashboard-b1",
+  "pr": 7469,
+  "source_url": "site/macro.html",
+  "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
+  "page_errors": [],
+  "cells": [
+    {
+      "file": "dashboard_dark_en_1440.png",
+      "hero_file": "dashboard_dark_en_1440_hero.png",
+      "viewport": "1440",
+      "theme": "dark",
+      "language": "en",
+      "spine": {
+        "w": 1314,
+        "h": 323,
+        "rows": 5
+      },
+      "verdict_excerpt": "Risk-on, narrowing"
+    },
+    {
+      "file": "dashboard_dark_zh_1440.png",
+      "hero_file": "dashboard_dark_zh_1440_hero.png",
+      "viewport": "1440",
+      "theme": "dark",
+      "language": "zh",
+      "spine": {
+        "w": 1314,
+        "h": 323,
+        "rows": 5
+      },
+      "verdict_excerpt": "风险偏好在收窄"
+    },
+    {
+      "file": "dashboard_light_en_1440.png",
+      "hero_file": "dashboard_light_en_1440_hero.png",
+      "viewport": "1440",
+      "theme": "light",
+      "language": "en",
+      "spine": {
+        "w": 1314,
+        "h": 323,
+        "rows": 5
+      },
+      "verdict_excerpt": "Risk-on, narrowing"
+    },
+    {
+      "file": "dashboard_light_zh_1440.png",
+      "hero_file": "dashboard_light_zh_1440_hero.png",
+      "viewport": "1440",
+      "theme": "light",
+      "language": "zh",
+      "spine": {
+        "w": 1314,
+        "h": 323,
+        "rows": 5
+      },
+      "verdict_excerpt": "风险偏好在收窄"
+    },
+    {
+      "file": "dashboard_dark_en_390.png",
+      "hero_file": "dashboard_dark_en_390_hero.png",
+      "viewport": "390",
+      "theme": "dark",
+      "language": "en",
+      "spine": {
+        "w": 308,
+        "h": 662,
+        "rows": 5
+      },
+      "verdict_excerpt": "Risk-on, narrowing"
+    },
+    {
+      "file": "dashboard_dark_zh_390.png",
+      "hero_file": "dashboard_dark_zh_390_hero.png",
+      "viewport": "390",
+      "theme": "dark",
+      "language": "zh",
+      "spine": {
+        "w": 308,
+        "h": 640,
+        "rows": 5
+      },
+      "verdict_excerpt": "风险偏好在收窄"
+    },
+    {
+      "file": "dashboard_light_en_390.png",
+      "hero_file": "dashboard_light_en_390_hero.png",
+      "viewport": "390",
+      "theme": "light",
+      "language": "en",
+      "spine": {
+        "w": 308,
+        "h": 662,
+        "rows": 5
+      },
+      "verdict_excerpt": "Risk-on, narrowing"
+    },
+    {
+      "file": "dashboard_light_zh_390.png",
+      "hero_file": "dashboard_light_zh_390_hero.png",
+      "viewport": "390",
+      "theme": "light",
+      "language": "zh",
+      "spine": {
+        "w": 308,
+        "h": 640,
+        "rows": 5
+      },
+      "verdict_excerpt": "风险偏好在收窄"
+    }
+  ]
+}
