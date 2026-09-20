@@ -15,6 +15,28 @@
   var FEED_URL = "live/risk_envelope.json";
   var POLL = (window.LIVE_POLL_SEC && +window.LIVE_POLL_SEC) || 60;
 
+  /* Older rendered pages may still contain the standalone band. Move that same
+     node (including all live identities) into optional Risk Radar detail. New
+     server renders already place the compact context there. Never clone a feed
+     consumer or leave a second first-level panel. */
+  function relocateLegacyEnvelope() {
+    var band = document.getElementById("risk-envelope-band");
+    if (!band || band.closest("#dlg-risk")) return;
+    var body = document.querySelector("#dlg-risk .mx5-dlg-body");
+    if (!body) { band.hidden = true; band.style.display = "none"; return; }
+    var detail = document.createElement("details");
+    detail.className = "mx-disc riskdlg-envelope-legacy";
+    var summary = document.createElement("summary");
+    var en = document.createElement("span"), zh = document.createElement("span");
+    en.className = "l-en"; en.textContent = "Market internals · trend and stress";
+    zh.className = "l-zh"; zh.textContent = "市场内部 · 趋势与压力";
+    summary.appendChild(en); summary.appendChild(zh);
+    detail.appendChild(summary);
+    body.insertBefore(detail, body.querySelector(".riskdlg-drivers"));
+    band.classList.remove("panel", "span12");
+    detail.appendChild(band);
+  }
+
   function unpaint() {
     var chip = document.getElementById("gde-live-chip");
     var pending = document.getElementById("gde-pending-chip");
@@ -148,6 +170,7 @@
   }
 
   function tick() {
+    relocateLegacyEnvelope();
     if (!document.getElementById("risk-envelope-band")) return;   // no wasted fetch
     fetch(FEED_URL + "?t=" + Date.now(), { cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })

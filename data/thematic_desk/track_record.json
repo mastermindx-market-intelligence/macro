@@ -1,15 +1,15 @@
 {
   "schema": "thematic_desk.v1",
   "as_of": "2026-09-18",
-  "scored_total": 233,
-  "open": 99,
+  "scored_total": 234,
+  "open": 103,
   "unscored_soft": 58,
   "overall": {
-    "n": 233,
-    "hits": 155,
+    "n": 234,
+    "hits": 156,
     "misses": 78,
-    "hit_rate": 0.665,
-    "dir_accuracy": 0.442
+    "hit_rate": 0.667,
+    "dir_accuracy": 0.444
   },
   "by_market": {
     "us": {
@@ -20,11 +20,11 @@
       "dir_accuracy": 0.514
     },
     "china": {
-      "n": 71,
-      "hits": 39,
+      "n": 72,
+      "hits": 40,
       "misses": 32,
-      "hit_rate": 0.549,
-      "dir_accuracy": 0.352
+      "hit_rate": 0.556,
+      "dir_accuracy": 0.361
     },
     "hk": {
       "n": 16,
@@ -43,11 +43,11 @@
   },
   "by_conviction": {
     "low": {
-      "n": 232,
-      "hits": 155,
+      "n": 233,
+      "hits": 156,
       "misses": 77,
-      "hit_rate": 0.668,
-      "dir_accuracy": 0.444
+      "hit_rate": 0.67,
+      "dir_accuracy": 0.446
     },
     "medium": {
       "n": 1,
@@ -64,8 +64,18 @@
       "dir_accuracy": null
     }
   },
-  "calibration_note": "233 scored, hit-rate 0.665 (directional accuracy 0.442). Chance alone would land a hit-rate near 0.847 (directional accuracy near 0.5082) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+  "calibration_note": "234 scored, hit-rate 0.667 (directional accuracy 0.444). Chance alone would land a hit-rate near 0.847 (directional accuracy near 0.5082) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
   "recent": [
+    {
+      "id": "china-2026-08-07-20260808153507-2",
+      "market": "china",
+      "subject": "Innovative Pharma & CXO",
+      "lean": "underweight",
+      "conviction": "low",
+      "outcome": "hit",
+      "realized": -0.0468,
+      "check_by": "2026-09-18"
+    },
     {
       "id": "hk-2026-08-05-20260805150353-1",
       "market": "hk",
@@ -174,16 +184,6 @@
       "conviction": "low",
       "outcome": "miss",
       "realized": -0.0568,
-      "check_by": "2026-09-16"
-    },
-    {
-      "id": "hk-2026-08-19-20260820081801-2",
-      "market": "hk",
-      "subject": "China Tech & Internet",
-      "lean": "underweight",
-      "conviction": "low",
-      "outcome": "hit",
-      "realized": -0.0472,
       "check_by": "2026-09-16"
     }
   ]

@@ -1,16 +1,16 @@
 {
-  "date": "2026-09-17",
-  "window_band": "MIXED",
-  "ipo_5y": -0.05394325573471248,
-  "spy_5y": 0.12944104827635772,
-  "gap_5y": -0.1833843040110702,
-  "priced_90d": 65,
-  "spac_pct_90d": 54,
-  "upcoming_n": 7,
+  "date": "2026-09-18",
+  "window_band": "SHUT",
+  "ipo_5y": -0.05238735083556734,
+  "spy_5y": 0.13031312728083644,
+  "gap_5y": -0.18270047811640377,
+  "priced_90d": 66,
+  "spac_pct_90d": 55,
+  "upcoming_n": 4,
   "verdict": "trails",
-  "lockups_approaching": 18,
-  "lockups_just_expired": 6,
+  "lockups_approaching": 20,
+  "lockups_just_expired": 5,
   "next_lockup": "HMH",
   "next_lockup_date": "2026-09-28",
-  "built": "2026-09-18 07:11 UTC"
+  "built": "2026-09-19 21:48 UTC"
 }

@@ -328,6 +328,7 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
         "always() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
 
@@ -351,14 +352,17 @@ def test_ci_pack_pins_the_plan_hash_and_unpins_itself_when_there_is_none() -> No
     hiccup into twelve red packs.
     """
     step = _pack_step()
-    fork_guard = "github.event.pull_request.head.repo.full_name != github.repository"
-    assert step["if"] == f"{fork_guard} && needs.ci-plan.outputs.plan_sha != ''"
+    hosted_guard = (
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc')"
+    )
+    assert step["if"] == f"{hosted_guard} && needs.ci-plan.outputs.plan_sha != ''"
     assert step["env"]["EXPECTED_PLAN_SHA"] == "${{ needs.ci-plan.outputs.plan_sha }}"
     assert '--expect-plan-sha "$EXPECTED_PLAN_SHA"' in step["run"]
     fallback = next(
         item for item in _job("ci-pack")["steps"] if item.get("name") == "fail-safe full suite when no authoritative plan was produced"
     )
-    assert fallback["if"] == f"{fork_guard} && needs.ci-plan.outputs.plan_sha == ''"
+    assert fallback["if"] == f"{hosted_guard} && needs.ci-plan.outputs.plan_sha == ''"
     assert "--expect-plan-sha" not in fallback["run"]
 
 
@@ -628,10 +632,11 @@ def test_ci_pack_downloads_the_list_and_exports_only_its_path() -> None:
     )
     assert download["with"]["path"] == "${{ runner.temp }}/ci-changed-files"
     assert download["if"] == (
-        "github.event.pull_request.head.repo.full_name != github.repository"
+        "(github.event.pull_request.head.repo.full_name != github.repository || "
+        "vars.CI_EXECUTION_ROUTE != 'pc')"
     ), (
-        "only the hosted fork executor downloads this artifact; same-repository "
-        "packs relay the main-owned trusted fragment instead"
+        "hosted execution downloads this artifact for forks and the ordinary "
+        "same-repository default; only explicit PC fallback relays trusted bytes"
     )
     export = next(
         step for step in steps if "CI_CHANGED_FILES_FILE=" in str(step.get("run", ""))

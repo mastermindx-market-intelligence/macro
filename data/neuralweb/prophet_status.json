@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-09-18T08:16:17+00:00",
+  "as_of": "2026-09-19T21:48:26+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -16,13 +16,13 @@
       ],
       "maturity_state": "accruing",
       "retro_grades": {
-        "total_rows": 11234,
-        "matured_rows": 11234,
+        "total_rows": 11521,
+        "matured_rows": 11521,
         "graded_col_counts": {
-          "excess_spy": 11234,
-          "mae_close_excess_spy": 11234,
-          "excess_sector": 11095,
-          "mae_close_excess_sector": 11095
+          "excess_spy": 11521,
+          "mae_close_excess_spy": 11521,
+          "excess_sector": 11374,
+          "mae_close_excess_sector": 11374
         },
         "note": "one-grader law (SA-R14); win_rate from committed scoreboard only"
       },
@@ -50,7 +50,7 @@
         "process_integrity": null
       },
       "track_history": {
-        "as_of": "2026-09-18",
+        "as_of": "2026-09-19",
         "n_cohorts": null,
         "status": null
       },
@@ -66,17 +66,17 @@
       "maturity_state": "accruing",
       "cn_board": {
         "board_definition": "cn_prophet_v4",
-        "total_rows": 474,
+        "total_rows": 496,
         "matured_rows": 0,
         "fill_basis_note": "t1_hl2 \u2014 accruing"
       },
       "fitness_card": {
-        "as_of": "2026-09-16",
+        "as_of": "2026-09-19",
         "hit_quality": null,
         "process_integrity": null
       },
       "audit_scoreboard": {
-        "as_of": "2026-09-16",
+        "as_of": "2026-09-19",
         "status": null,
         "n_matured": null
       },
@@ -178,21 +178,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 992.3,
+          "age_hours": 1029.8,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 8.3,
+          "age_hours": 21.8,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
-          "status": "ok",
-          "age_hours": 32.3,
+          "status": "stale",
+          "age_hours": 69.8,
           "sla_hours": 48
         }
       ],
@@ -205,13 +205,13 @@
         {
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
-          "status": "stale",
-          "age_hours": 56.3,
+          "status": "ok",
+          "age_hours": 21.8,
           "sla_hours": 30.0
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "degraded"
+      "overall_health": "ok"
     },
     "hk": {
       "market": "hk",
@@ -220,7 +220,7 @@
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
           "status": "ok",
-          "age_hours": 43.4,
+          "age_hours": 6.2,
           "sla_hours": 48
         }
       ],
@@ -234,7 +234,7 @@
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
           "status": "ok",
-          "age_hours": 0.1,
+          "age_hours": 0.2,
           "sla_hours": 48
         }
       ],
@@ -248,7 +248,7 @@
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
           "status": "ok",
-          "age_hours": 0.1,
+          "age_hours": 1.1,
           "sla_hours": 48
         }
       ],
@@ -265,10 +265,10 @@
       "open_count": 0,
       "closed_count": 100,
       "outcome_mix": {
-        "EXPIRED": 44,
-        "T1_HIT": 16,
-        "INVALIDATED": 36,
+        "INVALIDATED": 38,
+        "T1_HIT": 15,
         "T2_HIT": 1,
+        "EXPIRED": 43,
         "NO_ENTRY": 3
       }
     },
@@ -287,7 +287,7 @@
       "status": null
     },
     "cn_lab": {
-      "as_of": "2026-09-16",
+      "as_of": "2026-09-18",
       "book_count": null,
       "fire_count": 0,
       "status": null

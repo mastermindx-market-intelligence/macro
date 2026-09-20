@@ -1,9 +1,9 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-18",
+  "as_of": "2026-09-19",
   "scored_total": 182,
-  "open": 77,
-  "unscored_neutral": 263,
+  "open": 89,
+  "unscored_neutral": 269,
   "overall": {
     "n": 182,
     "hits": 116,

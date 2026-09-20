@@ -1,6 +1,6 @@
 {
-  "as_of": "2026-09-17",
-  "data_session": "2026-09-17",
+  "as_of": "2026-09-19",
+  "data_session": "2026-09-18",
   "state": "off",
   "k_count": 0,
   "chips": [
@@ -55,8 +55,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "pct_above_50=31.8% (was 45.9% 10d ago)",
-      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=31.8%\uff0810\u65e5\u524d45.9%\uff09",
+      "detail_en": "pct_above_50=28.8% (was 49.9% 10d ago)",
+      "detail_zh": "50\u65e5\u7ebf\u4e0a\u6bd4\u4f8b=28.8%\uff0810\u65e5\u524d49.9%\uff09",
       "source": "breadth"
     },
     {
@@ -66,8 +66,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "10d mean(nh-nl)=-4.4 (was 7.8 10d ago)",
-      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-4.4\uff0810\u65e5\u524d7.8\uff09",
+      "detail_en": "10d mean(nh-nl)=-9.5 (was 7.4 10d ago)",
+      "detail_zh": "10\u65e5\u5747(\u65b0\u9ad8-\u65b0\u4f4e)=-9.5\uff0810\u65e5\u524d7.4\uff09",
       "source": "breadth"
     },
     {
@@ -77,8 +77,8 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "20d log-RS slope=-0.0318 (negative)",
-      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0318\uff08\u8d1f\u5411\uff09",
+      "detail_en": "20d log-RS slope=-0.0382 (negative)",
+      "detail_zh": "20\u65e5\u5bf9\u6570RS\u659c\u7387=-0.0382\uff08\u8d1f\u5411\uff09",
       "source": "yahoo/RSP,SPY"
     },
     {
@@ -88,14 +88,14 @@
       "lit": false,
       "fresh": false,
       "since": null,
-      "detail_en": "4/11 ETFs above rising 50dma (need 8)",
-      "detail_zh": "4/11\u4e2aETF\u9ad8\u4e8e\u4e0a\u5347\u4e2d50\u65e5\u7ebf\uff08\u97008\u4e2a\uff09",
+      "detail_en": "3/11 ETFs above rising 50dma (need 8)",
+      "detail_zh": "3/11\u4e2aETF\u9ad8\u4e8e\u4e0a\u5347\u4e2d50\u65e5\u7ebf\uff08\u97008\u4e2a\uff09",
       "source": "yahoo/sector_etfs"
     }
   ],
   "regime": {
-    "label_en": "Narrow ignition \u2014 XLK; fragile until participation broadens",
-    "label_zh": "\u5c40\u90e8\u70b9\u706b \u2014 XLK\uff1b\u9700\u53c2\u4e0e\u5ea6\u6269\u6563\u65b9\u53ef\u786e\u8ba4",
+    "label_en": "Narrow ignition \u2014 SMH; fragile until participation broadens",
+    "label_zh": "\u5c40\u90e8\u70b9\u706b \u2014 SMH\uff1b\u9700\u53c2\u4e0e\u5ea6\u6269\u6563\u65b9\u53ef\u786e\u8ba4",
     "fragile": true,
     "do_en": "Theme-level evidence only. Fragile until RSP or sector breadth confirms. Evidence read, not a buy call.",
     "do_zh": "\u4ec5\u4e3b\u9898\u7ea7\u8bc1\u636e\uff0cRSP\u6216\u677f\u5757\u5e7f\u5ea6\u672a\u786e\u8ba4\u524d\u5b58\u5728\u8106\u5f31\u6027\u3002\u8bc1\u636e\u8bfb\u53d6\uff0c\u975e\u4e70\u5165\u4fe1\u53f7\u3002"
@@ -103,8 +103,8 @@
   "narrow": {
     "items": [
       {
-        "id": "XLK",
-        "ignition_score": 0.8962,
+        "id": "SMH",
+        "ignition_score": 0.974,
         "state": "igniting",
         "components": {
           "breadth_thrust": null,
@@ -112,8 +112,31 @@
             0,
             0
           ],
-          "rs_slope_change": 0.8442,
-          "rs_slope_raw": 0.04225,
+          "rs_slope_change": 0.9611,
+          "rs_slope_raw": 0.08015,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "SMH",
+        "name_zh": "SMH",
+        "category": "Sector ETF",
+        "type": "etf",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
+      {
+        "id": "XLK",
+        "ignition_score": 0.8896,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": null,
+          "breadth_n": [
+            0,
+            0
+          ],
+          "rs_slope_change": 0.8344,
+          "rs_slope_raw": 0.04042,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -126,40 +149,17 @@
         "above_200d_rising": true
       },
       {
-        "id": "quantum_computing",
-        "ignition_score": 0.8262,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": 0.9091,
-          "breadth_n": [
-            10,
-            11
-          ],
-          "rs_slope_change": 0.6564,
-          "rs_slope_raw": 0.01618,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "Quantum Computing",
-        "name_zh": "\u91cf\u5b50\u8ba1\u7b97",
-        "category": "AI & Technology",
-        "type": "basket",
-        "rs_new_high": false,
-        "above_200d_rising": true
-      },
-      {
         "id": "cybersecurity",
-        "ignition_score": 0.8077,
+        "ignition_score": 0.8282,
         "state": "igniting",
         "components": {
-          "breadth_thrust": 0.6,
+          "breadth_thrust": 0.7,
           "breadth_n": [
-            6,
+            7,
             10
           ],
-          "rs_slope_change": 0.9193,
-          "rs_slope_raw": 0.06081,
+          "rs_slope_change": 0.8705,
+          "rs_slope_raw": 0.04763,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -172,17 +172,63 @@
         "above_200d_rising": true
       },
       {
-        "id": "ai_semiconductors",
-        "ignition_score": 0.781,
+        "id": "memory_storage",
+        "ignition_score": 0.694,
         "state": "igniting",
         "components": {
-          "breadth_thrust": 0.5,
+          "breadth_thrust": 0.25,
           "breadth_n": [
-            6,
+            1,
+            4
+          ],
+          "rs_slope_change": 0.9851,
+          "rs_slope_raw": 0.10483,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "Memory, HBM & Storage",
+        "name_zh": "\u5185\u5b58\u3001HBM \u4e0e\u5b58\u50a8",
+        "category": "Semiconductors",
+        "type": "basket",
+        "rs_new_high": false,
+        "above_200d_rising": true
+      },
+      {
+        "id": "ai_neoclouds",
+        "ignition_score": 0.68,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": 0.2,
+          "breadth_n": [
+            2,
+            10
+          ],
+          "rs_slope_change": 1.0,
+          "rs_slope_raw": 0.26264,
+          "mtf_confirm": 1.0,
+          "mtf_ok": true,
+          "commodity_flip": false
+        },
+        "name": "AI Neoclouds & HPC Hosting",
+        "name_zh": "AI \u65b0\u4e91\u4e0e\u9ad8\u6027\u80fd\u7b97\u529b\u6258\u7ba1",
+        "category": "Artificial Intelligence",
+        "type": "basket",
+        "rs_new_high": false,
+        "above_200d_rising": false
+      },
+      {
+        "id": "ai_semiconductors",
+        "ignition_score": 0.6769,
+        "state": "igniting",
+        "components": {
+          "breadth_thrust": 0.25,
+          "breadth_n": [
+            3,
             12
           ],
-          "rs_slope_change": 0.9526,
-          "rs_slope_raw": 0.07501,
+          "rs_slope_change": 0.9423,
+          "rs_slope_raw": 0.06981,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
@@ -195,94 +241,48 @@
         "above_200d_rising": true
       },
       {
-        "id": "mag7",
-        "ignition_score": 0.6804,
+        "id": "quantum_computing",
+        "ignition_score": 0.6744,
         "state": "igniting",
         "components": {
-          "breadth_thrust": 0.4286,
+          "breadth_thrust": 0.5455,
           "breadth_n": [
-            3,
-            7
+            6,
+            11
           ],
-          "rs_slope_change": 0.7725,
-          "rs_slope_raw": 0.03056,
+          "rs_slope_change": 0.6405,
+          "rs_slope_raw": 0.01444,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "Magnificent Seven",
-        "name_zh": "\u4e03\u5de8\u5934",
+        "name": "Quantum Computing",
+        "name_zh": "\u91cf\u5b50\u8ba1\u7b97",
         "category": "AI & Technology",
         "type": "basket",
         "rs_new_high": false,
         "above_200d_rising": true
       },
       {
-        "id": "SMH",
-        "ignition_score": 0.6422,
+        "id": "ai_infra",
+        "ignition_score": 0.625,
         "state": "igniting",
         "components": {
-          "breadth_thrust": null,
+          "breadth_thrust": 0.125,
           "breadth_n": [
-            0,
-            0
+            3,
+            24
           ],
-          "rs_slope_change": 0.9634,
-          "rs_slope_raw": 0.08173,
-          "mtf_confirm": 0.0,
-          "mtf_ok": false,
-          "commodity_flip": false
-        },
-        "name": "SMH",
-        "name_zh": "SMH",
-        "category": "Sector ETF",
-        "type": "etf",
-        "rs_new_high": false,
-        "above_200d_rising": true
-      },
-      {
-        "id": "crypto",
-        "ignition_score": 0.6,
-        "state": "igniting",
-        "components": {
-          "breadth_thrust": 0.0,
-          "breadth_n": [
-            0,
-            7
-          ],
-          "rs_slope_change": 0.9999,
-          "rs_slope_raw": 0.23991,
+          "rs_slope_change": 0.9376,
+          "rs_slope_raw": 0.06774,
           "mtf_confirm": 1.0,
           "mtf_ok": true,
           "commodity_flip": false
         },
-        "name": "Crypto & Digital Assets",
-        "name_zh": "\u52a0\u5bc6\u4e0e\u6570\u5b57\u8d44\u4ea7",
-        "category": "Crypto & Digital Assets",
+        "name": "AI Infrastructure",
+        "name_zh": "AI \u57fa\u7840\u8bbe\u65bd",
+        "category": "AI & Technology",
         "type": "basket",
-        "rs_new_high": false,
-        "above_200d_rising": false
-      },
-      {
-        "id": "XLP",
-        "ignition_score": 0.517,
-        "state": "running",
-        "components": {
-          "breadth_thrust": null,
-          "breadth_n": [
-            0,
-            0
-          ],
-          "rs_slope_change": 0.2756,
-          "rs_slope_raw": -0.02417,
-          "mtf_confirm": 1.0,
-          "mtf_ok": true,
-          "commodity_flip": false
-        },
-        "name": "XLP",
-        "name_zh": "XLP",
-        "category": "Sector ETF",
-        "type": "etf",
         "rs_new_high": false,
         "above_200d_rising": true
       }
@@ -292,7 +292,7 @@
         "id": "energy_complex",
         "name": "US Energy Complex",
         "name_zh": "\u7f8e\u56fd\u80fd\u6e90\u7efc\u5408",
-        "ignition_score": 0.4674,
+        "ignition_score": 0.4824,
         "state": "running",
         "reason": "geopolitical event sector outside broad ignition (suspension 2026-07-23: single-sector bids \u2260 ignition)"
       },
@@ -300,7 +300,7 @@
         "id": "us_sector_energy",
         "name": "Energy (Equal-Weight)",
         "name_zh": "\u80fd\u6e90\uff08\u7b49\u6743\uff09",
-        "ignition_score": 0.3604,
+        "ignition_score": 0.3992,
         "state": "running",
         "reason": "geopolitical event sector outside broad ignition (suspension 2026-07-23: single-sector bids \u2260 ignition)"
       }
@@ -309,19 +309,19 @@
     "n_qualifying": 21,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-09-17"
+    "as_of": "2026-09-19"
   },
   "narrow_top": {
-    "basket_id": "XLK",
-    "name": "XLK",
-    "name_zh": "XLK",
-    "score": 0.8962,
+    "basket_id": "SMH",
+    "name": "SMH",
+    "name_zh": "SMH",
+    "score": 0.974,
     "streak_sessions": 4
   },
   "radar_xref": {
-    "state": "caution",
+    "state": "calm",
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 2.28
+  "_timing_s": 2.68
 }

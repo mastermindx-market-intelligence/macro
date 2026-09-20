@@ -7,7 +7,9 @@ claim: >
   physically instantaneous tap is misclassified as a long press; the event's own
   timeStamp carries the platform time the event was generated and is immune.
 falsifier: >
-  Drive a real browser, hold the main thread N ms from a window BUBBLE-phase
+  mastermind-terminal PR #633 reproducible falsifier: drive a real browser and
+  rerun `terminal/e2e/marker-tooltip.spec.ts:470`; hold the main thread N ms
+  from a window BUBBLE-phase
   pointerdown listener (capture:false, so every product handler has already
   recorded its start time), then tap with zero travel. If the handler-clock
   delta did NOT track N while the two events' timeStamps stayed <1ms apart, the

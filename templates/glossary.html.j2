@@ -125,7 +125,7 @@ html[data-theme="light"] .gl-letter:hover,html[data-theme="light"] .gl-letter:fo
 {% else %}    <span class="gl-letter is-empty" data-letter="{{ letter.id }}" aria-disabled="true"><span class="gl-tick" style="--n:0;"></span>{{ letter.label }}</span>
 {% endif %}{% endfor %}
   </nav>
-  <p class="gl-rail-note">{{ t('Dimmed letters have no terms yet.', '灰色字母下暂无词条。') }}</p>
+  <p class="gl-rail-note">{{ t('Dimmed letters have nothing to show in this view.', '灰色字母在当前视图中没有可显示词条。') }}</p>
 
   <section class="gl-controls" aria-label="{{ t_text('Search and filter', '搜索与筛选') }}">
     <div class="gl-search">

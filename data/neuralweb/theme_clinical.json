@@ -1,7 +1,7 @@
 {
   "schema": "theme_clinical.v1",
-  "as_of": "2026-09-18",
-  "generated_at": "2026-09-18T03:37:23.059124+00:00",
+  "as_of": "2026-09-19",
+  "generated_at": "2026-09-19T15:53:22.305934+00:00",
   "vocabulary_version": "v1",
   "authority": {
     "may_rank": false,
@@ -19,7 +19,7 @@
     "total_themes": 3,
     "themes_with_data": 3,
     "total_modalities_configured": 9,
-    "total_studies_stored": 2557,
+    "total_studies_stored": 2558,
     "parquet_absent": false
   },
   "pit_coverage": {
@@ -32,8 +32,8 @@
     "themes": {
       "diagnostics_lifesci": {
         "n_studies_pit": 0,
-        "n_studies_legacy": 1881,
-        "n_studies_total": 1881,
+        "n_studies_legacy": 1882,
+        "n_studies_total": 1882,
         "pit_backed_fraction": 0.0,
         "provenance": "legacy_theme_store"
       },
@@ -61,11 +61,11 @@
       "theme_id": "diagnostics_lifesci",
       "n_modalities_configured": 6,
       "n_modalities_with_data": 6,
-      "n_studies_total": 1881,
+      "n_studies_total": 1882,
       "year_month_max": "2026-09",
-      "theme_registration_yoy_pct": 4.62,
-      "theme_registration_velocity_read": "neutral",
-      "theme_registration_magnitude_band": null,
+      "theme_registration_yoy_pct": 5.03,
+      "theme_registration_velocity_read": "accelerating",
+      "theme_registration_magnitude_band": "small",
       "n_phase3_trailing12m": 35,
       "modalities": {
         "liquid_biopsy": {
@@ -236,41 +236,41 @@
         "mrna_therapeutics": {
           "modality_id": "mrna_therapeutics",
           "theme_id": "diagnostics_lifesci",
-          "n_studies_total": 372,
+          "n_studies_total": 373,
           "year_month_max": "2026-09",
-          "registration_yoy_pct": 14.63,
+          "registration_yoy_pct": 17.07,
           "registration_velocity_read": "accelerating",
           "registration_magnitude_band": "moderate",
           "enrollment_yoy_pct": -99.18,
           "enrollment_velocity_read": "decelerating",
           "enrollment_magnitude_band": "large",
           "phase_distribution": {
-            "share_phase2plus_recent": 0.617,
+            "share_phase2plus_recent": 0.6042,
             "share_phase2plus_prior": 0.561,
             "delta_pp": null,
-            "n_total_recent": 47,
+            "n_total_recent": 48,
             "n_phase2plus_recent": 29,
             "n_phase3_recent": 7,
             "n_total_prior": 41,
             "n_phase2plus_prior": 23,
             "read": "high_late_stage",
             "phase_data_caveat": "phase_non_pit: API returns current phase only; backfill rows carry phase-as-of-ingest (upper-biased toward late phase for pre-2025 studies); cross-cohort delta is confounded and not published; read is based on trailing-12m recent-window only (near-PIT).",
-            "coverage_note": "47 INDUSTRY studies in trailing 12m (29 Phase-2+, 7 Phase-3; phase as of ingest, near-PIT for recent registrations); 41 studies in prior window (phase upper-biased; cross-cohort delta not published)"
+            "coverage_note": "48 INDUSTRY studies in trailing 12m (29 Phase-2+, 7 Phase-3; phase as of ingest, near-PIT for recent registrations); 41 studies in prior window (phase upper-biased; cross-cohort delta not published)"
           },
           "n_phase3_trailing12m": 7,
-          "coverage_note": "372 INDUSTRY-sponsored studies; most recent registration: 2026-09; 89 months of registration data",
-          "coverage_note_zh": "共372个行业赞助研究；最近注册月份：2026-09；89个月的注册数据",
+          "coverage_note": "373 INDUSTRY-sponsored studies; most recent registration: 2026-09; 89 months of registration data",
+          "coverage_note_zh": "共373个行业赞助研究；最近注册月份：2026-09；89个月的注册数据",
           "expected_read": "rising registrations = mRNA platform capital commitment",
           "n_studies_pit": 0,
-          "n_studies_legacy": 372,
+          "n_studies_legacy": 373,
           "pit_backed_fraction": 0.0,
           "provenance": "legacy_theme_store"
         }
       },
-      "coverage_note": "6/6 modalities have data; 1881 total INDUSTRY-sponsored studies; most recent: 2026-09",
-      "coverage_note_zh": "6个模态中6个有数据；共1881个行业赞助研究；最新月份：2026-09",
+      "coverage_note": "6/6 modalities have data; 1882 total INDUSTRY-sponsored studies; most recent: 2026-09",
+      "coverage_note_zh": "6个模态中6个有数据；共1882个行业赞助研究；最新月份：2026-09",
       "n_studies_pit": 0,
-      "n_studies_legacy": 1881,
+      "n_studies_legacy": 1882,
       "pit_backed_fraction": 0.0,
       "provenance": "legacy_theme_store"
     },
