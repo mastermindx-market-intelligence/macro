@@ -168,7 +168,7 @@ def test_macro_transition_gets_source_bound_action_brief_without_mutation():
     assert brief['schema'] == 'mastermind.alert_brief.v1'
     assert brief['status'] == 'supported'
     assert brief['family'] == 'macro.transition_state_change'
-    assert brief['attention'] == 'review_first'
+    assert brief['attention'] == 'earlier_priority'
     assert brief['change'] == row['detail']
     assert brief['change_zh'] == row['detail_zh']
     assert brief['next_action_label'] == 'Recheck regime'
@@ -188,6 +188,7 @@ def test_macro_risk_brief_keeps_source_risk_separate_from_attention_priority():
     })
     brief = project([row])['briefs'][row['alert_id']]
     assert brief['status'] == 'supported'
+    assert brief['attention'] == 'earlier_priority'
     assert '63/100' in brief['change']
     assert 'attention priority 64' in brief['limitation']
     assert 'return forecast' in brief['limitation']
@@ -206,10 +207,20 @@ def test_unrecognized_macro_shape_abstains_from_family_specific_copy():
     assert brief['reassessment'] == ''
 
 
-def test_attention_language_derives_from_canonical_tier_not_numeric_priority():
-    act = signal('act'); act.update({'tier': 'act', 'priority': 1})
-    watch = signal('watch'); watch.update({'tier': 'watch', 'priority': 99})
-    context = signal('context'); context.update({'tier': 'context', 'priority': 100})
-    result = project([act, watch, context])
-    briefs = [result['briefs'][r['alert_id']] for r in (act, watch, context)]
-    assert [b['attention'] for b in briefs] == ['review_first', 'watch_next', 'for_awareness']
+def test_attention_language_uses_canonical_tier_and_freshness_not_numeric_priority():
+    fresh_act = signal('fresh-act'); fresh_act.update({'tier': 'act', 'priority': 1, 'age_days': 2})
+    old_act = signal('old-act'); old_act.update({'tier': 'act', 'priority': 100, 'age_days': 3})
+    fresh_watch = signal('fresh-watch'); fresh_watch.update({'tier': 'watch', 'priority': 99, 'age_days': 0})
+    old_watch = signal('old-watch'); old_watch.update({'tier': 'watch', 'priority': 100, 'age_days': 9})
+    context = signal('context'); context.update({'tier': 'context', 'priority': 100, 'age_days': 0})
+    rows = (fresh_act, old_act, fresh_watch, old_watch, context)
+    result = project(list(rows))
+    briefs = [result['briefs'][r['alert_id']] for r in rows]
+    assert [b['attention'] for b in briefs] == [
+        'review_first', 'earlier_priority', 'watch_next', 'for_awareness', 'for_awareness']
+
+
+def test_unknown_recency_never_impersonates_a_current_review_first_alert():
+    row = signal('unknown-age')
+    row.update({'tier': 'act', 'priority': 100, 'age_days': None, 'board_date': None})
+    assert project([row])['briefs'][row['alert_id']]['attention'] == 'earlier_priority'

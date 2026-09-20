@@ -141,9 +141,11 @@ body.page-alerts{margin:0;padding:var(--sp-6,24px);background:var(--bg);color:va
 .page-alerts .acx-attention-note{margin:0!important;font-size:var(--fs-label)!important}
 .page-alerts .acx-attention-count{font:600 var(--fs-sm) var(--font-mono);color:var(--muted)}
 .page-alerts .acx-attention-review_first .acx-attention-title{color:var(--ink-warn,var(--warn))}
+.page-alerts .acx-attention-earlier_priority .acx-attention-title{color:color-mix(in srgb,var(--warn) 62%,var(--muted))}
 .page-alerts .acx-attention-watch_next .acx-attention-title{color:var(--ink-info,var(--info))}
 .page-alerts .acx-row{grid-template-columns:28px minmax(0,1fr) minmax(112px,150px);min-height:96px}
 .page-alerts .acx-row.is-review_first{box-shadow:inset 3px 0 var(--warn)}
+.page-alerts .acx-row.is-earlier_priority{box-shadow:inset 2px 0 color-mix(in srgb,var(--warn) 45%,var(--line))}
 .page-alerts .acx-row.is-watch_next{box-shadow:inset 2px 0 color-mix(in srgb,var(--info) 65%,transparent)}
 .page-alerts .acx-row.is-for_awareness{box-shadow:inset 2px 0 var(--line)}
 .page-alerts .acx-row[aria-expanded="true"]{box-shadow:inset 3px 0 var(--info);background:var(--panel2)}

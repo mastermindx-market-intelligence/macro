@@ -38,8 +38,9 @@ def main():
             page.locator('#ac-results .acx-row').first.wait_for()
             assert page.locator('#ac-results .acx-row').count() == 8
             assert page.locator('#ac-results .acx-attention-group').count() >= 2
-            assert page.locator('#ac-results').get_by_text('Review first', exact=True).count() == 1
-            report['checks'].append('Now shows eight canonical observations grouped by source-derived attention')
+            assert page.locator('#ac-results').get_by_text('Earlier priority', exact=True).count() == 1
+            assert page.locator('#ac-results').get_by_text('Watch next', exact=True).count() == 1
+            report['checks'].append('Now separates earlier high-authority events from fresh watch items')
             page.select_option('#ac-source', 'bonds')
             ids = page.locator('#ac-results .acx-row').evaluate_all('(rows) => rows.map(r => r.dataset.alertId)')
             assert ids and all(by_id[id_]['source'] == 'bonds' for id_ in ids)

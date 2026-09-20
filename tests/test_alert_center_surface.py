@@ -88,7 +88,7 @@ def test_action_led_monitor_contract_replaces_the_generic_four_tab_shell():
 
 def test_client_renders_attention_groups_and_takeaway_before_receipts():
     source = (ROOT / 'templates' / 'alert_center.js').read_text()
-    for text in ('Review first', 'Watch next', 'For awareness', 'Takeaway',
+    for text in ('Review first', 'Earlier priority', 'Watch next', 'For awareness', 'Takeaway',
                  'What would change the read'):
         assert text in source
     assert "legacyView === 'signals'" in source

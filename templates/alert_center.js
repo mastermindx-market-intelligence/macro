@@ -20,11 +20,18 @@
   const hasFilters = () => state.src !== 'all' || state.sev !== 'all' || state.cl !== 'all' || state.q || state.s;
   const attentionLabels = {
     review_first: ['Review first', '优先查看'],
+    earlier_priority: ['Earlier priority', '较早的重要变化'],
     watch_next: ['Watch next', '持续关注'],
     for_awareness: ['For awareness', '背景了解']
   };
+  const attentionFor = a => {
+    const age = Number.isInteger(a.age_days) && a.age_days >= 0 ? a.age_days : null;
+    if (a.tier === 'act') return age !== null && age <= 2 ? 'review_first' : 'earlier_priority';
+    if (a.tier === 'watch' && age !== null && age <= 2) return 'watch_next';
+    return 'for_awareness';
+  };
   const briefFor = a => briefs[String(a.alert_id)] || {
-    status: 'fallback', attention: a.tier === 'act' ? 'review_first' : a.tier === 'watch' ? 'watch_next' : 'for_awareness',
+    status: 'fallback', attention: attentionFor(a),
     change: a.detail || plain(a.headline), change_zh: a.detail_zh || a.detail || plain(a.headline_zh),
     implication: (a.validation || {}).note || '', implication_zh: (a.validation || {}).note_zh || (a.validation || {}).note || '',
     limitation: 'Attention level and predictive evidence are separate.', limitation_zh: '关注级别与预测证据是两回事。',
@@ -70,7 +77,7 @@
   }
   function labels() {
     options('ac-source', [['all', tr('All sources', '所有来源')], ...((data.coverage || {}).sources || xp.sources || []).filter(s => !(xp.restricted_sources || []).includes(s.source)).map(s => [s.source, field(s, 'label')])], state.src);
-    options('ac-priority', [['all', tr('All priorities', '所有优先级')], ['act', tr('Review first', '优先查看')], ['critical', tr('Critical', '重要')], ['major', tr('Major', '较大变化')]], state.sev);
+    options('ac-priority', [['all', tr('All priorities', '所有优先级')], ['act', tr('Highest authority', '最高权威')], ['critical', tr('Critical', '重要')], ['major', tr('Major', '较大变化')]], state.sev);
     options('ac-topic', [['all', tr('All topics', '所有主题')], ['stress', tr('Risk & credit', '风险与信用')], ['regime', tr('Regime changes', '环境变化')], ['liquidity', tr('Liquidity & rates', '流动性与利率')], ['rotation', tr('Sector rotation', '板块轮动')], ['single_name', tr('Single-name activity', '个股活动')], ['other', tr('Other', '其他')]], state.cl);
     $('ac-search').placeholder = tr('Ticker, change or keyword', '股票、变化或关键词');
     for (const [id, en, cn] of [['ac-search', 'Search alerts', '搜索警报'], ['ac-source', 'Source', '来源'], ['ac-priority', 'Priority', '优先级'], ['ac-topic', 'Topic', '主题'], ['ac-close', 'Close evidence', '关闭证据']]) $(id).setAttribute('aria-label', tr(en, cn));
@@ -117,9 +124,10 @@
   }
   function attentionGroup(key, rows, startIndex) {
     const copy = {
-      review_first: ['Review first', '优先查看', 'Highest source-authority observations. Importance is not predictive certainty.', '来源权威最高的观测；重要性不等于预测确定性。'],
-      watch_next: ['Watch next', '持续关注', 'Changes worth monitoring for confirmation, deterioration or reversal.', '值得持续观察确认、恶化或反转的变化。'],
-      for_awareness: ['For awareness', '背景了解', 'Useful context that should not dominate the decision loop.', '有用背景，但不应主导决策流程。']
+      review_first: ['Review first', '优先查看', 'Fresh, highest-authority observations. Importance is not predictive certainty.', '最新且来源权威最高的观测；重要性不等于预测确定性。'],
+      earlier_priority: ['Earlier priority', '较早的重要变化', 'High-authority events outside the two-day fresh window. Recheck current conditions before acting.', '超出两天新鲜窗口的重要事件；行动前应复核当前状态。'],
+      watch_next: ['Watch next', '持续关注', 'Fresh changes worth monitoring for confirmation, deterioration or reversal.', '值得持续观察确认、恶化或反转的最新变化。'],
+      for_awareness: ['For awareness', '背景了解', 'Lower-authority or older context that should not dominate the decision loop.', '较低权威或较早背景，不应主导决策流程。']
     }[key];
     const wrap = node('section', undefined, 'acx-attention-group acx-attention-' + key);
     const head = node('header', undefined, 'acx-attention-head');
@@ -133,7 +141,7 @@
   function render() {
     labels();
     const titles = {now:['Attention queue','关注队列'], explore:['Explore all observations','探索全部观测'], history:['Observed firings','实际触发记录']};
-    const notes = {now:['Review first, watch next, then keep the lower-authority context available.','先处理优先事项，再持续关注，并保留低权威背景。'], explore:['Search and filter the complete grouped population without changing source authority.','搜索和筛选完整观测集合，不改变来源权威。'], history:['Actual logged events. Dates do not imply continuous activity.','真实事件记录，日期不代表持续状态。']};
+    const notes = {now:['Review fresh changes, keep earlier priorities honest, then watch what may develop.','先处理最新变化，诚实保留较早的重要事项，再关注可能发展的线索。'], explore:['Search and filter the complete grouped population without changing source authority.','搜索和筛选完整观测集合，不改变来源权威。'], history:['Actual logged events. Dates do not imply continuous activity.','真实事件记录，日期不代表持续状态。']};
     $('ac-view-title').textContent = tr(...titles[state.view]); $('ac-view-note').textContent = tr(...notes[state.view]);
     let rows;
     if (state.view === 'history') rows = history.filter(h => byId.has(h.alert_id) && matches(byId.get(h.alert_id), h));
@@ -144,7 +152,7 @@
     const visible = rows.slice(0, limit);
     if (state.view === 'now') {
       let ordinal = 0;
-      for (const key of ['review_first', 'watch_next', 'for_awareness']) {
+      for (const key of ['review_first', 'earlier_priority', 'watch_next', 'for_awareness']) {
         const grouped = visible.filter(a => briefFor(a).attention === key);
         if (grouped.length) { list.append(attentionGroup(key, grouped, ordinal)); ordinal += grouped.length; }
       }

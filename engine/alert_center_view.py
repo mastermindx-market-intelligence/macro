@@ -53,8 +53,14 @@ _RISK_DETAIL = re.compile(
 
 
 def _attention(row: dict) -> str:
-    return {'act': 'review_first', 'watch': 'watch_next'}.get(
-        str(row.get('tier') or ''), 'for_awareness')
+    """Translate source tier + canonical freshness into page attention only."""
+    tier = str(row.get('tier') or '')
+    age = _age_days(row)
+    if tier == 'act':
+        return 'review_first' if age is not None and age <= 2 else 'earlier_priority'
+    if tier == 'watch' and age is not None and age <= 2:
+        return 'watch_next'
+    return 'for_awareness'
 
 
 def _age_days(row: dict) -> int | None:
