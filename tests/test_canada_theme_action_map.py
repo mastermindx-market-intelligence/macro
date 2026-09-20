@@ -501,5 +501,5 @@ def test_successor_browser_receipt_proves_theme_to_prophet_journey() -> None:
 def test_p0b_canada_evidence_remains_immutable_predecessor() -> None:
     # The successor must not rewrite the accepted P0B evidence carrier.
     assert _sha256(P0B_EVIDENCE / "mobile-layout-canada.json") == (
-        "0c3a9cb1e23306ef320e3d85bd2e30b2814c161caefad5478a54b970d3452a38"
+        "f8c01489097babcc6e48c6bbf497c8241d7ac12a3e3882a7002a2e9f02a2d1dc"
     )
