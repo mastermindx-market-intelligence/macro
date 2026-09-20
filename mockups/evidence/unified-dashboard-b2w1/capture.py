@@ -110,6 +110,13 @@ def main() -> int:
                             )
                             continue
 
+                        # Scroll the isle into view BEFORE full-page capture
+                        # so the macro_<theme>_<lang>_<viewport>.png shows the
+                        # fold (dial + scar chips + vol-weather sub-row), not
+                        # only the hero. R-W1-E: every cell shows the fold.
+                        isle.scroll_into_view_if_needed(timeout=2000)
+                        page.wait_for_timeout(150)
+
                         # Full-page capture
                         full_filename = (
                             f"macro_{theme}_{lang}_{viewport}.png"
@@ -119,7 +126,8 @@ def main() -> int:
                             full_page=False,
                         )
 
-                        # Focused risk-isle crop
+                        # Focused risk-isle crop (always shows the fold;
+                        # the fold lives inside this slice)
                         isle_filename = (
                             f"risk_isle_{theme}_{lang}_{viewport}.png"
                         )

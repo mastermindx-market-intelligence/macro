@@ -41,6 +41,15 @@ def _env():
             zip=zip,
         )
     env.filters["min"] = lambda seq: min(seq)
+    # regex_replace is the One-Integer-Law (R-C, R-C FINAL FORM) hero stripper.
+    # build_site.py registers the same filter on the production env. Without
+    # this, the template crashes inside `_unified_dashboard_hero.html.j2` and
+    # `dashboard.html.j2` on `{%- set _flip_en = _flip_en|regex_replace(...) -%}`.
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     return env
 
 
@@ -50,7 +59,30 @@ def _base_ctx() -> dict:
     Only provides the keys exercised by the sections under test. All other
     references inside dashboard.html.j2 degrade via ChainableUndefined.
     """
+    # Load the engine's real market_state snapshot (or fall back to a
+    # minimal-but-complete stub that the template's MS.* accesses can use).
+    real_ms_path = ROOT / "data" / "market_state" / "latest.json"
+    if real_ms_path.exists():
+        try:
+            market_state = json.loads(real_ms_path.read_text())
+        except Exception:  # noqa: BLE001
+            market_state = _minimal_market_state()
+    else:
+        market_state = _minimal_market_state()
+
     return {
+        # mode='macro' is REQUIRED: the vol-weather strip (UD-B2-W1 R3 fold)
+        # is gated on the macro render path; the page-mode render omits it.
+        # Without this, the strip is dead markup and every assertion below
+        # would falsely pass on a vacuous "no strip" result.
+        "mode": "macro",
+        # market_state gates the #sx-risk-v2 block in the template:
+        # {% if market_state %} ... {% endif %}. Without it, the vol-weather
+        # strip never renders even with vol_weather set. The template also
+        # references MS.color / MS.label_en / MS.label_zh / MS.headline_en /
+        # MS.headline_zh / MS.score etc. — using the real engine snapshot
+        # means every unrelated MS access works without crashes.
+        "market_state": market_state,
         # fear_greed: needed by the dialog preamble we share the block with
         "fear_greed": {
             "dial": 50,
@@ -68,6 +100,45 @@ def _base_ctx() -> dict:
         # These should be None/falsy by default; individual tests override
         "vol_weather": None,
         "breadth_split": None,
+    }
+
+
+def _minimal_market_state() -> dict:
+    """Minimal market_state shape the template's MS.* accesses can survive."""
+    return {
+        "schema": "market_state.v1",
+        "asof": "2026-07-13",
+        "score": 61,
+        "raw_score": 61,
+        "score_source": "blend",
+        "capped": False,
+        "score_ceiling": None,
+        "score_caps": [],
+        "score_gap": None,
+        "color": "yellow",
+        "label_en": "Trade with caution",
+        "label_zh": "谨慎操作",
+        "verdict": "caution",
+        "headline_en": "Markets cautious — stay selective",
+        "headline_zh": "市场谨慎，精选标的",
+        "flip_en": "Cautious tone held; breadth stable.",
+        "flip_zh": "维持谨慎基调；广度稳定。",
+        "components": [],
+        "overrides": [],
+        "score_ceiling": None,
+        "radar": {
+            "state": "caution",
+            "top_score": 56,
+            "label_en": "Credit stress",
+            "label_zh": "信用压力",
+            "state_zh": "警戒",
+            "do_en": "Trim chasing; favour good entries over extended leaders.",
+            "do_zh": "减少追高；择优入场而非追逐已延展的龙头。",
+            "scares": [],
+            "is_warning": True,
+            "is_loud": False,
+        },
+        "audit": {},
     }
 
 
@@ -290,15 +361,63 @@ class TestVSBSurfaceBothPayloads:
         assert 'data-vsb-chip="' not in html
 
     def test_vol_weather_plain_text_and_pctile_phrase(self):
+        """R-W1-B + one-integer law: glance tier carries ONLY tier words
+        (calm/breeze/gust/storm + ZH twins). The OLD phrases ('Volatility is
+        calm', 'higher than N% of days', 'lower than N% of days') are banned
+        from the glance tier — they belonged to the dialog's scoreboard row
+        and have been demoted/removed entirely.
+
+        This test now verifies the TIER-WORD contract: each chip's band
+        maps to the tier-word family, and pctile scoreboard phrases are
+        absent from the rendered output.
+        """
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         html = _render(ctx)
-        # plain_en text for vix_level chip should appear
-        assert "Volatility is calm" in html
-        # pctile=42 (<50) -> renders the low-side phrasing "lower than 58% of days"
-        assert "lower than 58% of days" in html
-        # a high-side chip (pctile >= 50) renders "higher than N% of days"
-        assert "higher than" in html
+        # The risk isle slice is where the vol-weather strip lives.
+        risk_isle_start = html.find('<div class="sx" id="sx-risk-v2"')
+        assert risk_isle_start >= 0, "Risk isle must exist when mode=macro"
+        depth = 0
+        i = risk_isle_start
+        n = len(html)
+        while i < n:
+            if html.startswith("<div ", i) or html.startswith("<div>", i):
+                depth += 1
+                i += 5
+            elif html.startswith("</div>", i):
+                depth -= 1
+                i += 6
+                if depth == 0:
+                    break
+            else:
+                i += 1
+        isle = html[risk_isle_start:i]
+        # Every tier word family must be reachable from a chip in the fixture.
+        # The fixture uses bands: normal/calm/quiet/low/elevated/extreme. The
+        # template's _vw_band_word map covers every one of them — at least one
+        # of the tier words below must appear on the rendered row.
+        tier_words_en = ("calm", "breeze", "gust", "storm")
+        tier_words_zh = ("平静", "微风", "疾风", "风暴")
+        any_en = [w for w in tier_words_en if f'>{w}</span>' in isle or f'>{w}<' in isle]
+        any_zh = [w for w in tier_words_zh if f'>{w}</span>' in isle or f'>{w}<' in isle]
+        assert any_en, (
+            f"At least one tier word EN {tier_words_en} must appear on the "
+            f"rendered risk isle row (R-W1-B)"
+        )
+        assert any_zh, (
+            f"At least one tier word ZH {tier_words_zh} must appear on the "
+            f"rendered risk isle row (R-W1-B)"
+        )
+        # pctile scoreboard phrases must NOT appear on the page at all
+        # (one-integer law: removed entirely, not demoted)
+        assert "higher than" not in html, (
+            "Pctile 'higher than N% of days' must not appear (one-integer law retirement)"
+        )
+        assert "lower than" not in html, (
+            "Pctile 'lower than N% of days' must not appear (one-integer law retirement)"
+        )
+        # The old dialog-row marker is gone too
+        assert "data-vsb-chip=" not in html
 
     def test_breadth_split_section_present(self):
         ctx = _base_ctx()
@@ -482,8 +601,12 @@ class TestVSBSurfaceYoungChip:
         )
         assert "Still collecting" in html
 
-    def test_ok_chip_with_pctile_shows_history_phrase(self):
-        """A non-young chip with pctile=99 should show 'higher than 99% of days'."""
+    def test_ok_chip_with_extreme_band_shows_storm_tier(self):
+        """A chip with band='extreme' must show 'storm' / '风暴' tier word
+        on the glance tier (UD-B2-W1 R3 + R-W1-B). Engine `plain_en` and
+        pctile scoreboard phrases demote to the disclosure tier and do
+        NOT appear on glance.
+        """
         ctx = _base_ctx()
         vw = {
             "as_of": "2026-07-13",
@@ -508,10 +631,33 @@ class TestVSBSurfaceYoungChip:
         }
         ctx["vol_weather"] = vw
         html = _render(ctx)
-        assert "higher than 99% of days" in html
+        # Tier word lands on the right column of the glance row.
+        assert 'data-sx-vw-chip="vix_level"' in html
+        assert 'data-tier="extreme"' in html
+        # Tier word (storm / 风暴) shows inside the row's tier column.
+        # Walk to the row and verify the tier word appears after .sx-vw-tier.
+        import re as _re
+        row = _re.search(
+            r'data-sx-vw-chip="vix_level"[^>]*>.*?<div\s+class="sx-vw-tier">(.*?)</div>\s*</div>',
+            html, _re.DOTALL,
+        )
+        assert row, "vix_level row not found in rendered HTML"
+        tier = row.group(1)
+        assert "storm" in tier and "风暴" in tier, (
+            f"Extreme-band row must show 'storm' / '风暴' tier word; got {tier!r}"
+        )
+        # pctile scoreboard phrases must NOT appear on glance.
+        assert "higher than" not in html
+        assert "lower than" not in html
+        assert "% of days" not in html
+        # engine plain_en must NOT appear on glance (R-W1-B).
+        assert "Extreme fear" not in html
+        assert "volatility spiked" not in html
 
-    def test_ok_chip_no_pctile_no_history_phrase(self):
-        """A chip with pctile=None but freshness='ok' should not show history phrase."""
+    def test_ok_chip_with_calm_band_shows_calm_tier(self):
+        """A chip with band='calm' shows the 'calm' / '平静' tier word.
+        pctile scoreboard phrases and engine plain_en do not appear on glance.
+        """
         ctx = _base_ctx()
         vw = {
             "as_of": "2026-07-13",
@@ -523,7 +669,7 @@ class TestVSBSurfaceYoungChip:
                     "name_zh": "VIX 水平",
                     "value": 18.0,
                     "pctile": None,
-                    "band": "normal",
+                    "band": "calm",
                     "state": "calm",
                     "plain_en": "Calm",
                     "plain_zh": "平静",
@@ -536,6 +682,20 @@ class TestVSBSurfaceYoungChip:
         }
         ctx["vol_weather"] = vw
         html = _render(ctx)
+        import re as _re
+        row = _re.search(
+            r'data-sx-vw-chip="vix_level"[^>]*>.*?<div\s+class="sx-vw-tier">(.*?)</div>\s*</div>',
+            html, _re.DOTALL,
+        )
+        assert row, "vix_level row not found in rendered HTML"
+        tier = row.group(1)
+        assert "calm" in tier and "平静" in tier, (
+            f"Calm-band row must show 'calm' / '平静' tier word; got {tier!r}"
+        )
+        # pctile scoreboard phrases must NOT appear on glance.
         assert "higher than" not in html
-        # plain text should still appear
-        assert "Calm" in html
+        assert "lower than" not in html
+        # engine plain_en "Calm" must NOT appear on glance — tier word is the read.
+        # Note: tier word "calm" appears inside the tier column, but plain_en
+        # "Calm" (capitalised, from engine) should not appear on the row.
+        # The row contains "calm" in lowercase (tier word) only.

@@ -213,9 +213,12 @@
 
 {# ── Wave B2 W1 (UD-B2-W1): vol-weather sub-row. Folded into the Risk isle
    (sx-risk-v2) per seat ruling R3 (research/UNIFIED_DASHBOARD_DISPOSITION.md
-   rows 21+35). Plain-word glance tier: each row names the metric in plain
-   language (no internal VIX/COR/DSPX shorthand) and renders one tier word
-   (calm / breeze / gust / storm) on the right. The tier word comes straight
+   rows 21+35). Plain-word glance tier (R-W1-B): the glance tier carries
+   ONLY the tier word family (calm / breeze / gust / storm, EN + ZH twins)
+   and short plain clauses. Internal metric names ("Term structure",
+   "Vol-of-vol balance", "vol demand", "Single-stock vol", "期限结构",
+   "波动率的波动", "盘中波动需求", "个股波动率") demote to the isle's
+   dialog / disclosure tier — never on glance. The tier word comes straight
    from vm['vol_weather'].chips[].band — the engine already classifies; the
    template does not re-classify from percentiles. No raw values, no
    "higher/lower than N%" integers on the glance tier (one-integer law;
@@ -225,14 +228,14 @@
 {% set _vw_chips_all = vol_weather.get('chips') or [] %}
 {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
 {% set _vw_plain_name = {
-  'vix_level':   ('Volatility level',           '波动率水平'),
-  'vix_velocity':('5-day volatility change',    '5 日波动率变化'),
-  'term_slope':  ('Term structure',             '期限结构'),
-  'vvix_vix':    ('Vol-of-vol balance',         '波动率的波动'),
-  'vix1d':       ('Intraday volatility demand', '盘中波动需求'),
-  'cor1m':       ('1-month stock correlation',  '1 个月股票联动'),
-  'cor3m':       ('3-month stock correlation',  '3 个月股票联动'),
-  'dspx':        ('Single-stock volatility',    '个股波动率'),
+  'vix_level':   ('Volatility level',                '波动率水平'),
+  'vix_velocity':('5-day volatility change',         '5 日波动率变化'),
+  'term_slope':  ('Near-term vs far-term outlook',   '近期与远期展望'),
+  'vvix_vix':    ('How much traders expect next',    '交易员对未来的预期'),
+  'vix1d':       ('Overnight price swings',          '隔夜价格波动'),
+  'cor1m':       ('How much stocks move together',   '股票同步程度'),
+  'cor3m':       ('How much stocks move together',   '股票同步程度'),
+  'dspx':        ('Stock-by-stock swings',           '个股走势分散度'),
 } %}
 {% set _vw_band_word = {
   'calm':     ('calm',     '平静'),
@@ -267,10 +270,11 @@
       {% if _chip_fresh in ('young', 'missing') %}
       <div class="sx-vw-read"><span class="l-en">Still collecting — check back soon</span><span class="l-zh">仍在积累数据，稍后再看</span></div>
       {% else %}
-      <div class="sx-vw-read">
-        <span class="l-en">{{ _chip.get('plain_en') or _wx_word_pair[0] | capitalize }}</span>
-        <span class="l-zh">{{ _chip.get('plain_zh') or _wx_word_pair[1] }}</span>
-      </div>
+      {# Glance tier (R-W1-B): tier word only — no engine plain_en, no raw
+         values, no internal metric names. Plain clauses demoted to the
+         isle's disclosure / dialog tier (engine still carries plain_en in
+         vm['vol_weather'].chips[].plain_en for that tier). -#}
+      <div class="sx-vw-read" aria-hidden="true"></div>
       {% endif %}
     </div>
     <div class="sx-vw-tier">
@@ -4096,9 +4100,11 @@ body.page-macro.mx4-grid .sxg-face{display:flex;}
 /* Expanded card spans full width */
 body.page-macro.mx4-grid .sx[data-open]{grid-column:1/-1;}
 
-/* ── Risk card: face hidden in grid (band zone-2 is its face) ── */
-body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}
-/* But when data-open, show the tray normally */
+/* ── Risk card: face and weather sub-row coexist inside the isle
+   (UD-B2-W1 R3 — vol-weather fold). The dial + scar chips stay
+   visible in grid view AND the vol-weather strip is a sub-row
+   directly below them. The dial opens the risk dialog; the
+   strip's own glyphs and tier words are not interactive. */
 
 /* ── Sibling dim on expansion (graft 5, reuse v3 dim) ────────── */
 /* v3 already dims via has-open-island / many-open on body;
@@ -4269,20 +4275,15 @@ body.page-macro .sxg-deep-chip:hover{border-color:var(--link);color:var(--ink-li
 }
 
 /* ── In grid view the sx-tray behaves as normal (expands in-flow at 1/-1) ── */
-/* sx-risk-v2: face and sum hidden — band zone-2 (S2/S3) is its card face.
-   The .sx element collapses to zero height when not open; when open (data-open),
-   it spans 1/-1 at order:-1 top of rack showing the full island. */
+/* sx-risk-v2 keeps its full card chrome in grid view (UD-B2-W1 R3): the dial
+   + scar chips face is the visible card, the vol-weather sub-row sits directly
+   below it, and the card opens the risk dialog when clicked. The .sx element
+   does NOT collapse when not expanded — it carries the dial + weather strip
+   as the user-facing glance surface. When opened (data-open) it spans 1/-1
+   at order:-1 top of rack showing the full island. */
 /* sx-risk-v2 sx-sum{display:none} — removed (sx-sum rows retired v5.1) */
-/* Collapse the risk card when not expanded — it has no face in grid view */
-body.page-macro.mx4-grid #sx-risk-v2:not([data-open]){
-  min-height:0;
-  border:none;
-  background:transparent;
-  box-shadow:none;
-  padding:0;
-  margin:0;
-  /* still keep order:-1 so when opened it goes to top */
-}
+/* Collapse rules retired by UD-B2-W1 R3 — the risk isle now lives as a full
+   card with its face + weather sub-row both visible in grid view. */
 
 /* ── grid-only utility: visible only in mx4-grid, hidden in ledger ── */
 body.page-macro .mx4-grid-only{display:none;}
@@ -6969,12 +6970,12 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 /* — Volatility weather: per-row glyph + percentile position bar — */
 /* (the vsb-vw-row class was retired by UD-B2-W1 R3 — the vol-weather strip now
    lives inside #sx-risk-v2 and inherits the isle's tokens via .sx-vw-row.) */
-.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--sg-wx-c,var(--muted));}
+.sg-wx{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--muted);}
 .sg-wx svg{width:20px;height:20px;display:block;}
 .sg-pos{position:relative;height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:7px;}
 [data-theme="light"] .sg-pos{background:rgba(0,0,0,.08);}
 .sg-pos-mark{position:absolute;top:-3px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);
-  background:var(--sg-wx-c,var(--muted));border:2px solid var(--panel,#0f1420);box-shadow:0 1px 3px rgba(0,0,0,.35);}
+  background:var(--muted);border:2px solid var(--panel,#0f1420);box-shadow:0 1px 3px rgba(0,0,0,.35);}
 [data-theme="light"] .sg-pos-mark{border-color:#fff;}
 .sg-pos-axis{display:flex;justify-content:space-between;font:600 8px/1 var(--font-ui,inherit);color:var(--muted);margin-top:4px;letter-spacing:.02em;}
 @media(prefers-reduced-motion:no-preference){
