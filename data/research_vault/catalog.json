@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T10:43:44.813526+00:00",
-  "count": 2493,
+  "generated_at": "2026-09-20T10:58:53.478150+00:00",
+  "count": 2494,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -573,6 +573,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cwslqg3ob9p-aa0043",
+      "title": "GPS The World Rewired",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T01:43:00Z",
+      "summary_points": [
+        "Global Supply Chain Pressure: Index at highest since 2021-22 due to US tariffs and Iran conflict, with Brent oil at $90/barrel and Strait of Hormuz closure driving supply chain stress and margin pressure.",
+        "FDI Regional Divergence: Global FDI at $1.62T (2025), but Europe +39% vs.",
+        "Africa -26% and North America -2%, signaling uneven capital allocation and policy-driven shifts.",
+        "China Auto Export Pivot: North America’s share of China auto exports fell to ~13% (2026), while Africa rose to 15%, reflecting strategic shift to politically stable, high-price-sensitivity markets.",
+        "Asia Supply Chain Dominance: Healthcare (Asia: 77% of payment flows) and Technology (Asia: 60%) sectors show structural integration, demanding portfolio adjustments for high-value supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 36,
       "language": "en",
       "needs_metadata": false
     },
