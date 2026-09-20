@@ -312,6 +312,17 @@ def main():
             page.screenshot(path=str(out / 'desktop-silver-shock.png'))
             report['screenshots'].append('desktop-silver-shock.png')
             report['checks'].append('Commodity shock workflow now covers silver without turning stabilization into a direction call')
+            sector_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                             if brief.get('family') == 'macro.sector_rs_cross_low')
+            sector_brief = payload['explorer']['briefs'][sector_id]
+            page.goto(url + '#view=explore&id=' + sector_id, wait_until='domcontentloaded')
+            sector_text = page.locator('#ac-detail').inner_text()
+            assert sector_brief['limitation'] in sector_text
+            assert page.locator('#ac-detail .acx-next-action').inner_text() == sector_brief['next_action']
+            assert sector_brief['evidence_label'] in sector_text
+            page.screenshot(path=str(out / 'desktop-sector-rs-low.png'))
+            report['screenshots'].append('desktop-sector-rs-low.png')
+            report['checks'].append('Sector relative-strength breakdowns expose rotation verification without inventing flows or sell calls')
             situation = next(s for s in payload['explorer']['situations']
                              if len([id_ for id_ in s['member_ids'] if id_ in by_id]) >= 2)
             situation_ids = [id_ for id_ in situation['member_ids'] if id_ in by_id]

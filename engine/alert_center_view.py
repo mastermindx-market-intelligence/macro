@@ -174,6 +174,11 @@ _THEME_EMERGING = re.compile(
     r'\((?:constructive label shifts are debounced|constructive label shifts wait for a second session); '
     r'risk label shifts fire immediately\))?\.$', re.IGNORECASE,
 )
+_MACRO_SECTOR_RS_LOW = re.compile(
+    r'^([A-Z0-9.\-]+) RS vs ([A-Z0-9.\-]+) crossed below '
+    r'([0-9]{1,3})(?:st|nd|rd|th) pctile of 90d \(now ([0-9]{1,3})\)$'
+)
+
 _FOREX_RESIDUAL_HEADLINE = re.compile(
     r"^([A-Z]{3}/[A-Z]{3}): Unusual move the dollar and rates don't explain \((up|down)\)$"
 )
@@ -1059,6 +1064,70 @@ def build_alert_brief(row: dict) -> dict:
                 'reassessment': reassessment, 'reassessment_zh': reassessment_zh,
                 'evidence_label': 'Open current FX timeline',
                 'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    sector_low = _MACRO_SECTOR_RS_LOW.fullmatch(detail)
+    if source == 'macro' and type_ == 'sector_rs_cross_low' and sector_low:
+        sector, benchmark, threshold_text, current_text = sector_low.groups()
+        threshold = int(threshold_text)
+        current = int(current_text)
+        if (str(row.get('asset') or '') == 'macro' and sector != benchmark and
+                0 < threshold < 100 and 0 <= current <= threshold):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current sector-relative-strength rank.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前板块相对强度排名。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded crossings do not prove the sector stayed below the '
+                    'threshold between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录穿越并不能证明该板块在观测之间持续低于阈值。')
+            brief.update({
+                'status': 'supported', 'family': 'macro.sector_rs_cross_low',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'{sector} relative strength versus {benchmark} moved into the bottom '
+                    f'{threshold}% of its 90-day rank, with the source reporting a current '
+                    f'percentile of {current}; sector leadership has deteriorated enough to recheck.'),
+                'implication_zh': (
+                    f'{sector} 相对 {benchmark} 的强度进入其 90 天排名的底部 {threshold}%，'
+                    f'来源报告当前百分位为 {current}；板块领导力已经明显走弱，需要复核。'),
+                'limitation': (
+                    'A relative-strength percentile is a descriptive rank, not evidence of fund '
+                    'flows, a calibrated return probability, a bottom signal or a sell instruction. '
+                    'The source explicitly treats this family as rotation context rather than a '
+                    f'timing signal.{age_limit}{recurrence_limit}'),
+                'limitation_zh': (
+                    '相对强度百分位只是描述性排名，并不能证明资金流、校准收益概率、底部信号或卖出指令。'
+                    '来源明确将该信号族视为轮动背景，而非择时信号。'
+                    f'{age_limit_zh}{recurrence_limit_zh}'),
+                'next_action': (
+                    f'Open the current Macro sector panel and verify {sector} relative strength '
+                    f'versus {benchmark} is still at or below the {threshold}th-percentile threshold, '
+                    'then check whether the relative-strength line has based or reversed before '
+                    'changing sector exposure.'),
+                'next_action_zh': (
+                    f'打开当前宏观板块面板，确认 {sector} 相对 {benchmark} 的强度仍处于或低于 '
+                    f'第 {threshold} 百分位阈值，并检查相对强度线是否已经筑底或反转，再调整板块敞口。'),
+                'next_action_label': 'Recheck sector weakness',
+                'next_action_label_zh': '复核板块走弱',
+                'reassessment': (
+                    f'Change the read if {sector} relative strength recovers above the low-percentile '
+                    'threshold, forms a durable base, or a newer sector event supersedes this crossing.'),
+                'reassessment_zh': (
+                    f'若 {sector} 相对强度重新升至低百分位阈值之上、形成稳定底部，或更新的板块事件'
+                    '取代此次穿越，则改变判断。'),
+                'evidence_label': 'Open current Macro sector panel',
+                'evidence_label_zh': '打开当前宏观板块面板',
             })
             return brief
 

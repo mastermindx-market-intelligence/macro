@@ -981,6 +981,72 @@ def test_forex_smile_regime_abstains_on_zone_mismatch_or_nontransition():
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
 
 
+def test_sector_rs_cross_low_gets_rotation_context_without_flow_or_sell_claims():
+    row = signal('sector-low', source='macro', type_='sector_rs_cross_low', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 3, 'fire_count': 11, 'continuity_verified': False,
+        'headline': '📉 A sector fell out of favor',
+        'detail': 'XLP RS vs SPY crossed below 10th pctile of 90d (now 9)',
+        'detail_zh': 'XLP RS 相对 SPY 下穿 90 天第 10 百分位（现为 9）',
+        'edge': 'Context — descriptive rotation, not a timing signal.',
+        'edge_zh': '背景 — 描述性的轮动，而非择时信号。',
+        'link': 'macro.html#dlg-sector',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.sector_rs_cross_low'
+    assert brief['attention'] == 'for_awareness'
+    assert 'bottom 10% of its 90-day rank' in brief['implication']
+    assert 'current percentile of 9' in brief['implication']
+    assert 'not evidence of fund flows' in brief['limitation']
+    assert 'rotation context rather than a timing signal' in brief['limitation']
+    assert 'a bottom signal or a sell instruction' in brief['limitation']
+    assert '3 days old' in brief['limitation']
+    assert '11 recorded crossings' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck sector weakness'
+    assert brief['evidence_label'] == 'Open current Macro sector panel'
+    assert brief['evidence_scope'] == 'current_panel_not_historical_archive'
+
+
+def test_sector_rs_cross_low_has_threshold_recovery_falsifier():
+    row = signal('sector-low-fresh', source='macro', type_='sector_rs_cross_low', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 1,
+        'detail': 'XLU RS vs SPY crossed below 10th pctile of 90d (now 7)',
+        'link': 'macro.html#dlg-sector',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert 'XLU relative strength versus SPY' in brief['next_action']
+    assert 'at or below the 10th-percentile threshold' in brief['next_action']
+    assert 'recovers above the low-percentile threshold' in brief['reassessment']
+
+
+def test_sector_rs_cross_low_abstains_on_impossible_or_mismatched_shapes():
+    impossible = signal('sector-low-bad-rank', source='macro', type_='sector_rs_cross_low', asset='macro')
+    impossible.update({
+        'detail': 'XLP RS vs SPY crossed below 10th pctile of 90d (now 19)',
+        'link': 'macro.html#dlg-sector',
+    })
+    wrong_asset = signal('sector-low-asset', source='macro', type_='sector_rs_cross_low', asset='XLP')
+    wrong_asset.update({
+        'detail': 'XLP RS vs SPY crossed below 10th pctile of 90d (now 9)',
+        'link': 'macro.html#dlg-sector',
+    })
+    malformed = signal('sector-low-shape', source='macro', type_='sector_rs_cross_low', asset='macro')
+    malformed.update({
+        'detail': 'XLP relative strength is weak.',
+        'link': 'macro.html#dlg-sector',
+    })
+    rows = (impossible, wrong_asset, malformed)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
 def test_forex_momentum_gets_state_change_brief_without_directional_forecast():
     row = signal('fx-momentum', source='forex', type_='momentum', asset='EURUSD')
     row.update({
