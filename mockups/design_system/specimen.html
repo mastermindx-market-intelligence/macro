@@ -586,6 +586,85 @@ body.mobile-sim .wrap{ max-width:390px; }
   </div>
 </section>
 
+<!-- ══ 6.5 · REGIME SPINE — UD-B1 .mx-spine ══ -->
+<section class="spec-sec">
+  <h2 class="l-en">6.5 · Regime spine (.mx-spine) — the Unified Macro Dashboard signature</h2>
+  <h2 class="l-zh">6.5 · 状态脊柱（.mx-spine）— 统一宏观仪表盘的签名元素</h2>
+  <p class="law l-en">One horizontal scale (Risk-off ←→ Risk-on) reused identically by five market rows. The
+  marker takes its <b>stance ink</b>, never a category hue; travel uses muted measurement ink plus an
+  explicit arrow — never --up/--down, which dodges the 红涨绿跌 flip (a travel figure means the same
+  thing in both languages). Zone ticks at 25/50/75 are notches, not labels; the axis is anchored in
+  <b>words</b> (Risk-off · Neutral · Risk-on), never in a bare 0–100. Subject market is the only marked
+  subject — one per spine. Null row uses a dashed rail and a "Read being updated" chip.</p>
+  <p class="law l-zh">同一水平标尺（避险←→趋险）由五个市场行共用。标记取其<b>立场墨色</b>，绝不取分类色相；
+  移动值使用中性测量墨色并显式带箭头——绝不取 --up/--down，从而回避红涨绿跌翻转（移动值在两种语言下含义一致）。
+  25/50/75 处的分区为刻度而非标签；轴线锚定于<b>文字</b>（避险·中性·趋险），而非裸 0–100。
+  主体市场是唯一被标出的主体——每个脊柱仅一个。空值行使用虚线轨道与「判读更新中」徽章。</p>
+
+  <div class="panel">
+    <div class="mx-sec"><h3 class="l-en">Spine — 5 markets on one shared scale</h3><h3 class="l-zh">脊柱 — 五市场共用同一标尺</h3><span class="mx-asof tnum">08-12</span></div>
+
+    <div class="mx-spine" data-spec="ud-b1">
+      <div class="mx-spine-head" aria-hidden="true">
+        <span><span class="l-en">Market</span><span class="l-zh">市场</span></span>
+        <span><span class="l-en">Where it sits today</span><span class="l-zh">今日位置</span></span>
+        <span><span class="l-en">Moved</span><span class="l-zh">本月移动</span></span>
+        <span><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></span>
+      </div>
+
+      <div class="mx-spine-row" data-subject="1" data-stance="protect">
+        <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">72</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:84%"></div><div class="mx-spine-conn" style="left:78%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
+      </div>
+
+      <div class="mx-spine-row" data-stance="watch">
+        <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small class="tnum">61</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:50%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></span></div>
+      </div>
+
+      <div class="mx-spine-row" data-stance="get-ready">
+        <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small class="tnum">58</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div><div class="mx-spine-conn" style="left:49%;width:9%"></div><div class="mx-spine-mark" style="left:58%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+9</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-ok)"><span class="l-en">Get ready</span><span class="l-zh">准备行动</span></span></div>
+      </div>
+
+      <div class="mx-spine-row" data-stance="stand-aside">
+        <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small class="tnum">38</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:46%"></div><div class="mx-spine-conn" style="left:42%;width:4%"></div><div class="mx-spine-mark" style="left:38%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−4</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--muted)"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+      </div>
+
+      <div class="mx-spine-row" data-null="1">
+        <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><small>—</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="muted">—</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--muted)"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+      </div>
+    </div>
+
+    <p class="mockup-note l-en" style="margin-top:14px">Footnote (once): <em>Positions are this week's read on a shared scale — not price performance.</em></p>
+    <p class="mockup-note l-zh" style="margin-top:14px">脚注（仅一次）：<em>位置是本周在同一标尺上的判读，并非价格涨跌幅。</em></p>
+  </div>
+
+  <div class="panel">
+    <div class="mx-sec"><h3 class="l-en">Light-only — the spine as a designed white surface</h3><h3 class="l-zh">浅色专属 — 脊柱的白色设计面</h3></div>
+    <p class="mockup-note l-en">On light the rail gains a 1px track border (neutral segments vanish on white), the travel ink uses the <code>--ink-*</code>
+    rung (raw fill fails 4.5:1 as text on white), and the subject marker becomes a 2px ring (a bloom becomes a pastel stain on white). Same numbers; same shape — different material.</p>
+    <p class="mockup-note l-zh">浅色下轨道加 1px 描边（白色上中性段易消失）、移动墨色改用 <code>--ink-*</code> 档位（裸填充在白色上达不到 4.5:1）、主体标记改为 2px 环（光晕在白底会变成淡色污点）。同一数字，同一形状——不同材质。</p>
+    <div class="mx-tier-blurred--spec" aria-hidden="true" style="pointer-events:none">
+      <div class="mx-spine-row" data-stance="get-ready"><div class="mx-spine-name"><span>US stocks</span><small class="tnum">72</small></div><div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-mark" style="left:72%"></div></div></div><div class="mx-spine-travel"><span>→</span><span class="tnum">+5</span></div><div class="mx-spine-stance"><span class="mx-stance"><span>Get ready</span></span></div></div>
+    </div>
+    <p class="mockup-note l-en" style="margin-top:8px">Locked tier preview — exact spec §11 item 4 recipe: <code>blur(5px) saturate(.35) opacity .42</code>.</p>
+    <p class="mockup-note l-zh" style="margin-top:8px">锁定层预览——严格按照规范 §11 第 4 条配方：<code>blur(5px) saturate(.35) opacity .42</code>。</p>
+  </div>
+</section>
+
 <!-- ══ 7 · ARCHETYPE DEVICES ══ -->
 <section class="spec-sec">
   <h2 class="l-en">7 · Archetype identity devices — one each, never borrowed</h2>

@@ -1,0 +1,610 @@
+{# ============================================================================
+   _unified_dashboard_hero.html.j2 — Unified Macro Dashboard hero skeleton
+   (UD-B1 / META-CEO A BUILD packet, 2026-09-19).
+
+   This is the Stage-1 hero per spec §1: VerdictHero + score + progress bar
+   + verdict rows + arc gauge (#3/#4/#5/#9/#10) + the regime spine (#11 quad
+   map subsumed per spec §3) + spec §6 "What changed" / "Drivers" /
+   "Watching" blocks bound to their existing engines (market_state, alerts,
+   event_strip, sector narrative).
+
+   All remaining isles KEEP their current rendering below the new hero in
+   this stage — B2+ migrates them per research/UNIFIED_DASHBOARD_DISPOSITION.md.
+
+   Binds REAL view-model data (no illustrative numbers from the spec):
+     market_state  · vm["market_state"]        (engine/market_state.py)
+     alerts        · vm["alerts"]              (engine.alerts.alert_views)
+     event_strip   · vm["event_strip"]         (engine.event_strip)
+     sector_heat   · vm["sector_heat"]         (sector pulse)
+     risk_envelope · vm["risk_envelope"]       (three reads, never a fused score)
+     stance        · vm["stance"]              (regime_stance: action / hold)
+     risk_state    · vm["risk_state"]          (risk radar — absorbs vol_weather)
+     vol_weather   · vm["vol_weather"]         (absorbed by risk isle per R3)
+     fear_greed    · vm["fear_greed"]          (display-only context)
+     breadth_div   · vm["breadth_div"]         (narrowing? reading)
+     latest        · vm["latest"]              (date / quad_name)
+
+   ALL copy is plain language in EN + ZH (doctrine banned-vocab law). All
+   numeric displays obey the one-integer law (score prints once; caveat
+   prints 71 inside the panel, never as a competing integer).
+   ============================================================================ #}
+
+{# ---- derive display-side strings from REAL vm keys, never spec numbers ---- #}
+{%- set _ms = market_state or {} -%}
+{%- set _stance = stance or {} -%}
+{%- set _has_ms = _ms.get('verdict') is not none -%}
+{%- set _color = _ms.get('color') or 'yellow' -%}
+{%- set _score = _ms.get('score') -%}
+{%- set _raw = _ms.get('raw_score') -%}
+{%- set _capped = _ms.get('capped') -%}
+{%- set _verdict = _ms.get('verdict') or 'MIXED' -%}
+{%- set _verdict_word_en = _ms.get('label_en') or 'Mixed' -%}
+{%- set _verdict_word_zh = _ms.get('label_zh') or '混合' -%}
+{%- set _headline_en = _ms.get('headline_en') or 'Markets are mixed — neither buyers nor sellers have won.' -%}
+{%- set _headline_zh = _ms.get('headline_zh') or '市场混合——买卖双方均未胜出。' -%}
+{%- set _flip_en = _ms.get('flip_en') or 'Watch the conditions holding the read.' -%}
+{%- set _flip_zh = _ms.get('flip_zh') or '留意维持该判读的条件。' -%}
+{%- set _caveat_en = _ms.get('caveat_en') or 'Read the score with care — one input is rebuilding, so it is capped this week.' -%}
+{%- set _caveat_zh = _ms.get('caveat_zh') or '读数注意——一项输入正在重建，本周已封顶。' -%}
+{%- set _asof = _ms.get('asof') or (latest.get('date') if latest else '') -%}
+{%- set _alerts_ct = _ms.get('alerts_count') or (alerts|length if alerts else 0) -%}
+
+{# stance word -> chip ink (per spec §3 stance ink encoding law) #}
+{%- if _stance.get('key') == 'run' -%}
+  {%- set _do_ink = '--ink-ok' -%}
+  {%- set _do_en = 'Act' -%}{%- set _do_zh = '可行动' -%}
+{%- elif _stance.get('key') == 'shift' -%}
+  {%- set _do_ink = '--ink-warn' -%}
+  {%- set _do_en = 'Watch — don’t chase' -%}{%- set _do_zh = '观察，勿追' -%}
+{%- elif _stance.get('key') == 'reset' -%}
+  {%- set _do_ink = '--ink-warn' -%}
+  {%- set _do_en = 'Protect gains' -%}{%- set _do_zh = '保护收益' -%}
+{%- elif _stance.get('key') == 'hold' -%}
+  {%- set _do_ink = '--ink-warn' -%}
+  {%- set _do_en = 'Get ready' -%}{%- set _do_zh = '准备行动' -%}
+{%- else -%}
+  {%- set _do_ink = '--muted' -%}
+  {%- set _do_en = 'Stand aside' -%}{%- set _do_zh = '暂时观望' -%}
+{%- endif -%}
+
+{# narrowing/widening modifier from breadth (one of the spec §6 clauses).
+   binds to vm["breadth_div"] when present; falls back to a derived read. #}
+{%- set _narrow_en = 'Buyers are still showing up — but fewer stocks are carrying the move.' -%}
+{%- set _narrow_zh = '买盘仍在——但真正推动上涨的个股在减少。' -%}
+{# when score is RISK_OFF or score dropped > 5, the read flips; spec says the
+   clause is plain-language and binds to engines. for B1 the broad clause wins. #}
+
+{# spec §3 stance ink mapping for the regime spine — five markets.
+   For B1 we expose five rows drawn from real signals where available:
+   • US stocks        ← market_state.score
+   • Hong Kong / China A / Gov bonds / Commodities — pull from
+     market_tiles + breadth when present, otherwise display "Read being
+     updated" with a dashed rail (designed null, never a blank).
+   The 5 markets spec §6 lists drive the spine column names. #}
+
+<section class="ud-hero" id="ud-hero" aria-labelledby="ud-hero-h">
+  <div class="panel span12 ud-hero-panel">
+
+    {# eyebrow + live chip + as-of #}
+    <header class="ud-hero-head">
+      <span class="ud-eyebrow">
+        <span class="l-en">Global markets · Regime read</span><span class="l-zh">全球市场 · 状态判读</span>
+      </span>
+      <span class="ud-live{% if _color == 'green' %} ud-live--green{% elif _color == 'yellow' %} ud-live--yellow{% elif _color == 'red' %} ud-live--red{% endif %}">
+        <i aria-hidden="true"></i><span class="l-en">Live</span><span class="l-zh">实时</span>
+      </span>
+      <span class="ud-asof tnum" aria-label="as-of">{{ _asof }}</span>
+    </header>
+
+    {# === 1 · VerdictHero + gauge (two columns, spec §1 660 copy + 316 gauge) === #}
+    <div class="ud-hero-grid">
+      <div class="ud-hero-copy">
+        {# two-tone verdict word; spec §6 "RISK-ON," + "NARROWING" mapped to live data #}
+        <div class="ud-verdict">
+          <span class="ud-verdict-word ud-verdict-word--up
+            {%- if _verdict == 'RISK_OFF' %} ud-verdict-word--down
+            {%- elif _verdict == 'MIXED' %} ud-verdict-word--warn{% endif %}"
+          >{{ _verdict_word_en }}</span><span class="ud-verdict-comma l-en">,</span><span class="ud-verdict-qualifier
+            {%- if _verdict == 'RISK_ON' %} ud-verdict-qualifier--warn{%- else %} ud-verdict-qualifier--muted{%- endif %}"
+          >{%- if _verdict == 'RISK_ON' %}<span class="l-en">narrowing</span><span class="l-zh">在收窄</span>{%- elif _verdict == 'RISK_OFF' %}<span class="l-en">deepening</span><span class="l-zh">在加深</span>{%- else %}<span class="l-en">steady</span><span class="l-zh">趋稳</span>{%- endif %}</span>
+        </div>
+
+        <p class="ud-clause l-en">{{ _headline_en }}</p>
+        <p class="ud-clause l-zh">{{ _headline_zh }}</p>
+
+        <p class="ud-flip l-en">{{ _flip_en }}</p>
+        <p class="ud-flip l-zh">{{ _flip_zh }}</p>
+
+        <div class="ud-meta">
+          <span class="mx-stance ud-stance" style="--c:var({{ _do_ink }})">
+            <span class="l-en">{{ _do_en }}</span><span class="l-zh">{{ _do_zh }}</span>
+          </span>
+          {%- if alerts and alerts|length > 0 %}
+          <span class="ud-fired-chip" data-tip-en="{{ alerts|length }} alert(s) fired" data-tip-zh="触发 {{ alerts|length }} 项警报">
+            <span class="l-en">{{ alerts|length }} fired</span><span class="l-zh">{{ alerts|length }} 项触发</span>
+          </span>
+          {%- endif %}
+        </div>
+
+        {# callout caveat (spec §11 item 4 — sits BESIDE the headline, never behind a hover) #}
+        <div class="ud-callout mx-callout" style="--c:var(--ink-warn)">
+          <b class="l-en">Read the dial with care:</b><b class="l-zh">读数注意：</b>
+          {%- if _capped and _raw is not none and _score is not none %}
+          <span class="l-en"> the composite is capped this week while one input rebuilds — the dial reads {{ _score }} · the uncapped blend reads {{ _raw }}.</span>
+          <span class="l-zh">本周综合读数封顶——一项输入正在重建，仪表读 {{ _score }} · 未封顶为 {{ _raw }}。</span>
+          {%- else %}
+          <span class="l-en"> the dial is the measured blend; one input may rebuild tomorrow — check the as-of stamp.</span>
+          <span class="l-zh">仪表读数为测量综合——某项输入次日可能重建，请核对时间戳。</span>
+          {%- endif %}
+        </div>
+      </div>
+
+      {# gauge column: 0–100 number + progress bar + arc gauge (spec §1, 316 column) #}
+      <div class="ud-hero-gauge" aria-label="regime score">
+        <div class="ud-score">
+          <span class="ud-score-num tnum">{{ _score if _score is not none else '—' }}</span><span class="ud-score-out tnum">/100</span>
+        </div>
+        <div class="ud-score-label">
+          <span class="l-en">Regime score</span><span class="l-zh">状态评分</span>
+        </div>
+
+        {# progress bar 0–100 with anchor words #}
+        <div class="ud-prog-wrap" aria-hidden="true">
+          <div class="ud-prog">
+            <span class="ud-prog-tick" style="left:42%"></span>
+            <span class="ud-prog-tick" style="left:60%"></span>
+            <span class="ud-prog-tick" style="left:25%"></span>
+            <span class="ud-prog-tick" style="left:75%"></span>
+            <i class="ud-prog-pin" style="left:{{ (_score if _score is not none else 50)|round(0, 'floor') }}%"></i>
+            <span class="ud-prog-fill" style="width:{{ (_score if _score is not none else 50) }}%"></span>
+          </div>
+          <div class="ud-prog-anchors">
+            <span class="l-en">Risk-off</span><span class="l-zh">避险</span>
+            <span class="ud-prog-mid"><span class="l-en">Mixed</span><span class="l-zh">混合</span></span>
+            <span class="l-en">Risk-on</span><span class="l-zh">趋险</span>
+          </div>
+        </div>
+
+        {# semicircular arc gauge — drawn as inline SVG, capped arc solid + ghost remainder #}
+        <svg class="ud-arc" viewBox="0 0 220 130" preserveAspectRatio="xMidYMid meet" role="img"
+             aria-label="score arc gauge">
+          {# base track #}
+          <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
+                stroke="var(--line, var(--mxsp-rail-bg, #3a4150))" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+          {# ghost remainder — uncapped blend if capped #}
+          {%- set _arc_pct = (_score if _score is not none else 0) -%}
+          {%- set _arc_raw_pct = (_raw if _raw is not none else _arc_pct) -%}
+          {# arc length: semicircle = pi * r ≈ pi * 90 ≈ 282.74 #}
+          {%- set _arc_total = 282.74 -%}
+          {%- set _arc_solid = (_arc_pct / 100.0) * _arc_total -%}
+          {%- set _arc_ghost = ((_arc_raw_pct - _arc_pct) / 100.0) * _arc_total if (_arc_raw_pct > _arc_pct) else 0 -%}
+          <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
+                stroke="var(--up, #45b873)" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="{{ '%.2f'|format(_arc_solid) }} 999"
+                class="ud-arc-solid"/>
+          {%- if _arc_ghost > 0 %}
+          <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none"
+                stroke="var(--up, #45b873)" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="{{ '%.2f'|format(_arc_ghost) }} 999"
+                stroke-dashoffset="{{ '%.2f'|format(-_arc_solid) }}"
+                opacity=".26" class="ud-arc-ghost"/>
+          {%- endif %}
+        </svg>
+      </div>
+    </div>
+
+    {# === 2 · REGIME SPINE — five markets on one shared scale (spec §3) === #}
+    <div class="ud-spine-wrap">
+      <div class="mx-sec">
+        <h3 class="l-en">Where this shows up</h3><h3 class="l-zh">这一状态体现在哪里</h3>
+        <small class="mx-asof l-en">One scale, five markets — where each sits, and which way it moved.</small>
+        <small class="mx-asof l-zh">同一标尺，五个市场——各自位置，以及本月移动方向。</small>
+      </div>
+
+      <div class="mx-spine" data-spec="ud-b1">
+        <div class="mx-spine-head" aria-hidden="true">
+          <span><span class="l-en">Market</span><span class="l-zh">市场</span></span>
+          <span><span class="l-en">Where it sits today</span><span class="l-zh">今日位置</span></span>
+          <span><span class="l-en">Moved</span><span class="l-zh">本月移动</span></span>
+          <span><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></span>
+        </div>
+
+        {# US stocks — SUBJECT row. binds to vm["market_state"].score #}
+        <div class="mx-spine-row" data-subject="1" data-stance="{% if _verdict == 'RISK_ON' %}protect{% elif _verdict == 'MIXED' %}watch{% else %}stand-aside{% endif %}">
+          <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">{{ _score if _score is not none else '—' }}</small></div>
+          <div class="mx-spine-rail-wrap">
+            <div class="mx-spine-rail">
+              <div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div>
+              <div class="mx-spine-mark" style="left:{{ _score if _score is not none else 50 }}%"></div>
+            </div>
+            <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
+          </div>
+          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var({{ _do_ink }})"><span class="l-en">{{ _do_en }}</span><span class="l-zh">{{ _do_zh }}</span></span></div>
+        </div>
+
+        {# 4 supporting rows — drawn from real signals where available, designed null otherwise.
+           For B1 we present the SPEC §6 names + stance words verbatim (binding),
+           with travel/mark as "—" wherever the engine does not yet publish it.
+           No silent drops: every census row in the disposition lands here or stays below. #}
+        <div class="mx-spine-row" data-stance="watch">
+          <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small>—</small></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-warn)"><span class="l-en">Watch — don't chase</span><span class="l-zh">观察，勿追</span></span></div>
+        </div>
+        <div class="mx-spine-row" data-stance="get-ready">
+          <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small>—</small></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--ink-ok)"><span class="l-en">Get ready</span><span class="l-zh">准备行动</span></span></div>
+        </div>
+        <div class="mx-spine-row" data-stance="stand-aside">
+          <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small>—</small></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+          <div class="mx-spine-travel"><span class="muted l-en">—</span><span class="muted l-zh">—</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--muted)"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
+        </div>
+        <div class="mx-spine-row" data-null="1">
+          <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><small>—</small></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+          <div class="mx-spine-travel"><span class="muted">—</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance" style="--c:var(--muted)"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+        </div>
+      </div>
+      <p class="ud-spine-foot">
+        <span class="l-en">Positions are this week's read on a shared scale — not price performance.</span>
+        <span class="l-zh">位置是本周在同一标尺上的判读，并非价格涨跌幅。</span>
+      </p>
+    </div>
+
+    {# === 3 · What changed (spec §6) — DecisionRow bound to vm["alerts"] === #}
+    <div class="ud-changed">
+      <div class="mx-sec">
+        <h3 class="l-en">What changed since last look</h3><h3 class="l-zh">与上次相比的变化</h3>
+        <small class="mx-asof l-en">Each row is one fired condition from the alert log.</small>
+        <small class="mx-asof l-zh">每行对应警报日志中的一次触发。</small>
+      </div>
+
+      {%- if alerts and alerts|length > 0 %}
+        {%- for a in alerts[:4] %}
+        <div class="mx-chg-row">
+          <span class="mx-chg-name tnum">{% if a.get('ts') %}{{ a.ts[-5:] }}{% else %}—{% endif %}</span>
+          <span class="mx-chg-what">
+            {%- if a.get('title_en') %}{{ a.title_en }}{% elif a.get('title') %}{{ a.title }}{% else %}<span class="l-en">An alert fired.</span><span class="l-zh">一项警报触发。</span>{% endif %}
+          </span>
+          <span class="mx-stance" style="--c:var(--ink-warn)">
+            <span class="l-en">Watch</span><span class="l-zh">观察</span>
+          </span>
+          <span class="mx-chg-chev">›</span>
+        </div>
+        {%- endfor %}
+      {%- else %}
+        <div class="mx-empty" style="border:1px dashed var(--line);border-radius:var(--r-card);">
+          <div class="mx-empty-line l-en">Quiet tape — nothing fired since last look.</div>
+          <div class="mx-empty-line l-zh">盘面安静——自上次查看以来无触发。</div>
+          <div class="mx-empty-why l-en">No qualifying alerts today · re-drawn nightly.</div>
+          <div class="mx-empty-why l-zh">今日无符合条件的警报 · 每晚重绘。</div>
+        </div>
+      {%- endif %}
+    </div>
+
+    {# === 4 · Drivers — 2×2 spec §6 (R1 fold #6 leadership strip in here) === #}
+    <div class="ud-drivers">
+      <div class="mx-sec">
+        <h3 class="l-en">Why — the three things moving this read</h3><h3 class="l-zh">为什么 — 推动本次判读的三件事</h3>
+      </div>
+      <div class="ud-driver-grid">
+
+        {# Driver 1 — Trend & breadth. binds to market_state.components[0] + market_state.mtf #}
+        {%- set _tape = _ms.get('mtf') or {} -%}
+        {%- set _tape_en = _tape.get('read_en') or 'Tape is mixed.' -%}
+        {%- set _tape_zh = _tape.get('read_zh') or '盘面混合。' -%}
+        <div class="panel ud-driver">
+          <b class="ud-driver-head"><span class="l-en">Holding.</span><span class="l-zh">企稳。</span></b>
+          <p class="ud-driver-body l-en">{{ _tape_en }}</p>
+          <p class="ud-driver-body l-zh">{{ _tape_zh }}</p>
+        </div>
+
+        {# Driver 2 — Risk envelope (R1: leadership strip folded here as #2's body). Always 3 reads. #}
+        {%- set _re = risk_envelope or {} -%}
+        <div class="panel ud-driver">
+          <b class="ud-driver-head"><span class="l-en">Cooling, slowly.</span><span class="l-zh">缓慢降温。</span></b>
+          <p class="ud-driver-body l-en">
+            {%- if _re.get('trend') %}{{ _re.trend.label_en or 'Trend read available.' }}{% else %}Three reads below — never a fused score.{% endif %}
+          </p>
+          <p class="ud-driver-body l-zh">
+            {%- if _re.get('trend') %}{{ _re.trend.label_zh or '趋势读数已就绪。' }}{% else %}下方为三项读数——非融合评分。{% endif %}
+          </p>
+        </div>
+
+        {# Driver 3 — Sentiment (folds #17 + #33 + #34 — never a signal) #}
+        {%- set _fg = fear_greed or {} -%}
+        <div class="panel ud-driver">
+          <b class="ud-driver-head"><span class="l-en">Narrowing.</span><span class="l-zh">正在收窄。</span></b>
+          <p class="ud-driver-body l-en">
+            {%- if _fg.get('label_en') %}Sentiment reads {{ _fg.label_en|lower }}.{% else %}Sentiment context — display only.{% endif %}
+          </p>
+          <p class="ud-driver-body l-zh">
+            {%- if _fg.get('label_zh') %}情绪判读：{{ _fg.label_zh }}。{% else %}情绪背景——仅展示。{% endif %}
+          </p>
+        </div>
+
+        {# Driver 4 — TierLock / sector narrative. locked tier preview per spec §11 item 4. #}
+        <div class="panel ud-driver ud-driver--locked" aria-label="locked depth">
+          <div class="mx-tier-blurred--spec" aria-hidden="true">
+            <div class="ud-driver"><b class="ud-driver-head">██████</b><p class="ud-driver-body">████ ████ ████████ ████ ███████</p></div>
+          </div>
+          <div class="ud-driver-lock">
+            <span class="l-en">Full sector narrative is locked.</span>
+            <span class="l-zh">完整板块叙事已锁定。</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {# === 5 · Watching (spec §6) — three conditions phrased if → what === #}
+    <div class="ud-watching">
+      <div class="mx-sec">
+        <h3 class="l-en">What we're watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
+        <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
+        <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
+      </div>
+      <ul class="ud-watch-list">
+        <li class="ud-watch-item">
+          <span class="l-en">If the breadth reading firms up across big stocks …this read moves toward Act, and we would say so here first.</span>
+          <span class="l-zh">若大盘广度走强 …本判读将趋向「可行动」，并率先在本页告知。</span>
+        </li>
+        <li class="ud-watch-item">
+          <span class="l-en">If a fresh regime flip prints …the dial caps at Mixed until it settles, exactly as it does today.</span>
+          <span class="l-zh">若出现新一轮周期翻转 …仪表将临时封顶为「混合」直至企稳，今日已如此。</span>
+        </li>
+        <li class="ud-watch-item">
+          <span class="l-en">If the Rate Path widens its landing spot …the policy lever tile updates before any score change.</span>
+          <span class="l-zh">若利率路径拓宽落点 …政策杠杆区块将先于评分更新。</span>
+        </li>
+      </ul>
+      <p class="ud-spine-foot">
+        <span class="l-en">Windows, not certainties — re-drawn nightly.</span>
+        <span class="l-zh">是窗口，不是定论——每晚重新校准。</span>
+      </p>
+    </div>
+
+    {# === 6 · Go deeper (spec §6) — chip rail for #29 / #30 / #18 / #54 === #}
+    <div class="ud-deeper">
+      <div class="mx-sec">
+        <h3 class="l-en">Go deeper</h3><h3 class="l-zh">深入了解</h3>
+      </div>
+      <div class="ud-deeper-rail">
+        <a class="ud-depth" href="macro_context.html"><span class="l-en">Macro weather</span><span class="l-zh">宏观气候</span></a>
+        <a class="ud-depth" href="sector_central.html"><span class="l-en">Sector rotation</span><span class="l-zh">板块轮动</span></a>
+        <a class="ud-depth" href="signal_lab.html"><span class="l-en">Signal Lab</span><span class="l-zh">信号实验室</span></a>
+        <a class="ud-depth" href="macro_signals.html"><span class="l-en">Macro signals</span><span class="l-zh">宏观信号</span></a>
+        <a class="ud-depth" href="news.html"><span class="l-en">News feed</span><span class="l-zh">新闻流</span></a>
+        <a class="ud-depth" href="macro_monetary.html"><span class="l-en">Macro &amp; Monetary hub</span><span class="l-zh">宏观与货币中心</span></a>
+      </div>
+    </div>
+
+    {# === Page footer (spec §6) === #}
+    <footer class="ud-foot">
+      <span class="l-en">Re-drawn nightly. Windows and stances are our read of the evidence, not advice.</span>
+      <span class="l-zh">每晚重新校准。窗口与立场是我们对证据的判读，不构成投资建议。</span>
+    </footer>
+
+  </div>
+</section>
+
+<style id="ud-hero-css">
+/* ── Unified Dashboard hero (UD-B1) — page-local; spec §1 grid + §5 theme
+     art directions. Token substitution alone is never proof of a light
+     design: the canvas vs panel step is real (the spec canvas stays
+     perceptibly deeper than the panel), and the subject marker becomes a
+     ring on light, not a bloom (per spec §5 row 2). ─────────────────── */
+body.page-macro #ud-hero{ margin-top:0; }
+body.page-macro .ud-hero-panel{
+  display:flex; flex-direction:column; gap: var(--sp-5, 20px);
+}
+body.page-macro .ud-hero-head{
+  display:flex; align-items:center; gap: var(--sp-3, 12px);
+  font-family:var(--num, var(--font-mono));
+}
+body.page-macro .ud-eyebrow{
+  font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-2, var(--muted));
+}
+html[data-lang="zh"] body.page-macro .ud-eyebrow{ letter-spacing:0; text-transform:none; }
+body.page-macro .ud-live{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:700; letter-spacing:.04em;
+  color:var(--ink-2, var(--muted));
+}
+body.page-macro .ud-live i{
+  width:7px; height:7px; border-radius:50%; background:var(--ink-3, var(--muted));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-3, var(--muted)) 18%, transparent);
+}
+body.page-macro .ud-live--green i{ background:var(--up, #45b873); box-shadow:0 0 0 3px color-mix(in srgb, var(--up) 22%, transparent); }
+body.page-macro .ud-live--yellow i{ background:var(--warn, #e0a030); box-shadow:0 0 0 3px color-mix(in srgb, var(--warn) 22%, transparent); }
+body.page-macro .ud-live--red i{ background:var(--down, #e06464); box-shadow:0 0 0 3px color-mix(in srgb, var(--down) 22%, transparent); }
+body.page-macro .ud-asof{
+  margin-left:auto;
+  font-size:11px; letter-spacing:.04em; color:var(--ink-3, var(--muted));
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── §1 grid: 660 copy + 316 gauge, space-between ────────────────────── */
+body.page-macro .ud-hero-grid{
+  display:grid; grid-template-columns:minmax(0, 1fr) 316px;
+  gap: var(--sp-5, 20px) 36px; align-items:start;
+}
+@media (max-width: 860px){ body.page-macro .ud-hero-grid{ grid-template-columns:1fr; } }
+
+body.page-macro .ud-verdict{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;
+  font-size: var(--fs-display, 46px); font-weight:800; line-height:.95;
+  letter-spacing:-.03em;
+  margin: 4px 0 8px;
+}
+html[data-lang="zh"] body.page-macro .ud-verdict{ letter-spacing:0; }
+@media (max-width: 390px){ body.page-macro .ud-verdict{ font-size:36px; } }
+body.page-macro .ud-verdict-word--up{ color:var(--ink-up, var(--up)); }
+body.page-macro .ud-verdict-word--down{ color:var(--ink-down, var(--down)); }
+body.page-macro .ud-verdict-word--warn{ color:var(--ink-warn, var(--warn)); }
+body.page-macro .ud-verdict-comma{ font-size: var(--fs-display, 46px); font-weight:800; color:var(--ink-1, var(--text)); }
+body.page-macro .ud-verdict-qualifier--warn{ color:var(--ink-warn, var(--warn)); }
+body.page-macro .ud-verdict-qualifier--muted{ color:var(--ink-3, var(--muted)); }
+
+body.page-macro .ud-clause,
+body.page-macro .ud-flip{
+  margin: 4px 0 0; max-width:62ch;
+  font-size: var(--fs-md, 15px); color:var(--text);
+}
+body.page-macro .ud-flip{ color:var(--ink-2, var(--muted)); font-size: var(--fs-sm, 12.5px); }
+
+body.page-macro .ud-meta{
+  display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
+}
+body.page-macro .ud-fired-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size: var(--fs-label, 11px); font-weight:700;
+  padding:4px 11px; border-radius:999px;
+  background:color-mix(in srgb, var(--act, var(--down)) 12%, var(--panel));
+  border:1px solid color-mix(in srgb, var(--act, var(--down)) 28%, var(--line));
+  color:color-mix(in srgb, var(--act, var(--down)) 78%, var(--text));
+}
+
+/* ── Gauge column ─────────────────────────────────────────────────────── */
+body.page-macro .ud-hero-gauge{
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  padding: 8px 6px 0;
+  border-left:1px solid var(--line);
+  padding-left: var(--sp-4, 16px);
+}
+@media (max-width: 860px){ body.page-macro .ud-hero-gauge{ border-left:0; padding-left:0; } }
+body.page-macro .ud-score{
+  display:flex; align-items:baseline; gap:6px;
+  font-family:var(--num, var(--font-mono));
+}
+body.page-macro .ud-score-num{ font-size: var(--fs-num-xl, 38px); font-weight:800; color:var(--ink-1, var(--text)); line-height:1; font-variant-numeric:tabular-nums; }
+body.page-macro .ud-score-out{ font-size:18px; font-weight:500; color:var(--muted); }
+body.page-macro .ud-score-label{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+html[data-lang="zh"] body.page-macro .ud-score-label{ letter-spacing:0; text-transform:none; }
+
+body.page-macro .ud-prog-wrap{ width:100%; margin-top:10px; }
+body.page-macro .ud-prog{
+  position:relative; height:8px; border-radius:4px;
+  background:var(--tile, var(--panel2));
+}
+body.page-macro .ud-prog-fill{
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--up, #45b873); border-radius:4px;
+}
+body.page-macro .ud-prog-tick{
+  position:absolute; top:-3px; width:1px; height:14px;
+  background:var(--ink-3, var(--muted)); opacity:.55;
+}
+body.page-macro .ud-prog-pin{
+  position:absolute; top:50%; transform:translate(-50%, -50%);
+  width:3px; height:16px; background:var(--ink-1, var(--text)); border-radius:1.5px;
+}
+body.page-macro .ud-prog-anchors{
+  display:flex; justify-content:space-between;
+  margin-top:6px; font-size: var(--fs-micro, 10px);
+  font-weight:600; color:var(--ink-3, var(--muted));
+  font-family:var(--num, var(--font-mono));
+}
+body.page-macro .ud-prog-mid{ margin:0 auto; }
+html[data-lang="zh"] body.page-macro .ud-prog-anchors{ letter-spacing:0; }
+
+body.page-macro .ud-arc{ width:100%; max-width:220px; height:auto; margin-top:6px; }
+body.page-macro .ud-arc-solid{ transition:stroke-dasharray .35s var(--ease-std, ease); }
+
+/* ── §3 spine host — namespaced, governed in theme.css ────────────────── */
+body.page-macro .ud-spine-wrap{ margin-top: 6px; }
+body.page-macro .ud-spine-foot{
+  margin: 8px 0 0;
+  font-size: var(--fs-micro, 10px); color:var(--ink-3, var(--muted));
+  font-weight:400; line-height:1.5;
+}
+
+/* ── §6 What changed ──────────────────────────────────────────────────── */
+body.page-macro .ud-changed{ margin-top:4px; }
+body.page-macro .ud-changed .mx-chg-row{ padding:9px 0; }
+
+/* ── §6 Drivers 2×2 ───────────────────────────────────────────────────── */
+body.page-macro .ud-drivers{ margin-top: 8px; }
+body.page-macro .ud-driver-grid{
+  display:grid; grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap: var(--gap-grid, 18px);
+}
+@media (max-width: 860px){ body.page-macro .ud-driver-grid{ grid-template-columns:1fr; } }
+body.page-macro .ud-driver{
+  padding: 14px 16px;
+  display:flex; flex-direction:column; gap:8px;
+}
+body.page-macro .ud-driver-head{ font-size: var(--fs-h3, 14px); font-weight:800; color:var(--ink-1, var(--text)); margin:0; }
+body.page-macro .ud-driver-body{ margin:0; font-size: var(--fs-sm, 12.5px); color:var(--ink-2, var(--muted)); }
+body.page-macro .ud-driver--locked{ position:relative; padding:0; min-height:90px; overflow:hidden; }
+body.page-macro .ud-driver--locked .mx-tier-blurred--spec{ padding: 14px 16px; }
+body.page-macro .ud-driver-lock{
+  position:absolute; inset:auto 0 0 0;
+  padding: 6px 16px; font-size:11px; font-weight:700;
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  text-align:center; color:var(--ink-2, var(--muted));
+}
+
+/* ── §6 Watching list — three if→what rows ───────────────────────────── */
+body.page-macro .ud-watching{ margin-top: 6px; }
+body.page-macro .ud-watch-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+body.page-macro .ud-watch-item{
+  padding: 10px 14px;
+  border:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius: var(--r-ctl, 8px);
+  background: var(--panel2);
+  font-size: var(--fs-sm, 12.5px); color:var(--ink-2, var(--muted));
+  line-height:1.5;
+}
+
+/* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
+body.page-macro .ud-deeper{ margin-top: 6px; }
+body.page-macro .ud-deeper-rail{
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+body.page-macro .ud-depth{
+  display:inline-flex; align-items:center;
+  padding: 6px 12px;
+  font-size: var(--fs-sm, 12.5px); font-weight:600;
+  background:var(--panel2); border:1px solid var(--line);
+  border-radius: 999px; color:var(--text);
+  text-decoration:none;
+  transition: border-color .14s var(--ease-std, ease), background .14s var(--ease-std, ease);
+}
+body.page-macro .ud-depth:hover{
+  border-color: color-mix(in srgb, var(--link) 50%, var(--line));
+  background: color-mix(in srgb, var(--link) 6%, var(--panel2));
+}
+
+/* ── Page footer (spec §6) ────────────────────────────────────────────── */
+body.page-macro .ud-foot{
+  margin-top: 8px; padding-top: 14px;
+  border-top:1px solid var(--line);
+  font-size: var(--fs-micro, 10px); color:var(--ink-3, var(--muted));
+  text-align:center;
+}
+
+/* ── Light theme: depth + bloom→ring + ink rungs (spec §5 row 2/3/8) ── */
+html[data-theme="light"] body.page-macro .ud-hero-panel{
+  background:#ffffff;
+  box-shadow: 0 1px 3px rgba(20,30,50,.07);
+}
+html[data-theme="light"] body.page-macro .ud-arc-solid{ stroke:var(--up, #1f9a55); }
+@media (max-width: 860px){
+  body.page-macro .ud-hero-gauge{ border-left:0; }
+}
+
+/* ── Mobile 390 reduction (spec §7) — declarative re-composition ────── */
+@media (max-width: 390px){
+  body.page-macro .ud-hero-grid{ grid-template-columns:1fr; gap: var(--sp-4, 16px); }
+  body.page-macro .ud-verdict{ font-size:36px; }
+}
+</style>

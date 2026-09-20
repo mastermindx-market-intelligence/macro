@@ -2366,6 +2366,18 @@ html.has-js .rv.in .dmr-bar{transform:none;transition:transform .5s cubic-bezier
   .dmr-lb{grid-area:lb;} .dmr-val{grid-area:val;} .dmr-tr{grid-area:tr;height:22px;}
 }
 /* end debt maturity ladder */
+
+/* ===================== cash runway (_debt_maturity.html.j2, packet B-F09-3 second slice) =====================
+   Reuses the ladder's .dmw-lede / .dmw-null / .dmw-nullwhy tokens and the
+   same mod-ft footer. Dark/light treatment is inherited from the ladder panel
+   above (same section, same #debt-maturity / #cash-runway parent). No new
+   colours — same tokens as the ladder rules above. */
+.dmw-runway{margin-top:28px;padding-top:22px;
+  border-top:1px solid color-mix(in srgb,var(--hair) 60%,transparent);}
+[data-theme="light"] .dmw-runway{
+  border-top-color:var(--hair);}
+/* end cash runway */
+
 /* account sheet: alert delivery preferences (B-F08-1a) */
 .mmacc-alerts{position:relative;padding-left:14px}
 .mmacc-alerts::before{content:"";position:absolute;left:0;top:13px;bottom:13px;width:2px;border-radius:var(--r-ctl,8px);background:var(--line);transition:background .22s ease,box-shadow .22s ease}
@@ -2397,3 +2409,246 @@ button.mmacc-switch:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in
 @media (max-width:560px){.mmacc-timepair{gap:6px}.mmacc-time{flex:1 1 100%}.mmacc-timesep{display:none}}
 @media (prefers-reduced-motion:reduce){.mmacc-alerts::before,button.mmacc-switch,button.mmacc-switch::after{transition:none}}
 /* end account sheet: alert delivery preferences (B-F08-1a) */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   .mx-spine — Unified Macro Dashboard regime spine (UD-B1 §3, spec §3)
+
+   The signature primitive of the Unified Macro Dashboard (archetype D,
+   regime_dashboard). One horizontal scale (Risk-off ←→ Risk-on) reused identically
+   by five market rows. Each row carries: today's position (solid marker), the
+   position it came from a month ago (hollow marker), a thin connector between
+   them, a signed travel figure, and a plain stance word.
+
+   Encoding rules (each is a law being obeyed, not a style choice):
+   • Position uses neutral geometry; the marker takes its stance's ink, NEVER a
+     category hue. Travel uses muted measurement ink + an explicit arrow, NEVER
+     --up / --down (this dodges the 红涨绿跌 flip — a travel figure means the same
+     thing in both languages).
+   • Stance ink encodes health, and health never flips: Act / Get ready → --ink-ok;
+     Watch — don't chase / Protect gains → --ink-warn; Stand aside / Ignore → --muted.
+     Three levels, achromatic by default; colour only where it means severity.
+   • Zone ticks at 25 / 50 / 75 are notches, not labels. The axis is anchored in
+     WORDS (Risk-off · Neutral · Risk-on), never in a bare 0–100.
+   • The subject market (e.g. US stocks) is the only marked subject, one per spine.
+   • The null row is designed: dashed rail, no marker, "Read being updated" chip.
+     Not a blank, not an em-dash, and never falsifier vocabulary.
+
+   Token substitution alone is never proof of a light design — the spine has
+   theme-specific mechanisms (the bloom vs ring on the subject marker; the rail
+   track border; the raw ink vs ink-rung state ink). See spec §5 row 2/3/8.
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* axis — one shared rail with notches */
+.mx-spine{
+  --mxsp-rail-h: 6px;
+  --mxsp-notch-w: 1px;
+  --mxsp-marker-d: 14px;
+  --mxsp-marker-d-subject: 18px;
+  --mxsp-rail-bg: color-mix(in srgb, var(--line) 70%, transparent);
+  --mxsp-rail-brd: transparent;
+  --mxsp-notch-bg: var(--line);
+  --mxsp-travel-ink: var(--ink-3);
+  --mxsp-zone-ink: var(--muted);
+  display:flex; flex-direction:column; gap:0;
+  padding: var(--sp-4,16px) 0 0;
+  font-family: var(--num, var(--font-mono));
+}
+.mx-spine-head{
+  display:grid; grid-template-columns: 150px 1fr 78px 168px;
+  gap:14px; align-items:center;
+  padding: 0 0 8px;
+  border-bottom:1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+.mx-spine-head > span{
+  font-size:var(--fs-micro); font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted);
+}
+html[data-lang="zh"] .mx-spine-head > span{ letter-spacing:0; text-transform:none; }
+
+/* a single row — five markets on one rail */
+.mx-spine-row{
+  display:grid; grid-template-columns: 150px 1fr 78px 168px;
+  gap:14px; align-items:center;
+  padding: 10px 0;
+  border-bottom:1px solid color-mix(in srgb, var(--line) 40%, transparent);
+}
+.mx-spine-row:last-of-type{ border-bottom:none; }
+.mx-spine-name{
+  font-size:var(--fs-md); font-weight:600; color:var(--text);
+  display:flex; flex-direction:column; gap:2px;
+}
+.mx-spine-name small{
+  font-size:var(--fs-micro); color:var(--muted); font-weight:400;
+}
+
+/* the rail with notches */
+.mx-spine-rail{
+  position:relative; height: var(--mxsp-rail-h);
+  background: var(--mxsp-rail-bg);
+  border: 1px solid var(--mxsp-rail-brd);
+  border-radius: var(--mxsp-rail-h);
+}
+/* notches at 25 / 50 / 75 (not labels — just visual ticks cutting through the rail) */
+.mx-spine-rail::before,
+.mx-spine-rail::after,
+.mx-spine-rail .mx-spine-n25,
+.mx-spine-rail .mx-spine-n50,
+.mx-spine-rail .mx-spine-n75{
+  content:""; position:absolute; top:50%; transform:translateY(-50%);
+  width: var(--mxsp-notch-w); height: calc(var(--mxsp-rail-h) + 8px);
+  background: var(--mxsp-notch-bg);
+}
+.mx-spine-rail .mx-spine-n25{ left:25%; }
+.mx-spine-rail .mx-spine-n50{ left:50%; }
+.mx-spine-rail .mx-spine-n75{ left:75%; }
+/* axis-anchor words sit just under the rail */
+.mx-spine-anchors{
+  display:flex; justify-content:space-between;
+  margin-top:6px;
+  font-size:var(--fs-micro); font-weight:600; letter-spacing:.04em;
+  color:var(--mxsp-zone-ink);
+}
+.mx-spine-anchors .mx-spine-a-mid{ margin:0 auto; }
+html[data-lang="zh"] .mx-spine-anchors{ letter-spacing:0; }
+
+/* the marker (today) — solid disc in the stance's ink */
+.mx-spine-mark{
+  position:absolute; top:50%;
+  width: var(--mxsp-marker-d); height: var(--mxsp-marker-d);
+  border-radius:50%;
+  transform: translate(-50%, -50%);
+  background: var(--mxsp-mark-ink, var(--muted));
+  z-index:2;
+}
+/* the older marker (month-ago) — hollow */
+.mx-spine-prev{
+  position:absolute; top:50%;
+  width: 9px; height: 9px;
+  border-radius:50%;
+  transform: translate(-50%, -50%);
+  background: var(--panel);
+  border: 1.5px solid var(--mxsp-mark-ink, var(--muted));
+  z-index:1;
+  opacity:.55;
+}
+/* the thin connector between them */
+.mx-spine-conn{
+  position:absolute; top:50%; height: 1.5px;
+  background: var(--mxsp-mark-ink, var(--muted));
+  opacity:.4;
+  transform:translateY(-50%);
+  z-index:1;
+}
+/* the SUBJECT market marker — larger, with a soft bloom on dark / a 2px ring on light */
+.mx-spine-row[data-subject="1"] .mx-spine-mark{
+  width: var(--mxsp-marker-d-subject); height: var(--mxsp-marker-d-subject);
+  background: var(--mxsp-mark-ink, var(--ink-link));
+}
+html[data-theme="dark"] .mx-spine-row[data-subject="1"] .mx-spine-mark{
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--link) 55%, transparent))
+          drop-shadow(0 0 14px color-mix(in srgb, var(--link) 35%, transparent));
+}
+html[data-theme="light"] .mx-spine-row[data-subject="1"] .mx-spine-mark{
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--mxsp-mark-ink, var(--link)),
+              0 2px 4px rgba(20,30,50,.12);
+}
+
+/* stance ink — three levels, achromatic by default; colour only where it means severity */
+.mx-spine-row[data-stance="act"],
+.mx-spine-row[data-stance="get-ready"]{
+  --mxsp-mark-ink: var(--ink-ok);
+}
+.mx-spine-row[data-stance="watch"],
+.mx-spine-row[data-stance="protect"]{
+  --mxsp-mark-ink: var(--ink-warn);
+}
+.mx-spine-row[data-stance="stand-aside"],
+.mx-spine-row[data-stance="ignore"]{
+  --mxsp-mark-ink: var(--muted);
+}
+
+/* travel column — signed, muted measurement ink + explicit arrow (never --up/--down) */
+.mx-spine-travel{
+  font-size:var(--fs-md); font-weight:700;
+  font-variant-numeric: tabular-nums;
+  color: var(--mxsp-travel-ink);
+  display:flex; align-items:center; gap:5px;
+}
+.mx-spine-travel .mx-spine-arrow{
+  font-size: 12px; font-weight:700;
+  color: var(--mxsp-travel-ink);
+}
+
+/* stance chip on the right — uses .mx-stance tokens */
+.mx-spine-stance{ display:flex; justify-content:flex-start; }
+
+/* null row — dashed rail, no marker, "Read being updated" chip */
+.mx-spine-row[data-null="1"] .mx-spine-rail{
+  background: transparent;
+  border: 1px dashed var(--mxsp-rail-bg);
+}
+.mx-spine-row[data-null="1"] .mx-spine-mark,
+.mx-spine-row[data-null="1"] .mx-spine-prev,
+.mx-spine-row[data-null="1"] .mx-spine-conn{ display:none; }
+
+/* footnote (once per spine) */
+.mx-spine-foot{
+  margin-top:10px;
+  font-size:var(--fs-micro); color:var(--muted);
+  font-weight:400; line-height:1.5;
+}
+
+/* ── light theme specific mechanisms (spec §5 row 2/3/8) ──────────────────────
+   Token swap alone is NOT a light design. Three mechanisms intentionally differ:
+     • spine rail on white gains a 1px track border (neutral segments vanish on white)
+     • travel ink uses --ink-* rung (raw fill fails the 4.5:1 floor on white)
+     • subject marker becomes a 2px ring (bloom becomes a pastel stain on white).
+*/
+html[data-theme="light"] .mx-spine{
+  --mxsp-rail-brd: color-mix(in srgb, var(--text) 10%, var(--line));
+  --mxsp-notch-bg: var(--panel);
+  --mxsp-travel-ink: color-mix(in srgb, var(--ink-3) 92%, var(--text));
+  --mxsp-zone-ink: color-mix(in srgb, var(--muted) 88%, var(--text));
+}
+
+/* ── mobile 390 reduction (spec §7): stacked cards, NOT a squeezed table ──────
+   Scale survives; table geometry does not. Each row becomes two rows on the
+   card: row 1 = name + stance; row 2 = the same shared rail + travel figure.
+*/
+@media (max-width: 640px){
+  .mx-spine-head{ display:none; }
+  .mx-spine-row{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "name"
+      "rail"
+      "travel";
+    gap: 6px;
+    padding: 14px 0;
+  }
+  .mx-spine-name{ grid-area: name; flex-direction:row; align-items:center; justify-content:space-between; }
+  .mx-spine-rail-wrap{ grid-area: rail; }
+  .mx-spine-travel{ grid-area: travel; }
+  .mx-spine-stance{ display:none; }
+  .mx-spine-row[data-null="1"] .mx-spine-stance{
+    display:flex; grid-area:name; align-self:flex-end; margin-left:auto;
+  }
+}
+/* end .mx-spine — UD-B1 §3 */
+
+/* ════════════════════════════════════════════════════════════════════════════════
+   Locked-content ghost — spec §11 item 4
+
+   The unified dashboard's locked tier surfaces (driver 4 / locked depth-link
+   previews) use a deliberately desaturated blur to read as "this content is
+   here, just not yours yet" — NOT as a smudge on white. The recipe is exact:
+     filter: blur(5px) saturate(.35) opacity ≈ .42
+
+   Dark keeps the shipped .46 from the light-only stocks sweep (the stocks sweep
+   was a light-only design; dark inherits the locked tier .42 to stay consistent
+   with the new spec). The light theme ships the spec's exact saturate(.35) +
+   opacity .42. (test_design_system checks .mx-tier-blurred across both themes.)
+   ════════════════════════════════════════════════════════════════════════════════ */
+.mx-tier-blurred--spec{ filter: blur(5px) saturate(.35); opacity:.42; }
+html[data-theme="dark"]  .mx-tier-blurred--spec{ opacity:.42; }
+/* end locked-content ghost */
