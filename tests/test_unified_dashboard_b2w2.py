@@ -140,16 +140,18 @@ def intl_root(tmp_path):
     return root
 
 
-def _intl_ms_view(intl_root: Path, market_key: str) -> dict | None:
+def _persisted_ms_view(intl_root: Path, market_key: str) -> dict | None:
     """Read the persisted HK/CN market-state snapshot + score_log.parquet
     into the macro vm entry shape the template reads. R-H: the helper MUST
-    stay byte-equivalent to scripts.build_site._intl_ms_view — any drift
+    stay byte-equivalent to scripts.build_site._persisted_ms_view — any drift
     here would let the tests pass while the real ingest path diverges. We
     mirror the helper rather than import it because build_site is a 7000+
     line module with heavy module-level work; importing it from a unit test
     triggers parquet / yaml / plotly initialisation. The drift is fenced by
     test_engine_market_state_persist_docstring_accurate + the path-mapping
-    test below."""
+    test below. Named `_persisted_ms_view` (not `_intl_ms_view`) because
+    R-W2-2 forbids `intl_market_state` as a HK/CN source — the helper name
+    must not reopen that trap."""
     from engine.market_state import load_persisted as _lp
     snap = _lp(root=intl_root, market_key=market_key)
     if snap is None:
@@ -176,14 +178,14 @@ def _intl_ms_view(intl_root: Path, market_key: str) -> dict | None:
     return view
 
 
-def test_intl_ms_view_helper_matches_build_site_contract(intl_root):
+def test_persisted_ms_view_helper_matches_build_site_contract(intl_root):
     """Drift guard: the test helper's vm entry shape MUST match the shape
-    scripts/build_site.py:_intl_ms_view publishes. We assert the contract
+    scripts/build_site.py:_persisted_ms_view publishes. We assert the contract
     keys + the cn → china_market_state mapping rather than re-importing the
     helper (build_site has heavy module-level work). If build_site's helper
     later adds / renames a field, this test fails until the test helper
     catches up — preventing the named drift (Minor #4)."""
-    view = _intl_ms_view(intl_root, "cn")
+    view = _persisted_ms_view(intl_root, "cn")
     assert view is not None
     expected_keys = {"score", "raw_score", "verdict", "label_en", "label_zh",
                      "asof", "caveat_en", "caveat_zh", "display_only", "market",
@@ -374,7 +376,7 @@ def test_spine_slice_hk_row_binds_real_with_caveat(intl_root):
     named failure mode (R-W2-4)."""
     vm = {
         "market_state": None, "stance": {}, "ms_history": [],
-        "hk_market_state": _intl_ms_view(intl_root, "hk"),
+        "hk_market_state": _persisted_ms_view(intl_root, "hk"),
         "cn_market_state": None,
         "latest": {}, "alerts": [], "event_strip": [],
         "fear_greed": {}, "risk_envelope": {},
@@ -406,7 +408,7 @@ def test_spine_slice_cn_row_binds_real_with_caveat(intl_root):
     vm = {
         "market_state": None, "stance": {}, "ms_history": [],
         "hk_market_state": None,
-        "cn_market_state": _intl_ms_view(intl_root, "cn"),
+        "cn_market_state": _persisted_ms_view(intl_root, "cn"),
         "latest": {}, "alerts": [], "event_strip": [],
         "fear_greed": {}, "risk_envelope": {},
     }
@@ -440,7 +442,7 @@ def test_spine_slice_short_history_state_when_log_too_short(tmp_path):
                   index=False)
     vm = {
         "market_state": None, "stance": {}, "ms_history": [],
-        "hk_market_state": _intl_ms_view(tmp_path, "hk"),
+        "hk_market_state": _persisted_ms_view(tmp_path, "hk"),
         "cn_market_state": None,
         "latest": {}, "alerts": [], "event_strip": [],
         "fear_greed": {}, "risk_envelope": {},
@@ -466,8 +468,8 @@ def test_spine_slice_bonds_and_commodities_stay_designed_null(intl_root):
     touch these rows."""
     vm = {
         "market_state": None, "stance": {}, "ms_history": [],
-        "hk_market_state": _intl_ms_view(intl_root, "hk"),
-        "cn_market_state": _intl_ms_view(intl_root, "cn"),
+        "hk_market_state": _persisted_ms_view(intl_root, "hk"),
+        "cn_market_state": _persisted_ms_view(intl_root, "cn"),
         "latest": {}, "alerts": [], "event_strip": [],
         "fear_greed": {}, "risk_envelope": {},
     }
@@ -484,37 +486,59 @@ def test_spine_slice_bonds_and_commodities_stay_designed_null(intl_root):
     assert 'data-blocked-feed="china_a_regime"' not in slice_
 
 
+def _row_cells_without_disclosure(row: str) -> str:
+    """R-W2-14: the row cells carry marker geometry, travel delta, stance
+    words ONLY. As-of + caveat live in the disclosure, so strip
+    `.mx-spine-caveat` (and style attributes, which are geometry) before
+    scanning the cells for dates or competing integers."""
+    cells = re.sub(
+        r'<div class="mx-spine-caveat"[\s\S]*?</div>', "", row, count=1)
+    cells = re.sub(r'\sstyle="[^"]*"', "", cells)
+    return cells
+
+
 def test_spine_slice_hk_no_competing_integer_on_rail(intl_root):
-    """One-integer law (R-W2-9, R-C FINAL FORM): the HK row must carry the
-    US gauge's integer-free geometry on the rail — marker left:% style only,
-    never a bare integer in the slice."""
+    """One-integer law (R-W2-9 / R-W2-14): HK row cells carry marker
+    geometry + travel delta + stance words ONLY. No as-of date strings,
+    and no integer besides the travel delta, in the cells. The as-of +
+    caveat live in the disclosure (not the name cell)."""
     vm = {
         "market_state": None, "stance": {}, "ms_history": [],
-        "hk_market_state": _intl_ms_view(intl_root, "hk"),
+        "hk_market_state": _persisted_ms_view(intl_root, "hk"),
         "cn_market_state": None,
         "latest": {}, "alerts": [], "event_strip": [],
         "fear_greed": {}, "risk_envelope": {},
     }
     slice_ = _spine_slice(_render_macro_with_hero(vm))
     row = _hk_row(slice_)
-    # The today marker's position is a percentage style; the row does NOT
-    # reprint the integer 0-100 score on the rail.
-    # (The score integer lives on the US gauge column, NOT on this row.)
-    # Sanity-check: row has a left:X% style on the marker, not a bare integer.
     assert re.search(r'class="mx-spine-mark" style="left:\d+(\.\d+)?%"', row), (
         f"HK row must carry the marker's percentage geometry; got row tail: "
         f"{row[-400:]!r}"
     )
-    # Travel is a signed delta, not a score.
-    # (If the row prints a travel figure, it's the DELTA, not today's score.)
+    cells = _row_cells_without_disclosure(row)
+    assert "as of" not in cells, (
+        "R-W2-14: as-of dates must not appear in the spine row cells "
+        f"(they live in the disclosure). cells={cells!r}"
+    )
+    assert "截至" not in cells, (
+        "R-W2-14: ZH as-of dates must not appear in the spine row cells. "
+        f"cells={cells!r}"
+    )
+    assert not re.search(r"\d{4}-\d{2}-\d{2}", cells), (
+        "R-W2-14: no YYYY-MM-DD date strings in the spine row cells. "
+        f"cells={cells!r}"
+    )
+    # Visible text of the cells (tags stripped): the only remaining integer
+    # is the travel delta inside .tnum.
     travel_match = re.search(r'<span class="tnum">([+−]?\d+)</span>', row)
-    if travel_match:
-        # travel is a small delta (≤ |score - prev|); not a 0-100 score reprint.
-        delta = int(travel_match.group(1).lstrip("+−"))
-        assert delta <= 25, (
-            f"HK travel figure {delta} looks like a score reprint, not a delta "
-            "(R-W2-9: travel is a signed delta, not a score)"
-        )
+    assert travel_match, "HK real-state row must print a signed travel delta"
+    visible = re.sub(r"<[^>]+>", " ", cells)
+    integers = re.findall(r"\d+", visible)
+    travel_digits = re.findall(r"\d+", travel_match.group(1))
+    assert integers == travel_digits, (
+        f"R-W2-14: the only integer in the HK row cells must be the travel "
+        f"delta {travel_digits}; found {integers} in visible text {visible!r}"
+    )
 
 
 def test_spine_slice_hk_falls_back_to_null_when_snapshot_absent():
@@ -550,8 +574,8 @@ def test_spine_slice_does_not_wire_quad_artifact(intl_root):
     surface it."""
     vm = {
         "market_state": None, "stance": {}, "ms_history": [],
-        "hk_market_state": _intl_ms_view(intl_root, "hk"),
-        "cn_market_state": _intl_ms_view(intl_root, "cn"),
+        "hk_market_state": _persisted_ms_view(intl_root, "hk"),
+        "cn_market_state": _persisted_ms_view(intl_root, "cn"),
         # Quad payloads are NOT a spine source. Even if a builder wires them,
         # the row must not surface quad fields (quad != risk-on per R-W2-1).
         "hk_regime": {"quad": "Q4", "quad_name": "Growth-scare"},
@@ -572,8 +596,8 @@ def test_spine_slice_does_not_wire_quad_artifact(intl_root):
 
 def _committed_macro_html() -> str | None:
     """Return the committed site/macro.html text, or None if absent. The file
-    is part of the repo (regenerated by scripts/build_site.py — and the UD-B2-W2
-    micro-build splice keeps it current). Missing = nothing to gate; the test
+    is part of the repo and is regenerated ONLY by scripts/build_site.py
+    (R-W2-11: never a hand-rolled splice). Missing = nothing to gate; the test
     skips with an explicit reason rather than failing."""
     p = ROOT / "site" / "macro.html"
     return p.read_text() if p.exists() else None
@@ -697,3 +721,164 @@ def test_persist_cn_writes_china_market_state_via_store_path():
         assert str(us_path).endswith("data/market_state/latest.json"), (
             "US default must still land at data/market_state/latest.json"
         )
+
+
+# --------------------------------------------------------------------------- #
+# Round-3 ruling gates (R-W2-11 .. R-W2-16)
+# --------------------------------------------------------------------------- #
+
+def test_build_site_helper_is_not_named_intl_ms_view():
+    """Minor-1 / R-W2-2: the ingest helper must not be named `_intl_ms_view`
+    — that name reopens the `intl_market_state` source trap. The lawful
+    name is `_persisted_ms_view` (it loads persist() output)."""
+    src = (ROOT / "scripts" / "build_site.py").read_text()
+    assert "def _intl_ms_view" not in src
+    assert "def _persisted_ms_view" in src
+
+
+def test_committed_hk_cn_latest_json_is_persist_output():
+    """R-W2-11 / R-W2-12: committed HK/CN latest.json must be persist()
+    output — compact JSON (no indent), labels from engine._LABEL, never
+    the previous leg's re-originated 趋险 map."""
+    from engine.market_state import _LABEL
+    for rel, key in (
+        ("data/hk_market_state/latest.json", "hk"),
+        ("data/china_market_state/latest.json", "cn"),
+    ):
+        path = ROOT / rel
+        if not path.exists():
+            pytest.skip(f"{rel} absent in this checkout")
+        raw = path.read_text()
+        snap = json.loads(raw)
+        assert snap.get("market") == key
+        verdict = snap["verdict"]
+        assert snap["label_en"] == _LABEL[verdict][0]
+        assert snap["label_zh"] == _LABEL[verdict][1]
+        assert snap["label_zh"] != "趋险"
+        # persist() writes json.dumps(..., ensure_ascii=False, default=str)
+        # with no indent. A pretty-printed file is the old hand-typed splice.
+        assert "\n  " not in raw, (
+            f"{rel} is pretty-printed; persist() writes compact JSON"
+        )
+
+
+def test_ud_b2_w2_splice_scripts_are_gone():
+    """R-W2-11: the hand-rolled splice + capture scripts must not survive
+    in the PR. site/macro.html is regenerated by scripts/build_site.py;
+    persist artifacts are written by engine.market_state.persist()."""
+    assert not (ROOT / "scripts" / "_ud_b2_w2_micro_build.py").exists()
+    assert not (ROOT / "scripts" / "_ud_b2_w2_capture.py").exists()
+
+
+def test_legacy_verify_shots_ud_b2_w2_are_gone():
+    """R-W2-13: verify_shots/UD-B2-W2 and verify_shots/UD-B2-W2-spine-binding
+    pin fabricated positions (55%/+4, 43%/−6) and must not survive in any
+    form. Evidence lives at mockups/evidence/unified-dashboard-b2w2/."""
+    assert not (ROOT / "verify_shots" / "UD-B2-W2").exists()
+    assert not (ROOT / "verify_shots" / "UD-B2-W2-spine-binding").exists()
+
+
+def test_hero_template_has_no_color_mix():
+    """R-W2-16: changed template lines must not use color-mix(); existing
+    tokens only. (scripts/check_design_system.py FUNC_COLOR_RE does not
+    match color-mix — a linter gap; compliance is to the LAW.)"""
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
+    assert "color-mix" not in src
+
+
+def test_persisted_labels_come_from_engine_label_map(intl_root):
+    """R-W2-12: EN/ZH verdict labels come from engine.market_state._LABEL,
+    never a re-originated map (the previous leg's 趋险 vs 风险偏好)."""
+    from engine.market_state import _LABEL, load_persisted
+    for key in ("hk", "cn"):
+        snap = load_persisted(root=intl_root, market_key=key)
+        assert snap is not None
+        verdict = snap["verdict"]
+        assert snap["label_en"] == _LABEL[verdict][0]
+        assert snap["label_zh"] == _LABEL[verdict][1]
+        assert snap["label_zh"] != "趋险"
+
+
+def test_spine_slice_aria_labels_are_plain_caveat_sentences(intl_root):
+    """R-W2-15: aria-labels are plain sentences mirroring the ACTUAL caveat
+    text, EN and ZH. 'engine caveat' machine-English is banned copy."""
+    hk = _persisted_ms_view(intl_root, "hk")
+    cn = _persisted_ms_view(intl_root, "cn")
+    vm = {
+        "market_state": None, "stance": {}, "ms_history": [],
+        "hk_market_state": hk, "cn_market_state": cn,
+        "latest": {}, "alerts": [], "event_strip": [],
+        "fear_greed": {}, "risk_envelope": {},
+    }
+    html = _render_macro_with_hero(vm)
+    slice_ = _spine_slice(html)
+    assert "engine caveat" not in slice_
+    assert 'aria-label="engine caveat"' not in html
+    # Each bound row's disclosure aria-label is the actual caveat sentence
+    # (as-of prefix + engine caveat), in both locales.
+    hk_row = _hk_row(slice_)
+    cn_row = _cn_row(slice_)
+    assert hk["caveat_en"] in hk_row
+    assert hk["caveat_zh"] in hk_row
+    assert f'aria-label="{hk["caveat_en"]}"' in hk_row or hk["caveat_en"] in hk_row
+    assert cn["caveat_en"] in cn_row
+    assert cn["caveat_zh"] in cn_row
+    # EN/ZH aria-labels exist on the disclosure spans.
+    assert hk_row.count("aria-label=") >= 2
+    assert cn_row.count("aria-label=") >= 2
+
+
+def test_spine_slice_asof_lives_in_disclosure_not_name_cell(intl_root):
+    """R-W2-14: as-of dates are absent from the name cell; they travel with
+    the caveat in the disclosure."""
+    hk = _persisted_ms_view(intl_root, "hk")
+    vm = {
+        "market_state": None, "stance": {}, "ms_history": [],
+        "hk_market_state": hk, "cn_market_state": None,
+        "latest": {}, "alerts": [], "event_strip": [],
+        "fear_greed": {}, "risk_envelope": {},
+    }
+    row = _hk_row(_spine_slice(_render_macro_with_hero(vm)))
+    name_m = re.search(
+        r'<div class="mx-spine-name">(.*?)</div>', row, re.S)
+    assert name_m, "HK name cell not found"
+    name = name_m.group(1)
+    assert "as of" not in name
+    assert "截至" not in name
+    assert "mx-spine-asof" not in name
+    disc_m = re.search(
+        r'<div class="mx-spine-caveat"[^>]*>(.*?)</div>', row, re.S)
+    assert disc_m, "HK caveat disclosure must exist when the row is bound"
+    disc = disc_m.group(1)
+    asof = str(hk.get("asof") or "")
+    if asof:
+        assert asof in disc, (
+            f"as-of {asof} must live in the disclosure; disclosure={disc!r}"
+        )
+    assert hk["caveat_en"] in disc
+    assert hk["caveat_zh"] in disc
+
+
+def test_spine_slice_cn_no_date_or_score_integer_in_cells(intl_root):
+    """R-W2-14 mirror for the CN row cells."""
+    vm = {
+        "market_state": None, "stance": {}, "ms_history": [],
+        "hk_market_state": None,
+        "cn_market_state": _persisted_ms_view(intl_root, "cn"),
+        "latest": {}, "alerts": [], "event_strip": [],
+        "fear_greed": {}, "risk_envelope": {},
+    }
+    row = _cn_row(_spine_slice(_render_macro_with_hero(vm)))
+    cells = _row_cells_without_disclosure(row)
+    assert "as of" not in cells
+    assert "截至" not in cells
+    assert not re.search(r"\d{4}-\d{2}-\d{2}", cells)
+    travel_match = re.search(r'<span class="tnum">([+−]?\d+)</span>', row)
+    assert travel_match
+    visible = re.sub(r"<[^>]+>", " ", cells)
+    integers = re.findall(r"\d+", visible)
+    travel_digits = re.findall(r"\d+", travel_match.group(1))
+    assert integers == travel_digits, (
+        f"CN row cells may only show the travel delta; found {integers} in "
+        f"{visible!r}"
+    )

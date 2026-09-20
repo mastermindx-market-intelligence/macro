@@ -1,13 +1,1 @@
-{
-  "score": 37,
-  "raw_score": 37,
-  "capped": false,
-  "verdict": "RISK_OFF",
-  "label_en": "Risk-off",
-  "label_zh": "避险",
-  "asof": "2026-09-18",
-  "caveat_en": "Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast.",
-  "caveat_zh": "仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。",
-  "display_only": true,
-  "market": "hk"
-}
+{"schema": "market_state.v1", "asof": "2026-09-18", "score": 37, "raw_score": 37, "score_source": "blend", "capped": false, "verdict": "RISK_OFF", "color": "red", "label_en": "Risk-off", "label_zh": "避险", "posture_en": "Risk-off", "posture_zh": "避险", "headline_en": "Risk-off — stress is elevated; defend capital first.", "headline_zh": "避险 — 压力升高；优先防守。", "caveat_en": "Display-only and lighter than the US read: HK has no leading Risk Radar, no VIX term structure (VHSI stands in), and the downturn gauges are uncalibrated. HK is heavily globally driven — US/EM beta and the HKD peg. Context, not a forecast.", "caveat_zh": "仅供展示，较美股版更轻量：港股没有领先的风险雷达、没有 VIX 期限结构（以 VHSI 替代），下行指标未经校准。港股高度受全球驱动 — 美股／新兴市场贝塔与港元联汇。是背景，而非预测。", "is_display_only": true, "market": "hk"}

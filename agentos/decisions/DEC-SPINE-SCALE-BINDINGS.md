@@ -91,7 +91,7 @@ evidence:
   - "scripts/build_hk.py:1440-1475 — HK score_log.parquet (read + append, ≥22 rows → real travel)"
   - "scripts/build_china.py:1557-1575 — vm[market_state] = market_state_snapshot(..., CN_PROFILE); CN persist call added"
   - "scripts/build_china.py:1880-1921 — CN score_log.parquet (read + append)"
-  - "scripts/build_site.py:6661-6701 — _intl_ms_view('hk') / _intl_ms_view('cn') ingestion; vm[hk_market_state] / vm[cn_market_state] injection"
+  - "scripts/build_site.py:6661-6701 — _persisted_ms_view('hk') / _persisted_ms_view('cn') ingestion; vm[hk_market_state] / vm[cn_market_state] injection"
   - "templates/_unified_dashboard_hero.html.j2:415-505 — HK row bound to vm[hk_market_state]; CN row bound to vm[cn_market_state]"
   - "research/UNIFIED_DASHBOARD_DISPOSITION.md:58-61 — rows 19b/19c updated to BOUND with ratified source named; 19d/19e stay BLOCKED_DATA"
   - "research/UNIFIED_DASHBOARD_SPEC.md:3:105-129 — one-scale five-markets spine contract"

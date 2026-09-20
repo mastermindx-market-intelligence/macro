@@ -211,10 +211,9 @@
   border-radius: var(--r-ctl,8px);
   font-size: var(--fs-micro);
   line-height: 1.45;
-  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
 }
-html[data-theme="dark"]  .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-2) 88%, var(--text)); }
-html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3) 82%, var(--text)); }
+html[data-theme="light"] .mx-spine-caveat{ color: var(--ink-3); }
 </style>
 
 <section class="ud-hero panel span12 ud-hero-panel" id="ud-hero" aria-labelledby="ud-hero-h">
@@ -434,9 +433,11 @@ html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3
            vm["hk_market_state"] (HK_PROFILE market_state.score persisted by
            build_hk). Display-only rail marker; month-ago travel from the HK
            score_log.parquet analog with >=22 rows (R-W2-8, never raw_score).
-           One-integer law: the row carries geometry + name + caveat stamp,
-           NOT a competing integer (R-W2-9). Stance uses the verdict-band
-           fallback (R-W2-7) — no playbook stance is in the macro vm. #}
+           One-integer law: the row carries marker geometry, travel delta,
+           stance words ONLY (R-W2-9 / R-W2-14). As-of + caveat live in
+           the disclosure, never in the name cell. Stance uses the
+           verdict-band fallback (R-W2-7) — no playbook stance is in the
+           macro vm. #}
         {%- set _hk = (hk_market_state or {}) -%}
         {%- set _hk_today = _hk.get('score') -%}
         {%- set _hk_hist = (_hk.get('ms_history') or []) -%}
@@ -474,9 +475,7 @@ html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3
              data-caveat-en="{{ _hk.get('caveat_en') or '' }}" data-caveat-zh="{{ _hk.get('caveat_zh') or '' }}">
           <div class="mx-spine-name">
             <span class="l-en">Hong Kong</span><span class="l-zh">香港</span>
-            {%- if _hk_today is not none %}
-            <small class="mx-spine-asof"><span class="l-en">as of {{ _hk.get('asof') or '—' }}</span><span class="l-zh">截至 {{ _hk.get('asof') or '—' }}</span></small>
-            {%- else %}
+            {%- if _hk_today is none %}
             <small>—</small>
             {%- endif %}
           </div>
@@ -496,8 +495,18 @@ html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
             {%- if _hk_today is not none and _hk.get('caveat_en') %}
-            <div class="mx-spine-caveat" aria-label="engine caveat">
-              <span class="l-en">{{ _hk.caveat_en }}</span><span class="l-zh">{{ _hk.caveat_zh or _hk.caveat_en }}</span>
+            {%- set _hk_asof = _hk.get('asof') -%}
+            {%- set _hk_cav_en = _hk.caveat_en -%}
+            {%- set _hk_cav_zh = _hk.caveat_zh or _hk.caveat_en -%}
+            {%- if _hk_asof -%}
+              {%- set _hk_disc_en = 'As of ' ~ _hk_asof ~ '. ' ~ _hk_cav_en -%}
+              {%- set _hk_disc_zh = '截至 ' ~ _hk_asof ~ '。' ~ _hk_cav_zh -%}
+            {%- else -%}
+              {%- set _hk_disc_en = _hk_cav_en -%}
+              {%- set _hk_disc_zh = _hk_cav_zh -%}
+            {%- endif -%}
+            <div class="mx-spine-caveat">
+              <span class="l-en" aria-label="{{ _hk_disc_en }}">{{ _hk_disc_en }}</span><span class="l-zh" aria-label="{{ _hk_disc_zh }}">{{ _hk_disc_zh }}</span>
             </div>
             {%- endif %}
           </div>
@@ -554,9 +563,7 @@ html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3
              data-caveat-en="{{ _cn.get('caveat_en') or '' }}" data-caveat-zh="{{ _cn.get('caveat_zh') or '' }}">
           <div class="mx-spine-name">
             <span class="l-en">China A-shares</span><span class="l-zh">A股</span>
-            {%- if _cn_today is not none %}
-            <small class="mx-spine-asof"><span class="l-en">as of {{ _cn.get('asof') or '—' }}</span><span class="l-zh">截至 {{ _cn.get('asof') or '—' }}</span></small>
-            {%- else %}
+            {%- if _cn_today is none %}
             <small>—</small>
             {%- endif %}
           </div>
@@ -576,8 +583,18 @@ html[data-theme="light"] .mx-spine-caveat{ color: color-mix(in srgb, var(--ink-3
             </div>
             <div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div>
             {%- if _cn_today is not none and _cn.get('caveat_en') %}
-            <div class="mx-spine-caveat" aria-label="engine caveat">
-              <span class="l-en">{{ _cn.caveat_en }}</span><span class="l-zh">{{ _cn.caveat_zh or _cn.caveat_en }}</span>
+            {%- set _cn_asof = _cn.get('asof') -%}
+            {%- set _cn_cav_en = _cn.caveat_en -%}
+            {%- set _cn_cav_zh = _cn.caveat_zh or _cn.caveat_en -%}
+            {%- if _cn_asof -%}
+              {%- set _cn_disc_en = 'As of ' ~ _cn_asof ~ '. ' ~ _cn_cav_en -%}
+              {%- set _cn_disc_zh = '截至 ' ~ _cn_asof ~ '。' ~ _cn_cav_zh -%}
+            {%- else -%}
+              {%- set _cn_disc_en = _cn_cav_en -%}
+              {%- set _cn_disc_zh = _cn_cav_zh -%}
+            {%- endif -%}
+            <div class="mx-spine-caveat">
+              <span class="l-en" aria-label="{{ _cn_disc_en }}">{{ _cn_disc_en }}</span><span class="l-zh" aria-label="{{ _cn_disc_zh }}">{{ _cn_disc_zh }}</span>
             </div>
             {%- endif %}
           </div>

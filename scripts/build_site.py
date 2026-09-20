@@ -6662,13 +6662,15 @@ def main() -> int:
     # UD-B2-W2: ingest the HK + CN ratified market_state snapshots + score-log history.
     # These are READ-ONLY on the macro lane (persisted by build_hk / build_china on
     # their own nightly cadences) — the macro page never recomputes the blender
-    # itself. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
+    # itself. Named `_persisted_ms_view` (not `_intl_ms_view`) because R-W2-2
+    # forbids `intl_market_state` as a HK/CN source; the name must not reopen
+    # that trap. The entry shape is fixed by DEC-SPINE-SCALE-BINDINGS:
     # {score, label_en, label_zh, asof, caveat_en, caveat_zh, display_only:true};
     # ms_history is added so the spine row can compute month-ago travel the same way
     # the US subject row does (>=22 rows → real, shorter → designed-null travel
     # with a real today marker, matching _unified_dashboard_hero.html.j2 lines
     # ~:362-384 — never substitute raw_score).
-    def _intl_ms_view(market_key: str) -> dict | None:
+    def _persisted_ms_view(market_key: str) -> dict | None:
         try:
             from engine.market_state import load_persisted as _lp  # noqa: PLC0415
             _snap = _lp(market_key=market_key)
@@ -6701,8 +6703,8 @@ def main() -> int:
                         market_key, _e)
             return None
 
-    _hk_ms_view = _intl_ms_view("hk")
-    _cn_ms_view = _intl_ms_view("cn")
+    _hk_ms_view = _persisted_ms_view("hk")
+    _cn_ms_view = _persisted_ms_view("cn")
 
     # CA-W3: cross_asset radar chip — display-only concentration context.
     # Sources: data/regime/latest.json["cross_asset"] + data/crossasset_shadow/latest.json
