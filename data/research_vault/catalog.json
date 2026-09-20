@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-20T12:53:46.954495+00:00",
-  "count": 2500,
+  "generated_at": "2026-09-20T13:14:30.261500+00:00",
+  "count": 2501,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -1026,6 +1026,25 @@
         "Physical Enabling Tech Demand: Regulatory tailwinds and public investment fuel robust growth in grid expansion, renewables integration, and related infrastructure (cables/transformers), directly supporting TRIOS themes (AI, Power & Resources, Longevity).",
         "Active Engagement Frameworks: Equity strategies target issuers with superior climate transition performance; fixed income leverages thematic bonds (green/social), municipal bonds for ESG projects, and active engagement to drive measurable sustainability outcomes.",
         "Private Market Risk Profile: Climate tech impact investments face leverage, default, concentration, and illiquidity risks; requires active engagement for verifiable social/environmental impact alongside competitive returns."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tyh5hzzabtx-e91f98",
+      "title": "Invest in transformational innovation",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T00:55:57Z",
+      "summary_points": [
+        "AI Market Scale: $3.1tr market by 2030 (30% CAGR), $1.2tr AI capex (33% YoY rise), driven by inference demand (2/3 of AI compute) and structural shifts in energy/healthcare.",
+        "Power Grid Catalyst: $500bn grid infrastructure investment by 2026 ($3tr by 2030), with near-term catalysts including US midterm resolution and Q3 results driving electrical equipment demand.",
+        "Longevity Growth Engine: Global longevity market to expand from $5.3tr (2023) to $8tr by 2030, fueled by 12% annual revenue growth in obesity drugs from late-stage trials and regulatory events."
       ],
       "tags": [],
       "tickers": [],
