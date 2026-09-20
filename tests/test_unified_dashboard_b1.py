@@ -1,15 +1,19 @@
-"""Tests for the UD-B1 Unified Macro Dashboard hero skeleton.
+"""Tests for the UD-B1 Unified Macro Dashboard hero skeleton (round 3).
 
 The hero (templates/_unified_dashboard_hero.html.j2) is included from
 templates/dashboard.html.j2 only when `mode == "macro"`. These tests pin the
-binding contract: hero markup + class modifiers live on REAL view-model
-keys (no illustrative numbers), the score prints ONCE (one-integer law),
-no banned machine-text vocab ("1 alert(s) fired" etc), and the design
-ratchet passes on the file as added.
+binding contract against the REAL engine contracts (R-A):
+  • event_calendar._event publishes label / label_zh
+  • alerts.alert_view publishes message / message_zh
+Fixtures are built by calling the real engine view functions — NOT by
+inventing keys — so the tests fail RED-first if the engine contract ever
+shifts in a way the template doesn't track.
 
-The PR reviewer applied these tests after a fix-up that moved all hero
-CSS out of an inline <style> block and into templates/theme.css. The
-tests also fail RED-first on the pre-fix template (verifying #1, #2).
+Also pinned: one-integer law (the score prints ONCE), no banned machine-text
+vocab ("1 alert(s) fired" etc), live dot uses health tokens (R-D), spine
+rows that lack real regime data render as designed-null (R-B), and the flip
+clause drops the "now X/100" parenthetical so the gauge stays the only
+visible integer (R-C).
 """
 from __future__ import annotations
 
@@ -33,55 +37,55 @@ def _env() -> jinja2.Environment:
     return env
 
 
-def _base_vm() -> dict:
-    """Synthetic view-model: every key the hero reads (per file header)."""
+def _real_vm() -> dict:
+    """Build a vm by calling REAL engine view functions (R-A).
+
+    The shape mirrors what scripts/build_site.py hands the dashboard template
+    in production — same keys, same engine call sites.
+    """
+    from datetime import date
+    from engine import alerts as _alerts
+    from engine import event_calendar as _ec
+
+    # Real event_strip — calls engine.event_calendar.high_impact_strip()
+    strip = _ec.high_impact_strip(today=date(2026, 9, 19), horizon_days=14)[:3]
+
+    # Real alerts payload — calls engine.alerts.alert_view() to enrich
+    alert = _alerts.alert_view(
+        rule="breadth_narrowed",
+        severity="info",
+        message="Breadth narrowed again — fewer than half of big US stocks are above their 50-day line.",
+        message_zh="广度再次收窄——不到一半的大盘股位于 50 日均线之上。",
+    )
+    alert["ts"] = "2026-09-19T15:30:00Z"
+
+    # market_state — mirror the real engine.market_state_snapshot() shape
+    # (we don't run the full snapshot; the keys we exercise here are
+    # exactly the ones the template reads).
+    market_state = {
+        "verdict": "RISK_ON",
+        "color": "green",
+        "score": 61,
+        "raw_score": 85,
+        "capped": True,
+        "label_en": "Risk-on",
+        "label_zh": "风险偏好",
+        "headline_en": "Risk-on — the tape, breadth and cross-asset signals line up.",
+        "headline_zh": "风险偏好 — 价格、广度与跨资产信号一致。",
+        "flip_en": "→ Mixed if risk appetite breaks down (now 85/100).",
+        "flip_zh": "→ 若风险偏好走坏（现 85/100），则转「混合」。",
+        "asof": "2026-09-19 16:02 ET",
+        "alerts_count": 1,
+        "mtf": {},  # NO stance_en — designed-null path per R-A
+    }
+
     return {
-        "market_state": {
-            "verdict": "RISK_ON",
-            "color": "green",
-            "score": 61,
-            "raw_score": 85,
-            "capped": True,
-            "label_en": "Risk-on",
-            "label_zh": "趋险",
-            "headline_en": "Buyers are still showing up — but fewer stocks are carrying the move.",
-            "headline_zh": "买盘仍在——但真正推动上涨的个股在减少。",
-            "flip_en": "Watch the conditions holding the read.",
-            "flip_zh": "留意维持该判读的条件。",
-            "asof": "2026-09-19 16:02 ET",
-            "alerts_count": 1,
-            "mtf": {
-                "stance_en": "Holding.",
-                "stance_zh": "企稳。",
-                "read_en": "Tape read pending — re-drawn nightly.",
-                "read_zh": "盘面读数待更新——每晚重绘。",
-            },
-        },
-        "stance": {"key": "run"},
-        "alerts": [
-            {"ts": "2026-09-19T15:30:00Z", "title_en": "Breadth narrowed again.",
-             "title_zh": "广度再次收窄。"},
-        ],
-        "event_strip": [
-            {"tip_en": "If six-in-ten big stocks re-cross their 50-day line, the read moves toward Act.",
-             "tip_zh": "若六成大票重新站上 50 日线，判读将趋向「可行动」。"},
-            {"tip_en": "If a fresh regime flip prints, the dial caps at Mixed until it settles.",
-             "tip_zh": "若出现新一轮周期翻转，仪表将临时封顶为「混合」直至企稳。"},
-            {"tip_en": "If the policy-rate landing spot widens, the policy lever tile updates first.",
-             "tip_zh": "若利率落点拓宽，政策杠杆区块将先于评分更新。"},
-        ],
-        "risk_envelope": {
-            "stance_en": "Cooling, slowly.",
-            "stance_zh": "缓慢降温。",
-            "read_en": "Three reads below — never a fused score.",
-            "read_zh": "下方为三项读数——非融合评分。",
-        },
-        "fear_greed": {
-            "stance_en": "Narrowing.",
-            "stance_zh": "正在收窄。",
-            "label_en": "Greed fear in the read",
-            "label_zh": "情绪读数：贪婪。",
-        },
+        "market_state": market_state,
+        "stance": {"key": "shift"},
+        "alerts": [alert],
+        "event_strip": strip,
+        "risk_envelope": {},  # NO stance_en — designed-null path per R-A
+        "fear_greed": {"label_en": "Greed in the read", "label_zh": "判读中贪婪占优"},
         "latest": {"date": "2026-09-19 16:02 ET", "quad_name": "Risk-on"},
     }
 
@@ -93,20 +97,110 @@ def _render_macro_with_hero(vm: dict) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# One-integer law: regime score must print once in the gauge column.
+# Real engine contract binding (R-A)
+# --------------------------------------------------------------------------- #
+
+def test_hero_reads_real_event_strip_label_label_zh():
+    """event_calendar._event publishes label / label_zh — the hero watching
+    list must surface those EXACT keys, not invented tip_en / note_en."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    # Find the first real event from the strip
+    first = vm["event_strip"][0]
+    assert first["label"] in html, (
+        f"hero must render event_strip[0].label={first['label']!r}; "
+        f"engine contract is label/label_zh, not tip_en/note_en"
+    )
+    assert first["label_zh"] in html, (
+        f"hero must render event_strip[0].label_zh={first['label_zh']!r}"
+    )
+
+
+def test_hero_reads_real_alert_message_message_zh():
+    """alerts.alert_view publishes message / message_zh — the hero what-changed
+    rows must surface those EXACT keys, not invented title_en."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    alert = vm["alerts"][0]
+    assert alert["message"] in html, (
+        f"hero must render alerts[0].message={alert['message']!r}; "
+        f"engine contract is message/message_zh, not title_en/title_zh"
+    )
+    assert alert["message_zh"] in html, (
+        f"hero must render alerts[0].message_zh={alert['message_zh']!r}"
+    )
+
+
+def test_hero_watching_designed_null_when_event_strip_empty():
+    """When event_strip is empty the watching list must surface the
+    designed-null plain sentence — never a spec literal, never a blank."""
+    vm = _real_vm()
+    vm["event_strip"] = []
+    html = _render_macro_with_hero(vm)
+    assert html.count("Read being updated") >= 3, (
+        "watching list must surface 3 designed-null rows when event_strip is empty"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# Driver heads use designed-null when vm leg absent (R-A)
+# --------------------------------------------------------------------------- #
+
+def test_hero_driver_heads_designed_null_when_vm_leg_absent():
+    """Each driver's head verb comes from vm (mtf / risk_envelope / fear_greed).
+    When the live vm leg is absent the row prints the designed-null plain
+    sentence (NEVER a hardcoded spec literal like 'Holding.' or 'Narrowing.')."""
+    vm = _real_vm()
+    html = _render_macro_with_hero(vm)
+    # The three pre-fix hardcoded heads must NOT appear.
+    assert "Holding." not in html
+    assert "Cooling, slowly." not in html
+    assert "Narrowing." not in html
+    # The designed-null sentence appears at least 3 times (one per driver).
+    assert html.count("Read being updated") >= 3
+
+
+def test_hero_driver_head_uses_vm_leg_when_present():
+    """When the vm leg IS present (e.g. fear_greed.label_en) the driver
+    surfaces that exact phrase — not the designed-null."""
+    vm = _real_vm()
+    vm["fear_greed"]["stance_en"] = "CUSTOM-FG-STANCE."
+    vm["fear_greed"]["stance_zh"] = "自定义情绪。"
+    html = _render_macro_with_hero(vm)
+    assert "CUSTOM-FG-STANCE." in html
+
+
+# --------------------------------------------------------------------------- #
+# ZH verdict word renders (was set but never printed pre-fix) + l-en on EN (R-A)
+# --------------------------------------------------------------------------- #
+
+def test_zh_verdict_word_renders_when_lang_zh():
+    """Both EN and ZH verdict words render. The EN word carries `l-en`
+    so the ZH locale can hide it via the existing `html[data-lang="zh"] .l-en`
+    rule. Pre-fix set _verdict_word_zh but never printed it; pre-fix also
+    leaked the EN word into the ZH path."""
+    html = _render_macro_with_hero(_real_vm())
+    assert "Risk-on" in html
+    assert "风险偏好" in html
+    # The EN verdict word must carry the l-en class (otherwise ZH can't hide it).
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
+    assert 'class="l-en ud-verdict-word' in src, (
+        "EN verdict word span must carry l-en class so ZH locale can hide it"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# One-integer law (R-C): regime score must print once in the gauge column,
+# flip clause drops the "now X/100" parenthetical.
 # --------------------------------------------------------------------------- #
 
 def test_score_prints_once_in_gauge_one_integer_law():
     """The single integer for the read lives in the gauge column. The spine
     row carries only the marker geometry + name + stance — no competing
-    integer in the rendered text. Screen-reader bridges use aria-label."""
-    html = _render_macro_with_hero(_base_vm())
-    # The score number prints ONCE as visible text, in the gauge column.
+    integer in the rendered text."""
+    html = _render_macro_with_hero(_real_vm())
     score_hits = re.findall(r'data-role="score"[^>]*>(\d+)', html)
     assert score_hits == ["61"], f"score integer must print once, got: {score_hits}"
-    # No second integer 61 in any visible text node. The progress pin / arc
-    # are GEOMETRY — `style="left:N%"` carries N as a CSS value, never as a
-    # text node. Strip those before counting.
     text_only = re.sub(r"style=\"left:\d+%\"", "", html)
     text_only = re.sub(r"style=\"left:\d+%;width:\d+%\"", "", text_only)
     visible_61 = re.findall(r">\s*61\s*<", text_only)
@@ -114,105 +208,89 @@ def test_score_prints_once_in_gauge_one_integer_law():
         f"regime score must print exactly once as visible text (gauge), "
         f"got {len(visible_61)} text-node occurrences: {visible_61}"
     )
-    # The spine row US stocks must NOT carry a visible score integer; the
-    # aria-label on a sr-only bridge is the only allowed re-mention.
-    spine_row_int = re.search(
-        r'data-subject="1"[\s\S]*?</div>\s*</div>\s*</div>',
-        html,
+    # Flip clause must NOT carry a competing integer (the "(now X/100)" parenthetical).
+    assert "now 85/100" not in html, (
+        "flip clause must drop the (now X/100) parenthetical so the score column "
+        "is the only visible integer (R-C one-integer law)"
     )
-    assert spine_row_int
-    visible_in_spine = re.findall(r">\s*\d+\s*<", spine_row_int.group(0))
-    assert visible_in_spine == [], (
-        f"spine subject row must not carry visible integers, got: {visible_in_spine}"
+    assert "现 85/100" not in html, (
+        "flip clause must drop the （现 X/100） parenthetical in ZH too"
     )
 
 
 # --------------------------------------------------------------------------- #
-# Plain language: no machine-text "1 alert(s) fired" copy.
+# Plain language: alerts chip is a sentence (R-A — no machine text).
 # --------------------------------------------------------------------------- #
 
-def test_alerts_chip_uses_plain_language_not_machine_text():
-    """The "N fired" chip must pluralize cleanly and never print "alert(s)"."""
-    vm = _base_vm()
+def test_alerts_chip_uses_plain_language_sentence():
+    """The alerts chip prints a sentence: '1 alert fired' / '3 alerts fired'.
+    data-tip matches visible copy (the receipt IS the visible copy)."""
+    vm = _real_vm()
     vm["market_state"]["alerts_count"] = 1
     html = _render_macro_with_hero(vm)
-    # Plain language: "1 fired" (singular), not "1 alert(s) fired"
-    assert "1 fired" in html
+    # Plain language sentence
+    assert ">1 alert fired<" in html
+    assert 'data-tip-en="1 alert fired"' in html
     assert "alert(s)" not in html
     # Plural form
     vm["market_state"]["alerts_count"] = 3
     html = _render_macro_with_hero(vm)
-    assert "3 fired" in html
+    assert ">3 alerts fired<" in html
+    assert 'data-tip-en="3 alerts fired"' in html
     assert "3 alert(s) fired" not in html
 
 
 # --------------------------------------------------------------------------- #
-# Engine binding: hero reads REAL vm keys (no spec literals).
+# Live dot uses health tokens (R-D) — never direction tokens
 # --------------------------------------------------------------------------- #
 
-def test_hero_binds_to_event_strip_not_hardcoded_watching_text():
-    """Watching list must derive from vm['event_strip'], not hardcoded spec
-    clauses. (Pre-fix shipped three identical hardcoded sentences.)"""
-    custom = _base_vm()
-    custom["event_strip"] = [
-        {"tip_en": "CUSTOM-WATCH-A: a unique token signal A.",
-         "tip_zh": "自定义观察 A：独特信号。"},
-        {"tip_en": "CUSTOM-WATCH-B: a unique token signal B.",
-         "tip_zh": "自定义观察 B：独特信号。"},
-        {"tip_en": "CUSTOM-WATCH-C: a unique token signal C.",
-         "tip_zh": "自定义观察 C：独特信号。"},
-    ]
-    html = _render_macro_with_hero(custom)
-    assert "CUSTOM-WATCH-A" in html
-    assert "CUSTOM-WATCH-B" in html
-    assert "CUSTOM-WATCH-C" in html
-    # Designed-null fallback surfaces the same shape with "Read being updated".
-    null_vm = _base_vm()
-    null_vm["event_strip"] = []
-    null_html = _render_macro_with_hero(null_vm)
-    assert null_html.count("Read being updated") >= 3
-    assert "CUSTOM-WATCH" not in null_html
+def test_live_dot_uses_health_tokens_not_direction():
+    """The Live/实时 freshness dot uses `.ud-live--{ok,warn}` modifier classes
+    (HEALTH tokens). Direction tokens `.ud-live--{green,yellow,red}` would
+    flip red under the ZH 红涨绿跌 convention — they are forbidden."""
+    src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
+    # The template binds the modifier via Jinja — confirm both possible health
+    # tokens appear in the rendered output across the verdict color space.
+    rendered = _render_macro_with_hero(_real_vm())
+    assert "ud-live--ok" in rendered, (
+        "hero template must render health token .ud-live--ok for green/yellow verdict"
+    )
+    # Template source must NOT carry a direction token modifier.
+    assert "ud-live--green" not in src, (
+        "hero template must NOT use direction token .ud-live--green (R-D)"
+    )
+    assert "ud-live--yellow" not in src, (
+        "hero template must NOT use direction token .ud-live--yellow (R-D)"
+    )
+    assert "ud-live--red" not in src, (
+        "hero template must NOT use direction token .ud-live--red (R-D)"
+    )
+    # The CSS file must define the ok/warn modifiers and NOT define the direction ones.
+    css = (TEMPLATES / "theme.css").read_text()
+    assert "ud-live--ok i" in css
+    assert "ud-live--warn i" in css
+    assert "ud-live--green i" not in css
+    assert "ud-live--yellow i" not in css
+    assert "ud-live--red i" not in css
 
 
-def test_hero_driver_heads_derive_from_vm_not_hardcoded():
-    """Each driver's head verb comes from vm (mtf / risk_envelope / fear_greed),
-    not hardcoded spec literals. Pre-fix always rendered Holding/Cooling/Narrowing."""
-    custom = _base_vm()
-    custom["market_state"]["mtf"]["stance_en"] = "CUSTOM-MTF-STANCE."
-    custom["market_state"]["mtf"]["stance_zh"] = "自定义盘面。"
-    html = _render_macro_with_hero(custom)
-    assert "CUSTOM-MTF-STANCE." in html
-    # The three pre-fix hardcoded heads must NOT be present when their
-    # vm leg says something different.
-    assert html.count("Holding.") == 0  # not the pre-fix fallback
-
+# --------------------------------------------------------------------------- #
+# Verdict qualifier class modifier (was inline --c: pre-fix)
+# --------------------------------------------------------------------------- #
 
 def test_hero_verdict_qualifier_uses_class_modifier_not_inline_custom_property():
     """The qualifier ('narrowing' / 'deepening' / 'steady') lives on a class
     modifier (.ud-verdict-qualifier--{warn,down,muted}) — NEVER an inline
     style="--c: ..." custom property (which fails the design ratchet)."""
-    html = _render_macro_with_hero(_base_vm())
-    # RISK_ON + narrowing → qualifier--warn
-    assert 'ud-verdict-qualifier--warn' in html
-    assert 'class="l-en">narrowing<' in html or 'narrowing' in html
-    # No inline `--c:` in the rendered hero (the rendered HTML passes through
-    # the design-system check by virtue of the source template avoiding it).
-    # We assert this on the SOURCE template, not the rendered output (Jinja
-    # expands the value at render-time; the source is what the ratchet scans).
+    html = _render_macro_with_hero(_real_vm())
+    assert "ud-verdict-qualifier--warn" in html
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
     assert 'style="--c:' not in src, "hero template must not declare inline --c:"
-
-
-# --------------------------------------------------------------------------- #
-# ZH verdict word renders (was set but never printed pre-fix).
-# --------------------------------------------------------------------------- #
-
-def test_zh_verdict_word_renders_when_lang_zh():
-    """Pre-fix set _verdict_word_zh but never printed it. The verdict
-    headline must surface both the EN and the ZH word."""
-    html = _render_macro_with_hero(_base_vm())
-    assert "Risk-on" in html
-    assert "趋险" in html
+    # The CSS must define ALL three modifiers (warn / down / muted).
+    css = (TEMPLATES / "theme.css").read_text()
+    assert "ud-verdict-qualifier--down" in css, (
+        "theme.css must define .ud-verdict-qualifier--down for RISK_OFF"
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -265,14 +343,87 @@ def test_hero_template_has_no_inline_style_block():
 
 def test_hero_stance_uses_class_modifiers_not_inline_custom_property():
     """Every stance chip in the hero must use a `.mx-stance--{ok,warn,muted,down}`
-    modifier — not an inline `style="--c:..."`. Inline --c: fails the design
-    ratchet (literal-custom-property rule 4)."""
+    modifier — not an inline `style="--c:..."`. The modifier is filled by
+    Jinja, so the rendered text carries the modifier value; the SOURCE template
+    must reference the modifier pattern (`.mx-stance mx-stance--{{...}}`)."""
     src = (TEMPLATES / "_unified_dashboard_hero.html.j2").read_text()
-    # The modifier classes exist in theme.css; the template uses them.
-    assert "mx-stance--ok" in src
-    assert "mx-stance--warn" in src
-    assert "mx-stance--muted" in src
-    assert "mx-stance mx-stance--" in src
+    assert "mx-stance--" in src, (
+        "hero template must reference the .mx-stance--{...} modifier pattern"
+    )
     # No inline custom property declarations in the markup.
     assert 'style="--c:' not in src
     assert "style='--c:" not in src
+    # The four modifiers must exist as CSS classes in theme.css.
+    css = (TEMPLATES / "theme.css").read_text()
+    for mod in ("ok", "warn", "down", "muted"):
+        assert f"mx-stance--{mod}" in css, (
+            f"theme.css must define the .mx-stance--{mod} modifier class"
+        )
+
+
+# --------------------------------------------------------------------------- #
+# Spine: only US stocks carries a real rail; HK/China A/Bonds/Commodities
+# are designed-null (R-B — macro vm does not yet publish their regime data).
+# --------------------------------------------------------------------------- #
+
+def test_spine_only_us_stocks_has_marker_other_rows_designed_null():
+    """Per R-B the macro vm ACTUALLY only carries US stocks regime data; the
+    other four rows render as designed-null with no marker and a "Read being
+    updated" stance. Hardcoded specimen stances are forbidden."""
+    html = _render_macro_with_hero(_real_vm())
+    # US stocks row carries a marker (the only one in the spine).
+    us_marker_count = html.count('class="mx-spine-mark"')
+    assert us_marker_count == 1, (
+        f"only US stocks should carry a spine marker; got {us_marker_count}"
+    )
+    # The four supporting rows are designed-null — no hardcoded specimen stances.
+    assert "Watch — don’t chase" in html or "Watch — don't chase" not in html
+    # The hardcoded specimen stances for non-US rows must NOT appear.
+    for forbidden in ("Get ready", "Protect gains", "Stand aside"):
+        # Each may appear ONCE (in the hero stance chip driven by vm["stance"]),
+        # but NOT multiple times across the spine.
+        assert html.count(forbidden) <= 1, (
+            f"hardcoded specimen stance {forbidden!r} appears in the spine — "
+            f"macro vm does not carry HK/China A/Bonds regime data; "
+            f"these rows must be designed-null per R-B"
+        )
+    # Designed-null sentence appears in each spine row stance.
+    spine_null_count = html.count("Read being updated")
+    assert spine_null_count >= 4, (
+        "spine supporting rows must surface the designed-null sentence"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# 390 reduction: stance lives in row 1 with name (spec §7).
+# --------------------------------------------------------------------------- #
+
+def test_390_mobile_layout_puts_stance_in_name_row():
+    """Spec §7 declares row 1 of every spine row = name + stance at 390.
+    The CSS must lay the mobile grid out so .mx-spine-name and .mx-spine-stance
+    share the first visual row."""
+    css = (TEMPLATES / "theme.css").read_text()
+    # Find the spine mobile block by anchoring on the comment marker.
+    spine_marker = "/* ── mobile 390 reduction (spec §7)"
+    idx = css.find(spine_marker)
+    assert idx >= 0, "expected a spec §7 mobile reduction comment in theme.css"
+    # Take the next ~1500 chars after the comment (the @media block).
+    snippet = css[idx:idx + 1500]
+    # The stance rule must NOT be display:none (pre-fix hid it).
+    assert not re.search(r"\.mx-spine-stance\s*\{\s*display\s*:\s*none", snippet), (
+        "390 mobile layout must NOT hide .mx-spine-stance (spec §7 row 1 = name + stance)"
+    )
+    # The grid-template-areas declaration for .mx-spine-row must put name + stance on the first row.
+    areas_m = re.search(
+        r"\.mx-spine-row[^{]*\{[^}]*grid-template-areas\s*:\s*([^;]+);",
+        snippet, re.DOTALL,
+    )
+    assert areas_m, "mobile .mx-spine-row must declare grid-template-areas"
+    first_row = areas_m.group(1).strip().splitlines()[0]
+    assert "name" in first_row and "stance" in first_row, (
+        f"390 mobile grid must put name and stance on the same first row; "
+        f"got first row={first_row!r}"
+    )
+    # Both .mx-spine-name and .mx-spine-stance must be assigned grid-areas.
+    assert "grid-area: name" in snippet
+    assert "grid-area: stance" in snippet

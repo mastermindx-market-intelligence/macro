@@ -670,20 +670,23 @@ body.mobile-sim .wrap{ max-width:390px; }
       row 1 = name + stance chip; row 2 = the shared rail + travel figure. The head row hides; the stance column moves into the name row.
       Numbers survive; table geometry does not.</p>
     <p class="mockup-note l-zh">依规范 §7，390 视口下表格几何无法保留——每行在卡片上变为两行：第一行 = 名称 + 立场徽章；第二行 = 共享标尺 + 移动数字。表头隐藏；立场列并入名称行。数字保留；表格几何不再。</p>
-    <div class="mobile-sim" style="border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
-      <div class="mx-spine" data-spec="ud-b1-390" style="--mobile:1;">
+    <div class="mobile-sim mockup-spine-390" style="border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
+      <div class="mx-spine" data-spec="ud-b1-390">
         <div class="mx-spine-row" data-subject="1" data-stance="protect">
           <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:72%"></div></div></div>
           <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
         </div>
         <div class="mx-spine-row" data-stance="watch">
           <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:61%"></div></div></div>
           <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
         </div>
         <div class="mx-spine-row" data-null="1">
           <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div></div>
           <div class="mx-spine-travel"><span class="muted">—</span></div>
         </div>

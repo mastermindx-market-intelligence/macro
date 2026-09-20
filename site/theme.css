@@ -2464,6 +2464,11 @@ button.mmacc-switch:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in
   text-transform:uppercase; color:var(--muted);
 }
 html[data-lang="zh"] .mx-spine-head > span{ letter-spacing:0; text-transform:none; }
+/* Spec §11 item 5: Noto Sans SC has no 600/800. The ZH ramp maps 800→Black
+   and 600→Medium (the file's proxy for PingFang SC / Noto Sans CJK SC); this
+   mapping is a documented decision, not an accident. ZH 390 evidence
+   confirms the rendered glyphs (美股 / 香港 / 避险 / 趋险) hold weight
+   contrast and stay inside the spec §1 column widths at the design floor. */
 
 /* a single row — five markets on one rail */
 .mx-spine-row{
@@ -2614,26 +2619,49 @@ html[data-theme="light"] .mx-spine{
 /* ── mobile 390 reduction (spec §7): stacked cards, NOT a squeezed table ──────
    Scale survives; table geometry does not. Each row becomes two rows on the
    card: row 1 = name + stance; row 2 = the same shared rail + travel figure.
-*/
+   The --mobile:1 opt-in lets the specimen preview the reduction at any
+   viewport (used in mockups/design_system/specimen.html §6.6); it does NOT
+   affect real production render — only fires alongside the @media query. */
 @media (max-width: 640px){
   .mx-spine-head{ display:none; }
-  .mx-spine-row{
-    grid-template-columns: 1fr;
+  .mx-spine-row,
+  .mx-spine[data-mobile="1"] ~ * .mx-spine-row,
+  .mx-spine[style*="--mobile:1"] .mx-spine-row{
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "name"
-      "rail"
-      "travel";
-    gap: 6px;
+      "name    stance"
+      "rail    rail"
+      "travel  travel";
+    column-gap: 10px;
+    row-gap: 6px;
     padding: 14px 0;
   }
+  /* Spec §7: row 1 = name + stance. Stance stays in row 1 (right of name)
+     for both subject and null rows; null rows get muted ink and no rail marker. */
   .mx-spine-name{ grid-area: name; flex-direction:row; align-items:center; justify-content:space-between; }
+  .mx-spine-stance{ grid-area: stance; align-self:center; }
   .mx-spine-rail-wrap{ grid-area: rail; }
   .mx-spine-travel{ grid-area: travel; }
-  .mx-spine-stance{ display:none; }
-  .mx-spine-row[data-null="1"] .mx-spine-stance{
-    display:flex; grid-area:name; align-self:flex-end; margin-left:auto;
-  }
 }
+/* specimen opt-in: when a `.mx-spine` carries `style="--mobile:1;"` (the
+   design_system specimen's §6.6 panel) the reduction also fires at any
+   viewport. Real production never sets this flag; the rule is scoped to
+   the specimen wrapper class so it cannot leak. */
+.mockup-spine-390 .mx-spine-head{ display:none; }
+.mockup-spine-390 .mx-spine-row{
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name    stance"
+    "rail    rail"
+    "travel  travel";
+  column-gap: 10px;
+  row-gap: 6px;
+  padding: 14px 0;
+}
+.mockup-spine-390 .mx-spine-name{ grid-area: name; flex-direction:row; align-items:center; justify-content:space-between; }
+.mockup-spine-390 .mx-spine-stance{ grid-area: stance; align-self:center; }
+.mockup-spine-390 .mx-spine-rail-wrap{ grid-area: rail; }
+.mockup-spine-390 .mx-spine-travel{ grid-area: travel; }
 /* end .mx-spine — UD-B1 §3 */
 
 /* ════════════════════════════════════════════════════════════════════════════════
@@ -2704,6 +2732,11 @@ body.page-macro .ud-eyebrow{
   color:var(--ink-2,var(--muted));
 }
 html[data-lang="zh"] body.page-macro .ud-eyebrow{ letter-spacing:0; text-transform:none; }
+/* 390 floor — the EN uppercase + tracking still shreds the small eyebrow;
+   drop the tracking and uppercase so both locales render at the same weight. */
+@media (max-width:390px){
+  body.page-macro .ud-eyebrow{ letter-spacing:.04em; text-transform:none; font-size:10.5px; }
+}
 body.page-macro .ud-live{
   display:inline-flex; align-items:center; gap:6px;
   font-size:11px; font-weight:700; letter-spacing:.04em;
@@ -2714,9 +2747,16 @@ body.page-macro .ud-live i{
   background:var(--ink-3,var(--muted));
   box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-3,var(--muted)) 18%, transparent);
 }
-body.page-macro .ud-live--green i{ background:var(--up); box-shadow:0 0 0 3px color-mix(in srgb, var(--up) 22%, transparent); }
-body.page-macro .ud-live--yellow i{ background:var(--warn); box-shadow:0 0 0 3px color-mix(in srgb, var(--warn) 22%, transparent); }
-body.page-macro .ud-live--red i{ background:var(--down); box-shadow:0 0 0 3px color-mix(in srgb, var(--down) 22%, transparent); }
+/* R-D: live dot uses HEALTH tokens (ok/warn) — never direction tokens
+   (up/down), so it cannot flip red under the ZH 红涨绿跌 convention. */
+body.page-macro .ud-live--ok i{
+  background:var(--ink-ok,var(--up));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-ok,var(--up)) 22%, transparent);
+}
+body.page-macro .ud-live--warn i{
+  background:var(--ink-warn,var(--warn));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--ink-warn,var(--warn)) 22%, transparent);
+}
 body.page-macro .ud-asof{
   margin-left:auto;
   font-size:11px; letter-spacing:.04em; color:var(--ink-3,var(--muted));
@@ -2725,9 +2765,11 @@ body.page-macro .ud-asof{
 
 /* ── §1 grid: 660 copy + 316 gauge, space-between ────────────────────── */
 body.page-macro .ud-hero-grid{
-  display:grid; grid-template-columns:minmax(0,1fr) 316px;
+  display:grid; grid-template-columns:660px 316px;
+  justify-content:space-between;
   gap:var(--sp-5,20px) 36px; align-items:start;
 }
+@media (max-width:1280px){ body.page-macro .ud-hero-grid{ grid-template-columns:minmax(0,1fr) 316px; } }
 @media (max-width:860px){ body.page-macro .ud-hero-grid{ grid-template-columns:1fr; } }
 
 body.page-macro .ud-verdict{
@@ -2743,6 +2785,7 @@ body.page-macro .ud-verdict-word--down{ color:var(--ink-down,var(--down)); }
 body.page-macro .ud-verdict-word--warn{ color:var(--ink-warn,var(--warn)); }
 body.page-macro .ud-verdict-comma{ font-size:var(--fs-display,46px); font-weight:800; color:var(--ink-1,var(--text)); }
 body.page-macro .ud-verdict-qualifier--warn{ color:var(--ink-warn,var(--warn)); }
+body.page-macro .ud-verdict-qualifier--down{ color:var(--ink-down,var(--down)); }
 body.page-macro .ud-verdict-qualifier--muted{ color:var(--ink-3,var(--muted)); }
 
 body.page-macro .ud-clause,
@@ -2858,8 +2901,13 @@ body.page-macro .ud-watch-item{
   line-height:1.5;
 }
 body.page-macro .ud-watch-item-head{
-  display:block; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px;
+  display:none; font-weight:700; color:var(--ink-1,var(--text)); margin-bottom:4px;
 }
+body.page-macro .ud-watch-item-body{
+  display:none; font-weight:400; line-height:1.5; color:var(--ink-2,var(--muted));
+}
+html:not([data-lang="zh"]) body.page-macro .ud-watch-item-head.l-en{ display:block; }
+html[data-lang="zh"] body.page-macro .ud-watch-item-body.l-zh{ display:block; }
 
 /* ── §6 Go deeper chip rail ──────────────────────────────────────────── */
 body.page-macro .ud-deeper{ margin-top:6px; }

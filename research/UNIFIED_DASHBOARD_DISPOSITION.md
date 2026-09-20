@@ -22,7 +22,7 @@ names where every census module lands in the new composition, the disposition cl
 | **R2** | Census **#19 / #20** (Markets isle + dialog — 4-tile futures grid + tabbed deep dialog) | **RETAIN** as glance tile row + dialog per spec §4 (component inventory `DecisionRow` / `dlg-markets`); on the page it lands on the §2 spine row (US / HK / China A / Gov bonds / Commodities) |
 | **R3** | Census **#21 + #35** (Risk isle absorbs the volatility-weather chips) | **IMPROVE** — the risk isle keeps its dial + scar chips; the **volatility-weather chips** (`calm / breeze / gust / storm`) fold INTO the risk isle instead of sitting as a sibling stack |
 | **R4** | Census **#29** (Deep context isle — "Where next", three wnx-cards) | **RETAINED** as the **single deep-context surface** — the three wnx-cards stay grouped |
-| **R5** | Census **#44** (dlg-deep-context) | **ABSORBED** into #29 — one surface, not two; the dialog content rolls into the isle body or its disclosure |
+| **R5** | Census **#44** (dlg-deep-context) | **REMOVE** (absorbed into #29 — single deep-context surface, seat ruling) — the dialog content rolls into the isle body or its disclosure |
 | **R6** | Census **#36** (AI / non-AI breadth split) | **RELOCATE** to `advanced.html` with a chip link from the breadth surface — display-tier clutter has no place on the hero glance |
 | **R7** | Census **#54** (Macro & Monetary hub pill link) | **IMPROVE** — the `mq-suitenav-home` pill joins the canonical chrome link family (sits with the suite-nav surfaces, not as a one-off) |
 
@@ -54,6 +54,11 @@ silently dropped; no module is relocated or removed without a seat ruling.
 | 17 | Market Sentiment isle (sx-v5-sentiment) | RETAIN | §4 *Drivers* block — one driver tile | Display-tier context; never a signal |
 | 18 | Sector Temperature isle (sx-v5-sector) | RETAIN | §6 *Go deeper* — sector rotation chip | "Compass card" link to sector_central.html |
 | 19 | Markets isle (sx-markets-v2 — 4-tile futures grid) | RETAIN (R2) | §2 spine — five markets on one rail (US / HK / China A / Gov bonds / Commodities) | The 4-tile glance row becomes a row in the spine; deep stays in the dialog |
+| 19a | Spine feed · US stocks (`market_state.score`) | BOUND | §2 spine · subject row | `vm["market_state"]["score"]` is the regime score; the row carries today's marker + the stance derived from `vm["stance"]`. Real published data. |
+| 19b | Spine feed · Hong Kong | BLOCKED_DATA | §2 spine · designed-null row | `hk_regime` is not yet wired into the macro vm. Row carries `data-blocked-feed="hk_regime"` + dashed rail + "Read being updated" chip. Will bind when `vm["hk_regime"]` lands in `scripts/build_site.py`. |
+| 19c | Spine feed · China A-shares | BLOCKED_DATA | §2 spine · designed-null row | `china_a_regime` is not yet wired. `data-blocked-feed="china_a_regime"`; same designed-null treatment as HK. |
+| 19d | Spine feed · Government bonds | BLOCKED_DATA | §2 spine · designed-null row | `gov_bonds_regime` is not yet wired. `data-blocked-feed="gov_bonds_regime"`; same designed-null treatment. |
+| 19e | Spine feed · Commodities | BLOCKED_DATA | §2 spine · designed-null row | `commodities_regime` is not yet wired. `data-blocked-feed="commodities_regime"`; same designed-null treatment. |
 | 20 | Markets dialog (dlg-markets) | RETAIN (R2) | companion to §2 spine | Hub-and-spoke — index-health · sector heatmap · cross-asset preview |
 | 21 | Risk isle (sx-risk-v2, Risk Radar) | IMPROVE (R3) | §2 spine — receives the vol-weather chips (see R3) | The risk isle keeps its dial + scar chips; absorbs the vol-weather chips below |
 | 22 | Risk dialog (dlg-risk) | RETAIN | companion to §2 spine — risk state band + leading-signal stack + themes-rot | The deepest risk read; daily |
@@ -78,7 +83,7 @@ silently dropped; no module is relocated or removed without a seat ruling.
 | 41 | Sentiment detail dialog (dlg-sentiment) | RETAIN | companion to #33 | Deep sentiment read |
 | 42 | Sector detail dialog (dlg-sector) | RETAIN | companion to #18 | Deep sector read |
 | 43 | Fed detail dialog (dlg-fed) | RETAIN | companion to #16 | Companion deep |
-| 44 | Deep-context dialog (dlg-deep-context) | ABSORBED (R5) | folded into #29 — one surface, not two | The dialog content rolls into the isle body / its disclosure |
+| 44 | Deep-context dialog (dlg-deep-context) | REMOVE (R5) | folded into #29 — one surface, not two | The dialog content rolls into the isle body / its disclosure |
 | 45 | Live quote tiles (`nb-px` / `nb-chg`) | RETAIN | §2 spine — five markets tile row mount points | Always live tiles; data-sym attributes kept |
 | 46 | Heatmap lazy-load | RETAIN | companion to dlg-markets — sector treemap | 79% size cut; lazy-load discipline retained |
 | 47 | Theme switch | RETAIN | chrome — top right (nav) | Always-on chrome |

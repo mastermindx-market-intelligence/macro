@@ -1,5 +1,5 @@
 {
-  "head": "686c2d8d3e",
+  "head": "d2faae55ff",
   "branch": "claude/mo-a-unified-dashboard-b1",
   "pr": 7469,
   "source_url": "site/macro.html",
@@ -13,8 +13,8 @@
       "theme": "dark",
       "language": "en",
       "spine": {
-        "w": 529,
-        "h": 368,
+        "w": 1012,
+        "h": 335,
         "rows": 5
       },
       "verdict_excerpt": "Risk-on\n,\nnarrowing"
@@ -26,11 +26,11 @@
       "theme": "dark",
       "language": "zh",
       "spine": {
-        "w": 468,
-        "h": 368,
+        "w": 1012,
+        "h": 335,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     },
     {
       "file": "dashboard_light_en_1440.png",
@@ -39,8 +39,8 @@
       "theme": "light",
       "language": "en",
       "spine": {
-        "w": 529,
-        "h": 368,
+        "w": 1012,
+        "h": 335,
         "rows": 5
       },
       "verdict_excerpt": "Risk-on\n,\nnarrowing"
@@ -52,11 +52,11 @@
       "theme": "light",
       "language": "zh",
       "spine": {
-        "w": 468,
-        "h": 368,
+        "w": 1012,
+        "h": 335,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     },
     {
       "file": "dashboard_dark_en_390.png",
@@ -66,7 +66,7 @@
       "language": "en",
       "spine": {
         "w": 0,
-        "h": 696,
+        "h": 783,
         "rows": 5
       },
       "verdict_excerpt": "Risk-on\n,\nnarrowing"
@@ -79,10 +79,10 @@
       "language": "zh",
       "spine": {
         "w": 0,
-        "h": 795,
+        "h": 859,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     },
     {
       "file": "dashboard_light_en_390.png",
@@ -92,7 +92,7 @@
       "language": "en",
       "spine": {
         "w": 0,
-        "h": 696,
+        "h": 783,
         "rows": 5
       },
       "verdict_excerpt": "Risk-on\n,\nnarrowing"
@@ -105,10 +105,10 @@
       "language": "zh",
       "spine": {
         "w": 0,
-        "h": 795,
+        "h": 859,
         "rows": 5
       },
-      "verdict_excerpt": "Risk-on\n风险偏好\n在收窄"
+      "verdict_excerpt": "风险偏好\n在收窄"
     }
   ]
 }
