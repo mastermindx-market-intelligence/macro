@@ -188,8 +188,10 @@ Push the existing branch, create or update its PR, confirm required CI/security 
 
 PR #7180 was opened from the reviewed carrier. The branch is published; exact final-head CI/security proof remains before this step can close.
 
-### Task 5: Separate continuation after this PR
+### Task 5: Dependency-ordered continuation after this PR
 
 - [x] Reconcile the cancelled China run `35019907027` from main, run logs, store tips, and R2 effects before any retry. The subsequent same-program carrier `35021696056` completed successfully on a descendant of repair commit `4ec24e0f4745`; current main reports source/session `2026-09-15`, reversal exact-date `true`, available `true`, degraded `false`, 99.6% scored coverage, 100% actionable coverage, no outage flag, and fresh CN/HK R2 manifests. No duplicate retry is owed.
-- [ ] Rebase or integrate PR #7161 as the separate rescue/acceptance cohort-truth slice.
-- [ ] After merge, observe a real US nightly and record whether valid candidates originate from a non-mixed completed-session board.
+- [x] PR #7161 merged as `bdad67069190634b0f38c07bfbc4a39161354be9` on 2026-09-17. Its cohort/session repair is accepted history and must not be recreated or rebased.
+- [ ] After #7180 acceptance, integrate existing PR #7187 on its original carrier, preserving producer/provenance and tracked-panel authority.
+- [ ] After the accepted #7180 -> #7187 base, reconcile existing PR #7457 once on its original carrier, preserving display-only authority.
+- [ ] After lawful integration and deployment, observe a real completed-session source -> artifact -> protected payload -> production-browser journey and one subsequent scheduled refresh.

@@ -16,13 +16,16 @@ class: build
 blast_radius: reversible
 ambiguity: specified
 next_action: >
-  PR #7180 is the active bounded producer/source-bound carrier. Prove its exact
-  final head in CI, merge only after required gates are green, then observe one
-  natural US nightly/path result showing a coherent completed-session board and
-  immutable source snapshot. Keep capability state BUILT_NOT_PROVEN until that
-  production proof. Only after #7180 is accepted, rebase/integrate PR #7161 as
-  the separate rescue/acceptance cohort-truth slice. The China sibling recovery
-  is already production-proven by run 35021696056 and must not be retried.
+  PR #7180 remains the active bounded producer/source-bound carrier. Its reviewed
+  semantic head 99b9bc18 composes conflict-free with current main 3df8685c and
+  passes the current-base local release matrix; publish the documentation-only
+  qualification on the same branch, require fresh terminal hosted CI and genuine
+  independent approval, and merge only after release-owner acceptance. Then
+  integrate existing PR #7187 and reconcile existing PR #7457 once, in that order.
+  PR #7161 already merged as bdad6706 and is DO_NOT_REDO. Keep the parent capability
+  BUILT_NOT_PROVEN until exact deployed-commit source, protected-serving, browser,
+  and subsequent scheduled-refresh proof. China run 35021696056 remains proven and
+  must not be retried.
 owns_paths:
   - scripts/prophet_rescue.py
   - .github/workflows/prophet-rescue.yml

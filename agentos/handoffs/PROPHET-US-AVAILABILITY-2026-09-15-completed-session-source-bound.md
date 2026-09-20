@@ -91,11 +91,16 @@ verified:
     result: >
       The same six failures reproduce on the semantic base: one fixture omits newer
       unrelated surface artifacts and five tests invoke the Jinja template without translator t.
-  - claim: PR #7180 composes cleanly with current main and main has not moved a candidate-owned path.
+  - claim: PR #7180 preserves its reviewed semantics on the 2026-09-20 current-main integration candidate.
     command: >
-      git diff --name-status 38d30def3826..origin/main -- <owned paths>; git
-      merge-tree --write-tree origin/main HEAD.
-    result: No owned-path movement; merge-tree exit 0.
+      Pin protected Mastermind f3d187976e083f9b102fc49696395b5c1521ebb5 and Macro
+      main 3df8685c87c2ea750343ab72da09fd20626cd8d4; compare every shared-path
+      candidate hunk and imported functional blob; then run git merge-tree --write-tree
+      origin/main 99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba.
+    result: >
+      Conflict-free tree 2f5f7f04524d420987d6b948989594dcf4e1431c. The five
+      shared paths retain the candidate hunks unchanged; imported calendar, store,
+      residual-alpha, and owner-test blobs are byte-identical to the reviewed base.
   - claim: The China sibling availability/data-plane repair is live and should not be retried.
     command: >
       gh run view 35021696056; git merge-base --is-ancestor 4ec24e0f4745
@@ -112,32 +117,41 @@ unverified:
       Natural daily/Prophet run after merge shows non-mixed completed-session receipt,
       immutable source hash/path resolving to exact board bytes, and either lawful new
       originations or an honest no-candidate disposition unrelated to the repaired defects.
-  - claim: PR #7161 remains behaviorally correct after rebasing onto the accepted producer repair.
-    what_would_verify: Rebase/integrate on a separate carrier, rerun its rescue/acceptance tests, and independently review the composed diff.
+  - claim: PR #7187 composes after accepted #7180 without weakening producer/provenance or tracked-panel authority.
+    what_would_verify: >
+      Build the dependency-ordered integration candidate after #7180 acceptance, rerun
+      current-head owner/contract gates, and obtain exact-head review.
+  - claim: PR #7457 preserves display-only leader-observation semantics after the accepted #7180 -> #7187 base.
+    what_would_verify: >
+      Reconcile #7457 once on its original carrier, rerun focused/full owner suites,
+      contract-delta and exact-head review, then prove the protected serving boundary.
 unresolved:
   - PR #7180 exact-head CI/security proof and merge decision.
   - Natural US production proof; until then the US capability is BUILT_NOT_PROVEN.
-  - Separate rebase/integration of PR #7161 after #7180 acceptance.
+  - Dependency-ordered integration of PR #7187 after #7180 acceptance.
+  - One history-preserving reconciliation of PR #7457 after the accepted #7180 -> #7187 base.
   - Original W2 fire-drill week and other older workstream done-bar obligations remain outside this bounded producer repair.
 next_actions:
   - Monitor PR #7180 checks on its exact final head; repair only candidate-caused failures and never weaken chronology or mixed-vintage gates.
-  - Merge #7180 only after required gates and review authority are satisfied.
-  - Observe the first natural post-merge US Prophet path and record source clock, mixed-vintage state, intake dispositions, immutable source path/hash, and visible result.
-  - Then continue PR #7161 on a separate carrier; do not combine its control-plane changes into #7180.
+  - Merge #7180 only after required gates, genuine independent approval, and release authority are satisfied.
+  - After #7180 acceptance, integrate PR #7187 on its existing carrier.
+  - After the accepted #7180 -> #7187 base, reconcile PR #7457 once on its existing carrier.
+  - After lawful integration and deployment, record the natural source clock, mixed-vintage state, intake dispositions, immutable source path/hash, protected payload identity, browser result, and subsequent scheduled refresh.
 do_not_redo:
   - Do not disable or soften mixed-vintage refusal; the gate correctly protected users from a torn scoring panel.
   - Do not solve provenance by making live site/factordata/us_standouts.json Prophet-exclusive or restoring an older accepted board over a newer customer board.
   - Do not re-open the mutable board path after source freeze; all consumers use the one frozen object.
   - Do not rerun China recovery run 35019907027 or dispatch a duplicate; the successor carrier 35021696056 proved the repair live.
   - Do not repair the six reproduced adjacent baseline failures in PR #7180; they are unrelated and would widen the PR.
-  - Do not absorb PR #7161 into this branch; preserve one useful capability per PR.
+  - Do not redo PR #7161; it merged as bdad67069190634b0f38c07bfbc4a39161354be9 on 2026-09-17.
+  - Do not absorb PR #7187 or PR #7457 into this branch; preserve the dependency order and one useful capability per PR.
 danger_areas:
   - Source-byte and source-object authority must remain identical; boundary hashes alone do not defeat ABA rewrites.
   - Date-only replay and live timestamp semantics are intentionally distinct; changing one can silently restamp historical cohorts or reject valid pre-close boards.
   - Broad engine cleanup must remove only uncheckpointed immutable provenance and must not overwrite correction ledgers.
   - Public R2 remains health-only under DEC:B1-PROPHET-PUBLIC-SPLIT; exact source snapshots and plan books stay private.
   - A green or cancelled overall daily run is not proof of Prophet delivery; inspect the checkpointed artifact and source cohort.
-prs: [7180, 7161]
+prs: [7180, 7187, 7457, 7161]
 discoveries:
   - DSC:PROPHET-PRECLOSE-DAILY-BARS-ARE-NOT-COMPLETED-SESSIONS
   - DSC:PROPHET-SOURCE-HASH-NEEDS-A-FROZEN-CONSUMER-OBJECT
@@ -147,7 +161,7 @@ discoveries:
 ## Authority precedence and experience contract
 
 Chairman direction controls scope. The current protected Sol Skillpack commit is
-`7642aea155d2817219135b24246b55c1d7611c66`. GitHub owns implementation/evidence;
+`f3d187976e083f9b102fc49696395b5c1521ebb5`. GitHub owns implementation/evidence;
 Agent OS owns continuity; the live US candidate board remains the customer-facing product
 artifact and Prophet owns only its derived plans, ledgers, and immutable provenance.
 
@@ -161,11 +175,13 @@ or trade authority.
 
 ## Stop condition and continuation
 
-Stop this carrier at a green, independently reviewed PR #7180 plus natural production
-proof. A fresh Sol session should load this handoff, protected Skillpack, PR #7180 exact
-head/checks, and current main artifacts. Completed implementation and China proof are
-do-not-redo. The next modifying operation after #7180 acceptance is PR #7161 on its own
-carrier; EFFECT_UNKNOWN GitHub writes must be reconciled before any retry.
+Stop this carrier at terminal exact-head hosted CI, genuine independent approval, and
+release-owner acceptance for PR #7180. Natural production proof remains a separate
+post-integration/deployment gate. A fresh Sol session should load this handoff, protected
+Skillpack, PR #7180 exact head/checks, and current main artifacts. Completed implementation,
+China proof, and merged PR #7161 are do-not-redo. After #7180 acceptance, integrate PR
+#7187 on its existing carrier, then reconcile PR #7457 once on its existing carrier;
+EFFECT_UNKNOWN GitHub writes must be reconciled before any retry.
 
 ## 2026-09-16 incident release maintenance
 
@@ -176,3 +192,41 @@ The introduced hosted contract failure was an unregistered `tests/test_us_comple
 GitHub separately reports all existing org CI carriers pc-ci-1/2/3 offline. Their queued jobs require macro-home-canary / ci-linux; the authorized winpc-wsl SSH read timed out. Restore the existing approved host/listeners, not new labels, fallback runners or bypassed gates. Daily run 35041133038 was already collecting and was not canceled or duplicated.
 
 A cache-busted public HTTP read at 2026-09-16T02:56:37Z still exposed data-board-asof=2026-09-11 beneath a Sep-14 page title. PR #7163 remains the independent HK dead-link/browser-evidence release blocker. Complete same-head hosted checks and merge review, then require current completed-session inputs, exact immutable source provenance and visible production output. No live-recovery or workstream-completion claim is made here.
+
+## 2026-09-20 current-main release qualification
+
+Operation `prophet-us-availability-release-qualification-20260920-sol-001` continues
+PR #7180 on its original carrier. Protected procedure was reloaded from Mastermind
+`f3d187976e083f9b102fc49696395b5c1521ebb5`; no successor or merged equivalent of
+#7180 exists. The reviewed implementation head remains
+`99b9bc18ded963ed5e9b9a4864bfff88a8e1d5ba`.
+
+Macro main was pinned at `3df8685c87c2ea750343ab72da09fd20626cd8d4`.
+A history-preserving synthetic integration produced conflict-free tree
+`2f5f7f04524d420987d6b948989594dcf4e1431c`. Five shared paths moved on main, but
+candidate hunks remain unchanged; imported calendar, store, residual-alpha, and owner-test
+blobs remain byte-identical. No ancestry-only merge was added to the PR.
+
+Current-base local evidence on that exact integrated tree:
+
+- bounded release matrix: 192 passed;
+- stock-library freshness plus completed-session CI owner: 28 passed;
+- Prophet nightly/checkpoint/publication shell syntax: passed;
+- `daily.yml` YAML parse and `git diff --check`: passed;
+- Agent OS validation: 1,149 records, 0 errors, 51 inherited warnings.
+
+The prior hosted run `35050886413` is not a candidate failure and must not be treated as
+current proof. Its contract-delta gate and six packs passed; six sibling packs were
+cancelled, so `ci-gate` correctly failed on missing semantic fragments. Current main now
+routes ordinary PR packs to hosted Linux and sets matrix `fail-fast: false`, removing that
+specific incomplete-proof mechanism. Do not rerun the obsolete tested tree. Publish this
+same-carrier continuity update to trigger one fresh `synchronize` proof, then require
+terminal exact-head hosted CI and genuine independent approval. Capability remains
+`BUILT_NOT_PROVEN`; no merge, deployment, serving, browser, or natural-refresh proof is
+claimed.
+
+Live dependency reconciliation also supersedes the old #7161 continuation edge. PR #7161
+merged at `bdad67069190634b0f38c07bfbc4a39161354be9` on 2026-09-17 and is DO_NOT_REDO.
+After #7180 acceptance, the active order is #7187 integration, then one history-preserving
+#7457 reconciliation. Both remain open draft carriers and must not be recreated or folded
+into #7180.
