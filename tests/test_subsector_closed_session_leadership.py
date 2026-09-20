@@ -149,6 +149,24 @@ def test_missing_sessions_and_extreme_price_jump_are_disclosed_not_repaired():
     assert out["basis"]["corporate_action_basis"] == "OWNER_CLOSE_SERIES_UNVERIFIED"
 
 
+def test_internal_missing_session_stays_null_and_breaks_return_chain():
+    sessions = pd.bdate_range("2026-01-02", periods=25)
+    frame = pd.DataFrame(
+        {"close": np.linspace(100.0, 124.0, len(sessions)), "volume": 100.0},
+        index=sessions,
+    )
+    gap = sessions[-3]
+    frame = frame.drop(index=gap)
+
+    normalised = sr._normalise_daily_frame(frame, sessions, sessions[-1])
+
+    assert normalised is not None
+    assert pd.isna(normalised["close"].loc[gap])
+    assert pd.isna(normalised["return"].loc[gap])
+    assert pd.isna(normalised["return"].loc[sessions[-2]])
+    assert normalised["all_internal_missing_sessions"] == 1
+
+
 def test_failed_breakout_turns_deteriorating_without_sticky_heating_state():
     # Prior five sessions beat market; current five give the advantage back.
     returns = [0.0] * 55 + [0.02] * 5 + [-0.02] * 5
@@ -204,6 +222,8 @@ def test_trailing_stale_tape_is_not_forward_filled_as_zero_return():
     assert row["status"] == "PARTIAL"
     assert row["windows"]["5"]["participation"]["priced_members"] == 2
     assert row["coverage"]["current_session_members"] == 2
+    assert row["volume_reclaim"]["members_with_20d_reclaim_evidence"] == 2
+    assert row["volume_reclaim"]["members_with_volume"] == 2
     assert row["coverage"]["stale_members"] == [{
         "ticker": "STALE",
         "last_observed_session": str(stale.index[-1].date()),

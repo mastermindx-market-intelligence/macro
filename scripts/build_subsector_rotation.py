@@ -12,9 +12,8 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from datetime import datetime, time as dt_time, timezone
+from datetime import datetime, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -22,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from engine import subsector_rotation as sr  # noqa: E402
 from lib import config  # noqa: E402
+from lib.nyse_calendar import expected_last_session, is_session  # noqa: E402
 
 log = logging.getLogger("build_subsector_rotation")
 
@@ -30,7 +30,6 @@ log = logging.getLogger("build_subsector_rotation")
 # source-native cohorts (servers, storage and telecom infrastructure) remain
 # measured coverage evidence until the incumbent identity/ontology owner maps them.
 CLOSED_SESSION_PARENT_KEYS = frozenset({"Semiconductors"})
-_MARKET_CLOSE_ET = dt_time(16, 15)  # 15-minute close/finalisation buffer
 
 
 def _data(*parts: str) -> Path:
@@ -44,11 +43,11 @@ def _completed_session_asof(
     *,
     now_utc: datetime | None = None,
 ) -> str | None:
-    """Resolve the last market session safe to describe as completed.
+    """Resolve the latest owner bar the canonical NYSE clock considers completed.
 
-    A same-day tape is excluded before 16:15 New York time. Holidays and future
-    requested dates fall back to the latest available prior SPY session; no
-    calendar-day filling is performed.
+    ``lib.nyse_calendar`` owns holidays, one-off closures and the 17:00 ET
+    close-plus-settle boundary. Requested dates and future owner bars are capped;
+    no calendar-day filling is performed.
     """
     if market_bars is None:
         return None
@@ -65,20 +64,14 @@ def _completed_session_asof(
     if idx.tz is not None:
         idx = idx.tz_localize(None)
     idx = pd.DatetimeIndex(idx.normalize()).drop_duplicates().sort_values()
-    requested = pd.Timestamp(requested_asof).normalize() if requested_asof else idx[-1]
-    now_utc = now_utc or datetime.now(timezone.utc)
-    if now_utc.tzinfo is None:
-        now_utc = now_utc.replace(tzinfo=timezone.utc)
-    now_et = now_utc.astimezone(ZoneInfo("America/New_York"))
+    idx = pd.DatetimeIndex([stamp for stamp in idx if is_session(stamp.date())])
+    if idx.empty:
+        return None
 
-    target = min(requested, idx[-1])
-    same_or_future_local_day = target.date() >= now_et.date()
-    if same_or_future_local_day and (
-        target.date() > now_et.date() or now_et.timetz().replace(tzinfo=None) < _MARKET_CLOSE_ET
-    ):
-        eligible = idx[idx < target]
-    else:
-        eligible = idx[idx <= target]
+    completed = pd.Timestamp(expected_last_session(now_utc)).normalize()
+    requested = pd.Timestamp(requested_asof).normalize() if requested_asof else completed
+    target = min(requested, completed, idx[-1])
+    eligible = idx[idx <= target]
     return eligible[-1].date().isoformat() if len(eligible) else None
 
 
@@ -156,6 +149,8 @@ def _stamp_closed_session_metadata(
     observation["source_records"] = [
         "data/themes_heatmap/themes_tree.json",
         "engine.basket_index._load_member_ohlcv",
+        "lib.nyse_calendar.expected_last_session",
+        "lib.nyse_calendar.is_session",
         "SPY",
     ]
     receipt = {

@@ -17,17 +17,41 @@ def _bars(returns: list[float], *, start: str = "2026-06-01") -> pd.DataFrame:
     return pd.DataFrame({"close": close, "volume": 100.0}, index=idx)
 
 
-def test_completed_session_cutoff_excludes_same_day_before_close():
+def test_completed_session_cutoff_uses_canonical_settle_boundary():
     market = _bars([0.0] * 5)
     latest = market.index[-1]
     before_close_utc = datetime(latest.year, latest.month, latest.day, 19, 30, tzinfo=timezone.utc)
-    after_close_utc = datetime(latest.year, latest.month, latest.day, 20, 20, tzinfo=timezone.utc)
+    after_close_before_settle_utc = datetime(
+        latest.year, latest.month, latest.day, 20, 20, tzinfo=timezone.utc
+    )
+    after_settle_utc = datetime(latest.year, latest.month, latest.day, 21, 20, tzinfo=timezone.utc)
 
     before = build._completed_session_asof(market, str(latest.date()), now_utc=before_close_utc)
-    after = build._completed_session_asof(market, str(latest.date()), now_utc=after_close_utc)
+    before_settle = build._completed_session_asof(
+        market, str(latest.date()), now_utc=after_close_before_settle_utc
+    )
+    after_settle = build._completed_session_asof(
+        market, str(latest.date()), now_utc=after_settle_utc
+    )
 
     assert before == str(market.index[-2].date())
-    assert after == str(latest.date())
+    assert before_settle == str(market.index[-2].date())
+    assert after_settle == str(latest.date())
+
+
+def test_completed_session_cutoff_filters_non_session_placeholders():
+    market = pd.DataFrame(
+        {"close": [100.0, 101.0], "volume": [1.0, 1.0]},
+        index=pd.DatetimeIndex(["2026-09-18", "2026-09-19"]),
+    )
+
+    result = build._completed_session_asof(
+        market,
+        "2026-09-19",
+        now_utc=datetime(2026, 9, 20, 18, 0, tzinfo=timezone.utc),
+    )
+
+    assert result == "2026-09-18"
 
 
 def test_bounded_owner_loader_skips_unrelated_parent_and_attaches_to_real_payload():
@@ -70,7 +94,10 @@ def test_bounded_owner_loader_skips_unrelated_parent_and_attaches_to_real_payloa
     receipt = payload["themes"][0]["leadership_observation"]["measurement_receipt"]
     assert receipt["basis"]["membership_is_point_in_time"] is False
     assert receipt["permissions"]["may_rank"] is False
-    assert receipt["clocks"]["observation_session"] == str(market.index[-1].date())
+    # pd.bdate_range includes Labor Day; the canonical exchange calendar must not.
+    assert receipt["clocks"]["observation_session"] == str(market.index[-2].date())
+    assert "lib.nyse_calendar.expected_last_session" in receipt["source_records"]
+    assert "lib.nyse_calendar.is_session" in receipt["source_records"]
 
 
 def test_failure_receipt_is_visible_and_carries_local_clocks():

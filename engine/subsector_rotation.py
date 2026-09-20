@@ -225,9 +225,9 @@ def attach_turn(rows: list[dict], perf_by_key: Mapping[str, Mapping],
 def _normalise_daily_frame(frame, sessions: pd.DatetimeIndex, asof: pd.Timestamp) -> dict | None:
     """Normalise one owner-provided daily tape onto the completed market calendar.
 
-    The owner close series is not rewritten for corporate actions here. Missing bars
-    after a ticker becomes live are forward-filled exactly as the incumbent basket
-    composite does; the number of such fills is disclosed in coverage instead of hidden.
+    The owner close series is not rewritten for corporate actions here. Internal gaps
+    and stale tails remain null, and a return is unavailable on the first session after
+    a gap. Missing-session counts are disclosed in coverage instead of hidden.
     """
     if frame is None:
         return None
@@ -255,18 +255,17 @@ def _normalise_daily_frame(frame, sessions: pd.DatetimeIndex, asof: pd.Timestamp
         return None
     all_internal_missing_sessions = int(raw_close.loc[first:last].isna().sum())
     trailing_missing_sessions = int((sessions > last).sum())
-    # Fill only gaps bounded by real observations. A stale tail stays unavailable;
-    # carrying the last price through the cutoff would manufacture zero returns
-    # and false persistence for a member that no longer has a current tape.
-    filled_close = raw_close.ffill().where(raw_close.index <= last)
-    daily_return = filled_close.pct_change(fill_method=None)
-    daily_return = daily_return.where(filled_close.notna())
+    observed_close = raw_close.copy()
+    daily_return = observed_close.pct_change(fill_method=None)
+    daily_return = daily_return.where(
+        observed_close.notna() & observed_close.shift(1).notna()
+    )
 
     volume = None
     if "volume" in df:
         volume = pd.to_numeric(df["volume"], errors="coerce").reindex(sessions)
     return {
-        "close": filled_close,
+        "close": observed_close,
         "raw_close": raw_close,
         "return": daily_return,
         "volume": volume,
@@ -378,23 +377,26 @@ def _volume_reclaim_evidence(prepared: Mapping[str, Mapping], asof: pd.Timestamp
     reclaimed_20d_mean: list[bool] = []
     members_with_volume = 0
     members_with_reclaim = 0
+    asof = pd.Timestamp(asof).normalize()
     for item in prepared.values():
-        close = item["close"].loc[:asof].dropna()
+        raw_close = item["raw_close"].loc[:asof]
+        if asof not in raw_close.index or pd.isna(raw_close.loc[asof]):
+            continue
+        close = item["close"].loc[:asof].iloc[-21:]
         ret = item["return"].loc[:asof]
-        if len(close) >= 21:
+        if len(close) == 21 and not close.isna().any():
             latest = float(close.iloc[-1])
             previous = float(close.iloc[-2])
-            prior_mean = float(close.iloc[-21:-1].mean())
+            prior_mean = float(close.iloc[:-1].mean())
             current_mean = float(close.iloc[-20:].mean())
             above_20d_mean.append(latest >= current_mean)
             reclaimed_20d_mean.append(previous < prior_mean and latest >= prior_mean)
             members_with_reclaim += 1
         volume = item.get("volume")
         if volume is not None:
-            volume = volume.loc[:asof]
-            hist = volume.iloc[-21:].dropna()
-            latest_ret = ret.iloc[-1] if len(ret) else np.nan
-            if len(hist) >= 21 and np.isfinite(latest_ret):
+            hist = volume.loc[:asof].iloc[-21:]
+            latest_ret = ret.loc[asof] if asof in ret.index else np.nan
+            if len(hist) == 21 and not hist.isna().any() and np.isfinite(latest_ret):
                 high_volume_positive.append(
                     bool(hist.iloc[-1] > hist.iloc[:-1].mean() and latest_ret > 0)
                 )
