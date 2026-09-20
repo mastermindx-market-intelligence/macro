@@ -43,7 +43,8 @@ evidence:
     - {path: mockups/evidence/prophet-p0b-zero-fouc/78a60ac924044b8c.png, viewport: mobile390, theme: light, locale: zh, note: "Canada deterministic before"}
   gaps:
     - {axis: access, value: entitled, reason: "No approved signed-in fixture or current entitled browser capture in Session D."}
-    - {axis: proof_class, value: production, reason: "Before matrix is reproducible fixture evidence, not deployed production proof."}
+    - {axis: proof_class, value: production, reason: "Before matrix is reproducible fixture evidence. A separate anonymous-deployed HK probe proves one current interaction defect but not entitled-session correctness."}
+    - {axis: view_parity, value: HK All Grid/Table, reason: "Anonymous deployed probe: board 32 + watch 8 = 40 unique current identities, while stocktable-data and All/Table expose only 3 rows."}
     - {axis: natural_update, value: two successive publications, reason: "Owed by B/C implementation acceptance, not reference design."}
     - {axis: history_coverage, value: exact exit and continuous tenure, reason: "Existing HK/CA graded ledgers omit some visible shelves."}
 
@@ -90,6 +91,8 @@ design_lineage:
       note: "Visible shelves are not fully represented in graded ledgers; absence cannot establish continuous tenure or exact exit."
     - path: "research/PROPHET_HK_CANADA_SHARED_PRODUCT_DESIGN_CONTRACT_2026_09_20.md"
       note: "The paired contract separates current action, research attention, recent change, and record authority."
+    - path: "github:macro#7163 issuecomment-5749594572"
+      note: "ANONYMOUS_DEPLOYED HK evidence: owner proof declares 32 board + 8 watch = 40 unique current names; source=all Grid shows the shelves, but Table exposes only stocktable-data rows 2150.HK, 0241.HK, and 3888.HK. Returning to Grid restores the prior grid state. Live HTML was byte-identical to protected main at the observation; probe receipt SHA-256 prefix 747a698a, suffix b361."
 
 capabilities:
   - id: authority.market_native_current
@@ -118,7 +121,7 @@ capabilities:
     importance: core
   - id: controls.identity_preserving_views
     user_job: Search, filter, and switch views without silently changing identity or order.
-    evidence: "HK/Canada client controllers and stocktable/card projections"
+    evidence: "HK anonymous deployed probe: source=all Grid represents 40 current identities, while Table exposes only 3 stocktable rows; github:macro#7163 issuecomment-5749594572"
     importance: core
   - id: continuity.record_separation
     user_job: Inspect track record and historical context separately from current action authority.

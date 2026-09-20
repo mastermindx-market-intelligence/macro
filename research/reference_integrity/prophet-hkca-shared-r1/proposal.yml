@@ -133,10 +133,10 @@ user_tasks:
   - id: task.preserve_identity_across_controls
     task: Search, filter, and switch Grid/Table without changing the underlying roster or order.
     critical: true
-    production: "Current projections are not one visibly reconciled identity surface."
+    production: "Anonymous deployed HK proof observed 40 current identities in board/watch shelves, but source=all Table exposed only 3 stocktable rows; returning to Grid restored the prior grid state."
     proposal: "Every control projects the same canonical identity set and deterministic order."
     verdict: BETTER
-    notes: "B/C must prove round trips against real inherited controls."
+    notes: "Implementation must prove Grid→Table→Grid, search, stage, and filter round trips against the same dynamic producer roster; the reference epoch count 39 is not a quota or hardcoded total."
   - id: task.distinguish_current_research_record
     task: Distinguish current action authority from optional research and historical record.
     critical: true

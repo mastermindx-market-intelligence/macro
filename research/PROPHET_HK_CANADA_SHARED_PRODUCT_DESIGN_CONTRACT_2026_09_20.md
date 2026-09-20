@@ -107,10 +107,12 @@ artboard fit, deliberate responsive recomposition, and no horizontal overflow at
 
 The accepted product decisions are:
 
-- Hong Kong truthfully exposes all `39` current owner-visible names and an explicit two-name
-  Top subset without making the subset appear to be the whole board.
-- Canada truthfully exposes all `17` current screen/watch names, prints `Top Picks 0`, and
-  preserves Branch-B screen authority rather than inventing official picks or entry permission.
+- The Hong Kong reference epoch demonstrates `39` current names and an explicit two-name Top
+  subset without making the subset appear to be the whole board. Production derives the total
+  from the current reconciled roster; an independent anonymous probe later observed `40`.
+- The Canada reference epoch demonstrates `17` current screen/watch names and `Top Picks 0`, while
+  preserving Branch-B screen authority rather than inventing official picks or entry permission.
+  Production derives both counts from the current screen/watch owner; neither number is a quota.
 - Grid/Table, search, stage, recently changed, research attention, and evidence/record share
   one information architecture and card grammar across both themes and languages.
 - Mobile is a deliberate single-column recomposition rather than squeezed desktop geometry.
@@ -335,7 +337,8 @@ Refreshing a failed source and clearing filters are separate actions.
 
 ## 13. Evidence matrix
 
-The editable design now covers all sixteen primary cells:
+The editable design now covers all sixteen primary cells. Its displayed `39`/`17` counts are
+reference-epoch examples only; implementation must render current producer-derived totals:
 
 ```text
 2 markets × EN/ZH × dark/light × 1440/390 = 16/16
@@ -353,7 +356,10 @@ fresh→stale→failed→recovered transition treatment.
 Implementation still owes real-path proof for:
 
 - the inherited production card DOM and real controls rather than Paper nodes;
-- Grid/Table/search/stage/filter identity and deterministic-order round trips;
+- repair of the measured HK baseline where `source=all` Grid represented `40` current identities
+  (`32` board + `8` watch) but Table exposed only three stocktable rows;
+- Grid/Table/search/stage/filter identity and deterministic-order round trips, including
+  Grid→Table→Grid with no identity or order loss;
 - native keyboard, touch, Escape/focus-return, and popover/navigation behavior;
 - loading skeletons and live quote/layout stability;
 - access-policy enforcement and absence of hidden paid identities in delivered bytes;
