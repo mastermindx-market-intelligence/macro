@@ -1225,6 +1225,93 @@ def test_persistent_node_matching_refuses_to_bridge_beyond_declared_tolerance():
     assert matched["tracks"] == []
 
 
+def test_r6_transition_detects_geometry_and_dominant_tenor_migration():
+    state0 = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 100, 100),
+        _r6_row("2026-10-16", 100, 10),
+    ]))
+    state1 = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 105, 10),
+        _r6_row("2026-10-16", 110, 200),
+    ]))
+    got = skylit_r6.analyze_transition(
+        state0,
+        state1,
+        "2026-09-14",
+        "2026-09-15",
+    )
+    assert got["status"] == "TOPOLOGY_TRANSITION_COMPLETE"
+    assert got["outcome_labels_opened"] is False
+    assert got["whole_board"]["wasserstein_1_x"] > 0
+    assert got["whole_board"]["centroid_change_x"] > 0
+    assert got["expiry_population"]["common"] == 2
+    assert got["expiry_population"]["added"] == []
+    assert got["expiry_population"]["dropped"] == []
+    assert got["tenor"]["dominant0"] == "3-7DTE"
+    assert got["tenor"]["dominant1"] == "31-90DTE"
+    assert got["persistent_nodes"]["status"] == "NOT_REQUESTED"
+
+
+def test_r6_transition_matches_persistent_tracks_one_to_one():
+    rows0 = []
+    rows1 = []
+    for exp, strike0, strike1 in [
+        ("2026-09-18", 100, 100.5),
+        ("2026-09-25", 101, 101.5),
+        ("2026-10-02", 102, 102.5),
+    ]:
+        rows0.extend([
+            _r6_row(exp, strike0, 100),
+            _r6_row(exp, 120, 10),
+        ])
+        rows1.extend([
+            _r6_row(exp, strike1, 100),
+            _r6_row(exp, 120, 10),
+        ])
+    got = skylit_r6.analyze_transition(
+        _r6_state(pd.DataFrame(rows0)),
+        _r6_state(pd.DataFrame(rows1)),
+        "2026-09-14",
+        "2026-09-15",
+        node_prominence_fraction=0.40,
+        node_match_tolerance_x=0.02,
+        node_min_expiries=3,
+    )
+    p = got["persistent_nodes"]
+    assert p["status"] == "COMPLETE"
+    assert p["continued"] == 1
+    assert p["born"] == 0
+    assert p["died"] == 0
+    assert len(p["continuations"]) == 1
+    assert abs(p["continuations"][0]["delta_x"]) < 0.02
+
+
+def test_r6_transition_refuses_root_or_coordinate_mismatch():
+    left = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 100, 10),
+    ]))
+    right = _r6_state(pd.DataFrame([
+        _r6_row("2026-09-18", 101, 10),
+    ]))
+    bad_root = dict(right)
+    bad_root["root"] = "QQQ"
+    with pytest.raises(skylit_r6.R6Refusal, match="same non-empty root"):
+        skylit_r6.analyze_transition(
+            left,
+            bad_root,
+            "2026-09-14",
+            "2026-09-15",
+        )
+    with pytest.raises(skylit_r6.R6Refusal, match="cannot mix"):
+        skylit_r6.analyze_transition(
+            left,
+            right,
+            "2026-09-14",
+            "2026-09-15",
+            expected_move_pct1=2.0,
+        )
+
+
 def test_unqualified_r2_state_refuses_before_topology():
     with pytest.raises(skylit_r6.R6Refusal, match="not source-qualified"):
         skylit_r6.analyze_state(_r6_state(pd.DataFrame([_r6_row("2026-09-18", 100, 1)]), gate=False), "2026-09-14")
