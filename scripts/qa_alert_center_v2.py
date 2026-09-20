@@ -68,6 +68,10 @@ def main():
             assert page.locator('#ac-detail').evaluate('(d) => d.open')
             assert page.locator('#ac-detail-title').inner_text()
             report['checks'].append('Evidence selection has a reloadable canonical-ID permalink')
+            page.keyboard.press('Escape')
+            assert not page.locator('#ac-detail').evaluate('(d) => d.open')
+            assert page.locator(':focus').get_attribute('data-alert-id') == selected
+            report['checks'].append('Native Escape closes evidence and restores the selected row')
             supported_id = next(k for k, v in payload['explorer']['briefs'].items() if v.get('status') == 'supported')
             supported = payload['explorer']['briefs'][supported_id]
             page.goto(url + '#view=explore&id=' + supported_id, wait_until='domcontentloaded')
@@ -83,10 +87,8 @@ def main():
             assert page.locator('#ac-detail .acx-next-action').inner_text() == watch_brief['next_action']
             assert watch_brief['limitation'] in page.locator('#ac-detail').inner_text()
             report['checks'].append('A fresh watch-family alert exposes its own implication, limitation and decision-specific follow-up')
-            page.keyboard.press('Escape')
+            page.click('#ac-close')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
-            assert page.locator(':focus').get_attribute('data-alert-id') == selected
-            report['checks'].append('Native Escape closes evidence and restores the selected row')
             page.click('[data-view="history"]')
             page.go_back(wait_until='domcontentloaded')
             assert page.locator('[data-view="explore"]').get_attribute('aria-current') == 'page'
