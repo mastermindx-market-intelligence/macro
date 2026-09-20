@@ -103,3 +103,47 @@ def test_calendar_glyph_regression_does_not_return() -> None:
         '{% if imminent %}<div class="cnx-row"><span class="ic" aria-hidden="true"></span>'
         in TPL
     )
+
+
+def test_no_network_render_guard_covers_render_and_fast_modes(monkeypatch) -> None:
+    from scripts import build_china
+
+    monkeypatch.delenv("RENDER_NO_DRIP", raising=False)
+    monkeypatch.delenv("CHINA_FAST_RENDER", raising=False)
+    assert build_china._no_network_render() is False
+
+    monkeypatch.setenv("RENDER_NO_DRIP", "1")
+    assert build_china._no_network_render() is True
+    monkeypatch.delenv("RENDER_NO_DRIP")
+    monkeypatch.setenv("CHINA_FAST_RENDER", "1")
+    assert build_china._no_network_render() is True
+
+
+def test_no_network_render_never_calls_eastmoney_leaderboard(monkeypatch) -> None:
+    import requests
+    from scripts import build_china
+
+    def _network_forbidden(*args, **kwargs):
+        raise AssertionError("render lane attempted an Eastmoney HTTP call")
+
+    monkeypatch.setenv("CHINA_FAST_RENDER", "1")
+    monkeypatch.setattr(requests, "get", _network_forbidden)
+    assert build_china._leaderboard() is None
+
+
+def test_no_network_render_skips_stock_library_drips(monkeypatch) -> None:
+    from scripts import build_china
+
+    monkeypatch.setenv("RENDER_NO_DRIP", "1")
+    assert build_china._build_china_library_for_page(alpha=None) is None
+
+
+def test_no_network_render_disables_live_news_fetches(monkeypatch) -> None:
+    from engine import china_news
+
+    monkeypatch.setattr(china_news, "_cfg", lambda: {"enabled": True})
+    monkeypatch.setenv("RENDER_NO_DRIP", "1")
+    assert china_news.enabled() is False
+    monkeypatch.delenv("RENDER_NO_DRIP")
+    monkeypatch.setenv("CHINA_FAST_RENDER", "1")
+    assert china_news.enabled() is False
