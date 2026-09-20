@@ -192,3 +192,26 @@ reconciliation. Six green summaries do not constitute parent-program acceptance.
 - Current-main integration pin `0fb1196a192243a0ff2677af7ff31b261c565bf9`: 188 focused thesis/Theme Tracker/Portfolio tests passed, Agent OS validated with 0 errors, and real builders completed.
 - Real output at that pin: AI Semiconductors = `WATCH / early / NOT_DETECTED / no falsifier fired`; Medical Devices = `PRECIPICE / early / NOT_DETECTED / no falsifier fired`; GLP-1 Obesity and Space/Satellite = `RE-RATING / caution / NOT_DETECTED`.
 - Hosted PR #7526 contract-delta identified one required CI-scope widening: `unrun-subsector-themes.paths` must include `site/basketdata/foresight_cascade.json`. The current manifest itself specifies that widening is the safe response to a newly reached import path. Open PRs #7064/#7095 touch disjoint manifest hunks.
+
+## 2026-09-20 exact-head requalification after current-main reconciliation
+
+- Current protected Skillpack remains `40e7b63be296f19ef4153f59781021fb5f0e9e0d` (`mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap-major 1); `INDEX`, `COLD_START`, `ACTIVE_EXECUTION`, `WEB_CEO_DELEGATION`, and `RECONCILE_STATE` were re-pinned before this modifying step.
+- Canonical Lane A carrier remains `claude/theme-intelligence-lane-a-semantic-repair-20260920`; no successor branch or duplicate implementation was created.
+- Prior independently reviewed PR head `aaa69397ccce14fa26f5081fc71e69ee0fcd9ec7` was reconciled into the same carrier with local consumer evidence-identity work at merge `70ddcf75646273e80487f7d3723805a49c21a6fa`.
+- Current Macro main `7a99847f01f28e2acb8cc2ad6baaa283738d1471` was then integrated normally after a no-write merge-tree proof and exact-path comparison showed all six Lane A semantic/test paths disjoint.
+- Resulting exact local head before this receipt commit: `40ed5668d4b77c607e919391810de64bd2b38bff`, tree `df0f99a1f6ec834d32606233a49c1ced671604b4`.
+- Current main materially repaired the unrelated failures from the preceding PR run: shared basket CSS/research-screener fingerprint assertions and HK/Canada self-binding browser-receipt assertions all pass on the integrated Lane A tree.
+- Exact integrated owning suite: `125 passed, 1 deselected`; Python compile and `git diff --check` pass. The deselection is only the repository-global validated-claim gate.
+- Exact former-red-gate discriminator run: four assertions pass — basket stylesheet fingerprint, research-screener fresh bake, and both HK/Canada committed browser-receipt cases.
+- Agent OS exact integrated tree validation: `1158 records (69 workstreams, 329 decisions, 280 discoveries, 480 handoffs) — 0 errors, 62 warnings`.
+- Repository-global `python3 -m scripts.check_validated_claims` still reports 38 unearned-claim violations. Every reported path is outside Lane A-owned semantic/test/handoff paths; this shared gate is not repaired by this lane.
+- Real-path proof used a detached, non-branch proof checkout at the exact `40ed5668...` tree. `engine.neuralweb.theme_thesis.run_stage` compiled 18 theses with zero stale legs; `scripts.build_state_of_themes` rendered `state_of_themes.html` and emitted `theme_lanes.json` from the same tracked inputs.
+- On that path, `ai_semi_f1` is `ARMED / CONSECUTIVE_THRESHOLD_NOT_MET` over distinct dated revision-breadth observations `2026-09-16=0.654` and `2026-09-18=0.497`.
+- `ai_semi_f2` is `ARMED / WATCH_WITHOUT_INDEPENDENT_DETERIORATION` with current `WATCH`, current `bottleneck_band=NEUTRAL`, and prior `RE-RATING` dated `2026-08-04`.
+- The same build emits the AI-semiconductor compact consumer with thesis `NOT_DETECTED`, entry/leadership `UNAVAILABLE` until owner joins arrive, evidence identity fail-closed when owner identity is absent, and `may_rank=false`, `may_gate=false`, `may_size=false`, `may_escalate=false`, `may_trade=false`.
+- Durable real-path receipt: `/Volumes/Mastermind/agent-evidence/theme-intelligence-a-integration-and-semantic-repair-20260920/realpath-proof-40ed5668.json`, SHA-256 `e8ab09489c431cbfa9855ba04d2e2f86af003919375b9e8385cb5e5d07010d75`.
+- Durable qualification log: `/Volumes/Mastermind/agent-evidence/theme-intelligence-a-integration-and-semantic-repair-20260920/current-main-requalification-40ed5668.log`.
+- The latest independent APPROVE applies to PR head `aaa69397...`; it does not automatically accept the later consumer-evidence-identity/current-main integration delta. Exact-head re-review is required after push.
+- Publication and deployed-browser acceptance remain unproven and separate. Until the incumbent publisher produces an authorized deployment/deployed-byte/browser receipt, the source capability remains `BUILT_NOT_PROVEN`.
+
+Next action: commit this receipt, push the same carrier only if the remote PR head still equals `aaa69397...`, request exact-head Lane F reacceptance, and let current CI test the new merge tree. Do not force-push, create another carrier, or absorb the 38 unrelated validated-claim violations into Lane A.
