@@ -340,11 +340,14 @@ def _repository_checks(
         line for line in agentos["output"].splitlines()
         if "agentos-unparseable" in line and "THEME-INTELLIGENCE-LANE-C" in line
     ]
+    agentos_ok = agentos["exit_code"] == 0 and not unparseable
+    if agentos_ok:
+        positive.add("AGENTOS_VALIDATION")
     if agentos["exit_code"] != 0 and unparseable:
         blockers.add("AGENTOS_HANDOFF_UNPARSEABLE")
     details["agentos_validation"] = {
         "exit_code": agentos["exit_code"],
-        "status": "FAIL" if unparseable else "PASS",
+        "status": "PASS" if agentos_ok else "FAIL",
         "errors": unparseable,
         "summary": next(
             (line for line in reversed(agentos["output"].splitlines()) if line.startswith("agentos:")),
