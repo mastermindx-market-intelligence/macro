@@ -225,8 +225,11 @@
    .ud-watch-details so the <summary> disclosure row takes over (CSS cannot override
    the UA `:not([open]) > :not(summary) { display: none }` rule — the DOM state is
    the only lawful fix). Desktop (>640px) keeps the `open` so the three cards paint
-   at 1440. State selection via JS is permitted; styling stays in CSS. #}
-<script>try{if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}}catch(e){}</script>
+   at 1440. State selection via JS is permitted; styling stays in CSS.
+   Must register the listener, not run synchronously: this <script> lives in
+   <head>, the <details> lives in <body>, and a synchronous querySelectorAll
+   returns empty. DOMContentLoaded fires after the body parses. #}
+<script>try{document.addEventListener('DOMContentLoaded',function(){if(window.matchMedia&&window.matchMedia('(max-width:640px)').matches){document.querySelectorAll('body.page-macro .ud-watch-details[open]').forEach(function(d){d.removeAttribute('open');});}});}catch(e){}</script>
 <link rel="stylesheet" href="tier_preview.css">
 {% if mode != 'stocks' %}
 <link rel="preload" href="/fonts/InterDisplay-600.woff2" as="font" type="font/woff2" crossorigin>
