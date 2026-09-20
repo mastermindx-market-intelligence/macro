@@ -126,6 +126,25 @@ def main():
                 assert page.locator('#ac-detail .acx-next-action').inner_text() == theme_brief['next_action']
                 assert theme_brief['evidence_label'] in text
             report['checks'].append('Five theme-change families render source-bound model limits, reassessment and current-page actions')
+            rotation_families = {
+                'rotation.rotation_fading', 'rotation.rotation_turn_down',
+                'rotation.rotation_turn_up',
+            }
+            rotation_ids = {
+                brief.get('family'): id_ for id_, brief in payload['explorer']['briefs'].items()
+                if brief.get('family') in rotation_families
+            }
+            assert set(rotation_ids) == rotation_families
+            for family in sorted(rotation_families):
+                rotation_id = rotation_ids[family]
+                rotation_brief = payload['explorer']['briefs'][rotation_id]
+                page.goto(url + '#view=explore&id=' + rotation_id, wait_until='domcontentloaded')
+                assert page.locator('#ac-detail').evaluate('(d) => d.open')
+                text = page.locator('#ac-detail').inner_text()
+                assert rotation_brief['limitation'] in text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == rotation_brief['next_action']
+                assert rotation_brief['evidence_label'] in text
+            report['checks'].append('Three rotation rollover families render breadth-aware limits and current-panel reassessment')
             page.click('#ac-close')
             assert not page.locator('#ac-detail').evaluate('(d) => d.open')
             page.click('[data-view="history"]')

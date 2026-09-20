@@ -68,6 +68,25 @@ _ROTATION_EMERGING = re.compile(
     r'([+-]?[0-9]+(?:\.[0-9]+)?)\)\. An early rotate-in candidate '
     r'— context, not a buy list\.$'
 )
+
+_ROTATION_FADING = re.compile(
+    r'^(.+?) was leading but momentum has rolled over to weakening '
+    r'\(1W ([+-]?[0-9]+(?:\.[0-9]+)?)%, 3M ([+-]?[0-9]+(?:\.[0-9]+)?)%; '
+    r'mom ([+-]?[0-9]+(?:\.[0-9]+)?)\)\. A rotate-out / take-profit watch '
+    r'— context only\.$'
+)
+_ROTATION_TURN_DOWN = re.compile(
+    r"^(.+?) (ran|built) ([0-9]+(?:\.[0-9]+)?)% (off its 1-year low|of lead over the market) "
+    r"and has now rolled over on confirmed sessions — this week ([+-]?[0-9]+(?:\.[0-9]+)?)% "
+    r"vs the market's ([+-]?[0-9]+(?:\.[0-9]+)?)%/wk, ([0-9]{1,3})% of members rolling "
+    r"with it( · carried by one name)?\. Context, not a sell list\.$"
+)
+_ROTATION_TURN_UP = re.compile(
+    r"^(.+?) (fell|gave up) ([0-9]+(?:\.[0-9]+)?)% (from its 1-year high|of its lead over the market) "
+    r"and has now turned up on confirmed sessions — this week ([+-]?[0-9]+(?:\.[0-9]+)?)% "
+    r"vs the market's ([+-]?[0-9]+(?:\.[0-9]+)?)%/wk, ([0-9]{1,3})% of members turning "
+    r"with it( · carried by one name)?\. Context, not a buy list\.$"
+)
 _VECTOR_IMPULSE_DOWN = re.compile(
     r'^DVOL intraday-range spike \(unusually large versus its own history\) '
     r'— the options market is repricing risk\. BTC \$([0-9][0-9,]*)\.$'
@@ -151,6 +170,128 @@ def _age_days(row: dict) -> int | None:
     except (TypeError, ValueError):
         return None
     return value if value >= 0 else None
+
+
+def _rotation_fading_brief(row: dict, detail: str, detail_zh: str,
+                             age: int | None, brief: dict) -> dict | None:
+    match = _ROTATION_FADING.fullmatch(detail)
+    if row.get('source') != 'rotation' or row.get('type') != 'rotation_fading' or not match:
+        return None
+    subject, one_week, three_month, momentum = match.groups()
+    age_limit = '' if age is None or age <= 2 else (
+        f' This event is {age} days old; recheck the current quadrant.')
+    age_limit_zh = '' if age is None or age <= 2 else (
+        f' 该事件已过去 {age} 天；请复核当前象限。')
+    brief.update({
+        'status': 'supported', 'family': 'rotation.rotation_fading',
+        'change': detail, 'change_zh': detail_zh,
+        'implication': (
+            f'{subject} moved from leadership into weakening momentum, with 1W '
+            f'{one_week}%, 3M {three_month}% and momentum {momentum}; this is a '
+            'rotate-out research watch.'),
+        'implication_zh': (
+            f'{subject} 从领先转入动量走弱；1周 {one_week}%，3月 {three_month}%，'
+            f'动量 {momentum}。这是轮出研究观察。'),
+        'limitation': (
+            'This is context, not a take-profit instruction, sell list, calibrated '
+            'probability or separately backtested timing signal. The return horizons '
+            f'and quadrant are descriptive snapshots that can reverse.{age_limit}'),
+        'limitation_zh': (
+            '这只是背景，并非止盈指令、卖出清单、校准概率或经过单独回测的择时信号。'
+            f'周期收益与象限只是可能反转的描述性快照。{age_limit_zh}'),
+        'next_action': (
+            f'Open the current rotation panel and verify {subject} still sits in weakening, '
+            'momentum remains negative and its relative-performance profile has not recovered.'),
+        'next_action_zh': (
+            f'打开当前轮动面板，确认 {subject} 仍处于走弱、动量仍为负且相对表现尚未恢复。'),
+        'next_action_label': 'Recheck rollover', 'next_action_label_zh': '复核走弱',
+        'reassessment': (
+            'Change the read if the quadrant leaves weakening, momentum recovers or '
+            'relative performance resumes leadership.'),
+        'reassessment_zh': '若象限退出走弱、动量恢复或相对表现重新领先，则改变判断。',
+        'evidence_label': 'Open current rotation panel',
+        'evidence_label_zh': '打开当前轮动面板',
+    })
+    return brief
+
+
+def _rotation_turn_brief(row: dict, detail: str, detail_zh: str,
+                          age: int | None, brief: dict) -> dict | None:
+    type_ = str(row.get('type') or '')
+    up = type_ == 'rotation_turn_up'
+    if row.get('source') != 'rotation' or type_ not in {'rotation_turn_down', 'rotation_turn_up'}:
+        return None
+    match = (_ROTATION_TURN_UP if up else _ROTATION_TURN_DOWN).fullmatch(detail)
+    if not match:
+        return None
+    subject, verb, magnitude, basis, one_week, market_week, breadth_text, concentration = match.groups()
+    valid_basis = ((up and verb == 'fell' and basis == 'from its 1-year high') or
+                   (up and verb == 'gave up' and basis == 'of its lead over the market') or
+                   (not up and verb == 'ran' and basis == 'off its 1-year low') or
+                   (not up and verb == 'built' and basis == 'of lead over the market'))
+    if not valid_basis:
+        return None
+    breadth = int(breadth_text)
+    leadership_path = verb in {'gave up', 'built'}
+    path = 'leadership path' if leadership_path else 'price path'
+    path_zh = '领先路径' if leadership_path else '价格路径'
+    concentrated = bool(concentration)
+    if concentrated:
+        participation = (
+            f' {breadth}% breadth is concentrated and carried by one name; member breadth '
+            'is not independent confirmation.')
+        participation_zh = (
+            f' {breadth}% 的宽度较集中，且主要由单一成分股带动；成分股宽度并非独立确认。')
+    else:
+        participation = (
+            f' {breadth}% member breadth is descriptive participation, not independent confirmation.')
+        participation_zh = (
+            f' {breadth}% 的成分股宽度是描述性参与度，并非独立确认。')
+    age_limit = '' if age is None or age <= 2 else (
+        f' This event is {age} days old; recheck the current turn state.')
+    age_limit_zh = '' if age is None or age <= 2 else (
+        f' 该事件已过去 {age} 天；请复核当前转向状态。')
+    direction = 'up' if up else 'down'
+    direction_zh = '上行' if up else '下行'
+    verb_phrase = 'turned up' if up else 'rolled over'
+    members_phrase = 'turning' if up else 'rolling'
+    list_phrase = 'buy' if up else 'sell'
+    relative = 'leads' if up else 'lags'
+    brief.update({
+        'status': 'supported', 'family': f'rotation.rotation_turn_{direction}',
+        'change': detail, 'change_zh': detail_zh,
+        'implication': (
+            f'{subject} {verb_phrase} on confirmed sessions through its {path}; this week '
+            f'{one_week}% versus the market {market_week}%/wk, with {breadth}% of members '
+            f'{members_phrase} with it.'),
+        'implication_zh': (
+            f'{subject} 通过其{path_zh}连续确认转为{direction_zh}；本周 {one_week}%，市场 '
+            f'{market_week}%/周，{breadth}% 成分股同步转向。'),
+        'limitation': (
+            f'Confirmed sessions establish a repeated state transition, not future return or '
+            f'a {list_phrase} instruction. This is context, not a {list_phrase} list, calibrated '
+            f'probability or separately backtested timing signal.{participation}{age_limit}'),
+        'limitation_zh': (
+            f'连续确认只表明状态反复出现，并不代表未来收益或{("买入" if up else "卖出")}指令。'
+            f'这只是背景，不是{("买入" if up else "卖出")}清单、校准概率或经过单独回测的择时信号。'
+            f'{participation_zh}{age_limit_zh}'),
+        'next_action': (
+            f'Open the current rotation panel and verify {subject} remains turned {direction}, '
+            f'its weekly relative move still {relative} and member breadth remains near {breadth}%.'),
+        'next_action_zh': (
+            f'打开当前轮动面板，确认 {subject} 仍为{direction_zh}、本周相对表现继续'
+            f'{("领先" if up else "落后")}且成分股宽度仍接近 {breadth}%。'),
+        'next_action_label': f'Recheck turn {direction}',
+        'next_action_label_zh': f'复核{direction_zh}转向',
+        'reassessment': (
+            f'Change the read if the turn state reverses, weekly relative performance no longer '
+            f'{relative}, or member participation collapses.'),
+        'reassessment_zh': (
+            f'若转向状态反转、本周相对表现不再{("领先" if up else "落后")}或成分股参与度崩解，则改变判断。'),
+        'evidence_label': 'Open current rotation panel',
+        'evidence_label_zh': '打开当前轮动面板',
+    })
+    return brief
 
 
 def _fallback_brief(row: dict) -> dict:
@@ -459,6 +600,13 @@ def build_alert_brief(row: dict) -> dict:
             'evidence_label_zh': '打开当前轮动面板',
         })
         return brief
+
+    rotation_fading = _rotation_fading_brief(row, detail, detail_zh, age, brief)
+    if rotation_fading is not None:
+        return rotation_fading
+    rotation_turn = _rotation_turn_brief(row, detail, detail_zh, age, brief)
+    if rotation_turn is not None:
+        return rotation_turn
 
     risk_headline = _INSTRUMENT_RISK_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
     risk_detail = _INSTRUMENT_RISK_DETAIL.fullmatch(detail)

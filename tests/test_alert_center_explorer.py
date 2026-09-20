@@ -595,3 +595,83 @@ def test_theme_family_specific_copy_abstains_on_unsupported_shapes():
     briefs = project(rows)['briefs']
     assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
+def test_rotation_rollover_and_confirmed_turns_get_breadth_aware_briefs():
+    fading = signal('rotation-fading', source='rotation', type_='rotation_fading', asset='smartwatches')
+    fading.update({
+        'tier': 'context', 'age_days': 2,
+        'detail': 'Smartwatches was leading but momentum has rolled over to weakening (1W +0.1%, 3M +7.8%; mom -0.0). A rotate-out / take-profit watch — context only.',
+        'detail_zh': 'Smartwatches 此前领先，但动量已转弱（1周 +0.1%，3月 +7.8%；动量 -0.0）。轮出/止盈观察 — 仅作参考。',
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    turn_down = signal('rotation-down', source='rotation', type_='rotation_turn_down', asset='materials')
+    turn_down.update({
+        'tier': 'context', 'age_days': 2,
+        'detail': "Materials ran 39.6% off its 1-year low and has now rolled over on confirmed sessions — this week -2.4% vs the market's -0.7%/wk, 62% of members rolling with it. Context, not a sell list.",
+        'detail_zh': 'Materials 自一年低点上涨 39.6%，现已连续多个交易日确认转为下行——本周 -2.4%，市场为 -0.7%/周，62% 成分股同步走弱。仅作参考，非卖出清单。',
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    turn_up = signal('rotation-up', source='rotation', type_='rotation_turn_up', asset='batteries')
+    turn_up.update({
+        'tier': 'context', 'age_days': 11,
+        'detail': "Batteries fell 24.7% from its 1-year high and has now turned up on confirmed sessions — this week +8.3% vs the market's -0.3%/wk, 73% of members turning with it. Context, not a buy list.",
+        'detail_zh': 'Batteries 自一年高点回落 24.7%，现已连续多个交易日确认转为上行——本周 +8.3%，市场为 -0.3%/周，73% 成分股同步转向。仅作参考，非买入清单。',
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    rows = [fading, turn_down, turn_up]
+    before = deepcopy(rows)
+    briefs = project(rows)['briefs']
+    assert rows == before
+    values = [briefs[row['alert_id']] for row in rows]
+    assert [brief['family'] for brief in values] == [
+        'rotation.rotation_fading', 'rotation.rotation_turn_down', 'rotation.rotation_turn_up']
+    assert all(brief['status'] == 'supported' for brief in values)
+    assert all(brief['attention'] == 'for_awareness' for brief in values)
+    assert [brief['next_action_label'] for brief in values] == [
+        'Recheck rollover', 'Recheck turn down', 'Recheck turn up']
+    assert 'not a take-profit instruction' in values[0]['limitation']
+    assert '62% of members' in values[1]['implication']
+    assert 'not a sell list' in values[1]['limitation']
+    assert '73% of members' in values[2]['implication']
+    assert 'not a buy list' in values[2]['limitation']
+    assert '11 days old' in values[2]['limitation']
+    assert all(brief['evidence_scope'] == 'current_panel_not_historical_archive'
+               for brief in values)
+
+
+def test_rotation_turn_brief_discloses_concentration_and_leadership_basis():
+    down = signal('rotation-down-concentrated', source='rotation', type_='rotation_turn_down', asset='software')
+    down.update({
+        'tier': 'context', 'age_days': 1,
+        'detail': "Software built 18.5% of lead over the market and has now rolled over on confirmed sessions — this week -3.2% vs the market's -0.8%/wk, 25% of members rolling with it · carried by one name. Context, not a sell list.",
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    up = signal('rotation-up-lead', source='rotation', type_='rotation_turn_up', asset='crop_inputs')
+    up.update({
+        'tier': 'context', 'age_days': 1,
+        'detail': "Crop Inputs gave up 16.0% of its lead over the market and has now turned up on confirmed sessions — this week +6.4% vs the market's -1.2%/wk, 88% of members turning with it. Context, not a buy list.",
+        'link': 'subsector_rotation.html#rotation-app',
+        'validation': {'verdict': 'documented'},
+    })
+    d, u = [project([row])['briefs'][row['alert_id']] for row in (down, up)]
+    assert 'leadership path' in d['implication'] and 'leadership path' in u['implication']
+    assert 'carried by one name' in d['limitation']
+    assert '25% breadth is concentrated' in d['limitation']
+    assert '88% of members' in u['implication']
+
+
+def test_rotation_family_specific_copy_abstains_on_unsupported_shapes():
+    rows=[]
+    for type_ in ('rotation_fading','rotation_turn_down','rotation_turn_up'):
+        row=signal(f'bad-{type_}',source='rotation',type_=type_,asset='rotation')
+        row.update({'detail':f'{type_} changed in an unsupported shape.',
+                    'link':'subsector_rotation.html#rotation-app'})
+        rows.append(row)
+    briefs=project(rows)['briefs']
+    assert all(briefs[row['alert_id']]['status']=='fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
