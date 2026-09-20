@@ -104,3 +104,15 @@ This amendment does **not** strengthen the parent program to PROVEN_LIVE. #7335 
 
 The September 12 prohibition on replaying the blocked MAS-141 mutation remains unchanged.
 
+
+## 2026-09-20 release reconciliation
+
+This section supersedes only the release-status statements in the dated 2026-09-19 amendment. The organization decision, 130-row denominator, A/B ownership, single-ledger rule, blocked MAS-141 write, and no-duplicate-control-plane rules remain unchanged.
+
+- Macro **#7335** remains the canonical 130-row convergence merge at `af617506e59c258c5786bab926a34b35b9ab2deb`. Its exact semantic-head fences ultimately completed SUCCESS, while exact-head CI run `35433097717` ultimately completed **FAILURE**. Do not rewrite that historical run green. The resulting stale reconciliation-guard debt was later repaired on main by **#7407**, merged as `134c041bc9c2dc11918b05e68ff7796886f7f13d`.
+- Macro **#7390** is no longer pending. The reduced same-carrier correction merged as `102abb1b7d4fa34db6becb6429671abf17a8e221` after exact-head fences and CI both completed SUCCESS and independent exact-head approval. Current-main readback confirms **MO-PAID-039 remains BUILT_NOT_PROVEN**: the existing measurement builder is intentional and active; the residual is authenticated admin Calibration Lab implication-card proof plus repair of the public Intelligence Hub link to the intentionally blocked public `/measurement.html` route.
+- Current canonical F00C census remains **130 rows = 21 PROVEN_LIVE, 23 BUILT_NOT_PROVEN, 37 PARTIAL, 7 SPEC_ONLY, 42 NOT_BUILT**. #7407/#7390 repaired guard and evidence truth; they did not manufacture a capability-state promotion.
+- Macro **#7351** is still the bounded UK-policy activation carrier. Its reviewed activation semantics remain unchanged, and the same carrier has been integration-refreshed to current main as head `83345bba6c41132d34c34edb11659accb4dbf5f9`. Fresh exact-head fences are green and full CI is running. Merge will establish BUILT/ARMED only; MO-PAID-023 remains BUILT_NOT_PROVEN until a post-merge canonical White House sentinel execution emits typed non-`gate_off` UK state and Policy Watch reads it back with context-only/GOV.UK provenance.
+- This reconciliation used protected Sol procedure from `mastermindx-market-intelligence/Mastermind@db4ef921c1e9a1abd790197d2719ba5316fbf99e` (Skillpack 1.0.1 / bootstrap major 1).
+
+The parent MarketOntology program remains **PARTIAL**. Signed-in proof debt, unresolved product consumers, current Executive linkage, and automatic Agent OS -> Linear refresh remain separate obligations. This records update does not create or imply those capabilities.
