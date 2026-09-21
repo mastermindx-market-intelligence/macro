@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T10:17:20.612694+00:00",
-  "count": 2562,
+  "generated_at": "2026-09-21T10:47:34.978707+00:00",
+  "count": 2563,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -412,6 +412,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-005k2njodqo-6def24",
+      "title": "GS Coppersmith US EQUITIES tougher internals 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:05Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
