@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T17:33:15.773531+00:00",
-  "count": 2583,
+  "generated_at": "2026-09-21T17:48:19.225367+00:00",
+  "count": 2584,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-zeihs5chw4x-3736ec",
+      "title": "Wolfe Research The Wolfe Power Trip",
+      "institution": "Nuclear",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T17:21:23Z",
+      "summary_points": [
+        "Hyperscaler Demand & Offtake: Hyperscaler contracts (TLN/AMZN, VST/META) drive AI-powered electricity demand; PJM central procurement starts 9/30, but IRAS stakeholder opposition risks legal delays.",
+        "FERC Regulatory Timeline: FERC likely approves RBP with minimal changes (9/29 deadline), but PJM’s failed RBA proposal and White House push for emergency hyperscaler procurement create near-term regulatory uncertainty.",
+        "Debt Structure & Rate Sensitivity: NRG most exposed to rate hikes (4x leverage, 3.4% EPS impact per 100bps), while VST/CEG have low variable debt (6%) and swaps mitigating exposure.",
+        "Valuation Divergence: CEG trading at 23.5x P/E vs. sector 17.6x (overvalued), NRG at 12.9x (undervalued); sector EV/EBITDA (8.2x) near 2-year highs signaling potential overvaluation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 39,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-qis7gidmnxv-bf0219",
       "title": "JPM US Market Intelligence | Morning Briefing",
