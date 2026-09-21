@@ -716,6 +716,8 @@ def test_ths_membership_doc_generation_closes_when_pit_edges_arrive(tree):
         era="observed", computed_at="2026-08-12T00:00:00Z")
     assert {c["edge_id"] for c in closings} == {e["edge_id"] for e in prior}
     assert all(c["valid_to"] == pit_birth for c in closings)
+    assert all(c["evidence_refs"] == ["ev:deadbeefdeadbeef"] for c in closings), (
+        "parquet-backed evidence refs must stay flat identifiers, never one stringified array")
 
     computed = list(view.edges) + closings
     delta = materialize.changed_edges(computed, store.read_edges())

@@ -92,7 +92,7 @@ def test_b2_site_copy_matches_template_copy():
     assert a == b, "paired plain-copy asset drifted — run check_template_site_sync --fix"
 
 
-# ─────────────────────────── B3 — false "screened tonight" total ──────────
+# ─────────────────────────── B3 — honest dated-screen total ───────────────
 
 def test_b3_candidates_total_quotes_gate_total_not_the_sliced_board():
     rows = _stage_rows({"live": 2, "setting_up": 2, "ran": 2, "basing": 1, "blocked": 3})
@@ -101,11 +101,11 @@ def test_b3_candidates_total_quotes_gate_total_not_the_sliced_board():
     assert gate is not None and gate["total"] == 10
     html = _render_stocks({"us_standouts": shell_su, "gate": gate,
                             "us_prophet_book": _prophet_book(plans=[])})
-    assert "10</b> screened tonight" in html, (
-        "the gated shell's own board sub-header already quotes gate.total for the "
-        "identical honest-total problem — the Candidates total must match, not "
-        "the 3-row preview slice")
-    assert "3</b> screened tonight" not in html
+    assert "10</b> screened · date unavailable" in html, (
+        "the Candidates total must quote gate.total and disclose that this fixture "
+        "carries no source date — never substitute the page build clock")
+    assert "3</b> screened ·" not in html
+    assert "screened tonight" not in html
 
 
 def test_b3_candidate_shelf_pills_use_gate_stage_counts_when_gated():
@@ -419,7 +419,7 @@ def test_s7_wall_copy_says_plan_rows_not_names():
     book = _prophet_book(plans=plans)
     shell_book, life_gate, _locked = bs._split_us_prophet_board(book, 3, gated=True)
     html = _render_stocks({"us_prophet_book": shell_book, "life_gate": life_gate})
-    assert "plan rows on tonight's board" in html
+    assert "plan rows in the plan book" in html
     assert "more names on tonight's board" not in html
     assert "plan rows. Sign in" in html
     assert "names. Sign in" not in html
