@@ -1492,6 +1492,48 @@ def test_gold_premium_quality_audit_rechecks_post_normalization_tree_before_stag
     assert 'China gold premium final render audit' in text
 
 
+def test_gold_premium_rebuilds_and_reaudits_when_rebase_changes_material_inputs():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[1]
+    text = (repo / "scripts" / "ci" / "daily_engine_commit_outputs.sh").read_text()
+
+    assert "GOLD_MATERIAL_PATHS=(" in text
+    assert "data/gold_china_basis/sge_au9999.parquet" in text
+    assert "data/gold_china_basis/xaucny_spot.parquet" in text
+    assert "gold_material_fingerprint()" in text
+    assert "GOLD_FOLLOWUP_PATHS=(" in text
+    assert "data/commodity/latest.json" in text
+    assert "data/quality/china_gold_premium.json" in text
+    assert "site/commodities.html" in text
+
+    attempt = text[text.index("while push_attempt; do") :]
+    before = "gold_material_before_rebase=$(gold_material_fingerprint)"
+    fetch = "push_fetch_main_for_rebase"
+    rebase = "git rebase --autostash -X theirs origin/main"
+    after = "gold_material_after_rebase=$(gold_material_fingerprint)"
+    changed = 'if [ "$gold_material_before_rebase" != "$gold_material_after_rebase" ]; then'
+
+    assert attempt.index(before) < attempt.index(fetch) < attempt.index(rebase)
+    post_rebase = attempt[attempt.index(rebase) :]
+    assert post_rebase.index(after) < post_rebase.index(changed)
+
+    rebuild = "python -m scripts.build_commodities"
+    normalize = "python -m scripts.inject_data_base"
+    audit = "python -m scripts.audit_china_gold_premium --strict-render"
+    stage_loop = 'for path in "${GOLD_FOLLOWUP_PATHS[@]}"; do'
+    stage = 'git add -A -- "$path"'
+    clean = 'push_staged_clean site/ templates/ "${GOLD_FOLLOWUP_PATHS[@]}"'
+    push = "if push_do; then"
+
+    assert post_rebase.index(changed) < post_rebase.index(rebuild)
+    assert post_rebase.index(rebuild) < post_rebase.index(normalize)
+    assert post_rebase.index(normalize) < post_rebase.index(audit)
+    assert post_rebase.index(audit) < post_rebase.index(stage_loop)
+    assert post_rebase.index(stage_loop) < post_rebase.index(stage)
+    assert post_rebase.index(stage) < post_rebase.index(clean) < post_rebase.index(push)
+
+
 def test_gold_basis_exact_massive_endpoint_probe_is_code_gated():
     from scripts import massive_entitlement_probe as mep
 
