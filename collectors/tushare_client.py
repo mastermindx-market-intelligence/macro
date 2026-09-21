@@ -19,10 +19,11 @@ dependency, matching this repo's direct-Eastmoney-JSON convention. Notes:
     whole-market call per endpoint per build, so the throttle mostly matters for the few
     per-window loops.
   * Best-effort: any network / auth / parse failure returns ``None`` (logged) — never raises into
-    a build. An AUTH rejection additionally LATCHES into ``last_auth_error()`` so the one caller
-    that can act on it (``collectors/china_tushare``) can distinguish "the vendor is refusing our
-    credential" from "there were no rows"; degrading both to ``None`` is what kept the plane
-    silently dark from 2026-07-27 to 2026-08-06.
+    a build. AUTH rejections latch into ``last_auth_error()`` and failures before any HTTP response
+    latch into ``last_transport_error()`` so ``collectors/china_tushare`` can distinguish a rejected
+    credential from a runner DNS/network/TLS outage and from a genuinely empty response. Collapsing
+    all three to ``None`` is what kept the plane silently dark from 2026-07-27 to 2026-08-06 and
+    misdiagnosed the 2026-09-10→09-19 DNS outage as a possible entitlement problem.
 
 See research/TUSHARE_INTEGRATION.md for the tier, endpoint→积分 map, and the validate-before-score
 roadmap (every new premium feed lands display-only until china_validation proves it).
@@ -64,6 +65,12 @@ _AUTH_CODES = frozenset({40101})
 # the next code==0 response, so a re-issued token self-clears with no restart.
 _auth_error: dict | None = None
 
+# Latest failure before the vendor returned any HTTP response, or None. This is deliberately
+# separate from _auth_error: a DNS/connection/TLS outage says nothing about the credential or
+# account tier. Cleared as soon as requests.post returns a response — even an HTTP/vendor error
+# proves the runner reached the vendor transport.
+_transport_error: dict | None = None
+
 
 def last_auth_error() -> "dict | None":
     """The most recent vendor auth rejection — ``{api_name, code, msg, ts}`` — or None.
@@ -78,6 +85,43 @@ def last_auth_error() -> "dict | None":
     A copy is returned so a caller cannot mutate the latch.
     """
     return dict(_auth_error) if _auth_error else None
+
+
+def last_transport_error() -> "dict | None":
+    """Latest pre-response transport failure, or None, as a defensive copy.
+
+    Shape: ``{api_name, kind, exception, ts}``. No exception message, URL parameters,
+    request body, token, or vendor body is retained. ``kind`` is one of
+    ``connect_timeout``, ``read_timeout``, ``tls``, ``connection``, or ``timeout``.
+    Any HTTP response clears the latch because DNS/TCP/TLS have then succeeded.
+    """
+    return dict(_transport_error) if _transport_error else None
+
+
+def clear_transport_error() -> None:
+    """Start a new caller-owned diagnostic window without touching auth state.
+
+    The client is shared by multiple China adapters in one collect process. A consumer
+    diagnosing its own all-zero pass must not inherit a ConnectionError from an earlier
+    adapter, so ``ChinaTushareAdapter.fetch`` clears this latch before its module loop.
+    """
+    global _transport_error
+    _transport_error = None
+
+
+def _transport_kind(exc: BaseException) -> str | None:
+    """Classify requests failures that occurred before any HTTP response."""
+    if isinstance(exc, requests.exceptions.ConnectTimeout):
+        return "connect_timeout"
+    if isinstance(exc, requests.exceptions.ReadTimeout):
+        return "read_timeout"
+    if isinstance(exc, requests.exceptions.SSLError):
+        return "tls"
+    if isinstance(exc, requests.exceptions.ConnectionError):
+        return "connection"
+    if isinstance(exc, requests.exceptions.Timeout):
+        return "timeout"
+    return None
 
 
 def token() -> str | None:
@@ -126,7 +170,7 @@ def query(api_name: str, fields: str = "", *, _retries: int = 2,
     wants the frame is unaffected; the one caller that can raise on it (china_tushare) finally
     can. Any code==0 response clears the latch, so recovery needs no restart.
     """
-    global _auth_error
+    global _auth_error, _transport_error
     tok = token()
     if not tok:
         return None
@@ -143,15 +187,32 @@ def query(api_name: str, fields: str = "", *, _retries: int = 2,
                 timeout=_TIMEOUT,
                 allow_redirects=False,
             )
+        except Exception as e:  # noqa: BLE001 — one bad call never breaks a build
+            # Exception text can echo a request. Retain only a safe class/category receipt.
+            kind = _transport_kind(e)
+            _transport_error = ({
+                "api_name": api_name,
+                "kind": kind,
+                "exception": type(e).__name__,
+                "ts": datetime.now(timezone.utc).isoformat(),
+            } if kind else None)
+            log.warning("tushare %s request failed (%s)", api_name, type(e).__name__)
+            return None
+
+        # Any HTTP response proves the runner's resolver/TCP/TLS route reached the vendor.
+        # Clear a prior transport miss BEFORE parsing/status handling so an HTTP 4xx, redirect,
+        # malformed body, or vendor code can never masquerade as a DNS/network outage.
+        _transport_error = None
+        try:
             if r.is_redirect or r.is_permanent_redirect or 300 <= r.status_code < 400:
                 log.warning("tushare %s refused HTTP redirect", api_name)
                 return None
             r.raise_for_status()
             d = r.json()
-        except Exception as e:  # noqa: BLE001 — network/parse: one bad call never breaks a build
+        except Exception as e:  # noqa: BLE001 — HTTP/parse: one bad call never breaks a build
             # Exception text and vendor response bodies are untrusted and can echo a request.
             # Log only the exception class so credential-bearing payload state cannot escape.
-            log.warning("tushare %s request failed (%s)", api_name, type(e).__name__)
+            log.warning("tushare %s response failed (%s)", api_name, type(e).__name__)
             return None
         if not isinstance(d, dict):
             return None
