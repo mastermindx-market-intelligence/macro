@@ -11256,6 +11256,10 @@ jobs:
       # and B4/ranking/trading authority stay absent. No new job or runner is added.
       - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
         run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
+      # Strategy-platform prerequisite for B4: one immutable, versioned, authority-false
+      # owner definition. This does not compute Availability or widen B1/B3 admission.
+      - name: prophet strategy definition owner projection (B4 prerequisite only)
+        run: python -m pytest tests/test_prophet_strategy_definition.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
