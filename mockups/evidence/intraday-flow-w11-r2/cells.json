@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-11T07:02:12Z",
+  "captured_at": "2026-09-21T10:08:51Z",
   "rig": "S1 overlay-column (Playwright, overlay hide, reduced-motion)",
   "overlays_hidden": [
     ".ift-aurora",
@@ -17,7 +17,7 @@
         "#cell-stamp",
         ".lens-pop.open"
       ],
-      "bytes": 43181
+      "bytes": 43169
     },
     "stamp-tip-light-en": {
       "file": "cells/stamp-tip-light-en.png",
@@ -27,7 +27,7 @@
         "#cell-stamp",
         ".lens-pop.open"
       ],
-      "bytes": 40698
+      "bytes": 42696
     },
     "control-dark-en": {
       "file": "cells/control-dark-en.png",
@@ -36,7 +36,7 @@
       "clip": [
         "#cell-control"
       ],
-      "bytes": 17170
+      "bytes": 17168
     },
     "control-light-en": {
       "file": "cells/control-light-en.png",
@@ -45,7 +45,7 @@
       "clip": [
         "#cell-control"
       ],
-      "bytes": 16167
+      "bytes": 16157
     },
     "tip-row-zh": {
       "file": "cells/tip-row-zh.png",
@@ -54,7 +54,7 @@
       "clip": [
         ".lens-pop.open"
       ],
-      "bytes": 20998
+      "bytes": 20710
     },
     "outage-stance-en": {
       "file": "cells/outage-stance-en.png",
