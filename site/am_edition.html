@@ -52,52 +52,10 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css">
-<style>
-  * { box-sizing:border-box; }
-  body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
-         "Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
-  @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1100px)/2)); } }
-  a { text-decoration:none; }
-  h1 { font-size:20px; margin:0; }
-  h2 { font-size:15px; margin:0 0 6px; }
-  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,10px);
-           padding:14px 16px; margin-bottom:14px; }
-  .muted { color:var(--muted); }
-  .sm { font-size:13px; }
-  .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
-          height:15px; border-radius:var(--r-pill,999px); border:1px solid var(--muted); color:var(--muted);
-          font-size:10px; font-weight:600; cursor:help; position:relative;
-          vertical-align:middle; margin-left:5px; }
-  .help .tip { display:none; position:absolute; top:140%; left:50%;
-               transform:translateX(-50%); width:330px; max-width:78vw; background:var(--panel);
-               border:1px solid var(--line); padding:9px 11px; border-radius:var(--r-ctl,8px); z-index:60;
-               font-size:12px; line-height:1.45; color:var(--text); font-weight:400;
-               box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
-               max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; }
-  .help:hover::before { content:''; position:absolute; top:100%; left:-30px; right:-30px; height:10px; }
-  .help:hover .tip { display:block; }
-  .ctx-strip { display:flex; flex-wrap:wrap; gap:10px 20px; align-items:flex-start; }
-  .ctx-chip { display:inline-flex; align-items:center; gap:5px; background:var(--panel);
-              border:1px solid var(--line); border-radius:var(--r-ctl,6px); padding:5px 10px;
-              font-size:13px; font-weight:600; }
-  .ctx-chip.regime { border-color:var(--link); color:var(--ink-link, var(--link)); }
-  .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
-  .ctx-label { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase;
-               letter-spacing:.05em; white-space:nowrap; }
-  .brief-link-panel { display:flex; align-items:center; gap:10px; padding:10px 16px; }
-  .brief-link { display:inline-flex; align-items:center; gap:6px; background:var(--panel);
-                border:1px solid var(--link); border-radius:var(--r-ctl,6px); padding:7px 14px;
-                font-size:13px; font-weight:600; color:var(--ink-link, var(--link));
-                text-decoration:none; }
-  .brief-link:hover { opacity:0.8; }
-  .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
-                 border-radius:var(--r-pill,999px); padding:3px 10px; font-size:12px; font-weight:600; }
-  .state-open   { border-color:var(--up); color:var(--up); }
-  .state-closed { border-color:var(--muted); color:var(--muted); }
-  .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
-  .feasibility-note { font-size:12px; color:var(--muted); margin-top:4px; }
-</style>
+<link rel="stylesheet" href="theme.css?v=62b49cc0">
+<link rel="stylesheet" href="assets/css/a00ea153.css?v=a00ea153">
+<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
+<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
 </head>
 <body>
 
@@ -107,7 +65,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css">
+    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
     <div class="nav-links">
 
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -321,10 +279,10 @@
     </div>
   </div>
 
-  <script src="logo_config.js"></script>
-  <script src="stock-logos.js"></script>
-  <script src="live_config.js"></script>
-  <script src="live.js"></script>
+  <script src="logo_config.js?v=b37d33d3" defer></script>
+  <script src="stock-logos.js?v=cc29be53" defer></script>
+  <script src="live_config.js?v=52943e92" defer></script>
+  <script src="live.js?v=3cb38601" defer></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -621,6 +579,6 @@
 </p>
 
 
-<script src="theme.js"></script>
+<script src="theme.js?v=a5808ca0" defer></script>
 </body>
 </html>
