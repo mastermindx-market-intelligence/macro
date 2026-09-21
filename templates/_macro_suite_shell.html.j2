@@ -423,6 +423,8 @@
       <p>{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</p>
       {%- if not head.vector.present and not head.vector.incomplete %}
       <p>{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</p>
+      {%- elif head.vector.incomplete %}
+      <p>{{ t('The vector is not drawn: one of its two components is missing this cycle.', '不绘制向量：本周期缺少其中一个分量。') }}</p>
       {%- endif %}
     {% endcall %}
   </div>
@@ -443,7 +445,7 @@
       <strong class="mq-axis-value">{{ bl(head.vector.move) }}</strong>
       <span class="mq-axis-direction">{{ t('Change since the last reading', '相对上次读数的变化') }}</span>
       {% call mc_details() %}
-        <p>{{ t('Numeric move since the last reading:', '相对上次读数的数值位移：') }} Δx {{ head.vector.dx }} · Δy {{ head.vector.dy }}</p>
+        <p>{{ t('Numeric move since the last reading:', '相对上次读数的数值位移：') }} Δx {{ head.vector.dx_ascii }} · Δy {{ head.vector.dy_ascii }}</p>
       {% endcall %}
       {%- else %}
       <strong class="mq-axis-value">{{ absent(head.vector.absence) }}</strong>
@@ -558,6 +560,8 @@
     <p>{{ t('Movement since the prior accepted print', '相对上一已接受读数的位移') }}</p>
     {%- if not view.headline.vector.present and not view.headline.vector.incomplete %}
     <p>{{ t('No vector is drawn: there is no method-comparable prior print to move from.', '不绘制向量：不存在方法可比的历史读数作为起点。') }}</p>
+    {%- elif view.headline.vector.incomplete %}
+    <p>{{ t('The vector is not drawn: one of its two components is missing this cycle.', '不绘制向量：本周期缺少其中一个分量。') }}</p>
     {%- endif %}
   {% endcall %}
 

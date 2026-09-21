@@ -23,8 +23,8 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# Unconditional insert at position 0 — a conditional pin is not a pin.
+sys.path.insert(0, str(ROOT))
 SITE = ROOT / "site"
 DATA = SITE / "macrodata"
 EVIDENCE = ROOT / "mockups" / "evidence" / "macro-command-p3"

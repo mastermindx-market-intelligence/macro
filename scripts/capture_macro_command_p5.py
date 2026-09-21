@@ -21,8 +21,8 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# Unconditional insert at position 0 — a conditional pin is not a pin.
+sys.path.insert(0, str(ROOT))
 
 from scripts.capture_macro_command_p3 import (  # noqa: E402
     RAIL_VIEWPORT_JS,

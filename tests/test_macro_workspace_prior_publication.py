@@ -36,6 +36,7 @@ from engine.market_os.macro_workspaces.publication_prior import (  # noqa: E402
 )
 from lib import macro_suite_labels as L  # noqa: E402
 from lib import macro_suite_view as V  # noqa: E402
+from scripts.build_macro_suite_pages import register_suite_filters  # noqa: E402
 
 _NO_EARLIER_EN = "No earlier reading available to compare yet."
 _NO_EARLIER_ZH = "暂无可比较的更早读数。"
@@ -339,6 +340,7 @@ def test_shell_null_vector_slot_prints_no_earlier_reading_both_locales() -> None
     )
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")),
                       autoescape=True, undefined=StrictUndefined)
+    register_suite_filters(env)
     html = env.from_string(
         '{% import "_macro_suite_shell.html.j2" as shell %}'
         "{{ shell.headline_band(view) }}"

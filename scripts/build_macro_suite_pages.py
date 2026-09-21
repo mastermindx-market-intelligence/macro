@@ -527,20 +527,29 @@ def _identity(page: SuitePage) -> dict[str, Any]:
 _REGION_NAMES = {"US": "United States"}
 
 
+def register_suite_filters(env: Environment) -> None:
+    """Jinja filters the suite shell needs. Main's builder no longer
+    registers ``date_pair``; P5's ``vis_time`` still uses it, so every
+    environment that renders the shell (builder or a test) must call this.
+    """
+    env.filters["date_pair"] = (
+        lambda value: L.date_display_pair(str(value)) if value else None
+    )
+
+
 def _environment(root: Path) -> Environment:
     env = Environment(
         loader=FileSystemLoader(str(root / "templates")),
         autoescape=True,
         undefined=StrictUndefined,
     )
-    env.filters["date_pair"] = (
-        lambda value: L.date_display_pair(str(value)) if value else None
-    )
+    register_suite_filters(env)
     return env
 
 
 def render_page(env: Environment, page: SuitePage, view: Mapping[str, Any],
                 *, analyst: Mapping[str, Any] | None = None) -> str:
+    register_suite_filters(env)
     html = env.get_template(page.template).render(
         view=view,
         workspace_id=page.workspace_id,

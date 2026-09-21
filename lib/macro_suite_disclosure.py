@@ -536,8 +536,15 @@ def owner_display_pair(ref: Any) -> dict[str, str] | None:
     return _pair("Source owner not yet named", "数据来源负责人待定")
 
 
-def composition_law_pair(axis_id: Any, field: str, raw: Any) -> dict[str, str]:
-    """Reviewed composition-law sentence. Missing clause raises."""
+def composition_law_pair(axis_id: Any, field: str, raw: Any) -> dict[str, str] | None:
+    """Reviewed composition-law sentence.
+
+    A null/empty raw field is a dash (main's schema: the method cell is
+    optional). A present raw value on an unregistered axis is a build
+    defect — never a guessed sentence.
+    """
+    if raw is None or raw == "":
+        return None
     key = (str(axis_id or ""), field)
     found = COMPOSITION_LAW.get(key)
     if found is None:

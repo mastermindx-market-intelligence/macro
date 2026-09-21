@@ -379,8 +379,7 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
         x_axis, y_axis = resolved_x, resolved_y
         x_id = x_axis.get("axis_id")
         y_id = y_axis.get("axis_id")
-    elif vector_present:
-        raise KeyError("vector is missing required x_axis_id/y_axis_id")
+    # Present dx/dy still render without axis ids (main's rates fixture).
     published = L.date_or_none(headline.get("effective_date"))
     return {
         "state_id": headline.get("state_id"),
@@ -423,9 +422,14 @@ def _headline(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) ->
             "dy": L.fmt_signed(vector.get("dy")),
             "dx_raw": vector.get("dx"),
             "dy_raw": vector.get("dy"),
+            # Technical receipt uses ASCII hyphen; reading-path dx/dy keep U+2212.
+            "dx_ascii": (
+                f"{float(vector.get('dx')):+.2f}" if vector_present else None),
+            "dy_ascii": (
+                f"{float(vector.get('dy')):+.2f}" if vector_present else None),
             "move": (L.vector_move_pair(vector.get("dx"), vector.get("dy"),
                                         x_axis, y_axis)
-                     if vector_present else None),
+                     if vector_present and x_id and y_id else None),
             "x_axis_id": x_id,
             "y_axis_id": y_id,
             "absence": (

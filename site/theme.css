@@ -150,6 +150,39 @@
   --gbtn-brd:       color-mix(in srgb, var(--text) 12%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, var(--text) 24%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.09);
+  /* ── Macro Command tints (templates/macro_command.css) ────────────────────
+     color-mix on an added surface line is enforce-added-illegal; the mixes
+     live here so the surface only names tokens. --text/--info/--ok track
+     the theme (and the zh swap) at paint. Halo is 12% of the topic tone
+     on dark and cancelled on light; stance wash is 0 dark / 6% light. */
+  --mc-ink-02: color-mix(in srgb, var(--text) 2%, transparent);
+  --mc-ink-05: color-mix(in srgb, var(--text) 5%, transparent);
+  --mc-ink-07: color-mix(in srgb, var(--text) 7%, transparent);
+  --mc-ink-08: color-mix(in srgb, var(--text) 8%, transparent);
+  --mc-ink-09: color-mix(in srgb, var(--text) 9%, transparent);
+  --mc-ink-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-ink-12: color-mix(in srgb, var(--text) 12%, transparent);
+  --mc-ink-14: color-mix(in srgb, var(--text) 14%, transparent);
+  --mc-ink-18: color-mix(in srgb, var(--text) 18%, transparent);
+  --mc-text-06: color-mix(in srgb, var(--text) 6%, transparent);
+  --mc-text-10: color-mix(in srgb, var(--text) 10%, transparent);
+  --mc-text-22: color-mix(in srgb, var(--text) 22%, transparent);
+  --mc-accent-10: color-mix(in srgb, var(--info) 10%, transparent);
+  --mc-accent-12: color-mix(in srgb, var(--info) 12%, transparent);
+  --mc-accent-22: color-mix(in srgb, var(--info) 22%, transparent);
+  --mc-accent-34: color-mix(in srgb, var(--info) 34%, transparent);
+  --mc-accent-line: color-mix(in srgb, var(--info) 38%, color-mix(in srgb, var(--text) 12%, transparent));
+  --mc-halo-ink: color-mix(in srgb, var(--text) 12%, transparent);
+  --mc-halo-ok: color-mix(in srgb, var(--ok) 12%, transparent);
+  --mc-halo-warn: color-mix(in srgb, var(--warn) 12%, transparent);
+  --mc-halo-bad: color-mix(in srgb, var(--act) 12%, transparent);
+  --mc-halo-neutral: color-mix(in srgb, var(--muted) 12%, transparent);
+  --mc-stance-ok: transparent;
+  --mc-stance-warn: transparent;
+  --mc-stance-bad: transparent;
+  --mc-stance-neutral: transparent;
+  --mc-halo-fill: var(--mc-halo-ink);
+  --mc-stance-fill: var(--mc-stance-neutral);
 }
 html[data-theme="light"] {
   /* light glass buttons: white reads thin when too transparent, so lift the fill
@@ -165,6 +198,15 @@ html[data-theme="light"] {
   --gbtn-brd:       color-mix(in srgb, #1c2430 50%, transparent);
   --gbtn-brd-hover: color-mix(in srgb, #1c2430 66%, transparent);
   --gbtn-sheen:     rgba(255,255,255,.7);
+  --mc-halo-ink: transparent;
+  --mc-halo-ok: transparent;
+  --mc-halo-warn: transparent;
+  --mc-halo-bad: transparent;
+  --mc-halo-neutral: transparent;
+  --mc-stance-ok: color-mix(in srgb, var(--ok) 6%, transparent);
+  --mc-stance-warn: color-mix(in srgb, var(--warn) 6%, transparent);
+  --mc-stance-bad: color-mix(in srgb, var(--act) 6%, transparent);
+  --mc-stance-neutral: color-mix(in srgb, var(--muted) 6%, transparent);
 }
 html[data-theme="light"] {
   /* Light palette tuned to match the Bitcoin Vector dashboard: airy #F7F8FA

@@ -39,8 +39,8 @@ REST_FRAMES = {
 # R6-B1: recapture the entire matrix at the committed code sha. A
 # selective keep is how the last pass documented a page that no longer
 # existed. Empty-state crops are rebuilt from fixtures in the same run.
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+# Unconditional insert at position 0 — a conditional pin is not a pin.
+sys.path.insert(0, str(ROOT))
 
 SITE = ROOT / "site"
 DATA = SITE / "macrodata"
