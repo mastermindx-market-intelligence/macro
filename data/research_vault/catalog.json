@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T22:04:03.931586+00:00",
-  "count": 2596,
+  "generated_at": "2026-09-21T22:19:10.051370+00:00",
+  "count": 2597,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -411,6 +411,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qvbwiybeqxp-c61c71",
+      "title": "GS Utilities Daily RWE secures c.120 MW of onshore wind capacity in latest German auction Ofgem has launched a consultati...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:43:22Z",
+      "summary_points": [
+        "German Wind Auction Execution: RWE securing 119 MW onshore wind capacity (Jüchen 3: 84 MW, Seedorf: 35 MW) with 2028 commissioning directly validates EU energy transition progress, impacting renewable capacity growth and utility fundamentals.",
+        "UK Battery Grid Fee Policy: Ofgem’s proposed £3,000–£25,000/MW grid fee range for batteries critically alters project economics and grid integration costs, signaling regulatory shifts for storage viability.",
+        "EU Solar Acceleration: Solar now drives 42% of EU renewables (vs. 37% in Q2 2025), reflecting structural policy-driven electrification shift and validating renewable deployment momentum.",
+        "Agentic AI Power Demand Surge: Agentic AI (AAI) to boost datacenter power demand by +25% (vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
