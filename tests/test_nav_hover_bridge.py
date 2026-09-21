@@ -20,8 +20,8 @@ MACRO_HTML = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
 # The cache-buster the theme.js -> account.js -> nav_market.js chain is pinned
 # to, and a digest of the payload that key is responsible for busting. They MUST
 # move together -- see test_nav_release_key_moves_with_the_payload_it_busts.
-NAV_RELEASE_KEY = "20260913-account-actions"
-NAV_PAYLOAD_DIGEST = "7f766d93"
+NAV_RELEASE_KEY = "20260921-nav-aria-escape"
+NAV_PAYLOAD_DIGEST = "e44cf717"
 
 
 def _payload_digest() -> str:
@@ -37,6 +37,43 @@ def _payload_digest() -> str:
         digest.update(re.sub(r"\d{8}-[\w-]+", "<KEY>", text).encode("utf-8"))
     return digest.hexdigest()[:8]
 
+
+
+
+def test_top_market_menus_publish_expanded_state_and_escape_restores_trigger() -> None:
+    """Keyboard-opened mega panels must never strand focus inside a hidden panel."""
+    source = TEMPLATE_JS
+    bind = source.split("function bindHoverSafeDropdowns(links)", 1)[1].split(
+        "// Tracks what the rail is currently folded to", 1
+    )[0]
+
+    assert "trigger.setAttribute('aria-expanded', 'false');" in bind
+    assert "function setExpanded(on)" in bind
+    assert "stage.open(dd);" in bind
+    assert "setExpanded(true);" in bind
+    assert "stage.close(dd);" in bind
+    assert "setExpanded(false);" in bind
+    assert "e.preventDefault();" in bind
+    assert "stage.abort(dd);" in bind
+    assert "suppressFocusOpen = true;" in bind
+    assert "trigger.focus({ preventScroll: true })" in bind
+    assert "requestAnimationFrame(function () { suppressFocusOpen = false; });" in bind
+    assert "requestAnimationFrame(syncMobileExpanded);" in bind
+
+
+def test_runtime_active_nav_marks_only_exact_page_as_aria_current() -> None:
+    """Ancestor triggers may look active, but only the exact destination is current."""
+    source = TEMPLATE_JS
+    active = source.split("function remarkActive(links)", 1)[1].split(
+        "/* ---- Panel choreography", 1
+    )[0]
+    assert "a.removeAttribute('aria-current')" in active
+    assert "var currentMarked = false;" in active
+    assert "a.setAttribute('aria-current', 'page')" in active
+    assert "currentMarked = true;" in active
+    ancestor = active.split("while (p && p !== links)", 1)[1]
+    assert "trig.classList.add('active')" in ancestor
+    assert "trig.setAttribute('aria-current'" not in ancestor
 
 def test_top_market_menus_keep_hover_bridge_while_folded_countries_click() -> None:
     # Top-level market and Research menus share the hover-safe gap bridge.
