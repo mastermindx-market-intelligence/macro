@@ -360,6 +360,7 @@ def main():
                 'commodity.momentum': 'desktop-commodity-momentum.png',
                 'commodity.allocation': 'desktop-commodity-allocation.png',
                 'commodity.value': 'desktop-commodity-value.png',
+                'commodity.positioning': 'desktop-commodity-positioning.png',
             }
             for family, shot in commodity_decision_families.items():
                 decision_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
@@ -394,6 +395,15 @@ def main():
                 'macro.circuit_breaker_open': (
                     'desktop-source-circuit-breaker.png',
                     'Source outages expose missing-evidence handling without masquerading as market calm'),
+                'macro.sector_rs_cross_high': (
+                    'desktop-sector-rs-high.png',
+                    'Sector leadership crossings expose relative-strength verification without becoming flow evidence or buy calls'),
+                'macro.inflation_confidence_floor': (
+                    'desktop-inflation-confidence.png',
+                    'Axis-confidence floors expose regime-input disagreement without becoming probabilities or market direction calls'),
+                'macro.sector_holdings_accumulation': (
+                    'desktop-sector-passive-flow.png',
+                    'Passive sector-ETF residual flow stays distinct from discretionary manager conviction and stock recommendations'),
             }
             for family, (shot, statement) in context_families.items():
                 context_id = next((

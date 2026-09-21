@@ -87,6 +87,13 @@ _COMMODITY_VALUE_DETAIL = re.compile(
     r'^GSR at ([0-9]{1,3})(?:st|nd|rd|th) %ile \(3y\) — '
     r'(silver cheap vs gold|silver rich vs gold)\.$'
 )
+_COMMODITY_POSITIONING_HEADLINE = re.compile(
+    r'^(Gold|Silver|Copper|Oil) COT (crowded long|crowded short)$'
+)
+_COMMODITY_POSITIONING_DETAIL = re.compile(
+    r'^Speculative net positioning reached (crowded long|crowded short) '
+    r'\(([0-9]{1,3})(?:st|nd|rd|th) %ile, 3y\)\.$'
+)
 _VECTOR_ALLOCATION_CHANGE = re.compile(
     r'^Optimal strategy moved ([0-9]{1,3})% → ([0-9]{1,3})% BTC '
     r'\(momentum × risk grid\)\.$'
@@ -203,6 +210,22 @@ _THEME_EMERGING = re.compile(
 _MACRO_SECTOR_RS_LOW = re.compile(
     r'^([A-Z0-9.\-]+) RS vs ([A-Z0-9.\-]+) crossed below '
     r'([0-9]{1,3})(?:st|nd|rd|th) pctile of 90d \(now ([0-9]{1,3})\)$'
+)
+_MACRO_SECTOR_RS_HIGH = re.compile(
+    r'^([A-Z0-9.\-]+) RS vs ([A-Z0-9.\-]+) crossed above '
+    r'([0-9]{1,3})(?:st|nd|rd|th) pctile of 90d \(now ([0-9]{1,3})\)$'
+)
+_MACRO_AXIS_CONFIDENCE_FLOOR = re.compile(
+    r'^(Growth|Inflation) axis confidence dropped below ([0-9]{1,3})%: '
+    r'([0-9]{1,3})% -> ([0-9]{1,3})%$'
+)
+_MACRO_SECTOR_HOLDINGS = re.compile(
+    r'^([A-Z0-9._\-]+): ([A-Z0-9._\-]+) weight '
+    r'([+-][0-9]+(?:\.[0-9]+)?)pp beyond price'
+    r'(?: \(≈([+-]\$[0-9]+(?:\.[0-9]+)?[MB]) est\. rebalance flow\))? '
+    r'\((accumulating|trimming)\), '
+    r'([0-9]{4}-[0-9]{2}-[0-9]{2})\.\.([0-9]{4}-[0-9]{2}-[0-9]{2})'
+    r'(?: — cycle (.+)·(.+))?$'
 )
 _MACRO_HOLDINGS_ACTIVE_CHANGE = re.compile(
     r'^([A-Z0-9._\-]+): manager (added|cut) ([A-Z0-9._\-]+) by '
@@ -1545,6 +1568,202 @@ def build_alert_brief(row: dict) -> dict:
         })
         return brief
 
+    confidence = _MACRO_AXIS_CONFIDENCE_FLOOR.fullmatch(detail)
+    if source == 'macro' and confidence:
+        axis_label, floor_text, previous_text, current_text = confidence.groups()
+        axis = axis_label.lower()
+        expected_type = f'{axis}_confidence_floor'
+        expected_headline = f'{axis_label} read got muddy — trust the regime label less'
+        floor = int(floor_text)
+        previous = int(previous_text)
+        current = int(current_text)
+        if (type_ == expected_type and str(row.get('asset') or '') == 'macro' and
+                _plain(row.get('headline') or '').lstrip('\ufe0f ') == expected_headline and
+                0 < floor <= 100 and 0 <= current < floor <= previous <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current {axis} confidence.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前{axis_label}一致度。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated floor crossings are separate observations and do not prove confidence '
+                    'stayed below the threshold between them.')
+                recurrence_limit_zh = ' 重复下穿阈值是独立观测，并不能证明一致度在期间持续低于阈值。'
+            brief.update({
+                'status': 'supported', 'family': f'macro.{expected_type}',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source regime model reports {axis} indicator agreement fell from '
+                    f'{previous}% to {current}%, crossing below its {floor}% usable-confidence '
+                    'floor; the regime label should be treated with less confidence until the '
+                    'underlying inputs agree again.'),
+                'implication_zh': (
+                    f'来源周期模型报告{axis_label}指标一致度从 {previous}% 降至 {current}%，下穿 '
+                    f'{floor}% 的可用一致度阈值；在底层输入重新取得一致前，应降低对周期标签的信任。'),
+                'limitation': (
+                    'Axis confidence measures agreement among source inputs. It is not the probability '
+                    'that a regime label is correct, a market-risk score, a return forecast or a '
+                    'directional trade signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '轴一致度衡量的是来源输入之间的认同程度。它不是周期标签正确的概率、市场风险评分、'
+                    '收益预测或方向交易信号。' + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Regime Radar and verify {axis} confidence is still below '
+                    f'{floor}%, inspect the underlying {axis} inputs, and compare the current regime '
+                    'state before relying on the label for sizing decisions.'),
+                'next_action_zh': (
+                    f'打开当前周期雷达，确认{axis_label}一致度仍低于 {floor}%，检查底层{axis_label}输入，'
+                    '并核对当前周期状态，再将该标签用于仓位判断。'),
+                'next_action_label': f'Recheck {axis} confidence',
+                'next_action_label_zh': f'复核{axis_label}一致度',
+                'reassessment': (
+                    f'Change the read if {axis} confidence recovers above {floor}% with underlying '
+                    'inputs agreeing again, or a newer confidence event supersedes this crossing.'),
+                'reassessment_zh': (
+                    f'若{axis_label}一致度恢复至 {floor}% 以上且底层输入重新一致，或新的置信度事件'
+                    '取代此次下穿，则改变判断。'),
+                'evidence_label': 'Open current Regime Radar',
+                'evidence_label_zh': '打开当前周期雷达',
+            })
+            return brief
+
+    sector_holdings = _MACRO_SECTOR_HOLDINGS.fullmatch(detail)
+    if (source == 'macro' and type_ == 'sector_holdings_accumulation' and
+            str(row.get('asset') or '') == 'macro' and sector_holdings and
+            _plain(row.get('headline') or '') ==
+            'A sector ETF is over-weighting a stock beyond its price move'):
+        fund, ticker, change_text, flow_text, verb, window_start, window_end, cycle_label, cycle_action = (
+            sector_holdings.groups())
+        change = float(change_text)
+        sign_ok = (verb == 'accumulating' and change > 0) or (verb == 'trimming' and change < 0)
+        if sign_ok and window_start <= window_end:
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current sector-ETF weight residual.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前板块 ETF 权重残差。'
+            flow_clause = f' with an estimated rebalance flow of about {flow_text}' if flow_text else ''
+            flow_clause_zh = f'，估算再平衡资金流约为 {flow_text}' if flow_text else ''
+            cycle_clause = (
+                f' The source also attached cycle context “{cycle_label}·{cycle_action}”; that '
+                'overlay is context, not independent confirmation.'
+                if cycle_label and cycle_action else '')
+            cycle_clause_zh = (
+                f' 来源还附带周期背景“{cycle_label}·{cycle_action}”；该叠加层只是背景，并非独立确认。'
+                if cycle_label and cycle_action else '')
+            brief.update({
+                'status': 'supported', 'family': 'macro.sector_holdings_accumulation',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source price-decomposition reports {fund}’s {ticker} weight moved '
+                    f'{change_text} percentage points beyond what the stock’s own price move explains'
+                    f'{flow_clause}; this is passive sector-ETF rebalance/float-flow context.'),
+                'implication_zh': (
+                    f'来源的价格分解显示，{fund} 中 {ticker} 的权重变化比该股票自身价格变动可解释的部分多 '
+                    f'{change_text} 个百分点{flow_clause_zh}；这是被动板块 ETF 再平衡/流通权重资金流背景。'),
+                'limitation': (
+                    'A price-decomposed ETF weight residual is not discretionary manager conviction, '
+                    'a stock recommendation, calibrated probability or expected-return forecast. '
+                    'The source explicitly attributes this passive-fund residual to index '
+                    'reconstitution/float-weight flow rather than active selection.' +
+                    cycle_clause + age_limit),
+                'limitation_zh': (
+                    '价格分解后的 ETF 权重残差并非主动经理信念、个股推荐、校准概率或预期收益预测。'
+                    '来源明确将该被动基金残差归因于指数再平衡/流通权重资金流，而非主动选股。' +
+                    cycle_clause_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current sector-accumulation panel and verify {fund} still shows '
+                    f'{ticker} with a price-decomposed weight residual in the same direction, '
+                    'check any current rebalance-flow estimate, and inspect the stock’s own setup '
+                    'before using the flow context.'),
+                'next_action_zh': (
+                    f'打开当前板块累积面板，确认 {fund} 中 {ticker} 的价格分解权重残差方向仍一致，'
+                    '核对当前再平衡资金流估算，并检查该股自身形态后再使用该资金流背景。'),
+                'next_action_label': 'Recheck passive sector flow',
+                'next_action_label_zh': '复核被动板块资金流',
+                'reassessment': (
+                    'Change the read if the residual falls below the source alert threshold, reverses '
+                    'direction, or a newer holdings window supersedes this observation.'),
+                'reassessment_zh': (
+                    '若残差跌破来源警报阈值、方向反转，或新的持仓窗口取代该观测，则改变判断。'),
+                'evidence_label': 'Open current sector accumulation',
+                'evidence_label_zh': '打开当前板块累积',
+            })
+            return brief
+
+    sector_high = _MACRO_SECTOR_RS_HIGH.fullmatch(detail)
+    if source == 'macro' and type_ == 'sector_rs_cross_high' and sector_high:
+        sector, benchmark, threshold_text, current_text = sector_high.groups()
+        threshold = int(threshold_text)
+        current = int(current_text)
+        if (str(row.get('asset') or '') == 'macro' and sector != benchmark and
+                0 < threshold < 100 and threshold <= current <= 100 and
+                _plain(row.get('headline') or '') == 'A sector broke into leadership'):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current sector-relative-strength rank.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前板块相对强度排名。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            fire_count = int(row.get('fire_count') or 0)
+            if fire_count > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    f' {fire_count} recorded crossings do not prove the sector stayed above the '
+                    'threshold between observations.')
+                recurrence_limit_zh = (
+                    f' {fire_count} 次记录穿越并不能证明该板块在观测之间持续高于阈值。')
+            brief.update({
+                'status': 'supported', 'family': 'macro.sector_rs_cross_high',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'{sector} relative strength versus {benchmark} moved into the top '
+                    f'{100 - threshold}% of its 90-day rank, with the source reporting a current '
+                    f'percentile of {current}; sector leadership strengthened enough to recheck.'),
+                'implication_zh': (
+                    f'{sector} 相对 {benchmark} 的强度进入其 90 天排名的顶部 {100 - threshold}%，'
+                    f'来源报告当前百分位为 {current}；板块领导力已经明显增强，需要复核。'),
+                'limitation': (
+                    'A relative-strength percentile is a descriptive price-relative rank, not evidence '
+                    'of fund flows, a calibrated return probability, a durable leadership regime or '
+                    'an instant buy signal. The source treats this family as rotation context rather '
+                    'than a timing signal.' + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '相对强度百分位只是描述性的相对价格排名，并不能证明资金流、校准收益概率、持久领导状态'
+                    '或立即买入信号。来源将该信号族视为轮动背景，而非择时信号。' +
+                    age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current Macro sector panel and verify {sector} relative strength '
+                    f'versus {benchmark} is still at or above the {threshold}th-percentile threshold, '
+                    'then check the current sector heat and trigger state before changing exposure.'),
+                'next_action_zh': (
+                    f'打开当前宏观板块面板，确认 {sector} 相对 {benchmark} 的强度仍处于或高于第 '
+                    f'{threshold} 百分位阈值，并检查当前板块热度与触发状态，再调整敞口。'),
+                'next_action_label': 'Recheck sector leadership',
+                'next_action_label_zh': '复核板块领导力',
+                'reassessment': (
+                    f'Change the read if {sector} relative strength falls back below the high-percentile '
+                    'threshold, leadership weakens, or a newer sector event supersedes this crossing.'),
+                'reassessment_zh': (
+                    f'若 {sector} 相对强度重新跌破高百分位阈值、领导力减弱，或更新的板块事件取代此次穿越，'
+                    '则改变判断。'),
+                'evidence_label': 'Open current Macro sector panel',
+                'evidence_label_zh': '打开当前宏观板块面板',
+            })
+            return brief
+
     sector_low = _MACRO_SECTOR_RS_LOW.fullmatch(detail)
     if source == 'macro' and type_ == 'sector_rs_cross_low' and sector_low:
         sector, benchmark, threshold_text, current_text = sector_low.groups()
@@ -2536,6 +2755,71 @@ def build_alert_brief(row: dict) -> dict:
                     'three-year percentile normalizes, or a newer value-state event supersedes it.'),
                 'reassessment_zh': (
                     '若金银比退出当前来源分类、3 年百分位恢复正常，或新的价值状态事件取代该事件，则改变判断。'),
+                'evidence_label': 'Open current commodity timeline',
+                'evidence_label_zh': '打开当前商品时间线',
+            })
+            return brief
+
+    commodity_positioning_headline = _COMMODITY_POSITIONING_HEADLINE.fullmatch(
+        _plain(row.get('headline') or ''))
+    commodity_positioning_detail = _COMMODITY_POSITIONING_DETAIL.fullmatch(detail)
+    if (source == 'commodity' and type_ == 'positioning' and
+            commodity_positioning_headline and commodity_positioning_detail):
+        label, headline_state = commodity_positioning_headline.groups()
+        detail_state, percentile_text = commodity_positioning_detail.groups()
+        asset = str(row.get('asset') or '')
+        percentile = int(percentile_text)
+        if (asset == label.lower() and headline_state == detail_state and 0 <= percentile <= 100):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck current commodity positioning.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前商品持仓。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This positioning context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该持仓背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'commodity.positioning',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source places {label} speculative net positioning at the {percentile}th '
+                    f'percentile of its three-year range and classifies it as {detail_state}; this '
+                    'is crowding context to verify against the current commodity tape.'),
+                'implication_zh': (
+                    f'来源将 {label} 投机净持仓定位在三年区间的第 {percentile} 百分位，并分类为 '
+                    f'{detail_state}；这是需要结合当前商品盘面复核的拥挤背景。'),
+                'limitation': (
+                    'A COT percentile is a historical positioning rank, not proof a reversal or '
+                    'continuation is due, a calibrated return probability, intrinsic value measure '
+                    'or trade instruction.' + validation_limit + age_limit),
+                'limitation_zh': (
+                    'COT 百分位只是历史持仓排名，并不能证明反转或延续即将发生，也不是校准收益概率、'
+                    '内在价值衡量或交易指令。' + validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current commodity timeline and verify {label} positioning is still '
+                    f'{detail_state}, inspect the latest three-year percentile against {percentile}, '
+                    'and check whether a newer positioning event supersedes this observation.'),
+                'next_action_zh': (
+                    f'打开当前商品时间线，确认 {label} 持仓仍为 {detail_state}，核对最新三年百分位'
+                    f'与 {percentile} 的差异，并检查是否已有更新持仓事件取代该观测。'),
+                'next_action_label': f'Recheck {asset} positioning',
+                'next_action_label_zh': '复核商品持仓',
+                'reassessment': (
+                    f'Change the read if positioning leaves {detail_state}, the percentile normalizes, '
+                    'or a newer source event supersedes this observation.'),
+                'reassessment_zh': (
+                    f'若持仓退出 {detail_state}、百分位恢复正常，或新的来源事件取代该观测，则改变判断。'),
                 'evidence_label': 'Open current commodity timeline',
                 'evidence_label_zh': '打开当前商品时间线',
             })

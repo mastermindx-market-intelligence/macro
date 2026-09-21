@@ -1194,6 +1194,115 @@ def test_sector_rs_cross_low_abstains_on_impossible_or_mismatched_shapes():
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
 
 
+def test_sector_rs_cross_high_gets_leadership_context_without_buy_or_flow_claims():
+    row = signal('sector-high', source='macro', type_='sector_rs_cross_high', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 18, 'fire_count': 3, 'continuity_verified': False,
+        'headline': '📈 A sector broke into leadership',
+        'detail': 'XLF RS vs SPY crossed above 90th pctile of 90d (now 90)',
+        'link': 'macro.html#dlg-sector',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.sector_rs_cross_high'
+    assert 'top 10% of its 90-day rank' in brief['implication']
+    assert 'not evidence of fund flows' in brief['limitation']
+    assert 'instant buy signal' in brief['limitation']
+    assert '18 days old' in brief['limitation']
+    assert '3 recorded crossings' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck sector leadership'
+
+
+def test_axis_confidence_floor_keeps_agreement_distinct_from_probability():
+    row = signal('inflation-confidence', source='macro', type_='inflation_confidence_floor', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 26,
+        'headline': '🎚️ Inflation read got muddy — trust the regime label less',
+        'detail': 'Inflation axis confidence dropped below 30%: 42% -> 27%',
+        'link': 'macro.html#regime-radar',
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.inflation_confidence_floor'
+    assert 'agreement fell from 42% to 27%' in brief['implication']
+    assert 'not the probability that a regime label is correct' in brief['limitation']
+    assert '26 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck inflation confidence'
+    assert brief['evidence_label'] == 'Open current Regime Radar'
+
+
+def test_sector_holdings_accumulation_keeps_passive_flow_distinct_from_conviction():
+    row = signal('sector-flow', source='macro', type_='sector_holdings_accumulation', asset='macro')
+    row.update({
+        'tier': 'context', 'age_days': 28,
+        'headline': '🐳 A sector ETF is over-weighting a stock beyond its price move',
+        'detail': 'XLC: CHTR weight +0.81pp beyond price (≈+$182M est. rebalance flow) (accumulating), 2026-08-14..2026-08-21 — cycle UNCONFIRMED TURN·HIGH-RISK · NIMBLE ONLY',
+        'link': 'us_stocks.html#accumulation',
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'macro.sector_holdings_accumulation'
+    assert 'XLC’s CHTR weight moved +0.81 percentage points' in brief['implication']
+    assert 'estimated rebalance flow of about +$182M' in brief['implication']
+    assert 'not discretionary manager conviction' in brief['limitation']
+    assert 'index reconstitution/float-weight flow' in brief['limitation']
+    assert 'not independent confirmation' in brief['limitation']
+    assert '28 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck passive sector flow'
+
+
+def test_commodity_positioning_keeps_cot_rank_as_crowding_context():
+    row = signal('commodity-positioning', source='commodity', type_='positioning', asset='oil')
+    row.update({
+        'tier': 'context', 'age_days': 17,
+        'headline': 'Oil COT crowded short',
+        'detail': 'Speculative net positioning reached crowded short (14th %ile, 3y).',
+        'link': 'commodities.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'commodity.positioning'
+    assert '14th percentile of its three-year range' in brief['implication']
+    assert 'crowded short' in brief['implication']
+    assert 'not proof a reversal or continuation is due' in brief['limitation']
+    assert '17 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck oil positioning'
+
+
+def test_remaining_context_families_abstain_on_inconsistent_shapes():
+    high = signal('sector-high-bad', source='macro', type_='sector_rs_cross_high', asset='macro')
+    high.update({
+        'headline': '📈 A sector broke into leadership',
+        'detail': 'XLF RS vs SPY crossed above 90th pctile of 90d (now 70)',
+        'link': 'macro.html#dlg-sector',
+    })
+    confidence = signal('confidence-bad', source='macro', type_='inflation_confidence_floor', asset='macro')
+    confidence.update({
+        'headline': '🎚️ Inflation read got muddy — trust the regime label less',
+        'detail': 'Inflation axis confidence dropped below 30%: 27% -> 42%',
+        'link': 'macro.html#regime-radar',
+    })
+    flow = signal('sector-flow-bad', source='macro', type_='sector_holdings_accumulation', asset='macro')
+    flow.update({
+        'headline': '🐳 A sector ETF is over-weighting a stock beyond its price move',
+        'detail': 'XLC: CHTR weight -0.81pp beyond price (trimming), 2026-08-21..2026-08-14',
+        'link': 'us_stocks.html#accumulation',
+    })
+    cot = signal('commodity-cot-bad', source='commodity', type_='positioning', asset='oil')
+    cot.update({
+        'headline': 'Oil COT crowded short',
+        'detail': 'Speculative net positioning reached crowded short (114th %ile, 3y).',
+        'link': 'commodities.html#timeline',
+    })
+    rows = (high, confidence, flow, cot)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
 def test_forex_momentum_gets_state_change_brief_without_directional_forecast():
     row = signal('fx-momentum', source='forex', type_='momentum', asset='EURUSD')
     row.update({
