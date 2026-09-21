@@ -249,3 +249,70 @@ html[data-theme="light"] .rf-e.rf-closed { background:none; border:0; box-shadow
   .rf-hash { transition:none; }
   .rf-sum, .rf-e, .rf-e::before, .rf-e::after, .rf-sum::before, .rf-sum::after { transition:none; animation:none; }
 }
+/* ── unlinked owner state — a printed null, not silence ─────────────────────── */
+/* DARK: a muted line behind a hairline rail. On graphite a fill would read as a
+   selected row, so the state is carried by the rail alone.
+   LIGHT: a bare muted line on white reads as unstyled body text, so light adds a
+   --panel2 recess to make it legibly a STATE. Same rail, different material. */
+.rf-unlinked { color:var(--muted); font-size:var(--fs-sm); margin:var(--sp-1,4px) 0 0;
+  border-left:2px solid var(--line); padding-left:var(--sp-2,8px); }
+html[data-theme="light"] .rf-unlinked { background:var(--panel2);
+  border-radius:0 var(--r-ctl,8px) var(--r-ctl,8px) 0;
+  padding:var(--sp-2,8px) var(--sp-3,12px); }
+
+/* ══ COVERAGE LEDGER ═════════════════════════════════════════════════════════
+   The second deliberate divergence on this page, and it inverts the list's.
+   DARK: nothing. A top hairline on the graphite canvas and hairline-ruled rows.
+   A command center does not box its footnotes; a container here would compete
+   with the entries above it for the same luminance step.
+   LIGHT: the list above is a raised white sheet, so an unbounded ledger below it
+   floats. Light RECESSES instead — a --panel2 well with NO shadow. Shadow says
+   "this is material"; a ledger of absences must never be raised above the
+   catalogue it annotates. Dark lifts nothing, light sinks. */
+.rf-cov { margin:var(--sp-7,32px) 0 0; padding-top:var(--sp-4,16px);
+  border-top:1px solid var(--line); }
+html[data-theme="light"] .rf-cov { background:var(--panel2); border-top:0;
+  border-radius:var(--r-panel,14px); box-shadow:none;
+  padding:var(--sp-4,16px) var(--sp-4,16px) var(--sp-2,8px); }
+
+.rf-cov-h { font:600 var(--fs-label)/1 var(--font-ui); letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 var(--sp-2,8px); }
+html[data-lang="zh"] .rf-cov-h { letter-spacing:0; text-transform:none; }
+.rf-cov-lead { color:var(--muted); font-size:var(--fs-sm); margin:0 0 var(--sp-3,12px); }
+
+.rf-cov-list { list-style:none; margin:0; padding:0; }
+.rf-cov-row { display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,max-content);
+  gap:2px var(--sp-3,12px); align-items:baseline;
+  padding:var(--sp-3,12px) 0; border-top:1px solid var(--line); }
+.rf-cov-row:first-child { border-top:0; }
+.rf-cov-el { font-size:var(--fs-md); font-weight:700; color:var(--text); }
+html[data-lang="zh"] .rf-cov-el { font-weight:700; letter-spacing:0; }
+.rf-cov-where { display:block; font-size:var(--fs-label); font-weight:400;
+  color:var(--muted); }
+
+/* The state word. Achromatic in BOTH themes — a gap is not danger, and the
+   §1 reserved-hue law keeps --up/--down for direction only. */
+.rf-cov-state { justify-self:end; font:600 var(--fs-label)/1 var(--font-ui);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--muted);
+  padding:3px var(--sp-2,8px); border-radius:var(--r-pill,999px);
+  border:1px solid var(--line); white-space:nowrap; }
+html[data-lang="zh"] .rf-cov-state { letter-spacing:0; text-transform:none; }
+/* DARK: the "still missing" state is the only one that fills, by luminance.
+   LIGHT: the well is already tinted, so a --panel2 fill would vanish; light
+   fills with the sheet colour (--panel) instead — the figure/ground inverts. */
+.rf-cov-row--not_covered .rf-cov-state { background:var(--panel2); border-color:transparent; }
+html[data-theme="light"] .rf-cov-row--not_covered .rf-cov-state { background:var(--panel);
+  border-color:var(--line); }
+
+.rf-cov-why { grid-column:1 / -1; color:var(--muted); font-size:var(--fs-sm);
+  margin-top:var(--sp-1,4px); }
+.rf-cov-see { display:block; margin-top:var(--sp-1,4px); }
+.rf-cov-see a { color:var(--link); }
+.rf-cov-see a + a::before { content:"·"; color:var(--muted); margin:0 var(--sp-2,8px); }
+
+@media (max-width:640px) {
+  .rf-cov-row { grid-template-columns:minmax(0,1fr); }
+  .rf-cov-state { justify-self:start; margin-top:var(--sp-1,4px); }
+  html[data-theme="light"] .rf-cov { padding:var(--sp-3,12px); }
+}
