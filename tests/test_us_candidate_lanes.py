@@ -1265,3 +1265,129 @@ def test_visibility_rejects_non_json_metadata_without_throwing():
         result = project_candidate_visibility(board)
         assert result["status"] == "unavailable"
         assert result["rows"] == []
+
+
+# Current-screen/archive reconciliation: source evidence only, never admission.
+def _archive_fixture():
+    from copy import deepcopy
+    board = deepcopy(_visibility_board())
+    board["board_definition"] = "us_prophet_v3"
+    board["candidate_pool"]["board_definition"] = "us_prophet_v3"
+    pool = board["candidate_pool"]
+    rows = [{"ticker": ticker, "stamp_date": board["as_of"], "tier": "curated",
+             "board_definition": board["board_definition"], **columns}
+            for ticker, columns in ucl.store_columns(pool).items()]
+    return board, rows
+
+
+def test_archive_scan_only_is_not_curated_candidate_history():
+    board, rows = _archive_fixture()
+    for row in rows:
+        row["tier"] = "scan"
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["status"] == "incomplete"
+    assert receipt["counts"]["matched"] == 0
+    assert receipt["counts"]["missing"] == 2
+    assert receipt["by_ticker"]["AMD"] == "missing"
+    assert receipt["exact_generation_verified"] is False
+
+
+def test_archive_matching_fields_never_proves_exact_build_generation():
+    from copy import deepcopy
+    board, rows = _archive_fixture()
+    before = deepcopy((board, rows))
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["status"] == "matched_fields"
+    assert receipt["counts"]["matched"] == 2
+    assert receipt["exact_generation_verified"] is False
+    assert (board, rows) == before
+
+
+@pytest.mark.parametrize("field,value", [
+    ("stamp_date", "2026-09-17"), ("stamp_date", "2026-09-21"),
+    ("board_definition", "other_definition"), ("tier", None),
+])
+def test_archive_wrong_date_definition_or_tier_cannot_fill_missing(field, value):
+    board, rows = _archive_fixture()
+    for row in rows:
+        row[field] = value
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["counts"]["matched"] == 0
+    assert receipt["status"] != "matched_fields"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("pool_rank", 27), ("pool_rank", True), ("pool_in_buy_lane", "false"),
+    ("pool_lane_reasons", "new_refusal"), ("pool_definition", "other_pool"),
+    ("pool_headline_reason", None), ("pool_in_buy_lane", True),
+])
+def test_archive_same_date_changed_receipt_is_not_a_match(field, value):
+    board, rows = _archive_fixture()
+    rows[-1][field] = value
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["by_ticker"]["AMD"] == "mismatch"
+    assert receipt["counts"]["mismatched"] == 1
+    assert receipt["status"] == "mismatch"
+
+
+def test_archive_duplicate_or_extra_pool_rows_are_visible():
+    from copy import deepcopy
+    board, rows = _archive_fixture()
+    rows.append(deepcopy(rows[-1]))
+    rows.append({**rows[0], "ticker": "UNEXPECTED"})
+    receipt = ucl.reconcile_candidate_archive(board, rows)
+    assert receipt["counts"]["duplicate_tickers"] == 1
+    assert receipt["counts"]["extra_pool_rows"] == 1
+    assert receipt["by_ticker"]["AMD"] == "mismatch"
+    assert receipt["status"] == "mismatch"
+
+
+def test_archive_no_snapshot_is_unavailable_not_empty_success():
+    board, _ = _archive_fixture()
+    for rows in [None, []]:
+        receipt = ucl.reconcile_candidate_archive(board, rows)
+        assert receipt["status"] == "unavailable"
+        assert receipt["counts"]["matched"] is None
+
+
+def test_archive_loader_uses_existing_reader_and_one_month(monkeypatch):
+    import pandas as pd
+    from engine import us_context_vector as ucv
+    board, rows = _archive_fixture()
+    calls = []
+    def read(root, *, months, columns):
+        calls.append((root, months, columns))
+        return pd.DataFrame(rows)
+    monkeypatch.setattr(ucv, "load_candidates", read)
+    receipt = ucl.load_candidate_archive_status(board, root=Path("/no-write"))
+    assert receipt["status"] == "matched_fields"
+    assert calls[0][0] == Path("/no-write")
+    assert calls[0][1] == ["2026-09"]
+    assert set(calls[0][2]) == set(ucl.CANDIDATE_ARCHIVE_COLUMNS)
+
+
+def test_archive_loader_failure_does_not_leak_exception_or_break_view(monkeypatch):
+    from engine import us_context_vector as ucv
+    board, _ = _archive_fixture()
+    def fail(*args, **kwargs):
+        raise RuntimeError("PRIVATE_PATH_SECRET")
+    monkeypatch.setattr(ucv, "load_candidates", fail)
+    receipt = ucl.load_candidate_archive_status(board)
+    assert receipt["status"] == "unavailable"
+    assert "PRIVATE_PATH_SECRET" not in str(receipt)
+    view = ucl.project_candidate_visibility(board, archive=receipt)
+    assert len(view["rows"]) == 2
+    assert view["archive"]["status"] == "unavailable"
+
+
+def test_archive_annotation_preserves_order_score_and_protected_name_boundary():
+    board, rows = _archive_fixture()
+    bare = ucl.project_candidate_visibility(board)
+    receipt = ucl.reconcile_candidate_archive(board, rows[:1])
+    view = ucl.project_candidate_visibility(board, archive=receipt)
+    assert [r["ticker"] for r in view["rows"]] == [r["ticker"] for r in bare["rows"]]
+    assert view["rows"][-1]["prophet"] is None
+    assert view["rows"][-1]["archive_state"] == "missing"
+    assert "AMD" not in str(view["archive"])
+    assert "by_ticker" not in view["archive"]
+    assert view["source_digest"] != bare["source_digest"]

@@ -37,6 +37,14 @@
       {% if row.get('tier_cascade') %} · <span class="l-en">Signal</span><span class="l-zh">信号</span> {{ row.tier_cascade }}{% endif %}
       <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
       {% for reason in (row.get('lane_reasons') or [_reason]) %}<code>{{ reason }}</code>{% endfor %}
+      {% if row.get('archive_state') %}
+      <div class="ucp-archive-row" data-archive-state="{{ row.archive_state|e }}">
+        {% if row.archive_state == 'matched_fields' %}<span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
+        {% elif row.archive_state == 'missing' %}<span class="l-en">No matching saved candidate record.</span><span class="l-zh">没有匹配的已保存候选记录。</span>
+        {% elif row.archive_state == 'mismatch' %}<span class="l-en">Saved candidate record differs.</span><span class="l-zh">已保存候选记录存在差异。</span>
+        {% else %}<span class="l-en">Saved record not verified.</span><span class="l-zh">已保存记录尚未核实。</span>{% endif %}
+      </div>
+      {% endif %}
     </details>
   </div>
   <div class="ucp-score">

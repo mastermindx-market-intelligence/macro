@@ -1029,7 +1029,7 @@ def test_candidate_membership_detector_preserves_real_plan_population():
     assert set(TICKER_ATTR.findall(_candidate_card_surface(html))) == {"TIC0", "TIC1", "TIC2"}
 
 
-def _actual_fresh_board_condition(prior, fresh):
+def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=None):
     """Execute the production rerender predicate, not a test-owned approximation."""
     import ast
     from engine.us_candidate_lanes import project_candidate_visibility
@@ -1051,9 +1051,9 @@ def _actual_fresh_board_condition(prior, fresh):
         "_fresh_su": fresh,
         "_prior_as_of": prior.get("as_of"),
         "_prior_stale": prior.get("staleness") or {},
-        "_fresh_candidate_visibility": project_candidate_visibility(fresh),
+        "_fresh_candidate_visibility": fresh_view if fresh_view is not None else project_candidate_visibility(fresh),
         "vm": {"us_standouts": prior,
-               "us_candidate_visibility": project_candidate_visibility(prior)},
+               "us_candidate_visibility": prior_view if prior_view is not None else project_candidate_visibility(prior)},
     }
     return bool(eval(compile(ast.Expression(guards[0].test), "<actual-rerender-predicate>", "eval"), namespace))
 
@@ -1117,3 +1117,77 @@ def test_same_session_correction_reaches_both_preview_and_protected_payload():
     assert override["us_candidate_visibility"]["source_digest"] == view["source_digest"]
     assert view["source_digest"] != project_candidate_visibility(prior)["source_digest"]
     assert prior == original  # neither a correction nor display changes historical input
+
+
+def test_archive_history_summary_and_diagnostics_respect_preview_boundary():
+    from copy import deepcopy
+    from engine import us_candidate_lanes as pool
+    from scripts import build_site as bs
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, records = _archive_fixture()
+    before = deepcopy(board)
+    view = pool.project_candidate_visibility(
+        board, archive=pool.reconcile_candidate_archive(board, records[:1]))
+    vm = {"us_standouts": board, "us_candidate_visibility": view}
+    override, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    html = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=override["us_candidate_visibility"], pgate=gate)
+    assert 'data-archive-status="incomplete"' in html
+    assert '1/2' in html and 'Saved history' in html and '历史记录' in html
+    assert 'AMD' not in html
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    assert 'AMD' in blocks['candidate_pool_html']
+    assert 'No matching saved candidate record.' in blocks['candidate_pool_html']
+    assert blocks['candidate_pool_source']['digest'] == view['source_digest']
+    assert board == before
+
+
+def test_both_real_builder_reads_use_the_canonical_archive_reader():
+    import ast
+    from scripts import build_site as bs
+    from engine.us_candidate_lanes import project_candidate_visibility
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, _ = _archive_fixture()
+    tree = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    wanted = {"us_candidate_visibility", "_fresh_candidate_visibility"}
+    assignments = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+                   and any(isinstance(target, ast.Name) and target.id in wanted
+                           for target in node.targets)]
+    assert len(assignments) == 2
+    calls = []
+    def archive_read(actual):
+        calls.append(actual)
+        return {"as_of": board['as_of'], "board_definition": board['board_definition'],
+                "status": "incomplete", "counts": {"expected": 2, "matched": 0,
+                "missing": 2, "mismatched": 0, "extra_pool_rows": 0, "duplicate_tickers": 0},
+                "by_ticker": {row['ticker']: 'missing' for row in board['candidate_pool']['rows']}}
+    scope = {"us_standouts": board, "_fresh_su": board,
+             "project_candidate_visibility": project_candidate_visibility,
+             "load_candidate_archive_status": archive_read}
+    exec(compile(ast.Module(body=assignments, type_ignores=[]), "<production-archive-reads>", "exec"), scope)
+    assert calls == [board, board]
+    assert scope['us_candidate_visibility'] == scope['_fresh_candidate_visibility']
+    assert scope['us_candidate_visibility']['archive']['counts']['matched'] == 0
+
+
+def test_archive_unavailable_is_visible_without_hiding_candidates():
+    from engine import us_candidate_lanes as pool
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, _ = _archive_fixture()
+    view = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, None))
+    html = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=view, pgate=None)
+    assert 'data-archive-status="unavailable"' in html
+    assert 'AMD' in html
+    assert 'Historical comparisons are not established.' in html
+    assert 'candidate records match' not in html
+
+
+def test_archive_recovery_alone_refreshes_the_same_day_screen():
+    from engine import us_candidate_lanes as pool
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, records = _archive_fixture()
+    old = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, records[:1]))
+    fresh = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, records))
+    assert _actual_fresh_board_condition(board, board, prior_view=old, fresh_view=fresh)
+    assert not _actual_fresh_board_condition(board, board, prior_view=fresh, fresh_view=fresh)

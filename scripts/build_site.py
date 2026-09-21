@@ -6015,8 +6015,9 @@ def main() -> int:
     # fix, below) reuses the EXACT same enrichment and can never silently diverge.
     us_standouts = _attach_board_display_chips(site, us_standouts)
     # Read the existing lossless pool; never rescore or re-admit a candidate here.
-    from engine.us_candidate_lanes import project_candidate_visibility
-    us_candidate_visibility = project_candidate_visibility(us_standouts)
+    from engine.us_candidate_lanes import project_candidate_visibility, load_candidate_archive_status
+    us_candidate_visibility = project_candidate_visibility(
+        us_standouts, archive=load_candidate_archive_status(us_standouts))
     # ANTICIPATION §6.9 R5 — the per-name "why not" shelf under the board. Derived from
     # the SAME board dict the cards render from; see _us_prophet_refusals for the
     # build-order reason it cannot read the published prophet index for its reason list.
@@ -7542,7 +7543,8 @@ def main() -> int:
                 site, json.loads(_us_path.read_text())) if _us_path.exists() else None
             _prior_as_of = (us_standouts or {}).get("as_of")
             _prior_stale = (us_standouts or {}).get("staleness") or {}
-            _fresh_candidate_visibility = project_candidate_visibility(_fresh_su)
+            _fresh_candidate_visibility = project_candidate_visibility(
+                _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
                     _fresh_su.get("as_of") != _prior_as_of
                     or (_fresh_su.get("staleness") or {}) != _prior_stale
