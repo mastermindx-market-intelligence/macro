@@ -190,6 +190,13 @@ _MODE_IDENTITY = {
 }
 
 
+PROFILE_UNQUALIFIED_PENDING_CANARY = "UNQUALIFIED_PENDING_CANARY"
+PROFILE_QUALIFIED_CANARY = "QUALIFIED_CANARY"
+REQUEST_PROFILE_QUALIFICATIONS = frozenset(
+    {PROFILE_UNQUALIFIED_PENDING_CANARY, PROFILE_QUALIFIED_CANARY}
+)
+
+
 @dataclass(frozen=True)
 class RequestProfile:
     """A provider-owned, closed request body overlay.
@@ -204,6 +211,12 @@ class RequestProfile:
     temperature: float
     max_tokens: int
     qualification: str
+
+    def __post_init__(self) -> None:
+        if self.qualification not in REQUEST_PROFILE_QUALIFICATIONS:
+            raise ProductionModeConfigError(
+                "request profile qualification is not in the closed accepted vocabulary"
+            )
 
     def body(self, *, requested_max_tokens: int) -> dict[str, Any]:
         """The closed body overlay for one call.
@@ -228,7 +241,7 @@ GLM_REQUEST_PROFILE = RequestProfile(
     model=GLM_PINNED_MODEL,
     temperature=0.0,
     max_tokens=4096,
-    qualification="UNQUALIFIED_PENDING_CANARY",
+    qualification=PROFILE_UNQUALIFIED_PENDING_CANARY,
 )
 
 SECRET_REF_RE = re.compile(r"^[A-Z][A-Z0-9_]{3,63}$")
@@ -625,21 +638,59 @@ def _resolve_credential(mode: ProductionMode, env: Mapping[str, str] | None) -> 
     return value if isinstance(value, str) and value.strip() else None
 
 
+def _request_profile_for_mode(mode: ProductionMode) -> RequestProfile | None:
+    """Return and revalidate the provider-owned profile that gates ``mode``."""
+
+    if mode.mode_id != "glm_general_api":
+        return None
+    profile = GLM_REQUEST_PROFILE
+    if type(profile) is not RequestProfile:
+        raise ProductionModeConfigError("GLM request profile has invalid type")
+    if profile.qualification not in REQUEST_PROFILE_QUALIFICATIONS:
+        raise ProductionModeConfigError(
+            "GLM request profile qualification is not in the closed accepted vocabulary"
+        )
+    if profile.model != mode.default_model:
+        raise ProductionModeConfigError(
+            "GLM request profile model does not match the pinned production mode"
+        )
+    return profile
+
+
+def _resolve_status_and_credential(
+    mode: ProductionMode,
+    env: Mapping[str, str] | None,
+) -> tuple[ModeStatus, str | None]:
+    """Resolve admission before touching a credential value."""
+
+    if not mode.enabled:
+        return _status(mode, None), None
+    profile = _request_profile_for_mode(mode)
+    if profile is not None and profile.qualification != PROFILE_QUALIFIED_CANARY:
+        return _status(mode, None, qualified=False), None
+    credential = _resolve_credential(mode, env)
+    return _status(mode, credential), credential
+
+
 def resolve_mode(mode_id: str, env: Mapping[str, str] | None = None) -> ModeStatus:
-    """Resolve ``mode_id`` to ``disabled`` / ``unconfigured`` / ``configured``.
+    """Resolve one mode without treating an unqualified profile as callable."""
 
-    Reads only PRESENCE of the secret env var, and only through the single
-    credential boundary; the VALUE is never returned, stored or receipted.
-    ``env=None`` means ``os.environ``.
-    """
     mode = _mode(mode_id)
-    return _status(mode, _resolve_credential(mode, env))
+    status, _credential = _resolve_status_and_credential(mode, env)
+    return status
 
 
-def _status(mode: ProductionMode, credential: str | None) -> ModeStatus:
-    """Build the resolved status from an already-resolved credential."""
+def _status(
+    mode: ProductionMode,
+    credential: str | None,
+    *,
+    qualified: bool = True,
+) -> ModeStatus:
+    """Build the resolved status from already-admitted credential evidence."""
     if not mode.enabled:
         state = "disabled"
+    elif not qualified:
+        state = "unqualified"
     elif credential is None:
         state = "unconfigured"
     else:
@@ -1110,17 +1161,17 @@ def call_mode(
     """
     mode = _mode(mode_id)
     source: Mapping[str, str] = os.environ if env is None else env
-    credential = _resolve_credential(mode, source)
-    status = _status(mode, credential)
+    status, credential = _resolve_status_and_credential(mode, source)
     if status.state != "configured":
-        _emit_attempt(status, ok=False, latency_ms=0, error_class=status.state)
+        error_class = "unsupported" if status.state == "unqualified" else status.state
+        _emit_attempt(status, ok=False, latency_ms=0, error_class=error_class)
         return _receipt(
             status,
             ok=False,
             text=None,
             input_tokens=None,
             output_tokens=None,
-            error_class=status.state,
+            error_class=error_class,
             latency_ms=0,
         )
 

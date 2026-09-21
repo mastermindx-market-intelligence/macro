@@ -104,9 +104,25 @@ def _set(mode_id: str, key: str, value):
     return mutate
 
 
-def _install(monkeypatch, tmp_path: Path, *mutators) -> Path:
+def _install(
+    monkeypatch,
+    tmp_path: Path,
+    *mutators,
+    qualify_glm: bool = True,
+) -> Path:
+    """Install test config; transport tests opt into a qualified GLM profile."""
+
     cfg = _config(tmp_path, *mutators)
     monkeypatch.setattr(ppm, "DEFAULT_PATH", cfg)
+    if qualify_glm:
+        monkeypatch.setattr(
+            ppm,
+            "GLM_REQUEST_PROFILE",
+            dataclasses.replace(
+                ppm.GLM_REQUEST_PROFILE,
+                qualification=ppm.PROFILE_QUALIFIED_CANARY,
+            ),
+        )
     return cfg
 
 
@@ -153,6 +169,7 @@ def test_config_is_the_closed_two_mode_set():
     # so the strings are pinned rather than compared to themselves.
     assert ppm.MINIMAX_PINNED_MODEL == "MiniMax-M3"
     assert ppm.GLM_PINNED_MODEL == "glm-5.3-flash"
+    assert ppm.GLM_REQUEST_PROFILE.qualification == ppm.PROFILE_UNQUALIFIED_PENDING_CANARY
 
     # The credential destination table is exactly the two shipped modes.
     assert set(ppm._MODE_IDENTITY) == {"minimax_payg_api", "glm_general_api"}
@@ -166,6 +183,121 @@ def test_config_is_the_closed_two_mode_set():
         "https", "api.z.ai", "/api/paas/v4")
     assert glm_identity.secret_ref == "ZAI_API_KEY"
     assert glm_identity.model == "glm-5.3-flash"
+
+
+def test_glm_unqualified_refuses_before_credential_resolution_or_transport(
+    receipts, monkeypatch, tmp_path
+):
+    _install(
+        monkeypatch,
+        tmp_path,
+        _enable("glm_general_api"),
+        qualify_glm=False,
+    )
+    credential_reads: list[str] = []
+
+    def credential_spy(mode, env):
+        credential_reads.append(mode.mode_id)
+        return SECRET_VALUE
+
+    monkeypatch.setattr(ppm, "_resolve_credential", credential_spy)
+    transport = FakeTransport("must not run")
+
+    status = ppm.resolve_mode(
+        "glm_general_api", env={"ZAI_API_KEY": SECRET_VALUE}
+    )
+    receipt = ppm.call_mode(
+        "glm_general_api",
+        "s",
+        "u",
+        max_tokens=8,
+        env={"ZAI_API_KEY": SECRET_VALUE},
+        transport=transport,
+    )
+
+    assert status.state == "unqualified"
+    assert receipt.ok is False
+    assert receipt.state == "unqualified"
+    assert receipt.error_class == "unsupported"
+    assert credential_reads == []
+    assert transport.calls == []
+    assert receipts["usage"] == []
+    assert receipts["health"][0]["error_class"] == "unsupported"
+
+
+def test_glm_qualification_vocabulary_is_closed_and_drift_refuses_before_credential(
+    monkeypatch, tmp_path
+):
+    assert ppm.REQUEST_PROFILE_QUALIFICATIONS == frozenset(
+        {"UNQUALIFIED_PENDING_CANARY", "QUALIFIED_CANARY"}
+    )
+    with pytest.raises(ppm.ProductionModeConfigError, match="qualification"):
+        ppm.RequestProfile(
+            model=ppm.GLM_PINNED_MODEL,
+            temperature=0.0,
+            max_tokens=8,
+            qualification="DRIFTED",
+        )
+
+    drifted = dataclasses.replace(
+        ppm.GLM_REQUEST_PROFILE,
+        qualification="UNQUALIFIED_PENDING_CANARY",
+    )
+    object.__setattr__(drifted, "qualification", "DRIFTED")
+    monkeypatch.setattr(ppm, "GLM_REQUEST_PROFILE", drifted)
+    _install(
+        monkeypatch,
+        tmp_path,
+        _enable("glm_general_api"),
+        qualify_glm=False,
+    )
+
+    def forbidden_credential(*_args, **_kwargs):
+        raise AssertionError("qualification drift reached credential resolution")
+
+    monkeypatch.setattr(ppm, "_resolve_credential", forbidden_credential)
+    with pytest.raises(ppm.ProductionModeConfigError, match="qualification"):
+        ppm.resolve_mode(
+            "glm_general_api", env={"ZAI_API_KEY": SECRET_VALUE}
+        )
+
+
+def test_qualified_glm_profile_positive_control_reaches_existing_transport(
+    receipts, monkeypatch, tmp_path
+):
+    _install(monkeypatch, tmp_path, _enable("glm_general_api"))
+    monkeypatch.setattr(
+        ppm,
+        "GLM_REQUEST_PROFILE",
+        dataclasses.replace(
+            ppm.GLM_REQUEST_PROFILE,
+            qualification=ppm.PROFILE_QUALIFIED_CANARY,
+        ),
+    )
+    transport = FakeTransport(
+        {
+            "choices": [{"message": {"content": "qualified glm"}}],
+            "usage": {"prompt_tokens": 3, "completion_tokens": 2},
+        }
+    )
+
+    status = ppm.resolve_mode(
+        "glm_general_api", env={"ZAI_API_KEY": SECRET_VALUE}
+    )
+    receipt = ppm.call_mode(
+        "glm_general_api",
+        "s",
+        "u",
+        max_tokens=8,
+        env={"ZAI_API_KEY": SECRET_VALUE},
+        transport=transport,
+    )
+
+    assert status.state == "configured"
+    assert receipt.ok is True
+    assert receipt.text == "qualified glm"
+    assert len(transport.calls) == 1
+    assert transport.calls[0]["credential"] == SECRET_VALUE
 
 
 _REJECTIONS = {
@@ -538,7 +670,8 @@ def test_glm_real_shaped_response_body_is_the_profile_and_usage_reaches_the_ledg
     # The profile is CLOSED: no thinking/reasoning control was invented for an
     # unverified glm-5.3-flash parameter contract, and nothing else was added.
     assert set(body) == {"model", "messages", "max_tokens", "temperature", "stream"}
-    assert ppm.GLM_REQUEST_PROFILE.qualification == "UNQUALIFIED_PENDING_CANARY"
+    # This transport test opts into the explicit test-only qualified profile.
+    assert ppm.GLM_REQUEST_PROFILE.qualification == ppm.PROFILE_QUALIFIED_CANARY
 
     usage = receipts["usage"][0]
     assert usage["provider"] == "glm"
