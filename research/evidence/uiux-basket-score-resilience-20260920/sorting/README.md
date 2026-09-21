@@ -25,3 +25,6 @@ All 121 embedded DETAIL payloads and the existing sorting comparator are byte-id
 
 ## Exact next action / do not redo
 Conclude exact-head hosted checks, consume the incumbent shared theme repair #7523 through its owner, then qualify the immutable current-base integration. Only after actual gates clear, deliver through the existing VPS updater and run `verify_sorting.py --base-url https://www.mastermind-x.com --output-dir <production-evidence>` plus the prior resilience verifier. Do not force-merge, rewrite shared receipts by hand, rebase solely for ancestry, request Vercel deployment, create a replacement PR, reimplement sorting/ranking, or repeat completed source repairs. Source screenshots/tests do not prove deployment.
+
+## Latest release checkpoint
+See `../integration/README.md`: canonical current-base CSS binding, 160 tests and 20 browser cases verified. The original UI semantics remain frozen; exact-head hosted checks and VPS/public proof remain required.

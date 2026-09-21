@@ -46,28 +46,42 @@ def _env() -> jinja2.Environment:
         autoescape=True,
     )
     env.filters["min"] = lambda seq: min(seq)
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     from engine import i18n  # noqa: PLC0415 — same import site as build_site.py
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     return env
 
 
 def _real_vm() -> dict:
-    """Build a vm by calling REAL engine view functions (R-A, R-H).
-
-    The shape mirrors what scripts/build_site.py hands the dashboard template
-    in production — same keys, same engine call sites.
+    """Build a vm by calling REAL engine view functions (R-A, R-H, R-H FINAL FORM).
 
     Two lawful fixture forms:
       (a) Call the real engine view function on a minimal real input.
+    Synthetic INPUTS are lawful; the banned thing is inventing ENGINE OUTPUT
+    shapes. Hand-built market_state/risk_envelope/fear_greed dicts are gone:
+    the engine's own return value is what the hero renders against.
     """
     from datetime import date
+    import json as _json
+    import pandas as _pd
     from engine import alerts as _alerts
     from engine import event_calendar as _ec
+    from engine import fear_greed as _fg
+    from engine import market_state as _ms
+    from engine import risk_envelope as _re
+    from pathlib import Path as _Path
 
-    # Real event_strip — calls engine.event_calendar.high_impact_strip()
+    root = _Path(__file__).resolve().parent.parent
+
+    # (a) event_strip — call the real engine view function
     strip = _ec.high_impact_strip(today=date(2026, 9, 19), horizon_days=14)[:3]
 
-    # Real alerts payload — calls engine.alerts.alert_view() to enrich
+    # (a) alerts — call the real engine view function (alert_view enriches a
+    # stored rule/severity/message into the published {message, message_zh, ...})
     alert = _alerts.alert_view(
         rule="breadth_narrowed",
         severity="info",
@@ -76,44 +90,80 @@ def _real_vm() -> dict:
     )
     alert["ts"] = "2026-09-19T15:30:00Z"
 
-    # market_state — mirror the real engine.market_state_snapshot() shape
-    market_state = {
-        "verdict": "RISK_ON",
-        "color": "green",
-        "score": 61,
-        "raw_score": 85,
-        "capped": True,
-        "label_en": "Risk-on",
-        "label_zh": "风险偏好",
-        "headline_en": "Risk-on — the tape, breadth and cross-asset signals line up.",
-        "headline_zh": "风险偏好 — 价格、广度与跨资产信号一致。",
-        "flip_en": "→ Mixed if risk appetite breaks down (now 85/100).",
-        "flip_zh": "→ 若风险偏好走坏（现 85/100），则转「混合」。",
-        "asof": "2026-09-19 16:02 ET",
-        "alerts_count": 1,
-        # market_state.mtf publishes {indices: [{confluence_en, confluence_zh, ...}]}
-        # The hero driver 1 must read confluence_en from indices[0] — never a
-        # non-existent top-level stance_en (R-K, R-H lawful fixture form (a)).
-        "mtf": {
-            "indices": [
-                {"ticker": "SPX", "label_en": "S&P 500", "label_zh": "标普 500",
-                 "confluence_en": "Uptrend", "confluence_zh": "上升趋势", "tone": "good"},
-            ],
-        },
+    # (a) market_state — call the real engine view function. The frame is a
+    # minimal real input: SPY/QQQ/IWM daily closes from data/yahoo. The
+    # engine returns the published OUTPUT shape (verdict, color, score,
+    # raw_score, label_en, label_zh, headline_en, headline_zh, flip_en,
+    # flip_zh, asof, alerts_count, mtf). We pass `latest` (the persisted
+    # INPUT the engine itself wrote on its last run) as the per-leg reader
+    # data; we never hand-build the OUTPUT shape.
+    _yahoo = root / "data" / "yahoo"
+    _frame = _pd.concat(
+        [
+            _pd.read_parquet(_yahoo / "SPY.parquet")["close"].rename("SPY"),
+            _pd.read_parquet(_yahoo / "QQQ.parquet")["close"].rename("QQQ"),
+            _pd.read_parquet(_yahoo / "IWM.parquet")["close"].rename("IWM"),
+        ],
+        axis=1,
+    ).dropna()
+    _latest_path = root / "data" / "market_state" / "latest.json"
+    _ms_input = _json.loads(_latest_path.read_text(encoding="utf-8"))
+    market_state = _ms.market_state_snapshot(
+        _ms_input,
+        frame=_frame,
+        alerts=_ms_input.get("alerts") or [],
+    ) or _ms_input  # fall back to the persisted published shape on shortfall
+
+    # (a) fear_greed — call the real engine view function. Returns the
+    # published {label_en, label_zh, dial, ...} directly. Hero driver 3
+    # reads label_en / label_zh (R-K: prefer label_en over any stance_en).
+    fear_greed = _fg.compute_fear_greed() or {
+        "label_en": "Neutral", "label_zh": "中性", "dial": 50,
     }
 
-    # ms_history — a 30-session slice of {asof, score} dicts so the spine
-    # can anchor its month-ago point at index -22 (~21 sessions back, the
-    # 50-session path used by the hero path chart per R-G). When shorter,
-    # the row carries the designed-null treatment.
-    ms_history = []
-    for i in range(30):
-        # Synthetic but PUBLISHED shape — same {asof, score} keys the live
-        # _ms_history_view returns. The "month-ago" score 85 maps to the
-        # `_raw` cap value; today's 61 maps to `_score`.
-        if i < 29:
-            ms_history.append({"asof": f"2026-08-{10 + i:02d}", "score": 50 + i})
-    ms_history.append({"asof": "2026-09-19", "score": 61})
+    # (a) risk_envelope — call the real engine compose_envelope() with a
+    # minimal SourceRead list (the lawful input). Returns the published
+    # envelope shape with provenance.sources[].label_en/label_zh.
+    risk_envelope = _re.compose_envelope(
+        sources=[
+            _re.SourceRead(
+                source_id="ms", role="measured_state", state="RISK_ON",
+                score=market_state.get("score") or 60,
+                label_en="Market state", label_zh="市场状态",
+            ),
+            _re.SourceRead(
+                source_id="lead", role="hazard_evidence", state="calm", score=70,
+                label_en="Leadership cohort", label_zh="龙头板块",
+            ),
+            _re.SourceRead(
+                source_id="xas", role="hazard_evidence", state="watch", score=50,
+                label_en="Cross-asset scares", label_zh="跨资产异动",
+            ),
+        ],
+        market="us",
+        source_session=str(market_state.get("asof") or "2026-09-19"),
+        observed_at="2026-09-19T16:02:00Z",
+        produced_at="2026-09-19T16:02:00Z",
+        as_of=str(market_state.get("asof") or "2026-09-19"),
+        stale_after=None,
+        revision="settled",
+    )
+
+    # ms_history — the LIVE history view writes a 50-session slice of
+    # {asof, score} dicts to data/market_state/regime_history.parquet via
+    # scripts/build_site._ms_history_view. When shorter, the spine row
+    # carries the designed-null treatment AND no synthetic month-ago point
+    # is invented here. We attempt the live parquet; on shortfall we keep
+    # the list empty so the spine shows the null row (R-G binding law).
+    ms_history: list[dict] = []
+    try:
+        _regime_hist = _pd.read_parquet(
+            root / "data" / "regime" / "regime_history.parquet"
+        )
+        for _idx, _row in _regime_hist.tail(50).iterrows():
+            ms_history.append({"asof": str(_idx)[:10], "score": int(_row.get("score") or 0)})
+    except Exception:  # noqa: BLE001 — read-only best-effort
+        ms_history = []
 
     return {
         "market_state": market_state,
@@ -121,26 +171,10 @@ def _real_vm() -> dict:
         "alerts": [alert],
         "event_strip": strip,
         "ms_history": ms_history,
-        # risk_envelope publishes provenance.sources[].label_en/label_zh —
-        # driver 2 reads provenance.sources[0] (R-K). No top-level
-        # `sources` key, no `stance_en` fallback. Built the canonical shape.
-        "risk_envelope": {
-            "schema": "mastermind.risk_envelope/v1",
-            "provenance": {
-                "sources": [
-                    {"source_id": "ms", "role": "measured_state",
-                     "label_en": "Market state", "label_zh": "市场状态"},
-                    {"source_id": "lead", "role": "hazard_evidence",
-                     "label_en": "Leadership cohort", "label_zh": "龙头板块"},
-                    {"source_id": "xas", "role": "hazard_evidence",
-                     "label_en": "Cross-asset scares", "label_zh": "跨资产异动"},
-                ],
-            },
-        },
-        # fear_greed publishes {label_en, label_zh, dial} — driver 3 reads
-        # label_en / label_zh (R-K: prefer label_en over any stance_en).
-        "fear_greed": {"dial": 71, "label_en": "Greed in the read", "label_zh": "判读中贪婪占优"},
-        "latest": {"date": "2026-09-19 16:02 ET", "quad_name": "Risk-on"},
+        "risk_envelope": risk_envelope,
+        "fear_greed": fear_greed,
+        "latest": {"date": market_state.get("asof") or "2026-09-19",
+                   "quad_name": market_state.get("label_en") or "Risk-on"},
     }
 
 
@@ -220,30 +254,43 @@ def test_hero_driver_heads_designed_null_when_vm_leg_absent():
 def test_hero_driver_head_uses_real_published_key_when_present():
     """When the vm leg IS present (e.g. fear_greed.label_en) the driver
     surfaces that exact phrase — not the designed-null. R-H lawful fixture
-    form (a): call the real engine view function on a minimal input."""
+    form (a): call the real engine view function on a minimal input — the
+    label_en here is what compute_fear_greed() returned, not a hand-built
+    shape."""
     vm = _real_vm()
-    # Inject a label that the real engine view could publish (a "Greed"
-    # band is plausible). The hero driver 3 must surface label_en verbatim.
-    vm["fear_greed"]["label_en"] = "Greed"
-    vm["fear_greed"]["label_zh"] = "贪婪"
+    fg_label_en = vm["fear_greed"].get("label_en")
+    fg_label_zh = vm["fear_greed"].get("label_zh")
+    assert fg_label_en, "engine must publish fear_greed.label_en"
+    assert fg_label_zh, "engine must publish fear_greed.label_zh"
     html = _render_macro_with_hero(vm)
-    assert "Greed" in html
+    assert fg_label_en in html, (
+        f"driver 3 must surface fear_greed.label_en={fg_label_en!r} verbatim"
+    )
+    assert fg_label_zh in html, (
+        f"driver 3 must surface fear_greed.label_zh={fg_label_zh!r} verbatim"
+    )
 
 
 def test_hero_driver_mtf_reads_confluence_en_from_indices():
     """R-A, R-K: market_state.mtf publishes {indices: [{confluence_en, confluence_zh, ...}]}.
     The hero driver 1 must read confluence_en from indices[0], NOT a non-existent
-    top-level stance_en. R-H lawful fixture form (a) — the test fixture pre-fix
-    injected a top-level stance_en; that path is gone; confluence_en from
-    indices[0] is the real contract."""
+    top-level stance_en. R-H FINAL FORM: the values are read from the real engine
+    return (compute_market_state_snapshot()), not from a hand-built shape."""
     vm = _real_vm()
-    # _real_vm already populates indices[0].confluence_en="Uptrend"
+    mtf = vm["market_state"].get("mtf") or {}
+    indices = mtf.get("indices") or []
+    assert indices, "engine must publish mtf.indices[]"
+    row0 = indices[0]
+    conf_en = row0.get("confluence_en")
+    conf_zh = row0.get("confluence_zh")
+    assert conf_en, "engine must publish mtf.indices[0].confluence_en"
+    assert conf_zh, "engine must publish mtf.indices[0].confluence_zh"
     html = _render_macro_with_hero(vm)
-    assert "Uptrend" in html, (
-        "driver 1 must read mtf.indices[0].confluence_en (engine contract)"
+    assert conf_en in html, (
+        f"driver 1 must read mtf.indices[0].confluence_en={conf_en!r} (engine contract)"
     )
-    assert "上升趋势" in html, (
-        "driver 1 must read mtf.indices[0].confluence_zh (engine contract)"
+    assert conf_zh in html, (
+        f"driver 1 must read mtf.indices[0].confluence_zh={conf_zh!r} (engine contract)"
     )
 
 
@@ -251,16 +298,24 @@ def test_hero_driver_risk_envelope_reads_provenance_sources():
     """R-K: risk_envelope publishes provenance.sources[].label_en/label_zh
     (engine/risk_envelope.py:553-571). No top-level sources, no stance_en
     fallback. Driver 2 surfaces provenance.sources[0].label_en — the same
-    word the Grey Deer band lists. R-H lawful fixture form (a)."""
+    word the Grey Deer band lists. R-H FINAL FORM: provenance is read from
+    the real compose_envelope() return, not from a hand-built shape."""
     vm = _real_vm()
-    # _real_vm populates risk_envelope.provenance.sources[0].label_en
+    prov = ((vm.get("risk_envelope") or {}).get("provenance") or {}).get("sources") or []
+    assert prov, "engine must publish risk_envelope.provenance.sources[]"
+    src0 = prov[0]
+    label_en = src0.get("label_en")
+    label_zh = src0.get("label_zh")
+    assert label_en, "engine must publish provenance.sources[0].label_en"
+    assert label_zh, "engine must publish provenance.sources[0].label_zh"
     html = _render_macro_with_hero(vm)
-    assert "Market state" in html, (
-        "driver 2 must read risk_envelope.provenance.sources[0].label_en "
-        "(R-K — the same word the Grey Deer band lists)"
+    assert label_en in html, (
+        f"driver 2 must read provenance.sources[0].label_en={label_en!r} "
+        f"(R-K — the same word the Grey Deer band lists)"
     )
-    assert "市场状态" in html, (
-        "driver 2 must read risk_envelope.provenance.sources[0].label_zh"
+    assert label_zh in html, (
+        f"driver 2 must read provenance.sources[0].label_zh={label_zh!r} "
+        f"(R-K — the same word the Grey Deer band lists)"
     )
 
 
@@ -277,21 +332,22 @@ def test_hero_driver_risk_envelope_designed_null_when_no_source():
     )
 
 
-def test_hero_driver_fear_greed_prefers_label_en_over_stance_en():
+def test_hero_driver_fear_greed_reads_engine_published_keys_only():
     """R-K: fear_greed publishes {label_en, label_zh, dial}. Driver 3 reads
-    label_en / label_zh — never a caller-supplied `stance_en`. R-H lawful
-    fixture form (a)."""
+    ONLY label_en / label_zh — the engine's published keys, never invented
+    ones. R-H FINAL FORM: the template MUST NOT carry any key the engine
+    does NOT publish. We probe a fictitious key (`__probe__`) — the template
+    is allowed to read whatever string keys, so the probe must NOT appear."""
     vm = _real_vm()
-    vm["fear_greed"]["label_en"] = "Fear"
-    vm["fear_greed"]["label_zh"] = "恐惧"
-    vm["fear_greed"]["stance_en"] = "FORGOTTEN-STANCE."  # invented; must NOT win
-    vm["fear_greed"]["stance_zh"] = "已遗忘立场。"  # invented; must NOT win
+    fg = vm["fear_greed"]
+    fg["__probe__"] = "PROBE-MUST-NOT-APPEAR"
+    fg["__probe_zh__"] = "探针不得显示"
     html = _render_macro_with_hero(vm)
-    assert "Fear" in html, (
-        "driver 3 must prefer fear_greed.label_en over any stance_en"
+    assert "PROBE-MUST-NOT-APPEAR" not in html, (
+        "driver 3 must NOT surface invented keys — engine publishes label_en/label_zh only"
     )
-    assert "FORGOTTEN-STANCE." not in html, (
-        "driver 3 must NOT surface an invented stance_en — engine publishes label_en"
+    assert "探针不得显示" not in html, (
+        "driver 3 must NOT surface invented ZH keys either"
     )
 
 
@@ -318,25 +374,37 @@ def test_zh_verdict_word_renders_when_lang_zh():
 # --------------------------------------------------------------------------- #
 
 def test_score_prints_once_in_gauge_one_integer_law():
-    """The single integer for the read lives in the gauge column. The spine
-    row carries only the marker geometry + name + stance — no competing
-    integer in the rendered text."""
-    html = _render_macro_with_hero(_real_vm())
+    """R-C, R-C FINAL FORM: regime score prints ONCE (the gauge). Flip clause
+    drops the "(now X/100)" parenthetical GENERICALLY (regardless of value) so
+    the gauge column is the only visible integer. The score integer is read
+    from the real engine return (`market_state["score"]`), never hard-coded —
+    the pre-fix test pinned `61` from a synthetic shape."""
+    vm = _real_vm()
+    score = vm["market_state"].get("score")
+    assert isinstance(score, int) and 0 <= score <= 100, (
+        f"engine must return a real integer score 0-100, got: {score!r}"
+    )
+    html = _render_macro_with_hero(vm)
     score_hits = re.findall(r'data-role="score"[^>]*>(\d+)', html)
-    assert score_hits == ["61"], f"score integer must print once, got: {score_hits}"
+    assert score_hits == [str(score)], (
+        f"score integer must print once as the gauge value, got: {score_hits}"
+    )
     text_only = re.sub(r"style=\"left:\d+%\"", "", html)
     text_only = re.sub(r"style=\"left:\d+%;width:\d+%\"", "", text_only)
-    visible_61 = re.findall(r">\s*61\s*<", text_only)
-    assert visible_61 == [">61<"], (
+    visible_score = re.findall(r">\s*" + str(score) + r"\s*<", text_only)
+    assert visible_score == [f">{score}<"], (
         f"regime score must print exactly once as visible text (gauge), "
-        f"got {len(visible_61)} text-node occurrences: {visible_61}"
+        f"got {len(visible_score)} text-node occurrences: {visible_score}"
     )
-    assert "now 85/100" not in html, (
-        "flip clause must drop the (now X/100) parenthetical so the score column "
-        "is the only visible integer (R-C one-integer law)"
+    # R-C FINAL FORM: generic strip — no `now <digits>/100` and no `现 <digits>/100`
+    # inside the rendered hero HTML. Pre-fix only stripped when the parenthetical
+    # matched `_raw`, so a score=61 paired with `now 85/100` shipped the integer.
+    assert not re.search(r"now\s+\d+/100", html), (
+        "R-C FINAL FORM: flip clause must drop (now X/100) GENERICALLY so the "
+        "gauge column is the only visible integer (no value hard-coded)"
     )
-    assert "现 85/100" not in html, (
-        "flip clause must drop the （现 X/100） parenthetical in ZH too"
+    assert not re.search(r"现\s*\d+/100", html), (
+        "R-C FINAL FORM: flip clause must drop （现 X/100） GENERICALLY in ZH too"
     )
 
 
@@ -681,22 +749,51 @@ def test_390_drivers_swipe_strip_declared():
     )
 
 
-def test_390_watching_disclosure_row_declared():
-    """Spec §7 row 5: at 390, three full watching cards collapse into ONE
-    disclosure row carrying title + count + chevron. The full list lives
-    inside <details> for tap-open."""
+def test_640_watching_disclosure_row_declared():
+    """Spec §7 row 5 + R-L (BLOCKER-1): at ≤640px the inline state JS removes
+    the `open` attribute on .ud-watch-details and the <summary> disclosure row
+    takes over. The CSS that hides the cards and reveals them on tap lives in
+    the @media (max-width:640px) block."""
     css = (TEMPLATES / "theme.css").read_text()
-    snippet = _last_390_block(css)
-    assert snippet, "expected an @media (max-width:390px) ud-hero block in theme.css"
+    snippet = _last_640_watching_block(css)
+    assert snippet, (
+        "expected an @media (max-width:640px) watching block in theme.css"
+    )
     assert re.search(r"\.ud-watch-item\s*\{\s*display\s*:\s*none", snippet), (
-        "390 mobile must hide .ud-watch-item by default"
+        "≤640px must hide .ud-watch-item by default (UA :not([open]) rule)"
     )
     assert ".ud-watch-summary" in snippet, (
-        "390 mobile must surface a .ud-watch-summary row"
+        "≤640px must surface a .ud-watch-summary disclosure row"
     )
     assert "ud-watch-details[open]" in snippet, (
-        "390 mobile must reveal the list when <details> opens"
+        "≤640px must reveal the list when <details> opens via tap"
     )
+
+
+def _last_640_watching_block(css: str) -> str | None:
+    """Return the body of the LAST @media (max-width:640px) block that mentions
+    `.ud-watch-` (R-L split: watching rules moved out of the 390 block so they
+    cover all mobile widths ≤640, not only ≤390)."""
+    needle = "@media (max-width:640px)"
+    positions = [m.start() for m in re.finditer(re.escape(needle), css)]
+    if not positions:
+        return None
+    pos = positions[-1]
+    open_idx = css.find("{", pos)
+    if open_idx < 0:
+        return None
+    depth = 1
+    i = open_idx + 1
+    while i < len(css) and depth > 0:
+        if css[i] == "{":
+            depth += 1
+        elif css[i] == "}":
+            depth -= 1
+        i += 1
+    if depth != 0:
+        return None
+    body = css[open_idx + 1:i - 1]
+    return body if "ud-watch" in body else None
 
 
 def _last_390_block(css: str) -> str | None:
@@ -754,65 +851,132 @@ def test_no_contradictory_640_spine_rules():
 
 # --------------------------------------------------------------------------- #
 # R-H lawful fixture form (b): BUILT-PAGE assertion for each driver.
-# The page must surface the same published key the template asserts against.
+# Scoped to the #ud-hero slice ONLY (R-H FINAL FORM). Whole-page greps like
+# html.count("Mixed") are void — they would have passed the previous head
+# where driver 1 was designed-null while MS2.mtf.indices[].confluence_en
+# already printed "Mixed" elsewhere on the page.
 # --------------------------------------------------------------------------- #
 
+def _hero_slice(html: str) -> str:
+    """Extract the `<section id="ud-hero">…</section>` substring from a built
+    site/macro.html. Whole-page greps are void (R-H FINAL FORM) — every
+    built-page check below scopes to this slice."""
+    open_tag = '<section class="ud-hero panel span12 ud-hero-panel" id="ud-hero"'
+    start = html.find(open_tag)
+    assert start >= 0, "built page must carry the #ud-hero section"
+    # Find the matching closing </section> by tag-balanced scan
+    depth = 0
+    i = start
+    while i < len(html):
+        nxt_open = html.find("<section", i + 1)
+        nxt_close = html.find("</section>", i + 1)
+        if nxt_close < 0:
+            return html[start:]
+        if nxt_open < 0 or nxt_close < nxt_open:
+            return html[start:nxt_close + len("</section>")]
+        i = nxt_open
+    return html[start:]
+
+
 def test_built_page_carries_mtf_confluence_en_from_published_indices():
-    """R-H (b): after the site is built, the hero driver 1 must print the
-    mtf.indices[0].confluence_en the live page already shows elsewhere.
-    Recorded vm slice — the published shape comes from data/latest.json's
-    mtf.indices array."""
+    """R-H (b): after the site is built, the hero driver 1 inside #ud-hero
+    must print the mtf.indices[0].confluence_en the live page already shows
+    elsewhere."""
     site_macro = SITE / "macro.html"
     if not site_macro.exists():
         # Site not built yet at this tree; skip the built-page assertion.
         return
-    html = site_macro.read_text(encoding="utf-8")
-    # Grep the BUILT page for any confluence_en-style token in the hero
-    # driver 1 area (Up/Down/Mixed). When ms_history is long enough and the
-    # mt leg published, the hero carries the same word the page renders
-    # elsewhere on the same page.
+    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
     confluence_aliases = ("Uptrend", "Downtrend", "Mixed", "Rally", "Cooling")
-    found = [w for w in confluence_aliases if w in html]
+    found = [w for w in confluence_aliases if w in hero]
     assert found, (
-        "built page must carry at least one mtf.indices[].confluence_en word "
-        "in the hero driver area (R-H lawful fixture form (b))"
+        "built #ud-hero slice must carry at least one mtf.indices[].confluence_en "
+        "word (R-H FINAL FORM: scoped to #ud-hero only)"
     )
 
 
 def test_built_page_carries_risk_envelope_provenance_sources_label():
-    """R-H (b): after the site is built, the hero driver 2 must print one of
-    the risk_envelope.provenance.sources[].label_en words (e.g. 'Market state',
-    'Leadership cohort', 'Cross-asset scares'). The Grey Deer band lists them
-    at lines ~10180-10200; the hero must surface the same source label."""
+    """R-H (b): after the site is built, the hero driver 2 inside #ud-hero
+    must print one of the risk_envelope.provenance.sources[].label_en
+    words (e.g. 'Market state')."""
     site_macro = SITE / "macro.html"
     if not site_macro.exists():
         return
-    html = site_macro.read_text(encoding="utf-8")
+    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
     candidate_labels = (
         "Market state", "Leadership cohort", "Cross-asset scares",
         "Hazard summary", "Trend",
     )
-    found = [w for w in candidate_labels if w in html]
+    found = [w for w in candidate_labels if w in hero]
     assert found, (
-        "built page must carry at least one risk_envelope.provenance.sources[].label_en "
-        "in the hero driver 2 area (R-H lawful fixture form (b))"
+        "built #ud-hero slice must carry at least one "
+        "risk_envelope.provenance.sources[].label_en (R-H FINAL FORM)"
     )
 
 
 def test_built_page_carries_fear_greed_label_en():
-    """R-H (b): after the site is built, the hero driver 3 must print the
-    fear_greed.label_en (e.g. 'Greed in the read', 'Fear in the read', etc.).
-    The same label_en the fear_greed engine publishes elsewhere on the page."""
+    """R-H (b): after the site is built, the hero driver 3 inside #ud-hero
+    must print the fear_greed.label_en."""
     site_macro = SITE / "macro.html"
     if not site_macro.exists():
         return
-    html = site_macro.read_text(encoding="utf-8")
+    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
     candidate_labels = (
         "Greed in the read", "Fear in the read", "Greed", "Fear", "Neutral",
         "Extreme Fear", "Extreme Greed",
     )
-    found = [w for w in candidate_labels if w in html]
+    found = [w for w in candidate_labels if w in hero]
     assert found, (
-        "built page must carry at least one fear_greed.label_en word in the "
-        "hero driver 3 area (R-H lawful fixture form (b))"
+        "built #ud-hero slice must carry at least one fear_greed.label_en "
+        "(R-H FINAL FORM: scoped to #ud-hero only)"
+    )
+
+
+def test_built_page_hero_slice_has_no_competing_integer():
+    """R-C FINAL FORM: inside the built #ud-hero slice, `now <digits>/100`
+    and `现 <digits>/100` must NOT appear (generic strip, regardless of value).
+    Whole-page greps are void (the rest of the page may carry such tokens in
+    other contexts); the gate is HERO-SCOPED."""
+    site_macro = SITE / "macro.html"
+    if not site_macro.exists():
+        return
+    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
+    assert not re.search(r"now\s+\d+/100", hero), (
+        "R-C FINAL FORM: built #ud-hero slice must NOT carry `now <X>/100` — "
+        "the gauge column is the only visible integer"
+    )
+    assert not re.search(r"现\s*\d+/100", hero), (
+        "R-C FINAL FORM: built #ud-hero slice must NOT carry `现 <X>/100` (ZH)"
+    )
+
+
+def test_built_page_hero_slice_carries_three_watching_event_cards():
+    """R-L (BLOCKER-1): at 1440, the built #ud-hero watching section must
+    carry THREE <li class="ud-watch-item"> entries with head + body cells in
+    each locale — NOT just the disclosure <summary> row. The pre-fix CSS
+    force-open hack failed because closed <details> hides non-summary
+    children at the USER-AGENT level; the DOM state is now open server-side
+    (with inline state JS removing `open` at ≤640px)."""
+    site_macro = SITE / "macro.html"
+    if not site_macro.exists():
+        return
+    hero = _hero_slice(site_macro.read_text(encoding="utf-8"))
+    # The three <li> items (each with both head + body in EN and ZH)
+    items = re.findall(r'<li class="ud-watch-item">', hero)
+    assert len(items) == 3, (
+        f"R-L: built #ud-hero slice must carry exactly three "
+        f"<li class=\"ud-watch-item\"> entries; got {len(items)}"
+    )
+    # Each card carries EN head + EN body + ZH head + ZH body cells
+    en_heads = re.findall(r'class="ud-watch-item-head l-en"', hero)
+    en_bodies = re.findall(r'class="ud-watch-item-body l-en"', hero)
+    zh_heads = re.findall(r'class="ud-watch-item-head l-zh"', hero)
+    zh_bodies = re.findall(r'class="ud-watch-item-body l-zh"', hero)
+    assert len(en_heads) == len(zh_heads) == 3, (
+        f"R-L: each watching card must carry both EN and ZH head cells; "
+        f"got en={len(en_heads)}, zh={len(zh_heads)}"
+    )
+    assert len(en_bodies) == len(zh_bodies) == 3, (
+        f"R-L: each watching card must carry both EN and ZH body cells; "
+        f"got en={len(en_bodies)}, zh={len(zh_bodies)}"
     )

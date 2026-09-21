@@ -394,7 +394,7 @@
   },
   {
    "t": "688521.SS",
-   "nm": "VeriSilicon Microelectronics (Shanghai) Co., Ltd. / 芯原股份",
+   "nm": "VeriSilicon Microelectronics (Shanghai) Co., Ltd. / 芯原微电子",
    "sec": "Technology",
    "grp": null,
    "d": "2026-09-16",
@@ -1472,8 +1472,8 @@
   },
   {
    "t": "600161.SS",
-   "nm": "Beijing Tiantan Biological Products Co., Ltd. / 天坛生物",
-   "sec": "Healthcare",
+   "nm": null,
+   "sec": null,
    "grp": null,
    "d": "2026-09-09",
    "e": 12.53,
@@ -2462,7 +2462,7 @@
   },
   {
    "t": "600009.SS",
-   "nm": "Shanghai International Airport Co., Ltd. / 上海机场",
+   "nm": "Shanghai International Airport Co., Ltd. / XD上海机场",
    "sec": "Industrials",
    "grp": null,
    "d": "2026-09-04",
@@ -2594,7 +2594,7 @@
   },
   {
    "t": "688295.SS",
-   "nm": "Zhongfu Shenying Carbon Fiber Co.,Ltd. / 中复神鹰",
+   "nm": "Zhongfu Shenying Carbon Fiber Co.,Ltd. / 中复神鹰碳纤维",
    "sec": "Basic Materials",
    "grp": null,
    "d": "2026-09-04",
@@ -2726,8 +2726,8 @@
   },
   {
    "t": "600595.SS",
-   "nm": "Henan Zhongfu Industrial Co.,Ltd / 中孚实业",
-   "sec": "Basic Materials",
+   "nm": null,
+   "sec": null,
    "grp": null,
    "d": "2026-09-03",
    "e": 6.5,
@@ -3166,7 +3166,7 @@
   },
   {
    "t": "688387.SS",
-   "nm": "CICT Mobile Communication Technology Co., Ltd. / 信科移动",
+   "nm": "CICT Mobile Communication Technology Co., Ltd. / 中信科移动",
    "sec": "Technology",
    "grp": null,
    "d": "2026-09-01",
@@ -4288,8 +4288,8 @@
   },
   {
    "t": "300623.SZ",
-   "nm": null,
-   "sec": null,
+   "nm": "Jiangsu JieJie Microelectronics Co., Ltd. / 捷捷微电",
+   "sec": "Technology",
    "grp": null,
    "d": "2026-08-26",
    "e": 30.0,
@@ -5212,7 +5212,7 @@
   },
   {
    "t": "688301.SS",
-   "nm": "iRay Group / 奕瑞科技",
+   "nm": "iRay Group / 奕瑞科技股份",
    "sec": "Healthcare",
    "grp": null,
    "d": "2026-08-21",
@@ -5872,7 +5872,7 @@
   },
   {
    "t": "688676.SS",
-   "nm": "Hainan Jinpan Smart Technology Co., Ltd. / 金盘科技",
+   "nm": "Hainan Jinpan Smart Technology Co., Ltd. / 海南金盘智能科技",
    "sec": "Industrials",
    "grp": null,
    "d": "2026-08-19",
@@ -7444,7 +7444,7 @@
    },
    {
     "t": "688472.SS",
-    "nm": "CSI Solar Co., Ltd. / 阿特斯",
+    "nm": "CSI Solar Co., Ltd. / 阿特斯阳光电力",
     "sec": "Technology",
     "grp": null,
     "d": "2026-07-28",
@@ -7664,8 +7664,8 @@
    },
    {
     "t": "002271.SZ",
-    "nm": "Beijing Oriental Yuhong Waterproof Technology Co., Ltd. / 东方雨虹",
-    "sec": "Basic Materials",
+    "nm": null,
+    "sec": null,
     "grp": null,
     "d": "2026-07-27",
     "e": 11.21,
@@ -11250,8 +11250,8 @@
    },
    {
     "t": "600595.SS",
-    "nm": "Henan Zhongfu Industrial Co.,Ltd / 中孚实业",
-    "sec": "Basic Materials",
+    "nm": null,
+    "sec": null,
     "grp": null,
     "d": "2026-07-16",
     "e": 6.16,
@@ -12790,7 +12790,7 @@
    },
    {
     "t": "688271.SS",
-    "nm": "Shanghai United Imaging Healthcare Co., Ltd. / XD联影医",
+    "nm": "Shanghai United Imaging Healthcare Co., Ltd. / 联影医疗",
     "sec": "Healthcare",
     "grp": null,
     "d": "2026-07-14",
@@ -15012,7 +15012,7 @@
    },
    {
     "t": "688213.SS",
-    "nm": "Smartsens Technology (Shanghai) Co., Ltd. / 思特威",
+    "nm": "Smartsens Technology (Shanghai) Co., Ltd. / 思特威电子科技",
     "sec": "Technology",
     "grp": null,
     "d": "2026-07-08",
@@ -19150,7 +19150,7 @@
    },
    {
     "t": "688295.SS",
-    "nm": "Zhongfu Shenying Carbon Fiber Co.,Ltd. / 中复神鹰",
+    "nm": "Zhongfu Shenying Carbon Fiber Co.,Ltd. / 中复神鹰碳纤维",
     "sec": "Basic Materials",
     "grp": null,
     "d": "2026-06-30",
@@ -20330,8 +20330,8 @@
     },
     {
      "t": "000582.SZ",
-     "nm": "Beibu Gulf Port Co., Ltd. / 北部湾港",
-     "sec": "Industrials",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-07-30",
      "e": 12.2,
@@ -22059,8 +22059,8 @@
     },
     {
      "t": "600161.SS",
-     "nm": "Beijing Tiantan Biological Products Co., Ltd. / 天坛生物",
-     "sec": "Healthcare",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-09-08",
      "e": 12.67,
@@ -22697,7 +22697,7 @@
     },
     {
      "t": "600009.SS",
-     "nm": "Shanghai International Airport Co., Ltd. / 上海机场",
+     "nm": "Shanghai International Airport Co., Ltd. / XD上海机场",
      "sec": "Industrials",
      "grp": null,
      "d": "2026-09-04",
@@ -23071,8 +23071,8 @@
     },
     {
      "t": "600595.SS",
-     "nm": "Henan Zhongfu Industrial Co.,Ltd / 中孚实业",
-     "sec": "Basic Materials",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-09-03",
      "e": 6.5,
@@ -24325,7 +24325,7 @@
     },
     {
      "t": "688052.SS",
-     "nm": "Suzhou Novosense Microelectronics Co., Ltd. / 纳芯微",
+     "nm": "Suzhou Novosense Microelectronics Co., Ltd. / 纳芯微电子",
      "sec": "Technology",
      "grp": null,
      "d": "2026-08-27",
@@ -24413,8 +24413,8 @@
     },
     {
      "t": "000932.SZ",
-     "nm": "Hunan Valin Steel Co., Ltd. / 华菱钢铁",
-     "sec": "Basic Materials",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-08-26",
      "e": 3.73,
@@ -25667,7 +25667,7 @@
     },
     {
      "t": "601018.SS",
-     "nm": "Ningbo Zhoushan Port Company Limited / 宁波港",
+     "nm": "Ningbo Zhoushan Port Company Limited / XD宁波港",
      "sec": "Industrials",
      "grp": null,
      "d": "2026-08-19",
@@ -28958,8 +28958,8 @@
     },
     {
      "t": "002487.SZ",
-     "nm": null,
-     "sec": null,
+     "nm": "Dajin Heavy Industry Co.,Ltd. / 大金重工",
+     "sec": "Industrials",
      "grp": null,
      "d": "2026-08-07",
      "e": 41.53,
@@ -29662,7 +29662,7 @@
     },
     {
      "t": "688568.SS",
-     "nm": "Geovis Technology Co.,Ltd / 中科星图",
+     "nm": "Geovis Technology Co.,Ltd / 中科星图公司",
      "sec": "Technology",
      "grp": null,
      "d": "2026-08-06",
@@ -30093,7 +30093,7 @@
     },
     {
      "t": "688521.SS",
-     "nm": "VeriSilicon Microelectronics (Shanghai) Co., Ltd. / 芯原股份",
+     "nm": "VeriSilicon Microelectronics (Shanghai) Co., Ltd. / 芯原微电子",
      "sec": "Technology",
      "grp": null,
      "d": "2026-09-16",
@@ -31171,8 +31171,8 @@
     },
     {
      "t": "600161.SS",
-     "nm": "Beijing Tiantan Biological Products Co., Ltd. / 天坛生物",
-     "sec": "Healthcare",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-09-09",
      "e": 12.53,
@@ -32161,7 +32161,7 @@
     },
     {
      "t": "600009.SS",
-     "nm": "Shanghai International Airport Co., Ltd. / 上海机场",
+     "nm": "Shanghai International Airport Co., Ltd. / XD上海机场",
      "sec": "Industrials",
      "grp": null,
      "d": "2026-09-04",
@@ -32293,7 +32293,7 @@
     },
     {
      "t": "688295.SS",
-     "nm": "Zhongfu Shenying Carbon Fiber Co.,Ltd. / 中复神鹰",
+     "nm": "Zhongfu Shenying Carbon Fiber Co.,Ltd. / 中复神鹰碳纤维",
      "sec": "Basic Materials",
      "grp": null,
      "d": "2026-09-04",
@@ -32425,8 +32425,8 @@
     },
     {
      "t": "600595.SS",
-     "nm": "Henan Zhongfu Industrial Co.,Ltd / 中孚实业",
-     "sec": "Basic Materials",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-09-03",
      "e": 6.5,
@@ -32865,7 +32865,7 @@
     },
     {
      "t": "688387.SS",
-     "nm": "CICT Mobile Communication Technology Co., Ltd. / 信科移动",
+     "nm": "CICT Mobile Communication Technology Co., Ltd. / 中信科移动",
      "sec": "Technology",
      "grp": null,
      "d": "2026-09-01",
@@ -33987,8 +33987,8 @@
     },
     {
      "t": "300623.SZ",
-     "nm": null,
-     "sec": null,
+     "nm": "Jiangsu JieJie Microelectronics Co., Ltd. / 捷捷微电",
+     "sec": "Technology",
      "grp": null,
      "d": "2026-08-26",
      "e": 30.0,
@@ -34911,7 +34911,7 @@
     },
     {
      "t": "688301.SS",
-     "nm": "iRay Group / 奕瑞科技",
+     "nm": "iRay Group / 奕瑞科技股份",
      "sec": "Healthcare",
      "grp": null,
      "d": "2026-08-21",
@@ -35571,7 +35571,7 @@
     },
     {
      "t": "688676.SS",
-     "nm": "Hainan Jinpan Smart Technology Co., Ltd. / 金盘科技",
+     "nm": "Hainan Jinpan Smart Technology Co., Ltd. / 海南金盘智能科技",
      "sec": "Industrials",
      "grp": null,
      "d": "2026-08-19",
@@ -37696,8 +37696,8 @@
     },
     {
      "t": "600161.SS",
-     "nm": "Beijing Tiantan Biological Products Co., Ltd. / 天坛生物",
-     "sec": "Healthcare",
+     "nm": null,
+     "sec": null,
      "grp": null,
      "d": "2026-09-08",
      "e": 12.67,
@@ -40503,7 +40503,7 @@
     },
     {
      "t": "603119.SS",
-     "nm": "Zhejiang Rongtai Electric Material Co.,Ltd. / 浙江荣泰",
+     "nm": "Zhejiang Rongtai Electric Material Co.,Ltd. / 浙江荣泰股份",
      "sec": "Technology",
      "grp": null,
      "d": "2026-09-08",
@@ -41603,7 +41603,7 @@
     },
     {
      "t": "688205.SS",
-     "nm": "Wuxi Taclink Optoelectronics Technology Co., Ltd. / 德科立",
+     "nm": "Wuxi Taclink Optoelectronics Technology Co., Ltd. / XD德科立光电子",
      "sec": "Technology",
      "grp": null,
      "d": "2026-08-21",
@@ -43585,7 +43585,7 @@
     },
     {
      "t": "688568.SS",
-     "nm": "Geovis Technology Co.,Ltd / 中科星图",
+     "nm": "Geovis Technology Co.,Ltd / 中科星图公司",
      "sec": "Technology",
      "grp": null,
      "d": "2026-08-10",
@@ -45059,7 +45059,7 @@
     },
     {
      "t": "688472.SS",
-     "nm": "CSI Solar Co., Ltd. / 阿特斯",
+     "nm": "CSI Solar Co., Ltd. / 阿特斯阳光电力",
      "sec": "Technology",
      "grp": null,
      "d": "2026-08-04",
