@@ -1264,6 +1264,116 @@ def test_forex_momentum_abstains_on_pair_direction_or_shape_mismatch():
     assert all(briefs[row['alert_id']]['family'] is None for row in rows)
 
 
+def test_forex_trend_flip_keeps_ex_dollar_state_distinct_from_spot_forecast():
+    row = signal('fx-trend-flip', source='forex', type_='trend_flip', asset='USDCAD')
+    row.update({
+        'tier': 'context', 'age_days': 11,
+        'headline': 'USD/CAD: CAD 12-month trend turned up',
+        'detail': 'Idiosyncratic (ex-dollar) trailing-year momentum flipped down → up. USD/CAD 1.3805.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    before = deepcopy(row)
+    brief = project([row])['briefs'][row['alert_id']]
+    assert row == before
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.trend_flip'
+    assert brief['attention'] == 'for_awareness'
+    assert 'CAD trailing-year momentum from down to up' in brief['implication']
+    assert 'idiosyncratic trend state' in brief['implication']
+    assert 'not a spot-price target' in brief['limitation']
+    assert 'not separately backtested as a timing signal' in brief['limitation']
+    assert '11 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck ex-dollar trend'
+
+
+def test_forex_structure_keeps_chart_state_descriptive():
+    row = signal('fx-structure', source='forex', type_='structure', asset='USDJPY')
+    row.update({
+        'tier': 'context', 'age_days': 12,
+        'headline': 'USD/JPY: Chart shape turned constructive',
+        'detail': 'Structure state neutral → constructive. USD/JPY 153.4780.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.structure'
+    assert 'USD/JPY structure from neutral to constructive' in brief['implication']
+    assert 'not breakout certainty' in brief['limitation']
+    assert '12 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX structure'
+
+
+def test_forex_positioning_keeps_cot_percentile_as_contrarian_context():
+    row = signal('fx-positioning', source='forex', type_='positioning', asset='EURUSD')
+    row.update({
+        'tier': 'context', 'age_days': 13,
+        'headline': 'EUR/USD COT crowded short',
+        'detail': 'Speculative net positioning reached crowded short (13th %ile, 3y) — contrarian context.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.positioning'
+    assert '13th percentile of its three-year range' in brief['implication']
+    assert 'crowded short' in brief['implication']
+    assert 'not proof a reversal is due' in brief['limitation']
+    assert '13 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck FX positioning'
+
+
+def test_forex_smile_flip_keeps_structural_bias_as_source_taxonomy():
+    row = signal('fx-smile-flip', source='forex', type_='smile_regime_flip', asset='dollar')
+    row.update({
+        'tier': 'context', 'age_days': 20,
+        'headline': 'Dollar smile flipped: US growth premium → Global reflation',
+        'detail': 'The dollar-smile decomposition regime changed: US growth premium → Global reflation. This shifts the structural USD bias — see dollar desk for context.',
+        'link': 'forex.html#timeline',
+        'validation': {'verdict': 'documented'},
+    })
+    brief = project([row])['briefs'][row['alert_id']]
+    assert brief['status'] == 'supported'
+    assert brief['family'] == 'forex.smile_regime_flip'
+    assert 'US growth premium to Global reflation' in brief['implication']
+    assert 'source taxonomy' in brief['limitation']
+    assert 'not proof of a macro outcome' in brief['limitation']
+    assert '20 days old' in brief['limitation']
+    assert brief['next_action_label'] == 'Recheck dollar smile'
+
+
+def test_forex_context_families_abstain_on_mismatched_semantics():
+    trend = signal('fx-trend-bad', source='forex', type_='trend_flip', asset='USDCAD')
+    trend.update({
+        'headline': 'USD/CAD: CAD 12-month trend turned down',
+        'detail': 'Idiosyncratic (ex-dollar) trailing-year momentum flipped down → up. USD/CAD 1.3805.',
+        'link': 'forex.html#timeline',
+    })
+    structure = signal('fx-structure-bad', source='forex', type_='structure', asset='USDJPY')
+    structure.update({
+        'headline': 'USD/JPY: Chart shape broke down',
+        'detail': 'Structure state neutral → constructive. USD/JPY 153.4780.',
+        'link': 'forex.html#timeline',
+    })
+    positioning = signal('fx-position-bad', source='forex', type_='positioning', asset='EURUSD')
+    positioning.update({
+        'headline': 'EUR/USD COT crowded short',
+        'detail': 'Speculative net positioning reached crowded long (101st %ile, 3y) — contrarian context.',
+        'link': 'forex.html#timeline',
+    })
+    smile = signal('fx-smile-bad', source='forex', type_='smile_regime_flip', asset='dollar')
+    smile.update({
+        'headline': 'Dollar smile flipped: US growth premium → Global reflation',
+        'detail': 'The dollar-smile decomposition regime changed: US growth premium → Global reflation. This shifts the structural USD bias — safe-haven bid active.',
+        'link': 'forex.html#timeline',
+    })
+    rows = (trend, structure, positioning, smile)
+    briefs = project(list(rows))['briefs']
+    assert all(briefs[row['alert_id']]['status'] == 'fallback' for row in rows)
+    assert all(briefs[row['alert_id']]['family'] is None for row in rows)
+
+
 def test_forex_scenario_active_brief_preserves_threshold_without_claiming_intervention():
     row = signal('fx-scenario', source='forex', type_='scenario', asset='dollar')
     row.update({

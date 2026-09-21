@@ -258,6 +258,24 @@ def main():
             page.screenshot(path=str(out / 'desktop-forex-momentum.png'))
             report['screenshots'].append('desktop-forex-momentum.png')
             report['checks'].append('FX momentum flips expose current-state verification without becoming directional forecasts')
+            fx_context_families = {
+                'forex.trend_flip': 'desktop-forex-trend-flip.png',
+                'forex.structure': 'desktop-forex-structure.png',
+                'forex.positioning': 'desktop-forex-positioning.png',
+                'forex.smile_regime_flip': 'desktop-forex-smile-flip.png',
+            }
+            for family, shot in fx_context_families.items():
+                context_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
+                                  if brief.get('family') == family)
+                context_brief = payload['explorer']['briefs'][context_id]
+                page.goto(url + '#view=explore&id=' + context_id, wait_until='domcontentloaded')
+                context_text = page.locator('#ac-detail').inner_text()
+                assert context_brief['limitation'] in context_text
+                assert page.locator('#ac-detail .acx-next-action').inner_text() == context_brief['next_action']
+                assert context_brief['evidence_label'] in context_text
+                page.screenshot(path=str(out / shot))
+                report['screenshots'].append(shot)
+            report['checks'].append('FX trend, structure, positioning and dollar-smile flips expose current-state verification without becoming forecasts or trade calls')
             smile_id = next(id_ for id_, brief in payload['explorer']['briefs'].items()
                             if brief.get('family') == 'forex.smile_regime')
             smile_brief = payload['explorer']['briefs'][smile_id]

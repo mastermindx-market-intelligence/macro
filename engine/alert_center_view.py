@@ -244,6 +244,36 @@ _FOREX_MOMENTUM_DETAIL = re.compile(
     r'^Momentum state (neutral|bull|bear) → (bull|bear)\. '
     r'([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
 )
+_FOREX_TREND_FLIP_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}): ([A-Z]{3}) 12-month trend turned (up|down)$'
+)
+_FOREX_TREND_FLIP_DETAIL = re.compile(
+    r'^Idiosyncratic \(ex-dollar\) trailing-year momentum flipped '
+    r'(flat|up|down) → (up|down)\. ([A-Z]{3}/[A-Z]{3}) '
+    r'([0-9]+(?:\.[0-9]+)?)\.$'
+)
+_FOREX_STRUCTURE_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}): Chart shape (turned constructive|broke down)$'
+)
+_FOREX_STRUCTURE_DETAIL = re.compile(
+    r'^Structure state (neutral|constructive|broken) → (constructive|broken)\. '
+    r'([A-Z]{3}/[A-Z]{3}) ([0-9]+(?:\.[0-9]+)?)\.$'
+)
+_FOREX_POSITIONING_HEADLINE = re.compile(
+    r'^([A-Z]{3}/[A-Z]{3}) COT (crowded long|crowded short)$'
+)
+_FOREX_POSITIONING_DETAIL = re.compile(
+    r'^Speculative net positioning reached (crowded long|crowded short) '
+    r'\(([0-9]{1,3})(?:st|nd|rd|th) %ile, 3y\) — contrarian context\.$'
+)
+_FOREX_SMILE_FLIP_HEADLINE = re.compile(
+    r'^Dollar smile flipped: (.+?) → (.+?)$'
+)
+_FOREX_SMILE_FLIP_DETAIL = re.compile(
+    r'^The dollar-smile decomposition regime changed: (.+?) → (.+?)\. '
+    r'This shifts the structural USD bias — '
+    r'(safe-haven bid active|see dollar desk for context)\.$'
+)
 _FOREX_SCENARIO_HEADLINE = re.compile(
     r'^(Carry-trade unwind|Dollar squeeze|EM outflows|Flight to safety|Risk-on rally|'
     r'Intervention watch) pattern (now active|no longer active)$'
@@ -730,6 +760,271 @@ def build_alert_brief(row: dict) -> dict:
                     f'若当前动量状态不再是 {to_state}、来源记录新的反向转换，或更新证据取代该事件，则改变判断。'),
                 'evidence_label': 'Open current FX timeline',
                 'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    trend_headline = _FOREX_TREND_FLIP_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    trend_detail = _FOREX_TREND_FLIP_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'trend_flip' and trend_headline and trend_detail:
+        headline_pair, base_ccy, headline_direction = trend_headline.groups()
+        from_state, to_state, detail_pair, quote_text = trend_detail.groups()
+        asset_pair = detail_pair.replace('/', '')
+        pair_ccys = set(detail_pair.split('/'))
+        if (headline_pair == detail_pair and base_ccy in pair_ccys and
+                headline_direction == to_state and from_state != to_state and
+                asset_pair == str(row.get('asset') or '')):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current ex-dollar trend.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前去美元趋势。'
+            recurrence_limit = ''
+            recurrence_limit_zh = ''
+            if int(row.get('fire_count') or 0) > 1 and not row.get('continuity_verified'):
+                recurrence_limit = (
+                    ' Repeated trend flips are separate observations and do not prove the state '
+                    'persisted between them.')
+                recurrence_limit_zh = ' 重复趋势翻转是独立观测，并不能证明该状态在期间持续存在。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.trend_flip',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source ex-dollar trend model moved {base_ccy} trailing-year momentum '
+                    f'from {from_state} to {to_state} in {detail_pair} at {quote_text}; this isolates '
+                    'an idiosyncratic trend state to recheck.'),
+                'implication_zh': (
+                    f'来源的去美元趋势模型显示 {base_ccy} 在 {detail_pair} 中的过去一年动量从 '
+                    f'{from_state} 切换到 {to_state}，当时报价 {quote_text}；这是需要复核的特异趋势状态。'),
+                'limitation': (
+                    'An ex-dollar trailing-year trend state is a source-model classification, not a '
+                    'spot-price target, causal explanation, calibrated return probability or trade '
+                    'instruction.' + validation_limit + age_limit + recurrence_limit),
+                'limitation_zh': (
+                    '去美元的过去一年趋势状态只是来源模型分类，并非现货价格目标、因果解释、校准收益概率或交易指令。' +
+                    validation_limit_zh + age_limit_zh + recurrence_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {base_ccy} ex-dollar trailing-year '
+                    f'momentum is still {to_state}, compare the latest {detail_pair} quote with '
+                    f'{quote_text}, and check whether a newer trend transition has replaced this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {base_ccy} 去美元的过去一年动量仍为 {to_state}，将 '
+                    f'{detail_pair} 最新报价与 {quote_text} 对比，并检查是否已有更新趋势转换取代该事件。'),
+                'next_action_label': 'Recheck ex-dollar trend',
+                'next_action_label_zh': '复核去美元趋势',
+                'reassessment': (
+                    f'Change the read if the current ex-dollar trend is no longer {to_state}, '
+                    'returns to flat, or a newer source transition supersedes this event.'),
+                'reassessment_zh': (
+                    f'若当前去美元趋势不再是 {to_state}、回到走平，或新的来源转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    structure_headline = _FOREX_STRUCTURE_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    structure_detail = _FOREX_STRUCTURE_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'structure' and structure_headline and structure_detail:
+        headline_pair, headline_phrase = structure_headline.groups()
+        from_state, to_state, detail_pair, quote_text = structure_detail.groups()
+        expected_phrase = 'turned constructive' if to_state == 'constructive' else 'broke down'
+        if (headline_pair == detail_pair and headline_phrase == expected_phrase and
+                detail_pair.replace('/', '') == str(row.get('asset') or '') and
+                from_state != to_state):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current chart structure.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前图表结构。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This chart-state context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该图表状态背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.structure',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source chart-state model moved {detail_pair} structure from {from_state} '
+                    f'to {to_state} at {quote_text}; this is a structural state change to verify '
+                    'against the current pair.'),
+                'implication_zh': (
+                    f'来源的图表状态模型将 {detail_pair} 结构从 {from_state} 切换到 {to_state}，'
+                    f'当时报价 {quote_text}；这是需要结合当前货币对复核的结构状态变化。'),
+                'limitation': (
+                    'A constructive or broken chart-state label is descriptive model context, not '
+                    'breakout certainty, a price target, calibrated return probability or trade '
+                    'instruction.' + validation_limit + age_limit),
+                'limitation_zh': (
+                    '向好或破位的图表状态标签只是描述性模型背景，并非突破确定性、价格目标、校准收益概率或交易指令。' +
+                    validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {detail_pair} structure is still '
+                    f'{to_state}, compare the latest quote with {quote_text}, and check whether a '
+                    'newer structure transition has superseded this event.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {detail_pair} 结构仍为 {to_state}，将最新报价与 '
+                    f'{quote_text} 对比，并检查是否已有更新结构转换取代该事件。'),
+                'next_action_label': 'Recheck FX structure',
+                'next_action_label_zh': '复核外汇结构',
+                'reassessment': (
+                    f'Change the read if current structure is no longer {to_state}, returns to neutral, '
+                    'or a newer source transition replaces this event.'),
+                'reassessment_zh': (
+                    f'若当前结构不再是 {to_state}、回到中性，或新的来源转换取代该事件，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    positioning_headline = _FOREX_POSITIONING_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    positioning_detail = _FOREX_POSITIONING_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'positioning' and positioning_headline and positioning_detail:
+        headline_pair, headline_state = positioning_headline.groups()
+        detail_state, percentile_text = positioning_detail.groups()
+        percentile = int(percentile_text)
+        if (headline_state == detail_state and 0 <= percentile <= 100 and
+                headline_pair.replace('/', '') == str(row.get('asset') or '')):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck current positioning.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前持仓。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This positioning context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该持仓背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.positioning',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source places {headline_pair} speculative net positioning at the '
+                    f'{percentile}th percentile of its three-year range and classifies it as '
+                    f'{detail_state}; this is contrarian positioning context to recheck.'),
+                'implication_zh': (
+                    f'来源将 {headline_pair} 投机净持仓定位在三年区间的第 {percentile} 百分位，'
+                    f'并分类为 {detail_state}；这是需要复核的逆向持仓背景。'),
+                'limitation': (
+                    'A COT percentile is a historical positioning rank, not proof a reversal is due, '
+                    'a calibrated return probability, a measure of motive or a trade instruction.' +
+                    validation_limit + age_limit),
+                'limitation_zh': (
+                    'COT 百分位只是历史持仓排名，并不能证明反转即将发生，也不是校准收益概率、动机衡量或交易指令。' +
+                    validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current FX timeline and verify {headline_pair} positioning is still '
+                    f'{detail_state}, inspect the latest three-year percentile against {percentile}, '
+                    'and check whether a newer positioning event supersedes this observation.'),
+                'next_action_zh': (
+                    f'打开当前外汇时间线，确认 {headline_pair} 持仓仍为 {detail_state}，核对最新三年百分位'
+                    f'与 {percentile} 的差异，并检查是否已有更新持仓事件取代该观测。'),
+                'next_action_label': 'Recheck FX positioning',
+                'next_action_label_zh': '复核外汇持仓',
+                'reassessment': (
+                    f'Change the read if positioning leaves {detail_state}, the percentile normalizes, '
+                    'or a newer source event supersedes this observation.'),
+                'reassessment_zh': (
+                    f'若持仓退出 {detail_state}、百分位恢复正常，或新的来源事件取代该观测，则改变判断。'),
+                'evidence_label': 'Open current FX timeline',
+                'evidence_label_zh': '打开当前外汇时间线',
+            })
+            return brief
+
+    smile_flip_headline = _FOREX_SMILE_FLIP_HEADLINE.fullmatch(_plain(row.get('headline') or ''))
+    smile_flip_detail = _FOREX_SMILE_FLIP_DETAIL.fullmatch(detail)
+    if source == 'forex' and type_ == 'smile_regime_flip' and smile_flip_headline and smile_flip_detail:
+        headline_from, headline_to = smile_flip_headline.groups()
+        detail_from, detail_to, suffix = smile_flip_detail.groups()
+        expected_suffix = (
+            'safe-haven bid active' if detail_to == 'Risk-off haven bid'
+            else 'see dollar desk for context')
+        if (str(row.get('asset') or '') == 'dollar' and headline_from == detail_from and
+                headline_to == detail_to and detail_from != detail_to and
+                detail_from in _FOREX_SMILE_REGIMES and detail_to in _FOREX_SMILE_REGIMES and
+                suffix == expected_suffix):
+            age_limit = ''
+            age_limit_zh = ''
+            if age is None:
+                age_limit = ' Event age is unavailable; current validity cannot be established.'
+                age_limit_zh = ' 事件时间未知，无法确认当前有效性。'
+            elif age > 2:
+                age_limit = f' This event is {age} days old; recheck the current dollar-smile regime.'
+                age_limit_zh = f' 该事件已过去 {age} 天；请复核当前美元微笑状态。'
+            validation_limit = (
+                ' Source conviction is documented, but this family is not separately backtested '
+                'as a timing signal.'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' This regime context does not establish a calibrated timing edge.'
+            )
+            validation_limit_zh = (
+                ' 来源信念有据可查，但该信号族未作为择时信号单独回测。'
+                if str(validation.get('verdict') or '') == 'documented'
+                else ' 该状态背景不能建立校准的择时优势。'
+            )
+            brief.update({
+                'status': 'supported', 'family': 'forex.smile_regime_flip',
+                'change': detail, 'change_zh': detail_zh,
+                'implication': (
+                    f'The source dollar-smile decomposition changed from {detail_from} to '
+                    f'{detail_to}, altering its structural USD-bias context.'),
+                'implication_zh': (
+                    f'来源的美元微笑分解从 {detail_from} 切换到 {detail_to}，改变了其结构性美元偏向背景。'),
+                'limitation': (
+                    'A dollar-smile regime is a source taxonomy, not proof of a macro outcome, '
+                    'safe-haven mechanism, causal driver, calibrated return probability or '
+                    'directional USD trade.' + validation_limit + age_limit),
+                'limitation_zh': (
+                    '美元微笑状态只是来源分类，并不能证明宏观结果、避险机制、因果驱动、校准收益概率或美元方向交易。' +
+                    validation_limit_zh + age_limit_zh),
+                'next_action': (
+                    f'Open the current dollar desk and verify the smile regime is still {detail_to}, '
+                    'inspect the current dollar-direction and risk inputs, and check whether a newer '
+                    'regime flip has superseded this event.'),
+                'next_action_zh': (
+                    f'打开当前美元总台，确认美元微笑状态仍为 {detail_to}，检查当前美元方向与风险输入，'
+                    '并确认是否已有更新状态翻转取代该事件。'),
+                'next_action_label': 'Recheck dollar smile',
+                'next_action_label_zh': '复核美元微笑',
+                'reassessment': (
+                    f'Change the read if the current smile regime is no longer {detail_to}, the '
+                    'underlying dollar/risk inputs no longer fit it, or a newer flip replaces this event.'),
+                'reassessment_zh': (
+                    f'若当前美元微笑状态不再是 {detail_to}、底层美元/风险输入不再符合该状态，'
+                    '或新的翻转取代该事件，则改变判断。'),
+                'evidence_label': 'Open current dollar desk',
+                'evidence_label_zh': '打开当前美元总台',
             })
             return brief
 
