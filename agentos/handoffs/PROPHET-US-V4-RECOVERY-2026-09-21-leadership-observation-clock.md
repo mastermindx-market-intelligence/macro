@@ -14,6 +14,10 @@ state_before: >
   Reader, enrichment and writer duplicated the projection and missing dates could
   be replaced by the build date.
 changed:
+  - path: .github/ci/legacy-jobs.yml
+    what: Run the pulse unit and new observation-clock suites in the existing owner job.
+  - path: .github/workflows/ci.yml
+    what: Trigger the existing job on pulse-source and pulse-test edits; no gate relaxed.
   - path: engine/sector_pulse.py
     what: Shared dated projection, exact native US session endpoints, explicit missing comparison dates.
   - path: tests/test_sector_pulse.py

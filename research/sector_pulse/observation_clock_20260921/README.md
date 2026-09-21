@@ -58,8 +58,9 @@ the prior dated file intact rather than stamping old evidence as current.
 
 The original fixture was corrected to six distinct trading dates without removing
 or weakening any assertion. No live data, generated site page, ledger, strategy
-weight, entry gate, authorization path, CI guard or deployment configuration was
-modified.
+weight, entry gate, authorization path, deployment configuration was modified. The existing CI job and trigger
+allowlist were extended to run both the previously unlisted pulse unit suite
+and the new observation-clock suite; no existing check was removed or relaxed.
 
 ## Verification
 

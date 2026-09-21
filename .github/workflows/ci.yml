@@ -1193,6 +1193,10 @@ on:
       # test pins producer (AST) + template consumer, so the builder must trigger CI.
       - "scripts/build_stock_library.py"
       - "tests/test_sector_pulse_wiring.py"
+      # Shared leadership clock: source edits and regression-only edits both run.
+      - "engine/sector_pulse.py"
+      - "tests/test_sector_pulse.py"
+      - "tests/test_sector_pulse_observation_clock.py"
       # Options Alpha W1.3/W-C/W-OVC stamp + entry-state guards: engine files are
       # covered by engine/**, but the test files need explicit paths so a test-only
       # change (e.g. the 2026-07-23 W-OVC fixture re-anchor) still re-runs the
