@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T10:17:20.612694+00:00",
-  "count": 2562,
+  "generated_at": "2026-09-21T11:47:24.923961+00:00",
+  "count": 2566,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -168,6 +168,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jrcwqf89m6z-57d8ca",
+      "title": "Global Week Ahead September 21 – September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:45Z",
+      "summary_points": [
+        "Taiwan IP & Colombia Trade: Out-of-consensus bullish deviations (IP: 28.0% vs 24.6% consensus; Trade: -2300M vs -2617.5M), signaling regional economic strength and potential volatility.",
+        "SA Rate Hike Divergence: GS forecasts 25bps hike (vs consensus 0bps), indicating unpriced EM policy shift with high portfolio impact.",
+        "Germany PMI & US Goods Shipments: Strong bearish signals (PMI: -3.5; Goods: -2.5), highlighting material weakness in Eurozone manufacturing and US trade-sensitive assets.",
+        "Australia Unemployment: GS forecast 4.4% (vs 4.5% consensus), stronger labor market implying elevated risk sentiment and currency pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -352,6 +372,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-p4v4kvr4gic-f15b6e",
+      "title": "US Week Ahead September 21 September 27",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:15Z",
+      "summary_points": [
+        "Services PMI Miss & Inflation Risks: Preliminary S&P Global US Services PMI at 53.5 (vs. 0 consensus) signals weak sector; Fed Governor Barr cites persistent core non-housing services inflation and risks from tariffs, Middle East conflict, and AI buildout.",
+        "Fed Policy Divergence: Hammack states policy is not restrictive while Paulson outlines two inflation scenarios, highlighting internal Fed uncertainty on timing of rate cuts amid inflation above target.",
+        "Core Capital Goods Strength: GS forecasts core capital goods orders up 0.5% (vs. durable goods down 1.0%), with core capital goods shipments rising 0.3%, indicating manufacturing resilience amid broader industrial trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-6goqfhrgvdz-b29611",
       "title": "This Week in Asia Pacific Macro 21 27 September (Audio)",
       "institution": "Goldman Sachs",
@@ -386,6 +425,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-ngamcw0xo3y-80c10c",
+      "title": "Bernstein Americas Oil The drone attacks on Russian refineries are stunning",
+      "institution": "Bernstein",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:19:53Z",
+      "summary_points": [
+        "Ukrainian drone strikes on Russian refineries: ~90% of Russia’s refining capacity (2 mln bpd) offline, representing ~80% of 2026 capacity, driving sustained global supply tightness and elevated crack spreads.",
+        "Russia’s refined product export ban: Export ban until Jan 2027 (Reuters) tightening global supply, directly benefiting refiners/integrated oil companies (ExxonMobil, Chevron) through 2027.",
+        "Crack spreads near record highs: Persistently widening despite moderate oil prices, reflecting acute supply constraints from Russian refining disruptions.",
+        "Multiple refinery fire risks: Satellite evidence (NASA FIRMS) confirms fire risks at Omsk (430k bpd), Volgograd (300k bpd), Yaroslavl (280k bpd), and others, threatening supply chain stability.",
+        "Geographic clustering vulnerability: Western Russia’s concentrated refinery infrastructure heightens geopolitical risk exposure and supply chain fragility amid sanctions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 41,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-ujjixbqlnkj-b68158",
       "title": "GS Garrett weekend prep 20 Sep 2026",
       "institution": "S&T",
@@ -412,6 +472,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-005k2njodqo-6def24",
+      "title": "GS Coppersmith US EQUITIES tougher internals 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:08:05Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
