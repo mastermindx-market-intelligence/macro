@@ -162,6 +162,35 @@ html[data-theme="light"] {{ --text:#1c2430; --muted:#5c6573; --panel:#ffffff; --
     assert dark["background"] != light["background"]
 
 
+def test_manifest_declares_see_all_hover_and_focus_force_states():
+    """TOKENIZE-7070 visual-evidence: light post-stack owns :hover/:focus-visible.
+
+    Fails on head f4f17de018db: axes.force_states is a string list of named
+    board states and has no hover/focus dict, so check_ui_visual_evidence
+    cannot prove the See-all interaction. Passes once desktop/en dark+light
+    cells carry applied_force_state for see-all-hover and see-all-focus.
+    """
+    manifest = json.loads((EVIDENCE / "manifest.json").read_text(encoding="utf-8"))
+    defs = manifest["axes"]["force_states"]
+    by_kind = {d["kind"]: d for d in defs if isinstance(d, dict)}
+    assert by_kind["hover"]["name"] == "see-all-hover"
+    assert by_kind["hover"]["value"] == ".ift-see-all"
+    assert by_kind["focus"]["name"] == "see-all-focus"
+    assert by_kind["focus"]["value"] == ".ift-see-all"
+    states = [s for page in manifest["pages"] for s in page.get("states") or []]
+    for name in ("see-all-hover", "see-all-focus"):
+        pair = [
+            s for s in states
+            if s.get("force_state") == name
+            and s.get("applied_force_state") == name
+            and s.get("captured") is True
+            and s.get("viewport") == "desktop"
+            and s.get("locale") == "en"
+        ]
+        themes = {s.get("theme") for s in pair}
+        assert themes == {"dark", "light"}, (name, themes)
+
+
 def test_readme_records_recessive_light_chips():
     readme = (EVIDENCE / "README.md").read_text(encoding="utf-8")
     assert "Tape chips ghost/hairline in light — recessive by design" in readme
