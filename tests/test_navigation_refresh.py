@@ -608,7 +608,6 @@ def test_mobile_shared_chrome_controls_keep_touch_floor() -> None:
     assert ".nav-ctrls .terminal-link," in interaction
 
 
-
 def test_settings_rows_reflow_before_labels_collide_on_narrow_mobile() -> None:
     """At 320px, Settings controls move below labels instead of obscuring them."""
     for source in (THEME_JS, SITE_THEME_JS):
@@ -628,6 +627,3 @@ def test_settings_rows_reflow_before_labels_collide_on_narrow_mobile() -> None:
         ) in source
         assert ".settings-row:not(.settings-acct) .lang-toggle{width:100%;box-sizing:border-box}" in source
         assert ".settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;min-width:0}" in source
-        assert ".settings-acct .sa-btns{flex-direction:column}" in source
-        assert ".settings-acct-in{flex-wrap:wrap}" in source
-        assert ".settings-acct-in .sa-signout{width:100%}" in source

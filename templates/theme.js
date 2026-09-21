@@ -4203,9 +4203,6 @@
     '.settings-row:not(.settings-acct) .set-seg-btn{flex:1 1 0;min-width:40px;padding-left:6px;padding-right:6px}',
     '.settings-row:not(.settings-acct) .lang-toggle{width:100%;box-sizing:border-box}',
     '.settings-row:not(.settings-acct) .lang-toggle .opt{flex:1 1 50%;min-width:0}',
-    '.settings-acct .sa-btns{flex-direction:column}',
-    '.settings-acct-in{flex-wrap:wrap}',
-    '.settings-acct-in .sa-signout{width:100%}',
     '}',
     /* on/off toggle button */
     '.set-toggle-btn{position:relative;width:44px;height:24px;border-radius:999px;border:1px solid var(--line,var(--grid));background:var(--bg,var(--card));cursor:pointer;padding:0;transition:background .25s,border-color .25s}',
