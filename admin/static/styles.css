@@ -6397,3 +6397,22 @@ button.admin-notice { cursor:pointer; }
   .topbar .hmeta { grid-column:1 / -1; justify-content:space-between; gap:8px; width:100%; }
   .admin-metric-value { font-size:18px; }
 }
+
+/* Content Studio review controls reuse the existing admin materials. */
+.cs-review-controls { display:flex; align-items:flex-end; flex-wrap:wrap; gap:10px; margin:16px 0; }
+.cs-review-controls label { display:flex; flex:1 1 260px; min-width:0; flex-direction:column; gap:7px; color:var(--muted); font-size:12px; }
+.cs-review-controls input { box-sizing:border-box; width:100%; min-height:40px; padding:10px 12px; border:1px solid var(--border); border-radius:var(--r-sm); background:var(--surface2); color:var(--text); font:inherit; }
+.cs-review-controls input::placeholder { color:var(--muted); }
+.cs-review-controls .btn, .cs-review-pager .btn { min-height:40px; }
+.cs-review-pager { display:flex; align-items:center; justify-content:center; gap:14px; margin:16px 0 26px; }
+.cs-chart-preview { margin:12px 0; border:1px solid var(--border); border-radius:var(--r-sm); }
+.cs-chart-preview > summary { min-height:40px; padding:10px 12px; cursor:pointer; color:var(--accent); font-size:12px; }
+.cs-chart-body { overflow:hidden; padding:12px; }
+.cs-chart-body img { display:block; max-width:100%; height:auto; margin:auto; }
+.cs-chart-body .sub { overflow-wrap:anywhere; }
+.cs-review-controls :focus-visible, .cs-review-pager :focus-visible, .cs-chart-preview > summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+@media (max-width:600px) {
+  .cs-review-controls label { flex-basis:100%; }
+  .cs-review-controls .btn { flex:1 1 auto; }
+  .cs-review-pager { justify-content:space-between; gap:8px; }
+}

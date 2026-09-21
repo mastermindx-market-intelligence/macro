@@ -195,3 +195,57 @@ def test_startup_cannot_treat_a_failed_session_probe_as_authenticated():
     assert 'Unable to verify your session.' in init
     assert 'catch(() => ({ auth_enabled: false, authenticated: true }))' not in init
     assert 'SUMMARY = next; // keep the last good snapshot' in APP
+
+
+def test_content_review_intersects_filters_before_twelve_card_pagination():
+    _node_assert("""
+const review = new Function('const CS_REVIEW_PAGE_SIZE = 12;' + block('function csReviewPage(', 'function csRefreshPlan(') + '; return csReviewPage;')();
+const entries = Array.from({length: 48}, (_, i) => ({acctId: i % 2 ? 'beta' : 'alpha', post:{id:i, type:i % 3 ? 'chart' : 'signal', headline:'Draft ' + i, ticker: i === 44 ? 'AMD' : 'XYZ'}}));
+const original = JSON.stringify(entries);
+assert.equal(review(entries).rows.length, 12);
+assert.equal(review(entries, {page: 2}).rows[0].post.id, 12);
+assert.equal(review(entries, {page: 999}).page, 4);
+assert.equal(review(entries, {page: -1}).page, 1);
+assert.equal(review(entries, {}, 500).rows.length, 12);
+let selection = {type:'signal', account:'beta'};
+assert.deepEqual(review(entries, selection).rows.map(x => x.post.id), [3,9,15,21,27,33,39,45]);
+assert.deepEqual(review(entries, {account:'beta', type:'signal'}), review(entries, selection));
+assert.equal(review(entries, {query:'amd'}).rows[0].post.id, 44);
+assert.equal(review(entries, {query:'  DrAfT 44 ', account:'alpha', type:'chart'}).total, 1);
+assert.equal(review(entries, {query:'AMD', account:'beta'}).total, 0);
+const empty = review(entries, {query:'does not exist', page:9});
+assert.deepEqual([empty.from,empty.to,empty.page,empty.pages,empty.total], [0,0,1,1,0]);
+assert.equal(JSON.stringify(entries), original);
+assert.equal(review([null, {}, {post:null}]).total, 0);
+""")
+
+
+def test_content_review_uses_light_reads_and_never_inlines_chart_documents():
+    renderer = APP.split('RENDER.marketing_content = async () => {', 1)[1].split('/* Is the content plan stale?', 1)[0]
+    assert '"/api/marketing/content?charts=metadata"' in APP
+    assert 'csWireReview(allPosts, postCardHtml, d.content_revision, renderEpoch)' in renderer
+    assert 'allPosts.map(postCardHtml)' not in renderer
+    assert '${featured.svg}' not in renderer
+    assert 'data-cs-preview' in renderer
+    assert 'renderEpoch !== ADMIN_RENDER_EPOCH' in renderer
+    assert 'Nothing on this page has been sent.' not in renderer
+    preview = APP.split('async function csLoadPreview(', 1)[1].split('function csWireReview(', 1)[0]
+    assert 'document.createElement("img")' in preview
+    assert '.innerHTML' not in preview
+    assert 'response.content_revision !== revision' in preview
+    assert 'details.isConnected' in preview
+    assert 'plan_changed' in preview
+    assert 'Retry preview' in preview
+    assert 'Refresh plan' in preview
+
+
+def test_unrecorded_drop_reasons_are_not_reported_as_passed_drafts():
+    _node_assert("""
+const drop = new Function(block('function csDropPanel(', '/* Scroll helper for the funnel cells') + '; return csDropPanel;')();
+for (const data of [{}, {funnel:null}, {funnel:{drop_reasons:{}}}]) {
+  const html = drop(data);
+  assert(html.includes('No drop reasons were recorded'));
+  assert(html.includes('does not prove every draft passed'));
+  assert(!html.includes('Every planned post got words'));
+}
+""")

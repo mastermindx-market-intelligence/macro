@@ -72,3 +72,37 @@ Browser evidence includes desktop 1440×960, mobile 390×844 and mobile navigati
 6. **Theme/language and deeper accessibility:** the existing admin lacks full dual-theme and EN/ZH parity. Audit content contrast, large tables, modal focus and all nested controls beyond the rebuilt shell.
 
 Completion of this first workspace batch is not completion of the entire 54-page admin remediation program. Production deployment proof is tracked separately from local browser and source test evidence.
+
+## Continuation: Content Studio review workflow
+
+Chairman continuation retains the original admin mission. The protected procedure pin for this wave is `mastermindx-market-intelligence/Mastermind@74b475545e179a3256bfebe6b5226f54231cf1cb`: INDEX, COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION and CLOSEOUT; schema `mastermind.sol_skillpack.v1`, version 1.0.1, bootstrap major 1. Macro implementation base is `91d0269481fef77e82dc0ba6f9469bd2585ad7e7`, branch `claude/admin-publishing-review-20260921-sol`. Sol retained this tightly coupled review-path repair under `PRINCIPAL_JUDGMENT`; no worker started, no alternate provider/control plane was introduced, and no inherited effect was unresolved.
+
+### Before and after
+
+The type filter and desk filter previously overwrote each other's card visibility. The page created every post card and inline chart before wrapping the tail in a twelve-item disclosure. Filtering therefore neither composed correctly nor bounded the amount of rendered content.
+
+The review now intersects **desk + content type + case-insensitive search before pagination**. It mounts at most twelve matching cards, makes all remaining posts reachable with Previous/Next, states the matching count, and offers an explicit empty-result recovery. Search covers the entire plan, not just the visible page. Existing plan, funnel, desk-mix and intraday draft/approval functions remain owned by their original modules.
+
+The consumer requests `/api/marketing/content?charts=metadata`. Default callers of `/api/marketing/content` retain their original inline-chart representation. Both representations return the same plan revision, complete post inventory and existing operational fields. Chart bodies are requested only after the operator opens a preview, through the authenticated read route `/api/marketing/content/chart?id=…&revision=…`.
+
+The preview reader accepts an ID, never a filesystem path, and requires the complete source-plan SHA-256. It rejects a corrected plan, unreferenced chart, duplicate chart ID, malformed body or SVG above 2,000,000 UTF-8 bytes. An old plan is never silently joined to a different chart. The browser uses an image element rather than inserting an SVG document into the admin DOM. Missing/error responses offer a named retry or plan refresh; a late Content Studio response cannot replace a newly selected page.
+
+The review now describes plan times as advisory, provides the existing Outbox handoff, and removes the contradictory claim that nothing in the plan has been sent. Missing drop reasons no longer claim every draft passed, and no longer consume a large decorative empty-state panel.
+
+### Measurements and evidence
+
+On the **same committed local plan**, serialization fell from **2,875,956 to 40,294 bytes (98.60% smaller)**. Both responses retained **13 accounts, 38 posts and 27 chart references**, with identical revision `c9d133b9edbe08d84acb0a75f4e97dd9b277ce8b5568e977c26e858d2663ec86`. These are same-input payload measurements, not production latency measurements or a claim about the size of every future plan.
+
+The actual loopback HTTP read adapters were exercised in a browser using a clearly labeled 48-post fixture. Checks cover both filter orders, a search target beyond the first page, every post reached once, twelve-card bounds, intent-only previews, changed-plan refusal, failed-read retry, refresh, delayed-success navigation, and mobile overflow. All 21 checks passed with no unhandled JavaScript errors and no attempted write. Desktop 1440×960 and mobile 390×844 screenshots use the inherited English/dark admin style, not claimed light/Chinese certification.
+
+Source-backed tests exercise the real JavaScript filtering helper and backend read adapters, including default-API compatibility, payload bounds, revisions, missing/oversized/duplicate/unreferenced charts, HTTP errors and retained anonymous-access denial. The first broad admin run exposed two tests requiring omitted `data/` and `site/` sources; those trees were materialized before the full rerun. No test guard was disabled or assertion weakened to excuse missing data.
+
+Evidence is under `research/evidence/admin-publishing-review-20260921/`. Production delivery remains a separate receipt on the wave's GitHub PR; this committed document does not substitute local browser success for a live integration result.
+
+### Scope held and next action
+
+The accepted #7345/#7251/#7602 work is DO_NOT_REDO. All 54 admin route IDs and the 13-page everyday navigation remain intact. No publishing action, approval gate, customer account, payment, email, or deployment mutation was exercised as a test. The active publishing-truth and media owners (#7487, #7489, #7493 at this wave's collision check) were not modified or replaced.
+
+**The full admin program remains incomplete.** The next publishing step is to reconcile the existing Publisher/Outbox delivery states with their active owners, then consolidate overlapping status views only after proving that their distinct actions and evidence survive. In particular, Content Studio's inherited `posting`→`posted` usage mapping is not external delivery proof and was not silently redefined in this view repair. Other remaining obligations are authenticated specialist workflow checks, Intelligence OS/Site inventory latency, monolith boundaries, and full theme/language accessibility. No autonomous wake or background Web execution is claimed.
+
+Full post-materialization admin regression run: **1,414 passed in 72.74 seconds**, with default data/module guards retained.

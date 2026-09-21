@@ -536,3 +536,60 @@ def test_the_one_live_analytics_reading_is_still_never_cached():
     the operator watches for freshness, so the longer TTL above must not reach it."""
     assert not _cacheable_api_get("/api/analytics/fp/realtime", {})
     assert _cacheable_api_get("/api/analytics/fp/visitors", {})
+
+
+def test_content_review_representation_and_revision_routes(monkeypatch):
+    from admin import server
+    calls = []
+
+    def content(**kwargs):
+        calls.append(kwargs)
+        return {"ok": True, "chart_mode": kwargs.get("chart_mode", "inline")}
+
+    def chart(chart_id, revision):
+        if chart_id == "current" and revision == "a" * 64:
+            return {"ok": True, "chart": {"id": chart_id, "svg": "<svg/>"}}
+        return {"ok": False, "reason": "plan_changed", "error": "Refresh the plan."}
+
+    monkeypatch.setattr(server.marketing, "content", content)
+    monkeypatch.setattr(server.marketing, "content_chart", chart)
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        _, body = _get(port, "/api/marketing/content")
+        assert json.loads(body)["chart_mode"] == "inline"
+        _, body = _get(port, "/api/marketing/content?charts=metadata")
+        assert json.loads(body)["chart_mode"] == "metadata"
+        assert calls == [{}, {"chart_mode": "metadata"}]
+        _, body = _get(port, "/api/marketing/content/chart?id=current&revision=" + "a" * 64)
+        assert json.loads(body)["ok"] is True
+        for path, status in [
+            ("/api/marketing/content?charts=bad", 400),
+            ("/api/marketing/content/chart?id=old&revision=" + "b" * 64, 409),
+        ]:
+            try:
+                _get(port, path)
+                raise AssertionError("The route should reject this read")
+            except urllib.error.HTTPError as error:
+                assert error.code == status
+    finally:
+        httpd.shutdown(); httpd.server_close(); _clear_response_cache()
+
+
+def test_content_chart_read_remains_behind_existing_session_guard(monkeypatch):
+    from admin import server
+    monkeypatch.setattr(server.settings, "auth_enabled", lambda: True)
+    monkeypatch.setattr(Handler, "_authed", lambda self: False)
+    called = []
+    monkeypatch.setattr(server.marketing, "content_chart", lambda *args: called.append(args))
+    _clear_response_cache()
+    httpd, port = _server()
+    try:
+        try:
+            _get(port, "/api/marketing/content/chart?id=private&revision=" + "a" * 64)
+            raise AssertionError("Anonymous reads must not reach the chart adapter")
+        except urllib.error.HTTPError as error:
+            assert error.code == 401
+        assert called == []
+    finally:
+        httpd.shutdown(); httpd.server_close(); _clear_response_cache()
