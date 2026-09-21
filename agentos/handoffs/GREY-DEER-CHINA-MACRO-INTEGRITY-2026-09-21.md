@@ -18,7 +18,7 @@ verified:
     result: Initial RED 9 failed / 2 passed; expanded edge RED 2 failed / 13 passed.
   - claim: The repaired producer and adjacent collector/heatmap suites pass.
     command: python -m pytest tests/test_china_breadth_coverage.py tests/test_china_board_breadth.py tests/test_market_heatmap.py tests/test_breadth_constituents_repair.py tests/test_breadth_split_seam.py -q
-    result: 84 passed; one inherited pandas Timestamp.utcnow deprecation warning.
+    result: Original integrated candidate 84 passed; after native review repair, 94 passed without warnings in isolated Python3.12.13/pandas3.0.6/NumPy2.5.3.
   - claim: An existing stored close matrix retains identical breadth math on valid inputs.
     command: python research/grey_deer/china_breadth_coverage_20260921/real_input_probe.py --source /Users/chriswong/Documents/Cluade/macro-main/data/china_search/closes.parquet
     result: 1270 rows; 76 of 82 configured names present; 75 latest and MA-eligible names; exact output equality. Artifact ends 2026-09-04, not a current-production proof.
@@ -31,7 +31,7 @@ unresolved:
   - Whole-frame session age remains with the existing runner/freshness owner; this change does not invent a venue calendar or certify current data from a build timestamp.
   - Shared radar arithmetic/calibration repairs remain on PR 6989 at d775a6c40c9f12c8411cd87100ac7dbfcd664870, Draft/HOLD; this branch is not a replacement.
   - China template writers 7481, 7485 and 7383 overlap; action-board writer 7567 is independent. None is overwritten or released here.
-  - No admitted independent reviewer or Executive worker START has been proven in this session.
+  - Native Opus review completed PARTIAL; same-day cache issues were reproduced and repaired. The new semantic candidate still requires independent rereview. No Executive Job is claimed.
 next_actions:
   - Finish current-head source/CI review and release the bounded breadth producer repair through its own PR; no admin or immediate auto-merge over pending checks.
   - Reconcile the original PR 6989 custody and obtain a new lawful independent review; do not retry its terminal empty review or denied result inspection.
@@ -47,7 +47,7 @@ danger_areas:
   - The inherited breadth calculation can drop partial newest rows; checking fetch coverage alone is insufficient.
   - Current quotes without enough valid history cannot support a representative moving-average breadth denominator.
   - This is curated large-cap breadth, not all A-shares; no all-boats inference follows.
-  - Initial all-open-PR GraphQL census failed; only bounded relevant filename/source checks were completed, not an exhaustive 403-PR census.
+  - Current 403-PR census identified PR7578 as the shared P0B evidence writer; some large PR file lists were truncated, so exhaustive path clearance is not claimed.
 ---
 
 ## Current commission and source identity
@@ -56,3 +56,22 @@ Mission remains incomplete. This is a working implementation checkpoint, not acc
 Protected Skillpack: Mastermind@3e66e43258f34db240d5bff76f54148c7af84ee4, v1.0.1/bootstrap1.
 Macro acquisition: cf2aae0beefb3e7dbb15e4ec672d8c288492dd13. Current pre-commit check:
 fbdd7ae4e3db10868be4f86bef4edd067e478cb3; only unrelated CI hunks moved among checked dependencies.
+
+## Latest native-review continuation
+Current procedure pin: Mastermind@5103486e8d8c460c94f1563fec50a1e4dfc08aa3.
+Chairman authorized Studio subagents and model selection. Native Opus review
+6eec35bc-5e25-4ca5-9c8a-cfd4eff880cb completed; full text and adjudication live in
+research/grey_deer/china_breadth_coverage_20260921/REVIEW_REPAIR.md and sibling receipts.
+Seven cache regressions were RED before repair; final 94-test regression and
+unchanged stored-input canary are verified. Cache test coverage no longer expires
+with its fixed date. Shared run-status reads are isolated in the test fixtures.
+PR7592 remains Draft/HOLD; production proof and revised-head review remain open.
+Current shared CI dependency is PR7578, not already-merged PR7392. The incumbent
+was requested to rebind two manifest hashes; do not duplicate that writer.
+PR7485 acknowledged our review5263939650 and re-froze its release for bounded
+copy/live-headline repair. Its source remains with the incumbent, not this branch.
+The separate blocked copy-test append must not be retried or delegated by proxy.
+Native finite review is terminal; no worker/watch process is claimed running.
+Next: commit/push this same-source repair, obtain independent revised-head review,
+consume PR7578 and PR7485 returns, then normal release and production proof.
+MISSION_COMPLETE: false
