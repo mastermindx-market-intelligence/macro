@@ -29,6 +29,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 MACRO_HTML = ROOT / "site" / "macro.html"
+DASHBOARD_TEMPLATE = ROOT / "templates" / "dashboard.html.j2"
+THEME_CSS = ROOT / "templates" / "theme.css"
 VOL_WEATHER_JSON = ROOT / "site" / "basketdata" / "vol_weather.json"
 
 # Phrases banned from the glance tier (R-W1-B). Internal metric names belong in
@@ -239,6 +241,30 @@ class TestUDB2W1VwFold:
             "Risk isle sub-row must not use the old dialog row class"
         )
 
+    def test_tablet_scorecard_names_wrap_before_chart_collapses(self):
+        """The scorecard stays two-column down to 701px, so the weather names
+        must wrap through that entire narrow-card range instead of becoming
+        unreadable ellipses on portrait tablets.
+        """
+        css = THEME_CSS.read_text(encoding="utf-8")
+        marker = "/* ── Tablet / narrow scorecard (≤1100px): keep weather names readable ── */"
+        assert marker in css, (
+            "Vol-weather needs an explicit tablet contract; desktop + 390px "
+            "coverage leaves the 701–1100px two-column scorecard unprotected"
+        )
+        tablet = css.split(marker, 1)[1].split("/* ── Mobile (≤560px)", 1)[0]
+        assert "@media(max-width:1100px)" in tablet
+        selector = "body.page-macro .mx5-sc-vw .sx-vw-name{"
+        assert selector in tablet
+        rule = tablet.split(selector, 1)[1].split("}", 1)[0]
+        assert "white-space:normal" in rule
+        assert "text-overflow:ellipsis" not in rule
+        row_selector = "body.page-macro .mx5-sc-vw .sx-vw-row{"
+        assert row_selector in tablet
+        row_rule = tablet.split(row_selector, 1)[1].split("}", 1)[0]
+        assert "grid-template-columns:22px minmax(0,1fr) 64px" in row_rule
+        assert "gap:8px" in row_rule
+
     def test_plain_word_names_inside_isle(self, macro_html):
         """R-W1-B: glance tier carries only tier words + plain clauses.
         Internal metric names (Term structure / Vol-of-vol balance /
@@ -349,14 +375,14 @@ class TestUDB2W1VwFold:
         assert "mx5BtnRisk" in sc_left, (
             "mx5-sc-left must carry the scar-chip risk button"
         )
-        # Face hide rule lives in the page's inline <style> (dashboard.html.j2).
-        assert (
-            "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important;}"
-            in macro_html
-            or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none!important}"
-            in macro_html
-            or "body.page-macro.mx4-grid #sx-risk-v2 .sxg-face{display:none !important}"
-            in macro_html
+        # The optimizer extracts most inline CSS from site/macro.html into
+        # fingerprinted assets. Guard the source rule in dashboard.html.j2,
+        # while the assertions above keep the rendered dial/controls honest.
+        dashboard_source = DASHBOARD_TEMPLATE.read_text(encoding="utf-8")
+        assert re.search(
+            r"body\.page-macro\.mx4-grid\s+#sx-risk-v2\s+\.sxg-face"
+            r"\s*\{\s*display\s*:\s*none\s*!\s*important\s*;?\s*\}",
+            dashboard_source,
         ), (
             "R-W1-A-AMENDED: #sx-risk-v2 face is display:none!important "
             "BY DESIGN on the macro route, including the .mx4-grid carve-out"

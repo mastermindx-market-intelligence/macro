@@ -222,8 +222,13 @@
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
   #mmb-launch .lt{display:flex;flex-direction:column}
-  /* phones: collapse the labelled pill down to the lone orb — the label is desktop
-     affordance and the full pill crowds small screens. */
+  /* The dense Macro board needs the compact orb on portrait tablets; keep the
+     estate-wide labelled launcher unchanged there. Phones retain the existing
+     global collapse. Both paths preserve the same accessible name and action. */
+  @media(max-width:1024px){
+    body.page-macro #mmb-launch{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:8px;gap:0}
+    body.page-macro #mmb-launch .lt{display:none}
+  }
   @media(max-width:700px){
     #mmb-launch{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));padding:8px;gap:0}
     #mmb-launch .lt{display:none}

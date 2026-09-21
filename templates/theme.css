@@ -3203,6 +3203,25 @@ body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sx-vw-tier{color:var(-
 html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier{color:color-mix(in srgb, var(--text) 78%, transparent);}
 html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{color:color-mix(in srgb, var(--text) 55%, transparent);}
 
+/* ── Tablet / narrow scorecard (≤1100px): keep weather names readable ── */
+/* #regime-radar remains a 34/66 two-column card until 700px. Once the weather
+   strip was folded into its left column, an 820px portrait tablet left about
+   57px for the name and reduced every signal to an ambiguous ellipsis. Wrap the
+   plain-language name throughout that narrow-card range; the tier word remains
+   fixed at the right edge, and the 60-session path can stay visible. */
+@media(max-width:1100px){
+  body.page-macro .mx5-sc-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 64px;
+    gap:8px;
+  }
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{width:22px;height:22px;}
+  body.page-macro .mx5-sc-vw .sx-vw-name{
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+  }
+}
+
 /* ── Mobile (≤560px): tighten padding, allow mid column to wrap freely ── */
 @media(max-width:560px){
   body.page-macro .mx5-sc-vw .sx-vw-strip{padding:8px 10px 10px;}
