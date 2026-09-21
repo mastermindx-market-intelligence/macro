@@ -438,7 +438,10 @@ class TestRootCatalog:
             },
             day_state={
                 "root_gross_today": {"AMD": 200.0, "SPY": 100.0},
-                "root_minutes": {"AMD": {"10:00": {}}, "SPY": {"10:00": {}}},
+                "root_minutes": {
+                    "AMD": {"10:00": {"ncp": 200.0, "npp": -50.0, "vol": 10}},
+                    "SPY": {"10:00": {"ncp": 100.0, "npp": 0.0, "vol": 5}},
+                },
                 "root_strikes": {},
             },
         )
@@ -482,6 +485,23 @@ class TestRootCatalog:
         )
         assert [row["last_source_success"] for row in catalog] == [None, None]
 
+    def test_malformed_accumulator_rows_do_not_claim_session_data(self):
+        lf = _import_poller()
+        catalog = lf._build_root_catalog(
+            configured_roots=["AMD", "TLT"],
+            cycle_roots=["AMD", "TLT"],
+            successful_roots=["AMD", "TLT"],
+            receipts={
+                "AMD": "2026-09-20T14:00:00Z",
+                "TLT": "2026-09-20T14:00:00Z",
+            },
+            day_state={
+                "root_minutes": {"AMD": {"10:00": {}}},
+                "root_strikes": {"TLT": {"100.0": {"call_prem": 1.0}}},
+            },
+        )
+        assert [row["has_session_data"] for row in catalog] == [False, False]
+
     def test_attaches_full_catalog_without_overwriting_cycle_counts(self):
         lf = _import_poller()
         meta = {
@@ -493,7 +513,11 @@ class TestRootCatalog:
             configured_roots=["SPY", "TLT", "AMD", "PLTR"],
             cycle_roots=["SPY", "AMD"],
             receipts={"SPY": "2026-09-20T14:00:00Z"},
-            day_state={"root_minutes": {"SPY": {"10:00": {}}}},
+            day_state={
+                "root_minutes": {
+                    "SPY": {"10:00": {"ncp": 100.0, "npp": -25.0, "vol": 5}},
+                },
+            },
         )
         assert result is meta
         assert result["roots_requested"] == 2
@@ -504,19 +528,72 @@ class TestRootCatalog:
 
 
 class TestTickerPublishRoots:
-    def test_quiet_root_beyond_old_top40_is_selected_when_real_data_exists(self):
+    @staticmethod
+    def _minute(*, ncp: float = 100.0, npp: float = 0.0, vol: int = 1) -> dict:
+        return {"ncp": ncp, "npp": npp, "vol": vol}
+
+    @staticmethod
+    def _strike(*, call_prem: float = 100.0, put_prem: float = 0.0,
+                vol: int = 1) -> dict:
+        return {"call_prem": call_prem, "put_prem": put_prem, "vol": vol}
+
+    def test_quiet_root_beyond_old_top40_is_selected_when_all_roots_are_eligible(self):
         lf = _import_poller()
         roots = [f"T{i:02d}" for i in range(41)] + ["AMD"]
         day_state = {
-            "root_minutes": {"AMD": {"11:00": {}}},
+            "root_minutes": {
+                root: {"11:00": self._minute(ncp=float(i + 1))}
+                for i, root in enumerate(roots)
+            },
             "root_strikes": {},
+            "root_gross_today": {
+                root: float(len(roots) - i) for i, root in enumerate(roots)
+            },
         }
-        assert lf._select_ticker_publish_roots(roots, ["AMD"], day_state) == ["AMD"]
+
+        selected = lf._select_ticker_publish_roots(roots, roots, day_state)
+
+        assert selected == roots
+        assert len(selected) == 42
+        assert selected[-1] == "AMD"
+
+    def test_malformed_empty_rows_do_not_fabricate_session_data(self):
+        lf = _import_poller()
+        day_state = {
+            "root_minutes": {
+                "AMD": {"11:00": {}},
+                "PLTR": {"11:00": {"ncp": 1.0}},
+            },
+            "root_strikes": {
+                "TLT": {"100.0": {}},
+                "HYG": {"80.0": {"call_prem": 1.0}},
+            },
+        }
+        assert lf._select_ticker_publish_roots(
+            ["AMD", "PLTR", "TLT", "HYG"],
+            ["AMD", "PLTR", "TLT", "HYG"],
+            day_state,
+        ) == []
+
+    def test_legitimate_net_zero_rows_remain_real_session_data(self):
+        lf = _import_poller()
+        day_state = {
+            "root_minutes": {
+                "SPY": {"11:00": self._minute(ncp=125.0, npp=-125.0, vol=10)},
+                "QQQ": {"11:00": self._minute(ncp=0.0, npp=0.0, vol=5)},
+            },
+            "root_strikes": {
+                "TLT": {"100.0": self._strike(call_prem=0.0, put_prem=0.0, vol=2)},
+            },
+        }
+        assert lf._select_ticker_publish_roots(
+            ["SPY", "QQQ", "TLT"], ["SPY", "QQQ", "TLT"], day_state
+        ) == ["SPY", "QQQ", "TLT"]
 
     def test_excludes_failed_and_empty_roots(self):
         lf = _import_poller()
         day_state = {
-            "root_minutes": {"AMD": {"11:00": {}}},
+            "root_minutes": {"AMD": {"11:00": self._minute()}},
             "root_strikes": {},
         }
         assert lf._select_ticker_publish_roots(
@@ -526,7 +603,10 @@ class TestTickerPublishRoots:
     def test_preserves_cycle_order_and_deduplicates(self):
         lf = _import_poller()
         day_state = {
-            "root_minutes": {"AMD": {"11:00": {}}, "SPY": {"11:00": {}}},
+            "root_minutes": {
+                "AMD": {"11:00": self._minute()},
+                "SPY": {"11:00": self._minute()},
+            },
             "root_strikes": {},
         }
         assert lf._select_ticker_publish_roots(
@@ -536,7 +616,7 @@ class TestTickerPublishRoots:
     def test_does_not_freshen_prior_data_after_current_source_failure(self):
         lf = _import_poller()
         day_state = {
-            "root_minutes": {"AMD": {"11:00": {}}},
+            "root_minutes": {"AMD": {"11:00": self._minute()}},
             "root_strikes": {},
         }
         assert lf._select_ticker_publish_roots(["AMD"], [], day_state) == []

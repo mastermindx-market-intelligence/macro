@@ -294,18 +294,53 @@ def _valid_source_receipts(receipts) -> dict[str, str]:
     return out
 
 
+def _real_accumulator_row(row, value_fields: tuple[str, ...]) -> bool:
+    """Return whether an engine accumulator row contains usable numeric activity.
+
+    Engine-produced minute and strike rows always carry their complete field set.
+    Missing fields, booleans, strings, non-finite values, and negative volume are
+    malformed persisted state and must not advertise drill availability.  A
+    legitimate net-zero row remains real when positive volume proves prints were
+    accumulated.
+    """
+    if not isinstance(row, dict):
+        return False
+
+    values: list[float] = []
+    for field in value_fields:
+        value = row.get(field)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return False
+        numeric = float(value)
+        if not math.isfinite(numeric):
+            return False
+        values.append(numeric)
+
+    volume = values[-1]
+    if volume < 0 or not volume.is_integer():
+        return False
+    return volume > 0 or any(value != 0 for value in values[:-1])
+
+
 def _roots_with_ticker_data(day_state: dict) -> set[str]:
     """Roots with real accumulated minute or strike rows."""
     if not isinstance(day_state, dict):
         return set()
+
+    fields_by_container = {
+        "root_minutes": ("ncp", "npp", "vol"),
+        "root_strikes": ("call_prem", "put_prem", "vol"),
+    }
     out: set[str] = set()
-    for field in ("root_minutes", "root_strikes"):
+    for field, value_fields in fields_by_container.items():
         values = day_state.get(field)
         if not isinstance(values, dict):
             continue
         for raw_root, rows in values.items():
             roots = _normalise_root_list([raw_root])
-            if roots and bool(rows):
+            if not roots or not isinstance(rows, dict):
+                continue
+            if any(_real_accumulator_row(row, value_fields) for row in rows.values()):
                 out.add(roots[0])
     return out
 
@@ -2380,7 +2415,7 @@ def run_cycle(
             # network response and create false point-in-time provenance.
             observed_at = _utc_now_iso()
             fetch_results[r] = (calls_df, puts_df, observed_at)
-            if calls_df is not None or puts_df is not None:
+            if calls_df is not None and puts_df is not None:
                 source_response_times.append(observed_at)
             requests_count += 2  # two calls per root (call + put)
     _log_rss_phase("post_fetch", cycle_n=cycle_n)
@@ -2391,15 +2426,20 @@ def run_cycle(
     for root in roots:
         calls_df, puts_df, observed_at = fetch_results.get(root, (None, None, None))
         named_root: str | None = None
-        if calls_df is not None or puts_df is not None:
+        if calls_df is not None and puts_df is not None:
             normalised = _normalise_root_list([root])
             if normalised:
                 named_root = normalised[0]
                 roots_with_source_payload_names.append(named_root)
                 if isinstance(observed_at, str) and observed_at:
                     root_source_receipts[named_root] = observed_at
-        if calls_df is None and puts_df is None:
-            log.debug("poller: skip %s (both legs failed)", root)
+        if calls_df is None or puts_df is None:
+            log.warning(
+                "poller: skip %s (incomplete source response: calls=%s puts=%s)",
+                root,
+                "failed" if calls_df is None else "ok",
+                "failed" if puts_df is None else "ok",
+            )
             continue
 
         # Derive, but do not yet commit, the fetched-root watermark. It advances

@@ -2675,6 +2675,57 @@ class TestRunCycleEndToEnd:
         assert meta["source_response_at_first"] is None
         assert meta["source_response_at_last"] is None
 
+    @pytest.mark.parametrize("failed_leg", ["call", "put"])
+    def test_partial_leg_failure_retains_prior_receipts_and_skips_engine(
+        self, monkeypatch, failed_leg,
+    ):
+        import scripts.live_flow_poller as poller
+
+        successful = self._root_frame("SPY", "09:30", seq_base=1000)
+        if failed_leg == "call":
+            successful["right"] = "P"
+
+        def partial_fetch(root, *_args, **_kwargs):
+            if failed_leg == "call":
+                return root, None, successful.copy()
+            return root, successful.copy(), None
+
+        monkeypatch.setattr(poller, "_fetch_root", partial_fetch)
+        processed_roots: list[str] = []
+        real_process_batch = lf.process_batch
+
+        def recording_process_batch(**kwargs):
+            processed_roots.append("SPY")
+            return real_process_batch(**kwargs)
+
+        monkeypatch.setattr(lf, "process_batch", recording_process_batch)
+        prior_source = "2026-07-02T17:45:00Z"
+        prior_source_receipts = {"SPY": "2026-07-02T17:40:00Z"}
+        prior_ticker_receipts = {"SPY": "2026-07-02T17:39:00Z"}
+
+        feed, heat, meta, state, _ = self._run_real_cycle(
+            monkeypatch,
+            {"SPY": successful},
+            day_state={
+                "source_asof": prior_source,
+                "root_source_receipts": prior_source_receipts,
+                "root_ticker_receipts": prior_ticker_receipts,
+                "root_minutes": {
+                    "SPY": {"09:29": {"ncp": 100.0, "npp": 0.0, "vol": 1}},
+                },
+            },
+        )
+
+        assert processed_roots == []
+        assert meta["asof"] == prior_source
+        assert feed["source_asof"] == prior_source
+        assert heat["source_asof"] == prior_source
+        assert meta["roots_with_source_payload"] == 0
+        assert meta["roots_with_source_payload_names"] == []
+        assert meta["roots_with_ticker_state_names"] == []
+        assert state["root_source_receipts"] == prior_source_receipts
+        assert state["root_ticker_receipts"] == prior_ticker_receipts
+
     def test_root_source_receipts_update_in_requested_order_and_preserve_prior(self, monkeypatch):
         prior_receipts = {"IWM": "2026-07-02T17:40:00Z"}
         _, _, meta, state, _ = self._run_real_cycle(

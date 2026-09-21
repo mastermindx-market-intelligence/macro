@@ -48,7 +48,7 @@ Rules:
 - `scheduled_this_cycle` reflects the exact cycle root list.
 - `source_ok_this_cycle` reflects `run_cycle()` source-success names.
 - `last_source_success` comes from persisted session receipts and is null before first success.
-- `has_session_data` is true only when accumulated ticker state has at least one minute or strike row.
+- `has_session_data` is true only when accumulated ticker state has at least one complete numeric minute or strike row with real activity; malformed or default-filled rows do not count.
 - `activity_rank` is one-based gross-premium rank for roots with positive session gross; otherwise null.
 
 Ordering is deterministic: active roots by descending gross premium, remaining core roots in configured order, then remaining rotating roots in configured order. Each configured root appears once. Meta also carries `roots_configured`; existing count fields keep their meanings.
@@ -68,7 +68,7 @@ Raise `live_flow.top_names` from 100 to 128, matching the existing bounded chain
 - Missing receipt state degrades to an empty map.
 - Malformed prior receipt entries are ignored, not coerced.
 - A fully failed cycle retains prior receipts and prior `source_asof`.
-- A partial cycle updates source receipts for returned payloads and ticker receipts only for roots whose engine state merged successfully.
+- A partial cycle updates a root source receipt only when both call and put legs returned (an empty DataFrame is an honest no-trades response; `None` is failure), and updates its ticker receipt only after engine state merged successfully.
 - A configured root may have `last_source_success=null`; that is an honest awaiting-refresh state.
 - A root with a receipt but no minute/strike rows remains discoverable but gets no fabricated ticker artifact.
 - Catalog metadata never enters scoring, sizing, gating, or trade authority.
