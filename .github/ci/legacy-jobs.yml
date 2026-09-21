@@ -950,7 +950,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
-        run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py -q
+        run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
 
   trial-budgets:
     if: ${{ false }}
@@ -2926,6 +2926,7 @@ jobs:
           tests/test_ai_breadth_split.py
           tests/test_vsb_surface.py
           tests/test_ud_b2_w1_vw_fold.py
+          tests/test_unified_dashboard_b1.py
           tests/test_ud_b2_w1_red_first_proof.py
           tests/test_missing_tape.py tests/test_price_basis_flip.py
           tests/test_risk_lead_lag.py tests/test_anticipation.py
@@ -7623,6 +7624,13 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # P1 leader-observation closure widening 2026-09-20 (contract-delta):
+      # the existing Prophet serving/build paths now import the leader-pullback
+      # projection through the canonical Turn Organ dependency chain.
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_leader_pullback_coverage.py"
+      - "engine/us_turn_watch.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -11241,12 +11249,18 @@ jobs:
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
         run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
+      - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
+        run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
       # existing CODE-gated turn/organ lane: the source adapter consumes canonical
       # generation-local TURN WATCH facts, while Radar identity remains fail-closed
       # and B4/ranking/trading authority stay absent. No new job or runner is added.
       - name: prophet B3 candidate state (orthogonal lifecycle/emergence/maturity + fail-closed owner facts)
         run: python -m pytest tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py -q
+      # Strategy-platform prerequisite for B4: one immutable, versioned, authority-false
+      # owner definition. This does not compute Availability or widen B1/B3 admission.
+      - name: prophet strategy definition owner projection (B4 prerequisite only)
+        run: python -m pytest tests/test_prophet_strategy_definition.py -q
       - name: turn-watch desk + group-turn organ (§6.9 R8 — publish path, leg-(d) organ vs fallback, recall contract; §6.9 R6 basket lifecycle)
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
@@ -11310,6 +11324,8 @@ jobs:
       # reuses the pip line above — no new dependency enters this job's import closure.
       - name: anticipation why-not receipts (headline specificity, fail-closed status, the shelf partial)
         run: python -m pytest tests/test_prophet_whynot_receipts.py -q
+      - name: Prophet leader-observation shelf (real publisher, tier split, plan-byte invariance, rendered consumer)
+        run: python -m pytest tests/test_prophet_leader_observation_shelf.py -q
       - name: zone-basis copy (no raw enum/slug/internal state on the published entry_zone; EN+ZH)
         # Same job as the intake because it guards the same payload: `entry_zone` is
         # whitelisted onto site/prophet/index.json, so its `basis`/`conversion_evidence`
@@ -11555,6 +11571,13 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # P1 leader-observation closure widening 2026-09-20 (contract-delta):
+      # the existing Prophet serving/build paths now import the leader-pullback
+      # projection through the canonical Turn Organ dependency chain.
+      - "engine/us_basket_turn.py"
+      - "engine/us_leader_pullback.py"
+      - "engine/us_leader_pullback_coverage.py"
+      - "engine/us_turn_watch.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
