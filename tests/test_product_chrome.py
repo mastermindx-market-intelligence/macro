@@ -340,6 +340,8 @@ def test_subsector_detail_preserves_payload_truth_and_existing_chart_consumer():
         assert token in template
     assert "window.StockChart.mount" in template
     assert "CHART_KEY" in template
+    assert "T1 · confirmed setup" in template  # preserve the incumbent tier code visibly on touch/mobile
+    assert 'data-tier="' in template
     assert "AI Semiconductors" not in template
     assert ">66<" not in template
 

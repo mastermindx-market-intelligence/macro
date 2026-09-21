@@ -124,8 +124,8 @@ const sgn = (x, d = 1) => (x == null || isNaN(x)) ? '<span class="num">–</span
 const pageIdentity = DETAIL.kind === 'concept' || DETAIL.kind === 'basket' ? L("Theme Intelligence", "主题情报") : DETAIL.kind === 'sector' ? L("Sector Intelligence", "板块情报") : L("Subsector Intelligence", "子行业情报");
 const tierB = t => {
   const key = t || 'none';
-  const en = {T1:'confirmed setup',T2:'early setup',T3:'forming',T4:'first sign',none:'—'};
-  const zh = {T1:'已确认配置',T2:'早期配置',T3:'形成中',T4:'初步迹象',none:'—'};
+  const en = {T1:'T1 · confirmed setup',T2:'T2 · early setup',T3:'T3 · forming',T4:'T4 · first sign',none:'—'};
+  const zh = {T1:'T1 · 已确认配置',T2:'T2 · 早期配置',T3:'T3 · 形成中',T4:'T4 · 初步迹象',none:'—'};
   return '<span class="tier ' + esc(key) + '" data-tier="' + esc(key) + '" title="' + (key === 'none' ? '' : 'Technical tier ' + esc(key)) + '">' + L(en[key] || key, zh[key] || key) + '</span>';
 };
 
