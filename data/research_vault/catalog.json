@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T13:32:45.452825+00:00",
-  "count": 2571,
+  "generated_at": "2026-09-21T16:33:05.529258+00:00",
+  "count": 2580,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,185 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-genoeiwk8qt-09599b",
+      "title": "GS Callahan US TMT weekly + charts 21Sep2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:47:35Z",
+      "summary_points": [
+        "Semis P/E at multi-year lows amid oil correlation: SOX P/E near 18.2998 correlates with inverted oil prices (rising oil = falling SOX P/E), indicating macro-driven valuation pressure, not AI-specific issues.",
+        "Macro risk dominates sector dynamics: Oil price trends directly influence Semis/AI valuations, signaling vulnerability to broader economic conditions over AI narrative-driven risks.",
+        "Valuation compression in key names: AMAT’s PE/SPX ratio (1.2559) below 1.4126 threshold confirms valuation compression amid market de-rating, with technical bounce off 200-dma supporting near-term resilience."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pwjqbzqafk4-8855ee",
+      "title": "Turkiye TCMB Reserves US$9bn Lower",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:52Z",
+      "summary_points": [
+        "Capital Flight into Domestic Deposits: TRY deposits surge to $20bn amid $1.8bn MMF outflows, signaling capital flight as FX volatility intensifies and central bank reserves decline $9bn (to $180bn).",
+        "Geopolitical Reserves Erosion: Iran war triggered $36.4bn gross FX asset decline and $9.5bn FX liquidity drop since start, severely constraining central bank intervention capacity amid currency volatility.",
+        "FX Liquidity Compression: FX liquidity at $47.1bn (vs $67.6bn peak) indicates constrained ability to stabilize TRY, critical for emerging market exposure and currency risk management.",
+        "Foreign Capital Shift to Debt: $20bn cumulative foreign inflows into domestic debt post-2024, while equity inflows remain negative, reflecting risk-averse positioning and debt preference.",
+        "Credit Market Stress: Commercial loan rates persist 9pp above policy rate (45%), signaling tight lending conditions and elevated credit risk despite policy adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kufg2vdek5f-1a7522",
+      "title": "India Monthly Activity Chartbook Investment activity remains resilient in August",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:49Z",
+      "summary_points": [
+        "Investment Resilience: Electricity consumption at 12.8% yoy (two-year high), bank credit growth at 19.1% yoy (two-year high), industrial indicators (auto/steel/cement) robust in Aug-26.",
+        "Geopolitical & Weather Risks: Middle East conflict escalation, Brent crude >$100/bbl, El Niño-linked rainfall below average in key rice/wheat states threatening crop yields.",
+        "Urban Consumption Moderation: Urban demand indicators (light vehicles, aviation, petrol) show YoY declines in Aug-26; composite score at 88.9 (3m avg), signaling slowing activity.",
+        "Agricultural Supply Threats: Rainfall below long-term average in rice states (Exhibit 7), wheat reservoir levels at three-year lows (Exhibit 9), risking food security and inflation.",
+        "FX Reserves Surge: RBI FX reserves increased $45bn (Aug-Sept), reflecting robust dollar inflows and policy support for currency stability."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wkbzwf6mbxv-7b4e77",
+      "title": "Weekly US Earnings Estimates 21st 25th September 2026",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:10Z",
+      "summary_points": [
+        "Cross-Index Flow Catalyst: CTAS/PAYX reporting on Nasdaq 100 (23rd Sept) drives immediate cross-index flows, critical for short-term portfolio positioning.",
+        "Sector Revenue Benchmarks: CTAS ($2.98B Qtrly) and COST ($94.88B Qtrly) revenue releases (23rd/24th Sept) are fundamental data points for healthcare/retail sector analysis.",
+        "Growth Trajectory Signal: DRI’s $3.27B Next Qtr Revenue (24th Sept) directly signals Darden’s near-term growth trajectory for retail sector allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pfb3xjck5dd-7e7146",
+      "title": "Week in Focus 21 25th September 2026 Highlights include Xi s visit to the US Global Flash PMIs Aussie jobs and the SNB rate decision",
+      "institution": "Week Ahead",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:34:07Z",
+      "summary_points": [
+        "FOMC Hawkish Shift: Fed raised rates 25bps to 3.75-4.00%, with median forecast easing to 3.875% in 2024; Goldman Sachs now expects another 25bps hike in October, signaling persistent inflation risks and tightening liquidity.",
+        "Japan PMI Expansion: Manufacturing PMI expected at 54.8 (services at 52.6, composite above 53.0), driven by semiconductor/AI demand and tourism, with price pressures monitored as key sector catalyst.",
+        "US Data & Geopolitical Risk: US retail sales rose 1.2% MoM (vs. 8% forecast), driven by non-store sales; Iran conflict elevates oil price volatility, compounding inflation risks."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-r4nsqixlmi5-8f5433",
+      "title": "GS Johnstone GS TMT SPEC SALES AI & Semis Security debate Classified names make a comeback Consumer Agents ACN & Anthropic 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:11Z",
+      "summary_points": [
+        "AI Safety Policy Geopolitics: US-China AI safety debates (Altman’s UN briefing, Bessent proposals) and Xi-Trump summit create regulatory uncertainty and political risk, impacting sector valuations and policy shifts.",
+        "OpenAI SoftBank Debt Risk: $10bn SoftBank funding for OpenAI (CDS watch) introduces AI-credit risk, with potential market disruption if debt terms or valuation pressures materialize.",
+        "Agentic AI Infrastructure Demand: Persistent 24/7 operations from AI agents (e.g., Muse/Instinct) drive surge in secure VMs, hyperscalers, data centers, and GPU demand, reinforcing sector fundamentals."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-tz1xuvdbiew-6c5d5b",
+      "title": "GS Crook GS MORNING GCEM Symposium Key Quotes Trump Xi Summit Preview NBH Views Global FX Trader Dollar Drift and Week Ahead 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:29:08Z",
+      "summary_points": [
+        "Fed Policy & AI-Driven Volatility: Regime change in Fed policy (30-70% move meetings) elevates equilibrium rate (R) due to AI-driven investment/deficits, heightening volatility and upward yield/term premium.",
+        "Fiscal Debt Fragility: US fiscal expansion (6-8% annual) worsens debt-to-GDP ratio, signaling nominal economy fragility versus Japan’s 2022 trajectory (220%→180%).",
+        "Trump-Xi Summit & Geopolitical Shifts: Sept 23-25 summit with USDCNY <6.70 as stability signal; China’s oil mediation (US-Iran talks) is key market-moving factor beyond trade/AI.",
+        "CNY Policy Divergence: CNY strengthens against CFETS basket (diversified basket) vs.",
+        "USD (e.g., 2022), revealing active USD/CNY management and potential policy shift toward market-driven rates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pyzt8cziikz-942cc9",
+      "title": "GS Biswas GS Credit MarketStrats Ingredients (mostly technical) for a near term rally are shaping up 20 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:28:57Z",
+      "summary_points": [
+        "Rates Short Positioning Risk: $171mm DV01 short positions in JGBs/Bobl/Bunds (widest 15y levels) pricing 3+ Fed/ECB hikes, creating acute short squeeze risk if rates rally.",
+        "OATS Credit Risk Escalation: Idiosyncratic widening in OATS (Graphic 10) signals deteriorating credit quality, critical for bond portfolio fundamentals.",
+        "France Credit: Election Volatility & Policy Risk: Issuers prefunding 2027 for election volatility; 2026 budget labeled as imminent policy event requiring proactive portfolio adjustments.",
+        "Yield Curve Inversion Stress: Persistent long-term inversion (~-30) and short-term inversion (-0.92) signal systemic economic stress, recession risk, and capital flow shifts toward US assets."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-kr6l96dhpwg-6d41ac",
+      "title": "GS Abbas GS US Daily Download 21 Sep 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:28:53Z",
+      "summary_points": [
+        "HF Energy & Retail Flows: HF net sold global Energy fastest in 4 months (equal short/long sales); retail buying persists despite low HF net/gross and bottom sentiment.",
+        "Macro Rate & MSFT NDR: Fed’s inflation-focused message reinforces flattening yields; ECB hawkish on energy, BoE QT plans; MSFT Buy rated with MAIA/MAI improvements.",
+        "Solar Sector Outlook: ENPH (Buy) for higher margins/new launches; RUN (Buy) with rate valuation headwind; SEDG (Sell) cautious; YETI targets $1bn platform/Project Upcycle.",
+        "Market Dynamics: AI rotation triggered by Anthropic’s “Dario Doomsday” call → worst AI vs AI-at-risk day since 2020; 10yr yields backed up to 5% (rate weakness)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-untdix5ejwy-2a2605",
       "title": "Cost to Sweep Report 21 Sep 2026",
