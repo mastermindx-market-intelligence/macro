@@ -11581,6 +11581,31 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # HK-H2 closure widening 2026-09-21 (contract-delta): the hub copy pass
+      # import closure now reaches the marketing/intel/indicator modules below.
+      - "engine/indicators_m2.py"
+      - "engine/intel_discovery.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/market_clock.py"
+      - "engine/marketing/movers_source.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/share_cards.py"
+      - "engine/marketing/source_authority.py"
+      - "engine/marketing/state.py"
+      - "engine/stocks_hub.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
