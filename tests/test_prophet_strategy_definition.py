@@ -97,6 +97,7 @@ from engine.prophet_entry_availability import (
     evaluate_entry_availability,
     validate_entry_availability,
 )
+from engine.prophet_live.interval import ADJUSTED, UNADJUSTED
 
 _B4_GEN = "peg:" + "a" * 64
 
@@ -255,12 +256,24 @@ def test_b4_stale_quote_ambiguous_basis_or_unknown_required_fact_fail_closed():
     assert "LIQUIDITY_FILLABILITY_UNKNOWN" in out["blockers"]
 
 
-def test_b4_price_basis_mismatch_fails_closed():
-    f = _b4_facts()
-    f["geometry"]["basis_version"] = "raw:v7"
-    out = _b4_evaluate(f=f)
+def test_b4_distinct_incumbent_price_families_require_owner_basis_resolution():
+    # Production law keeps live vendor prints raw while entry geometry is computed
+    # on the adjusted store.  A resolved incumbent basis audit makes those two
+    # explicit families comparable without laundering the tape into an invented
+    # adjusted quote.
+    resolved = _b4_facts()
+    resolved["quote"]["basis_version"] = UNADJUSTED
+    resolved["geometry"]["basis_version"] = ADJUSTED
+    out = _b4_evaluate(f=resolved)
+    assert out["state"] == "ENTRY_OPEN"
+    assert out["current_price_basis"] == UNADJUSTED
+    assert out["zone"]["basis"] == ADJUSTED
+
+    ambiguous = copy.deepcopy(resolved)
+    ambiguous["deterministic_gates"]["corporate_action_basis"] = "AMBIGUOUS"
+    out = _b4_evaluate(f=ambiguous)
     assert out["state"] == "UNAVAILABLE_DATA"
-    assert "PRICE_BASIS_MISMATCH" in out["blockers"]
+    assert "CORPORATE_ACTION_BASIS_AMBIGUOUS" in out["blockers"]
 
 
 def test_b4_owner_chase_and_zone_relationship_route_without_rank_feedback():

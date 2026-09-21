@@ -365,8 +365,13 @@ def evaluate_entry_availability(
         unavailable: list[str] = []
         if quote_freshness != "FRESH":
             unavailable.append("QUOTE_STALE" if quote_freshness == "STALE" else "QUOTE_FRESHNESS_UNKNOWN")
-        if quote_basis != geometry_basis:
-            unavailable.append("PRICE_BASIS_MISMATCH")
+        # The incumbent live-price owner deliberately keeps two honest price
+        # families: raw vendor prints for the tape and split/dividend-adjusted
+        # levels for the armed geometry.  Equality is therefore NOT the resolution
+        # test.  The upstream basis owner must prove the two planes comparable
+        # (or fail closed) and reports that verdict through corporate_action_basis.
+        # Requiring literal equality here would dark every truthful live read and
+        # would pressure an adapter to fabricate an adjusted exchange print.
         if gate_values["corporate_action_basis"] != "RESOLVED":
             unavailable.append(
                 "CORPORATE_ACTION_BASIS_AMBIGUOUS"
