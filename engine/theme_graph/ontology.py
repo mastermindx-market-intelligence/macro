@@ -369,7 +369,7 @@ def _relation_projection(
 
 
 def _proposal_projection(row: Mapping[str, Any]) -> dict[str, Any]:
-    return {
+    result = {
         "proposal_id": str(row.get("proposal_id") or ""),
         "kind": str(row.get("kind") or ""),
         "subject": _clean(row.get("subject")) or {},
@@ -389,6 +389,9 @@ def _proposal_projection(row: Mapping[str, Any]) -> dict[str, Any]:
         "note": None if _is_null(row.get("note")) else str(row.get("note")),
         "truth_status": "PROPOSAL_ONLY",
     }
+    if "adjudication_note" in row:
+        result["adjudication_note"] = row.get("adjudication_note")
+    return result
 
 
 def _proposal_as_known(
@@ -405,7 +408,9 @@ def _proposal_as_known(
             known["status"] = "proposed"
             known["ratified_by"] = None
             known["adjudicated_at"] = None
-            known["note"] = None
+            # note is immutable proposal-origin content; decisions use a separate field.
+            if "adjudication_note" in known:
+                known["adjudication_note"] = None
     return known
 
 

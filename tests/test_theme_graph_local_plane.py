@@ -1493,7 +1493,7 @@ def test_ontology_future_proposals_and_adjudications_obey_knowledge_cutoff() -> 
     assert before["proposals"][0]["status"] == "proposed"
     assert before["proposals"][0]["ratified_by"] is None
     assert before["proposals"][0]["adjudicated_at"] is None
-    assert before["proposals"][0]["note"] is None
+    assert before["proposals"][0]["note"] == store._proposals[1]["note"]
     assert before["curation"] == {
         "state": "PROPOSED",
         "proposal_ids": ["prop:6666666666666666"],
@@ -1844,7 +1844,7 @@ def test_proposal_review_hides_later_decision(status):
     assert result["proposal"]["status"] == "proposed"
     assert result["proposal"]["ratified_by"] is None
     assert result["proposal"]["adjudicated_at"] is None
-    assert result["proposal"]["note"] is None
+    assert result["proposal"]["note"] == view._proposals[0]["note"]
 
 
 def test_proposal_review_duplicate_visible_identity_fails_closed():
@@ -2282,3 +2282,484 @@ def test_gmi_overlap_cli_json_and_markdown_preserve_input(tmp_path, capsys):
     assert main(["--review", str(source), "--out", str(source)]) == 2
     assert main(["--review", str(source), "--out", str(output)]) == 2
     assert source.read_bytes() == before and output.read_text() == text
+
+
+def _overlap_count_review():
+    basket = "basket:baskets:utilities"
+    view = _review_view(present=False)
+    view._proposals[0]["subject"] = {"basket": basket, "local_theme": _REVIEW_LOCAL}
+    view._proposals[0]["evidence"] = {"basket_size": 2, "subtheme_size": 2, "overlap": 1}
+    view._nodes.append(_ont_node(basket, "basket"))
+    for ticker in ("AAA", "BBB", "CCC"):
+        view._nodes.append(_ont_node("co:us:" + ticker, "company", name=ticker))
+    for i, (ticker, dst) in enumerate((("AAA", basket), ("BBB", basket),
+                                      ("BBB", _REVIEW_LOCAL), ("CCC", _REVIEW_LOCAL))):
+        view._edges.append(_ont_edge("count-member-" + str(i), "MEMBER_OF", "co:us:" + ticker, dst))
+    return _review_proposal(view)
+
+
+def _overlap_count_comparison(document):
+    report = _overlap_report(document)
+    assert "reported_count_comparison" in report, "reported versus observed count comparison is missing"
+    return report, report["reported_count_comparison"]
+
+
+@pytest.mark.parametrize("size,state,delta", [(2, "REPORTED_COUNTS_EQUAL", 0),
+    (3, "REPORTED_COUNTS_DIFFER", -1)])
+def test_gmi_overlap_reported_count_comparison(size, state, delta):
+    document = _overlap_count_review(); document["proposal"]["evidence"]["basket_size"] = size
+    report, comparison = _overlap_count_comparison(document)
+    assert comparison["state"] == state and comparison["same_vintage_verified"] is False
+    assert comparison["fields"][0] == dict(field="basket_size", reported=size, observed=2, delta=delta)
+    assert report["reported_evidence"]["basket_size"] == size
+
+
+@pytest.mark.parametrize("value", [None, True, -1, "2", 2.0, {}])
+def test_gmi_overlap_reported_counts_never_coerce_invalid_statistics(value):
+    document = _overlap_count_review()
+    document["proposal"]["evidence"]["basket_size"] = value
+    report, comparison = _overlap_count_comparison(document)
+    assert comparison["state"] == "REPORTED_COUNTS_PARTIAL"
+    assert comparison["invalid_fields"] == ["basket_size"]
+    assert all(row["field"] != "basket_size" for row in comparison["fields"])
+    assert report["reported_evidence"]["basket_size"] == value
+
+
+def test_gmi_overlap_reported_counts_missing_is_not_zero():
+    document = _overlap_count_review(); del document["proposal"]["evidence"]["overlap"]
+    _, comparison = _overlap_count_comparison(document)
+    assert comparison["state"] == "REPORTED_COUNTS_PARTIAL"
+    assert comparison["missing_fields"] == ["overlap"]
+    assert all(row["field"] != "overlap" for row in comparison["fields"])
+
+
+def test_gmi_overlap_reported_counts_respect_subject_metric_semantics():
+    document = _overlap_review()
+    document["proposal"]["evidence"] = {"basket_size": 2, "subtheme_size": 2, "overlap": 1}
+    _, comparison = _overlap_count_comparison(document)
+    assert comparison["state"] == "NOT_EVALUATED"
+    assert comparison["reason"] == "unsupported_metric_semantics"
+    assert comparison["fields"] == []
+
+
+@pytest.mark.parametrize("empty_side", [0, 1, "both"])
+def test_gmi_overlap_empty_membership_evidence_abstains(empty_side):
+    document = _overlap_count_review()
+    for i, endpoint in enumerate(document["endpoints"]):
+        if empty_side == "both" or i == empty_side:
+            endpoint["relations"] = [r for r in endpoint["relations"] if r["type"] != "MEMBER_OF"]
+    report, comparison = _overlap_count_comparison(document)
+    assert report["availability"]["state"] == "INSUFFICIENT_MEMBERSHIP_EVIDENCE"
+    assert report["ratios"] is None
+    assert comparison["state"] == "NOT_EVALUATED" and comparison["fields"] == []
+
+
+def test_gmi_overlap_null_member_metadata_preserves_recorded_membership():
+    document = _overlap_count_review()
+    for endpoint in document["endpoints"]:
+        for row in endpoint["relations"]:
+            if row["peer_node_id"] == "co:us:BBB": row["peer"] = None
+    report = _overlap_report(document)
+    assert report["counts"]["shared"] == 1
+    assert report["metadata_unavailable_ids"] == ["co:us:BBB"]
+    assert len(report["shared"][0]["source_memberships"]) == 1
+
+
+def test_gmi_overlap_unavailable_endpoint_is_not_an_empty_set():
+    view = _review_view(); view._nodes.pop()
+    report = _overlap_report(_review_proposal(view))
+    assert report["availability"]["state"] == "ENDPOINT_UNAVAILABLE"
+    assert report["counts"] is None and report["ratios"] is None
+
+
+def test_gmi_overlap_unavailable_proposal_does_not_compare_counts():
+    document = _review_proposal(_OntologyStore())
+    report, comparison = _overlap_count_comparison(document)
+    assert report["availability"]["state"] == "PROPOSAL_UNAVAILABLE"
+    assert comparison["state"] == "NOT_EVALUATED" and comparison["fields"] == []
+
+
+def test_gmi_overlap_conflicting_evidence_identity_refuses():
+    import copy
+    document = _overlap_count_review()
+    row = document["endpoints"][0]["relations"][0]
+    duplicate = copy.deepcopy(row); duplicate["evidence_refs"] = ["ev:conflicting"]
+    document["endpoints"][0]["relations"].append(duplicate)
+    with pytest.raises(ValueError, match="conflicting"):
+        _overlap_report(document)
+
+
+def test_gmi_overlap_count_difference_is_visible_in_human_brief():
+    from engine.theme_graph.membership_evidence import render_markdown
+    document = _overlap_count_review(); document["proposal"]["evidence"]["basket_size"] = 3
+    report, _ = _overlap_count_comparison(document)
+    text = render_markdown(report)
+    assert "basket_size: reported 3; recorded 2; difference -1." in text
+    assert "Same-vintage comparability is not established" in text
+
+
+_SECURITY_KEY = "SEC:US-XNAS-AAA"
+_ISSUER_KEY = "ISS:US-XNAS-AAA"
+
+
+def _security_row(node_id="co:us:AAA", security_id=_SECURITY_KEY, issuer_id=_ISSUER_KEY):
+    return dict(schema="gmi.identity_resolution/v1", node_id=node_id,
+        graph_kind="company", market_scope="us", graph_identity_epoch=1,
+        source_native_symbol="NOT_A_JOIN_KEY", resolution_asof="2026-09-18",
+        resolution_state="RESOLVED", issuer_id=issuer_id, security_id=security_id,
+        listing_key=security_id.removeprefix("SEC:"), join_method="vendor_alias",
+        master_generated_at="2026-09-18T00:00:00Z", master_symbol_directory_snapshot=None,
+        master_code_version="fixture", refusal_reason=None, source_receipts='{"fixture":true}',
+        computed_at="2026-09-18T17:42:27Z", engine_version="theme_graph.v1")
+
+
+def _security_query(rows=None, view=None, **kwargs):
+    import importlib.util
+    assert importlib.util.find_spec("engine.theme_graph.security_navigation"), "exact security navigation is missing"
+    from engine.theme_graph import security_navigation as navigation
+    rows = [_security_row()] if rows is None else rows
+    view = _OntologyStore(nodes=[_ont_node(r["node_id"], "company") for r in rows]) if view is None else view
+    result = navigation.compose_security_neighborhoods(view, rows,
+        identity_kind=kwargs.pop("identity_kind", "security"),
+        identity_id=kwargs.pop("identity_id", _SECURITY_KEY),
+        asof=kwargs.pop("asof", "2026-06-01"), rights_resolver=_ont_rights, **kwargs)
+    _security_validate(result)
+    return result
+
+
+def _security_validate(result):
+    from referencing import Registry, Resource
+    root = ROOT / "contracts/theme_graph"
+    registry = Registry()
+    for name in ("ontology_neighborhood.v1", "identity_resolution.v1"):
+        schema = json.loads((root / (name + ".schema.json")).read_text())
+        registry = registry.with_resource(schema["$id"], Resource.from_contents(schema))
+    schema = json.loads((root / "security_neighborhoods.v1.schema.json").read_text())
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(result)
+
+
+def test_gmi_security_preserves_every_same_security_graph_binding():
+    rows = [_security_row("co:us:OLD"), _security_row("co:us:NEW")]
+    result = _security_query(rows)
+    assert [x["node_id"] for x in result["bindings"]] == ["co:us:NEW", "co:us:OLD"]
+    assert result["counts"] == dict(matched_nodes=2, available_nodes=2, unavailable_nodes=0)
+    assert all(x["resolution"]["security_id"] == _SECURITY_KEY for x in result["bindings"])
+    assert result["identity_basis"] == "LATEST_PUBLISHED_OWNER_REFERENCE"
+    assert result["historical_identity_claim"] is False
+    assert result["knowledge_cutoff_applies_to"] == "GRAPH_NEIGHBORHOODS_ONLY"
+    assert result["bindings"][0]["resolution"]["computed_at"] == "2026-09-18T17:42:27Z"
+
+
+def test_gmi_security_issuer_query_preserves_separate_share_classes():
+    rows = [_security_row(), _security_row("co:us:AAB", "SEC:US-XNAS-AAB")]
+    result = _security_query(rows, identity_kind="issuer", identity_id=_ISSUER_KEY)
+    assert {x["resolution"]["security_id"] for x in result["bindings"]} == {_SECURITY_KEY, "SEC:US-XNAS-AAB"}
+
+
+@pytest.mark.parametrize("rows,state", [([], "IDENTITY_OWNER_UNAVAILABLE"),
+    ([_security_row(security_id="SEC:US-XNAS-OTHER")], "NO_GRAPH_BINDING")])
+def test_gmi_security_absence_does_not_become_an_empty_theme_set(rows, state):
+    result = _security_query(rows)
+    assert result["availability"]["state"] == state
+    assert result["bindings"] == [] and result["counts"] is None
+
+
+@pytest.mark.parametrize("kind,key", [("ticker", "AAA"), ("security", "AAA"),
+    ("security", " SEC:US-XNAS-AAA"), ("issuer", _SECURITY_KEY),
+    ("security", "SEC:"), ("security", "SEC:US XNAS AAA")])
+def test_gmi_security_never_resolves_a_label_or_mismatched_id_kind(kind, key):
+    with pytest.raises(ValueError): _security_query(identity_kind=kind, identity_id=key)
+
+
+@pytest.mark.parametrize("mutation", ["duplicate", "refused", "missing_listing", "missing_clock", "noncompany"])
+def test_gmi_security_invalid_owner_binding_fails_closed(mutation):
+    rows = [_security_row()]
+    if mutation == "duplicate": rows.append(dict(rows[0]))
+    elif mutation == "refused": rows[0]["resolution_state"] = "AMBIGUOUS"
+    elif mutation == "missing_listing": rows[0]["listing_key"] = None
+    elif mutation == "missing_clock": rows[0]["computed_at"] = None
+    else: rows[0]["node_id"] = "theme:AAA"
+    with pytest.raises(ValueError): _security_query(rows)
+
+
+@pytest.mark.parametrize("visible,state", [(0, "GRAPH_SUBJECTS_UNAVAILABLE"),
+    (1, "PARTIAL_GRAPH_VISIBILITY"), (2, "OK")])
+def test_gmi_security_graph_visibility_stays_separate_from_identity(visible, state):
+    rows = [_security_row("co:us:OLD"), _security_row("co:us:NEW")]
+    view = _OntologyStore(nodes=[_ont_node(r["node_id"], "company") for r in rows[:visible]])
+    result = _security_query(rows, view=view)
+    assert result["availability"]["state"] == state
+    assert len(result["bindings"]) == 2
+    assert result["counts"]["available_nodes"] == visible
+    assert result["counts"]["unavailable_nodes"] == 2 - visible
+
+
+def test_gmi_security_preserves_all_local_memberships_and_rights():
+    view = _OntologyStore(nodes=[_ont_node("co:us:AAA", "company"),
+        _ont_node("ltheme:finviz:first", "local_theme"), _ont_node("ltheme:finviz:second", "local_theme")],
+        edges=[_ont_edge("edge-a", "MEMBER_OF", "co:us:AAA", "ltheme:finviz:first"),
+               _ont_edge("edge-b", "MEMBER_OF", "co:us:AAA", "ltheme:finviz:second")])
+    result = _security_query(view=view)
+    neighborhood = result["bindings"][0]["neighborhood"]
+    assert {r["peer_node_id"] for r in neighborhood["relations"]} == {"ltheme:finviz:first", "ltheme:finviz:second"}
+    assert all(r["rights"][0]["public_display_allowed"] is False for r in neighborhood["relations"])
+    result = _security_query(view=view, knowledge_cutoff="2025-12-31")
+    assert result["availability"]["state"] == "GRAPH_SUBJECTS_UNAVAILABLE"
+    assert result["bindings"][0]["resolution"]["security_id"] == _SECURITY_KEY
+
+
+def test_gmi_security_owner_rows_and_graph_tables_are_not_rewritten_or_reread():
+    import copy
+    from types import SimpleNamespace
+    rows = [_security_row("co:us:OLD"), _security_row("co:us:NEW")]
+    before = copy.deepcopy(rows)
+    view = _OntologyStore(nodes=[_ont_node(r["node_id"], "company") for r in rows])
+    calls = {}
+    def once(name):
+        def read():
+            calls[name] = calls.get(name, 0) + 1
+            assert calls[name] == 1
+            return getattr(view, name)()
+        return read
+    names = ("read_nodes", "read_node_lifecycle", "read_edges", "read_proposals")
+    result = _security_query(rows, view=SimpleNamespace(**{n: once(n) for n in names}))
+    assert rows == before and calls == dict.fromkeys(names, 1)
+    result["bindings"][0]["resolution"]["source_receipts"] = "changed output"
+    assert rows == before
+
+
+def test_gmi_security_null_issuer_never_acquires_an_inferred_issuer():
+    row = _security_row(issuer_id=None)
+    assert _security_query([row])["bindings"][0]["resolution"]["issuer_id"] is None
+    assert _security_query([row], identity_kind="issuer", identity_id=_ISSUER_KEY)["availability"]["state"] == "NO_GRAPH_BINDING"
+
+
+def test_gmi_security_cli_uses_only_native_owner_and_preserves_existing_outputs(monkeypatch, tmp_path, capsys):
+    _security_query()
+    from scripts import query_theme_security as cli
+    calls = []
+    def reader(*, latest):
+        calls.append(latest)
+        return [_security_row()]
+    monkeypatch.setattr(cli.identity_owner, "read_identity_resolution", reader)
+    monkeypatch.setattr(cli, "RepositoryStore", lambda: _OntologyStore(nodes=[_ont_node("co:us:AAA", "company")]))
+    args = ["--security-id", _SECURITY_KEY, "--asof", "2026-06-01"]
+    assert cli.main(args) == 0
+    result = json.loads(capsys.readouterr().out)
+    _security_validate(result)
+    assert result["bindings"][0]["node_id"] == "co:us:AAA" and calls == [True]
+    output = tmp_path / "security.json"
+    assert cli.main(args + ["--out", str(output)]) == 0
+    saved = output.read_bytes()
+    assert cli.main(args + ["--out", str(output)]) == 2
+    assert output.read_bytes() == saved
+    with pytest.raises(SystemExit):
+        cli.main(args + ["--issuer-id", _ISSUER_KEY])
+
+
+def _worklist_rows():
+    return [_ont_proposal(f"prop:{i:016x}", {"local_theme": "ltheme:finviz:ai", "canonical_theme": f"theme:{i}"},
+        created=f"2026-01-0{i}T00:00:00Z") for i in (1, 2, 3)]
+
+
+def _worklist(rows=None, **kwargs):
+    import importlib.util
+    assert importlib.util.find_spec("engine.theme_graph.proposal_worklist"), "proposal worklist consumer missing"
+    from engine.theme_graph.proposal_worklist import compose_worklist
+    from referencing import Registry, Resource
+    result = compose_worklist(_worklist_rows() if rows is None else rows,
+        asof=kwargs.pop("asof", "2026-02-01"), **kwargs)
+    root = ROOT / "contracts/theme_graph"
+    ns = json.loads((root / "ontology_neighborhood.v1.schema.json").read_text())
+    registry = Registry().with_resource(ns["$id"], Resource.from_contents(ns))
+    schema = json.loads((root / "proposal_worklist.v1.schema.json").read_text())
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(result)
+    return result
+
+
+def test_gmi_worklist_browses_existing_queue_without_mutation():
+    import copy
+    rows = _worklist_rows(); before = copy.deepcopy(rows)
+    result = _worklist(rows)
+    assert result["counts"] == {"visible": 3, "matching": 3, "returned": 3}
+    assert result["items"][0]["review_query"] == {"proposal_id": rows[0]["proposal_id"], "asof": "2026-02-01", "knowledge_cutoff": "2026-02-01"}
+    assert all(item["proposal"]["truth_status"] == "PROPOSAL_ONLY" for item in result["items"])
+    assert rows == before
+
+
+@pytest.mark.parametrize("status", ["ratified", "rejected"])
+def test_gmi_worklist_cutoff_hides_future_rows_and_decisions(status):
+    rows = _worklist_rows()
+    rows[0].update(status=status, ratified_by="curator:test" if status == "ratified" else None,
+        adjudicated_at="2026-03-01T00:00:00Z", note="creation note")
+    rows[-1]["created"] = "2026-03-01T00:00:00Z"
+    result = _worklist(rows)
+    assert result["counts"]["visible"] == 2
+    assert result["facets"]["status"] == {"proposed": 2, "ratified": 0, "rejected": 0}
+    assert result["items"][0]["proposal"]["note"] == "creation note"
+    assert result["items"][0]["proposal"]["adjudicated_at"] is None
+    rows[-1]["subject"] = {"future": "changed"}
+    assert _worklist(rows) == result
+
+
+@pytest.mark.parametrize("filters,expected", [({"kind": "mapping"}, 2),
+    ({"proposed_by": "refresh_identity"}, 1), ({"subject_id": "theme:1"}, 1),
+    ({"subject_id": "theme:not-present"}, 0), ({"status": "rejected"}, 1)])
+def test_gmi_worklist_exact_filters(filters, expected):
+    rows = _worklist_rows()
+    rows[1].update(kind="key_rename", proposed_by="refresh_identity")
+    rows[2].update(status="rejected", adjudicated_at="2026-01-05T00:00:00Z")
+    result = _worklist(rows, **({"status": "all"} | filters))
+    assert result["counts"]["matching"] == expected
+    assert result["counts"]["visible"] == 3
+    assert result["availability"]["state"] == ("OK" if expected else "NO_MATCH")
+
+
+def test_gmi_worklist_pages_bind_same_visible_snapshot_and_preserve_order():
+    rows = _worklist_rows(); first = _worklist(rows, limit=2)
+    second = _worklist(list(reversed(rows)), limit=2, offset=first["page"]["next_offset"], expected_snapshot=first["snapshot_sha256"])
+    assert [x["proposal"]["proposal_id"] for x in first["items"] + second["items"]] == [r["proposal_id"] for r in rows]
+    assert second["page"]["next_offset"] is None
+    rows[0]["note"] = "new visible evidence"
+    with pytest.raises(ValueError, match="snapshot"):
+        _worklist(rows, offset=2, expected_snapshot=first["snapshot_sha256"])
+
+
+@pytest.mark.parametrize("bad", [{"limit": 0}, {"limit": 101}, {"limit": True},
+    {"offset": -1}, {"offset": 1}, {"status": "approved"}, {"kind": "fuzzy"},
+    {"proposed_by": "anonymous"}, {"subject_id": "AI"}, {"expected_snapshot": "invalid"}])
+def test_gmi_worklist_rejects_unsafe_selection_arguments(bad):
+    with pytest.raises(ValueError): _worklist(**bad)
+
+
+def test_gmi_worklist_empty_queue_is_distinct_from_no_matching_filter():
+    result = _worklist([])
+    assert result["availability"]["state"] == "EMPTY"
+    assert result["counts"] == {"visible": 0, "matching": 0, "returned": 0}
+    assert result["items"] == []
+
+
+def test_gmi_worklist_duplicate_visible_identity_fails_closed():
+    rows = _worklist_rows(); rows.append(dict(rows[0]))
+    with pytest.raises(ValueError, match="duplicate"): _worklist(rows)
+
+
+@pytest.mark.parametrize("raw", ['{"proposal_id":"a","proposal_id":"b"}', 'not JSON', '[]'])
+def test_gmi_worklist_strict_queue_reader_refuses_ambiguous_rows(tmp_path, raw):
+    from engine.theme_graph import probation
+    path = tmp_path / "proposals.jsonl"; path.write_text(raw + "\n")
+    with pytest.raises(ValueError): probation.read_proposals(path, strict=True)
+
+
+def test_gmi_worklist_strict_queue_missing_file_is_not_empty(tmp_path):
+    from engine.theme_graph import probation
+    path = tmp_path / "missing.jsonl"
+    assert probation.read_proposals(path) == []
+    with pytest.raises(FileNotFoundError): probation.read_proposals(path, strict=True)
+    path.write_text("")
+    assert probation.read_proposals(path, strict=True) == []
+
+
+def test_gmi_worklist_utc_creation_sort_not_lexical_sort():
+    rows = _worklist_rows()[:2]
+    rows[0]["created"] = "2026-01-01T09:00:00Z"
+    rows[1]["created"] = "2026-01-01T10:00:00+02:00"
+    assert _worklist(rows)["items"][0]["proposal"]["proposal_id"] == rows[1]["proposal_id"]
+
+
+def test_gmi_worklist_malformed_visible_row_is_not_silently_omitted():
+    rows = _worklist_rows(); rows[1]["subject"] = []
+    with pytest.raises(ValueError, match="proposal"): _worklist(rows)
+
+
+def test_gmi_worklist_cli_pages_link_to_existing_exact_review(monkeypatch, tmp_path, capsys):
+    _worklist()
+    from scripts import list_theme_proposals as cli
+    path = tmp_path / "proposals.jsonl"
+    path.write_text("\n".join(json.dumps(row) for row in _worklist_rows()) + "\n")
+    monkeypatch.setattr(cli, "proposal_path", lambda: path)
+    assert cli.main(["--asof", "2026-02-01", "--limit", "2"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["items"][0]["review_query"]["proposal_id"] == _worklist_rows()[0]["proposal_id"]
+    output = tmp_path / "worklist.md"
+    assert cli.main(["--asof", "2026-02-01", "--format", "markdown", "--out", str(output)]) == 0
+    assert "prop:0000000000000001" in output.read_text()
+    assert "PROPOSAL_ONLY" in output.read_text()
+    original = path.read_bytes()
+    assert cli.main(["--asof", "2026-02-01", "--out", str(path)]) == 2
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize("status", ["ratified", "rejected"])
+def test_gmi_review_creation_note_survives_decision_cutoff(status):
+    from engine.theme_graph.ontology import compose_proposal_review
+    view = _review_view(status=status)
+    view._proposals[0].update(note="proposal-era evidence", adjudication_note="later decision reason",
+        created="2026-01-01", adjudicated_at="2026-03-01")
+    result = compose_proposal_review(view, proposal_id=_REVIEW_ID, asof="2026-02-01", rights_resolver=_ont_rights)
+    assert result["proposal"]["note"] == "proposal-era evidence"
+    assert result["proposal"]["adjudication_note"] is None
+
+
+@pytest.mark.parametrize("field", ["proposal_id", "status"])
+def test_gmi_review_overlap_cli_rejects_duplicate_json_keys(tmp_path, capsys, field):
+    from scripts.explain_theme_overlap import main
+    document = _overlap_review()
+    raw = json.dumps(document)
+    value = document["proposal_id"] if field == "proposal_id" else "proposed"
+    needle = json.dumps(field) + ": " + json.dumps(value)
+    raw = raw.replace(needle, needle + ", " + needle, 1)
+    path = tmp_path / "ambiguous.json"; path.write_text(raw)
+    assert main(["--review", str(path)]) == 2
+    assert "duplicate JSON key" in capsys.readouterr().err
+
+
+def test_gmi_review_decision_note_has_separate_visibility_and_validation():
+    from engine.theme_graph import probation
+    from engine.theme_graph.ontology import compose_proposal_review
+    view = _review_view(status="rejected")
+    view._proposals[0]["adjudication_note"] = "curator rationale"
+    result = compose_proposal_review(view, proposal_id=_REVIEW_ID, asof="2026-06-01", rights_resolver=_ont_rights)
+    assert result["proposal"]["adjudication_note"] == "curator rationale"
+    row = _worklist_rows()[0]; row["adjudication_note"] = "unearned decision"
+    assert probation.validate(row)
+
+
+def test_gmi_strict_reader_preserves_legacy_forgiving_default(tmp_path):
+    from engine.theme_graph import probation
+    path = tmp_path / "legacy.jsonl"
+    raw = '\nnot JSON\n[]\n{"proposal_id":"first","proposal_id":"last"}\n'
+    path.write_text(raw)
+    assert probation.read_proposals(path) == [{"proposal_id": "last"}]
+    assert path.read_text() == raw
+
+
+@pytest.mark.parametrize("bad", ['{"subject":{"basket":"a","basket":"b"}}', '{"truncated":'])
+def test_gmi_strict_reader_never_returns_a_partial_queue(tmp_path, bad):
+    from engine.theme_graph import probation
+    path = tmp_path / "proposals.jsonl"
+    raw = '{"proposal_id":"first"}\n' + bad + '\n'
+    path.write_text(raw)
+    with pytest.raises(ValueError, match="line 2"):
+        probation.read_proposals(path, strict=True)
+    assert path.read_text() == raw
+
+
+@pytest.mark.parametrize("kind", ["oversized", "too_deep"])
+def test_gmi_overlap_cli_uses_bounded_loader_and_refuses_without_output(tmp_path, capsys, kind):
+    import sys
+    from scripts.explain_theme_changes import MAX_INPUT_BYTES
+    from scripts.explain_theme_overlap import main
+    path, output = tmp_path / "review.json", tmp_path / "report.json"
+    depth = sys.getrecursionlimit() + 100
+    raw = ' ' * (MAX_INPUT_BYTES + 1) if kind == "oversized" else '[' * depth + '0' + ']' * depth
+    path.write_text(raw)
+    assert main(["--review", str(path), "--out", str(output)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    refusal = json.loads(captured.err)
+    assert refusal["code"] == "OVERLAP_EVIDENCE_UNAVAILABLE"
+    if kind == "oversized":
+        assert "8 MiB" in refusal["message"]
+    assert not output.exists()
+    assert path.read_text() == raw

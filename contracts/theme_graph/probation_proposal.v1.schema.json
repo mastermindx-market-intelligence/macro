@@ -43,6 +43,7 @@
       "type": ["string", "null"],
       "description": "Decision-time belief clock. Required for ratified/rejected rows and null/absent while proposed; never backdated to proposal creation."
     },
+    "adjudication_note": {"type": ["string", "null"], "description": "Decision-time note, hidden before adjudicated_at. The existing note is immutable proposal-origin content."},
     "note": {"type": ["string", "null"]}
   },
   "allOf": [

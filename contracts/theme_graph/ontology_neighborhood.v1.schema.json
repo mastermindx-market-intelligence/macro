@@ -166,6 +166,7 @@
         "status": {"enum": ["proposed", "ratified", "rejected"]},
         "ratified_by": {"type": ["string", "null"]},
         "adjudicated_at": {"type": ["string", "null"]},
+        "adjudication_note": {"type": ["string", "null"], "description": "Decision-time note, hidden before adjudicated_at. The existing note is immutable proposal-origin content."},
         "note": {"type": ["string", "null"]},
         "truth_status": {"const": "PROPOSAL_ONLY"}
       }

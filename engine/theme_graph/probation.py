@@ -41,7 +41,7 @@ STATUSES: frozenset[str] = frozenset({"proposed", "ratified", "rejected"})
 
 ROW_FIELDS: tuple[str, ...] = (
     "proposal_id", "kind", "subject", "evidence", "evidence_refs", "proposed_by",
-    "created", "status", "ratified_by", "adjudicated_at", "note",
+    "created", "status", "ratified_by", "adjudicated_at", "note", "adjudication_note",
 )
 
 
@@ -93,6 +93,7 @@ def make_proposal(*, kind: str, subject: dict, evidence: dict | None = None,
         "ratified_by": None,
         "adjudicated_at": None,
         "note": note,
+        "adjudication_note": None,
     }
 
 
@@ -122,6 +123,12 @@ def validate(row: dict) -> list[str]:
     if status == "proposed" and adjudicated_at:
         out.append("adjudicated_at set on a row that is still proposed")
 
+    decision_note = row.get("adjudication_note")
+    if decision_note is not None and not isinstance(decision_note, str):
+        out.append("adjudication_note must be text or null")
+    if status == "proposed" and decision_note is not None:
+        out.append("adjudication_note set on a row that is still proposed")
+
     created_clock = None
     if str(row.get("created") or "").strip():
         try:
@@ -143,9 +150,24 @@ def validate(row: dict) -> list[str]:
     return out
 
 
-def read_proposals(path: Path) -> list[dict]:
-    """Every row on disk, oldest first. Unparseable lines are reported, never fatal."""
-    if not path.exists():
+def _unique_proposal_object(pairs):
+    """Reject ambiguous keys at every object depth in strict JSONL reads."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def read_proposals(path: Path, *, strict: bool = False) -> list[dict]:
+    """Read rows oldest first, retaining the legacy forgiving default.
+
+    Strict consumers distinguish a missing file from an empty queue and refuse
+    malformed, duplicate-key or non-object rows rather than silently dropping them.
+    Proposal contract validation remains with the existing owner/consumer.
+    """
+    if not strict and not path.exists():
         return []
     out: list[dict] = []
     for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
@@ -153,13 +175,17 @@ def read_proposals(path: Path) -> list[dict]:
         if not line:
             continue
         try:
-            row = json.loads(line)
-        except Exception:  # noqa: BLE001
+            row = json.loads(line, object_pairs_hook=_unique_proposal_object if strict else None)
+        except Exception as exc:  # noqa: BLE001 — preserve the legacy forgiving reader
+            if strict:
+                raise ValueError(f"{path.name} line {lineno}: {exc}") from exc
             log.warning("theme_graph.probation: %s line %d unparseable — skipped",
                         path.name, lineno)
             continue
         if isinstance(row, dict):
             out.append(row)
+        elif strict:
+            raise ValueError(f"{path.name} line {lineno}: proposal row must be a JSON object")
     return out
 
 

@@ -16,6 +16,7 @@
     "proposal_status": {"enum": [null, "proposed", "ratified", "rejected"]},
     "reported_created": {"type": ["string", "null"]},
     "reported_evidence": {"type": ["object", "null"]},
+    "reported_count_comparison": {"type": "object", "additionalProperties": false, "required": ["state", "reason", "same_vintage_verified", "fields", "missing_fields", "invalid_fields"], "properties": {"state": {"enum": ["NOT_EVALUATED", "REPORTED_COUNTS_EQUAL", "REPORTED_COUNTS_DIFFER", "REPORTED_COUNTS_PARTIAL"]}, "reason": {"type": ["string", "null"]}, "same_vintage_verified": {"const": false}, "fields": {"type": "array", "maxItems": 3, "items": {"type": "object", "additionalProperties": false, "required": ["field", "reported", "observed", "delta"], "properties": {"field": {"enum": ["basket_size", "subtheme_size", "overlap"]}, "reported": {"type": "integer", "minimum": 0}, "observed": {"type": "integer", "minimum": 0}, "delta": {"type": "integer"}}}}, "missing_fields": {"type": "array", "uniqueItems": true, "items": {"enum": ["basket_size", "subtheme_size", "overlap"]}}, "invalid_fields": {"type": "array", "uniqueItems": true, "items": {"enum": ["basket_size", "subtheme_size", "overlap"]}}}},
     "mapping_relation_state": {"enum": ["NOT_EVALUATED", "UNSUPPORTED_SUBJECT", "ENDPOINT_UNAVAILABLE", "RELATION_ABSENT", "RELATION_PRESENT"]},
     "availability": {
       "type": "object", "additionalProperties": false, "required": ["state", "reason"],

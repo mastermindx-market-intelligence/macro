@@ -78,6 +78,7 @@ def build_overlap_evidence(document: Mapping[str, Any]) -> dict[str, Any]:
         availability={"state": "PROPOSAL_UNAVAILABLE", "reason": "proposal unavailable at requested cutoff"},
         counts=None, ratios=None, shared=[], source_only=[], target_only=[], metadata_unavailable_ids=[],
         input_digest=hashlib.sha256(encoded.encode("utf-8")).hexdigest(), limitations=list(LIMITATIONS))
+    result["reported_count_comparison"] = _reported_count_comparison(result, source)
     if proposal is None:
         return result
     if proposal["proposal_id"] != source["proposal_id"]:
@@ -116,6 +117,7 @@ def build_overlap_evidence(document: Mapping[str, Any]) -> dict[str, Any]:
     result["availability"] = {"state": "OK", "reason": None}
     result["ratios"] = dict(source_containment=len(a & b) / len(a),
         target_containment=len(a & b) / len(b), jaccard=len(a & b) / len(a | b))
+    result["reported_count_comparison"] = _reported_count_comparison(result, source)
     return result
 
 
@@ -153,6 +155,18 @@ def render_markdown(report: Mapping[str, Any]) -> str:
             lines.append(f"Showing 100 of {len(rows)} rows; JSON contains all membership evidence.")
         if not rows:
             lines.append("No rows in this group; consult evidence availability before interpreting absence.")
+    comparison = report.get("reported_count_comparison")
+    if comparison is not None:
+        lines += ["", "## Reported counts versus recorded sets", "",
+            _display(comparison["state"]),
+            "Same-vintage comparability is not established; differences do not identify a cause."]
+        for row in comparison["fields"]:
+            lines.append(f"{row['field']}: reported {row['reported']}; recorded {row['observed']}; difference {row['delta']}.")
+        for key in ("missing_fields", "invalid_fields"):
+            if comparison[key]:
+                lines.append(_display(key) + ": " + _display(", ".join(comparison[key])))
+        if comparison["state"] == "NOT_EVALUATED":
+            lines.append("Count comparison unavailable: " + _display(comparison["reason"]))
     lines += ["", "## Original proposal evidence — separate observation", "",
               f"Proposal creation clock: {_display(report['reported_created'])}.",
               _display(_canonical(report["reported_evidence"])), "",
@@ -160,3 +174,35 @@ def render_markdown(report: Mapping[str, Any]) -> str:
               "", "## Interpretation limits", "", *report["limitations"], "",
               "Input document SHA-256: " + report["input_digest"], ""]
     return "\n".join(lines)
+
+
+def _reported_count_comparison(report, document):
+    """Compare cardinality figures only; matching values do not prove matching vintages."""
+    comparison = dict(state="NOT_EVALUATED", reason="observed_membership_evidence_unavailable",
+        same_vintage_verified=False, fields=[], missing_fields=[], invalid_fields=[])
+    if report["availability"]["state"] != "OK":
+        return comparison
+    proposal = document["proposal"]
+    if (proposal["proposed_by"] != "overlap_stats"
+        or not str(report["source_node_id"]).startswith("basket:")
+        or not str(report["target_node_id"]).startswith("ltheme:")):
+        comparison["reason"] = "unsupported_metric_semantics"
+        return comparison
+    evidence = report["reported_evidence"]
+    for field, count_key in (("basket_size", "source"), ("subtheme_size", "target"), ("overlap", "shared")):
+        if field not in evidence:
+            comparison["missing_fields"].append(field)
+            continue
+        value = evidence[field]
+        if type(value) is not int or value < 0:
+            comparison["invalid_fields"].append(field)
+            continue
+        observed = report["counts"][count_key]
+        comparison["fields"].append(dict(field=field, reported=value, observed=observed,
+                                         delta=observed - value))
+    incomplete = bool(comparison["missing_fields"] or comparison["invalid_fields"])
+    differs = any(row["delta"] != 0 for row in comparison["fields"])
+    comparison["state"] = ("REPORTED_COUNTS_DIFFER" if differs else
+                           "REPORTED_COUNTS_PARTIAL" if incomplete else "REPORTED_COUNTS_EQUAL")
+    comparison["reason"] = "reported_counts_incomplete" if incomplete else None
+    return comparison
