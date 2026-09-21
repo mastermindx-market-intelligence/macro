@@ -317,7 +317,9 @@ def test_transport_outage_raises_exact_remedy_and_annotation(monkeypatch, capsys
     detail = str(excinfo.value)
     assert "runner DNS/network/TLS or vendor reachability" in detail
     assert "does not establish a bad TUSHARE_TOKEN" in detail
-    assert "do not rotate the token" in detail
+    assert "do not rotate the credential based on this receipt" in detail
+    from collectors.base import safe_exc_text
+    assert "do not rotate the credential based on this receipt" in safe_exc_text(detail)
     lines = [line for line in capsys.readouterr().out.splitlines()
              if line.startswith("::error")]
     assert len(lines) == 1

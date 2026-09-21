@@ -134,8 +134,8 @@ class ChinaTushareAdapter(Adapter):
                       "a bad TUSHARE_TOKEN, exhausted 积分, or missing endpoint entitlement. "
                       "data/tushare/*.parquet is frozen this run; verify the runner resolver/"
                       "connectivity and vendor reachability, then rerun asia-close. Adjudicate "
-                      "the credential/tier only after a vendor response; do not rotate the token "
-                      "from this receipt")
+                      "the credential/tier only after a vendor response; do not rotate the "
+                      "credential based on this receipt")
             print(f"::error title=tushare-transport-outage::{detail}", flush=True)
             raise RuntimeError(detail)
         if errors and len(errors) == len(_MODULES):
