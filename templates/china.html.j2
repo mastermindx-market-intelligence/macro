@@ -2375,7 +2375,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
     {# What Changed: preserve the Macro News dialog, but orient the glance card
        around recency/change rather than a raw headline dump. #}
-    <div class="cnx-card">
+    <div class="cnx-card" role="button" tabindex="0" onclick="if(!event.target.closest('a,button'))cnxOpenDlg('cnx-dlg-news')">
       <div class="cnx-ctitle">{{ t('Macro News','宏观新闻') }} <button type="button" class="cnx-ctitle-note" onclick="cnxOpenDlg('cnx-dlg-news')">{{ t('What changed ↓','最近变化 ↓') }}</button></div>
       {% if (CN and CN.news and CN.news.headlines) or latest.alerts %}
       <div class="cnx-change-list">
