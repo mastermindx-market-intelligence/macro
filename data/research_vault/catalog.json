@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T14:02:42.287690+00:00",
-  "count": 2573,
+  "generated_at": "2026-09-21T14:32:44.358380+00:00",
+  "count": 2574,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-pwjqbzqafk4-8855ee",
+      "title": "Turkiye TCMB Reserves US$9bn Lower",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:52Z",
+      "summary_points": [
+        "Capital Flight into Domestic Deposits: TRY deposits surge to $20bn amid $1.8bn MMF outflows, signaling capital flight as FX volatility intensifies and central bank reserves decline $9bn (to $180bn).",
+        "Geopolitical Reserves Erosion: Iran war triggered $36.4bn gross FX asset decline and $9.5bn FX liquidity drop since start, severely constraining central bank intervention capacity amid currency volatility.",
+        "FX Liquidity Compression: FX liquidity at $47.1bn (vs $67.6bn peak) indicates constrained ability to stabilize TRY, critical for emerging market exposure and currency risk management.",
+        "Foreign Capital Shift to Debt: $20bn cumulative foreign inflows into domestic debt post-2024, while equity inflows remain negative, reflecting risk-averse positioning and debt preference.",
+        "Credit Market Stress: Commercial loan rates persist 9pp above policy rate (45%), signaling tight lending conditions and elevated credit risk despite policy adjustments."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-wkbzwf6mbxv-7b4e77",
       "title": "Weekly US Earnings Estimates 21st 25th September 2026",
