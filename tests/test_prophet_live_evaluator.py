@@ -1150,6 +1150,39 @@ def test_a_pack_close_that_matches_the_feeds_previous_close_evaluates_normally()
     assert ba["checked_n"] == 1 and ba["unchecked_n"] == 0 and ba["mismatched"] == {}
 
 
+def test_a_checked_matching_basis_emits_positive_per_name_relation_receipt():
+    art = _run(pack({"BBB": buyable()}),
+               quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}))
+    state = art["states"]["BBB"]
+    assert state["basis_status"] == "RESOLVED"
+    assert state["basis_receipt"].startswith("sha256:")
+    assert len(state["basis_receipt"]) == len("sha256:") + 64
+    assert art["meta"]["price_adjustment"]["relation_schema"] == \
+        "prophet_live.basis_relation/v1"
+
+    shifted = _run(pack({"BBB": buyable()}),
+                   quotes_with_prev({"BBB": 100.0}, {"BBB": 100.2}))
+    assert shifted["states"]["BBB"]["basis_receipt"] != state["basis_receipt"]
+
+
+def test_unchecked_basis_never_mints_a_positive_relation_receipt():
+    art = _run(pack({"BBB": buyable()}), quotes(BBB=100.0))
+    assert art["states"]["BBB"]["state"] == "forming"
+    assert "basis_status" not in art["states"]["BBB"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
+def test_disabled_basis_audit_never_mints_a_positive_relation_receipt():
+    cfg = LS.live_cfg({"prophet_live": {"debounce_passes": 2, "quote_max_age_min": 12,
+                                        "basis_tolerance_pct": 0.0}})
+    art = LS.evaluate(pack({"BBB": buyable()}),
+                      quotes_with_prev({"BBB": 100.0}, {"BBB": 100.0}), None,
+                      now=NOW, cfg=cfg, quote_age_of=lambda _q: 1.0)
+    assert art["states"]["BBB"]["state"] == "forming"
+    assert "basis_status" not in art["states"]["BBB"]
+    assert "basis_receipt" not in art["states"]["BBB"]
+
+
 def test_a_dividend_sized_pack_vs_feed_gap_darks_that_name():
     """The materially-mismatched case. A 1% gap between the pack's close and the feed's
     previous close for the SAME session is a distribution, not tick noise — the levels
@@ -1232,9 +1265,14 @@ def test_a_name_whose_levels_are_on_another_basis_says_so_on_its_own_row():
     entry = buyable()
     entry["price_adjustment"] = LS.LIVE_QUOTE_ADJUSTMENT
     art = _run(pack({"AAA": buyable(), "BBB": entry}),
-               quotes(AAA=100.0, BBB=100.0))
+               quotes_with_prev({"AAA": 100.0, "BBB": 100.0},
+                                {"AAA": 100.0, "BBB": 100.0}))
     assert "levels_adjustment" not in art["states"]["AAA"]
     assert art["states"]["BBB"]["levels_adjustment"] == LS.LIVE_QUOTE_ADJUSTMENT
+    assert art["states"]["AAA"]["basis_status"] == "RESOLVED"
+    assert art["states"]["BBB"]["basis_status"] == "RESOLVED"
+    assert art["states"]["AAA"]["basis_receipt"] != \
+        art["states"]["BBB"]["basis_receipt"]
 
 
 def test_the_freshness_stamp_and_delay_ride_on_every_payload():
