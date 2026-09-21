@@ -1807,7 +1807,8 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
     <div class="cnx-hero-left">
       <div class="cnx-hero-meta">
         <span class="cnx-regime-pill"><span class="dot"></span>
-          {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span></span>
+          {{ td(latest.quad_name) }}<span style="opacity:.55"> · {{ td(latest.cycle_tag or 'mid') }}</span>
+          {% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}<span style="opacity:.75"> · <span class="l-en">watch → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span><span class="l-zh">预警 → {{ td({'Q1':'Goldilocks','Q2':'Reflation','Q3':'Stagflation','Q4':'Growth scare'}[latest.pending_quad]) }}</span></span>{% endif %}</span>
         <span id="ms-live-pill" class="cnx-live-pill"><span class="d"></span>
           <span class="l-en">LIVE</span><span class="l-zh">实时</span>
           <span id="ms-date" style="margin-left:4px">{{ latest.date }}</span>
