@@ -2947,7 +2947,10 @@ def test_method_table_390_contribution_union() -> None:
         assert species_census[(loc, "composition")] >= 8, (
             loc, "composition census floor",
             species_census[(loc, "composition")])
-        assert species_census[(loc, "changed")] >= 10, (
+        # Business activity publishes no change table (nothing earlier to
+        # compare), so the photographed changed tables are the four desks
+        # that still compare, in both themes.
+        assert species_census[(loc, "changed")] >= 8, (
             loc, "changed census floor", species_census[(loc, "changed")])
         assert species_census[(loc, "coverage")] >= 10, (
             loc, "coverage census floor", species_census[(loc, "coverage")])
