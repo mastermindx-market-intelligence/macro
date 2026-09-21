@@ -1,0 +1,148 @@
+[
+  {
+    "source": "da216f856dc4eacf42e71c6edc1b1fc27e1700ad",
+    "case": "default",
+    "groups": [
+      {
+        "id": "gex-range-btns",
+        "selected": [
+          "126"
+        ],
+        "pressed": 0,
+        "role": null,
+        "button_heights": [
+          20,
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      {
+        "id": "sys-range-btns",
+        "selected": [
+          "252"
+        ],
+        "pressed": 0,
+        "role": null,
+        "button_heights": [
+          20,
+          20,
+          20
+        ]
+      },
+      {
+        "id": "cor-range-btns",
+        "selected": [
+          "252"
+        ],
+        "pressed": 0,
+        "role": null,
+        "button_heights": [
+          20,
+          20,
+          20
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "gex-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      },
+      {
+        "id": "spx-flip-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      },
+      {
+        "id": "sys-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      },
+      {
+        "id": "cor-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      }
+    ],
+    "page_errors": [],
+    "http": 200
+  },
+  {
+    "source": "da216f856dc4eacf42e71c6edc1b1fc27e1700ad",
+    "case": "corrupt",
+    "groups": [
+      {
+        "id": "gex-range-btns",
+        "selected": [],
+        "pressed": 0,
+        "role": null,
+        "button_heights": [
+          20,
+          20,
+          20,
+          20,
+          20
+        ]
+      },
+      {
+        "id": "sys-range-btns",
+        "selected": [],
+        "pressed": 0,
+        "role": null,
+        "button_heights": [
+          20,
+          20,
+          20
+        ]
+      },
+      {
+        "id": "cor-range-btns",
+        "selected": [
+          "63"
+        ],
+        "pressed": 0,
+        "role": null,
+        "button_heights": [
+          20,
+          20,
+          20
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "gex-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      },
+      {
+        "id": "spx-flip-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      },
+      {
+        "id": "sys-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      },
+      {
+        "id": "cor-chart",
+        "role": null,
+        "label": null,
+        "title": null
+      }
+    ],
+    "page_errors": [],
+    "http": 200
+  }
+]
