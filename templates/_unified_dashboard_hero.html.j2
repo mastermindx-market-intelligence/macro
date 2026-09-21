@@ -69,16 +69,21 @@
 {%- set _asof = _ms.get('asof') or (latest.get('date') if latest else '') -%}
 {%- set _alerts_ct = _ms.get('alerts_count') or (alerts|length if alerts else 0) -%}
 
-{# One-integer law (R-C): the live flip clause may quote its own constraint
-   integer; strip the "(now X/100)" parenthetical before printing so the
-   gauge column stays the only visible integer on the page. #}
+{# One-integer law (R-C, R-C FINAL FORM): the live flip clause may quote its
+   own constraint integer — strip GENERICALLY regardless of the number, EN
+   `(now X/100)` and ZH `（现 X/100）` — so the gauge column stays the only
+   visible integer on the page. The pre-fix equal-strip only fired when
+   `_raw` matched the parenthetical, so `score=61`/`raw_score=85` paired
+   with `now 85/100` shipped the competing integer. Jinja does NOT recognise
+   Python's `r"..."` prefix — escape each backslash so the lexer does not
+   try to consume `\s` as a string escape sequence. #}
 {%- set _flip_en = _flip_en_raw -%}
 {%- set _flip_zh = _flip_zh_raw -%}
 {%- if _flip_en -%}
-  {%- set _flip_en = _flip_en|replace(' (now ' ~ (_raw if _raw is not none else 0) ~ '/100)', '') -%}
+  {%- set _flip_en = _flip_en|regex_replace('\\s*\\(now\\s+\\d+/100\\)', '') -%}
 {%- endif -%}
-{%- if _flip_zh and _raw is not none -%}
-  {%- set _flip_zh = _flip_zh|replace('（现 ' ~ _raw ~ '/100）', '') -%}
+{%- if _flip_zh -%}
+  {%- set _flip_zh = _flip_zh|regex_replace('（现\\s*\\d+/100）', '') -%}
 {%- endif -%}
 
 {# Verdict qualifier & spine ink mapping (one source of truth).
@@ -445,7 +450,7 @@
       <div class="mx-sec">
         <h3 class="l-en">What changed since last look</h3><h3 class="l-zh">与上次相比的变化</h3>
         <small class="mx-asof l-en">Each row is one fired condition from the alert log.</small>
-        <small class="mx-asof l-zh">每行对应警报日志中的一次触发。</small>
+        <small class="mx-asof l-zh">每行对应触发日志中的一次触发。</small>
       </div>
 
       {%- if alerts and alerts|length > 0 %}
@@ -473,7 +478,7 @@
           <div class="mx-empty-line l-en">Quiet tape — nothing fired since last look.</div>
           <div class="mx-empty-line l-zh">盘面安静——自上次查看以来无触发。</div>
           <div class="mx-empty-why l-en">No qualifying alerts today · re-drawn nightly.</div>
-          <div class="mx-empty-why l-zh">今日无符合条件的警报 · 每晚重绘。</div>
+          <div class="mx-empty-why l-zh">今日无符合条件 · 每晚重绘。</div>
         </div>
       {%- endif %}
     </div>
@@ -564,17 +569,23 @@
        Spec §7 row 5: at 390, three full cards collapse into ONE DISCLOSURE ROW
        (the <summary>) carrying title + count `3` + chevron + a one-line preview
        of the first condition. The full list lives inside the <details> wrapper
-       for tap-open. At DESKTOP the <details> is forced OPEN via CSS
-       (.ud-watch-details:not([open]) .ud-watch-list selector with specificity
-       higher than the UA `details:not([open]) > :not(summary) { display: none }`),
-       so the three cards always paint at 1440. R-J, round 7. #}
+       for tap-open.
+
+       R-L (1440 watching, BLOCKER-1 fix): a closed <details> hides its non-summary
+       children at the USER-AGENT level — CSS display rules on the children CANNOT
+       override that, which is why the force-open :not([open]) hack failed in the
+       capture browser. Fix the DOM state, not the CSS: render
+       <details class="ud-watch-details" open> server-side (always open), hide
+       the summary chrome at >640px via CSS, and the inline state JS in
+       templates/dashboard.html.j2 removes the `open` attribute when the viewport
+       is ≤640px so the summary disclosure row takes over. #}
     <div class="ud-watching">
       <div class="mx-sec">
         <h3 class="l-en">What we’re watching next</h3><h3 class="l-zh">接下来我们在盯什么</h3>
         <small class="mx-asof l-en">Three conditions, each phrased as if → what it would change.</small>
         <small class="mx-asof l-zh">三项条件，每条格式为「若 X，则将如何变化」。</small>
       </div>
-      <details class="ud-watch-details">
+      <details class="ud-watch-details" open>
         <summary class="ud-watch-summary">
           <div class="ud-watch-summary-row">
             <span class="ud-watch-summary-h">
