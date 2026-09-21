@@ -435,7 +435,10 @@ def _b4_runtime_sources(symbol="UNIT"):
     }
     live = {
         "schema": "prophet_live.states/v1",
-        "meta": {"session_et": "2026-09-18"},
+        "meta": {
+            "session_et": "2026-09-18",
+            "pass_ts": "2026-09-18T19:30:08Z",
+        },
         "states": {
             symbol: {
                 "state": "forming",
@@ -555,7 +558,7 @@ def test_b4_runtime_adapter_refuses_synthetic_dark_unresolved_or_mismatched_live
         )
 
 
-def test_b4_runtime_adapter_only_opens_when_every_external_gate_owner_explicitly_passes():
+def test_b4_runtime_adapter_refuses_unbound_external_gate_or_receipt_injection():
     gates = {
         "owner_confluence": "PASS",
         "risk_ceiling": "PASS",
@@ -565,17 +568,67 @@ def test_b4_runtime_adapter_only_opens_when_every_external_gate_owner_explicitly
         "event_status": "ACTIVE",
         "structural_invalidation": "CLEAR",
     }
-    out = evaluate_runtime_entry_availability(
-        _b4_projection(),
-        episode_id=_b4_cid(),
-        strategy_definition=build_early_leadership_sector_rotation_definition(),
-        **_b4_runtime_kwargs(owner_gate_facts=gates),
-    )
-    assert out["state"] == "ENTRY_OPEN"
-    assert out["entry_open"] is True
+    with pytest.raises(RuntimeOwnerFactError, match="cannot inject gate verdicts"):
+        evaluate_runtime_entry_availability(
+            _b4_projection(),
+            episode_id=_b4_cid(),
+            strategy_definition=build_early_leadership_sector_rotation_definition(),
+            **_b4_runtime_kwargs(owner_gate_facts=gates),
+        )
 
-    with pytest.raises(RuntimeOwnerFactError, match="unowned or unknown gate"):
+    with pytest.raises(RuntimeOwnerFactError, match="cannot be attached"):
         compose_runtime_owner_facts(
             _b4_projection(), episode_id=_b4_cid(),
-            **_b4_runtime_kwargs(owner_gate_facts={"source_health": "PASS"}),
+            **_b4_runtime_kwargs(owner_source_receipts=["sha256:" + "3" * 64]),
+        )
+
+
+def test_b4_runtime_adapter_binds_quote_clock_to_live_state_freshness_owner():
+    facts = compose_runtime_owner_facts(
+        _b4_projection(), episode_id=_b4_cid(), **_b4_runtime_kwargs()
+    )
+    assert facts["quote"]["freshness"] == "FRESH"
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    quotes["UNIT"]["quote_ts"] = "2026-09-17T19:30:00Z"
+    with pytest.raises(RuntimeOwnerFactError, match="does not match live-state owner quote_age_min"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=quotes, live_state_artifact=live,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            ),
+        )
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    live["states"]["UNIT"].pop("quote_age_min")
+    with pytest.raises(RuntimeOwnerFactError, match="live_state.quote_age_min must be numeric"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=quotes, live_state_artifact=live,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            ),
+        )
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    live["meta"]["pass_ts"] = "2026-09-18T19:30:07Z"
+    with pytest.raises(RuntimeOwnerFactError, match="pass_ts must equal B4 decision clock"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=quotes, live_state_artifact=live,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            ),
+        )
+
+    quotes, live, entry, metrics = _b4_runtime_sources()
+    quotes["UNIT"]["quote_ts"] = "2026-09-18T19:30:09Z"
+    with pytest.raises(RuntimeOwnerFactError, match="cannot be after B4 decision clock"):
+        compose_runtime_owner_facts(
+            _b4_projection(), episode_id=_b4_cid(),
+            **_b4_runtime_kwargs(
+                quotes_by_symbol=quotes, live_state_artifact=live,
+                entry_rows_by_symbol=entry, metric_inputs=metrics,
+            ),
         )

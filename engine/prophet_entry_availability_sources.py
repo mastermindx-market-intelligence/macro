@@ -35,16 +35,6 @@ _GATE_DEFAULTS = {
     "event_status": "UNKNOWN",
     "structural_invalidation": "UNKNOWN",
 }
-_CALLER_GATE_KEYS = frozenset(_GATE_DEFAULTS) - {"source_health", "corporate_action_basis"}
-_GATE_ALLOWED = {
-    "owner_confluence": frozenset({"PASS", "FAIL", "UNKNOWN"}),
-    "risk_ceiling": frozenset({"PASS", "FAIL", "UNKNOWN"}),
-    "liquidity_fillability": frozenset({"PASS", "FAIL", "UNKNOWN"}),
-    "gap_velocity": frozenset({"PASS", "FAIL", "UNKNOWN"}),
-    "session_eligibility": frozenset({"PASS", "FAIL", "UNKNOWN"}),
-    "event_status": frozenset({"ACTIVE", "RETRACTED", "UNKNOWN"}),
-    "structural_invalidation": frozenset({"CLEAR", "BREACHED", "UNKNOWN"}),
-}
 _METRIC_KEYS = frozenset({"first_trigger_price", "anchor_price", "atr"})
 
 
@@ -84,7 +74,16 @@ def _positive(value: object, field: str) -> float:
     return number
 
 
-def _utc_z(value: object, field: str) -> str:
+def _nonnegative(value: object, field: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise RuntimeOwnerFactError(f"{field} must be numeric")
+    number = float(value)
+    if not isfinite(number) or number < 0:
+        raise RuntimeOwnerFactError(f"{field} must be finite and >= 0")
+    return number
+
+
+def _utc(value: object, field: str) -> datetime:
     text = _text(value, field)
     try:
         parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
@@ -92,8 +91,7 @@ def _utc_z(value: object, field: str) -> str:
         raise RuntimeOwnerFactError(f"{field} must be an ISO timestamp") from exc
     if parsed.tzinfo is None:
         raise RuntimeOwnerFactError(f"{field} must be timezone-aware")
-    parsed = parsed.astimezone(timezone.utc)
-    return parsed.isoformat(timespec="seconds").replace("+00:00", "Z")
+    return parsed.astimezone(timezone.utc)
 
 
 def _candidate_row(candidate_projection: Mapping[str, object], episode_id: str) -> Mapping[str, object]:
@@ -171,10 +169,11 @@ def compose_runtime_owner_facts(
 ) -> dict[str, object]:
     """Bind runtime owner facts for one canonical B3 episode without guessing.
 
-    The function intentionally leaves all not-yet-wired gate owners UNKNOWN.  A
-    caller may supply only the named gate verdicts it actually owns; source health
-    and corporate-action basis are bound here from the quote/live-state owners and
-    cannot be overridden by the caller.
+    The function intentionally leaves all not-yet-wired gate owners UNKNOWN.
+    Generic external PASS/ACTIVE/CLEAR injection is refused: every future gate must
+    be wired from its incumbent owner together with its native clock and receipt.
+    Source health and corporate-action basis are bound here from the quote/live-state
+    owners and cannot be overridden by the caller.
     """
     episode_id = _text(episode_id, "episode_id")
     row = _candidate_row(candidate_projection, episode_id)
@@ -187,12 +186,27 @@ def compose_runtime_owner_facts(
     if quote_row.get("quote_ts_synthetic") is not False:
         raise RuntimeOwnerFactError("live quote has no real source-market timestamp")
     quote_price = _positive(quote_row.get("price"), "quote.price")
-    quote_asof = _utc_z(quote_row.get("quote_ts"), "quote.quote_ts")
+    quote_clock = _utc(quote_row.get("quote_ts"), "quote.quote_ts")
+    quote_asof = quote_clock.isoformat(timespec="seconds").replace("+00:00", "Z")
+    decision_clock = _utc(decision_at, "decision_at")
+    if quote_clock > decision_clock:
+        raise RuntimeOwnerFactError("live quote timestamp cannot be after B4 decision clock")
 
     live_state = _live_state_for_symbol(live_state_artifact, symbol, market_session)
+    live_meta = live_state_artifact.get("meta")
+    assert isinstance(live_meta, Mapping)  # guaranteed by _live_state_for_symbol
+    live_pass_clock = _utc(live_meta.get("pass_ts"), "live_state.meta.pass_ts")
+    if live_pass_clock != decision_clock:
+        raise RuntimeOwnerFactError("live-state pass_ts must equal B4 decision clock")
     live_price = _positive(live_state.get("price"), "live_state.price")
     if round(live_price, 4) != round(quote_price, 4):
         raise RuntimeOwnerFactError("live quote and basis-audited live state disagree on price")
+    owner_quote_age_min = _nonnegative(live_state.get("quote_age_min"), "live_state.quote_age_min")
+    bound_quote_age_min = round((live_pass_clock - quote_clock).total_seconds() / 60.0, 1)
+    if abs(owner_quote_age_min - bound_quote_age_min) > 1e-9:
+        raise RuntimeOwnerFactError(
+            "live quote timestamp does not match live-state owner quote_age_min at decision clock"
+        )
 
     signal = _entry_signal_for_symbol(entry_rows_by_symbol, symbol)
     zone = signal.get("buy_zone")
@@ -209,20 +223,24 @@ def compose_runtime_owner_facts(
     metrics = {key: _positive(metric_inputs.get(key), f"metric_inputs.{key}") for key in sorted(_METRIC_KEYS)}
 
     gates = dict(_GATE_DEFAULTS)
-    supplied = owner_gate_facts or {}
-    if not isinstance(supplied, Mapping) or not set(supplied).issubset(_CALLER_GATE_KEYS):
-        raise RuntimeOwnerFactError("owner_gate_facts contains an unowned or unknown gate")
-    for key, value in supplied.items():
-        if value not in _GATE_ALLOWED[key]:
-            raise RuntimeOwnerFactError(f"owner_gate_facts.{key} has invalid verdict")
-        gates[key] = value
+    if owner_gate_facts not in (None, {}):
+        raise RuntimeOwnerFactError(
+            "owner_gate_facts cannot inject gate verdicts without native owner evidence"
+        )
+    if owner_source_receipts:
+        raise RuntimeOwnerFactError(
+            "owner_source_receipts cannot be attached without a bound native owner fact"
+        )
 
     quote_receipt = _sha_receipt({
         "schema": "prophet.b4.quote_binding/v1",
         "security_id": security_id,
         "store_symbol": symbol,
         "market_session": market_session,
+        "decision_at": decision_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),
         "quote": dict(quote_row),
+        "live_state_pass_ts": live_pass_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "live_state_quote_age_min": owner_quote_age_min,
     })
     geometry_receipt = _sha_receipt({
         "schema": "prophet.b4.geometry_binding/v1",
@@ -236,11 +254,9 @@ def compose_runtime_owner_facts(
         _text(candidate_projection.get("projection_id"), "candidate_projection.projection_id"),
         _text(live_state.get("basis_receipt"), "live_state.basis_receipt"),
     ]
-    for receipt in owner_source_receipts:
-        receipts.append(_text(receipt, "owner_source_receipts[]"))
 
     return {
-        "decision_at": _utc_z(decision_at, "decision_at"),
+        "decision_at": decision_clock.isoformat(timespec="seconds").replace("+00:00", "Z"),
         "market_session": market_session,
         "quote": {
             "price": quote_price,
