@@ -1,11 +1,10 @@
 """Build the Mastermind snapshot page -> site/mastermind.html.
 
-ONE static page that renders a daily snapshot of the LOCAL Mastermind AI paper-trading
-desk. The data (site/mastermind/mastermind_snapshot.json) is NOT produced here — it is
-pushed out-of-band, twice a day, by the local Mastermind server (it commits the JSON to
-this repo's site/mastermind/ via its vendor/macro symlink, since the cloud build can't
-reach localhost). templates/mastermind.js fetches + renders that JSON client-side,
-bilingually, degrading to a "snapshot pending" state when it is absent.
+ONE static page that renders a governed point-in-time snapshot of the Portfolio/Mastermind
+paper desk. The data (site/mastermind/mastermind_snapshot.json) is NOT produced here; it is
+owned by the cross-repository publication lane. templates/mastermind.js fetches and renders
+that tier-gated JSON client-side, bilingually, with explicit sign-in, upgrade, stale, archived,
+and unavailable states.
 
 This builder therefore does NO data work and is order-independent. Returns 0 on ANY error
 so it can never break the rest of the site build.
@@ -29,8 +28,8 @@ from lib.pages import write_page  # noqa: E402
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_mastermind")
 
-# Shared nav/theme assets + the page's own renderer. The snapshot JSON is produced by
-# the local Mastermind server, not here.
+# Shared nav/theme assets + the page's own renderer. The tier-gated snapshot JSON is
+# produced by the governed cross-repository publication lane, not here.
 ASSETS = ("theme.css", "theme.js", "mastermind.js")
 
 

@@ -33,7 +33,7 @@
 })();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>Mastermind — 2026-09-18 18:51 UTC</title>
+<title>Mastermind — Portfolio Snapshot</title>
 
 <meta name="description" content="The Mastermind macro regime and market cycle dashboard — live regime reads, signal boards and cycle intelligence across US and global markets.">
 <link rel="canonical" href="https://www.mastermind-x.com/mastermind.html">
@@ -50,10 +50,82 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css?v=62b49cc0">
-<link rel="stylesheet" href="assets/css/da64c9df.css?v=da64c9df">
-<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=ef068fe1">
+<link rel="stylesheet" href="theme.css">
+<style>
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
+         "Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
+  @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1100px)/2)); } }
+  a { text-decoration:none; }
+  h1 { font-size:20px; margin:0; }
+  h2 { font-size:15px; margin:0 0 8px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+           padding:14px 16px; margin-bottom:14px; }
+  .muted { color:var(--muted); }
+  .sm { font-size:13px; }
+  .up { color:var(--ink-up, var(--up)); } .down { color:var(--ink-down, var(--down)); }
+  .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
+          height:15px; border-radius:50%; border:1px solid var(--muted); color:var(--muted);
+          font-size:10px; font-weight:600; cursor:help; position:relative;
+          vertical-align:middle; margin-left:5px; }
+  .help .tip { display:none; position:absolute; top:140%; left:50%;
+               transform:translateX(-50%); width:330px; max-width:78vw; background:var(--panel);
+               border:1px solid var(--line); padding:9px 11px; border-radius:8px; z-index:60;
+               font-size:12px; line-height:1.45; color:var(--text); font-weight:400;
+               box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
+               max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; }
+  /* invisible hover pad across the icon→tip gap — keeps :hover alive mid-travel (on .help, not .tip: the tip is a scroll container and clips its pseudos) */
+  .help:hover::before { content:''; position:absolute; top:100%; left:-30px; right:-30px; height:10px; }
+  .help:hover .tip { display:block; }
+  /* live-dashboard button */
+  .live-btn { display:inline-flex; align-items:center; gap:6px; background:var(--link);
+              color:#fff; border-radius:999px; padding:7px 16px; font:600 13px/1 inherit;
+              border:1px solid var(--link); }
+  .live-btn:hover { filter:brightness(1.08); }
+  /* book tabs (same look as the AI-brief tabs) */
+  .mm-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; }
+  .mm-tab-btn { background:var(--panel); border:1px solid var(--line); color:var(--muted);
+                border-radius:999px; padding:7px 16px; font:600 13px/1 inherit; cursor:pointer;
+                font-family:inherit; transition:background .15s,color .15s,border-color .15s; }
+  .mm-tab-btn:hover { color:var(--text); border-color:var(--muted); }
+  .mm-tab-btn.active { background:var(--link); border-color:var(--link); color:#fff; }
+  .mm-tab-btn .tl { font-weight:400; opacity:.8; margin-left:6px; font-size:11px; }
+  .mm-tab-btn .life { display:inline-block; margin-left:7px; padding:1px 6px; border-radius:999px;
+                      border:1px solid currentColor; font-size:10px; font-weight:600; opacity:.8; }
+  .mm-tab-btn .life.archived { opacity:.65; }
+  .mm-notice { border:1px solid var(--line); border-left:4px solid var(--up); border-radius:8px;
+               background:var(--panel); padding:9px 12px; margin:0 0 14px; color:var(--muted); }
+  .mm-notice strong { color:var(--text); }
+  .mm-notice-stale { border-left-color:var(--down); }
+  .mm-archive-note { border:1px solid var(--line); border-left:4px solid var(--muted); border-radius:8px;
+                     padding:8px 10px; margin:0 0 10px; color:var(--muted); font-size:12px; }
+  .mm-access .live-btn { margin-top:8px; }
+  /* stat grid */
+  .mm-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; }
+  .mm-stat { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:9px 11px; }
+  .mm-stat .k { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .mm-stat .v { font-size:18px; font-weight:700; margin-top:2px; }
+  /* sleeve / allocation bar */
+  .mm-bar { display:flex; height:18px; border-radius:6px; overflow:hidden; border:1px solid var(--line); }
+  .mm-bar > span { display:block; height:100%; }
+  .mm-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:8px; font-size:12px; color:var(--muted); }
+  .mm-legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+  /* tables */
+  table.mm { width:100%; border-collapse:collapse; font-size:13px; }
+  table.mm th, table.mm td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); }
+  table.mm th { color:var(--muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+  table.mm td.num, table.mm th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .pill { display:inline-block; padding:1px 7px; border-radius:999px; font-size:11px; font-weight:600;
+          border:1px solid var(--line); color:var(--muted); }
+  .pill.pend { color:var(--ink-down, var(--down)); border-color:var(--down); }
+  .pill.hold { color:var(--ink-up, var(--up)); border-color:var(--up); }
+  .mm-dec { border-bottom:1px solid var(--line); padding:9px 0; }
+  .mm-dec:last-child { border-bottom:none; }
+  .mm-dec .h { font-weight:600; }
+  .mm-empty { color:var(--muted); padding:18px 4px; }
+  .sparkwrap { position:relative; }
+  .spark-leg { font-size:11px; color:var(--muted); margin-top:4px; }
+</style>
 </head>
 <body>
 
@@ -63,7 +135,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=ef068fe1">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -277,10 +349,10 @@
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=3cb38601" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -305,11 +377,13 @@
 <div class="panel">
   <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
     <h1><span class="product-icon product-icon-mastermind" aria-hidden="true"></span><span class="l-en">Mastermind</span><span class="l-zh">操盘大脑</span></h1>
-    <span class="muted"><span class="l-en">AI paper-trading desk — a daily snapshot of the live book</span><span class="l-zh">AI 模拟交易台 — 实盘账本每日快照</span></span>
-    <a class="live-btn" id="mm-live" href="http://localhost:8000" target="_blank" rel="noopener">↗ <span class="l-en">Open live dashboard</span><span class="l-zh">打开实时面板</span></a>
+    <span class="muted"><span class="l-en">AI paper-trading desk — governed point-in-time snapshot</span><span class="l-zh">AI 模拟交易台 — 受治理的时点快照</span></span>
+    <a class="live-btn" id="mm-live" href="https://bot.mastermind-x.com" target="_blank" rel="noopener">↗ <span class="l-en">Open live dashboard</span><span class="l-zh">打开实时面板</span></a>
   </div>
-  <p class="muted sm" style="margin:10px 0 0"><span class="l-en">Mastermind is an autonomous AI paper-trading agent that runs on a local server. This page is a STATIC SNAPSHOT of its dashboard, pushed twice a day. For the full interactive view — live marks, brain reasoning trace, research feed and order tickets — open the live dashboard (it runs on your local machine). Paper-only / display-only: accountability, not alpha. Not investment advice.</span><span class="l-zh">Mastermind 是运行在本地服务器上的自主 AI 模拟交易代理。本页为其面板的静态快照，每日推送两次。如需完整交互视图——实时报价、推理追踪、研究动态与下单——请打开实时面板（运行于你的本机）。仅纸面／仅展示：问责而非阿尔法。非投资建议。</span></p>
+  <p class="muted sm" style="margin:10px 0 0"><span class="l-en">This page is a point-in-time snapshot from the live Portfolio system. Its generated timestamp and freshness banner show exactly when the published bytes were produced. For live marks, reasoning trace, research and paper-order details, open the secured Portfolio dashboard. Paper-only / display-only: accountability, not alpha. Not investment advice.</span><span class="l-zh">本页是实时 Portfolio 系统的时点快照。生成时间与新鲜度提示会明确显示这些已发布数据的时间。如需实时报价、推理追踪、研究与模拟订单详情，请打开受保护的 Portfolio 面板。仅纸面／仅展示：问责而非阿尔法。非投资建议。</span></p>
 </div>
+
+<div id="mm-state" aria-live="polite"></div>
 
 <div class="mm-tabs" id="mm-tabs" role="tablist" aria-label="Book · 账本"></div>
 
@@ -318,14 +392,13 @@
 </div>
 
 <div class="panel">
-  <p class="muted" style="font-size:12px;margin:0" id="mm-foot"><span class="l-en">Static snapshot of a local AI paper-trading desk — refreshed twice daily. Paper-only / display-only; not investment advice.</span><span class="l-zh">本地 AI 模拟交易台的静态快照 — 每日刷新两次。仅纸面／仅展示；非投资建议。</span></p>
+  <p class="muted" style="font-size:12px;margin:0" id="mm-foot"><span class="l-en">Point-in-time Portfolio snapshot. Check the generated timestamp and freshness banner before use. Paper-only / display-only; not investment advice.</span><span class="l-zh">Portfolio 时点快照。使用前请检查生成时间与新鲜度提示。仅纸面／仅展示；非投资建议。</span></p>
 </div>
 
-<script src="theme.js?v=a5808ca0" defer></script>
-<script src="mastermind.js?v=e75ad26e" defer></script>
+<script src="theme.js"></script>
+<script src="mastermind.js"></script>
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
-<script defer data-whb data-root="" src="wh_banner.js?v=b1207f44"></script>
 </body>
 </html>
