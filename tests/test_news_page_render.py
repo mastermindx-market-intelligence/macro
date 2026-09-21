@@ -203,11 +203,13 @@ def test_mobile_triage_standalone_controls_meet_product_floor():
 
 def test_mobile_triage_reports_result_count_and_reset_state():
     html = _render_full()
-    assert "stories.length" in html
+    assert "shown+' of '+stories.length+' shown'" in html
+    assert "'显示 '+shown+' / '+stories.length+' 条'" in html
     assert "clearBtn.hidden" in html
     assert "resultCountEl" in html
     assert "intelClear.hidden" in html
     assert "aria-pressed" in html
+    assert 'aria-label="<span' not in html
 
 
 def test_release_board_renders():

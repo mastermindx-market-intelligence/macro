@@ -761,7 +761,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 {# ============================ CONTROLS + FEED ============================ #}
 {% if FEED %}
 <div class="nx-controls" id="nxControls">
-  <div class="seg" id="nxSeg" role="tablist" aria-label="{{ t('News lanes','新闻分类') }}">
+  <div class="seg" id="nxSeg" role="tablist">
     <button class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
     <button class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
     <button class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
@@ -1093,7 +1093,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       }).length;
       if(countEl){
         var isZh=document.documentElement.getAttribute('data-lang')==='zh';
-        countEl.textContent = isZh ? ('显示 '+total+' / '+stories.length+' 条') : (total+' of '+stories.length+' shown');
+        countEl.textContent = isZh ? ('显示 '+shown+' / '+stories.length+' 条') : (shown+' of '+stories.length+' shown');
       }
       if(emptyEl) emptyEl.style.display = total? 'none':'block';
       if(moreBtn) moreBtn.style.display = (!expanded && !q && lane==='all' && total>CAP)? '':'none';
