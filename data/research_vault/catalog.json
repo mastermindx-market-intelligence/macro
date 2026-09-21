@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T12:32:28.828717+00:00",
-  "count": 2568,
+  "generated_at": "2026-09-21T12:47:33.855957+00:00",
+  "count": 2569,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-untdix5ejwy-2a2605",
+      "title": "Cost to Sweep Report 21 Sep 2026",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T12:38:58Z",
+      "summary_points": [
+        "European Sovereign Liquidity Stress: Synchronized cost-to-sweep spikes across German (DU Schatz, RX Bund), Austrian (OE Bobl), UK (G Long Gilt), and Italian (IK Italy Bond) sovereigns signal systemic liquidity constraints, posing rebalancing risks and volatility for fixed-income portfolios.",
+        "European Equity Execution Risk: VG (Euro Stoxx 50) and Z (FTSE 100) indices show 7x higher cost-to-sweep than US equities (NO), indicating severe liquidity constraints for large orders and direct impact on trade profitability in Europe.",
+        "Asian Market Liquidity Crisis: SGX FTSE Taiwan exhibits extreme cost-to-sweep spikes (up to 12 bps), revealing severe liquidity constraints in regional markets and amplifying execution risk for portfolios with EM/Asia exposure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-xvkblxzkzo7-a030e6",
       "title": "Here is our FX Blueprint",
