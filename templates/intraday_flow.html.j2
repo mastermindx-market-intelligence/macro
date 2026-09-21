@@ -228,7 +228,7 @@
 
   .dealer-cell { min-width:150px; font-size:11.5px; }
   .dealer-line { line-height:1.42; }
-  .regime-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+  .regime-dot { display:inline-block; width:8px; height:8px; border-radius:var(--r-pill,999px); margin-right:5px; vertical-align:middle; background:var(--lane, var(--muted)); }
   .rd-long { background:var(--info); } .rd-short { background:var(--orange); } .rd-neutral { background:var(--muted); }
   .dealer-na { color:var(--muted); font-style:italic; }
 
@@ -402,7 +402,7 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
       </div>
       <div class="hero-ctx">
         <div class="ctx-row"><span class="ctx-ic">⚡</span><span id="ctx-strong">{{ t('Waiting for the tape…','等待资金带……') }}</span></div>
-        <div class="ctx-row muted"><span class="ctx-ic">🧭</span><span id="ctx-watch">{{ t('The board below carries every name and the reasoning behind each call.','下方看板列出每只标的及其结论依据。') }}</span></div>
+        <div class="ctx-row muted"><span id="ctx-watch">{{ t('The board below carries every name and the reasoning behind each call.','下方看板列出每只标的及其结论依据。') }}</span></div>
         {% if ift.as_of_display and ift.as_of_display.en %}
         <div class="ctx-stamp" id="ift-stamp">{{ t('Board built ' ~ ift.as_of_display.en, '看板构建于' ~ ift.as_of_display.zh) }}<span class="skel ift-skel-inline" aria-hidden="true"></span></div>
         {% else %}
@@ -542,19 +542,19 @@ body.page-intraday-flow .lens-pop .ift-feed-row + .ift-feed-row { margin-top:0.4
     </div>
     <div class="playbook-body">
       <ul class="l-en">
-        <li><b>🟢 Buy now</b> — sold off recently, reclaimed above the day’s average price on durable (not one-spike) volume, and it is a clean leader. The continuation setup is live; stop goes below the washout base.</li>
-        <li><b>🔵 Almost ready</b> — the base is built but price hasn’t reclaimed yet. Waiting for a push back above the average price on volume.</li>
-        <li><b>🏃 In favour</b> — already trending and holding above the average price, but with no fresh washout. Ride an existing position; not a fresh entry.</li>
-        <li><b>🟠 Take profits</b> — stretched well above the average price, or jammed into a dealer ceiling / expiry pin. Expect a pullback; don’t chase.</li>
-        <li><b>👀 Watch — don’t chase</b> — moving, but without a washout base, or a name with a history of faking breakouts. Wait for structure.</li>
+        <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> Buy now</b> — sold off recently, reclaimed above the day’s average price on durable (not one-spike) volume, and it is a clean leader. The continuation setup is live; stop goes below the washout base.</li>
+        <li><b><span class="regime-dot lane-ready" aria-hidden="true"></span> Almost ready</b> — the base is built but price hasn’t reclaimed yet. Waiting for a push back above the average price on volume.</li>
+        <li><b>In favour</b> — already trending and holding above the average price, but with no fresh washout. Ride an existing position; not a fresh entry.</li>
+        <li><b><span class="regime-dot lane-profit" aria-hidden="true"></span> Take profits</b> — stretched well above the average price, or jammed into a dealer ceiling / expiry pin. Expect a pullback; don’t chase.</li>
+        <li><b>Watch — don’t chase</b> — moving, but without a washout base, or a name with a history of faking breakouts. Wait for structure.</li>
         <li><b>⚪ Stand aside</b> — quiet tape, no setup right now.</li>
       </ul>
       <ul class="l-zh">
-        <li><b>🟢 现在买入</b> —— 近期下跌后，在持续（非单次）放量中收复当日均价，且为干净的领涨股。延续布局已成立；止损设在洗盘底部下方。</li>
-        <li><b>🔵 即将就绪</b> —— 底部已成，但价格尚未收复。等待放量重回均价上方。</li>
-        <li><b>🏃 走势占优</b> —— 已在趋势中并守住均价上方，但无新的洗盘。适合持有已有仓位，非新入场点。</li>
-        <li><b>🟠 获利了结</b> —— 大幅高于均价，或顶到做市商天花板/到期钉价。预期回落，勿追。</li>
-        <li><b>👀 观望——勿追</b> —— 有异动，但无洗盘底部，或该标的有假突破前科。等待结构。</li>
+        <li><b><span class="regime-dot lane-act" aria-hidden="true"></span> 现在买入</b> —— 近期下跌后，在持续（非单次）放量中收复当日均价，且为干净的领涨股。延续布局已成立；止损设在洗盘底部下方。</li>
+        <li><b><span class="regime-dot lane-ready" aria-hidden="true"></span> 即将就绪</b> —— 底部已成，但价格尚未收复。等待放量重回均价上方。</li>
+        <li><b>走势占优</b> —— 已在趋势中并守住均价上方，但无新的洗盘。适合持有已有仓位，非新入场点。</li>
+        <li><b><span class="regime-dot lane-profit" aria-hidden="true"></span> 获利了结</b> —— 大幅高于均价，或顶到做市商天花板/到期钉价。预期回落，勿追。</li>
+        <li><b>观望——勿追</b> —— 有异动，但无洗盘底部，或该标的有假突破前科。等待结构。</li>
         <li><b>⚪ 暂时观望</b> —— 盘口平静，当前无布局。</li>
       </ul>
     </div>
@@ -623,11 +623,11 @@ var boardExpanded = false;
 
 // ── Stance lane metadata (labels localized; keys deterministic) ────────────
 var STANCE_META = {
-  act:         { dot:'🟢', lane:'lane-act',    en:'Buy now',            zh:'现在买入', order:0 },
-  get_ready:   { dot:'🔵', lane:'lane-ready',  en:'Almost ready',       zh:'即将就绪', order:1 },
-  in_favour:   { dot:'🏃', lane:'lane-fav',    en:'In favour',          zh:'走势占优', order:2 },
-  take_profits:{ dot:'🟠', lane:'lane-profit', en:'Take profits',       zh:'获利了结', order:3 },
-  watch:       { dot:'👀', lane:'lane-watch',  en:"Watch — don't chase",zh:'观望——勿追', order:4 },
+  act:         { dot:'',   lane:'lane-act',    en:'Buy now',            zh:'现在买入', order:0 },
+  get_ready:   { dot:'',   lane:'lane-ready',  en:'Almost ready',       zh:'即将就绪', order:1 },
+  in_favour:   { dot:'',   lane:'lane-fav',    en:'In favour',          zh:'走势占优', order:2 },
+  take_profits:{ dot:'',   lane:'lane-profit', en:'Take profits',       zh:'获利了结', order:3 },
+  watch:       { dot:'',   lane:'lane-watch',  en:"Watch — don't chase",zh:'观望——勿追', order:4 },
   stand_aside: { dot:'⚪', lane:'lane-aside',  en:'Stand aside',        zh:'暂时观望', order:5 },
   degraded:    { dot:'·',  lane:'lane-aside',  en:'No read',            zh:'暂无判断', order:6 }
 };

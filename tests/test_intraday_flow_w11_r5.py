@@ -196,6 +196,90 @@ def test_readme_records_recessive_light_chips():
     assert "Tape chips ghost/hairline in light — recessive by design" in readme
 
 
+# ── TOKENIZE-7070-R2: radius token + no blocking emoji ───────────────────────
+
+# The six pictographic glyphs the TOKENIZE-7070-R2 seat named. Dingbats
+# (⚡ ⚪) and other pre-existing plane hits are out of this round's scope.
+_NAMED_BLOCKING_EMOJI = {
+    "\U0001F9ED": "compass",
+    "\U0001F7E2": "green-circle",
+    "\U0001F535": "blue-circle",
+    "\U0001F3C3": "runner",
+    "\U0001F7E0": "orange-circle",
+    "\U0001F440": "eyes",
+}
+_NAMED_BLOCKING_EMOJI_RE = re.compile("|".join(re.escape(g) for g in _NAMED_BLOCKING_EMOJI))
+
+
+def test_regime_dot_uses_tokenized_circular_radius():
+    """TOKENIZE-7070-R2: .regime-dot must not ship border-radius:50%.
+
+    Fails on head 45e7dc759e: `.regime-dot { ... border-radius:50%; ... }`.
+    Passes once the circular radius binds the design-system --r-pill token
+    (theme.css: --r-pill on a square box is a circle; was 50%).
+    """
+    css = _page_css(_src())
+    match = re.search(r"\.regime-dot\s*\{[^}]+\}", css)
+    assert match, "missing .regime-dot rule"
+    rule = match.group(0)
+    assert "border-radius:50%" not in rule.replace(" ", ""), rule
+    assert re.search(r"border-radius\s*:\s*var\(\s*--r-pill", rule), rule
+
+
+def test_template_has_no_blocking_emoji_codepoints():
+    """TOKENIZE-7070-R2: pictographic emoji are banned in front-facing markup.
+
+    Fails on head 45e7dc759e: templates/intraday_flow.html.j2 still carries
+    U+1F9ED (compass at the ctx-watch row), U+1F7E2/U+1F535/U+1F7E0 (colored
+    circles in the field guide and STANCE_META), U+1F3C3 (runner), U+1F440
+    (eyes). Passes once those glyphs are gone: colored-circle markers use
+    tokenized .regime-dot + lane classes; decorative compass/runner/eyes are
+    removed and the bilingual words carry the meaning.
+    """
+    hits = []
+    for i, line in enumerate(_src().splitlines(), 1):
+        for match in _NAMED_BLOCKING_EMOJI_RE.finditer(line):
+            glyph = match.group(0)
+            hits.append((i, f"U+{ord(glyph):04X}", _NAMED_BLOCKING_EMOJI[glyph]))
+    assert hits == [], f"named blocking emoji still in template: {hits}"
+
+
+def test_field_guide_colored_circles_are_regime_dots_not_emoji():
+    """TOKENIZE-7070-R2: field-guide state markers are .regime-dot + lane.
+
+    Fails on head 45e7dc759e: the EN/ZH 'What each call means' lists lead with
+    🟢/🔵/🟠 (and decorative 🏃/👀). Passes once Buy now / Almost ready /
+    Take profits use .regime-dot.lane-* and In favour / Watch keep the plain
+    bilingual words with no replacement iconography.
+    """
+    body = _region(_src(), "2 · What each call means", "3 · The options tape")
+    for glyph in ("\U0001F7E2", "\U0001F535", "\U0001F3C3", "\U0001F7E0", "\U0001F440"):
+        assert glyph not in body, f"{glyph!r} still in the field guide"
+    assert 'class="regime-dot lane-act"' in body
+    assert 'class="regime-dot lane-ready"' in body
+    assert 'class="regime-dot lane-profit"' in body
+    assert "<b>In favour</b>" in body
+    assert "<b>Watch — don’t chase</b>" in body or "<b>Watch — don't chase</b>" in body
+    assert "<b>走势占优</b>" in body
+    assert "<b>观望——勿追</b>" in body
+
+
+def test_hero_ctx_watch_has_no_compass_iconography():
+    """TOKENIZE-7070-R2: decorative compass is removed; words stay.
+
+    Fails on head 45e7dc759e: `<span class="ctx-ic">🧭</span>` wraps the
+    ctx-watch row. Passes once that span is gone and the bilingual sentence
+    remains.
+    """
+    src = _src()
+    assert "\U0001F9ED" not in src
+    watch = _region(src, 'id="ctx-watch"', "</div>")
+    assert "The board below carries every name" in watch
+    assert "下方看板列出每只标的及其结论依据。" in watch
+    ctx = _region(src, 'class="hero-ctx"', 'id="ift-stamp"')
+    assert "ctx-ic" not in ctx.split("ctx-watch")[1]
+
+
 # ── m-4 guarded empty stamp ──────────────────────────────────────────────────
 
 def test_empty_stamp_dict_renders_wordless_skeleton_not_dangling_prefix():
