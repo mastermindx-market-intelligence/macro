@@ -263,6 +263,48 @@ def test_p3ba_policy_rejects_new_caller_supplied_inputs(tmp_path: Path) -> None:
     assert "R13" in result.stdout
 
 
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_moved_to_pc(tmp_path: Path) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    compat = document["jobs"]["legacy-hosted-pack"]
+    compat["runs-on"] = {"group": "macro-home-canary", "labels": "ci-linux"}
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_without_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["legacy-hosted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_pc_pack_without_explicit_pc_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["trusted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "explicit PC route" in result.stdout
+
+
 def test_p3ba_policy_rejects_a_second_runner_group_consumer(tmp_path: Path) -> None:
     root, registry, workflows = fixture_tree(tmp_path)
     path = workflows / "trusted-ci-executor.yml"
