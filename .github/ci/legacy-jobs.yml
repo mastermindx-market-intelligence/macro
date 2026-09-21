@@ -10823,7 +10823,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: dead-asset refs + rendered ticker links over the shipped estate
-        run: python -m pytest tests/test_check_site_asset_refs.py tests/test_rendered_ticker_links.py -q
+        run: python -m pytest tests/test_check_site_asset_refs.py tests/test_rendered_ticker_links.py tests/test_render_dead_ref_targets.py -q
       - name: git-plane containment — conflicted-autostash guard + render checkout bound
         run: python -m pytest tests/test_push_conflict_guard.py tests/test_render_checkout_bound.py -q
       - name: admin research tools + earnings worker (terminal intake + launchd assets)
