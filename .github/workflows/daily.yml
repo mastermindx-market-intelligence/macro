@@ -3163,6 +3163,15 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      # Durable core checkpoint (incident run 35547644919): the coherent builder
+      # band completed, but a later best-effort tail exhausted the 300-minute job
+      # cap before the sole broad publisher. Persist the core public tree here;
+      # the existing final publisher remains the second cut for later tail outputs.
+      - name: checkpoint core engine outputs to main (durable before tail desks)
+        if: always()
+        timeout-minutes: 25
+        continue-on-error: true
+        run: bash scripts/ci/daily_engine_commit_outputs.sh
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not

@@ -502,6 +502,55 @@ def _daily_engine_commit_step() -> tuple[dict, dict]:
     return doc, step
 
 
+CORE_ENGINE_CHECKPOINT_NAME = (
+    "checkpoint core engine outputs to main (durable before tail desks)"
+)
+
+
+def _daily_engine_steps() -> list[dict]:
+    workflow = REPO_ROOT / ".github" / "workflows" / "daily.yml"
+    return yaml.safe_load(workflow.read_text())["jobs"]["engine"]["steps"]
+
+
+def test_daily_engine_checkpoints_core_outputs_before_tail_desks():
+    steps = _daily_engine_steps()
+    names = [step.get("name") for step in steps]
+    checkpoint_index = names.index(CORE_ENGINE_CHECKPOINT_NAME)
+    regional_index = next(
+        index
+        for index, name in enumerate(names)
+        if str(name).startswith("regional + desk builders")
+    )
+    membership_index = names.index(
+        "membership snapshot freshness tripwire (advisory)"
+    )
+    tail_index = names.index("timings band — tail-desks (W2)")
+
+    assert regional_index < checkpoint_index < membership_index < tail_index
+
+    checkpoint = steps[checkpoint_index]
+    assert checkpoint["if"] == "always()"
+    assert checkpoint["timeout-minutes"] == 25
+    assert checkpoint["continue-on-error"] is True
+    assert checkpoint["run"] == "bash scripts/ci/daily_engine_commit_outputs.sh"
+
+
+def test_daily_engine_keeps_final_commit_after_core_checkpoint():
+    steps = _daily_engine_steps()
+    publisher_steps = [
+        step
+        for step in steps
+        if step.get("run") == "bash scripts/ci/daily_engine_commit_outputs.sh"
+    ]
+
+    assert [step.get("name") for step in publisher_steps] == [
+        CORE_ENGINE_CHECKPOINT_NAME,
+        "commit engine outputs",
+    ]
+    assert publisher_steps[0]["continue-on-error"] is True
+    assert publisher_steps[1]["if"] == "always()"
+
+
 def test_daily_engine_lane_uses_quarantine_helper_for_fast_main_retries():
     _doc, step = _daily_engine_commit_step()
     run = step["run"]
