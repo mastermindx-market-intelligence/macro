@@ -24,6 +24,7 @@ from lib.chat_allowance import chat_allowance_view_model  # noqa: E402
 from lib.glossary import glossary_view_model  # noqa: E402
 from lib.help_directory import help_page_view_model  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from scripts.inject_wh_banner import inject_text as inject_wh_banner_text  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_public_pages")
@@ -139,13 +140,15 @@ def build(site=None) -> None:
     glossary_vm: dict | None = None
     try:
         glossary_vm = glossary_view_model(config.ROOT)
-        write_page(
-            site / "glossary.html",
-            env.get_template("glossary.html.j2").render(
-                generated_utc=generated,
-                **glossary_vm,
-            ),
+        glossary_html = env.get_template("glossary.html.j2").render(
+            generated_utc=generated,
+            **glossary_vm,
         )
+        # public-render does not run the site-wide banner sweep; without this,
+        # rebuilding glossary.html silently strips the already-shipped ticker.
+        # Reuse the canonical idempotent injector rather than duplicating tag logic.
+        glossary_html = inject_wh_banner_text(glossary_html, "")
+        write_page(site / "glossary.html", glossary_html)
     except Exception as exc:  # noqa: BLE001 — re-raised after the other pages land
         glossary_error = exc
         print(

@@ -96,27 +96,33 @@ def test_rendered_rail_note_makes_no_permanent_claim_about_a_transient_state():
     assert "当前视图" in zh.group(1), zh.group(1)
 
 
-# daily.yml's `scripts/inject_wh_banner.py` splices this one tag into every
-# generated page; the public-render fast lane never runs that sweep, so a
-# regenerated page must carry the committed tag over byte-for-byte. Same shape
-# as `_WHB_TAG_RE` in scripts/build_free_content.py, whose `_carry_over_wh_banner`
-# exists because "wh_banner is the one sweep we cannot replay".
+# daily.yml's `scripts/inject_wh_banner.py` splices this tag site-wide. The
+# public-render fast lane does not run that sweep, so build_public_pages now
+# applies the same canonical injector to glossary.html before writing it. Same
+# shape as `_WHB_TAG_RE` in scripts/build_free_content.py.
 _WHB_TAG_RE = re.compile(r"[ \t]*<script[^>]*\bdata-whb\b[^>]*></script>\n?")
 
 
 def test_committed_glossary_page_carries_the_alert_banner_script():
-    """B-F13-1 review round 2, BLOCKER 1: regenerating site/glossary.html
-    dropped the page's `<script defer data-whb …>` tag, so merging would have
-    removed the alert banner from the live public /glossary only — the fleet
-    count went 3747 → 3746 with this page as the single loss. The site-pair
-    test below cannot see it (the fast-path render never injects the tag), so
-    the committed page is pinned directly: exactly one banner tag, before
-    `</body>`, pointing at wh_banner.js."""
+    """Committed public glossary must retain the shared alert-banner client."""
     html = (config.site_dir() / "glossary.html").read_text(encoding="utf-8")
     tags = re.findall(r'<script[^>]*\bdata-whb\b[^>]*></script>', html)
     assert len(tags) == 1, f"expected exactly one data-whb banner tag, found {len(tags)}"
     assert "wh_banner.js" in tags[0], tags[0]
     assert html.index(tags[0]) < html.rindex("</body>"), "banner tag sits after </body>"
+
+
+def test_public_fastlane_rebuild_keeps_glossary_alert_banner(tmp_path):
+    """The fast public-page producer must not strip chrome restored by nightly."""
+    from scripts import build_public_pages
+
+    out = tmp_path / "site"
+    build_public_pages.build(out)
+    html = (out / "glossary.html").read_text(encoding="utf-8")
+    tags = re.findall(r'<script[^>]*\bdata-whb\b[^>]*></script>', html)
+    assert len(tags) == 1
+    assert 'data-root=""' in tags[0]
+    assert 'src="wh_banner.js"' in tags[0]
 
 
 def test_rendered_letter_rail_anchors_are_unique_ids():
