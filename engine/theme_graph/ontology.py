@@ -44,7 +44,8 @@ class RepositoryStore:
         return store.read_edges(latest_belief=False)
 
     def read_proposals(self) -> Any:
-        return probation.read_proposals(store.probation_path())
+        # Canonical research reads must not turn missing/corrupt input into absence.
+        return probation.read_proposals(store.probation_path(), strict=True)
 
 
 def _records(value: Any) -> list[dict[str, Any]]:

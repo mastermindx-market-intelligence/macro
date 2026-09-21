@@ -5,19 +5,17 @@ model: sol
 ended_because: blocked
 mission: Deliver the existing GMI ontology and curation research workflow without a second graph, queue, identity
   or approval authority.
-state_before: Published 8684bc; 14 uncommitted paths preserved; canonical worklist CLI blocked on strict owner-reader
-  integration; seven tests failing.
+state_before: Published 46fad16493d62c9275a16f04b59ea52b8c86814f; strict worklist and overlap inputs proven;
+  Codex finding 4060996476 identifies forgiving canonical proposal drilldown.
 changed:
 - path: engine/theme_graph/proposal_worklist.py
-  what: Build a read-only typed-row worklist with exact filters
-  cutoff-aware status: null
-  UTC ordering: null
-  digest-bound pages and existing review-query arguments.: null
+  what: Preserved exact filters, cutoff-aware status, UTC ordering, digest-bound pages and existing review-query
+    arguments.
 - path: contracts/theme_graph/proposal_worklist.v1.schema.json
   what: Add the worklist projection referencing the existing proposal contract.
 - path: engine/theme_graph/ontology.py
-  what: Preserve proposal-origin notes before adjudication; expose separately clocked optional adjudication_note
-    only when known.
+  what: Preserve the existing note repair; route RepositoryStore proposal reads through the existing strict
+    owner reader for both proposal drilldown and neighborhood consumers.
 - path: contracts/theme_graph/ontology_neighborhood.v1.schema.json
   what: Add optional decision-note projection; ordinary proposal note is creation content.
 - path: contracts/theme_graph/probation_proposal.v1.schema.json
@@ -29,8 +27,8 @@ changed:
   what: Reuse existing 8 MiB duplicate-key-rejecting loader from explain_theme_changes and return structured
     refusal on excess recursion.
 - path: tests/test_theme_graph_local_plane.py
-  what: All seven formerly failing cases pass; five additional controls pin forgiving-default parity, nested
-    duplicates, partial-file refusal, document bounds and no-output refusal.
+  what: Preserve all earlier tests; add six real-adapter/CLI changed-input refusal cases, one genuine-empty-queue
+    case and three shared node-consumer cases.
 - path: scripts/list_theme_proposals.py
   what: Existing CLI now operational through the strict canonical proposal owner; no replacement wrapper or
     queue.
@@ -44,37 +42,38 @@ verified:
   command: pytest tests/test_theme_graph_local_plane.py -k strict_queue/worklist_cli_pages/overlap_duplicate
     selection; exact invocations in evidence logs
   result: 'RED: 7 failed. GREEN: 7 passed; all seven retained and unskipped.'
-- claim: The coherent local candidate passes the existing nine-module owner battery.
-  command: Same nine-module owner command recorded in strict-input-continuation-20260921/verification.json;
-    owner.log
-  result: 630 passed, exit 0; includes five added boundary controls. Strict graph audit and contract selftest
-    both exit 0.
-- claim: The actual canonical-file worklist-to-review-to-overlap CLI works.
-  command: python3 strict-input-continuation-20260921/real-cli-proof.py (absolute evidence-root path); real-cli-verification.json
-  result: 15 subprocess CLI commands exit 0; 234 raw-file proposals across 10 pages, zero missing/duplicate
-    IDs; exact Utilities filter returns 2; prop:4f5e710b2c995d2b resolves to RELATION_ABSENT; overlap source31/target9/shared9/source-only22/target-only0.
-    All 8 canonical input-file hashes unchanged.
 - claim: The separate identity-owner baseline is still red, not waived.
   command: python3 -m pytest tests/test_theme_graph_identity_resolution.py -q; identity-baseline.log
   result: '52 passed / 4 failed: two 2806-versus-2807 count assumptions, committed-bake reproducibility, and
     already-present VMRK sidecar assumption.'
+- claim: The canonical review CLI refuses corrupted/missing queue input after worklist selection.
+  command: pytest tests/test_theme_graph_local_plane.py -k gmi_review_drilldown; review-strict-drilldown-20260921/red.log
+    and green.log; node-consumer.log
+  result: RED 6 failed / 1 passed; GREEN focused drilldown/strict-reader battery 14 passed; three additional
+    node-consumer checks pass. Genuine empty input stays distinct; refusal writes no output and leaves input
+    unchanged.
+- claim: Changed source passes the selected owner battery and real canonical-file chain.
+  command: review-strict-drilldown-20260921/owner-final.log; strict.log; selftest.log; python3 real-cli-proof.py
+  result: 640 owner tests passed; strict/selftest exits 0; 15 actual CLI commands exit 0; 234 raw proposals
+    across 10 pages without omission/duplication; exact Utilities review and both overlap formats work; all
+    8 canonical hashes unchanged.
 unverified:
-- claim: Changed-candidate current-base integration, publication and independent acceptance.
-  what_would_verify: Freeze and qualify an immutable integrated candidate, publish normally on existing PR
-    7462, then exact-head review and concluded binding CI without weakening HOLD.
+- claim: This new repair head has immutable integration, publication and independent acceptance.
+  what_would_verify: Freeze the repair commit; qualify exact-base integration; publish on PR 7462; consume
+    changed-head review and binding CI without weakening HOLD.
 - claim: Natural graph publication and full GMI parent completion.
   what_would_verify: Existing producer result and canonical graph receipt under original run ownership; complete
     remaining D2D breadth and gated D2E/W3B/W3C.
 unresolved:
-- Independent exact-head acceptance and release remain pending.
-- Four identity-owner baseline failures remain unwaived.
-- Historical tool-refusal cause remains unknown; this session has direct same-carrier APPLIED readback for
-  the two source edits.
+- Changed-head independent review and release remain pending.
+- Four separately recorded identity-owner baseline failures remain unwaived; not rerun for this adapter-only
+  repair.
+- Vercel reported deployment rate limiting on 46fad164; inactive merge-queue-pilot context is not the active
+  main authority check.
 next_actions:
-- Qualify immutable current-base integration of the preserved and repaired candidate.
-- Publish on the original PR/branch only through a normal same-carrier fast-forward push and read back the
-  exact head.
-- Obtain changed-head independent review and concluded binding checks before any release ruling.
+- Qualify and publish the strict-drilldown repair on the original PR and branch.
+- Consume exact repair-head independent review and binding CI, then refresh current-base compatibility before
+  a release ruling.
 do_not_redo:
 - Published 8684bc exact ontology/history/overlap readers and accepted predecessor work
 - Preserved count comparison, exact security navigation, worklist core/CLI and separate creation/adjudication
@@ -83,7 +82,7 @@ do_not_redo:
 - Merged 6809/7458, accepted PIT replay, or another queue/graph/identity authority
 danger_areas:
 - Proposals and browsing order confer no approval, ranking, trade or public-display authority.
-- Never hide the four identity baseline failures behind the 630-test selected-owner result.
+- Never hide the four identity baseline failures behind the 640-test selected-owner result.
 - No reset, force, rebase, stash, ancestry-only conflict concealment or duplicate graph producer.
 - No blind retry or carrier change for any newly ambiguous/refused mutation.
 prs:
@@ -93,37 +92,20 @@ prs:
 - 7511
 ---
 
-MISSION_COMPLETE: false. This is the cumulative working checkpoint for the same Chairman-directed
-operation gmi-theme-ontology-d2d-20260827-sol-001 and PR 7462. Sol retains source/release custody.
-Protected procedure pin: Mastermind@6a24ed038774afff0bbab2982f420ef0e66e5b5f, Skillpack 1.0.1/bootstrap 1.
-Direct execution: LOWER_TOTAL_OVERHEAD for two frozen reader integrations; no worker was spawned.
+MISSION_COMPLETE: false. Same Chairman-directed operation gmi-theme-ontology-d2d-20260827-sol-001, WS:GMI-THEME-GRAPH and PR 7462. Sol retains source/release custody; DRAFT / HOLD-FOR-SOL / RESEARCH_INTERNAL_ONLY remains effective.
 
-Evidence root: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/strict-input-continuation-20260921/.
-Recovery manifest: proposal-worklist/verification.json SHA256
-167f84122b94e57e4daaf0785b22f9d1e97656cbac9aea71f586763805c93c43.
-All 14 prior working files were hash-verified and backed up before edits; the existing count,
-security, worklist and note capabilities were preserved rather than rebuilt. Historical refusals
-were NOT_APPLIED. Current same-Studio-carrier edits returned APPLIED and were read/test verified;
-no account, permission, transport, provider or safety-setting change occurred.
+Current source law: protected Mastermind@74b475545e179a3256bfebe6b5226f54231cf1cb, Skillpack 1.0.1/bootstrap 1. Required procedure bytes were freshly loaded and compared equal to the prior pin. Direct repair is LOWER_TOTAL_OVERHEAD for one existing adapter boundary; no replacement worker, graph, queue or identity plane.
 
-The checkpoint's mergeable=false is no longer current: GitHub returned mergeable=true, and direct
-merge-tree probes of published 8684bc against both fetched main 96e5b35ae123d196694d4576d9c4f94fc7767971
-and GitHub's reported base af92792954e1ad8a4812cf0e73a2dc54dac0672a concluded without conflict.
-Those are published-head probes, NOT proof of the new working candidate. No unnecessary ancestry
-merge was made. Changed-candidate integration/publication receipts must be read from the current
-verification.json and canonical cumulative PR checkpoint comment 5755209687.
+Prior source 46fad16493d62c9275a16f04b59ea52b8c86814f and original-workspace restoration were freshly reconciled. Staging and tracked dirt were empty. Prior source edits/commit/push are APPLIED. The earlier metadata-only refresh refusal remains NOT_APPLIED and its file is not retried. Studio Direct is not exposed in this connection; the available authorized Desktop Commander connection reaches the same Mac-Studio.local workspace. An initial read-only process request was platform-blocked; after a distinct same-device canonical-law read succeeded, the exact same read-only request succeeded. No source mutation was involved in that refusal and no prior modifying effect was moved or duplicated.
 
-Real CLI proof uses the original canonical proposal path with no substituted data root or mocked
-reader. The first proof-driver attempt completed paging but used a case-mismatched Utilities label;
-that driver failure is retained under real-cli-attempt-1/. The corrected driver uses the recorded
-exact subject basket:baskets:us_sector_utilities and all 15 subprocess commands passed. Relation
-state is read from exact-review.json#/relation/state, not a fabricated top-level field.
+Codex review 5265226068 at 46fad164 returned finding 4060996476. RepositoryStore.read_proposals still selected the forgiving default, so damaged input between selection and drilldown could become a successful partial review. Reply 4061267927 records Sol REQUEST_CHANGES. Six regressions demonstrate missing, malformed, non-object, duplicate, nested-duplicate and deeply nested raw input; the existing strict owner reader now protects the adapter. The forgiving owner default is unchanged. Three further tests cover the shared adapter's node-neighborhood consumer, including genuine empty input.
 
-The separate identity baseline remains 52 passed / four failed; no fixture, identity owner or data
-was rewritten to green it. No graph producer/rerun/cancellation or curation act was invoked.
-The last locally observed graph generation remains 2026-09-18T17:42:29Z; a running or finished
-workflow alone is not new graph proof. Prior Codex findings were against published 8684bc;
-both repairs are now locally tested, not yet independently accepted. A pending reviewer request
-is not evidence of a running worker. Draft/HOLD-FOR-SOL and RESEARCH_INTERNAL_ONLY remain binding.
-Full D2D structural/curation breadth, deferred security history, D2E, ThemeState W3B and cohort W3C
-remain unfinished. Continue from the current canonical checkpoint and exact evidence, not old chat.
+Evidence: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/review-strict-drilldown-20260921/. Source-before backups, recovery.json, red/green/owner-final/strict/selftest logs and real-cli-verification.json retain exact input/source identity. Current tested totals are 640 selected owner tests and 15 real CLI commands. No production input or graph-data write occurred. Prior 14-file preservation and accepted strict worklist/count/security/note capabilities are DO_NOT_REDO.
+
+The first checkpoint-and-commit request was platform-blocked. Same-carrier readback proved HEAD still 46fad164, staging empty, handoff unchanged and all intended commit/manifest outputs absent: NOT_APPLIED. A subsequent independently useful node-consumer regression addition succeeded on the same device and tool, and the changed full selected battery passed 640 tests. No alternate actor, credential, permission or transport was used to perform the blocked modification; its internal platform cause remains unknown.
+
+A direct pre-repair merge-tree against f8c7759ef26324bcddb945d6a60c2a5ae2dbee76 was conflict-free and relevant source paths were unchanged from the prior integration base. GitHub's mergeability flag alone is not integration proof; the new semantic repair still needs its immutable qualification. Do not add an ancestry-only source merge or alter another session's work.
+
+Previous-head ci run 35584282332 concluded all 12 packs and ci-gate SUCCESS. Its Vercel status reported deployment rate limiting; ci-authority/codex/merge-queue-pilot reported inactive_base_context while main authority passed. None is a changed-head or release receipt. The separate previously reproduced 52-pass/four-failure identity baseline remains unwaived and is not disguised by selected-suite success.
+
+The cumulative external checkpoint is PR comment 5755209687. Natural graph generation is still 2026-09-18T17:42:29Z at freshly read main f8c7759e. Natural engine 106205605943 remains unfinished, with commit-engine-outputs pending at the latest step read. No producer rerun/cancellation, curation, approval, public-display, ranking, sizing or trading authority was invoked. Full D2D structural/curation breadth, deferred security history, D2E, sole ThemeState W3B and cohort W3C remain unfinished. No autonomous Web wake or reviewer execution is inferred.

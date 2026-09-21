@@ -2763,3 +2763,84 @@ def test_gmi_overlap_cli_uses_bounded_loader_and_refuses_without_output(tmp_path
         assert "8 MiB" in refusal["message"]
     assert not output.exists()
     assert path.read_text() == raw
+
+
+@pytest.mark.parametrize("damage", ["missing", "malformed", "nonobject", "duplicate", "nested_duplicate", "too_deep"])
+def test_gmi_review_drilldown_refuses_changed_raw_queue(monkeypatch, tmp_path, capsys, damage):
+    """The real adapter must not weaken raw-input guarantees after worklist selection."""
+    import sys
+    from engine.theme_graph import store
+    from scripts import list_theme_proposals as worklist_cli, query_theme_ontology as review_cli
+    path, output = tmp_path / "proposals.jsonl", tmp_path / "review.json"
+    row = _worklist_rows()[0]
+    original = json.dumps(row) + "\n"
+    path.write_text(original, encoding="utf-8")
+    monkeypatch.setattr(store, "probation_path", lambda: path)
+    assert worklist_cli.main(["--asof", "2026-02-01"]) == 0
+    item = json.loads(capsys.readouterr().out)["items"][0]
+    query = item["review_query"]
+    assert query["proposal_id"] == row["proposal_id"]
+    if damage == "missing":
+        path.unlink()
+        raw = None
+    else:
+        depth = sys.getrecursionlimit() + 100
+        bad = {"malformed": "not JSON", "nonobject": "[]",
+               "duplicate": '{"proposal_id":"a","proposal_id":"b"}',
+               "nested_duplicate": '{"evidence":{"count":1,"count":2}}',
+               "too_deep": "[" * depth + "0" + "]" * depth}[damage]
+        raw = original + bad + "\n"
+        path.write_text(raw, encoding="utf-8")
+    args = ["--proposal-id", query["proposal_id"], "--asof", query["asof"],
+            "--knowledge-cutoff", query["knowledge_cutoff"], "--out", str(output)]
+    assert review_cli.main(args) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    refusal = json.loads(captured.err)
+    assert refusal["code"] == "ONTOLOGY_QUERY_UNAVAILABLE"
+    assert not output.exists()
+    if raw is None:
+        assert not path.exists()
+    else:
+        assert path.read_text(encoding="utf-8") == raw
+        assert "line 2" in refusal["message"]
+
+
+def test_gmi_review_drilldown_empty_queue_is_genuine_absence(monkeypatch, tmp_path, capsys):
+    from engine.theme_graph import store
+    from scripts import query_theme_ontology as review_cli
+    path = tmp_path / "proposals.jsonl"
+    path.write_text("", encoding="utf-8")
+    monkeypatch.setattr(store, "probation_path", lambda: path)
+    assert review_cli.main(["--proposal-id", _worklist_rows()[0]["proposal_id"],
+                            "--asof", "2026-02-01"]) == 0
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    assert json.loads(captured.out)["availability"]["state"] == "PROPOSAL_NOT_FOUND"
+    assert path.read_bytes() == b""
+
+
+@pytest.mark.parametrize("queue_state", ["missing", "nonobject", "empty"])
+def test_gmi_repository_neighborhood_distinguishes_unreadable_queue_from_empty(monkeypatch, tmp_path, capsys, queue_state):
+    """The adapter's other consumer must retain graph truth without inventing queue absence."""
+    from engine.theme_graph import store
+    from scripts import query_theme_ontology as cli
+    path = tmp_path / "proposals.jsonl"
+    monkeypatch.setattr(store, "probation_path", lambda: path)
+    monkeypatch.setattr(store, "read_nodes", lambda **kwargs: [_ont_node("co:us:AAA", "company")])
+    monkeypatch.setattr(store, "read_node_lifecycle", lambda **kwargs: [])
+    monkeypatch.setattr(store, "read_edges", lambda **kwargs: [])
+    if queue_state != "missing":
+        path.write_text("[]\n" if queue_state == "nonobject" else "", encoding="utf-8")
+    status = cli.main(["--node-id", "co:us:AAA", "--asof", "2026-06-01"])
+    captured = capsys.readouterr()
+    if queue_state == "empty":
+        assert status == 0 and captured.err == ""
+        result = json.loads(captured.out)
+        assert result["availability"]["state"] == "OK"
+        assert result["counts"]["proposals"] == 0
+        assert path.read_bytes() == b""
+    else:
+        assert status == 2 and captured.out == ""
+        assert json.loads(captured.err)["code"] == "ONTOLOGY_QUERY_UNAVAILABLE"
+        assert path.exists() == (queue_state == "nonobject")
