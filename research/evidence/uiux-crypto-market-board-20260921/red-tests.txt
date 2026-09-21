@@ -1,0 +1,71 @@
+...FFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+_________ test_crypto_market_board_has_accessible_table_relationships __________
+
+    def test_crypto_market_board_has_accessible_table_relationships():
+        source = (ROOT / "templates/crypto.html.j2").read_text()
+        for marker in ('id="crypto-market-title"', 'role="table" aria-labelledby="crypto-market-title"',
+                       'role="columnheader"', 'role="rowheader"', 'role="cell"'):
+>           assert marker in source
+E           assert 'id="crypto-market-title"' in '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...mindX Inc</div>\n</main>\n<script defer src="illus.js"></script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_crypto_house_style.py:44: AssertionError
+_________ test_crypto_narrow_rows_keep_identity_and_numbers_in_bounds __________
+
+    def test_crypto_narrow_rows_keep_identity_and_numbers_in_bounds():
+        source = (ROOT / "templates/crypto.html.j2").read_text()
+>       assert '#market-board .market-row{grid-template-columns:minmax(0,1fr) 100px 66px}' in source
+E       assert '#market-board .market-row{grid-template-columns:minmax(0,1fr) 100px 66px}' in '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...mindX Inc</div>\n</main>\n<script defer src="illus.js"></script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_crypto_house_style.py:51: AssertionError
+________ test_crypto_more_assets_remains_native_and_has_a_focus_target _________
+
+    def test_crypto_more_assets_remains_native_and_has_a_focus_target():
+        source = (ROOT / "templates/crypto.html.j2").read_text()
+>       assert "t('More assets','更多资产')" in source
+E       assert "t('More assets','更多资产')" in '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...mindX Inc</div>\n</main>\n<script defer src="illus.js"></script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_crypto_house_style.py:60: AssertionError
+____________ test_crypto_snapshot_and_market_headers_are_bilingual _____________
+
+    def test_crypto_snapshot_and_market_headers_are_bilingual():
+        source = (ROOT / "templates/crypto.html.j2").read_text()
+>       assert "t('Daily snapshot','每日快照')" in source
+E       assert "t('Daily snapshot','每日快照')" in '{# Crypto Intelligence Cockpit — H1–H8 are governed shelf roots. #}\n{% macro t(en, zh=\'\') -%}\n<span class="l-en">...mindX Inc</div>\n</main>\n<script defer src="illus.js"></script>\n<script src="theme.js"></script>\n</body>\n</html>\n'
+
+tests/test_crypto_house_style.py:69: AssertionError
+________ test_crypto_published_market_table_keeps_all_live_quote_pairs _________
+
+    def test_crypto_published_market_table_keeps_all_live_quote_pairs():
+        import re
+        page = (ROOT / "site/crypto.html").read_text()
+>       start = page.index('role="table" aria-labelledby="crypto-market-title"')
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: substring not found
+
+tests/test_crypto_house_style.py:78: ValueError
+__________ test_crypto_canonical_control_css_matches_published_asset ___________
+
+    def test_crypto_canonical_control_css_matches_published_asset():
+        import hashlib, re
+        from jinja2 import Environment, FileSystemLoader
+        source = (ROOT / "templates/crypto.html.j2").read_text()
+        css_source = re.search(r'<style>(.*?)</style>', source, re.S).group(1)
+        rendered = Environment(loader=FileSystemLoader(str(ROOT / "templates"))).from_string(css_source).render()
+        page = (ROOT / "site/crypto.html").read_text()
+        refs = re.findall(r'assets/css/([0-9a-f]{8})\.css\?v=\1', page)
+        assets = [ROOT / "site" / "assets" / "css" / (ref + ".css") for ref in refs]
+        matching = [p for p in assets if p.exists() and '#market-board .asset small' in p.read_text()]
+>       assert len(matching) == 1
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_crypto_house_style.py:99: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_crypto_house_style.py::test_crypto_market_board_has_accessible_table_relationships
+FAILED tests/test_crypto_house_style.py::test_crypto_narrow_rows_keep_identity_and_numbers_in_bounds
+FAILED tests/test_crypto_house_style.py::test_crypto_more_assets_remains_native_and_has_a_focus_target
+FAILED tests/test_crypto_house_style.py::test_crypto_snapshot_and_market_headers_are_bilingual
+FAILED tests/test_crypto_house_style.py::test_crypto_published_market_table_keeps_all_live_quote_pairs
+FAILED tests/test_crypto_house_style.py::test_crypto_canonical_control_css_matches_published_asset
+6 failed, 3 passed in 0.09s
