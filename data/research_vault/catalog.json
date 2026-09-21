@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T11:47:24.923961+00:00",
-  "count": 2566,
+  "generated_at": "2026-09-21T12:02:37.697683+00:00",
+  "count": 2567,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -149,6 +149,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-a1lbsxy38mt-f8028b",
+      "title": "Bear Traps Report Turning Point Final New III Sep 20 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-09-21T03:34:29Z",
+      "summary_points": [
+        "Market Breadth Crisis: S&P 500 near highs but extreme breadth deterioration (more stocks at lows than highs, long-term uptrends plunging), comparable to 1973/1999 setups.",
+        "Credit Sell Signals: Convertible supply at record levels with 3+ months to election, signaling potential risk in credit markets (mirroring Q4 1999/2021).",
+        "1987 vs 2025 Bond-Stock Divergence: Treasury yields surged 200bps (7.25%→9.50%) triggering Black Monday; current high-yield bonds near 8%, French OATs up 360bps, debt-to-GDP double.",
+        "Bear Traps Report Cash Monitor: 76/13 positions in May 2025 (vs. 52 in Sep 2026); 55+ = RAISE CASH, 75+ = DEPLOY CASH, amplified by global trade disruptions."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 26,
       "language": "en",
       "needs_metadata": false
     },
