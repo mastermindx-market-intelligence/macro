@@ -316,6 +316,15 @@ def test_contamination_probe_reuses_the_cache_without_an_origin_checkout() -> No
     assert "git fetch" not in detach["run"]
 
 
+def test_contamination_probe_evaluates_after_dependencies_but_requires_success() -> None:
+    job = workflow("selfhosted-ci-canary.yml")["jobs"]["contamination-probe"]
+    condition = str(job["if"])
+    assert "always()" in condition
+    assert "inputs.slots == '1'" in condition
+    assert "needs.plan.result == 'success'" in condition
+    assert "needs.selfhosted-pack.result == 'success'" in condition
+
+
 def test_process_contamination_probe_intentionally_abandons_and_then_rejects_a_child() -> None:
     document = workflow("selfhosted-ci-canary.yml")
     pack = str(document["jobs"]["selfhosted-pack"]["steps"])
