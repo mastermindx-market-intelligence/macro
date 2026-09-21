@@ -21,7 +21,8 @@
 {% macro risk_context(risk_envelope) -%}
 {# Chairman 2026-09-19: Risk Envelope belongs inside the existing Risk Radar.
    One derived engine contract; no new score, policy authority or first-level panel.
-   Keep the legacy id and live hooks so the accepted live consumer keeps its identity. #}
+   Keep the legacy id and live hooks so the accepted live consumer keeps its identity.
+   W9: capital-policy copy names the restriction fact, not the Grey Deer program. #}
 {% set _re = risk_envelope %}
 {% if _re and _re.get('schema') == 'mastermind.risk_envelope/v1' %}
 {% set _ms = _re.get('measured_state') or {} %}
@@ -154,8 +155,19 @@
           <div id="gde-live-sources" hidden><p class="gde-disc-h"><span class="l-en">Live source dates</span><span class="l-zh">实时来源日期</span></p><div class="gde-live-source-rows" id="gde-live-source-rows"><span class="l-en"></span><span class="l-zh"></span></div></div>
           <div class="gde-receipt gde-receipt-live" id="gde-live-receipt" hidden></div>
       <p class="gde-policy">
-        <span class="l-en">Capital controls: {% if _ps.get('policy_count') is none %}unavailable{% elif _ps.get('policy_count') == 0 %}none active{% else %}{{ _ps.get('policy_count') }} active{% endif %}. Separate from the market readings.</span>
-        <span class="l-zh">资金限制：{% if _ps.get('policy_count') is none %}暂无数据{% elif _ps.get('policy_count') == 0 %}未启用{% else %}{{ _ps.get('policy_count') }} 项生效{% endif %}。与市场判读独立。</span>
+        {# Three-state count stays truthful (#7467). Zero names the W9 fact, not "none active" / Grey Deer. One integer on the count; dates stay in the evidence table, not the glance cells. #}
+        {% if _ps.get('policy_count') is none %}
+        <span class="l-en">Capital controls: unavailable. Separate from the market readings.</span>
+        <span class="l-zh">资金限制：暂无数据。与市场判读独立。</span>
+        {% elif _ps.get('policy_count') == 0 %}
+        <span class="gde-policy-state"><span class="l-en">No capital restrictions in force</span><span class="l-zh">当前无资金限制</span></span>
+        <span class="gde-policy-count tnum">{{ _ps.get('policy_count') }} <span class="l-en">active</span><span class="l-zh">项生效</span></span>
+        <span class="l-en">Separate from the market readings.</span>
+        <span class="l-zh">与市场判读独立。</span>
+        {% else %}
+        <span class="l-en">Capital controls: {{ _ps.get('policy_count') }} active. Separate from the market readings.</span>
+        <span class="l-zh">资金限制：{{ _ps.get('policy_count') }} 项生效。与市场判读独立。</span>
+        {% endif %}
       </p>
     </div>
   </details>
