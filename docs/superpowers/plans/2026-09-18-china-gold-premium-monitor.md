@@ -82,8 +82,8 @@ Slice B therefore adds exactly one bounded collector, `gold_china_basis`, which:
   trading calendars), then refreshes a bounded 14-day overlap nightly; Massive history is
   requested newest-first so an older-history access/network failure cannot black out the current
   close-aligned point; after the first observed Massive HTTP 429, the historical repair retries
-  that same chunk after one Basic-plan-safe interval and paces each older request for the rest of
-  the run, preventing a transient 5-calls/minute ceiling from becoming permanent chart holes;
+  that same chunk after clearing one full 60-second rate window, then paces each older request at
+  12.5 seconds for the rest of the run, preventing a transient 5-calls/minute ceiling from becoming permanent chart holes;
   the collector continues retrying cold-start depth until at least 30 persisted dates overlap
   across both raw legs; if either raw leg falls outside the normal
   overlap the next run expands to cover the whole observed gap plus overlap, bounded by the

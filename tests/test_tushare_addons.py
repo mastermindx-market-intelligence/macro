@@ -1704,4 +1704,8 @@ def test_gold_basis_rate_limit_retries_same_history_chunk_then_paces_older_reque
     assert pd.Timestamp("2026-09-01T07:30:00") in frames["xaucny_spot"].index
     assert pd.Timestamp("2026-08-15T07:30:00") in frames["xaucny_spot"].index
     assert len(sleeps) >= 2
-    assert min(sleeps) >= 12.0
+    # With no provider Retry-After header, the first 429 must clear one full
+    # rate-limit window before retrying the exact chunk. After that reset the
+    # remaining older history can run at the safe steady-state cadence.
+    assert sleeps[0] >= 60.0
+    assert any(12.0 <= value < 60.0 for value in sleeps[1:])

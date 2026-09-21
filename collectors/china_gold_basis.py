@@ -37,7 +37,8 @@ _CLOSE_MINUTE_UTC = 30
 _REFRESH_DAYS = 13  # today + 13 prior days = one <=14-day minute-bar request
 _COLD_START_DAYS = 90  # enough calendar depth for honest 30-session product statistics
 _MAX_MASSIVE_RESULTS = 50_000
-_MASSIVE_BASIC_PACE_SECONDS = 12.5  # <= 5 calls/minute after an observed 429
+_MASSIVE_BASIC_PACE_SECONDS = 12.5  # <= 5 calls/minute after a cleared limit window
+_MASSIVE_RATE_LIMIT_RESET_SECONDS = 60.0
 
 log = logging.getLogger("collector.gold_china_basis")
 
@@ -315,12 +316,12 @@ class ChinaGoldBasisAdapter(Adapter):
                     rate_limited = True
                     log.warning(
                         "Massive XAUCNY rate limit observed at %s..%s; "
-                        "retrying after %.1fs and pacing older history",
+                        "clearing the rate window for %.0fs, then pacing older history",
                         chunk_start,
                         chunk_end,
-                        _MASSIVE_BASIC_PACE_SECONDS,
+                        _MASSIVE_RATE_LIMIT_RESET_SECONDS,
                     )
-                    time.sleep(_MASSIVE_BASIC_PACE_SECONDS)
+                    time.sleep(_MASSIVE_RATE_LIMIT_RESET_SECONDS)
                     try:
                         piece = fetch_piece(retries=1)
                     except Exception as retry_exc:
