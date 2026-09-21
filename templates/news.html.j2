@@ -1440,9 +1440,13 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       listEl.hidden=!shown.length; stateEl.hidden=!!shown.length;
       if(!shown.length){
         stateEl.textContent='';
-        stateEl.appendChild(el('strong','',tx('No stories in this view','此视图暂无事件')));
-        stateEl.appendChild(el('p','',
-          tx('Nothing to act on — choose another filter or wait for the next confirmed development.','无需操作——请选择其他筛选条件，或等待下一条已确认进展。')));
+        if(filter!=='all'){
+          stateEl.appendChild(el('strong','',tx('No stories match this filter','没有事件匹配此筛选')));
+          stateEl.appendChild(el('p','',tx('Clear the filter to return to all active stories.','清除筛选可返回全部活跃事件。')));
+        }else{
+          stateEl.appendChild(el('strong','',tx('No stories in this view','此视图暂无事件')));
+          stateEl.appendChild(el('p','',tx('Nothing to act on — wait for the next confirmed development.','无需操作——等待下一条已确认进展。')));
+        }
       }
       if(resultCountEl) text(resultCountEl,zh()?('显示 '+shown.length+' / '+filtered.length+' 条'):(shown.length+' of '+filtered.length+' shown'));
       if(intelClear) intelClear.hidden=filter==='all';
