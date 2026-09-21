@@ -1,20 +1,25 @@
 {
-  "schema": "mastermind.alert_center.latest_base_compatibility.v5",
-  "observed_at": "2026-09-20T08:44:25Z",
-  "candidate_source_head": "a5cc3d4cba5c3d7c2568c538aee1cbd2aa7f3d75",
-  "latest_protected_main": "78ef3b7b9d50deb02ac06ec7e655b7e892bfd40c",
-  "latest_merge_tree": "03a24330d0ff411b2ff845051d17b42ea4d322c0",
+  "schema": "mastermind.alert_center.latest_base_compatibility.v6",
+  "observed_at": "2026-09-21T07:28:49Z",
+  "candidate_source_head": "292dedb32d350b1064bad46a7145c7d00a21a804",
+  "latest_protected_main": "fe06492ddf544ebbbdea77dd057f2ad861970a26",
+  "latest_merge_tree": "5ddfc2c502ae0520ca16d87ae85eb3bbbff10797",
   "merge_conflicts": [],
   "material_movement": {
-    "candidate_owned_alert_paths_changed_on_main": [],
-    "shared_release_blocker": "tests/test_unified_dashboard_b1.py exists on protected main without .github/ci/legacy-jobs.yml ownership"
+    "candidate_owned_alert_paths_changed_on_main": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "candidate_semantic_paths_changed_on_main": [],
+    "integration_result": "Conflict-free integrated tree retains both current-main unified-dashboard ownership and Alert Center source/test closure."
   },
-  "skillpack_commit": "23061ab70a7fb79636b7962d9b440a3de23fe016",
+  "skillpack_commit": "3e66e43258f34db240d5bff76f54148c7af84ee4",
   "classification": "FULL_REREVIEW_REQUIRED",
-  "reason": "Demand, FX residual/momentum/scenario, net-liquidity, leverage-crowding, MOVE, commodity-shock and Treasury-curve semantics expand the source-bound decision journey after the prior semantic review. Current protected-main movement is disjoint from candidate-owned alert paths and the immutable merge tree is conflict-free.",
+  "reason": "The immutable source head now completes source-bound decision briefs across the entire 634-row shared snapshot (49 families, zero fallback), strengthening capability beyond the prior review. Current protected-main movement does not change candidate semantic paths; the latest integrated tree is conflict-free and preserves both CI ownership sets.",
   "production_acceptance": false,
-  "candidate_evidence_head": "f253ec1f8ebe6362aa169d7f80484b8f41b72bd2",
+  "candidate_evidence_head": "00f13b153f0bed71ce371dfdc17ff9082f8daf52",
   "release_blockers": [
-    "shared protected-main contract-delta defect outside Alert Center ownership"
+    "independent exact-head review has not returned",
+    "hosted exact-head CI/contract-delta must pass after push",
+    "production still serves the old Alert Command Center"
   ]
 }
