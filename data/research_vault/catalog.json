@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T21:20:14.648382+00:00",
-  "count": 2594,
+  "generated_at": "2026-09-21T21:34:01.427230+00:00",
+  "count": 2595,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -371,6 +371,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-34aogwpn6uz-8b64b4",
+      "title": "Asia Pacific Portfolio Strategy Asian equity market daily update",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T13:44:34Z",
+      "summary_points": [
+        "<u>Valuation Overextension</u>: MXAPJ at 10.7x forward P/E (+2.3 s.d.) and 2.4x trailing P/B (+2.3 s.d.) signals overvaluation vs historical norms, despite 440bp equity/bond yield gap indicating relative cheapness vs bonds.",
+        "<u>FII Outflows & Volatility Risk</u>: Persistent FII outflows (Taiwan -39B, Korea -120B YTD) vs DII inflows (India +64B) create net negative flows, heightening capital flight risk and requiring hedging strategies.",
+        "<u>Negative Breadth & Regional Divergence</u>: Indonesia (-33%) and Malaysia (-19%) show severe negative breadth, signaling heightened decline risk; MXAPJ’s 1% breadth reflects uneven bullishness across AP.",
+        "<u>Earnings Revision Divergence</u>: Japan/Korea show negative 2026 earnings revisions, while China Real Estate/Energy and Japan Energy exhibit positive revisions, driving sector-specific allocation shifts.",
+        "<u>Currency/Rate Divergence</u>: AUD/KRW up 6.4%/4.4% vs IDR/PHP down -6.3%/-6.0%, with long rates surging (PH +147 b.p.), indicating policy tightening and economic headwinds."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
