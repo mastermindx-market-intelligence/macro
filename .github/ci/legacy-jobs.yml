@@ -2931,6 +2931,7 @@ jobs:
           tests/test_vsb_surface.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_unified_dashboard_b1.py
+          tests/test_global_regime_intl_route.py tests/test_intl_mobile_layout.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_hub_plain_language.py
           tests/test_unified_dashboard_b2w3.py

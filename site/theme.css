@@ -2701,6 +2701,16 @@ html[data-theme="dark"]  .mx-tier-blurred--spec{ opacity:.42; }
    alone is never proof of a light design — the bloom→ring on the subject
    marker is one of three intentionally differing mechanisms (see spec §5).
    ════════════════════════════════════════════════════════════════════════════════ */
+/* International risk-desk columns must shrink to the viewport. Keep the existing
+   table scrollers; an automatic grid-item minimum must not widen the whole page. */
+body.page-intl .ird-twocol > * { min-width:0; }
+@media (max-width:640px) {
+  body.page-intl .te-strip { grid-template-columns:minmax(0,1fr); }
+  body.page-intl .seg { flex-wrap:wrap; max-width:100%; }
+  body.page-intl .ird-tx-row { flex-wrap:wrap; }
+  body.page-intl .rf-s { overflow-wrap:anywhere; }
+}
+
 /* One governed component on both routes; International does not inherit US page styling. */
 body.page-intl #ud-hero,
 body.page-macro #ud-hero{ margin-top:0; }
