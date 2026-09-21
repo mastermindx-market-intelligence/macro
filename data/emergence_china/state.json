@@ -2,26 +2,26 @@
   "1ae477edc89d": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Basic Materials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Basic Materials",
-    "score": 60.9
+    "score": 60.3
   },
-  "84179773b315": {
+  "30d6be22a97c": {
     "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 46.1
+    "score": 66.3
+  },
+  "46ec34e4290f": {
+    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
+    "score": 47.6
+  },
+  "46f0425317df": {
+    "name_en": "Emerging Utilities cluster",
+    "name_zh": "\u65b0\u5174 Utilities \u96c6\u7fa4",
+    "score": 44.0
   },
   "c00427ef8be6": {
     "name_en": "Emerging Technology cluster",
     "name_zh": "\u65b0\u5174 Technology \u96c6\u7fa4",
-    "score": 62.2
-  },
-  "ed0cc25d729f": {
-    "name_en": "Cross-sector cluster \u00b7 Consumer Defensive + Consumer Cyclical",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Defensive + Consumer Cyclical",
-    "score": 61.5
-  },
-  "f223cbb977ff": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Technology",
-    "score": 72.3
+    "score": 56.7
   }
 }

@@ -3035,12 +3035,16 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
   /* Driver counter chip — `1 / 3` badge that floats over the strip's right
      edge. Hidden at desktop; the swipe strip at 390 is the affordance. */
   body.page-macro .ud-driver-count{ display:inline-flex; }
+}
+/* end .ud-hero — UD-B1 §1/§3/§6 */
 
-  /* Watching → single disclosure row (the <summary>) carries title + count +
-     chevron + one-line preview of the first condition. The full list lives
-     inside the <details> wrapper and is hidden by default at 390; tapping the
-     summary opens <details> and reveals the list via .ud-watch-details[open].
-     R-J round 7 — desktop forces the list open via specificity. */
+/* ── Mobile ≤640px watching disclosure (R-L BLOCKER-1 fix) ─────────────
+   At ≤640px the inline state JS in templates/dashboard.html.j2 removes the
+   `open` attribute on .ud-watch-details so the <summary> disclosure row takes
+   over. The summary chrome shows by default; the list is hidden until the
+   user taps the disclosure row (the UA `:not([open])` rule handles that —
+   CSS cannot override it, which is why the DOM state is the lawful fix). */
+@media (max-width:640px){
   body.page-macro .ud-watch-item{ display:none; }
   body.page-macro .ud-watch-details[open] .ud-watch-item{ display:flex; }
   body.page-macro .ud-watch-summary{
@@ -3067,4 +3071,158 @@ html[data-theme="light"] body.page-macro .ud-arc-stroke{ stroke:var(--up); }
     color:var(--ink-2,var(--muted));
   }
 }
-/* end .ud-hero — UD-B1 §1/§3/§6 */
+
+/* ══════════════════════════════════════════════════════════
+   UD-B2-W1 — Vol-weather sub-row inside the mx5 scorecard
+   (.mx5-sc-left). The fold-in: chips previously lived in
+   #dlg-sentiment as a sibling section; they now live inside
+   the scorecard left column, below its dial + scar chips.
+   Scoped to body.page-macro .mx5-sc-vw so the strip stays a
+   one-off — no global rules. #sx-risk-v2 is not a host.
+
+   Dark treatment: calm/breeze/gust/storm glyphs in their own
+   severity color (--up/info/warn/down), each row on a tinted
+   --panel2 cell with a hairline --line border, eyebrow in
+   --isle-color (the risk token). Reads like an instrument
+   strip on a calm command-center surface.
+
+   Light treatment: same geometry, but every tinted --panel2
+   cell becomes a soft hairline-bordered white card; the
+   glyphs keep their severity colors (they are the same
+   semantic meaning in both themes); the eyebrow ink-3 tone
+   softens so the header doesn't shout against the white
+   panel. The visual identity stays "risk instrument" — not
+   "risk callout" — so a calm day reads as one calm row, not
+   as a louder headline. -#}
+
+/* ── Strip container ── */
+body.page-macro .mx5-sc-vw .sx-vw-strip{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top:10px;
+  padding:10px 12px 12px;
+  border-top:1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  background:color-mix(in srgb, var(--panel2) 56%, transparent);
+  border-radius:inherit;
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-strip{
+  background:color-mix(in srgb, var(--panel2) 30%, var(--panel) 70%);
+  border-top-color:color-mix(in srgb, var(--line) 80%, transparent);
+}
+
+/* ── Eyebrow ── */
+body.page-macro .mx5-sc-vw .sx-vw-eyebrow{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--isle-color, var(--ink-3));
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:2px;
+}
+body.page-macro .mx5-sc-vw .sx-vw-eyebrow::after{
+  content:'';flex:1;height:1px;
+  background:color-mix(in srgb, var(--isle-color, var(--line)) 28%, transparent);
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-eyebrow{
+  color:color-mix(in srgb, var(--isle-color, var(--ink-3)) 92%, transparent);
+}
+
+/* ── Row: glyph · mid · tier ── */
+body.page-macro .mx5-sc-vw .sx-vw-row{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) 70px;
+  align-items:center;
+  gap:10px;
+  padding:6px 8px;
+  border-radius:var(--r-ctl,8px);
+  border:1px solid color-mix(in srgb, var(--line) 55%, transparent);
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02);
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-row{
+  background:color-mix(in srgb, var(--panel) 100%, transparent);
+  border-color:color-mix(in srgb, var(--line) 75%, transparent);
+  box-shadow:0 1px 2px rgba(15,23,42,.04);
+}
+
+/* ── Glyph colour is class-driven (one-integer law: tier-word only, no values) ── */
+body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);
+}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--calm    .sg-wx{color:var(--up,#22c55e);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--quiet   .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--low     .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--normal  .sg-wx{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sg-wx{color:var(--warn,#f59e0b);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--extreme .sg-wx{color:var(--down,#ef4444);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sg-wx{color:var(--muted);opacity:.6;}
+body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx svg{width:18px;height:18px;display:block;}
+
+/* ── Mid column ── */
+body.page-macro .mx5-sc-vw .sx-vw-mid{
+  display:flex;flex-direction:column;gap:2px;min-width:0;
+}
+body.page-macro .mx5-sc-vw .sx-vw-name{
+  font-size:12px;font-weight:700;color:var(--ink-1);
+  line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.page-macro .mx5-sc-vw .sx-vw-read{
+  font-size:11px;line-height:1.45;color:var(--ink-2);
+  /* Wrap, never truncate: the read sentence is the user-facing message; clipping
+     mid-sentence at 390 is unreadable. Names alone get ellipsis if needed. */
+  overflow-wrap:anywhere;
+}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-name{color:var(--text);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-read{color:color-mix(in srgb, var(--text) 78%, transparent);}
+
+/* ── Tier word (right column): calm / breeze / gust / storm. Bilingual side-by-side. ── */
+body.page-macro .mx5-sc-vw .sx-vw-tier{
+  font-size:11px;font-weight:700;text-align:right;letter-spacing:.02em;
+  color:var(--ink-2);
+  display:flex;flex-direction:column;align-items:flex-end;gap:1px;
+  white-space:nowrap;
+}
+body.page-macro .mx5-sc-vw .sx-vw-tier .l-en{font-size:11px;line-height:1.1;}
+body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{font-size:10px;line-height:1.1;color:var(--ink-3);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--calm    .sx-vw-tier{color:var(--up,#22c55e);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--quiet   .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--low     .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--normal  .sx-vw-tier{color:var(--info,#4d8ef5);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--elevated .sx-vw-tier{color:var(--warn,#f59e0b);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--extreme .sx-vw-tier{color:var(--down,#ef4444);}
+body.page-macro .mx5-sc-vw .sx-vw-row.sx-vw-row--young   .sx-vw-tier{color:var(--ink-3);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier{color:color-mix(in srgb, var(--text) 78%, transparent);}
+html[data-theme="light"] body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{color:color-mix(in srgb, var(--text) 55%, transparent);}
+
+/* ── Mobile (≤560px): tighten padding, allow mid column to wrap freely ── */
+@media(max-width:560px){
+  body.page-macro .mx5-sc-vw .sx-vw-strip{padding:8px 10px 10px;}
+  body.page-macro .mx5-sc-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 64px;
+    gap:8px;padding:6px 8px;
+  }
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx{width:22px;height:22px;}
+  body.page-macro .mx5-sc-vw .sx-vw-row .sg-wx svg{width:16px;height:16px;}
+  body.page-macro .mx5-sc-vw .sx-vw-name{font-size:11px;white-space:normal;}
+  body.page-macro .mx5-sc-vw .sx-vw-read{font-size:10.5px;}
+  body.page-macro .mx5-sc-vw .sx-vw-tier{font-size:10px;}
+  body.page-macro .mx5-sc-vw .sx-vw-tier .l-zh{font-size:9px;}
+}
+
+/* Percentile-bar mark moved from dashboard.html.j2 (governed CSS).
+   --r-pill on a 12x12 box is a circle (was 50%). Border is --panel. */
+.sg-pos-mark{
+  position:absolute;top:-3px;width:12px;height:12px;
+  border-radius:var(--r-pill,999px);transform:translateX(-50%);
+  background:var(--muted);border:2px solid var(--panel);
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+}
