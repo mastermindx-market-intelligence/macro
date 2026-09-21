@@ -1982,9 +1982,34 @@
   
   <div id="tm-mount"></div>
   
-<section id="forming-narratives"></section>
-<script src="forming_narratives.js?v=df6bf5cc" defer></script>
-<script>renderFormingNarratives({ base: "basketdata/" });</script>
+<section id="forming-narratives" data-render-state="pending"></section>
+<script id="forming-narratives-runtime" src="forming_narratives.js?v=2e4b21ce" defer></script>
+<script>
+(function () {
+  var sec = document.getElementById('forming-narratives');
+  var runtime = document.getElementById('forming-narratives-runtime');
+  var called = false;
+  function unavailable() {
+    if (!sec || called) return;
+    sec.setAttribute('data-render-state', 'unavailable');
+    sec.innerHTML = '<p class="ne-shell-state panel pad muted sm" role="status" aria-live="polite">'
+      + '<span class="l-en">Forming narratives are temporarily unavailable. Sign in if you have access, or try again later.</span>'
+      + '<span class="l-zh">成形叙事暂不可用。如已有权限请登录，或稍后重试。</span></p>';
+  }
+  function render() {
+    if (called) return;
+    if (typeof window.renderFormingNarratives !== 'function') { unavailable(); return; }
+    called = true;
+    if (sec) sec.setAttribute('data-render-state', 'ready');
+    window.renderFormingNarratives({ base: "basketdata/" });
+  }
+  if (typeof window.renderFormingNarratives === 'function') render();
+  else if (runtime && (runtime.defer || runtime.hasAttribute('defer'))) {
+    runtime.addEventListener('load', render, { once: true });
+    runtime.addEventListener('error', unavailable, { once: true });
+  } else unavailable();
+})();
+</script>
 
   <!-- W2a: hidden live-price spans for basket members so build_live_quotes.scrape_site_symbols
        picks up all ~683 member tickers from this top-level site/baskets.html file.
@@ -3013,7 +3038,7 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
 })();
 </script>
 
-<script src="si_workspace.js?v=9d4d6860" defer></script>
+<script src="si_workspace.js?v=d9458f79" defer></script>
 <script>
 (function(){
   'use strict';

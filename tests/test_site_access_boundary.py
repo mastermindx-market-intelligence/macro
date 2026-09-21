@@ -112,6 +112,39 @@ def test_biocatalyst_shell_assets_are_public_but_payload_api_stays_paid():
     assert "enforce_site_full" in api_source
 
 
+def test_sector_interactive_shell_code_is_public_but_payloads_stay_gated():
+    """Anonymous Sector Intelligence gets its execution shell, never its paid payloads."""
+    shell = {"/si_workspace.js", "/forming_narratives.js"}
+    protected = {
+        "/sector_central_data.js",
+        "/sector_cycles_data.js",
+        "/mm_charts.js",
+        "/sector_cycles.js",
+    }
+    public_exact = set(POLICY["public"]["exact"])
+
+    assert shell <= public_exact
+    assert protected.isdisjoint(public_exact)
+    assert shell <= _caddy_public_exclusions()
+
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "Caddy matcher @reg_asset_err missing"
+    assert shell <= set(shlex.split(error_matcher.group(1)))
+
+    for matcher in ("public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, f"Caddy matcher @{matcher} missing"
+        paths = {
+            token
+            for path_line in re.findall(r"^\s*path\s+([^\n]+)", block.group(1), flags=re.M)
+            for token in shlex.split(path_line)
+        }
+        assert shell <= paths
+        assert protected.isdisjoint(paths)
+
+
 def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()

@@ -308,7 +308,7 @@ def test_lazy_assets_keep_their_version_stamp() -> None:
 
 def test_cycle_map_trio_is_mounted_by_the_map_view() -> None:
     router = _router()
-    assert "'@cycles'" in router and "function loadCycles()" in router
+    assert "'@cycles'" in router and "function loadCycles(view)" in router
     for f in ("sector_cycles_data.js", "mm_charts.js", "sector_cycles.js"):
         assert f in router
     assert "map:['@cycles']" in router
@@ -550,6 +550,27 @@ def test_no_i18n_macro_inside_an_html_attribute() -> None:
     # and the rail's own label survived as plain text
     nav = re.search(r"<nav class=\"si-side\"[^>]*>", html)
     assert nav and 'aria-label="Sector Intelligence views"' in nav.group(0), nav
+
+
+def test_lazy_asset_load_failure_has_an_explicit_shell_state() -> None:
+    """A gated/missing organ may fail, but the active view must not look inert."""
+    code = _code(_router())
+    assert "addEventListener('error'" in code
+    assert "showAssetFailure" in code
+    assert "si-load-state" in code
+    assert "Sign in if you have access" in code
+    assert "如已有权限请登录" in code
+
+
+def test_generated_router_stamp_matches_changed_asset() -> None:
+    """Immutable CDN URL must move whenever the public router body moves."""
+    import hashlib
+
+    site_copy = ROOT / "site" / "si_workspace.js"
+    digest = hashlib.sha256(site_copy.read_bytes()).hexdigest()[:8]
+    assert f'si_workspace.js?v={digest}' in (ROOT / "site" / "sector_central.html").read_text(
+        encoding="utf-8"
+    )
 
 
 def test_router_asset_is_paired_into_site() -> None:

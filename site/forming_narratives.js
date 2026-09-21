@@ -160,14 +160,51 @@
     return html;
   }
 
+  function shellState(sec, state, en, zh, busy) {
+    sec.style.display = '';
+    sec.setAttribute('data-render-state', state);
+    if (busy) sec.setAttribute('aria-busy', 'true');
+    else sec.removeAttribute('aria-busy');
+    sec.innerHTML = `<p class="ne-shell-state panel pad muted sm" role="status" aria-live="polite">${L(en, zh)}</p>`;
+  }
+
+  function emptyState(sec) {
+    sec.removeAttribute('aria-busy');
+    sec.setAttribute('data-render-state', 'empty');
+    sec.style.display = 'none';
+    sec.innerHTML = '';
+  }
+
   window.renderFormingNarratives = function (opts) {
     const base = (opts && opts.base) || 'basketdata/';
     const sec = document.getElementById('forming-narratives');
     if (!sec) return;
+    shellState(sec, 'loading', 'Loading forming narratives…', '正在加载成形叙事…', true);
     fetch(base + 'narrative_emergence.json', { cache: 'no-store' })
-      .then(r => r.ok ? r.json() : null)
-      .then(d => {
-        if (!d || !(d.narratives || []).length) { sec.style.display = 'none'; return; }
+      .then(r => {
+        if (r.status === 401 || r.status === 403) return { kind: 'denied' };
+        if (r.status === 404) return { kind: 'absent' };
+        if (!r.ok) return { kind: 'error' };
+        return r.json().then(d => ({ kind: 'data', data: d }));
+      })
+      .then(result => {
+        if (!result || result.kind === 'error') {
+          shellState(sec, 'unavailable', 'Forming narratives could not load. Try again later.',
+            '成形叙事加载失败，请稍后重试。', false);
+          return;
+        }
+        if (result.kind === 'denied') {
+          shellState(sec, 'entitled-unavailable',
+            'Forming narratives data is unavailable in this session. Sign in if your plan includes access.',
+            '本次会话无法访问成形叙事数据。如套餐包含此权限，请登录。', false);
+          return;
+        }
+        if (result.kind === 'absent') { emptyState(sec); return; }
+        const d = result.data;
+        if (!d || !(d.narratives || []).length) { emptyState(sec); return; }
+        sec.removeAttribute('aria-busy');
+        sec.setAttribute('data-render-state', 'ready');
+        sec.style.display = '';
         injectStyles();
         const scanNote = L(
           'Scanned ' + (d.n_universe || '—') + ' names as of ' + esc(d.as_of) + '. Scores rank narrative formation, not expected return. A noisy watchlist lens — not a buy list.',
@@ -206,6 +243,7 @@
             setTimeout(() => el.classList.remove('ne-flash'), 1400); }
         }
       })
-      .catch(() => { sec.style.display = 'none'; });
+      .catch(() => shellState(sec, 'unavailable', 'Forming narratives could not load. Try again later.',
+        '成形叙事加载失败，请稍后重试。', false));
   };
 })();

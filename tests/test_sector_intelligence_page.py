@@ -10,6 +10,7 @@ Charter: research/SECTOR_INTELLIGENCE_CONSOLIDATION_MASTERPLAN_BY_FABLE.md §0.
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -174,6 +175,112 @@ def test_forming_narratives_mounted_at_end_of_explore() -> None:
     movement = _view_body(s, "moving")
     assert 'id="tm-mount"' not in movement, "time machine still mounted in MOVEMENT too"
     assert "_forming_narratives" not in movement, "forming panel still in MOVEMENT too"
+
+
+def test_forming_narratives_missing_renderer_fails_soft_with_visible_state() -> None:
+    """A missing optional renderer must not throw and abort the rest of the shell."""
+    partial = _read(TPL / "_forming_narratives.html.j2")
+    assert "typeof window.renderFormingNarratives === 'function'" in partial
+    assert "data-render-state" in partial
+    assert "runtime.defer" in partial
+    assert "addEventListener('load', render" in partial
+    assert "addEventListener('error', unavailable" in partial
+    assert "temporarily unavailable" in partial
+    assert "暂不可用" in partial
+
+
+def test_forming_narratives_generated_hosts_keep_the_deferred_guard() -> None:
+    """The optimized site adds defer, so every committed host must wait for runtime load."""
+    pages = {
+        "baskets_canada.html": "canadabasketdata/",
+        "baskets_hk.html": "hkbasketdata/",
+        "baskets_intl.html": "intlbasketdata/",
+        "sector_central.html": "basketdata/",
+        "sector_central_china.html": "chinabasketdata/",
+    }
+    for name, base in pages.items():
+        html = _read(ROOT / "site" / name)
+        assert 'id="forming-narratives-runtime"' in html
+        assert 'data-render-state="pending"' in html
+        assert "runtime.addEventListener('load', render" in html
+        assert "runtime.addEventListener('error', unavailable" in html
+        assert f'window.renderFormingNarratives({{ base: "{base}" }});' in html
+
+
+def test_forming_narratives_data_failure_is_not_empty_success() -> None:
+    """Denied, delayed, malformed, and transport failures stay visible and typed."""
+    renderer = _read(TPL / "forming_narratives.js")
+    assert "shellState(sec, 'loading'" in renderer
+    assert "aria-busy" in renderer
+    assert "r.status === 401 || r.status === 403" in renderer
+    assert "'entitled-unavailable'" in renderer
+    assert "r.status === 404" in renderer
+    assert "emptyState(sec)" in renderer
+    assert ".catch(() => shellState(sec, 'unavailable'" in renderer
+    assert ".catch(() => { sec.style.display = 'none'; })" not in renderer
+    assert (TPL / "forming_narratives.js").read_bytes() == (
+        ROOT / "site" / "forming_narratives.js"
+    ).read_bytes()
+
+
+def test_forming_narratives_delayed_denied_and_error_states_execute() -> None:
+    """Exercise the renderer without a browser: pending fetch stays loading, then fails visibly."""
+    harness = r"""
+const fs = require('fs');
+const vm = require('vm');
+const path = process.argv[1];
+const sec = {
+  style: {},
+  attrs: {},
+  innerHTML: '',
+  setAttribute(k, v) { this.attrs[k] = String(v); },
+  removeAttribute(k) { delete this.attrs[k]; }
+};
+global.window = global;
+global.document = { getElementById(id) { return id === 'forming-narratives' ? sec : null; } };
+vm.runInThisContext(fs.readFileSync(path, 'utf8'), { filename: path });
+const flush = () => new Promise(resolve => setImmediate(resolve));
+(async () => {
+  let resolveFetch;
+  global.fetch = () => new Promise(resolve => { resolveFetch = resolve; });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  if (sec.attrs['data-render-state'] !== 'loading' || sec.attrs['aria-busy'] !== 'true') throw new Error('delayed-not-loading');
+  resolveFetch({ status: 401, ok: false });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'entitled-unavailable' || sec.attrs['aria-busy']) throw new Error('denied-not-visible');
+
+  global.fetch = () => Promise.reject(new Error('offline'));
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'unavailable' || sec.style.display === 'none') throw new Error('error-hidden');
+
+  global.fetch = () => Promise.resolve({ status: 404, ok: false });
+  window.renderFormingNarratives({ base: 'fixture/' });
+  await flush(); await flush();
+  if (sec.attrs['data-render-state'] !== 'empty' || sec.style.display !== 'none') throw new Error('absent-not-empty');
+})().catch(err => { console.error(err.stack || err); process.exit(1); });
+"""
+    subprocess.run(
+        ["node", "-e", harness, str(TPL / "forming_narratives.js")],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_forming_narratives_hosts_use_current_content_hash() -> None:
+    """The immutable URL must advance with the renderer body."""
+    import hashlib
+
+    digest = hashlib.sha256((ROOT / "site" / "forming_narratives.js").read_bytes()).hexdigest()[:8]
+    for name in (
+        "baskets_canada.html",
+        "baskets_hk.html",
+        "baskets_intl.html",
+        "sector_central.html",
+        "sector_central_china.html",
+    ):
+        assert f"forming_narratives.js?v={digest}" in _read(ROOT / "site" / name)
 
 
 def test_forming_narratives_asset_copied_by_builder() -> None:
