@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T05:37:05.256309+00:00",
-  "count": 2548,
+  "generated_at": "2026-09-21T06:02:07.885274+00:00",
+  "count": 2549,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-iqyilwz1nhs-f45ee9",
+      "title": "South Korea Chip Driven Acceleration in Early September Exports, with a Record High Trade Surplus of US$23bn",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-21T03:22:48Z",
+      "summary_points": [
+        "Record Trade Surplus: South Korea hit a historic $23bn monthly trade surplus (vs $14bn prior), driven by chip exports surging 16.0% mom sa (60% of headline increase) and accelerated overall exports.",
+        "Chip Export Dominance: Semiconductors fueled 60% of the sequential export growth, with chip exports rising 16.0% mom sa, underscoring sector-specific strength amid global demand.",
+        "Near-Term Export Momentum: Workday-adjusted exports showed sharp acceleration in early September (Exhibit 1), signaling sustained export strength beyond the current surplus record."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-23hszonk8iu-92177d",
       "title": "Asia Economics Analyst Korea – Tracking Corporate Cash and Financial market Flows",
