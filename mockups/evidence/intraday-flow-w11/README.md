@@ -14,8 +14,8 @@ Recapture: `python3 mockups/evidence/intraday-flow-w11/capture.py`
 with `See all 12` / `查看全部 12 只`; expansion renders exactly 12 rows. It is
 count-true. It is not 116; 12 is what the fixture actually holds.
 
-Captured 2026-09-21T10:06:38Z at committed head `9218e87936364c6ec2fd6d8382126a26960804a3`
-with empty `git status --porcelain` (rig-enforced). 64 cells, 64 overlay-clean.
+Captured 2026-09-21T10:15:53Z at committed head `c7b30b3723c0348d0abeae927a37887b03b1d27d`
+with empty `git status --porcelain` (rig-enforced). 68 cells, 68 overlay-clean (64 rest/named + 4 See-all hover/focus).
 58 PNGs on disk; the 6-file delta is content-addressed reuse (`f-board-default-*`
 byte-identical to `baseline-board-*`). README cells↔PNGs reconcile 64/64, no orphans.
 
@@ -88,10 +88,10 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 
 | Cell | File | Theme | Lang | Viewport | overlay-clean | In frame |
 |---|---|---|---|---|---|---|
-| `baseline-hero-dark-en-1440` | `7d938bb26399af9b.png` | dark | en | 1440×900 | true | LENS tip 3 rows: quotes · carrying prices / tape · carrying trades / options · carrying flow; stamp all feeds carrying |
-| `baseline-hero-light-en-1440` | `b11a64af9a0aa616.png` | light | en | 1440×900 | true | LENS tip 3 rows on white; act name in spotlight |
-| `baseline-hero-dark-zh-1440` | `b00c745ac0914cda.png` | dark | zh | 1440×900 | true | LENS tip 3 rows: 行情 · 报价已送达 / 资金带 · 成交已送达 / 期权流 · 流数据已送达; 各路数据已送达 |
-| `baseline-hero-light-zh-1440` | `4d85b41d47cbecd9.png` | light | zh | 1440×900 | true | LENS tip 3 rows on white |
+| `baseline-hero-dark-en-1440` | `84c6d9be63d62551.png` | dark | en | 1440×900 | true | LENS tip 3 rows: quotes · carrying prices / tape · carrying trades / options · carrying flow; stamp all feeds carrying |
+| `baseline-hero-light-en-1440` | `548e15d021785485.png` | light | en | 1440×900 | true | LENS tip 3 rows on white; act name in spotlight |
+| `baseline-hero-dark-zh-1440` | `86d644e9aef8e2ca.png` | dark | zh | 1440×900 | true | LENS tip 3 rows: 行情 · 报价已送达 / 资金带 · 成交已送达 / 期权流 · 流数据已送达; 各路数据已送达 |
+| `baseline-hero-light-zh-1440` | `8ff7bdbc2b091e43.png` | light | zh | 1440×900 | true | LENS tip 3 rows on white |
 | `baseline-hero-dark-en-390` | `631fdef71101fad4.png` | dark | en | 390×844 | true | mobile reduction |
 | `baseline-hero-light-en-390` | `4cea328e219ebb5a.png` | light | en | 390×844 | true | mobile reduction |
 | `baseline-hero-dark-zh-390` | `87c7d4a85248adb5.png` | dark | zh | 390×844 | true | mobile reduction |
@@ -104,26 +104,26 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 | `baseline-board-light-en-390` | `8ad8d7bbf4666d27.png` | light | en | 390×844 | true | See-all; chips hidden |
 | `baseline-board-dark-zh-390` | `7e6b8e6e1c24cb3e.png` | dark | zh | 390×844 | true | 查看全部 12 只 |
 | `baseline-board-light-zh-390` | `86226ae3dc61db54.png` | light | zh | 390×844 | true | 查看全部 12 只 |
-| `a-market-open-dark-en-1440` | `2097ec9e824c342d.png` | dark | en | 1440×900 | true | ≥1 act (NVDA Buy now); LENS tip 3 rows |
-| `a-market-open-light-en-1440` | `2c6302dae591450e.png` | light | en | 1440×900 | true | ≥1 act on white |
+| `a-market-open-dark-en-1440` | `1939f1e2cf0c7402.png` | dark | en | 1440×900 | true | ≥1 act (NVDA Buy now); LENS tip 3 rows |
+| `a-market-open-light-en-1440` | `548138571ed5c918.png` | light | en | 1440×900 | true | ≥1 act on white |
 | `a-market-open-dark-zh-1440` | `13d7875faeda840f.png` | dark | zh | 1440×900 | true | 现在买入 |
 | `a-market-open-light-zh-1440` | `e1d8824c16bf2cd6.png` | light | zh | 1440×900 | true | 现在买入 |
-| `b-skeleton-dark-en-1440` | `e84e53375047d3e6.png` | dark | en | 1440×900 | true | r2 wordless skels in hero/spot/board |
-| `b-skeleton-light-en-1440` | `d0802ab69624e150.png` | light | en | 1440×900 | true | skels on white, no glow |
+| `b-skeleton-dark-en-1440` | `45047b9d18afe2d8.png` | dark | en | 1440×900 | true | r2 wordless skels in hero/spot/board |
+| `b-skeleton-light-en-1440` | `20484a9a7c2e1f9f.png` | light | en | 1440×900 | true | skels on white, no glow |
 | `b-skeleton-dark-zh-1440` | `cf2286d191098af7.png` | dark | zh | 1440×900 | true | wordless (bilingual CSS) |
 | `b-skeleton-light-zh-1440` | `8cce5827aee359b4.png` | light | zh | 1440×900 | true | wordless |
 | `b-skeleton-dark-en-390` | `ffbe28d276aba9f0.png` | dark | en | 390×844 | true | mobile skels |
 | `b-skeleton-dark-zh-390` | `102de995e8b3a9ca.png` | dark | zh | 390×844 | true | mobile skels |
 | `c-spotlight-empty-dark-en-1440` | `1e7892b06c1bd97f.png` | dark | en | 1440×900 | true | live empty: No fresh setups (r1 DNT #2) |
-| `c-spotlight-empty-light-en-1440` | `46bc22fd5ed289e8.png` | light | en | 1440×900 | true | same empty on white |
+| `c-spotlight-empty-light-en-1440` | `7733da70eb788881.png` | light | en | 1440×900 | true | same empty on white |
 | `c-spotlight-empty-dark-zh-1440` | `c333d1cfe5a450ee.png` | dark | zh | 1440×900 | true | 当前无新布局 |
 | `c-spotlight-empty-light-zh-1440` | `6abb78c269ae64f5.png` | light | zh | 1440×900 | true | 当前无新布局 |
 | `d-quotes-outage-dark-en-1440` | `5d15ad9148101e0f.png` | dark | en | 1440×900 | true | P0: No read leads; aux cells subordinated (2.4× holding / ceiling-floor / ~call buying stay); stamp prices not coming through; no freshness-claiming live/实时 string; the labelled signal-count 'setups live' is present and seat-ratified 2026-09-11 |
 | `d-quotes-outage-light-en-1440` | `bbd53def78b23acf.png` | light | en | 1440×900 | true | No read leads on white; aux cells muted; ghost/hairline chips; setups live seat-ratified |
 | `d-quotes-outage-dark-zh-1440` | `e46c408a4fa12265.png` | dark | zh | 1440×900 | true | 暂无判断 leads; aux subordinated; 行情数据未送达 |
 | `d-quotes-outage-light-zh-1440` | `f0736b40f6a4b00a.png` | light | zh | 1440×900 | true | 暂无判断 leads; aux muted on white |
-| `e-options-outage-dark-en-1440` | `bf39addb59735cfd.png` | dark | en | 1440×900 | true | stamp `options flow not coming through`; tip rows tape · carrying trades / options · flow not coming through |
-| `e-options-outage-light-en-1440` | `182358df39496cdc.png` | light | en | 1440×900 | true | same headline on white; tip 3 rows |
+| `e-options-outage-dark-en-1440` | `3f262272ab54aa7a.png` | dark | en | 1440×900 | true | stamp `options flow not coming through`; tip rows tape · carrying trades / options · flow not coming through |
+| `e-options-outage-light-en-1440` | `296d08d9ad3d72f9.png` | light | en | 1440×900 | true | same headline on white; tip 3 rows |
 | `e-options-outage-dark-zh-1440` | `bad937e35fd09de7.png` | dark | zh | 1440×900 | true | 期权流数据未送达 |
 | `e-options-outage-light-zh-1440` | `ff08e9bf22a52154.png` | light | zh | 1440×900 | true | 期权流数据未送达 |
 | `f-board-default-dark-en-1440` | `8d74e8e2ac71b0f3.png` | dark | en | 1440×900 | true | Showing 8 of 12 · See all 12 |
@@ -146,7 +146,7 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 | `i-search-narrow-light-en-1440` | `e2dbb0b20459077a.png` | light | en | 1440×900 | true | `1 leader` |
 | `i-search-narrow-dark-zh-1440` | `8a791111e2ee73ed.png` | dark | zh | 1440×900 | true | `共 1 只`; no 查看全部 |
 | `i-search-narrow-light-zh-1440` | `dd8601b83ec11c2e.png` | light | zh | 1440×900 | true | `共 1 只` |
-| `i-search-narrow-dark-en-390` | `e2fe3e9ea3f2556d.png` | dark | en | 390×844 | true | `1 leader` |
+| `i-search-narrow-dark-en-390` | `ea9df260577e8492.png` | dark | en | 390×844 | true | `1 leader` |
 | `i-search-narrow-dark-zh-390` | `19abc900719f4878.png` | dark | zh | 390×844 | true | `共 1 只` |
 | `j-row-expanded-dark-en-1440` | `90012cf6e8e9a0d9.png` | dark | en | 1440×900 | true | Tier-2 detail: VWAP, expected move (day), receipts |
 | `j-row-expanded-light-en-1440` | `58ce3450a58dc129.png` | light | en | 1440×900 | true | detail on white |
@@ -155,4 +155,4 @@ overlay-clean is per-crop (viewport frame after overlay removal).
 
 Volume-column session-anchored tip (`This session's volume vs a normal day at this exact time` / `本时段成交量与同一时段正常水平之比`) lives on the header `help()`; the matrix does not hover that control, so the string is source-proven (r4 whole-template sweep) rather than in-frame. Feed-status tip rows and headlines are in-frame on the hero/outage cells above.
 
-TOKENIZE-7070 recapture at committed head `9218e87936364c6ec2fd6d8382126a26960804a3`; porcelain empty at capture. Content-addressed reuse is honest (cells.json 64 rows, 58 PNGs, 6 shared files, no orphans).
+TOKENIZE-7070 recapture at committed head `c7b30b3723c0348d0abeae927a37887b03b1d27d`; porcelain empty at capture. Content-addressed reuse is honest (cells.json 68 rows, 62 PNGs, content-addressed reuse, no orphans).

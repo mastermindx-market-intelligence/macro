@@ -1,6 +1,6 @@
 {
-  "captured_at": "2026-09-21T10:06:38Z",
-  "capture_sha": "9218e87936364c6ec2fd6d8382126a26960804a3",
+  "captured_at": "2026-09-21T10:15:53Z",
+  "capture_sha": "c7b30b3723c0348d0abeae927a37887b03b1d27d",
   "porcelain_at_capture": "",
   "rig": "S1 fixture-feeds + real body classes (Playwright, overlay hide, __skyDeck, reduced-motion)",
   "overlays_hidden": [
@@ -21,9 +21,9 @@
       "kind": "baseline",
       "state": "baseline",
       "subject": "hero",
-      "file": "7d938bb26399af9b.png",
-      "sha256": "7d938bb26399af9ba605269893754fbf871f8e9b52b15fb01b193482188d91f4",
-      "bytes": 263627,
+      "file": "84c6d9be63d62551.png",
+      "sha256": "84c6d9be63d62551e493da8540e91e33904da4e371c826b5928965c0e1f19726",
+      "bytes": 268338,
       "theme": "dark",
       "locale": "en",
       "viewport": "desktop",
@@ -56,16 +56,17 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-light-en-1440",
       "kind": "baseline",
       "state": "baseline",
       "subject": "hero",
-      "file": "b11a64af9a0aa616.png",
-      "sha256": "b11a64af9a0aa616a28f81210f69ce02da704a678bb76f98fb25dbb658cfd763",
-      "bytes": 236820,
+      "file": "548e15d021785485.png",
+      "sha256": "548e15d0217854858e96e00c98f555c98d41b3acd5e469170d9ad192adcb2d4d",
+      "bytes": 236875,
       "theme": "light",
       "locale": "en",
       "viewport": "desktop",
@@ -98,16 +99,17 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-dark-zh-1440",
       "kind": "baseline",
       "state": "baseline",
       "subject": "hero",
-      "file": "b00c745ac0914cda.png",
-      "sha256": "b00c745ac0914cdad1d1c8ef7474bb5f828a98e33f875898a5e318da8f709946",
-      "bytes": 269074,
+      "file": "86d644e9aef8e2ca.png",
+      "sha256": "86d644e9aef8e2cad21a9f0d3238e614f2fc05b6ec707680c9ca7fb6f6198894",
+      "bytes": 270912,
       "theme": "dark",
       "locale": "zh",
       "viewport": "desktop",
@@ -127,16 +129,17 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-light-zh-1440",
       "kind": "baseline",
       "state": "baseline",
       "subject": "hero",
-      "file": "4d85b41d47cbecd9.png",
-      "sha256": "4d85b41d47cbecd9438ae7824ea37242b97abada4ae4d0243932fe152a12ecd1",
-      "bytes": 239420,
+      "file": "8ff7bdbc2b091e43.png",
+      "sha256": "8ff7bdbc2b091e43c910147df3f052512f00b37baf0072dd4309c6299055ee84",
+      "bytes": 241452,
       "theme": "light",
       "locale": "zh",
       "viewport": "desktop",
@@ -156,7 +159,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-dark-en-390",
@@ -198,7 +202,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-light-en-390",
@@ -240,7 +245,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-dark-zh-390",
@@ -269,7 +275,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-hero-light-zh-390",
@@ -298,7 +305,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-dark-en-1440",
@@ -340,7 +348,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-light-en-1440",
@@ -382,7 +391,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-dark-zh-1440",
@@ -411,7 +421,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-light-zh-1440",
@@ -440,7 +451,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-dark-en-390",
@@ -482,7 +494,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-light-en-390",
@@ -524,7 +537,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-dark-zh-390",
@@ -553,7 +567,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "baseline-board-light-zh-390",
@@ -582,16 +597,17 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "a-market-open-dark-en-1440",
       "kind": "state",
       "state": "a-market-open",
       "subject": null,
-      "file": "2097ec9e824c342d.png",
-      "sha256": "2097ec9e824c342dd2c7a4fdbd042f2ec7679a35d5d2a93867a339eccf965c58",
-      "bytes": 263634,
+      "file": "1939f1e2cf0c7402.png",
+      "sha256": "1939f1e2cf0c74021b8d16d18262084a0fe5cbec21824bff18f5930590b296de",
+      "bytes": 272313,
       "theme": "dark",
       "locale": "en",
       "viewport": "desktop",
@@ -624,16 +640,17 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "a-market-open-light-en-1440",
       "kind": "state",
       "state": "a-market-open",
       "subject": null,
-      "file": "2c6302dae591450e.png",
-      "sha256": "2c6302dae591450ec067c3510de1bb5a19558ef6ca020b41fdc091503fc00c6c",
-      "bytes": 240545,
+      "file": "548138571ed5c918.png",
+      "sha256": "548138571ed5c9180c12faa8913ab68dae447cbcd69c1666ad6a827c1d855fb5",
+      "bytes": 236704,
       "theme": "light",
       "locale": "en",
       "viewport": "desktop",
@@ -666,7 +683,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "a-market-open-dark-zh-1440",
@@ -695,7 +713,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "a-market-open-light-zh-1440",
@@ -724,16 +743,17 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "b-skeleton-dark-en-1440",
       "kind": "state",
       "state": "b-skeleton",
       "subject": null,
-      "file": "e84e53375047d3e6.png",
-      "sha256": "e84e53375047d3e60f60913040b9ba7e1e8dfe9c8094a9a7b921707193b8744c",
-      "bytes": 240055,
+      "file": "45047b9d18afe2d8.png",
+      "sha256": "45047b9d18afe2d8941495b713fc8b136a1136b5f20c2cc085d2fa0747e767af",
+      "bytes": 240106,
       "theme": "dark",
       "locale": "en",
       "viewport": "desktop",
@@ -760,16 +780,17 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "b-skeleton-light-en-1440",
       "kind": "state",
       "state": "b-skeleton",
       "subject": null,
-      "file": "d0802ab69624e150.png",
-      "sha256": "d0802ab69624e150b648582421eccd4748089215f54ab65e937f05ba79a29807",
-      "bytes": 207763,
+      "file": "20484a9a7c2e1f9f.png",
+      "sha256": "20484a9a7c2e1f9feb793b96626143e3cde7cc8fc4b6c2927a0e38521e422627",
+      "bytes": 207693,
       "theme": "light",
       "locale": "en",
       "viewport": "desktop",
@@ -796,7 +817,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "b-skeleton-dark-zh-1440",
@@ -825,7 +847,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "b-skeleton-light-zh-1440",
@@ -854,7 +877,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "b-skeleton-dark-en-390",
@@ -890,7 +914,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "b-skeleton-dark-zh-390",
@@ -919,7 +944,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "c-spotlight-empty-dark-en-1440",
@@ -955,16 +981,17 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "c-spotlight-empty-light-en-1440",
       "kind": "state",
       "state": "c-spotlight-empty",
       "subject": null,
-      "file": "46bc22fd5ed289e8.png",
-      "sha256": "46bc22fd5ed289e8f8a017fb350ddf981d3d3696222c845f68ac6d90e1c6e625",
-      "bytes": 222030,
+      "file": "7733da70eb788881.png",
+      "sha256": "7733da70eb788881a86f2a3256b64f2455d9369901932d6d2d1647da58d26cac",
+      "bytes": 222073,
       "theme": "light",
       "locale": "en",
       "viewport": "desktop",
@@ -991,7 +1018,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "c-spotlight-empty-dark-zh-1440",
@@ -1020,7 +1048,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "c-spotlight-empty-light-zh-1440",
@@ -1049,7 +1078,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "d-quotes-outage-dark-en-1440",
@@ -1085,7 +1115,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "d-quotes-outage-light-en-1440",
@@ -1121,7 +1152,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "d-quotes-outage-dark-zh-1440",
@@ -1150,7 +1182,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "d-quotes-outage-light-zh-1440",
@@ -1179,16 +1212,17 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "e-options-outage-dark-en-1440",
       "kind": "state",
       "state": "e-options-outage",
       "subject": null,
-      "file": "bf39addb59735cfd.png",
-      "sha256": "bf39addb59735cfdbfea8389247a1c9a929cd81a41400b7dba85e56ccec24529",
-      "bytes": 271471,
+      "file": "3f262272ab54aa7a.png",
+      "sha256": "3f262272ab54aa7ad2db74ed159c5f08ae4b947e5203d3f2179c6b504f94cf9d",
+      "bytes": 270838,
       "theme": "dark",
       "locale": "en",
       "viewport": "desktop",
@@ -1221,16 +1255,17 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "e-options-outage-light-en-1440",
       "kind": "state",
       "state": "e-options-outage",
       "subject": null,
-      "file": "182358df39496cdc.png",
-      "sha256": "182358df39496cdc8f135f3f318c193d8946dda7e04bf4b015dbd9d5e594d688",
-      "bytes": 238053,
+      "file": "296d08d9ad3d72f9.png",
+      "sha256": "296d08d9ad3d72f97705c2ee375e834481057fead5ec91b12a65b30e96dc377a",
+      "bytes": 239357,
       "theme": "light",
       "locale": "en",
       "viewport": "desktop",
@@ -1263,7 +1298,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "e-options-outage-dark-zh-1440",
@@ -1292,7 +1328,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "e-options-outage-light-zh-1440",
@@ -1321,7 +1358,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "f-board-default-dark-en-1440",
@@ -1363,7 +1401,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "f-board-default-light-en-1440",
@@ -1405,7 +1444,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "f-board-default-dark-zh-1440",
@@ -1434,7 +1474,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "f-board-default-light-zh-1440",
@@ -1463,7 +1504,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "f-board-default-dark-en-390",
@@ -1505,7 +1547,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "f-board-default-dark-zh-390",
@@ -1534,7 +1577,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "g-board-expanded-dark-en-1440",
@@ -1576,7 +1620,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "g-board-expanded-light-en-1440",
@@ -1618,7 +1663,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "g-board-expanded-dark-zh-1440",
@@ -1647,7 +1693,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "g-board-expanded-light-zh-1440",
@@ -1676,7 +1723,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "g-board-expanded-dark-en-390",
@@ -1718,7 +1766,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "g-board-expanded-dark-zh-390",
@@ -1747,7 +1796,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "h-basket-grid-dark-en-1440",
@@ -1789,7 +1839,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "h-basket-grid-light-en-1440",
@@ -1831,7 +1882,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "h-basket-grid-dark-zh-1440",
@@ -1860,7 +1912,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "h-basket-grid-light-zh-1440",
@@ -1889,7 +1942,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "i-search-narrow-dark-en-1440",
@@ -1931,7 +1985,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "i-search-narrow-light-en-1440",
@@ -1973,7 +2028,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "i-search-narrow-dark-zh-1440",
@@ -2002,7 +2058,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "i-search-narrow-light-zh-1440",
@@ -2031,16 +2088,17 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "i-search-narrow-dark-en-390",
       "kind": "state",
       "state": "i-search-narrow",
       "subject": null,
-      "file": "e2fe3e9ea3f2556d.png",
-      "sha256": "e2fe3e9ea3f2556d1908d892043063bf0cba540a79ed4e867c13c5aa33747d1d",
-      "bytes": 103839,
+      "file": "ea9df260577e8492.png",
+      "sha256": "ea9df260577e8492b863c26b1d6febde696280fb7932a506d9624f20fbe48f5c",
+      "bytes": 103816,
       "theme": "dark",
       "locale": "en",
       "viewport": "mobile",
@@ -2073,7 +2131,8 @@
       "has_dianwang": false,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "i-search-narrow-dark-zh-390",
@@ -2102,7 +2161,8 @@
       "has_dianwang": true,
       "has_see_all": false,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "j-row-expanded-dark-en-1440",
@@ -2150,7 +2210,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "j-row-expanded-light-en-1440",
@@ -2198,7 +2259,8 @@
       "has_dianwang": false,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "j-row-expanded-dark-zh-1440",
@@ -2234,7 +2296,8 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
     },
     {
       "id": "j-row-expanded-light-zh-1440",
@@ -2270,7 +2333,180 @@
       "has_dianwang": true,
       "has_see_all": true,
       "has_act": true,
-      "fixture_n": 12
+      "fixture_n": 12,
+      "force_name": null
+    },
+    {
+      "id": "see-all-hover-dark-en-1440",
+      "kind": "state",
+      "state": "see-all-hover",
+      "subject": null,
+      "file": "cf56509ff7b9253c.png",
+      "sha256": "cf56509ff7b9253c4b0e4ec653dc6e3c6a3f6c91c64f9eb24d3aae44c9d8af95",
+      "bytes": 282499,
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "overlay_clean": true,
+      "overlay_hits": [],
+      "tip_open": false,
+      "body_class": "page-intraday-flow tape-green",
+      "count_label": "Showing 8 of 12 leaders \u00b7 See all 12",
+      "stamp_text": "Board built 10 Sep 11:34pm UTC \u00b7 all feeds carrying?",
+      "live_hits": [
+        {
+          "text": "Each reclaimed a washout on durable volume \u2014 the continuation setups are live.",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        },
+        {
+          "text": "setups live",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        }
+      ],
+      "visible_excerpt": "MASTERMINDX United States \u25be China \u25be Hong Kong \u25be Canada \u25be International \u25be Other Assets \u25be Research \u25be Terminal Market open \u224815-min delayed ? 1 leader is being bought back on real volume. Each reclaimed a washout on durable volume \u2014 the continuation setups are live. 2 setups live buy-now + almost-ready Buy now Almost ready In favour Watch \u2014 don't chase \u26a1 Strongest tape: NVDA \u00b7 2.4\u00d7 normal \u00b7 holding \ud83e\udded ",
+      "has_no_read": false,
+      "has_dianwang": false,
+      "has_see_all": true,
+      "has_act": true,
+      "fixture_n": 12,
+      "force_name": "see-all-hover"
+    },
+    {
+      "id": "see-all-focus-dark-en-1440",
+      "kind": "state",
+      "state": "see-all-focus",
+      "subject": null,
+      "file": "b2dcb3c4d15ff45d.png",
+      "sha256": "b2dcb3c4d15ff45d07d935179a98ec2adf4824160e9a20095f6c7906fcd86f5f",
+      "bytes": 282834,
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "overlay_clean": true,
+      "overlay_hits": [],
+      "tip_open": false,
+      "body_class": "page-intraday-flow tape-green",
+      "count_label": "Showing 8 of 12 leaders \u00b7 See all 12",
+      "stamp_text": "Board built 10 Sep 11:34pm UTC \u00b7 all feeds carrying?",
+      "live_hits": [
+        {
+          "text": "Each reclaimed a washout on durable volume \u2014 the continuation setups are live.",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        },
+        {
+          "text": "setups live",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        }
+      ],
+      "visible_excerpt": "MASTERMINDX United States \u25be China \u25be Hong Kong \u25be Canada \u25be International \u25be Other Assets \u25be Research \u25be Terminal Market open \u224815-min delayed ? 1 leader is being bought back on real volume. Each reclaimed a washout on durable volume \u2014 the continuation setups are live. 2 setups live buy-now + almost-ready Buy now Almost ready In favour Watch \u2014 don't chase \u26a1 Strongest tape: NVDA \u00b7 2.4\u00d7 normal \u00b7 holding \ud83e\udded ",
+      "has_no_read": false,
+      "has_dianwang": false,
+      "has_see_all": true,
+      "has_act": true,
+      "fixture_n": 12,
+      "force_name": "see-all-focus"
+    },
+    {
+      "id": "see-all-hover-light-en-1440",
+      "kind": "state",
+      "state": "see-all-hover",
+      "subject": null,
+      "file": "522851cf012c4961.png",
+      "sha256": "522851cf012c496183ada1ab461ef36562d43e91e62c874446a7e9d5a2f10152",
+      "bytes": 257122,
+      "theme": "light",
+      "locale": "en",
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "overlay_clean": true,
+      "overlay_hits": [],
+      "tip_open": false,
+      "body_class": "page-intraday-flow tape-green",
+      "count_label": "Showing 8 of 12 leaders \u00b7 See all 12",
+      "stamp_text": "Board built 10 Sep 11:34pm UTC \u00b7 all feeds carrying?",
+      "live_hits": [
+        {
+          "text": "Each reclaimed a washout on durable volume \u2014 the continuation setups are live.",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        },
+        {
+          "text": "setups live",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        }
+      ],
+      "visible_excerpt": "MASTERMINDX United States \u25be China \u25be Hong Kong \u25be Canada \u25be International \u25be Other Assets \u25be Research \u25be Terminal Market open \u224815-min delayed ? 1 leader is being bought back on real volume. Each reclaimed a washout on durable volume \u2014 the continuation setups are live. 2 setups live buy-now + almost-ready Buy now Almost ready In favour Watch \u2014 don't chase \u26a1 Strongest tape: NVDA \u00b7 2.4\u00d7 normal \u00b7 holding \ud83e\udded ",
+      "has_no_read": false,
+      "has_dianwang": false,
+      "has_see_all": true,
+      "has_act": true,
+      "fixture_n": 12,
+      "force_name": "see-all-hover"
+    },
+    {
+      "id": "see-all-focus-light-en-1440",
+      "kind": "state",
+      "state": "see-all-focus",
+      "subject": null,
+      "file": "44611c4310804cc7.png",
+      "sha256": "44611c4310804cc7f9123a466bbd11e3bfb8e40e678763d6a979fb503d7c7cfd",
+      "bytes": 257419,
+      "theme": "light",
+      "locale": "en",
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "overlay_clean": true,
+      "overlay_hits": [],
+      "tip_open": false,
+      "body_class": "page-intraday-flow tape-green",
+      "count_label": "Showing 8 of 12 leaders \u00b7 See all 12",
+      "stamp_text": "Board built 10 Sep 11:34pm UTC \u00b7 all feeds carrying?",
+      "live_hits": [
+        {
+          "text": "Each reclaimed a washout on durable volume \u2014 the continuation setups are live.",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        },
+        {
+          "text": "setups live",
+          "in_stamp": false,
+          "tag": "span",
+          "cls": "l-en"
+        }
+      ],
+      "visible_excerpt": "MASTERMINDX United States \u25be China \u25be Hong Kong \u25be Canada \u25be International \u25be Other Assets \u25be Research \u25be Terminal Market open \u224815-min delayed ? 1 leader is being bought back on real volume. Each reclaimed a washout on durable volume \u2014 the continuation setups are live. 2 setups live buy-now + almost-ready Buy now Almost ready In favour Watch \u2014 don't chase \u26a1 Strongest tape: NVDA \u00b7 2.4\u00d7 normal \u00b7 holding \ud83e\udded ",
+      "has_no_read": false,
+      "has_dianwang": false,
+      "has_see_all": true,
+      "has_act": true,
+      "fixture_n": 12,
+      "force_name": "see-all-focus"
     }
   ]
 }

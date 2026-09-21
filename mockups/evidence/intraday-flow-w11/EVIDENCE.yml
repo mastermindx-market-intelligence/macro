@@ -1,7 +1,6 @@
 # Recapture (TOKENIZE-7070, 2026-09-21): capturedAtHead =
-# 9218e87936364c6ec2fd6d8382126a26960804a3. Light post-stack now binds existing
-# theme.css tokens (--ink-link, --muted, --line, --card-shadow, --popover-shadow).
-# porcelain empty at capture. 64/64 overlay-clean.
+# c7b30b3723c0348d0abeae927a37887b03b1d27d. Light post-stack binds existing theme.css tokens.
+# See-all hover/focus captured desktop/en dark+light. porcelain empty.
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/intraday_flow.html.j2
