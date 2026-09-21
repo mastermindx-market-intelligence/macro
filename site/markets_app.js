@@ -510,8 +510,12 @@
     var ps = points.map(function (x) { return x.p; });
     var mean = ps.reduce(function (sum, v) { return sum + v; }, 0) / n;
     var sd = Math.sqrt(ps.reduce(function (sum, v) { return sum + Math.pow(v - mean, 2); }, 0) / n);
-    var highs = points.filter(function (x) { return x.p >= 78; });
-    var lower = points.filter(function (x) { return x.p <= 45; });
+    // Reuse the page's existing zone() boundaries: >=82 is "at the highs";
+    // <42 is below the mid-cycle band. Do not invent a second bucketing scale.
+    var highCut = 82;
+    var lowerCut = 42;
+    var highs = points.filter(function (x) { return x.p >= highCut; });
+    var lower = points.filter(function (x) { return x.p < lowerCut; });
     var engineN = points.filter(function (x) { return x.source === "engine"; }).length;
     var label = sd >= 22 ? t("Wide dispersion", "分化显著")
       : highs.length >= Math.ceil(n * 0.6) ? t("Broadly extended", "整体偏高位")
@@ -562,9 +566,9 @@
     }
     var buckets = document.getElementById("global-regime-pulse-buckets");
     buckets.innerHTML =
-      bucket("Extended", "高位拉伸", points.filter(function (x) { return x.p >= 78; })) +
-      bucket("Mid-cycle", "周期中段", points.filter(function (x) { return x.p > 45 && x.p < 78; })) +
-      bucket("Lower cycle", "周期低位", points.filter(function (x) { return x.p <= 45; }));
+      bucket("At the highs", "高位", points.filter(function (x) { return x.p >= highCut; })) +
+      bucket("Mid / late cycle", "周期中后段", points.filter(function (x) { return x.p >= lowerCut && x.p < highCut; })) +
+      bucket("Lower cycle", "周期低位", points.filter(function (x) { return x.p < lowerCut; }));
 
     host.querySelectorAll("[data-id]").forEach(function (button) {
       button.addEventListener("click", function () {

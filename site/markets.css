@@ -133,8 +133,8 @@
   background: var(--line);
   opacity: .72;
 }
-.grp-track::before { left: 45%; }
-.grp-track::after { left: 78%; }
+.grp-track::before { left: 42%; }
+.grp-track::after { left: 82%; }
 .grp-dot {
   position: absolute;
   top: 50%;

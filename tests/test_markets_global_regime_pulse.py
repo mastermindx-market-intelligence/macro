@@ -51,6 +51,16 @@ def test_global_pulse_uses_cycle_positions_not_us_market_state():
     assert "regField(" not in fn
 
 
+def test_global_pulse_reuses_existing_zone_boundaries():
+    src = APP.read_text(encoding="utf-8")
+    fn = _function_slice(src, "renderGlobalPulse")
+    assert "var highCut = 82;" in fn
+    assert "var lowerCut = 42;" in fn
+    css = CSS.read_text(encoding="utf-8")
+    assert ".grp-track::before { left: 42%; }" in css
+    assert ".grp-track::after { left: 82%; }" in css
+
+
 def test_global_pulse_exposes_mixed_source_provenance():
     src = APP.read_text(encoding="utf-8")
     fn = _function_slice(src, "renderGlobalPulse")
