@@ -314,6 +314,42 @@ def _render(ctx: dict) -> str:
     return tmpl.render(**ctx)
 
 
+def _advanced_ctx(breadth_split=None) -> dict:
+    """Minimal context that keeps advanced.html.j2 from crashing."""
+    return {
+        "latest": {
+            "date": "2026-07-13",
+            "growth_score": 0.1,
+            "growth_confidence": 0.5,
+            "inflation_score": -0.1,
+            "inflation_confidence": 0.5,
+            "preference_check": None,
+        },
+        "generated_utc": "2026-07-13T00:00:00Z",
+        "cross_asset": None,
+        "portfolio": None,
+        "ic_scorecard": None,
+        "components_confirming": [],
+        "components_contradicting": [],
+        "flip_plain": "",
+        "internals": [],
+        "size_style": [],
+        "breadth_div": None,
+        "accumulation": [],
+        "holdings_changes": [],
+        "holdings_threshold": 1,
+        "flows_html": None,
+        "breadth_split": breadth_split,
+    }
+
+
+def _render_advanced(ctx: dict) -> str:
+    """Render advanced.html.j2 — the R6 landing for the breadth-split module."""
+    env = _env()
+    tmpl = env.get_template("advanced.html.j2")
+    return tmpl.render(**ctx)
+
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
@@ -422,57 +458,47 @@ class TestVSBSurfaceBothPayloads:
         assert "data-vsb-chip=" not in html
 
     def test_breadth_split_section_present(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        """UD-B2-W3 R6: the module lives on advanced.html, not the macro dialog."""
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert 'id="vsb-breadth-split-section"' in html, (
-            "AI vs rest section header should render when payload present"
+            "AI vs rest section header should render on advanced.html when payload present"
+        )
+        dash = _render(_base_ctx() | {"breadth_split": _full_breadth_split(spread=25.0)})
+        assert 'id="vsb-breadth-split-section"' not in dash, (
+            "Move, do not duplicate: dashboard.html.j2 must not keep the module"
         )
 
     def test_breadth_split_stance_text(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert "AI names leading" in html
         assert "AI 相关股领涨" in html
 
     def test_breadth_split_receipt_lines(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert 'data-vsb-bs="ai"' in html
         assert 'data-vsb-bs="nonai"' in html
         assert "AI-linked names above their 50-day trend" in html
         assert "Everyone else" in html
 
     def test_card_caveat_renders_when_spread_large(self):
+        """UD-B2-W3 R6: the glance-tier sentiment caveat is relocated with the
+        module. Dashboard must not keep vsb-sentiment-caveat."""
         ctx = _base_ctx()
         ctx["vol_weather"] = _full_vol_weather()
         ctx["breadth_split"] = _full_breadth_split(spread=25.0)
         html = _render(ctx)
-        assert 'id="vsb-sentiment-caveat"' in html, (
-            "Card caveat should render when |spread_50| >= 15"
+        assert 'id="vsb-sentiment-caveat"' not in html, (
+            "Card caveat relocated with census #36; must not remain on the sentiment isle"
         )
-        # Stance text should appear in the caveat
-        assert "AI names leading" in html
 
     def test_circularity_watch_note(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         assert "recycles capital" in html, (
-            "Static circularity-watch note should appear in dialog"
+            "Static circularity-watch note should appear on advanced.html"
         )
 
     def test_cohort_size_note(self):
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=25.0)
-        html = _render(ctx)
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=25.0)))
         # 100 AI-linked names out of 400 tracked
         assert "100" in html
         assert "400" in html
@@ -515,6 +541,11 @@ class TestVSBSurfaceAbsent:
         ctx = _base_ctx()
         html = _render(ctx)
         assert 'id="vsb-breadth-split-section"' not in html
+        # advanced.html keeps the landing (designed-null) so the hero chip
+        # does not 404; the data rows stay absent.
+        adv = _render_advanced(_advanced_ctx(None))
+        assert 'id="vsb-breadth-split-section"' in adv
+        assert 'data-vsb-bs="ai"' not in adv
 
     def test_card_caveat_absent_when_breadth_none(self):
         ctx = _base_ctx()
@@ -541,11 +572,8 @@ class TestVSBSurfaceSmallSpread:
         )
 
     def test_dialog_sections_still_render_when_spread_small(self):
-        """Small spread should not suppress the dialog sections."""
-        ctx = _base_ctx()
-        ctx["vol_weather"] = _full_vol_weather()
-        ctx["breadth_split"] = _full_breadth_split(spread=8.0)
-        html = _render(ctx)
+        """Small spread should not suppress the relocated advanced.html module."""
+        html = _render_advanced(_advanced_ctx(_full_breadth_split(spread=8.0)))
         assert 'id="vsb-breadth-split-section"' in html
 
     def test_negative_spread_also_suppressed(self):

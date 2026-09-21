@@ -187,4 +187,4 @@
 ::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0C-V2-REST-SINGLE-TICKER-DAILY.md: [review-overdue] review_by 2026-08-21 has passed
 ::warning title=agentos-review-overdue::agentos/decisions/DEC-W2C-M0D0-0400Z-SOURCE-SEAL-GO.md: [review-overdue] review_by 2026-08-25 has passed
 ::warning title=agentos-review-overdue::agentos/decisions/DEC-WORKSPACE-SUPERVISION-EXTENDS-EXISTING-AUTONOMY.md: [review-overdue] review_by 2026-09-20 has passed
-agentos: 1165 records (69 workstreams, 330 decisions, 284 discoveries, 482 handoffs) — 0 error(s), 189 warning(s)
+agentos: 1166 records (69 workstreams, 330 decisions, 285 discoveries, 482 handoffs) — 0 error(s), 189 warning(s)

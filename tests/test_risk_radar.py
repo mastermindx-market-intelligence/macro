@@ -705,3 +705,47 @@ def test_gate_latency_daily_tradeoff_excludes_unknown_state_rows():
     out = gl.daily_result(raw_state, gate, labels)
     assert out["raw"]["n"] == out["gated"]["n"] == 2
     assert out["raw"]["confusion"] == {"tp": 1, "fp": 0, "fn": 0, "tn": 1}
+
+def test_episode_warning_path_uses_exact_frozen_anchor():
+    import pytest
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2020-02-17", periods=5))
+    assert atlas._fixed_anchor(idx, "2020-02-19") == pd.Timestamp("2020-02-19")
+    with pytest.raises(ValueError, match="fixed episode anchor"):
+        atlas._fixed_anchor(idx, "2020-02-22")
+
+
+def test_episode_warning_path_persistence_is_about_near_peak_state():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2026-01-01", periods=8))
+    states = pd.Series(
+        ["calm", "watch", "caution", "caution", "elevated", "caution", "calm", "calm"],
+        index=idx,
+    )
+    known = pd.Series(True, index=idx)
+    out = atlas._warning_persistence(states, known, idx, idx[5], -5)
+    assert out["sessions_known"] == 6
+    assert out["warning_sessions"] == 4
+    assert out["loud_sessions"] == 1
+    assert out["warning_fraction"] == round(4 / 6, 4)
+    assert out["consecutive_warning_to_t0"] == 4
+
+
+
+def test_episode_warning_path_preserves_unknown_gate():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    assert atlas._gate_label(pd.NA) == "unknown"
+    assert atlas._gate_label(True) == "open"
+    assert atlas._gate_label(False) == "closed"
+
+
+def test_episode_warning_path_forward_outcomes_use_canonical_grader():
+    from scripts.research import risk_radar_episode_atlas as atlas
+    idx = pd.DatetimeIndex(pd.bdate_range("2026-01-01", periods=30))
+    spy = pd.Series([100., 99., 94., 96., 97.] + [100.] * 25, index=idx)
+    out = atlas._forward_outcomes(idx[0], spy, "caution")
+    assert out is not None
+    assert out["base_px"] == 100.
+    assert out["fwd_dd"]["h5"] == -.06
+    assert out["hit"]["h5"]["dd5"] is True
+    assert "graded_at" not in out

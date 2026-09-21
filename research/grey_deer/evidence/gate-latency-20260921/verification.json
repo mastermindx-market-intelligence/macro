@@ -40,6 +40,12 @@
     "data/yahoo/_VIX3M.parquet": "0304d258dd25725e6a8c03d50ec1e109da5871844bd24cd6f659a972ab3030d1",
     "data/yahoo/_VIX9D.parquet": "2cda964c2314c661b0322ce3aeae7be84cf013656588b51f7c918240258a9d07"
   },
+  "integration": {
+    "reason": "real shared-file collision on tests/test_risk_radar.py with accepted PR 7586",
+    "required_parent": "1dc11fb3eb326393c803bc2eff408db89bb91bc1",
+    "resolution": "history-preserving main join; retained both warning-path and gate-latency tests",
+    "result_sha_unchanged_across_join": "122ae9a6fc0880dee67cadf7ff22f0470ec59776d1cb1e0d8d29a6dbcd47583a"
+  },
   "method": {
     "canonical_population_crosscheck": {
       "full": {
@@ -80,16 +86,16 @@
   "schema": "mastermind.risk_radar_gate_latency_evidence.v1",
   "source_base": "4273786fa0c3a84efed2a793584f740fe110265a",
   "verification": {
-    "agentos": "0 errors; inherited warnings only",
-    "agentos_log_sha256": "c4b4367fc396ecd12bc98206bcf9704520b0c1bc9f6ea730adb6777772379ff2",
+    "agentos": "0 errors; inherited warnings only after integration",
+    "agentos_log_sha256": "493bc2cd713066113cbff72a461b3f20a7a2ab9143d3f20c6550c6e75190a245",
     "diff_check": "pass",
     "focused_method_tests": "7 passed",
-    "owning_suites": "125 passed",
+    "owning_suites": "129 passed after required PR 7586 integration",
     "py_compile": "pass",
     "result_sha256": "122ae9a6fc0880dee67cadf7ff22f0470ec59776d1cb1e0d8d29a6dbcd47583a",
     "run_log_sha256": "1ff72cd896f584c24962ea261c6e0029ea920cbddc34faadb6b2510ce6d2a7f1",
     "script_sha256": "d38afd5dce808425bdd564624fef78af20e0e3487b8671055780ff472df16255",
-    "test_file_sha256": "537af76190d82c4af26d99ad83849af320d90084e97c5d07734f68a2a5706697",
-    "tests_log_sha256": "ccaecc816e6d065f56cf87b37b00e5dc2a3bb7f46fbda3100ae0292da0605c9d"
+    "test_file_sha256": "75236b37a91b38ef220f0f97d863fb351d1f17ba0f9d0e8411aebd4384f4ebaa",
+    "tests_log_sha256": "3bf8c5f2210a1b106c054a9c12203fd06882cc42c58760779dc76cdadc1dd824"
   }
 }
