@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-21T00:01:04.749854+00:00",
-  "count": 2532,
+  "generated_at": "2026-09-21T00:37:04.764937+00:00",
+  "count": 2534,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -92,6 +92,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-ot99l5cnz0h-efc9da",
+      "title": "Deep in the Tranches",
+      "institution": "BTIG",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-20T19:33:14Z",
+      "summary_points": [
+        "Downside Volume Signal: NYSE downside volume (20 DMA) at 54% (12th occurrence since 1996), signaling heightened selling pressure despite SPX only 3% off highs, with historical bearish dates (Mar 2000, Nov 2007, Nov 2021) indicating cycle top risk.",
+        "CCC Spreads at Crisis Levels: Riskiest credit tranches (CCCs) spreads at 9% (widest since 2023), exceeding 2022 bear market depths, with Bloomberg CAA US High Yield OAS signaling deteriorating conditions in vulnerable credit segments.",
+        "Small-Cap Underperformance: RTY/SPX ratio fell ~8% since late June, reflecting small-caps underperforming large-caps due to widening CCC spreads, critical for sector allocation and tactical positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 13,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-eb0kmkgp2hq-ad8357",
       "title": "MS Sunday Start A Fed in Motion",
@@ -610,6 +629,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-qdqd2pbipu8-c30dcb",
+      "title": "UBS Week Ahead",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-19T10:46:15Z",
+      "summary_points": [
+        "Earnings Density & Sector Flows: 10+ results (H1/Q2/FY) across 8 sectors (Banks, Luxury, Retail, Energy) drive institutional flows; concentrated volatility in Banks (3 CMCs), Luxury (3 results), and Retail (2 results) signals near-term valuation shifts.",
+        "Fed Policy Catalysts: Philly Fed Nonmanufacturing (13:30 GMT) and Richmond Fed Manufacturing/Nonmanufacturing (15:00 GMT) critical for US economic momentum, directly shaping Fed policy expectations and USD volatility.",
+        "ECB Central Bank Event: ECB’s Sleijpen and Buch speech in Amsterdam (22 Sep) pivotal for Eurozone monetary policy, cross-asset flows, and policy coordination.",
+        "Fed Speaker Influence: Williams, Hammack, and Paulson (21–22 Sep) addressing inflation, rate decisions, and fintech—key for US monetary policy direction and market positioning.",
+        "Sector Risk Concentration: Banks (3 CMCs), Luxury (3 results), and Retail (2 results) dominate calendar; FY results (Renishaw, Trigano) and Q2 results (Halma, Solaria) signal immediate valuation shifts."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 27,
       "language": "en",
       "needs_metadata": false
     },
