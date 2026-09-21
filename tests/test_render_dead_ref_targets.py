@@ -16,3 +16,5 @@ def test_public_nav_target_and_hk_sector_links_do_not_ship_dead_routes():
     )
     alias = sector_alias.read_text(encoding="utf-8")
     assert "hk_stocks.html#sector-rotation" in alias
+    hk_stocks = (ROOT / "site" / "hk_stocks.html").read_text(encoding="utf-8")
+    assert 'id="sector-rotation"' in hk_stocks

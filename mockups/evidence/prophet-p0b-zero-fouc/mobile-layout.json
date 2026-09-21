@@ -13,7 +13,7 @@
   },
   "browser": {
     "engine": "chromium",
-    "version": "153.0.8010.12"
+    "version": "151.0.7922.34"
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
@@ -521,6 +521,7 @@
     "site/charts.js": "5372d2a229f4d2b16319a2d02c9fb2bfba19ad65c680d415796b12103aeff6ff",
     "site/dashboard-icons.css": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9",
     "site/dashboard-icons.js": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03",
+    "site/favicon.svg": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
     "site/fonts/Inter-400.woff2": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
     "site/fonts/Inter-500.woff2": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
     "site/fonts/Inter-600.woff2": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
@@ -534,14 +535,14 @@
     "site/logo_config.js": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
     "site/mtf.js": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0",
     "site/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
-    "site/navigation-refresh.css": "fed6efbaeb3c5d7941eb4d474a549752d385dc9e50fa4ef2514e98f22c0912f3",
+    "site/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
     "site/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
     "site/stock-dashboard.css": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0",
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "56f6f93366f2e21024b4cd5c971766a7c9506aea49c21b37b428674b8f086819",
     "site/tablesort.js": "484d93337c0288b95b920d82d893600c97d7e4313c715d6bd9263222c9e4cc78",
     "site/theme.css": "62b49cc08ccfd6a7d124d6a415e05f1767f1278f295be4279882cdabdedc2eb7",
-    "site/theme.js": "48082a1e53686c0f8c70fccd5d2d22719dcea3f944ccde9e55e5397d3c4beddc"
+    "site/theme.js": "a5808ca021c7d934fc1bc6ffaa4a8634de49f1d4ef5113a36e5912cc2513d67a"
   },
   "viewport": {
     "width": 390,
@@ -3193,7 +3194,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "5774dae388352e24bcd0da034035efbee358b10ffb4f0d843f2e7f8e578adc40",
+          "sha256": "519858a4c70809d01fafc06838d9c044c91a701a80d8a90d514a54e371c9e28c",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4577,7 +4578,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "6e793cc95d7033f58efec94098199b6a40d0e6408c100b09ca9d998a0e76ab3e",
+          "sha256": "a4dabfb63c0583d3fe842507baeea671d8448d62614c24269f0dedcd5bc3ce13",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -5961,7 +5962,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "15982e871a4853456373bdddb88e1c5a83296e57541e62ff221a9063029a90fb",
+          "sha256": "78215d9f55b6543279d9435757e7fb072acb295c486be1b43c77f921ded57108",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7345,7 +7346,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "bbab19fdb25073eeb60afc805a50f573ec0ddd3a53937783e7228a0059450ab6",
+          "sha256": "99b9fa34d1fa14119df6d2ccd44db0a2158426ad152d946dbd5d1f57d11ea32f",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -8729,7 +8730,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "c0d6e880ddf51e33435b53f2ebfb90cb80f295bf1a678c7ed639859fa8a24341",
+          "sha256": "c7d95f6f6057ad620173317d7732c0ce4d5c758aeae4ca814d0fb9565dd0aea7",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10113,7 +10114,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "faf745be77d76071c87a381eb5e3fc731488cbc2829fb4bbe4a868659db705f5",
+          "sha256": "a5c0ab25fbec18223235ddc826c3181e0215e5f94a0aef306e065b726dbc7afb",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11497,7 +11498,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "c57ab22022320740a71b35391b8a239a60e2e469e1c12db5ea9efdc9507e68f4",
+          "sha256": "8e5c34e9d87a9a9461b724eeed4b81e660efe233fcf635468ec9487c0986f1cc",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -12881,7 +12882,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "60862cebcb1c2da05dbfd037310a2ddfdd08023397b5cf4950f97790536a1db7",
+          "sha256": "5b0766cf156d2f99ddc3c7e3ee35dc11396d2de7219a45ee396f681a7477764d",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
