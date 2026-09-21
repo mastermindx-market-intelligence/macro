@@ -1567,14 +1567,14 @@ def test_ontology_exact_live_mapping_materializes_from_both_query_sides() -> Non
 def test_repository_store_reads_raw_nodes_and_full_lifecycle(monkeypatch) -> None:
     from engine.theme_graph.ontology import RepositoryStore
 
-    calls: list[tuple[str, bool]] = []
+    calls: list[tuple[str, bool, bool]] = []
 
-    def fake_nodes(*, current: bool = False):
-        calls.append(("nodes", current))
+    def fake_nodes(*, current: bool = False, strict: bool = False):
+        calls.append(("nodes", current, strict))
         return []
 
-    def fake_lifecycle(*, latest: bool = True):
-        calls.append(("lifecycle", latest))
+    def fake_lifecycle(*, latest: bool = True, strict: bool = False):
+        calls.append(("lifecycle", latest, strict))
         return []
 
     monkeypatch.setattr(store, "read_nodes", fake_nodes)
@@ -1583,7 +1583,7 @@ def test_repository_store_reads_raw_nodes_and_full_lifecycle(monkeypatch) -> Non
     repository = RepositoryStore()
     assert repository.read_nodes() == []
     assert repository.read_node_lifecycle() == []
-    assert calls == [("nodes", False), ("lifecycle", False)]
+    assert calls == [("nodes", False, True), ("lifecycle", False, True)]
 
 
 def test_ontology_subject_visibility_obeys_birth_and_knowledge_clocks() -> None:
@@ -2558,8 +2558,12 @@ def test_gmi_security_cli_uses_only_native_owner_and_preserves_existing_outputs(
 
 
 def _worklist_rows():
-    return [_ont_proposal(f"prop:{i:016x}", {"local_theme": "ltheme:finviz:ai", "canonical_theme": f"theme:{i}"},
+    from engine.theme_graph import probation
+    rows = [_ont_proposal(f"prop:{i:016x}", {"local_theme": "ltheme:finviz:ai", "canonical_theme": f"theme:{i}"},
         created=f"2026-01-0{i}T00:00:00Z") for i in (1, 2, 3)]
+    for row in rows:
+        row["proposal_id"] = probation.proposal_id(row["kind"], row["subject"])
+    return rows
 
 
 def _worklist(rows=None, **kwargs):
@@ -2599,6 +2603,8 @@ def test_gmi_worklist_cutoff_hides_future_rows_and_decisions(status):
     assert result["items"][0]["proposal"]["note"] == "creation note"
     assert result["items"][0]["proposal"]["adjudicated_at"] is None
     rows[-1]["subject"] = {"future": "changed"}
+    from engine.theme_graph import probation
+    rows[-1]["proposal_id"] = probation.proposal_id(rows[-1]["kind"], rows[-1]["subject"])
     assert _worklist(rows) == result
 
 
@@ -2608,6 +2614,8 @@ def test_gmi_worklist_cutoff_hides_future_rows_and_decisions(status):
 def test_gmi_worklist_exact_filters(filters, expected):
     rows = _worklist_rows()
     rows[1].update(kind="key_rename", proposed_by="refresh_identity")
+    from engine.theme_graph import probation
+    rows[1]["proposal_id"] = probation.proposal_id(rows[1]["kind"], rows[1]["subject"])
     rows[2].update(status="rejected", adjudicated_at="2026-01-05T00:00:00Z")
     result = _worklist(rows, **({"status": "all"} | filters))
     assert result["counts"]["matching"] == expected
@@ -2683,7 +2691,7 @@ def test_gmi_worklist_cli_pages_link_to_existing_exact_review(monkeypatch, tmp_p
     assert result["items"][0]["review_query"]["proposal_id"] == _worklist_rows()[0]["proposal_id"]
     output = tmp_path / "worklist.md"
     assert cli.main(["--asof", "2026-02-01", "--format", "markdown", "--out", str(output)]) == 0
-    assert "prop:0000000000000001" in output.read_text()
+    assert _worklist_rows()[0]["proposal_id"] in output.read_text()
     assert "PROPOSAL_ONLY" in output.read_text()
     original = path.read_bytes()
     assert cli.main(["--asof", "2026-02-01", "--out", str(path)]) == 2
@@ -2884,6 +2892,9 @@ def _inventory_view():
     proposed = _ont_proposal("prop:0000000000000011", {"local_theme": names[1], "canonical_theme": "theme:a"}, created="2026-01-01")
     rejected = _ont_proposal("prop:0000000000000012", {"local_theme": names[2], "canonical_theme": "theme:a"}, created="2026-01-01")
     rejected.update(status="rejected", adjudicated_at="2026-02-01")
+    from engine.theme_graph import probation
+    for row in (proposed, rejected):
+        row["proposal_id"] = probation.proposal_id(row["kind"], row["subject"])
     return _OntologyStore(nodes=nodes, edges=edges, proposals=[proposed, rejected])
 
 
@@ -3019,3 +3030,218 @@ def test_gmi_inventory_cli_json_markdown_and_output_preservation(monkeypatch, tm
     assert cli.main(["--asof", "2026-03-01", "--out", str(out)]) == 2
     assert json.loads(capsys.readouterr().err)["code"] == "ONTOLOGY_INVENTORY_UNAVAILABLE"
     assert not out.exists()
+
+
+# Real file boundaries required by structural and inventory consumers.
+def _gmi_integrity_files(tmp_path, monkeypatch):
+    from engine.theme_graph import store, probation
+    view = _inventory_view()
+    for row in view._proposals:
+        row["proposal_id"] = probation.proposal_id(row["kind"], row["subject"])
+    paths = {}
+    for kind, values, columns in [
+        ("nodes", view._nodes, store.NODE_COLUMNS),
+        ("edges", view._edges, store.EDGE_COLUMNS),
+        ("node_lifecycle", [], store.NODE_LIFECYCLE_COLUMNS),
+    ]:
+        path = tmp_path / (kind + ".parquet")
+        pd.DataFrame(values, columns=columns).to_parquet(path, index=False)
+        monkeypatch.setattr(store, kind + "_path", lambda path=path: path)
+        paths[kind] = path
+    path = tmp_path / "proposals.jsonl"
+    path.write_text("".join(json.dumps(r) + "\n" for r in view._proposals))
+    monkeypatch.setattr(store, "probation_path", lambda: path)
+    paths["proposals"] = path
+    return paths
+
+
+@pytest.mark.parametrize("kind", ["nodes", "edges", "node_lifecycle"])
+@pytest.mark.parametrize("damage", ["truncated", "missing", "wrong_columns"])
+def test_gmi_integrity_graph_file_refuses_before_inventory(tmp_path, monkeypatch, capsys, kind, damage):
+    from scripts import list_theme_ontology as cli
+    paths = _gmi_integrity_files(tmp_path, monkeypatch)
+    path = paths[kind]
+    if damage == "missing": path.unlink()
+    elif damage == "truncated": path.write_bytes(b"PAR1broken")
+    else: pd.DataFrame({"unrelated": [1]}).to_parquet(path, index=False)
+    before = path.read_bytes() if path.exists() else None
+    output = tmp_path / "inventory.json"
+    assert cli.main(["--asof", "2026-03-01", "--out", str(output)]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == "" and not output.exists()
+    assert json.loads(captured.err)["code"] == "ONTOLOGY_INVENTORY_UNAVAILABLE"
+    assert (path.read_bytes() if path.exists() else None) == before
+
+
+def test_gmi_integrity_valid_empty_parquet_is_not_corruption(tmp_path, monkeypatch, capsys):
+    from engine.theme_graph import store
+    from scripts import list_theme_ontology as cli
+    paths = _gmi_integrity_files(tmp_path, monkeypatch)
+    pd.DataFrame(columns=store.EDGE_COLUMNS).to_parquet(paths["edges"], index=False)
+    assert cli.main(["--asof", "2026-03-01"]) == 0
+    captured = capsys.readouterr()
+    result = json.loads(captured.out)
+    assert captured.err == "" and result["counts"]["mapped"] == 0
+    assert result["counts"]["visible"] == 4
+
+
+@pytest.mark.parametrize("damage", ["subject", "kind", "id"])
+def test_gmi_integrity_proposal_payload_identity_refuses(tmp_path, monkeypatch, capsys, damage):
+    from engine.theme_graph import probation
+    from scripts import list_theme_proposals as worklist, query_theme_ontology as review
+    paths = _gmi_integrity_files(tmp_path, monkeypatch)
+    rows = probation.read_proposals(paths["proposals"], strict=True)
+    row = rows[0]; original_id = row["proposal_id"]
+    if damage == "subject": row["subject"]["local_theme"] = "ltheme:finviz:altered"
+    elif damage == "kind": row["kind"] = "split"
+    else: row["proposal_id"] = "prop:" + "0" * 16
+    raw = "".join(json.dumps(r) + "\n" for r in rows); paths["proposals"].write_text(raw)
+    for cli, args in [(worklist, ["--asof", "2026-03-01"]),
+                      (review, ["--proposal-id", original_id, "--asof", "2026-03-01"])]:
+        assert cli.main(args) == 2
+        captured = capsys.readouterr()
+        assert captured.out == "" and "identity" in json.loads(captured.err)["message"]
+    assert paths["proposals"].read_text() == raw
+
+
+# Source-native structural references; never a new classification master.
+def _gmi_structure_view():
+    company = _ont_node("co:us:AAA", "company")
+    sector = _ont_node("basket:baskets:us_sector_tech", "basket", name="Technology")
+    sector["external_ids"] = json.dumps({"suite":"baskets", "basket_id":"us_sector_tech"})
+    other = _ont_node("basket:baskets:us_sector_energy", "basket", name="Energy")
+    other["external_ids"] = json.dumps({"suite":"baskets", "basket_id":"us_sector_energy"})
+    local = _ont_node("ltheme:finviz:ai", "local_theme", name="Technology")
+    local["source_meta"] = json.dumps({"source_family":"finviz_themes", "source_local_id":"ai",
+        "parent_source_key":"Artificial Intelligence", "parent_source_label":"Artificial Intelligence"})
+    theme = _ont_node("theme:ai", "theme")
+    edges = [_ont_edge("e:tech", "MEMBER_OF", company["node_id"], sector["node_id"]),
+             _ont_edge("e:energy", "MEMBER_OF", company["node_id"], other["node_id"]),
+             _ont_edge("e:local", "MEMBER_OF", company["node_id"], local["node_id"]),
+             _ont_edge("e:mapping", "EXPRESSES", local["node_id"], theme["node_id"])]
+    return _OntologyStore(nodes=[company,sector,other,local,theme], edges=edges)
+
+
+def _gmi_structure_owner():
+    return {"unmapped_baskets":[{"id":"us_sector_tech", "reason":"Sector context; not a theme."},
+        {"id":"us_sector_energy", "reason":"Sector context; not a theme."}]}
+
+
+def _gmi_structure(view=None, node_id="co:us:AAA", **kwargs):
+    import importlib.util
+    assert importlib.util.find_spec("engine.theme_graph.structural_navigation"), "structural navigation missing"
+    from engine.theme_graph.structural_navigation import compose_structure
+    from referencing import Registry,Resource
+    result = compose_structure(_gmi_structure_view() if view is None else view, node_id=node_id,
+        asof=kwargs.pop("asof","2026-06-01"), owner_document=kwargs.pop("owner_document",_gmi_structure_owner()),
+        owner_sha256="a"*64, rights_resolver=_ont_rights, **kwargs)
+    root=ROOT/"contracts/theme_graph"
+    existing=json.loads((root/"ontology_neighborhood.v1.schema.json").read_text())
+    registry=Registry().with_resource(existing["$id"],Resource.from_contents(existing))
+    schema=json.loads((root/"structural_context.v1.schema.json").read_text())
+    jsonschema.Draft202012Validator(schema,registry=registry).validate(result)
+    return result
+
+
+def test_gmi_structure_preserves_all_sector_and_local_parent_references():
+    import copy
+    view=_gmi_structure_view(); before=copy.deepcopy(vars(view)); result=_gmi_structure(view)
+    assert [r["basket_id"] for r in result["sector_references"]] == ["us_sector_energy","us_sector_tech"]
+    assert result["counts"] == {"sector_references":2,"source_parent_references":1,"member_queries":0}
+    parent=result["source_parent_references"][0]
+    assert parent["parent_source_key"] == "Artificial Intelligence"
+    assert parent["reference_kind"] == "SOURCE_LOCAL_PARENT_REFERENCE"
+    assert parent["rights"]["public_display_allowed"] is False
+    assert result["historical_classification_claim"] is False
+    assert result["owner_reference_basis"] == "LATEST_STORED_CROSSWALK"
+    assert vars(view) == before
+
+
+def test_gmi_structure_round_trip_sector_members_and_local_mapping():
+    company=_gmi_structure()
+    for ref in company["sector_references"]:
+        sector=_gmi_structure(node_id=ref["node_id"])
+        assert sector["subject_reference"]["basket_id"] == ref["basket_id"]
+        assert sector["member_queries"] == [{"node_id":"co:us:AAA","asof":"2026-06-01","knowledge_cutoff":"2026-06-01"}]
+    local=_gmi_structure(node_id="ltheme:finviz:ai")
+    assert local["neighborhood"]["canonical_mapping"]["theme_node_ids"] == ["theme:ai"]
+    assert len(local["source_parent_references"]) == 1
+    assert local["sector_references"] == []
+
+
+@pytest.mark.parametrize("damage", ["unregistered", "different_suite", "id_mismatch", "name_only"])
+def test_gmi_structure_never_classifies_by_label_or_unregistered_prefix(damage):
+    view=_gmi_structure_view(); owner=_gmi_structure_owner(); sector=view._nodes[1]
+    if damage=="unregistered": owner["unmapped_baskets"] = owner["unmapped_baskets"][1:]
+    elif damage=="different_suite": sector["external_ids"]=json.dumps({"suite":"baskets_hk","basket_id":"us_sector_tech"})
+    elif damage=="id_mismatch": sector["external_ids"]=json.dumps({"suite":"baskets","basket_id":"us_sector_energy"})
+    else: sector["external_ids"]="{}"
+    result=_gmi_structure(view,owner_document=owner)
+    assert [r["basket_id"] for r in result["sector_references"]] == ["us_sector_energy"]
+
+
+@pytest.mark.parametrize("cutoff,asof,expected", [("2026-02-01","2026-06-01",2),("2026-06-01","2026-06-01",1),("2026-06-01","2026-02-01",2)])
+def test_gmi_structure_delegates_membership_clocks_to_existing_reader(cutoff,asof,expected):
+    view=_gmi_structure_view(); correction=dict(view._edges[0])
+    correction.update(valid_to="2026-03-01",belief_time="2026-04-01",computed_at="2026-04-01T00:00:00Z")
+    view._edges.append(correction)
+    assert len(_gmi_structure(view,knowledge_cutoff=cutoff,asof=asof)["sector_references"]) == expected
+
+
+def test_gmi_structure_proposals_never_create_sector_membership():
+    view=_gmi_structure_view(); view._edges=[]
+    view._proposals=[_ont_proposal("prop:0000000000000001",{"company":"co:us:AAA","basket":"basket:baskets:us_sector_tech"})]
+    result=_gmi_structure(view)
+    assert result["sector_references"] == []
+    assert result["coverage"]["industry"]["state"] == "OWNER_NOT_BOUND"
+    assert result["coverage"]["subindustry"]["state"] == "OWNER_NOT_BOUND"
+
+
+@pytest.mark.parametrize("owner", [{},{"unmapped_baskets":None},{"unmapped_baskets":[{"id":"us_sector_tech","reason":"x"}]*2}])
+def test_gmi_structure_ambiguous_owner_is_not_missing_classification(owner):
+    with pytest.raises(ValueError): _gmi_structure(owner_document=owner)
+
+
+def test_gmi_structure_absent_graph_subject_remains_absent():
+    result=_gmi_structure(node_id="co:us:UNKNOWN")
+    assert result["neighborhood"]["availability"]["state"] == "SUBJECT_NOT_FOUND"
+    assert result["sector_references"] == [] and result["source_parent_references"] == []
+
+
+def test_gmi_structure_existing_cli_mode_preserves_output_and_owner_input(monkeypatch,tmp_path,capsys):
+    _gmi_structure()
+    from scripts import query_theme_ontology as cli
+    from engine.theme_graph import structural_navigation as structure
+    owner=tmp_path/"crosswalk.yml";owner.write_text("unmapped_baskets:\n  - id: us_sector_tech\n    reason: Sector context\n")
+    monkeypatch.setattr(structure,"CROSSWALK_PATH",owner)
+    monkeypatch.setattr(cli,"RepositoryStore",_gmi_structure_view)
+    args=["--node-id","co:us:AAA","--asof","2026-06-01","--structure"]
+    assert cli.main(args)==0
+    result=json.loads(capsys.readouterr().out)
+    assert result["sector_references"][0]["basket_id"]=="us_sector_tech"
+    assert cli.main(args+["--format","markdown"])==0
+    assert "OWNER_NOT_BOUND" in capsys.readouterr().out
+    original=owner.read_bytes()
+    assert cli.main(args+["--out",str(owner)])==2
+    assert owner.read_bytes()==original
+    capsys.readouterr();owner.unlink()
+    assert cli.main(args)==2 and capsys.readouterr().out==""
+
+
+
+def test_gmi_structure_parent_family_must_match_the_existing_node_owner():
+    view = _gmi_structure_view()
+    metadata=json.loads(view._nodes[3]["source_meta"])
+    metadata["source_family"]="unrelated_owner"
+    view._nodes[3]["source_meta"]=json.dumps(metadata)
+    with pytest.raises(ValueError,match="source-local"):
+        _gmi_structure(view)
+
+
+@pytest.mark.parametrize("raw", ["unmapped_baskets: []\nunmapped_baskets: []\n", "unmapped_baskets: [", " "*(1024*1024+1)])
+def test_gmi_structure_owner_loader_rejects_ambiguous_or_unreadable_input(monkeypatch,tmp_path,raw):
+    from engine.theme_graph import structural_navigation as module
+    path=tmp_path/"owner.yml";path.write_text(raw)
+    monkeypatch.setattr(module,"CROSSWALK_PATH",path)
+    with pytest.raises(ValueError):module.load_structural_owner()
+    assert path.read_text()==raw

@@ -54,6 +54,7 @@ def compose_worklist(rows, *, asof, knowledge_cutoff=None, status="proposed", ki
         raise ValueError("invalid expected snapshot")
     if offset and expected_snapshot is None:
         raise ValueError("continued pages require the first page snapshot")
+    probation.require_valid_rows(rows)
     visible, seen = [], set()
     for row in rows:
         if not isinstance(row, dict):

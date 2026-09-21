@@ -3,95 +3,110 @@ workstream: WS:GMI-THEME-GRAPH
 session: sol/gmi-d2d-ontology-neighborhood-20260919
 model: sol
 ended_because: context_budget
-mission: Deliver the existing GMI ontology and curation workflow without a second graph, queue, identity or approval
-  authority.
-state_before: Published 567f955c; strict reader/overlap/worklist chain operational; reviewer 4061497674 found object-schema
-  corruption could still appear as absence; no local-concept inventory.
+mission: Deliver the existing GMI ontology and curation workflow without a second graph, queue, identity or
+  approval authority.
+state_before: Published d12e592af4465ee6f9eaf9b222298c999fea82c3; completed local-concept inventory and proposal
+  readers; two returned input-integrity findings; structural references not yet exposed.
 changed:
-- path: engine/theme_graph/probation.py
-  what: Add complete-row contract validation using the existing proposal schema, finite JSON and existing lifecycle
-    rules; no change to forgiving or syntax-only reader defaults.
+- path: engine/theme_graph/structural_navigation.py
+  what: Compose exact crosswalk-registered sector-context baskets and separate source-local parent references
+    over the existing neighborhood reader; no classification master or graph mutation.
+- path: contracts/theme_graph/structural_context.v1.schema.json
+  what: Add a projection referencing existing neighborhood, membership evidence and rights contracts; explicit
+    owner-not-bound industry/subindustry states.
+- path: scripts/query_theme_ontology.py
+  what: Add opt-in --structure and JSON/Markdown to the existing CLI; structure output is exclusive-create,
+    never an input overwrite.
+- path: engine/theme_graph/store.py
+  what: Add opt-in strict parquet reading to existing nodes/edges/lifecycle owners; preserve forgiving defaults
+    and legacy callback shape.
 - path: engine/theme_graph/ontology.py
-  what: Validate the complete canonical proposal snapshot before subject selection or absence; close review finding
-    4061497674.
-- path: engine/theme_graph/ontology_inventory.py
-  what: Discover all exact local graph concepts through existing ontology semantics with owner rights, many-parent
-    mapping, separate proposal state, filters, digest-bound pages and exact drilldown arguments.
-- path: contracts/theme_graph/ontology_inventory.v1.schema.json
-  what: Add a read-only projection contract that references existing node, mapping, curation and rights contracts.
-- path: scripts/list_theme_ontology.py
-  what: Expose the inventory as JSON/Markdown; require owner input files and refuse existing-output overwrite.
+  what: Canonical research adapter requests strict nodes/edges/lifecycle reads; unreadable or missing required
+    inputs cannot become empty graph facts.
+- path: engine/theme_graph/probation.py
+  what: Complete-snapshot validation checks proposal_id against the existing deterministic kind/subject identity.
+- path: engine/theme_graph/proposal_worklist.py
+  what: Use complete owner snapshot validation before selection, keeping worklist and review identity guarantees
+    aligned.
 - path: tests/test_theme_graph_local_plane.py
-  what: Add eight malformed-object review cases and 24 inventory regression cases; retain all previous tests.
+  what: Add 32 integrity/structural/boundary cases; repair raw-reader fixture IDs using the owner generator
+    without removing cutoff, filtering or round-trip assertions.
 verified:
-- claim: Review object-corruption is rejected before absence.
-  command: ontology-inventory-20260921/red-contract.log and green-contract.log
-  result: Five of eight cases reproduced the remaining defect; three already passed. After repair, 18 focused contract/drilldown/default-parity
-    cases pass.
-- claim: The new inventory enforces the frozen D2D boundaries.
-  command: pytest -k gmi_inventory; red-inventory.log / green-inventory.log
-  result: 24 failed before implementation; 24 passed after. Many-parent mapping, no forced labels, cutoff handling,
-    source filtering, stable pages and missing-input distinction covered.
-- claim: The complete selected owner battery remains green.
-  command: Nine-module owner command recorded in owner-results.json
-  result: 672 passed; strict graph audit, selftest and diff-check exit 0. Not whole-repository green.
-- claim: Actual canonical inventory and drilldown work.
-  command: real-inventory-proof.py; real-inventory-verification.json
-  result: 13 subprocess commands exit 0; 644 distinct local nodes across seven pages without omissions/duplicates;
-    61 mapped, 583 unmapped; 438 unmapped nodes lack proposals (315 THS / 123 Finviz). Exact THS and Finviz gaps
-    open through the existing reader.
-- claim: The existing proposal worklist/review/overlap path is preserved.
-  command: real-cli-proof.py; real-cli-verification.json
-  result: 15 commands exit 0; 234 proposals across ten pages; exact Utilities review and both overlap formats still
-    work. All eight canonical input hashes unchanged.
-- claim: Graph and current THS source denominators are distinct observations.
-  command: denominator-reconciliation.json
-  result: Graph has 376 THS nodes; current source map has 375. Graph-only ltheme:ths:309263 remains canonical in
-    the existing graph. Not automatically retired, excluded or mapped.
+- claim: Input integrity failures reproduce and are repaired.
+  command: structural-navigation-20260921/red.log, integrity-green.log, parent-family-red.log and owner-final.log
+  result: 'Initial integrity matrix: 8 failed/5 passed; all now pass. Parent-family mismatch separately reproduced
+    RED and is refused. No tests waived.'
+- claim: Structural navigation is a new working consumer, not a second taxonomy.
+  command: pytest -k gmi_structure; structure-red.log/structure-green.log; owner-final.log
+  result: First 15 structural cases RED then GREEN; four extra boundary cases included in final suite.
+- claim: Selected graph/source/consumer battery passes.
+  command: owner-commands.json owner invocation with pytest-owner-final; owner-final.log/exit
+  result: 704 passed, exit 0; separate identity-owner baseline debt is not part of this selected battery and
+    remains unwaived.
+- claim: Real security-to-structural-reference path is operational.
+  command: python3 structural-navigation-20260921/prove-real.py; real-final.json
+  result: 17 actual CLI commands exit 0; exact SEC:US-XNAS-NVDA resolves to co:us:NVDA, one recorded sector
+    basket and 38 local membership references across 17 source-parent groups. All 11 registered sector baskets
+    open and return member queries.
 unverified:
-- claim: New-head independent review, latest-base integration, binding CI and release.
-  what_would_verify: Exact new-head review and current-base qualification through PR 7462; CI is deferred by Chairman
-    instruction, not waived.
-- claim: Full D2D structural/curation breadth and natural producer acceptance.
-  what_would_verify: Lawful existing structural-owner reference contracts, curated evidence dispositions and the
-    original natural graph proof; downstream D2E/W3B/W3C remain held.
+- claim: Current candidate independent acceptance, latest-base integration and release.
+  what_would_verify: Independent exact-head review, applicable concluded CI and immutable integration proof
+    before any release; Chairman deferred CI waiting, not these gates.
+- claim: Industry/subindustry structural identities and remaining D2D curation breadth.
+  what_would_verify: Bind a qualified incumbent identity owner and evidence-backed curation under existing
+    probation/graph authority; no inferred official classification.
+- claim: Full GMI natural production acceptance.
+  what_would_verify: Existing producer proof and completion of remaining D2D/D2E/W3B/W3C under their current
+    gates.
 unresolved:
-- Four previously reproduced identity-owner baseline failures remain unwaived; not rerun for this read-only increment.
-- Graph-only THS concept 309263 needs owner evidence before any lifecycle change.
-- Historical platform refusal causes remain unknown; no unresolved source effect is known.
+- CI/review/latest-base integration deferred, not waived.
+- Four prior identity-owner baseline failures remain unwaived.
+- Stored THS map has 375 codes versus 376 graph nodes; graph-only ltheme:ths:309263 remains preserved.
+- Two bounded source lookups were platform-blocked with no mutation; internal cause unknown. Broader industry
+  owner discovery remains unqualified.
 next_actions:
-- Advance the next D2D source-native structural-reference/curation slice using existing owners; do not block all
-  build work on CI.
-- Consume exact new-head independent findings; finish latest-base integration and applicable CI adjudication before
+- Continue inventory-gap to evidence-backed curation review for a bounded THS/Finviz cohort using existing
+  proposal identity and graph evidence; do not auto-ratify or force mapping.
+- Consume actual new-head independent review and qualify latest-base integration and applicable checks before
   release.
-- Preserve all existing graph and proposal data; current instruction does not authorize automatic mappings or approvals.
 do_not_redo:
-- Published ontology/history/overlap/count/security/worklist/note implementations and prior strict-reader/drilldown
-  repairs.
-- Completed ontology-inventory slice and 644-node canonical CLI proof unless source, behavior or evidence materially
-  changes.
-- Accepted PIT replay, merged 6809/7458, or a replacement graph/queue/identity/control plane.
+- Original preserved work and published strict reader/worklist/inventory/note/security/history/overlap capabilities.
+- This exact structural navigation and source-integrity repair absent a material invalidator.
+- Merged 6809/7458 and accepted PIT replay; no replacement GMI graph, queue, taxonomy or identity authority.
 danger_areas:
-- Unmapped is lawful, not an instruction to auto-map. Proposal status is not graph truth.
-- 644 is the observed graph denominator, not a quota; preserve the source-map difference.
-- No graph data writes, public display, rankings, sizing, trading or ThemeState authority.
-- Source publication and local proof are not integration, independent acceptance or deployment.
+- Sector-context basket membership is not a complete official issuer classification.
+- Owner reference and source-parent metadata are not historical classification proof; only graph memberships
+  use requested clocks.
+- No public-display, mapping approval, ranking, sizing or trading authority.
+- Never turn unreadable input or changed proposal identity into successful absence.
+- No reset, rebase, force, ancestry-only source merge, duplicated producer or blind retry.
 prs:
 - 7462
 - 6809
 - 7458
 ---
 
-MISSION_COMPLETE: false. FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.
-Sol retains the same Chairman-authorized operation gmi-theme-ontology-d2d-20260827-sol-001, original workspace and PR7462.
-Procedure: protected Mastermind@c49956d14878bd7b9c001258855e12d547596f13, Skillpack1.0.1/bootstrap1; required loaded skills unchanged.
-Chairman explicitly prioritized the next capability over waiting for CI. CI/release gates remain required, not waived; no CI rerun, cancellation or merge arm is authorized by that prioritization.
+MISSION_COMPLETE: false. Sol retains gmi-theme-ontology-d2d-20260827-sol-001, WS:GMI-THEME-GRAPH,
+original workspace/branch and macro PR7462. Protected pin a3bcfdbb4d99f6af7c3a86a7fed730cbd0184465;
+compatible Skillpack1.0.1/bootstrap1. Current laws were fetched from that same commit and compared
+against the preceding compatible pin. Direct owner-seam adjudication was PRINCIPAL_JUDGMENT;
+the bounded repair/build stayed on the incumbent source carrier with LOWER_TOTAL_OVERHEAD.
 
-Evidence root: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/ontology-inventory-20260921/.
-Exact publication SHA and effect receipt belong to the current cumulative PR checkpoint5755209687 and publication.json. This handoff travels with the source commit, without pretending to embed its own future SHA.
-Source before this increment was clean567f955c. The complete input manifest covers eight canonical graph files. No canonical graph/proposal input was rewritten.
-A composite read and an initial large source-authoring call were platform-blocked. Same-host readback found no inventory module and no staged changes from the refused authoring call. The additive schema and subsequent native file writes on the same authorized host/workspace succeeded and their bytes passed tests and real CLI proof. No credential, account, permission or safety-setting change was made. No source mutation remains EFFECT_UNKNOWN.
+Evidence root: /Volumes/Mastermind/agent-evidence/gmi-d2d-takeover-20260920-sol/structural-navigation-20260921/.
+Source-before backups, start.json, owner commands, RED/GREEN logs, real-final.json and reader-regression/
+retain exact inputs and outputs. Final immutable source/publication identities and digests are in
+publication.json and cumulative PR checkpoint5755209687; do not infer publication from this handoff.
+No source write response has been ambiguous. Older refused metadata artifacts were not rewritten.
 
-The changed main materializer normalizes evidence-reference arrays; this is a release-time integration dependency, not a reason to replace the original source carrier. No new integrated-candidate result or current CI success is claimed for this increment.
-The prior identity baseline remains52passed/4failed: frozen2806/2807 counts, bake-source vintage, and VMRK assumptions. Local graph generation remains2026-09-18T17:42:29Z.
-The verified vertical-slice boundary and accumulated tool context justify continuation from this compact state. Full GMI is incomplete. Intended resume: fresh MastermindX continuation from checkpoint5755209687 and minimum fresh canonical sources; no autonomous wake or custody transfer is claimed.
+The structural owner seam is the EXISTING crosswalk's unmapped_baskets us_sector_* namespace,
+identified by D1 source_family_matrix/taxonomy_grain_matrix and explicit current owner entries.
+References additionally require matching graph node_id, basket-kind, suite and basket_id; names,
+sector-leg conventions and unregistered prefixes cannot originate a classification. Finviz parent
+references stay source-local, with original membership evidence/rights and no new parent graph node.
+Missing industry/subindustry binding is explicit OWNER_NOT_BOUND, not an invented classification.
+
+Stored graph generation remains2026-09-18T17:42:29Z. No graph-data or crosswalk write, producer,
+curation act, force mapping, public display or downstream ThemeState/cohort wave was invoked.
+This bounded structural slice is a context-safe continuation boundary, not full D2D acceptance.
+Chairman prioritized build-forward work: CI was not polled or rerun; release stays Draft/HOLD.
+Resume from5755209687 and fresh minimum owner state, not this chat history.

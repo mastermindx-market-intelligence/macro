@@ -208,7 +208,19 @@ def lane_ok(lane: str | None, what: str, *, allow_backfill: bool = False) -> boo
 # Readers
 # ---------------------------------------------------------------------------
 
-def _read(path: Path, columns: tuple[str, ...]) -> pd.DataFrame:
+def _read(path: Path, columns: tuple[str, ...], *, strict: bool = False) -> pd.DataFrame:
+    if strict:
+        # Research readers must distinguish corrupt/missing input from valid emptiness.
+        try:
+            frame = pd.read_parquet(path)
+        except FileNotFoundError:
+            raise
+        except Exception as exc:  # noqa: BLE001 — typed refusal, never an empty fallback
+            raise ValueError(f"unreadable graph input: {path.name}") from exc
+        missing = set(columns) - set(frame.columns)
+        if missing:
+            raise ValueError(f"graph input {path.name} missing columns: {sorted(missing)}")
+        return frame
     if not path.exists():
         return pd.DataFrame(columns=list(columns))
     try:
@@ -218,7 +230,7 @@ def _read(path: Path, columns: tuple[str, ...]) -> pd.DataFrame:
         return pd.DataFrame(columns=list(columns))
 
 
-def read_node_lifecycle(*, latest: bool = True) -> pd.DataFrame:
+def read_node_lifecycle(*, latest: bool = True, strict: bool = False) -> pd.DataFrame:
     """Node lifecycle lineage (V4-D2B3). ``latest`` collapses to the current view (max
     ``computed_at`` per ``node_id``) — the exact ``read_capability``/
     ``read_identity_resolution`` pattern.
@@ -227,7 +239,7 @@ def read_node_lifecycle(*, latest: bool = True) -> pd.DataFrame:
     a status/retire_date tie broken on content would quietly turn a tie into a ratchet
     in whichever direction sorted higher.
     """
-    df = _read(node_lifecycle_path(), NODE_LIFECYCLE_COLUMNS)
+    df = (_read(node_lifecycle_path(), NODE_LIFECYCLE_COLUMNS, strict=True) if strict else _read(node_lifecycle_path(), NODE_LIFECYCLE_COLUMNS))
     if df.empty or not latest:
         return df
     ordered = df.sort_values(["node_id", "computed_at"], kind="stable")
@@ -243,7 +255,7 @@ def read_node_lifecycle(*, latest: bool = True) -> pd.DataFrame:
 RETIRED_LIKE_STATUSES: frozenset[str] = frozenset({"retired", "merged"})
 
 
-def read_nodes(*, current: bool = False) -> pd.DataFrame:
+def read_nodes(*, current: bool = False, strict: bool = False) -> pd.DataFrame:
     """Node rows. ``current=False`` (default) returns the raw write-once table
     byte-identically — every pre-existing consumer is unaffected (R-D2B3-2).
 
@@ -254,10 +266,10 @@ def read_nodes(*, current: bool = False) -> pd.DataFrame:
     only these three columns move, so a caller that wants an active-only population
     must still filter on ``status`` itself (see ``scripts/theme_coverage_gaps.py``).
     """
-    df = _read(nodes_path(), NODE_COLUMNS)
+    df = (_read(nodes_path(), NODE_COLUMNS, strict=True) if strict else _read(nodes_path(), NODE_COLUMNS))
     if not current or df.empty:
         return df
-    lifecycle = read_node_lifecycle(latest=True)
+    lifecycle = read_node_lifecycle(latest=True, strict=strict)
     if lifecycle.empty:
         return df
     overlay = lifecycle.set_index("node_id")[["status", "retire_date", "merged_into"]]
@@ -275,14 +287,14 @@ def read_evidence() -> pd.DataFrame:
     return _read(evidence_path(), EVIDENCE_COLUMNS)
 
 
-def read_edges(*, latest_belief: bool = True) -> pd.DataFrame:
+def read_edges(*, latest_belief: bool = True, strict: bool = False) -> pd.DataFrame:
     """Edges. ``latest_belief`` collapses the history to the current view.
 
     The collapse is max ``belief_time`` per ``edge_id``, breaking ties on the later
     ``computed_at`` and then on ``edge_id`` — deterministic, and never on a magnitude
     (G0.11: nothing in this store may be ordered by a value).
     """
-    df = _read(edges_path(), EDGE_COLUMNS)
+    df = (_read(edges_path(), EDGE_COLUMNS, strict=True) if strict else _read(edges_path(), EDGE_COLUMNS))
     if df.empty or not latest_belief:
         return df
     ordered = df.sort_values(["edge_id", "belief_time", "computed_at"], kind="stable")

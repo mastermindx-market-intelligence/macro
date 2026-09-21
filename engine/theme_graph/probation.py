@@ -176,6 +176,8 @@ def require_valid_rows(rows: list[dict]) -> None:
         errors = validate(row)
         if errors:
             raise ValueError(f"invalid probation proposal at row {position}: {errors}")
+        if row["proposal_id"] != proposal_id(row["kind"], row["subject"]):
+            raise ValueError(f"probation proposal identity payload mismatch at row {position}")
         if row["proposal_id"] in seen:
             raise ValueError(f"duplicate probation proposal identity at row {position}")
         seen.add(row["proposal_id"])

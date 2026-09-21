@@ -34,14 +34,14 @@ class RepositoryStore:
     """Read-only adapter over the canonical Theme Graph owners."""
 
     def read_nodes(self) -> Any:
-        return store.read_nodes(current=False)
+        return store.read_nodes(current=False, strict=True)
 
     def read_node_lifecycle(self) -> Any:
-        return store.read_node_lifecycle(latest=False)
+        return store.read_node_lifecycle(latest=False, strict=True)
 
     def read_edges(self) -> Any:
         # Dual-clock selection must see the append-only belief history.
-        return store.read_edges(latest_belief=False)
+        return store.read_edges(latest_belief=False, strict=True)
 
     def read_proposals(self) -> Any:
         # Canonical research reads must not turn missing/corrupt input into absence.
