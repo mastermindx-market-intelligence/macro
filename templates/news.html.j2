@@ -229,6 +229,9 @@ html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","
 .nx-triage-jump{ display:none; min-height:40px; align-items:center; gap:6px; margin-top:8px; padding:6px 10px;
   border:1px solid var(--nx-hair); border-radius:var(--r-ctl); color:var(--text); font-size:11.5px; font-weight:700; }
 .nx-triage-jump:hover{ border-color:var(--nx-rule); background:var(--nx-card2); }
+/* Gated/grid/flex children must not override native hidden state. */
+#nxIntel[hidden],#nxIntel [hidden],#nxWire[hidden],#nxWire [hidden]{display:none!important}
+#nxIntel[data-state="quiet"] .nxi-health{display:none}
 
 /* ---- FEED — a story list, not a stack of cards ---- */
 .nx-feed{ display:flex; flex-direction:column; }
@@ -762,16 +765,16 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 {# ============================ CONTROLS + FEED ============================ #}
 {% if FEED %}
 <div class="nx-controls" id="nxControls">
-  <div class="seg" id="nxSeg">
-    <button class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
-    <button class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
-    <button class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
-    <button class="seg-btn" data-lane="fed" aria-pressed="false">{{ t('Fed','美联储') }}</button>
-    <button class="seg-btn" data-lane="companies" aria-pressed="false">{{ t('Companies','公司') }}</button>
+  <div class="seg" id="nxSeg" role="group" aria-label="Filter news by topic" data-label-en="Filter news by topic" data-label-zh="按主题筛选新闻">
+    <button type="button" class="seg-btn on" data-lane="all" aria-pressed="true">{{ t('All','全部') }}</button>
+    <button type="button" class="seg-btn" data-lane="markets" aria-pressed="false">{{ t('Markets','市场') }}</button>
+    <button type="button" class="seg-btn" data-lane="macro" aria-pressed="false">{{ t('Macro','宏观') }}</button>
+    <button type="button" class="seg-btn" data-lane="fed" aria-pressed="false">{{ t('Fed','美联储') }}</button>
+    <button type="button" class="seg-btn" data-lane="companies" aria-pressed="false">{{ t('Companies','公司') }}</button>
   </div>
   <div class="nx-search">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" placeholder="Search headlines, tickers…" aria-label="Search news">
+    <input type="search" id="nxSearch" data-ph-en="Search headlines, tickers…" data-ph-zh="搜索标题、代码…" data-label-en="Search news" data-label-zh="搜索新闻" placeholder="Search headlines, tickers…" aria-label="Search news">
   </div>
   <div class="nx-filter-status">
     <span class="nx-count" id="nxCount" aria-live="polite"></span>
@@ -786,9 +789,9 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 <section class="nxi" id="nxIntel" data-state="loading" hidden>
   <div class="nxi-head">
     <div>
-      <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Live story graph','实时事件图谱') }}</div>
+      <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Story updates','事件更新') }}</div>
       <h2 class="nxi-title">{{ t('Intelligence Desk','情报工作台') }}</h2>
-      <p class="nxi-sub">{{ t('One developing story per card — repeated reports merged, source receipts attached, market context checked, and X drafts held for review.','每张卡片对应一个持续发展的事件——合并重复报道、附上来源依据、核对市场背景，并将 X 草稿留待审核。') }}</p>
+      <p class="nxi-sub">{{ t('Developing stories with their sources and market context.','跟踪事件发展、相关来源和市场背景。') }}</p>
     </div>
     <div class="nxi-health">
       <strong id="nxIntelHealth">{{ t('Connecting to the desk','正在连接工作台') }}</strong>
@@ -801,11 +804,11 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     <div class="nxi-metric"><b id="nxiDrafts">—</b><span>{{ t('Draft-ready','草稿就绪') }}</span></div>
     <div class="nxi-metric"><b id="nxiSources">—</b><span>{{ t('Sources in view','当前来源') }}</span></div>
   </div>
-  <div class="nxi-toolbar" id="nxIntelToolbar" hidden>
-    <button class="nxi-filter on" data-intel-filter="all" aria-pressed="true">{{ t('All stories','全部事件') }}</button>
-    <button class="nxi-filter" data-intel-filter="high_impact" aria-pressed="false">{{ t('High impact','高影响') }}</button>
-    <button class="nxi-filter" data-intel-filter="confirmed" aria-pressed="false">{{ t('Confirmed','已确认') }}</button>
-    <button class="nxi-filter" data-intel-filter="draft" aria-pressed="false">{{ t('Draft ready','草稿就绪') }}</button>
+  <div class="nxi-toolbar" id="nxIntelToolbar" role="group" aria-label="Filter stories" data-label-en="Filter stories" data-label-zh="筛选事件" hidden>
+    <button type="button" class="nxi-filter on" data-intel-filter="all" aria-pressed="true">{{ t('All stories','全部事件') }}</button>
+    <button type="button" class="nxi-filter" data-intel-filter="high_impact" aria-pressed="false">{{ t('High impact','高影响') }}</button>
+    <button type="button" class="nxi-filter" data-intel-filter="confirmed" aria-pressed="false">{{ t('Confirmed','已确认') }}</button>
+    <button type="button" class="nxi-filter" data-intel-filter="draft" aria-pressed="false">{{ t('Draft ready','草稿就绪') }}</button>
     <span class="nxi-result-count" id="nxIntelCount" aria-live="polite"></span>
     <button type="button" class="nxi-clear" id="nxIntelClear" hidden>{{ t('Clear filter','清除筛选') }}</button>
     <span class="nxi-toolbar-note">{{ t('Outbound posting is separate and remains review-gated.','对外发布为独立流程，仍需人工审核。') }}</span>
@@ -927,7 +930,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
   {% set acc = 'var(--up)' if (h.event and h.event.direction=='bullish') or h.ai_sentiment=='pos' or h.sentiment=='pos' else ('var(--down)' if (h.event and h.event.direction=='bearish') or h.ai_sentiment=='neg' or h.sentiment=='neg' else 'var(--link)') %}
   <article class="nx-story{{ ' hide' if loop.index0 >= 24 else '' }}" data-lane="{{ h.lane or 'markets' }}"
            data-idx="{{ loop.index0 }}"
-           data-search="{{ ((h.title or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
+           data-search="{{ ((h.title or '') ~ ' ' ~ (h.title_zh or '') ~ ' ' ~ (h.tickers|join(' ') if h.tickers else '') ~ ' ' ~ (h.source_name or h.source or h.domain or ''))|lower|e }}"
            style="--acc:{{ acc }};">
     <div class="nx-story-main">
       <a class="nx-story-title" href="{{ h.url }}" target="_blank" rel="noopener">{{ t(h.title|e, (h.title_zh or h.title)|e) }}</a>
@@ -1061,13 +1064,21 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var d=h/24; return Math.floor(d)+(zh?'天前':'d ago');
   }
   function stamps(){ document.querySelectorAll('.rel-time[data-ts]').forEach(function(el){ el.textContent=rel(el.getAttribute('data-ts')); }); }
-  stamps(); window.addEventListener('langchange', stamps);
+  stamps(); document.addEventListener('langchange', stamps);
 
-  // ---- bilingual search placeholder (set here, never as t() inside an attribute) ----
-  function setPh(){ var s=document.getElementById('nxSearch'); if(!s) return;
+  // ---- bilingual search/group labels (set here, never as t() inside an attribute) ----
+  function setPh(){ var s=document.getElementById('nxSearch');
     var zh=document.documentElement.getAttribute('data-lang')==='zh';
-    s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder; }
-  setPh(); window.addEventListener('langchange', setPh);
+    if(s){
+      s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder;
+      s.setAttribute('aria-label',s.getAttribute(zh?'data-label-zh':'data-label-en') || s.getAttribute('aria-label'));
+    }
+    ['nxSeg','nxIntelToolbar'].forEach(function(id){
+      var el=document.getElementById(id); if(!el) return;
+      el.setAttribute('aria-label',el.getAttribute(zh?'data-label-zh':'data-label-en') || el.getAttribute('aria-label'));
+    });
+  }
+  setPh(); document.addEventListener('langchange', setPh);
 
   // ---- lane + search filter over the ranked feed ----
   var feed=document.getElementById('nxFeed');
@@ -1115,7 +1126,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       if(search) search.focus();
     });
     if(moreBtn) moreBtn.addEventListener('click', function(){ expanded=true; apply(); });
-    window.addEventListener('langchange', apply);
+    document.addEventListener('langchange', apply);
     apply();
   }
 
@@ -1476,7 +1487,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     function stateCopy(kind){
       return ({
         gate:[tx('Sign in to open the Intelligence Desk','登录后查看情报工作台'),
-          tx('The story graph, source receipts, and review drafts are available to registered accounts.','事件图谱、来源依据与审核草稿仅向注册账户开放。')],
+          tx('Sign in to read developing stories and their sources.','登录后可查看正在发展的事件及来源。')],
         down:[tx('The Intelligence Desk is reconnecting','情报工作台正在重新连接'),
           tx('Nothing to do — the live wire and ranked board use separate paths and remain available.','无需操作——实时快讯与排序新闻使用独立路径，仍可继续查看。')],
         quiet:[tx('The desk is quiet','工作台当前平静'),
@@ -1532,7 +1543,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       if(toolbarEl){var allBtn=toolbarEl.querySelector('[data-intel-filter="all"]'); if(allBtn) allBtn.focus();}
     });
     if(moreEl) moreEl.addEventListener('click',function(){expanded=true;render();});
-    window.addEventListener('langchange',function(){
+    document.addEventListener('langchange',function(){
       if(mode==='ok') showDesk({health:health,stories:stories,updated_at:updatedAt});
       else if(stateCopy(mode)) showState(mode);
     });
@@ -1768,8 +1779,8 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 
     var STATE_COPY = {
       gate: { h:['Sign in to see the live wire','登录后查看实时快讯'],
-              s:['The wire is open to every registered account. Your session has ended — sign back in and it picks up where it left off.',
-                 '实时快讯对所有已注册账户开放。您的登录状态已失效——重新登录即可继续查看。'],
+              s:['Sign in to read live headlines.',
+                 '登录后可阅读实时快讯。'],
               cta:['Sign in','登录'] },
       down: { h:['The live wire is not reachable right now','实时快讯暂时无法连接'],
               s:['Nothing to do — the ranked board below is built on a separate path and is current. The wire reconnects on its own.',
@@ -1881,7 +1892,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       var b = e.target.closest && e.target.closest('.seg-btn');
       if(b && mode === 'ok' && items.length) { renderList(); renderMeta(isStale()); }
     });
-    window.addEventListener('langchange', repaint);
+    document.addEventListener('langchange', repaint);
     document.addEventListener('visibilitychange', function(){
       if(document.hidden) return;
       if(mode === 'absent') return;                        // settled: nothing to re-ask
