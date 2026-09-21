@@ -27079,3 +27079,4 @@
 {"series": "BOPTIMP", "group": "fred", "fetch_ts": "2026-09-21T02:41:11.480586+00:00", "last_obs_date": "2026-07-01"}
 {"series": "IR", "group": "fred", "fetch_ts": "2026-09-21T02:41:11.481785+00:00", "last_obs_date": "2026-08-01"}
 {"series": "IQ", "group": "fred", "fetch_ts": "2026-09-21T02:41:11.483004+00:00", "last_obs_date": "2026-08-01"}
+{"series": "gold_china_basis", "group": "gold_china_basis", "fetch_ts": "2026-09-21T06:53:46.641085+00:00", "last_obs_date": "2026-09-18"}

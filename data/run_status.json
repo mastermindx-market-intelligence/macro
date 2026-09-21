@@ -1,5 +1,5 @@
 {
-  "last_run": "2026-09-21T02:50:13.223765+00:00",
+  "last_run": "2026-09-21T06:53:46.644142+00:00",
   "sources": {
     "cot": {
       "source": "cot",
@@ -2202,13 +2202,13 @@
     "gold_china_basis": {
       "source": "gold_china_basis",
       "status": "ok",
-      "rows": 18,
+      "rows": 502,
       "last_date": "2026-09-18",
       "error": null,
       "notes": [],
       "probed_at": null,
-      "elapsed_sec": 3.3,
-      "checked_at": "2026-09-21T02:50:13.224370+00:00"
+      "elapsed_sec": 296.9,
+      "checked_at": "2026-09-21T06:53:46.644167+00:00"
     }
   },
   "circuit_breaker": {
