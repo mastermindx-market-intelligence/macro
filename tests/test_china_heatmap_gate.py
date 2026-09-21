@@ -440,9 +440,15 @@ def test_tile_map_carries_the_free_market_facts():
     assert len(with_px) / len(tiles) > 0.95, "most tiles carry no last price"
     assert len(with_p200) / len(tiles) > 0.8, "most tiles carry no 200-day distance"
     assert all(t["px"] > 0 for t in with_px)
-    # The card renders both from the tile, with the per-ticker file only as the
-    # fallback for maps whose tiles do not carry them (the US map).
-    assert re.search(r"var p2 = t\.p200 != null \? t\.p200 : tech\.pct_vs_200dma", HEATMAP_JS)
+    # The card renders both facts directly from the tile. The per-ticker file
+    # remains a fallback for maps whose tiles do not carry them, but an enhanced
+    # China observation snapshot must not mix in an unbound nightly 200-day fact.
+    assert re.search(
+        r'var p2 = t\.p200 != null \? t\.p200 : '
+        r'\(\(data\.market === ["\']china["\'] && t\.observation\) '
+        r'\? null : tech\.pct_vs_200dma\);',
+        HEATMAP_JS,
+    )
     assert re.search(r"var px = t\.px != null", HEATMAP_JS)
     assert "hm-c-meta" not in TEMPLATE_SRC          # built by the card, not the page
 
