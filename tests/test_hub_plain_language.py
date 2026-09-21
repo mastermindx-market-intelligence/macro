@@ -162,9 +162,11 @@ def test_g_vectors_chips_carry_lens_tips():
     html = bv._g_vectors(
         vm, None, None, {"score": 88, "phase": "late", "label": "healthy"},
         None, None, None, None)
-    assert "Low risk" in html and "低风险" in html
-    assert "Strong up-momentum" in html and "动量偏强向上" in html
-    assert "Healthy · late-cycle" in html and "健康 · 周期晚段" in html
+    # Main later glance copy stays on the face; H1 scale lives in the hover.
+    assert "Risk on" in html and "风险偏好" in html
+    assert "Momentum positive" in html and "动量偏强" in html
+    assert "Bond health" in html and "债券健康" in html
+    assert "Healthy · late-cycle" not in html
     assert "Risk ON · 2" not in html
     assert "Mom 0.63" not in html
     assert "Health 88 · late" not in html
@@ -176,9 +178,10 @@ def test_g_vectors_chips_carry_lens_tips():
     null_html = bv._g_vectors(
         {"risk_on": True, "risk_word": "ON", "risk_index": 2, "momentum": None},
         None, None, None, None, None, None, None)
-    assert "Momentum: no reading yet" in null_html
-    assert "动量：暂无读数" in null_html
+    assert "Momentum unavailable" in null_html
+    assert "动量暂缺" in null_html
     assert ">Momentum<" not in null_html
+    assert "Momentum reading unavailable." in null_html
 
 
 # ---------------------------------------------------------------------------
@@ -309,9 +312,12 @@ def test_ipo_lockup_line_names_the_company_and_the_count():
     })
     assert "SmartRent" in en and "SmartRent" in zh
     assert "SWMR" not in en and "SWMR" not in zh
+    assert en.startswith("Next shares unlock:")
+    assert "Next un-lock" not in en
     assert "15 lock-ups approaching" in en
     assert "临近 15 只解禁" in zh
     assert "15 approaching" not in en
+    assert "coming soon" not in en
 
 
 def test_ipo_lockup_line_falls_back_to_ticker_without_inventing_a_name():
@@ -330,8 +336,11 @@ def test_g_vectors_ipo_line_uses_company_name():
              "next_lockup": "SWMR", "next_lockup_company": "SmartRent",
              "next_lockup_date": "2026-09-20", "lockups_approaching": 15})
     assert "SmartRent" in html
+    assert "Next shares unlock: SmartRent" in html
     assert "15 lock-ups approaching" in html
     assert "SWMR" not in html
+    assert "Next un-lock" not in html
+    assert "coming soon" not in html
 
 
 def test_hub_hero_uses_loading_skeleton_not_em_dash():
@@ -342,28 +351,66 @@ def test_hub_hero_uses_loading_skeleton_not_em_dash():
         commodities={"present": False}, forex={"present": False},
         bonds={"present": False}, etf={"present": False},
         watchlist={"present": False})
+    assert "hub-snapshot-meta" in html
+    assert "hub-live-meta" not in html
     assert "hub-clock-skel" in html
     assert 'class="hub-clock-skel skel"' in html
     assert 'class="hub-clock-static"' in html
+    assert "Latest market snapshot" in html
+    assert "最新市场快照" in html
+    assert 'data-asof="2026-06-14"' in html
+    assert "Jun 14, 2026" in html
+    assert "2026年6月14日" in html
     assert "Live · —" not in html
     assert "实时 · —" not in html
+    assert "Live ·" not in html
+    assert "setInterval" not in html
     assert "hub-clock-wrap" in html
-    assert "is-live" in html  # JS adds the class after the first tick
-    # No-JS / never-ran: the liveness WORD is outside .hub-clock-live so the
-    # CSS that hides the live clock until is-live cannot blank the cell.
+    assert "is-live" in html  # JS adds the class after revealing the baked as-of
+    # No-JS / never-ran: the snapshot WORD is outside .hub-clock-live so the
+    # CSS that hides the live stamp until is-live cannot blank the cell.
     assert ".hub-clock-wrap.is-live .hub-clock-static{display:none}" in html
     assert "@media(scripting:none){.hub-clock-skel{display:none}}" in html
     assert ".sb-tickers-code{font-family:var(--font-mono)}" in html
-    # JS-enabled-but-IIFE-crashed: stamp no-clock, hide skeleton AND the
-    # static "Live" word — failure shows nothing where the clock was.
+    # JS-enabled-but-IIFE-crashed: stamp no-clock, hide skeleton + live stamp,
+    # keep the static snapshot word (a snapshot label is still true without a date).
     assert 'function fail(){if(wrap&&!wrap.classList.contains("is-live"))wrap.classList.add("no-clock");}' in html
     assert "setTimeout(fail,2000);" in html
     assert "}catch(e){fail();}" in html
     assert ".hub-clock-wrap.no-clock .hub-clock-skel" in html
-    assert ".hub-clock-wrap.no-clock .hub-clock-static{display:none}" in html
+    assert ".hub-clock-wrap.no-clock .hub-clock-live{display:none}" in html
+    assert ".hub-clock-wrap.no-clock .hub-clock-static{display:none}" not in html
     # Receipt line is prose in the UI face; mono stays on ticker codes only.
     assert ".ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-size:11.5px;color:var(--muted)}" in html
     assert "ha-read{font-family:var(--font-mono)" not in html
+
+
+def test_reconciled_hub_keeps_snapshot_shell_and_h1_clock_wrap():
+    """RED on pre-merge head 4f0a6d4a5b: that head emitted hub-live-meta + Live
+    and ticked the viewer's clock. origin/main's hub-snapshot-meta had no
+    clock-wrap skeleton. The merge must carry both: main's snapshot shell and
+    H1's clock-wrap states, with a baked civil as-of (no setInterval).
+    """
+    vm = {"risk_on": True, "risk_word": "ON", "risk_index": 2, "momentum": 0.63,
+          "built": "2026-09-18"}
+    html = bv._hub_html(
+        vm, {"label": "Goldilocks", "date": "2026-09-12"}, [],
+        commodities={"present": False}, forex={"present": False},
+        bonds={"present": False}, etf={"present": False},
+        watchlist={"present": False})
+    assert 'class="hub-snapshot-meta"' in html
+    assert "snapshot-dot" in html
+    assert "hub-clock-wrap" in html
+    assert "hub-clock-skel" in html
+    assert "Latest market snapshot" in html
+    assert "最新市场快照" in html
+    assert 'data-asof="2026-09-18"' in html
+    assert "Sep 18, 2026" in html
+    clock_js = html.split("querySelector(\".hub-clock-wrap\")", 1)[-1].split("hub-welcome.js", 1)[0]
+    assert "new Date()" not in clock_js
+    assert "setInterval" not in clock_js
+    assert "livepulse" not in html
+    assert "hub-live-meta" not in html
 
 
 def _what_changed_alert(i=0):

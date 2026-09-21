@@ -2217,13 +2217,13 @@ html[data-lang="zh"] .hub-signin .l-zh{display:inline}
    a focused command surface rather than an accidental collision. */
 .hub-page.nav-search-focus .h{opacity:.12;transform:translateY(5px) scale(.992);filter:saturate(.72)}
 .hub-page.nav-search-focus .globe-deck{opacity:.58;filter:saturate(.68)}
-.hub-live-meta{display:flex;justify-content:center;align-items:center;margin-top:14px}
-.hub-live-meta .eyebrow{margin-bottom:0}
+.hub-snapshot-meta{display:flex;justify-content:center;align-items:center;margin-top:14px}
+.hub-snapshot-meta .eyebrow{margin-bottom:0}
 .hub-clock-wrap{display:inline-flex;align-items:center;gap:.35em;min-height:1em}
 .hub-clock-skel{display:inline-block;width:18ch;height:.85em;vertical-align:-.1em}
 .hub-clock-wrap:not(.is-live) .hub-clock-live{display:none}
 .hub-clock-wrap.is-live .hub-clock-skel,.hub-clock-wrap.is-live .hub-clock-static{display:none}
-.hub-clock-wrap.no-clock .hub-clock-skel,.hub-clock-wrap.no-clock .hub-clock-live,.hub-clock-wrap.no-clock .hub-clock-static{display:none}
+.hub-clock-wrap.no-clock .hub-clock-skel,.hub-clock-wrap.no-clock .hub-clock-live{display:none}
 @media(scripting:none){.hub-clock-skel{display:none}}
 .chips .pill[data-tip-en]{cursor:help}
 /* a soft, feathered radial --bg scrim sits BEHIND the hero text (own stacking
@@ -2235,9 +2235,7 @@ html[data-lang="zh"] .hub-signin .l-zh{display:inline}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted);
  background:color-mix(in srgb,var(--panel) 64%,transparent);border:1px solid var(--line);padding:6px 14px;border-radius:999px;
  margin-bottom:14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.eyebrow .live{width:7px;height:7px;border-radius:50%;background:#22c55e;
- box-shadow:0 0 0 0 color-mix(in srgb,#22c55e 55%,transparent);animation:livepulse 2.4s ease-out infinite}
-@keyframes livepulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,#22c55e 55%,transparent)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.eyebrow .snapshot-dot{width:7px;height:7px;border-radius:50%;background:var(--info)}
 .h h1{font-size:clamp(31px,4.6vw,48px);font-weight:800;letter-spacing:-.035em;line-height:1.04;margin:0 0 10px;
  background:linear-gradient(176deg,var(--text) 24%,color-mix(in srgb,var(--text) 56%,var(--muted)));
  -webkit-background-clip:text;background-clip:text;color:transparent;
@@ -2439,7 +2437,7 @@ a:focus-visible,.links a:focus-visible,.ha-item summary:focus-visible{outline:2p
 .reveal{animation:smReveal .45s cubic-bezier(.2,.7,.3,1) both}
 .state.reveal{animation-delay:0ms} .nav.mk.reveal{animation-delay:70ms} .nav.vc.reveal{animation-delay:120ms} .alerts.reveal{animation-delay:160ms}
 @media (prefers-reduced-motion: reduce){
- .eyebrow .live{animation:none} .reveal{animation:none}
+ .reveal{animation:none}
  .card,.ico,.ha-item summary{transition:none} .card:hover{transform:none}
  .gd-scroll,.gd-scroll::before,.gd-scroll::after,.gd-scroll-chev svg{animation:none}}
 
@@ -2529,7 +2527,6 @@ html[data-theme="light"] .gd-isl .body:hover,html[data-theme="light"] .gd-isl .b
 .gd-isl .isl-px{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:1px}
 html.soft-contrast[data-theme="light"]{--bg:#eceef1;--panel:#f5f5f7;--panel2:#e8eaed;--text:#2e3950;--muted:#4c5a6c;--line:#d0d4db;--glass-bg:color-mix(in srgb,#f5f5f7 64%,transparent);--glass-brd:color-mix(in srgb,#2e3950 9%,transparent);--card-shadow:0 1px 3px rgba(20,30,50,.05)}
 html.soft-contrast[data-theme="dark"]{--bg:#0d1018;--panel:#151820;--panel2:#1b1f28;--text:#c8d0dc;--line:#262c38}
-@media(max-width:560px){.h .eyebrow{display:none}}
 @media(max-width:560px){.gd-isl .body{gap:6px;padding:5px 10px 5px 8px} .gd-isl .isl-chg{font-size:12px} .gd-isl .isl-px{display:none} .gd-isl .isl-flag{font-size:14px}}
 @media(max-width:560px){.gd-isl .body{overflow:visible}.gd-isl .body::after{content:'';position:absolute;inset:-10px;height:auto;width:auto;border-radius:0;background:transparent;box-shadow:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.gd-isl .glow,.gd-isl .isl-sem.open{animation:none}}
@@ -2847,7 +2844,7 @@ _GLOBE_DECK_DOM = r"""<section class="globe-deck command" aria-label="Global mac
 _HUB_SEG_HTML = """<div class="hub-seg" role="group" aria-label="Sections / 版块">
 <span class="hub-seg-ind" aria-hidden="true"></span>
 <button class="hub-seg-btn on" type="button" aria-pressed="true" data-v="mk"><span class="l-en">Markets</span><span class="l-zh">市场</span></button>
-<button class="hub-seg-btn" type="button" aria-pressed="false" data-v="vc"><span class="l-en">Other Features</span><span class="l-zh">其他功能</span></button>
+<button class="hub-seg-btn" type="button" aria-pressed="false" data-v="vc"><span class="l-en">Explore</span><span class="l-zh">探索</span></button>
 </div>"""
 
 _GQUAD_ZH = {"Goldilocks": "理想增长", "Reflation": "再通胀", "Stagflation": "滞胀",
@@ -3278,8 +3275,9 @@ def _hub_ipo_lockup_line(ipo: dict) -> tuple[str, str] | None:
     name = _esc(company or ticker)
     date = str(ipo.get("next_lockup_date") or "")
     md = _esc(date[5:] if len(date) >= 10 else date)
-    en = "🔓 Next un-lock: " + name + ((" " + md) if md else "")
-    zh = "🔓 下一解禁：" + name + ((" " + md) if md else "")
+    # Main's later verb ("Next shares unlock") + H1 company name and lock-up noun.
+    en = "Next shares unlock: " + name + ((" " + md) if md else "")
+    zh = "下一解禁：" + name + ((" " + md) if md else "")
     n = ipo.get("lockups_approaching")
     if n:
         en += " · " + str(n) + " lock-ups approaching"
@@ -3291,8 +3289,13 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
                latest_report: "dict | None" = None, ipo: "dict | None" = None):
     risk_cls = "on" if vm["risk_on"] else "off"
     mom_cls = "neg" if (vm.get("momentum") is not None and vm["momentum"] < 0) else ""
-    fav = ", ".join((commodities or {}).get("favored", []))
-    b_score = (bonds or {}).get("score")
+    _favored = list((commodities or {}).get("favored", []))
+    fav = ", ".join(_favored)
+    _COMMODITY_ZH = {
+        "Gold": "黄金", "Silver": "白银", "Copper": "铜", "Oil": "原油",
+        "Crude Oil": "原油", "Natural Gas": "天然气",
+    }
+    fav_zh = ", ".join(_COMMODITY_ZH.get(x, x) for x in _favored)
     fx_risk = (forex or {}).get("risk", "")
 
     def card(cls, ic, h_en, h_zh, h_en_s, h_zh_s, body, go_en, go_zh, href, attrs=""):
@@ -3301,31 +3304,41 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
                 '<h3 class="card-h"><span class="ch-full">' + _bi(h_en, h_zh) + '</span><span class="ch-mini">' + _bi(h_en_s, h_zh_s) + '</span></h3></div>' + body
                 + '<span class="go"><span class="go-tx">' + _bi(go_en, go_zh) + '</span></span></a>')
 
-    r_en, r_zh, r_tip_en, r_tip_zh = _hub_risk_chip(vm)
-    m_en, m_zh, m_tip_en, m_tip_zh = _hub_mom_chip(vm)
-    btc = ('<div class="bar b-risk"><i style="width:' + str(vm["risk_index"]) + '%"></i></div>'
-           '<div class="chips"><span class="pill ' + risk_cls + '"'
-           + _tip_attrs(r_tip_en, r_tip_zh) + '>' + _bi(r_en, r_zh)
-           + '</span><span class="pill ' + mom_cls + '"'
-           + _tip_attrs(m_tip_en, m_tip_zh) + '>' + _bi(m_en, m_zh)
-           + '</span></div>')
-    bd_bar = ('<div class="bar b-health"><i style="width:' + str(b_score) + '%"></i></div>') if b_score is not None else ""
-    health = _hub_health_chip(bonds)
-    if health is None:
-        bd_pill = _bi("Bond health", "债券健康")
-        bd_tip = ""
+    # Main later glance ("Risk on" / "Momentum positive") stays the card face;
+    # H1 scale readings live in the hover, never as raw rest-state chips.
+    _, _, r_tip_en, r_tip_zh = _hub_risk_chip(vm)
+    _, _, m_tip_en, m_tip_zh = _hub_mom_chip(vm)
+    _risk_en = "Risk on" if vm["risk_on"] else "Risk off"
+    _risk_zh = "风险偏好" if vm["risk_on"] else "风险规避"
+    _mom = vm.get("momentum")
+    if _mom is None:
+        _mom_en, _mom_zh = "Momentum unavailable", "动量暂缺"
+    elif _mom > 0:
+        _mom_en, _mom_zh = "Momentum positive", "动量偏强"
+    elif _mom < 0:
+        _mom_en, _mom_zh = "Momentum negative", "动量偏弱"
     else:
-        h_en, h_zh, h_tip_en, h_tip_zh = health
-        bd_pill = _bi(h_en, h_zh)
-        bd_tip = _tip_attrs(h_tip_en, h_tip_zh)
-    bd = bd_bar + '<div class="chips"><span class="pill"' + bd_tip + '>' + bd_pill + '</span></div>'
+        _mom_en, _mom_zh = "Momentum flat", "动量持平"
+    btc = ('<div class="chips"><span class="pill ' + risk_cls + '"'
+           + _tip_attrs(r_tip_en, r_tip_zh) + '>' + _bi(_risk_en, _risk_zh)
+           + '</span><span class="pill ' + mom_cls + '"'
+           + _tip_attrs(m_tip_en, m_tip_zh) + '>' + _bi(_mom_en, _mom_zh)
+           + '</span></div>')
+    # The full bond score/phase remains on the bonds page; the home card only needs
+    # to tell a reader what they will find there. Raw score + unlabeled bar was
+    # decoration on the glance tier and could leak untranslated phase strings in ZH.
+    # H1 scale/phase copy is the hover, not the glance face.
+    health = _hub_health_chip(bonds)
+    bd_tip = _tip_attrs(health[2], health[3]) if health is not None else ""
+    bd = '<div class="chips"><span class="pill"' + bd_tip + '>' + _bi("Bond health", "债券健康") + '</span></div>'
     com_label = (commodities or {}).get("label", "—")
     com_q = _GQUAD_CLS.get(com_label, "")   # tint the pill by regime quadrant (was a no-op guard)
     # zh users previously saw the English regime word ("Goldilocks") — translate it
     com = ('<div class="chips"><span class="pill ' + com_q + '">' + _bi(com_label, _GQUAD_ZH.get(com_label, com_label))
-           + '</span>' + ('<span class="pill">' + _bi("Favored: " + fav, "偏好：" + fav) + '</span>' if fav else "") + '</div>')
+           + '</span>' + ('<span class="pill">' + _bi("Favored: " + fav, "偏好：" + fav_zh) + '</span>' if fav else "") + '</div>')
     _FX_LABEL_ZH = {
         "US growth premium": "美元增长溢价",
+        "Global reflation": "全球再通胀",
         "risk-on": "风险偏好",
         "risk-off": "风险厌恶",
         "neutral": "中性",
@@ -3338,10 +3351,10 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
         _fx_label_zh + ((" · " + _fx_risk_zh) if _fx_risk_zh else ""),
     ) + '</span></div>'
     term = '<div class="chips"><span class="pill on">' + _bi("Trading charts", "交易图表") + '</span><span class="pill">' + _bi("Live terminal", "实时终端") + '</span></div>'
-    crypto = '<div class="chips"><span class="pill on">' + _bi("50-asset board", "50项资产看板") + '</span><span class="pill">' + _bi("Flows & leverage", "资金流与杠杆") + '</span></div>'
-    cyc = '<div class="chips"><span class="pill">' + _bi("Cycle clocks", "周期时钟") + '</span><span class="pill">' + _bi("Country regimes", "国家周期") + '</span></div>'
-    sec_us = '<div class="chips"><span class="pill">' + _bi("US sectors", "美股行业") + '</span><span class="pill">' + _bi("Rotation desk", "轮动面板") + '</span></div>'
-    sec_cn = '<div class="chips"><span class="pill">' + _bi("CN sectors", "中国行业") + '</span><span class="pill">' + _bi("Rotation desk", "轮动面板") + '</span></div>'
+    crypto = '<div class="chips"><span class="pill on">' + _bi("50 major assets", "50项主要资产") + '</span><span class="pill">' + _bi("Flows & leverage", "资金流与杠杆") + '</span></div>'
+    cyc = '<div class="chips"><span class="pill">' + _bi("Cycle timing", "周期节奏") + '</span><span class="pill">' + _bi("Country regimes", "国家周期") + '</span></div>'
+    sec_us = '<div class="chips"><span class="pill">' + _bi("US sectors", "美股行业") + '</span><span class="pill">' + _bi("Sector rotation", "行业轮动") + '</span></div>'
+    sec_cn = '<div class="chips"><span class="pill">' + _bi("CN sectors", "中国行业") + '</span><span class="pill">' + _bi("Sector rotation", "行业轮动") + '</span></div>'
     rep = '<div class="chips"><span class="pill">' + _bi("Research library", "研究库") + '</span><span class="pill">' + _bi("Deep dives", "深度报告") + '</span></div>'
     if latest_report:
         _rdate = latest_report["date"]
@@ -3385,23 +3398,23 @@ def _g_vectors(vm, commodities, forex, bonds, crossasset, etf, strategies, watch
         ipo_body = ('<div class="chips"><span class="pill ' + _bcls + '">' + _bi(_bw_en, _bw_zh) + '</span>'
                     '<span class="pill">' + _bi(_ist_en, _ist_zh) + '</span></div>'
                     + _aft + _cliff)
-        ipo_card = card("ipo", "🚀", "IPO Radar", "新股雷达", "IPO", "新股", ipo_body,
-                        "New-issue window & lock-up cliffs", "新股窗口与解禁日历", "ipo.html")
+        ipo_card = card("ipo", "↗", "IPO Radar", "新股雷达", "IPO", "新股", ipo_body,
+                        "IPO window & upcoming unlocks", "新股窗口与解禁日历", "ipo.html")
     cards = [
         card("term", "▣", "Terminal", "交易终端", "Terminal", "终端", term, "Trading charts & stock workspace", "交易图表与个股工作台", "https://app.mastermind-x.com", ' rel="noopener"'),
         card("cyc", "◷", "Cycle Intelligence", "周期智能", "Cycle Intel", "周期", cyc, "Country cycle dashboards", "国家周期看板", "cycle.html"),
-        card("sec l-en", "▦", "US Sectors", "美股行业", "US Sectors", "美股行业", sec_us, "Sector Intelligence rotation map", "行业智慧轮动图", "sector_central.html"),
-        card("sec l-zh", "▦", "CN Sectors", "中国行业", "CN Sectors", "中国行业", sec_cn, "Sector Intelligence rotation map", "中国行业智慧轮动图", "sector_central_china.html"),
-        card("rep", "◇", "Research Reports", "研究报告", "Reports", "报告", rep, "Read the latest research desk", "阅读最新研究", "reports.html"),
-        card("btc crypto", "◈", "Crypto Cockpit", "加密驾驶舱", "Crypto", "加密", crypto, "Market state, flows & class allocation", "市场状态、资金流与资产配置", "crypto.html"),
+        card("sec l-en", "▦", "US Sectors", "美股行业", "US Sectors", "美股行业", sec_us, "See sector rotation", "查看行业轮动", "sector_central.html"),
+        card("sec l-zh", "▦", "CN Sectors", "中国行业", "CN Sectors", "中国行业", sec_cn, "See sector rotation", "查看行业轮动", "sector_central_china.html"),
+        card("rep", "◇", "Research Reports", "研究报告", "Reports", "报告", rep, "Read the latest research", "阅读最新研究", "reports.html"),
+        card("btc crypto", "◈", "Crypto Cockpit", "加密驾驶舱", "Crypto", "加密", crypto, "Market state, flows & allocation", "市场状态、资金流与资产配置", "crypto.html"),
         card("btc", "₿", "Bitcoin Vector", "比特币向量", "Bitcoin", "比特币", btc, "Risk, momentum & allocation", "风险、动量与配置", "vector.html"),
-        card("bd", "🏛️", "Bonds & Bond Health", "债券与债券健康", "Bonds", "债券", bd, "Curve, credit & cycle clock", "曲线、信用与周期时钟", "bonds.html"),
-        card("com", "◆", "Commodity Vector", "大宗商品向量", "Commodities", "商品", com, "Allocation & shock detection", "配置与冲击检测", "commodities.html"),
-        card("fx", "💱", "Forex Vector", "外汇向量", "Forex", "外汇", fx, "Dollar-smile currency board", "美元微笑货币面板", "forex.html"),
+        card("bd", "≋", "Bonds & Bond Health", "债券与债券健康", "Bonds", "债券", bd, "Yield curve & credit", "收益率曲线与信用", "bonds.html"),
+        card("com", "◆", "Commodity Vector", "大宗商品向量", "Commodities", "商品", com, "Allocation & market shocks", "配置与市场冲击", "commodities.html"),
+        card("fx", "↔", "Forex Vector", "外汇向量", "Forex", "外汇", fx, "Dollar & currency regime", "美元与货币周期", "forex.html"),
     ]
     if ipo_card:
         cards.append(ipo_card)
-    return ('<div class="band"><h2>' + _bi("Other Features", "其他功能") + '</h2><span class="ln"></span></div>'
+    return ('<div class="band"><h2>' + _bi("Explore", "探索") + '</h2><span class="ln"></span></div>'
             '<div class="nav vc reveal">' + "".join(cards) + '</div>')
 
 
@@ -3643,7 +3656,7 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
     # templates/_seo_head.html.j2 used by the Jinja hub pages. Canonical is
     # /start.html — the root canonical belongs to the marketing landing page.
     _seo_title = "MastermindX — Global Macro Regime & Market Cycle Intelligence"
-    _seo_desc = ("MastermindX is a live macro dashboard tracking market regimes, sector "
+    _seo_desc = ("MastermindX is a macro dashboard tracking market regimes, sector "
                  "rotation and boom-bust cycles across the US, China, Hong Kong, Canada and "
                  "global markets.")
     _seo = (
@@ -3693,6 +3706,25 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
             '<link rel="stylesheet" href="theme.css">\n'
             + _GLOBE_HUB_CSS + _HUB_CRITICAL_CSS + '</head><body class="hub-page">')
 
+    # Snapshot as-of is a civil date from the bake (vm.built, else macro.date).
+    # Never tick the viewer's clock — that would relabel a snapshot as live.
+    _asof_raw = str((vm or {}).get("built") or (macro or {}).get("date") or "").strip()
+    _asof = _asof_raw[:10] if len(_asof_raw) >= 10 else ""
+    _MONTH = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+    _asof_en = _asof_zh = ""
+    if _asof:
+        try:
+            _y, _m, _d = int(_asof[0:4]), int(_asof[5:7]), int(_asof[8:10])
+            if 1 <= _m <= 12 and 1 <= _d <= 31:
+                _asof_en = f"{_MONTH[_m - 1]} {_d}, {_y}"
+                _asof_zh = f"{_y}年{_m}月{_d}日"
+            else:
+                _asof = ""
+        except ValueError:
+            _asof = ""
+    _asof_attr = (' data-asof="' + _esc(_asof, quote=True) + '"') if _asof else ""
+
     body = (
         '<div id="sky" aria-hidden="true"><canvas id="sky-stars"></canvas><div id="sky-sun"></div><div id="sky-moon"></div>'
         '<div id="sky-sat"><svg viewBox="0 0 148 74" xmlns="http://www.w3.org/2000/svg"><defs>'
@@ -3730,13 +3762,13 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         + '<span class="logo-word">MASTERMINDX</span></h1>'
         '<p>' + _bi("One disciplined view across every major market.",
                     "一套框架，看清全球主要市场。") + '</p></div></div>'
-        '<div class="hub-live-meta"><span class="eyebrow"><span class="live"></span>'
-        '<span class="hub-clock-wrap">'
-        '<span class="hub-clock-static">' + _bi("Live", "实时") + '</span>'
+        '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot"></span>'
+        '<span class="hub-clock-wrap"' + _asof_attr + '>'
+        '<span class="hub-clock-static">' + _bi("Latest market snapshot", "最新市场快照") + '</span>'
         '<span class="hub-clock-skel skel" aria-hidden="true"></span>'
         '<span class="hub-clock-live">'
-        + _bi('Live · <span class="hub-clock" data-loc="en"></span>',
-              '实时 · <span class="hub-clock" data-loc="zh-CN"></span>')
+        + _bi('Latest market snapshot · <span class="hub-clock" data-loc="en">' + _esc(_asof_en) + '</span>',
+              '最新市场快照 · <span class="hub-clock" data-loc="zh-CN">' + _esc(_asof_zh) + '</span>')
         + '</span></span></span></div></header>'
         + globe_deck
         + '<div class="hub-views" id="hub-views" data-view="mk">'
@@ -3756,16 +3788,14 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         '<script src="theme.js"></script>'
         # live_config.js + live.js already load through the canonical product nav
         # emitted by _hub_product_nav_html(); do not parse/execute them twice here.
-        # eyebrow clock — ticks the viewer's own browser local time, second by second
+        # Snapshot as-of is baked; JS only reveals it (is-live) or fails honest
+        # (no-clock keeps the static snapshot word). No viewer-clock tick.
         '<script>(function(){var wrap=document.querySelector(".hub-clock-wrap");'
         'function fail(){if(wrap&&!wrap.classList.contains("is-live"))wrap.classList.add("no-clock");}'
         'setTimeout(fail,2000);'
-        'try{var els=document.querySelectorAll(".hub-clock");if(!els.length){fail();return;}'
-        'var opt={year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false,timeZoneName:"short"};'
-        'function tick(){var d=new Date();for(var i=0;i<els.length;i++){var l=els[i].getAttribute("data-loc")||undefined;'
-        'try{els[i].textContent=d.toLocaleString(l,opt);}catch(e){els[i].textContent=d.toLocaleString(undefined,opt);}}'
-        'if(wrap)wrap.classList.add("is-live");}'
-        'tick();setInterval(tick,1000);}catch(e){fail();}})();</script>'
+        'try{if(!wrap||!wrap.getAttribute("data-asof")){fail();return;}'
+        'var els=document.querySelectorAll(".hub-clock");if(!els.length){fail();return;}'
+        'wrap.classList.add("is-live");}catch(e){fail();}})();</script>'
         # personal welcome — name greeting + a short market-aware read (real #globe-data,
         # no LLM), paced with pauses, then a slow dissolve to the brand. Engine + topic/
         # phrasing rotation + same-day visit recall live in hub-welcome.js.
